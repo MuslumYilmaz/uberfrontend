@@ -33,6 +33,15 @@ const ANGULAR_SEO_KEYWORDS = [
   'angular signals interview questions',
 ];
 
+const JAVASCRIPT_SEO_KEYWORDS = [
+  'javascript interview questions and answers',
+  'javascript interview questions',
+  'javascript interview questions for experienced developers',
+  'javascript interview questions for beginners',
+  'javascript output interview questions',
+  'javascript async interview questions',
+];
+
 describe('React interview route SEO contract', () => {
   it('keeps Q&A ownership, ordered keywords, and the existing H1 route title', () => {
     const reactRoute = routes.find((route) => route.path === 'react/interview-questions');
@@ -80,6 +89,23 @@ describe('Angular interview route SEO contract', () => {
       description:
         '65 Angular interview questions and answers for frontend developers: RxJS, signals, change detection, DI, testing, performance, and code scenarios.',
       keywords: ANGULAR_SEO_KEYWORDS,
+    });
+  });
+});
+
+describe('JavaScript interview route SEO contract', () => {
+  it('keeps the singular helper keyword while assigning ordered Q&A ownership to SEO metadata', () => {
+    const javascriptRoute = routes.find((route) => route.path === 'javascript/interview-questions');
+    const config = javascriptRoute?.data?.['interviewQuestions'];
+    const seo = javascriptRoute?.data?.['seo'];
+
+    expect(config?.keyword).toBe('javascript interview questions');
+    expect(config?.title).toBe('JavaScript Interview Questions and Answers');
+    expect(seo).toEqual({
+      title: 'JavaScript Interview Questions and Answers: Async & Closures',
+      description:
+        '41 JavaScript interview questions and answers for frontend developers: closures, async/await, event loop, output tracing, DOM, security, and scenarios.',
+      keywords: JAVASCRIPT_SEO_KEYWORDS,
     });
   });
 });
@@ -1183,19 +1209,39 @@ describe('InterviewQuestionsLandingComponent', () => {
       techs: ['javascript'],
     };
     routeStub.snapshot.data.seo = {
-      title: 'JavaScript Interview Questions and Answers',
-      description: 'Practice JavaScript interview questions and answers with coding prompts, concept questions, cloning, promises, async debugging, immutability, XSS prevention, common mistakes, and resources.',
+      title: 'JavaScript Interview Questions and Answers: Async & Closures',
+      description:
+        '41 JavaScript interview questions and answers for frontend developers: closures, async/await, event loop, output tracing, DOM, security, and scenarios.',
+      keywords: JAVASCRIPT_SEO_KEYWORDS,
     };
     routeStub.snapshot.data.interviewQuestionsList = {
       techs: ['javascript'],
-      coding: [
-        { id: 'js-shallow-clone', title: 'Shallow Clone', type: 'coding', technology: 'javascript', difficulty: 'easy', access: 'free', tags: [], importance: 5, companies: [], description: 'Clone top-level object properties.', tech: 'javascript' },
-        { id: 'js-array-sort', title: 'Sort Numbers', type: 'coding', technology: 'javascript', difficulty: 'easy', access: 'free', tags: [], importance: 4, companies: [], description: 'Sort numbers with a comparator.', tech: 'javascript' },
-      ],
-      trivia: [
-        { id: 'js-promises-async-await', title: 'Promises and async/await', type: 'trivia', technology: 'javascript', difficulty: 'easy', access: 'free', tags: [], importance: 5, companies: [], description: 'Explain promises.', tech: 'javascript' },
-        { id: 'js-shallow-vs-deep-copy', title: 'Shallow vs Deep Copy', type: 'trivia', technology: 'javascript', difficulty: 'intermediate', access: 'free', tags: [], importance: 5, companies: [], description: 'Compare clone depth.', tech: 'javascript' },
-      ],
+      coding: Array.from({ length: 8 }, (_, index) => ({
+        id: `js-schema-coding-${String(index + 1).padStart(2, '0')}`,
+        title: `JavaScript schema coding ${index + 1}`,
+        type: 'coding',
+        technology: 'javascript',
+        difficulty: 'easy',
+        access: 'free',
+        tags: [],
+        importance: 8 - index,
+        companies: [],
+        description: `Practice JavaScript coding scenario ${index + 1}.`,
+        tech: 'javascript',
+      })),
+      trivia: Array.from({ length: 21 }, (_, index) => ({
+        id: `js-schema-trivia-${String(index + 1).padStart(2, '0')}`,
+        title: `JavaScript schema trivia ${index + 1}`,
+        type: 'trivia',
+        technology: 'javascript',
+        difficulty: 'easy',
+        access: 'free',
+        tags: [],
+        importance: 21 - index,
+        companies: [],
+        description: `Explain JavaScript concept ${index + 1}.`,
+        tech: 'javascript',
+      })),
     };
     routeStub.snapshot.url = [{ path: 'javascript' }, { path: 'interview-questions' }];
     routeStub.snapshot.pathFromRoot = [{ url: [] }, { url: [{ path: 'javascript' }, { path: 'interview-questions' }] }];
@@ -1210,18 +1256,25 @@ describe('InterviewQuestionsLandingComponent', () => {
     expectNoMasterHubCopy(text, fixture.nativeElement);
 
     expect(text).toContain('JavaScript Interview Questions and Answers');
-    expect(text).toContain('Updated May 19, 2026');
+    expect(fixture.nativeElement.querySelectorAll('h1').length).toBe(1);
+    expect(fixture.nativeElement.querySelector('h1')?.textContent?.trim()).toBe(
+      'JavaScript Interview Questions and Answers'
+    );
+    expect(text).toContain(
+      'Review 41 JavaScript interview questions and answers for beginner-to-experienced frontend developers, covering closures, Promises, async/await, the event loop, output tracing, DOM APIs, browser security, and coding scenarios.'
+    );
+    expect(text).toContain('Updated August 14, 2026');
     expect(text).toContain('FrontendAtlas Editorial');
     expect(text).toContain('25 answers, 8 output questions, and 8 browser/DOM/security questions');
     expect(text).toContain('On this page');
-    expect(text).toContain('Top JavaScript interview questions and short answers, beginner to advanced');
+    expect(text).toContain('JavaScript interview questions and answers: beginner to advanced');
     expect(text).toContain('Use these beginner, intermediate, and advanced answers for a fast review');
     expect(text).toContain('Output-based JavaScript interview questions');
     expect(text).toContain('DOM, browser, and security questions');
     for (const question of JAVASCRIPT_SHORT_ANSWER_QUESTIONS) {
       expect(text).toContain(question);
     }
-    expect(text.indexOf('Top JavaScript interview questions and short answers, beginner to advanced')).toBeLessThan(
+    expect(text.indexOf('JavaScript interview questions and answers: beginner to advanced')).toBeLessThan(
       text.indexOf('Most crucial JavaScript coding interview questions')
     );
     expect(text.indexOf('DOM, browser, and security questions')).toBeLessThan(
@@ -1243,11 +1296,14 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(text).toContain('JavaScript coding interview best practices');
     expect(text).toContain('How to debug async JavaScript issues');
     expect(text).toContain('Best resources for JavaScript interview preparation');
-    expect(text).toContain('Are these JavaScript interview questions for beginners or experienced developers?');
+    expect(text).toContain('Are these JavaScript interview questions and answers for beginners and experienced developers?');
     expect(text).toContain('Do these include output-based JavaScript interview questions?');
     expect(text).toContain('Where should I practice JavaScript coding interview questions?');
-    expect(text).toContain('What are common mistakes in JavaScript interviews?');
-    expect(text).toContain('What are the best resources for JavaScript interview preparation?');
+    expect(text).toContain('Does this page include JavaScript interview questions and answers with async, output, and browser scenarios?');
+    expect(text).toContain('How should I prepare after reviewing these JavaScript interview questions?');
+    expect(text).toContain('implementation patterns and coding drills');
+    expect(text).toContain('7, 14, or 30-day study plan');
+    expect(fixture.nativeElement.querySelectorAll('.iq-faq-card').length).toBe(5);
     expect(text).not.toContain('React interview topic map');
     expect(text).not.toContain('Popular React interview question clusters');
     expect(text).not.toContain('Top React interview questions and short answers, beginner to advanced');
@@ -1290,6 +1346,9 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(fixture.nativeElement.querySelectorAll('.iq-output-card').length).toBe(8);
     expect(fixture.nativeElement.querySelector('.iq-section--javascript-browser')).toBeTruthy();
     expect(fixture.nativeElement.querySelectorAll('.iq-browser-card').length).toBe(8);
+    expect(
+      fixture.nativeElement.querySelectorAll('.iq-short-answer, .iq-output-card, .iq-browser-card').length
+    ).toBe(41);
     expect(fixture.nativeElement.querySelector('.iq-section--javascript-coverage')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('.iq-section--react-clusters')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--react-short-answers')).toBeNull();
@@ -1330,7 +1389,15 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(fixture.nativeElement.querySelector('a[href="/javascript/coding/js-dom-find-node"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/javascript/debug/js-debug-lost-this-binding"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/javascript/coding/js-array-sort"]')).toBeTruthy();
-    expect(fixture.nativeElement.querySelector('a[href="/guides/framework-prep/javascript-prep-path"]')).toBeTruthy();
+    const javascriptPrepLinks = fixture.nativeElement.querySelectorAll(
+      'a[href="/guides/framework-prep/javascript-prep-path"]'
+    );
+    expect(javascriptPrepLinks.length).toBe(2);
+    const codingGuideCta = fixture.nativeElement.querySelector(
+      '.iq-javascript-support-card--best-practices a[href="/guides/interview-blueprint/javascript-interviews"]'
+    ) as HTMLAnchorElement | null;
+    expect(codingGuideCta).toBeTruthy();
+    expect(codingGuideCta?.textContent || '').toContain('Practice JavaScript coding interview patterns');
     expect(fixture.nativeElement.querySelector('a[href="/javascript/trivia/js-shallow-vs-deep-copy"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/javascript/coding/js-shallow-clone"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/javascript/trivia/js-promises-async-await"]')).toBeTruthy();
@@ -1346,7 +1413,34 @@ describe('InterviewQuestionsLandingComponent', () => {
     const payload = seo.updateTags.calls.mostRecent().args[0] as any;
     const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
     const collection = graph.find((entry: any) => entry?.['@type'] === 'CollectionPage');
+    const breadcrumbList = graph.find((entry: any) => entry?.['@type'] === 'BreadcrumbList');
     const faqPage = graph.find((entry: any) => entry?.['@type'] === 'FAQPage');
+
+    expect(payload.title).toBe('JavaScript Interview Questions and Answers: Async & Closures');
+    expect(payload.description).toBe(
+      '41 JavaScript interview questions and answers for frontend developers: closures, async/await, event loop, output tracing, DOM, security, and scenarios.'
+    );
+    expect(payload.keywords).toEqual(JAVASCRIPT_SEO_KEYWORDS);
+    expect(payload.canonical).toBe('/javascript/interview-questions');
+    expect(graph.map((entry: any) => entry?.['@type'])).toEqual([
+      'CollectionPage',
+      'BreadcrumbList',
+      'FAQPage',
+    ]);
+    expect(collection?.['@id']).toBe('https://frontendatlas.com/javascript/interview-questions');
+    expect(collection?.url).toBe('https://frontendatlas.com/javascript/interview-questions');
+    expect(collection?.name).toBe('JavaScript Interview Questions and Answers');
+    expect(breadcrumbList).toBeTruthy();
+    expect(collection?.mainEntity?.['@type']).toBe('ItemList');
+    const schemaItems = collection?.mainEntity?.itemListElement || [];
+    const schemaUrls = schemaItems.map((entry: any) => String(entry?.url || ''));
+    expect(schemaItems.length).toBe(20);
+    expect(new Set(schemaUrls).size).toBe(20);
+    expect(schemaUrls.slice(0, 12).every((url: string) => url.includes('/javascript/trivia/'))).toBeTrue();
+    expect(schemaUrls.slice(12).every((url: string) => url.includes('/javascript/coding/'))).toBeTrue();
+    expect(schemaItems.map((entry: any) => entry?.position)).toEqual(
+      Array.from({ length: 20 }, (_, index) => index + 1)
+    );
 
     expect((collection?.about || []).some((entry: any) =>
       String(entry?.name || '').includes('JavaScript shallow copy versus deep copy')
@@ -1384,10 +1478,10 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect((collection?.mentions || []).some((entry: any) =>
       String(entry?.name || '').includes('JavaScript event bubbling and capturing')
     )).toBeTrue();
-    expect(collection?.dateModified).toBe('2026-05-19T00:00:00.000Z');
+    expect(collection?.dateModified).toBe('2026-08-14T00:00:00.000Z');
     expect(collection?.author?.name).toBe('FrontendAtlas Editorial');
     expect(faqPage).toBeTruthy();
-    expect(faqPage?.name).toBe('Top JavaScript interview questions and short answers, beginner to advanced');
+    expect(faqPage?.name).toBe('JavaScript interview questions and answers: beginner to advanced');
     expect(Array.isArray(faqPage?.mainEntity)).toBeTrue();
     expect(faqPage?.mainEntity.length).toBe(25);
     expect(faqPage?.mainEntity.map((entry: any) => entry?.name)).toEqual(JAVASCRIPT_SHORT_ANSWER_QUESTIONS);

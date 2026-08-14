@@ -1247,9 +1247,17 @@ export const routes: Routes = [
         techs: ['javascript'],
       },
       seo: {
-        title: 'JavaScript Interview Questions: 41 Q&A, Output and Async',
+        title: 'JavaScript Interview Questions and Answers: Async & Closures',
         description:
-          '41 JavaScript interview questions for frontend developers: beginner-to-advanced Q&A, output tracing, closures, event loop, promises, DOM, XSS, coding prompts.',
+          '41 JavaScript interview questions and answers for frontend developers: closures, async/await, event loop, output tracing, DOM, security, and scenarios.',
+        keywords: [
+          'javascript interview questions and answers',
+          'javascript interview questions',
+          'javascript interview questions for experienced developers',
+          'javascript interview questions for beginners',
+          'javascript output interview questions',
+          'javascript async interview questions',
+        ],
       },
     },
   },
