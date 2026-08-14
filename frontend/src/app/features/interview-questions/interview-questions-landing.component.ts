@@ -1057,6 +1057,14 @@ const HUB_FAQ_PROFILES: Record<string, HubFaqItem[]> = {
       q: 'Does this page cover Angular security, guards, resolvers, and performance?',
       a: 'Yes. The security and routing sections cover Angular sanitization, DomSanitizer, XSS prevention, user-controlled URLs, guards, resolvers, AOT/JIT, template compilation, lazy loading, and performance profiling.',
     },
+    {
+      q: 'Does this page include modern Angular interview questions and answers?',
+      a: 'Yes. The modern Angular section covers standalone components, route-level providers, signals, control flow, deferrable views, zoneless change detection, SSR, hydration, and Signal Forms trade-offs.',
+    },
+    {
+      q: 'How should I prepare after reviewing these Angular interview questions?',
+      a: 'Use this hub to find gaps, then move to the Angular interview preparation path for a 7, 14, or 30-day plan. The prep path owns the study-plan intent; this page owns the question-and-answer review intent.',
+    },
   ],
   vue: [
     {
@@ -1756,10 +1764,10 @@ const ANGULAR_ANCHOR_ITEMS: AngularAnchorItem[] = [
 ];
 
 const ANGULAR_EDITORIAL_SIGNAL: AngularEditorialSignal = {
-  updatedLabel: 'Updated May 20, 2026',
+  updatedLabel: 'Updated August 14, 2026',
   author: PUBLIC_EDITORIAL_FACTS.author.name,
   coverage: '65 visible Angular questions across answers, scenarios, modern Angular, testing, security, routing, and performance',
-  dateModified: '2026-05-20T00:00:00.000Z',
+  dateModified: '2026-08-14T00:00:00.000Z',
 };
 
 const ANGULAR_KEYWORD_CLUSTERS: AngularKeywordClusterItem[] = [
@@ -1811,8 +1819,6 @@ const ANGULAR_TESTING_QUESTIONS: AngularFocusedQuestionItem[] = [
     level: 'intermediate',
     q: 'When should you use TestBed instead of a plain unit test?',
     a: 'Use plain unit tests for pure functions, validators, mapping logic, and services that do not need Angular runtime behavior. Use TestBed when the code depends on templates, dependency injection, lifecycle hooks, pipes, directives, or Angular change detection. TestBed has more setup cost, so the boundary should match the behavior you need to prove.',
-    route: ['/guides', 'framework-prep', 'angular-prep-path'],
-    cta: 'Open the Angular testing prep path',
   },
   {
     level: 'intermediate',
@@ -1825,8 +1831,6 @@ const ANGULAR_TESTING_QUESTIONS: AngularFocusedQuestionItem[] = [
     level: 'advanced',
     q: 'What do fakeAsync() and tick() do in Angular tests?',
     a: 'fakeAsync runs a test inside a controlled async zone so timers and microtasks can be advanced deterministically. tick() moves virtual time forward and flushes timer work scheduled for that window. It is useful for debounce, delay, timeout, and lifecycle timing, but it should not hide unclear async ownership.',
-    route: ['/guides', 'framework-prep', 'angular-prep-path'],
-    cta: 'Review async testing strategy',
   },
   {
     level: 'advanced',
@@ -1839,8 +1843,6 @@ const ANGULAR_TESTING_QUESTIONS: AngularFocusedQuestionItem[] = [
     level: 'advanced',
     q: 'What are Angular component harnesses?',
     a: 'Component harnesses provide a stable testing API for interacting with components through user-facing behavior. They reduce brittle selectors and hide markup details that should not matter to the test. Harnesses are most valuable for shared UI components where many tests need the same reliable interactions.',
-    route: ['/guides', 'framework-prep', 'angular-prep-path'],
-    cta: 'Open the Angular prep path',
   },
   {
     level: 'advanced',
@@ -1860,8 +1862,6 @@ const ANGULAR_TESTING_QUESTIONS: AngularFocusedQuestionItem[] = [
     level: 'intermediate',
     q: 'What makes Angular tests brittle?',
     a: 'Tests become brittle when they assert private methods, framework internals, or exact DOM structure that users cannot observe. They also become flaky when async work is not owned clearly, such as unflushed HTTP requests or timers. Prefer behavior assertions, stable selectors or harnesses, explicit async control, and tests at the smallest boundary that proves the risk.',
-    route: ['/guides', 'framework-prep', 'angular-prep-path'],
-    cta: 'Review Angular testing mistakes',
   },
 ];
 
@@ -1884,15 +1884,11 @@ const ANGULAR_SECURITY_QUESTIONS: AngularFocusedQuestionItem[] = [
     level: 'advanced',
     q: 'What is DomSanitizer used for?',
     a: 'DomSanitizer is an Angular API for sanitizing values or explicitly marking a value trusted for a specific security context. It is needed only when ordinary binding and built-in sanitization are not enough for a controlled use case. The dangerous part is that trust decisions move responsibility from Angular to application code.',
-    route: ['/guides', 'framework-prep', 'angular-prep-path'],
-    cta: 'Review Angular security topics',
   },
   {
     level: 'advanced',
     q: 'Why is bypassSecurityTrustHtml dangerous?',
     a: 'bypassSecurityTrustHtml tells Angular to skip normal sanitization for that value. If the value contains user-controlled markup, the app can reintroduce XSS even though Angular templates are normally safe. Only use bypass APIs for tightly controlled, audited content and keep the trusted boundary small.',
-    route: ['/guides', 'framework-prep', 'angular-prep-path'],
-    cta: 'Review Angular security topics',
   },
   {
     level: 'advanced',
@@ -1905,15 +1901,11 @@ const ANGULAR_SECURITY_QUESTIONS: AngularFocusedQuestionItem[] = [
     level: 'advanced',
     q: 'How do you render CMS or rich text safely in Angular?',
     a: 'Treat CMS HTML as untrusted unless it comes from a trusted pipeline with server-side sanitization and a narrow allowlist. Client-side rendering should still avoid scripts, event-handler attributes, unsafe URLs, and unknown embeds. The safer architecture sanitizes before storage or delivery, then renders through a small component with clear ownership.',
-    route: ['/guides', 'framework-prep', 'angular-prep-path'],
-    cta: 'Review Angular security topics',
   },
   {
     level: 'intermediate',
     q: 'How do CSP and backend validation support Angular security?',
     a: 'Content Security Policy reduces the damage of injected scripts by limiting what the browser can execute or load. Backend validation and output encoding protect data before it reaches the Angular app and protect non-Angular consumers too. Angular template safety is one layer, not a replacement for server-side validation and browser policy.',
-    route: ['/guides', 'framework-prep', 'angular-prep-path'],
-    cta: 'Review Angular prep path',
   },
   {
     level: 'advanced',
@@ -5504,6 +5496,10 @@ export class InterviewQuestionsLandingComponent implements OnInit {
       return 'Review 66 React interview questions and answers for beginner-to-experienced frontend developers, covering hooks, state, rendering, React 19, Server Components, testing, performance, and code scenarios.';
     }
 
+    if (this.isAngularHub()) {
+      return 'Review 65 Angular interview questions and answers for beginner-to-experienced frontend developers, covering RxJS, signals, change detection, dependency injection, testing, performance, and code scenarios.';
+    }
+
     return `${this.keywordSentenceCase()} and answers hub with coding prompts, concept questions, follow-ups, and common mistakes. Practice concise answers first, then expand into Study Plans, guides, and Company Prep.`;
   }
 
@@ -7020,7 +7016,7 @@ export class InterviewQuestionsLandingComponent implements OnInit {
       '@type': 'FAQPage',
       '@id': `${canonicalUrl}#angular-short-answers`,
       url: canonicalUrl,
-      name: 'Top Angular interview questions and short answers, beginner to advanced',
+      name: 'Angular interview questions and answers: beginner to advanced',
       mainEntity: this.angularShortAnswers().map((item) => ({
         '@type': 'Question',
         name: item.q,
@@ -7121,7 +7117,7 @@ export class InterviewQuestionsLandingComponent implements OnInit {
     const seen = new Set<string>();
     const out: SchemaQuestionLink[] = [];
 
-    if (this.isReactHub() || this.isVueHub()) {
+    if (this.isReactHub() || this.isVueHub() || this.isAngularHub()) {
       this.appendSchemaQuestionLinks(out, seen, this.triviaQuestions, 12);
       this.appendSchemaQuestionLinks(out, seen, this.codingQuestions, 8);
       return out;

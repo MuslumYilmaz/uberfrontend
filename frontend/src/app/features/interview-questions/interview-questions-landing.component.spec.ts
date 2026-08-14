@@ -24,6 +24,15 @@ const VUE_SEO_KEYWORDS = [
   'vue 3 interview questions',
 ];
 
+const ANGULAR_SEO_KEYWORDS = [
+  'angular interview questions and answers',
+  'angular interview questions',
+  'angular interview questions for experienced developers',
+  'angular interview questions for beginners',
+  'angular rxjs interview questions',
+  'angular signals interview questions',
+];
+
 describe('React interview route SEO contract', () => {
   it('keeps Q&A ownership, ordered keywords, and the existing H1 route title', () => {
     const reactRoute = routes.find((route) => route.path === 'react/interview-questions');
@@ -54,6 +63,23 @@ describe('Vue interview route SEO contract', () => {
       description:
         '65 Vue.js interview questions and answers for frontend developers: Vue 3, Composition API, reactivity, Pinia, Router, testing, performance, and scenarios.',
       keywords: VUE_SEO_KEYWORDS,
+    });
+  });
+});
+
+describe('Angular interview route SEO contract', () => {
+  it('keeps the singular helper keyword while assigning ordered Q&A ownership to SEO metadata', () => {
+    const angularRoute = routes.find((route) => route.path === 'angular/interview-questions');
+    const config = angularRoute?.data?.['interviewQuestions'];
+    const seo = angularRoute?.data?.['seo'];
+
+    expect(config?.keyword).toBe('angular interview questions');
+    expect(config?.title).toBe('Angular Interview Questions and Answers');
+    expect(seo).toEqual({
+      title: 'Angular Interview Questions and Answers: RxJS & Signals',
+      description:
+        '65 Angular interview questions and answers for frontend developers: RxJS, signals, change detection, DI, testing, performance, and code scenarios.',
+      keywords: ANGULAR_SEO_KEYWORDS,
     });
   });
 });
@@ -2887,13 +2913,54 @@ describe('InterviewQuestionsLandingComponent', () => {
       title: 'Angular Interview Questions and Answers',
       techs: ['angular'],
     };
+    routeStub.snapshot.data.seo = {
+      title: 'Angular Interview Questions and Answers: RxJS & Signals',
+      description:
+        '65 Angular interview questions and answers for frontend developers: RxJS, signals, change detection, DI, testing, performance, and code scenarios.',
+      keywords: ANGULAR_SEO_KEYWORDS,
+    };
     routeStub.snapshot.data.interviewQuestionsList = {
       techs: ['angular'],
-      coding: [
-        { id: 'angular-debounced-search-rxjs', title: 'Angular Debounced Search', type: 'coding', technology: 'angular', difficulty: 'intermediate', access: 'free', tags: [], importance: 5, companies: [], description: 'Build debounced search.', tech: 'angular' },
-      ],
+      coding: Array.from({ length: 8 }, (_, index) => ({
+        id: index === 0 ? 'angular-debounced-search-rxjs' : `angular-coding-fixture-${index + 1}`,
+        title: index === 0 ? 'Angular Debounced Search' : `Angular coding fixture ${index + 1}`,
+        type: 'coding',
+        technology: 'angular',
+        difficulty: 'intermediate',
+        access: 'free',
+        tags: [],
+        importance: 5,
+        companies: [],
+        description: `Build Angular coding fixture ${index + 1}.`,
+        tech: 'angular',
+      })),
       trivia: [
-        { id: 'angular-change-detection-strategies', title: 'Angular Change Detection', type: 'trivia', technology: 'angular', difficulty: 'intermediate', access: 'free', tags: [], importance: 5, companies: [], description: 'Explain change detection.', tech: 'angular' },
+        {
+          id: 'angular-change-detection-strategies',
+          title: 'Angular Change Detection',
+          type: 'trivia',
+          technology: 'angular',
+          difficulty: 'intermediate',
+          access: 'free',
+          tags: [],
+          importance: 5,
+          companies: [],
+          description: 'Explain change detection.',
+          tech: 'angular',
+        },
+        ...Array.from({ length: 20 }, (_, index) => ({
+          id: `angular-trivia-fixture-${index + 1}`,
+          title: `Angular trivia fixture ${index + 1}`,
+          type: 'trivia',
+          technology: 'angular',
+          difficulty: 'intermediate',
+          access: 'free',
+          tags: [],
+          importance: 4,
+          companies: [],
+          description: `Explain Angular trivia fixture ${index + 1}.`,
+          tech: 'angular',
+        })),
       ],
     };
     routeStub.snapshot.url = [{ path: 'angular' }, { path: 'interview-questions' }];
@@ -2909,7 +2976,15 @@ describe('InterviewQuestionsLandingComponent', () => {
     expectNoMasterHubCopy(text, fixture.nativeElement);
 
     expect(text).toContain('Angular Interview Questions and Answers');
-    expect(text).toContain('Updated May 20, 2026');
+    expect(fixture.componentInstance.keywordSentenceCase()).toBe('Angular interview questions');
+    expect(fixture.nativeElement.querySelectorAll('h1').length).toBe(1);
+    expect(fixture.nativeElement.querySelector('h1')?.textContent?.trim()).toBe(
+      'Angular Interview Questions and Answers'
+    );
+    expect(text).toContain(
+      'Review 65 Angular interview questions and answers for beginner-to-experienced frontend developers, covering RxJS, signals, change detection, dependency injection, testing, performance, and code scenarios.'
+    );
+    expect(text).toContain('Updated August 14, 2026');
     expect(text).toContain('FrontendAtlas Editorial');
     expect(text).toContain('65 visible Angular questions across answers, scenarios, modern Angular, testing, security, routing, and performance');
     expect(text).toContain('On this page');
@@ -2917,7 +2992,8 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(text).toContain('Beginner');
     expect(text).toContain('Experienced');
     expect(text).toContain('Routing/Performance');
-    expect(text).toContain('Top Angular interview questions and short answers, beginner to advanced');
+    expect(text).toContain('Angular interview questions and answers: beginner to advanced');
+    expect(text).not.toContain('Top Angular interview questions and short answers, beginner to advanced');
     expect(text).toContain('Use these beginner, intermediate, and advanced Angular answers for a fast review');
     expect(text).toContain('Angular interview questions for beginners and experienced developers');
     expect(text).toContain('For beginners');
@@ -2926,7 +3002,7 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(text).toContain('Angular security interview questions');
     expect(text).toContain('Angular routing, compiler, and performance interview questions');
     expect(text).toContain('Angular scenario and code interview questions');
-    expect(text).toContain('Modern Angular interview questions');
+    expect(text).toContain('Modern Angular interview questions and answers');
     for (const question of ANGULAR_SHORT_ANSWER_QUESTIONS) {
       expect(text).toContain(question);
     }
@@ -2939,13 +3015,13 @@ describe('InterviewQuestionsLandingComponent', () => {
     for (const question of ANGULAR_CLASSIC_QUESTIONS) {
       expect(text).toContain(question);
     }
-    expect(text.indexOf('Top Angular interview questions and short answers, beginner to advanced')).toBeLessThan(
+    expect(text.indexOf('Angular interview questions and answers: beginner to advanced')).toBeLessThan(
       text.indexOf('Angular testing interview questions')
     );
     expect(text.indexOf('Angular routing, compiler, and performance interview questions')).toBeLessThan(
       text.indexOf('Angular scenario and code interview questions')
     );
-    expect(text.indexOf('Modern Angular interview questions')).toBeLessThan(
+    expect(text.indexOf('Modern Angular interview questions and answers')).toBeLessThan(
       text.indexOf('Most crucial Angular coding interview questions')
     );
     expect(text.indexOf('Angular testing interview questions')).toBeLessThan(
@@ -2969,6 +3045,17 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(text).toContain('Are these Angular interview questions for beginners and experienced developers?');
     expect(text).toContain('Does this page include Angular testing interview questions?');
     expect(text).toContain('Does this page cover Angular security, guards, resolvers, and performance?');
+    expect(text).toContain('Does this page include modern Angular interview questions and answers?');
+    expect(text).toContain('How should I prepare after reviewing these Angular interview questions?');
+    const ownershipFaq = Array.from(
+      fixture.nativeElement.querySelectorAll('.iq-faq-card') as NodeListOf<HTMLElement>
+    ).find((card) =>
+      (card.querySelector('h3')?.textContent || '').includes(
+        'How should I prepare after reviewing these Angular interview questions?'
+      )
+    );
+    expect(ownershipFaq?.textContent || '').toMatch(/study[- ]plan/i);
+    expect(ownershipFaq?.textContent || '').toMatch(/question(?:-and-answer| and answer)/i);
     expect(text).toContain('Why does this OnPush child stay stale after a nested mutation?');
     expect(text).toContain('Why is switchMap safer than mergeMap for typeahead search?');
     expect(text).toContain('What changes in zoneless Angular change detection?');
@@ -3072,12 +3159,52 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(fixture.nativeElement.querySelector('a[href="/angular/trivia/angular-performance-optimization"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/angular/trivia/ngrx-store-vs-component-state-angular-when-to-use"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/angular/trivia/angular-prevent-memory-leaks-unsubscribe-patterns"]')).toBeTruthy();
-    expect(fixture.nativeElement.querySelector('a[href="/guides/framework-prep/angular-prep-path"]')).toBeTruthy();
+    const angularPrepLinks = fixture.nativeElement.querySelectorAll(
+      'a[href="/guides/framework-prep/angular-prep-path"]'
+    );
+    expect(angularPrepLinks.length).toBe(4);
+    expect(
+      fixture.nativeElement.querySelector(
+        '.iq-section--angular-testing a[href="/guides/framework-prep/angular-prep-path"]'
+      )
+    ).toBeNull();
+    expect(
+      fixture.nativeElement.querySelector(
+        '.iq-section--angular-security a[href="/guides/framework-prep/angular-prep-path"]'
+      )
+    ).toBeNull();
 
     const payload = seo.updateTags.calls.mostRecent().args[0] as any;
     const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
     const collection = graph.find((entry: any) => entry?.['@type'] === 'CollectionPage');
+    const breadcrumb = graph.find((entry: any) => entry?.['@type'] === 'BreadcrumbList');
     const faqPage = graph.find((entry: any) => entry?.['@type'] === 'FAQPage');
+
+    expect(payload.title).toBe('Angular Interview Questions and Answers: RxJS & Signals');
+    expect(payload.description).toBe(
+      '65 Angular interview questions and answers for frontend developers: RxJS, signals, change detection, DI, testing, performance, and code scenarios.'
+    );
+    expect(payload.keywords).toEqual(ANGULAR_SEO_KEYWORDS);
+    expect(payload.canonical).toBe('/angular/interview-questions');
+    expect(graph.map((entry: any) => entry?.['@type'])).toEqual([
+      'CollectionPage',
+      'BreadcrumbList',
+      'FAQPage',
+    ]);
+    expect(collection?.['@id']).toBe('https://frontendatlas.com/angular/interview-questions');
+    expect(collection?.url).toBe('https://frontendatlas.com/angular/interview-questions');
+    expect(collection?.name).toBe('Angular Interview Questions and Answers');
+    expect(breadcrumb).toBeTruthy();
+    expect(collection?.mainEntity?.['@type']).toBe('ItemList');
+    const schemaItems = collection?.mainEntity?.itemListElement || [];
+    const schemaUrls = schemaItems.map((entry: any) => String(entry?.url || ''));
+    expect(schemaItems.length).toBe(20);
+    expect(new Set(schemaUrls).size).toBe(20);
+    expect(schemaUrls.slice(0, 12).every((url: string) => url.includes('/angular/trivia/'))).toBeTrue();
+    expect(schemaUrls.slice(12).every((url: string) => url.includes('/angular/coding/'))).toBeTrue();
+    expect(schemaItems.map((entry: any) => entry?.position)).toEqual(
+      Array.from({ length: 20 }, (_, index) => index + 1)
+    );
 
     expect((collection?.about || []).some((entry: any) =>
       String(entry?.name || '').includes('Angular dependency injection')
@@ -3178,10 +3305,10 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect((collection?.mentions || []).some((entry: any) =>
       String(entry?.name || '').includes('Modern Angular interview topics')
     )).toBeTrue();
-    expect(collection?.dateModified).toBe('2026-05-20T00:00:00.000Z');
+    expect(collection?.dateModified).toBe('2026-08-14T00:00:00.000Z');
     expect(collection?.author?.name).toBe('FrontendAtlas Editorial');
     expect(faqPage).toBeTruthy();
-    expect(faqPage?.name).toBe('Top Angular interview questions and short answers, beginner to advanced');
+    expect(faqPage?.name).toBe('Angular interview questions and answers: beginner to advanced');
     expect(Array.isArray(faqPage?.mainEntity)).toBeTrue();
     expect(faqPage?.mainEntity.length).toBe(25);
     expect(faqPage?.mainEntity.map((entry: any) => entry?.name)).toEqual(ANGULAR_SHORT_ANSWER_QUESTIONS);

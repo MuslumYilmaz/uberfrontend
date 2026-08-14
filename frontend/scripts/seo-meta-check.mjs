@@ -159,18 +159,23 @@ const criticalRouteContracts = [
   },
   {
     route: '/angular/interview-questions',
-    title: 'Angular Interview Questions and Answers',
+    title: 'Angular Interview Questions and Answers: RxJS & Signals',
     h1: 'Angular Interview Questions and Answers',
     descriptionTerms: [
+      '65 Angular interview questions and answers',
       'frontend developers',
-      'beginner-to-experienced',
       'RxJS',
-      'change detection',
       'signals',
+      'change detection',
       'DI',
       'testing',
       'performance',
-      'coding prompts',
+      'code scenarios',
+    ],
+    bodyTerms: [
+      'Review 65 Angular interview questions and answers for beginner-to-experienced frontend developers, covering RxJS, signals, change detection, dependency injection, testing, performance, and code scenarios.',
+      'Angular interview questions and answers: beginner to advanced',
+      'Modern Angular interview questions and answers',
     ],
   },
   {

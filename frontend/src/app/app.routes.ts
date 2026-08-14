@@ -1316,9 +1316,17 @@ export const routes: Routes = [
         ],
       },
       seo: {
-        title: 'Angular Interview Questions and Answers: RxJS and Signals',
+        title: 'Angular Interview Questions and Answers: RxJS & Signals',
         description:
-          'Angular interview questions for frontend developers: beginner-to-experienced Q&A, RxJS, change detection, signals, DI, testing, performance, coding prompts.',
+          '65 Angular interview questions and answers for frontend developers: RxJS, signals, change detection, DI, testing, performance, and code scenarios.',
+        keywords: [
+          'angular interview questions and answers',
+          'angular interview questions',
+          'angular interview questions for experienced developers',
+          'angular interview questions for beginners',
+          'angular rxjs interview questions',
+          'angular signals interview questions',
+        ],
       },
     },
   },
