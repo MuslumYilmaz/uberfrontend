@@ -1,4 +1,5 @@
 import { SENTRY_DSN, SENTRY_RELEASE, SENTRY_TRACES_SAMPLE_RATE } from './sentry.env';
+import { TURNSTILE_SITE_KEY } from './turnstile.env';
 
 export const environment = {
     production: true,
@@ -9,6 +10,7 @@ export const environment = {
     cdnBaseUrl: 'https://frontendatlas.vercel.app',
     cdnEnabled: true,
     trustedAssetOrigins: ['https://frontendatlas.vercel.app'],
+    turnstileSiteKey: TURNSTILE_SITE_KEY,
     sentryDsn: SENTRY_DSN,
     sentryRelease: SENTRY_RELEASE,
     sentryTracesSampleRate: SENTRY_TRACES_SAMPLE_RATE,

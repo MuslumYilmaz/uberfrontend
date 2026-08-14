@@ -40,6 +40,16 @@
         class="bug-textarea"
         placeholder="Example: On the track page, clicking Start Challenge keeps me on a loading spinner."></textarea>
 
+      <input
+        type="text"
+        name="website"
+        class="bug-honeypot"
+        [ngModel]="bugReport.website()"
+        (ngModelChange)="onWebsiteChange($event)"
+        aria-hidden="true"
+        tabindex="-1"
+        autocomplete="off">
+
       <div class="bug-meta">
         <span class="bug-meta__hint">Minimum {{ bugReport.minNoteChars }} characters</span>
         <span class="bug-meta__count">{{ bugReport.note().length }} / {{ bugReport.maxNoteChars }}</span>
@@ -47,6 +57,27 @@
 
       <div *ngIf="bugReport.cooldownSeconds() > 0" class="bug-cooldown" role="status" aria-live="polite">
         Please wait {{ bugReport.cooldownSeconds() }}s before sending another report.
+      </div>
+
+      <app-turnstile-challenge
+        #turnstileChallenge
+        class="bug-challenge"
+        action="bug_report"
+        [active]="bugReport.visible()"
+        (tokenChange)="onTokenChange($event)"
+        (stateChange)="onChallengeStateChange($event)">
+      </app-turnstile-challenge>
+
+      <div *ngIf="challengeMessage" class="bug-verification-error" role="alert" aria-live="assertive">
+        {{ challengeMessage }}
+      </div>
+
+      <div
+        *ngIf="challengeSupportFallback || bugReport.supportFallbackVisible()"
+        class="bug-support-fallback"
+        role="status">
+        <span>If the verification check remains unavailable,</span>
+        <a [href]="'mailto:' + supportEmail">email {{ supportEmail }}</a>.
       </div>
 
       <div class="bug-actions">

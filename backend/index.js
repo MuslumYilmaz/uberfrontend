@@ -8,19 +8,17 @@ const express = require('express');
 const { rateLimit: expressRateLimit } = require('express-rate-limit');
 const cors = require('cors');
 const mongoose = require('mongoose');
-const crypto = require('crypto');
 const { requireAuth } = require('./middleware/Auth');
 const { getJwtSecret } = require('./config/jwt');
 const cookieParser = require('cookie-parser');
 const { requireAdmin } = require('./middleware/RequireAdmin');
-const { createExpressRateLimitStore, rateLimit, getClientIp } = require('./middleware/rateLimit');
+const { createExpressRateLimitStore } = require('./middleware/rateLimit');
 const { cookieCsrfProtection } = require('./middleware/Csrf');
 const { createRequestMetricsMiddleware } = require('./middleware/observability');
 const { createSecurityHeadersMiddleware } = require('./middleware/securityHeaders');
 const { connectToMongo, resolveMongoConnectionConfig } = require('./config/mongo');
 const { normalizeOrigin, resolveAllowedFrontendOrigins, resolveServerBase } = require('./config/urls');
 const { validateAuthRuntimeConfig } = require('./config/auth-runtime');
-const { sendMail } = require('./services/email');
 
 const app = express();
 
@@ -29,21 +27,6 @@ const PORT = process.env.PORT || 3001;
 const { uri: MONGO_URL } = resolveMongoConnectionConfig();
 const SERVER_BASE = resolveServerBase();
 const ALLOWED_FRONTEND_ORIGINS = resolveAllowedFrontendOrigins();
-const SUPPORT_EMAIL = String(process.env.SUPPORT_EMAIL || 'support@frontendatlas.com').trim() || 'support@frontendatlas.com';
-const CONTACT_BURST_WINDOW_MS = Number(process.env.CONTACT_BURST_WINDOW_MS || 60 * 1000); // 1m
-const CONTACT_BURST_MAX = Number(process.env.CONTACT_BURST_MAX || 2);
-const CONTACT_WINDOW_MS = Number(process.env.CONTACT_WINDOW_MS || 60 * 60 * 1000); // 1h
-const CONTACT_MAX = Number(process.env.CONTACT_MAX || 5);
-const CONTACT_MIN_MESSAGE_CHARS = Number(process.env.CONTACT_MIN_MESSAGE_CHARS || 10);
-const CONTACT_MAX_MESSAGE_CHARS = Number(process.env.CONTACT_MAX_MESSAGE_CHARS || 4000);
-const BUG_REPORT_BURST_WINDOW_MS = Number(process.env.BUG_REPORT_BURST_WINDOW_MS || 60 * 1000); // 1m
-const BUG_REPORT_BURST_MAX = Number(process.env.BUG_REPORT_BURST_MAX || 2);
-const BUG_REPORT_WINDOW_MS = Number(process.env.BUG_REPORT_WINDOW_MS || 60 * 60 * 1000); // 1h
-const BUG_REPORT_MAX = Number(process.env.BUG_REPORT_MAX || 5);
-const BUG_REPORT_DUP_WINDOW_MS = Number(process.env.BUG_REPORT_DUP_WINDOW_MS || 10 * 60 * 1000); // 10m
-const BUG_REPORT_MIN_NOTE_CHARS = Number(process.env.BUG_REPORT_MIN_NOTE_CHARS || 8);
-const BUG_REPORT_MAX_NOTE_CHARS = Number(process.env.BUG_REPORT_MAX_NOTE_CHARS || 4000);
-const BUG_REPORT_MAX_URL_CHARS = Number(process.env.BUG_REPORT_MAX_URL_CHARS || 2000);
 const API_RATE_LIMIT_WINDOW_MS = Math.max(1000, Number(process.env.API_RATE_LIMIT_WINDOW_MS) || 60_000);
 const API_RATE_LIMIT_MAX = Math.max(1, Number(process.env.API_RATE_LIMIT_MAX) || 300);
 const WEBHOOK_RATE_LIMIT_WINDOW_MS = Math.max(1000, Number(process.env.WEBHOOK_RATE_LIMIT_WINDOW_MS) || 60_000);
@@ -102,6 +85,7 @@ app.use(
             return cb(null, false);
         },
         credentials: true,
+        exposedHeaders: ['Retry-After'],
     })
 );
 const captureRawBody = (req, _res, buf) => {
@@ -159,6 +143,8 @@ const apiRateLimiter = expressRateLimit({
         const path = String(req.originalUrl || req.url || '').split('?')[0];
         return path === '/api/hello' ||
             path === '/api/health' ||
+            path === '/api/contact' ||
+            path === '/api/bug-report' ||
             path === '/api/billing/webhooks' ||
             path.startsWith('/api/billing/webhooks/');
     },
@@ -222,222 +208,9 @@ app.get('/api/health', async (_req, res) => {
     }
 });
 
-// ======================
-//  Bug Report -> Email
-// ======================
-const recentBugReportFingerprints = new Map(); // key -> expiresAt
-
-function normalizeBugText(value) {
-    return String(value || '')
-        .trim()
-        .toLowerCase()
-        .replace(/\s+/g, ' ');
-}
-
-function bugReportFingerprint(note, url) {
-    const base = `${normalizeBugText(note)}|${normalizeBugText(url)}`;
-    return crypto.createHash('sha256').update(base).digest('hex');
-}
-
-function hasRecentBugFingerprint(key, now = Date.now()) {
-    const expiresAt = recentBugReportFingerprints.get(key);
-    if (!expiresAt) return false;
-    if (now >= expiresAt) {
-        recentBugReportFingerprints.delete(key);
-        return false;
-    }
-    return true;
-}
-
-function rememberBugFingerprint(key, now = Date.now()) {
-    const ttl = Math.max(1000, BUG_REPORT_DUP_WINDOW_MS);
-    recentBugReportFingerprints.set(key, now + ttl);
-
-    // Opportunistic cleanup to avoid unbounded growth.
-    if (recentBugReportFingerprints.size > 10_000 && Math.random() < 0.02) {
-        for (const [fp, expiresAt] of recentBugReportFingerprints) {
-            if (now >= expiresAt) recentBugReportFingerprints.delete(fp);
-        }
-    }
-}
-
-function isValidEmailAddress(value) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value || '').trim());
-}
-
-/**
- * POST /api/contact
- * body: { name: string, email: string, topic?: string, message: string, url?: string }
- * Sends an email to the FrontendAtlas support inbox
- */
-app.post(
-    '/api/contact',
-    rateLimit({
-        name: 'contact-burst',
-        windowMs: CONTACT_BURST_WINDOW_MS,
-        max: CONTACT_BURST_MAX,
-        message: 'Please wait a moment before sending another message.',
-    }),
-    rateLimit({
-        name: 'contact-hourly',
-        windowMs: CONTACT_WINDOW_MS,
-        max: CONTACT_MAX,
-        message: 'Too many messages, please try again later.',
-    }),
-    async (req, res) => {
-        try {
-            const { name, email, topic, message, url } = req.body || {};
-            const safeName = typeof name === 'string' ? name.trim() : '';
-            const safeEmail = typeof email === 'string' ? email.trim() : '';
-            const safeTopic = ['general', 'billing', 'bug', 'feature'].includes(String(topic || '').trim())
-                ? String(topic).trim()
-                : 'general';
-            const safeMessage = typeof message === 'string' ? message.trim() : '';
-            const safeUrl = typeof url === 'string' ? url.trim() : '';
-
-            if (!safeName) {
-                return res.status(400).json({ error: 'Missing "name"' });
-            }
-            if (!safeEmail || !isValidEmailAddress(safeEmail)) {
-                return res.status(400).json({ error: 'Please provide a valid email address.' });
-            }
-            if (!safeMessage) {
-                return res.status(400).json({ error: 'Missing "message"' });
-            }
-            if (safeName.length > 120) {
-                return res.status(413).json({ error: 'Contact name too long' });
-            }
-            if (safeEmail.length > 320) {
-                return res.status(413).json({ error: 'Contact email too long' });
-            }
-            if (safeMessage.length < CONTACT_MIN_MESSAGE_CHARS) {
-                return res.status(400).json({ error: `Contact message must be at least ${CONTACT_MIN_MESSAGE_CHARS} characters` });
-            }
-            if (safeMessage.length > CONTACT_MAX_MESSAGE_CHARS) {
-                return res.status(413).json({ error: 'Contact message too long' });
-            }
-            if (safeUrl.length > BUG_REPORT_MAX_URL_CHARS) {
-                return res.status(413).json({ error: 'Contact url too long' });
-            }
-
-            const sentAt = new Date().toISOString();
-            const subject = `Contact form from FrontendAtlas: ${safeTopic} - ${safeName}`;
-            const html = `
-      <h2 style="margin:0 0 8px">New Contact Message</h2>
-      <p><strong>Name:</strong> ${escapeHtml(safeName)}</p>
-      <p><strong>Email:</strong> <a href="mailto:${escapeAttr(safeEmail)}">${escapeHtml(safeEmail)}</a></p>
-      <p><strong>Topic:</strong> ${escapeHtml(safeTopic)}</p>
-      ${safeUrl ? `<p><strong>Page:</strong> <a href="${escapeAttr(safeUrl)}">${escapeHtml(safeUrl)}</a></p>` : ''}
-      <hr style="border:none;border-top:1px solid #eee;margin:12px 0"/>
-      <p style="white-space:pre-wrap;font-family:ui-sans-serif,system-ui,Segoe UI,Roboto">${escapeHtml(safeMessage)}</p>
-      <hr style="border:none;border-top:1px solid #eee;margin:12px 0"/>
-      <p style="color:#64748b;font-size:12px;margin:0">Sent ${sentAt}</p>
-    `;
-
-            await sendMail({
-                from: `"FrontendAtlas Contact" <${process.env.SMTP_USER}>`,
-                to: SUPPORT_EMAIL,
-                replyTo: safeEmail,
-                subject,
-                text:
-                    `New contact message\n\n` +
-                    `Name: ${safeName}\n` +
-                    `Email: ${safeEmail}\n` +
-                    `Topic: ${safeTopic}\n` +
-                    `Page: ${safeUrl || '(none)'}\n` +
-                    `Sent: ${sentAt}\n\n` +
-                    `${safeMessage}`,
-                html,
-            });
-
-            return res.status(204).end();
-        } catch (err) {
-            console.error('Contact email send failed:', err);
-            return res.status(500).json({ error: 'Email send failed' });
-        }
-    }
-);
-
-/**
- * POST /api/bug-report
- * body: { note: string, url?: string }
- * Sends an email to the FrontendAtlas support inbox
- */
-app.post(
-    '/api/bug-report',
-    rateLimit({
-        name: 'bug-report-burst',
-        windowMs: BUG_REPORT_BURST_WINDOW_MS,
-        max: BUG_REPORT_BURST_MAX,
-        message: 'Please wait a moment before sending another bug report.',
-    }),
-    rateLimit({
-        name: 'bug-report-hourly',
-        windowMs: BUG_REPORT_WINDOW_MS,
-        max: BUG_REPORT_MAX,
-        message: 'Too many bug reports, please try again later.',
-    }),
-    async (req, res) => {
-        try {
-            const { note, url } = req.body || {};
-            const safeText = typeof note === 'string' ? note.trim() : '';
-            const safeUrl = typeof url === 'string' ? url.trim() : '';
-
-            if (!safeText) {
-                return res.status(400).json({ error: 'Missing "note"' });
-            }
-            if (safeText.length < BUG_REPORT_MIN_NOTE_CHARS) {
-                return res.status(400).json({ error: `Bug report note must be at least ${BUG_REPORT_MIN_NOTE_CHARS} characters` });
-            }
-            if (safeText.length > BUG_REPORT_MAX_NOTE_CHARS) {
-                return res.status(413).json({ error: 'Bug report note too long' });
-            }
-            if (safeUrl.length > BUG_REPORT_MAX_URL_CHARS) {
-                return res.status(413).json({ error: 'Bug report url too long' });
-            }
-
-            const sourceIp = getClientIp(req) || req.ip || 'unknown';
-            const fingerprint = bugReportFingerprint(safeText, safeUrl);
-            const dedupeKey = `${sourceIp}:${fingerprint}`;
-
-            if (hasRecentBugFingerprint(dedupeKey)) {
-                return res.status(429).json({ error: 'Duplicate bug report detected. Please wait before sending again.' });
-            }
-
-            const html = `
-      <h2 style="margin:0 0 8px">New Bug Report</h2>
-      <p style="white-space:pre-wrap;font-family:ui-sans-serif,system-ui,Segoe UI,Roboto">
-        ${escapeHtml(safeText)}
-      </p>
-      ${safeUrl ? `<p><strong>Page:</strong> <a href="${escapeAttr(safeUrl)}">${escapeHtml(safeUrl)}</a></p>` : ''}
-      <hr style="border:none;border-top:1px solid #eee;margin:12px 0"/>
-      <p style="color:#64748b;font-size:12px;margin:0">Sent ${new Date().toISOString()}</p>
-    `;
-
-            await sendMail({
-                from: `"Bug Reporter" <${process.env.SMTP_USER}>`,
-                to: SUPPORT_EMAIL,
-                subject: 'Bug report from FrontendAtlas',
-                text: `Bug report:\n\n${safeText}\n\nPage: ${safeUrl || '(none)'}\nSent ${new Date().toISOString()}`,
-                html,
-            });
-
-            rememberBugFingerprint(dedupeKey);
-            return res.status(204).end();
-        } catch (err) {
-            console.error('Email send failed:', err);
-            return res.status(500).json({ error: 'Email send failed' });
-        }
-    }
-);
-
-// small HTML-escape helpers
-function escapeHtml(s = '') {
-    return String(s).replace(/[&<>"']/g, (m) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
-}
-function escapeAttr(s = '') {
-    return escapeHtml(s).replace(/`/g, '&#96;');
-}
+// Public contact and bug-report forms share fail-closed Turnstile, quota, and
+// duplicate protections without widening failure scope to other API routes.
+app.use('/api', require('./routes/public-forms'));
 
 // ---- Auth routes ----
 app.use('/api/auth', require('./routes/auth'));

@@ -2422,6 +2422,7 @@
 }
 
 .contact-form{
+  position: relative;
   margin-top: 12px;
   display: grid;
   flex: 1 1 520px;
@@ -2469,6 +2470,35 @@
   min-height: 120px;
 }
 
+.contact-honeypot{
+  position: absolute !important;
+  left: -10000px !important;
+  top: auto !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+.contact-verification{
+  width: 100%;
+  min-width: 0;
+}
+
+.contact-verification app-turnstile-challenge{
+  display: block;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.contact-cooldown{
+  font-size: 13px;
+  line-height: 1.5;
+  color: color-mix(in srgb, var(--uf-text-secondary) 88%, var(--uf-accent) 12%);
+}
+
 .contact-input:focus,
 .contact-textarea:focus{
   border-color: var(--uf-accent);
@@ -2497,11 +2527,21 @@
 .contact-form-status{
   margin-top: 2px;
   padding: 10px 12px;
+  display: grid;
+  gap: 4px;
   border-radius: 12px;
   border: 1px solid var(--uf-border-subtle);
   font-size: 13px;
   font-weight: 700;
   line-height: 1.5;
+}
+
+.contact-form-status a{
+  width: fit-content;
+  color: inherit;
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .contact-form-status[data-status='success']{
@@ -2841,6 +2881,9 @@
   }
   .contact-form-row{
     grid-template-columns: 1fr;
+  }
+  .contact-card {
+    padding-inline: 14px;
   }
   .hero-grid {
     gap: 20px;

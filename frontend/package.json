@@ -2,7 +2,7 @@
   "name": "frontendatlas",
   "version": "0.0.0",
   "scripts": {
-    "gen:data": "node scripts/sync-app-ui-assets.mjs && node scripts/sync-monaco-assets.mjs && node scripts/gen-sentry-env.mjs && node scripts/sync-tradeoff-battle-access.mjs && node scripts/generate-practice-registry.mjs && node scripts/generate-angular-decision-graphs.mjs && node scripts/gen-showcase-stats.mjs && node scripts/gen-content-metadata.mjs && node scripts/gen-data-version.mjs && node scripts/generate-sitemap.mjs && node scripts/generate-prerender-routes.mjs && node scripts/prerender-sitemap-diff.mjs",
+    "gen:data": "node scripts/sync-app-ui-assets.mjs && node scripts/sync-monaco-assets.mjs && node scripts/gen-sentry-env.mjs && node scripts/gen-turnstile-env.mjs && node scripts/sync-tradeoff-battle-access.mjs && node scripts/generate-practice-registry.mjs && node scripts/generate-angular-decision-graphs.mjs && node scripts/gen-showcase-stats.mjs && node scripts/gen-content-metadata.mjs && node scripts/gen-data-version.mjs && node scripts/generate-sitemap.mjs && node scripts/generate-prerender-routes.mjs && node scripts/prerender-sitemap-diff.mjs",
     "sync:monaco-assets": "node scripts/sync-monaco-assets.mjs",
     "check:monaco-assets": "node scripts/sync-monaco-assets.mjs --check",
     "gen:angular-decision-graphs": "node scripts/generate-angular-decision-graphs.mjs",
@@ -85,7 +85,7 @@
     "e2e:full": "npm run test:e2e:full",
     "e2e:ui": "PLAYWRIGHT_WEB_SERVER=1 playwright test --ui",
     "e2e:perf": "PLAYWRIGHT_WEB_SERVER=1 playwright test e2e/perf --project=chromium",
-    "postinstall": "node scripts/sync-app-ui-assets.mjs && node scripts/sync-monaco-assets.mjs && node scripts/gen-content-metadata.mjs && patch-package",
+    "postinstall": "node scripts/sync-app-ui-assets.mjs && node scripts/sync-monaco-assets.mjs && node scripts/gen-turnstile-env.mjs && node scripts/gen-content-metadata.mjs && patch-package",
     "postbuild": "node scripts/sentry-release.mjs",
     "seo:sitemap-sample": "node scripts/sitemap-sample-audit.mjs",
     "seo:meta-check": "node scripts/seo-meta-check.mjs",

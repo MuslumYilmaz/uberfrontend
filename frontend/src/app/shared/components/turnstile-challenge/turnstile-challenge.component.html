@@ -1,0 +1,6 @@
+<div
+  class="turnstile-challenge"
+  [attr.data-state]="currentState"
+  [attr.aria-busy]="currentState === 'loading' ? 'true' : null">
+  <div #widgetContainer class="turnstile-challenge__widget"></div>
+</div>

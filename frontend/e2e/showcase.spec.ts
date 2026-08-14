@@ -13,6 +13,33 @@ async function seedHeroVariant(page: any, variant: 'control' | 'outcome'): Promi
   }, variant);
 }
 
+async function installTurnstileStub(page: any): Promise<void> {
+  await page.addInitScript(() => {
+    const widgets = new Map<string, any>();
+    let widgetSequence = 0;
+
+    (window as any).turnstile = {
+      render(container: string | HTMLElement, options: any) {
+        const element = typeof container === 'string'
+          ? document.querySelector(container)
+          : container;
+        const widgetId = `e2e-turnstile-${++widgetSequence}`;
+        widgets.set(widgetId, options);
+        element?.setAttribute('data-turnstile-stub', 'ready');
+        window.setTimeout(() => options.callback?.(`e2e-token-${widgetSequence}`), 0);
+        return widgetId;
+      },
+      reset(widgetId: string) {
+        const options = widgets.get(widgetId);
+        window.setTimeout(() => options?.callback?.(`e2e-token-${++widgetSequence}`), 0);
+      },
+      remove(widgetId: string) {
+        widgets.delete(widgetId);
+      },
+    };
+  });
+}
+
 test('showcase: demo CTA routes to the correct question pages', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByTestId('showcase-hero-title')).toBeVisible();
@@ -49,6 +76,36 @@ test('showcase: trivia snapshot tabs resolve to real questions', async ({ page }
     'href',
     '/angular/trivia/angular-component-metadata',
   );
+});
+
+test('showcase: contact form requires verification and sends the anti-spam payload', async ({ page }) => {
+  await installTurnstileStub(page);
+  let postedBody: Record<string, unknown> | undefined;
+  await page.route('**/api/contact', async (route) => {
+    postedBody = route.request().postDataJSON() as Record<string, unknown>;
+    await route.fulfill({ status: 204 });
+  });
+  await page.goto('/');
+
+  await page.locator('[data-load="contact"]').scrollIntoViewIfNeeded();
+  const form = page.getByTestId('showcase-contact-form');
+  await expect(form).toBeVisible();
+  await form.locator('input[name="name"]').fill('Alex Frontend');
+  await form.locator('input[name="email"]').fill('alex@example.com');
+  await form.locator('textarea[name="message"]').fill('Please add more debugging incidents.');
+
+  const submit = page.getByTestId('showcase-contact-submit');
+  await expect(submit).toBeEnabled();
+  await submit.click();
+
+  await expect(page.getByTestId('showcase-contact-status')).toContainText('Message sent');
+  expect(postedBody).toEqual(expect.objectContaining({
+    name: 'Alex Frontend',
+    email: 'alex@example.com',
+    message: 'Please add more debugging incidents.',
+    website: '',
+  }));
+  expect(String(postedBody?.['verificationToken'] || '')).toMatch(/^e2e-token-/);
 });
 
 test('content: react-counter solution avoids React.useState', async () => {

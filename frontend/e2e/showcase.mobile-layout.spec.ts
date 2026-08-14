@@ -4,6 +4,37 @@ const SMALL_MOBILE_VIEWPORT = { width: 360, height: 800 };
 const MOBILE_VIEWPORT = { width: 390, height: 844 };
 const TABLET_VIEWPORT = { width: 834, height: 1112 };
 const DESKTOP_VIEWPORT = { width: 1366, height: 900 };
+const LARGE_DESKTOP_VIEWPORT = { width: 1440, height: 900 };
+
+async function installTurnstileLayoutStub(page: import('@playwright/test').Page): Promise<void> {
+  await page.addInitScript(() => {
+    let sequence = 0;
+    (window as any).turnstile = {
+      render(container: string | HTMLElement, options: Record<string, unknown>) {
+        const element = typeof container === 'string'
+          ? document.querySelector<HTMLElement>(container)
+          : container;
+        const widgetId = `layout-turnstile-${++sequence}`;
+        if (element) {
+          element.dataset['turnstileStub'] = 'ready';
+          element.dataset['turnstileSize'] = String(options['size'] || '');
+          const frame = document.createElement('iframe');
+          frame.title = 'Turnstile layout test';
+          frame.style.display = 'block';
+          frame.style.width = '100%';
+          frame.style.minWidth = '300px';
+          frame.style.maxWidth = '100%';
+          frame.style.border = '0';
+          element.append(frame);
+        }
+        window.setTimeout(() => (options['callback'] as ((token: string) => void) | undefined)?.(`layout-token-${sequence}`), 0);
+        return widgetId;
+      },
+      reset() {},
+      remove() {},
+    };
+  });
+}
 
 async function stabilize(page: import('@playwright/test').Page) {
   await page.addStyleTag({
@@ -146,12 +177,53 @@ async function assertTrustAndCompanyLayout(
   );
 }
 
+async function assertContactChallengeLayout(page: import('@playwright/test').Page, label: string) {
+  const contact = page.locator('[data-load="contact"]');
+  await contact.scrollIntoViewIfNeeded();
+  const verification = page.getByTestId('showcase-contact-verification');
+  await expect(verification).toBeVisible();
+  await expect(verification.locator('[data-turnstile-stub="ready"]')).toHaveAttribute(
+    'data-turnstile-size',
+    'flexible',
+  );
+  await assertLocatorFitsWidth(
+    verification.locator('app-turnstile-challenge, [data-turnstile-stub="ready"], iframe'),
+    `${label} Turnstile challenge`,
+  );
+  await assertElementsStayInside(verification, '.contact-form', `${label} Turnstile challenge`);
+}
+
+async function assertBugReportChallengeLayout(page: import('@playwright/test').Page, label: string) {
+  await page.evaluate(() => {
+    const root = document.querySelector('app-root');
+    const app = (window as any).ng?.getComponent?.(root) as {
+      bugReport?: { open: (context: { source: string; url: string }) => void };
+    } | undefined;
+    if (!app?.bugReport) throw new Error('Angular bug-report service is unavailable in E2E.');
+    app.bugReport.open({ source: 'turnstile-layout-e2e', url: window.location.href });
+  });
+
+  const dialog = page.locator('.bug-dialog.p-dialog');
+  await expect(dialog).toBeVisible();
+  const challenge = dialog.locator('.bug-challenge');
+  await expect(challenge.locator('[data-turnstile-stub="ready"]')).toHaveAttribute(
+    'data-turnstile-size',
+    'flexible',
+  );
+  await assertLocatorFitsWidth(
+    challenge.locator('app-turnstile-challenge, [data-turnstile-stub="ready"], iframe'),
+    `${label} bug-report Turnstile challenge`,
+  );
+  await assertElementsStayInside(challenge, '.bug-dialog__panel', `${label} bug-report challenge`);
+}
+
 test.describe('showcase mobile layout guardrail', () => {
   test.skip(({ browserName }) => browserName !== 'chromium', 'Layout guardrail is chromium-only.');
 
   for (const viewport of [SMALL_MOBILE_VIEWPORT, MOBILE_VIEWPORT]) {
     test(`mobile ${viewport.width}px: sections reflow without broken labels`, async ({ page }) => {
       await page.setViewportSize(viewport);
+      await installTurnstileLayoutStub(page);
       await page.goto('/');
 
       await expect(page.getByTestId('showcase-hero-title')).toBeVisible();
@@ -171,11 +243,16 @@ test.describe('showcase mobile layout guardrail', () => {
       await assertLocatorFitsWidth(page.locator('.demo-mobile-guard-card'), 'mobile guard card');
       await assertLocatorFitsWidth(page.locator('.trivia-preview-card'), 'trivia preview card');
       await assertLocatorFitsWidth(page.locator('.system-preview-card'), 'system preview card');
+      await assertContactChallengeLayout(page, `showcase mobile ${viewport.width}px`);
+      await assertNoHorizontalOverflow(page, `showcase mobile ${viewport.width}px contact`);
+      await assertBugReportChallengeLayout(page, `showcase mobile ${viewport.width}px`);
+      await assertNoHorizontalOverflow(page, `showcase mobile ${viewport.width}px bug report`);
     });
   }
 
   test('tablet: coding workspace remains enabled', async ({ page }) => {
     await page.setViewportSize(TABLET_VIEWPORT);
+    await installTurnstileLayoutStub(page);
     await page.goto('/');
 
     await expect(page.getByTestId('showcase-hero-title')).toBeVisible();
@@ -187,19 +264,26 @@ test.describe('showcase mobile layout guardrail', () => {
     await assertTrustAndCompanyLayout(page, 2, 'showcase tablet');
     await assertNoHorizontalOverflow(page, 'showcase tablet');
     await assertLocatorFitsWidth(page.locator('.demo-frame'), 'demo frame');
+    await assertContactChallengeLayout(page, 'showcase tablet');
+    await assertNoHorizontalOverflow(page, 'showcase tablet contact');
   });
 
-  test('desktop: existing full demo frame stays available', async ({ page }) => {
-    await page.setViewportSize(DESKTOP_VIEWPORT);
-    await page.goto('/');
+  for (const viewport of [DESKTOP_VIEWPORT, LARGE_DESKTOP_VIEWPORT]) {
+    test(`desktop ${viewport.width}px: existing full demo frame stays available`, async ({ page }) => {
+      await page.setViewportSize(viewport);
+      await installTurnstileLayoutStub(page);
+      await page.goto('/');
 
-    await expect(page.getByTestId('showcase-hero-title')).toBeVisible();
-    await expect(page.getByTestId('showcase-demo-mobile-guard')).toHaveCount(0);
-    await expect(page.locator('#demo-pane')).toBeVisible();
-    await expect(page.getByTestId('showcase-demo-open-live')).toBeVisible();
+      await expect(page.getByTestId('showcase-hero-title')).toBeVisible();
+      await expect(page.getByTestId('showcase-demo-mobile-guard')).toHaveCount(0);
+      await expect(page.locator('#demo-pane')).toBeVisible();
+      await expect(page.getByTestId('showcase-demo-open-live')).toBeVisible();
 
-    await stabilize(page);
-    await assertTrustAndCompanyLayout(page, 2, 'showcase desktop');
-    await assertNoHorizontalOverflow(page, 'showcase desktop');
-  });
+      await stabilize(page);
+      await assertTrustAndCompanyLayout(page, 2, `showcase desktop ${viewport.width}px`);
+      await assertNoHorizontalOverflow(page, `showcase desktop ${viewport.width}px`);
+      await assertContactChallengeLayout(page, `showcase desktop ${viewport.width}px`);
+      await assertNoHorizontalOverflow(page, `showcase desktop ${viewport.width}px contact`);
+    });
+  }
 });

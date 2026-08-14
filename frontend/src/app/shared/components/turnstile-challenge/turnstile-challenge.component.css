@@ -1,0 +1,13 @@
+:host {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.turnstile-challenge,
+.turnstile-challenge__widget {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
