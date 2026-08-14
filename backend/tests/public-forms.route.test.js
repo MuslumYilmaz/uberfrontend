@@ -97,6 +97,30 @@ describe('public form route protection contract', () => {
     expect(failed.sendMail).not.toHaveBeenCalled();
   });
 
+  test('rejects an oversized dot-heavy contact email before Turnstile and SMTP', async () => {
+    const store = {
+      increment: jest.fn().mockResolvedValue({ count: 1, ttlSeconds: 60 }),
+      claim: jest.fn(),
+      release: jest.fn(),
+    };
+    const fixture = createTestApp({
+      store,
+      env: { CONTACT_MAX_EMAIL_CHARS: '10000' },
+    });
+    const oversizedEmail = `a@${'a.'.repeat(200)}invalid invalid`;
+
+    const response = await request(fixture.app)
+      .post('/api/contact')
+      .send(contact({ email: oversizedEmail }));
+
+    expect(response.status).toBe(413);
+    expect(response.body).toEqual({ error: 'Contact email too long' });
+    expect(store.increment).toHaveBeenCalledTimes(2);
+    expect(store.claim).not.toHaveBeenCalled();
+    expect(fixture.verifyTurnstile).not.toHaveBeenCalled();
+    expect(fixture.sendMail).not.toHaveBeenCalled();
+  });
+
   test.each([
     ['/api/contact', contact({ website: 'https://spam.example', verificationToken: '' })],
     ['/api/bug-report', bugReport({ website: 'https://spam.example', verificationToken: '' })],

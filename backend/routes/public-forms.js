@@ -15,6 +15,8 @@ const {
   verifyTurnstile: defaultVerifyTurnstile,
 } = require('../services/public-form-protection');
 
+const CONTACT_EMAIL_HARD_MAX_CHARS = 320;
+
 class PublicFormPayloadError extends Error {
   constructor(status, message, reason = 'invalid_payload') {
     super(message);
@@ -35,7 +37,9 @@ function normalizeEmail(value) {
 }
 
 function isValidEmailAddress(value) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value || '').trim());
+  const email = String(value || '').trim();
+  if (email.length > CONTACT_EMAIL_HARD_MAX_CHARS) return false;
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
 function escapeHtml(value = '') {
@@ -90,11 +94,14 @@ function contactPayload(body, config) {
   if (name.length > config.contactMaxNameChars) {
     throw new PublicFormPayloadError(413, 'Contact name too long', 'name_too_long');
   }
-  if (!email || !isValidEmailAddress(email)) {
+  if (!email) {
     throw new PublicFormPayloadError(400, 'Please provide a valid email address.', 'email_invalid');
   }
   if (email.length > config.contactMaxEmailChars) {
     throw new PublicFormPayloadError(413, 'Contact email too long', 'email_too_long');
+  }
+  if (!isValidEmailAddress(email)) {
+    throw new PublicFormPayloadError(400, 'Please provide a valid email address.', 'email_invalid');
   }
   if (!message) throw new PublicFormPayloadError(400, 'Missing "message"', 'message_missing');
   if (message.length < config.contactMinMessageChars) {
@@ -150,7 +157,10 @@ function createConfig(env, allowedFrontendOrigins) {
     contactMinMessageChars: numberFromEnv(env, 'CONTACT_MIN_MESSAGE_CHARS', 10),
     contactMaxMessageChars: numberFromEnv(env, 'CONTACT_MAX_MESSAGE_CHARS', 4000),
     contactMaxNameChars: numberFromEnv(env, 'CONTACT_MAX_NAME_CHARS', 120),
-    contactMaxEmailChars: numberFromEnv(env, 'CONTACT_MAX_EMAIL_CHARS', 320),
+    contactMaxEmailChars: Math.min(
+      numberFromEnv(env, 'CONTACT_MAX_EMAIL_CHARS', CONTACT_EMAIL_HARD_MAX_CHARS),
+      CONTACT_EMAIL_HARD_MAX_CHARS
+    ),
     bugReportBurstWindowMs: numberFromEnv(env, 'BUG_REPORT_BURST_WINDOW_MS', 60_000, 1000),
     bugReportBurstMax: numberFromEnv(env, 'BUG_REPORT_BURST_MAX', 2),
     bugReportWindowMs: numberFromEnv(env, 'BUG_REPORT_WINDOW_MS', 3_600_000, 1000),
