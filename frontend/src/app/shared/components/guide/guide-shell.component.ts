@@ -4,6 +4,7 @@ import {
   Component,
   ElementRef,
   Input,
+  NgZone,
   OnDestroy,
   PLATFORM_ID,
   Renderer2,
@@ -804,6 +805,7 @@ export class GuideShellComponent implements AfterViewInit, OnDestroy {
   private mo?: MutationObserver;
   private imgListeners: Array<() => void> = [];
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  private readonly ngZone = inject(NgZone);
   readonly fallbackReaderPromise = FALLBACK_READER_PROMISE;
   private readonly analytics = inject(AnalyticsService, { optional: true });
   private guidePath: GuidePathMeta | null = null;
@@ -998,11 +1000,13 @@ export class GuideShellComponent implements AfterViewInit, OnDestroy {
 
   private startGuideVisibilityTimer() {
     if (!this.guideAnalyticsContext() || this.guideVisibleIntervalId !== null) return;
-    this.guideVisibleIntervalId = window.setInterval(() => {
-      if (document.hidden) return;
-      this.visibleGuideMs += 1000;
-      this.maybeTrackGuideReadEngaged();
-    }, 1000);
+    this.ngZone.runOutsideAngular(() => {
+      this.guideVisibleIntervalId = window.setInterval(() => {
+        if (document.hidden) return;
+        this.visibleGuideMs += 1000;
+        this.maybeTrackGuideReadEngaged();
+      }, 1000);
+    });
   }
 
   private updateGuideScrollDepth() {
