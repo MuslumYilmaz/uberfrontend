@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { NO_ERRORS_SCHEMA, PLATFORM_ID } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule, convertToParamMap, provideRouter } from '@angular/router';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { IncidentService } from '../../core/services/incident.service';
 import { PUBLIC_EDITORIAL_FACTS } from '../../core/content/public-editorial-facts';
 import { AnalyticsService } from '../../core/services/analytics.service';
@@ -19,9 +19,11 @@ import { ShowcasePageComponent } from './showcase.page';
 describe('ShowcasePageComponent', () => {
   let fixture: ComponentFixture<ShowcasePageComponent>;
   let analytics: jasmine.SpyObj<AnalyticsService>;
+  let http: jasmine.SpyObj<HttpClient>;
 
   beforeEach(async () => {
     analytics = jasmine.createSpyObj<AnalyticsService>('AnalyticsService', ['track']);
+    http = jasmine.createSpyObj<HttpClient>('HttpClient', ['post']);
 
     await TestBed.configureTestingModule({
       imports: [ShowcasePageComponent, NoopAnimationsModule],
@@ -35,7 +37,7 @@ describe('ShowcasePageComponent', () => {
             },
           },
         },
-        { provide: HttpClient, useValue: jasmine.createSpyObj<HttpClient>('HttpClient', ['post']) },
+        { provide: HttpClient, useValue: http },
         { provide: AnalyticsService, useValue: analytics },
         {
           provide: BillingCheckoutService,
@@ -128,6 +130,148 @@ describe('ShowcasePageComponent', () => {
         start_path_variant: 'guided_plan_first',
       }),
     );
+  });
+
+  it('requires a fresh verification token before posting the contact form', async () => {
+    const component = fixture.componentInstance;
+    component.contact = {
+      name: 'Alex Frontend',
+      email: 'alex@example.com',
+      topic: 'general',
+      message: 'I need help with a practice question.',
+      website: '',
+    };
+
+    await component.submitContact();
+
+    expect(http.post).not.toHaveBeenCalled();
+    expect(component.contactStatus).toEqual(jasmine.objectContaining({
+      tone: 'error',
+      text: jasmine.stringContaining('complete the verification'),
+    }));
+  });
+
+  it('sends the verification and honeypot fields, then clears successful contact state', async () => {
+    const component = fixture.componentInstance;
+    const reset = jasmine.createSpy('reset');
+    component.contactTurnstile = { reset } as any;
+    component.contact = {
+      name: ' Alex Frontend ',
+      email: ' alex@example.com ',
+      topic: 'feature',
+      message: ' Please add more debugging incidents. ',
+      website: '',
+    };
+    component.onContactTokenChange('verified-token');
+    http.post.and.returnValue(of(''));
+
+    await component.submitContact();
+
+    expect(http.post).toHaveBeenCalled();
+    const [requestUrl, requestBody, requestOptions] = http.post.calls.mostRecent().args as any[];
+    expect(requestUrl).toMatch(/\/contact$/);
+    expect(requestBody).toEqual(jasmine.objectContaining({
+      name: 'Alex Frontend',
+      email: 'alex@example.com',
+      topic: 'feature',
+      message: 'Please add more debugging incidents.',
+      website: '',
+      verificationToken: 'verified-token',
+    }));
+    expect(requestOptions).toEqual({ responseType: 'text' });
+    expect(component.contact).toEqual({
+      name: '',
+      email: '',
+      topic: 'general',
+      message: '',
+      website: '',
+    });
+    expect(component.contactVerificationToken).toBe('');
+    expect(reset).toHaveBeenCalled();
+    expect(component.contactStatus?.tone).toBe('success');
+  });
+
+  it('preserves typed contact data and honors Retry-After after a rate-limit response', async () => {
+    const component = fixture.componentInstance;
+    const reset = jasmine.createSpy('reset');
+    component.contactTurnstile = { reset } as any;
+    component.contact = {
+      name: 'Alex Frontend',
+      email: 'alex@example.com',
+      topic: 'billing',
+      message: 'Please help me understand my billing status.',
+      website: '',
+    };
+    component.onContactTokenChange('verified-token');
+    http.post.and.returnValue(throwError(() => new HttpErrorResponse({
+      status: 429,
+      error: { code: 'FORM_RATE_LIMITED', error: 'Too many messages' },
+      headers: new HttpHeaders({ 'Retry-After': '17' }),
+    })));
+
+    await component.submitContact();
+
+    expect(component.contact.message).toBe('Please help me understand my billing status.');
+    expect(component.contactCooldownSeconds).toBe(17);
+    expect(component.contactStatus?.text).toContain('17s');
+    expect(component.contactVerificationToken).toBe('');
+    expect(reset).toHaveBeenCalled();
+  });
+
+  it('counts a contact Retry-After cooldown down to zero in the browser', fakeAsync(() => {
+    const component = fixture.componentInstance;
+    Object.defineProperty(component, 'isBrowser', { value: true });
+
+    (component as any).startContactCooldown(2);
+    expect(component.contactCooldownSeconds).toBe(2);
+
+    tick(1100);
+    expect(component.contactCooldownSeconds).toBe(1);
+
+    tick(1100);
+    expect(component.contactCooldownSeconds).toBe(0);
+  }));
+
+  it('maps a text-mode JSON verification rejection to the accessible form message', async () => {
+    const component = fixture.componentInstance;
+    component.contactTurnstile = { reset: jasmine.createSpy('reset') } as any;
+    component.contact = {
+      name: 'Alex Frontend',
+      email: 'alex@example.com',
+      topic: 'general',
+      message: 'This message uses a provider-rejected verification token.',
+      website: '',
+    };
+    component.onContactTokenChange('rejected-token');
+    http.post.and.returnValue(throwError(() => new HttpErrorResponse({
+      status: 403,
+      error: JSON.stringify({
+        code: 'FORM_VERIFICATION_FAILED',
+        error: 'Verification failed.',
+      }),
+    })));
+
+    await component.submitContact();
+
+    expect(component.contact.message).toContain('provider-rejected');
+    expect(component.contactStatus?.text).toBe(
+      'We could not verify this submission. Please complete the verification and try again.',
+    );
+  });
+
+  it('fails closed with a direct-email fallback when verification cannot load', () => {
+    const component = fixture.componentInstance;
+
+    component.onContactChallengeStateChange('error');
+
+    expect(component.contactVerificationToken).toBe('');
+    expect(component.contactStatus).toEqual({
+      tone: 'error',
+      text: 'Verification is unavailable. Please email support@frontendatlas.com directly.',
+    });
+
+    component.onContactTokenChange('replacement-token');
+    expect(component.contactStatus).toBeNull();
   });
 
   it('removes the floating chip cloud, keeps the hero proof static on first render, and reinforces the next-step path below the fold', () => {

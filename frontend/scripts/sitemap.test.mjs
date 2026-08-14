@@ -1068,6 +1068,24 @@ function assertVercelCspAllowsGoogleAnalyticsCollection() {
   });
 }
 
+function assertVercelCspAllowsTurnstile() {
+  const config = readVercelConfig();
+  const headerNames = ['Content-Security-Policy', 'Content-Security-Policy-Report-Only'];
+
+  headerNames.forEach((headerName) => {
+    const policy = getGlobalVercelHeader(config, headerName);
+
+    ['script-src', 'script-src-elem', 'frame-src'].forEach((directiveName) => {
+      assertCspDirectiveSources({
+        headerName,
+        policy,
+        directiveName,
+        requiredSources: ['https://challenges.cloudflare.com'],
+      });
+    });
+  });
+}
+
 const sitemapFiles = getSitemapFileNames();
 sitemapFiles.forEach((fileName) => assertSitemapWithinLimit(fileName));
 const locs = getAllSitemapLocs(sitemapFiles);
@@ -1100,5 +1118,6 @@ assertVercelInterviewRouteControls();
 assertVercelMasteryRedirects();
 assertVercelCspAllowsCodingSandboxRunner();
 assertVercelCspAllowsGoogleAnalyticsCollection();
+assertVercelCspAllowsTurnstile();
 
 console.log('Sitemap size check passed.');

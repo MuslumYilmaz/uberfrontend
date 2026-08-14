@@ -721,18 +721,18 @@
     <div class="contact-card glass" *ngIf="sectionVisible.contact; else contactPlaceholder">
       <div class="contact-copy">
         <div class="contact-pills" aria-label="Contact options">
-          <form class="contact-form" (ngSubmit)="submitContact()" #f="ngForm" novalidate>
+          <form class="contact-form" data-testid="showcase-contact-form" (ngSubmit)="submitContact()" #f="ngForm" novalidate>
             <div class="contact-form-row">
               <label class="contact-label">
                 <span>Name</span>
                 <input class="contact-input" name="name" [(ngModel)]="contact.name" required autocomplete="name"
-                  placeholder="Your name" />
+                  [maxlength]="contactMaxNameChars" placeholder="Your name" />
               </label>
 
               <label class="contact-label">
                 <span>Email</span>
                 <input class="contact-input" name="email" [(ngModel)]="contact.email" required email
-                  autocomplete="email" placeholder="you@company.com" />
+                  autocomplete="email" [maxlength]="contactMaxEmailChars" placeholder="you@company.com" />
               </label>
             </div>
 
@@ -750,12 +750,45 @@
 
             <label class="contact-label">
               <span>Message</span>
-              <textarea class="contact-textarea" name="message" [(ngModel)]="contact.message" required rows="5"
+              <textarea class="contact-textarea" name="message" [(ngModel)]="contact.message" required
+                [minlength]="contactMinMessageChars" [maxlength]="contactMaxMessageChars" rows="5"
                 placeholder="What can we help with? Include URL + screenshot if it’s a bug."></textarea>
             </label>
 
+            <label class="contact-honeypot" aria-hidden="true">
+              <span>Website</span>
+              <input
+                name="website"
+                type="text"
+                [(ngModel)]="contact.website"
+                tabindex="-1"
+                autocomplete="off"
+                spellcheck="false" />
+            </label>
+
+            <div
+              class="contact-verification"
+              data-testid="showcase-contact-verification"
+              [attr.data-state]="contactChallengeState">
+              <app-turnstile-challenge
+                #contactTurnstile
+                action="contact"
+                [active]="sectionVisible.contact"
+                (tokenChange)="onContactTokenChange($event)"
+                (stateChange)="onContactChallengeStateChange($event)">
+              </app-turnstile-challenge>
+            </div>
+
+            <div *ngIf="contactCooldownSeconds > 0" class="contact-cooldown" role="status" aria-live="polite">
+              Please wait {{ contactCooldownSeconds }}s before sending another message.
+            </div>
+
             <div class="contact-form-actions">
-              <button type="submit" class="sk-btn sk-btn-primary" [disabled]="f.invalid || contactSubmitting">
+              <button
+                type="submit"
+                class="sk-btn sk-btn-primary"
+                data-testid="showcase-contact-submit"
+                [disabled]="f.invalid || contactSubmitting || contactCooldownSeconds > 0 || !contactVerificationToken">
                 <span class="contact-action-mark" aria-hidden="true">→</span>
                 <span>{{ contactSubmitting ? 'Sending...' : 'Send message' }}</span>
               </button>
@@ -766,11 +799,13 @@
             </div>
             <div
               class="contact-form-status"
+              data-testid="showcase-contact-status"
               *ngIf="contactStatus as status"
               [attr.data-status]="status.tone"
               [attr.role]="status.tone === 'error' ? 'alert' : 'status'"
               [attr.aria-live]="status.tone === 'error' ? 'assertive' : 'polite'">
-              {{ status.text }}
+              <span>{{ status.text }}</span>
+              <a *ngIf="status.tone === 'error'" [href]="'mailto:' + supportEmail">Email support directly</a>
             </div>
             <div class="contact-shortcuts" aria-label="Quick links">
               <a class="contact-pill" routerLink="/guides" aria-label="Open guides">

@@ -121,6 +121,14 @@ describe('GuideShellComponent', () => {
     }
   });
 
+  it('keeps Angular stable while the guide visibility timer is active', async () => {
+    const shell = shellInstance() as any;
+
+    expect(shell.guideVisibleIntervalId).not.toBeNull();
+    await fixture.whenStable();
+    expect(fixture.isStable()).toBeTrue();
+  });
+
   it('fires scroll depth exactly once per threshold', () => {
     const shell = shellInstance() as any;
     analytics.track.calls.reset();

@@ -35,6 +35,7 @@ Then edit `.env` with your values. Do not commit `.env` (it is gitignored).
 - `API_RATE_LIMIT_MAX` / `API_RATE_LIMIT_WINDOW_MS`: general `/api/**` IP quota (defaults: `300` / `60000`).
 - `WEBHOOK_RATE_LIMIT_MAX` / `WEBHOOK_RATE_LIMIT_WINDOW_MS`: billing webhook IP quota (defaults: `1200` / `60000`).
 - `RATE_LIMIT_STORE`: `auto` (Upstash when configured), `redis`, or process-local `memory`.
+- Public forms in production also require `TURNSTILE_SECRET_KEY`, `TURNSTILE_ALLOWED_HOSTNAMES`, `PUBLIC_FORM_REDIS_REQUIRED=true`, `UPSTASH_REDIS_REST_URL`, and `UPSTASH_REDIS_REST_TOKEN`.
 
 ### Billing (webhooks)
 
@@ -137,40 +138,59 @@ Routes are handled via `backend/api/[...all].js`, so your API is available at:
 - `RATE_LIMIT_STORE=auto` falls back to process-local memory when Upstash is absent or unavailable. This preserves availability but does not provide a global quota across Vercel instances.
 - Keep `RATE_LIMIT_REDIS_FAIL_CLOSED=false` unless rejecting requests during a Redis outage is an explicit availability tradeoff.
 - Defaults are `API_RATE_LIMIT_MAX=300` per minute and `WEBHOOK_RATE_LIMIT_MAX=1200` per minute; both windows and limits are configurable with the corresponding `_WINDOW_MS` and `_MAX` variables.
+- Public contact and bug-report protection is intentionally separate: set `PUBLIC_FORM_REDIS_REQUIRED=true` in production. Those two routes fail closed with `FORM_PROTECTION_UNAVAILABLE` if Upstash is missing or unavailable; the global API limiter keeps the fallback behavior above.
 
 **Cookie/SameSite**
 - If your frontend + backend share the same site (recommended, e.g. `frontendatlas.com` and `api.frontendatlas.com`), keep `COOKIE_SAMESITE=lax` and consider `COOKIE_DOMAIN=.frontendatlas.com` if you set cookies from different subdomains.
 - If your frontend is on a different site (different eTLD+1), use `COOKIE_SAMESITE=none` (enables CSRF double-submit; the frontend already sends `X-CSRF-Token` when the `csrf_token` cookie exists).
 
-**Support email (optional)**
+**Public contact and bug-report forms**
 - `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`
 - `SUPPORT_EMAIL` (defaults to `support@frontendatlas.com`)
+- `TURNSTILE_SECRET_KEY`: Managed Cloudflare Turnstile secret; never expose it to frontend code.
+- `TURNSTILE_ALLOW_DUMMY_KEYS=false`: set to `true` only with `NODE_ENV=test` or `NODE_ENV=development` and Cloudflare's exact official dummy secret. Production, staging, and unknown runtime values reject both this flag and known dummy secrets with `503`.
+- `TURNSTILE_ALLOWED_HOSTNAMES`: exact comma-separated response hostnames, without schemes/ports/paths (for example `frontendatlas.com,www.frontendatlas.com`).
+- `TURNSTILE_VERIFY_TIMEOUT_MS` (default `3000`) and `TURNSTILE_TOKEN_MAX_AGE_MS` (default `300000`). Siteverify uses the request IP, validates the form action and hostname, and makes one transient retry with the same idempotency key.
+- `PUBLIC_FORM_REDIS_REQUIRED=true`: required in production; no memory fallback is used there. `PUBLIC_FORM_REDIS_TIMEOUT_MS` bounds each Upstash request (default `3000`).
+- `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`: shared quota and exact-deduplication store.
+- Shared form knobs (optional):
+  - `PUBLIC_FORM_DUP_WINDOW_MS` (default `600000`)
+  - `PUBLIC_FORM_MAX_URL_CHARS` (default `2000`); non-empty `url` values must use `http`/`https` and match a configured `FRONTEND_ORIGINS` origin.
 - Contact form knobs (optional):
   - `CONTACT_BURST_WINDOW_MS` (default `60000`)
   - `CONTACT_BURST_MAX` (default `2`)
   - `CONTACT_WINDOW_MS` (default `3600000`)
   - `CONTACT_MAX` (default `5`)
+  - `CONTACT_EMAIL_HOURLY_WINDOW_MS` / `CONTACT_EMAIL_HOURLY_MAX` (defaults `3600000` / `3`)
+  - `CONTACT_EMAIL_DAILY_WINDOW_MS` / `CONTACT_EMAIL_DAILY_MAX` (defaults `86400000` / `5`)
+  - `CONTACT_MAX_NAME_CHARS` / `CONTACT_MAX_EMAIL_CHARS` (defaults `120` / `320`)
   - `CONTACT_MIN_MESSAGE_CHARS` (default `10`)
   - `CONTACT_MAX_MESSAGE_CHARS` (default `4000`)
-- Spam guard knobs (optional):
+- Bug-report knobs (optional):
   - `BUG_REPORT_BURST_WINDOW_MS` (default `60000`)
   - `BUG_REPORT_BURST_MAX` (default `2`)
   - `BUG_REPORT_WINDOW_MS` (default `3600000`)
   - `BUG_REPORT_MAX` (default `5`)
-  - `BUG_REPORT_DUP_WINDOW_MS` (default `600000`)
   - `BUG_REPORT_MIN_NOTE_CHARS` (default `8`)
+  - `BUG_REPORT_MAX_NOTE_CHARS` (default `4000`)
+
+Both `POST /api/contact` and `POST /api/bug-report` accept `verificationToken` plus an empty `website` honeypot field and keep `204` as the success response. Protection failures use `{ code, error }`: `FORM_VERIFICATION_REQUIRED` (`400`), `FORM_VERIFICATION_FAILED` (`403`), `FORM_RATE_LIMITED` (`429`, with `Retry-After`), and `FORM_PROTECTION_UNAVAILABLE` (`503`). Quota and duplicate keys contain hashes only; decision logs contain only form/outcome/reason labels.
+
+For local/E2E automation, use `NODE_ENV=test` or `NODE_ENV=development`, Cloudflare's official Turnstile test sitekey and matching test secret, set `TURNSTILE_ALLOW_DUMMY_KEYS=true`, and include `localhost` in `TURNSTILE_ALLOWED_HOSTNAMES`. This explicit test mode accepts Cloudflare's fixed dummy metadata (`action=test` and its fixed challenge timestamp) while still requiring a successful Siteverify response and an allowed hostname. Tests can set `PUBLIC_FORM_REDIS_REQUIRED=false` to use the process-local store without network access. Never deploy the Turnstile test secret or enable dummy keys in production. See [Cloudflare's testing guide](https://developers.cloudflare.com/turnstile/troubleshooting/testing/) and [Siteverify guide](https://developers.cloudflare.com/turnstile/get-started/server-side-validation/).
+
+Deployment order: provision the Managed widget and Upstash first, deploy the token-sending frontend, then enable backend enforcement with the production secret, allowed hostnames, and `PUBLIC_FORM_REDIS_REQUIRED=true`. During the first seven days, monitor PII-free accepted/rejected reasons, `429`/`503` rates, and Turnstile Analytics; tune quotas through environment variables only and do not introduce automatic fail-open behavior.
 
 ### Quick verification checklist
 
 - Health: `GET /api/hello`
 - Contact:
-  - `POST /api/contact` returns `204` and delivers an email
+  - `POST /api/contact` with a valid `verificationToken` and empty `website` returns `204` and delivers an email
 - Auth:
   - `POST /api/auth/signup` sets `access_token` + `refresh_token` cookies
   - `POST /api/auth/refresh` rotates the refresh session and reissues `access_token`
   - `GET /api/auth/me` returns user when access cookie is present
 - Bug report:
-  - `POST /api/bug-report` returns `204` and delivers an email
+  - `POST /api/bug-report` with a valid `verificationToken` and empty `website` returns `204` and delivers an email
 
 ## Alternative hosting (Render/Fly/Railway)
 

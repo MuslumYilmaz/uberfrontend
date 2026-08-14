@@ -10,6 +10,7 @@ import {
   QueryList,
   PLATFORM_ID,
   Type,
+  ViewChild,
   ViewChildren,
   inject,
 } from '@angular/core';
@@ -36,6 +37,10 @@ import {
 } from '../../core/content/public-editorial-facts';
 import { CompanyLogoMarkComponent } from '../../shared/components/company-logo-mark/company-logo-mark.component';
 import { PrepRoadmapComponent, type PrepRoadmapItem } from '../../shared/components/prep-roadmap/prep-roadmap.component';
+import {
+  TurnstileChallengeComponent,
+  type TurnstileChallengeState,
+} from '../../shared/components/turnstile-challenge/turnstile-challenge.component';
 import { ShowcaseIconComponent, ShowcaseIconName } from './showcase-icon.component';
 import { TRACK_LOOKUP, deriveTrackMetrics } from '../tracks/track.data';
 
@@ -73,7 +78,7 @@ const FOUNDATIONS_TRACK_METRICS = deriveTrackMetrics(FOUNDATIONS_TRACK);
 
 @Component({
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, PricingPlansSectionComponent, FaqSectionComponent, ShowcaseIconComponent, CompanyLogoMarkComponent, PrepRoadmapComponent],
+  imports: [CommonModule, FormsModule, RouterModule, PricingPlansSectionComponent, FaqSectionComponent, ShowcaseIconComponent, CompanyLogoMarkComponent, PrepRoadmapComponent, TurnstileChallengeComponent],
   selector: 'app-showcase-page',
   templateUrl: './showcase.page.html',
   styleUrls: ['./showcase.page.css'],
@@ -83,6 +88,7 @@ export class ShowcasePageComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly http = inject(HttpClient);
   private readonly incidentService = inject(IncidentService);
   private readonly tradeoffBattleService = inject(TradeoffBattleService);
+  @ViewChild('contactTurnstile') contactTurnstile?: TurnstileChallengeComponent;
   @ViewChildren('observeSection', { read: ElementRef }) observeSections!: QueryList<
     ElementRef<HTMLElement>
   >;
@@ -102,11 +108,21 @@ export class ShowcasePageComponent implements OnInit, AfterViewInit, OnDestroy {
     email: '',
     topic: 'general' as ContactTopic,
     message: '',
+    website: '',
   };
 
   contactSubmitting = false;
   contactStatus: ContactStatus | null = null;
+  contactVerificationToken = '';
+  contactChallengeState: TurnstileChallengeState = 'idle';
+  contactCooldownSeconds = 0;
+  readonly contactMinMessageChars = 10;
+  readonly contactMaxMessageChars = 4000;
+  readonly contactMaxNameChars = 120;
+  readonly contactMaxEmailChars = 320;
   readonly supportEmail = 'support@frontendatlas.com';
+  private contactCooldownTimer?: number;
+  private contactChallengeStatusActive = false;
 
   readonly reduceMotion =
     typeof window !== 'undefined' &&
@@ -641,6 +657,10 @@ You can also reset any task back to the starter whenever you want to re-practice
     this.observer?.disconnect();
     if (this.isBrowser) {
       window.removeEventListener('resize', this.onViewportResize);
+      if (this.contactCooldownTimer) {
+        window.clearInterval(this.contactCooldownTimer);
+        this.contactCooldownTimer = undefined;
+      }
     }
   }
 
@@ -993,14 +1013,26 @@ You can also reset any task back to the starter whenever you want to re-practice
   }
 
   async submitContact(): Promise<void> {
+    if (this.contactSubmitting || this.contactCooldownSeconds > 0) return;
+
     const name = this.contact.name.trim();
     const email = this.contact.email.trim();
     const message = this.contact.message.trim();
     const topic = this.contact.topic;
+    const verificationToken = this.contactVerificationToken.trim();
 
     if (!name || !email || !message) return;
+    if (!verificationToken) {
+      this.contactChallengeStatusActive = true;
+      this.contactStatus = {
+        tone: 'error',
+        text: `Please complete the verification before sending, or email ${this.supportEmail} directly.`,
+      };
+      return;
+    }
 
     this.contactSubmitting = true;
+    this.contactChallengeStatusActive = false;
     this.contactStatus = null;
 
     try {
@@ -1010,35 +1042,122 @@ You can also reset any task back to the starter whenever you want to re-practice
         topic,
         message,
         url: typeof window !== 'undefined' ? window.location.href : '',
+        website: this.contact.website,
+        verificationToken,
       }, { responseType: 'text' }));
 
-      this.contact = { name: '', email: '', topic: 'general', message: '' };
+      this.contact = { name: '', email: '', topic: 'general', message: '', website: '' };
       this.contactStatus = {
         tone: 'success',
         text: 'Message sent. We will reply to the email address you provided.',
       };
     } catch (err) {
+      this.contactChallengeStatusActive = false;
+      if (err instanceof HttpErrorResponse && err.status === 429) {
+        this.startContactCooldown(this.readRetryAfterSeconds(err));
+      }
       this.contactStatus = {
         tone: 'error',
         text: this.mapContactError(err),
       };
     } finally {
+      this.contactVerificationToken = '';
+      this.contactTurnstile?.reset();
       this.contactSubmitting = false;
+    }
+  }
+
+  onContactTokenChange(token: string): void {
+    this.contactVerificationToken = String(token || '').trim();
+    if (this.contactVerificationToken && this.contactChallengeStatusActive) {
+      this.contactChallengeStatusActive = false;
+      this.contactStatus = null;
+    }
+  }
+
+  onContactChallengeStateChange(state: TurnstileChallengeState): void {
+    this.contactChallengeState = state;
+    if (state === 'error') {
+      this.contactVerificationToken = '';
+      this.contactChallengeStatusActive = true;
+      this.contactStatus = {
+        tone: 'error',
+        text: `Verification is unavailable. Please email ${this.supportEmail} directly.`,
+      };
+      return;
+    }
+    if (state === 'expired') {
+      this.contactVerificationToken = '';
+      this.contactChallengeStatusActive = true;
+      this.contactStatus = {
+        tone: 'error',
+        text: 'Verification expired and is refreshing. Please wait a moment before sending.',
+      };
     }
   }
 
   private mapContactError(err: unknown): string {
     if (err instanceof HttpErrorResponse) {
-      const apiMessage =
-        typeof err.error === 'string'
-          ? err.error
-          : (typeof err.error?.error === 'string' ? err.error.error : '');
-      if (apiMessage) return apiMessage;
+      const apiError = this.parseContactApiError(err.error);
+      const apiCode = apiError.code;
       if (err.status === 429) {
-        return `Too many messages right now. Please wait a bit or email ${this.supportEmail} directly.`;
+        const retryAfter = this.readRetryAfterSeconds(err);
+        return `Too many messages right now. Please wait ${retryAfter}s or email ${this.supportEmail} directly.`;
       }
+      if (err.status === 503 || apiCode === 'FORM_PROTECTION_UNAVAILABLE') {
+        return `Verification is unavailable. Please email ${this.supportEmail} directly.`;
+      }
+      if (
+        apiCode === 'FORM_VERIFICATION_REQUIRED'
+        || apiCode === 'FORM_VERIFICATION_FAILED'
+      ) {
+        return 'We could not verify this submission. Please complete the verification and try again.';
+      }
+      if (apiError.message) return apiError.message;
     }
     return `We could not send your message right now. Please email ${this.supportEmail} directly.`;
+  }
+
+  private parseContactApiError(value: unknown): { code: string; message: string } {
+    let body = value;
+    if (typeof body === 'string') {
+      try {
+        body = JSON.parse(body) as unknown;
+      } catch {
+        return { code: '', message: String(body) };
+      }
+    }
+
+    if (!body || typeof body !== 'object') return { code: '', message: '' };
+    const candidate = body as { code?: unknown; error?: unknown };
+    return {
+      code: typeof candidate.code === 'string' ? candidate.code : '',
+      message: typeof candidate.error === 'string' ? candidate.error : '',
+    };
+  }
+
+  private readRetryAfterSeconds(err: HttpErrorResponse): number {
+    const raw = Number(err.headers?.get('Retry-After') || 0);
+    return Number.isFinite(raw) && raw > 0 ? Math.ceil(raw) : 60;
+  }
+
+  private startContactCooldown(seconds: number): void {
+    const safeSeconds = Math.max(1, Math.ceil(seconds));
+    this.contactCooldownSeconds = safeSeconds;
+    if (!this.isBrowser) return;
+
+    if (this.contactCooldownTimer) {
+      window.clearInterval(this.contactCooldownTimer);
+    }
+    const until = Date.now() + safeSeconds * 1000;
+    this.contactCooldownTimer = window.setInterval(() => {
+      const remaining = Math.max(0, Math.ceil((until - Date.now()) / 1000));
+      this.contactCooldownSeconds = remaining;
+      if (remaining === 0 && this.contactCooldownTimer) {
+        window.clearInterval(this.contactCooldownTimer);
+        this.contactCooldownTimer = undefined;
+      }
+    }, 250);
   }
 
   setActiveLane(lane: LibraryLane) {

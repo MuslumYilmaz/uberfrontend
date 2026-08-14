@@ -16,6 +16,14 @@ Run `ng generate component component-name` to generate a new component. You can 
 
 Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
 
+## Turnstile config
+
+Set the public Cloudflare Turnstile sitekey as `NG_APP_TURNSTILE_SITE_KEY` before a production build. `npm run gen:data` writes it to the generated `src/environments/turnstile.env.ts` module; the Turnstile secret belongs only in the backend environment.
+
+Local and test builds use Cloudflare's official always-pass test sitekey when the variable is absent. Vercel production builds never fall back to that test key: a missing variable leaves the sitekey empty so public forms fail closed.
+
+Configure the production Turnstile widget in Cloudflare as Managed with pre-clearance disabled.
+
 ## Payments config
 
 Set these build-time values in `frontend/src/environments/environment.ts` (and `environment.prod.ts` for production):

@@ -97,6 +97,19 @@ describe('global API security middleware', () => {
     expect((await request(app).get('/api/auth/ping')).status).toBe(429);
   });
 
+  test('exposes Retry-After to allowed browser origins without changing credentialed CORS', async () => {
+    const app = loadApp();
+    const response = await request(app)
+      .options('/api/contact')
+      .set('Origin', 'http://127.0.0.1:4200')
+      .set('Access-Control-Request-Method', 'POST');
+
+    expect(response.status).toBe(204);
+    expect(response.headers['access-control-allow-origin']).toBe('http://127.0.0.1:4200');
+    expect(response.headers['access-control-allow-credentials']).toBe('true');
+    expect(response.headers['access-control-expose-headers']).toContain('Retry-After');
+  });
+
   test('uses the independent webhook quota without requiring auth cookies', async () => {
     const app = loadApp({ API_RATE_LIMIT_MAX: '1', WEBHOOK_RATE_LIMIT_MAX: '2' });
 
