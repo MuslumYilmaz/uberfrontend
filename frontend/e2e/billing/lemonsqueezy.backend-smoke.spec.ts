@@ -14,6 +14,19 @@ function assertNotProductionTarget(baseURL: string) {
   }
 }
 
+async function completeSignupNavigation(page: Page): Promise<void> {
+  const dashboard = page.getByTestId('dashboard-page');
+  const verificationFallback = page.getByTestId('signup-verification-continue');
+
+  await expect(dashboard.or(verificationFallback).first()).toBeVisible({ timeout: 30_000 });
+  if (await verificationFallback.isVisible()) {
+    await verificationFallback.click();
+  }
+
+  await expect(page).toHaveURL(/\/dashboard/, { timeout: 30_000 });
+  await expect(dashboard).toBeVisible();
+}
+
 async function signUp(page: Page, email: string, username: string, password: string) {
   await page.goto('/auth/signup');
   await expect(page.getByTestId('signup-page')).toBeVisible();
@@ -22,8 +35,7 @@ async function signUp(page: Page, email: string, username: string, password: str
   await page.getByTestId('signup-password').fill(password);
   await page.getByTestId('signup-confirm').fill(password);
   await page.getByTestId('signup-submit').click();
-  await expect(page).toHaveURL(/\/dashboard/, { timeout: 30_000 });
-  await expect(page.getByTestId('dashboard-page')).toBeVisible();
+  await completeSignupNavigation(page);
 }
 
 async function csrfHeaders(context: BrowserContext): Promise<Record<string, string>> {

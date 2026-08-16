@@ -1,4 +1,4 @@
-import { test, expect, type BrowserContext } from '@playwright/test';
+import { test, expect, type BrowserContext, type Page } from '@playwright/test';
 
 function resolveBaseUrl(baseURL: string | undefined): string {
   if (baseURL) return baseURL;
@@ -20,6 +20,19 @@ async function authCookieValue(context: BrowserContext): Promise<string | null> 
   const cookies = await context.cookies();
   const authCookie = cookies.find((cookie) => cookie.name === 'access_token');
   return authCookie ? authCookie.value : null;
+}
+
+async function completeSignupNavigation(page: Page): Promise<void> {
+  const dashboard = page.getByTestId('dashboard-page');
+  const verificationFallback = page.getByTestId('signup-verification-continue');
+
+  await expect(dashboard.or(verificationFallback).first()).toBeVisible({ timeout: 30_000 });
+  if (await verificationFallback.isVisible()) {
+    await verificationFallback.click();
+  }
+
+  await expect(page).toHaveURL(/\/dashboard/, { timeout: 30_000 });
+  await expect(dashboard).toBeVisible();
 }
 
 const runRealAuth = process.env.E2E_REAL_AUTH === '1';
@@ -60,8 +73,7 @@ test.describe('auth real smoke', () => {
     await page.getByTestId('signup-confirm').fill(password);
     await page.getByTestId('signup-submit').click();
 
-    await expect(page).toHaveURL(/\/dashboard/, { timeout: 30_000 });
-    await expect(page.getByTestId('dashboard-page')).toBeVisible();
+    await completeSignupNavigation(page);
     expect(await authCookieValue(context)).toBeTruthy();
 
     const meAfterReload = page.waitForResponse(

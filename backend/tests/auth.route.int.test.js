@@ -944,7 +944,7 @@ describe('email verification', () => {
 
 describe('Password recovery', () => {
   test('request is generic, stores only a token hash, and preserves the prior token on SMTP failure', async () => {
-    await User.create({
+    const resetUser = await User.create({
       email: 'reset-existing@example.com',
       username: 'reset_existing',
       passwordHash: await require('bcrypt').hash('secret123', 10),
@@ -956,8 +956,12 @@ describe('Password recovery', () => {
         .post('/api/auth/password-reset/request')
         .send({ email: 'reset-existing@example.com' });
       expect(first.status).toBe(202);
-      const firstToken = passwordResetTokenFromLastEmail();
-      const firstHash = require('crypto').createHash('sha256').update(firstToken).digest('hex');
+
+      const initialRecords = await PasswordReset.find({ userId: resetUser._id }).lean();
+      expect(initialRecords).toHaveLength(1);
+      const [initialRecord] = initialRecords;
+      expect(initialRecord?.tokenHash).toMatch(/^[a-f0-9]{64}$/);
+      expect(initialRecord).not.toHaveProperty('token');
 
       mockSendMail.mockRejectedValueOnce(new Error('smtp unavailable'));
       const existing = await request(app)
@@ -978,10 +982,12 @@ describe('Password recovery', () => {
       expect(invalid.body).toEqual(existing.body);
       expect(mockSendMail).toHaveBeenCalledTimes(2);
 
-      const failedToken = passwordResetTokenFromLastEmail();
-      const failedHash = require('crypto').createHash('sha256').update(failedToken).digest('hex');
-      expect(await PasswordReset.findOne({ tokenHash: failedHash }).lean()).toBeNull();
-      const stored = await PasswordReset.findOne({ tokenHash: firstHash }).lean();
+      const storedRecords = await PasswordReset.find({ userId: resetUser._id }).lean();
+      expect(storedRecords).toHaveLength(1);
+      expect(await PasswordReset.countDocuments({})).toBe(1);
+      const [stored] = storedRecords;
+      expect(String(stored?._id)).toBe(String(initialRecord?._id));
+      expect(stored?.tokenHash).toBe(initialRecord?.tokenHash);
       expect(stored?.tokenHash).toMatch(/^[a-f0-9]{64}$/);
       expect(stored).not.toHaveProperty('token');
       expect(stored?.consumedAt).toBeNull();
