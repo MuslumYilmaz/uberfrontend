@@ -14,7 +14,7 @@ describe('FaQuestionRowComponent', () => {
     fixture.componentRef.setInput('kindLabel', 'Concept');
     fixture.componentRef.setInput('title', 'What are callbacks?');
     fixture.componentRef.setInput('description', 'Explain inversion of control.');
-    fixture.componentRef.setInput('routerLink', ['/javascript', 'trivia', 'demo']);
+    fixture.componentRef.setInput('routeLink', ['/javascript', 'trivia', 'demo']);
     fixture.componentRef.setInput('solved', true);
     fixture.componentRef.setInput('companies', ['google', 'meta']);
     fixture.componentRef.setInput('metaChips', [

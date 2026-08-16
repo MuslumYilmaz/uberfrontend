@@ -53,7 +53,7 @@ export type FaQuestionRowVariant = {
         [class.is-solved]="solved"
         [class.is-disabled]="disabled"
         [class.has-variants]="variants.length > 1"
-        [routerLink]="routerLink"
+        [routerLink]="routeLink"
         [queryParams]="queryParams"
         [state]="state"
         [attr.aria-disabled]="disabled ? 'true' : null"
@@ -172,7 +172,7 @@ export class FaQuestionRowComponent {
   @Input() description = '';
   @Input() descriptionTooltip = '';
   @Input() kindLabel = '';
-  @Input() routerLink: string | any[] | null = null;
+  @Input() routeLink: string | any[] | null = null;
   @Input() queryParams: Params | null = null;
   @Input() state: { [k: string]: any } | undefined = undefined;
   @Input() disabled = false;
@@ -187,8 +187,8 @@ export class FaQuestionRowComponent {
   @Output() variantSelected = new EventEmitter<FaQuestionRowVariant>();
 
   hasLink(): boolean {
-    if (Array.isArray(this.routerLink)) return this.routerLink.length > 0;
-    return typeof this.routerLink === 'string' && this.routerLink.length > 0;
+    if (Array.isArray(this.routeLink)) return this.routeLink.length > 0;
+    return typeof this.routeLink === 'string' && this.routeLink.length > 0;
   }
 
   handleRowClick(event: Event): void {
