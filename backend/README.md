@@ -53,6 +53,9 @@ Then edit `.env` with your values. Do not commit `.env` (it is gitignored).
   - `LEMONSQUEEZY_MONTHLY_URL_TEST`, `LEMONSQUEEZY_QUARTERLY_URL_TEST`, `LEMONSQUEEZY_ANNUAL_URL_TEST`, `LEMONSQUEEZY_LIFETIME_URL_TEST`
   - `LEMONSQUEEZY_MONTHLY_URL_LIVE`, `LEMONSQUEEZY_QUARTERLY_URL_LIVE`, `LEMONSQUEEZY_ANNUAL_URL_LIVE`, `LEMONSQUEEZY_LIFETIME_URL_LIVE`
   - `STRIPE_*` values are still reserved; `/api/billing/checkout/config` will report `configuredProvider: "stripe"` with `provider: null` and `enabled: false` until Stripe is fully implemented.
+- Live LemonSqueezy checkout requires the matching `*_URL_LIVE` value. The legacy unscoped URL is test-only. A URL reused across test/live or copied from an earlier plan (including Lifetime) is disabled fail-closed.
+- Hosted checkout URLs must use HTTPS on the configured provider's own domain.
+- Gumroad checkout is exposed only in `PAYMENTS_MODE=live`; the app has no separate Gumroad sandbox URL contract.
 
 ### LemonSqueezy prod setup
 
@@ -73,6 +76,7 @@ Then edit `.env` with your values. Do not commit `.env` (it is gitignored).
 4) Checkout start:
    - Route: `POST /api/billing/checkout/start` (auth required).
    - The backend creates a `CheckoutAttempt`, appends custom metadata like `fa_checkout_attempt_id`, and returns the final hosted checkout URL.
+   - `analyticsSource` (campaign/referrer) and `analyticsSurface` (UI placement) are normalized and persisted independently; either field is used as a compatibility fallback only when the other is omitted.
    - If the same user already has a recent active attempt for the same plan/provider, the backend reuses that attempt instead of creating a second one.
    - Success/cancel redirects include `?attempt=<attemptId>` so the frontend can correlate the return flow.
 
@@ -80,6 +84,7 @@ Then edit `.env` with your values. Do not commit `.env` (it is gitignored).
    - Route: `GET /api/billing/checkout/attempts/:attemptId/status` (auth required).
    - Returns the correlated attempt state (`awaiting_webhook`, `applied`, `pending_user_match`, `failed`, `expired`) so the success page can show a deterministic activation state instead of trusting the redirect alone.
    - Current product contract is single-tier: the success page only verifies whether premium access became active. It does not try to prove a specific plan delta or transaction-by-transaction upgrade path yet.
+   - `POST /api/billing/checkout/attempts/:attemptId/client-state` is authenticated and accepts `provider_opened`, `popup_blocked`, `success_redirected`, or `cancel_redirected`. Timestamps are first-write/idempotent. Redirect state is monotonic (`created` < `cancel_redirected` < `success_redirected`) and cannot overwrite webhook/server terminal states.
 
 5) Manage URL (customer portal):
    - Route: `GET /api/billing/manage-url` (auth required).

@@ -90,6 +90,56 @@ test.describe('lemonsqueezy integration (local)', () => {
         body: JSON.stringify(buildCheckoutConfigResponse()),
       });
     });
+    // This is a frontend-only suite: /auth/me and checkout/start are mocked,
+    // so no real auth cookie exists for the authenticated client-state route.
+    // Keep the mock contract complete; an unhandled 401 would invoke the auth
+    // refresh interceptor and sign out the in-memory user after checkout opens.
+    await page.route(
+      /\/api\/billing\/checkout\/attempts\/[^/?]+\/client-state(?:\?.*)?$/,
+      async (route) => {
+        const request = route.request();
+        if (request.method() === 'OPTIONS') {
+          await route.fulfill({ status: 204 });
+          return;
+        }
+
+        const pathname = new URL(request.url()).pathname;
+        const encodedAttemptId = pathname.split('/').at(-2) || '';
+        const attemptId = decodeURIComponent(encodedAttemptId);
+        const payload = request.postDataJSON() as { state?: string };
+        const state = String(payload?.state || '');
+        const observedAt = new Date().toISOString();
+        const rawStatus = state === 'success_redirected' || state === 'cancel_redirected'
+          ? state
+          : 'created';
+
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            attemptId,
+            supportReference: attemptId,
+            provider: 'lemonsqueezy',
+            planId: 'monthly',
+            mode: paymentsMode,
+            analyticsSurface: 'pricing_page',
+            analyticsSource: 'pricing',
+            state: 'awaiting_webhook',
+            rawStatus,
+            entitlementActive: false,
+            accessTierEffective: 'free',
+            billingEventId: null,
+            lastErrorCode: null,
+            lastErrorMessage: null,
+            providerOpenedAt: state === 'provider_opened' ? observedAt : null,
+            popupBlockedAt: state === 'popup_blocked' ? observedAt : null,
+            successRedirectedAt: state === 'success_redirected' ? observedAt : null,
+            cancelRedirectedAt: state === 'cancel_redirected' ? observedAt : null,
+            purchase: null,
+          }),
+        });
+      },
+    );
   });
 
   test('pricing CTA opens lemonsqueezy checkout in new tab without navigation', async ({ page }) => {

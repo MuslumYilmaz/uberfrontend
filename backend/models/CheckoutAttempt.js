@@ -11,6 +11,7 @@ const CheckoutAttemptSchema = new mongoose.Schema(
       required: true,
     },
     mode: { type: String, enum: ['test', 'live'], required: true },
+    analyticsSurface: { type: String, trim: true },
     analyticsSource: { type: String, trim: true, default: 'pricing' },
     status: {
       type: String,
@@ -44,6 +45,10 @@ const CheckoutAttemptSchema = new mongoose.Schema(
     lastErrorCode: { type: String, trim: true },
     lastErrorMessage: { type: String, trim: true },
     startedAt: { type: Date, default: Date.now },
+    providerOpenedAt: { type: Date },
+    popupBlockedAt: { type: Date },
+    successRedirectedAt: { type: Date },
+    cancelRedirectedAt: { type: Date },
     completedAt: { type: Date },
     cancelledAt: { type: Date },
     metadata: { type: Object },

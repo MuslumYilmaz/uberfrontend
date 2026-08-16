@@ -1,5 +1,10 @@
 import { Injectable } from '@angular/core';
-import { openExternalWindow } from '../utils/external-window.util';
+import {
+  ExternalWindowReservation,
+  navigateReservedExternalWindow,
+  releaseExternalWindowReservation,
+  reserveExternalWindow,
+} from '../utils/external-window.util';
 
 export type LemonSqueezyCheckoutContext = {
   userId?: string;
@@ -12,7 +17,9 @@ export class LemonSqueezyCheckoutService {
   private isValidBuyUrl(value: string): boolean {
     try {
       const parsed = new URL(value);
-      return parsed.pathname.includes('/checkout/buy/');
+      return parsed.protocol === 'https:'
+        && parsed.hostname === 'frontendatlas.lemonsqueezy.com'
+        && /^\/checkout\/buy\/[^/]+/.test(parsed.pathname);
     } catch {
       return false;
     }
@@ -23,29 +30,29 @@ export class LemonSqueezyCheckoutService {
     return;
   }
 
-  async open(url: string, context?: LemonSqueezyCheckoutContext): Promise<'overlay' | 'new-tab' | 'blocked'> {
+  reserve(): ExternalWindowReservation {
+    return reserveExternalWindow();
+  }
+
+  release(reservation: ExternalWindowReservation | null | undefined): void {
+    releaseExternalWindowReservation(reservation);
+  }
+
+  async open(
+    url: string,
+    _context?: LemonSqueezyCheckoutContext,
+    reservation?: ExternalWindowReservation,
+  ): Promise<'overlay' | 'new-tab' | 'blocked'> {
     if (!url) return 'new-tab';
     if (typeof window === 'undefined') return 'new-tab';
 
     const finalUrl = String(url || '').trim();
     if (!finalUrl || !this.isValidBuyUrl(finalUrl)) {
-      console.error('[billing] invalid lemonsqueezy checkout url (expected /checkout/buy/)', {
-        baseUrl: url,
-        finalUrl,
-      });
+      this.release(reservation);
+      console.error('[billing] invalid LemonSqueezy checkout URL.');
       return 'new-tab';
     }
-    (window as any).__faCheckoutLastUrl = finalUrl;
-    const debug = typeof window !== 'undefined' && localStorage.getItem('fa:debug:billing') === '1';
-    if (debug) {
-      console.log('[billing] lemonsqueezy checkout url', {
-        baseUrl: url,
-        finalUrl,
-        hasUserId: !!context?.userId,
-        hasEmail: !!context?.email,
-      });
-    }
-    const openResult = openExternalWindow(finalUrl);
+    const openResult = navigateReservedExternalWindow(reservation || this.reserve(), finalUrl);
     if (openResult === 'blocked') {
       console.warn('[billing] LemonSqueezy checkout popup was blocked.');
       return 'blocked';

@@ -141,6 +141,7 @@ describe('billing checkout attempt status route', () => {
       provider: 'lemonsqueezy',
       planId: 'annual',
       mode: 'live',
+      analyticsSurface: 'annual_card',
       analyticsSource: 'pricing_page',
       status: 'applied',
       billingEventId: 'live:subscription_created:sub_annual',
@@ -164,6 +165,8 @@ describe('billing checkout attempt status route', () => {
       .set('Authorization', authHeader(user._id));
 
     expect(res.status).toBe(200);
+    expect(res.body.analyticsSurface).toBe('annual_card');
+    expect(res.body.analyticsSource).toBe('pricing_page');
     expect(res.body.purchase).toEqual({
       transactionId: 'order_annual_123',
       currency: 'USD',
@@ -325,5 +328,111 @@ describe('billing checkout attempt status route', () => {
 
     expect(res.status).toBe(404);
     expect(res.body.code).toBe('CHECKOUT_ATTEMPT_NOT_FOUND');
+  });
+
+  test('records idempotent client observations without regressing an applied attempt', async () => {
+    const user = await seedUser({
+      accessTier: 'premium',
+      entitlements: {
+        pro: { status: 'active', validUntil: null },
+        projects: { status: 'none', validUntil: null },
+      },
+    });
+    await CheckoutAttempt.create({
+      attemptId: 'chk_client_state_123',
+      userId: user._id,
+      provider: 'lemonsqueezy',
+      planId: 'monthly',
+      mode: 'test',
+      analyticsSurface: 'pricing_card',
+      analyticsSource: 'campaign_status',
+      status: 'created',
+    });
+
+    const firstOpened = await request(app)
+      .post('/api/billing/checkout/attempts/chk_client_state_123/client-state')
+      .set('Authorization', authHeader(user._id))
+      .send({ state: 'provider_opened' });
+    const repeatedOpened = await request(app)
+      .post('/api/billing/checkout/attempts/chk_client_state_123/client-state')
+      .set('Authorization', authHeader(user._id))
+      .send({ state: 'provider_opened' });
+    const cancelled = await request(app)
+      .post('/api/billing/checkout/attempts/chk_client_state_123/client-state')
+      .set('Authorization', authHeader(user._id))
+      .send({ state: 'cancel_redirected' });
+    const redirected = await request(app)
+      .post('/api/billing/checkout/attempts/chk_client_state_123/client-state')
+      .set('Authorization', authHeader(user._id))
+      .send({ state: 'success_redirected' });
+    const cancelAfterSuccess = await request(app)
+      .post('/api/billing/checkout/attempts/chk_client_state_123/client-state')
+      .set('Authorization', authHeader(user._id))
+      .send({ state: 'cancel_redirected' });
+
+    expect(firstOpened.status).toBe(200);
+    expect(firstOpened.body.analyticsSurface).toBe('pricing_card');
+    expect(firstOpened.body.analyticsSource).toBe('campaign_status');
+    expect(firstOpened.body.providerOpenedAt).toBeTruthy();
+    expect(repeatedOpened.body.providerOpenedAt).toBe(firstOpened.body.providerOpenedAt);
+    expect(cancelled.body.rawStatus).toBe('cancel_redirected');
+    expect(redirected.body.rawStatus).toBe('success_redirected');
+    expect(redirected.body.state).toBe('awaiting_webhook');
+    expect(redirected.body.successRedirectedAt).toBeTruthy();
+    expect(cancelAfterSuccess.body.rawStatus).toBe('success_redirected');
+    expect(cancelAfterSuccess.body.cancelRedirectedAt).toBe(cancelled.body.cancelRedirectedAt);
+
+    await CheckoutAttempt.updateOne(
+      { attemptId: 'chk_client_state_123' },
+      { $set: { status: 'webhook_received' } }
+    );
+    const afterWebhook = await request(app)
+      .post('/api/billing/checkout/attempts/chk_client_state_123/client-state')
+      .set('Authorization', authHeader(user._id))
+      .send({ state: 'cancel_redirected' });
+    expect(afterWebhook.body.rawStatus).toBe('webhook_received');
+    expect(afterWebhook.body.cancelRedirectedAt).toBeTruthy();
+
+    await CheckoutAttempt.updateOne(
+      { attemptId: 'chk_client_state_123' },
+      { $set: { status: 'applied', completedAt: new Date() } }
+    );
+    const lateCancel = await request(app)
+      .post('/api/billing/checkout/attempts/chk_client_state_123/client-state')
+      .set('Authorization', authHeader(user._id))
+      .send({ state: 'cancel_redirected' });
+
+    expect(lateCancel.status).toBe(200);
+    expect(lateCancel.body.rawStatus).toBe('applied');
+    expect(lateCancel.body.cancelRedirectedAt).toBeTruthy();
+    const persisted = await CheckoutAttempt.findOne({ attemptId: 'chk_client_state_123' }).lean();
+    expect(persisted.status).toBe('applied');
+  });
+
+  test('rejects invalid or cross-account checkout client state', async () => {
+    const owner = await seedUser();
+    const otherUser = await seedUser({ email: 'client-state-other@example.com', username: 'client_state_other' });
+    await CheckoutAttempt.create({
+      attemptId: 'chk_client_state_private',
+      userId: owner._id,
+      provider: 'lemonsqueezy',
+      planId: 'monthly',
+      mode: 'test',
+      status: 'created',
+    });
+
+    const invalid = await request(app)
+      .post('/api/billing/checkout/attempts/chk_client_state_private/client-state')
+      .set('Authorization', authHeader(owner._id))
+      .send({ state: 'payment_succeeded' });
+    const crossAccount = await request(app)
+      .post('/api/billing/checkout/attempts/chk_client_state_private/client-state')
+      .set('Authorization', authHeader(otherUser._id))
+      .send({ state: 'popup_blocked' });
+
+    expect(invalid.status).toBe(400);
+    expect(invalid.body.code).toBe('CHECKOUT_CLIENT_STATE_INVALID');
+    expect(crossAccount.status).toBe(404);
+    expect(crossAccount.body.code).toBe('CHECKOUT_ATTEMPT_NOT_FOUND');
   });
 });

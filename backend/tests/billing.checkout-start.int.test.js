@@ -44,6 +44,10 @@ beforeAll(async () => {
   process.env.LEMONSQUEEZY_QUARTERLY_URL_TEST = '';
   process.env.LEMONSQUEEZY_ANNUAL_URL_TEST = '';
   process.env.LEMONSQUEEZY_LIFETIME_URL_TEST = '';
+  process.env.LEMONSQUEEZY_MONTHLY_URL_LIVE = '';
+  process.env.LEMONSQUEEZY_QUARTERLY_URL_LIVE = '';
+  process.env.LEMONSQUEEZY_ANNUAL_URL_LIVE = '';
+  process.env.LEMONSQUEEZY_LIFETIME_URL_LIVE = '';
 
   jest.resetModules();
   app = require('../index');
@@ -72,6 +76,14 @@ beforeEach(async () => {
   process.env.LEMONSQUEEZY_QUARTERLY_URL_TEST = '';
   process.env.LEMONSQUEEZY_ANNUAL_URL_TEST = '';
   process.env.LEMONSQUEEZY_LIFETIME_URL_TEST = '';
+  process.env.LEMONSQUEEZY_MONTHLY_URL_LIVE = '';
+  process.env.LEMONSQUEEZY_QUARTERLY_URL_LIVE = '';
+  process.env.LEMONSQUEEZY_ANNUAL_URL_LIVE = '';
+  process.env.LEMONSQUEEZY_LIFETIME_URL_LIVE = '';
+  process.env.LEMONSQUEEZY_MONTHLY_URL = '';
+  process.env.LEMONSQUEEZY_QUARTERLY_URL = '';
+  process.env.LEMONSQUEEZY_ANNUAL_URL = '';
+  process.env.LEMONSQUEEZY_LIFETIME_URL = '';
   await User.deleteMany({});
   await CheckoutAttempt.deleteMany({});
 });
@@ -151,6 +163,83 @@ describe('billing checkout start route', () => {
     expect(startRes.body.checkoutUrl).toContain('/checkout/buy/live-monthly');
   });
 
+  test('does not fall back to an unscoped LemonSqueezy URL in live mode', async () => {
+    process.env.PAYMENTS_MODE = 'live';
+    process.env.LEMONSQUEEZY_MONTHLY_URL =
+      'https://frontendatlas.lemonsqueezy.com/checkout/buy/legacy-test-monthly';
+    process.env.LEMONSQUEEZY_MONTHLY_URL_LIVE = '';
+
+    const configRes = await request(app).get('/api/billing/checkout/config');
+
+    expect(configRes.status).toBe(200);
+    expect(configRes.body.plans.monthly).toBe(false);
+    const user = await seedUser({ email: 'no-live-fallback@example.com', username: 'no_live_fallback' });
+    const startRes = await request(app)
+      .post('/api/billing/checkout/start')
+      .set('Authorization', authHeader(user._id))
+      .send({ planId: 'monthly' });
+    expect(startRes.status).toBe(409);
+    expect(startRes.body.code).toBe('CHECKOUT_UNAVAILABLE');
+  });
+
+  test('disables a lifetime checkout URL copied from a recurring plan', async () => {
+    process.env.PAYMENTS_MODE = 'live';
+    process.env.LEMONSQUEEZY_ANNUAL_URL_LIVE =
+      'https://frontendatlas.lemonsqueezy.com/checkout/buy/live-annual';
+    process.env.LEMONSQUEEZY_LIFETIME_URL_LIVE =
+      'https://frontendatlas.lemonsqueezy.com/checkout/buy/live-annual';
+
+    const configRes = await request(app).get('/api/billing/checkout/config');
+
+    expect(configRes.status).toBe(200);
+    expect(configRes.body.plans.annual).toBe(true);
+    expect(configRes.body.plans.lifetime).toBe(false);
+    const user = await seedUser({ email: 'lifetime-copy@example.com', username: 'lifetime_copy' });
+    const startRes = await request(app)
+      .post('/api/billing/checkout/start')
+      .set('Authorization', authHeader(user._id))
+      .send({ planId: 'lifetime' });
+    expect(startRes.status).toBe(409);
+    expect(startRes.body.code).toBe('CHECKOUT_UNAVAILABLE');
+  });
+
+  test('disables a plan when its test and live URLs are identical', async () => {
+    const shared = 'https://frontendatlas.lemonsqueezy.com/checkout/buy/shared-mode-url';
+    process.env.LEMONSQUEEZY_MONTHLY_URL_TEST = shared;
+    process.env.LEMONSQUEEZY_MONTHLY_URL_LIVE = shared;
+
+    const configRes = await request(app).get('/api/billing/checkout/config');
+
+    expect(configRes.status).toBe(200);
+    expect(configRes.body.plans.monthly).toBe(false);
+  });
+
+  test('disables checkout URLs copied across different plans and modes', async () => {
+    const shared = 'https://frontendatlas.lemonsqueezy.com/checkout/buy/shared-cross-plan-mode-url';
+    process.env.PAYMENTS_MODE = 'live';
+    process.env.LEMONSQUEEZY_MONTHLY_URL_TEST = shared;
+    process.env.LEMONSQUEEZY_LIFETIME_URL_LIVE = shared;
+
+    const liveConfig = await request(app).get('/api/billing/checkout/config');
+    expect(liveConfig.status).toBe(200);
+    expect(liveConfig.body.plans.lifetime).toBe(false);
+
+    process.env.PAYMENTS_MODE = 'test';
+    const testConfig = await request(app).get('/api/billing/checkout/config');
+    expect(testConfig.status).toBe(200);
+    expect(testConfig.body.plans.monthly).toBe(false);
+  });
+
+  test('rejects a checkout URL hosted outside the configured provider', async () => {
+    process.env.LEMONSQUEEZY_MONTHLY_URL_TEST = 'https://payments.example.test/checkout/buy/not-lemonsqueezy';
+
+    const configRes = await request(app).get('/api/billing/checkout/config');
+
+    expect(configRes.status).toBe(200);
+    expect(configRes.body.plans.monthly).toBe(false);
+    expect(configRes.body.enabled).toBe(false);
+  });
+
   test('creates a checkout attempt and returns a final hosted checkout url', async () => {
     const user = await seedUser();
 
@@ -200,16 +289,23 @@ describe('billing checkout start route', () => {
     expect(res.body.planId).toBe('monthly');
   });
 
-  test('stores only a normalized analytics source on the checkout attempt', async () => {
+  test('stores normalized analytics source and surface as independent attribution dimensions', async () => {
     const user = await seedUser();
 
     const safe = await request(app)
       .post('/api/billing/checkout/start')
       .set('Authorization', authHeader(user._id))
-      .send({ planId: 'monthly', analyticsSource: 'Pricing_Page' });
+      .send({
+        planId: 'monthly',
+        analyticsSurface: 'Hero_Pricing',
+        analyticsSource: 'Pricing_Page',
+      });
 
     expect(safe.status).toBe(200);
     const safeAttempt = await CheckoutAttempt.findOne({ attemptId: safe.body.attemptId }).lean();
+    expect(safe.body.analyticsSurface).toBe('hero_pricing');
+    expect(safe.body.analyticsSource).toBe('pricing_page');
+    expect(safeAttempt.analyticsSurface).toBe('hero_pricing');
     expect(safeAttempt.analyticsSource).toBe('pricing_page');
 
     const invalid = await request(app)
@@ -219,7 +315,31 @@ describe('billing checkout start route', () => {
 
     expect(invalid.status).toBe(200);
     const invalidAttempt = await CheckoutAttempt.findOne({ attemptId: invalid.body.attemptId }).lean();
+    expect(invalid.body.analyticsSurface).toBe('pricing');
+    expect(invalid.body.analyticsSource).toBe('pricing');
+    expect(invalidAttempt.analyticsSurface).toBe('pricing');
     expect(invalidAttempt.analyticsSource).toBe('pricing');
+  });
+
+  test('does not reuse a checkout attempt across different analytics sources', async () => {
+    const user = await seedUser();
+
+    const first = await request(app)
+      .post('/api/billing/checkout/start')
+      .set('Authorization', authHeader(user._id))
+      .send({ planId: 'monthly', analyticsSource: 'campaign_a', analyticsSurface: 'pricing_page' });
+    const second = await request(app)
+      .post('/api/billing/checkout/start')
+      .set('Authorization', authHeader(user._id))
+      .send({ planId: 'monthly', analyticsSource: 'campaign_b', analyticsSurface: 'pricing_page' });
+
+    expect(first.status).toBe(200);
+    expect(second.status).toBe(200);
+    expect(second.body.attemptId).not.toBe(first.body.attemptId);
+    expect(second.body.reused).toBe(false);
+    const attempts = await CheckoutAttempt.find({ userId: user._id }).sort({ createdAt: 1 }).lean();
+    expect(attempts.map((attempt) => attempt.analyticsSource)).toEqual(['campaign_a', 'campaign_b']);
+    expect(attempts.every((attempt) => attempt.analyticsSurface === 'pricing_page')).toBe(true);
   });
 
   test('reuses a recent active checkout attempt for the same user and plan', async () => {

@@ -123,6 +123,30 @@ describe('global API security middleware', () => {
     expect(limited.body?.code).toBe('API_RATE_LIMITED');
   });
 
+  test('serves public checkout config without touching Mongo while other billing routes keep the DB gate', async () => {
+    const app = loadApp({
+      BILLING_PROVIDER: 'lemonsqueezy',
+      PAYMENTS_MODE: 'test',
+      LEMONSQUEEZY_MONTHLY_URL_TEST: 'https://frontendatlas.lemonsqueezy.com/checkout/buy/test-monthly',
+    });
+    const { connectToMongo } = require('../config/mongo');
+    connectToMongo.mockRejectedValue(new Error('synthetic database outage'));
+
+    const config = await request(app).get('/api/billing/checkout/config');
+
+    expect(config.status).toBe(200);
+    expect(config.body).toEqual(expect.objectContaining({
+      provider: 'lemonsqueezy',
+      mode: 'test',
+      enabled: true,
+    }));
+    expect(connectToMongo).not.toHaveBeenCalled();
+
+    const protectedBillingRoute = await request(app).get('/api/billing/manage-url');
+    expect(protectedBillingRoute.status).toBe(503);
+    expect(connectToMongo).toHaveBeenCalledTimes(1);
+  });
+
   test('falls back to process memory when Redis is unavailable', async () => {
     global.fetch = jest.fn().mockRejectedValue(new Error('mock redis outage'));
     const app = loadApp({

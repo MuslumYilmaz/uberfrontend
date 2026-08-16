@@ -5,12 +5,19 @@ import { firstValueFrom } from 'rxjs';
 import { AnalyticsService } from '../../../../core/services/analytics.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { BillingCheckoutService } from '../../../../core/services/billing-checkout.service';
+import { CheckoutIntent, CheckoutIntentService } from '../../../../core/services/checkout-intent.service';
+import { ConversionContextService } from '../../../../core/services/conversion-context.service';
 import { getCheckoutLaunchNotice, getManageSubscriptionErrorMessage } from '../../../../core/utils/billing-ux.util';
-import { openExternalWindow } from '../../../../core/utils/external-window.util';
+import {
+  navigateReservedExternalWindow,
+  releaseExternalWindowReservation,
+  reserveExternalWindow,
+} from '../../../../core/utils/external-window.util';
 import { PlanId } from '../../../../core/utils/payments-provider.util';
 import { isProActive } from '../../../../core/utils/entitlements.util';
 import { LoginRequiredDialogComponent } from '../../../../shared/components/login-required-dialog/login-required-dialog.component';
 import { FaqSectionComponent } from '../../../../shared/faq-section/faq-section.component';
+import { FaButtonComponent } from '../../../../shared/ui/button/fa-button.component';
 import { PUBLIC_CHANGELOG_ENTRIES } from '../../../../core/content/public-changelog';
 
 type PricingVariant = 'full' | 'compact';
@@ -22,7 +29,7 @@ export const RECOMMENDED_PRICING_PLAN: PlanId = 'quarterly';
 @Component({
   standalone: true,
   selector: 'app-pricing-plans-section',
-  imports: [CommonModule, RouterModule, FaqSectionComponent, LoginRequiredDialogComponent],
+  imports: [CommonModule, RouterModule, FaqSectionComponent, LoginRequiredDialogComponent, FaButtonComponent],
   styleUrls: ['./pricing-plans-section.component.css'],
   template: `
     <section class="pr-wrap" [class.pr-wrap--compact]="variant === 'compact'">
@@ -44,7 +51,27 @@ export const RECOMMENDED_PRICING_PLAN: PlanId = 'quarterly';
         </div>
       </div>
 
-      <div class="pr-grid" #planCardsRef>
+      <section
+        class="checkout-continuation"
+        *ngIf="pendingCheckoutIntent && canShowPendingCheckoutIntent()"
+        data-testid="checkout-continuation"
+        aria-labelledby="checkout-continuation-title">
+        <div>
+          <p class="eyebrow">Continue where you left off</p>
+          <h2 id="checkout-continuation-title">Continue with {{ pendingPlanTitle() }}</h2>
+          <p class="muted">Your plan choice was saved for this session. Checkout will open only after you confirm.</p>
+        </div>
+        <div class="checkout-continuation__actions">
+          <button type="button" faButton variant="primary" (click)="continuePendingCheckout()">
+            Continue to checkout
+          </button>
+          <button type="button" faButton variant="neutral" (click)="dismissPendingCheckoutIntent()">
+            Choose another plan
+          </button>
+        </div>
+      </section>
+
+      <div class="pr-grid" id="pricing-plans" #planCardsRef>
         <article class="pr-card" *ngFor="let plan of plans" [class.pr-rec]="plan.id === recommendedPlan">
           <div class="rec-badge" *ngIf="plan.badge" [class.rec-badge--muted]="plan.id !== recommendedPlan">{{ plan.badge }}</div>
           <h3 class="title">{{ plan.title }}</h3>
@@ -72,6 +99,28 @@ export const RECOMMENDED_PRICING_PLAN: PlanId = 'quarterly';
           </div>
         </article>
       </div>
+
+      <div
+        class="checkout-notice"
+        *ngIf="checkoutNotice"
+        role="status"
+        aria-live="polite"
+        data-testid="checkout-notice">
+        <p>{{ checkoutNotice }}</p>
+        <button
+          *ngIf="retryCheckout"
+          type="button"
+          faButton
+          variant="primary"
+          data-testid="checkout-same-tab-recovery"
+          (click)="continueCheckoutInSameTab()">
+          Continue in this tab
+        </button>
+      </div>
+
+      <p class="tiny muted pr-footnote" *ngIf="paymentsConfigReady && !paymentsEnabled">
+        Checkout is temporarily unavailable. Please try again shortly.
+      </p>
 
       <section class="unlock-preview" *ngIf="variant === 'full'" #unlockPreviewRef>
         <div class="unlock-preview__head">
@@ -222,13 +271,6 @@ export const RECOMMENDED_PRICING_PLAN: PlanId = 'quarterly';
         </app-faq-section>
       </section>
 
-      <p class="tiny muted pr-footnote" *ngIf="variant === 'full' && paymentsConfigReady && !paymentsEnabled">
-        Payments are not enabled in this build.
-      </p>
-      <p class="tiny muted pr-footnote" *ngIf="checkoutNotice" data-testid="checkout-notice">
-        {{ checkoutNotice }}
-      </p>
-
       <ng-template #riskReversalBlock>
         <section class="risk-reversal">
           <div class="risk-reversal__head">
@@ -304,8 +346,6 @@ export const RECOMMENDED_PRICING_PLAN: PlanId = 'quarterly';
   `,
 })
 export class PricingPlansSectionComponent implements OnInit, AfterViewInit, OnDestroy {
-  private static readonly CHECKOUT_PLAN_KEY = 'fa:checkout:last_plan_id';
-  private static readonly CHECKOUT_SOURCE_KEY = 'fa:checkout:last_source';
   private static readonly SOURCE_PATTERN = /^[a-z0-9_-]{1,64}$/;
 
   @Input() variant: PricingVariant = 'full';
@@ -314,6 +354,7 @@ export class PricingPlansSectionComponent implements OnInit, AfterViewInit, OnDe
   @Input() ctaMode: CtaMode = 'navigatePricing';
   @Input() ctaLabel?: string;
   @Input() analyticsSource = 'pricing';
+  @Input() analyticsSurface = 'pricing_page';
   @Input() riskReversalPlacement: 'top' | 'after_plans' = 'after_plans';
   @Input() checkoutAvailability: Partial<Record<PlanId, boolean>> | null = null;
   @Output() ctaClick = new EventEmitter<{ planId: PlanId }>();
@@ -330,6 +371,16 @@ export class PricingPlansSectionComponent implements OnInit, AfterViewInit, OnDe
   loginRequiredSignupLabel = 'Create free account';
   loginRequiredLoginLabel = 'Sign in';
   checkoutNotice: string | null = null;
+  pendingCheckoutIntent: CheckoutIntent | null = null;
+  retryCheckout: {
+    url: string;
+    planId: PlanId;
+    provider: string;
+    checkoutMode: string;
+    attemptId: string;
+    source: string;
+    surface: string;
+  } | null = null;
   private checkoutNoticeTimer?: number;
   private visibilityObserver?: IntersectionObserver;
   private readonly observedTargets = new WeakMap<Element, 'plan_cards' | 'unlock_preview' | 'value_anchor'>();
@@ -667,6 +718,8 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
     private auth: AuthService,
     private billingCheckout: BillingCheckoutService,
     private analytics: AnalyticsService,
+    private checkoutIntent: CheckoutIntentService,
+    private conversionContext: ConversionContextService,
   ) { }
 
   formatWeek(value: string): string {
@@ -708,6 +761,7 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
   }
 
   ngOnInit(): void {
+    this.pendingCheckoutIntent = this.checkoutIntent.load();
     if (typeof window !== 'undefined' && this.paymentsEnabled) {
       void this.billingCheckout.prefetch();
     }
@@ -735,7 +789,7 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
 
   isCheckoutDisabled(planId: PlanId): boolean {
     if (this.paymentsConfigReady && !this.paymentsEnabled) return true;
-    return this.paymentsEnabled && (!this.isCheckoutAvailable(planId) || this.isCheckoutLoading(planId));
+    return this.paymentsEnabled && (!this.isCheckoutAvailable(planId) || this.checkoutLoading !== null);
   }
 
   isCheckoutLoading(planId: PlanId): boolean {
@@ -743,8 +797,8 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
   }
 
   checkoutTooltip(planId: PlanId): string | null {
-    if (this.isCheckoutLoading(planId)) return 'Loading checkout...';
-    if (this.paymentsConfigReady && !this.paymentsEnabled) return 'Payments are not enabled in this build.';
+    if (this.checkoutLoading !== null) return 'Loading checkout...';
+    if (this.paymentsConfigReady && !this.paymentsEnabled) return 'Checkout is temporarily unavailable.';
     if (!this.paymentsEnabled || this.isCheckoutAvailable(planId)) return null;
     return 'Checkout is temporarily unavailable.';
   }
@@ -795,7 +849,7 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
   private trackPlanCardsSeen(): void {
     if (this.planCardsSeenTracked) return;
     this.planCardsSeenTracked = true;
-    this.analytics.track('pricing_plan_cards_seen', {
+    this.analytics.track('pricing_viewed', {
       ...this.pricingAnalyticsBase(),
       plan_count: this.plans.length,
     });
@@ -819,12 +873,12 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
     });
   }
 
-  private setCheckoutNotice(message: string) {
+  private setCheckoutNotice(message: string, persistent = false) {
     this.checkoutNotice = message;
     if (this.checkoutNoticeTimer && typeof window !== 'undefined') {
       window.clearTimeout(this.checkoutNoticeTimer);
     }
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined' || persistent) return;
     this.checkoutNoticeTimer = window.setTimeout(() => {
       this.checkoutNotice = null;
       this.checkoutNoticeTimer = undefined;
@@ -837,9 +891,16 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
     return raw;
   }
 
+  private normalizedSurface(): string {
+    const raw = String(this.analyticsSurface || '').trim().toLowerCase();
+    if (!raw || !PricingPlansSectionComponent.SOURCE_PATTERN.test(raw)) return 'pricing_page';
+    return raw;
+  }
+
   private pricingAnalyticsBase(): Record<string, string> {
     return {
       src: this.normalizedSource(),
+      surface: this.normalizedSurface(),
       variant: this.variant,
       page_layout: PRICING_PAGE_LAYOUT,
       recommended_plan: RECOMMENDED_PRICING_PLAN,
@@ -858,15 +919,73 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
 
   private trackPlanClick(planId: PlanId, method: string) {
     this.analytics.track('pricing_plan_cta_clicked', {
+      plan: planId,
       plan_id: planId,
       ...this.pricingAnalyticsBase(),
+      auth_state: this.analyticsAuthState(),
       method,
       redirect_to_present: false,
       ...this.planAnalyticsMeta(planId),
     });
   }
 
-  private trackBeginCheckout(planId: PlanId, provider: string, checkoutMode: string, launchMode: string) {
+  private trackCheckoutIntentCreated(intent: CheckoutIntent): void {
+    this.analytics.track('checkout_intent_created', {
+      plan: intent.planId,
+      plan_id: intent.planId,
+      src: intent.src,
+      surface: intent.surface,
+      auth_state: this.analyticsAuthState(),
+    });
+  }
+
+  private trackCheckoutOpened(
+    planId: PlanId,
+    provider: string,
+    checkoutMode: string,
+    launchMode: string,
+    source: string,
+    surface: string,
+  ): void {
+    this.analytics.track('checkout_opened', {
+      plan: planId,
+      plan_id: planId,
+      src: source,
+      surface,
+      auth_state: this.analyticsAuthState(),
+      provider,
+      checkout_mode: checkoutMode,
+      launch_mode: launchMode,
+    });
+  }
+
+  private trackCheckoutLaunchFailed(
+    planId: PlanId,
+    provider: string,
+    reason: string,
+    source: string,
+    surface: string,
+  ): void {
+    this.analytics.track('checkout_launch_failed', {
+      plan: planId,
+      plan_id: planId,
+      src: source,
+      surface,
+      auth_state: this.analyticsAuthState(),
+      provider,
+      launch_mode: reason === 'popup_blocked' ? 'blocked' : 'not_opened',
+      failure_reason: reason,
+    });
+  }
+
+  private trackBeginCheckout(
+    planId: PlanId,
+    provider: string,
+    checkoutMode: string,
+    launchMode: string,
+    source = this.normalizedSource(),
+    surface = this.normalizedSurface(),
+  ) {
     const prices: Record<PlanId, number> = {
       monthly: 12,
       quarterly: 29,
@@ -875,8 +994,12 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
     };
     const value = prices[planId];
     this.analytics.track('begin_checkout', {
+      plan: planId,
       plan_id: planId,
       ...this.pricingAnalyticsBase(),
+      src: source,
+      surface,
+      auth_state: this.analyticsAuthState(),
       provider,
       checkout_mode: checkoutMode,
       launch_mode: launchMode,
@@ -892,24 +1015,13 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
     });
   }
 
-  private persistCheckoutContext(planId: PlanId) {
-    if (typeof window === 'undefined') return;
-    try {
-      sessionStorage.setItem(PricingPlansSectionComponent.CHECKOUT_PLAN_KEY, planId);
-      sessionStorage.setItem(PricingPlansSectionComponent.CHECKOUT_SOURCE_KEY, this.normalizedSource());
-    } catch { }
-  }
-
-  private clearCheckoutContext() {
-    if (typeof window === 'undefined') return;
-    try {
-      sessionStorage.removeItem(PricingPlansSectionComponent.CHECKOUT_PLAN_KEY);
-      sessionStorage.removeItem(PricingPlansSectionComponent.CHECKOUT_SOURCE_KEY);
-    } catch { }
-  }
-
   async onCta(planId: PlanId) {
+    // Guard programmatic and near-simultaneous clicks as well as the disabled
+    // button state. A second click must never replace the persisted intent
+    // while the first plan is creating/opening its checkout.
+    if (this.checkoutLoading !== null) return;
     const source = this.normalizedSource();
+    const surface = this.normalizedSurface();
     if (isProActive(this.auth.user())) {
       this.trackPlanClick(planId, 'manage_subscription');
       this.openManageSubscription(planId);
@@ -917,61 +1029,30 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
     }
     if (this.paymentsConfigReady && !this.paymentsEnabled) {
       this.trackPlanClick(planId, 'checkout_unavailable');
-      this.setCheckoutNotice('Payments are not enabled in this build.');
+      this.setCheckoutNotice('Checkout is temporarily unavailable. Please try again shortly.');
       return;
     }
     if (this.paymentsEnabled) {
       if (this.isCheckoutAvailable(planId)) {
         this.trackPlanClick(planId, 'checkout');
-        this.checkoutLoading = planId;
-        try {
-          let user = this.auth.user();
-          if (!user) {
-            try {
-              user = await firstValueFrom(this.auth.ensureMe());
-            } catch {
-              user = null;
-            }
-          }
+        const intent = this.checkoutIntent.save({
+          planId,
+          src: source,
+          surface,
+          returnUrl: this.router.url || '/pricing',
+        });
+        this.trackCheckoutIntentCreated(intent);
 
-          if (!user) {
-            this.loginRedirectTo = this.router.url || '/pricing';
-            this.loginRequiredOpen = true;
-            return;
-          }
-
-          this.persistCheckoutContext(planId);
-          const result = await this.billingCheckout.checkout(planId, {
-            userId: user._id,
-            email: user.email,
-            username: user.username,
-          }, source);
-          if (!result.ok) {
-            this.clearCheckoutContext();
-            if (result.reason === 'verification-required') {
-              this.setCheckoutNotice('Verify your email in Profile → Account before starting checkout.');
-            } else if (result.reason === 'invalid-url') {
-              this.setCheckoutNotice('Checkout is misconfigured right now. Please contact support.');
-            } else {
-              this.setCheckoutNotice('Checkout is unavailable right now. Please try again in a moment.');
-            }
-            return;
-          }
-          this.trackBeginCheckout(
-            planId,
-            result.provider,
-            result.checkoutMode,
-            result.mode,
-          );
-          const launchNotice = getCheckoutLaunchNotice(result.mode, result.reused);
-          if (launchNotice) {
-            this.setCheckoutNotice(launchNotice);
-          }
-        } finally {
-          if (this.checkoutLoading === planId) {
-            this.checkoutLoading = null;
-          }
+        const user = this.auth.user();
+        if (!user) {
+          // Return to a visible continuation banner after authentication. The
+          // original plan/source remain in sessionStorage, not the public URL.
+          this.loginRedirectTo = '/pricing';
+          this.loginRequiredOpen = true;
+          return;
         }
+
+        await this.launchCheckout(planId, source, surface, user);
         return;
       }
       this.trackPlanClick(planId, 'checkout_unavailable');
@@ -981,9 +1062,8 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
 
     if (this.ctaMode === 'navigatePricing') {
       this.trackPlanClick(planId, 'navigate_pricing');
-      this.router.navigate(['/pricing'], {
-        queryParams: { src: source },
-      }).catch(() => void 0);
+      this.conversionContext.rememberPricingContext(source, surface);
+      this.router.navigate(['/pricing']).catch(() => void 0);
       return;
     }
 
@@ -991,26 +1071,193 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
     this.ctaClick.emit({ planId });
   }
 
+  canShowPendingCheckoutIntent(): boolean {
+    return !!this.auth.user() && !isProActive(this.auth.user());
+  }
+
+  pendingPlanTitle(): string {
+    const planId = this.pendingCheckoutIntent?.planId;
+    return this.plans.find((plan) => plan.id === planId)?.title || 'your selected plan';
+  }
+
+  async continuePendingCheckout(): Promise<void> {
+    if (this.checkoutLoading !== null) return;
+    const intent = this.checkoutIntent.load();
+    const user = this.auth.user();
+    if (!intent || !user || isProActive(user)) return;
+    this.trackPlanClick(intent.planId, 'continue_intent');
+    await this.launchCheckout(intent.planId, intent.src, intent.surface, user);
+  }
+
+  dismissPendingCheckoutIntent(): void {
+    this.checkoutIntent.clear();
+    this.pendingCheckoutIntent = null;
+  }
+
+  async continueCheckoutInSameTab(): Promise<void> {
+    const retry = this.retryCheckout;
+    if (!retry || typeof window === 'undefined') return;
+
+    this.trackCheckoutOpened(
+      retry.planId,
+      retry.provider,
+      retry.checkoutMode,
+      'same_tab',
+      retry.source,
+      retry.surface,
+    );
+    this.trackBeginCheckout(
+      retry.planId,
+      retry.provider,
+      retry.checkoutMode,
+      'same_tab',
+      retry.source,
+      retry.surface,
+    );
+    // Give the authenticated state write a short opportunity to finish before
+    // same-tab navigation tears down the Angular request. The intent remains
+    // in this tab so the provider's success/cancel return can attribute and
+    // clear it terminally.
+    await this.recordClientStateBeforeNavigation(retry.attemptId, 'provider_opened');
+    this.pendingCheckoutIntent = null;
+    this.retryCheckout = null;
+    window.location.assign(retry.url);
+  }
+
+  private async launchCheckout(
+    planId: PlanId,
+    source: string,
+    surface: string,
+    user: { _id: string; email: string; username: string },
+  ): Promise<void> {
+    if (this.checkoutLoading) return;
+
+    // This must happen synchronously inside the click handler, before any
+    // config/auth/checkout network await consumes browser user activation.
+    const launchReservation = this.billingCheckout.reserveCheckoutWindow();
+    this.checkoutLoading = planId;
+    this.checkoutNotice = null;
+    this.retryCheckout = null;
+
+    try {
+      const result = await this.billingCheckout.checkout(planId, {
+        userId: user._id,
+        email: user.email,
+        username: user.username,
+        launchReservation,
+      }, source, surface);
+
+      if (!result.ok) {
+        this.trackCheckoutLaunchFailed(planId, result.provider, result.reason, source, surface);
+        if (result.reason === 'verification-required') {
+          this.setCheckoutNotice('Verify your email in Profile → Account before starting checkout.');
+        } else if (result.reason === 'invalid-url') {
+          this.setCheckoutNotice('Checkout is misconfigured right now. Please contact support.');
+        } else {
+          this.setCheckoutNotice('Checkout is unavailable right now. Please try again in a moment.');
+        }
+        this.pendingCheckoutIntent = this.checkoutIntent.load();
+        return;
+      }
+
+      if (result.mode === 'blocked') {
+        this.recordClientState(result.attemptId, 'popup_blocked');
+        this.trackCheckoutLaunchFailed(planId, result.provider, 'popup_blocked', source, surface);
+        this.retryCheckout = {
+          url: result.url,
+          planId,
+          provider: result.provider,
+          checkoutMode: result.checkoutMode,
+          attemptId: result.attemptId,
+          source,
+          surface,
+        };
+        this.setCheckoutNotice(
+          'Your browser blocked the checkout tab. Continue safely in this tab, or allow popups and try again.',
+          true,
+        );
+        return;
+      }
+
+      const launchMode = result.mode === 'new-tab' ? 'new_tab' : result.mode;
+      this.recordClientState(result.attemptId, 'provider_opened');
+      this.trackCheckoutOpened(
+        planId,
+        result.provider,
+        result.checkoutMode,
+        launchMode,
+        source,
+        surface,
+      );
+      this.trackBeginCheckout(
+        planId,
+        result.provider,
+        result.checkoutMode,
+        launchMode,
+        source,
+        surface,
+      );
+      this.checkoutIntent.clear();
+      this.pendingCheckoutIntent = null;
+
+      const launchNotice = getCheckoutLaunchNotice(result.mode, result.reused);
+      if (launchNotice) this.setCheckoutNotice(launchNotice);
+    } finally {
+      if (this.checkoutLoading === planId) this.checkoutLoading = null;
+    }
+  }
+
+  private recordClientState(
+    attemptId: string,
+    state: 'provider_opened' | 'popup_blocked',
+  ): void {
+    this.billingCheckout.recordAttemptClientState(attemptId, state).subscribe({
+      error: () => undefined,
+    });
+  }
+
+  private async recordClientStateBeforeNavigation(
+    attemptId: string,
+    state: 'provider_opened' | 'popup_blocked',
+  ): Promise<void> {
+    if (typeof window === 'undefined') return;
+    await Promise.race([
+      firstValueFrom(this.billingCheckout.recordAttemptClientState(attemptId, state))
+        .then(() => undefined)
+        .catch(() => undefined),
+      new Promise<void>((resolve) => window.setTimeout(resolve, 400)),
+    ]);
+  }
+
+  private analyticsAuthState(): 'guest' | 'logged_in_free' | 'logged_in_pro' {
+    const user = this.auth.user();
+    if (!user) return 'guest';
+    return isProActive(user) ? 'logged_in_pro' : 'logged_in_free';
+  }
+
   private openManageSubscription(planId: PlanId) {
     if (this.checkoutLoading) return;
+    const reservation = reserveExternalWindow();
     this.checkoutNotice = null;
     this.checkoutLoading = planId;
     this.auth.getManageSubscriptionUrl().subscribe({
       next: ({ url }) => {
         this.checkoutLoading = null;
         if (!url) {
+          releaseExternalWindowReservation(reservation);
           this.setCheckoutNotice(
             'We could not open the billing portal automatically right now. Contact support@frontendatlas.com for help.'
           );
           return;
         }
-        const openResult = openExternalWindow(url);
+        const openResult = navigateReservedExternalWindow(reservation, url);
         if (openResult === 'blocked') {
           this.setCheckoutNotice('Your browser blocked the billing portal. Allow popups and try again.');
           return;
         }
       },
       error: (err) => {
+        releaseExternalWindowReservation(reservation);
         this.checkoutLoading = null;
         this.setCheckoutNotice(getManageSubscriptionErrorMessage(err));
       },

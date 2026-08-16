@@ -13,6 +13,7 @@ import {
 } from '../../core/services/billing-checkout.service';
 import { isProActive } from '../../core/utils/entitlements.util';
 import { sanitizeRedirectTarget } from '../../core/utils/redirect.util';
+import { CheckoutIntentService } from '../../core/services/checkout-intent.service';
 
 @Component({
   standalone: true,
@@ -36,7 +37,8 @@ export class BillingSuccessComponent implements OnInit, OnDestroy {
   private pollSub?: Subscription;
   private readonly pollConfig = this.resolvePollConfig();
   private checkoutPlanId: string | null = null;
-  private checkoutSource = 'billing_success';
+  private checkoutSource: string | null = null;
+  private checkoutSurface: string | null = null;
   private checkoutVerifiedTracked = false;
   private purchaseTracked = false;
   private entitlementAppliedSeen = false;
@@ -48,10 +50,17 @@ export class BillingSuccessComponent implements OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute,
     private analytics: AnalyticsService,
+    private checkoutIntent: CheckoutIntentService,
   ) { }
 
   ngOnInit(): void {
     this.hydrateCheckoutContext();
+    const attemptId = this.attemptId();
+    if (attemptId && typeof window !== 'undefined') {
+      this.billingCheckout.recordAttemptClientState(attemptId, 'success_redirected').subscribe({
+        error: () => undefined,
+      });
+    }
     this.startPolling();
   }
 
@@ -80,16 +89,21 @@ export class BillingSuccessComponent implements OnInit, OnDestroy {
     }
     this.loginRedirectTo.set(this.resolveLoginRedirectTarget(attemptId));
 
+    const intent = this.checkoutIntent.load();
+    if (intent) {
+      this.checkoutPlanId = intent.planId;
+      this.checkoutSource = intent.src;
+      this.checkoutSurface = intent.surface;
+    }
+
     if (typeof window !== 'undefined') {
       try {
         const planId = sessionStorage.getItem(BillingSuccessComponent.CHECKOUT_PLAN_KEY);
         const source = sessionStorage.getItem(BillingSuccessComponent.CHECKOUT_SOURCE_KEY);
-        if (planId) this.checkoutPlanId = planId;
-        if (source && /^[a-z0-9_-]{1,64}$/i.test(source)) {
+        if (!this.checkoutPlanId && this.isPlanId(planId)) this.checkoutPlanId = planId;
+        if (!this.checkoutSource && source && /^[a-z0-9_-]{1,64}$/i.test(source)) {
           this.checkoutSource = source.toLowerCase();
         }
-        sessionStorage.removeItem(BillingSuccessComponent.CHECKOUT_PLAN_KEY);
-        sessionStorage.removeItem(BillingSuccessComponent.CHECKOUT_SOURCE_KEY);
       } catch { }
     }
   }
@@ -235,8 +249,9 @@ export class BillingSuccessComponent implements OnInit, OnDestroy {
     if (this.checkoutVerifiedTracked) return;
     this.checkoutVerifiedTracked = true;
     this.analytics.track('checkout_verified', {
-      src: attempt?.purchase?.source || this.checkoutSource,
-      plan_id: attempt?.planId || this.checkoutPlanId,
+      src: this.checkoutSource || attempt?.purchase?.source || 'billing_success',
+      surface: this.checkoutSurface || 'billing_success',
+      plan_id: this.checkoutPlanId || attempt?.planId || null,
       provider: attempt?.provider || 'unknown',
       checkout_mode: attempt?.mode || 'unknown',
       entitlement_applied: true,
@@ -262,8 +277,9 @@ export class BillingSuccessComponent implements OnInit, OnDestroy {
       tax: purchase.tax,
       total: purchase.total,
       items: purchase.items,
-      src: purchase.source,
-      plan_id: attempt.planId,
+      src: this.checkoutSource || purchase.source || 'billing_success',
+      surface: this.checkoutSurface || 'billing_success',
+      plan_id: this.checkoutPlanId || attempt.planId,
       provider: attempt.provider,
       checkout_mode: attempt.mode,
       verified_at: purchase.verifiedAt,
@@ -279,7 +295,21 @@ export class BillingSuccessComponent implements OnInit, OnDestroy {
   }
 
   private finishPolling(): void {
+    this.clearCheckoutContext();
     this.router.navigateByUrl('/profile').catch(() => void 0);
     this.pollSub?.unsubscribe();
+  }
+
+  private clearCheckoutContext(): void {
+    this.checkoutIntent.clear();
+    if (typeof window === 'undefined') return;
+    try {
+      sessionStorage.removeItem(BillingSuccessComponent.CHECKOUT_PLAN_KEY);
+      sessionStorage.removeItem(BillingSuccessComponent.CHECKOUT_SOURCE_KEY);
+    } catch { }
+  }
+
+  private isPlanId(value: string | null): value is 'monthly' | 'quarterly' | 'annual' | 'lifetime' {
+    return value === 'monthly' || value === 'quarterly' || value === 'annual' || value === 'lifetime';
   }
 }

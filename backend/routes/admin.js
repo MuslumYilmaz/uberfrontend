@@ -89,12 +89,18 @@ function serializeReconciliationAttempt(attempt) {
         provider: attempt.provider,
         planId: attempt.planId,
         mode: attempt.mode,
+        analyticsSurface: attempt.analyticsSurface || attempt.analyticsSource || 'pricing',
+        analyticsSource: attempt.analyticsSource || attempt.analyticsSurface || 'pricing',
         status: attempt.status,
         billingEventId: attempt.billingEventId || null,
         customerEmail: attempt.customerEmail || null,
         customerUserId: attempt.customerUserId || null,
         lastErrorCode: attempt.lastErrorCode || null,
         lastErrorMessage: attempt.lastErrorMessage || null,
+        providerOpenedAt: attempt.providerOpenedAt || null,
+        popupBlockedAt: attempt.popupBlockedAt || null,
+        successRedirectedAt: attempt.successRedirectedAt || null,
+        cancelRedirectedAt: attempt.cancelRedirectedAt || null,
         createdAt: attempt.createdAt,
         updatedAt: attempt.updatedAt,
     };
@@ -330,10 +336,27 @@ router.get('/billing/reconciliation', async (req, res) => {
     try {
         const limit = clampLimit(req.query?.limit, 50, 200);
 
-        const [checkoutAttempts, pendingEntitlements, unresolvedEvents, totalPendingAttempts, totalPendingEntitlements, totalUnresolvedEvents] =
+        const [
+            checkoutAttempts,
+            pendingEntitlements,
+            unresolvedEvents,
+            totalPendingAttempts,
+            totalPendingEntitlements,
+            totalUnresolvedEvents,
+        ] =
             await Promise.all([
                 CheckoutAttempt.find({
-                    status: { $in: ['created', 'webhook_received', 'pending_user_match', 'failed', 'expired'] },
+                    status: {
+                        $in: [
+                            'created',
+                            'webhook_received',
+                            'pending_user_match',
+                            'success_redirected',
+                            'cancel_redirected',
+                            'failed',
+                            'expired',
+                        ],
+                    },
                 })
                     .sort({ updatedAt: -1 })
                     .limit(limit)
@@ -358,7 +381,17 @@ router.get('/billing/reconciliation', async (req, res) => {
                     .limit(limit)
                     .lean(),
                 CheckoutAttempt.countDocuments({
-                    status: { $in: ['created', 'webhook_received', 'pending_user_match', 'failed', 'expired'] },
+                    status: {
+                        $in: [
+                            'created',
+                            'webhook_received',
+                            'pending_user_match',
+                            'success_redirected',
+                            'cancel_redirected',
+                            'failed',
+                            'expired',
+                        ],
+                    },
                 }),
                 PendingEntitlement.countDocuments({ appliedAt: null, ignoredAt: null }),
                 BillingEvent.countDocuments({

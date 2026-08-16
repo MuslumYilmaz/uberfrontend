@@ -163,7 +163,15 @@ app.use('/api', cookieCsrfProtection);
 const SKIP_DB_PATHS = new Set(['/', '/api/hello', '/api/contact', '/api/bug-report', '/api/health']);
 app.use(async (req, res, next) => {
     try {
-        if (SKIP_DB_PATHS.has(req.path) || req.path.startsWith('/api/tools/') || req.path.startsWith('/api/trivia/')) return next();
+        const isPublicCheckoutConfig =
+            (req.method === 'GET' || req.method === 'HEAD') &&
+            req.path === '/api/billing/checkout/config';
+        if (
+            SKIP_DB_PATHS.has(req.path) ||
+            isPublicCheckoutConfig ||
+            req.path.startsWith('/api/tools/') ||
+            req.path.startsWith('/api/trivia/')
+        ) return next();
         await connectToMongo(MONGO_URL);
         return next();
     } catch (err) {

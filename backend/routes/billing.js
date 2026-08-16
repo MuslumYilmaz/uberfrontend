@@ -9,6 +9,7 @@ const {
   createCheckoutAttempt,
   normalizeAnalyticsSource,
   resolveCheckoutConfig,
+  resolveMode,
 } = require('../services/billing/checkout-start');
 const { isProEntitlementActive } = require('../services/billing/entitlements');
 const { applyPendingEntitlementsForUser, normalizeEmail } = require('../services/billing/pending-entitlements');
@@ -56,7 +57,28 @@ const gumroadParsers = [
 ];
 
 const eventStore = createBillingEventStore(BillingEvent);
-const NONTERMINAL_ATTEMPT_STATUSES = ['created', 'webhook_received', 'pending_user_match', 'failed'];
+const NONTERMINAL_ATTEMPT_STATUSES = [
+  'created',
+  'webhook_received',
+  'pending_user_match',
+  'success_redirected',
+  'cancel_redirected',
+  'failed',
+];
+const CLIENT_ATTEMPT_STATES = Object.freeze({
+  provider_opened: { timestampField: 'providerOpenedAt' },
+  popup_blocked: { timestampField: 'popupBlockedAt' },
+  success_redirected: {
+    timestampField: 'successRedirectedAt',
+    status: 'success_redirected',
+    previousStatuses: ['created', 'cancel_redirected', 'success_redirected'],
+  },
+  cancel_redirected: {
+    timestampField: 'cancelRedirectedAt',
+    status: 'cancel_redirected',
+    previousStatuses: ['created', 'cancel_redirected'],
+  },
+});
 
 function respondToUnacquiredEvent(res, acquisition) {
   if (acquisition?.busy) {
@@ -140,6 +162,8 @@ function serializeCheckoutAttemptStatus(attempt, user) {
     provider: attempt.provider,
     planId: attempt.planId,
     mode: attempt.mode,
+    analyticsSurface: attempt.analyticsSurface || attempt.analyticsSource || 'pricing',
+    analyticsSource: normalizeAnalyticsSource(attempt.analyticsSource || attempt.analyticsSurface),
     state: toAttemptPublicState(attempt),
     rawStatus: attempt.status,
     entitlementActive,
@@ -147,7 +171,54 @@ function serializeCheckoutAttemptStatus(attempt, user) {
     billingEventId: attempt.billingEventId || null,
     lastErrorCode: attempt.lastErrorCode || null,
     lastErrorMessage: attempt.lastErrorMessage || null,
+    providerOpenedAt: attempt.providerOpenedAt || null,
+    popupBlockedAt: attempt.popupBlockedAt || null,
+    successRedirectedAt: attempt.successRedirectedAt || null,
+    cancelRedirectedAt: attempt.cancelRedirectedAt || null,
     purchase: serializeVerifiedPurchase(attempt),
+  };
+}
+
+function validateCheckoutAttemptForWebhook(attempt, { eventMode, normalizedUserId, normalized }) {
+  if (!attempt) return null;
+  if (attempt.provider !== 'lemonsqueezy') {
+    return {
+      code: 'CHECKOUT_ATTEMPT_PROVIDER_MISMATCH',
+      message: 'Webhook provider does not match the checkout attempt provider.',
+    };
+  }
+  if (!['test', 'live'].includes(eventMode) || attempt.mode !== eventMode) {
+    return {
+      code: 'CHECKOUT_ATTEMPT_MODE_MISMATCH',
+      message: 'Webhook mode does not match the checkout attempt mode.',
+    };
+  }
+  if (normalizedUserId && String(attempt.userId) !== normalizedUserId) {
+    return {
+      code: 'CHECKOUT_ATTEMPT_USER_MISMATCH',
+      message: 'Webhook user does not own the checkout attempt.',
+    };
+  }
+  if (isGrantingEntitlement(normalized)) {
+    const attemptIsLifetime = attempt.planId === 'lifetime';
+    const eventIsLifetime = normalized?.entitlement?.status === 'lifetime';
+    if (attemptIsLifetime !== eventIsLifetime) {
+      return {
+        code: 'CHECKOUT_ATTEMPT_PLAN_MISMATCH',
+        message: 'Webhook lifetime status does not match the checkout attempt plan.',
+      };
+    }
+  }
+  return null;
+}
+
+function validateRuntimeModeForWebhook(eventMode, normalized) {
+  if (normalized?.shouldApplyEntitlement === false) return null;
+  const runtimeMode = resolveMode();
+  if (['test', 'live'].includes(eventMode) && eventMode === runtimeMode) return null;
+  return {
+    code: 'BILLING_RUNTIME_MODE_MISMATCH',
+    message: 'Webhook mode does not match the configured payments mode.',
   };
 }
 
@@ -424,7 +495,9 @@ async function handleLemonSqueezyWebhook(req, res) {
     const expectedMode = modeHint === 'test' ? 'test' : modeHint === 'live' ? 'live' : 'unknown';
     const missingExpected =
       (expectedMode === 'test' && !testSecret && !legacySecret) ||
-      (expectedMode === 'live' && !liveSecret && !legacySecret);
+      // The legacy secret is test-only. Never authenticate a signed live event
+      // without the explicitly configured live secret.
+      (expectedMode === 'live' && !liveSecret);
     if (!hasTest && !hasLive || missingExpected) {
       if (debug) {
         console.warn('[lemonsqueezy] webhook secrets missing', {
@@ -467,7 +540,7 @@ async function handleLemonSqueezyWebhook(req, res) {
     if (expectedMode === 'test') {
       valid = verifyWithSecret(testSecret, 'test') || verifyWithSecret(legacySecret, 'legacy');
     } else if (expectedMode === 'live') {
-      valid = verifyWithSecret(liveSecret, 'live') || verifyWithSecret(legacySecret, 'legacy');
+      valid = verifyWithSecret(liveSecret, 'live');
     } else {
       // Unknown mode: try test, then live, then legacy.
       valid =
@@ -476,7 +549,9 @@ async function handleLemonSqueezyWebhook(req, res) {
         verifyWithSecret(legacySecret, 'legacy');
     }
 
-    const chosenMode = verifiedMode || expectedMode;
+    // Payload mode is authoritative once its corresponding secret verifies.
+    // The secret label remains a fallback for older payloads without test_mode.
+    const chosenMode = expectedMode !== 'unknown' ? expectedMode : verifiedMode;
     if (debug) {
       const eventName =
         req.body?.meta?.event_name ||
@@ -549,6 +624,36 @@ async function handleLemonSqueezyWebhook(req, res) {
 
     if (!acquisition.acquired) {
       return respondToUnacquiredEvent(res, acquisition);
+    }
+
+    const checkoutAttempt = normalizedAttemptId
+      ? await CheckoutAttempt.findOne({ attemptId: normalizedAttemptId }).lean()
+      : null;
+    const checkoutMismatch =
+      validateRuntimeModeForWebhook(eventMode, normalized) ||
+      validateCheckoutAttemptForWebhook(checkoutAttempt, {
+        eventMode,
+        normalizedUserId,
+        normalized,
+      });
+    if (checkoutMismatch) {
+      await updateCheckoutAttempt(normalizedAttemptId, {
+        status: 'failed',
+        billingEventId: eventId,
+        lastErrorCode: checkoutMismatch.code,
+        lastErrorMessage: checkoutMismatch.message,
+      }, { status: { $in: NONTERMINAL_ATTEMPT_STATUSES } });
+      await completeClaimedEvent({
+        provider: 'lemonsqueezy',
+        eventId,
+        leaseToken: acquisition.leaseToken,
+        processingStatus: 'processed_checkout_mismatch',
+      });
+      return res.status(200).json({
+        ok: true,
+        ignored: true,
+        code: checkoutMismatch.code,
+      });
     }
 
     await persistVerifiedOrderPayment({
@@ -735,10 +840,22 @@ router.post('/checkout/start', requireAuth, async (req, res) => {
       return res.status(404).json({ error: 'User not found', code: 'USER_NOT_FOUND' });
     }
 
-    const { attemptId, provider, planId, mode, checkoutUrl, successUrl, cancelUrl, reused } =
+    const {
+      attemptId,
+      provider,
+      planId,
+      mode,
+      checkoutUrl,
+      successUrl,
+      cancelUrl,
+      analyticsSurface,
+      analyticsSource,
+      reused,
+    } =
       await createCheckoutAttempt(CheckoutAttempt, {
         user,
         planId: req.body?.planId,
+        analyticsSurface: req.body?.analyticsSurface,
         analyticsSource: req.body?.analyticsSource,
       });
 
@@ -750,6 +867,8 @@ router.post('/checkout/start', requireAuth, async (req, res) => {
       checkoutUrl,
       successUrl,
       cancelUrl,
+      analyticsSurface,
+      analyticsSource,
       reused,
     });
   } catch (err) {
@@ -807,6 +926,61 @@ router.get('/checkout/attempts/:attemptId/status', requireAuth, async (req, res)
     return res.status(500).json({
       error: 'Failed to resolve checkout attempt status',
       code: 'CHECKOUT_ATTEMPT_STATUS_FAILED',
+    });
+  }
+});
+
+router.post('/checkout/attempts/:attemptId/client-state', requireAuth, async (req, res) => {
+  try {
+    const attemptId = String(req.params.attemptId || '').trim();
+    const state = String(req.body?.state || '').trim().toLowerCase();
+    const transition = CLIENT_ATTEMPT_STATES[state];
+    if (!attemptId) {
+      return res.status(400).json({ error: 'Attempt id missing', code: 'CHECKOUT_ATTEMPT_ID_MISSING' });
+    }
+    if (!transition) {
+      return res.status(400).json({ error: 'Client state invalid', code: 'CHECKOUT_CLIENT_STATE_INVALID' });
+    }
+
+    const user = await User.findById(req.auth.userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found', code: 'USER_NOT_FOUND' });
+    }
+
+    const now = new Date();
+    const timestampField = transition.timestampField;
+    const statusExpression = transition.status
+      ? {
+          $cond: [
+            { $in: ['$status', transition.previousStatuses] },
+            transition.status,
+            '$status',
+          ],
+        }
+      : '$status';
+    const attempt = await CheckoutAttempt.findOneAndUpdate(
+      { attemptId, userId: user._id },
+      [
+        {
+          $set: {
+            [timestampField]: { $ifNull: [`$${timestampField}`, now] },
+            status: statusExpression,
+            updatedAt: now,
+          },
+        },
+      ],
+      { new: true }
+    );
+    if (!attempt) {
+      return res.status(404).json({ error: 'Checkout attempt not found', code: 'CHECKOUT_ATTEMPT_NOT_FOUND' });
+    }
+
+    return res.status(200).json(serializeCheckoutAttemptStatus(attempt, user));
+  } catch (err) {
+    console.error('[billing] checkout attempt client-state error:', err);
+    return res.status(500).json({
+      error: 'Failed to record checkout attempt client state',
+      code: 'CHECKOUT_CLIENT_STATE_FAILED',
     });
   }
 });
