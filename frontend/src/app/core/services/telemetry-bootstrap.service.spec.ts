@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common';
-import { signal } from '@angular/core';
+import { NgZone, signal } from '@angular/core';
 import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { BrowserTestingModule } from '@angular/platform-browser/testing';
 import { environment } from '../../../environments/environment';
@@ -283,6 +283,46 @@ describe('TelemetryBootstrapService', () => {
     expect(analytics.ensureInitialized).toHaveBeenCalledTimes(1);
     service.ngOnDestroy();
   }));
+
+  it('registers qualification and first-interaction listeners outside Angular', () => {
+    const service = TestBed.inject(TelemetryBootstrapService);
+    const ngZone = TestBed.inject(NgZone);
+    const originalAddEventListener = doc.addEventListener.bind(doc);
+    const registrationZones: Array<{
+      eventName: string;
+      once: boolean;
+      inAngularZone: boolean;
+    }> = [];
+    const trackedEvents = new Set(['pointerdown', 'keydown', 'touchstart', 'visibilitychange']);
+
+    spyOn(doc, 'addEventListener').and.callFake((
+      eventName: string,
+      listener: EventListenerOrEventListenerObject,
+      options?: boolean | AddEventListenerOptions,
+    ) => {
+      if (trackedEvents.has(eventName)) {
+        registrationZones.push({
+          eventName,
+          once: typeof options === 'object' && options.once === true,
+          inAngularZone: NgZone.isInAngularZone(),
+        });
+      }
+      originalAddEventListener(eventName, listener, options);
+    });
+
+    ngZone.run(() => service.armForUrl('/'));
+
+    expect(registrationZones).toEqual([
+      { eventName: 'pointerdown', once: false, inAngularZone: false },
+      { eventName: 'keydown', once: false, inAngularZone: false },
+      { eventName: 'touchstart', once: false, inAngularZone: false },
+      { eventName: 'visibilitychange', once: false, inAngularZone: false },
+      { eventName: 'pointerdown', once: true, inAngularZone: false },
+      { eventName: 'keydown', once: true, inAngularZone: false },
+      { eventName: 'touchstart', once: true, inAngularZone: false },
+    ]);
+    service.ngOnDestroy();
+  });
 
   it('qualifies synchronously once from a trusted visible interaction with sticky activation', () => {
     environment.production = false;

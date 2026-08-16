@@ -141,7 +141,7 @@ export type FaQuestionRowVariant = {
         </div>
 
         <div class="fa-question-row__meta" role="group" aria-label="Question metadata">
-          <ng-container *ngFor="let chip of metaChips">
+          <ng-container *ngFor="let chip of metaChips; trackBy: trackByMetaChip">
             <span
               *ngIf="isPrimaryMetaChip(chip)"
               class="fa-question-row__meta-chip"
@@ -207,6 +207,9 @@ export class FaQuestionRowComponent {
   }
 
   trackByVariant = (_: number, variant: FaQuestionRowVariant): string => variant.id;
+
+  trackByMetaChip = (_: number, chip: FaQuestionRowMetaChip): string =>
+    `${chip.priority || 'primary'}:${chip.tone || 'neutral'}:${chip.ariaLabel}`;
 
   isPrimaryMetaChip(chip: FaQuestionRowMetaChip): boolean {
     return chip.priority !== 'secondary';

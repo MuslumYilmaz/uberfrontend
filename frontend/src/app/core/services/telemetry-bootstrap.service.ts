@@ -1,5 +1,13 @@
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
-import { Injectable, InjectionToken, OnDestroy, PLATFORM_ID, effect, inject } from '@angular/core';
+import {
+  Injectable,
+  InjectionToken,
+  NgZone,
+  OnDestroy,
+  PLATFORM_ID,
+  effect,
+  inject,
+} from '@angular/core';
 import type { ErrorEvent as SentryErrorEvent, EventHint as SentryEventHint } from '@sentry/browser';
 import { environment } from '../../../environments/environment';
 import { AnalyticsService } from './analytics.service';
@@ -74,6 +82,7 @@ export class TelemetryBootstrapService implements OnDestroy {
   private readonly auth = inject(AuthService);
   private readonly document = inject(DOCUMENT);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  private readonly zone = inject(NgZone);
   private readonly sentryLoader = inject(SENTRY_BROWSER_LOADER);
   private interactionCleanup: (() => void) | null = null;
   private inMemoryAnonymousId: string | null = null;
@@ -133,36 +142,38 @@ export class TelemetryBootstrapService implements OnDestroy {
   private armDecisionSessionQualification(): void {
     if (this.qualificationCompleted || this.qualificationCleanup) return;
 
-    DECISION_SESSION_INTERACTION_EVENTS.forEach((eventName) => {
-      this.document.addEventListener(eventName, this.onDecisionSessionInteraction, {
-        passive: true,
-        capture: true,
-      });
-    });
-    this.document.addEventListener(
-      'visibilitychange',
-      this.onDecisionSessionVisibilityChange,
-      true,
-    );
-
-    this.qualificationCleanup = () => {
+    this.zone.runOutsideAngular(() => {
       DECISION_SESSION_INTERACTION_EVENTS.forEach((eventName) => {
-        this.document.removeEventListener(eventName, this.onDecisionSessionInteraction, true);
+        this.document.addEventListener(eventName, this.onDecisionSessionInteraction, {
+          passive: true,
+          capture: true,
+        });
       });
-      this.document.removeEventListener(
+      this.document.addEventListener(
         'visibilitychange',
         this.onDecisionSessionVisibilityChange,
         true,
       );
-      if (this.qualificationTimer !== null) {
-        window.clearTimeout(this.qualificationTimer);
-        this.qualificationTimer = null;
-      }
-      this.qualificationVisibleStartedAt = null;
-      this.qualificationCleanup = null;
-    };
 
-    this.startQualificationForegroundTimer();
+      this.qualificationCleanup = () => {
+        DECISION_SESSION_INTERACTION_EVENTS.forEach((eventName) => {
+          this.document.removeEventListener(eventName, this.onDecisionSessionInteraction, true);
+        });
+        this.document.removeEventListener(
+          'visibilitychange',
+          this.onDecisionSessionVisibilityChange,
+          true,
+        );
+        if (this.qualificationTimer !== null) {
+          window.clearTimeout(this.qualificationTimer);
+          this.qualificationTimer = null;
+        }
+        this.qualificationVisibleStartedAt = null;
+        this.qualificationCleanup = null;
+      };
+
+      this.startQualificationForegroundTimer();
+    });
   }
 
   private startQualificationForegroundTimer(): void {
@@ -257,27 +268,29 @@ export class TelemetryBootstrapService implements OnDestroy {
     if (this.interactionCleanup) return;
     if (this.analytics.isInitialized() && this.sentryInitPromise) return;
 
-    const activate = () => {
-      this.disarmOnFirstInteraction();
-      this.scheduleAnalyticsInitialization();
-      void this.ensureSentryInitialized();
-    };
+    this.zone.runOutsideAngular(() => {
+      const activate = () => {
+        this.disarmOnFirstInteraction();
+        this.scheduleAnalyticsInitialization();
+        void this.ensureSentryInitialized();
+      };
 
-    const listeners: Array<keyof DocumentEventMap> = ['pointerdown', 'keydown', 'touchstart'];
-    listeners.forEach((eventName) => {
-      this.document.addEventListener(eventName, activate, {
-        once: true,
-        passive: true,
-        capture: true,
-      });
-    });
-
-    this.interactionCleanup = () => {
+      const listeners: Array<keyof DocumentEventMap> = ['pointerdown', 'keydown', 'touchstart'];
       listeners.forEach((eventName) => {
-        this.document.removeEventListener(eventName, activate, true);
+        this.document.addEventListener(eventName, activate, {
+          once: true,
+          passive: true,
+          capture: true,
+        });
       });
-      this.interactionCleanup = null;
-    };
+
+      this.interactionCleanup = () => {
+        listeners.forEach((eventName) => {
+          this.document.removeEventListener(eventName, activate, true);
+        });
+        this.interactionCleanup = null;
+      };
+    });
   }
 
   private disarmOnFirstInteraction(): void {
