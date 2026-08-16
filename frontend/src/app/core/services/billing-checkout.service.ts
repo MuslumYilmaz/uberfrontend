@@ -11,10 +11,13 @@ import {
   resolvePaymentsProvider,
 } from '../utils/payments-provider.util';
 import { apiUrl } from '../utils/api-base';
+import { ExternalWindowReservation } from '../utils/external-window.util';
 import { GumroadOverlayService } from './gumroad-overlay.service';
 import { LemonSqueezyCheckoutContext, LemonSqueezyCheckoutService } from './lemonsqueezy-checkout.service';
 
-export type CheckoutContext = LemonSqueezyCheckoutContext;
+export type CheckoutContext = LemonSqueezyCheckoutContext & {
+  launchReservation?: ExternalWindowReservation | null;
+};
 
 type BillingProvider = {
   checkout: (url: string, context?: CheckoutContext) => Promise<CheckoutMode>;
@@ -58,8 +61,15 @@ type CheckoutStartResponse = {
   checkoutUrl: string;
   successUrl: string;
   cancelUrl: string;
+  analyticsSurface?: string;
   reused?: boolean;
 };
+
+export type CheckoutClientState =
+  | 'provider_opened'
+  | 'popup_blocked'
+  | 'success_redirected'
+  | 'cancel_redirected';
 
 export type VerifiedPurchase = {
   transactionId: string;
@@ -84,6 +94,11 @@ export type CheckoutAttemptStatus = {
   billingEventId: string | null;
   lastErrorCode: string | null;
   lastErrorMessage: string | null;
+  analyticsSurface?: string | null;
+  providerOpenedAt?: string | null;
+  popupBlockedAt?: string | null;
+  successRedirectedAt?: string | null;
+  cancelRedirectedAt?: string | null;
   purchase: VerifiedPurchase | null;
 };
 
@@ -105,8 +120,10 @@ type CheckoutConfigResponse = CheckoutConfig;
 
 @Injectable({ providedIn: 'root' })
 export class BillingCheckoutService {
+  private static readonly CONFIG_CACHE_TTL_MS = 5 * 60 * 1000;
+  private static readonly CONFIG_RETRY_DELAYS_MS = [0, 500, 1500] as const;
   private providers: Record<PaymentsProvider, BillingProvider | null>;
-  private checkoutConfigCache: CheckoutConfig | null | undefined = undefined;
+  private checkoutConfigCache?: { value: CheckoutConfig; expiresAt: number };
   private checkoutConfigRequest?: Promise<CheckoutConfig | null>;
 
   constructor(
@@ -116,11 +133,18 @@ export class BillingCheckoutService {
   ) {
     this.providers = {
       gumroad: {
-        checkout: (url) => this.gumroadOverlay.open(url),
+        checkout: (url, context) => {
+          this.lemonSqueezyCheckout.release(context?.launchReservation);
+          return this.gumroadOverlay.open(url);
+        },
         prefetch: () => this.gumroadOverlay.prefetch(),
       },
       lemonsqueezy: {
-        checkout: (url, context) => this.lemonSqueezyCheckout.open(url, context),
+        checkout: (url, context) => this.lemonSqueezyCheckout.open(
+          url,
+          context,
+          context?.launchReservation || undefined,
+        ),
         prefetch: () => this.lemonSqueezyCheckout.prefetch(),
       },
     };
@@ -130,24 +154,30 @@ export class BillingCheckoutService {
     if (typeof window === 'undefined') {
       return null;
     }
-    if (!force && this.checkoutConfigCache !== undefined) {
-      return this.checkoutConfigCache;
+    if (!force && this.checkoutConfigCache?.expiresAt && this.checkoutConfigCache.expiresAt > Date.now()) {
+      return this.checkoutConfigCache.value;
     }
-    if (!force && this.checkoutConfigRequest) {
+    if (this.checkoutConfigCache && this.checkoutConfigCache.expiresAt <= Date.now()) {
+      this.checkoutConfigCache = undefined;
+    }
+    if (this.checkoutConfigRequest) {
       return this.checkoutConfigRequest;
     }
 
-    const request = firstValueFrom(
-      this.http.get<CheckoutConfigResponse>(apiUrl('/billing/checkout/config'))
-    )
+    const request = this.fetchCheckoutConfigWithRetry()
       .then((config) => {
         const normalized = normalizeCheckoutConfig(config);
-        this.checkoutConfigCache = normalized;
+        if (normalized) {
+          this.checkoutConfigCache = {
+            value: normalized,
+            expiresAt: Date.now() + BillingCheckoutService.CONFIG_CACHE_TTL_MS,
+          };
+        }
         return normalized;
       })
-      .catch((error) => {
-        console.error('[billing] failed to load checkout config', { error });
-        this.checkoutConfigCache = null;
+      .catch(() => {
+        // A transient config failure must not disable checkout for the whole session.
+        this.checkoutConfigCache = undefined;
         return null;
       })
       .finally(() => {
@@ -156,6 +186,16 @@ export class BillingCheckoutService {
 
     this.checkoutConfigRequest = request;
     return request;
+  }
+
+  reserveCheckoutWindow(): ExternalWindowReservation | null {
+    const cachedProvider = this.checkoutConfigCache?.value.provider;
+    if (cachedProvider === 'gumroad') return null;
+    return this.lemonSqueezyCheckout.reserve();
+  }
+
+  releaseCheckoutWindow(reservation: ExternalWindowReservation | null | undefined): void {
+    this.lemonSqueezyCheckout.release(reservation);
   }
 
   async prefetch(): Promise<void> {
@@ -178,6 +218,7 @@ export class BillingCheckoutService {
     planId: PlanId,
     context?: CheckoutContext,
     analyticsSource = 'pricing',
+    analyticsSurface = analyticsSource,
   ): Promise<CheckoutResult> {
     const fallbackProvider =
       (await this.getCheckoutConfig())?.provider ||
@@ -189,34 +230,41 @@ export class BillingCheckoutService {
       start = await firstValueFrom(
         this.http.post<CheckoutStartResponse>(
           apiUrl('/billing/checkout/start'),
-          { planId, analyticsSource },
+          { planId, analyticsSource, analyticsSurface },
           { withCredentials: true }
         )
       );
     } catch (error) {
+      this.releaseCheckoutWindow(context?.launchReservation);
       const reason = mapCheckoutStartError(error, fallbackProvider);
       return { ok: false, reason, provider: fallbackProvider };
     }
 
     const handler = this.providers[start.provider];
     if (!handler) {
+      this.releaseCheckoutWindow(context?.launchReservation);
       console.warn('[billing] checkout provider not implemented', { provider: start.provider, planId });
       return { ok: false, reason: 'provider-unavailable', provider: start.provider };
     }
 
     if (!start?.checkoutUrl) {
+      this.releaseCheckoutWindow(context?.launchReservation);
       console.warn('[billing] missing checkout url from backend', { provider: start.provider, planId });
       return { ok: false, reason: 'missing-url', provider: start.provider };
     }
     if (start.provider === 'lemonsqueezy' && !isLemonSqueezyBuyUrl(start.checkoutUrl)) {
-      console.error('[billing] invalid LemonSqueezy checkout url (expected /checkout/buy/)', {
-        planId,
-        url: start.checkoutUrl,
-      });
+      this.releaseCheckoutWindow(context?.launchReservation);
+      console.error('[billing] invalid LemonSqueezy checkout URL.');
       return { ok: false, reason: 'invalid-url', provider: start.provider };
     }
 
-    const mode = await handler.checkout(start.checkoutUrl, context);
+    let mode: CheckoutMode;
+    try {
+      mode = await handler.checkout(start.checkoutUrl, context);
+    } catch {
+      this.releaseCheckoutWindow(context?.launchReservation);
+      return { ok: false, reason: 'provider-unavailable', provider: start.provider };
+    }
     return {
       ok: true,
       mode,
@@ -226,6 +274,17 @@ export class BillingCheckoutService {
       attemptId: start.attemptId,
       reused: start.reused === true,
     };
+  }
+
+  recordAttemptClientState(
+    attemptId: string,
+    state: CheckoutClientState,
+  ): Observable<CheckoutAttemptStatus> {
+    return this.http.post<CheckoutAttemptStatus>(
+      apiUrl(`/billing/checkout/attempts/${encodeURIComponent(attemptId)}/client-state`),
+      { state },
+      { withCredentials: true },
+    );
   }
 
   fetchAttemptStatus(attemptId: string): Observable<CheckoutAttemptStatusResult> {
@@ -251,6 +310,24 @@ export class BillingCheckoutService {
         })
       );
   }
+
+  private async fetchCheckoutConfigWithRetry(): Promise<CheckoutConfigResponse> {
+    let lastError: unknown;
+    for (const delayMs of BillingCheckoutService.CONFIG_RETRY_DELAYS_MS) {
+      if (delayMs > 0) {
+        await new Promise<void>((resolve) => window.setTimeout(resolve, delayMs));
+      }
+      try {
+        return await firstValueFrom(
+          this.http.get<CheckoutConfigResponse>(apiUrl('/billing/checkout/config')),
+        );
+      } catch (error) {
+        lastError = error;
+        if (!shouldRetryCheckoutConfig(error)) break;
+      }
+    }
+    throw lastError;
+  }
 }
 
 function normalizeCheckoutConfig(value: CheckoutConfigResponse | null | undefined): CheckoutConfig | null {
@@ -272,7 +349,9 @@ function normalizeCheckoutConfig(value: CheckoutConfigResponse | null | undefine
 function isLemonSqueezyBuyUrl(value: string): boolean {
   try {
     const parsed = new URL(value);
-    return parsed.pathname.includes('/checkout/buy/');
+    return parsed.protocol === 'https:'
+      && parsed.hostname === 'frontendatlas.lemonsqueezy.com'
+      && /^\/checkout\/buy\/[^/]+/.test(parsed.pathname);
   } catch {
     return false;
   }
@@ -297,4 +376,9 @@ function mapCheckoutStartError(error: unknown, provider: PaymentsProvider): Chec
     error: error.error,
   });
   return 'start-failed';
+}
+
+function shouldRetryCheckoutConfig(error: unknown): boolean {
+  if (!(error instanceof HttpErrorResponse)) return true;
+  return error.status === 0 || error.status === 408 || error.status === 429 || error.status >= 500;
 }

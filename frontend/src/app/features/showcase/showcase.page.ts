@@ -28,6 +28,7 @@ import { SEO_SUPPRESS_TOKEN } from '../../core/services/seo-context';
 import { TradeoffBattleService } from '../../core/services/tradeoff-battle.service';
 import { FaqSectionComponent } from '../../shared/faq-section/faq-section.component';
 import { PricingPlansSectionComponent } from '../pricing/components/pricing-plans-section/pricing-plans-section.component';
+import { ConversionContextService } from '../../core/services/conversion-context.service';
 import { PlanId } from '../../core/utils/payments-provider.util';
 import { apiUrl } from '../../core/utils/api-base';
 import { SHOWCASE_STATS } from '../../generated/content-metadata';
@@ -42,6 +43,7 @@ import {
   type TurnstileChallengeState,
 } from '../../shared/components/turnstile-challenge/turnstile-challenge.component';
 import { ShowcaseIconComponent, ShowcaseIconName } from './showcase-icon.component';
+import { ConversionStickyCtaComponent } from '../../shared/components/conversion-sticky-cta/conversion-sticky-cta.component';
 import { TRACK_LOOKUP, deriveTrackMetrics } from '../tracks/track.data';
 
 type DemoKey = 'ui' | 'html' | 'js' | 'react' | 'angular' | 'vue';
@@ -78,7 +80,7 @@ const FOUNDATIONS_TRACK_METRICS = deriveTrackMetrics(FOUNDATIONS_TRACK);
 
 @Component({
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, PricingPlansSectionComponent, FaqSectionComponent, ShowcaseIconComponent, CompanyLogoMarkComponent, PrepRoadmapComponent, TurnstileChallengeComponent],
+  imports: [CommonModule, FormsModule, RouterModule, PricingPlansSectionComponent, FaqSectionComponent, ShowcaseIconComponent, CompanyLogoMarkComponent, PrepRoadmapComponent, TurnstileChallengeComponent, ConversionStickyCtaComponent],
   selector: 'app-showcase-page',
   templateUrl: './showcase.page.html',
   styleUrls: ['./showcase.page.css'],
@@ -619,6 +621,7 @@ You can also reset any task back to the starter whenever you want to re-practice
     private billingCheckout: BillingCheckoutService,
     private experiments: ExperimentService,
     private route: ActivatedRoute,
+    private conversionContext: ConversionContextService,
   ) { }
 
   ngOnInit(): void {
@@ -670,6 +673,13 @@ You can also reset any task back to the starter whenever you want to re-practice
     }
     this.checkoutConfigRequested = true;
     const config = await this.billingCheckout.getCheckoutConfig();
+    if (!config) {
+      this.analytics.track('checkout_config_failed', {
+        src: 'showcase_pricing',
+        surface: 'showcase_pricing',
+        failure_reason: 'unavailable_after_retry',
+      });
+    }
     this.paymentsEnabled = config?.enabled ?? false;
     this.checkoutAvailability = config?.plans ?? null;
     this.paymentsConfigReady = true;
@@ -888,6 +898,25 @@ You can also reset any task back to the starter whenever you want to re-practice
       route: '/guides/interview-blueprint/intro',
       start_path_variant: 'guided_plan_first',
       hero_variant: this.heroExperimentVariant,
+    });
+  }
+
+  onHeroSignupClick(): void {
+    this.analytics.track('lp_conversion_link_clicked', {
+      action: 'create_account',
+      src: 'showcase_hero',
+      surface: 'showcase_hero',
+      destination: '/auth/signup',
+    });
+  }
+
+  onHeroPricingClick(): void {
+    this.conversionContext.rememberPricingContext('showcase_hero', 'showcase_hero');
+    this.analytics.track('lp_conversion_link_clicked', {
+      action: 'view_pricing',
+      src: 'showcase_hero',
+      surface: 'showcase_hero',
+      destination: '/pricing',
     });
   }
 

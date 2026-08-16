@@ -31,9 +31,32 @@ async function createAndSendVerification(EmailVerification, user, requestedEmail
   const expiresAt = new Date(now.getTime() + TOKEN_TTL_MS);
   const token = crypto.randomBytes(32).toString('base64url');
 
+  const verification = await EmailVerification.create({
+    userId: user._id,
+    email: targetEmail,
+    purpose,
+    tokenHash: hashVerificationToken(token),
+    expiresAt,
+  });
+
+  try {
+    await sendEmailVerificationMail({
+      to: targetEmail,
+      verificationUrl: buildVerificationUrl(token),
+      purpose,
+    });
+  } catch (error) {
+    // Do not leave an undelivered token active or invalidate the user's last
+    // usable link when SMTP fails.
+    await EmailVerification.deleteOne({ _id: verification._id });
+    throw error;
+  }
+
   await EmailVerification.updateMany(
     {
+      _id: { $ne: verification._id },
       userId: user._id,
+      createdAt: { $lte: verification.createdAt },
       $or: [
         { consumedAt: null },
         { purpose: 'change_email', finalizedAt: null },
@@ -51,19 +74,6 @@ async function createAndSendVerification(EmailVerification, user, requestedEmail
       },
     }
   );
-  await EmailVerification.create({
-    userId: user._id,
-    email: targetEmail,
-    purpose,
-    tokenHash: hashVerificationToken(token),
-    expiresAt,
-  });
-
-  await sendEmailVerificationMail({
-    to: targetEmail,
-    verificationUrl: buildVerificationUrl(token),
-    purpose,
-  });
 
   return { purpose, expiresAt };
 }

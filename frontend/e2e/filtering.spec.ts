@@ -116,6 +116,9 @@ test('coding list filters sync to URL and persist on reload + back', async ({ pa
   await expect(page.getByTestId(`question-card-${JS_QUESTION.id}`)).toBeVisible();
 
   await page.getByTestId(`question-card-${JS_QUESTION.id}`).click();
+  await expect(page).toHaveURL(
+    new URL(`/${JS_QUESTION.tech}/coding/${JS_QUESTION.id}`, page.url()).href,
+  );
   await expect(page.getByTestId('coding-detail-page')).toBeVisible();
 
   await page.goBack();

@@ -17,7 +17,11 @@ import { take } from 'rxjs';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { environment } from '../../../../environments/environment';
 import { getManageSubscriptionErrorMessage } from '../../../core/utils/billing-ux.util';
-import { openExternalWindow } from '../../../core/utils/external-window.util';
+import {
+  navigateReservedExternalWindow,
+  releaseExternalWindowReservation,
+  reserveExternalWindow,
+} from '../../../core/utils/external-window.util';
 import { ConfiguredPaymentsProvider, resolvePaymentsProvider } from '../../../core/utils/payments-provider.util';
 import { isProActive } from '../../../core/utils/entitlements.util';
 import { FaGlyphComponent } from '../../../shared/ui/icon/fa-glyph.component';
@@ -727,6 +731,7 @@ export class ProfileComponent implements OnInit {
 
   openManageSubscription(): void {
     if (this.manageLoading()) return;
+    const reservation = reserveExternalWindow();
     this.manageError.set(null);
     this.manageLoading.set(true);
 
@@ -734,18 +739,20 @@ export class ProfileComponent implements OnInit {
       next: ({ url }) => {
         this.manageLoading.set(false);
         if (!url) {
+          releaseExternalWindowReservation(reservation);
           this.manageError.set(
             'We could not open the billing portal automatically right now. Contact support@frontendatlas.com for help.'
           );
           return;
         }
-        const openResult = openExternalWindow(url);
+        const openResult = navigateReservedExternalWindow(reservation, url);
         if (openResult === 'blocked') {
           this.manageError.set('Your browser blocked the billing portal. Allow popups and try again.');
           return;
         }
       },
       error: (err) => {
+        releaseExternalWindowReservation(reservation);
         this.manageLoading.set(false);
         this.manageError.set(getManageSubscriptionErrorMessage(err));
       },

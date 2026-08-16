@@ -44,6 +44,8 @@ function normalizeAnalyticsSource(raw) {
   return value && ANALYTICS_SOURCE_PATTERN.test(value) ? value : 'pricing';
 }
 
+const normalizeAnalyticsSurface = normalizeAnalyticsSource;
+
 function resolveAttemptReuseWindowMs() {
   const value = Number(process.env.CHECKOUT_ATTEMPT_REUSE_WINDOW_MS || 5 * 60 * 1000);
   if (!Number.isFinite(value) || value <= 0) return 5 * 60 * 1000;
@@ -66,31 +68,49 @@ function pick(value, fallback) {
   return normalizeUrlCandidate(fallback);
 }
 
-function resolveCheckoutUrl(provider, planId, mode) {
-  if (provider === 'lemonsqueezy') {
-    const suffix = planId.toUpperCase();
-    const modeValue = mode === 'live'
-      ? pick(
-          process.env[`LEMONSQUEEZY_${suffix}_URL_LIVE`],
-          process.env[`LEMONSQUEEZY_${suffix}_URL`]
-        )
-      : pick(
-          process.env[`LEMONSQUEEZY_${suffix}_URL_TEST`],
-          process.env[`LEMONSQUEEZY_${suffix}_URL`]
-        );
+function resolveLemonSqueezyUrlForMode(planId, mode) {
+  const suffix = planId.toUpperCase();
+  if (mode === 'live') {
+    // Live checkouts must be configured explicitly. Falling back to the legacy
+    // unscoped URL can silently send production users to a test checkout.
+    return normalizeUrlCandidate(process.env[`LEMONSQUEEZY_${suffix}_URL_LIVE`]);
+  }
+  return pick(
+    process.env[`LEMONSQUEEZY_${suffix}_URL_TEST`],
+    process.env[`LEMONSQUEEZY_${suffix}_URL`]
+  );
+}
 
-    if (mode === 'live' && planId === 'annual') {
-      const annual = modeValue;
-      const quarterly = pick(
-        process.env.LEMONSQUEEZY_QUARTERLY_URL_LIVE,
-        process.env.LEMONSQUEEZY_QUARTERLY_URL
-      );
-      if (annual && quarterly && annual === quarterly) return '';
+function resolveCheckoutUrl(provider, planId, mode) {
+  if (!PLANS.has(planId) || !['test', 'live'].includes(mode)) return '';
+  if (provider === 'lemonsqueezy') {
+    const modeValue = resolveLemonSqueezyUrlForMode(planId, mode);
+    if (!modeValue) return '';
+
+    const oppositeMode = mode === 'live' ? 'test' : 'live';
+    // Any URL collision across test/live is unsafe, even when it was copied
+    // between different plans (for example test monthly -> live lifetime).
+    for (const otherPlanId of PLAN_IDS) {
+      if (resolveLemonSqueezyUrlForMode(otherPlanId, oppositeMode) === modeValue) {
+        return '';
+      }
+    }
+
+    // A copied URL for a later plan is almost always a configuration mistake.
+    // Keep the first configured plan available while failing closed for the
+    // duplicate (including a lifetime URL copied from a recurring plan).
+    const planIndex = PLAN_IDS.indexOf(planId);
+    for (const earlierPlanId of PLAN_IDS.slice(0, planIndex)) {
+      if (resolveLemonSqueezyUrlForMode(earlierPlanId, mode) === modeValue) {
+        return '';
+      }
     }
     return modeValue;
   }
 
   if (provider === 'gumroad') {
+    // Gumroad does not expose a separate sandbox URL contract in this app.
+    if (mode !== 'live') return '';
     if (planId === 'lifetime') return '';
     return normalizeUrlCandidate(process.env[`GUMROAD_${planId.toUpperCase()}_URL`]);
   }
@@ -123,14 +143,24 @@ function resolveCheckoutConfig(rawProvider) {
 function isValidHostedCheckoutUrl(provider, url) {
   const normalized = normalizeUrlCandidate(url);
   if (!normalized) return false;
-  if (provider === 'lemonsqueezy') {
-    try {
-      return new URL(normalized).pathname.includes('/checkout/buy/');
-    } catch {
-      return false;
+  try {
+    const parsed = new URL(normalized);
+    if (parsed.protocol !== 'https:') return false;
+    const hostname = parsed.hostname.toLowerCase();
+    if (provider === 'lemonsqueezy') {
+      const providerHost = hostname === 'lemonsqueezy.com' || hostname.endsWith('.lemonsqueezy.com');
+      return providerHost && /\/checkout\/buy\/[^/]+/.test(parsed.pathname);
     }
+    if (provider === 'gumroad') {
+      return hostname === 'gumroad.com' || hostname.endsWith('.gumroad.com');
+    }
+    if (provider === 'stripe') {
+      return hostname === 'stripe.com' || hostname.endsWith('.stripe.com');
+    }
+    return false;
+  } catch {
+    return false;
   }
-  return /^https?:\/\//i.test(normalized);
 }
 
 function buildRedirectUrl(pathname, attemptId) {
@@ -178,14 +208,24 @@ function buildFinalCheckoutUrl(provider, baseUrl, user, attemptId) {
   return { checkoutUrl: baseUrl, successUrl, cancelUrl };
 }
 
-async function findReusableCheckoutAttempt(CheckoutAttempt, { user, provider, planId, mode, analyticsSource }) {
+async function findReusableCheckoutAttempt(
+  CheckoutAttempt,
+  { user, provider, planId, mode, analyticsSurface, analyticsSource }
+) {
   const threshold = new Date(Date.now() - resolveAttemptReuseWindowMs());
+  const attributionFilters = [{ analyticsSurface, analyticsSource }];
+  if (analyticsSurface === analyticsSource) {
+    attributionFilters.push({
+      analyticsSurface: { $exists: false },
+      analyticsSource,
+    });
+  }
   return CheckoutAttempt.findOne({
     userId: user._id,
     provider,
     planId,
     mode,
-    analyticsSource,
+    $or: attributionFilters,
     status: { $in: Array.from(REUSABLE_ATTEMPT_STATUSES) },
     startedAt: { $gte: threshold },
   })
@@ -195,11 +235,21 @@ async function findReusableCheckoutAttempt(CheckoutAttempt, { user, provider, pl
 
 async function createCheckoutAttempt(
   CheckoutAttempt,
-  { user, provider: rawProvider, planId: rawPlanId, analyticsSource: rawAnalyticsSource }
+  {
+    user,
+    provider: rawProvider,
+    planId: rawPlanId,
+    analyticsSurface: rawAnalyticsSurface,
+    analyticsSource: rawAnalyticsSource,
+  }
 ) {
   const provider = resolveProvider(rawProvider);
   const planId = resolvePlanId(rawPlanId);
-  const analyticsSource = normalizeAnalyticsSource(rawAnalyticsSource);
+  // Source (campaign/referrer) and surface (UI placement) are separate
+  // attribution dimensions. Each falls back to the other only for clients
+  // that send one side of the compatibility contract.
+  const analyticsSource = normalizeAnalyticsSource(rawAnalyticsSource || rawAnalyticsSurface);
+  const analyticsSurface = normalizeAnalyticsSurface(rawAnalyticsSurface || rawAnalyticsSource);
 
   if (!provider) {
     throw new CheckoutStartError('UNSUPPORTED_PROVIDER', 'Provider not supported', 400);
@@ -232,6 +282,7 @@ async function createCheckoutAttempt(
     provider,
     planId,
     mode,
+    analyticsSurface,
     analyticsSource,
   });
   if (reusableAttempt?.attemptId && isValidHostedCheckoutUrl(provider, reusableAttempt.checkoutUrl)) {
@@ -240,6 +291,8 @@ async function createCheckoutAttempt(
       provider,
       planId,
       mode,
+      analyticsSurface: reusableAttempt.analyticsSurface || reusableAttempt.analyticsSource || analyticsSurface,
+      analyticsSource: reusableAttempt.analyticsSource || analyticsSource,
       attemptId: reusableAttempt.attemptId,
       checkoutUrl: reusableAttempt.checkoutUrl,
       successUrl: reusableAttempt.successUrl,
@@ -261,6 +314,7 @@ async function createCheckoutAttempt(
     provider,
     planId,
     mode,
+    analyticsSurface,
     analyticsSource,
     status: 'created',
     checkoutUrl,
@@ -275,6 +329,8 @@ async function createCheckoutAttempt(
     provider,
     planId,
     mode,
+    analyticsSurface,
+    analyticsSource,
     attemptId,
     checkoutUrl,
     successUrl,
@@ -292,4 +348,5 @@ module.exports = {
   resolveCheckoutUrl,
   isValidHostedCheckoutUrl,
   normalizeAnalyticsSource,
+  normalizeAnalyticsSurface,
 };

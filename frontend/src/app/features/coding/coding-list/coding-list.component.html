@@ -222,9 +222,8 @@
             [lockedLabel]="isLocked(q) ? 'Locked' : ''"
             [metaChips]="questionRowMetaChips(q)"
             [variants]="questionRowVariants(q)"
-            [routerLink]="linkTo(q)"
+            [routeLink]="linkTo(q)"
             [state]="stateForNav(questions, q, (companySlug$ | async) || null)"
-            (rowClick)="handleCardClick($event, q)"
             (variantSelected)="handleQuestionVariantSelected($event, q)"
           ></fa-question-row>
         </ng-container>

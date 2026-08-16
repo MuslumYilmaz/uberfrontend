@@ -28,7 +28,7 @@ export const environment = {
     LEMONSQUEEZY_MONTHLY_URL_LIVE: 'https://frontendatlas.lemonsqueezy.com/checkout/buy/d5b7b06e-7df2-48f0-b0be-27560d95f78e',
     LEMONSQUEEZY_QUARTERLY_URL_LIVE: 'https://frontendatlas.lemonsqueezy.com/checkout/buy/5185a10f-25e6-47e4-9c7b-871e59b66db7',
     LEMONSQUEEZY_ANNUAL_URL_LIVE: 'https://frontendatlas.lemonsqueezy.com/checkout/buy/cdca0aaf-1968-4e00-8113-96d688552975',
-    LEMONSQUEEZY_LIFETIME_URL_LIVE: 'https://frontendatlas.lemonsqueezy.com/checkout/buy/2ec8ac68-4d40-4b2d-a6b9-cc3ca4ec63d7',
+    LEMONSQUEEZY_LIFETIME_URL_LIVE: 'https://frontendatlas.lemonsqueezy.com/checkout/buy/e72d0bb7-2da9-491f-8b04-7a7f428132c9',
     LEMONSQUEEZY_MANAGE_URL_LIVE: '',
     STRIPE_MONTHLY_URL: '',
     STRIPE_QUARTERLY_URL: '',

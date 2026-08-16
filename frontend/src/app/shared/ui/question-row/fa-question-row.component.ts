@@ -53,7 +53,7 @@ export type FaQuestionRowVariant = {
         [class.is-solved]="solved"
         [class.is-disabled]="disabled"
         [class.has-variants]="variants.length > 1"
-        [routerLink]="routerLink"
+        [routerLink]="routeLink"
         [queryParams]="queryParams"
         [state]="state"
         [attr.aria-disabled]="disabled ? 'true' : null"
@@ -141,7 +141,7 @@ export type FaQuestionRowVariant = {
         </div>
 
         <div class="fa-question-row__meta" role="group" aria-label="Question metadata">
-          <ng-container *ngFor="let chip of metaChips">
+          <ng-container *ngFor="let chip of metaChips; trackBy: trackByMetaChip">
             <span
               *ngIf="isPrimaryMetaChip(chip)"
               class="fa-question-row__meta-chip"
@@ -172,7 +172,7 @@ export class FaQuestionRowComponent {
   @Input() description = '';
   @Input() descriptionTooltip = '';
   @Input() kindLabel = '';
-  @Input() routerLink: string | any[] | null = null;
+  @Input() routeLink: string | any[] | null = null;
   @Input() queryParams: Params | null = null;
   @Input() state: { [k: string]: any } | undefined = undefined;
   @Input() disabled = false;
@@ -187,8 +187,8 @@ export class FaQuestionRowComponent {
   @Output() variantSelected = new EventEmitter<FaQuestionRowVariant>();
 
   hasLink(): boolean {
-    if (Array.isArray(this.routerLink)) return this.routerLink.length > 0;
-    return typeof this.routerLink === 'string' && this.routerLink.length > 0;
+    if (Array.isArray(this.routeLink)) return this.routeLink.length > 0;
+    return typeof this.routeLink === 'string' && this.routeLink.length > 0;
   }
 
   handleRowClick(event: Event): void {
@@ -207,6 +207,9 @@ export class FaQuestionRowComponent {
   }
 
   trackByVariant = (_: number, variant: FaQuestionRowVariant): string => variant.id;
+
+  trackByMetaChip = (_: number, chip: FaQuestionRowMetaChip): string =>
+    `${chip.priority || 'primary'}:${chip.tone || 'neutral'}:${chip.ariaLabel}`;
 
   isPrimaryMetaChip(chip: FaQuestionRowMetaChip): boolean {
     return chip.priority !== 'secondary';

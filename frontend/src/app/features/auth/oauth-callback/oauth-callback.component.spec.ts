@@ -92,7 +92,7 @@ describe('OAuthCallbackComponent', () => {
       redirectTo: '/javascript/coding/two-sum',
       source: 'coding_submit',
     });
-    authServiceStub.completeOAuthCallback.and.returnValue(of({}));
+    authServiceStub.completeOAuthCallback.and.returnValue(of({ user: null, action: 'signup' }));
 
     createComponent();
 
@@ -103,6 +103,24 @@ describe('OAuthCallbackComponent', () => {
       src: 'coding_submit',
     }));
     expect(router.navigateByUrl).toHaveBeenCalledWith('/javascript/coding/two-sum');
+  });
+
+  it('uses the backend action truth when requested signup resolves an existing OAuth identity', () => {
+    authServiceStub.consumeOAuthContext.and.returnValue({
+      mode: 'signup',
+      provider: 'google',
+      redirectTo: '/dashboard',
+      source: 'direct',
+    });
+    authServiceStub.completeOAuthCallback.and.returnValue(of({ user: null, action: 'login' }));
+
+    createComponent();
+
+    expect(analytics.track).toHaveBeenCalledWith('login', jasmine.objectContaining({
+      auth_mode: 'login',
+      provider: 'google',
+    }));
+    expect(analytics.track).not.toHaveBeenCalledWith('sign_up', jasmine.anything());
   });
 
   it('tracks OAuth callback errors with an allowlisted reason and no raw error detail', () => {

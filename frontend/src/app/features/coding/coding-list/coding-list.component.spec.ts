@@ -1,7 +1,7 @@
 import { Location } from '@angular/common';
 import { PLATFORM_ID, computed, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { ActivatedRoute, Router, convertToParamMap, provideRouter } from '@angular/router';
+import { ActivatedRoute, Router, UrlTree, convertToParamMap, provideRouter } from '@angular/router';
 import { BehaviorSubject, of } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
 import { CodingListStateService } from '../../../core/services/coding-list-state';
@@ -157,6 +157,38 @@ describe('CodingListComponent', () => {
     expect(solvedMark).not.toBeNull();
     expect(solvedCard?.classList.contains('is-solved')).toBeTrue();
     expect(solvedCard?.textContent || '').not.toContain('Solved');
+  });
+
+  it('lets RouterLink exclusively own whole-card navigation while preserving practice state', async () => {
+    const fixture = await createComponent({
+      queryParams: { tech: 'javascript', kind: 'coding' },
+      items: [question({ id: 'js-number-clamp', title: 'Clamp' })],
+    });
+    const router = TestBed.inject(Router);
+    const navigate = spyOn(router, 'navigate').and.resolveTo(true);
+    const navigateByUrl = spyOn(router, 'navigateByUrl').and.resolveTo(true);
+    const row = fixture.nativeElement.querySelector(
+      '[data-testid="question-card-js-number-clamp"]',
+    ) as HTMLAnchorElement | null;
+
+    expect(row).not.toBeNull();
+    row!.click();
+    await fixture.whenStable();
+
+    expect(navigate).not.toHaveBeenCalled();
+    expect(navigateByUrl).toHaveBeenCalledTimes(1);
+
+    const [urlTree, extras] = navigateByUrl.calls.mostRecent().args;
+    expect(urlTree instanceof UrlTree).toBeTrue();
+    expect(router.serializeUrl(urlTree as UrlTree)).toBe('/javascript/coding/js-number-clamp');
+    expect(extras?.state).toEqual(jasmine.objectContaining({
+      session: {
+        items: [{ tech: 'javascript', kind: 'coding', id: 'js-number-clamp' }],
+        index: 0,
+      },
+      returnToUrl: '/coding?tech=javascript',
+      returnLabel: 'All questions',
+    }));
   });
 
   it('does not render question-level company attribution badges from internal company tags', async () => {

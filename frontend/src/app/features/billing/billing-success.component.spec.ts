@@ -16,10 +16,15 @@ describe('BillingSuccessComponent', () => {
 
   beforeEach(async () => {
     (window as any).__billingPollConfig = { maxAttempts: 3, intervalMs: 25 };
+    sessionStorage.removeItem('fa:checkout:intent:v1');
+    sessionStorage.removeItem('fa:checkout:last_plan_id');
+    sessionStorage.removeItem('fa:checkout:last_source');
 
     billingCheckoutStub = jasmine.createSpyObj<BillingCheckoutService>('BillingCheckoutService', [
       'fetchAttemptStatus',
+      'recordAttemptClientState',
     ]);
+    billingCheckoutStub.recordAttemptClientState.and.returnValue(of({} as any));
     authStub = jasmine.createSpyObj<AuthService>('AuthService', ['fetchMeStatus']);
     analyticsStub = jasmine.createSpyObj<AnalyticsService>('AnalyticsService', ['track']);
 
@@ -51,9 +56,14 @@ describe('BillingSuccessComponent', () => {
   afterEach(() => {
     delete (window as any).__billingPollConfig;
     localStorage.removeItem('fa:analytics:purchase:order_live_123');
+    sessionStorage.removeItem('fa:checkout:intent:v1');
+    sessionStorage.removeItem('fa:checkout:last_plan_id');
+    sessionStorage.removeItem('fa:checkout:last_source');
   });
 
   it('polls attempt status until checkout is applied, then redirects to profile', fakeAsync(() => {
+    sessionStorage.setItem('fa:checkout:last_plan_id', 'monthly');
+    sessionStorage.setItem('fa:checkout:last_source', 'legacy_pricing');
     let pollCount = 0;
     billingCheckoutStub.fetchAttemptStatus.and.callFake(() => {
       pollCount += 1;
@@ -103,14 +113,29 @@ describe('BillingSuccessComponent', () => {
     expect(router.navigateByUrl).toHaveBeenCalledWith('/profile');
     expect(component.state()).toBe('syncing');
     expect(analyticsStub.track).toHaveBeenCalledWith('checkout_verified', jasmine.objectContaining({
+      src: 'legacy_pricing',
+      surface: 'billing_success',
+      plan_id: 'monthly',
       checkout_mode: 'test',
       entitlement_applied: true,
     }));
+    expect(sessionStorage.getItem('fa:checkout:last_plan_id')).toBeNull();
+    expect(sessionStorage.getItem('fa:checkout:last_source')).toBeNull();
     expect(analyticsStub.track).not.toHaveBeenCalledWith('purchase', jasmine.anything());
     expect(analyticsStub.track).not.toHaveBeenCalledWith('checkout_completed', jasmine.anything());
   }));
 
   it('tracks a verified live purchase once per transaction id across success-page reloads', fakeAsync(() => {
+    sessionStorage.setItem('fa:checkout:intent:v1', JSON.stringify({
+      version: 1,
+      planId: 'annual',
+      src: 'showcase_hero',
+      surface: 'showcase_pricing',
+      returnUrl: '/pricing',
+      createdAt: Date.now(),
+    }));
+    sessionStorage.setItem('fa:checkout:last_plan_id', 'monthly');
+    sessionStorage.setItem('fa:checkout:last_source', 'legacy_pricing');
     const liveAttempt = {
       attemptId: 'chk_success_123',
       provider: 'lemonsqueezy' as const,
@@ -150,8 +175,19 @@ describe('BillingSuccessComponent', () => {
       currency: 'USD',
       value: 69,
       tax: 12.42,
+      src: 'showcase_hero',
+      surface: 'showcase_pricing',
+      plan_id: 'annual',
       checkout_mode: 'live',
     }));
+    expect(analyticsStub.track).toHaveBeenCalledWith('checkout_verified', jasmine.objectContaining({
+      src: 'showcase_hero',
+      surface: 'showcase_pricing',
+      plan_id: 'annual',
+    }));
+    expect(sessionStorage.getItem('fa:checkout:intent:v1')).toBeNull();
+    expect(sessionStorage.getItem('fa:checkout:last_plan_id')).toBeNull();
+    expect(sessionStorage.getItem('fa:checkout:last_source')).toBeNull();
     expect(analyticsStub.track.calls.allArgs().filter(([name]) => name === 'purchase')).toHaveSize(1);
 
     fixture.destroy();
@@ -198,6 +234,14 @@ describe('BillingSuccessComponent', () => {
   }));
 
   it('preserves the success attempt as redirectTo when sign-in is required', fakeAsync(() => {
+    sessionStorage.setItem('fa:checkout:intent:v1', JSON.stringify({
+      version: 1,
+      planId: 'quarterly',
+      src: 'marketing_header',
+      surface: 'pricing_page',
+      returnUrl: '/pricing',
+      createdAt: Date.now(),
+    }));
     billingCheckoutStub.fetchAttemptStatus.and.returnValue(
       of({
         attempt: null,
@@ -214,6 +258,7 @@ describe('BillingSuccessComponent', () => {
 
     expect(component.state()).toBe('login-required');
     expect(component.loginRedirectTo()).toBe('/billing/success?attempt=chk_success_123');
+    expect(sessionStorage.getItem('fa:checkout:intent:v1')).not.toBeNull();
 
     const link = fixture.nativeElement.querySelector('.timeout .btn') as HTMLAnchorElement;
     expect(link.getAttribute('href')).toContain('/auth/login');
@@ -225,7 +270,9 @@ describe('BillingSuccessComponent', () => {
 
     billingCheckoutStub = jasmine.createSpyObj<BillingCheckoutService>('BillingCheckoutService', [
       'fetchAttemptStatus',
+      'recordAttemptClientState',
     ]);
+    billingCheckoutStub.recordAttemptClientState.and.returnValue(of({} as any));
     authStub = jasmine.createSpyObj<AuthService>('AuthService', ['fetchMeStatus']);
     authStub.fetchMeStatus.and.returnValue(
       of({

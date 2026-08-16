@@ -22,10 +22,32 @@ test('navigate list -> open question detail -> editor visible', async ({ page })
 
   await page.getByTestId(`question-card-${JS_QUESTION.id}`).click();
 
+  await expect(page).toHaveURL(
+    new URL(`/${JS_QUESTION.tech}/coding/${JS_QUESTION.id}`, page.url()).href,
+  );
   await expect(page.getByTestId('coding-detail-page')).toBeVisible();
   await expect(page.getByTestId('question-title')).toHaveText(JS_QUESTION.title);
   await expect(page.getByTestId('js-panel')).toBeVisible();
   await expect(page.getByTestId('js-code-editor')).toBeVisible();
+});
+
+test('first trusted pointer on question metadata opens its detail route', async ({ page }) => {
+  await page.goto('/coding');
+
+  const card = page.getByTestId(`question-card-${JS_QUESTION.id}`);
+  const difficultyChip = card.locator(
+    '.fa-question-row__meta-chip[aria-label^="Difficulty:"]',
+  );
+  await expect(difficultyChip).toBeVisible();
+
+  const expectedDetailUrl = new URL(
+    `/${JS_QUESTION.tech}/coding/${JS_QUESTION.id}`,
+    page.url(),
+  ).href;
+  await difficultyChip.click();
+
+  await expect(page).toHaveURL(expectedDetailUrl);
+  await expect(page.getByTestId('coding-detail-page')).toBeVisible();
 });
 
 test('change filter/sort -> list updates -> open result', async ({ page }) => {

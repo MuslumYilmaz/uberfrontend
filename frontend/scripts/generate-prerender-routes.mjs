@@ -145,6 +145,8 @@ function buildRoutes() {
     '/404',
     '/auth/login',
     '/auth/signup',
+    '/auth/forgot-password',
+    '/auth/reset-password',
     '/auth/callback',
     '/dashboard',
     '/profile',

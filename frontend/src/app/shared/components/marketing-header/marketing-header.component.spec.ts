@@ -81,12 +81,11 @@ describe('MarketingHeaderComponent', () => {
       '/coding',
       '/tracks',
     ]);
-    expect(utilityLabels).toEqual(['Log in']);
-    expect(utilityLabels).not.toContain('Pricing');
+    expect(utilityLabels).toEqual(['Pricing', 'Log in']);
     expect((fixture.nativeElement.querySelector('[data-testid="marketing-header-cta"]') as HTMLAnchorElement).textContent || '')
-      .toContain('Start practicing');
+      .toContain('Create free account');
     expect((fixture.nativeElement.querySelector('[data-testid="marketing-header-cta"]') as HTMLAnchorElement).getAttribute('href'))
-      .toBe('/interview-questions/essential');
+      .toContain('/auth/signup');
   });
 
   it('switches utility actions for logged-in users', async () => {
@@ -99,7 +98,16 @@ describe('MarketingHeaderComponent', () => {
 
     expect(utilityLabels).toEqual(['Dashboard', 'Profile']);
     expect(utilityLabels).not.toContain('Pricing');
+    expect(cta.textContent || '').toContain('View pricing');
+    expect(cta.getAttribute('href')).toBe('/pricing');
+  });
+
+  it('keeps the dashboard action for active Premium users', async () => {
+    const fixture = await createComponent({ isLoggedIn: true, isPro: true });
+    const cta = fixture.nativeElement.querySelector('[data-testid="marketing-header-cta"]') as HTMLAnchorElement;
+
     expect(cta.textContent || '').toContain('Open dashboard');
+    expect(cta.getAttribute('href')).toBe('/dashboard');
   });
 
   it('keeps desktop auth actions neutral while pending and reacts to authentication', async () => {
@@ -120,7 +128,7 @@ describe('MarketingHeaderComponent', () => {
     ).map((link) => (link.textContent || '').trim());
     expect(host.querySelector('[data-testid="marketing-header-auth-pending"]')).toBeNull();
     expect(utilityLabels).toEqual(['Dashboard', 'Profile']);
-    expect((host.querySelector('[data-testid="marketing-header-cta"]')?.textContent || '').trim()).toBe('Open dashboard');
+    expect((host.querySelector('[data-testid="marketing-header-cta"]')?.textContent || '').trim()).toBe('View pricing');
     expect(actions.hasAttribute('aria-busy')).toBeFalse();
   });
 
@@ -148,8 +156,7 @@ describe('MarketingHeaderComponent', () => {
       'Study Plans',
     ]);
     expect(mobilePrimaryLabels).not.toContain('System Design');
-    expect(mobileUtilityLabels).toEqual(['Log in']);
-    expect(mobileUtilityLabels).not.toContain('Pricing');
+    expect(mobileUtilityLabels).toEqual(['Pricing', 'Log in']);
     expect(analytics.track).toHaveBeenCalledWith(
       'header_top_nav_clicked',
       jasmine.objectContaining({ surface: 'marketing', area: 'mobile_menu', destination: 'menu' }),
@@ -174,8 +181,9 @@ describe('MarketingHeaderComponent', () => {
     fixture.detectChanges();
 
     expect(host.querySelector('[data-testid="marketing-header-mobile-auth-pending"]')).toBeNull();
-    expect((host.querySelector('[data-testid="marketing-header-mobile-utility-link"]')?.textContent || '').trim()).toBe('Log in');
-    expect((host.querySelector('[data-testid="marketing-header-mobile-cta"]')?.textContent || '').trim()).toBe('Start practicing');
+    expect(Array.from(host.querySelectorAll('[data-testid="marketing-header-mobile-utility-link"]'))
+      .map((link) => (link.textContent || '').trim())).toEqual(['Pricing', 'Log in']);
+    expect((host.querySelector('[data-testid="marketing-header-mobile-cta"]')?.textContent || '').trim()).toBe('Create free account');
     expect(mobileAuth.hasAttribute('aria-busy')).toBeFalse();
   });
 
@@ -197,14 +205,14 @@ describe('MarketingHeaderComponent', () => {
     expect(component.isPrimaryLinkActive(essential60)).toBeFalse();
   });
 
-  it('demotes the top-right CTA on the showcase landing route', async () => {
+  it('keeps the conversion CTA visually primary on the showcase landing route', async () => {
     const fixture = await createComponent({ isLoggedIn: false });
     const component = fixture.componentInstance;
     const cta = fixture.nativeElement.querySelector('[data-testid="marketing-header-cta"]') as HTMLAnchorElement;
 
     component.currentUrl.set('/');
     fixture.detectChanges();
-    expect(cta.classList.contains('famh-cta--muted')).toBeTrue();
+    expect(cta.classList.contains('famh-cta--muted')).toBeFalse();
 
     component.currentUrl.set('/pricing');
     fixture.detectChanges();

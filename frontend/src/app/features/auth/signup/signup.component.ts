@@ -18,6 +18,8 @@ import { sanitizeRedirectTarget } from '../../../core/utils/redirect.util';
 export class SignupComponent implements OnInit {
   loading = false;
   error = '';
+  accountCreated = false;
+  verificationError = '';
   submitted = false;
   redirectTo = '/dashboard';
   redirectToPresent = false;
@@ -69,7 +71,7 @@ export class SignupComponent implements OnInit {
   }
 
   submit() {
-    if (this.loading) return;
+    if (this.loading || this.accountCreated) return;
 
     this.submitted = true;
 
@@ -94,12 +96,19 @@ export class SignupComponent implements OnInit {
     this.error = '';
     this.analytics.track('auth_submit_started', this.authAnalyticsParams('password'));
     this.auth.signup({ email, username, password }).subscribe({
-      next: () => {
-        this.analytics.track('sign_up', {
-          ...this.authAnalyticsParams('password'),
-          method: 'password',
-        });
-        this.router.navigateByUrl(this.redirectTo);
+      next: (result) => {
+        this.accountCreated = result.accountCreated;
+        if (result.accountCreated) {
+          this.analytics.track('sign_up', {
+            ...this.authAnalyticsParams('password'),
+            method: 'password',
+          });
+        }
+        if (!result.verificationEmailRequired) {
+          this.router.navigateByUrl(this.redirectTo);
+          return;
+        }
+        this.sendVerificationEmail();
       },
       error: (err: any) => {
         const data = err?.error || {};
@@ -122,6 +131,15 @@ export class SignupComponent implements OnInit {
     });
   }
 
+  retryVerification(): void {
+    if (this.loading || !this.accountCreated) return;
+    this.sendVerificationEmail();
+  }
+
+  continueAfterSignup(): void {
+    this.router.navigateByUrl(this.redirectTo);
+  }
+
   continueWithGoogle() {
     this.startOAuth('google');
   }
@@ -133,6 +151,21 @@ export class SignupComponent implements OnInit {
   private startOAuth(provider: 'google' | 'github'): void {
     this.analytics.track('auth_submit_started', this.authAnalyticsParams(provider));
     this.auth.oauthStart(provider, 'signup', this.redirectTo, this.analyticsSource);
+  }
+
+  private sendVerificationEmail(): void {
+    this.loading = true;
+    this.verificationError = '';
+    this.auth.requestEmailVerification().subscribe({
+      next: () => this.router.navigateByUrl(this.redirectTo),
+      error: (error) => {
+        this.loading = false;
+        this.verificationError = getAuthDisplayError(
+          error,
+          'Your account is ready, but we could not send the verification email. Please retry.',
+        );
+      },
+    });
   }
 
   private authAnalyticsParams(provider: 'password' | 'google' | 'github'): Record<string, unknown> {

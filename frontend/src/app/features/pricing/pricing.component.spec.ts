@@ -1,3 +1,4 @@
+import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { AnalyticsService } from '../../core/services/analytics.service';
@@ -12,6 +13,7 @@ describe('PricingComponent', () => {
   let analyticsStub: jasmine.SpyObj<AnalyticsService>;
 
   beforeEach(async () => {
+    sessionStorage.removeItem('fa:conversion:pricing-context:v1');
     billingCheckoutStub = jasmine.createSpyObj<BillingCheckoutService>('BillingCheckoutService', ['getCheckoutConfig', 'prefetch']);
     billingCheckoutStub.getCheckoutConfig.and.resolveTo(null);
     billingCheckoutStub.prefetch.and.resolveTo();
@@ -25,7 +27,9 @@ describe('PricingComponent', () => {
         {
           provide: AuthService,
           useValue: {
+            authUiState: signal('signed_out'),
             user: jasmine.createSpy('user').and.returnValue(null),
+            isLoggedIn: jasmine.createSpy('isLoggedIn').and.returnValue(false),
             ensureMe: jasmine.createSpy('ensureMe'),
             getManageSubscriptionUrl: jasmine.createSpy('getManageSubscriptionUrl'),
           },
@@ -49,11 +53,17 @@ describe('PricingComponent', () => {
     expect(component.paymentsConfigReady).toBeTrue();
     expect(component.paymentsEnabled).toBeFalse();
     expect(component.checkoutAvailability).toBeNull();
-    expect(analyticsStub.track).toHaveBeenCalledWith('pricing_viewed', jasmine.objectContaining({
+    expect(analyticsStub.track).toHaveBeenCalledWith('pricing_page_viewed', jasmine.objectContaining({
       src: 'pricing_page',
+      surface: 'pricing_page',
       page: 'pricing',
       page_layout: 'interview_sprint_v1',
       recommended_plan: 'quarterly',
     }));
+    expect(analyticsStub.track).toHaveBeenCalledWith('checkout_config_failed', {
+      src: 'pricing_page',
+      surface: 'pricing_page',
+      failure_reason: 'unavailable_after_retry',
+    });
   });
 });

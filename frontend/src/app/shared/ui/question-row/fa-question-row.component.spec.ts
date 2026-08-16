@@ -14,7 +14,7 @@ describe('FaQuestionRowComponent', () => {
     fixture.componentRef.setInput('kindLabel', 'Concept');
     fixture.componentRef.setInput('title', 'What are callbacks?');
     fixture.componentRef.setInput('description', 'Explain inversion of control.');
-    fixture.componentRef.setInput('routerLink', ['/javascript', 'trivia', 'demo']);
+    fixture.componentRef.setInput('routeLink', ['/javascript', 'trivia', 'demo']);
     fixture.componentRef.setInput('solved', true);
     fixture.componentRef.setInput('companies', ['google', 'meta']);
     fixture.componentRef.setInput('metaChips', [
@@ -114,6 +114,29 @@ describe('FaQuestionRowComponent', () => {
     expect(meta.querySelector('.fa-question-row__sr-meta')?.textContent || '').toContain(
       'Section: JavaScript functions',
     );
+  });
+
+  it('preserves metadata DOM nodes when equivalent fresh chip objects are provided', async () => {
+    const fixture = await createComponent();
+    const host = fixture.nativeElement as HTMLElement;
+    const initialChip = host.querySelector(
+      '.fa-question-row__meta-chip[aria-label="Difficulty: Easy"]',
+    ) as HTMLElement;
+    const initialLabel = initialChip.querySelector('.fa-question-row__meta-label');
+
+    fixture.componentRef.setInput('metaChips', [
+      { label: 'Easy', ariaLabel: 'Difficulty: Easy', tone: 'difficulty' },
+      { label: 'JavaScript', ariaLabel: 'Technology: JavaScript', tone: 'tech' },
+    ]);
+    fixture.detectChanges();
+
+    const updatedChip = host.querySelector(
+      '.fa-question-row__meta-chip[aria-label="Difficulty: Easy"]',
+    ) as HTMLElement;
+    const updatedLabel = updatedChip.querySelector('.fa-question-row__meta-label');
+
+    expect(updatedChip).toBe(initialChip);
+    expect(updatedLabel).toBe(initialLabel);
   });
 
   it('keeps long titles readable while letting metadata wrap', async () => {

@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpErrorResponse } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
-import { throwError } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { PUBLIC_CHANGELOG_ENTRIES } from '../../../../core/content/public-changelog';
 import { AnalyticsService } from '../../../../core/services/analytics.service';
 import { AuthService } from '../../../../core/services/auth.service';
@@ -27,7 +27,12 @@ describe('PricingPlansSectionComponent', () => {
         },
         {
           provide: BillingCheckoutService,
-          useValue: jasmine.createSpyObj('BillingCheckoutService', ['prefetch', 'checkout']),
+          useValue: jasmine.createSpyObj('BillingCheckoutService', [
+            'prefetch',
+            'checkout',
+            'reserveCheckoutWindow',
+            'recordAttemptClientState',
+          ]),
         },
         {
           provide: AnalyticsService,
@@ -39,7 +44,13 @@ describe('PricingPlansSectionComponent', () => {
     fixture = TestBed.createComponent(PricingPlansSectionComponent);
     component = fixture.componentInstance;
     component.variant = 'full';
+    const billingCheckout = TestBed.inject(BillingCheckoutService) as jasmine.SpyObj<BillingCheckoutService>;
+    billingCheckout.reserveCheckoutWindow.and.returnValue(null);
+    billingCheckout.recordAttemptClientState.and.returnValue(of({} as any));
+    sessionStorage.removeItem('fa:checkout:intent:v1');
   });
+
+  afterEach(() => sessionStorage.removeItem('fa:checkout:intent:v1'));
 
   it('disables plans that backend checkout config marks unavailable', () => {
     component.paymentsEnabled = true;
@@ -159,7 +170,7 @@ describe('PricingPlansSectionComponent', () => {
       win.IntersectionObserver = originalObserver;
     }
 
-    expect(analytics.track).toHaveBeenCalledWith('pricing_plan_cards_seen', jasmine.objectContaining({
+    expect(analytics.track).toHaveBeenCalledWith('pricing_viewed', jasmine.objectContaining({
       page_layout: 'interview_sprint_v1',
       recommended_plan: 'quarterly',
       plan_count: 4,
@@ -240,8 +251,9 @@ describe('PricingPlansSectionComponent', () => {
     await component.onCta('quarterly');
 
     expect(component.loginRequiredOpen).toBeTrue();
-    expect(component.loginRedirectTo).toBe('/');
+    expect(component.loginRedirectTo).toBe('/pricing');
     expect(billingCheckout.checkout).not.toHaveBeenCalled();
+    expect(sessionStorage.getItem('fa:checkout:intent:v1')).toContain('quarterly');
   });
 
   it('shows a blocked-popup notice when checkout window opening is blocked', async () => {
@@ -275,22 +287,96 @@ describe('PricingPlansSectionComponent', () => {
 
     await component.onCta('monthly');
 
-    expect(component.checkoutNotice).toBe('Your browser blocked the checkout window. Allow popups and try again.');
+    expect(component.checkoutNotice).toContain('Continue safely in this tab');
     const beginCheckout = analytics.track.calls.allArgs().find(([event]) => event === 'begin_checkout');
-    expect(beginCheckout?.[1]).toEqual(jasmine.objectContaining({
+    expect(beginCheckout).toBeUndefined();
+    expect(analytics.track).toHaveBeenCalledWith('checkout_launch_failed', jasmine.objectContaining({
+      failure_reason: 'popup_blocked',
       plan_id: 'monthly',
-      page_layout: 'interview_sprint_v1',
-      recommended_plan: 'quarterly',
-      checkout_mode: 'test',
       provider: 'lemonsqueezy',
-      currency: 'USD',
-      value: 12,
     }));
     expect(billingCheckout.checkout).toHaveBeenCalledWith(
       'monthly',
-      jasmine.objectContaining({ userId: 'user_1' }),
+      jasmine.objectContaining({ userId: 'user_1', launchReservation: null }),
       'pricing',
+      'pricing_page',
     );
+    expect(billingCheckout.recordAttemptClientState).toHaveBeenCalledWith('chk_blocked', 'popup_blocked');
+  });
+
+  it('emits begin_checkout only after the provider tab opens', async () => {
+    const auth = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
+    const billingCheckout = TestBed.inject(BillingCheckoutService) as jasmine.SpyObj<BillingCheckoutService>;
+    const analytics = TestBed.inject(AnalyticsService) as jasmine.SpyObj<AnalyticsService>;
+    auth.user.and.returnValue({
+      _id: 'user_1',
+      username: 'billing_user',
+      email: 'billing@example.com',
+    } as any);
+    billingCheckout.checkout.and.resolveTo({
+      ok: true,
+      provider: 'lemonsqueezy',
+      mode: 'new-tab',
+      checkoutMode: 'live',
+      url: 'https://frontendatlas.lemonsqueezy.com/checkout/buy/live',
+      attemptId: 'chk_opened',
+      reused: false,
+    });
+    component.paymentsEnabled = true;
+    component.paymentsConfigReady = true;
+    component.checkoutAvailability = { monthly: true, quarterly: true, annual: true, lifetime: true };
+
+    await component.onCta('quarterly');
+
+    expect(analytics.track).toHaveBeenCalledWith('checkout_opened', jasmine.objectContaining({
+      plan: 'quarterly',
+      launch_mode: 'new_tab',
+    }));
+    expect(analytics.track).toHaveBeenCalledWith('begin_checkout', jasmine.objectContaining({
+      plan: 'quarterly',
+      launch_mode: 'new_tab',
+      checkout_mode: 'live',
+    }));
+    expect(billingCheckout.recordAttemptClientState).toHaveBeenCalledWith('chk_opened', 'provider_opened');
+  });
+
+  it('keeps the first plan intent when a second plan is clicked during checkout creation', async () => {
+    const auth = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
+    const billingCheckout = TestBed.inject(BillingCheckoutService) as jasmine.SpyObj<BillingCheckoutService>;
+    auth.user.and.returnValue({
+      _id: 'user_1',
+      username: 'billing_user',
+      email: 'billing@example.com',
+    } as any);
+    component.paymentsEnabled = true;
+    component.paymentsConfigReady = true;
+    component.checkoutAvailability = { monthly: true, quarterly: true, annual: true, lifetime: true };
+
+    let resolveCheckout!: (value: any) => void;
+    billingCheckout.checkout.and.returnValue(new Promise((resolve) => {
+      resolveCheckout = resolve;
+    }));
+
+    const firstCheckout = component.onCta('monthly');
+    await Promise.resolve();
+    await component.onCta('annual');
+
+    expect(billingCheckout.checkout).toHaveBeenCalledTimes(1);
+    expect(billingCheckout.checkout).toHaveBeenCalledWith(
+      'monthly',
+      jasmine.anything(),
+      'pricing',
+      'pricing_page',
+    );
+    expect(sessionStorage.getItem('fa:checkout:intent:v1')).toContain('monthly');
+    expect(sessionStorage.getItem('fa:checkout:intent:v1')).not.toContain('annual');
+
+    resolveCheckout({
+      ok: false,
+      provider: 'lemonsqueezy',
+      reason: 'start-failed',
+    });
+    await firstCheckout;
   });
 
   it('tells an unverified Gumroad user how to unblock checkout', async () => {

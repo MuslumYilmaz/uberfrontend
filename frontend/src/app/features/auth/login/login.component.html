@@ -1,5 +1,6 @@
 <div class="auth-page" data-testid="login-page">
   <section class="auth-left">
+    <a class="auth-home-link" routerLink="/" aria-label="Back to FrontendAtlas home">FrontendAtlas</a>
     <div class="auth-card">
       <h1 class="auth-title">Sign in to your account</h1>
 
@@ -23,17 +24,23 @@
       <form [formGroup]="form" (ngSubmit)="submit()" class="auth-form">
         <label class="field">
           <span>Email or username</span>
-          <input data-testid="login-email" formControlName="email" type="text" placeholder="you@example.com or username" />
+          <input id="login-email" name="username" data-testid="login-email" formControlName="email" type="text"
+            autocomplete="username" required placeholder="you@example.com or username"
+            [attr.aria-invalid]="showError(emailCtrl) && emailCtrl?.errors ? 'true' : null"
+            [attr.aria-describedby]="showError(emailCtrl) && emailCtrl?.errors ? 'login-email-error' : null" />
         </label>
-        <div *ngIf="showError(emailCtrl) && emailCtrl?.errors" class="error" data-testid="login-email-error">
+        <div id="login-email-error" *ngIf="showError(emailCtrl) && emailCtrl?.errors" class="error" data-testid="login-email-error">
           <ng-container *ngIf="emailCtrl?.errors?.['required']">Email or username is required.</ng-container>
         </div>
 
         <label class="field">
           <span>Password</span>
-          <input data-testid="login-password" formControlName="password" type="password" placeholder="••••••••" />
+          <input id="login-password" name="password" data-testid="login-password" formControlName="password" type="password"
+            autocomplete="current-password" required placeholder="••••••••"
+            [attr.aria-invalid]="showError(passwordCtrl) && passwordCtrl?.errors ? 'true' : null"
+            [attr.aria-describedby]="showError(passwordCtrl) && passwordCtrl?.errors ? 'login-password-error' : null" />
         </label>
-        <div *ngIf="showError(passwordCtrl) && passwordCtrl?.errors" class="error" data-testid="login-password-error">
+        <div id="login-password-error" *ngIf="showError(passwordCtrl) && passwordCtrl?.errors" class="error" data-testid="login-password-error">
           <ng-container *ngIf="passwordCtrl?.errors?.['required']">Password is required.</ng-container>
         </div>
 
@@ -41,8 +48,12 @@
           {{ loading ? 'Signing in…' : 'Sign In' }}
         </button>
 
-        <div *ngIf="error" class="error" data-testid="login-error">{{ error }}</div>
+        <div *ngIf="error" class="error" role="alert" data-testid="login-error">{{ error }}</div>
       </form>
+
+      <p class="meta meta-center">
+        <a routerLink="/auth/forgot-password" data-testid="login-forgot-password">Forgot your password?</a>
+      </p>
 
       <p class="meta">
         Don’t have an account?

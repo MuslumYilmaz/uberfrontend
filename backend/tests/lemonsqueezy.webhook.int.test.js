@@ -41,6 +41,7 @@ beforeAll(async () => {
   process.env.MONGO_URL_TEST = mongoServer.getUri();
   process.env.LEMONSQUEEZY_WEBHOOK_SECRET = SECRET;
   process.env.LEMONSQUEEZY_WEBHOOK_SECRET_TEST = SECRET;
+  process.env.PAYMENTS_MODE = 'test';
 
   jest.resetModules();
   app = require('../index');
@@ -69,6 +70,7 @@ beforeEach(async () => {
   process.env.LEMONSQUEEZY_WEBHOOK_SECRET = SECRET;
   process.env.LEMONSQUEEZY_WEBHOOK_SECRET_TEST = SECRET;
   process.env.LEMONSQUEEZY_WEBHOOK_SECRET_LIVE = '';
+  process.env.PAYMENTS_MODE = 'test';
   await User.deleteMany({});
   await BillingEvent.deleteMany({});
   await CheckoutAttempt.deleteMany({});
@@ -259,6 +261,37 @@ describe('LemonSqueezy webhook integration', () => {
     expect(event.eventId).toMatch(/^live:subscription_created:sub_live:[a-f0-9]{64}$/);
   });
 
+  test('does not accept the legacy test secret for a live-mode payload', async () => {
+    process.env.LEMONSQUEEZY_WEBHOOK_SECRET_TEST = '';
+    process.env.LEMONSQUEEZY_WEBHOOK_SECRET_LIVE = '';
+    process.env.LEMONSQUEEZY_WEBHOOK_SECRET = SECRET;
+    const user = await User.findOne({ email: 'test@example.com' }).lean();
+    const payload = {
+      meta: { event_name: 'subscription_created', test_mode: false },
+      data: {
+        id: 'sub_live_with_legacy_secret',
+        attributes: {
+          user_email: user.email,
+          status: 'active',
+          renews_at: '2099-01-01T00:00:00Z',
+          custom_data: { fa_user_id: String(user._id) },
+        },
+      },
+    };
+    const rawBody = JSON.stringify(payload);
+
+    const res = await request(app)
+      .post('/api/billing/webhooks/lemonsqueezy')
+      .set('Content-Type', 'application/json')
+      .set('x-signature', signPayload(rawBody))
+      .send(rawBody);
+
+    expect(res.status).toBe(500);
+    const unchanged = await User.findById(user._id).lean();
+    expect(unchanged.entitlements.pro.status).toBe('none');
+    expect(await BillingEvent.countDocuments({})).toBe(0);
+  });
+
   test('legacy single secret still verifies', async () => {
     process.env.LEMONSQUEEZY_WEBHOOK_SECRET = 'legacy_secret';
     process.env.LEMONSQUEEZY_WEBHOOK_SECRET_TEST = '';
@@ -292,6 +325,36 @@ describe('LemonSqueezy webhook integration', () => {
     }).lean();
     expect(event).toBeTruthy();
     expect(event.eventId).toMatch(/^test:subscription_created:sub_legacy:[a-f0-9]{64}$/);
+  });
+
+  test('a test-mode event cannot mutate entitlement while the billing runtime is live', async () => {
+    process.env.PAYMENTS_MODE = 'live';
+    const user = await User.findOne({ email: 'test@example.com' }).lean();
+    const payload = {
+      meta: { event_name: 'subscription_created', test_mode: true },
+      data: {
+        id: 'sub_test_event_in_live_runtime',
+        attributes: {
+          user_email: user.email,
+          status: 'active',
+          renews_at: '2099-01-01T00:00:00Z',
+          custom_data: { fa_user_id: String(user._id) },
+        },
+      },
+    };
+    const rawBody = JSON.stringify(payload);
+
+    const res = await request(app)
+      .post('/api/billing/webhooks/lemonsqueezy')
+      .set('Content-Type', 'application/json')
+      .set('x-signature', signPayload(rawBody))
+      .send(rawBody);
+
+    expect(res.status).toBe(200);
+    expect(res.body.code).toBe('BILLING_RUNTIME_MODE_MISMATCH');
+    const unchanged = await User.findById(user._id).lean();
+    expect(unchanged.entitlements.pro.status).toBe('none');
+    expect(await PendingEntitlement.countDocuments({})).toBe(0);
   });
 
   test('JSON subscription created upgrades user', async () => {
@@ -808,6 +871,100 @@ describe('LemonSqueezy webhook integration', () => {
     expect(updatedAttempt.providerSubscriptionId).toBe('sub_attempt_123');
     expect(updatedAttempt.completedAt).toBeTruthy();
     expect(updatedAttempt.lastErrorCode).toBeFalsy();
+  });
+
+  test('a live webhook for a test checkout attempt never grants entitlement', async () => {
+    process.env.PAYMENTS_MODE = 'live';
+    process.env.LEMONSQUEEZY_WEBHOOK_SECRET_LIVE = 'live_mode_mismatch_secret';
+    const user = await User.findOne({ email: 'test@example.com' }).lean();
+    await CheckoutAttempt.create({
+      attemptId: 'chk_mode_mismatch',
+      userId: user._id,
+      provider: 'lemonsqueezy',
+      planId: 'monthly',
+      mode: 'test',
+      status: 'created',
+    });
+    const payload = {
+      meta: { event_name: 'subscription_created', test_mode: false },
+      data: {
+        id: 'sub_mode_mismatch',
+        attributes: {
+          user_email: user.email,
+          status: 'active',
+          renews_at: '2099-01-01T00:00:00Z',
+          custom_data: {
+            fa_user_id: String(user._id),
+            fa_checkout_attempt_id: 'chk_mode_mismatch',
+          },
+        },
+      },
+    };
+    const rawBody = JSON.stringify(payload);
+    const signature = crypto
+      .createHmac('sha256', process.env.LEMONSQUEEZY_WEBHOOK_SECRET_LIVE)
+      .update(rawBody)
+      .digest('hex');
+
+    const res = await request(app)
+      .post('/api/billing/webhooks/lemonsqueezy')
+      .set('Content-Type', 'application/json')
+      .set('x-signature', signature)
+      .send(rawBody);
+
+    expect(res.status).toBe(200);
+    expect(res.body.code).toBe('CHECKOUT_ATTEMPT_MODE_MISMATCH');
+    const unchanged = await User.findById(user._id).lean();
+    expect(unchanged.entitlements.pro.status).toBe('none');
+    expect(unchanged.accessTier).toBe('free');
+    expect(await PendingEntitlement.countDocuments({})).toBe(0);
+    const attempt = await CheckoutAttempt.findOne({ attemptId: 'chk_mode_mismatch' }).lean();
+    expect(attempt.status).toBe('failed');
+    expect(attempt.lastErrorCode).toBe('CHECKOUT_ATTEMPT_MODE_MISMATCH');
+    const event = await BillingEvent.findOne({ eventType: 'subscription_created' }).lean();
+    expect(event.processingStatus).toBe('processed_checkout_mismatch');
+  });
+
+  test('a recurring entitlement for a lifetime checkout attempt never grants entitlement', async () => {
+    const user = await User.findOne({ email: 'test@example.com' }).lean();
+    await CheckoutAttempt.create({
+      attemptId: 'chk_lifetime_plan_mismatch',
+      userId: user._id,
+      provider: 'lemonsqueezy',
+      planId: 'lifetime',
+      mode: 'test',
+      status: 'created',
+    });
+    const payload = {
+      meta: { event_name: 'subscription_created', test_mode: true },
+      data: {
+        id: 'sub_lifetime_plan_mismatch',
+        attributes: {
+          user_email: user.email,
+          status: 'active',
+          renews_at: '2099-01-01T00:00:00Z',
+          product_name: 'FrontendAtlas Premium Monthly',
+          variant_name: 'Monthly',
+          custom_data: {
+            fa_user_id: String(user._id),
+            fa_checkout_attempt_id: 'chk_lifetime_plan_mismatch',
+          },
+        },
+      },
+    };
+    const rawBody = JSON.stringify(payload);
+
+    const res = await request(app)
+      .post('/api/billing/webhooks/lemonsqueezy')
+      .set('Content-Type', 'application/json')
+      .set('x-signature', signPayload(rawBody))
+      .send(rawBody);
+
+    expect(res.status).toBe(200);
+    expect(res.body.code).toBe('CHECKOUT_ATTEMPT_PLAN_MISMATCH');
+    const unchanged = await User.findById(user._id).lean();
+    expect(unchanged.entitlements.pro.status).toBe('none');
+    expect(await PendingEntitlement.countDocuments({})).toBe(0);
   });
 
   test('retry completes checkout bookkeeping without reapplying after user save succeeded', async () => {

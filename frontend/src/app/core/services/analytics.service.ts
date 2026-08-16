@@ -11,6 +11,18 @@ type AnalyticsWindow = Window & {
   Cypress?: unknown;
 };
 
+type AnalyticsPageView = {
+  path: string;
+  location: string;
+  title?: string;
+};
+
+type PendingAnalyticsDispatch =
+  | { type: 'event'; name: string; params?: Record<string, unknown> }
+  | { type: 'page_view'; pageView: AnalyticsPageView };
+
+export type DecisionSessionQualificationMethod = 'trusted_interaction' | 'foreground_15s';
+
 const RESERVED_ACQUISITION_PARAMS = new Set([
   'source',
   'medium',
@@ -34,14 +46,14 @@ export class AnalyticsService {
   private readonly scriptId = 'ga4-gtag-script';
   private lastTrackedPath: string | null = null;
   private initialized = false;
-  private pendingEvents: Array<{ name: string; params?: Record<string, unknown> }> = [];
-  private pendingPageViews: string[] = [];
+  private decisionSessionQualified = false;
+  private pendingDispatches: PendingAnalyticsDispatch[] = [];
 
   track(name: string, params?: Record<string, unknown>): boolean {
     if (!this.analyticsEnabled) return false;
     const safeParams = this.sanitizeEventParams(params);
     if (!this.initialized) {
-      this.pendingEvents.push({ name, params: safeParams });
+      this.pendingDispatches.push({ type: 'event', name, params: safeParams });
       return true;
     }
 
@@ -55,13 +67,24 @@ export class AnalyticsService {
     const pagePath = this.normalizePath(path);
     if (this.lastTrackedPath === pagePath) return;
     this.lastTrackedPath = pagePath;
+    const pageView = this.createPageView(pagePath);
 
     if (!this.initialized) {
-      this.pendingPageViews.push(pagePath);
+      this.pendingDispatches.push({ type: 'page_view', pageView });
       return;
     }
 
-    this.dispatchPageView(pagePath);
+    this.dispatchPageView(pageView);
+  }
+
+  trackDecisionSessionQualified(method: DecisionSessionQualificationMethod): boolean {
+    if (this.decisionSessionQualified) return false;
+    this.decisionSessionQualified = true;
+
+    return this.track('decision_session_qualified', {
+      qualification_method: method,
+      qualification_version: 'v1',
+    });
   }
 
   ensureInitialized() {
@@ -90,14 +113,14 @@ export class AnalyticsService {
     });
   }
 
-  private dispatchPageView(pagePath: string) {
+  private dispatchPageView(pageView: AnalyticsPageView) {
     const gtag = this.getGtag();
     if (!gtag) return;
 
     gtag('event', 'page_view', {
-      page_path: pagePath,
-      page_location: window.location.href,
-      page_title: this.document.title || undefined,
+      page_path: pageView.path,
+      page_location: pageView.location,
+      page_title: pageView.title,
       ...(this.measurementId ? { send_to: this.measurementId } : {}),
     });
   }
@@ -142,13 +165,16 @@ export class AnalyticsService {
   }
 
   private flushPending() {
-    const pendingEvents = [...this.pendingEvents];
-    const pendingPageViews = [...this.pendingPageViews];
-    this.pendingEvents.length = 0;
-    this.pendingPageViews.length = 0;
+    const pending = [...this.pendingDispatches];
+    this.pendingDispatches.length = 0;
 
-    pendingEvents.forEach((event) => this.dispatchEvent(event.name, event.params));
-    pendingPageViews.forEach((pagePath) => this.dispatchPageView(pagePath));
+    pending.forEach((item) => {
+      if (item.type === 'event') {
+        this.dispatchEvent(item.name, item.params);
+      } else {
+        this.dispatchPageView(item.pageView);
+      }
+    });
   }
 
   private getGtag(): GtagFn | null {
@@ -178,16 +204,26 @@ export class AnalyticsService {
   }
 
   private normalizePath(path?: string): string {
-    if (!path) return `${window.location.pathname}${window.location.search}${window.location.hash}`;
-    if (/^https?:\/\//i.test(path)) {
-      try {
-        const url = new URL(path);
-        return `${url.pathname}${url.search}${url.hash}`;
-      } catch {
-        return path;
-      }
+    const rawPath = path || window.location.pathname || '/';
+    try {
+      const url = new URL(rawPath, window.location.origin);
+      return url.pathname || '/';
+    } catch {
+      const canonicalPath = rawPath.split(/[?#]/, 1)[0] || '/';
+      return canonicalPath.startsWith('/') ? canonicalPath : `/${canonicalPath}`;
     }
-    return path.startsWith('/') ? path : `/${path}`;
+  }
+
+  private createPageView(path: string): AnalyticsPageView {
+    let location = path;
+    try {
+      location = new URL(path, window.location.origin).href;
+    } catch { }
+    return {
+      path,
+      location,
+      title: this.document.title || undefined,
+    };
   }
 
   // Suppress analytics in browser automation so local/CI traffic does not pollute GA.

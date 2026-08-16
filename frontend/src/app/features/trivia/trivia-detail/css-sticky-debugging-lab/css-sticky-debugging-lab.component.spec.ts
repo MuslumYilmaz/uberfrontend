@@ -15,6 +15,7 @@ describe('CssStickyDebuggingLabComponent', () => {
   let observerCallback: IntersectionObserverCallback | undefined;
   let observerInstance: TestIntersectionObserver | undefined;
   let originalIntersectionObserver: typeof IntersectionObserver;
+  let originalVisibilityStateDescriptor: PropertyDescriptor | undefined;
 
   class TestIntersectionObserver implements IntersectionObserver {
     readonly root = null;
@@ -46,6 +47,11 @@ describe('CssStickyDebuggingLabComponent', () => {
     preview = new PreviewPortStub();
     originalIntersectionObserver = window.IntersectionObserver;
     window.IntersectionObserver = TestIntersectionObserver as unknown as typeof IntersectionObserver;
+    originalVisibilityStateDescriptor = Object.getOwnPropertyDescriptor(document, 'visibilityState');
+    Object.defineProperty(document, 'visibilityState', {
+      configurable: true,
+      get: () => 'visible' as DocumentVisibilityState,
+    });
 
     await TestBed.configureTestingModule({
       imports: [CssStickyDebuggingLabComponent],
@@ -66,6 +72,11 @@ describe('CssStickyDebuggingLabComponent', () => {
   afterEach(() => {
     if (!fixture.componentRef.hostView.destroyed) fixture.destroy();
     window.IntersectionObserver = originalIntersectionObserver;
+    if (originalVisibilityStateDescriptor) {
+      Object.defineProperty(document, 'visibilityState', originalVisibilityStateDescriptor);
+    } else {
+      delete (document as any).visibilityState;
+    }
   });
 
   it('starts with five accessible cases and defers Monaco until Edit CSS', () => {

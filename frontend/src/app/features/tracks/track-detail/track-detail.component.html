@@ -216,7 +216,7 @@
                   [solved]="isSolved(item.id)"
                   [metaChips]="trackRowMetaChips(item)"
                   [variants]="trackRowVariants(item)"
-                  [routerLink]="linkFor(item)"
+                  [routeLink]="linkFor(item)"
                   [state]="navState(section.items, item)"
                   (variantSelected)="handleTrackVariantSelected($event, item)"
                 ></fa-question-row>
@@ -250,7 +250,7 @@
               [solved]="isSolved(item.id)"
               [metaChips]="trackRowMetaChips(item)"
               [variants]="trackRowVariants(item)"
-              [routerLink]="linkFor(item)"
+              [routeLink]="linkFor(item)"
               [state]="navState(questions, item)"
               (variantSelected)="handleTrackVariantSelected($event, item)"
             ></fa-question-row>

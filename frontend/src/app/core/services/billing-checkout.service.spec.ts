@@ -1,5 +1,5 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { TestBed } from '@angular/core/testing';
+import { fakeAsync, flushMicrotasks, TestBed, tick } from '@angular/core/testing';
 import { apiUrl } from '../utils/api-base';
 import { BillingCheckoutService } from './billing-checkout.service';
 import { GumroadOverlayService } from './gumroad-overlay.service';
@@ -13,7 +13,7 @@ describe('BillingCheckoutService', () => {
   beforeEach(() => {
     lemonSqueezyCheckout = jasmine.createSpyObj<LemonSqueezyCheckoutService>(
       'LemonSqueezyCheckoutService',
-      ['open', 'prefetch']
+      ['open', 'prefetch', 'reserve', 'release']
     );
     lemonSqueezyCheckout.open.and.resolveTo('new-tab');
     lemonSqueezyCheckout.prefetch.and.resolveTo();
@@ -56,7 +56,11 @@ describe('BillingCheckoutService', () => {
 
     const req = httpMock.expectOne(apiUrl('/billing/checkout/start'));
     expect(req.request.method).toBe('POST');
-    expect(req.request.body).toEqual({ planId: 'monthly', analyticsSource: 'pricing_page' });
+    expect(req.request.body).toEqual({
+      planId: 'monthly',
+      analyticsSource: 'pricing_page',
+      analyticsSurface: 'pricing_page',
+    });
 
     req.flush({
       attemptId: 'chk_123',
@@ -154,6 +158,38 @@ describe('BillingCheckoutService', () => {
       attemptId: 'chk_blocked_123',
       reused: false,
     });
+  });
+
+  it('rejects a checkout path returned on an untrusted or insecure host', async () => {
+    spyOn(console, 'error');
+    const configPromise = service.getCheckoutConfig();
+    httpMock.expectOne(apiUrl('/billing/checkout/config')).flush({
+      configuredProvider: 'lemonsqueezy',
+      provider: 'lemonsqueezy',
+      mode: 'live',
+      enabled: true,
+      plans: { monthly: true, quarterly: true, annual: true, lifetime: true },
+    });
+    await configPromise;
+
+    const checkoutPromise = service.checkout('monthly');
+    await Promise.resolve();
+    httpMock.expectOne(apiUrl('/billing/checkout/start')).flush({
+      attemptId: 'chk_hostile',
+      provider: 'lemonsqueezy',
+      planId: 'monthly',
+      mode: 'live',
+      checkoutUrl: 'https://example.com/checkout/buy/lookalike',
+      successUrl: 'https://frontendatlas.com/billing/success?attempt=chk_hostile',
+      cancelUrl: 'https://frontendatlas.com/billing/cancel?attempt=chk_hostile',
+    });
+
+    await expectAsync(checkoutPromise).toBeResolvedTo({
+      ok: false,
+      reason: 'invalid-url',
+      provider: 'lemonsqueezy',
+    });
+    expect(lemonSqueezyCheckout.open).not.toHaveBeenCalled();
   });
 
   it('maps backend availability failures to a missing-url result', async () => {
@@ -259,10 +295,52 @@ describe('BillingCheckoutService', () => {
     const req = httpMock.expectOne(apiUrl('/billing/checkout/config'));
     req.flush(
       { code: 'CHECKOUT_CONFIG_FAILED', error: 'Failed to resolve checkout configuration' },
-      { status: 500, statusText: 'Server Error' }
+      { status: 400, statusText: 'Bad Request' }
     );
 
     await expectAsync(configPromise).toBeResolvedTo(null);
+  });
+
+  it('retries transient config failures and caches only the successful result', fakeAsync(() => {
+    let resolved: unknown;
+    service.getCheckoutConfig().then((value) => { resolved = value; });
+
+    httpMock.expectOne(apiUrl('/billing/checkout/config')).flush(
+      { code: 'TEMPORARY' },
+      { status: 503, statusText: 'Unavailable' },
+    );
+    flushMicrotasks();
+    expect(resolved).toBeUndefined();
+
+    tick(500);
+    httpMock.expectOne(apiUrl('/billing/checkout/config')).flush(
+      { code: 'TEMPORARY' },
+      { status: 503, statusText: 'Unavailable' },
+    );
+    flushMicrotasks();
+
+    tick(1500);
+    httpMock.expectOne(apiUrl('/billing/checkout/config')).flush({
+      configuredProvider: 'lemonsqueezy',
+      provider: 'lemonsqueezy',
+      mode: 'live',
+      enabled: true,
+      plans: { monthly: true, quarterly: true, annual: true, lifetime: true },
+    });
+    flushMicrotasks();
+
+    expect(resolved).toEqual(jasmine.objectContaining({ mode: 'live', enabled: true }));
+  }));
+
+  it('records checkout client state without exposing the checkout url', () => {
+    service.recordAttemptClientState('chk_state_123', 'popup_blocked').subscribe((attempt) => {
+      expect(attempt.attemptId).toBe('chk_state_123');
+    });
+
+    const req = httpMock.expectOne(apiUrl('/billing/checkout/attempts/chk_state_123/client-state'));
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({ state: 'popup_blocked' });
+    req.flush({ attemptId: 'chk_state_123' });
   });
 
   it('fetches checkout attempt status from the backend', (done) => {

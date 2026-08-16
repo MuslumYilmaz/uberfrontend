@@ -19,6 +19,7 @@ describe('JavaScriptEventLoopExperienceComponent', () => {
   let observerCallback: IntersectionObserverCallback | undefined;
   let observerInstance: TestIntersectionObserver | undefined;
   let originalIntersectionObserver: typeof IntersectionObserver;
+  let originalVisibilityStateDescriptor: PropertyDescriptor | undefined;
 
   class TestIntersectionObserver implements IntersectionObserver {
     readonly root = null;
@@ -42,6 +43,11 @@ describe('JavaScriptEventLoopExperienceComponent', () => {
     analytics = jasmine.createSpyObj<AnalyticsService>('AnalyticsService', ['track']);
     originalIntersectionObserver = window.IntersectionObserver;
     window.IntersectionObserver = TestIntersectionObserver as unknown as typeof IntersectionObserver;
+    originalVisibilityStateDescriptor = Object.getOwnPropertyDescriptor(document, 'visibilityState');
+    Object.defineProperty(document, 'visibilityState', {
+      configurable: true,
+      get: () => 'visible' as DocumentVisibilityState,
+    });
 
     await TestBed.configureTestingModule({
       imports: [JavaScriptEventLoopExperienceComponent],
@@ -59,6 +65,11 @@ describe('JavaScriptEventLoopExperienceComponent', () => {
   afterEach(() => {
     fixture.destroy();
     window.IntersectionObserver = originalIntersectionObserver;
+    if (originalVisibilityStateDescriptor) {
+      Object.defineProperty(document, 'visibilityState', originalVisibilityStateDescriptor);
+    } else {
+      delete (document as any).visibilityState;
+    }
   });
 
   it('starts with three native prediction choices and does not reveal the answer', () => {

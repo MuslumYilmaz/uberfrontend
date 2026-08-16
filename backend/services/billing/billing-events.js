@@ -6,6 +6,7 @@ const TERMINAL_STATUSES = new Set([
   'processed',
   'processed_unknown_type',
   'processed_no_entitlement',
+  'processed_checkout_mismatch',
   'processed_stale',
   'processed_simulated',
 ]);

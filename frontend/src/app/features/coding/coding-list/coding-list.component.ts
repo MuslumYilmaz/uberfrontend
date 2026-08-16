@@ -327,7 +327,6 @@ export class CodingListComponent implements OnInit, OnDestroy {
   private viewModeSub?: Subscription;
   private navSub?: Subscription;
   private hydrated = false;
-  private latestVisibleRows: Row[] = [];
   private navigatingToDetail = false;
   private lastScopedFilter: { topic: string | null; focus: string | null } = { topic: null, focus: null };
   private resolvedList: QuestionListResolved | null = null;
@@ -799,9 +798,6 @@ export class CodingListComponent implements OnInit, OnDestroy {
   // Emit list again whenever solved ids change, so UI reacts immediately to auth/progress updates.
   visible$ = combineLatest([this.filtered$, this.solvedIds$]).pipe(
     map(([qs]) => qs),
-    tap((qs) => {
-      this.latestVisibleRows = qs ?? [];
-    }),
     shareReplay({ bufferSize: 1, refCount: true }),
   );
 
@@ -1040,12 +1036,6 @@ export class CodingListComponent implements OnInit, OnDestroy {
   trackByDiscoverySection = (_: number, section: CodingHubDiscoverySection): string => section.title;
   trackByDiscoveryItem = (_: number, item: CodingHubDiscoveryItem): string =>
     `${item.kind}:${item.tech}:${item.id}`;
-
-  handleCardClick(ev: Event, q: Row) {
-    ev.preventDefault();
-    ev.stopImmediatePropagation();
-    this.go(q, this.latestVisibleRows.length ? this.latestVisibleRows : [q]);
-  }
 
   openFirstVisible(): void {
     if (this.isGuestDefaultGlobalLibrary()) {
