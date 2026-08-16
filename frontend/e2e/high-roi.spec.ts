@@ -257,10 +257,13 @@ test('solution view is non-destructive; loading approach overwrites editor', asy
 });
 
 test('split-pane drag resizes editor/results reliably', async ({ page }) => {
-  const requestFailures = trackRequestFailures(page);
+  const requestFailures = trackRequestFailures(page, {
+    allowlist: [blockedMonacoWorkerScript],
+  });
 
   await page.goto(`/${JS_QUESTION.tech}/coding/${JS_QUESTION.id}`);
   await expect(page.getByTestId('js-panel')).toBeVisible();
+  await waitForMonacoModel(page, `q-${JS_QUESTION.id}-code`);
 
   const editor = page.getByTestId('js-code-editor');
   const results = page.getByTestId('js-results-panel');
@@ -274,6 +277,7 @@ test('split-pane drag resizes editor/results reliably', async ({ page }) => {
   expect(editorH0).toBeGreaterThan(50);
   expect(resultsH0).toBeGreaterThan(50);
 
+  await splitter.hover();
   const splitBox = await splitter.boundingBox();
   expect(splitBox).not.toBeNull();
   if (!splitBox) return;
@@ -281,9 +285,9 @@ test('split-pane drag resizes editor/results reliably', async ({ page }) => {
   const x = splitBox.x + splitBox.width / 2;
   const y = splitBox.y + splitBox.height / 2;
 
-  await page.mouse.move(x, y);
   await page.mouse.down();
-  await page.mouse.move(x, y + 160);
+  await expect(splitter).toHaveClass(/dragging/);
+  await page.mouse.move(x, y + 160, { steps: 8 });
   await page.mouse.up();
 
   await expect.poll(async () => (await editor.boundingBox())?.height ?? 0).toBeGreaterThan(editorH0 + 20);

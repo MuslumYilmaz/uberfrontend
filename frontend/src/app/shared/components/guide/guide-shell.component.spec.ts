@@ -89,6 +89,7 @@ describe('GuideShellComponent', () => {
     analytics.track.and.stub();
     originalPath = `${window.location.pathname}${window.location.search}${window.location.hash}`;
     originalHiddenDescriptor = Object.getOwnPropertyDescriptor(document, 'hidden');
+    setDocumentHidden(false);
     window.history.pushState({}, '', '/guides/interview-blueprint/test-guide');
 
     await TestBed.configureTestingModule({
