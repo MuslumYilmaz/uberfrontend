@@ -6,6 +6,7 @@ const User = require('../models/User.js');
 const AuthSession = require('../models/AuthSession');
 const AuthAttemptReceipt = require('../models/AuthAttemptReceipt');
 const EmailVerification = require('../models/EmailVerification');
+const PasswordReset = require('../models/PasswordReset');
 const OAuthIdentity = require('../models/OAuthIdentity');
 const PendingEntitlement = require('../models/PendingEntitlement');
 const { applyPendingEntitlementsForUser } = require('../services/billing/pending-entitlements');
@@ -28,6 +29,10 @@ const {
     isValidEmail,
     normalizeEmail,
 } = require('../services/email-verification');
+const {
+    createAndSendPasswordReset,
+    hashPasswordResetToken,
+} = require('../services/password-reset');
 const {
     createAuthSession,
     buildReplayableRefreshTokenForSession,
@@ -333,10 +338,11 @@ async function completeAuthAttemptReceipt(receipt, response) {
     );
 }
 
-function sendAuthSuccess(req, res, statusCode, user, accessToken) {
+function sendAuthSuccess(req, res, statusCode, user, accessToken, extra = {}) {
     return res.status(statusCode).json({
         ...(shouldReturnToken(req) ? { token: accessToken } : { token: accessToken }),
         user: pick(user),
+        ...extra,
     });
 }
 
@@ -363,7 +369,16 @@ async function replayAuthAttemptReceipt(req, res, receipt) {
         requestId: receipt.requestId,
     });
     setAuthCookies(req, res, { accessToken, refreshToken });
-    sendAuthSuccess(req, res, receipt.statusCode || (receipt.action === 'signup' ? 201 : 200), user, accessToken);
+    sendAuthSuccess(
+        req,
+        res,
+        receipt.statusCode || (receipt.action === 'signup' ? 201 : 200),
+        user,
+        accessToken,
+        receipt.action === 'signup'
+            ? { accountCreated: true, verificationEmailRequired: !user.emailVerifiedAt }
+            : {}
+    );
     return true;
 }
 
@@ -517,6 +532,7 @@ const AUTH_REFRESH_MAX = Number(process.env.AUTH_REFRESH_MAX || 30);
 const AUTH_OAUTH_START_WINDOW_MS = Number(process.env.AUTH_OAUTH_START_WINDOW_MS || 10 * 60 * 1000);
 const AUTH_OAUTH_START_MAX = Number(process.env.AUTH_OAUTH_START_MAX || 20);
 const EMAIL_VERIFICATION_WINDOW_MS = 15 * 60 * 1000;
+const PASSWORD_RESET_WINDOW_MS = 15 * 60 * 1000;
 
 const loginRateLimit = rateLimit({
     name: 'auth-login',
@@ -571,6 +587,23 @@ const emailVerificationConfirmRateLimit = rateLimit({
     code: AUTH_RATE_LIMIT_CODE,
     message: 'Too many verification attempts. Please wait and try again.',
     keyGenerator: (req) => buildIdentifierKey(req, [req.auth?.userId]),
+});
+
+const passwordResetRequestRateLimit = rateLimit({
+    name: 'password-reset-request',
+    windowMs: PASSWORD_RESET_WINDOW_MS,
+    max: 5,
+    code: AUTH_RATE_LIMIT_CODE,
+    message: 'Too many password reset requests. Please wait and try again.',
+    keyGenerator: (req) => buildIdentifierKey(req, [normalizeEmailInput(req.body?.email)]),
+});
+
+const passwordResetConfirmRateLimit = rateLimit({
+    name: 'password-reset-confirm',
+    windowMs: PASSWORD_RESET_WINDOW_MS,
+    max: 10,
+    code: AUTH_RATE_LIMIT_CODE,
+    message: 'Too many password reset attempts. Please wait and try again.',
 });
 
 function buildDefaultPrefs() {
@@ -703,7 +736,7 @@ async function resolveOAuthUser({
         }
         touchOAuthProfile(currentUser, avatarUrl);
         await currentUser.save();
-        return currentUser;
+        return { user: currentUser, action: 'link' };
     }
 
     if (user) {
@@ -713,7 +746,7 @@ async function resolveOAuthUser({
             user.emailVerifiedAt = user.emailVerifiedAt || new Date();
         }
         await user.save();
-        return user;
+        return { user, action: 'login' };
     }
 
     if (normalizedEmail && await User.exists({ email: normalizedEmail })) {
@@ -733,10 +766,11 @@ async function resolveOAuthUser({
     await linkProviderToUser(user, provider, normalizedProviderId);
     touchOAuthProfile(user, avatarUrl);
     await user.save();
-    return user;
+    return { user, action: 'signup' };
 }
 
 const OAUTH_PUBLIC_FAILURES = Object.freeze({
+    OAUTH_CANCELLED: 'Authentication was cancelled.',
     OAUTH_EMAIL_CONFLICT: 'An account already uses this email. Sign in with your password, then link the provider from Security.',
     OAUTH_EMAIL_UNVERIFIED: 'Your OAuth provider did not return a verified email address.',
     OAUTH_LINK_SESSION_MISMATCH: 'Your sign-in session changed. Start the account link again.',
@@ -1131,8 +1165,6 @@ router.get('/oauth/google/start', oauthStartRateLimit, async (req, res) => {
     });
 
     const url = oauth.generateAuthUrl({
-        access_type: 'offline',
-        prompt: 'consent',
         scope: ['openid', 'email', 'profile'],
         state,
         redirect_uri: GOOGLE_REDIRECT,
@@ -1147,9 +1179,8 @@ router.get('/oauth/google/callback', async (req, res) => {
     let clientState = '';
     let clientMode = '';
     try {
-        const code = String(req.query.code || '');
         const rawState = String(req.query.state || '');
-        if (!code || !rawState) return res.status(400).send('Missing code/state');
+        if (!rawState) return res.status(400).send('Missing state');
 
         const { r, n, s, m, u } = readOAuthState(rawState);
         redirectUri = r;
@@ -1157,6 +1188,17 @@ router.get('/oauth/google/callback', async (req, res) => {
         clientMode = m;
         if (!r || !n || n !== req.cookies?.g_csrf) return res.status(400).send('Bad state');
         if (!isAllowedRedirectUri(r)) return res.status(400).send('redirect_uri not allowed');
+
+        const providerError = String(req.query.error || '').trim();
+        if (providerError) {
+            const error = new Error('OAuth provider returned an error');
+            error.code = providerError === 'access_denied' ? 'OAUTH_CANCELLED' : 'OAUTH_ERROR';
+            res.clearCookie('g_csrf');
+            return redirectOAuthFailure(res, r, s, m, error);
+        }
+
+        const code = String(req.query.code || '');
+        if (!code) return res.status(400).send('Missing code');
 
         // Exchange code → tokens
         const { tokens } = await oauth.getToken({ code, redirect_uri: GOOGLE_REDIRECT });
@@ -1178,7 +1220,7 @@ router.get('/oauth/google/callback', async (req, res) => {
         const providerId = String(payload?.sub || '').trim();
         if (!providerId) return res.status(400).send('Missing provider identity');
 
-        const user = await resolveOAuthUser({
+        const { user, action } = await resolveOAuthUser({
             req,
             provider: 'google',
             providerId,
@@ -1195,6 +1237,7 @@ router.get('/oauth/google/callback', async (req, res) => {
         const dest = new URL(r);
         if (s) dest.searchParams.set('state', String(s));
         if (m) dest.searchParams.set('mode', String(m));
+        dest.searchParams.set('action', action);
         res.clearCookie('g_csrf');
         return res.redirect(dest.toString());
     } catch (e) {
@@ -1251,9 +1294,8 @@ router.get('/oauth/github/callback', async (req, res) => {
     let clientState = '';
     let clientMode = '';
     try {
-        const code = String(req.query.code || '');
         const rawState = String(req.query.state || '');
-        if (!code || !rawState) return res.status(400).send('Missing code/state');
+        if (!rawState) return res.status(400).send('Missing state');
 
         const { r, n, s, m, u } = readOAuthState(rawState);
         redirectUri = r;
@@ -1261,6 +1303,17 @@ router.get('/oauth/github/callback', async (req, res) => {
         clientMode = m;
         if (!r || !n || n !== req.cookies?.gh_csrf) return res.status(400).send('Bad state');
         if (!isAllowedRedirectUri(r)) return res.status(400).send('redirect_uri not allowed');
+
+        const providerError = String(req.query.error || '').trim();
+        if (providerError) {
+            const error = new Error('OAuth provider returned an error');
+            error.code = providerError === 'access_denied' ? 'OAUTH_CANCELLED' : 'OAUTH_ERROR';
+            res.clearCookie('gh_csrf');
+            return redirectOAuthFailure(res, r, s, m, error);
+        }
+
+        const code = String(req.query.code || '');
+        if (!code) return res.status(400).send('Missing code');
 
         // code -> access token
         const tokenRes = await fetch('https://github.com/login/oauth/access_token', {
@@ -1303,7 +1356,7 @@ router.get('/oauth/github/callback', async (req, res) => {
 
         const username = gh.name || gh.login;
         const avatarUrl = gh.avatar_url;
-        const user = await resolveOAuthUser({
+        const { user, action } = await resolveOAuthUser({
             req,
             provider: 'github',
             providerId,
@@ -1319,6 +1372,7 @@ router.get('/oauth/github/callback', async (req, res) => {
         const dest = new URL(String(r));
         if (s) dest.searchParams.set('state', String(s));
         if (m) dest.searchParams.set('mode', String(m));
+        dest.searchParams.set('action', action);
         res.clearCookie('gh_csrf');
         return res.redirect(dest.toString());
     } catch (e) {
@@ -1409,15 +1463,10 @@ router.post('/signup', signupRateLimit, async (req, res) => {
             userId: user._id,
             sessionId: session._id,
         });
-        if (process.env.NODE_ENV !== 'test' || process.env.EMAIL_VERIFICATION_AUTO_SEND === 'true') {
-            try {
-                await createAndSendVerification(EmailVerification, user, user.email);
-            } catch (error) {
-                // Account/session creation must not depend on SMTP availability.
-                console.error('Failed to send signup verification email:', error);
-            }
-        }
-        return sendAuthSuccess(req, res, 201, user, accessToken);
+        return sendAuthSuccess(req, res, 201, user, accessToken, {
+            accountCreated: true,
+            verificationEmailRequired: true,
+        });
     } catch (e) {
         await releaseAuthAttemptReceipt(attemptReservation?.receipt);
         if (isDuplicateKeyError(e)) {
@@ -1566,6 +1615,93 @@ router.post('/logout', async (req, res) => {
     }
     clearAuthCookies(res);
     return res.status(200).json({ ok: true });
+});
+
+// POST /api/auth/password-reset/request
+// Always return the same accepted response so callers cannot enumerate accounts.
+router.post('/password-reset/request', passwordResetRequestRateLimit, async (req, res) => {
+    const email = normalizeEmailInput(req.body?.email);
+    try {
+        if (isValidEmail(email)) {
+            const user = await User.findOne({ email });
+            if (user) {
+                try {
+                    // Await delivery: serverless runtimes may stop work as soon as the
+                    // response is sent, so this must not be an unobserved background job.
+                    await createAndSendPasswordReset(PasswordReset, user);
+                } catch (error) {
+                    console.error('Failed to send password reset email:', error);
+                }
+            }
+        }
+    } catch (error) {
+        console.error('Failed to process password reset request:', error);
+    }
+
+    return res.status(202).json({ ok: true });
+});
+
+// POST /api/auth/password-reset/confirm
+router.post('/password-reset/confirm', passwordResetConfirmRateLimit, async (req, res) => {
+    const invalid = () => res.status(400).json({
+        code: 'PASSWORD_RESET_INVALID',
+        error: 'This reset link is invalid or expired.',
+    });
+    let claimedReset = null;
+    let passwordPersisted = false;
+
+    try {
+        const token = typeof req.body?.token === 'string' ? req.body.token.trim() : '';
+        const newPassword = String(req.body?.newPassword || '');
+        if (!token || token.length > 256) return invalid();
+        if (!isStrongPassword(newPassword)) {
+            return res.status(400).json({
+                code: 'PASSWORD_RESET_WEAK',
+                error: 'Password must be at least 8 characters and include a letter and a number.',
+            });
+        }
+
+        const now = new Date();
+        const reset = await PasswordReset.findOneAndUpdate(
+            {
+                tokenHash: hashPasswordResetToken(token),
+                consumedAt: null,
+                supersededAt: null,
+                expiresAt: { $gt: now },
+            },
+            { $set: { consumedAt: now } },
+            { new: true }
+        );
+        if (!reset) return invalid();
+        claimedReset = reset;
+
+        const user = await User.findById(reset.userId);
+        if (!user) return invalid();
+
+        user.passwordHash = await bcrypt.hash(newPassword, 10);
+        user.passwordUpdatedAt = now;
+        await user.save();
+        passwordPersisted = true;
+        clearAuthValidationCacheForUser(user._id);
+        await revokeAllSessionsForUser(AuthSession, user._id, 'password_reset');
+        clearAuthCookies(res);
+
+        return res.json({ ok: true });
+    } catch (error) {
+        if (claimedReset && !passwordPersisted) {
+            try {
+                await PasswordReset.updateOne(
+                    { _id: claimedReset._id, consumedAt: claimedReset.consumedAt },
+                    { $set: { consumedAt: null } }
+                );
+            } catch (releaseError) {
+                console.error('Failed to release password reset token claim:', releaseError);
+            }
+        }
+        if (passwordPersisted) clearAuthCookies(res);
+        console.error('Failed to reset password:', error);
+        return res.status(500).json({ error: 'Failed to reset password' });
+    }
 });
 
 // POST /api/auth/change-password

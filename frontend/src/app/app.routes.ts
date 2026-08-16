@@ -195,6 +195,34 @@ export const routes: Routes = [
         },
       },
       {
+        path: 'forgot-password',
+        loadComponent: () =>
+          import('./features/auth/forgot-password/forgot-password.component').then(
+            (m) => m.ForgotPasswordComponent,
+          ),
+        data: {
+          seo: {
+            title: 'Reset password',
+            description: 'Request a FrontendAtlas password reset link.',
+            robots: 'noindex,nofollow',
+          },
+        },
+      },
+      {
+        path: 'reset-password',
+        loadComponent: () =>
+          import('./features/auth/reset-password/reset-password.component').then(
+            (m) => m.ResetPasswordComponent,
+          ),
+        data: {
+          seo: {
+            title: 'Choose a new password',
+            description: 'Choose a new password for your FrontendAtlas account.',
+            robots: 'noindex,nofollow',
+          },
+        },
+      },
+      {
         path: 'callback',
         loadComponent: () =>
           import('./features/auth/oauth-callback/oauth-callback.component').then(

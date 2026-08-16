@@ -204,12 +204,15 @@ test.describe('auth edge: stale header session hint', () => {
     const me = await gateNextMeRequest(page);
     await page.goto('/', { waitUntil: 'domcontentloaded' });
     await me.waitUntilSeen();
+    const guestLoginAction = page
+      .getByRole('banner')
+      .getByRole('link', { name: 'Log in', exact: true });
 
     await expect(page.getByTestId('marketing-header-auth-pending')).toBeVisible();
-    await expect(page.locator('[data-testid="marketing-header-utility-link"][href="/auth/login"]')).toHaveCount(0);
+    await expect(guestLoginAction).toHaveCount(0);
 
     me.release();
-    await expect(page.locator('[data-testid="marketing-header-utility-link"][href="/auth/login"]')).toBeVisible();
+    await expect(guestLoginAction).toBeVisible();
     await expect(page.getByTestId('marketing-header-auth-pending')).toHaveCount(0);
     await expect.poll(() => page.evaluate(() => localStorage.getItem('fa:auth:session'))).toBeNull();
   });

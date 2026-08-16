@@ -16,6 +16,7 @@ let User;
 let AuthSession;
 let AuthAttemptReceipt;
 let EmailVerification;
+let PasswordReset;
 let OAuthIdentity;
 let OAuth2Client;
 let connectToMongo;
@@ -87,6 +88,12 @@ function verificationTokenFromLastEmail() {
   return match ? decodeURIComponent(match[1]) : '';
 }
 
+function passwordResetTokenFromLastEmail() {
+  const message = mockSendMail.mock.calls.at(-1)?.[0];
+  const match = String(message?.text || '').match(/\/auth\/reset-password#token=([^\s]+)/);
+  return match ? decodeURIComponent(match[1]) : '';
+}
+
 beforeAll(async () => {
   mongoServer = await MongoMemoryServer.create();
   process.env.MONGO_URL_TEST = mongoServer.getUri();
@@ -112,6 +119,7 @@ beforeAll(async () => {
   AuthSession = require('../models/AuthSession');
   AuthAttemptReceipt = require('../models/AuthAttemptReceipt');
   EmailVerification = require('../models/EmailVerification');
+  PasswordReset = require('../models/PasswordReset');
   OAuthIdentity = require('../models/OAuthIdentity');
   ({ OAuth2Client } = require('google-auth-library'));
 
@@ -131,11 +139,33 @@ beforeEach(async () => {
     AuthSession.deleteMany({}),
     AuthAttemptReceipt.deleteMany({}),
     EmailVerification.deleteMany({}),
+    PasswordReset.deleteMany({}),
     OAuthIdentity.deleteMany({}),
   ]);
 });
 
 describe('POST /api/auth/signup and /api/auth/login', () => {
+  test('signup success never waits for or invokes SMTP', async () => {
+    process.env.EMAIL_VERIFICATION_AUTO_SEND = 'true';
+    try {
+      mockSendMail.mockRejectedValueOnce(new Error('smtp unavailable'));
+      const signup = await request(app).post('/api/auth/signup').send({
+        email: 'smtp-independent@example.com',
+        username: 'smtp_independent',
+        password: 'secret123',
+      });
+
+      expect(signup.status).toBe(201);
+      expect(signup.body).toEqual(expect.objectContaining({
+        accountCreated: true,
+        verificationEmailRequired: true,
+      }));
+      expect(mockSendMail).not.toHaveBeenCalled();
+    } finally {
+      delete process.env.EMAIL_VERIFICATION_AUTO_SEND;
+    }
+  });
+
   test('signup normalizes email/username and login accepts trimmed case-insensitive email', async () => {
     const signup = await request(app)
       .post('/api/auth/signup')
@@ -148,6 +178,9 @@ describe('POST /api/auth/signup and /api/auth/login', () => {
     expect(signup.status).toBe(201);
     expect(signup.body?.user?.email).toBe('user@example.com');
     expect(signup.body?.user?.username).toBe('test_user');
+    expect(signup.body?.accountCreated).toBe(true);
+    expect(signup.body?.verificationEmailRequired).toBe(true);
+    expect(mockSendMail).not.toHaveBeenCalled();
 
     const login = await request(app)
       .post('/api/auth/login')
@@ -782,11 +815,22 @@ describe('email verification', () => {
     });
     expect(signup.status).toBe(201);
 
+    const firstRequest = await agent.post('/api/auth/email-verification/request').send({});
+    expect(firstRequest.status).toBe(200);
+    const firstToken = verificationTokenFromLastEmail();
+    const firstHash = require('crypto').createHash('sha256').update(firstToken).digest('hex');
+
     mockSendMail.mockRejectedValueOnce(new Error('mock smtp unavailable'));
     const failed = await agent.post('/api/auth/email-verification/request').send({});
     expect(failed.status).toBe(503);
     expect(failed.body?.code).toBe('EMAIL_DELIVERY_FAILED');
     expect((await agent.get('/api/auth/me')).status).toBe(200);
+    const failedToken = verificationTokenFromLastEmail();
+    const failedHash = require('crypto').createHash('sha256').update(failedToken).digest('hex');
+    expect(await EmailVerification.findOne({ tokenHash: failedHash }).lean()).toBeNull();
+    const priorUsable = await EmailVerification.findOne({ tokenHash: firstHash }).lean();
+    expect(priorUsable?.consumedAt).toBeNull();
+    expect(priorUsable?.supersededAt).toBeNull();
 
     mockSendMail.mockResolvedValueOnce({ accepted: ['smtp-failure@example.com'] });
     const retried = await agent.post('/api/auth/email-verification/request').send({});
@@ -898,6 +942,146 @@ describe('email verification', () => {
   });
 });
 
+describe('Password recovery', () => {
+  test('request is generic, stores only a token hash, and preserves the prior token on SMTP failure', async () => {
+    await User.create({
+      email: 'reset-existing@example.com',
+      username: 'reset_existing',
+      passwordHash: await require('bcrypt').hash('secret123', 10),
+    });
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    try {
+      const first = await request(app)
+        .post('/api/auth/password-reset/request')
+        .send({ email: 'reset-existing@example.com' });
+      expect(first.status).toBe(202);
+      const firstToken = passwordResetTokenFromLastEmail();
+      const firstHash = require('crypto').createHash('sha256').update(firstToken).digest('hex');
+
+      mockSendMail.mockRejectedValueOnce(new Error('smtp unavailable'));
+      const existing = await request(app)
+        .post('/api/auth/password-reset/request')
+        .send({ email: ' RESET-EXISTING@example.com ' });
+      const missing = await request(app)
+        .post('/api/auth/password-reset/request')
+        .send({ email: 'reset-missing@example.com' });
+      const invalid = await request(app)
+        .post('/api/auth/password-reset/request')
+        .send({ email: 'not-an-email' });
+
+      expect(existing.status).toBe(202);
+      expect(missing.status).toBe(202);
+      expect(invalid.status).toBe(202);
+      expect(existing.body).toEqual({ ok: true });
+      expect(missing.body).toEqual(existing.body);
+      expect(invalid.body).toEqual(existing.body);
+      expect(mockSendMail).toHaveBeenCalledTimes(2);
+
+      const failedToken = passwordResetTokenFromLastEmail();
+      const failedHash = require('crypto').createHash('sha256').update(failedToken).digest('hex');
+      expect(await PasswordReset.findOne({ tokenHash: failedHash }).lean()).toBeNull();
+      const stored = await PasswordReset.findOne({ tokenHash: firstHash }).lean();
+      expect(stored?.tokenHash).toMatch(/^[a-f0-9]{64}$/);
+      expect(stored).not.toHaveProperty('token');
+      expect(stored?.consumedAt).toBeNull();
+      expect(stored?.supersededAt).toBeNull();
+    } finally {
+      consoleErrorSpy.mockRestore();
+    }
+  });
+
+  test('confirm changes the password, revokes every session, and rejects replay', async () => {
+    const firstAgent = request.agent(app);
+    const secondAgent = request.agent(app);
+    const signup = await firstAgent.post('/api/auth/signup').send({
+      email: 'reset-sessions@example.com', username: 'reset_sessions', password: 'secret123',
+    });
+    expect(signup.status).toBe(201);
+    expect((await secondAgent.post('/api/auth/login').send({
+      emailOrUsername: 'reset-sessions@example.com', password: 'secret123',
+    })).status).toBe(200);
+
+    const requestReset = await firstAgent.post('/api/auth/password-reset/request').send({
+      email: 'reset-sessions@example.com',
+    });
+    expect(requestReset.status).toBe(202);
+    const token = passwordResetTokenFromLastEmail();
+    expect(token).toBeTruthy();
+
+    const weak = await firstAgent.post('/api/auth/password-reset/confirm').send({
+      token, newPassword: 'weak',
+    });
+    expect(weak.status).toBe(400);
+    expect(weak.body?.code).toBe('PASSWORD_RESET_WEAK');
+
+    const confirmed = await firstAgent.post('/api/auth/password-reset/confirm').send({
+      token, newPassword: 'new-secret-456',
+    });
+    expect(confirmed.status).toBe(200);
+    expect(confirmed.body).toEqual({ ok: true });
+    expect(await AuthSession.countDocuments({ userId: signup.body.user._id, revokedAt: null })).toBe(0);
+    expect(await AuthSession.countDocuments({
+      userId: signup.body.user._id,
+      revokedReason: 'password_reset',
+    })).toBe(2);
+
+    const replay = await request(app).post('/api/auth/password-reset/confirm').send({
+      token, newPassword: 'another-secret-789',
+    });
+    expect(replay.status).toBe(400);
+    expect(replay.body?.code).toBe('PASSWORD_RESET_INVALID');
+    expect((await request(app).post('/api/auth/login').send({
+      emailOrUsername: 'reset-sessions@example.com', password: 'secret123',
+    })).status).toBe(401);
+    expect((await request(app).post('/api/auth/login').send({
+      emailOrUsername: 'reset-sessions@example.com', password: 'new-secret-456',
+    })).status).toBe(200);
+  });
+
+  test('expired reset tokens are rejected without changing the password', async () => {
+    const signup = await request(app).post('/api/auth/signup').send({
+      email: 'reset-expired@example.com', username: 'reset_expired', password: 'secret123',
+    });
+    await request(app).post('/api/auth/password-reset/request').send({ email: 'reset-expired@example.com' });
+    const token = passwordResetTokenFromLastEmail();
+    await PasswordReset.updateOne({}, { $set: { expiresAt: new Date(Date.now() - 1000) } });
+
+    const expired = await request(app).post('/api/auth/password-reset/confirm').send({
+      token, newPassword: 'new-secret-456',
+    });
+    expect(expired.status).toBe(400);
+    expect(expired.body?.code).toBe('PASSWORD_RESET_INVALID');
+    expect((await User.findById(signup.body.user._id).lean())?.passwordUpdatedAt).toBeFalsy();
+  });
+
+  test('a transient user save failure releases the reset token for retry', async () => {
+    await request(app).post('/api/auth/signup').send({
+      email: 'reset-retry@example.com', username: 'reset_retry', password: 'secret123',
+    });
+    await request(app).post('/api/auth/password-reset/request').send({ email: 'reset-retry@example.com' });
+    const token = passwordResetTokenFromLastEmail();
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    const saveSpy = jest.spyOn(User.prototype, 'save').mockRejectedValueOnce(new Error('transient save failure'));
+
+    try {
+      const failed = await request(app).post('/api/auth/password-reset/confirm').send({
+        token, newPassword: 'new-secret-456',
+      });
+      expect(failed.status).toBe(500);
+      expect((await PasswordReset.findOne({}).lean())?.consumedAt).toBeNull();
+
+      const retried = await request(app).post('/api/auth/password-reset/confirm').send({
+        token, newPassword: 'new-secret-456',
+      });
+      expect(retried.status).toBe(200);
+    } finally {
+      saveSpy.mockRestore();
+      consoleErrorSpy.mockRestore();
+    }
+  });
+});
+
 describe('OAuth callbacks', () => {
   test('login mode ignores an existing auth cookie and never turns it into a link operation', async () => {
     const agent = request.agent(app);
@@ -910,7 +1094,10 @@ describe('OAuth callbacks', () => {
       redirect_uri: 'http://localhost:4200/auth/callback',
       mode: 'login',
     });
-    const state = new URL(start.headers.location).searchParams.get('state');
+    const startUrl = new URL(start.headers.location);
+    const state = startUrl.searchParams.get('state');
+    expect(startUrl.searchParams.get('prompt')).toBeNull();
+    expect(startUrl.searchParams.get('access_type')).toBeNull();
     const getTokenSpy = jest.spyOn(OAuth2Client.prototype, 'getToken')
       .mockResolvedValue({ tokens: { id_token: 'google-id-token' } });
     const verifySpy = jest.spyOn(OAuth2Client.prototype, 'verifyIdToken').mockResolvedValue({
@@ -925,11 +1112,22 @@ describe('OAuth callbacks', () => {
     try {
       const callback = await agent.get('/api/auth/oauth/google/callback').query({ code: 'oauth-code', state });
       expect(callback.status).toBe(302);
+      expect(new URL(callback.headers.location).searchParams.get('action')).toBe('signup');
       expect(csrfCookieValueFromResponse(callback)).toMatch(/^[a-f0-9]{64}$/);
       const original = await User.findById(signup.body.user._id).lean();
       expect(original?.providers || []).toHaveLength(0);
       expect(await User.countDocuments({})).toBe(2);
       expect((await User.findOne({ email: 'oauth-new@example.com' }).lean())?.emailVerifiedAt).toBeTruthy();
+
+      const loginStart = await agent.get('/api/auth/oauth/google/start').query({
+        redirect_uri: 'http://localhost:4200/auth/callback',
+        mode: 'signup',
+      });
+      const loginState = new URL(loginStart.headers.location).searchParams.get('state');
+      const loginCallback = await agent.get('/api/auth/oauth/google/callback').query({
+        code: 'oauth-code-again', state: loginState,
+      });
+      expect(new URL(loginCallback.headers.location).searchParams.get('action')).toBe('login');
     } finally {
       getTokenSpy.mockRestore();
       verifySpy.mockRestore();
@@ -962,6 +1160,18 @@ describe('OAuth callbacks', () => {
       expect(redirect.searchParams.get('code')).toBe('OAUTH_ERROR');
       expect(redirect.searchParams.get('error')).toBe('We could not finish authentication. Please try again.');
       expect(redirected.headers.location).not.toContain(encodeURIComponent(secretFailure));
+
+      const cancelled = await agent.get('/api/auth/oauth/google/callback').query({
+        error: 'access_denied',
+        error_description: 'The user denied access',
+        state,
+      });
+      expect(cancelled.status).toBe(302);
+      const cancelledRedirect = new URL(cancelled.headers.location);
+      expect(cancelledRedirect.searchParams.get('state')).toBe('client-state');
+      expect(cancelledRedirect.searchParams.get('mode')).toBe('login');
+      expect(cancelledRedirect.searchParams.get('code')).toBe('OAUTH_CANCELLED');
+      expect(cancelledRedirect.searchParams.get('error')).toBe('Authentication was cancelled.');
 
       const direct = await request(app)
         .get('/api/auth/oauth/google/callback')

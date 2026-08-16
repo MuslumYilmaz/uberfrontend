@@ -73,7 +73,9 @@
 /angular/trivia/rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use
 /angular/trivia/rxjs-tap-vs-map-angular-when-to-use
 /auth/callback
+/auth/forgot-password
 /auth/login
+/auth/reset-password
 /auth/signup
 /billing/cancel
 /billing/success

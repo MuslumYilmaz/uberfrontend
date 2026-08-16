@@ -6,7 +6,10 @@
 }
 .auth-page{min-height:100vh; display:grid; grid-template-columns:1fr minmax(360px, 48%);}
 @media (max-width:960px){.auth-page{grid-template-columns:1fr;}}
-.auth-left{display:grid; place-items:center; padding:32px 24px;}
+.auth-left{position:relative; display:grid; place-items:center; padding:72px 24px 32px;}
+.auth-home-link{position:absolute; top:24px; left:24px; color:var(--uf-text-primary); font-weight:800; text-decoration:none; letter-spacing:-.01em;}
+.auth-home-link:hover{color:var(--uf-accent);}
+.auth-home-link:focus-visible{outline:none; box-shadow:var(--uf-focus-ring); border-radius:6px;}
 .auth-card{width:min(520px,100%); background:var(--uf-surface); border:1px solid var(--uf-border-subtle); border-radius:var(--uf-card-radius); box-shadow:var(--uf-card-shadow-strong); padding:24px; display:grid; gap:18px;}
 .auth-title{margin:0; font-size:26px; font-weight:800; color:var(--uf-text-primary);}
 .auth-socials{display:grid; gap:10px;}
@@ -41,3 +44,6 @@
 .aside-list strong{color:var(--uf-text-primary);} 
 .aside-note{margin-top:4px; color:color-mix(in srgb, var(--uf-text-tertiary) 80%, transparent);} 
 .muted{color:color-mix(in srgb, var(--uf-text-tertiary) 70%, transparent);}
+.account-created{display:grid; gap:12px; line-height:1.55;}
+.account-created p{margin:0; color:var(--uf-text-secondary);}
+.account-created-actions{display:grid; gap:10px;}

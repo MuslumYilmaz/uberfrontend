@@ -1,9 +1,10 @@
 <div class="auth-page" data-testid="signup-page">
   <section class="auth-left">
+    <a class="auth-home-link" routerLink="/" aria-label="Back to FrontendAtlas home">FrontendAtlas</a>
     <div class="auth-card">
-      <h1 class="auth-title">Create a new account</h1>
+      <h1 class="auth-title">{{ accountCreated ? 'Your account is ready' : 'Create a new account' }}</h1>
 
-      <div class="auth-socials">
+      <div class="auth-socials" *ngIf="!accountCreated">
         <button type="button" class="btn-surface" data-testid="signup-google" (click)="continueWithGoogle()">
           <i class="fa-brands fa-google social-icon" aria-hidden="true"></i>
           Continue with Google
@@ -14,18 +15,21 @@
         </button>
       </div>
 
-      <div class="divider">
+      <div class="divider" *ngIf="!accountCreated">
         <span class="line"></span>
         <span class="label">or</span>
         <span class="line"></span>
       </div>
 
-      <form [formGroup]="form" (ngSubmit)="submit()" class="auth-form">
+      <form *ngIf="!accountCreated" [formGroup]="form" (ngSubmit)="submit()" class="auth-form">
         <label class="field">
           <span>Email</span>
-          <input data-testid="signup-email" formControlName="email" type="email" placeholder="you@example.com" />
+          <input id="signup-email" name="email" data-testid="signup-email" formControlName="email" type="email"
+            inputmode="email" autocomplete="email" required placeholder="you@example.com"
+            [attr.aria-invalid]="showError(emailCtrl) && emailCtrl?.errors ? 'true' : null"
+            [attr.aria-describedby]="showError(emailCtrl) && emailCtrl?.errors ? 'signup-email-error' : null" />
         </label>
-        <div *ngIf="showError(emailCtrl) && emailCtrl?.errors" class="error" data-testid="signup-email-error">
+        <div id="signup-email-error" *ngIf="showError(emailCtrl) && emailCtrl?.errors" class="error" data-testid="signup-email-error">
           <ng-container *ngIf="emailCtrl?.errors?.['required']">Email is required.</ng-container>
           <ng-container *ngIf="emailCtrl?.errors?.['email']">Enter a valid email address.</ng-container>
           <ng-container *ngIf="emailCtrl?.errors?.['duplicate']">Email is already in use.</ng-container>
@@ -33,9 +37,12 @@
 
         <label class="field">
           <span>Username</span>
-          <input data-testid="signup-username" formControlName="username" type="text" placeholder="jane_doe" />
+          <input id="signup-username" name="username" data-testid="signup-username" formControlName="username" type="text"
+            autocomplete="username" required placeholder="jane_doe"
+            [attr.aria-invalid]="showError(usernameCtrl) && usernameCtrl?.errors ? 'true' : null"
+            [attr.aria-describedby]="showError(usernameCtrl) && usernameCtrl?.errors ? 'signup-username-error' : null" />
         </label>
-        <div *ngIf="showError(usernameCtrl) && usernameCtrl?.errors" class="error" data-testid="signup-username-error">
+        <div id="signup-username-error" *ngIf="showError(usernameCtrl) && usernameCtrl?.errors" class="error" data-testid="signup-username-error">
           <ng-container *ngIf="usernameCtrl?.errors?.['required']">Username is required.</ng-container>
           <ng-container *ngIf="usernameCtrl?.errors?.['minlength']">Username must be at least 3 characters.</ng-container>
           <ng-container *ngIf="usernameCtrl?.errors?.['duplicate']">Username is already in use.</ng-container>
@@ -44,9 +51,12 @@
         <div formGroupName="passwords" class="auth-form">
           <label class="field">
             <span>Password</span>
-            <input data-testid="signup-password" formControlName="password" type="password" placeholder="••••••••" />
+            <input id="signup-password" name="password" data-testid="signup-password" formControlName="password" type="password"
+              autocomplete="new-password" required placeholder="••••••••"
+              [attr.aria-invalid]="showError(passwordCtrl) && passwordCtrl?.errors ? 'true' : null"
+              [attr.aria-describedby]="showError(passwordCtrl) && passwordCtrl?.errors ? 'signup-password-error' : null" />
           </label>
-          <div *ngIf="showError(passwordCtrl) && passwordCtrl?.errors" class="error" data-testid="signup-password-error">
+          <div id="signup-password-error" *ngIf="showError(passwordCtrl) && passwordCtrl?.errors" class="error" data-testid="signup-password-error">
             <ng-container *ngIf="passwordCtrl?.errors?.['required']">Password is required.</ng-container>
             <ng-container *ngIf="passwordCtrl?.errors?.['minlength']">Password must be at least 8 characters.</ng-container>
             <ng-container *ngIf="passwordCtrl?.errors?.['pattern']">Use at least 8 characters with a letter and a number.</ng-container>
@@ -54,13 +64,16 @@
 
           <label class="field">
             <span>Confirm Password</span>
-            <input data-testid="signup-confirm" formControlName="confirmPassword" type="password" placeholder="••••••••" />
+            <input id="signup-confirm" name="confirmPassword" data-testid="signup-confirm" formControlName="confirmPassword" type="password"
+              autocomplete="new-password" required placeholder="••••••••"
+              [attr.aria-invalid]="showError(confirmCtrl) && (confirmCtrl?.errors || form.hasError('mismatch')) ? 'true' : null"
+              [attr.aria-describedby]="showError(confirmCtrl) && confirmCtrl?.errors ? 'signup-confirm-error' : (form.hasError('mismatch') ? 'signup-mismatch' : null)" />
           </label>
-          <div *ngIf="showError(confirmCtrl) && confirmCtrl?.errors" class="error" data-testid="signup-confirm-error">
+          <div id="signup-confirm-error" *ngIf="showError(confirmCtrl) && confirmCtrl?.errors" class="error" data-testid="signup-confirm-error">
             <ng-container *ngIf="confirmCtrl?.errors?.['required']">Please confirm your password.</ng-container>
           </div>
 
-          <div *ngIf="form.hasError('mismatch') && (showError(confirmCtrl) || showError(passwordCtrl))" class="error" data-testid="signup-mismatch">
+          <div id="signup-mismatch" *ngIf="form.hasError('mismatch') && (showError(confirmCtrl) || showError(passwordCtrl))" class="error" data-testid="signup-mismatch">
             Passwords do not match
           </div>
         </div>
@@ -69,10 +82,24 @@
           {{ loading ? 'Creating account…' : 'Create account' }}
         </button>
 
-        <div *ngIf="error" class="error" data-testid="signup-error">{{ error }}</div>
+        <div *ngIf="error" class="error" role="alert" data-testid="signup-error">{{ error }}</div>
       </form>
 
-      <p class="meta">
+      <section *ngIf="accountCreated" class="account-created" aria-live="polite" data-testid="signup-account-created">
+        <p>Your account was created successfully.</p>
+        <p *ngIf="loading">Sending your verification email…</p>
+        <p *ngIf="verificationError" class="error" role="alert" data-testid="signup-verification-error">
+          {{ verificationError }}
+        </p>
+        <div class="account-created-actions" *ngIf="verificationError">
+          <button type="button" class="btn-primary" [disabled]="loading" (click)="retryVerification()"
+            data-testid="signup-verification-retry">Retry verification email</button>
+          <button type="button" class="btn-surface" (click)="continueAfterSignup()"
+            data-testid="signup-verification-continue">Continue for now</button>
+        </div>
+      </section>
+
+      <p class="meta" *ngIf="!accountCreated">
         Already have an account?
         <a routerLink="/auth/login" [queryParams]="authSwitchQueryParams" data-testid="signup-link-login">Sign in</a>
       </p>

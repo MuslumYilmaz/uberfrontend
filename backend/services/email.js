@@ -50,4 +50,14 @@ async function sendEmailVerificationMail({ to, verificationUrl, purpose }) {
   });
 }
 
-module.exports = { sendMail, sendEmailVerificationMail };
+async function sendPasswordResetMail({ to, resetUrl }) {
+  const safeUrl = escapeHtml(resetUrl);
+  return sendMail({
+    to,
+    subject: 'Reset your FrontendAtlas password',
+    text: `Reset your FrontendAtlas password\n\nOpen this link within 30 minutes:\n${resetUrl}\n\nIf you did not request this, you can ignore this email.`,
+    html: `<h2>Reset your FrontendAtlas password</h2><p>Open this link within 30 minutes:</p><p><a href="${safeUrl}">${safeUrl}</a></p><p>If you did not request this, you can ignore this email.</p>`,
+  });
+}
+
+module.exports = { sendMail, sendEmailVerificationMail, sendPasswordResetMail };

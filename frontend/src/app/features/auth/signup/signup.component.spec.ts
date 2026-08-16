@@ -13,7 +13,7 @@ describe('SignupComponent analytics', () => {
   let router: Router;
 
   beforeEach(async () => {
-    auth = jasmine.createSpyObj<AuthService>('AuthService', ['signup', 'oauthStart']);
+    auth = jasmine.createSpyObj<AuthService>('AuthService', ['signup', 'oauthStart', 'requestEmailVerification']);
     analytics = jasmine.createSpyObj<AnalyticsService>('AnalyticsService', ['track']);
     await TestBed.configureTestingModule({
       imports: [SignupComponent],
@@ -43,7 +43,11 @@ describe('SignupComponent analytics', () => {
   });
 
   it('emits standard sign_up without sending form PII', () => {
-    auth.signup.and.returnValue(of({} as any));
+    auth.signup.and.returnValue(of({
+      user: {} as any,
+      accountCreated: true,
+      verificationEmailRequired: false,
+    }));
     component.form.setValue({
       email: 'person@example.com',
       username: 'person',
@@ -85,5 +89,41 @@ describe('SignupComponent analytics', () => {
       failure_reason: 'identity_conflict',
       src: 'coding_submit',
     }));
+  });
+
+  it('keeps the created account and offers email retry without resubmitting signup', () => {
+    auth.signup.and.returnValue(of({
+      user: {} as any,
+      accountCreated: true,
+      verificationEmailRequired: true,
+    }));
+    auth.requestEmailVerification.and.returnValue(throwError(() => ({
+      status: 503,
+      error: { code: 'EMAIL_DELIVERY_FAILED', error: 'Verification email could not be sent.' },
+    })));
+    component.form.setValue({
+      email: 'person@example.com',
+      username: 'person',
+      passwords: { password: 'secret123', confirmPassword: 'secret123' },
+    });
+
+    component.submit();
+    fixture.detectChanges();
+
+    expect(component.accountCreated).toBeTrue();
+    expect(auth.signup).toHaveBeenCalledTimes(1);
+    expect(auth.requestEmailVerification).toHaveBeenCalledTimes(1);
+    expect(fixture.nativeElement.querySelector('[data-testid="signup-verification-retry"]')).toBeTruthy();
+
+    auth.requestEmailVerification.and.returnValue(of({
+      ok: true,
+      purpose: 'verify_email',
+      expiresAt: new Date().toISOString(),
+    }));
+    component.retryVerification();
+
+    expect(auth.signup).toHaveBeenCalledTimes(1);
+    expect(auth.requestEmailVerification).toHaveBeenCalledTimes(2);
+    expect(router.navigateByUrl).toHaveBeenCalledWith('/javascript/coding/two-sum');
   });
 });

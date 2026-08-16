@@ -102,6 +102,17 @@ export type OAuthContext = {
   source: string;
 };
 
+export type SignupResult = {
+  user: User;
+  accountCreated: boolean;
+  verificationEmailRequired: boolean;
+};
+
+export type OAuthCompletion = {
+  user: User | null;
+  action: 'login' | 'signup' | 'link' | null;
+};
+
 function buildSessionBootstrapError(context: AuthBootstrapContext) {
   const action =
     context === 'login' ? 'sign you in' :
@@ -151,7 +162,7 @@ export class AuthService {
   private pendingMeRequest$: Observable<User | null> | null = null;
   private pendingMeBroadcast = false;
   private readonly pendingLoginAttempts = new Map<string, Observable<User>>();
-  private readonly pendingSignupAttempts = new Map<string, Observable<User>>();
+  private readonly pendingSignupAttempts = new Map<string, Observable<SignupResult>>();
 
   constructor(private http: HttpClient) {
     this.authAuthority.events$.subscribe((event) => this.handleAuthorityEvent(event));
@@ -181,7 +192,12 @@ export class AuthService {
     const authEpoch = this.authAuthority.captureEpoch();
     const headers = this.buildAuthAttemptHeaders();
     const request$ = this.http
-      .post<{ token?: string; user?: User }>(`${this.base}/signup`, data, { withCredentials: true, headers })
+      .post<{
+        token?: string;
+        user?: User;
+        accountCreated?: boolean;
+        verificationEmailRequired?: boolean;
+      }>(`${this.base}/signup`, data, { withCredentials: true, headers })
       .pipe(
         tap((res) => {
           this.authAuthority.noteSessionHintPresent();
@@ -190,7 +206,22 @@ export class AuthService {
           }
           this.attemptInsights?.notifyAuthSessionStarted();
         }),
-        switchMap(() => this.hydrateAuthenticatedUser('signup', { broadcastLogin: true })),
+        switchMap((res) => {
+          const responseUser = res.user ? this.cloneUser(res.user) : null;
+          const result = (user: User): SignupResult => ({
+            user,
+            accountCreated: res.accountCreated === true,
+            verificationEmailRequired: res.verificationEmailRequired === true,
+          });
+          return this.hydrateAuthenticatedUser('signup', { broadcastLogin: true }).pipe(
+            map(result),
+            // Account creation is backend truth and must not disappear from
+            // analytics/UI merely because the follow-up /me hydration failed.
+            catchError((error) => responseUser && res.accountCreated === true
+              ? of(result(responseUser))
+              : throwError(() => error)),
+          );
+        }),
         finalize(() => this.pendingSignupAttempts.delete(key)),
         shareReplay(1)
       );
@@ -364,6 +395,22 @@ export class AuthService {
     );
   }
 
+  requestPasswordReset(email: string) {
+    return this.http.post<{ ok: boolean }>(
+      `${this.base}/password-reset/request`,
+      { email },
+      { withCredentials: true },
+    );
+  }
+
+  confirmPasswordReset(token: string, newPassword: string) {
+    return this.http.post<{ ok: boolean }>(
+      `${this.base}/password-reset/confirm`,
+      { token, newPassword },
+      { withCredentials: true },
+    ).pipe(tap(() => this.authAuthority.forceSignOut('session_expired')));
+  }
+
   /** GET /api/billing/manage-url */
   getManageSubscriptionUrl(): Observable<{ url: string }> {
     const provider = resolvePaymentsProvider(environment);
@@ -437,14 +484,34 @@ export class AuthService {
    * Primary: backend sets httpOnly cookie and redirects back to the app.
    * Legacy: backend may still include ?token=... or #token=... (we do not store it).
    */
-  completeOAuthCallback(qp: Record<string, any>): Observable<User | null> {
+  completeOAuthCallback(qp: Record<string, any>): Observable<OAuthCompletion> {
     const expected = sessionStorage.getItem(AuthService.OAUTH_STATE_KEY);
-    if (qp['state'] && expected && qp['state'] !== expected) {
+    if (!qp['state'] || !expected || qp['state'] !== expected) {
+      this.scrubOAuthCallbackUrl();
+      try {
+        sessionStorage.removeItem(AuthService.OAUTH_STATE_KEY);
+      } catch { }
       return throwError(() => new Error('Invalid OAuth state'));
     }
     try {
       sessionStorage.removeItem(AuthService.OAUTH_STATE_KEY);
     } catch { }
+
+    const action = qp['action'] === 'login' || qp['action'] === 'signup' || qp['action'] === 'link'
+      ? qp['action']
+      : null;
+
+    // token may be in query OR in the hash (legacy). Capture it before the URL
+    // is scrubbed, and use it only for this single /me request.
+    let token: string | null = (qp['token'] as string) || (qp['access_token'] as string) || null;
+    if (!token && window.location.hash) {
+      const hash = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+      token = hash.get('token') || hash.get('access_token');
+    }
+
+    // Remove callback state and legacy token material even when the provider
+    // reports an error, so cancelled/failed attempts do not linger in the URL.
+    this.scrubOAuthCallbackUrl();
 
     if (qp['error']) {
       return throwError(() => ({
@@ -455,16 +522,6 @@ export class AuthService {
         },
       }));
     }
-
-    // token may be in query OR in the hash (legacy)
-    let token: string | null = (qp['token'] as string) || (qp['access_token'] as string) || null;
-    if (!token && window.location.hash) {
-      const hash = new URLSearchParams(window.location.hash.replace(/^#/, ''));
-      token = hash.get('token') || hash.get('access_token');
-    }
-
-    // Remove sensitive tokens from the URL (query/hash) to avoid leaks via copy/paste or screenshots.
-    this.scrubOAuthCallbackUrl();
 
     // Prefer cookie session (backend should set it). If a legacy token exists, use it once.
     const me$ = token
@@ -479,11 +536,11 @@ export class AuthService {
 
     return me$.pipe(
       map((u) => {
-        if (!this.canApplyAuthResponse(seq, authEpoch)) return null;
+        if (!this.canApplyAuthResponse(seq, authEpoch)) return { user: null, action };
         const cloned = this.cloneUser(u);
         this.authAuthority.commitAuthenticated({ broadcast: true });
         this.user.set(cloned);
-        return cloned;
+        return { user: cloned, action };
       }),
       catchError((error) => {
         if (this.canApplyAuthResponse(seq, authEpoch)) {
@@ -507,6 +564,7 @@ export class AuthService {
       url.searchParams.delete('access_token');
       url.searchParams.delete('state');
       url.searchParams.delete('mode');
+      url.searchParams.delete('action');
       url.hash = '';
       window.history.replaceState({}, document.title, `${url.pathname}${url.search}`);
     } catch { }

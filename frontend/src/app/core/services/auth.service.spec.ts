@@ -298,6 +298,95 @@ describe('AuthService', () => {
     expect(service.user()?.email).toBe('test@example.com');
   });
 
+  it('returns account creation and verification requirements from signup after hydration', async () => {
+    const result = firstValueFrom(service.signup({
+      email: 'test@example.com', username: 'test-user', password: 'secret123',
+    }));
+    const signupReq = httpMock.expectOne((request) =>
+      request.method === 'POST' && request.url.endsWith('/api/auth/signup')
+    );
+    signupReq.flush({
+      user: sampleUser,
+      accountCreated: true,
+      verificationEmailRequired: true,
+    });
+    const meReq = httpMock.expectOne((request) =>
+      request.method === 'GET' && request.url.endsWith('/api/auth/me')
+    );
+    meReq.flush(sampleUser);
+
+    expect(await result).toEqual(jasmine.objectContaining({
+      user: jasmine.objectContaining({ email: 'test@example.com' }),
+      accountCreated: true,
+      verificationEmailRequired: true,
+    }));
+  });
+
+  it('preserves backend account-created truth when follow-up hydration fails', async () => {
+    const result = firstValueFrom(service.signup({
+      email: 'test@example.com', username: 'test-user', password: 'secret123',
+    }));
+    httpMock.expectOne((request) =>
+      request.method === 'POST' && request.url.endsWith('/api/auth/signup')
+    ).flush({
+      user: sampleUser,
+      accountCreated: true,
+      verificationEmailRequired: true,
+    });
+    httpMock.expectOne((request) =>
+      request.method === 'GET' && request.url.endsWith('/api/auth/me')
+    ).flush({ error: 'temporary' }, { status: 503, statusText: 'Unavailable' });
+
+    expect(await result).toEqual(jasmine.objectContaining({
+      user: jasmine.objectContaining({ email: 'test@example.com' }),
+      accountCreated: true,
+      verificationEmailRequired: true,
+    }));
+  });
+
+  it('uses the generic password reset request and confirm contracts', async () => {
+    const requested = firstValueFrom(service.requestPasswordReset('test@example.com'));
+    const requestReq = httpMock.expectOne((request) =>
+      request.method === 'POST' && request.url.endsWith('/api/auth/password-reset/request')
+    );
+    expect(requestReq.request.body).toEqual({ email: 'test@example.com' });
+    expect(requestReq.request.withCredentials).toBeTrue();
+    requestReq.flush({ ok: true }, { status: 202, statusText: 'Accepted' });
+    expect((await requested).ok).toBeTrue();
+
+    service.user.set(sampleUser);
+    const confirmed = firstValueFrom(service.confirmPasswordReset('reset-token', 'new-secret-456'));
+    const confirmReq = httpMock.expectOne((request) =>
+      request.method === 'POST' && request.url.endsWith('/api/auth/password-reset/confirm')
+    );
+    expect(confirmReq.request.body).toEqual({ token: 'reset-token', newPassword: 'new-secret-456' });
+    confirmReq.flush({ ok: true });
+    expect((await confirmed).ok).toBeTrue();
+    expect(service.user()).toBeNull();
+  });
+
+  it('returns the backend OAuth action and scrubs it from the callback URL', async () => {
+    window.history.replaceState({}, '', '/auth/callback?action=signup&state=oauth-state');
+    sessionStorage.setItem('oauth:state', 'oauth-state');
+    const result = firstValueFrom(service.completeOAuthCallback({ action: 'signup', state: 'oauth-state' }));
+    const meReq = httpMock.expectOne((request) =>
+      request.method === 'GET' && request.url.endsWith('/api/auth/me')
+    );
+    meReq.flush(sampleUser);
+
+    expect((await result).action).toBe('signup');
+    expect(window.location.search).not.toContain('action=');
+    expect(window.location.search).not.toContain('state=');
+  });
+
+  it('rejects OAuth callbacks that are not bound to the initiating browser state', async () => {
+    const error = await firstValueFrom(service.completeOAuthCallback({ action: 'signup' }))
+      .catch((value) => value);
+
+    expect(error?.message).toBe('Invalid OAuth state');
+    httpMock.expectNone((request) => request.url.endsWith('/api/auth/me'));
+  });
+
   it('applies the provider-safe user contract after email confirmation', async () => {
     const confirmedUser: User = {
       ...sampleUser,
@@ -318,7 +407,9 @@ describe('AuthService', () => {
   });
 
   it('preserves stable OAuth conflict codes from the callback query', async () => {
+    sessionStorage.setItem('oauth:state', 'oauth-conflict-state');
     const error = await firstValueFrom(service.completeOAuthCallback({
+      state: 'oauth-conflict-state',
       error: 'An account already uses this email.',
       code: 'OAUTH_EMAIL_CONFLICT',
     })).catch((value) => value);

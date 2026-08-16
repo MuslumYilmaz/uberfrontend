@@ -22,8 +22,8 @@ import { sanitizeRedirectTarget } from '../../../core/utils/redirect.util';
             type="button"
             class="fa-btn fa-btn--primary"
             data-testid="oauth-callback-login"
-            (click)="goToLogin()">
-            Go to sign in
+            (click)="goToAuth()">
+            {{ retryMode === 'signup' ? 'Go to sign up' : 'Go to sign in' }}
           </button>
         </div>
       </div>
@@ -34,6 +34,7 @@ export class OAuthCallbackComponent implements OnInit {
   error = '';
   private redirectTo = '/dashboard';
   private analyticsSource = 'direct';
+  retryMode: 'login' | 'signup' = 'login';
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   constructor(
@@ -51,13 +52,14 @@ export class OAuthCallbackComponent implements OnInit {
     const oauthContext = this.auth.consumeOAuthContext(queryRedirect);
     this.redirectTo = oauthContext.redirectTo;
     this.analyticsSource = oauthContext.source;
+    this.retryMode = oauthContext.mode === 'signup' ? 'signup' : 'login';
     this.auth.completeOAuthCallback(qp).subscribe({
-      next: () => {
-        if (oauthContext.mode === 'signup' || oauthContext.mode === 'login') {
-          this.analytics.track(oauthContext.mode === 'signup' ? 'sign_up' : 'login', {
+      next: (completion) => {
+        if (completion.action === 'signup' || completion.action === 'login') {
+          this.analytics.track(completion.action === 'signup' ? 'sign_up' : 'login', {
             method: oauthContext.provider || 'oauth',
             provider: oauthContext.provider || 'unknown',
-            auth_mode: oauthContext.mode,
+            auth_mode: completion.action,
             src: oauthContext.source,
             redirect_to_present: oauthContext.redirectTo !== '/dashboard',
           });
@@ -80,8 +82,8 @@ export class OAuthCallbackComponent implements OnInit {
     });
   }
 
-  goToLogin(): void {
-    this.router.navigate(['/auth/login'], {
+  goToAuth(): void {
+    this.router.navigate([`/auth/${this.retryMode}`], {
       queryParams: { redirectTo: this.redirectTo, src: this.analyticsSource },
     });
   }
