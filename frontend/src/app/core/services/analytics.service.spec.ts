@@ -80,6 +80,33 @@ describe('AnalyticsService', () => {
     }));
   });
 
+  it('keeps queued event order and canonicalizes page paths without query or hash fragments', () => {
+    const service = TestBed.inject(AnalyticsService);
+    doc.title = 'Pricing snapshot';
+
+    service.track('before_navigation', { src: 'header' });
+    service.trackPageView('/pricing?src=marketing_header#pricing-plans');
+    service.track('after_navigation', { surface: 'pricing_page' });
+    service.ensureInitialized();
+
+    const dispatches = (win.dataLayer || [])
+      .map((entry) => Array.from(entry as IArguments))
+      .filter((entry) => entry[0] === 'event');
+    expect(dispatches.map((entry) => entry[1])).toEqual([
+      'before_navigation',
+      'page_view',
+      'after_navigation',
+    ]);
+    expect(dispatches[1][2]).toEqual(jasmine.objectContaining({
+      page_path: '/pricing',
+      page_location: `${window.location.origin}/pricing`,
+      page_title: 'Pricing snapshot',
+    }));
+
+    service.trackPageView('/pricing?src=another_source');
+    expect((win.dataLayer || []).length).toBe(5);
+  });
+
   it('drops acquisition overrides and PII before events enter the queue', () => {
     const service = TestBed.inject(AnalyticsService);
 
@@ -111,6 +138,31 @@ describe('AnalyticsService', () => {
       customer_email: jasmine.anything(),
       access_token: jasmine.anything(),
       refreshToken: jasmine.anything(),
+    }));
+  });
+
+  it('emits the PII-free decision-session qualification contract only once per runtime', () => {
+    const service = TestBed.inject(AnalyticsService);
+
+    expect(service.trackDecisionSessionQualified('trusted_interaction')).toBeTrue();
+    expect(service.trackDecisionSessionQualified('foreground_15s')).toBeFalse();
+
+    service.ensureInitialized();
+
+    const eventCalls = (win.dataLayer || [])
+      .map((entry) => Array.from(entry as IArguments))
+      .filter((entry) => entry[0] === 'event' && entry[1] === 'decision_session_qualified');
+    expect(eventCalls.length).toBe(1);
+    expect(eventCalls[0][2]).toEqual({
+      qualification_method: 'trusted_interaction',
+      qualification_version: 'v1',
+      send_to: 'G-TEST123',
+    });
+    expect(eventCalls[0][2]).not.toEqual(jasmine.objectContaining({
+      page_path: jasmine.anything(),
+      page_location: jasmine.anything(),
+      email: jasmine.anything(),
+      username: jasmine.anything(),
     }));
   });
 

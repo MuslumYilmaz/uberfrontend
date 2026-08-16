@@ -1,3 +1,4 @@
+import { DOCUMENT } from '@angular/common';
 import { signal } from '@angular/core';
 import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { BrowserTestingModule } from '@angular/platform-browser/testing';
@@ -46,7 +47,11 @@ describe('TelemetryBootstrapService', () => {
     setUser: jasmine.Spy;
   };
   let analytics: jasmine.SpyObj<AnalyticsService>;
+  let doc: Document;
   let originalRequestIdleCallback: unknown;
+  let originalVisibilityStateDescriptor: PropertyDescriptor | undefined;
+  let originalHiddenDescriptor: PropertyDescriptor | undefined;
+  let originalUserActivationDescriptor: PropertyDescriptor | undefined;
 
   beforeEach(() => {
     environment.production = true;
@@ -61,8 +66,13 @@ describe('TelemetryBootstrapService', () => {
       init: jasmine.createSpy('init'),
       setUser: jasmine.createSpy('setUser'),
     };
-    analytics = jasmine.createSpyObj<AnalyticsService>('AnalyticsService', ['ensureInitialized', 'isInitialized']);
+    analytics = jasmine.createSpyObj<AnalyticsService>('AnalyticsService', [
+      'ensureInitialized',
+      'isInitialized',
+      'trackDecisionSessionQualified',
+    ]);
     analytics.isInitialized.and.returnValue(true);
+    analytics.trackDecisionSessionQualified.and.returnValue(true);
 
     originalRequestIdleCallback = (window as any).requestIdleCallback;
     (window as any).requestIdleCallback = (callback: () => void) => {
@@ -90,6 +100,14 @@ describe('TelemetryBootstrapService', () => {
         },
       ],
     });
+
+    doc = TestBed.inject(DOCUMENT);
+    originalVisibilityStateDescriptor = Object.getOwnPropertyDescriptor(doc, 'visibilityState');
+    originalHiddenDescriptor = Object.getOwnPropertyDescriptor(doc, 'hidden');
+    originalUserActivationDescriptor = Object.getOwnPropertyDescriptor(
+      window.navigator,
+      'userActivation',
+    );
   });
 
   afterEach(() => {
@@ -98,6 +116,9 @@ describe('TelemetryBootstrapService', () => {
     environment.sentryRelease = originalEnvironment.sentryRelease;
     environment.sentryTracesSampleRate = originalEnvironment.sentryTracesSampleRate;
     (window as any).requestIdleCallback = originalRequestIdleCallback;
+    restoreOwnProperty(doc, 'visibilityState', originalVisibilityStateDescriptor);
+    restoreOwnProperty(doc, 'hidden', originalHiddenDescriptor);
+    restoreOwnProperty(window.navigator, 'userActivation', originalUserActivationDescriptor);
     localStorage.clear();
     TestBed.resetTestingModule();
   });
@@ -245,6 +266,7 @@ describe('TelemetryBootstrapService', () => {
     expect(analytics.ensureInitialized).not.toHaveBeenCalled();
     tick(1);
     expect(analytics.ensureInitialized).toHaveBeenCalledTimes(1);
+    service.ngOnDestroy();
   }));
 
   it('initializes analytics on marketing routes after the post-load delay', fakeAsync(() => {
@@ -259,6 +281,79 @@ describe('TelemetryBootstrapService', () => {
     expect(analytics.ensureInitialized).not.toHaveBeenCalled();
     tick(1);
     expect(analytics.ensureInitialized).toHaveBeenCalledTimes(1);
+    service.ngOnDestroy();
+  }));
+
+  it('qualifies synchronously once from a trusted visible interaction with sticky activation', () => {
+    environment.production = false;
+    setDocumentVisibility('visible', false);
+    setUserActivation(false);
+    const callOrder: string[] = [];
+    analytics.ensureInitialized.and.callFake(() => {
+      callOrder.push('initialize');
+    });
+    analytics.trackDecisionSessionQualified.and.callFake(() => {
+      callOrder.push('qualify');
+      return true;
+    });
+
+    const service = TestBed.inject(TelemetryBootstrapService);
+    service.armForUrl('/');
+
+    doc.dispatchEvent(new Event('pointerdown'));
+    invokeDecisionSessionInteraction(service, true);
+    expect(analytics.trackDecisionSessionQualified).not.toHaveBeenCalled();
+
+    setUserActivation(true);
+    invokeDecisionSessionInteraction(service, true);
+    invokeDecisionSessionInteraction(service, true);
+    service.armForUrl('/pricing');
+
+    expect(callOrder).toEqual(['initialize', 'qualify']);
+    expect(analytics.trackDecisionSessionQualified)
+      .toHaveBeenCalledOnceWith('trusted_interaction');
+    service.ngOnDestroy();
+  });
+
+  it('accepts a trusted interaction when the User Activation API is unavailable', () => {
+    environment.production = false;
+    setDocumentVisibility('visible', false);
+    setUserActivation(undefined);
+
+    const service = TestBed.inject(TelemetryBootstrapService);
+    service.armForUrl('/dashboard');
+    invokeDecisionSessionInteraction(service, true);
+
+    expect(analytics.trackDecisionSessionQualified)
+      .toHaveBeenCalledOnceWith('trusted_interaction');
+    service.ngOnDestroy();
+  });
+
+  it('counts 15 cumulative visible seconds and pauses while the document is hidden', fakeAsync(() => {
+    environment.production = false;
+    setDocumentVisibility('visible', false);
+    setUserActivation(true);
+
+    const service = TestBed.inject(TelemetryBootstrapService);
+    service.armForUrl('/dashboard');
+
+    tick(5_000);
+    service.armForUrl('/pricing');
+    tick(4_000);
+    setDocumentVisibility('hidden');
+    invokeDecisionSessionInteraction(service, true);
+    tick(30_000);
+    expect(analytics.trackDecisionSessionQualified).not.toHaveBeenCalled();
+
+    setDocumentVisibility('visible');
+    tick(5_999);
+    expect(analytics.trackDecisionSessionQualified).not.toHaveBeenCalled();
+    tick(1);
+
+    expect(analytics.ensureInitialized).toHaveBeenCalledTimes(1);
+    expect(analytics.trackDecisionSessionQualified)
+      .toHaveBeenCalledOnceWith('foreground_15s');
+    service.ngOnDestroy();
   }));
 
   function initializeSentry(): Promise<void> {
@@ -281,6 +376,50 @@ describe('TelemetryBootstrapService', () => {
     }
     expect((payload as any).email).toBeUndefined();
     expect((payload as any).username).toBeUndefined();
+  }
+
+  function invokeDecisionSessionInteraction(
+    service: TelemetryBootstrapService,
+    isTrusted: boolean,
+  ): void {
+    const harness = service as unknown as {
+      onDecisionSessionInteraction: (event: Event) => void;
+    };
+    harness.onDecisionSessionInteraction({ isTrusted } as Event);
+  }
+
+  function setDocumentVisibility(
+    state: DocumentVisibilityState,
+    emitChange = true,
+  ): void {
+    Object.defineProperty(doc, 'visibilityState', {
+      configurable: true,
+      get: () => state,
+    });
+    Object.defineProperty(doc, 'hidden', {
+      configurable: true,
+      get: () => state !== 'visible',
+    });
+    if (emitChange) doc.dispatchEvent(new Event('visibilitychange'));
+  }
+
+  function setUserActivation(hasBeenActive: boolean | undefined): void {
+    Object.defineProperty(window.navigator, 'userActivation', {
+      configurable: true,
+      get: () => hasBeenActive === undefined ? undefined : { hasBeenActive },
+    });
+  }
+
+  function restoreOwnProperty(
+    target: object,
+    key: PropertyKey,
+    descriptor: PropertyDescriptor | undefined,
+  ): void {
+    if (descriptor) {
+      Object.defineProperty(target, key, descriptor);
+    } else {
+      delete (target as Record<PropertyKey, unknown>)[key];
+    }
   }
 
   function browserApiErrorEvent(
