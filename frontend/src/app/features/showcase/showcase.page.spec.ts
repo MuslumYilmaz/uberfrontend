@@ -100,12 +100,18 @@ describe('ShowcasePageComponent', () => {
     const primaryCta = page.querySelector('[data-testid="showcase-hero-primary-cta"]') as HTMLAnchorElement;
     const secondaryCta = page.querySelector('[data-testid="showcase-hero-secondary-cta"]') as HTMLAnchorElement;
     const helper = page.querySelector('[data-testid="showcase-hero-helper"]') as HTMLElement;
+    const conversionLinks = Array.from(page.querySelectorAll('.hero-conversion-links a')) as HTMLAnchorElement[];
 
     expect(primaryCta.textContent?.trim()).toBe('Start 30-day plan');
     expect(primaryCta.getAttribute('href') || '').toContain('/tracks/foundations-30d/preview');
     expect(secondaryCta.textContent?.trim()).toBe('View prep guide');
     expect(secondaryCta.getAttribute('href') || '').toContain('/guides/interview-blueprint/intro');
     expect(helper.textContent).toContain('Want a smaller first rep? Essential 60 is the compact practice block after the plan preview.');
+    expect(conversionLinks.map((link) => (link.textContent || '').trim())).toEqual([
+      'Create a free account',
+      'Compare Premium plans',
+    ]);
+    expect(conversionLinks[1].getAttribute('href')).toBe('/pricing');
 
     primaryCta.click();
 

@@ -48,6 +48,7 @@
             routerLinkActive="famh-link--active"
             [routerLinkActiveOptions]="{ exact: true }"
             [routerLink]="link.route"
+            [queryParams]="link.queryParams || null"
             (click)="trackUtilityClick(link)"
           >
             {{ link.label }}
@@ -72,9 +73,9 @@
       <a
         *ngIf="isAuthUiResolved()"
         class="famh-cta"
-        [class.famh-cta--muted]="isShowcaseLanding()"
         data-testid="marketing-header-cta"
         [routerLink]="ctaLink()"
+        [queryParams]="ctaQueryParams()"
         (click)="trackCtaClick()"
       >
         {{ ctaLabel() }}
@@ -145,6 +146,7 @@
                 routerLinkActive="famh-mobile-link--active"
                 [routerLinkActiveOptions]="{ exact: true }"
                 [routerLink]="link.route"
+                [queryParams]="link.queryParams || null"
                 (click)="trackUtilityClick(link, 'mobile_menu')"
               >
                 {{ link.label }}
@@ -169,9 +171,9 @@
           <a
             *ngIf="isAuthUiResolved()"
             class="famh-mobile-cta"
-            [class.famh-mobile-cta--muted]="isShowcaseLanding()"
             data-testid="marketing-header-mobile-cta"
             [routerLink]="ctaLink()"
+            [queryParams]="ctaQueryParams()"
             (click)="trackCtaClick('mobile_menu')"
           >
             {{ ctaLabel() }}

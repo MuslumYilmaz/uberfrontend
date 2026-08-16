@@ -167,6 +167,25 @@
   margin-bottom: 8px;
 }
 
+.hero-conversion-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin: 0 0 10px;
+}
+
+.hero-conversion-links a {
+  color: color-mix(in srgb, var(--uf-text-secondary) 84%, var(--uf-accent) 16%);
+  font-size: 13px;
+  font-weight: 700;
+  text-underline-offset: 3px;
+}
+
+.hero-conversion-links a:hover,
+.hero-conversion-links a:focus-visible {
+  color: var(--uf-text-primary);
+}
+
 .sk-btn {
   display: inline-flex;
   align-items: center;

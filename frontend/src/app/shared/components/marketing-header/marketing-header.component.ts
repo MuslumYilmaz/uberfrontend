@@ -4,6 +4,7 @@ import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { filter } from 'rxjs';
 import { AnalyticsService } from '../../../core/services/analytics.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { ConversionContextService } from '../../../core/services/conversion-context.service';
 import { isProActive } from '../../../core/utils/entitlements.util';
 
 type MarketingLink = {
@@ -26,6 +27,7 @@ export class MarketingHeaderComponent {
   private readonly hostEl = inject(ElementRef<HTMLElement>);
   private readonly router = inject(Router);
   private readonly analytics = inject(AnalyticsService);
+  private readonly conversionContext = inject(ConversionContextService);
 
   readonly auth = inject(AuthService);
   readonly isPro = computed(() => isProActive(this.auth.user()));
@@ -63,9 +65,15 @@ export class MarketingHeaderComponent {
 
   readonly guestUtilityLinks: MarketingLink[] = [
     {
+      label: 'Pricing',
+      route: ['/pricing'],
+      destination: '/pricing',
+    },
+    {
       label: 'Log in',
       route: ['/auth', 'login'],
       destination: '/auth/login',
+      queryParams: { src: 'marketing_header' },
     },
   ];
 
@@ -82,9 +90,21 @@ export class MarketingHeaderComponent {
     },
   ];
 
-  readonly ctaLabel = computed(() => (this.isAuthenticatedUi() ? 'Open dashboard' : 'Start practicing'));
-  readonly ctaLink = computed(() => (this.isAuthenticatedUi() ? ['/dashboard'] : ['/interview-questions', 'essential']));
-  readonly ctaDestination = computed(() => (this.isAuthenticatedUi() ? '/dashboard' : '/interview-questions/essential'));
+  readonly ctaLabel = computed(() => {
+    if (!this.isAuthenticatedUi()) return 'Create free account';
+    return this.isPro() ? 'Open dashboard' : 'View pricing';
+  });
+  readonly ctaLink = computed(() => {
+    if (!this.isAuthenticatedUi()) return ['/auth', 'signup'];
+    return this.isPro() ? ['/dashboard'] : ['/pricing'];
+  });
+  readonly ctaDestination = computed(() => {
+    if (!this.isAuthenticatedUi()) return '/auth/signup';
+    return this.isPro() ? '/dashboard' : '/pricing';
+  });
+  readonly ctaQueryParams = computed(() => (
+    this.isAuthenticatedUi() ? null : { src: 'marketing_header' }
+  ));
 
   constructor() {
     this.router.events
@@ -136,10 +156,16 @@ export class MarketingHeaderComponent {
   }
 
   trackUtilityClick(link: MarketingLink, area: 'utility' | 'mobile_menu' = 'utility') {
+    if (link.destination === '/pricing') {
+      this.conversionContext.rememberPricingContext('marketing_header', `marketing_header_${area}`);
+    }
     this.trackTopNavClick(area, link.destination);
   }
 
   trackCtaClick(area: 'utility' | 'mobile_menu' = 'utility') {
+    if (this.ctaDestination() === '/pricing') {
+      this.conversionContext.rememberPricingContext('marketing_header', `marketing_header_${area}`);
+    }
     this.trackTopNavClick(area, this.ctaDestination());
   }
 

@@ -1,0 +1,46 @@
+<aside
+  *ngIf="visible()"
+  class="conversion-sticky"
+  data-testid="conversion-mobile-sticky"
+  aria-label="Account and pricing shortcuts">
+  <button
+    type="button"
+    faButton
+    variant="ghost"
+    size="sm"
+    iconOnly
+    class="conversion-sticky__dismiss"
+    aria-label="Hide shortcuts for this session"
+    (click)="dismiss()">
+    <span aria-hidden="true">×</span>
+  </button>
+
+  <p class="conversion-sticky__copy" *ngIf="authState() === 'guest'">
+    Save progress for free, or compare Premium when you are ready.
+  </p>
+  <p class="conversion-sticky__copy" *ngIf="authState() === 'free'">
+    Ready for deeper interview practice? Compare Premium plans.
+  </p>
+
+  <div class="conversion-sticky__actions">
+    <a
+      *ngIf="authState() === 'guest'"
+      faButton
+      variant="primary"
+      size="sm"
+      routerLink="/auth/signup"
+      [queryParams]="{ src: surface === 'pricing' ? 'pricing_mobile_sticky' : 'showcase_mobile_sticky' }"
+      (click)="trackSignup()">
+      Create free account
+    </a>
+    <a
+      faButton
+      [variant]="authState() === 'guest' ? 'neutral' : 'primary'"
+      size="sm"
+      routerLink="/pricing"
+      fragment="pricing-plans"
+      (click)="trackPricing()">
+      {{ authState() === 'guest' ? 'Compare plans' : 'View pricing' }}
+    </a>
+  </div>
+</aside>

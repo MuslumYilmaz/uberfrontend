@@ -53,6 +53,17 @@
           View prep guide
         </a>
       </div>
+      <nav class="hero-conversion-links" aria-label="Account and pricing">
+        <a
+          routerLink="/auth/signup"
+          [queryParams]="{ src: 'showcase_hero' }"
+          (click)="onHeroSignupClick()">
+          Create a free account
+        </a>
+        <a routerLink="/pricing" (click)="onHeroPricingClick()">
+          Compare Premium plans
+        </a>
+      </nav>
       <p class="hero-helper" data-testid="showcase-hero-helper">Want a smaller first rep? Essential 60 is the compact practice block after the plan preview.</p>
     </div>
 
@@ -676,10 +687,13 @@
       [paymentsConfigReady]="paymentsConfigReady"
       [checkoutAvailability]="checkoutAvailability"
       analyticsSource="showcase_pricing"
+      analyticsSurface="showcase_pricing"
       ctaMode="navigatePricing">
     </app-pricing-plans-section>
   </div>
 </section>
+
+<app-conversion-sticky-cta surface="showcase"></app-conversion-sticky-cta>
 
 <section class="section reveal" #observeSection aria-labelledby="faq-title" data-load="faq">
   <div class="shell">
