@@ -209,6 +209,7 @@ describe('IncidentDetailComponent', () => {
       fixture.nativeElement.querySelectorAll('button'),
     ) as HTMLButtonElement[])
       .find((button) => (button.textContent || '').includes('Submit response')) as HTMLButtonElement;
+    submitButton.focus();
     submitButton.click();
     fixture.detectChanges();
 
@@ -216,6 +217,107 @@ describe('IncidentDetailComponent', () => {
     expect(feedback?.textContent || '').toContain('Strong call');
     expect(feedback?.textContent || '').toContain('25/25');
     expect(feedback?.textContent || '').toContain('Correct diagnosis.');
+
+    const announcement = fixture.nativeElement.querySelector(
+      '[data-testid="incident-feedback-announcement"]',
+    ) as HTMLElement | null;
+    expect(announcement?.getAttribute('role')).toBe('status');
+    expect(announcement?.getAttribute('aria-live')).toBe('polite');
+    expect(announcement?.textContent || '').toContain('Stage 1. Strong call. Score 25 out of 25.');
+    expect(document.activeElement).toBe(submitButton);
+    expect(submitButton.textContent || '').toContain('Next stage');
+  });
+
+  it('names single-select radio groups and exposes one option in the tab order', async () => {
+    routeData$.next({ incidentDetail: resolvedDetail });
+
+    const fixture = TestBed.createComponent(IncidentDetailComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    fixture.componentInstance.startIncident();
+    fixture.detectChanges();
+
+    const prompt = fixture.nativeElement.querySelector('#incident-stage-prompt-root-cause') as HTMLElement | null;
+    const group = fixture.nativeElement.querySelector('[role="radiogroup"]') as HTMLElement | null;
+    const radios = Array.from(
+      fixture.nativeElement.querySelectorAll('[role="radiogroup"] [role="radio"]'),
+    ) as HTMLButtonElement[];
+
+    expect(prompt?.textContent?.trim()).toBe('Pick root cause');
+    expect(group?.getAttribute('aria-labelledby')).toBe(prompt?.id);
+    expect(radios.map((radio) => radio.tabIndex)).toEqual([0, -1]);
+
+    radios[1]?.click();
+    fixture.detectChanges();
+
+    expect(radios.map((radio) => radio.tabIndex)).toEqual([-1, 0]);
+    expect(radios.map((radio) => radio.getAttribute('aria-checked'))).toEqual(['false', 'true']);
+
+    fixture.componentInstance.answers.set({ 'root-cause': 'removed-option' });
+    fixture.detectChanges();
+    expect(radios.map((radio) => radio.tabIndex)).toEqual([0, -1]);
+  });
+
+  it('moves radio focus and selection with arrow, Home, and End keys', async () => {
+    routeData$.next({ incidentDetail: resolvedDetail });
+
+    const fixture = TestBed.createComponent(IncidentDetailComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    fixture.componentInstance.startIncident();
+    fixture.detectChanges();
+
+    const radios = Array.from(
+      fixture.nativeElement.querySelectorAll('[role="radiogroup"] [role="radio"]'),
+    ) as HTMLButtonElement[];
+    const first = radios[0]!;
+    const last = radios[radios.length - 1]!;
+
+    first.focus();
+    first.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp', bubbles: true }));
+    fixture.detectChanges();
+    expect(document.activeElement).toBe(last);
+    expect(last.getAttribute('aria-checked')).toBe('true');
+
+    last.dispatchEvent(new KeyboardEvent('keydown', { key: 'Home', bubbles: true }));
+    fixture.detectChanges();
+    expect(document.activeElement).toBe(first);
+    expect(first.getAttribute('aria-checked')).toBe('true');
+
+    first.dispatchEvent(new KeyboardEvent('keydown', { key: 'End', bubbles: true }));
+    fixture.detectChanges();
+    expect(document.activeElement).toBe(last);
+    expect(last.getAttribute('aria-checked')).toBe('true');
+
+    last.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+    fixture.detectChanges();
+    expect(document.activeElement).toBe(first);
+    expect(first.getAttribute('aria-checked')).toBe('true');
+  });
+
+  it('marks only the active incident navigation item as current', async () => {
+    routeData$.next({ incidentDetail: resolvedDetail });
+
+    const fixture = TestBed.createComponent(IncidentDetailComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const currentBefore = Array.from(
+      fixture.nativeElement.querySelectorAll('.incident-step-nav__item[aria-current="step"]'),
+    ) as HTMLButtonElement[];
+    expect(currentBefore.length).toBe(1);
+    expect(currentBefore[0]?.textContent?.trim()).toBe('Overview');
+
+    fixture.componentInstance.startIncident();
+    fixture.detectChanges();
+
+    const currentAfter = Array.from(
+      fixture.nativeElement.querySelectorAll('.incident-step-nav__item[aria-current="step"]'),
+    ) as HTMLButtonElement[];
+    expect(currentAfter.length).toBe(1);
+    expect(currentAfter[0]?.textContent?.trim()).toBe('1');
   });
 
   it('scrolls mobile users to feedback after submitting a response', async () => {
