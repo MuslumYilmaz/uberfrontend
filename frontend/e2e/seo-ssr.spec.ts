@@ -131,9 +131,49 @@ const CASES = [
   },
   {
     path: '/react/coding/react-counter',
-    titleIncludes: 'Counter',
-    h1: 'React Counter (Guarded Decrement)',
+    titleIncludes: 'React Counter Component with useState',
+    h1: 'Build a React Counter Component with useState',
     detail: true,
+    indexable: true,
+    bodyTextIncludes: [
+      'Build a React counter component with the useState hook',
+      'React useState and functional updates',
+      'How do you build a counter component in React with useState?',
+    ],
+  },
+  {
+    path: '/javascript/trivia/js-compare-two-objects',
+    titleIncludes: 'How to compare two objects in JavaScript: shallow vs',
+    h1: 'How would you compare two objects in JavaScript?',
+    detail: true,
+    indexable: true,
+    bodyTextIncludes: [
+      'How to compare two objects in JavaScript',
+      'Shallow object comparison in JavaScript',
+      'Can you compare JavaScript objects with JSON.stringify?',
+      'JavaScript deep-equality challenge',
+    ],
+  },
+  {
+    path: '/css/interview-questions',
+    titleIncludes: 'CSS Interview Questions: 65 Q&A, Flexbox and Grid',
+    h1: 'CSS Interview Questions and Answers',
+    indexable: true,
+    bodyTextIncludes: [
+      'Review 65 CSS interview questions and answers covering cascade, specificity, Flexbox, Grid, responsive CSS, and methodical visual debugging.',
+      'What CSS interview rounds test',
+    ],
+  },
+  {
+    path: '/html-css/interview-questions',
+    titleIncludes: 'HTML and CSS Interview Questions: 65 UI Q&A',
+    h1: 'HTML and CSS Interview Questions and Answers',
+    indexable: true,
+    bodyTextIncludes: [
+      'Practice HTML and CSS together for frontend UI rounds',
+      'HTML structure and CSS layout in UI interview rounds',
+      'dedicated CSS interview questions hub',
+    ],
   },
   {
     path: '/javascript/trivia/js-event-loop',
@@ -234,6 +274,14 @@ const CASES = [
     ],
   },
 ];
+
+const GSC_OPPORTUNITY_PATHS = new Set([
+  '/javascript/trivia/js-compare-two-objects',
+  '/react/coding/react-counter',
+  '/css/interview-questions',
+  '/html-css/interview-questions',
+]);
+const GSC_OPPORTUNITY_CASES = CASES.filter((entry) => GSC_OPPORTUNITY_PATHS.has(entry.path));
 
 const RAW_HTML_CASES: Array<{
   path: string;
@@ -847,6 +895,32 @@ test.describe('seo-ssr', () => {
     !SSR_ENABLED,
     'SSR tests require prerender/SSR output (set PLAYWRIGHT_SSR=1 to force).',
   );
+
+  test('GSC opportunity pages keep their SSR and hydrated ownership contracts', async ({ browser, page }) => {
+    expect(GSC_OPPORTUNITY_CASES).toHaveLength(GSC_OPPORTUNITY_PATHS.size);
+
+    const ssrContext = await browser.newContext({ javaScriptEnabled: false });
+    const ssrPage = await ssrContext.newPage();
+    for (const entry of GSC_OPPORTUNITY_CASES) {
+      await ssrPage.goto(fullUrl(entry.path), { waitUntil: 'domcontentloaded' });
+      await expect(ssrPage).toHaveTitle(new RegExp(entry.titleIncludes, 'i'));
+      await assertSsrBasics(ssrPage, entry);
+    }
+    await ssrContext.close();
+
+    await page.addInitScript(() => {
+      (window as Window & { __FA_SEO_HOST__?: string }).__FA_SEO_HOST__ = 'frontendatlas.com';
+    });
+    for (const entry of GSC_OPPORTUNITY_CASES) {
+      await page.goto(entry.path, { waitUntil: 'domcontentloaded' });
+      await expect
+        .poll(async () => (await page.locator('h1').first().textContent())?.trim() || '', {
+          timeout: 15000,
+        })
+        .toContain(entry.h1);
+      await assertHydratedBasics(page, entry);
+    }
+  });
 
   test('SSR HTML renders correct shell + meta (JS disabled)', async ({ browser }) => {
     const context = await browser.newContext({ javaScriptEnabled: false });

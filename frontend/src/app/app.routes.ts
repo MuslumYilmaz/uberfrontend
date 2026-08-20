@@ -1422,8 +1422,16 @@ export const routes: Routes = [
         techs: ['html', 'css'],
       },
       seo: {
-        title: 'HTML and CSS Interview Questions: 65 Q&A, Flexbox and Grid',
-        description: '65 HTML and CSS interview questions for frontend developers: beginner-to-advanced Q&A, semantics, accessibility, Flexbox, Grid, responsive UI, code scenarios.',
+        title: 'HTML and CSS Interview Questions: 65 UI Q&A',
+        description:
+          '65 joint HTML and CSS interview questions for frontend UI rounds: semantic markup, accessible forms, layout implementation, browser behavior, and code scenarios.',
+        keywords: [
+          'html and css interview questions',
+          'html css interview questions',
+          'html and css interview questions and answers',
+          'frontend ui interview questions',
+          'html css coding interview questions',
+        ],
       },
     },
   },
@@ -1480,6 +1488,17 @@ export const routes: Routes = [
         title: 'CSS Interview Questions: 65 Q&A, Flexbox and Grid',
         description:
           '65 CSS interview questions for frontend developers: beginner-to-advanced Q&A, specificity, cascade, Flexbox, Grid, responsive CSS, debugging, performance.',
+        keywords: [
+          'css interview questions',
+          'css interview questions and answers',
+          'css interview questions for beginners',
+          'css interview questions for experienced developers',
+          'css specificity interview questions',
+          'css flexbox interview questions',
+          'css grid interview questions',
+          'responsive css interview questions',
+          'css debugging interview questions',
+        ],
       },
     },
   },

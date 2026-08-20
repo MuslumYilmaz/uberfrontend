@@ -2,18 +2,18 @@
   "artifacts": {
     "private": {
       "file": "interview-coding-registry-v1.private.json",
-      "sha256": "5e5e61632275a8edbbd932b1536ad2a7ae7f527f2bdfde501c274258d8ead903"
+      "sha256": "ccbc8deeebf508ee3fa6c0ad27d4cf9d4642490ad652f58a323f6730836ae155"
     },
     "public": {
       "file": "interview-coding-registry-v1.public.json",
-      "sha256": "880e2c9b61abad7ba18855fb6fb8ce6d52a6a06d4cf65f8158e49d9a6b2079d8"
+      "sha256": "d120f45c64b3ea18f02b9349a36f6d2aa2ee6804c9a945e3a0663c5065bf874f"
     }
   },
-  "contentHash": "2dc0cbb1ba9efc23d7bc898eb3b8de8364fa6a098611b493843d29b2baabb73c",
-  "definitionHash": "c8c31198f9ff2fd65ace43be87f28cc22d8bbe451818d6e3fa0218e449e0e393",
+  "contentHash": "cc29adca541417505f594341c8016fa8d4f9abee737306489f96aa803d6f1f1b",
+  "definitionHash": "40415337fa3aaf091dbc7ae07edafa8ddda60c2605977b3fde9be4ea318d649b",
   "enabledVariantCount": 24,
   "finalApproval": null,
-  "registryContentHash": "2dc0cbb1ba9efc23d7bc898eb3b8de8364fa6a098611b493843d29b2baabb73c",
+  "registryContentHash": "cc29adca541417505f594341c8016fa8d4f9abee737306489f96aa803d6f1f1b",
   "registryId": "frontend-interview-coding-registry-v1",
   "registryVersion": "1.0.0",
   "schemaVersion": "1.0.0",
@@ -93,7 +93,7 @@
       "revision": 1
     },
     {
-      "contentHash": "323af4503848652947a3d975818e7b9ce24e986dee25a35598145370a5724d8a",
+      "contentHash": "56a8c441b543ba6cbaa94a5eccd6ec2883e6c84a290848b75f1a405e4fc4d8aa",
       "enabled": true,
       "id": "int-code-react-junior-counter-v1",
       "revision": 1

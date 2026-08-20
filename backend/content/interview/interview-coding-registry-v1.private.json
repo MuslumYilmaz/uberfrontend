@@ -1,5 +1,5 @@
 {
-  "definitionHash": "c8c31198f9ff2fd65ace43be87f28cc22d8bbe451818d6e3fa0218e449e0e393",
+  "definitionHash": "40415337fa3aaf091dbc7ae07edafa8ddda60c2605977b3fde9be4ea318d649b",
   "finalApproval": null,
   "registryId": "frontend-interview-coding-registry-v1",
   "registryVersion": "1.0.0",
@@ -16,7 +16,7 @@
       ],
       "review": {
         "contentHash": "04797a7d03d8affd6a13ae07171976abdd209f2a4693df5de93d45597ac56a66",
-        "definitionHash": "c8c31198f9ff2fd65ace43be87f28cc22d8bbe451818d6e3fa0218e449e0e393",
+        "definitionHash": "40415337fa3aaf091dbc7ae07edafa8ddda60c2605977b3fde9be4ea318d649b",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -35,7 +35,7 @@
           "status": "passed",
           "variantId": "int-code-angular-junior-counter-v1"
         },
-        "reviewedAt": "2026-08-06",
+        "reviewedAt": "2026-08-20",
         "reviewedRevision": 1,
         "technical": {
           "notes": [
@@ -229,7 +229,7 @@
       ],
       "review": {
         "contentHash": "18de554492733266341bd37fa07776ad0242dd41a81ee7649c874d7432e6d497",
-        "definitionHash": "c8c31198f9ff2fd65ace43be87f28cc22d8bbe451818d6e3fa0218e449e0e393",
+        "definitionHash": "40415337fa3aaf091dbc7ae07edafa8ddda60c2605977b3fde9be4ea318d649b",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -248,7 +248,7 @@
           "status": "passed",
           "variantId": "int-code-angular-junior-todo-v1"
         },
-        "reviewedAt": "2026-08-06",
+        "reviewedAt": "2026-08-20",
         "reviewedRevision": 1,
         "technical": {
           "notes": [
@@ -542,7 +542,7 @@
       ],
       "review": {
         "contentHash": "b4baf4a74d743f215d81551801598d745f6580dc71d5b37eba92e6f9d44d4dab",
-        "definitionHash": "c8c31198f9ff2fd65ace43be87f28cc22d8bbe451818d6e3fa0218e449e0e393",
+        "definitionHash": "40415337fa3aaf091dbc7ae07edafa8ddda60c2605977b3fde9be4ea318d649b",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -561,7 +561,7 @@
           "status": "passed",
           "variantId": "int-code-angular-mid-pagination-v1"
         },
-        "reviewedAt": "2026-08-06",
+        "reviewedAt": "2026-08-20",
         "reviewedRevision": 1,
         "technical": {
           "notes": [
@@ -1076,7 +1076,7 @@
       ],
       "review": {
         "contentHash": "7c28ac1b8fc4ff421b5bff288f7b49dc4c66b1a5811aeaaa9c4f40869a7c9825",
-        "definitionHash": "c8c31198f9ff2fd65ace43be87f28cc22d8bbe451818d6e3fa0218e449e0e393",
+        "definitionHash": "40415337fa3aaf091dbc7ae07edafa8ddda60c2605977b3fde9be4ea318d649b",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -1095,7 +1095,7 @@
           "status": "passed",
           "variantId": "int-code-angular-mid-shopping-cart-v1"
         },
-        "reviewedAt": "2026-08-06",
+        "reviewedAt": "2026-08-20",
         "reviewedRevision": 1,
         "technical": {
           "notes": [
@@ -1635,7 +1635,7 @@
       ],
       "review": {
         "contentHash": "b59941489c364a0e5c383461688868814c724b881c7850856acb0b0f9f5fd43a",
-        "definitionHash": "c8c31198f9ff2fd65ace43be87f28cc22d8bbe451818d6e3fa0218e449e0e393",
+        "definitionHash": "40415337fa3aaf091dbc7ae07edafa8ddda60c2605977b3fde9be4ea318d649b",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -1654,7 +1654,7 @@
           "status": "passed",
           "variantId": "int-code-angular-senior-chips-autocomplete-v1"
         },
-        "reviewedAt": "2026-08-06",
+        "reviewedAt": "2026-08-20",
         "reviewedRevision": 1,
         "technical": {
           "notes": [
@@ -2454,7 +2454,7 @@
       ],
       "review": {
         "contentHash": "cb69a6983eff1132fe1e5743a241de9538fe399804c3a0b6171a004599959c3e",
-        "definitionHash": "c8c31198f9ff2fd65ace43be87f28cc22d8bbe451818d6e3fa0218e449e0e393",
+        "definitionHash": "40415337fa3aaf091dbc7ae07edafa8ddda60c2605977b3fde9be4ea318d649b",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -2473,7 +2473,7 @@
           "status": "passed",
           "variantId": "int-code-angular-senior-debounced-search-v1"
         },
-        "reviewedAt": "2026-08-06",
+        "reviewedAt": "2026-08-20",
         "reviewedRevision": 1,
         "technical": {
           "notes": [
@@ -2872,7 +2872,7 @@
       ],
       "review": {
         "contentHash": "882884703e2bb0d404d314de45e382214cd3fb929b28cf21205a95f0acbefa17",
-        "definitionHash": "c8c31198f9ff2fd65ace43be87f28cc22d8bbe451818d6e3fa0218e449e0e393",
+        "definitionHash": "40415337fa3aaf091dbc7ae07edafa8ddda60c2605977b3fde9be4ea318d649b",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -2891,7 +2891,7 @@
           "status": "passed",
           "variantId": "int-code-core-web-junior-escape-html-v1"
         },
-        "reviewedAt": "2026-08-06",
+        "reviewedAt": "2026-08-20",
         "reviewedRevision": 1,
         "technical": {
           "notes": [
@@ -2970,7 +2970,7 @@
       ],
       "review": {
         "contentHash": "8ba4e2e62fd3ba91c8634fd77cfe5b7f86b25a3c995dcc390002a9b9f7c09ef9",
-        "definitionHash": "c8c31198f9ff2fd65ace43be87f28cc22d8bbe451818d6e3fa0218e449e0e393",
+        "definitionHash": "40415337fa3aaf091dbc7ae07edafa8ddda60c2605977b3fde9be4ea318d649b",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -2989,7 +2989,7 @@
           "status": "passed",
           "variantId": "int-code-core-web-junior-validate-username-v1"
         },
-        "reviewedAt": "2026-08-06",
+        "reviewedAt": "2026-08-20",
         "reviewedRevision": 1,
         "technical": {
           "notes": [
@@ -3079,7 +3079,7 @@
       ],
       "review": {
         "contentHash": "df93f85ae99b2c7234c596f509b013146679c2a26d27b4a68660c9be531d4534",
-        "definitionHash": "c8c31198f9ff2fd65ace43be87f28cc22d8bbe451818d6e3fa0218e449e0e393",
+        "definitionHash": "40415337fa3aaf091dbc7ae07edafa8ddda60c2605977b3fde9be4ea318d649b",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -3098,7 +3098,7 @@
           "status": "passed",
           "variantId": "int-code-core-web-mid-fetch-timeout-v1"
         },
-        "reviewedAt": "2026-08-06",
+        "reviewedAt": "2026-08-20",
         "reviewedRevision": 1,
         "technical": {
           "notes": [
@@ -3199,7 +3199,7 @@
       ],
       "review": {
         "contentHash": "20a2623018ce44bf0fb4eb009744f32fc7ee71326c89a54a37e69bd626c8b4cc",
-        "definitionHash": "c8c31198f9ff2fd65ace43be87f28cc22d8bbe451818d6e3fa0218e449e0e393",
+        "definitionHash": "40415337fa3aaf091dbc7ae07edafa8ddda60c2605977b3fde9be4ea318d649b",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -3218,7 +3218,7 @@
           "status": "passed",
           "variantId": "int-code-core-web-mid-take-latest-v1"
         },
-        "reviewedAt": "2026-08-06",
+        "reviewedAt": "2026-08-20",
         "reviewedRevision": 1,
         "technical": {
           "notes": [
@@ -3319,7 +3319,7 @@
       ],
       "review": {
         "contentHash": "a46562a3755178280473a3aba3ca56d411c25b4f2733b4409a199ed6860aeece",
-        "definitionHash": "c8c31198f9ff2fd65ace43be87f28cc22d8bbe451818d6e3fa0218e449e0e393",
+        "definitionHash": "40415337fa3aaf091dbc7ae07edafa8ddda60c2605977b3fde9be4ea318d649b",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -3338,7 +3338,7 @@
           "status": "passed",
           "variantId": "int-code-core-web-senior-concurrency-map-v1"
         },
-        "reviewedAt": "2026-08-06",
+        "reviewedAt": "2026-08-20",
         "reviewedRevision": 1,
         "technical": {
           "notes": [
@@ -3439,7 +3439,7 @@
       ],
       "review": {
         "contentHash": "2a13a53222648c16758abd064e7a9bfc24a306a0a4d29a49ee091a070675e19c",
-        "definitionHash": "c8c31198f9ff2fd65ace43be87f28cc22d8bbe451818d6e3fa0218e449e0e393",
+        "definitionHash": "40415337fa3aaf091dbc7ae07edafa8ddda60c2605977b3fde9be4ea318d649b",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -3458,7 +3458,7 @@
           "status": "passed",
           "variantId": "int-code-core-web-senior-lru-cache-v1"
         },
-        "reviewedAt": "2026-08-06",
+        "reviewedAt": "2026-08-20",
         "reviewedRevision": 1,
         "technical": {
           "notes": [
@@ -3544,7 +3544,7 @@
       }
     },
     {
-      "contentHash": "323af4503848652947a3d975818e7b9ce24e986dee25a35598145370a5724d8a",
+      "contentHash": "56a8c441b543ba6cbaa94a5eccd6ec2883e6c84a290848b75f1a405e4fc4d8aa",
       "id": "int-code-react-junior-counter-v1",
       "remediationTopics": [
         "React state transitions",
@@ -3552,8 +3552,8 @@
         "Configurable update steps"
       ],
       "review": {
-        "contentHash": "323af4503848652947a3d975818e7b9ce24e986dee25a35598145370a5724d8a",
-        "definitionHash": "c8c31198f9ff2fd65ace43be87f28cc22d8bbe451818d6e3fa0218e449e0e393",
+        "contentHash": "56a8c441b543ba6cbaa94a5eccd6ec2883e6c84a290848b75f1a405e4fc4d8aa",
+        "definitionHash": "40415337fa3aaf091dbc7ae07edafa8ddda60c2605977b3fde9be4ea318d649b",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -3572,7 +3572,7 @@
           "status": "passed",
           "variantId": "int-code-react-junior-counter-v1"
         },
-        "reviewedAt": "2026-08-06",
+        "reviewedAt": "2026-08-20",
         "reviewedRevision": 1,
         "technical": {
           "notes": [
@@ -3751,7 +3751,7 @@
         "pressureAsset": "assets/questions/pressure-modes/counter.v1.json",
         "pressureAssetHash": "bc1d05a14201d35e8d8aaafcc5ffd28b701bc9c7f35611559091d60ca1bb71d9",
         "selectedCheckContractHash": "2739e4c8fac1b694f081c8a7aabd6caa618c7f7abe75340f19cfce9c3cc6e86f",
-        "sourceQuestionHash": "430f69a04d7f6f6a0d547263ce65a837228aa9a38c64bc4116d16880bf942b83",
+        "sourceQuestionHash": "904dc5380c7402d4d6bd4bb82c0cb7674d7515710eb66a581624c6a75d11b1b1",
         "starterAsset": "assets/sb/react/question/react-counter.v1.json",
         "starterAssetHash": "957987d105a3eb4186b964dafe98c3218328dea87c01e2e0e7167d06265d0db6"
       }
@@ -3766,7 +3766,7 @@
       ],
       "review": {
         "contentHash": "a2a0dd6d5e1d57e19ab9bfe333123dd78cbeda836901caa45936bbead24fcc93",
-        "definitionHash": "c8c31198f9ff2fd65ace43be87f28cc22d8bbe451818d6e3fa0218e449e0e393",
+        "definitionHash": "40415337fa3aaf091dbc7ae07edafa8ddda60c2605977b3fde9be4ea318d649b",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -3785,7 +3785,7 @@
           "status": "passed",
           "variantId": "int-code-react-junior-todo-v1"
         },
-        "reviewedAt": "2026-08-06",
+        "reviewedAt": "2026-08-20",
         "reviewedRevision": 1,
         "technical": {
           "notes": [
@@ -4079,7 +4079,7 @@
       ],
       "review": {
         "contentHash": "720b1615c56664129a257e2cb267465990129502ed6ddec8e5781c171a521ea9",
-        "definitionHash": "c8c31198f9ff2fd65ace43be87f28cc22d8bbe451818d6e3fa0218e449e0e393",
+        "definitionHash": "40415337fa3aaf091dbc7ae07edafa8ddda60c2605977b3fde9be4ea318d649b",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -4098,7 +4098,7 @@
           "status": "passed",
           "variantId": "int-code-react-mid-pagination-v1"
         },
-        "reviewedAt": "2026-08-06",
+        "reviewedAt": "2026-08-20",
         "reviewedRevision": 1,
         "technical": {
           "notes": [
@@ -4613,7 +4613,7 @@
       ],
       "review": {
         "contentHash": "b874b97658c4f3a14555c3c4c0abd38e3c85c3279ebe7e69f0a7db488ea736f7",
-        "definitionHash": "c8c31198f9ff2fd65ace43be87f28cc22d8bbe451818d6e3fa0218e449e0e393",
+        "definitionHash": "40415337fa3aaf091dbc7ae07edafa8ddda60c2605977b3fde9be4ea318d649b",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -4632,7 +4632,7 @@
           "status": "passed",
           "variantId": "int-code-react-mid-shopping-cart-v1"
         },
-        "reviewedAt": "2026-08-06",
+        "reviewedAt": "2026-08-20",
         "reviewedRevision": 1,
         "technical": {
           "notes": [
@@ -5172,7 +5172,7 @@
       ],
       "review": {
         "contentHash": "3b6e0fce1141b6aca00a6ba1cf78e5dd4f16a22435eb608a58a7d36ced2436ad",
-        "definitionHash": "c8c31198f9ff2fd65ace43be87f28cc22d8bbe451818d6e3fa0218e449e0e393",
+        "definitionHash": "40415337fa3aaf091dbc7ae07edafa8ddda60c2605977b3fde9be4ea318d649b",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -5191,7 +5191,7 @@
           "status": "passed",
           "variantId": "int-code-react-senior-chips-autocomplete-v1"
         },
-        "reviewedAt": "2026-08-06",
+        "reviewedAt": "2026-08-20",
         "reviewedRevision": 1,
         "technical": {
           "notes": [
@@ -5991,7 +5991,7 @@
       ],
       "review": {
         "contentHash": "db2fe2b668f4ec350e26e24c142dc613008917b921ed03e2275cf294889bdeb8",
-        "definitionHash": "c8c31198f9ff2fd65ace43be87f28cc22d8bbe451818d6e3fa0218e449e0e393",
+        "definitionHash": "40415337fa3aaf091dbc7ae07edafa8ddda60c2605977b3fde9be4ea318d649b",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -6010,7 +6010,7 @@
           "status": "passed",
           "variantId": "int-code-react-senior-debounced-search-v1"
         },
-        "reviewedAt": "2026-08-06",
+        "reviewedAt": "2026-08-20",
         "reviewedRevision": 1,
         "technical": {
           "notes": [
@@ -6409,7 +6409,7 @@
       ],
       "review": {
         "contentHash": "1d74cb13400467d4e2f68246908edd48aa20da006a9be7e427a752528e51554f",
-        "definitionHash": "c8c31198f9ff2fd65ace43be87f28cc22d8bbe451818d6e3fa0218e449e0e393",
+        "definitionHash": "40415337fa3aaf091dbc7ae07edafa8ddda60c2605977b3fde9be4ea318d649b",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -6428,7 +6428,7 @@
           "status": "passed",
           "variantId": "int-code-vue-junior-counter-v1"
         },
-        "reviewedAt": "2026-08-06",
+        "reviewedAt": "2026-08-20",
         "reviewedRevision": 1,
         "technical": {
           "notes": [
@@ -6622,7 +6622,7 @@
       ],
       "review": {
         "contentHash": "24028642630407880de1f004bb38dd82c96625850b87b6a369116ebc119346a8",
-        "definitionHash": "c8c31198f9ff2fd65ace43be87f28cc22d8bbe451818d6e3fa0218e449e0e393",
+        "definitionHash": "40415337fa3aaf091dbc7ae07edafa8ddda60c2605977b3fde9be4ea318d649b",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -6641,7 +6641,7 @@
           "status": "passed",
           "variantId": "int-code-vue-junior-todo-v1"
         },
-        "reviewedAt": "2026-08-06",
+        "reviewedAt": "2026-08-20",
         "reviewedRevision": 1,
         "technical": {
           "notes": [
@@ -6935,7 +6935,7 @@
       ],
       "review": {
         "contentHash": "fc81a0a3893597fdc0019d6e48be4898266f97b96e4f63ad4880b74e1957278e",
-        "definitionHash": "c8c31198f9ff2fd65ace43be87f28cc22d8bbe451818d6e3fa0218e449e0e393",
+        "definitionHash": "40415337fa3aaf091dbc7ae07edafa8ddda60c2605977b3fde9be4ea318d649b",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -6954,7 +6954,7 @@
           "status": "passed",
           "variantId": "int-code-vue-mid-pagination-v1"
         },
-        "reviewedAt": "2026-08-06",
+        "reviewedAt": "2026-08-20",
         "reviewedRevision": 1,
         "technical": {
           "notes": [
@@ -7469,7 +7469,7 @@
       ],
       "review": {
         "contentHash": "edf2d7389f53db3faea4cf5ce7801a39963f441d503b410ac25c1c64a2b87ec2",
-        "definitionHash": "c8c31198f9ff2fd65ace43be87f28cc22d8bbe451818d6e3fa0218e449e0e393",
+        "definitionHash": "40415337fa3aaf091dbc7ae07edafa8ddda60c2605977b3fde9be4ea318d649b",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -7488,7 +7488,7 @@
           "status": "passed",
           "variantId": "int-code-vue-mid-shopping-cart-v1"
         },
-        "reviewedAt": "2026-08-06",
+        "reviewedAt": "2026-08-20",
         "reviewedRevision": 1,
         "technical": {
           "notes": [
@@ -8028,7 +8028,7 @@
       ],
       "review": {
         "contentHash": "3bc2bb4e551a0d0d99315af7026a2d93b7f34d830f3d8f37fc875ead4830e240",
-        "definitionHash": "c8c31198f9ff2fd65ace43be87f28cc22d8bbe451818d6e3fa0218e449e0e393",
+        "definitionHash": "40415337fa3aaf091dbc7ae07edafa8ddda60c2605977b3fde9be4ea318d649b",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -8047,7 +8047,7 @@
           "status": "passed",
           "variantId": "int-code-vue-senior-chips-autocomplete-v1"
         },
-        "reviewedAt": "2026-08-06",
+        "reviewedAt": "2026-08-20",
         "reviewedRevision": 1,
         "technical": {
           "notes": [
@@ -8847,7 +8847,7 @@
       ],
       "review": {
         "contentHash": "5c12650312cca9f6fb8b26cd283c032d167a2b3e94a97858a99cfe9c10d7feff",
-        "definitionHash": "c8c31198f9ff2fd65ace43be87f28cc22d8bbe451818d6e3fa0218e449e0e393",
+        "definitionHash": "40415337fa3aaf091dbc7ae07edafa8ddda60c2605977b3fde9be4ea318d649b",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -8866,7 +8866,7 @@
           "status": "passed",
           "variantId": "int-code-vue-senior-debounced-search-v1"
         },
-        "reviewedAt": "2026-08-06",
+        "reviewedAt": "2026-08-20",
         "reviewedRevision": 1,
         "technical": {
           "notes": [

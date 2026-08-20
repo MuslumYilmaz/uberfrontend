@@ -723,11 +723,11 @@
       "track": "core-web"
     },
     {
-      "contentHash": "323af4503848652947a3d975818e7b9ce24e986dee25a35598145370a5724d8a",
+      "contentHash": "56a8c441b543ba6cbaa94a5eccd6ec2883e6c84a290848b75f1a405e4fc4d8aa",
       "enabled": true,
       "id": "int-code-react-junior-counter-v1",
       "level": "junior",
-      "prompt": "Build a React counter component with increment/decrement and a zero floor. Use state for the count, disable decrement at zero, and keep UI text in sync with state changes so the user always sees valid values. Concepts: react, state, event handlers, components, basics. Framework focus: React hooks (useState/useEffect), JSX event handling, and one-way props/state flow.",
+      "prompt": "Build a React counter component with the useState hook. Initialize the count at zero, wire increment and guarded decrement handlers, disable decrement at zero, and keep the rendered value synchronized with state.",
       "publicRequirements": [
         {
           "constraints": [
@@ -755,7 +755,7 @@
       "revision": 1,
       "roundLimit": 2,
       "runner": "framework-preview",
-      "sourceContentVersion": "2026-01-30",
+      "sourceContentVersion": "2026-08-20",
       "sourceQuestionId": "react-counter",
       "starterAsset": "assets/sb/react/question/react-counter.v1.json",
       "starterFiles": [

@@ -2817,6 +2817,10 @@
         },
         {
           "type": "text",
+          "text": "When two separately created objects must match by value rather than reference, continue with <a href=\"/javascript/trivia/js-compare-two-objects\">how to compare two objects in JavaScript</a> to choose identity, shallow, or deep equality deliberately."
+        },
+        {
+          "type": "text",
           "text": "## FrontendAtlas review note\n\nThis answer is reviewed as a frontend debugging rule. The high-signal cases are boundary cases: DOM input sends `''`, URL params send strings like `'false'`, localStorage returns `'0'`, APIs may omit a field or send `null`, and math can produce `NaN`. The expected fix is to normalize at the boundary, compare with `===` or `!==`, and add tests for the exact edge cases the feature accepts or rejects."
         },
         {
@@ -2827,7 +2831,7 @@
     },
     "access": "free",
     "publishedAt": "2025-11-08",
-    "updatedAt": "2026-07-03",
+    "updatedAt": "2026-08-20",
     "seo": {
       "title": "JavaScript == vs ===: frontend coercion bug playbook",
       "description": "Debug form, query param, storage, API, NaN, and collection equality bugs with strict comparison, explicit normalization, and edge-case tests."
@@ -2878,7 +2882,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The core idea</strong>\n\nObject comparison in JavaScript is not one single operation. You choose the <strong>cheapest comparison strategy that matches your intent</strong>:\n- <strong>Identity comparison</strong>: are both variables pointing to the exact same object?\n- <strong>Shallow value comparison</strong>: are top-level keys and values equal?\n- <strong>Deep value comparison</strong>: are nested objects/arrays equal by content?\n\nMost interview mistakes happen when people use <code>===</code> but expect deep value equality, or when they deep-compare everything even though a flat shallow check would have been enough."
+          "text": "## How to compare two objects in JavaScript\n\nUse <code>===</code> (or <code>Object.is</code>) when you mean <strong>the same object reference</strong>. For two separate objects, compare their own top-level keys and values when the data is flat, or use a tested deep-equality implementation when nested values must match. <code>JSON.stringify(a) === JSON.stringify(b)</code> is not a general deep-comparison solution.\n\nChoose the cheapest correct strategy for the contract:\n- <strong>Identity comparison</strong>: do both variables point to the same object?\n- <strong>Shallow value comparison</strong>: do the relevant top-level keys and values match?\n- <strong>Deep value comparison</strong>: do supported nested objects and arrays match recursively?"
         },
         {
           "type": "code",
@@ -2913,11 +2917,11 @@
               "Higher CPU cost and edge-case complexity"
             ]
           ],
-          "caption": "Pick comparison strategy based on intent and data shape."
+          "caption": "Choose how to compare two objects based on intent and data shape."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Shallow comparison helper</strong>\n\nUse shallow compare when object values are primitives or when nested objects are intentionally compared by reference."
+          "text": "## Shallow object comparison in JavaScript\n\nUse a shallow comparison for plain records when the relevant fields are own enumerable string keys and each value is primitive or intentionally compared by reference. The helper below compares top-level values with <code>Object.is</code>; it does not recurse into nested objects."
         },
         {
           "type": "code",
@@ -2926,7 +2930,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-briefcase'></i> <strong>Business case: shallow is often enough</strong>\n\nIf a filter bar stores only flat primitive fields like page, sort, and query, a shallow comparison is cheaper and easier to reason about than a recursive deep compare."
+          "text": "## When shallow equality is enough\n\nIf a filter bar stores only flat primitive fields such as page, sort, and query, a shallow comparison is cheaper and easier to reason about than a recursive deep comparison."
         },
         {
           "type": "code",
@@ -2935,12 +2939,12 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Deep comparison helper (handles cycles)</strong>\n\nFor nested data, deep comparison is safer. A robust helper should handle arrays, dates, and circular references."
+          "text": "## Deep object comparison for nested values\n\nUse a scoped recursive comparison when nested arrays and ordinary objects must match by value. The example below supports arrays, <code>Date</code>, <code>RegExp</code>, cycles, and shared-reference topology. It intentionally does not define equality for <code>Map</code>, <code>Set</code>, typed arrays, custom class instances, symbol keys, or non-enumerable properties; production code should make those rules explicit or use a library that matches its data contract."
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "function deepEqual(a, b, seen = new WeakMap()) {\n  if (Object.is(a, b)) return true;\n\n  if (typeof a !== 'object' || a === null || typeof b !== 'object' || b === null) {\n    return false;\n  }\n\n  if (a.constructor !== b.constructor) return false;\n\n  if (a instanceof Date) return a.getTime() === b.getTime();\n  if (a instanceof RegExp) return String(a) === String(b);\n\n  if (seen.get(a) === b) return true;\n  seen.set(a, b);\n\n  if (Array.isArray(a)) {\n    if (!Array.isArray(b) || a.length !== b.length) return false;\n    for (let i = 0; i < a.length; i++) {\n      if (!deepEqual(a[i], b[i], seen)) return false;\n    }\n    return true;\n  }\n\n  const keysA = Object.keys(a);\n  const keysB = Object.keys(b);\n  if (keysA.length !== keysB.length) return false;\n\n  for (const key of keysA) {\n    if (!Object.prototype.hasOwnProperty.call(b, key)) return false;\n    if (!deepEqual(a[key], b[key], seen)) return false;\n  }\n\n  return true;\n}"
+          "code": "function deepEqual(a, b, seenA = new WeakMap(), seenB = new WeakMap()) {\n  if (Object.is(a, b)) return true;\n\n  if (typeof a !== 'object' || a === null || typeof b !== 'object' || b === null) {\n    return false;\n  }\n\n  if (Object.getPrototypeOf(a) !== Object.getPrototypeOf(b)) return false;\n\n  if (a instanceof Date) return Object.is(a.getTime(), b.getTime());\n  if (a instanceof RegExp) {\n    return a.source === b.source && a.flags === b.flags && a.lastIndex === b.lastIndex;\n  }\n\n  const aIsArray = Array.isArray(a);\n  const bIsArray = Array.isArray(b);\n  if (aIsArray !== bIsArray) return false;\n\n  if (!aIsArray) {\n    const prototype = Object.getPrototypeOf(a);\n    if (prototype !== Object.prototype && prototype !== null) return false;\n  }\n\n  if (seenA.has(a) || seenB.has(b)) {\n    return seenA.get(a) === b && seenB.get(b) === a;\n  }\n  seenA.set(a, b);\n  seenB.set(b, a);\n\n  if (aIsArray && a.length !== b.length) return false;\n\n  const keysA = Object.keys(a);\n  const keysB = Object.keys(b);\n  if (keysA.length !== keysB.length) return false;\n\n  for (const key of keysA) {\n    if (!Object.prototype.hasOwnProperty.call(b, key)) return false;\n    if (!deepEqual(a[key], b[key], seenA, seenB)) return false;\n  }\n\n  return true;\n}"
         },
         {
           "type": "code",
@@ -2949,7 +2953,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Why <code>JSON.stringify</code> is not a universal solution</strong>\n\nThe stringify trick is fast to write, but it breaks in real systems:\n- Key order can differ between objects with same logical meaning.\n- <code>undefined</code>, functions, and symbols are dropped.\n- Circular references throw errors.\n- <code>Date</code>, <code>Map</code>, <code>Set</code>, and class instances need special handling."
+          "text": "## Can you compare JavaScript objects with JSON.stringify?\n\nOnly for a deliberately narrow JSON-data contract. The shortcut can produce the wrong result because:\n- Equal key/value sets can serialize differently when their insertion order differs.\n- Object properties whose values are <code>undefined</code>, functions, or symbols are omitted.\n- <code>NaN</code> and infinities serialize as <code>null</code>, while <code>BigInt</code> and circular references throw.\n- <code>Date</code> becomes a string, and <code>Map</code>, <code>Set</code>, class instances, or custom <code>toJSON()</code> methods need explicit semantics."
         },
         {
           "type": "code",
@@ -2958,20 +2962,20 @@
         },
         {
           "type": "text",
-          "text": "<strong>Follow-up limits</strong><br><ul><li>Dates usually need value comparison such as <code>getTime()</code>.</li><li>Functions usually compare by identity, not by source text.</li><li>Cycles require visited-pair tracking or a proven library.</li></ul>"
+          "text": "## Object comparison edge cases\n\n- Dates usually need value comparison such as <code>getTime()</code>.\n- Functions usually compare by identity, not by source text.\n- Cycles and repeated references require consistent pair tracking, not just a visited-object set.\n- Maps, sets, typed arrays, prototypes, property descriptors, symbol keys, and non-enumerable properties need an explicit equality contract."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Production guidance</strong>\n\n- Use <code>===</code> for identity checks (cheap and exact).\n- Use shallow compare for flat objects and render optimization.\n- Use a proven library (for example <code>fast-deep-equal</code>) when deep equality must be reliable and fast.\n- In tests, include edge cases: <code>NaN</code>, dates, arrays, functions, and circular references."
+          "text": "## Which object comparison strategy should you use?\n\n- Use <code>===</code> for object identity checks; it is cheap and exact.\n- Use shallow comparison for flat records and render optimizations where nested identity is intentional.\n- Use deep comparison only after defining supported types and whether repeated-reference topology matters. Choose a proven library whose contract matches those requirements; for example, <code>fast-deep-equal</code> is useful when cyclic graphs are out of scope.\n- Test the values your contract supports, including <code>NaN</code>, dates, arrays, functions, cycles, and repeated references."
         },
         {
           "type": "text",
-          "text": "<strong>Practical scenario</strong><br>A product filter panel compares previous and next query objects to decide whether to refetch results. A strict reference check misses equal-by-value objects, while naive deep checks hurt performance on every keystroke.<br><br><strong>Common pitfalls</strong><br><ul><li>Using <code>===</code> when your intent is value equality.</li><li>Using <code>JSON.stringify</code> where key order, <code>undefined</code>, or cycles matter.</li><li>Running deep comparison on large objects inside hot render loops instead of using the cheapest strategy that fits the business intent.</li></ul><strong>Trade-off or test tip</strong><br>Choose comparison depth by use case, then benchmark. In UI code, prefer stable object creation plus targeted shallow checks; in validation/tests, use robust deep equality.</strong>"
+          "text": "## Example: comparing filter objects\n\nA product filter panel compares previous and next query objects to decide whether to refetch results. A reference check treats separately created but equal-by-value objects as different, while an unconditional deep comparison can add work on every keystroke. For flat filter state, stable object creation plus a targeted shallow comparison is usually the clearer contract.\n\n<strong>Common pitfalls</strong>\n- Using <code>===</code> when the requirement is value equality.\n- Using <code>JSON.stringify</code> where insertion order, omitted values, special types, or cycles matter.\n- Deep-comparing large objects in hot render paths without measuring the cost.\n\n## Practice the decision\n\nImplement recursive comparison in the <a href=\"/javascript/coding/js-deep-equal\">JavaScript deep-equality challenge</a>, distinguish equality from copying with <a href=\"/javascript/trivia/js-shallow-vs-deep-copy\">shallow versus deep copy</a>, or apply state and data-shape decisions in <a href=\"/machine-coding\">frontend machine-coding practice</a>."
         }
       ]
     },
     "access": "free",
-    "updatedAt": "2026-04-10",
+    "updatedAt": "2026-08-20",
     "seo": {
       "title": "How to compare two objects in JavaScript: shallow vs deep vs JSON pitfalls",
       "description": "Choose the right object comparison strategy in JavaScript: identity, shallow equality, deep equality, and the common JSON.stringify traps."
@@ -7636,11 +7640,15 @@
         {
           "type": "text",
           "text": "<i class='fa-solid fa-circle-check'></i> <strong>One-sentence answer</strong>\n\nA <strong>shallow copy</strong> creates a new top-level object but <strong>reuses nested references</strong>, while a <strong>deep copy</strong> <strong>recursively duplicates everything</strong> so changes in one copy never affect the other."
+        },
+        {
+          "type": "text",
+          "text": "Copying and equality answer different questions. After choosing how references are copied, use <a href=\"/javascript/trivia/js-compare-two-objects\">the JavaScript object-comparison guide</a> to decide whether identity, shallow value equality, or deep equality matches the contract."
         }
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-08-20",
     "seo": {
       "title": "Shallow copy vs deep copy in JavaScript: what is the difference?",
       "description": "A shallow copy duplicates only top-level references, while a deep copy recursively duplicates nested objects and arrays."

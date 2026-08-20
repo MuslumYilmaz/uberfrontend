@@ -42,6 +42,26 @@ const JAVASCRIPT_SEO_KEYWORDS = [
   'javascript async interview questions',
 ];
 
+const HTML_CSS_SEO_KEYWORDS = [
+  'html and css interview questions',
+  'html css interview questions',
+  'html and css interview questions and answers',
+  'frontend ui interview questions',
+  'html css coding interview questions',
+];
+
+const CSS_SEO_KEYWORDS = [
+  'css interview questions',
+  'css interview questions and answers',
+  'css interview questions for beginners',
+  'css interview questions for experienced developers',
+  'css specificity interview questions',
+  'css flexbox interview questions',
+  'css grid interview questions',
+  'responsive css interview questions',
+  'css debugging interview questions',
+];
+
 describe('React interview route SEO contract', () => {
   it('keeps Q&A ownership, ordered keywords, and the existing H1 route title', () => {
     const reactRoute = routes.find((route) => route.path === 'react/interview-questions');
@@ -107,6 +127,42 @@ describe('JavaScript interview route SEO contract', () => {
         '41 JavaScript interview questions and answers for frontend developers: closures, async/await, event loop, output tracing, DOM, security, and scenarios.',
       keywords: JAVASCRIPT_SEO_KEYWORDS,
     });
+  });
+});
+
+describe('HTML/CSS query ownership route contracts', () => {
+  it('keeps joint UI intent on the combined page and CSS-only intent on the dedicated page', () => {
+    const htmlCssRoute = routes.find((route) => route.path === 'html-css/interview-questions');
+    const htmlCssConfig = htmlCssRoute?.data?.['interviewQuestions'];
+    const htmlCssSeo = htmlCssRoute?.data?.['seo'];
+    const cssRoute = routes.find((route) => route.path === 'css/interview-questions');
+    const cssConfig = cssRoute?.data?.['interviewQuestions'];
+    const cssSeo = cssRoute?.data?.['seo'];
+
+    expect(htmlCssConfig).toEqual({
+      keyword: 'html and css interview questions',
+      title: 'HTML and CSS Interview Questions and Answers',
+      techs: ['html', 'css'],
+    });
+    expect(htmlCssSeo).toEqual({
+      title: 'HTML and CSS Interview Questions: 65 UI Q&A',
+      description:
+        '65 joint HTML and CSS interview questions for frontend UI rounds: semantic markup, accessible forms, layout implementation, browser behavior, and code scenarios.',
+      keywords: HTML_CSS_SEO_KEYWORDS,
+    });
+
+    expect(cssConfig?.keyword).toBe('css interview questions');
+    expect(cssConfig?.title).toBe('CSS Interview Questions and Answers');
+    expect(cssSeo).toEqual({
+      title: 'CSS Interview Questions: 65 Q&A, Flexbox and Grid',
+      description:
+        '65 CSS interview questions for frontend developers: beginner-to-advanced Q&A, specificity, cascade, Flexbox, Grid, responsive CSS, debugging, performance.',
+      keywords: CSS_SEO_KEYWORDS,
+    });
+
+    expect(htmlCssSeo?.keywords).not.toContain('css interview questions');
+    expect(htmlCssSeo?.description).not.toContain('specificity');
+    expect(cssSeo?.keywords?.[0]).toBe('css interview questions');
   });
 });
 
@@ -352,6 +408,26 @@ const HTML_CSS_SHORT_ANSWER_QUESTIONS = [
   'When should you use a button instead of a link?',
   'How does native form validation work?',
   'What metadata belongs in the head?',
+  'How do HTML structure and the CSS box model shape a component?',
+  'How should HTML state hooks participate in the CSS cascade?',
+  'How can semantic markup avoid CSS specificity conflicts?',
+  'How should a semantic navigation use Flexbox?',
+  'How should CSS Grid preserve semantic page and card structure?',
+  'How do DOM structure and containing blocks affect positioned UI?',
+  'How should modal DOM placement and CSS stacking work together?',
+  'How should content structure and media queries adapt together?',
+  'How do responsive images work?',
+  'How should component boundaries scope CSS custom properties?',
+  'How do HTML states and CSS pseudo-classes work together?',
+  'How do you debug overflow without hiding content or keyboard focus?',
+  'What causes layout shift?',
+  'How should focus states be styled?',
+  'How do HTML semantics and CSS display values interact?',
+  'How should CSS units preserve readable, zoomable HTML content?',
+  'How do you make an HTML and CSS component responsive?',
+];
+
+const PURE_CSS_FAQ_QUESTIONS = [
   'What is the CSS box model?',
   'How does the CSS cascade work?',
   'What is CSS specificity?',
@@ -360,15 +436,11 @@ const HTML_CSS_SHORT_ANSWER_QUESTIONS = [
   'How does CSS positioning work?',
   'How does z-index work?',
   'What are media queries used for?',
-  'How do responsive images work?',
   'What are CSS custom properties?',
   'What are pseudo-classes and pseudo-elements?',
   'How do you debug CSS overflow?',
-  'What causes layout shift?',
-  'How should focus states be styled?',
   'What is the difference between block, inline, and inline-block?',
   'How do rem, em, px, and percent differ?',
-  'How do you make an HTML and CSS component responsive?',
 ];
 
 const HTML_CSS_SEMANTICS_QUESTIONS = [
@@ -383,6 +455,17 @@ const HTML_CSS_SEMANTICS_QUESTIONS = [
 ];
 
 const HTML_CSS_LAYOUT_QUESTIONS = [
+  'How should semantic structure guide a Flexbox or Grid layout?',
+  'How can cascade layers reflect component and state boundaries?',
+  'How do stable markup hooks prevent specificity wars?',
+  'How can DOM and scroll-container structure make sticky UI fail?',
+  'How should overlay markup and stacking contexts work together?',
+  'How should component markup scope CSS custom properties?',
+  'How should content structure determine layout breakpoints?',
+  'How do markup contracts and CSS stay maintainable at scale?',
+];
+
+const PURE_CSS_LAYOUT_QUESTIONS = [
   'How do Flexbox and Grid differ?',
   'How do cascade layers change CSS conflicts?',
   'How do you avoid specificity wars?',
@@ -1887,8 +1970,10 @@ describe('InterviewQuestionsLandingComponent', () => {
       techs: ['html', 'css'],
     };
     routeStub.snapshot.data.seo = {
-      title: 'HTML and CSS Interview Questions and Answers',
-      description: 'HTML and CSS interview questions and answers, beginner to advanced, with semantic HTML, forms, accessibility, Flexbox, Grid, cascade, specificity, responsive layout, and code scenarios.',
+      title: 'HTML and CSS Interview Questions: 65 UI Q&A',
+      description:
+        '65 joint HTML and CSS interview questions for frontend UI rounds: semantic markup, accessible forms, layout implementation, browser behavior, and code scenarios.',
+      keywords: HTML_CSS_SEO_KEYWORDS,
     };
     routeStub.snapshot.data.interviewQuestionsList = {
       techs: ['html', 'css'],
@@ -1916,21 +2001,22 @@ describe('InterviewQuestionsLandingComponent', () => {
     const thirdItem = fixture.nativeElement.querySelector('[data-testid="prep-roadmap-item-3"]') as HTMLAnchorElement;
 
     expect(text).toContain('HTML and CSS Interview Questions and Answers');
-    expect(text).toContain('Updated May 20, 2026');
+    expect(text).toContain('Practice HTML and CSS together for frontend UI rounds: connect semantic markup, accessible forms, component structure, layout behavior, and browser defaults in realistic code scenarios.');
+    expect(text).toContain('Updated August 20, 2026');
     expect(text).toContain('FrontendAtlas Editorial');
-    expect(text).toContain('65 visible HTML and CSS questions across semantics, forms, accessibility, layout, cascade, responsive UI, code scenarios, and browser debugging');
+    expect(text).toContain('65 visible joint HTML and CSS questions across semantic structure, forms, accessibility, layout implementation, browser behavior, responsive UI, and code scenarios');
     expect(text).toContain('On this page');
     expect(text).toContain('Popular HTML and CSS interview question clusters');
     expect(text).toContain('Top HTML and CSS interview questions and short answers, beginner to advanced');
     expect(text).toContain('HTML and CSS interview questions for beginners and experienced frontend developers');
     expect(text).toContain('HTML semantics, forms, and accessibility interview questions');
-    expect(text).toContain('CSS layout, cascade, and responsive interview questions');
+    expect(text).toContain('HTML structure and CSS layout in UI interview rounds');
     expect(text).toContain('HTML and CSS code scenario interview questions');
-    expect(text).toContain('Browser rendering and UI debugging interview questions');
-    expect(text).toContain('Responsive UI implementation interview questions');
+    expect(text).toContain('Browser behavior across HTML and CSS UI scenarios');
+    expect(text).toContain('Adaptive HTML and CSS UI scenarios');
     expect(text).toContain('Are these HTML and CSS interview questions for beginners and experienced developers?');
     expect(text).toContain('Does this page cover accessibility and forms?');
-    expect(text).toContain('Does this page cover CSS layout, cascade, and responsive UI?');
+    expect(text).toContain('How does this page combine HTML and CSS for UI interview rounds?');
     expect(text).toContain('Where should I practice HTML and CSS coding scenarios?');
     for (const question of HTML_CSS_SHORT_ANSWER_QUESTIONS) {
       expect(text).toContain(question);
@@ -1940,6 +2026,13 @@ describe('InterviewQuestionsLandingComponent', () => {
     }
     for (const question of HTML_CSS_LAYOUT_QUESTIONS) {
       expect(text).toContain(question);
+    }
+    const combinedLayoutQuestionNames = Array.from(
+      fixture.nativeElement.querySelectorAll('.iq-section--html-css-layout h3') as NodeListOf<HTMLElement>
+    ).map((heading) => (heading.textContent || '').trim());
+    expect(combinedLayoutQuestionNames).toEqual(HTML_CSS_LAYOUT_QUESTIONS);
+    for (const pureCssQuestion of PURE_CSS_LAYOUT_QUESTIONS) {
+      expect(combinedLayoutQuestionNames).not.toContain(pureCssQuestion);
     }
     for (const question of HTML_CSS_CODE_SCENARIOS) {
       expect(text).toContain(question);
@@ -1954,7 +2047,7 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(text.indexOf('Top HTML and CSS interview questions and short answers, beginner to advanced')).toBeLessThan(
       text.indexOf('Most crucial HTML and CSS coding interview questions')
     );
-    expect(text.indexOf('Responsive UI implementation interview questions')).toBeLessThan(
+    expect(text.indexOf('Adaptive HTML and CSS UI scenarios')).toBeLessThan(
       text.indexOf('Most crucial HTML and CSS coding interview questions')
     );
     expect(text).toContain('Most crucial HTML and CSS coding interview questions');
@@ -1996,6 +2089,11 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(fixture.nativeElement.querySelectorAll('.iq-section--html-css-code .iq-scenario-card').length).toBe(8);
     expect(fixture.nativeElement.querySelectorAll('.iq-section--html-css-browser .iq-focused-card').length).toBe(8);
     expect(fixture.nativeElement.querySelectorAll('.iq-section--html-css-responsive .iq-focused-card').length).toBe(8);
+    const dedicatedCssLink = fixture.nativeElement.querySelector(
+      '[data-testid="html-css-dedicated-css-link"]'
+    ) as HTMLAnchorElement | null;
+    expect(dedicatedCssLink?.getAttribute('href') || '').toBe('/css/interview-questions');
+    expect(dedicatedCssLink?.textContent || '').toContain('cascade, specificity, Flexbox, Grid, responsive CSS, and debugging');
     expect(
       fixture.nativeElement.querySelectorAll(
         '.iq-section--html-css-short-answers .iq-short-answer, .iq-section--html-css-semantics .iq-focused-card, .iq-section--html-css-layout .iq-focused-card, .iq-section--html-css-code .iq-scenario-card, .iq-section--html-css-browser .iq-focused-card, .iq-section--html-css-responsive .iq-focused-card'
@@ -2039,7 +2137,8 @@ describe('InterviewQuestionsLandingComponent', () => {
     const collection = graph.find((entry: any) => entry?.['@type'] === 'CollectionPage');
     const faqPage = graph.find((entry: any) => entry?.['@type'] === 'FAQPage');
 
-    expect(collection?.dateModified).toBe('2026-05-20T00:00:00.000Z');
+    expect(payload.canonical).toBe('/html-css/interview-questions');
+    expect(collection?.dateModified).toBe('2026-08-20T00:00:00.000Z');
     expect(collection?.author?.name).toBe('FrontendAtlas Editorial');
     expect((collection?.about || []).some((entry: any) =>
       String(entry?.name || '').includes('HTML CSS interview questions')
@@ -2054,14 +2153,11 @@ describe('InterviewQuestionsLandingComponent', () => {
       String(entry?.name || '').includes('semantic HTML interview questions')
     )).toBeTrue();
     expect((collection?.about || []).some((entry: any) =>
-      String(entry?.name || '').includes('CSS layout interview questions')
-    )).toBeTrue();
-    expect((collection?.about || []).some((entry: any) =>
-      String(entry?.name || '').includes('Flexbox and Grid interview questions')
+      String(entry?.name || '').includes('HTML and CSS UI implementation questions')
     )).toBeTrue();
     expect((collection?.about || []).some((entry: any) =>
       String(entry?.name || '').includes('CSS specificity and cascade interview questions')
-    )).toBeTrue();
+    )).toBeFalse();
     expect((collection?.about || []).some((entry: any) =>
       String(entry?.name || '').includes('accessibility interview questions')
     )).toBeTrue();
@@ -2071,12 +2167,19 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect((collection?.mentions || []).some((entry: any) =>
       String(entry?.name || '').includes('HTML and CSS code scenarios')
     )).toBeTrue();
-    expect((collection?.mentions || []).some((entry: any) =>
-      String(entry?.name || '').includes('Browser rendering and UI debugging')
-    )).toBeTrue();
+    const dedicatedCssMention = (collection?.mentions || []).find((entry: any) =>
+      String(entry?.name || '') === 'Dedicated CSS interview questions'
+    );
+    expect(dedicatedCssMention?.url).toBe('https://frontendatlas.com/css/interview-questions');
     expect(Array.isArray(faqPage?.mainEntity)).toBeTrue();
     expect(faqPage?.mainEntity.length).toBe(25);
-    expect(faqPage?.mainEntity.map((entry: any) => entry?.name)).toEqual(HTML_CSS_SHORT_ANSWER_QUESTIONS);
+    const combinedFaqNames = faqPage?.mainEntity.map((entry: any) => entry?.name) || [];
+    expect(combinedFaqNames).toEqual(HTML_CSS_SHORT_ANSWER_QUESTIONS);
+    for (const pureCssQuestion of PURE_CSS_FAQ_QUESTIONS) {
+      expect(combinedFaqNames).not.toContain(pureCssQuestion);
+    }
+    expect(combinedFaqNames).toContain('How should a semantic navigation use Flexbox?');
+    expect(combinedFaqNames).toContain('How should modal DOM placement and CSS stacking work together?');
     const semanticEntry = faqPage?.mainEntity.find((entry: any) =>
       entry?.name === 'What is semantic HTML?'
     );
@@ -2722,6 +2825,12 @@ describe('InterviewQuestionsLandingComponent', () => {
       title: 'CSS Interview Questions and Answers',
       techs: ['css'],
     };
+    routeStub.snapshot.data.seo = {
+      title: 'CSS Interview Questions: 65 Q&A, Flexbox and Grid',
+      description:
+        '65 CSS interview questions for frontend developers: beginner-to-advanced Q&A, specificity, cascade, Flexbox, Grid, responsive CSS, debugging, performance.',
+      keywords: CSS_SEO_KEYWORDS,
+    };
     routeStub.snapshot.data.interviewQuestionsList = {
       techs: ['css'],
       coding: [
@@ -2744,7 +2853,8 @@ describe('InterviewQuestionsLandingComponent', () => {
     expectNoMasterHubCopy(text, fixture.nativeElement);
 
     expect(text).toContain('CSS Interview Questions and Answers');
-    expect(text).toContain('Updated May 20, 2026');
+    expect(text).toContain('Review 65 CSS interview questions and answers covering cascade, specificity, Flexbox, Grid, responsive CSS, and methodical visual debugging.');
+    expect(text).toContain('Updated August 20, 2026');
     expect(text).toContain('65 visible CSS questions across cascade, specificity, box model, layout, responsive design, debugging, performance, and maintainable CSS');
     expect(text).toContain('Popular CSS interview question clusters');
     expect(text).toContain('Top CSS interview questions and short answers, beginner to advanced');
@@ -2931,7 +3041,8 @@ describe('InterviewQuestionsLandingComponent', () => {
     const collection = graph.find((entry: any) => entry?.['@type'] === 'CollectionPage');
     const faqPage = graph.find((entry: any) => entry?.['@type'] === 'FAQPage');
 
-    expect(collection?.dateModified).toBe('2026-05-20T00:00:00.000Z');
+    expect(payload.canonical).toBe('/css/interview-questions');
+    expect(collection?.dateModified).toBe('2026-08-20T00:00:00.000Z');
     expect(collection?.author?.name).toBe('FrontendAtlas Editorial');
     expect((collection?.about || []).some((entry: any) =>
       String(entry?.name || '').includes('CSS interview questions and answers')
@@ -2998,7 +3109,13 @@ describe('InterviewQuestionsLandingComponent', () => {
     )).toBeTrue();
     expect(faqPage?.['@id']).toContain('#css-short-answers');
     expect(faqPage?.mainEntity.length).toBe(25);
-    expect(faqPage?.mainEntity.map((entry: any) => entry?.name)).toEqual(CSS_SHORT_ANSWER_QUESTIONS);
+    const cssFaqNames = faqPage?.mainEntity.map((entry: any) => entry?.name) || [];
+    expect(cssFaqNames).toEqual(CSS_SHORT_ANSWER_QUESTIONS);
+    for (const pureCssQuestion of PURE_CSS_FAQ_QUESTIONS.filter((question) =>
+      CSS_SHORT_ANSWER_QUESTIONS.includes(question)
+    )) {
+      expect(cssFaqNames).toContain(pureCssQuestion);
+    }
   });
 
   it('renders Angular-only answer-first coverage, scenarios, modern topics, and schema mentions', async () => {

@@ -7,8 +7,10 @@ import ts from 'typescript';
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(scriptDir, '../..');
 const catalogPath = path.join(repoRoot, 'cdn/questions/javascript/coding.json');
+const triviaCatalogPath = path.join(repoRoot, 'cdn/questions/javascript/trivia.json');
 const graphDir = path.join(repoRoot, 'cdn/questions/javascript/decision-graphs');
 const catalog = JSON.parse(fs.readFileSync(catalogPath, 'utf8'));
+const triviaCatalog = JSON.parse(fs.readFileSync(triviaCatalogPath, 'utf8'));
 
 function getQuestion(id) {
   const question = catalog.find((entry) => entry.id === id);
@@ -626,6 +628,54 @@ async function testFetchJsonMock() {
   }
 }
 
+async function testObjectComparisonDeepEqualExample() {
+  const question = triviaCatalog.find((entry) => entry.id === 'js-compare-two-objects');
+  assert.ok(question, 'Missing JavaScript object-comparison trivia entry');
+
+  const code = question.answer?.blocks?.find(
+    (block) => block.type === 'code' && /^function deepEqual\(/.test(block.code || ''),
+  )?.code;
+  assert.equal(typeof code, 'string', 'Missing deepEqual example on object-comparison page');
+
+  const source = `${code}\nexport default deepEqual;`;
+  const url = `data:text/javascript;base64,${Buffer.from(source).toString('base64')}#trivia-deep-equal`;
+  const deepEqual = (await import(url)).default;
+
+  assert.equal(deepEqual({ nested: { value: 1 } }, { nested: { value: 1 } }), true);
+
+  const leftCycle = {};
+  leftCycle.self = leftCycle;
+  const rightCycle = {};
+  rightCycle.self = rightCycle;
+  assert.equal(deepEqual(leftCycle, rightCycle), true);
+
+  const shared = { value: 1 };
+  assert.equal(
+    deepEqual(
+      { first: shared, second: shared },
+      { first: { value: 1 }, second: { value: 1 } },
+    ),
+    false,
+    'Repeated-reference topology must be preserved',
+  );
+
+  assert.equal(
+    deepEqual(Array(1), [undefined]),
+    false,
+    'Sparse arrays must not equal arrays with an explicit undefined entry',
+  );
+
+  const firstArray = [1];
+  firstArray.extra = 'first';
+  const secondArray = [1];
+  secondArray.extra = 'second';
+  assert.equal(
+    deepEqual(firstArray, secondArray),
+    false,
+    'Enumerable array properties must participate in equality',
+  );
+}
+
 assertDecisionGraphParity('js-sanitize-href-url');
 assertDecisionGraphParity('js-poll-until');
 assertDecisionGraphParity('js-implement-new');
@@ -652,5 +702,6 @@ await testDebounceExample();
 await testTakeLatestCleanup();
 await testStreamToTextCleanup();
 await testFetchJsonMock();
+await testObjectComparisonDeepEqualExample();
 
-console.log('Question solution regressions passed (P0/P1/P2 JavaScript + TypeScript catalog).');
+console.log('Question solution regressions passed (P0/P1/P2 JavaScript + TypeScript catalog and object-comparison example).');

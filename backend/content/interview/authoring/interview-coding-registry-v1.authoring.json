@@ -4,10 +4,10 @@
   "registryVersion": "1.0.0",
   "status": "candidate",
   "finalApproval": null,
-  "definitionHash": "c8c31198f9ff2fd65ace43be87f28cc22d8bbe451818d6e3fa0218e449e0e393",
+  "definitionHash": "40415337fa3aaf091dbc7ae07edafa8ddda60c2605977b3fde9be4ea318d649b",
   "reviewBatch": {
-    "reviewedDefinitionHash": "c8c31198f9ff2fd65ace43be87f28cc22d8bbe451818d6e3fa0218e449e0e393",
-    "reviewedAt": "2026-08-06",
+    "reviewedDefinitionHash": "40415337fa3aaf091dbc7ae07edafa8ddda60c2605977b3fde9be4ea318d649b",
+    "reviewedAt": "2026-08-20",
     "technical": {
       "reviewer": "codex-interview-coding-technical-v1",
       "reviewerType": "ai",
@@ -390,7 +390,7 @@
       "level": "junior",
       "catalog": "react",
       "sourceQuestionId": "react-counter",
-      "expectedQuestionHash": "430f69a04d7f6f6a0d547263ce65a837228aa9a38c64bc4116d16880bf942b83",
+      "expectedQuestionHash": "904dc5380c7402d4d6bd4bb82c0cb7674d7515710eb66a581624c6a75d11b1b1",
       "expectedStarterAssetHash": "957987d105a3eb4186b964dafe98c3218328dea87c01e2e0e7167d06265d0db6",
       "expectedPressureAssetHash": "bc1d05a14201d35e8d8aaafcc5ffd28b701bc9c7f35611559091d60ca1bb71d9",
       "timeLimitSeconds": 1500,

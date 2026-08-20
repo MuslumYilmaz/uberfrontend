@@ -8,13 +8,14 @@
     "importance": 2,
     "tags": [
       "react",
+      "hooks",
       "state",
       "event-handlers",
       "components",
       "basics"
     ],
     "description": {
-      "summary": "Build a React counter component with increment/decrement and a zero floor. Use state for the count, disable decrement at zero, and keep UI text in sync with state changes so the user always sees valid values. Concepts: react, state, event handlers, components, basics. Framework focus: React hooks (useState/useEffect), JSX event handling, and one-way props/state flow.",
+      "summary": "Build a React counter component with the useState hook. Initialize the count at zero, wire increment and guarded decrement handlers, disable decrement at zero, and keep the rendered value synchronized with state.",
       "specs": {
         "requirements": [
           "Render a <Counter /> as the main UI.",
@@ -28,14 +29,25 @@
           "Initial count starts at 0."
         ],
         "implementationNotes": [
-          "Use React state (useState) to store the count.",
+          "Initialize local component state with useState(0).",
           "Guard the decrement so it never sets a negative value.",
+          "Disable decrement at zero so the interface communicates the invariant.",
           "Keep everything in a single small component for this exercise."
         ],
         "techFocus": [
           "React useState",
           "Event handlers",
-          "Basic component structure"
+          "Derived disabled state"
+        ],
+        "faq": [
+          {
+            "question": "How do you build a counter component in React with useState?",
+            "answer": "Call useState(0) to store the count, render that state, and update it from increment and decrement button handlers. Guard decrement so the value cannot fall below zero."
+          },
+          {
+            "question": "How do you prevent a React counter from going below zero?",
+            "answer": "Guard the decrement so it clamps at zero, then disable the decrement button when count is zero to keep behavior and visual state aligned."
+          }
         ]
       }
     },
@@ -139,10 +151,12 @@
     "solutionAsset": "assets/sb/react/solution/react-counter-solution.v1.json",
     "companies": [],
     "access": "free",
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-08-20",
     "seo": {
-      "title": "Build React Counter Component",
-      "description": "Build a counter UI that increments and decrements value, prevents negative counts, and reflects disabled states correctly."
+      "title": "Build a React Counter Component with useState",
+      "description": "Build and test a React counter component with useState, increment and guarded decrement handlers, and a disabled zero state.",
+      "h1": "Build a React Counter Component with useState",
+      "h1IntentLabel": "React counter component with useState"
     }
   },
   {
