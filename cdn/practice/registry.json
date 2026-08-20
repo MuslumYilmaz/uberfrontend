@@ -4941,7 +4941,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-10",
+    "updatedAt": "2026-08-20",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-compare-two-objects"
   },
@@ -6160,7 +6160,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-08-20",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-shallow-vs-deep-copy"
   },
@@ -6938,7 +6938,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-07-03",
+    "updatedAt": "2026-08-20",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-equality-vs-strict-equality"
   },
@@ -7614,9 +7614,10 @@
     "route": "/react/coding/react-counter",
     "tech": "react",
     "difficulty": "easy",
-    "summary": "Build a React counter component with increment/decrement and a zero floor. Use state for the count, disable decrement at zero, and keep UI text in sync with state changes so the user always sees valid values.",
+    "summary": "Build a React counter component with the useState hook. Initialize the count at zero, wire increment and guarded decrement handlers, disable decrement at zero, and keep the rendered value synchronized with state.",
     "tags": [
       "react",
+      "hooks",
       "state",
       "event-handlers",
       "components",
@@ -7624,7 +7625,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-08-20",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/coding.json#react-counter"
   },
