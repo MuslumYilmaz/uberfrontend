@@ -32,7 +32,9 @@
 
       <nav class="incident-step-nav" aria-label="Incident steps">
         <button type="button" class="incident-step-nav__item" [class.is-active]="activeStepIndex() === 0"
-          [class.is-unlocked]="isStepUnlocked(0)" (click)="goToStep(0)">
+          [class.is-unlocked]="isStepUnlocked(0)"
+          [attr.aria-current]="activeStepIndex() === 0 ? 'step' : null"
+          (click)="goToStep(0)">
           Overview
         </button>
         <button
@@ -41,16 +43,28 @@
           *ngFor="let stage of scenario.stages; let index = index"
           [class.is-active]="activeStepIndex() === index + 1"
           [class.is-unlocked]="isStepUnlocked(index + 1)"
+          [attr.aria-current]="activeStepIndex() === index + 1 ? 'step' : null"
           [disabled]="!isStepUnlocked(index + 1)"
           (click)="goToStep(index + 1)">
           {{ index + 1 }}
         </button>
         <button type="button" class="incident-step-nav__item" [class.is-active]="activeStepIndex() === debriefStepIndex()"
-          [class.is-unlocked]="isStepUnlocked(debriefStepIndex())" [disabled]="!isStepUnlocked(debriefStepIndex())"
+          [class.is-unlocked]="isStepUnlocked(debriefStepIndex())"
+          [attr.aria-current]="activeStepIndex() === debriefStepIndex() ? 'step' : null"
+          [disabled]="!isStepUnlocked(debriefStepIndex())"
           (click)="goToStep(debriefStepIndex())">
           Debrief
         </button>
       </nav>
+
+      <p
+        class="incident-sr-only"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        data-testid="incident-feedback-announcement">
+        {{ feedbackAnnouncement() }}
+      </p>
 
       <section class="incident-stage-card incident-stage-card--overview" *ngIf="activeStepIndex() === 0">
         <div class="incident-stage-card__header incident-overview__header">
@@ -104,31 +118,40 @@
         <div class="incident-stage-card__header">
           <div>
             <p class="incident-stage-card__eyebrow">{{ stage.title }}</p>
-            <h2>{{ stage.prompt }}</h2>
+            <h2 [attr.id]="'incident-stage-prompt-' + stage.id">{{ stage.prompt }}</h2>
           </div>
           <span class="incident-stage-card__badge">Scored</span>
         </div>
 
         <p class="incident-stage-card__helper" *ngIf="stage.helperText">{{ stage.helperText }}</p>
 
-        <div class="incident-options" *ngIf="stage.type === 'single-select'" role="radiogroup">
+        <div
+          class="incident-options"
+          *ngIf="stage.type === 'single-select'"
+          role="radiogroup"
+          [attr.aria-labelledby]="'incident-stage-prompt-' + stage.id">
           <button
             type="button"
             class="incident-option"
-            *ngFor="let option of stage.options"
+            *ngFor="let option of stage.options; let optionIndex = index"
             role="radio"
             [attr.aria-checked]="isOptionSelected(stage.id, option.id)"
+            [attr.tabindex]="singleSelectTabIndex(stage, option.id, optionIndex)"
             [class.is-selected]="isOptionSelected(stage.id, option.id)"
             [disabled]="isStageSubmitted(stage.id)"
             [attr.data-testid]="'incident-option-' + stage.id + '-' + option.id"
             (click)="activateOption(stage, option.id)"
-            (keydown)="onOptionKeydown($event, stage, option.id)">
+            (keydown)="onSingleSelectKeydown($event, stage, option.id)">
             <span class="incident-option__marker" aria-hidden="true"></span>
             <span class="incident-option__copy">{{ option.label }}</span>
           </button>
         </div>
 
-        <div class="incident-options" *ngIf="stage.type === 'multi-select'">
+        <div
+          class="incident-options"
+          *ngIf="stage.type === 'multi-select'"
+          role="group"
+          [attr.aria-labelledby]="'incident-stage-prompt-' + stage.id">
           <button
             type="button"
             class="incident-option"
@@ -318,10 +341,9 @@
           <button
             type="button"
             class="incident-action-bar__btn incident-action-bar__btn--primary"
-            *ngIf="!isStageSubmitted(actionStage.id); else stageAdvance"
-            [disabled]="!canSubmitCurrentStage()"
-            (click)="submitCurrentStage()">
-            Submit response
+            [disabled]="!isStageSubmitted(actionStage.id) && !canSubmitCurrentStage()"
+            (click)="isStageSubmitted(actionStage.id) ? nextStep() : submitCurrentStage()">
+            {{ isStageSubmitted(actionStage.id) ? nextButtonLabel() : 'Submit response' }}
           </button>
         </ng-container>
 
@@ -334,14 +356,6 @@
           </button>
         </ng-template>
 
-        <ng-template #stageAdvance>
-          <button
-            type="button"
-            class="incident-action-bar__btn incident-action-bar__btn--primary"
-            (click)="nextStep()">
-            {{ nextButtonLabel() }}
-          </button>
-        </ng-template>
       </div>
 
       <ng-template #debriefActions>

@@ -12,6 +12,7 @@ import {
   IncidentProgressRecord,
   IncidentRelatedPractice,
   IncidentScenario,
+  IncidentSingleSelectStage,
   IncidentStage,
   createEmptyIncidentProgressRecord,
 } from '../../../core/models/incident.model';
@@ -73,6 +74,7 @@ export class IncidentDetailComponent {
   readonly submittedStageIds = signal<string[]>([]);
   readonly stageResults = signal<Record<string, IncidentStageEvaluation>>({});
   readonly reflectionNote = signal('');
+  readonly feedbackAnnouncement = signal('');
 
   readonly stages = computed(() => this.incident()?.stages ?? []);
   readonly debriefStepIndex = computed(() => this.stages().length + 1);
@@ -144,12 +146,14 @@ export class IncidentDetailComponent {
   }
 
   startIncident(): void {
+    this.feedbackAnnouncement.set('');
     this.activeStepIndex.set(1);
     this.persistSession();
   }
 
   goToStep(index: number): void {
     if (!this.isStepUnlocked(index)) return;
+    this.feedbackAnnouncement.set('');
     if (index === this.debriefStepIndex()) {
       this.enterDebrief();
       return;
@@ -161,6 +165,7 @@ export class IncidentDetailComponent {
   previousStep(): void {
     const current = this.activeStepIndex();
     const next = current <= 0 ? 0 : current - 1;
+    this.feedbackAnnouncement.set('');
     this.activeStepIndex.set(next);
     this.persistSession();
   }
@@ -180,6 +185,7 @@ export class IncidentDetailComponent {
       return;
     }
 
+    this.feedbackAnnouncement.set('');
     this.activeStepIndex.set(current + 1);
     this.persistSession();
   }
@@ -190,6 +196,7 @@ export class IncidentDetailComponent {
     this.answers.set({});
     this.submittedStageIds.set([]);
     this.stageResults.set({});
+    this.feedbackAnnouncement.set('');
     this.activeStepIndex.set(0);
     this.progress.clearSession(incident.meta.id);
     this.progress.markStarted(incident.meta.id);
@@ -239,6 +246,62 @@ export class IncidentDetailComponent {
     if (event.key !== 'Enter' && event.key !== ' ') return;
     event.preventDefault();
     this.activateOption(stage, optionId);
+  }
+
+  singleSelectTabIndex(stage: IncidentSingleSelectStage, optionId: string, optionIndex: number): number {
+    if (this.isStageSubmitted(stage.id)) return -1;
+    const selectedOptionId = this.answers()[stage.id];
+    const hasValidSelection = typeof selectedOptionId === 'string'
+      && stage.options.some((option) => option.id === selectedOptionId);
+    if (hasValidSelection) return selectedOptionId === optionId ? 0 : -1;
+    return optionIndex === 0 ? 0 : -1;
+  }
+
+  onSingleSelectKeydown(
+    event: KeyboardEvent,
+    stage: IncidentSingleSelectStage,
+    optionId: string,
+  ): void {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      this.activateOption(stage, optionId);
+      return;
+    }
+
+    const targetByKey: Record<string, 'first' | 'last' | 'next' | 'previous'> = {
+      ArrowDown: 'next',
+      ArrowRight: 'next',
+      ArrowUp: 'previous',
+      ArrowLeft: 'previous',
+      Home: 'first',
+      End: 'last',
+    };
+    const targetAction = targetByKey[event.key];
+    if (!targetAction) return;
+
+    const currentRadio = event.currentTarget as HTMLButtonElement | null;
+    const radioGroup = currentRadio?.closest<HTMLElement>('[role="radiogroup"]');
+    if (!currentRadio || !radioGroup) return;
+
+    const radios = Array.from(
+      radioGroup.querySelectorAll<HTMLButtonElement>('[role="radio"]:not(:disabled)'),
+    );
+    const currentIndex = radios.indexOf(currentRadio);
+    if (currentIndex < 0 || radios.length === 0) return;
+
+    let targetIndex = currentIndex;
+    if (targetAction === 'first') targetIndex = 0;
+    if (targetAction === 'last') targetIndex = radios.length - 1;
+    if (targetAction === 'next') targetIndex = (currentIndex + 1) % radios.length;
+    if (targetAction === 'previous') targetIndex = (currentIndex - 1 + radios.length) % radios.length;
+
+    const targetRadio = radios[targetIndex];
+    const targetOption = stage.options[targetIndex];
+    if (!targetRadio || !targetOption) return;
+
+    event.preventDefault();
+    this.activateOption(stage, targetOption.id);
+    targetRadio.focus();
   }
 
   priorityOrder(stage: IncidentPriorityOrderStage): string[] {
@@ -305,6 +368,9 @@ export class IncidentDetailComponent {
       [stage.id]: evaluation,
     });
     this.submittedStageIds.set(Array.from(new Set([...this.submittedStageIds(), stage.id])));
+    this.feedbackAnnouncement.set(
+      `${stage.title}. ${this.feedbackHeading(stage.id)}. Score ${evaluation.rawScore} out of ${evaluation.maxScore}.`,
+    );
     this.persistSession();
     this.scrollToFeedback(stage.id);
   }
@@ -407,6 +473,7 @@ export class IncidentDetailComponent {
     this.incidentList.set(resolved?.list ?? []);
     this.prevIncident.set(resolved?.prev ?? null);
     this.nextIncident.set(resolved?.next ?? null);
+    this.feedbackAnnouncement.set('');
 
     if (!scenario) return;
 
@@ -482,6 +549,7 @@ export class IncidentDetailComponent {
           },
         });
     }
+    this.feedbackAnnouncement.set('');
     this.activeStepIndex.set(this.debriefStepIndex());
     this.persistSession();
   }

@@ -4,6 +4,27 @@
   padding: 1.5rem 1rem 1.5rem;
 }
 
+.incident-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.incident-step-nav__item:focus-visible,
+.incident-option:focus-visible,
+.incident-priority__btn:focus-visible,
+.incident-action-bar__btn:focus-visible {
+  outline: 2px solid var(--uf-accent);
+  outline-offset: 3px;
+}
+
 .locked-shell{
   height: calc(100vh - var(--app-safe-top, 64px) - 56px);
   display: flex;

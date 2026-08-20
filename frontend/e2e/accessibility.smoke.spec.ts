@@ -94,6 +94,39 @@ test.describe('accessibility smoke', () => {
     await expectNoSeriousViolations(page, 'coding detail route', '[data-testid="coding-detail-page"]');
   });
 
+  test('modal incident supports a named radio workflow and announced feedback', async ({ page }) => {
+    await page.goto('/incidents/modal-screen-reader-failure');
+    await expect(page.getByRole('heading', {
+      level: 1,
+      name: 'Modal opens visually but fails screen-reader users',
+    })).toBeVisible();
+
+    await page.getByRole('button', { name: 'Begin simulator' }).click();
+
+    const group = page.getByRole('radiogroup', { name: 'What is actually broken here?' });
+    const radios = group.getByRole('radio');
+    await expect(radios).toHaveCount(4);
+    await expect(radios.nth(0)).toHaveAttribute('tabindex', '0');
+    await expect(radios.nth(1)).toHaveAttribute('tabindex', '-1');
+    await expect(radios.nth(2)).toHaveAttribute('tabindex', '-1');
+    await expect(radios.nth(3)).toHaveAttribute('tabindex', '-1');
+
+    await radios.first().focus();
+    await page.keyboard.press('End');
+    const correctOption = radios.last();
+    await expect(correctOption).toBeFocused();
+    await expect(correctOption).toHaveAttribute('aria-checked', 'true');
+    await expect(correctOption).toHaveAttribute('tabindex', '0');
+
+    await page.getByRole('button', { name: 'Submit response' }).click();
+    await expect(page.getByRole('status')).toContainText(
+      'Stage 1: likely root cause. Strong call. Score 25 out of 25.',
+    );
+    await expect(page.getByRole('button', { name: 'Next stage' })).toBeFocused();
+    await expect(page.locator('.incident-step-nav__item[aria-current="step"]')).toHaveCount(1);
+    await expectNoSeriousViolations(page, 'modal accessibility incident', '.incident-detail-shell');
+  });
+
   test('offline email reader and open Overview dialog are accessible by keyboard', async ({ page }) => {
     await page.setViewportSize(MOBILE_VIEWPORT);
     await page.goto(OFFLINE_EMAIL_PATH);
