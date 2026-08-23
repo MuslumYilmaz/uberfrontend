@@ -22,6 +22,10 @@ declare global {
 
 const PLAN_IDS = ['monthly', 'quarterly', 'annual'] as const;
 const ALL_PLAN_IDS = ['monthly', 'quarterly', 'annual', 'lifetime'] as const;
+const appOrigin = new URL(
+  process.env.PLAYWRIGHT_BASE_URL
+    || `http://${process.env.PLAYWRIGHT_HOST || '127.0.0.1'}:${process.env.PLAYWRIGHT_PORT || '4200'}`,
+).origin;
 const paymentsMode = resolvePaymentsMode(environment);
 const allowLive = process.env.E2E_ALLOW_LIVE_PAYMENTS === 'true';
 
@@ -48,16 +52,16 @@ function buildStartedCheckoutResponse(planId: typeof PLAN_IDS[number]) {
   const attemptId = `chk_e2e_${planId}`;
   const checkoutUrl = new URL(expectedUrlFor(planId));
   checkoutUrl.searchParams.set('checkout[custom_data][fa_checkout_attempt_id]', attemptId);
-  checkoutUrl.searchParams.set('checkout[success_url]', `http://127.0.0.1:4200/billing/success?attempt=${attemptId}`);
-  checkoutUrl.searchParams.set('checkout[cancel_url]', `http://127.0.0.1:4200/billing/cancel?attempt=${attemptId}`);
+  checkoutUrl.searchParams.set('checkout[success_url]', `${appOrigin}/billing/success?attempt=${attemptId}`);
+  checkoutUrl.searchParams.set('checkout[cancel_url]', `${appOrigin}/billing/cancel?attempt=${attemptId}`);
   return {
     attemptId,
     provider: 'lemonsqueezy',
     planId,
     mode: paymentsMode,
     checkoutUrl: checkoutUrl.toString(),
-    successUrl: `http://127.0.0.1:4200/billing/success?attempt=${attemptId}`,
-    cancelUrl: `http://127.0.0.1:4200/billing/cancel?attempt=${attemptId}`,
+    successUrl: `${appOrigin}/billing/success?attempt=${attemptId}`,
+    cancelUrl: `${appOrigin}/billing/cancel?attempt=${attemptId}`,
     reused: false,
   };
 }
@@ -349,7 +353,7 @@ test.describe('lemonsqueezy integration (local)', () => {
       });
     });
     await expect.poll(() => page.evaluate(() => window.__lastSuccessRedirect || '')).toBe(
-      'http://127.0.0.1:4200/billing/success?attempt=chk_e2e_quarterly',
+      `${appOrigin}/billing/success?attempt=chk_e2e_quarterly`,
     );
     expect(await page.evaluate(() => window.__lemonSqueezyCloseCount || 0)).toBe(1);
   });
