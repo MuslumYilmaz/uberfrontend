@@ -6,6 +6,7 @@ import { combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { QuestionService } from '../../../core/services/question.service';
 import { COMPANY_PRACTICE_DISCLAIMER } from '../../../core/content/public-editorial-facts';
+import { companyBrandFor } from '../../../shared/company-branding';
 import { FaChipComponent } from '../../../shared/components/chip/fa-chip.component';
 import { collectCompanyCounts, CompanyCountBucket } from '../../../shared/company-counts.util';
 
@@ -41,7 +42,6 @@ export class CompanyDetailComponent {
   }
 
   pretty(slug: string) {
-    const map: Record<string, string> = { google: 'Google', amazon: 'Amazon', apple: 'Apple', meta: 'Meta', microsoft: 'Microsoft', uber: 'Uber', airbnb: 'Airbnb', netflix: 'Netflix' };
-    return map[slug] ?? slug.replace(/-/g, ' ').replace(/\b\w/g, m => m.toUpperCase());
+    return companyBrandFor(slug)?.label ?? slug;
   }
 }

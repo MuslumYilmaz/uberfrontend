@@ -201,6 +201,7 @@ async function assertBugReportChallengeLayout(page: import('@playwright/test').P
     } | undefined;
     if (!app?.bugReport) throw new Error('Angular bug-report service is unavailable in E2E.');
     app.bugReport.open({ source: 'turnstile-layout-e2e', url: window.location.href });
+    (window as any).ng?.applyChanges?.(app);
   });
 
   const dialog = page.locator('.bug-dialog.p-dialog');
@@ -217,6 +218,51 @@ async function assertBugReportChallengeLayout(page: import('@playwright/test').P
   await assertElementsStayInside(challenge, '.bug-dialog__panel', `${label} bug-report challenge`);
 }
 
+async function assertMobileDemoControlsAreOmitted(page: import('@playwright/test').Page): Promise<void> {
+  await expect(page.locator('.demo-picker')).toHaveCount(0);
+  await expect(page.locator('.demo-choice-list')).toHaveCount(0);
+  await expect(page.locator('[data-testid^="showcase-demo-tab-"]')).toHaveCount(0);
+  await expect(page.locator('.demo-meta')).toHaveCount(0);
+  await expect(page.locator('#demo-pane')).toHaveCount(0);
+}
+
+async function assertMobileConversionFitsViewport(
+  page: import('@playwright/test').Page,
+  label: string,
+): Promise<void> {
+  await page.getByTestId('showcase-trust-section').scrollIntoViewIfNeeded();
+
+  const sticky = page.getByTestId('conversion-mobile-sticky');
+  await expect(sticky).toBeVisible();
+
+  const metrics = await sticky.evaluate((element) => {
+    const rect = element.getBoundingClientRect();
+    const style = window.getComputedStyle(element);
+    return {
+      top: rect.top,
+      bottom: rect.bottom,
+      height: rect.height,
+      viewportHeight: window.innerHeight,
+      clientHeight: element.clientHeight,
+      scrollHeight: element.scrollHeight,
+      overflowY: style.overflowY,
+    };
+  });
+
+  expect(metrics.top, `${label} sticky top`).toBeGreaterThanOrEqual(-1);
+  expect(metrics.bottom, `${label} sticky bottom`).toBeLessThanOrEqual(metrics.viewportHeight + 1);
+  expect(metrics.height, `${label} sticky height`).toBeLessThanOrEqual(181);
+  expect(metrics.clientHeight, `${label} sticky usable viewport height`).toBeLessThanOrEqual(
+    metrics.viewportHeight - 48 + 1,
+  );
+  expect(metrics.overflowY, `${label} sticky overflow behavior`).toMatch(/auto|scroll/);
+
+  const links = sticky.locator('.conversion-sticky__actions a');
+  await expect(links).toHaveCount(2);
+  await assertLocatorFitsWidth(links, `${label} sticky action`);
+  await assertElementsStayInside(links, '.conversion-sticky__actions', `${label} sticky actions`);
+}
+
 test.describe('showcase mobile layout guardrail', () => {
   test.skip(({ browserName }) => browserName !== 'chromium', 'Layout guardrail is chromium-only.');
 
@@ -229,15 +275,20 @@ test.describe('showcase mobile layout guardrail', () => {
       await expect(page.getByTestId('showcase-hero-title')).toBeVisible();
       await page.getByTestId('showcase-demo-mobile-guard').scrollIntoViewIfNeeded();
       await expect(page.getByTestId('showcase-demo-mobile-guard')).toBeVisible();
-      await expect(page.locator('#demo-pane')).toHaveCount(0);
+      await assertMobileDemoControlsAreOmitted(page);
       await expect(page.getByTestId('showcase-demo-mobile-guard-open')).toHaveAttribute(
         'href',
-        '/react/coding/react-counter',
+        '/coding',
+      );
+      await expect(page.getByTestId('showcase-demo-mobile-guard-browse')).toHaveAttribute(
+        'href',
+        '/interview-questions',
       );
       await expect(page.getByTestId('showcase-demo-open-live')).toHaveClass(/hidden/);
 
       await stabilize(page);
       await assertTrustAndCompanyLayout(page, 1, `showcase mobile ${viewport.width}px`);
+      await assertMobileConversionFitsViewport(page, `showcase mobile ${viewport.width}px`);
       await assertNoHorizontalOverflow(page, `showcase mobile ${viewport.width}px`);
       await assertLocatorFitsWidth(page.locator('.showcase-hero .shell'), 'hero shell');
       await assertLocatorFitsWidth(page.locator('.demo-mobile-guard-card'), 'mobile guard card');
@@ -258,6 +309,10 @@ test.describe('showcase mobile layout guardrail', () => {
     await expect(page.getByTestId('showcase-hero-title')).toBeVisible();
     await expect(page.getByTestId('showcase-demo-mobile-guard')).toHaveCount(0);
     await expect(page.locator('#demo-pane')).toBeVisible();
+    await expect(page.locator('.demo-picker')).toBeVisible();
+    await expect(page.locator('.demo-picker__featured')).toBeVisible();
+    await expect(page.locator('[data-testid^="showcase-demo-tab-"]')).toHaveCount(4);
+    await expect(page.locator('.demo-meta')).toBeVisible();
     await expect(page.getByTestId('showcase-demo-open-live')).toBeVisible();
 
     await stabilize(page);
@@ -277,6 +332,8 @@ test.describe('showcase mobile layout guardrail', () => {
       await expect(page.getByTestId('showcase-hero-title')).toBeVisible();
       await expect(page.getByTestId('showcase-demo-mobile-guard')).toHaveCount(0);
       await expect(page.locator('#demo-pane')).toBeVisible();
+      await expect(page.locator('.demo-picker')).toBeVisible();
+      await expect(page.locator('.demo-meta')).toBeVisible();
       await expect(page.getByTestId('showcase-demo-open-live')).toBeVisible();
 
       await stabilize(page);
@@ -286,4 +343,34 @@ test.describe('showcase mobile layout guardrail', () => {
       await assertNoHorizontalOverflow(page, `showcase desktop ${viewport.width}px contact`);
     });
   }
+
+  test('767/768px: the mobile demo DOM switches exactly at the supported boundary', async ({ page }) => {
+    await page.setViewportSize({ width: 767, height: 900 });
+    await page.goto('/');
+
+    await page.getByTestId('showcase-demo-mobile-guard').scrollIntoViewIfNeeded();
+    await expect(page.getByTestId('showcase-demo-mobile-guard')).toBeVisible();
+    await assertMobileDemoControlsAreOmitted(page);
+
+    await page.setViewportSize({ width: 768, height: 900 });
+    await expect(page.getByTestId('showcase-demo-mobile-guard')).toHaveCount(0);
+    await expect(page.locator('.demo-picker')).toBeVisible();
+    await expect(page.locator('.demo-meta')).toBeVisible();
+    await expect(page.locator('#demo-pane')).toBeVisible();
+  });
+
+  test('short mobile viewport: sticky shortcuts stay contained and become internally scrollable', async ({ page }) => {
+    await page.setViewportSize({ width: 360, height: 120 });
+    await page.goto('/');
+
+    await assertMobileConversionFitsViewport(page, 'showcase short mobile');
+
+    const metrics = await page.getByTestId('conversion-mobile-sticky').evaluate((element) => ({
+      clientHeight: element.clientHeight,
+      scrollHeight: element.scrollHeight,
+    }));
+    expect(metrics.scrollHeight, 'short sticky content should scroll inside its viewport cap').toBeGreaterThan(
+      metrics.clientHeight,
+    );
+  });
 });

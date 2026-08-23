@@ -1,4 +1,4 @@
-<section class="showcase-hero reveal" #observeSection aria-labelledby="showcase-hero-title" data-load="stats">
+<section class="showcase-hero reveal" #observeSection aria-labelledby="showcase-hero-title" data-load="stats" data-showcase-landmark="hero">
   <div class="ambient ambient-a"></div>
   <div class="ambient ambient-b"></div>
   <div class="shell hero-grid">
@@ -98,7 +98,7 @@
   </div>
 </section>
 
-<section class="section reveal" #observeSection aria-labelledby="demo-title" data-load="demo">
+<section class="section reveal" #observeSection aria-labelledby="demo-title" data-load="demo" data-showcase-landmark="demo">
   <div class="shell section-head demo-section-head">
     <div class="demo-section-copy">
       <p class="eyebrow">Interactive demo</p>
@@ -107,7 +107,7 @@
       </p>
       <h2 id="demo-title">Run the actual coding workspace.</h2>
       <p class="muted">Live editor, real tests, and the same UI you get in the product.</p>
-      <div class="demo-picker" aria-label="Pick a live demo question">
+      <div class="demo-picker" *ngIf="!showMobileCodingGuard" aria-label="Pick a live demo question">
         <article class="demo-picker__featured" id="demo-choice-active">
           <span class="demo-picker__kicker">Selected workspace</span>
           <div class="demo-picker__active-title">
@@ -116,7 +116,7 @@
           </div>
           <span>{{ activeDemo.caption }}</span>
         </article>
-        <div class="demo-choice-list" role="list" aria-label="Other demo workspaces">
+        <div class="demo-choice-list" role="group" aria-label="Other demo workspaces">
           <button type="button" class="demo-tab" *ngFor="let tab of demoChoiceTabs"
             [attr.id]="'demo-choice-' + tab.key" [class.active]="tab.key === activeDemoKey"
             [attr.data-testid]="'showcase-demo-tab-' + tab.key"
@@ -131,7 +131,7 @@
   </div>
 
   <div class="shell">
-    <div class="demo-meta">
+    <div class="demo-meta" *ngIf="!showMobileCodingGuard">
       <span class="pill">{{ activeDemo.pill }}</span>
       <span class="demo-active-label" aria-live="polite">{{ activeDemo.caption }}</span>
       <button type="button" class="demo-hide-btn" *ngIf="isHideableDemo && !showMobileCodingGuard" (click)="toggleDemoVisibility()"
@@ -160,7 +160,7 @@
       <div class="demo-mobile-guard-shell" data-testid="showcase-demo-mobile-guard">
         <article class="demo-mobile-guard-card">
           <div class="demo-mobile-guard-pill">Desktop or Tablet</div>
-          <h3 class="demo-mobile-guard-title">{{ activeDemo.label }} demo</h3>
+          <h3 class="demo-mobile-guard-title">Coding practice works best with more space</h3>
           <p class="demo-mobile-guard-copy">
             The coding workspace is disabled on small mobile screens.
             Use desktop or tablet for the editor + preview layout.
@@ -172,13 +172,11 @@
           </ul>
           <div class="demo-mobile-guard-actions">
             <a class="sk-btn sk-btn-primary"
-              [routerLink]="['/', activeDemo.questionTech, 'coding', activeDemo.questionId]"
-              data-testid="showcase-demo-mobile-guard-open"
-              aria-label="Open this coding challenge">
-              Open challenge
+              routerLink="/coding"
+              data-testid="showcase-demo-mobile-guard-open">
+              Browse coding challenges
             </a>
-            <a class="sk-btn sk-btn-ghost" routerLink="/interview-questions" data-testid="showcase-demo-mobile-guard-browse"
-              aria-label="Browse interview questions">
+            <a class="sk-btn sk-btn-ghost" routerLink="/interview-questions" data-testid="showcase-demo-mobile-guard-browse">
               Browse interview questions
             </a>
           </div>
@@ -208,7 +206,12 @@
   </div>
 </section>
 
-<section class="section section--roadmap reveal" #observeSection>
+<section
+  class="section section--roadmap reveal"
+  #observeSection
+  aria-label="Preparation path"
+  data-showcase-landmark="preparation"
+  data-testid="showcase-landmark-preparation">
   <div class="shell">
     <app-prep-roadmap
       title="Recommended preparation"
@@ -216,29 +219,55 @@
       [items]="homepagePrepRoadmapItems"
       variant="hero"
     ></app-prep-roadmap>
-  </div>
-</section>
 
-<section class="section section--focus reveal" #observeSection aria-labelledby="showcase-focus-title" data-testid="showcase-focus-section">
-  <div class="shell">
-    <div class="section-head">
-      <div>
-        <p class="eyebrow">Choose your focus</p>
-        <h2 id="showcase-focus-title">Move from guided plan into the exact weak area.</h2>
+    <div class="showcase-subsection section--focus" aria-labelledby="showcase-focus-title" data-testid="showcase-focus-section">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Choose your focus</p>
+          <h3 id="showcase-focus-title">Move from guided plan into the exact weak area.</h3>
+        </div>
+        <p class="muted">Use these focus areas to move from a broad plan into the skill you need to strengthen next.</p>
       </div>
-      <p class="muted">Use these focus areas to move from a broad plan into the skill you need to strengthen next.</p>
+
+      <div class="showcase-focus-grid" aria-label="Frontend interview focus links">
+        <a class="showcase-focus-link" *ngFor="let link of homepageFocusLinks" [routerLink]="link.route">
+          <strong>{{ link.label }}</strong>
+          <span>{{ link.detail }}</span>
+        </a>
+      </div>
     </div>
 
-    <div class="showcase-focus-grid" aria-label="Frontend interview focus links">
-      <a class="showcase-focus-link" *ngFor="let link of homepageFocusLinks" [routerLink]="link.route">
-        <strong>{{ link.label }}</strong>
-        <span>{{ link.detail }}</span>
-      </a>
+    <div class="showcase-subsection" #observeSection aria-labelledby="tracks-title" data-load="tracks">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Tracks</p>
+          <h3 id="tracks-title">Choose a sequence when you need structure.</h3>
+        </div>
+        <p class="muted">Built for progression: the brief stays premium while the scaffolding evolves.</p>
+      </div>
+
+      <div class="track-grid" *ngIf="sectionVisible.tracks; else tracksPlaceholder">
+        <article class="track-card glass" *ngFor="let track of tracks; let i = index">
+          <header>
+            <span class="pill">{{ track.name }}</span>
+            <span class="meta">Series {{ i + 1 }}</span>
+          </header>
+          <ul>
+            <li *ngFor="let bullet of track.bullets">{{ bullet }}</li>
+          </ul>
+          <a class="sk-btn sk-btn-ghost tiny" [routerLink]="track.route">
+            Preview {{ track.name }} <span class="inline-arrow" aria-hidden="true">→</span>
+          </a>
+        </article>
+      </div>
+      <ng-template #tracksPlaceholder>
+        <div class="preview-placeholder">Loading track highlights…</div>
+      </ng-template>
     </div>
   </div>
 </section>
 
-<section class="section section--trust reveal" #observeSection aria-labelledby="trust-title" data-testid="showcase-trust-section">
+<section class="section section--trust reveal" #observeSection aria-labelledby="trust-title" data-testid="showcase-trust-section" data-showcase-landmark="trust">
   <div class="shell trust-shell">
     <div class="trust-copy">
       <p class="eyebrow">Built for credible practice</p>
@@ -266,56 +295,62 @@
   </div>
 </section>
 
-<section class="section reveal" #observeSection aria-labelledby="trivia-preview-title" data-load="trivia">
-  <div class="shell">
-    <div class="section-head">
-      <div>
-        <p class="eyebrow">Interview question snapshot</p>
-        <h2 id="trivia-preview-title">See a real interview answer breakdown.</h2>
-      </div>
-      <p class="muted">Pulled from a live interview question page.</p>
-    </div>
-
-    <div class="demo-tabs" role="tablist" aria-label="Pick an interview question preview">
-      <button type="button" class="demo-tab" *ngFor="let tab of triviaTabs" role="tab"
-        [attr.id]="'trivia-tab-' + tab.key" [class.active]="tab.key === activeTriviaKey"
-        [attr.data-testid]="'showcase-trivia-tab-' + tab.key"
-        (click)="setActiveTrivia(tab.key)" [attr.aria-selected]="tab.key === activeTriviaKey"
-        aria-controls="trivia-pane">
-        <span class="tab-label">{{ tab.label }}</span>
-        <span class="tab-sub">{{ tab.caption }}</span>
-      </button>
-    </div>
-
-    <div class="trivia-preview-card glass" role="region" aria-label="Interview question preview">
-      <div class="trivia-frame" role="tabpanel" id="trivia-pane"
-        [attr.aria-labelledby]="'trivia-tab-' + activeTriviaTab.key">
-        <ng-container *ngIf="triviaDetailComponent; else triviaPlaceholder">
-          <ng-container *ngComponentOutlet="triviaDetailComponent; injector: triviaInjector"></ng-container>
-        </ng-container>
-        <ng-template #triviaPlaceholder>
-          <div class="preview-placeholder">Preview loads when you interact.</div>
-        </ng-template>
-        <div class="trivia-gradient" aria-hidden="true"></div>
-      </div>
-    </div>
-
-    <a class="demo-banner" [routerLink]="triviaPreviewLink" role="button"
-      data-testid="showcase-trivia-open"
-      [attr.aria-label]="'Open the full ' + activeTriviaTab.label + ' interview question'">
-      <span class="dot" aria-hidden="true"></span>
-      <span class="text">Open full interview question →</span>
-      <span class="demo-banner__arrow" aria-hidden="true">→</span>
-    </a>
+<section class="section reveal" aria-labelledby="practice-formats-title" data-testid="showcase-landmark-practice" data-showcase-landmark="practice">
+  <div class="shell showcase-landmark-head">
+    <p class="eyebrow">Practice formats</p>
+    <h2 id="practice-formats-title">Practice the formats frontend interviews actually use.</h2>
   </div>
-</section>
 
-<section class="section reveal" #observeSection aria-labelledby="system-preview-title" data-load="system">
+  <div class="showcase-subsection reveal" #observeSection aria-labelledby="trivia-preview-title" data-load="trivia">
+    <div class="shell">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Interview question snapshot</p>
+          <h3 id="trivia-preview-title">See a real interview answer breakdown.</h3>
+        </div>
+        <p class="muted">Pulled from a live interview question page.</p>
+      </div>
+
+      <div class="demo-tabs" role="tablist" aria-label="Pick an interview question preview">
+        <button type="button" class="demo-tab" *ngFor="let tab of triviaTabs" role="tab"
+          [attr.id]="'trivia-tab-' + tab.key" [class.active]="tab.key === activeTriviaKey"
+          [attr.data-testid]="'showcase-trivia-tab-' + tab.key"
+          (click)="setActiveTrivia(tab.key)" [attr.aria-selected]="tab.key === activeTriviaKey"
+          aria-controls="trivia-pane">
+          <span class="tab-label">{{ tab.label }}</span>
+          <span class="tab-sub">{{ tab.caption }}</span>
+        </button>
+      </div>
+
+      <div class="trivia-preview-card glass" role="region" aria-label="Interview question preview">
+        <div class="trivia-frame" role="tabpanel" id="trivia-pane"
+          [attr.aria-labelledby]="'trivia-tab-' + activeTriviaTab.key">
+          <ng-container *ngIf="triviaDetailComponent; else triviaPlaceholder">
+            <ng-container *ngComponentOutlet="triviaDetailComponent; injector: triviaInjector"></ng-container>
+          </ng-container>
+          <ng-template #triviaPlaceholder>
+            <div class="preview-placeholder">Preview loads when you interact.</div>
+          </ng-template>
+          <div class="trivia-gradient" aria-hidden="true"></div>
+        </div>
+      </div>
+
+      <a class="demo-banner" [routerLink]="triviaPreviewLink" role="button"
+        data-testid="showcase-trivia-open"
+        [attr.aria-label]="'Open the full ' + activeTriviaTab.label + ' interview question'">
+        <span class="dot" aria-hidden="true"></span>
+        <span class="text">Open full interview question →</span>
+        <span class="demo-banner__arrow" aria-hidden="true">→</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="showcase-subsection reveal" #observeSection aria-labelledby="system-preview-title" data-load="system">
   <div class="shell">
     <div class="section-head">
       <div>
         <p class="eyebrow">System design snapshot</p>
-        <h2 id="system-preview-title">Architecture slices, not slides.</h2>
+        <h3 id="system-preview-title">Architecture slices, not slides.</h3>
       </div>
       <p class="muted">A real front-end system design walkthrough, clipped for a quick peek.</p>
     </div>
@@ -339,14 +374,14 @@
       <span class="demo-banner__arrow" aria-hidden="true">→</span>
     </a>
   </div>
-</section>
+</div>
 
-<section class="section reveal" #observeSection aria-labelledby="reasoning-title" data-load="reasoning">
+  <div class="showcase-subsection reveal" #observeSection aria-labelledby="reasoning-title" data-load="reasoning">
   <div class="shell">
     <div class="section-head">
       <div>
         <p class="eyebrow">Reasoning practice</p>
-        <h2 id="reasoning-title">Diagnose bugs. Defend decisions.</h2>
+        <h3 id="reasoning-title">Diagnose bugs. Defend decisions.</h3>
       </div>
       <p class="muted">A compact look at the two interview modes that test how you think under pressure, not just how you code.</p>
     </div>
@@ -417,14 +452,21 @@
       <div class="preview-placeholder">Loading reasoning practice…</div>
     </ng-template>
   </div>
+</div>
 </section>
 
-<section class="section reveal" #observeSection aria-labelledby="library-title" data-load="library">
+<section class="section reveal" aria-labelledby="browse-product-title" data-testid="showcase-landmark-browse" data-showcase-landmark="browse">
+  <div class="shell showcase-landmark-head">
+    <p class="eyebrow">Browse and understand the product</p>
+    <h2 id="browse-product-title">Find the right practice, then understand how the workflow helps.</h2>
+  </div>
+
+  <div class="showcase-subsection reveal" #observeSection aria-labelledby="library-title" data-load="library">
   <div class="shell">
     <div class="section-head">
       <div>
         <p class="eyebrow">Question Library</p>
-        <h2 id="library-title">Start with the shortlist, then broaden with filters.</h2>
+        <h3 id="library-title">Start with the shortlist, then broaden with filters.</h3>
         <p class="muted">
           Use FrontendAtlas Essential 60 for the first compact pass, then branch into the full Question Library
           or Study Plans for broader coverage.
@@ -463,15 +505,15 @@
       <div class="preview-placeholder">Loading library highlights…</div>
     </ng-template>
   </div>
-</section>
+</div>
 
-<section class="section reveal" #observeSection aria-labelledby="company-title" data-load="company"
+  <div class="showcase-subsection reveal" #observeSection aria-labelledby="company-title" data-load="company"
   data-testid="showcase-company-section">
   <div class="shell">
     <div class="section-head company-section-head">
       <div class="company-section-copy">
         <p class="eyebrow">Company practice</p>
-        <h2 id="company-title">Practice company-style frontend prompts.</h2>
+        <h3 id="company-title">Practice company-style frontend prompts.</h3>
         <p class="muted company-lede">
           A few FrontendAtlas editorial practice groupings across UI, JavaScript, and system design.
         </p>
@@ -507,14 +549,14 @@
       <div class="preview-placeholder">Loading Company Prep…</div>
     </ng-template>
   </div>
-</section>
+</div>
 
-<section class="section reveal cap-section" #observeSection aria-labelledby="capabilities-title" data-load="capabilities">
+  <div class="showcase-subsection reveal cap-section" #observeSection aria-labelledby="capabilities-title" data-load="capabilities">
   <div class="shell">
     <div class="section-head">
       <div>
         <p class="eyebrow">What makes FrontendAtlas different</p>
-        <h2 id="capabilities-title">Built for frontend interview practice.</h2>
+        <h3 id="capabilities-title">Built for frontend interview practice.</h3>
       </div>
       <p class="muted">High-signal depth, not filler. Each tile maps to a capability inside the FrontendAtlas
         workspace.</p>
@@ -534,36 +576,10 @@
       <div class="preview-placeholder">Loading capabilities…</div>
     </ng-template>
   </div>
+</div>
 </section>
 
-<section class="section reveal" #observeSection aria-labelledby="tracks-title" data-load="tracks">
-  <div class="shell">
-    <div class="section-head">
-      <div>
-        <p class="eyebrow">Tracks</p>
-        <h2 id="tracks-title">Choose a sequence when you need structure.</h2>
-      </div>
-      <p class="muted">Built for progression: the brief stays premium while the scaffolding evolves.</p>
-    </div>
-
-    <div class="track-grid" *ngIf="sectionVisible.tracks; else tracksPlaceholder">
-      <article class="track-card glass" *ngFor="let track of tracks; let i = index">
-        <header>
-          <span class="pill">{{ track.name }}</span>
-          <span class="meta">Series {{ i + 1 }}</span>
-        </header>
-        <ul>
-          <li *ngFor="let bullet of track.bullets">{{ bullet }}</li>
-        </ul>
-      </article>
-    </div>
-    <ng-template #tracksPlaceholder>
-      <div class="preview-placeholder">Loading track highlights…</div>
-    </ng-template>
-  </div>
-</section>
-
-<section class="section reveal" #observeSection aria-labelledby="cv-linter-title">
+<section class="section reveal" #observeSection aria-labelledby="cv-linter-title" data-testid="showcase-landmark-cv" data-showcase-landmark="cv">
   <div class="shell">
     <div class="section-head">
       <div>
@@ -671,7 +687,7 @@
   </div>
 </section>
 
-<section class="section reveal" #observeSection aria-labelledby="pricing-title" data-load="pricing">
+<section class="section reveal" #observeSection aria-labelledby="pricing-title" data-load="pricing" data-testid="showcase-landmark-pricing" data-showcase-landmark="pricing">
   <div class="shell">
     <div class="section-head">
       <div>
@@ -683,9 +699,6 @@
 
     <app-pricing-plans-section
       variant="compact"
-      [paymentsEnabled]="paymentsEnabled"
-      [paymentsConfigReady]="paymentsConfigReady"
-      [checkoutAvailability]="checkoutAvailability"
       analyticsSource="showcase_pricing"
       analyticsSurface="showcase_pricing"
       ctaMode="navigatePricing">
@@ -695,14 +708,23 @@
 
 <app-conversion-sticky-cta surface="showcase"></app-conversion-sticky-cta>
 
-<section class="section reveal" #observeSection aria-labelledby="faq-title" data-load="faq">
-  <div class="shell">
+<section class="section reveal" aria-labelledby="questions-support-title" data-testid="showcase-landmark-support" data-showcase-landmark="support">
+  <div class="shell showcase-landmark-head">
+    <p class="eyebrow">Questions and support</p>
+    <h2 id="questions-support-title">Get an answer or reach the team.</h2>
+  </div>
+
+  <div class="showcase-subsection reveal" #observeSection aria-labelledby="faq-title" data-load="faq">
+    <div class="shell">
     <ng-container *ngIf="sectionVisible.faq; else faqPlaceholder">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">FAQ</p>
+          <h3 id="faq-title">Common questions, answered.</h3>
+        </div>
+        <p class="muted">Quick answers about setup, content, devices, and progress.</p>
+      </div>
       <app-faq-section
-        id="faq-title"
-        eyebrow="FAQ"
-        title="Common questions, answered."
-        subtitle="Quick answers about setup, content, devices, and progress."
         [groups]="faqGroups"
         [flush]="true"
         [singleOpen]="true">
@@ -718,14 +740,14 @@
       </a>
     </div>
   </div>
-</section>
+</div>
 
-<section class="section reveal" #observeSection aria-labelledby="contact-title" data-load="contact">
+  <div class="showcase-subsection reveal" #observeSection aria-labelledby="contact-title" data-load="contact">
   <div class="shell">
     <div class="section-head">
       <div>
         <p class="eyebrow">Contact</p>
-        <h2 id="contact-title">Still have a question?</h2>
+        <h3 id="contact-title">Still have a question?</h3>
       </div>
       <p class="muted">
         If the FAQ didn’t cover it, reach out. We read every message.
@@ -789,8 +811,36 @@
                 action="contact"
                 [active]="sectionVisible.contact"
                 (tokenChange)="onContactTokenChange($event)"
-                (stateChange)="onContactChallengeStateChange($event)">
+                (stateChange)="onContactChallengeStateChangeDeferred($event)">
               </app-turnstile-challenge>
+            </div>
+
+            <div
+              class="contact-form-status"
+              data-testid="showcase-contact-challenge-status"
+              [attr.data-status]="contactChallengeState === 'verified' ? 'success' : null"
+              *ngIf="contactChallengeState === 'loading' || contactChallengeState === 'ready' || contactChallengeState === 'verified'"
+              role="status"
+              aria-live="polite">
+              <span *ngIf="contactChallengeState === 'loading'">Loading verification…</span>
+              <span *ngIf="contactChallengeState === 'ready'">Complete the verification above to send.</span>
+              <span *ngIf="contactChallengeState === 'verified'">Verification complete.</span>
+            </div>
+
+            <div
+              class="contact-form-status"
+              data-testid="showcase-contact-challenge-alert"
+              data-status="error"
+              *ngIf="contactChallengeState === 'error' || contactChallengeState === 'expired'"
+              role="alert">
+              <span *ngIf="contactChallengeState === 'error'">Verification is unavailable. Your message has been preserved.</span>
+              <span *ngIf="contactChallengeState === 'expired'">Verification expired. Your message has been preserved.</span>
+              <div class="contact-form-actions">
+                <button type="button" class="sk-btn sk-btn-ghost tiny" (click)="retryContactVerification()">
+                  Retry verification
+                </button>
+                <a [href]="'mailto:' + supportEmail">Email {{ supportEmail }}</a>
+              </div>
             </div>
 
             <div *ngIf="contactCooldownSeconds > 0" class="contact-cooldown" role="status" aria-live="polite">
@@ -804,7 +854,7 @@
                 data-testid="showcase-contact-submit"
                 [disabled]="f.invalid || contactSubmitting || contactCooldownSeconds > 0 || !contactVerificationToken">
                 <span class="contact-action-mark" aria-hidden="true">→</span>
-                <span>{{ contactSubmitting ? 'Sending...' : 'Send message' }}</span>
+                <span>{{ contactSubmitLabel() }}</span>
               </button>
 
               <div class="contact-actions-note muted">
@@ -835,37 +885,40 @@
           </form>
         </div>
 
-        <p class="contact-meta">
-          Typical response: <strong>1–2 business days</strong>. Prefer email?
-          <a [href]="'mailto:' + supportEmail">{{ supportEmail }}</a>
-        </p>
       </div>
 
-      <div class="contact-side" aria-hidden="true">
+      <aside class="contact-side" aria-label="Support information">
         <div class="contact-badge">
-          <div class="badge-dot"></div>
+          <div class="badge-dot" aria-hidden="true"></div>
           <div class="badge-title">Support</div>
           <div class="badge-sub">Product · Billing · Bugs</div>
         </div>
 
+        <a class="contact-pill" [href]="'mailto:' + supportEmail">{{ supportEmail }}</a>
+        <p class="muted">Typical response: <strong>1–2 business days</strong>.</p>
         <div class="contact-note">
-          Prefer reporting bugs?
-          <span class="muted">Use the contact page and include a screenshot + URL.</span>
+          <strong>Reporting a bug?</strong>
+          <span class="muted">Please include:</span>
+          <ul>
+            <li>The page URL</li>
+            <li>A screenshot or short recording</li>
+            <li>Your browser and operating system</li>
+          </ul>
         </div>
-      </div>
+      </aside>
     </div>
     <ng-template #contactPlaceholder>
       <div class="preview-placeholder">Loading contact form…</div>
     </ng-template>
   </div>
-</section>
+</div>
 
-<section class="section reveal" #observeSection aria-labelledby="cta-title">
-  <div class="shell">
+  <div class="showcase-subsection reveal" #observeSection aria-labelledby="cta-title">
+    <div class="shell">
     <div class="cta-card glass">
       <div>
         <p class="eyebrow">Final step</p>
-        <h2 id="cta-title">Start with the curated shortlist.</h2>
+        <h3 id="cta-title">Start with the curated shortlist.</h3>
         <p class="muted">Open the playground, ship code, and let the tests push back.</p>
       </div>
       <div class="cta-actions">
@@ -874,4 +927,5 @@
       </div>
     </div>
   </div>
+</div>
 </section>

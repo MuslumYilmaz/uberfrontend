@@ -201,7 +201,9 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   private liteReadyPollTimer?: number;
   private liteReadyAttempts = 0;
   private readonly MOBILE_WORKSPACE_BREAKPOINT = 768;
+  private readonly COMPACT_WORKSPACE_BREAKPOINT = 980;
   isPhoneViewport = signal(false);
+  isCompactWorkspace = signal(false);
   showMobileDesktopGuard = computed(
     () => this.isPhoneViewport() && !this.demoMode && !this.liteMode
   );
@@ -228,16 +230,19 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   private readonly COLLAPSED_PX = 48;
   descCollapsed = signal(false);
   private lastAsideRatio = 0.3;
-  asideFlex = computed(
-    () => this.descCollapsed()
-      ? `0 0 ${this.COLLAPSED_PX}px`
-      : `0 0 ${this.horizontalRatio() * 100}%`
-  );
+  asideFlex = computed(() => {
+    if (this.descCollapsed()) return `0 0 ${this.COLLAPSED_PX}px`;
+    const ratio = this.isCompactWorkspace()
+      ? this.compactAsideRatio(this.horizontalRatio())
+      : this.horizontalRatio();
+    return `0 0 ${ratio * 100}%`;
+  });
 
   // Context flags + course bits
   isCourseContext = signal(false);
   copiedExamples = signal(false);
   isDraggingHorizontal = signal(false);
+  isDraggingAside = signal(false);
 
   courseIdFromState: string | null = null;
   courseOutline: Array<{ id: string; title: string; lessons: any[] }> | null = null;
@@ -504,6 +509,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   private overflowPatched = false;
 
   @ViewChild('splitContainer', { read: ElementRef }) splitContainer?: ElementRef<HTMLDivElement>;
+  @ViewChild('codingLayout', { read: ElementRef }) codingLayout?: ElementRef<HTMLDivElement>;
   @ViewChild('previewFrame', { read: ElementRef }) previewFrame?: ElementRef<HTMLIFrameElement>;
   @ViewChild('previewSplit', { read: ElementRef }) previewSplit?: ElementRef<HTMLDivElement>;
   @ViewChild('jsPanel') jsPanel?: CodingJsPanelComponent;
@@ -514,9 +520,9 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   private dragging = false;
   private startY = 0;
   private startRatio = 0;
-  private draggingHorizontal = false;
-  private startX = 0;
-  private startRatioH = 0;
+  private asideDragAxis: 'x' | 'y' = 'x';
+  private asideDragStart = 0;
+  private startAsideRatio = 0;
   private sessionStart = Date.now();
   private recorded = false;
 
@@ -1101,7 +1107,13 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
   private syncViewportState() {
     if (!this.isBrowser) return;
-    this.isPhoneViewport.set(window.innerWidth < this.MOBILE_WORKSPACE_BREAKPOINT);
+    const viewportWidth = window.innerWidth;
+    const compactWorkspace = viewportWidth <= this.COMPACT_WORKSPACE_BREAKPOINT;
+    if (compactWorkspace !== this.isCompactWorkspace() && this.isDraggingAside()) {
+      this.isDraggingAside.set(false);
+    }
+    this.isPhoneViewport.set(viewportWidth < this.MOBILE_WORKSPACE_BREAKPOINT);
+    this.isCompactWorkspace.set(compactWorkspace);
   }
 
   private scheduleLiteUpgrade() {
@@ -2209,7 +2221,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     document.addEventListener('pointerup', stop);
   };
   private onPointerMove = (ev: PointerEvent) => {
-    if (this.draggingHorizontal) { this.onPointerMoveHorizontal(ev); return; } // aside splitter
+    if (this.isDraggingAside()) { this.onPointerMoveHorizontal(ev); return; } // description/workspace splitter
     if (this.draggingCols) { this.onPointerMoveCols(ev); return; } // middle splitter
     if (this.draggingPreview) { this.onPointerMovePreview(ev); return; } // right splitter
 
@@ -2959,36 +2971,55 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
   private onPointerUp = () => {
     if (this.dragging) this.dragging = false;
-    if (this.draggingHorizontal) this.draggingHorizontal = false;
+    if (this.isDraggingAside()) {
+      this.zone.run(() => this.isDraggingAside.set(false));
+    }
     if (this.draggingCols) this.draggingCols = false;
     if (this.draggingPreview) this.draggingPreview = false;
   };
 
   startHorizontalDrag = (ev: PointerEvent) => {
     ev.preventDefault();
-    this.draggingHorizontal = true;
-    this.startX = ev.clientX;
-    this.startRatioH = this.horizontalRatio();
+    this.asideDragAxis = this.isCompactWorkspace() ? 'y' : 'x';
+    this.asideDragStart = this.asideDragAxis === 'y' ? ev.clientY : ev.clientX;
+    this.startAsideRatio = this.asideDragAxis === 'y'
+      ? this.compactAsideRatio(this.horizontalRatio())
+      : this.horizontalRatio();
+    this.isDraggingAside.set(true);
 
-    const stop = () => { this.draggingHorizontal = false; document.removeEventListener('pointerup', stop); };
+    const stop = () => {
+      this.isDraggingAside.set(false);
+      document.removeEventListener('pointerup', stop);
+    };
     (ev.target as HTMLElement).setPointerCapture(ev.pointerId);
     document.addEventListener('pointerup', stop);
   };
 
 
   private onPointerMoveHorizontal = (ev: PointerEvent) => {
-    if (!this.draggingHorizontal) return;
-    const totalWidth = window.innerWidth;
-    const delta = ev.clientX - this.startX;
-    let newRatio = this.startRatioH + delta / totalWidth;
+    if (!this.isDraggingAside()) return;
+    const layoutRect = this.codingLayout?.nativeElement.getBoundingClientRect();
+    if (!layoutRect) return;
 
-    // Tighter bounds in HTML/CSS so editors stay dominant
-    const min = this.isWebTech() ? 0.18 : 0.20;  // minimum ~18% for web
-    const max = this.isWebTech() ? 0.45 : 0.80;  // cap aside at 45% for web
+    const currentPointer = this.asideDragAxis === 'y' ? ev.clientY : ev.clientX;
+    const layoutExtent = this.asideDragAxis === 'y' ? layoutRect.height : layoutRect.width;
+    if (layoutExtent <= 0) return;
+
+    const delta = currentPointer - this.asideDragStart;
+    let newRatio = this.startAsideRatio + delta / layoutExtent;
+
+    // Compact workspaces split into rows, so keep enough height for both the
+    // description and the editor. Desktop retains the existing width bounds.
+    const min = this.asideDragAxis === 'y' ? 0.22 : (this.isWebTech() ? 0.18 : 0.20);
+    const max = this.asideDragAxis === 'y' ? 0.45 : (this.isWebTech() ? 0.45 : 0.80);
 
     newRatio = Math.max(min, Math.min(max, newRatio));
     this.zone.run(() => this.horizontalRatio.set(newRatio));
   };
+
+  private compactAsideRatio(ratio: number): number {
+    return Math.max(0.22, Math.min(0.45, ratio));
+  }
 
   closePreview() {
     this.previewVisible = false;

@@ -4,7 +4,7 @@
       <a
         class="fah-brand"
         data-testid="header-brand"
-        routerLink="/dashboard"
+        [routerLink]="brandLink()"
         (click)="trackBrandClick()"
       >
         FrontendAtlas
@@ -15,7 +15,7 @@
         class="fah-mobile-study"
         data-testid="header-mobile-study-button"
         (click)="toggleMega($event)"
-        aria-haspopup="menu"
+        aria-haspopup="dialog"
         [attr.aria-expanded]="megaOpen()"
         aria-controls="prepare-mega"
         [class.fah-mobile-study--active]="megaOpen() || isStudyActive()"
@@ -30,11 +30,12 @@
 
     <div class="fah-center">
       <button
+        type="button"
         #desktopStudyTrigger
         class="fah-navlink"
         [class.fah-navlink--active]="megaOpen() || isStudyActive()"
         (click)="toggleMega($event)"
-        aria-haspopup="menu"
+        aria-haspopup="dialog"
         [attr.aria-expanded]="megaOpen()"
         aria-controls="prepare-mega"
       >
@@ -146,18 +147,23 @@
       id="prepare-mega"
       class="study-panel study-panel--compact"
       (click)="$event.stopPropagation()"
-      (keydown.escape)="closeAll()"
-      (keydown.arrowdown)="moveActive(1)"
-      (keydown.arrowup)="moveActive(-1)"
-      (keydown.enter)="activateActive()"
       [style.left.px]="megaAnchorX()"
       tabindex="-1"
-      role="menu"
-      aria-label="Interview prep menu"
+      role="dialog"
+      aria-label="Interview prep"
     >
       <div class="study-search">
-        <i class="pi pi-search"></i>
-        <input type="text" [value]="searchTerm" (input)="onSearchInput($event)" placeholder="Search guides, companies, or practice" />
+        <i class="pi pi-search" aria-hidden="true"></i>
+        <input
+          #studySearchInput
+          type="text"
+          aria-label="Search interview prep"
+          autocomplete="off"
+          [value]="searchTerm"
+          (input)="onSearchInput($event)"
+          (keydown)="onSearchKeydown($event)"
+          placeholder="Search guides, companies, or practice"
+        />
         <span class="shortcut" aria-hidden="true">/</span>
       </div>
 

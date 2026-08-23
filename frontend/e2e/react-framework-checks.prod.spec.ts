@@ -542,6 +542,101 @@ test.describe('Framework checks against the production SSR build', () => {
     await expect(checkRows(page)).not.toHaveAttribute('data-failure-kind', /.+/);
   });
 
+  test('coding workspace stacks at 834px, keeps both framework panes usable, and preserves desktop columns', async ({ page }) => {
+    await page.setViewportSize({ width: 834, height: 900 });
+    await page.goto('/react/coding/react-counter');
+    await expect(page.getByTestId('coding-detail-page')).toBeVisible();
+    await waitForFrameworkPreview(page, '.value');
+
+    const description = page.getByTestId('coding-description-pane');
+    const workspace = page.getByTestId('coding-workspace-panel');
+    const splitter = page.getByTestId('coding-description-splitter');
+    const editorColumn = page.getByTestId('framework-editor-column');
+    const previewColumn = page.getByTestId('framework-preview-column');
+
+    await expect(splitter).toHaveAttribute('data-orientation', 'horizontal');
+    await expect(editorColumn).toBeVisible();
+    await expect(previewColumn).toBeVisible();
+    const tabletGeometry = await page.evaluate(() => {
+      const rect = (testId: string) => {
+        const element = document.querySelector<HTMLElement>(`[data-testid="${testId}"]`);
+        if (!element) throw new Error(`Missing ${testId}`);
+        const box = element.getBoundingClientRect();
+        return {
+          x: box.x,
+          y: box.y,
+          width: box.width,
+          height: box.height,
+          right: box.right,
+          bottom: box.bottom,
+        };
+      };
+      return {
+        detail: rect('coding-detail-page'),
+        description: rect('coding-description-pane'),
+        splitter: rect('coding-description-splitter'),
+        workspace: rect('coding-workspace-panel'),
+        editor: rect('framework-editor-column'),
+        preview: rect('framework-preview-column'),
+      };
+    });
+    expect(Math.abs(tabletGeometry.description.x - tabletGeometry.workspace.x)).toBeLessThanOrEqual(1);
+    expect(tabletGeometry.description.bottom).toBeLessThanOrEqual(tabletGeometry.workspace.y);
+    expect(tabletGeometry.splitter.width).toBeGreaterThanOrEqual(tabletGeometry.detail.width - 1);
+    expect(tabletGeometry.workspace.width).toBeGreaterThanOrEqual(tabletGeometry.detail.width - 1);
+    expect(tabletGeometry.editor.width).toBeGreaterThan(350);
+    expect(tabletGeometry.preview.width).toBeGreaterThan(300);
+
+    const splitterBox = await splitter.boundingBox();
+    if (!splitterBox) throw new Error('Tablet description splitter is not measurable');
+    const descriptionHeightBeforeDrag = tabletGeometry.description.height;
+    await page.mouse.move(splitterBox.x + splitterBox.width / 2, splitterBox.y + splitterBox.height / 2);
+    await page.mouse.down();
+    await expect(splitter).toHaveClass(/dragging/);
+    await page.mouse.move(
+      splitterBox.x + splitterBox.width / 2,
+      splitterBox.y + splitterBox.height / 2 + 50,
+      { steps: 4 },
+    );
+    await page.mouse.up();
+    await expect(splitter).not.toHaveClass(/dragging/);
+    await expect.poll(async () => (await description.boundingBox())?.height ?? 0)
+      .toBeGreaterThan(descriptionHeightBeforeDrag + 30);
+
+    await page.getByRole('button', { name: 'Hide description' }).click();
+    await expect(page.getByTestId('coding-description-rail')).toBeVisible();
+    await expect(splitter).toHaveCount(0);
+    await expect.poll(async () => (await description.boundingBox())?.height ?? 0)
+      .toBeGreaterThanOrEqual(46);
+    await expect.poll(async () => (await description.boundingBox())?.height ?? 0)
+      .toBeLessThanOrEqual(50);
+    await expect.poll(async () => (await workspace.boundingBox())?.width ?? 0)
+      .toBeGreaterThanOrEqual(tabletGeometry.detail.width - 1);
+
+    await page.getByRole('button', { name: 'Expand description' }).click();
+    await expect(splitter).toBeVisible();
+    await page.setViewportSize({ width: 1366, height: 900 });
+    await expect(splitter).toHaveAttribute('data-orientation', 'vertical');
+    const desktopGeometry = await page.evaluate(() => {
+      const descriptionBox = document.querySelector<HTMLElement>(
+        '[data-testid="coding-description-pane"]',
+      )?.getBoundingClientRect();
+      const workspaceBox = document.querySelector<HTMLElement>(
+        '[data-testid="coding-workspace-panel"]',
+      )?.getBoundingClientRect();
+      if (!descriptionBox || !workspaceBox) throw new Error('Desktop workspace panels are missing');
+      return {
+        descriptionRight: descriptionBox.right,
+        descriptionY: descriptionBox.y,
+        workspaceX: workspaceBox.x,
+        workspaceY: workspaceBox.y,
+      };
+    });
+    expect(desktopGeometry.descriptionRight).toBeLessThanOrEqual(desktopGeometry.workspaceX);
+    expect(Math.abs(desktopGeometry.descriptionY - desktopGeometry.workspaceY)).toBeLessThanOrEqual(1);
+    await expectNoHorizontalOverflow(page);
+  });
+
   test('React Counter keeps normal and pressure drafts isolated across all four rounds', async ({ page }) => {
     await page.goto('/react/coding/react-counter');
     await expect(page.getByTestId('coding-detail-page')).toBeVisible();
@@ -574,6 +669,10 @@ test.describe('Framework checks against the production SSR build', () => {
     for (const width of [834, 1366, 1440]) {
       await page.setViewportSize({ width, height: 900 });
       await expect(page.getByTestId('pressure-mode-panel')).toBeVisible();
+      await expect(page.getByTestId('coding-description-splitter')).toHaveAttribute(
+        'data-orientation',
+        width === 834 ? 'horizontal' : 'vertical',
+      );
       await expectNoHorizontalOverflow(page);
     }
 
@@ -943,9 +1042,8 @@ test.describe('Framework checks against the production SSR build', () => {
     await expect(page.getByTestId('coding-detail-page')).toBeVisible();
     await expect(page).toHaveURL(/\/react\/coding\/react-autocomplete-search-starter$/);
     await expect(page.getByTestId('pressure-mode-panel')).toHaveCount(0);
-    await expect(page.getByTestId('pressure-mode-entry')).toBeVisible();
-    await expect(page.getByTestId('pressure-mode-coming-soon')).toBeDisabled();
-    await expect(page.getByTestId('pressure-mode-coming-soon')).toHaveText('Coming soon');
+    await expect(page.getByTestId('pressure-mode-entry')).toHaveCount(0);
+    await expect(page.getByTestId('pressure-mode-coming-soon')).toHaveCount(0);
     await expect(page.getByTestId('pressure-mode-start')).toHaveCount(0);
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
       'href',

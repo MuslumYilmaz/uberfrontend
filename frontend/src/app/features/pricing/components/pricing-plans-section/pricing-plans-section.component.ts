@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { AnalyticsService } from '../../../../core/services/analytics.service';
@@ -21,7 +21,7 @@ import { FaButtonComponent } from '../../../../shared/ui/button/fa-button.compon
 import { PUBLIC_CHANGELOG_ENTRIES } from '../../../../core/content/public-changelog';
 
 type PricingVariant = 'full' | 'compact';
-type CtaMode = 'emit' | 'navigatePricing';
+type CtaMode = 'checkout' | 'navigatePricing';
 
 export const PRICING_PAGE_LAYOUT = 'interview_sprint_v1';
 export const RECOMMENDED_PRICING_PLAN: PlanId = 'quarterly';
@@ -53,7 +53,7 @@ export const RECOMMENDED_PRICING_PLAN: PlanId = 'quarterly';
 
       <section
         class="checkout-continuation"
-        *ngIf="pendingCheckoutIntent && canShowPendingCheckoutIntent()"
+        *ngIf="ctaMode === 'checkout' && pendingCheckoutIntent && canShowPendingCheckoutIntent()"
         data-testid="checkout-continuation"
         aria-labelledby="checkout-continuation-title">
         <div>
@@ -71,7 +71,11 @@ export const RECOMMENDED_PRICING_PLAN: PlanId = 'quarterly';
         </div>
       </section>
 
-      <div class="pr-grid" id="pricing-plans" #planCardsRef>
+      <div
+        class="pr-grid"
+        id="pricing-plans"
+        #planCardsRef
+        [attr.aria-busy]="ctaMode === 'checkout' && !paymentsConfigReady ? 'true' : null">
         <article class="pr-card" *ngFor="let plan of plans" [class.pr-rec]="plan.id === recommendedPlan">
           <div class="rec-badge" *ngIf="plan.badge" [class.rec-badge--muted]="plan.id !== recommendedPlan">{{ plan.badge }}</div>
           <h3 class="title">{{ plan.title }}</h3>
@@ -100,6 +104,14 @@ export const RECOMMENDED_PRICING_PLAN: PlanId = 'quarterly';
         </article>
       </div>
 
+      <p
+        class="checkout-config-status"
+        *ngIf="ctaMode === 'checkout' && !paymentsConfigReady && !isProUser()"
+        role="status"
+        aria-live="polite">
+        Checking checkout availability…
+      </p>
+
       <div
         class="checkout-notice"
         *ngIf="checkoutNotice"
@@ -118,7 +130,7 @@ export const RECOMMENDED_PRICING_PLAN: PlanId = 'quarterly';
         </button>
       </div>
 
-      <p class="tiny muted pr-footnote" *ngIf="paymentsConfigReady && !paymentsEnabled">
+      <p class="tiny muted pr-footnote" *ngIf="ctaMode === 'checkout' && paymentsConfigReady && !paymentsEnabled && !isProUser()">
         Checkout is temporarily unavailable. Please try again shortly.
       </p>
 
@@ -357,7 +369,6 @@ export class PricingPlansSectionComponent implements OnInit, AfterViewInit, OnDe
   @Input() analyticsSurface = 'pricing_page';
   @Input() riskReversalPlacement: 'top' | 'after_plans' = 'after_plans';
   @Input() checkoutAvailability: Partial<Record<PlanId, boolean>> | null = null;
-  @Output() ctaClick = new EventEmitter<{ planId: PlanId }>();
 
   @ViewChild('planCardsRef') private planCardsRef?: ElementRef<HTMLElement>;
   @ViewChild('unlockPreviewRef') private unlockPreviewRef?: ElementRef<HTMLElement>;
@@ -710,7 +721,16 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
   ctaTextFor(plan: { ctaLabel: string }): string {
     if (isProActive(this.auth.user())) return 'Manage subscription';
     if (this.ctaLabel) return this.ctaLabel;
+    if (this.ctaMode === 'navigatePricing') {
+      return plan.ctaLabel
+        .replace(/^Start /, 'View ')
+        .replace(/^Get lifetime access$/, 'View lifetime plan');
+    }
     return plan.ctaLabel;
+  }
+
+  isProUser(): boolean {
+    return isProActive(this.auth.user());
   }
 
   constructor(
@@ -761,8 +781,8 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
   }
 
   ngOnInit(): void {
-    this.pendingCheckoutIntent = this.checkoutIntent.load();
-    if (typeof window !== 'undefined' && this.paymentsEnabled) {
+    this.pendingCheckoutIntent = this.ctaMode === 'checkout' ? this.checkoutIntent.load() : null;
+    if (this.ctaMode === 'checkout' && typeof window !== 'undefined' && this.paymentsEnabled) {
       void this.billingCheckout.prefetch();
     }
   }
@@ -782,14 +802,17 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
   }
 
   isCheckoutAvailable(planId: PlanId): boolean {
+    if (this.ctaMode === 'navigatePricing') return true;
     if (!this.paymentsEnabled) return false;
-    if (!this.paymentsConfigReady) return true;
+    if (!this.paymentsConfigReady) return false;
     return this.checkoutAvailability?.[planId] === true;
   }
 
   isCheckoutDisabled(planId: PlanId): boolean {
-    if (this.paymentsConfigReady && !this.paymentsEnabled) return true;
-    return this.paymentsEnabled && (!this.isCheckoutAvailable(planId) || this.checkoutLoading !== null);
+    if (isProActive(this.auth.user())) return this.checkoutLoading !== null;
+    if (this.ctaMode === 'navigatePricing') return false;
+    if (!this.paymentsConfigReady || !this.paymentsEnabled) return true;
+    return !this.isCheckoutAvailable(planId) || this.checkoutLoading !== null;
   }
 
   isCheckoutLoading(planId: PlanId): boolean {
@@ -798,8 +821,10 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
 
   checkoutTooltip(planId: PlanId): string | null {
     if (this.checkoutLoading !== null) return 'Loading checkout...';
+    if (isProActive(this.auth.user()) || this.ctaMode === 'navigatePricing') return null;
+    if (!this.paymentsConfigReady) return 'Checking checkout availability...';
     if (this.paymentsConfigReady && !this.paymentsEnabled) return 'Checkout is temporarily unavailable.';
-    if (!this.paymentsEnabled || this.isCheckoutAvailable(planId)) return null;
+    if (this.isCheckoutAvailable(planId)) return null;
     return 'Checkout is temporarily unavailable.';
   }
 
@@ -1027,6 +1052,15 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
       this.openManageSubscription(planId);
       return;
     }
+    if (this.ctaMode === 'navigatePricing') {
+      this.trackPlanClick(planId, 'navigate_pricing');
+      this.conversionContext.rememberPricingContext(source, surface);
+      this.router.navigate(['/pricing'], { fragment: 'pricing-plans' }).catch(() => void 0);
+      return;
+    }
+    if (!this.paymentsConfigReady) {
+      return;
+    }
     if (this.paymentsConfigReady && !this.paymentsEnabled) {
       this.trackPlanClick(planId, 'checkout_unavailable');
       this.setCheckoutNotice('Checkout is temporarily unavailable. Please try again shortly.');
@@ -1060,15 +1094,8 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
       return;
     }
 
-    if (this.ctaMode === 'navigatePricing') {
-      this.trackPlanClick(planId, 'navigate_pricing');
-      this.conversionContext.rememberPricingContext(source, surface);
-      this.router.navigate(['/pricing']).catch(() => void 0);
-      return;
-    }
-
-    this.trackPlanClick(planId, 'emit');
-    this.ctaClick.emit({ planId });
+    this.trackPlanClick(planId, 'checkout_unavailable');
+    this.setCheckoutNotice('Checkout is temporarily unavailable. Please try again shortly.');
   }
 
   canShowPendingCheckoutIntent(): boolean {

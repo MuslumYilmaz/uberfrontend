@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpErrorResponse } from '@angular/common/http';
-import { provideRouter } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { PUBLIC_CHANGELOG_ENTRIES } from '../../../../core/content/public-changelog';
 import { AnalyticsService } from '../../../../core/services/analytics.service';
@@ -44,6 +44,7 @@ describe('PricingPlansSectionComponent', () => {
     fixture = TestBed.createComponent(PricingPlansSectionComponent);
     component = fixture.componentInstance;
     component.variant = 'full';
+    component.ctaMode = 'checkout';
     const billingCheckout = TestBed.inject(BillingCheckoutService) as jasmine.SpyObj<BillingCheckoutService>;
     billingCheckout.reserveCheckoutWindow.and.returnValue(null);
     billingCheckout.recordAttemptClientState.and.returnValue(of({} as any));
@@ -72,7 +73,7 @@ describe('PricingPlansSectionComponent', () => {
     expect(quarterlyButton.disabled).toBeFalse();
   });
 
-  it('does not pessimistically disable checkout before backend config is ready', () => {
+  it('fails closed while backend checkout config is loading', () => {
     component.paymentsEnabled = true;
     component.paymentsConfigReady = false;
     component.checkoutAvailability = null;
@@ -80,7 +81,65 @@ describe('PricingPlansSectionComponent', () => {
     fixture.detectChanges();
 
     const monthlyButton = fixture.nativeElement.querySelector('[data-testid="pricing-cta-monthly"]') as HTMLButtonElement;
-    expect(monthlyButton.disabled).toBeFalse();
+    const planGrid = fixture.nativeElement.querySelector('.pr-grid') as HTMLElement;
+
+    expect(monthlyButton.disabled).toBeTrue();
+    expect(monthlyButton.getAttribute('title')).toBe('Checking checkout availability...');
+    expect(planGrid.getAttribute('aria-busy')).toBe('true');
+    expect(fixture.nativeElement.textContent || '').toContain('Checking checkout availability…');
+  });
+
+  it('keeps navigatePricing authoritative across pending, enabled, and unavailable config states', async () => {
+    const router = TestBed.inject(Router);
+    const navigate = spyOn(router, 'navigate').and.resolveTo(true);
+    const billingCheckout = TestBed.inject(BillingCheckoutService) as jasmine.SpyObj<BillingCheckoutService>;
+    const analytics = TestBed.inject(AnalyticsService) as jasmine.SpyObj<AnalyticsService>;
+    component.ctaMode = 'navigatePricing';
+
+    for (const state of [
+      { ready: false, enabled: false, available: null },
+      { ready: true, enabled: true, available: { monthly: true } },
+      { ready: true, enabled: false, available: { monthly: false } },
+    ]) {
+      component.paymentsConfigReady = state.ready;
+      component.paymentsEnabled = state.enabled;
+      component.checkoutAvailability = state.available;
+      fixture.detectChanges();
+
+      const button = fixture.nativeElement.querySelector('[data-testid="pricing-cta-monthly"]') as HTMLButtonElement;
+      expect(button.disabled).withContext(JSON.stringify(state)).toBeFalse();
+      await component.onCta('monthly');
+    }
+
+    expect(navigate).toHaveBeenCalledTimes(3);
+    expect(navigate).toHaveBeenCalledWith(['/pricing'], { fragment: 'pricing-plans' });
+    expect(billingCheckout.checkout).not.toHaveBeenCalled();
+    expect(billingCheckout.prefetch).not.toHaveBeenCalled();
+    expect(component.loginRequiredOpen).toBeFalse();
+    expect(sessionStorage.getItem('fa:checkout:intent:v1')).toBeNull();
+    expect(analytics.track).toHaveBeenCalledWith('pricing_plan_cta_clicked', jasmine.objectContaining({
+      method: 'navigate_pricing',
+      plan_id: 'monthly',
+    }));
+    expect(fixture.nativeElement.textContent || '').not.toContain('Checkout is temporarily unavailable');
+    expect(fixture.nativeElement.textContent || '').not.toContain('Checking checkout availability');
+  });
+
+  it('lets an active Pro user manage a subscription when purchase config failed', () => {
+    const auth = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
+    auth.user.and.returnValue({
+      _id: 'pro_user',
+      entitlements: { pro: { status: 'active', validUntil: null } },
+    } as any);
+    auth.getManageSubscriptionUrl.and.returnValue(of({ url: 'https://billing.example.com/manage' } as any));
+    component.paymentsEnabled = false;
+    component.paymentsConfigReady = true;
+
+    fixture.detectChanges();
+
+    const button = fixture.nativeElement.querySelector('[data-testid="pricing-cta-monthly"]') as HTMLButtonElement;
+    expect(button.disabled).toBeFalse();
+    expect(button.textContent || '').toContain('Manage subscription');
   });
 
   it('renders quarterly as the only recommended sprint plan', () => {

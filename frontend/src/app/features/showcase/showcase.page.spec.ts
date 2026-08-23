@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { NO_ERRORS_SCHEMA, PLATFORM_ID } from '@angular/core';
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule, convertToParamMap, provideRouter } from '@angular/router';
@@ -9,7 +9,6 @@ import { of, throwError } from 'rxjs';
 import { IncidentService } from '../../core/services/incident.service';
 import { PUBLIC_EDITORIAL_FACTS } from '../../core/content/public-editorial-facts';
 import { AnalyticsService } from '../../core/services/analytics.service';
-import { BillingCheckoutService } from '../../core/services/billing-checkout.service';
 import { ExperimentService } from '../../core/services/experiment.service';
 import { QuestionService } from '../../core/services/question.service';
 import { TradeoffBattleService } from '../../core/services/tradeoff-battle.service';
@@ -39,12 +38,6 @@ describe('ShowcasePageComponent', () => {
         },
         { provide: HttpClient, useValue: http },
         { provide: AnalyticsService, useValue: analytics },
-        {
-          provide: BillingCheckoutService,
-          useValue: {
-            getCheckoutConfig: jasmine.createSpy('getCheckoutConfig').and.resolveTo({ enabled: false, plans: null }),
-          },
-        },
         {
           provide: ExperimentService,
           useValue: {
@@ -151,10 +144,8 @@ describe('ShowcasePageComponent', () => {
     await component.submitContact();
 
     expect(http.post).not.toHaveBeenCalled();
-    expect(component.contactStatus).toEqual(jasmine.objectContaining({
-      tone: 'error',
-      text: jasmine.stringContaining('complete the verification'),
-    }));
+    expect(component.contactStatus).toBeNull();
+    expect(component.contactSubmitLabel()).toBe('Complete verification to send');
   });
 
   it('sends the verification and honeypot fields, then clears successful contact state', async () => {
@@ -267,17 +258,133 @@ describe('ShowcasePageComponent', () => {
 
   it('fails closed with a direct-email fallback when verification cannot load', () => {
     const component = fixture.componentInstance;
+    const reset = jasmine.createSpy('reset');
+    component.contactTurnstile = { reset } as any;
+    component.contact = {
+      name: 'Alex Frontend',
+      email: 'alex@example.com',
+      topic: 'bug',
+      message: 'Keep this message while verification retries.',
+      website: '',
+    };
 
     component.onContactChallengeStateChange('error');
+    fixture.detectChanges();
+    component.contactTurnstile = { reset } as any;
 
     expect(component.contactVerificationToken).toBe('');
-    expect(component.contactStatus).toEqual({
-      tone: 'error',
-      text: 'Verification is unavailable. Please email support@frontendatlas.com directly.',
-    });
+    expect(component.contactStatus).toBeNull();
+    expect(component.contactSubmitLabel()).toBe('Verification unavailable');
+    const alert = fixture.nativeElement.querySelector('[data-testid="showcase-contact-challenge-alert"]') as HTMLElement;
+    const submit = fixture.nativeElement.querySelector('[data-testid="showcase-contact-submit"]') as HTMLButtonElement;
+    expect(alert.getAttribute('role')).toBe('alert');
+    expect(alert.textContent || '').toContain('Your message has been preserved');
+    expect(alert.querySelector('a')?.getAttribute('href')).toBe('mailto:support@frontendatlas.com');
+    expect(submit.disabled).toBeTrue();
+
+    component.retryContactVerification();
+    expect(reset).toHaveBeenCalled();
+    expect(component.contact.message).toBe('Keep this message while verification retries.');
 
     component.onContactTokenChange('replacement-token');
-    expect(component.contactStatus).toBeNull();
+    component.onContactChallengeStateChange('verified');
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('[data-testid="showcase-contact-challenge-alert"]')).toBeNull();
+    expect(component.contactSubmitLabel()).toBe('Send message');
+  });
+
+  it('keeps verification expiry separate from submission results and preserves the form', () => {
+    const component = fixture.componentInstance;
+    component.contact = {
+      name: 'Alex Frontend',
+      email: 'alex@example.com',
+      topic: 'general',
+      message: 'Preserve this expired verification draft.',
+      website: '',
+    };
+    component.contactStatus = { tone: 'error', text: 'A prior network request failed.' };
+    component.onContactTokenChange('old-token');
+
+    component.onContactChallengeStateChange('expired');
+    fixture.detectChanges();
+
+    expect(component.contactVerificationToken).toBe('');
+    expect(component.contactStatus?.text).toBe('A prior network request failed.');
+    expect(component.contact.message).toBe('Preserve this expired verification draft.');
+    expect(component.contactSubmitLabel()).toBe('Verification expired');
+    expect(fixture.nativeElement.querySelector('[data-testid="showcase-contact-challenge-alert"]')).toBeTruthy();
+  });
+
+  it('defers template challenge state updates beyond the current change-detection turn', fakeAsync(() => {
+    const component = fixture.componentInstance;
+
+    component.onContactChallengeStateChangeDeferred('error');
+    expect(component.contactChallengeState).toBe('idle');
+
+    flushMicrotasks();
+    expect(component.contactChallengeState).toBe('error');
+    expect(component.contactVerificationToken).toBe('');
+  }));
+
+  it('renders a semantic support card with email, response time, and bug-report guidance', () => {
+    const aside = fixture.nativeElement.querySelector('aside[aria-label="Support information"]') as HTMLElement;
+
+    expect(aside).toBeTruthy();
+    expect(aside.getAttribute('aria-hidden')).toBeNull();
+    expect(aside.querySelector('a')?.getAttribute('href')).toBe('mailto:support@frontendatlas.com');
+    expect(aside.textContent || '').toContain('1–2 business days');
+    expect(Array.from(aside.querySelectorAll('li'), (item: Element) => item.textContent?.trim())).toEqual([
+      'The page URL',
+      'A screenshot or short recording',
+      'Your browser and operating system',
+    ]);
+  });
+
+  it('omits demo controls and component activation from the mobile DOM', () => {
+    const component = fixture.componentInstance;
+    Object.defineProperty(component, 'isBrowser', { value: true });
+    component.showMobileCodingGuard = true;
+
+    component.activateDemo();
+    fixture.detectChanges();
+
+    const page = fixture.nativeElement as HTMLElement;
+    expect(page.querySelector('.demo-picker')).toBeNull();
+    expect(page.querySelector('.demo-meta')).toBeNull();
+    expect(page.querySelector('#demo-pane')).toBeNull();
+    expect(page.querySelectorAll('[data-testid^="showcase-demo-tab-"]').length).toBe(0);
+    expect(page.querySelector('[data-testid="showcase-demo-mobile-guard-open"]')?.getAttribute('href')).toBe('/coding');
+    expect(component.demoLoading).toBeFalse();
+    expect(component.demoComponent).toBeUndefined();
+  });
+
+  it('groups the homepage into nine ordered outer landmarks without dropping core routes', () => {
+    const page = fixture.nativeElement as HTMLElement;
+    const landmarks = Array.from(page.querySelectorAll<HTMLElement>('[data-showcase-landmark]'));
+
+    expect(landmarks.map((item) => item.dataset['showcaseLandmark'])).toEqual([
+      'hero',
+      'demo',
+      'preparation',
+      'trust',
+      'practice',
+      'browse',
+      'cv',
+      'pricing',
+      'support',
+    ]);
+    const preparation = landmarks[2];
+    const browse = landmarks[5];
+    const support = landmarks[8];
+    expect(preparation.querySelector('[data-testid="showcase-focus-section"]')).toBeTruthy();
+    expect(preparation.querySelector('a[href="/tracks/crash-7d/preview"]')).toBeTruthy();
+    expect(preparation.querySelector('a[href="/tracks/foundations-30d/preview"]')).toBeTruthy();
+    expect(browse.querySelector('[data-testid="showcase-company-section"]')).toBeTruthy();
+    expect(browse.querySelector('a[href="/coding"]')).toBeTruthy();
+    expect(support.querySelector('[data-testid="showcase-contact-form"]')).toBeTruthy();
+    expect(support.querySelector('a[href="/interview-questions/essential"]')).toBeTruthy();
+    expect(support.querySelector('a[href="/guides/interview-blueprint/intro"]')).toBeTruthy();
+    expect(page.querySelectorAll('h1').length).toBe(1);
   });
 
   it('removes the floating chip cloud, keeps the hero proof static on first render, and reinforces the next-step path below the fold', () => {

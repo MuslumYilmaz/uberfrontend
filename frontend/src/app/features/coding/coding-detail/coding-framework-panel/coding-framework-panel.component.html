@@ -69,7 +69,8 @@
     <!-- 2-col layout: editor + preview -->
     <div class="flex-1 flex min-h-0 framework-layout">
         <!-- LEFT: Editor -->
-        <div class="min-w-0 min-h-0 flex flex-col" [style.flex]="frameworkEditorFlex()">
+        <div class="min-w-0 min-h-0 flex flex-col" data-testid="framework-editor-column"
+            [style.flex]="frameworkEditorFlex()">
             <!-- editor header, tabs vs. -->
             <div class="flex items-center justify-between border-b border-white/10 px-2 py-1">
                 <div class="flex items-center gap-3 min-w-0">
@@ -144,7 +145,8 @@
         </div>
 
         <!-- RIGHT: Preview iframe -->
-        <div class="framework-preview-column flex-1 min-w-0 min-h-0">
+        <div class="framework-preview-column flex-1 min-w-0 min-h-0"
+            data-testid="framework-preview-column">
             <div class="framework-preview-stage">
                 <div *ngIf="showingFrameworkSolutionPreview()"
                     class="absolute top-2 right-3 z-20 bg-yellow-300 text-black text-xs px-3 py-1.5 rounded shadow-sm flex items-center gap-3">

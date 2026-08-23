@@ -21,7 +21,7 @@
       <div class="preview-meta" aria-label="OpenAI preview coverage">
         <span class="preview-chip">5 representative prompts</span>
         <span class="preview-chip">Streaming, state, accessibility, system design</span>
-        <span class="preview-chip preview-chip--lock">Full route stays premium</span>
+        <span class="preview-chip preview-chip--lock">Full practice set requires Premium</span>
       </div>
     </header>
 
@@ -116,7 +116,7 @@
         <h2 id="openai-free-practice">Use these free pages to support the preview</h2>
         <p>
           These links are intentionally limited to public, relevant practice. Use them to rehearse the concepts behind
-          the representative prompts before deciding whether to unlock the premium OpenAI route.
+          the representative prompts before deciding whether to unlock the full OpenAI practice set.
         </p>
       </div>
       <div class="openai-link-grid">
@@ -131,11 +131,11 @@
 
     <section class="openai-section openai-cta" aria-labelledby="openai-unlock">
       <div>
-        <p class="preview-kicker">Premium company route</p>
+        <p class="preview-kicker">Full company practice</p>
         <h2 id="openai-unlock">Unlock the full OpenAI practice set</h2>
         <p>
-          The public preview gives you the intent, prompts, and rubric. Premium keeps the deeper company route gated,
-          including the broader set navigation and focused drills across coding, concept questions, and system design.
+          The public preview gives you the intent, prompts, and rubric. Premium unlocks the deeper company practice set,
+          including broader navigation and focused drills across coding, concept questions, and system design.
         </p>
       </div>
       <a
@@ -164,7 +164,7 @@
       <div class="preview-meta" aria-label="Google guide coverage">
         <span class="preview-chip">7 representative prompts</span>
         <span class="preview-chip">DSA, JavaScript, browser, UI, system design</span>
-        <span class="preview-chip preview-chip--lock">Full route stays premium</span>
+        <span class="preview-chip preview-chip--lock">Full practice set requires Premium</span>
       </div>
     </header>
 
@@ -322,11 +322,11 @@
 
     <section class="company-guide-section company-guide-cta" aria-labelledby="google-premium-route">
       <div>
-        <p class="preview-kicker">Premium company route</p>
+        <p class="preview-kicker">Full company practice</p>
         <h2 id="google-premium-route">Unlock the full Google practice set</h2>
         <p>
-          This public guide stands on its own for planning and practice. Premium keeps the broader company-tagged route
-          gated as a FrontendAtlas editorial grouping, including deeper navigation across coding, concept questions, and system design.
+          This public guide stands on its own for planning and practice. Premium unlocks the broader company-tagged set
+          as a FrontendAtlas editorial grouping, including deeper navigation across coding, concept questions, and system design.
         </p>
       </div>
       <a
@@ -354,7 +354,7 @@
       <div class="preview-meta" aria-label="Netflix guide coverage">
         <span class="preview-chip">6 representative prompts</span>
         <span class="preview-chip">JavaScript, React, streaming UI, system design</span>
-        <span class="preview-chip preview-chip--lock">Full route stays premium</span>
+        <span class="preview-chip preview-chip--lock">Full practice set requires Premium</span>
       </div>
     </header>
 
@@ -546,11 +546,11 @@
 
     <section class="company-guide-section company-guide-cta" aria-labelledby="netflix-premium-route">
       <div>
-        <p class="preview-kicker">Premium company route</p>
+        <p class="preview-kicker">Full company practice</p>
         <h2 id="netflix-premium-route">Continue with the full Netflix practice set</h2>
         <p>
-          This public guide is complete enough to plan a focused week. Premium keeps the broader company-tagged
-          editorial route gated, with deeper navigation across coding, concept questions, and system design.
+          This public guide is complete enough to plan a focused week. Premium unlocks the broader company-tagged
+          editorial set, with deeper navigation across coding, concept questions, and system design.
         </p>
       </div>
       <a
@@ -569,14 +569,14 @@
     <p class="preview-kicker">Public preview</p>
     <h1>{{ label }} Frontend Interview Questions Preview</h1>
     <p class="preview-subtitle">
-      Review a FrontendAtlas editorial practice grouping across coding, concept questions, and system design before unlocking the full premium route.
+      Review a FrontendAtlas editorial practice grouping across coding, concept questions, and system design before choosing the full practice set.
     </p>
 
     <ng-container *ngIf="data$ | async as data">
       <div class="preview-meta">
         <span class="preview-chip">{{ promptCountLabel(data.counts.all) }}</span>
         <span class="preview-chip">Coding {{ data.counts.coding }} · Concepts {{ data.counts.trivia }} · System {{ data.counts.system }}</span>
-        <span class="preview-chip preview-chip--lock">Full route stays premium</span>
+        <span class="preview-chip preview-chip--lock">Full practice set requires Premium</span>
       </div>
     </ng-container>
   </header>
@@ -595,7 +595,7 @@
       <article class="proof-card">
         <h2>What unlocks with premium</h2>
         <ul>
-          <li>Full guided route at <code>/companies/{{ slug }}</code>.</li>
+          <li>Complete company practice across coding, concept questions, and system design.</li>
           <li>The full editorial practice grouping across coding, concept questions, and system design.</li>
           <li>Depth-focused question navigation for interview-specific preparation.</li>
         </ul>

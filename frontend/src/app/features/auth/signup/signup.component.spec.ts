@@ -5,7 +5,7 @@ import { AnalyticsService } from '../../../core/services/analytics.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { SignupComponent } from './signup.component';
 
-describe('SignupComponent analytics', () => {
+describe('SignupComponent', () => {
   let fixture: ComponentFixture<SignupComponent>;
   let component: SignupComponent;
   let auth: jasmine.SpyObj<AuthService>;
@@ -40,6 +40,66 @@ describe('SignupComponent analytics', () => {
     fixture = TestBed.createComponent(SignupComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
+  });
+
+  it('shows one passive legal disclosure that covers OAuth and email signup', () => {
+    const host = fixture.nativeElement as HTMLElement;
+    const disclosure = host.querySelector('[data-testid="signup-legal-disclosure"]') as HTMLElement | null;
+    const terms = host.querySelector('[data-testid="signup-terms-link"]') as HTMLAnchorElement | null;
+    const privacy = host.querySelector('[data-testid="signup-privacy-link"]') as HTMLAnchorElement | null;
+    const googleButton = host.querySelector('[data-testid="signup-google"]') as HTMLButtonElement | null;
+    const disclosureText = (disclosure?.textContent || '').replace(/\s+/g, ' ').trim();
+
+    expect(disclosureText).toContain('Google, GitHub, or email');
+    expect(disclosureText).toContain('agree to the Terms of Service');
+    expect(disclosureText).toContain('acknowledge the Privacy Notice');
+    expect(terms?.getAttribute('href')).toBe('/legal/terms');
+    expect(privacy?.getAttribute('href')).toBe('/legal/privacy');
+    expect(terms?.getAttribute('target')).toBe('_blank');
+    expect(privacy?.getAttribute('target')).toBe('_blank');
+    expect(terms?.getAttribute('rel')).toContain('noopener');
+    expect(privacy?.getAttribute('rel')).toContain('noopener');
+    expect(Boolean(
+      disclosure
+      && googleButton
+      && (disclosure.compareDocumentPosition(googleButton) & Node.DOCUMENT_POSITION_FOLLOWING),
+    )).toBeTrue();
+    expect(host.querySelector('input[type="checkbox"]')).toBeNull();
+  });
+
+  it('keeps the exact password requirement visible and referenced before and after validation', () => {
+    const host = fixture.nativeElement as HTMLElement;
+    const passwordInput = host.querySelector('[data-testid="signup-password"]') as HTMLInputElement;
+    const requirement = host.querySelector('[data-testid="signup-password-requirements"]') as HTMLElement;
+
+    expect(requirement.textContent?.trim()).toBe(
+      'Use at least 8 characters, including a letter and a number.',
+    );
+    expect(passwordInput.getAttribute('aria-describedby')).toBe('signup-password-requirements');
+
+    component.passwordCtrl?.setValue('abcdefgh');
+    component.passwordCtrl?.markAsTouched();
+    fixture.detectChanges();
+
+    const letterOnlyError = host.querySelector('[data-testid="signup-password-error"]') as HTMLElement;
+    expect(component.passwordCtrl?.invalid).toBeTrue();
+    expect(letterOnlyError.textContent?.replace(/\s+/g, ' ').trim()).toBe(
+      'Password does not meet the requirement above.',
+    );
+    expect(passwordInput.getAttribute('aria-describedby')).toBe(
+      'signup-password-requirements signup-password-error',
+    );
+
+    component.passwordCtrl?.setValue('12345678');
+    fixture.detectChanges();
+    expect(component.passwordCtrl?.invalid).toBeTrue();
+
+    component.passwordCtrl?.setValue('secret123');
+    fixture.detectChanges();
+    expect(component.passwordCtrl?.valid).toBeTrue();
+    expect(host.querySelector('[data-testid="signup-password-error"]')).toBeNull();
+    expect(passwordInput.getAttribute('aria-describedby')).toBe('signup-password-requirements');
+    expect(host.querySelector('[data-testid="signup-password-requirements"]')).toBeTruthy();
   });
 
   it('emits standard sign_up without sending form PII', () => {

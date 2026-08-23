@@ -8,6 +8,7 @@ import { map } from 'rxjs/operators';
 import { QuestionService } from '../../../core/services/question.service';
 import { SeoService } from '../../../core/services/seo.service';
 import { COMPANY_PRACTICE_DISCLAIMER } from '../../../core/content/public-editorial-facts';
+import { companyBrandFor } from '../../../shared/company-branding';
 import { collectCompanyCounts } from '../../../shared/company-counts.util';
 import { CompanyLogoMarkComponent } from '../../../shared/components/company-logo-mark/company-logo-mark.component';
 import { PrepSignalGridComponent, PrepSignalItem } from '../../../shared/components/prep-signal-grid/prep-signal-grid.component';
@@ -16,15 +17,15 @@ type CompanyCard = { slug: string; label: string; count: number };
 type CompanyHubLink = { label: string; route: string[]; path: string };
 
 // Always show these, even if data lacks explicit "companies" tags.
-const SEED: ReadonlyArray<Pick<CompanyCard, 'slug' | 'label'>> = [
-  { slug: 'google', label: 'Google' },
-  { slug: 'amazon', label: 'Amazon' },
-  { slug: 'apple', label: 'Apple' },
-  { slug: 'meta', label: 'Meta' },
-  { slug: 'microsoft', label: 'Microsoft' },
-  { slug: 'uber', label: 'Uber' },
-  { slug: 'airbnb', label: 'Airbnb' },
-  { slug: 'netflix', label: 'Netflix' },
+const SEED_SLUGS: ReadonlyArray<string> = [
+  'google',
+  'amazon',
+  'apple',
+  'meta',
+  'microsoft',
+  'uber',
+  'airbnb',
+  'netflix',
 ];
 
 const COMPANY_INDEX_TITLE = 'Company Frontend Interview Questions';
@@ -90,18 +91,19 @@ export class CompanyIndexComponent implements OnInit {
           const counts = collectCompanyCounts({ coding, trivia, system });
 
           // Start with the seed list so the page isn’t empty
-          const list: CompanyCard[] = SEED.map(s => ({
-            ...s,
-            count: counts[s.slug]?.all ?? 0
+          const list: CompanyCard[] = SEED_SLUGS.map(slug => ({
+            slug,
+            label: this.companyLabel(slug),
+            count: counts[slug]?.all ?? 0
           })).filter(c => c.count > 0);
 
           // Add any extra slugs found in data that aren’t in the seed
           Object.entries(counts).forEach(([slug, bucket]) => {
             if (bucket.all <= 0) return;
-            if (!SEED.find(s => s.slug === slug)) {
+            if (!SEED_SLUGS.includes(slug)) {
               list.push({
                 slug,
-                label: slug.replace(/-/g, ' ').replace(/\b\w/g, m => m.toUpperCase()),
+                label: this.companyLabel(slug),
                 count: bucket.all
               });
             }
@@ -116,6 +118,10 @@ export class CompanyIndexComponent implements OnInit {
         this.loading = false;
         this.publishSeo(list);
       });
+  }
+
+  private companyLabel(slug: string): string {
+    return companyBrandFor(slug)?.label ?? slug;
   }
 
   private publishSeo(companies: CompanyCard[]): void {

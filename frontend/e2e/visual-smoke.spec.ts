@@ -5,15 +5,24 @@ const DESKTOP_VIEWPORT = { width: 1440, height: 1024 };
 
 async function revealDeferredSections(page: import('@playwright/test').Page) {
   const viewportHeight = page.viewportSize()?.height ?? DESKTOP_VIEWPORT.height;
-  const maxScroll = await page.evaluate(() => Math.max(document.body.scrollHeight, document.documentElement.scrollHeight));
   const step = Math.max(480, Math.floor(viewportHeight * 0.85));
+  let previousHeight = -1;
 
-  for (let scrollY = 0; scrollY < maxScroll; scrollY += step) {
-    await page.evaluate((value) => window.scrollTo(0, value), scrollY);
-    await page.waitForTimeout(80);
+  for (let pass = 0; pass < 3; pass += 1) {
+    const maxScroll = await page.evaluate(() => Math.max(document.body.scrollHeight, document.documentElement.scrollHeight));
+    for (let scrollY = 0; scrollY <= maxScroll; scrollY += step) {
+      await page.evaluate((value) => window.scrollTo(0, value), scrollY);
+      await page.waitForTimeout(80);
+    }
+    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+    await page.waitForTimeout(180);
+
+    const currentHeight = await page.evaluate(() => Math.max(document.body.scrollHeight, document.documentElement.scrollHeight));
+    if (pass > 0 && Math.abs(currentHeight - previousHeight) <= 1) break;
+    previousHeight = currentHeight;
   }
 
-  await page.waitForTimeout(180);
+  await page.waitForTimeout(120);
 }
 
 async function stabilize(page: import('@playwright/test').Page) {
@@ -56,6 +65,8 @@ async function waitForShowcaseDemo(page: import('@playwright/test').Page) {
   await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
   await expect(page.locator('.demo-placeholder')).toBeHidden({ timeout: 30_000 });
   await expect(page.locator('.preview-loading')).toBeHidden({ timeout: 30_000 });
+  await expect(page.getByTestId('framework-editor-column')).toBeVisible({ timeout: 30_000 });
+  await expect(page.getByTestId('framework-preview-column')).toBeVisible({ timeout: 30_000 });
   await page.waitForTimeout(120);
   await page.evaluate(() => window.scrollTo(0, 0));
 }
@@ -127,7 +138,7 @@ test.describe('visual smoke baselines', () => {
   test('pricing page baseline', async ({ page }) => {
     await page.goto('/pricing');
     await expect(page.locator('.pricing-page')).toBeVisible();
-    await expect(page.getByText('Payments are not enabled in this build.')).toBeVisible();
+    await expect(page.locator('.pr-footnote')).toContainText('Checkout is temporarily unavailable.');
     await stabilize(page);
     await expect(page).toHaveScreenshot('pricing-page.png', { fullPage: true });
   });

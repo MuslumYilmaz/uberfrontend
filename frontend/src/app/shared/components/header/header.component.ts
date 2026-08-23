@@ -57,6 +57,7 @@ type StudyPrimaryAction = {
 export class HeaderComponent implements OnInit {
   @ViewChild('desktopStudyTrigger') desktopStudyTrigger?: ElementRef<HTMLButtonElement>;
   @ViewChild('mobileStudyTrigger') mobileStudyTrigger?: ElementRef<HTMLButtonElement>;
+  @ViewChild('studySearchInput') studySearchInput?: ElementRef<HTMLInputElement>;
 
   private doc = inject(DOCUMENT);
   private router = inject(Router);
@@ -103,6 +104,8 @@ export class HeaderComponent implements OnInit {
 
   public auth = inject(AuthService);
   isPro = computed(() => isProActive(this.auth.user()));
+  brandLink = computed(() => this.auth.authUiState() === 'authenticated' ? ['/dashboard'] : ['/']);
+  brandDestination = computed(() => this.auth.authUiState() === 'authenticated' ? '/dashboard' : '/');
   ctaLabel = computed(() => {
     if (this.isPro()) return 'Manage subscription';
     return this.auth.isLoggedIn() ? 'Upgrade' : 'Start prep';
@@ -418,8 +421,16 @@ export class HeaderComponent implements OnInit {
     }
   }
 
-  @HostListener('document:keydown.escape')
-  onDocumentEsc() { this.closeAll(); }
+  @HostListener('document:keydown.escape', ['$event'])
+  onDocumentEsc(event: KeyboardEvent) {
+    if (!this.megaOpen()) {
+      this.closeAll();
+      return;
+    }
+
+    event.preventDefault();
+    this.closeMegaAndRestoreFocus();
+  }
 
   @HostListener('document:keydown', ['$event'])
   onGlobalKey(ev: KeyboardEvent) {
@@ -428,11 +439,19 @@ export class HeaderComponent implements OnInit {
     const key = ev.key.toLowerCase();
     if ((ev.ctrlKey || ev.metaKey) && key === 'k') {
       ev.preventDefault();
-      this.toggleMega();
+      if (this.megaOpen()) {
+        this.closeMegaAndRestoreFocus();
+      } else {
+        this.lastStudyTrigger = this.findVisibleStudyTrigger();
+        this.openOnly('mega');
+        this.trackTopNavClick('primary', 'study');
+        this.analytics.track('header_study_opened', { trigger: 'shortcut' });
+      }
       return;
     }
     if (!inInput && key === '/') {
       ev.preventDefault();
+      this.lastStudyTrigger = this.findVisibleStudyTrigger();
       this.openOnly('mega');
       this.analytics.track('header_study_opened', { trigger: 'shortcut' });
       this.activeIndex.set(0);
@@ -448,6 +467,7 @@ export class HeaderComponent implements OnInit {
       this.activeIndex.set(-1);
       this.browseAllOpen.set(false);
       this.loadRecents();
+      this.focusStudySearchAfterRender();
     } else {
       this.megaAnchorX.set(null);
       this.searchTerm = '';
@@ -460,7 +480,10 @@ export class HeaderComponent implements OnInit {
       this.openOnly(null);
       return;
     }
-    this.syncMegaAnchor(ev);
+    const trigger = ev?.currentTarget as HTMLElement | null | undefined;
+    this.lastStudyTrigger = trigger?.tagName === 'BUTTON'
+      ? trigger as HTMLButtonElement
+      : this.findVisibleStudyTrigger();
     this.openOnly('mega');
     this.trackTopNavClick('primary', 'study');
     this.analytics.track('header_study_opened', { trigger: ev ? 'button' : 'shortcut' });
@@ -483,6 +506,33 @@ export class HeaderComponent implements OnInit {
   }
 
   closeAll() { this.openOnly(null); }
+
+  onSearchKeydown(event: KeyboardEvent) {
+    if (event.isComposing) return;
+
+    switch (event.key) {
+      case 'ArrowDown':
+        event.preventDefault();
+        this.moveActive(1);
+        return;
+      case 'ArrowUp':
+        event.preventDefault();
+        this.moveActive(-1);
+        return;
+      case 'Enter':
+        if (this.activeIndex() < 0) return;
+        event.preventDefault();
+        this.activateActive();
+        return;
+      case 'Escape':
+        event.preventDefault();
+        event.stopPropagation();
+        this.closeMegaAndRestoreFocus();
+        return;
+      default:
+        return;
+    }
+  }
 
   @HostListener('window:resize')
   onWindowResize() {
@@ -516,7 +566,7 @@ export class HeaderComponent implements OnInit {
   trackBrandClick() {
     this.analytics.track('header_brand_clicked', {
       surface: 'app',
-      destination: '/dashboard',
+      destination: this.brandDestination(),
       auth_state: this.authState(),
     });
   }
@@ -609,20 +659,35 @@ export class HeaderComponent implements OnInit {
     return rect.left + rect.width / 2;
   }
 
-  private findVisibleStudyTriggerCenter(): number | null {
+  private lastStudyTrigger: HTMLButtonElement | null = null;
+
+  private findVisibleStudyTrigger(): HTMLButtonElement | null {
     const desktop = this.desktopStudyTrigger?.nativeElement;
-    if (desktop && this.isVisible(desktop)) {
-      const rect = desktop.getBoundingClientRect();
-      return rect.left + rect.width / 2;
-    }
+    if (desktop && this.isVisible(desktop)) return desktop;
 
     const mobile = this.mobileStudyTrigger?.nativeElement;
-    if (mobile && this.isVisible(mobile)) {
-      const rect = mobile.getBoundingClientRect();
-      return rect.left + rect.width / 2;
-    }
+    if (mobile && this.isVisible(mobile)) return mobile;
 
-    return null;
+    return desktop ?? mobile ?? null;
+  }
+
+  private findVisibleStudyTriggerCenter(): number | null {
+    const trigger = this.findVisibleStudyTrigger();
+    if (!trigger) return null;
+    const rect = trigger.getBoundingClientRect();
+    return rect.left + rect.width / 2;
+  }
+
+  private focusStudySearchAfterRender() {
+    this.doc.defaultView?.setTimeout(() => {
+      if (this.megaOpen()) this.studySearchInput?.nativeElement.focus();
+    }, 0);
+  }
+
+  private closeMegaAndRestoreFocus() {
+    const trigger = this.lastStudyTrigger ?? this.findVisibleStudyTrigger();
+    this.openOnly(null);
+    trigger?.focus();
   }
 
   private isVisible(el: HTMLElement): boolean {

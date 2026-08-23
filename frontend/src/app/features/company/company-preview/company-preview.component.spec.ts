@@ -97,7 +97,9 @@ describe('CompanyPreviewComponent', () => {
     expect(text).toContain('Strong answer should cover');
     expect(text).toContain('Walk through stale stream handling before you code');
     expect(text).toContain('Day 7');
-    expect(text).toContain('Bunlar leaked veya confirmed OpenAI questions değildir; role-relevant representative practice prompts’tur.');
+    expect(text).toContain(
+      'These are not leaked or confirmed OpenAI interview questions; they are representative, role-relevant practice prompts.',
+    );
     expect(text).toContain('Unlock the full OpenAI practice set');
     expect(host.querySelector('[data-testid="company-practice-disclaimer"]')?.textContent?.trim()).toBe(
       'Editorial practice groupings, not verified official interview questions or endorsements.',
@@ -107,6 +109,22 @@ describe('CompanyPreviewComponent', () => {
     expect(text).not.toContain('Chat UI with Streaming Response');
     expect(text).not.toContain('AI Chat Text Area (ChatGPT-Style)');
     expect(text).not.toContain('AI UX Resilience and Control Patterns');
+  });
+
+  it('uses the shared ByteDance brand casing in the generic preview and metadata', async () => {
+    const fixture = await createComponent('bytedance');
+    const host: HTMLElement = fixture.nativeElement;
+    const payload = seo.updateTags.calls.mostRecent().args[0] as any;
+
+    expect(host.querySelector('h1')?.textContent?.trim()).toBe(
+      'ByteDance Frontend Interview Questions Preview',
+    );
+    expect(host.querySelector('.preview-breadcrumb span:last-child')?.textContent?.trim()).toBe(
+      'ByteDance frontend interview questions preview',
+    );
+    expect(payload.title).toBe('ByteDance Frontend Interview Questions Preview');
+    expect(payload.description).toContain('editorial ByteDance practice grouping');
+    expect(host.textContent || '').not.toContain('Bytedance');
   });
 
   it('keeps contextual OpenAI links on free public practice pages', async () => {

@@ -20,6 +20,8 @@ describe('CompanyIndexComponent', () => {
         return of([
           { id: 'google-coding', title: 'Google UI prompt', companies: ['google'] },
           { id: 'amazon-coding', title: 'Amazon list prompt', companies: ['amazon'] },
+          { id: 'openai-coding', title: 'OpenAI stream prompt', companies: ['openai'] },
+          { id: 'bytedance-coding', title: 'ByteDance feed prompt', companies: ['bytedance'] },
         ] as any);
       }
       return of([
@@ -75,9 +77,45 @@ describe('CompanyIndexComponent', () => {
     expect(host.querySelector('a[href="/system-design"]')).toBeTruthy();
   });
 
+  it('places the company directory immediately after the page header and guidance after the list', () => {
+    const host: HTMLElement = fixture.nativeElement;
+    const header = host.querySelector('.fa-page-header') as HTMLElement;
+    const directory = host.querySelector('[data-testid="company-index-directory"]') as HTMLElement;
+    const list = host.querySelector('[data-testid="company-index-list"]') as HTMLElement;
+    const guidance = host.querySelector('[data-testid="company-index-guidance"]') as HTMLElement;
+    const comesBefore = (left: HTMLElement, right: HTMLElement) =>
+      Boolean(left.compareDocumentPosition(right) & Node.DOCUMENT_POSITION_FOLLOWING);
+
+    expect(header).toBeTruthy();
+    expect(directory).toBeTruthy();
+    expect(list).toBeTruthy();
+    expect(guidance).toBeTruthy();
+    expect(header.nextElementSibling).toBe(directory);
+    expect(comesBefore(list, guidance)).toBeTrue();
+  });
+
+  it('uses shared user-facing brand labels for OpenAI and ByteDance cards and schema', () => {
+    const host: HTMLElement = fixture.nativeElement;
+    const openAiCard = host.querySelector<HTMLAnchorElement>('a.company-card[href="/companies/openai/preview"]');
+    const byteDanceCard = host.querySelector<HTMLAnchorElement>('a.company-card[href="/companies/bytedance/preview"]');
+    const payload = seo.updateTags.calls.mostRecent().args[0] as any;
+    const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
+    const collection = graph.find((entry: any) => entry?.['@type'] === 'CollectionPage');
+    const schemaNames = collection?.mainEntity?.itemListElement?.map((item: any) => item.name) ?? [];
+
+    expect(openAiCard?.querySelector('.company-card__title')?.textContent?.trim()).toBe('OpenAI');
+    expect(byteDanceCard?.querySelector('.company-card__title')?.textContent?.trim()).toBe('ByteDance');
+    expect(host.textContent || '').not.toContain('Openai');
+    expect(host.textContent || '').not.toContain('Bytedance');
+    expect(schemaNames).toContain('OpenAI');
+    expect(schemaNames).toContain('ByteDance');
+  });
+
   it('exposes a clean crawlable OpenAI preview anchor in the SSR shell', () => {
     const host: HTMLElement = fixture.nativeElement;
-    const openAiPreview = host.querySelector<HTMLAnchorElement>('a[href="/companies/openai/preview"]');
+    const openAiPreview = host.querySelector<HTMLAnchorElement>(
+      '[data-testid="company-index-guidance"] a[href="/companies/openai/preview"]',
+    );
 
     expect(openAiPreview).toBeTruthy();
     expect(openAiPreview?.textContent).toContain('OpenAI interview preview');
@@ -85,7 +123,9 @@ describe('CompanyIndexComponent', () => {
 
   it('exposes a clean descriptive Google guide anchor in the SSR shell', () => {
     const host: HTMLElement = fixture.nativeElement;
-    const googleGuide = host.querySelector<HTMLAnchorElement>('a[href="/companies/google/preview"]');
+    const googleGuide = host.querySelector<HTMLAnchorElement>(
+      '[data-testid="company-index-guidance"] a[href="/companies/google/preview"]',
+    );
 
     expect(googleGuide).toBeTruthy();
     expect(googleGuide?.textContent?.trim()).toBe('Google frontend interview questions');
@@ -94,7 +134,9 @@ describe('CompanyIndexComponent', () => {
 
   it('exposes a clean descriptive Netflix guide anchor in the SSR shell', () => {
     const host: HTMLElement = fixture.nativeElement;
-    const netflixGuide = host.querySelector<HTMLAnchorElement>('a[href="/companies/netflix/preview"]');
+    const netflixGuide = host.querySelector<HTMLAnchorElement>(
+      '[data-testid="company-index-guidance"] a[href="/companies/netflix/preview"]',
+    );
 
     expect(netflixGuide).toBeTruthy();
     expect(netflixGuide?.textContent?.trim()).toBe('Netflix frontend interview questions');

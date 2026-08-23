@@ -40,6 +40,35 @@ async function installTurnstileStub(page: any): Promise<void> {
   });
 }
 
+async function installTurnstileErrorStub(page: any): Promise<void> {
+  await page.addInitScript(() => {
+    const widgets = new Map<string, any>();
+    let widgetSequence = 0;
+    (window as any).__showcaseTurnstileResetCount = 0;
+
+    (window as any).turnstile = {
+      render(container: string | HTMLElement, options: any) {
+        const element = typeof container === 'string'
+          ? document.querySelector(container)
+          : container;
+        const widgetId = `e2e-error-turnstile-${++widgetSequence}`;
+        widgets.set(widgetId, options);
+        element?.setAttribute('data-turnstile-stub', 'error');
+        window.setTimeout(() => options['error-callback']?.(), 0);
+        return widgetId;
+      },
+      reset(widgetId: string) {
+        (window as any).__showcaseTurnstileResetCount += 1;
+        const options = widgets.get(widgetId);
+        window.setTimeout(() => options?.['error-callback']?.(), 0);
+      },
+      remove(widgetId: string) {
+        widgets.delete(widgetId);
+      },
+    };
+  });
+}
+
 test('showcase: demo CTA routes to the correct question pages', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByTestId('showcase-hero-title')).toBeVisible();
@@ -60,6 +89,31 @@ test('showcase: demo CTA routes to the correct question pages', async ({ page })
   // JavaScript
   await page.getByTestId('showcase-demo-tab-js').click();
   await expect(openLive).toHaveAttribute('href', '/javascript/coding/js-is-object-empty');
+});
+
+test('showcase: embedded pricing only navigates to pricing and never starts checkout', async ({ page }) => {
+  const billingConfigRequests: string[] = [];
+  const checkoutRequests: string[] = [];
+  page.on('request', (request) => {
+    const url = request.url();
+    if (/\/api\/billing\/checkout\/config(?:\?|$)/.test(url)) billingConfigRequests.push(url);
+    if (/\/api\/billing\/checkout\/start(?:\?|$)/.test(url)) checkoutRequests.push(url);
+  });
+
+  await page.goto('/');
+  const pricing = page.getByTestId('showcase-landmark-pricing');
+  await pricing.scrollIntoViewIfNeeded();
+  const monthlyCta = page.getByTestId('pricing-cta-monthly');
+  await expect(monthlyCta).toBeVisible();
+
+  // Revealing compact pricing must not fetch checkout availability or arm checkout.
+  await page.waitForTimeout(300);
+  expect(billingConfigRequests).toEqual([]);
+  expect(checkoutRequests).toEqual([]);
+
+  await monthlyCta.click();
+  await expect(page).toHaveURL(/\/pricing#pricing-plans$/);
+  expect(checkoutRequests).toEqual([]);
 });
 
 test('showcase: trivia snapshot tabs resolve to real questions', async ({ page }) => {
@@ -106,6 +160,43 @@ test('showcase: contact form requires verification and sends the anti-spam paylo
     website: '',
   }));
   expect(String(postedBody?.['verificationToken'] || '')).toMatch(/^e2e-token-/);
+});
+
+test('showcase: verification errors preserve the contact draft and expose retry plus email fallback', async ({ page }) => {
+  await installTurnstileErrorStub(page);
+  await page.goto('/');
+
+  await page.locator('[data-load="contact"]').scrollIntoViewIfNeeded();
+  const form = page.getByTestId('showcase-contact-form');
+  await expect(form).toBeVisible();
+
+  const name = form.locator('input[name="name"]');
+  const email = form.locator('input[name="email"]');
+  const message = form.locator('textarea[name="message"]');
+  await name.fill('Alex Frontend');
+  await email.fill('alex@example.com');
+  await message.fill('Please preserve this draft while verification is unavailable.');
+
+  const alert = page.getByTestId('showcase-contact-challenge-alert');
+  await expect(alert).toBeVisible();
+  await expect(alert).toContainText('Verification is unavailable');
+  await expect(alert.getByRole('link', { name: /email support@frontendatlas\.com/i })).toHaveAttribute(
+    'href',
+    'mailto:support@frontendatlas.com',
+  );
+
+  const submit = page.getByTestId('showcase-contact-submit');
+  await expect(submit).toBeDisabled();
+  await expect(submit).toContainText('Verification unavailable');
+  await expect(page.getByTestId('showcase-contact-status')).toHaveCount(0);
+
+  await alert.getByRole('button', { name: 'Retry verification' }).click();
+  await expect.poll(() => page.evaluate(() => (window as any).__showcaseTurnstileResetCount)).toBe(1);
+  await expect(alert).toBeVisible();
+  await expect(submit).toBeDisabled();
+  await expect(name).toHaveValue('Alex Frontend');
+  await expect(email).toHaveValue('alex@example.com');
+  await expect(message).toHaveValue('Please preserve this draft while verification is unavailable.');
 });
 
 test('content: react-counter solution avoids React.useState', async () => {

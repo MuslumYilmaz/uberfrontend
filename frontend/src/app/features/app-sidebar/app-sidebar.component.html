@@ -1,12 +1,13 @@
 <aside id="app-sidebar-drawer" class="sidebar" [class.is-collapsed]="shouldCollapseRail()" [class.is-open]="drawerOpen()" [class.sidebar--drawer-only]="drawerOnly">
-    <nav class="nav">
+    <nav class="nav" aria-label="App navigation">
         <div class="nav-section nav-section--top" *ngIf="isLink(nav[0])">
             <ul>
                 <li>
                     <a class="nav-link" [routerLink]="$any(nav[0]).to" [queryParams]="$any(nav[0]).query || null"
                         [class.is-active]="isLinkActive($any(nav[0]))" (click)="closeDrawer()"
-                        aria-label="Home">
-                        <i class="pi nav-ic pi-compass"></i>
+                        aria-label="Home base" pTooltip="Home base" tooltipPosition="right"
+                        [tooltipDisabled]="!shouldCollapseRail()">
+                        <i class="pi nav-ic pi-compass" aria-hidden="true"></i>
                         <span class="label">Home base</span>
                     </a>
                 </li>
@@ -18,13 +19,17 @@
             <ng-container *ngIf="isGroup(nav[1])">
                 <div class="nav-group nav-block">
                     <button class="group-header" type="button" (click)="toggleGroup(1)"
-                        [attr.aria-expanded]="$any(nav[1]).open" [attr.aria-controls]="'group-1'">
-                        <i class="pi nav-ic pi-box"></i>
+                        aria-label="Practice Library" pTooltip="Practice Library" tooltipPosition="right"
+                        [tooltipDisabled]="!shouldCollapseRail()"
+                        [attr.aria-expanded]="isGroupExpanded(1)" [attr.aria-controls]="'group-1'">
+                        <i class="pi nav-ic pi-box" aria-hidden="true"></i>
                         <span class="label">Practice Library</span>
-                        <i class="pi caret" [ngClass]="$any(nav[1]).open ? 'pi-chevron-down' : 'pi-chevron-right'"></i>
+                        <i class="pi caret" aria-hidden="true" [ngClass]="$any(nav[1]).open ? 'pi-chevron-down' : 'pi-chevron-right'"></i>
                     </button>
 
-                    <div class="group-list" [id]="'group-1'" [class.open]="$any(nav[1]).open">
+                    <div class="group-list" [id]="'group-1'" [class.open]="$any(nav[1]).open"
+                        [attr.aria-hidden]="isGroupContentHidden(1) ? 'true' : null"
+                        [attr.inert]="isGroupContentHidden(1) ? '' : null">
                         <ul class="group-inner">
                             <li *ngFor="let c of $any(nav[1]).children">
                                 <a class="nav-sublink" [routerLink]="c.to" [queryParams]="c.query || null"
@@ -48,13 +53,17 @@
             <ng-container *ngIf="isGroup(nav[2])">
                 <div class="nav-group nav-block">
                     <button class="group-header" type="button" (click)="toggleGroup(2)"
-                        [attr.aria-expanded]="$any(nav[2]).open" [attr.aria-controls]="'group-2'">
-                        <i class="pi nav-ic pi-directions-alt"></i>
+                        aria-label="Study Plans" pTooltip="Study Plans" tooltipPosition="right"
+                        [tooltipDisabled]="!shouldCollapseRail()"
+                        [attr.aria-expanded]="isGroupExpanded(2)" [attr.aria-controls]="'group-2'">
+                        <i class="pi nav-ic pi-directions-alt" aria-hidden="true"></i>
                         <span class="label">Study Plans</span>
-                        <i class="pi caret" [ngClass]="$any(nav[2]).open ? 'pi-chevron-down' : 'pi-chevron-right'"></i>
+                        <i class="pi caret" aria-hidden="true" [ngClass]="$any(nav[2]).open ? 'pi-chevron-down' : 'pi-chevron-right'"></i>
                     </button>
 
-                    <div class="group-list" [id]="'group-2'" [class.open]="$any(nav[2]).open">
+                    <div class="group-list" [id]="'group-2'" [class.open]="$any(nav[2]).open"
+                        [attr.aria-hidden]="isGroupContentHidden(2) ? 'true' : null"
+                        [attr.inert]="isGroupContentHidden(2) ? '' : null">
                         <ul class="group-inner">
                             <li *ngFor="let c of $any(nav[2]).children">
                                 <a class="nav-sublink" [routerLink]="c.to" [queryParams]="c.query || null"
@@ -71,13 +80,17 @@
             <ng-container *ngIf="isGroup(nav[3])">
                 <div class="nav-group nav-block">
                     <button class="group-header" type="button" (click)="toggleGroup(3)"
-                        [attr.aria-expanded]="$any(nav[3]).open" [attr.aria-controls]="'group-3'">
-                        <i class="pi nav-ic pi-bookmark"></i>
+                        aria-label="Reference guides" pTooltip="Reference guides" tooltipPosition="right"
+                        [tooltipDisabled]="!shouldCollapseRail()"
+                        [attr.aria-expanded]="isGroupExpanded(3)" [attr.aria-controls]="'group-3'">
+                        <i class="pi nav-ic pi-bookmark" aria-hidden="true"></i>
                         <span class="label">Reference guides</span>
-                        <i class="pi caret" [ngClass]="$any(nav[3]).open ? 'pi-chevron-down' : 'pi-chevron-right'"></i>
+                        <i class="pi caret" aria-hidden="true" [ngClass]="$any(nav[3]).open ? 'pi-chevron-down' : 'pi-chevron-right'"></i>
                     </button>
 
-                    <div class="group-list" [id]="'group-3'" [class.open]="$any(nav[3]).open">
+                    <div class="group-list" [id]="'group-3'" [class.open]="$any(nav[3]).open"
+                        [attr.aria-hidden]="isGroupContentHidden(3) ? 'true' : null"
+                        [attr.inert]="isGroupContentHidden(3) ? '' : null">
                         <ul class="group-inner">
                             <li *ngFor="let c of $any(nav[3]).children">
                                 <a class="nav-sublink" [routerLink]="c.to" [queryParams]="c.query || null"
@@ -97,13 +110,17 @@
             <ng-container *ngIf="isGroup(nav[4])">
                 <div class="nav-group nav-block">
                     <button class="group-header nav-link--pill" type="button" (click)="toggleGroup(4)"
-                        [attr.aria-expanded]="$any(nav[4]).open" [attr.aria-controls]="'group-4'">
-                        <i class="pi nav-ic pi-stopwatch"></i>
+                        aria-label="Shortcuts and tools" pTooltip="Shortcuts &amp; tools" tooltipPosition="right"
+                        [tooltipDisabled]="!shouldCollapseRail()"
+                        [attr.aria-expanded]="isGroupExpanded(4)" [attr.aria-controls]="'group-4'">
+                        <i class="pi nav-ic pi-stopwatch" aria-hidden="true"></i>
                         <span class="label">Shortcuts &amp; tools</span>
-                        <i class="pi caret" [ngClass]="$any(nav[4]).open ? 'pi-chevron-down' : 'pi-chevron-right'"></i>
+                        <i class="pi caret" aria-hidden="true" [ngClass]="$any(nav[4]).open ? 'pi-chevron-down' : 'pi-chevron-right'"></i>
                     </button>
 
-                    <div class="group-list" [id]="'group-4'" [class.open]="$any(nav[4]).open">
+                    <div class="group-list" [id]="'group-4'" [class.open]="$any(nav[4]).open"
+                        [attr.aria-hidden]="isGroupContentHidden(4) ? 'true' : null"
+                        [attr.inert]="isGroupContentHidden(4) ? '' : null">
                         <ul class="group-inner">
                             <li *ngFor="let c of $any(nav[4]).children">
                                 <a class="nav-sublink" [routerLink]="c.to" [queryParams]="c.query || null"

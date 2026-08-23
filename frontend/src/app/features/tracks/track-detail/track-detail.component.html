@@ -163,6 +163,7 @@
                 <input
                   type="text"
                   pInputText
+                  aria-label="Search questions in this track"
                   placeholder="Search in this track"
                   data-testid="track-filter-search"
                   [(ngModel)]="searchTerm"
@@ -174,7 +175,7 @@
             <div class="filter-group filter-group--sort">
               <div class="filter-label fa-meta-label">Sort</div>
               <div class="fa-input sort-select">
-                <select data-testid="track-filter-sort" [ngModel]="sort$.value" (ngModelChange)="setSort($event)">
+                <select aria-label="Sort track questions" data-testid="track-filter-sort" [ngModel]="sort$.value" (ngModelChange)="setSort($event)">
                   <option *ngFor="let opt of sortOptions" [value]="opt.key">{{ opt.label }}</option>
                 </select>
               </div>

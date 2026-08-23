@@ -371,12 +371,28 @@ html, body { height: 100%; background: var(--uf-bg); }
 }
 .card-head { margin: 0; background: color-mix(in srgb, var(--uf-surface) 92%, var(--uf-surface-alt)); padding: 10px 14px; font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--uf-text-secondary); border-bottom: 1px solid var(--uf-border-subtle); }
 .card-body { padding: 18px 20px; }
+.card-head--toggle {
+  padding: 0;
+}
 .card-head-toggle {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  width: 100%;
+  padding: 10px 14px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-align: left;
+  text-transform: inherit;
   cursor: pointer;
   user-select: none;
+}
+.card-head-toggle:focus-visible {
+  outline: none;
+  box-shadow: inset var(--uf-focus-ring);
 }
 
 .guide-links {

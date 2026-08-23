@@ -1,13 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router';
-import { of } from 'rxjs';
+import { BehaviorSubject, of } from 'rxjs';
 import { QuestionService } from '../../../core/services/question.service';
 import { CompanyDetailComponent } from './company-detail.component';
 
 describe('CompanyDetailComponent', () => {
   let fixture: ComponentFixture<CompanyDetailComponent>;
+  let routeParamMap: BehaviorSubject<ReturnType<typeof convertToParamMap>>;
 
   beforeEach(async () => {
+    routeParamMap = new BehaviorSubject(convertToParamMap({ slug: 'google' }));
+
     await TestBed.configureTestingModule({
       imports: [CompanyDetailComponent],
       providers: [
@@ -15,7 +18,7 @@ describe('CompanyDetailComponent', () => {
         {
           provide: ActivatedRoute,
           useValue: {
-            paramMap: of(convertToParamMap({ slug: 'google' })),
+            paramMap: routeParamMap,
           },
         },
         {
@@ -53,5 +56,24 @@ describe('CompanyDetailComponent', () => {
     expect(text).not.toContain('known questions');
     expect(text).not.toContain('candidate reports');
     expect(text).not.toContain('How Google Evaluates');
+  });
+
+  it('uses shared OpenAI and ByteDance brand casing in the reachable detail view', () => {
+    routeParamMap.next(convertToParamMap({ slug: 'openai' }));
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('h1')?.textContent?.trim()).toBe(
+      'OpenAI Frontend Practice Group',
+    );
+
+    routeParamMap.next(convertToParamMap({ slug: 'bytedance' }));
+    fixture.detectChanges();
+
+    const text = fixture.nativeElement.textContent || '';
+    expect(fixture.nativeElement.querySelector('h1')?.textContent?.trim()).toBe(
+      'ByteDance Frontend Practice Group',
+    );
+    expect(text).not.toContain('Openai');
+    expect(text).not.toContain('Bytedance');
   });
 });

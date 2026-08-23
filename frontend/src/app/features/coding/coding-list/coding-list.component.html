@@ -160,7 +160,7 @@
       <div class="fa-question-list__controls">
         <div class="fa-question-list__search fa-input">
           <i class="pi pi-search"></i>
-          <input pInputText type="text" placeholder="Search questions" [(ngModel)]="searchTerm"
+          <input pInputText type="text" aria-label="Search questions" placeholder="Search questions" [(ngModel)]="searchTerm"
             data-testid="coding-list-search"
             (ngModelChange)="onSearchTermChange($event)" [ngModelOptions]="{ standalone: true }" />
         </div>

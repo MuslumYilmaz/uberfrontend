@@ -1,16 +1,22 @@
 <ng-container *ngIf="loadState() === 'loaded'; else loadingOrMissing">
 <ng-container *ngIf="!locked(); else lockedView">
 <ng-container *ngIf="!showMobileDesktopGuard(); else mobileWorkspaceGuard">
-<div class="coding-detail flex gap-[5px]" data-testid="coding-detail-page" [class.fixed-under-header]="!demoMode" [class.demo-embed]="demoMode">
+<div #codingLayout class="coding-detail flex gap-[5px]" data-testid="coding-detail-page"
+  [class.coding-detail--compact]="isCompactWorkspace()"
+  [class.fixed-under-header]="!demoMode" [class.demo-embed]="demoMode">
   <!-- LEFT COLUMN -->
-  <aside class="flex flex-col min-h-0 bg-neutral-900/95 rounded-lg shadow-sm border border-white/10 overflow-hidden coding-detail__scroll"
+  <aside class="coding-description-pane flex flex-col min-h-0 bg-neutral-900/95 rounded-lg shadow-sm border border-white/10 overflow-hidden coding-detail__scroll"
+    data-testid="coding-description-pane" aria-label="Challenge description and solution"
+    [class.coding-description-pane--collapsed]="descCollapsed()"
     [style.flex]="asideFlex()" style="min-width:0;">
     <!-- Collapsed rail -->
-    <div *ngIf="descCollapsed()" class="h-full w-full flex flex-col items-center justify-between py-2">
-      <div class="flex flex-col items-center gap-2">
+    <div *ngIf="descCollapsed()" class="coding-description-rail h-full w-full flex flex-col items-center justify-between py-2"
+      data-testid="coding-description-rail">
+      <div class="coding-description-rail__actions flex flex-col items-center gap-2">
         <button faButton type="button" variant="ghost" [iconOnly]="true" class="p-button-rounded p-button-text"
           (click)="toggleDescription()" aria-label="Expand description">
-          <app-fa-glyph class="fa-btn__icon" icon="pi pi-chevron-right"></app-fa-glyph>
+          <app-fa-glyph class="fa-btn__icon"
+            [icon]="isCompactWorkspace() ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></app-fa-glyph>
         </button>
 
         <button faButton type="button" variant="ghost" [iconOnly]="true" class="p-button-rounded p-button-text"
@@ -47,7 +53,8 @@
 
         <button class="px-3 py-2 text-gray-300 hover:text-white p-button-text" faButton variant="ghost" [iconOnly]="true"
           type="button" (click)="toggleDescription()" aria-label="Hide description">
-          <app-fa-glyph class="fa-btn__icon" icon="pi pi-chevron-left"></app-fa-glyph>
+          <app-fa-glyph class="fa-btn__icon"
+            [icon]="isCompactWorkspace() ? 'pi pi-chevron-up' : 'pi pi-chevron-left'"></app-fa-glyph>
         </button>
       </div>
 
@@ -167,41 +174,22 @@
             </div>
 
             <section
-              *ngIf="!demoMode && kind === 'coding' && isFrameworkTech()"
+              *ngIf="pressureSupported()"
               class="pressure-entry"
               data-testid="pressure-mode-entry"
             >
               <div>
                 <p class="pressure-entry__eyebrow">Optional interview simulation</p>
                 <h2>Keep coding as the requirements change</h2>
-                <p *ngIf="pressureSupported(); else pressureComingSoonCopy">
+                <p>
                   Continue the same challenge through cumulative rounds. Each round adds a new behavioral,
                   accessibility, or lifecycle constraint without resetting your draft.
                 </p>
-                <ng-template #pressureComingSoonCopy>
-                  <p>
-                    A tailored cumulative pressure mode for this challenge is coming soon.
-                  </p>
-                </ng-template>
               </div>
-              <ng-container *ngIf="pressureSupported(); else pressureComingSoonButton">
-                <button type="button" faButton variant="primary" data-testid="pressure-mode-start"
-                  (click)="startPressureMode()">
-                  Start Interview Pressure Mode
-                </button>
-              </ng-container>
-              <ng-template #pressureComingSoonButton>
-                <button
-                  type="button"
-                  faButton
-                  variant="primary"
-                  data-testid="pressure-mode-coming-soon"
-                  aria-label="Interview Pressure Mode coming soon for this challenge"
-                  disabled
-                >
-                  Coming soon
-                </button>
-              </ng-template>
+              <button type="button" faButton variant="primary" data-testid="pressure-mode-start"
+                (click)="startPressureMode()">
+                Start Interview Pressure Mode
+              </button>
             </section>
 
             <section class="detail-interview-hero" *ngIf="hasInterviewHeroMeta()" data-testid="coding-interview-hero">
@@ -786,8 +774,10 @@
     </ng-container>
   </aside>
 
-  <!-- VERTICAL SPLITTER -->
-  <div *ngIf="!descCollapsed()" class="splitter" [class.dragging]="isDraggingHorizontal()"
+  <!-- DESCRIPTION / WORKSPACE SPLITTER -->
+  <div *ngIf="!descCollapsed()" class="splitter" data-testid="coding-description-splitter"
+    [attr.data-orientation]="isCompactWorkspace() ? 'horizontal' : 'vertical'"
+    [class.dragging]="isDraggingAside()"
     (pointerdown)="startHorizontalDrag($event)"></div>
 
   <!-- RIGHT COLUMN -->

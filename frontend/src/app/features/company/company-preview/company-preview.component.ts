@@ -82,7 +82,7 @@ const OPENAI_PREVIEW_DESCRIPTION =
 const OPENAI_PREVIEW_CANONICAL_PATH = '/companies/openai/preview';
 const OPENAI_PREVIEW_DATE_MODIFIED = '2026-07-11T00:00:00.000Z';
 const OPENAI_TRUST_NOTE =
-  'Bunlar leaked veya confirmed OpenAI questions değildir; role-relevant representative practice prompts’tur.';
+  'These are not leaked or confirmed OpenAI interview questions; they are representative, role-relevant practice prompts.';
 
 const OPENAI_RESOURCE_LINKS: OpenAiResourceLink[] = [
   {
@@ -329,7 +329,7 @@ export class CompanyPreviewComponent implements OnInit {
   sampleDescription(item: CompanyPreviewQuestion): string {
     return item.access === 'free'
       ? 'Available from the public Question Library.'
-      : 'Previewed here; full company route stays premium.';
+      : 'Previewed here; the full practice set requires Premium.';
   }
 
   sampleMetaChips(item: CompanyPreviewQuestion): FaQuestionRowMetaChip[] {
@@ -682,7 +682,6 @@ export class CompanyPreviewComponent implements OnInit {
   }
 
   private prettyCompany(slug: string): string {
-    const brand = companyBrandFor(slug);
-    return brand?.label || slug.replace(/-/g, ' ').replace(/\b\w/g, (m) => m.toUpperCase());
+    return companyBrandFor(slug)?.label ?? slug;
   }
 }
