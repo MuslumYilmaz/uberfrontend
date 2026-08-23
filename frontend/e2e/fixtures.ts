@@ -138,9 +138,18 @@ export const test = baseTest.extend<{
           enabled: false,
           plans: {
             monthly: false,
-            yearly: false,
+            quarterly: false,
+            annual: false,
             lifetime: false,
           },
+          planDetails: {
+            monthly: { amountCents: 1200, currency: 'USD', interval: 'month', intervalCount: 1, taxInclusive: false },
+            quarterly: { amountCents: 2900, currency: 'USD', interval: 'month', intervalCount: 3, taxInclusive: false },
+            annual: { amountCents: 7900, currency: 'USD', interval: 'year', intervalCount: 1, taxInclusive: false },
+            lifetime: { amountCents: 19900, currency: 'USD', interval: 'one_time', intervalCount: null, taxInclusive: false },
+          },
+          offerVersion: 'pricing_baseline_v1',
+          checkoutSurface: 'hosted_new_tab',
         }),
       });
     });

@@ -1,10 +1,25 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  HostListener,
+  Input,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  SimpleChanges,
+  ViewChild,
+} from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { AnalyticsService } from '../../../../core/services/analytics.service';
 import { AuthService } from '../../../../core/services/auth.service';
-import { BillingCheckoutService } from '../../../../core/services/billing-checkout.service';
+import {
+  BillingCheckoutService,
+  CheckoutPlanDetail,
+  CheckoutSurface,
+} from '../../../../core/services/billing-checkout.service';
 import { CheckoutIntent, CheckoutIntentService } from '../../../../core/services/checkout-intent.service';
 import { ConversionContextService } from '../../../../core/services/conversion-context.service';
 import { getCheckoutLaunchNotice, getManageSubscriptionErrorMessage } from '../../../../core/utils/billing-ux.util';
@@ -19,11 +34,27 @@ import { LoginRequiredDialogComponent } from '../../../../shared/components/logi
 import { FaqSectionComponent } from '../../../../shared/faq-section/faq-section.component';
 import { FaButtonComponent } from '../../../../shared/ui/button/fa-button.component';
 import { PUBLIC_CHANGELOG_ENTRIES } from '../../../../core/content/public-changelog';
+import { SHOWCASE_STATS } from '../../../../generated/content-metadata';
 
 type PricingVariant = 'full' | 'compact';
-type CtaMode = 'checkout' | 'navigatePricing';
+export type PricingCtaMode = 'checkout' | 'navigatePricing';
+
+export type PricingPlanDetail = CheckoutPlanDetail;
+
+export type PricingPlanDetails = Partial<Record<PlanId, PricingPlanDetail>>;
+
+type PricingPlan = {
+  id: PlanId;
+  title: string;
+  summary: string;
+  features: string[];
+  badge: string;
+  ctaLabel: string;
+};
 
 export const PRICING_PAGE_LAYOUT = 'interview_sprint_v1';
+export const PRICING_BASELINE_OFFER_VERSION = 'pricing_baseline_v1';
+export const PRICING_V2_OFFER_VERSION = 'interview_sprint_v2';
 export const RECOMMENDED_PRICING_PLAN: PlanId = 'quarterly';
 
 @Component({
@@ -36,24 +67,31 @@ export const RECOMMENDED_PRICING_PLAN: PlanId = 'quarterly';
       <header class="pr-hero" *ngIf="variant === 'full'">
         <p class="pr-kicker">Premium for interview sprints</p>
         <h1>Prepare faster with deeper frontend interview reps</h1>
-        <p class="muted">
+        <p class="muted" *ngIf="!isOfferV2(); else offerV2HeroCopy">
           Premium unlocks the full coding and system-design depth behind the free workflow:
           deeper prompts, guided solutions where available, track/company depth, and saved progress while you prep.
         </p>
+        <ng-template #offerV2HeroCopy>
+          <p class="muted">
+            Practice across {{ totalQuestionCount }} questions and 141 Premium prompts with runnable workspaces,
+            behavioral checks, guided solutions, front-end system-design walkthroughs, and official-source checks.
+          </p>
+        </ng-template>
       </header>
 
       <div class="plan-unlock-strip">
         <div class="plan-unlock-strip__copy">
           <p>Same Premium library. Choose the timeline that fits your prep.</p>
+          <span *ngIf="isOfferV2()">Every paid plan unlocks the same practice depth; only the access period changes.</span>
         </div>
         <div class="pr-proof-chips" aria-label="Premium highlights">
-          <span *ngFor="let chip of proofChips">{{ chip }}</span>
+          <span *ngFor="let chip of activeProofChips()">{{ chip }}</span>
         </div>
       </div>
 
       <section
         class="checkout-continuation"
-        *ngIf="ctaMode === 'checkout' && pendingCheckoutIntent && canShowPendingCheckoutIntent()"
+        *ngIf="ctaMode === 'checkout' && pendingCheckoutIntent && canShowPendingCheckoutIntent() && !autoContinuingPendingCheckout"
         data-testid="checkout-continuation"
         aria-labelledby="checkout-continuation-title">
         <div>
@@ -73,17 +111,31 @@ export const RECOMMENDED_PRICING_PLAN: PlanId = 'quarterly';
 
       <div
         class="pr-grid"
+        [class.pr-grid--v2]="isOfferV2()"
         id="pricing-plans"
         #planCardsRef
         [attr.aria-busy]="ctaMode === 'checkout' && !paymentsConfigReady ? 'true' : null">
-        <article class="pr-card" *ngFor="let plan of plans" [class.pr-rec]="plan.id === recommendedPlan">
-          <div class="rec-badge" *ngIf="plan.badge" [class.rec-badge--muted]="plan.id !== recommendedPlan">{{ plan.badge }}</div>
-          <h3 class="title">{{ plan.title }}</h3>
-          <p class="plan-summary">{{ plan.summary }}</p>
-          <div class="price">
-            {{ plan.price }}<span>{{ plan.priceSuffix }}</span>
+        <article
+          class="pr-card"
+          *ngFor="let plan of activePrimaryPlans(); trackBy: trackPlanById"
+          [class.pr-card--monthly]="plan.id === 'monthly'"
+          [class.pr-card--quarterly]="plan.id === 'quarterly'"
+          [class.pr-card--annual]="plan.id === 'annual'"
+          [class.pr-card--lifetime]="plan.id === 'lifetime'"
+          [class.pr-rec]="plan.id === recommendedPlan">
+          <div
+            class="rec-badge"
+            *ngIf="badgeFor(plan)"
+            [class.rec-badge--muted]="plan.id !== recommendedPlan">
+            {{ badgeFor(plan) }}
           </div>
-          <p class="billing-note">{{ plan.billing }}</p>
+          <h3 class="title">{{ plan.title }}</h3>
+          <p class="plan-summary">{{ summaryFor(plan) }}</p>
+          <div class="price">
+            {{ displayPrice(plan.id) }}<span>{{ priceSuffix(plan.id) }}</span>
+          </div>
+          <p class="billing-note">{{ billingNote(plan.id) }}</p>
+          <p class="plan-savings" *ngIf="savingsLabel(plan.id)">{{ savingsLabel(plan.id) }}</p>
           <ul class="features">
             <li *ngFor="let feat of plan.features">{{ feat }}</li>
           </ul>
@@ -97,12 +149,57 @@ export const RECOMMENDED_PRICING_PLAN: PlanId = 'quarterly';
             [attr.data-testid]="'pricing-cta-' + plan.id">
             {{ ctaTextFor(plan) }}
           </button>
-          <div class="plan-note" *ngIf="plan.note">
+          <div class="plan-note" *ngIf="planNote(plan.id)">
             <span class="plan-note__label">Note</span>
-            <span class="plan-note__text">{{ plan.note }}</span>
+            <span class="plan-note__text">{{ planNote(plan.id) }}</span>
           </div>
         </article>
       </div>
+
+      <div class="pr-trust-strip" *ngIf="isOfferV2()" data-testid="pricing-trust-strip" aria-label="Checkout assurances">
+        <span><i class="pi pi-check" aria-hidden="true"></i>{{ taxTrustCopy() }}</span>
+        <span><i class="pi pi-refresh" aria-hidden="true"></i>Cancel anytime</span>
+        <span><i class="pi pi-lock" aria-hidden="true"></i>Secure checkout by Lemon Squeezy</span>
+        <span><i class="pi pi-eye" aria-hidden="true"></i>Free examples available</span>
+        <span class="pr-trust-strip__refund">
+          <i class="pi pi-replay" aria-hidden="true"></i>
+          <a [routerLink]="['/legal/refund']">Limited-use refund requests are reviewed under the Refund Policy</a>
+        </span>
+      </div>
+
+      <section
+        class="lifetime-offer"
+        *ngIf="isOfferV2()"
+        data-testid="pricing-lifetime-secondary"
+        aria-labelledby="lifetime-offer-title">
+        <div class="lifetime-offer__copy">
+          <p class="eyebrow">One-time option</p>
+          <h3 id="lifetime-offer-title">Prefer one-time access?</h3>
+          <p>Keep Premium access for long-term interview refreshers without another renewal.</p>
+        </div>
+        <div class="lifetime-offer__action">
+          <p class="lifetime-offer__price">{{ displayPrice('lifetime') }} <span>{{ priceSuffix('lifetime') }}</span></p>
+          <button
+            class="btn btn--secondary"
+            type="button"
+            (click)="onCta('lifetime')"
+            [disabled]="isCheckoutDisabled('lifetime')"
+            [attr.aria-disabled]="isCheckoutDisabled('lifetime') ? 'true' : null"
+            [attr.title]="checkoutTooltip('lifetime')"
+            data-testid="pricing-cta-lifetime">
+            {{ ctaTextFor(lifetimePlan()) }}
+          </button>
+        </div>
+      </section>
+
+      <a
+        *ngIf="variant === 'compact' && isOfferV2()"
+        class="compare-all-plans"
+        [routerLink]="['/pricing']"
+        fragment="pricing-plans"
+        (click)="trackCompareAllPlans()">
+        Compare all plans
+      </a>
 
       <p
         class="checkout-config-status"
@@ -133,6 +230,48 @@ export const RECOMMENDED_PRICING_PLAN: PlanId = 'quarterly';
       <p class="tiny muted pr-footnote" *ngIf="ctaMode === 'checkout' && paymentsConfigReady && !paymentsEnabled && !isProUser()">
         Checkout is temporarily unavailable. Please try again shortly.
       </p>
+
+      <figure
+        class="product-proof"
+        *ngIf="variant === 'full' && isOfferV2()"
+        data-testid="pricing-product-proof"
+        aria-labelledby="pricing-product-proof-title">
+        <div class="product-proof__copy">
+          <p class="eyebrow">Real product, before you pay</p>
+          <h2 id="pricing-product-proof-title">See the practice workflow in action</h2>
+          <p>
+            Read the prompt, edit working code, inspect the live preview, and run behavioral checks
+            from one workspace. Open the free React Counter challenge to try it yourself.
+          </p>
+          <div class="product-proof__actions" aria-label="Product preview links">
+            <a
+              class="link-btn link-btn--primary"
+              [routerLink]="['/react', 'coding', 'react-counter']"
+              [queryParams]="{ src: 'pricing_product_proof' }"
+              (click)="trackFreePathClick('product_proof_free_challenge', '/react/coding/react-counter')">
+              Open free React Counter challenge
+            </a>
+            <a
+              class="link-btn"
+              [routerLink]="['/javascript', 'coding', 'js-throttle']"
+              [queryParams]="{ src: 'pricing_product_proof' }"
+              (click)="trackFreePathClick('product_proof_solution_preview', '/javascript/coding/js-throttle')">
+              Preview a guided solution
+            </a>
+          </div>
+        </div>
+        <div class="product-proof__visual">
+          <img
+            src="assets/images/product-proof/react-counter-workspace.jpg"
+            alt="FrontendAtlas React Counter workspace with prompt, code editor, live preview, and run checks controls"
+            width="1512"
+            height="857"
+            loading="lazy"
+            decoding="async"
+          />
+          <figcaption>Actual FrontendAtlas workspace shown with the free React Counter challenge.</figcaption>
+        </div>
+      </figure>
 
       <section class="unlock-preview" *ngIf="variant === 'full'" #unlockPreviewRef>
         <div class="unlock-preview__head">
@@ -256,7 +395,7 @@ export const RECOMMENDED_PRICING_PLAN: PlanId = 'quarterly';
           <ul class="proof-list">
             <li><i class="pi pi-book proof-icon" aria-hidden="true"></i> Large question library with UI-first coding and practical scenarios</li>
             <li><i class="pi pi-desktop proof-icon" aria-hidden="true"></i> UI-focused coding with real prompts and starter files</li>
-            <li><i class="fa-solid fa-flask proof-icon" aria-hidden="true"></i> Live preview + test runner where available</li>
+            <li><i class="fa-solid fa-flask proof-icon" aria-hidden="true"></i> Runnable workspaces with live preview and behavioral checks across supported tasks</li>
             <li><i class="pi pi-shield proof-icon" aria-hidden="true"></i> Practical constraints: accessibility, performance, state</li>
             <li><i class="pi pi-sitemap proof-icon" aria-hidden="true"></i> System design reasoning for front-end surfaces</li>
           </ul>
@@ -287,8 +426,12 @@ export const RECOMMENDED_PRICING_PLAN: PlanId = 'quarterly';
         <section class="risk-reversal">
           <div class="risk-reversal__head">
             <p class="eyebrow">Risk reversal</p>
-            <h3>Pay only after you’ve used the free workflow</h3>
-            <p class="muted risk-reversal__copy">Clear billing terms and a public refund policy. No hidden conditions at checkout.</p>
+            <h3>Try the free workflow before you decide</h3>
+            <p class="muted risk-reversal__copy">
+              Refund requests are reviewed case by case within applicable legal windows and generally require limited
+              Premium usage. Renewal charges and unused subscription time are generally non-refundable; mandatory
+              consumer rights still apply.
+            </p>
           </div>
           <div class="risk-reversal__links">
             <a class="risk-link" [routerLink]="['/legal/refund']">
@@ -349,6 +492,9 @@ export const RECOMMENDED_PRICING_PLAN: PlanId = 'quarterly';
       <app-login-required-dialog
         [(visible)]="loginRequiredOpen"
         context="pricing_checkout"
+        [directAuthActions]="isOfferV2()"
+        [offerVersion]="normalizedOfferVersion()"
+        [checkoutSurface]="normalizedCheckoutSurface()"
         [title]="loginRequiredTitle"
         [body]="loginRequiredBody"
         [signupLabel]="loginRequiredSignupLabel"
@@ -357,18 +503,24 @@ export const RECOMMENDED_PRICING_PLAN: PlanId = 'quarterly';
       </app-login-required-dialog>
   `,
 })
-export class PricingPlansSectionComponent implements OnInit, AfterViewInit, OnDestroy {
+export class PricingPlansSectionComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
   private static readonly SOURCE_PATTERN = /^[a-z0-9_-]{1,64}$/;
+  private static readonly CAMPAIGN_ID_PATTERN = /^[a-z0-9][a-z0-9_-]{0,63}$/;
 
   @Input() variant: PricingVariant = 'full';
   @Input() paymentsEnabled = false;
   @Input() paymentsConfigReady = true;
-  @Input() ctaMode: CtaMode = 'navigatePricing';
+  @Input() analyticsReady = true;
+  @Input() ctaMode: PricingCtaMode = 'navigatePricing';
   @Input() ctaLabel?: string;
   @Input() analyticsSource = 'pricing';
   @Input() analyticsSurface = 'pricing_page';
   @Input() riskReversalPlacement: 'top' | 'after_plans' = 'after_plans';
   @Input() checkoutAvailability: Partial<Record<PlanId, boolean>> | null = null;
+  @Input() planDetails: PricingPlanDetails | null = null;
+  @Input() offerVersion = PRICING_BASELINE_OFFER_VERSION;
+  @Input() checkoutSurface: CheckoutSurface = 'hosted_new_tab';
+  @Input() campaignId?: string | null;
 
   @ViewChild('planCardsRef') private planCardsRef?: ElementRef<HTMLElement>;
   @ViewChild('unlockPreviewRef') private unlockPreviewRef?: ElementRef<HTMLElement>;
@@ -391,15 +543,23 @@ export class PricingPlansSectionComponent implements OnInit, AfterViewInit, OnDe
     attemptId: string;
     source: string;
     surface: string;
+    offerCampaignId?: string;
   } | null = null;
   private checkoutNoticeTimer?: number;
   private visibilityObserver?: IntersectionObserver;
+  private viewInitialized = false;
+  private analyticsObservationStarted = false;
+  private autoContinueAttempted = false;
+  private checkoutPrefetchRequested = false;
+  private useMobilePrimaryPlanOrder = false;
+  autoContinuingPendingCheckout = false;
   private readonly observedTargets = new WeakMap<Element, 'plan_cards' | 'unlock_preview' | 'value_anchor'>();
   private planCardsSeenTracked = false;
   private unlockPreviewSeenTracked = false;
   private valueAnchorSeenTracked = false;
   changelogPreview = PUBLIC_CHANGELOG_ENTRIES.slice(0, 3);
   recommendedPlan = RECOMMENDED_PRICING_PLAN;
+  readonly totalQuestionCount = SHOWCASE_STATS.totalQuestions;
 
   proofChips = ['140+ premium prompts', 'coding + system design', 'guided solution depth'];
 
@@ -437,8 +597,8 @@ export class PricingPlansSectionComponent implements OnInit, AfterViewInit, OnDe
         previewType: 'solution_depth',
         label: 'Solution depth',
         title: 'Throttle Function',
-        desc: 'Use guided solution coverage where available to compare edge cases and tradeoffs.',
-        bullets: ['Implementation pitfalls and edge cases', 'Solution depth where available'],
+        desc: 'Compare the included Throttle Function solution against edge cases and implementation tradeoffs.',
+        bullets: ['Implementation pitfalls and edge cases', 'Guided implementation review'],
         icon: 'fa-solid fa-list-check',
         route: ['/', 'javascript', 'coding', 'js-throttle'],
         destination: '/javascript/coding/js-throttle',
@@ -469,7 +629,7 @@ export class PricingPlansSectionComponent implements OnInit, AfterViewInit, OnDe
     {
       label: 'Interview sprint guidance',
       freeValue: 'Public previews and warm-up paths',
-      premiumValue: 'Track/company depth and guided solution coverage where available',
+      premiumValue: '141 Premium prompts with guided solutions and track/company depth',
     },
     {
       label: 'Continuity',
@@ -478,75 +638,48 @@ export class PricingPlansSectionComponent implements OnInit, AfterViewInit, OnDe
     },
   ];
 
-  plans: Array<{
-    id: PlanId;
-    title: string;
-    price: string;
-    priceSuffix: string;
-    summary: string;
-    billing: string;
-    features: string[];
-    badge: string;
-    ctaLabel: string;
-    note?: string;
-  }> = [
+  plans: PricingPlan[] = [
       {
         id: 'monthly',
         title: 'Monthly',
-        price: '$12',
-        priceSuffix: ' / month',
         summary: 'Best for trying Premium',
-        billing: 'Billed monthly',
         features: ['Full Premium content', 'Cancel before the next renewal'],
         badge: '',
         ctaLabel: 'Start monthly',
-        note: 'Final price, currency, and taxes are shown at checkout.',
       },
       {
         id: 'quarterly',
         title: 'Quarterly',
-        price: '$29',
-        priceSuffix: ' / 3 months',
         summary: 'Best for 4-12 week interview prep',
-        billing: '$9.67/mo billed quarterly',
         features: ['Full Premium content', 'Fits a focused interview sprint'],
         badge: 'Recommended sprint',
         ctaLabel: 'Start quarterly',
-        note: 'Final price, currency, and taxes are shown at checkout.',
       },
       {
         id: 'annual',
         title: 'Annual',
-        price: '$79',
-        priceSuffix: ' / year',
         summary: 'Best value if you’ll keep practicing',
-        billing: '$6.58/mo billed yearly',
         features: ['Full Premium content', 'Best value for ongoing prep'],
         badge: 'Best value',
         ctaLabel: 'Start annual',
-        note: 'Final price, currency, and taxes are shown at checkout.',
       },
       {
         id: 'lifetime',
         title: 'Lifetime',
-        price: '$199',
-        priceSuffix: ' once',
         summary: 'For long-term reuse',
-        billing: 'One-time payment',
         features: ['Full Premium content', 'Premium access forever'],
         badge: 'Lifetime access',
         ctaLabel: 'Get lifetime access',
-        note: 'Final price, currency, and taxes are shown at checkout.',
       },
     ];
 
   featureCards = [
-    { icon: 'fa-solid fa-book', title: 'Large question library', desc: 'UI-first coding and practical front-end scenarios — growing over time.' },
+    { icon: 'fa-solid fa-book', title: 'Large question library', desc: 'UI-first coding and practical front-end scenarios across the current library.' },
     { icon: 'fa-solid fa-diagram-project', title: 'Real workflow', desc: 'Code + preview + tests + review signals — designed to feel like real interviews.' },
     { icon: 'fa-solid fa-file-code', title: 'Starter files included', desc: 'You start from realistic scaffolds, not blank files.' },
     { icon: 'fa-solid fa-chart-line', title: 'Progress tracking', desc: 'Saved work and tracking for signed-in accounts.' },
-    { icon: 'fa-solid fa-sitemap', title: 'System design for UI', desc: 'Front-end system design walkthroughs and prompts (expanding).' },
-    { icon: 'fa-solid fa-rotate', title: 'Continuous updates', desc: 'New content and improvements shipped regularly.' },
+    { icon: 'fa-solid fa-sitemap', title: 'System design for UI', desc: 'Front-end system design walkthroughs focused on UI architecture and tradeoffs.' },
+    { icon: 'fa-solid fa-rotate', title: 'Shipped updates', desc: 'The public changelog documents released content and product improvements.' },
   ];
 
   faqGroups = [
@@ -621,8 +754,8 @@ This makes it easy to build a weekly plan: pick a focus → grind a tight set �
         {
           id: 'solutions-and-explanations',
           q: 'Do exercises include solutions and explanations?',
-          a: `Yes — many tasks include solutions and detailed explanations, and more are added over time.<br><br>
-When available, solutions focus on what matters in interviews:<br>
+          a: `Yes — supported question sets include solutions and detailed explanations.<br><br>
+Included solutions focus on what matters in interviews:<br>
 - a clean baseline implementation<br>
 - edge cases + common mistakes<br>
 - tradeoffs between approaches (when it’s not just “one right answer”)<br><br>
@@ -670,7 +803,7 @@ You can also reset any task back to the starter whenever you want to re-practice
           a: `Premium is for people who want the fastest path to results.<br><br>
 Typically, it unlocks:<br>
 - Premium question sets and deeper practice content<br>
-- More guided solutions/explanations where available<br>
+- Guided solutions and explanations across supported question sets<br>
 - Ongoing content updates while your plan is active<br><br>
 If you’re practicing consistently, Premium mainly saves you time: less hunting, more reps.`,
         },
@@ -717,6 +850,122 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
       ],
     },
   ];
+
+  isOfferV2(): boolean {
+    return this.normalizedOfferVersion() === PRICING_V2_OFFER_VERSION;
+  }
+
+  activeProofChips(): string[] {
+    if (!this.isOfferV2()) return this.proofChips;
+    return [
+      `${this.totalQuestionCount} questions`,
+      '141 Premium prompts',
+      'Runnable checks + guided solutions',
+      'Front-end system design',
+      'Official-source checks',
+    ];
+  }
+
+  activePrimaryPlans(): PricingPlan[] {
+    if (!this.isOfferV2()) return this.plans;
+    const primaryPlans = this.plans.filter((plan) => plan.id !== 'lifetime');
+    if (!this.useMobilePrimaryPlanOrder) return primaryPlans;
+    const mobileOrder: PlanId[] = ['quarterly', 'monthly', 'annual'];
+    return [...primaryPlans].sort(
+      (left, right) => mobileOrder.indexOf(left.id) - mobileOrder.indexOf(right.id),
+    );
+  }
+
+  lifetimePlan(): PricingPlan {
+    return this.plans.find((plan) => plan.id === 'lifetime') as PricingPlan;
+  }
+
+  trackPlanById(_index: number, plan: PricingPlan): PlanId {
+    return plan.id;
+  }
+
+  badgeFor(plan: PricingPlan): string {
+    if (!this.isOfferV2()) return plan.badge;
+    return plan.id === RECOMMENDED_PRICING_PLAN
+      ? 'Recommended — 4–12 week interview sprint'
+      : '';
+  }
+
+  summaryFor(plan: PricingPlan): string {
+    if (!this.isOfferV2()) return plan.summary;
+    const summaries: Record<PlanId, string> = {
+      monthly: 'A flexible month of focused practice',
+      quarterly: 'Built for a complete interview sprint',
+      annual: 'Lowest monthly cost for ongoing practice',
+      lifetime: 'Long-term access with one payment',
+    };
+    return summaries[plan.id];
+  }
+
+  displayPrice(planId: PlanId): string {
+    const detail = this.planDetailForDisplay(planId);
+    if (!detail) return '—';
+    return this.formatMoney(detail.amountCents, detail.currency, false);
+  }
+
+  priceSuffix(planId: PlanId): string {
+    const detail = this.planDetailForDisplay(planId);
+    if (!detail) return '';
+    if (detail.interval === 'one_time') return ' once';
+    if (detail.interval === 'month' && detail.intervalCount === 1) return ' / month';
+    if (detail.interval === 'month' && Number(detail.intervalCount) > 1) {
+      return ` / ${detail.intervalCount} months`;
+    }
+    if (detail.interval === 'year' && detail.intervalCount === 1) return ' / year';
+    return ` / ${detail.intervalCount || 1} ${detail.interval}s`;
+  }
+
+  billingNote(planId: PlanId): string {
+    const detail = this.planDetailForDisplay(planId);
+    if (!detail) return 'Checkout unavailable';
+    if (detail.interval === 'one_time') return 'One-time payment';
+    if (detail.interval === 'month' && detail.intervalCount === 1) return 'Billed monthly';
+    const months = detail.interval === 'year'
+      ? 12 * Math.max(1, Number(detail.intervalCount) || 1)
+      : Math.max(1, Number(detail.intervalCount) || 1);
+    const perMonth = this.formatMoney(detail.amountCents / months, detail.currency, true);
+    if (detail.interval === 'year' && detail.intervalCount === 1) {
+      return `${perMonth}/mo billed yearly`;
+    }
+    return `${perMonth}/mo billed every ${months} months`;
+  }
+
+  savingsLabel(planId: PlanId): string | null {
+    if (!this.isOfferV2() || (planId !== 'quarterly' && planId !== 'annual')) return null;
+    const monthly = this.planDetailForDisplay('monthly');
+    const detail = this.planDetailForDisplay(planId);
+    if (!monthly || !detail || monthly.currency !== detail.currency || monthly.amountCents <= 0) return null;
+    const comparisonMonths = planId === 'quarterly' ? 3 : 12;
+    const percentage = Math.round((1 - (detail.amountCents / (monthly.amountCents * comparisonMonths))) * 100);
+    return percentage > 0 ? `Save ${percentage}%` : null;
+  }
+
+  planNote(_planId: PlanId): string | null {
+    if (this.isOfferV2()) return null;
+    return 'Final price, currency, and taxes are shown at checkout.';
+  }
+
+  taxTrustCopy(): string {
+    const primaryDetails = this.activePrimaryPlans()
+      .map((plan) => this.planDetailForDisplay(plan.id))
+      .filter((detail): detail is PricingPlanDetail => !!detail);
+    return primaryDetails.length === this.activePrimaryPlans().length
+      && primaryDetails.every((detail) => detail.taxInclusive)
+      ? 'Taxes included'
+      : 'Taxes calculated at checkout';
+  }
+
+  trackCompareAllPlans(): void {
+    this.analytics.track('pricing_compare_all_clicked', {
+      ...this.pricingAnalyticsBase(),
+      destination: '/pricing#pricing-plans',
+    });
+  }
 
   ctaTextFor(plan: { ctaLabel: string }): string {
     if (isProActive(this.auth.user())) return 'Manage subscription';
@@ -781,15 +1030,24 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
   }
 
   ngOnInit(): void {
+    this.syncPrimaryPlanOrder();
     this.pendingCheckoutIntent = this.ctaMode === 'checkout' ? this.checkoutIntent.load() : null;
-    if (this.ctaMode === 'checkout' && typeof window !== 'undefined' && this.paymentsEnabled) {
-      void this.billingCheckout.prefetch();
+    this.maybePrefetchCheckout();
+    this.schedulePendingCheckoutAutoContinue();
+  }
+
+  ngOnChanges(_changes: SimpleChanges): void {
+    if (this.ctaMode === 'checkout' && !this.pendingCheckoutIntent) {
+      this.pendingCheckoutIntent = this.checkoutIntent.load();
     }
+    this.maybePrefetchCheckout();
+    this.schedulePendingCheckoutAutoContinue();
+    this.scheduleAnalyticsObservation();
   }
 
   ngAfterViewInit(): void {
-    if (typeof window === 'undefined') return;
-    this.observePricingVisibility();
+    this.viewInitialized = true;
+    this.scheduleAnalyticsObservation();
   }
 
   ngOnDestroy(): void {
@@ -801,11 +1059,68 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
     this.visibilityObserver = undefined;
   }
 
+  @HostListener('window:resize')
+  onViewportResize(): void {
+    this.syncPrimaryPlanOrder();
+  }
+
   isCheckoutAvailable(planId: PlanId): boolean {
     if (this.ctaMode === 'navigatePricing') return true;
     if (!this.paymentsEnabled) return false;
     if (!this.paymentsConfigReady) return false;
-    return this.checkoutAvailability?.[planId] === true;
+    return this.checkoutAvailability?.[planId] === true && !!this.configuredPlanDetail(planId);
+  }
+
+  private maybePrefetchCheckout(): void {
+    if (
+      this.checkoutPrefetchRequested
+      || this.ctaMode !== 'checkout'
+      || typeof window === 'undefined'
+      || !this.paymentsEnabled
+    ) return;
+    this.checkoutPrefetchRequested = true;
+    void this.billingCheckout.prefetch();
+  }
+
+  private syncPrimaryPlanOrder(): void {
+    if (typeof window === 'undefined') {
+      this.useMobilePrimaryPlanOrder = false;
+      return;
+    }
+    this.useMobilePrimaryPlanOrder = typeof window.matchMedia === 'function'
+      ? window.matchMedia('(max-width: 640px)').matches
+      : window.innerWidth <= 640;
+  }
+
+  private scheduleAnalyticsObservation(): void {
+    if (
+      !this.viewInitialized
+      || !this.analyticsReady
+      || this.analyticsObservationStarted
+      || typeof window === 'undefined'
+    ) return;
+    this.analyticsObservationStarted = true;
+    this.observePricingVisibility();
+  }
+
+  private schedulePendingCheckoutAutoContinue(): void {
+    if (
+      !this.isOfferV2()
+      || this.ctaMode !== 'checkout'
+      || !this.paymentsConfigReady
+      || !this.paymentsEnabled
+      || this.autoContinueAttempted
+    ) return;
+    const intent = this.checkoutIntent.load();
+    const user = this.auth.user();
+    if (!intent || !user || isProActive(user) || !this.isCheckoutAvailable(intent.planId)) return;
+
+    this.pendingCheckoutIntent = intent;
+    this.autoContinueAttempted = true;
+    this.autoContinuingPendingCheckout = true;
+    Promise.resolve()
+      .then(() => this.continuePendingCheckout())
+      .finally(() => { this.autoContinuingPendingCheckout = false; });
   }
 
   isCheckoutDisabled(planId: PlanId): boolean {
@@ -876,7 +1191,8 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
     this.planCardsSeenTracked = true;
     this.analytics.track('pricing_viewed', {
       ...this.pricingAnalyticsBase(),
-      plan_count: this.plans.length,
+      plan_count: this.activePrimaryPlans().length,
+      lifetime_secondary: this.isOfferV2(),
     });
   }
 
@@ -922,20 +1238,91 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
     return raw;
   }
 
+  normalizedOfferVersion(): string {
+    const raw = String(this.offerVersion || '').trim().toLowerCase();
+    if (!raw || !PricingPlansSectionComponent.SOURCE_PATTERN.test(raw)) {
+      return PRICING_BASELINE_OFFER_VERSION;
+    }
+    return raw;
+  }
+
+  normalizedCheckoutSurface(): CheckoutSurface {
+    const raw = String(this.checkoutSurface || '').trim().toLowerCase();
+    return raw === 'overlay' ? 'overlay' : 'hosted_new_tab';
+  }
+
+  private requestedCampaignId(): string | undefined {
+    const explicit = this.normalizeCampaignId(this.campaignId);
+    if (explicit) return explicit;
+    if (typeof window === 'undefined') return undefined;
+
+    try {
+      // Campaign IDs are opaque server allowlist keys, never provider coupon
+      // codes. Unknown IDs safely resolve to an undiscounted checkout server-side.
+      return this.normalizeCampaignId(new URL(window.location.href).searchParams.get('campaign_id'));
+    } catch {
+      return undefined;
+    }
+  }
+
+  private normalizeCampaignId(value: unknown): string | undefined {
+    const normalized = String(value || '').trim().toLowerCase();
+    return PricingPlansSectionComponent.CAMPAIGN_ID_PATTERN.test(normalized) ? normalized : undefined;
+  }
+
+  private pageLayout(): string {
+    return this.isOfferV2() ? PRICING_V2_OFFER_VERSION : PRICING_PAGE_LAYOUT;
+  }
+
+  private configuredPlanDetail(planId: PlanId): PricingPlanDetail | null {
+    const detail = this.planDetails?.[planId];
+    if (!detail || !Number.isFinite(detail.amountCents) || detail.amountCents <= 0) return null;
+    if (!/^[A-Z]{3}$/.test(String(detail.currency || '').toUpperCase())) return null;
+    return {
+      ...detail,
+      currency: String(detail.currency).toUpperCase(),
+    };
+  }
+
+  private planDetailForDisplay(planId: PlanId): PricingPlanDetail | null {
+    return this.configuredPlanDetail(planId);
+  }
+
+  private formatMoney(amountCents: number, currency: string, forceCents: boolean): string {
+    const amount = amountCents / 100;
+    const hasFraction = Math.abs(amount - Math.round(amount)) > 0.0001;
+    try {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency,
+        minimumFractionDigits: forceCents || hasFraction ? 2 : 0,
+        maximumFractionDigits: 2,
+      }).format(amount);
+    } catch {
+      return `${currency} ${amount.toFixed(forceCents || hasFraction ? 2 : 0)}`;
+    }
+  }
+
   private pricingAnalyticsBase(): Record<string, string> {
     return {
       src: this.normalizedSource(),
       surface: this.normalizedSurface(),
       variant: this.variant,
-      page_layout: PRICING_PAGE_LAYOUT,
+      page_layout: this.pageLayout(),
+      offer_version: this.normalizedOfferVersion(),
+      checkout_surface: this.normalizedCheckoutSurface(),
       recommended_plan: RECOMMENDED_PRICING_PLAN,
       risk_reversal_variant: this.riskReversalPlacement,
     };
   }
 
   private planAnalyticsMeta(planId: PlanId): { cta_label: string; plan_position: number } {
-    const index = this.plans.findIndex((plan) => plan.id === planId);
-    const plan = index >= 0 ? this.plans[index] : null;
+    const displayedPlans = this.activePrimaryPlans();
+    const allVisiblePlans = this.isOfferV2()
+      ? [...displayedPlans, this.lifetimePlan()]
+      : displayedPlans;
+    const index = allVisiblePlans.findIndex((plan) => plan.id === planId);
+    const plan = index >= 0 ? allVisiblePlans[index] : null;
     return {
       cta_label: plan ? this.ctaTextFor(plan) : this.ctaLabel || 'Upgrade',
       plan_position: index >= 0 ? index + 1 : -1,
@@ -958,6 +1345,7 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
     this.analytics.track('checkout_intent_created', {
       plan: intent.planId,
       plan_id: intent.planId,
+      ...this.pricingAnalyticsBase(),
       src: intent.src,
       surface: intent.surface,
       auth_state: this.analyticsAuthState(),
@@ -971,10 +1359,13 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
     launchMode: string,
     source: string,
     surface: string,
+    offerCampaignId?: string,
   ): void {
     this.analytics.track('checkout_opened', {
       plan: planId,
       plan_id: planId,
+      ...this.pricingAnalyticsBase(),
+      ...(offerCampaignId ? { offer_campaign_id: offerCampaignId } : {}),
       src: source,
       surface,
       auth_state: this.analyticsAuthState(),
@@ -994,6 +1385,7 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
     this.analytics.track('checkout_launch_failed', {
       plan: planId,
       plan_id: planId,
+      ...this.pricingAnalyticsBase(),
       src: source,
       surface,
       auth_state: this.analyticsAuthState(),
@@ -1010,25 +1402,23 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
     launchMode: string,
     source = this.normalizedSource(),
     surface = this.normalizedSurface(),
+    offerCampaignId?: string,
   ) {
-    const prices: Record<PlanId, number> = {
-      monthly: 12,
-      quarterly: 29,
-      annual: 79,
-      lifetime: 199,
-    };
-    const value = prices[planId];
+    const detail = this.configuredPlanDetail(planId);
+    if (!detail) return;
+    const value = detail.amountCents / 100;
     this.analytics.track('begin_checkout', {
       plan: planId,
       plan_id: planId,
       ...this.pricingAnalyticsBase(),
+      ...(offerCampaignId ? { offer_campaign_id: offerCampaignId } : {}),
       src: source,
       surface,
       auth_state: this.analyticsAuthState(),
       provider,
       checkout_mode: checkoutMode,
       launch_mode: launchMode,
-      currency: 'USD',
+      currency: detail.currency,
       value,
       items: [{
         item_id: `frontendatlas_${planId}`,
@@ -1047,6 +1437,7 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
     if (this.checkoutLoading !== null) return;
     const source = this.normalizedSource();
     const surface = this.normalizedSurface();
+    const campaignId = this.requestedCampaignId();
     if (isProActive(this.auth.user())) {
       this.trackPlanClick(planId, 'manage_subscription');
       this.openManageSubscription(planId);
@@ -1073,6 +1464,7 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
           planId,
           src: source,
           surface,
+          campaignId,
           returnUrl: this.router.url || '/pricing',
         });
         this.trackCheckoutIntentCreated(intent);
@@ -1086,7 +1478,7 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
           return;
         }
 
-        await this.launchCheckout(planId, source, surface, user);
+        await this.launchCheckout(planId, source, surface, user, campaignId);
         return;
       }
       this.trackPlanClick(planId, 'checkout_unavailable');
@@ -1112,8 +1504,12 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
     const intent = this.checkoutIntent.load();
     const user = this.auth.user();
     if (!intent || !user || isProActive(user)) return;
+    if (!this.isCheckoutAvailable(intent.planId)) {
+      this.setCheckoutNotice('Checkout is not configured for this plan yet. Please choose another plan.');
+      return;
+    }
     this.trackPlanClick(intent.planId, 'continue_intent');
-    await this.launchCheckout(intent.planId, intent.src, intent.surface, user);
+    await this.launchCheckout(intent.planId, intent.src, intent.surface, user, intent.campaignId);
   }
 
   dismissPendingCheckoutIntent(): void {
@@ -1132,6 +1528,7 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
       'same_tab',
       retry.source,
       retry.surface,
+      retry.offerCampaignId,
     );
     this.trackBeginCheckout(
       retry.planId,
@@ -1140,6 +1537,7 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
       'same_tab',
       retry.source,
       retry.surface,
+      retry.offerCampaignId,
     );
     // Give the authenticated state write a short opportunity to finish before
     // same-tab navigation tears down the Angular request. The intent remains
@@ -1156,6 +1554,7 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
     source: string,
     surface: string,
     user: { _id: string; email: string; username: string },
+    campaignId?: string,
   ): Promise<void> {
     if (this.checkoutLoading) return;
 
@@ -1172,6 +1571,10 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
         email: user.email,
         username: user.username,
         launchReservation,
+        analyticsSessionId: this.analytics.getDecisionSessionId() || undefined,
+        campaignId,
+        offerVersion: this.normalizedOfferVersion(),
+        checkoutSurface: this.normalizedCheckoutSurface(),
       }, source, surface);
 
       if (!result.ok) {
@@ -1198,6 +1601,7 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
           attemptId: result.attemptId,
           source,
           surface,
+          offerCampaignId: result.campaignId,
         };
         this.setCheckoutNotice(
           'Your browser blocked the checkout tab. Continue safely in this tab, or allow popups and try again.',
@@ -1206,7 +1610,38 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
         return;
       }
 
-      const launchMode = result.mode === 'new-tab' ? 'new_tab' : result.mode;
+      const launchMode = result.mode === 'new-tab'
+        ? 'new_tab'
+        : result.mode === 'same-tab'
+          ? 'same_tab'
+          : result.mode;
+      if (result.mode === 'same-tab') {
+        this.trackCheckoutOpened(
+          planId,
+          result.provider,
+          result.checkoutMode,
+          launchMode,
+          source,
+          surface,
+          result.campaignId,
+        );
+        this.trackBeginCheckout(
+          planId,
+          result.provider,
+          result.checkoutMode,
+          launchMode,
+          source,
+          surface,
+          result.campaignId,
+        );
+        await this.recordClientStateBeforeNavigation(result.attemptId, 'provider_opened');
+        if (!this.navigateLemonSqueezyCheckoutSameTab(result.url, result.provider)) {
+          this.setCheckoutNotice('Checkout could not open safely. Please try again in a moment.', true);
+          this.pendingCheckoutIntent = this.checkoutIntent.load();
+        }
+        return;
+      }
+
       this.recordClientState(result.attemptId, 'provider_opened');
       this.trackCheckoutOpened(
         planId,
@@ -1215,6 +1650,7 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
         launchMode,
         source,
         surface,
+        result.campaignId,
       );
       this.trackBeginCheckout(
         planId,
@@ -1223,6 +1659,7 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
         launchMode,
         source,
         surface,
+        result.campaignId,
       );
       this.checkoutIntent.clear();
       this.pendingCheckoutIntent = null;
@@ -1231,6 +1668,29 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
       if (launchNotice) this.setCheckoutNotice(launchNotice);
     } finally {
       if (this.checkoutLoading === planId) this.checkoutLoading = null;
+    }
+  }
+
+  private navigateLemonSqueezyCheckoutSameTab(url: string, provider: string): boolean {
+    if (typeof window === 'undefined' || provider !== 'lemonsqueezy') return false;
+    try {
+      const parsed = new URL(String(url || '').trim());
+      if (
+        parsed.protocol !== 'https:'
+        || parsed.hostname !== 'frontendatlas.lemonsqueezy.com'
+        || !/^\/checkout\/buy\/[^/]+/.test(parsed.pathname)
+      ) {
+        return false;
+      }
+      const redirectHook = (window as any).__faCheckoutRedirect;
+      if (typeof redirectHook === 'function') {
+        redirectHook(parsed.toString());
+      } else {
+        window.location.assign(parsed.toString());
+      }
+      return true;
+    } catch {
+      return false;
     }
   }
 

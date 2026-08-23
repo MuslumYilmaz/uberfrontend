@@ -14,6 +14,7 @@ type TestWindow = Window & {
 
 describe('AnalyticsService', () => {
   const originalMeasurementId = environment.gaMeasurementId;
+  const originalUrl = window.location.href;
   let doc: Document;
   let win: TestWindow;
 
@@ -29,6 +30,9 @@ describe('AnalyticsService', () => {
     delete view.Cypress;
     delete navigatorOverride.userAgent;
     delete navigatorOverride.webdriver;
+    sessionStorage.removeItem('fa:analytics:decision_session:v1');
+    sessionStorage.removeItem('fa:analytics:traffic_class:v1');
+    window.history.replaceState({}, '', originalUrl);
   }
 
   beforeEach(() => {
@@ -112,7 +116,9 @@ describe('AnalyticsService', () => {
 
     expect(service.track('xp_awarded', {
       source: 'question_complete',
+      campaign_id: 'client_spoofed_campaign',
       campaign_source: 'dashboard',
+      offer_campaign_id: 'interview_august',
       customer_email: 'person@example.com',
       access_token: 'secret',
       refreshToken: 'also-secret',
@@ -129,11 +135,13 @@ describe('AnalyticsService', () => {
     expect(eventCall[2]).toEqual(jasmine.objectContaining({
       reward_source: 'question_complete',
       gap_source: 'catalog',
+      offer_campaign_id: 'interview_august',
       items: [{ item_id: 'monthly' }],
       send_to: 'G-TEST123',
     }));
     expect(eventCall[2]).not.toEqual(jasmine.objectContaining({
       source: jasmine.anything(),
+      campaign_id: jasmine.anything(),
       campaign_source: jasmine.anything(),
       customer_email: jasmine.anything(),
       access_token: jasmine.anything(),
@@ -164,6 +172,55 @@ describe('AnalyticsService', () => {
       email: jasmine.anything(),
       username: jasmine.anything(),
     }));
+  });
+
+  it('provides a stable PII-free decision session id for checkout attribution', () => {
+    const service = TestBed.inject(AnalyticsService);
+
+    const first = service.getDecisionSessionId();
+    const second = service.getDecisionSessionId();
+
+    expect(first).toMatch(/^ds_[a-f0-9]{32}$/);
+    expect(second).toBe(first);
+    expect(sessionStorage.getItem('fa:analytics:decision_session:v1')).toBe(first);
+    expect(first).not.toContain('@');
+  });
+
+  it('marks an opted-in internal session without leaking the query string into page views', () => {
+    window.history.replaceState({}, '', '/pricing?fa_traffic=internal');
+    const service = TestBed.inject(AnalyticsService);
+
+    service.trackPageView('/pricing?fa_traffic=internal');
+    service.track('pricing_viewed', { surface: 'pricing_page' });
+    service.ensureInitialized();
+
+    const eventCalls = (win.dataLayer || [])
+      .map((entry) => Array.from(entry as IArguments))
+      .filter((entry) => entry[0] === 'event');
+    expect(eventCalls.map((entry) => entry[1])).toEqual(['page_view', 'pricing_viewed']);
+    expect(eventCalls[0][2]).toEqual(jasmine.objectContaining({
+      page_path: '/pricing',
+      page_location: `${window.location.origin}/pricing`,
+      traffic_type: 'internal',
+    }));
+    expect(eventCalls[1][2]).toEqual(jasmine.objectContaining({
+      surface: 'pricing_page',
+      traffic_type: 'internal',
+    }));
+    expect(sessionStorage.getItem('fa:analytics:traffic_class:v1')).toBe('internal');
+  });
+
+  it('clears a tab traffic marker when fa_traffic=external is requested', () => {
+    sessionStorage.setItem('fa:analytics:traffic_class:v1', 'test');
+    window.history.replaceState({}, '', '/pricing?fa_traffic=external');
+    const service = TestBed.inject(AnalyticsService);
+
+    service.track('pricing_viewed');
+    service.ensureInitialized();
+
+    const eventCall = Array.from(win.dataLayer?.[2] as IArguments);
+    expect(eventCall[2]).not.toEqual(jasmine.objectContaining({ traffic_type: jasmine.anything() }));
+    expect(sessionStorage.getItem('fa:analytics:traffic_class:v1')).toBeNull();
   });
 
   it('skips analytics bootstrap in Playwright-like automation contexts', () => {

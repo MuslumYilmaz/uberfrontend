@@ -13,6 +13,16 @@ const CheckoutAttemptSchema = new mongoose.Schema(
     mode: { type: String, enum: ['test', 'live'], required: true },
     analyticsSurface: { type: String, trim: true },
     analyticsSource: { type: String, trim: true, default: 'pricing' },
+    analyticsSessionId: { type: String, trim: true, maxlength: 128, default: null },
+    experimentId: { type: String, trim: true, maxlength: 128, default: null },
+    offerVersion: { type: String, trim: true, maxlength: 64, default: 'pricing_baseline_v1' },
+    campaignId: { type: String, trim: true, maxlength: 64, default: null },
+    providerDiscountId: { type: String, trim: true, maxlength: 128, default: null },
+    checkoutSurface: {
+      type: String,
+      enum: ['hosted_new_tab', 'overlay'],
+      default: 'hosted_new_tab',
+    },
     status: {
       type: String,
       enum: [
@@ -59,5 +69,6 @@ const CheckoutAttemptSchema = new mongoose.Schema(
 CheckoutAttemptSchema.index({ userId: 1, createdAt: -1 });
 CheckoutAttemptSchema.index({ provider: 1, status: 1, createdAt: -1 });
 CheckoutAttemptSchema.index({ paymentEventId: 1 }, { sparse: true });
+CheckoutAttemptSchema.index({ provider: 1, mode: 1, paymentVerifiedAt: -1 });
 
 module.exports = mongoose.model('CheckoutAttempt', CheckoutAttemptSchema);

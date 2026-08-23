@@ -9,7 +9,6 @@ import {
   BillingCheckoutService,
   CheckoutAttemptStatus,
   CheckoutAttemptStatusResult,
-  VerifiedPurchase,
 } from '../../core/services/billing-checkout.service';
 import { isProActive } from '../../core/utils/entitlements.util';
 import { sanitizeRedirectTarget } from '../../core/utils/redirect.util';
@@ -25,9 +24,8 @@ import { CheckoutIntentService } from '../../core/services/checkout-intent.servi
 export class BillingSuccessComponent implements OnInit, OnDestroy {
   private static readonly CHECKOUT_PLAN_KEY = 'fa:checkout:last_plan_id';
   private static readonly CHECKOUT_SOURCE_KEY = 'fa:checkout:last_source';
-  private static readonly PURCHASE_TRACKED_PREFIX = 'fa:analytics:purchase:';
 
-  state = signal<'syncing' | 'timeout' | 'error' | 'login-required' | 'pending-user-match'>('syncing');
+  state = signal<'syncing' | 'ready' | 'timeout' | 'error' | 'login-required' | 'pending-user-match'>('syncing');
   errorMessage = signal<string | null>(null);
   attempts = signal(0);
   attemptId = signal<string | null>(null);
@@ -40,9 +38,7 @@ export class BillingSuccessComponent implements OnInit, OnDestroy {
   private checkoutSource: string | null = null;
   private checkoutSurface: string | null = null;
   private checkoutVerifiedTracked = false;
-  private purchaseTracked = false;
-  private entitlementAppliedSeen = false;
-  private appliedGracePolls = 0;
+  private premiumChallengeTracked = false;
 
   constructor(
     private auth: AuthService,
@@ -178,22 +174,7 @@ export class BillingSuccessComponent implements OnInit, OnDestroy {
 
       if (result.attempt.state === 'applied' && result.attempt.entitlementActive) {
         this.trackCheckoutVerified(result.attempt);
-        if (result.attempt.purchase && result.attempt.mode === 'live') {
-          this.trackPurchaseOnce(result.attempt.purchase, result.attempt);
-          this.finishPolling();
-          return;
-        }
-
-        if (!this.entitlementAppliedSeen) {
-          this.entitlementAppliedSeen = true;
-          this.appliedGracePolls = 0;
-          return;
-        }
-
-        this.appliedGracePolls += 1;
-        if (this.appliedGracePolls >= 3) {
-          this.finishPolling();
-        }
+        this.finishPolling(result.attempt);
         return;
       }
 
@@ -255,49 +236,55 @@ export class BillingSuccessComponent implements OnInit, OnDestroy {
       provider: attempt?.provider || 'unknown',
       checkout_mode: attempt?.mode || 'unknown',
       entitlement_applied: true,
+      ...this.serverOfferAnalytics(attempt),
     });
   }
 
-  private trackPurchaseOnce(purchase: VerifiedPurchase, attempt: CheckoutAttemptStatus): void {
-    if (this.purchaseTracked || !purchase?.transactionId) return;
-    const storageKey = `${BillingSuccessComponent.PURCHASE_TRACKED_PREFIX}${purchase.transactionId}`;
-    if (typeof window !== 'undefined') {
-      try {
-        if (localStorage.getItem(storageKey) === '1') {
-          this.purchaseTracked = true;
-          return;
-        }
-      } catch { }
-    }
-
-    const accepted = this.analytics.track('purchase', {
-      transaction_id: purchase.transactionId,
-      currency: purchase.currency,
-      value: purchase.value,
-      tax: purchase.tax,
-      total: purchase.total,
-      items: purchase.items,
-      src: this.checkoutSource || purchase.source || 'billing_success',
-      surface: this.checkoutSurface || 'billing_success',
-      plan_id: this.checkoutPlanId || attempt.planId,
-      provider: attempt.provider,
-      checkout_mode: attempt.mode,
-      verified_at: purchase.verifiedAt,
+  trackPremiumChallengeStarted(): void {
+    if (this.premiumChallengeTracked || this.state() !== 'ready') return;
+    this.premiumChallengeTracked = true;
+    const attempt = this.attemptStatus();
+    this.analytics.track('premium_challenge_started', {
+      src: 'billing_success',
+      surface: 'billing_success',
+      entry_point: 'post_purchase_primary_cta',
+      plan_id: attempt?.planId || this.checkoutPlanId,
+      provider: attempt?.provider || 'unknown',
+      entitlement_applied: true,
+      ...this.serverOfferAnalytics(attempt || undefined),
     });
-    if (accepted === false) return;
-
-    this.purchaseTracked = true;
-    if (typeof window !== 'undefined') {
-      try {
-        localStorage.setItem(storageKey, '1');
-      } catch { }
-    }
   }
 
-  private finishPolling(): void {
+  private serverOfferAnalytics(attempt?: CheckoutAttemptStatus): Record<string, string> {
+    if (!attempt) return {};
+    const campaignId = this.normalizeOfferToken(attempt.campaignId);
+    const offerVersion = this.normalizeOfferToken(attempt.offerVersion);
+    const checkoutSurface = attempt.checkoutSurface === 'overlay'
+      ? 'overlay'
+      : attempt.checkoutSurface === 'hosted_new_tab'
+        ? 'hosted_new_tab'
+        : null;
+    return {
+      ...(campaignId ? { offer_campaign_id: campaignId } : {}),
+      ...(offerVersion ? { offer_version: offerVersion } : {}),
+      ...(checkoutSurface ? { checkout_surface: checkoutSurface } : {}),
+    };
+  }
+
+  private normalizeOfferToken(value: unknown): string | null {
+    const normalized = String(value || '').trim().toLowerCase();
+    return /^[a-z0-9][a-z0-9_-]{0,63}$/.test(normalized) ? normalized : null;
+  }
+
+  private finishPolling(attempt?: CheckoutAttemptStatus): void {
     this.clearCheckoutContext();
-    this.router.navigateByUrl('/profile').catch(() => void 0);
     this.pollSub?.unsubscribe();
+    if (attempt?.offerVersion === 'interview_sprint_v2') {
+      this.state.set('ready');
+      this.errorMessage.set(null);
+      return;
+    }
+    this.router.navigateByUrl('/profile').catch(() => void 0);
   }
 
   private clearCheckoutContext(): void {

@@ -27,7 +27,7 @@ import { isProActive } from '../../../core/utils/entitlements.util';
 import { FaGlyphComponent } from '../../../shared/ui/icon/fa-glyph.component';
 import { FaButtonComponent } from '../../../shared/ui/button/fa-button.component';
 
-type ProfileTab = 'activity' | 'account' | 'billing' | 'security' | 'coupons';
+type ProfileTab = 'activity' | 'account' | 'billing' | 'security';
 type ProfileShelfBadge = DashboardAchievement & {
   shelfState: 'earned' | 'in-progress';
   shelfLabel: 'Earned' | 'In progress';
@@ -66,7 +66,6 @@ type ProfileShelfBadge = DashboardAchievement & {
           <button [class.active]="tab() === 'account'" (click)="tab.set('account')">Account</button>
           <button [class.active]="tab() === 'billing'" (click)="tab.set('billing')">Billing</button>
           <button [class.active]="tab() === 'security'" (click)="tab.set('security')">Security</button>
-          <button [class.active]="tab() === 'coupons'" (click)="tab.set('coupons')">Coupons</button>
         </nav>
 
         <!-- Activity (solved questions) -->
@@ -329,16 +328,18 @@ type ProfileShelfBadge = DashboardAchievement & {
         <!-- Billing -->
         <section *ngIf="tab() === 'billing'" class="panel">
           <div class="account-card">
-            <h4>FrontendAtlas Pro</h4>
-            <p class="desc" *ngIf="billing()?.pro?.status === 'lifetime'">You are on the <b>Lifetime</b> plan.</p>
+            <h4>FrontendAtlas Premium</h4>
+            <p class="desc" *ngIf="isLifetimeEntitlement()" data-testid="profile-lifetime-access">
+              Your <b>Lifetime</b> Premium access is active.
+            </p>
             <p class="desc" *ngIf="isPro() && proStartDate()" data-testid="pro-start-date">
               Started on {{ proStartDate() | date:'mediumDate' }}.
             </p>
             <p class="desc" *ngIf="isPro() && proEndDate()" data-testid="pro-end-date">
               {{ proEndLabel() }} {{ proEndDate() | date:'mediumDate' }}.
             </p>
-            <p class="desc" *ngIf="isPro() && billing()?.pro?.status !== 'active' && billing()?.pro?.status !== 'lifetime'">
-              Your plan is active.
+            <p class="desc" *ngIf="isPro() && !isLifetimeEntitlement() && !proStartDate() && !proEndDate()">
+              Your Premium access is active.
             </p>
             <p class="desc" *ngIf="!isPro()">
               You are not subscribed.
@@ -408,18 +409,6 @@ type ProfileShelfBadge = DashboardAchievement & {
           </div>
         </section>
 
-        <!-- Coupons -->
-        <section *ngIf="tab() === 'coupons'" class="panel">
-          <h3>Coupons</h3>
-          <p class="muted" *ngIf="!user()?.coupons?.length">No coupons available.</p>
-          <ul *ngIf="user()?.coupons?.length">
-            <li *ngFor="let c of user()!.coupons!">
-              <span class="chip">{{ c.code }}</span>
-              <span class="muted">{{ c.scope }}</span> ·
-              <span class="muted">{{ c.appliedAt | date:'mediumDate' }}</span>
-            </li>
-          </ul>
-        </section>
       </main>
     </div>
 
@@ -497,7 +486,7 @@ type ProfileShelfBadge = DashboardAchievement & {
 })
 export class ProfileComponent implements OnInit {
   tab = signal<ProfileTab>('activity');
-  private readonly availableTabs: readonly ProfileTab[] = ['activity', 'account', 'billing', 'security', 'coupons'];
+  private readonly availableTabs: readonly ProfileTab[] = ['activity', 'account', 'billing', 'security'];
 
   user = computed(() => this.auth.user());
   billing = computed(() => this.auth.user()?.billing);
@@ -581,6 +570,12 @@ export class ProfileComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((params) => {
         const tab = params.get('tab');
+        // The legacy coupons view was not connected to provider checkout.
+        // Keep old bookmarks useful without exposing coupon codes in account UI.
+        if (tab === 'coupons') {
+          this.tab.set('billing');
+          return;
+        }
         if (this.isProfileTab(tab)) this.tab.set(tab);
       });
 
@@ -608,6 +603,10 @@ export class ProfileComponent implements OnInit {
     return isProActive(this.user());
   }
 
+  isLifetimeEntitlement(): boolean {
+    return this.user()?.entitlements?.pro?.status === 'lifetime';
+  }
+
   proStartDate(): Date | null {
     const lsStartedAt = (this.billing() as any)?.providers?.lemonsqueezy?.startedAt;
     if (lsStartedAt) return new Date(lsStartedAt);
@@ -619,8 +618,7 @@ export class ProfileComponent implements OnInit {
     if (status === 'lifetime') return null;
     const entValidUntil = (this.user() as any)?.entitlements?.pro?.validUntil;
     if (entValidUntil) return new Date(entValidUntil);
-    const legacyRenewsAt = this.billing()?.pro?.renewsAt;
-    return legacyRenewsAt ? new Date(legacyRenewsAt) : null;
+    return null;
   }
 
   proEndLabel(): string {
@@ -724,7 +722,7 @@ export class ProfileComponent implements OnInit {
 
   showManageSubscription(): boolean {
     if (this.paymentsProvider !== 'lemonsqueezy') return false;
-    if (this.isPro()) return true;
+    if (this.isLifetimeEntitlement()) return false;
     const lsMeta = this.user()?.billing?.providers?.lemonsqueezy;
     return !!(lsMeta?.subscriptionId || lsMeta?.customerId);
   }

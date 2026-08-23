@@ -74,6 +74,9 @@ dimension whose dimension name and event parameter are exactly the same.
 | `surface` | Event | `surface` |
 | `variant` | Event | `variant` |
 | `page_layout` | Event | `page_layout` |
+| `offer_version` | Event | `offer_version` |
+| `checkout_surface` | Event | `checkout_surface` |
+| `offer_campaign_id` | Event | `offer_campaign_id` |
 | `recommended_plan` | Event | `recommended_plan` |
 | `risk_reversal_variant` | Event | `risk_reversal_variant` |
 | `method` | Event | `method` |
@@ -142,8 +145,8 @@ OAuth button/page intent is not account-creation truth.
 
 ### Tab 3: Gated auth prompt
 
-1. `auth_prompt_shown`
-   - `event_name` exactly matches `auth_prompt_shown`
+1. `auth_prompt`
+   - `event_name` exactly matches `auth_prompt`
 2. `auth_prompt_action`
    - `event_name` exactly matches `auth_prompt_action`
    - `auth_action` matches `sign_up` OR `login`
@@ -199,10 +202,10 @@ the baseline:
 4. A guest successful JS challenge emits, in order,
    `challenge_viewed`, `challenge_attempt_started`,
    `challenge_attempt_result` with `outcome=passed`, and
-   `auth_prompt_shown`. It must not emit `challenge_completion_saved` before
+   `auth_prompt`. It must not emit `challenge_completion_saved` before
    authentication.
 5. A failed guest attempt emits `challenge_attempt_result` with
-   `outcome=failed` and does not emit `auth_prompt_shown`.
+   `outcome=failed` and does not emit `auth_prompt`.
 6. Password and OAuth flows use `auth_submit_failed.failure_reason` only from
    the approved category list and never send email, username, password, token,
    credential, authorization, or secret fields.
@@ -210,10 +213,15 @@ the baseline:
    `begin_checkout`. A blocked popup emits `checkout_launch_failed` with
    `launch_mode=blocked`, offers the same-tab recovery action, and emits neither
    successful-open event until that action actually navigates.
-8. A test-mode order never emits `purchase`.
-9. A verified paid live order emits one `purchase` per `transaction_id`, with
-   `currency`, `value`, `tax`, and `items`. `value` excludes tax and equals the
-   sum of item values.
+8. `add_payment_info` is owned by the Lemon Squeezy checkout integration. The
+   frontend must not synthesize it; validate the provider event in GA4
+   DebugView before reading the funnel.
+9. `purchase` is owned exclusively by Lemon Squeezy's native GA4 integration.
+   The frontend success page must never emit it. For a verified paid live
+   order, validate exactly one event per `transaction_id`, with `currency`,
+   `value`, `tax`, and `items`; exclude test-mode orders from production
+   reporting. The backend webhook remains the entitlement and revenue source
+   of truth.
 10. Entitlement application emits `checkout_verified`, including when verified
    order metadata arrives after the entitlement event.
 11. Early queued events and page views retain their original event/page order.
@@ -231,7 +239,7 @@ retaining the unsegmented raw sanity tab:
 | --- | --- |
 | Challenge | 100 `challenge_viewed` events with `access_state=available` and 20 attempts |
 | Auth acquisition | 30 `auth_page_viewed` events and 10 submit starts |
-| Gated auth | 30 `auth_prompt_shown` events |
+| Gated auth | 30 `auth_prompt` events |
 | Pricing | 30 `pricing_viewed` events and 10 purchase-eligible plan CTA clicks |
 
 These are early product-decision guardrails, not statistical-significance
@@ -252,6 +260,33 @@ so it can behave like an upper bound. Call the latter **decision-qualified**,
 never “bot-free” or “clean human.” Exact bot subtraction is not available from
 GA4 alone because Vercel ASN/JA4 request signals are not joined to a GA session
 identifier.
+
+## Promotion Experiment Gate
+
+Keep the public offer un-discounted throughout the first 28 complete baseline
+days. Do not start a promotion until the pricing minimum-volume guardrail above
+is satisfied. When a later promotion is approved, run it sequentially under a
+new `offer_version`; do not split the low-volume audience into A/B buckets.
+
+The first eligible promotion is limited to Quarterly and Annual, applies to the
+initial payment only, and must use a real 72-hour expiry. The checkout link
+pre-applies the provider discount while the coupon field remains hidden.
+Monthly, Lifetime, abandoned-cart recovery, public social tasks, reviews, and
+open-ended coupon entry remain outside the experiment.
+
+Use this decision rule:
+
+- Primary metric: net revenue per decision-qualified pricing visitor.
+- Net revenue subtracts tax, Lemon Squeezy fees, recovery or affiliate fees,
+  and refunds from verified paid-order revenue.
+- Guardrails: pricing CTA to checkout rate, checkout to paid rate, plan mix,
+  average net order value, refunds, and first Premium challenge activation.
+- A 10% discount requires more than an 11.1% relative purchase-rate lift to
+  preserve gross revenue at an unchanged plan mix; use the primary net metric
+  for the actual decision because fees and plan mix change that break-even.
+- Do not call a result a winner before 20 decision-qualified checkout opens or
+  10 verified paid orders. A completed window below either evidence threshold
+  is `inconclusive`, not a win.
 
 Production deployment is deliberately outside this runbook and requires a
 separate explicit approval.

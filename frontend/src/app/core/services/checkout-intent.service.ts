@@ -7,6 +7,7 @@ export type CheckoutIntent = {
   planId: PlanId;
   src: string;
   surface: string;
+  campaignId?: string;
   returnUrl: string;
   createdAt: number;
 };
@@ -19,11 +20,13 @@ export class CheckoutIntentService {
   private static readonly PLAN_IDS: PlanId[] = ['monthly', 'quarterly', 'annual', 'lifetime'];
 
   save(input: Omit<CheckoutIntent, 'version' | 'createdAt'>): CheckoutIntent {
+    const campaignId = this.normalizeToken(input.campaignId, '');
     const intent: CheckoutIntent = {
       version: 1,
       planId: CheckoutIntentService.PLAN_IDS.includes(input.planId) ? input.planId : 'quarterly',
       src: this.normalizeToken(input.src, 'pricing'),
       surface: this.normalizeToken(input.surface, 'pricing_page'),
+      ...(campaignId ? { campaignId } : {}),
       returnUrl: sanitizeRedirectTarget(input.returnUrl, '/pricing'),
       createdAt: Date.now(),
     };
@@ -58,11 +61,13 @@ export class CheckoutIntentService {
       return null;
     }
 
+    const campaignId = this.normalizeToken(parsed.campaignId, '');
     return {
       version: 1,
       planId: parsed.planId as PlanId,
       src: this.normalizeToken(parsed.src, 'pricing'),
       surface: this.normalizeToken(parsed.surface, 'pricing_page'),
+      ...(campaignId ? { campaignId } : {}),
       returnUrl: sanitizeRedirectTarget(parsed.returnUrl, '/pricing'),
       createdAt: parsed.createdAt,
     };

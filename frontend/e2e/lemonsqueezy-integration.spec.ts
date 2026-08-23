@@ -11,6 +11,10 @@ import {
 declare global {
   interface Window {
     __lastOpenedUrl?: string;
+    __lastSuccessRedirect?: string;
+    __fallbackRedirectUrl?: string;
+    __lemonSqueezyEventHandler?: (event: { event?: string; data?: unknown }) => void;
+    __lemonSqueezyCloseCount?: number;
     __billingPollConfig?: { maxAttempts: number; intervalMs: number };
     __faCheckoutRedirect?: (url?: string | URL) => void;
   }
@@ -71,6 +75,38 @@ function buildCheckoutConfigResponse() {
     mode: paymentsMode,
     enabled: ALL_PLAN_IDS.some((planId) => plans[planId]),
     plans,
+    planDetails: {
+      monthly: {
+        amountCents: 1200,
+        currency: 'USD',
+        interval: 'month',
+        intervalCount: 1,
+        taxInclusive: true,
+      },
+      quarterly: {
+        amountCents: 2900,
+        currency: 'USD',
+        interval: 'month',
+        intervalCount: 3,
+        taxInclusive: true,
+      },
+      annual: {
+        amountCents: 7900,
+        currency: 'USD',
+        interval: 'year',
+        intervalCount: 1,
+        taxInclusive: true,
+      },
+      lifetime: {
+        amountCents: 19900,
+        currency: 'USD',
+        interval: 'one_time',
+        intervalCount: null,
+        taxInclusive: true,
+      },
+    },
+    offerVersion: 'pricing_baseline_v1',
+    checkoutSurface: 'hosted_new_tab',
   };
 }
 
@@ -213,6 +249,193 @@ test.describe('lemonsqueezy integration (local)', () => {
     }
 
     expect(lsRequests).toBe(0);
+    await expect(page).toHaveURL(/\/pricing/);
+  });
+
+  test('v2 config opens the selected plan in a Lemon.js overlay without leaving pricing', async ({ page }) => {
+    const user = buildMockUser({
+      _id: 'e2e-overlay-user',
+      username: 'overlay_user',
+      email: 'overlay@example.com',
+      accessTier: 'free',
+    });
+    let checkoutStartBody: Record<string, unknown> | null = null;
+
+    await page.unroute('**/api/billing/checkout/config');
+    await page.route('**/api/billing/checkout/config', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          ...buildCheckoutConfigResponse(),
+          offerVersion: 'interview_sprint_v2',
+          checkoutSurface: 'overlay',
+        }),
+      });
+    });
+    await page.route('**/api/auth/me', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          ...user,
+          entitlements: {
+            pro: { status: 'none', validUntil: null },
+            projects: { status: 'none', validUntil: null },
+          },
+          effectiveProActive: false,
+          accessTierEffective: 'free',
+        }),
+      });
+    });
+    await page.route('**/api/billing/checkout/start', async (route) => {
+      checkoutStartBody = route.request().postDataJSON() as Record<string, unknown>;
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          ...buildStartedCheckoutResponse('quarterly'),
+          campaignId: 'interview_august',
+          offerVersion: 'interview_sprint_v2',
+          checkoutSurface: 'overlay',
+        }),
+      });
+    });
+    await page.addInitScript(() => {
+      localStorage.setItem('fa:auth:session', '1');
+      const win = window as any;
+      win.__lastOpenedUrl = '';
+      win.__lastSuccessRedirect = '';
+      win.__lemonSqueezyCloseCount = 0;
+      win.__faCheckoutRedirect = (url?: string | URL) => {
+        win.__lastSuccessRedirect = String(url || '');
+      };
+      win.createLemonSqueezy = () => undefined;
+      win.LemonSqueezy = {
+        Setup: ({ eventHandler }: any) => { win.__lemonSqueezyEventHandler = eventHandler; },
+        Url: {
+          Open: (url: string) => { win.__lastOpenedUrl = url; },
+          Close: () => { win.__lemonSqueezyCloseCount += 1; },
+        },
+      };
+    });
+
+    await page.goto('/pricing?campaign_id=interview_august');
+    await page.getByTestId('pricing-cta-quarterly').click();
+
+    const expected = expectedUrlFor('quarterly');
+    await expect.poll(() => page.evaluate(() => window.__lastOpenedUrl || '')).toContain(expected);
+    await expect.poll(() => page.evaluate(() => window.__lastOpenedUrl || '')).toContain('embed=1');
+    await expect(page).toHaveURL(/\/pricing/);
+    expect(checkoutStartBody).toMatchObject({
+      planId: 'quarterly',
+      campaignId: 'interview_august',
+      offerVersion: 'interview_sprint_v2',
+      checkoutSurface: 'overlay',
+    });
+
+    await page.evaluate(() => {
+      window.__lemonSqueezyEventHandler?.({
+        event: 'PaymentMethodUpdate.Mounted',
+        data: { redirect_url: 'https://example.com' },
+      });
+    });
+    expect(await page.evaluate(() => window.__lastSuccessRedirect || '')).toBe('');
+
+    await page.evaluate(() => {
+      window.__lemonSqueezyEventHandler?.({
+        event: 'Checkout.Success',
+        data: { redirect_url: 'https://attacker.example/billing/success?attempt=wrong' },
+      });
+    });
+    await expect.poll(() => page.evaluate(() => window.__lastSuccessRedirect || '')).toBe(
+      'http://127.0.0.1:4200/billing/success?attempt=chk_e2e_quarterly',
+    );
+    expect(await page.evaluate(() => window.__lemonSqueezyCloseCount || 0)).toBe(1);
+  });
+
+  test('Lemon.js fallback records provider state before controlled same-tab navigation', async ({ page }) => {
+    const user = buildMockUser({
+      _id: 'e2e-fallback-user',
+      username: 'fallback_user',
+      email: 'fallback@example.com',
+      accessTier: 'free',
+    });
+    let providerOpenedRecorded = false;
+
+    await page.unroute('**/api/billing/checkout/config');
+    await page.route('**/api/billing/checkout/config', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          ...buildCheckoutConfigResponse(),
+          offerVersion: 'interview_sprint_v2',
+          checkoutSurface: 'overlay',
+        }),
+      });
+    });
+    await page.route('**/api/auth/me', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          ...user,
+          entitlements: {
+            pro: { status: 'none', validUntil: null },
+            projects: { status: 'none', validUntil: null },
+          },
+          effectiveProActive: false,
+          accessTierEffective: 'free',
+        }),
+      });
+    });
+    await page.route('**/api/billing/checkout/start', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          ...buildStartedCheckoutResponse('quarterly'),
+          offerVersion: 'interview_sprint_v2',
+          checkoutSurface: 'overlay',
+        }),
+      });
+    });
+    await page.unroute(/\/api\/billing\/checkout\/attempts\/[^/?]+\/client-state(?:\?.*)?$/);
+    await page.route(
+      /\/api\/billing\/checkout\/attempts\/[^/?]+\/client-state(?:\?.*)?$/,
+      async (route) => {
+        const payload = route.request().postDataJSON() as { state?: string };
+        providerOpenedRecorded = payload.state === 'provider_opened';
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ attemptId: 'chk_e2e_quarterly', state: 'awaiting_webhook' }),
+        });
+      },
+    );
+    await page.addInitScript(() => {
+      localStorage.setItem('fa:auth:session', '1');
+      const win = window as any;
+      win.__fallbackRedirectUrl = '';
+      win.__faCheckoutRedirect = (url?: string | URL) => {
+        win.__fallbackRedirectUrl = String(url || '');
+      };
+      win.createLemonSqueezy = () => undefined;
+      win.LemonSqueezy = {
+        Setup: () => undefined,
+        Url: {
+          Open: () => { throw new Error('simulated overlay failure'); },
+          Close: () => undefined,
+        },
+      };
+    });
+
+    await page.goto('/pricing');
+    await page.getByTestId('pricing-cta-quarterly').click();
+
+    await expect.poll(() => page.evaluate(() => window.__fallbackRedirectUrl || '')).toContain('/checkout/buy/');
+    expect(providerOpenedRecorded).toBe(true);
     await expect(page).toHaveURL(/\/pricing/);
   });
 

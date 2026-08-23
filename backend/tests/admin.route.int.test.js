@@ -400,6 +400,8 @@ describe('Admin billing reconciliation', () => {
       pendingAttempts: 1,
       pendingEntitlements: 1,
       unresolvedEvents: 1,
+      verifiedPurchaseCandidates: 0,
+      verifiedPurchaseMismatches: 0,
     });
     expect(res.body.checkoutAttempts).toEqual(
       expect.arrayContaining([
@@ -440,5 +442,251 @@ describe('Admin billing reconciliation', () => {
         }),
       ])
     );
+  });
+
+  test('flags missing entitlement and a campaign purchase whose discount was not applied', async () => {
+    const admin = await User.create({
+      email: 'reconciliation-admin@example.com',
+      username: 'reconciliation_admin',
+      passwordHash: 'hash',
+      role: 'admin',
+    });
+    const user = await User.create({
+      email: 'missing-entitlement@example.com',
+      username: 'missing_entitlement',
+      passwordHash: 'hash',
+      role: 'user',
+      accessTier: 'free',
+      entitlements: { pro: { status: 'none', validUntil: null } },
+    });
+    const eventId = 'test:subscription_created:missing_entitlement';
+    await BillingEvent.create({
+      provider: 'lemonsqueezy',
+      eventId,
+      eventType: 'subscription_created',
+      processingStatus: 'processed',
+      userId: user._id,
+      payload: {},
+    });
+    await CheckoutAttempt.create({
+      attemptId: 'chk_verified_missing_entitlement',
+      userId: user._id,
+      provider: 'lemonsqueezy',
+      planId: 'monthly',
+      mode: 'test',
+      campaignId: 'partner_august',
+      providerDiscountId: 'discount_123',
+      status: 'applied',
+      billingEventId: eventId,
+      paymentEventId: 'test:order_created:missing_entitlement',
+      paymentCurrency: 'USD',
+      paymentSubtotalCents: 1200,
+      paymentDiscountCents: 0,
+      paymentTaxCents: 0,
+      paymentTotalCents: 1200,
+      paymentVerifiedAt: new Date(Date.now() - 30 * 60 * 1000),
+    });
+
+    const res = await request(app)
+      .get('/api/admin/billing/reconciliation?mode=test')
+      .set('Authorization', authHeader(admin._id));
+
+    expect(res.status).toBe(200);
+    expect(res.body.summary.verifiedPurchaseCandidates).toBe(1);
+    expect(res.body.summary.verifiedPurchaseMismatches).toBe(1);
+    expect(res.body.verifiedPurchases.mismatches).toEqual([
+      expect.objectContaining({
+        attemptId: 'chk_verified_missing_entitlement',
+        campaignId: 'partner_august',
+        providerDiscountId: 'discount_123',
+        paymentDiscountCents: 0,
+        reasons: expect.arrayContaining([
+          'campaign_discount_not_applied',
+          'entitlement_inactive',
+          'access_tier_not_premium',
+        ]),
+      }),
+    ]);
+    expect(res.body.verifiedPurchases.campaigns).toEqual([
+      expect.objectContaining({
+        campaignId: 'partner_august',
+        providerDiscountId: 'discount_123',
+        purchases: 1,
+        includedPurchases: 1,
+        discountAppliedPurchases: 0,
+        discountMissingPurchases: 1,
+        subtotalCents: 1200,
+        discountCents: 0,
+        totalCents: 1200,
+        recordedRevenueExcludingTaxCents: 1200,
+      }),
+    ]);
+    expect(JSON.stringify(res.body.verifiedPurchases)).not.toContain(user.email);
+  });
+
+  test('optionally reconciles provider orders missing a verified backend purchase and entitlement', async () => {
+    const admin = await User.create({
+      email: 'provider-reconciliation-admin@example.com',
+      username: 'provider_reconciliation_admin',
+      passwordHash: 'hash',
+      role: 'admin',
+    });
+    const user = await User.create({
+      email: 'provider-order-user@example.com',
+      username: 'provider_order_user',
+      passwordHash: 'hash',
+      role: 'user',
+      accessTier: 'free',
+      entitlements: { pro: { status: 'none', validUntil: null } },
+    });
+    await CheckoutAttempt.create({
+      attemptId: 'chk_unverified_provider_order',
+      userId: user._id,
+      provider: 'lemonsqueezy',
+      planId: 'monthly',
+      mode: 'test',
+      status: 'created',
+      providerOrderId: '1002',
+    });
+    const activeUser = await User.create({
+      email: 'provider-order-active@example.com',
+      username: 'provider_order_active',
+      passwordHash: 'hash',
+      role: 'user',
+      accessTier: 'premium',
+      entitlements: { pro: { status: 'active', validUntil: null } },
+    });
+    const verifiedEventId = 'test:subscription_created:provider_amount_mismatch';
+    await BillingEvent.create({
+      provider: 'lemonsqueezy',
+      eventId: verifiedEventId,
+      eventType: 'subscription_created',
+      processingStatus: 'processed',
+      userId: activeUser._id,
+      payload: {},
+    });
+    await CheckoutAttempt.create({
+      attemptId: 'chk_provider_amount_mismatch',
+      userId: activeUser._id,
+      provider: 'lemonsqueezy',
+      planId: 'monthly',
+      mode: 'test',
+      status: 'applied',
+      providerOrderId: '1003',
+      billingEventId: verifiedEventId,
+      paymentEventId: 'test:order_created:provider_amount_mismatch',
+      paymentCurrency: 'EUR',
+      paymentSubtotalCents: 999,
+      paymentDiscountCents: 0,
+      paymentTaxCents: 0,
+      paymentTotalCents: 999,
+      paymentVerifiedAt: new Date(Date.now() - 30 * 60 * 1000),
+    });
+
+    const originalFetch = global.fetch;
+    const originalApiKey = process.env.LEMONSQUEEZY_API_KEY;
+    const originalTestApiKey = process.env.LEMONSQUEEZY_API_KEY_TEST;
+    const originalStoreId = process.env.LEMONSQUEEZY_STORE_ID;
+    process.env.LEMONSQUEEZY_API_KEY = 'test_read_only_key';
+    process.env.LEMONSQUEEZY_API_KEY_TEST = 'test_read_only_key';
+    process.env.LEMONSQUEEZY_STORE_ID = '12345';
+    const createdAt = new Date(Date.now() - 30 * 60 * 1000).toISOString();
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        data: [
+          {
+            id: 'provider-order-id-1',
+            attributes: {
+              order_number: 1001,
+              status: 'paid',
+              total: 1200,
+              discount_total: 0,
+              currency: 'USD',
+              created_at: createdAt,
+              test_mode: true,
+            },
+          },
+          {
+            id: 'provider-order-id-2',
+            attributes: {
+              order_number: 1002,
+              status: 'paid',
+              total: 1200,
+              discount_total: 0,
+              currency: 'USD',
+              created_at: createdAt,
+              test_mode: true,
+            },
+          },
+          {
+            id: 'provider-order-id-3',
+            attributes: {
+              order_number: 1003,
+              status: 'paid',
+              total: 1200,
+              discount_total: 100,
+              currency: 'USD',
+              created_at: createdAt,
+              test_mode: true,
+            },
+          },
+        ],
+      }),
+    });
+
+    try {
+      const res = await request(app)
+        .get('/api/admin/billing/reconciliation?mode=test&includeProviderOrders=true')
+        .set('Authorization', authHeader(admin._id));
+
+      expect(res.status).toBe(200);
+      expect(res.body.summary.providerOrders).toBe(3);
+      expect(res.body.summary.providerOrderMismatches).toBe(3);
+      expect(res.body.verifiedPurchases.providerOrders).toEqual(expect.objectContaining({
+        status: 'checked',
+        truncated: false,
+        mismatches: expect.arrayContaining([
+          expect.objectContaining({
+            orderId: '1001',
+            reasons: ['checkout_attempt_missing'],
+          }),
+          expect.objectContaining({
+            orderId: '1002',
+            attemptId: 'chk_unverified_provider_order',
+            reasons: expect.arrayContaining([
+              'purchase_unverified',
+              'entitlement_not_applied',
+              'entitlement_inactive',
+              'entitlement_access_tier_mismatch',
+            ]),
+          }),
+          expect.objectContaining({
+            orderId: '1003',
+            attemptId: 'chk_provider_amount_mismatch',
+            reasons: expect.arrayContaining([
+              'purchase_amount_mismatch',
+              'purchase_discount_mismatch',
+              'purchase_currency_mismatch',
+            ]),
+          }),
+        ]),
+      }));
+      expect(global.fetch).toHaveBeenCalledTimes(1);
+      const [providerUrl, providerOptions] = global.fetch.mock.calls[0];
+      expect(providerUrl).toContain('filter%5Bstore_id%5D=12345');
+      expect(providerUrl).not.toContain('test-mode');
+      expect(providerOptions.headers.Authorization).toBe('Bearer test_read_only_key');
+      expect(JSON.stringify(res.body)).not.toContain(user.email);
+      expect(JSON.stringify(res.body)).not.toContain('test_read_only_key');
+    } finally {
+      global.fetch = originalFetch;
+      if (originalApiKey === undefined) delete process.env.LEMONSQUEEZY_API_KEY;
+      else process.env.LEMONSQUEEZY_API_KEY = originalApiKey;
+      if (originalTestApiKey === undefined) delete process.env.LEMONSQUEEZY_API_KEY_TEST;
+      else process.env.LEMONSQUEEZY_API_KEY_TEST = originalTestApiKey;
+      if (originalStoreId === undefined) delete process.env.LEMONSQUEEZY_STORE_ID;
+      else process.env.LEMONSQUEEZY_STORE_ID = originalStoreId;
+    }
   });
 });

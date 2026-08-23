@@ -1086,6 +1086,55 @@ function assertVercelCspAllowsTurnstile() {
   });
 }
 
+function assertVercelCspAllowsLemonSqueezyOverlay() {
+  const config = readVercelConfig();
+  const headerNames = ['Content-Security-Policy', 'Content-Security-Policy-Report-Only'];
+
+  headerNames.forEach((headerName) => {
+    const policy = getGlobalVercelHeader(config, headerName);
+
+    ['script-src', 'script-src-elem'].forEach((directiveName) => {
+      assertCspDirectiveSources({
+        headerName,
+        policy,
+        directiveName,
+        requiredSources: ['https://app.lemonsqueezy.com'],
+      });
+    });
+    assertCspDirectiveSources({
+      headerName,
+      policy,
+      directiveName: 'frame-src',
+      requiredSources: ['https://*.lemonsqueezy.com'],
+    });
+  });
+}
+
+function assertVercelPermissionsPolicyAllowsLemonSqueezyPayments() {
+  const config = readVercelConfig();
+  const policy = getGlobalVercelHeader(config, 'Permissions-Policy');
+  const paymentDirective = policy
+    .split(',')
+    .map((part) => part.trim())
+    .find((part) => part.startsWith('payment='));
+
+  if (!paymentDirective) {
+    throw new Error('Permissions-Policy missing payment directive.');
+  }
+  const requiredTokens = [
+    'self',
+    '"https://app.lemonsqueezy.com"',
+    '"https://frontendatlas.lemonsqueezy.com"',
+  ];
+  const missing = requiredTokens.filter((token) => !paymentDirective.includes(token));
+  if (missing.length) {
+    throw new Error(`Permissions-Policy payment directive missing required token(s): ${missing.join(', ')}`);
+  }
+  if (/payment\s*=\s*\(\s*\)/.test(paymentDirective)) {
+    throw new Error('Permissions-Policy must not disable payments for the Lemon Squeezy overlay.');
+  }
+}
+
 const sitemapFiles = getSitemapFileNames();
 sitemapFiles.forEach((fileName) => assertSitemapWithinLimit(fileName));
 const locs = getAllSitemapLocs(sitemapFiles);
@@ -1119,5 +1168,7 @@ assertVercelMasteryRedirects();
 assertVercelCspAllowsCodingSandboxRunner();
 assertVercelCspAllowsGoogleAnalyticsCollection();
 assertVercelCspAllowsTurnstile();
+assertVercelCspAllowsLemonSqueezyOverlay();
+assertVercelPermissionsPolicyAllowsLemonSqueezyPayments();
 
 console.log('Sitemap size check passed.');

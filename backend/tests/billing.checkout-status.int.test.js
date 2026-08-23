@@ -143,6 +143,12 @@ describe('billing checkout attempt status route', () => {
       mode: 'live',
       analyticsSurface: 'annual_card',
       analyticsSource: 'pricing_page',
+      analyticsSessionId: '1724400000.123456789',
+      experimentId: 'pricing-proof:variant_a',
+      offerVersion: 'interview_sprint_v2',
+      campaignId: 'partner_august',
+      providerDiscountId: 'discount_123',
+      checkoutSurface: 'overlay',
       status: 'applied',
       billingEventId: 'live:subscription_created:sub_annual',
       paymentEventId: 'live:order_created:order_annual',
@@ -167,12 +173,21 @@ describe('billing checkout attempt status route', () => {
     expect(res.status).toBe(200);
     expect(res.body.analyticsSurface).toBe('annual_card');
     expect(res.body.analyticsSource).toBe('pricing_page');
+    expect(res.body.analyticsSessionId).toBe('1724400000.123456789');
+    expect(res.body.experimentId).toBe('pricing-proof:variant_a');
+    expect(res.body.offerVersion).toBe('interview_sprint_v2');
+    expect(res.body.campaignId).toBe('partner_august');
+    expect(res.body.providerDiscountId).toBe('discount_123');
+    expect(res.body.checkoutSurface).toBe('overlay');
     expect(res.body.purchase).toEqual({
       transactionId: 'order_annual_123',
       currency: 'USD',
       value: 69,
+      discount: 10,
       tax: 12.42,
       total: 81.42,
+      campaignId: 'partner_august',
+      providerDiscountId: 'discount_123',
       items: [{
         item_id: 'frontendatlas_annual',
         item_name: 'Annual Premium',
@@ -184,7 +199,8 @@ describe('billing checkout attempt status route', () => {
       verifiedAt: verifiedAt.toISOString(),
     });
     expect(Object.keys(res.body.purchase).sort()).toEqual([
-      'currency', 'items', 'source', 'tax', 'total', 'transactionId', 'value', 'verifiedAt',
+      'campaignId', 'currency', 'discount', 'items', 'providerDiscountId', 'source', 'tax',
+      'total', 'transactionId', 'value', 'verifiedAt',
     ]);
     expect(JSON.stringify(res.body.purchase)).not.toContain(user.email);
     expect(JSON.stringify(res.body.purchase)).not.toContain(user.username);

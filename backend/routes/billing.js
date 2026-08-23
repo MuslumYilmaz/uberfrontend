@@ -164,6 +164,12 @@ function serializeCheckoutAttemptStatus(attempt, user) {
     mode: attempt.mode,
     analyticsSurface: attempt.analyticsSurface || attempt.analyticsSource || 'pricing',
     analyticsSource: normalizeAnalyticsSource(attempt.analyticsSource || attempt.analyticsSurface),
+    analyticsSessionId: attempt.analyticsSessionId || null,
+    experimentId: attempt.experimentId || null,
+    offerVersion: attempt.offerVersion || 'pricing_baseline_v1',
+    campaignId: attempt.campaignId || null,
+    providerDiscountId: attempt.providerDiscountId || null,
+    checkoutSurface: attempt.checkoutSurface || 'hosted_new_tab',
     state: toAttemptPublicState(attempt),
     rawStatus: attempt.status,
     entitlementActive,
@@ -258,8 +264,11 @@ function serializeVerifiedPurchase(attempt) {
     transactionId,
     currency,
     value,
+    discount: centsToCurrencyValue(discountCents),
     tax: centsToCurrencyValue(taxCents),
     total: centsToCurrencyValue(totalCents),
+    campaignId: attempt.campaignId || null,
+    providerDiscountId: attempt.providerDiscountId || null,
     items: [
       {
         item_id: `frontendatlas_${planId}`,
@@ -850,6 +859,12 @@ router.post('/checkout/start', requireAuth, async (req, res) => {
       cancelUrl,
       analyticsSurface,
       analyticsSource,
+      analyticsSessionId,
+      experimentId,
+      offerVersion,
+      campaignId,
+      providerDiscountId,
+      checkoutSurface,
       reused,
     } =
       await createCheckoutAttempt(CheckoutAttempt, {
@@ -857,6 +872,11 @@ router.post('/checkout/start', requireAuth, async (req, res) => {
         planId: req.body?.planId,
         analyticsSurface: req.body?.analyticsSurface,
         analyticsSource: req.body?.analyticsSource,
+        analyticsSessionId: req.body?.analyticsSessionId,
+        experimentId: req.body?.experimentId,
+        offerVersion: req.body?.offerVersion,
+        campaignId: req.body?.campaignId,
+        checkoutSurface: req.body?.checkoutSurface,
       });
 
     return res.status(200).json({
@@ -869,6 +889,12 @@ router.post('/checkout/start', requireAuth, async (req, res) => {
       cancelUrl,
       analyticsSurface,
       analyticsSource,
+      analyticsSessionId,
+      experimentId,
+      offerVersion,
+      campaignId,
+      providerDiscountId,
+      checkoutSurface,
       reused,
     });
   } catch (err) {

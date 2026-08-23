@@ -4,6 +4,7 @@ import {
   resolvePaymentsMode,
   resolvePaymentsProvider,
 } from './payments-provider.util';
+import { environment as productionEnvironment } from '../../../environments/environment.prod';
 
 describe('payments-provider util', () => {
   it('defaults to test mode when not production', () => {
@@ -31,6 +32,18 @@ describe('payments-provider util', () => {
     expect(resolveCheckoutUrl(provider, 'quarterly', env)).toBe('https://test.example.com/quarterly');
     expect(resolveCheckoutUrl(provider, 'annual', env)).toBe('https://test.example.com/annual');
     expect(resolveCheckoutUrl(provider, 'lifetime', env)).toBe('https://test.example.com/lifetime');
+  });
+
+  it('keeps all production-build LemonSqueezy test checkout URLs plan-specific', () => {
+    const urls = [
+      productionEnvironment.LEMONSQUEEZY_MONTHLY_URL_TEST,
+      productionEnvironment.LEMONSQUEEZY_QUARTERLY_URL_TEST,
+      productionEnvironment.LEMONSQUEEZY_ANNUAL_URL_TEST,
+      productionEnvironment.LEMONSQUEEZY_LIFETIME_URL_TEST,
+    ];
+
+    expect(urls.every(Boolean)).toBeTrue();
+    expect(new Set(urls).size).toBe(4);
   });
 
   it('falls back to legacy lemonsqueezy urls if mode-specific is missing', () => {

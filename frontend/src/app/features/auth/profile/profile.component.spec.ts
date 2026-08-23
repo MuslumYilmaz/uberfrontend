@@ -2,7 +2,7 @@ import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router';
-import { of } from 'rxjs';
+import { BehaviorSubject, of } from 'rxjs';
 import { DashboardGamificationResponse } from '../../../core/models/gamification.model';
 import { AuthService } from '../../../core/services/auth.service';
 import { GamificationService } from '../../../core/services/gamification.service';
@@ -15,6 +15,7 @@ describe('ProfileComponent', () => {
   let gamification: jasmine.SpyObj<GamificationService>;
   let solvedQuestions: jasmine.SpyObj<SolvedQuestionsService>;
   let authStub: any;
+  let queryParamMap$: BehaviorSubject<ReturnType<typeof convertToParamMap>>;
   const userSig = signal<any>({
     _id: 'user-1',
     username: 'badge_user',
@@ -150,6 +151,7 @@ describe('ProfileComponent', () => {
       createdAt: '2026-01-01T00:00:00.000Z',
     });
     solvedIdsSig.set(['react-counter']);
+    queryParamMap$ = new BehaviorSubject(convertToParamMap({}));
 
     authStub = {
       user: userSig,
@@ -185,7 +187,7 @@ describe('ProfileComponent', () => {
         { provide: GamificationService, useValue: gamification },
         { provide: SolvedQuestionsService, useValue: solvedQuestions },
         { provide: UserProgressService, useValue: { solvedIds: solvedIdsSig } },
-        { provide: ActivatedRoute, useValue: { queryParamMap: of(convertToParamMap({})) } },
+        { provide: ActivatedRoute, useValue: { queryParamMap: queryParamMap$.asObservable() } },
       ],
     }).compileComponents();
   });
@@ -195,6 +197,23 @@ describe('ProfileComponent', () => {
     nextFixture.detectChanges();
     return nextFixture;
   }
+
+  it('hides legacy coupon data and routes old coupon bookmarks to billing', () => {
+    userSig.update((user) => ({
+      ...user,
+      coupons: [{ code: 'ATLAS15', scope: 'pro', appliedAt: '2026-08-01T00:00:00.000Z' }],
+    }));
+    queryParamMap$.next(convertToParamMap({ tab: 'coupons' }));
+
+    fixture = createComponent();
+
+    const text = fixture.nativeElement.textContent || '';
+    expect(fixture.componentInstance.tab()).toBe('billing');
+    expect(text).toContain('FrontendAtlas Premium');
+    expect(text).not.toContain('Coupons');
+    expect(text).not.toContain('ATLAS15');
+    expect(fixture.nativeElement.querySelector('input[name*="coupon"], input[name*="promo"]')).toBeNull();
+  });
 
   it('renders profile badges above progress details and keeps XP lower in activity history', () => {
     fixture = createComponent();
@@ -287,5 +306,61 @@ describe('ProfileComponent', () => {
     expect(authStub.requestEmailVerification).toHaveBeenCalledWith('badge@example.com');
     expect(authStub.updateProfile).not.toHaveBeenCalled();
     expect(fixture.nativeElement.textContent || '').toContain('Check your inbox to verify your email.');
+  });
+
+  it('renders billing status from entitlements instead of legacy billing.pro', () => {
+    userSig.update((user) => ({
+      ...user,
+      accessTier: 'free',
+      entitlements: {
+        pro: { status: 'lifetime', validUntil: null },
+        projects: { status: 'none', validUntil: null },
+      },
+      billing: {
+        pro: { status: 'none' },
+        projects: { status: 'none' },
+        providers: { lemonsqueezy: { customerId: 'customer_lifetime' } },
+      },
+    }));
+    fixture = createComponent();
+    fixture.componentInstance.tab.set('billing');
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('[data-testid="profile-lifetime-access"]')).toBeTruthy();
+    expect(fixture.nativeElement.textContent || '').toContain('Lifetime Premium access is active');
+    expect(fixture.componentInstance.showManageSubscription()).toBeFalse();
+
+    userSig.update((user) => ({
+      ...user,
+      entitlements: {
+        pro: { status: 'none', validUntil: null },
+        projects: { status: 'none', validUntil: null },
+      },
+      billing: {
+        ...user.billing,
+        pro: { status: 'lifetime' },
+        providers: {},
+      },
+    }));
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('[data-testid="profile-lifetime-access"]')).toBeFalsy();
+    expect(fixture.nativeElement.textContent || '').toContain('You are not subscribed');
+
+    userSig.update((user) => ({
+      ...user,
+      entitlements: {
+        pro: { status: 'active', validUntil: null },
+        projects: { status: 'none', validUntil: null },
+      },
+      billing: {
+        ...user.billing,
+        pro: { status: 'active', renewsAt: '2099-01-01T00:00:00.000Z' },
+      },
+    }));
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('[data-testid="pro-end-date"]')).toBeFalsy();
+    expect(fixture.nativeElement.textContent || '').toContain('Your Premium access is active');
   });
 });

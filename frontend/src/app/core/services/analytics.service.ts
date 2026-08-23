@@ -22,6 +22,10 @@ type PendingAnalyticsDispatch =
   | { type: 'page_view'; pageView: AnalyticsPageView };
 
 export type DecisionSessionQualificationMethod = 'trusted_interaction' | 'foreground_15s';
+export type AnalyticsTrafficClass = 'internal' | 'test';
+
+const TRAFFIC_CLASS_QUERY_PARAM = 'fa_traffic';
+const TRAFFIC_CLASS_STORAGE_KEY = 'fa:analytics:traffic_class:v1';
 
 const RESERVED_ACQUISITION_PARAMS = new Set([
   'source',
@@ -43,11 +47,42 @@ export class AnalyticsService {
   private readonly document = inject(DOCUMENT);
   private readonly measurementId = String(environment.gaMeasurementId || '').trim();
   private readonly analyticsEnabled = this.isBrowser && !!this.measurementId && !this.detectAutomationContext();
+  private readonly trafficClass = this.resolveTrafficClass();
   private readonly scriptId = 'ga4-gtag-script';
+  private readonly decisionSessionStorageKey = 'fa:analytics:decision_session:v1';
   private lastTrackedPath: string | null = null;
   private initialized = false;
   private decisionSessionQualified = false;
   private pendingDispatches: PendingAnalyticsDispatch[] = [];
+  private decisionSessionId: string | null | undefined;
+
+  /**
+   * PII-free, tab-scoped identifier for joining qualified pricing activity to
+   * a server-created checkout attempt. This is intentionally not a GA client
+   * ID and is never derived from account data.
+   */
+  getDecisionSessionId(): string | null {
+    if (!this.isBrowser) return null;
+    if (this.decisionSessionId !== undefined) return this.decisionSessionId;
+
+    try {
+      const existing = sessionStorage.getItem(this.decisionSessionStorageKey);
+      if (existing && /^ds_[a-f0-9]{32}$/.test(existing)) {
+        this.decisionSessionId = existing;
+        return existing;
+      }
+
+      const bytes = new Uint8Array(16);
+      crypto.getRandomValues(bytes);
+      const created = `ds_${Array.from(bytes, (value) => value.toString(16).padStart(2, '0')).join('')}`;
+      sessionStorage.setItem(this.decisionSessionStorageKey, created);
+      this.decisionSessionId = created;
+      return created;
+    } catch {
+      this.decisionSessionId = null;
+      return null;
+    }
+  }
 
   track(name: string, params?: Record<string, unknown>): boolean {
     if (!this.analyticsEnabled) return false;
@@ -109,6 +144,7 @@ export class AnalyticsService {
 
     gtag('event', name, {
       ...(params || {}),
+      ...(this.trafficClass ? { traffic_type: this.trafficClass } : {}),
       ...(this.measurementId ? { send_to: this.measurementId } : {}),
     });
   }
@@ -121,6 +157,7 @@ export class AnalyticsService {
       page_path: pageView.path,
       page_location: pageView.location,
       page_title: pageView.title,
+      ...(this.trafficClass ? { traffic_type: this.trafficClass } : {}),
       ...(this.measurementId ? { send_to: this.measurementId } : {}),
     });
   }
@@ -224,6 +261,36 @@ export class AnalyticsService {
       location,
       title: this.document.title || undefined,
     };
+  }
+
+  /**
+   * Lets staff/test sessions opt into GA's `traffic_type` contract without
+   * putting account data or IP addresses in application analytics. The marker
+   * lasts only for the current browser tab. `external` clears an old marker.
+   */
+  private resolveTrafficClass(): AnalyticsTrafficClass | null {
+    if (!this.isBrowser) return null;
+
+    try {
+      const requested = new URLSearchParams(window.location.search)
+        .get(TRAFFIC_CLASS_QUERY_PARAM)
+        ?.trim()
+        .toLowerCase();
+
+      if (requested === 'external') {
+        sessionStorage.removeItem(TRAFFIC_CLASS_STORAGE_KEY);
+        return null;
+      }
+      if (requested === 'internal' || requested === 'test') {
+        sessionStorage.setItem(TRAFFIC_CLASS_STORAGE_KEY, requested);
+        return requested;
+      }
+
+      const stored = sessionStorage.getItem(TRAFFIC_CLASS_STORAGE_KEY);
+      return stored === 'internal' || stored === 'test' ? stored : null;
+    } catch {
+      return null;
+    }
   }
 
   // Suppress analytics in browser automation so local/CI traffic does not pollute GA.

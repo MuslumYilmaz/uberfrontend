@@ -699,9 +699,16 @@
 
     <app-pricing-plans-section
       variant="compact"
+      [paymentsEnabled]="pricingPaymentsEnabled"
+      [paymentsConfigReady]="pricingPaymentsConfigReady"
+      [checkoutAvailability]="pricingCheckoutAvailability"
+      [planDetails]="pricingPlanDetails"
+      [offerVersion]="pricingOfferVersion"
+      [checkoutSurface]="pricingCheckoutSurface"
+      [analyticsReady]="pricingPaymentsConfigReady"
       analyticsSource="showcase_pricing"
       analyticsSurface="showcase_pricing"
-      ctaMode="navigatePricing">
+      [ctaMode]="pricingCtaMode">
     </app-pricing-plans-section>
   </div>
 </section>

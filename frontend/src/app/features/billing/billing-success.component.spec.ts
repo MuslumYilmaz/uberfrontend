@@ -55,7 +55,6 @@ describe('BillingSuccessComponent', () => {
 
   afterEach(() => {
     delete (window as any).__billingPollConfig;
-    localStorage.removeItem('fa:analytics:purchase:order_live_123');
     sessionStorage.removeItem('fa:checkout:intent:v1');
     sessionStorage.removeItem('fa:checkout:last_plan_id');
     sessionStorage.removeItem('fa:checkout:last_source');
@@ -103,13 +102,11 @@ describe('BillingSuccessComponent', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
     tick();
-    tick(99);
-
     expect(router.navigateByUrl).not.toHaveBeenCalled();
-    tick(1);
+    tick(25);
 
     expect(billingCheckoutStub.fetchAttemptStatus).toHaveBeenCalledWith('chk_success_123');
-    expect(pollCount).toBe(5);
+    expect(pollCount).toBe(2);
     expect(router.navigateByUrl).toHaveBeenCalledWith('/profile');
     expect(component.state()).toBe('syncing');
     expect(analyticsStub.track).toHaveBeenCalledWith('checkout_verified', jasmine.objectContaining({
@@ -125,7 +122,7 @@ describe('BillingSuccessComponent', () => {
     expect(analyticsStub.track).not.toHaveBeenCalledWith('checkout_completed', jasmine.anything());
   }));
 
-  it('tracks a verified live purchase once per transaction id across success-page reloads', fakeAsync(() => {
+  it('keeps checkout_verified but never emits a browser purchase event', fakeAsync(() => {
     sessionStorage.setItem('fa:checkout:intent:v1', JSON.stringify({
       version: 1,
       planId: 'annual',
@@ -170,16 +167,7 @@ describe('BillingSuccessComponent', () => {
     fixture.detectChanges();
     tick();
 
-    expect(analyticsStub.track).toHaveBeenCalledWith('purchase', jasmine.objectContaining({
-      transaction_id: 'order_live_123',
-      currency: 'USD',
-      value: 69,
-      tax: 12.42,
-      src: 'showcase_hero',
-      surface: 'showcase_pricing',
-      plan_id: 'annual',
-      checkout_mode: 'live',
-    }));
+    expect(analyticsStub.track).not.toHaveBeenCalledWith('purchase', jasmine.anything());
     expect(analyticsStub.track).toHaveBeenCalledWith('checkout_verified', jasmine.objectContaining({
       src: 'showcase_hero',
       surface: 'showcase_pricing',
@@ -188,16 +176,60 @@ describe('BillingSuccessComponent', () => {
     expect(sessionStorage.getItem('fa:checkout:intent:v1')).toBeNull();
     expect(sessionStorage.getItem('fa:checkout:last_plan_id')).toBeNull();
     expect(sessionStorage.getItem('fa:checkout:last_source')).toBeNull();
-    expect(analyticsStub.track.calls.allArgs().filter(([name]) => name === 'purchase')).toHaveSize(1);
+    expect(router.navigateByUrl).toHaveBeenCalledWith('/profile');
+  }));
 
-    fixture.destroy();
-    analyticsStub.track.calls.reset();
+  it('keeps a verified v2 buyer on the success page with a Premium challenge primary action', fakeAsync(() => {
+    billingCheckoutStub.fetchAttemptStatus.and.returnValue(of({
+      attempt: {
+        attemptId: 'chk_success_123',
+        provider: 'lemonsqueezy',
+        planId: 'quarterly',
+        mode: 'live',
+        state: 'applied',
+        rawStatus: 'applied',
+        entitlementActive: true,
+        accessTierEffective: 'premium',
+        billingEventId: 'live:subscription_created:sub_v2',
+        lastErrorCode: null,
+        lastErrorMessage: null,
+        campaignId: 'interview_august',
+        offerVersion: 'interview_sprint_v2',
+        checkoutSurface: 'overlay',
+        purchase: null,
+      },
+      status: 200,
+    }));
+
     fixture = TestBed.createComponent(BillingSuccessComponent);
+    component = fixture.componentInstance;
     fixture.detectChanges();
     tick();
+    fixture.detectChanges();
 
-    expect(analyticsStub.track.calls.allArgs().filter(([name]) => name === 'purchase')).toHaveSize(0);
-    expect(analyticsStub.track).toHaveBeenCalledWith('checkout_verified', jasmine.anything());
+    expect(component.state()).toBe('ready');
+    expect(router.navigateByUrl).not.toHaveBeenCalled();
+    const ready = fixture.nativeElement.querySelector('[data-testid="billing-ready-state"]') as HTMLElement;
+    const primary = fixture.nativeElement.querySelector('[data-testid="billing-start-premium"]') as HTMLAnchorElement;
+    expect(ready.textContent || '').toContain('Premium access has been applied');
+    expect(primary.textContent || '').toContain('Start your first Premium challenge');
+    expect(primary.getAttribute('href') || '').toContain('/react/coding/react-contact-form-starter');
+    expect(analyticsStub.track).toHaveBeenCalledWith('checkout_verified', jasmine.objectContaining({
+      plan_id: 'quarterly',
+      entitlement_applied: true,
+      offer_campaign_id: 'interview_august',
+      offer_version: 'interview_sprint_v2',
+      checkout_surface: 'overlay',
+    }));
+    primary.click();
+    expect(analyticsStub.track).toHaveBeenCalledWith('premium_challenge_started', jasmine.objectContaining({
+      entry_point: 'post_purchase_primary_cta',
+      plan_id: 'quarterly',
+      offer_campaign_id: 'interview_august',
+      offer_version: 'interview_sprint_v2',
+      checkout_surface: 'overlay',
+    }));
+    expect(analyticsStub.track).not.toHaveBeenCalledWith('purchase', jasmine.anything());
   }));
 
   it('shows a pending-user-match state when the payment cannot be safely linked', fakeAsync(() => {
