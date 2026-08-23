@@ -2202,6 +2202,23 @@ describe('TriviaDetailComponent', () => {
     expect(footerLeft?.getAttribute('href') || '').toContain('/coding');
   });
 
+  it('uses a native disclosure button for similar questions', async () => {
+    const fixture = await createLoadedFixture();
+    const toggle = fixture.nativeElement.querySelector(
+      'button[aria-controls="similar-questions-panel"]',
+    ) as HTMLButtonElement;
+
+    expect(toggle).toBeTruthy();
+    expect(toggle.textContent || '').toContain('Similar questions');
+    expect(toggle.getAttribute('aria-expanded')).toBe('true');
+    expect(fixture.nativeElement.querySelector('#similar-questions-panel')).toBeTruthy();
+
+    toggle.click();
+    fixture.detectChanges();
+    expect(toggle.getAttribute('aria-expanded')).toBe('false');
+    expect(fixture.nativeElement.querySelector('#similar-questions-panel')).toBeNull();
+  });
+
   it('maps trivia detail tech to interview hub routes', () => {
     const fixture = TestBed.createComponent(TriviaDetailComponent);
     const component = fixture.componentInstance;

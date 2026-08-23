@@ -85,6 +85,14 @@ test.describe('accessibility smoke', () => {
   test('trivia detail route has no serious accessibility violations', async ({ page }) => {
     await page.goto('/javascript/trivia/js-event-loop');
     await expect(page.getByTestId('trivia-detail-main')).toBeVisible();
+    const similarToggle = page.getByRole('button', { name: 'Similar questions' });
+    await expect(similarToggle).toHaveAttribute('aria-expanded', 'true');
+    await similarToggle.focus();
+    await page.keyboard.press('Space');
+    await expect(similarToggle).toHaveAttribute('aria-expanded', 'false');
+    await expect(page.locator('#similar-questions-panel')).toHaveCount(0);
+    await page.keyboard.press('Space');
+    await expect(similarToggle).toHaveAttribute('aria-expanded', 'true');
     await expectNoSeriousViolations(page, 'trivia detail route', '[data-testid="trivia-detail-main"]');
   });
 

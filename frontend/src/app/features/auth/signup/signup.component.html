@@ -4,6 +4,23 @@
     <div class="auth-card">
       <h1 class="auth-title">{{ accountCreated ? 'Your account is ready' : 'Create a new account' }}</h1>
 
+      <p class="auth-legal" *ngIf="!accountCreated" data-testid="signup-legal-disclosure">
+        By continuing with Google, GitHub, or email, you agree to the
+        <a
+          routerLink="/legal/terms"
+          target="_blank"
+          rel="noopener"
+          aria-label="Terms of Service (opens in a new tab)"
+          data-testid="signup-terms-link">Terms of Service</a>
+        and acknowledge the
+        <a
+          routerLink="/legal/privacy"
+          target="_blank"
+          rel="noopener"
+          aria-label="Privacy Notice (opens in a new tab)"
+          data-testid="signup-privacy-link">Privacy Notice</a>.
+      </p>
+
       <div class="auth-socials" *ngIf="!accountCreated">
         <button type="button" class="btn-surface" data-testid="signup-google" (click)="continueWithGoogle()">
           <i class="fa-brands fa-google social-icon" aria-hidden="true"></i>
@@ -49,17 +66,25 @@
         </div>
 
         <div formGroupName="passwords" class="auth-form">
-          <label class="field">
-            <span>Password</span>
-            <input id="signup-password" name="password" data-testid="signup-password" formControlName="password" type="password"
-              autocomplete="new-password" required placeholder="••••••••"
-              [attr.aria-invalid]="showError(passwordCtrl) && passwordCtrl?.errors ? 'true' : null"
-              [attr.aria-describedby]="showError(passwordCtrl) && passwordCtrl?.errors ? 'signup-password-error' : null" />
-          </label>
+          <div class="field-stack">
+            <label class="field">
+              <span>Password</span>
+              <input id="signup-password" name="password" data-testid="signup-password" formControlName="password" type="password"
+                autocomplete="new-password" required placeholder="••••••••"
+                [attr.aria-invalid]="showError(passwordCtrl) && passwordCtrl?.errors ? 'true' : null"
+                [attr.aria-describedby]="showError(passwordCtrl) && passwordCtrl?.errors
+                  ? 'signup-password-requirements signup-password-error'
+                  : 'signup-password-requirements'" />
+            </label>
+            <p id="signup-password-requirements" class="field-hint" data-testid="signup-password-requirements">
+              Use at least 8 characters, including a letter and a number.
+            </p>
+          </div>
           <div id="signup-password-error" *ngIf="showError(passwordCtrl) && passwordCtrl?.errors" class="error" data-testid="signup-password-error">
             <ng-container *ngIf="passwordCtrl?.errors?.['required']">Password is required.</ng-container>
-            <ng-container *ngIf="passwordCtrl?.errors?.['minlength']">Password must be at least 8 characters.</ng-container>
-            <ng-container *ngIf="passwordCtrl?.errors?.['pattern']">Use at least 8 characters with a letter and a number.</ng-container>
+            <ng-container *ngIf="!passwordCtrl?.errors?.['required'] && (passwordCtrl?.errors?.['minlength'] || passwordCtrl?.errors?.['pattern'])">
+              Password does not meet the requirement above.
+            </ng-container>
           </div>
 
           <label class="field">

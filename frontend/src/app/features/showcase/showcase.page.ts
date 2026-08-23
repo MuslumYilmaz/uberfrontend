@@ -21,7 +21,6 @@ import { take } from 'rxjs/operators';
 import { IncidentService } from '../../core/services/incident.service';
 import { Tech } from '../../core/models/user.model';
 import { AnalyticsService } from '../../core/services/analytics.service';
-import { BillingCheckoutService } from '../../core/services/billing-checkout.service';
 import { ExperimentService } from '../../core/services/experiment.service';
 import { QuestionService, ShowcaseStatsPayload } from '../../core/services/question.service';
 import { SEO_SUPPRESS_TOKEN } from '../../core/services/seo-context';
@@ -29,7 +28,6 @@ import { TradeoffBattleService } from '../../core/services/tradeoff-battle.servi
 import { FaqSectionComponent } from '../../shared/faq-section/faq-section.component';
 import { PricingPlansSectionComponent } from '../pricing/components/pricing-plans-section/pricing-plans-section.component';
 import { ConversionContextService } from '../../core/services/conversion-context.service';
-import { PlanId } from '../../core/utils/payments-provider.util';
 import { apiUrl } from '../../core/utils/api-base';
 import { SHOWCASE_STATS } from '../../generated/content-metadata';
 import {
@@ -99,11 +97,7 @@ export class ShowcasePageComponent implements OnInit, AfterViewInit, OnDestroy {
   demoLoading = false;
   demoComponent?: Type<unknown>;
   private demoComponentPromise?: Promise<Type<unknown>>;
-
-  paymentsEnabled = true;
-  paymentsConfigReady = false;
-  checkoutAvailability: Partial<Record<PlanId, boolean>> | null = null;
-  private checkoutConfigRequested = false;
+  private demoSectionRequested = false;
 
   contact = {
     name: '',
@@ -124,7 +118,6 @@ export class ShowcasePageComponent implements OnInit, AfterViewInit, OnDestroy {
   readonly contactMaxEmailChars = 320;
   readonly supportEmail = 'support@frontendatlas.com';
   private contactCooldownTimer?: number;
-  private contactChallengeStatusActive = false;
 
   readonly reduceMotion =
     typeof window !== 'undefined' &&
@@ -377,6 +370,7 @@ export class ShowcasePageComponent implements OnInit, AfterViewInit, OnDestroy {
   tracks = [
     {
       name: 'Crash Track (7 days)',
+      route: ['/tracks', 'crash-7d', 'preview'],
       bullets: [
         '30 high-yield questions for a focused 7-day sprint.',
         'JS async/core + UI data flows + 2 must-know system design prompts.',
@@ -385,6 +379,7 @@ export class ShowcasePageComponent implements OnInit, AfterViewInit, OnDestroy {
     },
     {
       name: 'Foundations Track (30 days)',
+      route: ['/tracks', 'foundations-30d', 'preview'],
       bullets: [
         `${FOUNDATIONS_TRACK_METRICS.uniquePrompts} unique prompts progressing from fundamentals to medium-level concepts.`,
         'Framework coding drills in React/Angular/Vue with framework-agnostic concept questions.',
@@ -618,7 +613,6 @@ You can also reset any task back to the starter whenever you want to re-practice
     private injector: Injector,
     private qs: QuestionService,
     private analytics: AnalyticsService,
-    private billingCheckout: BillingCheckoutService,
     private experiments: ExperimentService,
     private route: ActivatedRoute,
     private conversionContext: ConversionContextService,
@@ -667,30 +661,12 @@ You can also reset any task back to the starter whenever you want to re-practice
     }
   }
 
-  private async loadCheckoutConfig(): Promise<void> {
-    if (this.checkoutConfigRequested) {
-      return;
-    }
-    this.checkoutConfigRequested = true;
-    const config = await this.billingCheckout.getCheckoutConfig();
-    if (!config) {
-      this.analytics.track('checkout_config_failed', {
-        src: 'showcase_pricing',
-        surface: 'showcase_pricing',
-        failure_reason: 'unavailable_after_retry',
-      });
-    }
-    this.paymentsEnabled = config?.enabled ?? false;
-    this.checkoutAvailability = config?.plans ?? null;
-    this.paymentsConfigReady = true;
-  }
-
   toggleExplanation() {
     this.explanationVisible = !this.explanationVisible;
   }
 
   activateDemo() {
-    if (!this.isBrowser) return;
+    if (!this.isBrowser || this.showMobileCodingGuard) return;
     if (this.demoComponent || this.demoLoading) {
       this.demoHidden = false;
       return;
@@ -748,11 +724,11 @@ You can also reset any task back to the starter whenever you want to re-practice
 
   private markAllVisible() {
     this.observeSections?.forEach((section) => section.nativeElement.classList.add('visible'));
+    this.demoSectionRequested = true;
     this.activateDemo();
     this.loadTriviaPreview();
     this.loadSystemPreview();
     this.loadReasoningPreview();
-    void this.loadCheckoutConfig();
     (Object.keys(this.sectionVisible) as Array<keyof typeof this.sectionVisible>)
       .forEach((key) => { this.sectionVisible[key] = true; });
   }
@@ -761,6 +737,7 @@ You can also reset any task back to the starter whenever you want to re-practice
     const key = el.dataset['load'];
     if (!key) return;
     if (key === 'demo') {
+      this.demoSectionRequested = true;
       this.activateDemo();
       return;
     }
@@ -800,17 +777,18 @@ You can also reset any task back to the starter whenever you want to re-practice
       this.sectionVisible.faq = true;
       return;
     }
-    if (key === 'pricing') {
-      void this.loadCheckoutConfig();
-      return;
-    }
+    if (key === 'pricing') return;
     if (key === 'contact') {
       this.sectionVisible.contact = true;
     }
   }
 
   private onViewportResize = () => {
+    const wasGuarded = this.showMobileCodingGuard;
     this.syncViewportState();
+    if (wasGuarded && !this.showMobileCodingGuard && this.demoSectionRequested) {
+      this.activateDemo();
+    }
   };
 
   private syncViewportState() {
@@ -1052,16 +1030,10 @@ You can also reset any task back to the starter whenever you want to re-practice
 
     if (!name || !email || !message) return;
     if (!verificationToken) {
-      this.contactChallengeStatusActive = true;
-      this.contactStatus = {
-        tone: 'error',
-        text: `Please complete the verification before sending, or email ${this.supportEmail} directly.`,
-      };
       return;
     }
 
     this.contactSubmitting = true;
-    this.contactChallengeStatusActive = false;
     this.contactStatus = null;
 
     try {
@@ -1081,7 +1053,6 @@ You can also reset any task back to the starter whenever you want to re-practice
         text: 'Message sent. We will reply to the email address you provided.',
       };
     } catch (err) {
-      this.contactChallengeStatusActive = false;
       if (err instanceof HttpErrorResponse && err.status === 429) {
         this.startContactCooldown(this.readRetryAfterSeconds(err));
       }
@@ -1098,31 +1069,39 @@ You can also reset any task back to the starter whenever you want to re-practice
 
   onContactTokenChange(token: string): void {
     this.contactVerificationToken = String(token || '').trim();
-    if (this.contactVerificationToken && this.contactChallengeStatusActive) {
-      this.contactChallengeStatusActive = false;
-      this.contactStatus = null;
-    }
   }
 
   onContactChallengeStateChange(state: TurnstileChallengeState): void {
     this.contactChallengeState = state;
     if (state === 'error') {
       this.contactVerificationToken = '';
-      this.contactChallengeStatusActive = true;
-      this.contactStatus = {
-        tone: 'error',
-        text: `Verification is unavailable. Please email ${this.supportEmail} directly.`,
-      };
       return;
     }
     if (state === 'expired') {
       this.contactVerificationToken = '';
-      this.contactChallengeStatusActive = true;
-      this.contactStatus = {
-        tone: 'error',
-        text: 'Verification expired and is refreshing. Please wait a moment before sending.',
-      };
     }
+  }
+
+  onContactChallengeStateChangeDeferred(state: TurnstileChallengeState): void {
+    queueMicrotask(() => this.onContactChallengeStateChange(state));
+  }
+
+  retryContactVerification(): void {
+    this.contactVerificationToken = '';
+    this.contactChallengeState = 'loading';
+    this.contactTurnstile?.reset();
+  }
+
+  contactSubmitLabel(): string {
+    if (this.contactSubmitting) return 'Sending...';
+    if (this.contactChallengeState === 'error') return 'Verification unavailable';
+    if (this.contactChallengeState === 'expired') return 'Verification expired';
+    if (!this.contactVerificationToken) {
+      return this.contactChallengeState === 'loading'
+        ? 'Loading verification...'
+        : 'Complete verification to send';
+    }
+    return 'Send message';
   }
 
   private mapContactError(err: unknown): string {

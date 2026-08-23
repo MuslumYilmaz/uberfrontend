@@ -20,6 +20,7 @@ test.describe('homepage network guardrails', () => {
     const blockedOnLanding = [
       'googletagmanager.com/gtag/js',
       '@sentry/browser',
+      '/api/billing/checkout/config',
       '/assets/monaco/min/vs/loader.js',
       '/assets/vendor/primeng/resources/themes/lara-dark-amber/theme.css',
       '/assets/vendor/primeng/resources/primeng.min.css',
@@ -44,6 +45,42 @@ test.describe('homepage network guardrails', () => {
     await expect
       .poll(() => requests.some((url) => url.includes('/assets/questions/angular/coding.json')))
       .toBeTruthy();
+
+    await page.getByTestId('showcase-landmark-pricing').scrollIntoViewIfNeeded();
+    await page.waitForTimeout(300);
+    expect(requests.some((url) => url.includes('/api/billing/checkout/config'))).toBeFalsy();
+  });
+
+  test('mobile defers the coding demo payload until the revealed section grows past 767px', async ({ page, browserName }) => {
+    test.skip(browserName !== 'chromium', 'Chromium-only network smoke');
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    const requests: string[] = [];
+    page.on('request', (request) => {
+      requests.push(request.url());
+    });
+
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+    await page.getByTestId('showcase-demo-mobile-guard').scrollIntoViewIfNeeded();
+    await expect(page.getByTestId('showcase-demo-mobile-guard')).toBeVisible();
+    await expect(page.locator('.demo-picker, .demo-meta, #demo-pane')).toHaveCount(0);
+
+    await page.waitForTimeout(500);
+    const reactCodingRequests = () => requests.filter((url) =>
+      url.includes('/assets/questions/react/coding.json'),
+    );
+    expect(reactCodingRequests()).toEqual([]);
+
+    await page.setViewportSize({ width: 834, height: 1112 });
+    await expect(page.getByTestId('showcase-demo-mobile-guard')).toHaveCount(0);
+    await expect(page.locator('#demo-pane')).toBeVisible();
+    await expect.poll(() => reactCodingRequests().length).toBe(1);
+
+    // Later supported-width resizes must reuse the one activated demo instance.
+    await page.setViewportSize({ width: 900, height: 1000 });
+    await page.setViewportSize({ width: 834, height: 1112 });
+    await page.waitForTimeout(300);
+    expect(reactCodingRequests()).toHaveLength(1);
   });
 
   test('app routes still load deferred vendor UI styles', async ({ page, browserName }) => {

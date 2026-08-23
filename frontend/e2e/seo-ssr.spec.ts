@@ -2027,7 +2027,7 @@ test.describe('seo-ssr', () => {
     });
 
     expect(caseText).toContain(
-      'Bunlar leaked veya confirmed OpenAI questions değildir; role-relevant representative practice prompts’tur.',
+      'These are not leaked or confirmed OpenAI interview questions; they are representative, role-relevant practice prompts.',
     );
     expect(caseText).toContain('OpenAI');
     expect(caseText).not.toContain('Openai');
@@ -2064,7 +2064,7 @@ test.describe('seo-ssr', () => {
       'Public Google prep guide',
       '7 representative prompts',
       'DSA, JavaScript, browser, UI, system design',
-      'Full route stays premium',
+      'Full practice set requires Premium',
       'What to study first for a Google frontend interview',
       'Current process note — reviewed July 2026',
       'Seven Google frontend interview practice questions',

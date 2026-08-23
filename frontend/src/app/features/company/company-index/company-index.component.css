@@ -2,6 +2,10 @@
   display: block;
 }
 
+.company-directory {
+  margin: 0 0 16px;
+}
+
 .company-intro {
   margin: 0 0 16px;
   padding: 16px 18px;

@@ -66,4 +66,36 @@ describe('PricingComponent', () => {
       failure_reason: 'unavailable_after_retry',
     });
   });
+
+  it('keeps direct checkout pending until config resolves, then exposes only enabled plans', async () => {
+    let resolveConfig!: (value: any) => void;
+    billingCheckoutStub.getCheckoutConfig.and.returnValue(new Promise((resolve) => {
+      resolveConfig = resolve;
+    }));
+    fixture = TestBed.createComponent(PricingComponent);
+    component = fixture.componentInstance;
+
+    fixture.detectChanges();
+
+    let monthlyButton = fixture.nativeElement.querySelector('[data-testid="pricing-cta-monthly"]') as HTMLButtonElement;
+    let planGrid = fixture.nativeElement.querySelector('.pr-grid') as HTMLElement;
+    expect(component.paymentsConfigReady).toBeFalse();
+    expect(monthlyButton.disabled).toBeTrue();
+    expect(planGrid.getAttribute('aria-busy')).toBe('true');
+
+    resolveConfig({
+      enabled: true,
+      plans: { monthly: true, quarterly: false, annual: true, lifetime: false },
+    });
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    monthlyButton = fixture.nativeElement.querySelector('[data-testid="pricing-cta-monthly"]') as HTMLButtonElement;
+    const quarterlyButton = fixture.nativeElement.querySelector('[data-testid="pricing-cta-quarterly"]') as HTMLButtonElement;
+    planGrid = fixture.nativeElement.querySelector('.pr-grid') as HTMLElement;
+    expect(component.paymentsConfigReady).toBeTrue();
+    expect(monthlyButton.disabled).toBeFalse();
+    expect(quarterlyButton.disabled).toBeTrue();
+    expect(planGrid.hasAttribute('aria-busy')).toBeFalse();
+  });
 });

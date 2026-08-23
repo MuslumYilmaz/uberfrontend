@@ -76,6 +76,7 @@ describe('IncidentListComponent', () => {
     const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
     const collection = graph.find((entry: any) => entry?.['@type'] === 'CollectionPage');
     const breadcrumb = graph.find((entry: any) => entry?.['@type'] === 'BreadcrumbList');
+    const search = fixture.nativeElement.querySelector('[data-testid="incident-list-search"]') as HTMLInputElement;
 
     expect(collection).toBeTruthy();
     expect(collection?.url || '').toContain('/incidents');
@@ -83,6 +84,7 @@ describe('IncidentListComponent', () => {
     expect(Array.isArray(collection?.mainEntity?.itemListElement)).toBeTrue();
     expect(collection?.mainEntity?.itemListElement?.[0]?.url || '').toContain('/incidents/search-typing-lag');
     expect(breadcrumb).toBeTruthy();
+    expect(search.getAttribute('aria-label')).toBe('Search incident scenarios');
   });
 
   it('renders a premium chip and preview copy for premium incidents', async () => {

@@ -763,12 +763,18 @@
             </section>
 
             <!-- Similar questions -->
-            <section class="card" *ngIf="similarItems().length && !showAngularHttpCancellationLab(q)">
-                <div class="card-head card-head-toggle" (click)="similarOpen.set(!similarOpen())">
-                    <span>Similar questions</span>
-                    <app-fa-glyph class="card-head-toggle__icon" [icon]="similarOpen() ? 'fa-solid fa-chevron-up' : 'fa-solid fa-chevron-down'"></app-fa-glyph>
-                </div>
-                <div class="card-body" *ngIf="similarOpen()">
+            <section class="card" *ngIf="similarItems().length && !showAngularHttpCancellationLab(q)"
+                aria-labelledby="similar-questions-heading">
+                <h2 class="card-head card-head--toggle" id="similar-questions-heading">
+                    <button type="button" class="card-head-toggle"
+                        aria-controls="similar-questions-panel"
+                        [attr.aria-expanded]="similarOpen()"
+                        (click)="similarOpen.set(!similarOpen())">
+                        <span>Similar questions</span>
+                        <app-fa-glyph class="card-head-toggle__icon" aria-hidden="true" [icon]="similarOpen() ? 'fa-solid fa-chevron-up' : 'fa-solid fa-chevron-down'"></app-fa-glyph>
+                    </button>
+                </h2>
+                <div class="card-body" id="similar-questions-panel" *ngIf="similarOpen()">
                     <div class="similar-list">
                         <a class="similar-item" *ngFor="let s of similarItems(); trackBy: trackBySimilarQuestion"
                             data-trivia-link-zone="similar"

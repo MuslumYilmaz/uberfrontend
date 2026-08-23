@@ -208,6 +208,86 @@ describe('CodingDetailComponent', () => {
     expect(component.submitLabel()).toBe('Mark as incomplete');
   });
 
+  it('keeps the phone guard below 768px and uses compact workspace layout through 980px', () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    const viewportWidth = spyOnProperty(window, 'innerWidth', 'get');
+
+    viewportWidth.and.returnValue(767);
+    (component as any).syncViewportState();
+    expect(component.isPhoneViewport()).toBeTrue();
+    expect(component.isCompactWorkspace()).toBeTrue();
+    expect(component.showMobileDesktopGuard()).toBeTrue();
+
+    viewportWidth.and.returnValue(768);
+    (component as any).syncViewportState();
+    expect(component.isPhoneViewport()).toBeFalse();
+    expect(component.isCompactWorkspace()).toBeTrue();
+    expect(component.showMobileDesktopGuard()).toBeFalse();
+
+    viewportWidth.and.returnValue(980);
+    (component as any).syncViewportState();
+    expect(component.isCompactWorkspace()).toBeTrue();
+    component.horizontalRatio.set(0.8);
+    expect(component.asideFlex()).toBe('0 0 45%');
+
+    viewportWidth.and.returnValue(981);
+    (component as any).syncViewportState();
+    expect(component.isPhoneViewport()).toBeFalse();
+    expect(component.isCompactWorkspace()).toBeFalse();
+    expect(component.asideFlex()).toBe('0 0 80%');
+  });
+
+  it('resizes the description by the coding root height on compact screens and width on desktop', () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    const layout = document.createElement('div');
+    const setPointerCapture = jasmine.createSpy('setPointerCapture');
+    spyOn(layout, 'getBoundingClientRect').and.returnValue({
+      width: 500,
+      height: 400,
+      top: 0,
+      right: 500,
+      bottom: 400,
+      left: 0,
+      x: 0,
+      y: 0,
+      toJSON: () => ({}),
+    } as DOMRect);
+    component.codingLayout = { nativeElement: layout } as any;
+    component.tech = 'react';
+    component.horizontalRatio.set(0.3);
+    component.isCompactWorkspace.set(true);
+
+    component.startHorizontalDrag({
+      preventDefault: jasmine.createSpy('preventDefault'),
+      clientX: 100,
+      clientY: 100,
+      pointerId: 1,
+      target: { setPointerCapture },
+    } as any);
+    expect(component.isDraggingAside()).toBeTrue();
+    (component as any).onPointerMoveHorizontal({ clientX: 450, clientY: 140 });
+    expect(component.horizontalRatio()).toBeCloseTo(0.4, 5);
+    document.dispatchEvent(new Event('pointerup'));
+    expect(component.isDraggingAside()).toBeFalse();
+
+    component.horizontalRatio.set(0.3);
+    component.isCompactWorkspace.set(false);
+    component.startHorizontalDrag({
+      preventDefault: jasmine.createSpy('preventDefaultDesktop'),
+      clientX: 100,
+      clientY: 100,
+      pointerId: 2,
+      target: { setPointerCapture },
+    } as any);
+    (component as any).onPointerMoveHorizontal({ clientX: 150, clientY: 350 });
+    expect(component.horizontalRatio()).toBeCloseTo(0.4, 5);
+    document.dispatchEvent(new Event('pointerup'));
+    expect(component.isDraggingAside()).toBeFalse();
+    expect(setPointerCapture).toHaveBeenCalledTimes(2);
+  });
+
   it('delegates runTests to the JS panel for JS questions', async () => {
     const fixture = TestBed.createComponent(CodingDetailComponent);
     const component = fixture.componentInstance;
@@ -991,7 +1071,7 @@ describe('CodingDetailComponent', () => {
     expect(completion.textContent).not.toContain('Counter');
   });
 
-  it('shows a disabled Coming soon pressure entry for unsupported framework questions', async () => {
+  it('does not advertise Pressure Mode for unsupported framework questions', async () => {
     const question = {
       id: 'react-autocomplete-search-starter',
       title: 'React Autocomplete Search',
@@ -1023,15 +1103,12 @@ describe('CodingDetailComponent', () => {
     component.isPhoneViewport.set(false);
     fixture.detectChanges();
 
-    const entry = fixture.nativeElement.querySelector(
-      '[data-testid="pressure-mode-entry"]'
-    ) as HTMLElement;
-    const comingSoonButton = fixture.nativeElement.querySelector(
-      '[data-testid="pressure-mode-coming-soon"]'
-    ) as HTMLButtonElement;
-    expect(entry.textContent).toContain('tailored cumulative pressure mode');
-    expect(comingSoonButton.textContent?.trim()).toBe('Coming soon');
-    expect(comingSoonButton.disabled).toBeTrue();
+    expect(
+      fixture.nativeElement.querySelector('[data-testid="pressure-mode-entry"]')
+    ).toBeNull();
+    expect(
+      fixture.nativeElement.querySelector('[data-testid="pressure-mode-coming-soon"]')
+    ).toBeNull();
     expect(
       fixture.nativeElement.querySelector('[data-testid="pressure-mode-start"]')
     ).toBeNull();

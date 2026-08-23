@@ -102,6 +102,23 @@ describe('MarketingHeaderComponent', () => {
     expect(cta.getAttribute('href')).toBe('/pricing');
   });
 
+  it('routes the brand by resolved authentication state and tracks the matching destination', async () => {
+    const fixture = await createComponent({ authUiState: 'pending' });
+    const brand = fixture.nativeElement.querySelector('[data-testid="marketing-header-brand"]') as HTMLAnchorElement;
+
+    expect(brand.getAttribute('href')).toBe('/');
+
+    authUiState.set('authenticated');
+    fixture.detectChanges();
+    expect(brand.getAttribute('href')).toBe('/dashboard');
+
+    brand.click();
+    expect(analytics.track).toHaveBeenCalledWith(
+      'header_brand_clicked',
+      jasmine.objectContaining({ surface: 'marketing', destination: '/dashboard' }),
+    );
+  });
+
   it('keeps the dashboard action for active Premium users', async () => {
     const fixture = await createComponent({ isLoggedIn: true, isPro: true });
     const cta = fixture.nativeElement.querySelector('[data-testid="marketing-header-cta"]') as HTMLAnchorElement;

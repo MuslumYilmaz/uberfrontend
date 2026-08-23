@@ -921,10 +921,43 @@
 .coding-detail select:focus { outline: none; border-color:#60a5fa; box-shadow:0 0 0 2px rgba(96,165,250,.25); }
 
 /* ---------- Splitters ---------- */
-.splitter{ width:5px; background:transparent; border-radius:25px; cursor:col-resize; transition:background-color .15s; }
+.splitter{ flex:0 0 5px; width:5px; background:transparent; border-radius:25px; cursor:col-resize; touch-action:none; user-select:none; transition:background-color .15s; }
 .splitter:hover, .splitter.dragging{ background-color:#3b82f6; }
 .horizontal-splitter{ height:5px; z-index:2; background:transparent; border-radius:25px; cursor:row-resize; user-select:none; transition:background-color .15s; }
 .horizontal-splitter:hover, .horizontal-splitter.dragging{ background-color:#3b82f6; }
+
+@media (max-width: 980px) {
+  .coding-detail {
+    flex-direction: column;
+  }
+
+  .coding-detail > aside,
+  .coding-detail > main {
+    width: 100%;
+    max-width: 100%;
+    padding-bottom: 0;
+  }
+
+  .coding-detail > .splitter {
+    flex-basis: 5px;
+    width: 100%;
+    height: 5px;
+    cursor: row-resize;
+  }
+
+  .coding-detail > .coding-description-pane--collapsed {
+    overflow: hidden;
+  }
+
+  .coding-description-rail {
+    flex-direction: row;
+    padding: 3px 8px;
+  }
+
+  .coding-description-rail__actions {
+    flex-direction: row;
+  }
+}
 
 /* ---------- Notes & Pitfalls tiles ---------- */
 .coding-detail .grid.md\:grid-cols-3.gap-3 { align-items: stretch; }

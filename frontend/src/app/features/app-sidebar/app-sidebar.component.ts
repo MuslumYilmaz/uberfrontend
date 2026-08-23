@@ -151,6 +151,15 @@ export class AppSidebarComponent implements OnInit, OnDestroy {
     return this.collapsed;
   }
 
+  isGroupExpanded(index: number): boolean {
+    const item = this.nav[index];
+    return !!item && this.isGroup(item) && !this.shouldCollapseRail() && !!item.open;
+  }
+
+  isGroupContentHidden(index: number): boolean {
+    return !this.isGroupExpanded(index);
+  }
+
   isLinkActive(item: LinkItem): boolean {
     const path = this.currentPath;
     const view = this.queryValue('view');

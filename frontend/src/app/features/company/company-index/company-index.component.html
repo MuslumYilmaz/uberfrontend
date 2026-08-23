@@ -9,8 +9,34 @@
     </p>
 </header>
 
-<section class="company-intro fa-card">
-    <p class="company-intro__kicker">Route purpose</p>
+<section class="company-directory" aria-label="Company practice groupings" data-testid="company-index-directory">
+    <ng-container *ngIf="loading; else loaded">
+        <div class="company-loading" role="status" aria-live="polite" data-testid="company-index-loading">
+            <p-progressSpinner></p-progressSpinner>
+            <div class="company-loading__text">Loading company practice groups…</div>
+        </div>
+    </ng-container>
+
+    <ng-template #loaded>
+        <div class="company-list" data-testid="company-index-list">
+            <a *ngFor="let c of companies" class="company-card fa-card" [routerLink]="['/companies', c.slug, 'preview']">
+                <div class="company-card__content">
+                    <div class="company-card__left">
+                        <app-company-logo-mark class="company-card__logo" [company]="c.slug" [decorative]="true"></app-company-logo-mark>
+                        <div>
+                            <div class="company-card__title">{{ c.label }}</div>
+                            <div class="company-card__meta">{{ promptCountLabel(c.count) }}</div>
+                        </div>
+                    </div>
+                    <div class="company-card__chevron">→</div>
+                </div>
+            </a>
+        </div>
+    </ng-template>
+</section>
+
+<section class="company-intro fa-card" data-testid="company-index-guidance">
+    <p class="company-intro__kicker">How to use company prep</p>
     <h2 class="company-intro__title">Company sets are the final targeting layer in your prep stack</h2>
     <p class="company-intro__copy">
         Use the Question Library and Study Plans for baseline coverage, then use Company Prep to rehearse coding, concept, and system design differences for the teams you are targeting.
@@ -47,7 +73,7 @@
     </section>
 
     <details class="company-more-routes">
-        <summary>More routes and prep links</summary>
+        <summary>More ways to prepare</summary>
         <p>
             Company pages organize coding, concept, and system design practice into FrontendAtlas editorial groupings for targeted rehearsal.
         </p>
@@ -79,27 +105,3 @@
         </div>
     </details>
 </section>
-
-<ng-container *ngIf="loading; else loaded">
-    <div class="company-loading" role="status" aria-live="polite" data-testid="company-index-loading">
-        <p-progressSpinner></p-progressSpinner>
-        <div class="company-loading__text">Loading company guides…</div>
-    </div>
-</ng-container>
-
-<ng-template #loaded>
-    <div class="company-list">
-        <a *ngFor="let c of companies" class="company-card fa-card" [routerLink]="['/companies', c.slug, 'preview']">
-            <div class="company-card__content">
-                <div class="company-card__left">
-                    <app-company-logo-mark class="company-card__logo" [company]="c.slug" [decorative]="true"></app-company-logo-mark>
-                    <div>
-                        <div class="company-card__title">{{ c.label }}</div>
-                        <div class="company-card__meta">{{ promptCountLabel(c.count) }}</div>
-                    </div>
-                </div>
-                <div class="company-card__chevron">→</div>
-            </div>
-        </a>
-    </div>
-</ng-template>

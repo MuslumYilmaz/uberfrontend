@@ -1,8 +1,10 @@
 import { Component, signal } from '@angular/core';
+import { By } from '@angular/platform-browser';
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
+import { Tooltip } from 'primeng/tooltip';
 import { BugReportService } from '../../core/services/bug-report.service';
 import { PracticeRegistryService } from '../../core/services/practice-registry.service';
 import { AppSidebarDrawerService } from '../../core/services/app-sidebar-drawer.service';
@@ -168,6 +170,60 @@ describe('AppSidebarComponent', () => {
       source: 'sidebar',
       route: '/',
     }));
+  });
+
+  it('names compact rail controls and only enables their tooltips while collapsed', async () => {
+    await configureTestingModule();
+    spyOn(window, 'matchMedia').and.returnValue({ matches: false } as MediaQueryList);
+    const fixture = TestBed.createComponent(AppSidebarComponent);
+    fixture.componentInstance.collapsed = true;
+    fixture.detectChanges();
+
+    const homeDebug = fixture.debugElement.query(By.css('a[aria-label="Home base"]'));
+    const practiceButton = fixture.nativeElement.querySelector(
+      'button[aria-label="Practice Library"]',
+    ) as HTMLButtonElement;
+    expect(homeDebug).toBeTruthy();
+    expect(homeDebug.injector.get(Tooltip).disabled).toBeFalse();
+    expect(practiceButton.getAttribute('aria-expanded')).toBe('false');
+
+    fixture.componentInstance.collapsed = false;
+    fixture.detectChanges();
+    expect(homeDebug.injector.get(Tooltip).disabled).toBeTrue();
+  });
+
+  it('keeps collapsed or closed group links hidden and inert until their group is visibly expanded', async () => {
+    await configureTestingModule();
+    spyOn(window, 'matchMedia').and.returnValue({ matches: false } as MediaQueryList);
+    const fixture = TestBed.createComponent(AppSidebarComponent);
+    fixture.componentInstance.collapsed = true;
+    fixture.detectChanges();
+    (fixture.componentInstance.nav[1] as any).open = true;
+    fixture.detectChanges();
+
+    const practiceButton = fixture.nativeElement.querySelector(
+      'button[aria-label="Practice Library"]',
+    ) as HTMLButtonElement;
+    const group = fixture.nativeElement.querySelector('#group-1') as HTMLElement;
+    const hiddenLink = group.querySelector('a') as HTMLAnchorElement;
+
+    expect(practiceButton.getAttribute('aria-expanded')).toBe('false');
+    expect(group.getAttribute('aria-hidden')).toBe('true');
+    expect(group.hasAttribute('inert')).toBeTrue();
+    hiddenLink.focus();
+    expect(document.activeElement).not.toBe(hiddenLink);
+
+    fixture.componentInstance.collapsed = false;
+    fixture.detectChanges();
+    expect(practiceButton.getAttribute('aria-expanded')).toBe('true');
+    expect(group.hasAttribute('aria-hidden')).toBeFalse();
+    expect(group.hasAttribute('inert')).toBeFalse();
+
+    practiceButton.click();
+    fixture.detectChanges();
+    expect(practiceButton.getAttribute('aria-expanded')).toBe('false');
+    expect(group.getAttribute('aria-hidden')).toBe('true');
+    expect(group.hasAttribute('inert')).toBeTrue();
   });
 
   it('highlights debug scenarios and opens the practice catalog for incident detail routes', async () => {

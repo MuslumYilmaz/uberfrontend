@@ -27,14 +27,14 @@ import { ConversionStickyCtaComponent } from '../../shared/components/conversion
         [checkoutAvailability]="checkoutAvailability"
         [analyticsSource]="analyticsSource"
         analyticsSurface="pricing_page"
-        ctaMode="emit">
+        ctaMode="checkout">
       </app-pricing-plans-section>
     </section>
     <app-conversion-sticky-cta surface="pricing"></app-conversion-sticky-cta>
   `
 })
 export class PricingComponent implements OnInit {
-  paymentsEnabled = true;
+  paymentsEnabled = false;
   paymentsConfigReady = false;
   checkoutAvailability: Partial<Record<PlanId, boolean>> | null = null;
   analyticsSource = 'pricing_page';

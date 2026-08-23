@@ -93,6 +93,7 @@ test('coding list filters sync to URL and persist on reload + back', async ({ pa
 
   await page.goto('/coding');
   await expect(page.getByTestId('coding-list-page')).toBeVisible();
+  await expect(page.getByLabel('Search questions', { exact: true })).toBeVisible();
 
   await page.getByTestId('filter-tech-javascript').click();
   await page.getByTestId(`filter-difficulty-${jsFilters.difficulty}`).click();
@@ -142,6 +143,8 @@ test('track filters sync to URL and persist on reload + back', async ({ page }) 
   await page.goto(`/tracks/${TRACK_FILTER_TEST.slug}`);
   await expect(page.getByTestId('track-detail-page')).toBeVisible();
   await expect(page.getByTestId('track-filter-kind-all')).toBeVisible();
+  await expect(page.getByLabel('Search questions in this track', { exact: true })).toBeVisible();
+  await expect(page.getByLabel('Sort track questions', { exact: true })).toBeVisible();
 
   await page.getByTestId('track-filter-kind-coding').click();
   await page.getByTestId('track-filter-tech-javascript').click();

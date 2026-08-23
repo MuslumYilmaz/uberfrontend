@@ -305,37 +305,39 @@ import { PUBLIC_EDITORIAL_FACTS } from '../../../core/content/public-editorial-f
 
     <!-- Section 4 -->
     <h2>Typical hiring process</h2>
-    <ol>
+    <ol data-testid="frontend-interview-hiring-process">
       <li>
-        <strong>Recruiter call (20–30 min).</strong>  
-        A quick conversation about your background and motivation.  
-        Expect light screening questions (e.g., “What’s the difference between var, let, const?”).  
-        Purpose: check you’re a fit on paper and can communicate well.
+        <p><strong>Recruiter call (20–30 min).</strong></p>
+        <p>A quick conversation about your background and motivation.</p>
+        <p>Expect light screening questions (e.g., “What’s the difference between var, let, const?”).</p>
+        <p>Purpose: check you’re a fit on paper and can communicate well.</p>
       </li>
       <li>
-        <strong>Online assessment / take-home.</strong>  
-        Usually a timed quiz (30–60 min) or a small project you submit in a few days.  
-        They want to see your *raw coding ability* without interview pressure.  
-        Tip: keep your solution simple and easy to read — don’t over-engineer.
+        <p><strong>Online assessment / take-home.</strong></p>
+        <p>Usually a timed quiz (30–60 min) or a small project you submit in a few days.</p>
+        <p>They want to see your <em>raw coding ability</em> without interview pressure.</p>
+        <p><strong>Tip:</strong> keep your solution simple and easy to read — don’t over-engineer.</p>
       </li>
       <li>
-        <strong>Phone screen / virtual interview (45–60 min).</strong>  
-        A live coding task with an engineer.  
-        You’ll likely implement a small UI widget or JS helper, while talking through your approach.  
-        This is where narration matters: share your thinking instead of silently typing.
+        <p><strong>Phone screen / virtual interview (45–60 min).</strong></p>
+        <p>A live coding task with an engineer.</p>
+        <p>You’ll likely implement a small UI widget or JS helper, while talking through your approach.</p>
+        <p>This is where narration matters: share your thinking instead of silently typing.</p>
       </li>
       <li>
-        <strong>Onsite / interview loop (half-day to full-day).</strong>  
-        Multiple rounds back-to-back:  
-        - **Coding** (bigger task or multiple small ones).  
-        - **System design** (for senior roles: architecture, state, data flow).  
-        - **Behavioral** (team fit, communication, past experiences).  
-        Tip: bring steady energy — consistency across rounds matters as much as nailing one.
+        <p><strong>Onsite / interview loop (half-day to full-day).</strong></p>
+        <p>Multiple rounds back-to-back:</p>
+        <ul data-testid="frontend-interview-onsite-rounds">
+          <li><strong>Coding:</strong> a bigger task or multiple small ones.</li>
+          <li><strong>System design:</strong> for senior roles, architecture, state, and data flow.</li>
+          <li><strong>Behavioral:</strong> team fit, communication, and past experiences.</li>
+        </ul>
+        <p><strong>Tip:</strong> bring steady energy — consistency across rounds matters as much as nailing one.</p>
       </li>
     </ol>
     <p>
-      💡 Pro tip: Always ask your recruiter for the exact breakdown of rounds.  
-      Many companies even send prep material — if they offer, *use it*. It shows initiative and helps you focus your practice.
+      <strong>Pro tip:</strong> Always ask your recruiter for the exact breakdown of rounds.
+      Many companies even send prep material — if they offer, <em>use it</em>. It shows initiative and helps you focus your practice.
     </p>
 
     <!-- Section 5 -->

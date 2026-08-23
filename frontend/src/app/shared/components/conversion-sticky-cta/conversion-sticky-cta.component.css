@@ -4,6 +4,7 @@
 
 .conversion-sticky {
   position: fixed;
+  box-sizing: border-box;
   z-index: 45;
   right: max(12px, env(safe-area-inset-right));
   bottom: max(12px, env(safe-area-inset-bottom));
@@ -13,6 +14,8 @@
   align-items: center;
   gap: 10px 14px;
   width: min(560px, calc(100vw - 24px));
+  max-height: min(180px, calc(100vh - max(24px, env(safe-area-inset-top)) - max(24px, env(safe-area-inset-bottom))));
+  max-height: min(180px, calc(100dvh - max(24px, env(safe-area-inset-top)) - max(24px, env(safe-area-inset-bottom))));
   margin-left: auto;
   padding: 14px 44px 14px 14px;
   border: 1px solid color-mix(in srgb, var(--uf-border-subtle) 58%, var(--uf-accent) 42%);
@@ -20,6 +23,9 @@
   background: color-mix(in srgb, var(--uf-surface-alt) 94%, transparent);
   box-shadow: var(--uf-card-shadow-strong);
   backdrop-filter: blur(14px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .conversion-sticky__copy {
@@ -58,7 +64,7 @@
 
   .conversion-sticky__actions {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.9fr);
   }
 
   .conversion-sticky__actions a:only-child {

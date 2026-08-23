@@ -101,6 +101,17 @@ describe('HeaderComponent', () => {
     expect(desktopLinks.some((link) => (link.textContent || '').trim() === 'Dashboard')).toBeFalse();
   });
 
+  it('keeps the brand on the public landing page until authentication resolves', async () => {
+    const fixture = await createComponent({ isLoggedIn: false, authUiState: 'pending' });
+    const brandLink = fixture.nativeElement.querySelector('[data-testid="header-brand"]') as HTMLAnchorElement;
+
+    expect(brandLink.getAttribute('href')).toBe('/');
+
+    authUiState.set('signed_out');
+    fixture.detectChanges();
+    expect(brandLink.getAttribute('href')).toBe('/');
+  });
+
   it('shows the mobile profile button for signed-in users', async () => {
     const fixture = await createComponent({ isLoggedIn: true });
     const profileLink = fixture.nativeElement.querySelector('[data-testid="header-mobile-profile-button"]') as HTMLAnchorElement;
@@ -236,6 +247,62 @@ describe('HeaderComponent', () => {
       'header_top_nav_clicked',
       jasmine.objectContaining({ surface: 'app', area: 'primary', destination: 'study' }),
     );
+  });
+
+  it('opens a named prep dialog, focuses search, and restores trigger focus on Escape', async () => {
+    const fixture = await createComponent({ isLoggedIn: false });
+    const trigger = fixture.nativeElement.querySelector(
+      '[data-testid="header-mobile-study-button"]',
+    ) as HTMLButtonElement;
+
+    trigger.focus();
+    trigger.click();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const dialog = fixture.nativeElement.querySelector('[role="dialog"]') as HTMLElement;
+    const input = fixture.nativeElement.querySelector('input[aria-label="Search interview prep"]') as HTMLInputElement;
+    expect(trigger.getAttribute('aria-haspopup')).toBe('dialog');
+    expect(dialog.getAttribute('aria-label')).toBe('Interview prep');
+    expect(document.activeElement).toBe(input);
+
+    const down = new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true, cancelable: true });
+    input.dispatchEvent(down);
+    expect(down.defaultPrevented).toBeTrue();
+    expect(fixture.componentInstance.activeIndex()).toBe(0);
+
+    input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }));
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('[role="dialog"]')).toBeNull();
+    expect(document.activeElement).toBe(trigger);
+  });
+
+  it('focuses prep search for slash and Ctrl/Meta+K shortcuts', async () => {
+    const fixture = await createComponent({ isLoggedIn: false });
+    const trigger = fixture.nativeElement.querySelector('.fah-navlink') as HTMLButtonElement;
+
+    const openWithShortcut = async (event: KeyboardEvent) => {
+      document.dispatchEvent(event);
+      fixture.detectChanges();
+      await fixture.whenStable();
+      fixture.detectChanges();
+      expect(event.defaultPrevented).toBeTrue();
+      expect(document.activeElement).toBe(
+        fixture.nativeElement.querySelector('input[aria-label="Search interview prep"]'),
+      );
+
+      document.activeElement?.dispatchEvent(
+        new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }),
+      );
+      fixture.detectChanges();
+      expect([trigger, fixture.nativeElement.querySelector('[data-testid="header-mobile-study-button"]')])
+        .toContain(document.activeElement as HTMLButtonElement);
+    };
+
+    await openWithShortcut(new KeyboardEvent('keydown', { key: '/', bubbles: true, cancelable: true }));
+    await openWithShortcut(new KeyboardEvent('keydown', { key: 'k', ctrlKey: true, bubbles: true, cancelable: true }));
+    await openWithShortcut(new KeyboardEvent('keydown', { key: 'k', metaKey: true, bubbles: true, cancelable: true }));
   });
 
   it('tracks the guide as the primary start action and keeps Question Library as the full-library action', async () => {

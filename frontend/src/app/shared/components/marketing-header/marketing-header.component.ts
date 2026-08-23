@@ -33,6 +33,8 @@ export class MarketingHeaderComponent {
   readonly isPro = computed(() => isProActive(this.auth.user()));
   readonly isAuthenticatedUi = computed(() => this.auth.authUiState() === 'authenticated');
   readonly isAuthUiResolved = computed(() => this.auth.authUiState() !== 'pending');
+  readonly brandLink = computed(() => this.isAuthenticatedUi() ? ['/dashboard'] : ['/']);
+  readonly brandDestination = computed(() => this.isAuthenticatedUi() ? '/dashboard' : '/');
   readonly mobileMenuOpen = signal(false);
   readonly currentUrl = signal(this.router.url);
 
@@ -146,7 +148,7 @@ export class MarketingHeaderComponent {
   trackBrandClick() {
     this.analytics.track('header_brand_clicked', {
       surface: 'marketing',
-      destination: '/',
+      destination: this.brandDestination(),
       auth_state: this.authState(),
     });
   }

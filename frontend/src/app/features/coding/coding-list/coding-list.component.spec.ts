@@ -144,6 +144,13 @@ describe('CodingListComponent', () => {
     expect(component.questionRowKindLabel(question({ __kind: 'coding' }) as any)).toBe('Coding');
   });
 
+  it('gives the question catalog search control an accessible name', async () => {
+    const fixture = await createComponent();
+    const search = fixture.nativeElement.querySelector('[data-testid="coding-list-search"]') as HTMLInputElement;
+
+    expect(search.getAttribute('aria-label')).toBe('Search questions');
+  });
+
   it('renders solved styling without visible solved text for solved questions in the list', async () => {
     const fixture = await createComponent({
       items: [question()],

@@ -56,8 +56,13 @@ describe('ConversionStickyCtaComponent', () => {
   });
 
   it('shows clean account and pricing links for signed-out mobile visitors', () => {
+    const aside = fixture.nativeElement.querySelector('aside') as HTMLElement;
+    const dismiss = fixture.nativeElement.querySelector('.conversion-sticky__dismiss') as HTMLButtonElement;
     const links = Array.from(fixture.nativeElement.querySelectorAll('a')) as HTMLAnchorElement[];
 
+    expect(aside.getAttribute('aria-label')).toBe('Account and pricing shortcuts');
+    expect(aside.hasAttribute('aria-live')).toBeFalse();
+    expect(dismiss.getAttribute('aria-label')).toBe('Hide shortcuts for this session');
     expect(links.map((link) => (link.textContent || '').trim())).toEqual([
       'Create free account',
       'Compare plans',
