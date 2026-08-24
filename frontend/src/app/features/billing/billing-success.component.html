@@ -1,14 +1,31 @@
 <section class="billing-page">
   <div class="billing-card">
     <p class="eyebrow">Billing</p>
-    <h1 data-testid="billing-success-title">Payment received</h1>
-    <p class="lead">Payment received, syncing access...</p>
-    <p class="muted">This usually takes a few seconds.</p>
+    <h1 data-testid="billing-success-title">
+      {{ state() === 'ready' ? 'Premium access is ready' : 'Payment received' }}
+    </h1>
+    <p class="lead">
+      {{ state() === 'ready' ? 'Your Premium library is unlocked.' : 'Payment received, syncing access...' }}
+    </p>
+    <p class="muted" *ngIf="state() !== 'ready'">This usually takes a few seconds.</p>
     <p class="muted" *ngIf="attemptId()" data-testid="billing-attempt-id">
       Support reference: {{ attemptId() }}
     </p>
 
     <p class="muted" *ngIf="errorMessage()">{{ errorMessage() }}</p>
+
+    <div class="timeout" *ngIf="state() === 'ready'" data-testid="billing-ready-state">
+      <p>Your payment is verified and Premium access has been applied to this account.</p>
+      <a
+        class="btn"
+        [routerLink]="['/react', 'coding', 'react-contact-form-starter']"
+        [queryParams]="{ src: 'billing_success' }"
+        (click)="trackPremiumChallengeStarted()"
+        data-testid="billing-start-premium">
+        Start your first Premium challenge
+      </a>
+      <a class="link" routerLink="/profile">View profile</a>
+    </div>
 
     <div class="timeout" *ngIf="state() === 'timeout'">
       <p>We’re still waiting on the subscription update.</p>

@@ -17,6 +17,7 @@ describe('CheckoutIntentService', () => {
       planId: 'quarterly',
       src: 'showcase_pricing',
       surface: 'showcase_pricing',
+      campaignId: 'INTERVIEW_AUGUST',
       returnUrl: '/?view=plans',
     });
 
@@ -25,8 +26,27 @@ describe('CheckoutIntentService', () => {
       planId: 'quarterly',
       src: 'showcase_pricing',
       surface: 'showcase_pricing',
+      campaignId: 'interview_august',
       returnUrl: '/?view=plans',
     }));
+  });
+
+  it('drops unsafe campaign values and never persists raw discount-code fields', () => {
+    const intent = service.save({
+      planId: 'monthly',
+      src: 'pricing',
+      surface: 'pricing_page',
+      campaignId: 'SAVE 15% NOW',
+      returnUrl: '/pricing',
+      ...({ couponCode: 'ATLAS15', discountCode: 'SAVE15' } as any),
+    });
+
+    const stored = sessionStorage.getItem('fa:checkout:intent:v1') || '';
+    expect(intent.campaignId).toBeUndefined();
+    expect(stored).not.toContain('ATLAS15');
+    expect(stored).not.toContain('SAVE15');
+    expect(stored).not.toContain('couponCode');
+    expect(stored).not.toContain('discountCode');
   });
 
   it('rejects stale or unsafe stored values', () => {

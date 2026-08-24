@@ -21,14 +21,22 @@ import { take } from 'rxjs/operators';
 import { IncidentService } from '../../core/services/incident.service';
 import { Tech } from '../../core/models/user.model';
 import { AnalyticsService } from '../../core/services/analytics.service';
+import { BillingCheckoutService, CheckoutSurface } from '../../core/services/billing-checkout.service';
 import { ExperimentService } from '../../core/services/experiment.service';
 import { QuestionService, ShowcaseStatsPayload } from '../../core/services/question.service';
 import { SEO_SUPPRESS_TOKEN } from '../../core/services/seo-context';
 import { TradeoffBattleService } from '../../core/services/tradeoff-battle.service';
 import { FaqSectionComponent } from '../../shared/faq-section/faq-section.component';
-import { PricingPlansSectionComponent } from '../pricing/components/pricing-plans-section/pricing-plans-section.component';
+import {
+  PRICING_BASELINE_OFFER_VERSION,
+  PRICING_V2_OFFER_VERSION,
+  PricingCtaMode,
+  PricingPlanDetails,
+  PricingPlansSectionComponent,
+} from '../pricing/components/pricing-plans-section/pricing-plans-section.component';
 import { ConversionContextService } from '../../core/services/conversion-context.service';
 import { apiUrl } from '../../core/utils/api-base';
+import { PlanId } from '../../core/utils/payments-provider.util';
 import { SHOWCASE_STATS } from '../../generated/content-metadata';
 import {
   COMPANY_PRACTICE_DISCLAIMER,
@@ -605,18 +613,32 @@ You can also reset any task back to the starter whenever you want to re-practice
     faq: false,
     contact: false,
   };
+  pricingPaymentsEnabled = false;
+  pricingPaymentsConfigReady = false;
+  pricingCheckoutAvailability: Partial<Record<PlanId, boolean>> | null = null;
+  pricingPlanDetails: PricingPlanDetails | null = null;
+  pricingOfferVersion = PRICING_BASELINE_OFFER_VERSION;
+  pricingCheckoutSurface: CheckoutSurface = 'hosted_new_tab';
 
   private readonly LP_SRC_PATTERN = /^[a-z0-9_-]{1,64}$/;
   private reasoningPreviewLoaded = false;
+  private pricingConfigLoading = false;
 
   constructor(
     private injector: Injector,
     private qs: QuestionService,
     private analytics: AnalyticsService,
+    private billingCheckout: BillingCheckoutService,
     private experiments: ExperimentService,
     private route: ActivatedRoute,
     private conversionContext: ConversionContextService,
   ) { }
+
+  get pricingCtaMode(): PricingCtaMode {
+    return this.pricingOfferVersion === PRICING_V2_OFFER_VERSION
+      ? 'checkout'
+      : 'navigatePricing';
+  }
 
   ngOnInit(): void {
     this.heroExperimentVariant = this.experiments.variant('hero_headline_cta_v1', 'showcase');
@@ -731,6 +753,7 @@ You can also reset any task back to the starter whenever you want to re-practice
     this.loadReasoningPreview();
     (Object.keys(this.sectionVisible) as Array<keyof typeof this.sectionVisible>)
       .forEach((key) => { this.sectionVisible[key] = true; });
+    if (this.isBrowser) void this.loadPricingConfig();
   }
 
   private handleDeferredSection(el: HTMLElement) {
@@ -777,9 +800,28 @@ You can also reset any task back to the starter whenever you want to re-practice
       this.sectionVisible.faq = true;
       return;
     }
-    if (key === 'pricing') return;
+    if (key === 'pricing') {
+      void this.loadPricingConfig();
+      return;
+    }
     if (key === 'contact') {
       this.sectionVisible.contact = true;
+    }
+  }
+
+  private async loadPricingConfig(): Promise<void> {
+    if (this.pricingPaymentsConfigReady || this.pricingConfigLoading || !this.isBrowser) return;
+    this.pricingConfigLoading = true;
+    try {
+      const config = await this.billingCheckout.getCheckoutConfig();
+      this.pricingPaymentsEnabled = config?.enabled ?? false;
+      this.pricingCheckoutAvailability = config?.plans ?? null;
+      this.pricingPlanDetails = config?.planDetails ?? null;
+      this.pricingOfferVersion = config?.offerVersion ?? PRICING_BASELINE_OFFER_VERSION;
+      this.pricingCheckoutSurface = config?.checkoutSurface ?? 'hosted_new_tab';
+    } finally {
+      this.pricingConfigLoading = false;
+      this.pricingPaymentsConfigReady = true;
     }
   }
 

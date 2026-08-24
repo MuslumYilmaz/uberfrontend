@@ -14,6 +14,14 @@ describe('billing-ux util', () => {
     );
   });
 
+  it('describes reused checkout launches without claiming an overlay opened a new tab', () => {
+    expect(getCheckoutLaunchNotice('overlay', true)).toBe(
+      'Checkout is already in progress. Reopened the same checkout.'
+    );
+    expect(getCheckoutLaunchNotice('new-tab', true)).toContain('in a new tab');
+    expect(getCheckoutLaunchNotice('same-tab', true)).toContain('in this tab');
+  });
+
   it('maps manage-url backend codes to user-facing messages', () => {
     const unsupported = new HttpErrorResponse({
       status: 400,

@@ -9,6 +9,7 @@ import { of, throwError } from 'rxjs';
 import { IncidentService } from '../../core/services/incident.service';
 import { PUBLIC_EDITORIAL_FACTS } from '../../core/content/public-editorial-facts';
 import { AnalyticsService } from '../../core/services/analytics.service';
+import { BillingCheckoutService } from '../../core/services/billing-checkout.service';
 import { ExperimentService } from '../../core/services/experiment.service';
 import { QuestionService } from '../../core/services/question.service';
 import { TradeoffBattleService } from '../../core/services/tradeoff-battle.service';
@@ -19,10 +20,13 @@ describe('ShowcasePageComponent', () => {
   let fixture: ComponentFixture<ShowcasePageComponent>;
   let analytics: jasmine.SpyObj<AnalyticsService>;
   let http: jasmine.SpyObj<HttpClient>;
+  let billingCheckout: jasmine.SpyObj<BillingCheckoutService>;
 
   beforeEach(async () => {
     analytics = jasmine.createSpyObj<AnalyticsService>('AnalyticsService', ['track']);
     http = jasmine.createSpyObj<HttpClient>('HttpClient', ['post']);
+    billingCheckout = jasmine.createSpyObj<BillingCheckoutService>('BillingCheckoutService', ['getCheckoutConfig']);
+    billingCheckout.getCheckoutConfig.and.resolveTo(null);
 
     await TestBed.configureTestingModule({
       imports: [ShowcasePageComponent, NoopAnimationsModule],
@@ -38,6 +42,7 @@ describe('ShowcasePageComponent', () => {
         },
         { provide: HttpClient, useValue: http },
         { provide: AnalyticsService, useValue: analytics },
+        { provide: BillingCheckoutService, useValue: billingCheckout },
         {
           provide: ExperimentService,
           useValue: {
@@ -129,6 +134,35 @@ describe('ShowcasePageComponent', () => {
         start_path_variant: 'guided_plan_first',
       }),
     );
+  });
+
+  it('keeps homepage pricing navigation on baseline and enables shared checkout only for offer v2', async () => {
+    const component = fixture.componentInstance;
+    expect(component.pricingCtaMode).toBe('navigatePricing');
+
+    billingCheckout.getCheckoutConfig.and.resolveTo({
+      configuredProvider: 'lemonsqueezy',
+      provider: 'lemonsqueezy',
+      mode: 'live',
+      enabled: true,
+      plans: { monthly: true, quarterly: true, annual: true, lifetime: true },
+      planDetails: {
+        monthly: { amountCents: 1200, currency: 'USD', interval: 'month', intervalCount: 1, taxInclusive: true },
+        quarterly: { amountCents: 2900, currency: 'USD', interval: 'month', intervalCount: 3, taxInclusive: true },
+        annual: { amountCents: 7900, currency: 'USD', interval: 'year', intervalCount: 1, taxInclusive: true },
+        lifetime: { amountCents: 19900, currency: 'USD', interval: 'one_time', intervalCount: null, taxInclusive: true },
+      },
+      offerVersion: 'interview_sprint_v2',
+      checkoutSurface: 'overlay',
+    });
+    Object.defineProperty(component, 'isBrowser', { value: true });
+
+    await (component as any).loadPricingConfig();
+
+    expect(component.pricingCtaMode).toBe('checkout');
+    expect(component.pricingOfferVersion).toBe('interview_sprint_v2');
+    expect(component.pricingCheckoutSurface).toBe('overlay');
+    expect(component.pricingPlanDetails?.quarterly?.amountCents).toBe(2900);
   });
 
   it('requires a fresh verification token before posting the contact form', async () => {

@@ -45,8 +45,15 @@ Then edit `.env` with your values. Do not commit `.env` (it is gitignored).
 - `LEMONSQUEEZY_WEBHOOK_SECRET_LIVE`: LemonSqueezy live webhook secret.
 - `LEMONSQUEEZY_WEBHOOK_SECRET`: legacy fallback (treated as test secret if _TEST is not set).
 - `LEMONSQUEEZY_API_KEY`: LemonSqueezy API key for resolving customer portal/manage URLs.
+- `LEMONSQUEEZY_API_KEY_TEST` / `LEMONSQUEEZY_API_KEY_LIVE`: mode-scoped read-only API keys for price/order audits. Each falls back to the legacy unscoped key only when its scoped value is absent.
+- `LEMONSQUEEZY_STORE_ID`: numeric store id used by the optional read-only orders reconciliation.
 - `STRIPE_WEBHOOK_SECRET`: reserved for future use.
 - `PAYMENTS_MODE`: `test` or `live` for checkout-start URL selection. Production should use `live`. Local/E2E should stay on `test` unless you explicitly intend to hit live billing.
+- `BILLING_TAX_INCLUSIVE`: public checkout metadata flag. Defaults to `true` because the store uses tax-inclusive pricing; set it explicitly to `false` only if the store setting is deliberately rolled back.
+- `BILLING_OFFER_VERSION`: sequential pricing/offer version. Defaults to `pricing_baseline_v1`; use `interview_sprint_v2` when that offer is deliberately released.
+- `BILLING_CHECKOUT_SURFACE`: `hosted_new_tab` (default) or `overlay`. Checkout attempts persist this value so historical funnel data is not reinterpreted after a rollout.
+- `BILLING_DISCOUNT_CAMPAIGNS_JSON`: server-only JSON allowlist for bounded LemonSqueezy campaigns; defaults to `[]` (all campaigns off). Each enabled entry requires a normalized `campaignId`, `providerDiscountId`, provider-owned `discountCode`, exact mode/plan/source allowlists, and an `endsAt` timestamp. Optional `startsAt` controls activation. Invalid, expired, duplicated, or out-of-scope entries fail closed.
+  - Configure the same validity window and redemption limits on the LemonSqueezy discount itself. The backend window controls URL creation, while LemonSqueezy remains authoritative when an already-created checkout URL is redeemed.
 - Provider checkout URLs for `POST /api/billing/checkout/start`:
   - `GUMROAD_MONTHLY_URL`, `GUMROAD_QUARTERLY_URL`, `GUMROAD_ANNUAL_URL`
   - `LEMONSQUEEZY_MONTHLY_URL`, `LEMONSQUEEZY_QUARTERLY_URL`, `LEMONSQUEEZY_ANNUAL_URL`, `LEMONSQUEEZY_LIFETIME_URL`
@@ -77,6 +84,11 @@ Then edit `.env` with your values. Do not commit `.env` (it is gitignored).
    - Route: `POST /api/billing/checkout/start` (auth required).
    - The backend creates a `CheckoutAttempt`, appends custom metadata like `fa_checkout_attempt_id`, and returns the final hosted checkout URL.
    - `analyticsSource` (campaign/referrer) and `analyticsSurface` (UI placement) are normalized and persisted independently; either field is used as a compatibility fallback only when the other is omitted.
+   - Optional `analyticsSessionId`, `experimentId`, `offerVersion`, and `checkoutSurface` values are allow-list normalized, persisted on the attempt, and forwarded to LemonSqueezy as non-PII custom attribution.
+   - Clients may send only a campaign identifier (`campaignId`). The backend resolves the LemonSqueezy code and provider discount id from `BILLING_DISCOUNT_CAMPAIGNS_JSON`; raw client coupon/code/discount-id fields are ignored. Campaign attribution is part of attempt reuse, so discounted and undiscounted attempts cannot be reused across each other.
+   - Every LemonSqueezy checkout URL is rebuilt with `discount=0`, after removing inherited `discount` and `checkout[discount_code]` query values. A valid active campaign is then pre-applied with server-owned `checkout[discount_code]`; the coupon input remains hidden.
+   - Reconciliation groups verified attempts by campaign and records discount/amount totals. `recordedRevenueExcludingTaxCents` is deliberately not a final net-revenue metric: LemonSqueezy, recovery, and affiliate fees are not stored on `CheckoutAttempt`, and must be joined from provider exports before using it for the business KPI.
+   - `providerDiscountId` is the server-configured intended discount identity. The current orders audit verifies the provider-reported discount amount when available; it does not fetch LemonSqueezy discount-redemption resources to prove that identifier independently.
    - If the same user already has a recent active attempt for the same plan/provider, the backend reuses that attempt instead of creating a second one.
    - Success/cancel redirects include `?attempt=<attemptId>` so the frontend can correlate the return flow.
 
@@ -94,6 +106,11 @@ Then edit `.env` with your values. Do not commit `.env` (it is gitignored).
    - LemonSqueezy `subscription_cancelled` without an end date keeps the user's existing paid-through window instead of expiring access immediately.
    - Gumroad cancellation without an end date expires access immediately.
    - Those differences are intentional and covered by tests; do not normalize them away without an explicit product decision.
+
+### Billing audits
+
+- `npm run audit:billing-price-parity` reads the configured LemonSqueezy variants and compares their amount/interval to the backend catalog. It requires the matching `LEMONSQUEEZY_API_KEY_TEST|LIVE` (with the legacy unscoped key as fallback) and mode-scoped `LEMONSQUEEZY_*_VARIANT_ID_TEST|LIVE` values; it never mutates LemonSqueezy.
+- `npm run audit:billing-reconciliation` compares recently verified purchases with applied premium entitlements in an explicitly selected test database. With the matching `LEMONSQUEEZY_API_KEY_TEST|LIVE` (or the legacy unscoped fallback) and `LEMONSQUEEZY_STORE_ID`, it also reads recent provider orders and detects missing attempts or unverified purchases. The CLI refuses production targets. The admin-only `GET /api/admin/billing/reconciliation?mode=live&includeProviderOrders=true` endpoint exposes the complete read-only production report for scheduled monitoring; without that opt-in, its report is explicitly local-only.
 
 ## Run
 

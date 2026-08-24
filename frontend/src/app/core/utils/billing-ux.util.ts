@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 
-export type CheckoutLaunchMode = 'overlay' | 'new-tab' | 'blocked';
+export type CheckoutLaunchMode = 'overlay' | 'new-tab' | 'same-tab' | 'blocked';
 
 export function getCheckoutLaunchNotice(mode: CheckoutLaunchMode, reused: boolean): string | null {
   if (mode === 'blocked' && reused) {
@@ -10,7 +10,13 @@ export function getCheckoutLaunchNotice(mode: CheckoutLaunchMode, reused: boolea
     return 'Your browser blocked the checkout window. Allow popups and try again.';
   }
   if (reused) {
-    return 'Checkout is already in progress. Reopened the same checkout in a new tab.';
+    if (mode === 'new-tab') {
+      return 'Checkout is already in progress. Reopened the same checkout in a new tab.';
+    }
+    if (mode === 'same-tab') {
+      return 'Checkout is already in progress. Continuing the same checkout in this tab.';
+    }
+    return 'Checkout is already in progress. Reopened the same checkout.';
   }
   if (mode === 'new-tab') {
     return 'Checkout opened in a new tab. If it did not open, allow popups and try again.';

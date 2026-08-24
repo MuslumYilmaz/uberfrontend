@@ -9,6 +9,14 @@ const { applyNormalizedLemonSqueezyEventToUser } = require('../services/billing/
 const { normalizeLemonSqueezyEvent } = require('../services/billing/providers/lemonsqueezy');
 const { applyOrderedProviderEvent } = require('../services/billing/ordered-user-event');
 const {
+    findVerifiedPurchaseEntitlementMismatches,
+    findProviderOrderMismatches,
+} = require('../services/billing/reconciliation');
+const {
+    fetchRecentLemonSqueezyOrders,
+    resolveLemonSqueezyApiKey,
+} = require('../services/billing/providers/lemonsqueezy-orders');
+const {
     SUPPORTED_SCENARIOS,
     buildLemonSqueezySimulationPayload,
 } = require('../services/billing/providers/lemonsqueezy-simulator');
@@ -91,6 +99,12 @@ function serializeReconciliationAttempt(attempt) {
         mode: attempt.mode,
         analyticsSurface: attempt.analyticsSurface || attempt.analyticsSource || 'pricing',
         analyticsSource: attempt.analyticsSource || attempt.analyticsSurface || 'pricing',
+        analyticsSessionId: attempt.analyticsSessionId || null,
+        experimentId: attempt.experimentId || null,
+        offerVersion: attempt.offerVersion || 'pricing_baseline_v1',
+        campaignId: attempt.campaignId || null,
+        providerDiscountId: attempt.providerDiscountId || null,
+        checkoutSurface: attempt.checkoutSurface || 'hosted_new_tab',
         status: attempt.status,
         billingEventId: attempt.billingEventId || null,
         customerEmail: attempt.customerEmail || null,
@@ -335,6 +349,19 @@ router.post('/billing/simulate/lemonsqueezy', async (req, res) => {
 router.get('/billing/reconciliation', async (req, res) => {
     try {
         const limit = clampLimit(req.query?.limit, 50, 200);
+        const mode = req.query?.mode === 'test' ? 'test' : 'live';
+        const includeProviderOrders = req.query?.includeProviderOrders === 'true';
+        const providerApiKey = resolveLemonSqueezyApiKey(mode);
+        if (
+            includeProviderOrders
+            && (!providerApiKey
+                || !String(process.env.LEMONSQUEEZY_STORE_ID || '').trim())
+        ) {
+            return res.status(409).json({
+                error: 'LemonSqueezy order reconciliation is not configured',
+                code: 'LEMONSQUEEZY_RECONCILIATION_NOT_CONFIGURED',
+            });
+        }
 
         const [
             checkoutAttempts,
@@ -343,6 +370,7 @@ router.get('/billing/reconciliation', async (req, res) => {
             totalPendingAttempts,
             totalPendingEntitlements,
             totalUnresolvedEvents,
+            verifiedPurchaseReport,
         ] =
             await Promise.all([
                 CheckoutAttempt.find({
@@ -406,17 +434,59 @@ router.get('/billing/reconciliation', async (req, res) => {
                         ],
                     },
                 }),
+                findVerifiedPurchaseEntitlementMismatches({
+                    CheckoutAttempt,
+                    User,
+                    BillingEvent,
+                    mode,
+                    lookbackDays: req.query?.lookbackDays,
+                    graceMinutes: req.query?.graceMinutes,
+                    limit,
+                }),
             ]);
+
+        let providerOrders = { status: 'not_requested' };
+        if (includeProviderOrders) {
+            const fetched = await fetchRecentLemonSqueezyOrders({
+                apiKey: providerApiKey,
+                storeId: process.env.LEMONSQUEEZY_STORE_ID,
+                mode,
+                createdAfter: verifiedPurchaseReport.window.verifiedAfter,
+                createdBefore: verifiedPurchaseReport.window.verifiedBefore,
+            });
+            const reconciliation = await findProviderOrderMismatches({
+                CheckoutAttempt,
+                User,
+                orders: fetched.orders,
+                mode,
+            });
+            providerOrders = {
+                status: 'checked',
+                pagesFetched: fetched.pagesFetched,
+                truncated: fetched.truncated,
+                ...reconciliation,
+            };
+        }
 
         return res.json({
             summary: {
                 pendingAttempts: totalPendingAttempts,
                 pendingEntitlements: totalPendingEntitlements,
                 unresolvedEvents: totalUnresolvedEvents,
+                verifiedPurchaseCandidates: verifiedPurchaseReport.summary.candidates,
+                verifiedPurchaseMismatches: verifiedPurchaseReport.summary.mismatches,
+                ...(providerOrders.status === 'checked' ? {
+                    providerOrders: providerOrders.summary.orders,
+                    providerOrderMismatches: providerOrders.summary.mismatches,
+                } : {}),
             },
             checkoutAttempts: checkoutAttempts.map(serializeReconciliationAttempt),
             pendingEntitlements: pendingEntitlements.map(serializeReconciliationPendingEntitlement),
             billingEvents: unresolvedEvents.map(serializeReconciliationBillingEvent),
+            verifiedPurchases: {
+                ...verifiedPurchaseReport,
+                providerOrders,
+            },
         });
     } catch (err) {
         console.error('[admin] billing reconciliation failed:', err);

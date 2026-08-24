@@ -51,6 +51,12 @@ Notes:
 - Keep `PAYMENTS_MODE=test` in local/CI builds.
 - E2E will refuse to run if `PAYMENTS_MODE=live` unless `E2E_ALLOW_LIVE_PAYMENTS=true` is set.
 
+## Analytics traffic hygiene
+
+- Local/test builds do not load GA because their measurement ID is empty, and browser automation is suppressed even in a production build.
+- To mark a real production browser tab used by the team, open any page once with `?fa_traffic=internal`. Use `?fa_traffic=test` for an intentional live analytics verification. The PII-free `traffic_type` marker remains only for that tab.
+- Open a page with `?fa_traffic=external` to clear the tab marker. Qualified-visitor reporting should exclude `traffic_type` values `internal` and `test`.
+
 ## Running unit tests
 
 Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).

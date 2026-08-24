@@ -91,7 +91,7 @@ test('showcase: demo CTA routes to the correct question pages', async ({ page })
   await expect(openLive).toHaveAttribute('href', '/javascript/coding/js-is-object-empty');
 });
 
-test('showcase: embedded pricing only navigates to pricing and never starts checkout', async ({ page }) => {
+test('showcase: baseline pricing loads public metadata, navigates to pricing, and never starts checkout', async ({ page }) => {
   const billingConfigRequests: string[] = [];
   const checkoutRequests: string[] = [];
   page.on('request', (request) => {
@@ -106,9 +106,10 @@ test('showcase: embedded pricing only navigates to pricing and never starts chec
   const monthlyCta = page.getByTestId('pricing-cta-monthly');
   await expect(monthlyCta).toBeVisible();
 
-  // Revealing compact pricing must not fetch checkout availability or arm checkout.
+  // Revealing compact pricing loads the public metadata needed to render
+  // authoritative prices, but the baseline offer must not arm checkout.
   await page.waitForTimeout(300);
-  expect(billingConfigRequests).toEqual([]);
+  expect(billingConfigRequests.length).toBe(1);
   expect(checkoutRequests).toEqual([]);
 
   await monthlyCta.click();

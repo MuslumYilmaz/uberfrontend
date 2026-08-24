@@ -3,12 +3,15 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import {
+  PRICING_BASELINE_OFFER_VERSION,
   PRICING_PAGE_LAYOUT,
+  PRICING_V2_OFFER_VERSION,
   RECOMMENDED_PRICING_PLAN,
+  PricingPlanDetails,
   PricingPlansSectionComponent,
 } from './components/pricing-plans-section/pricing-plans-section.component';
 import { AnalyticsService } from '../../core/services/analytics.service';
-import { BillingCheckoutService } from '../../core/services/billing-checkout.service';
+import { BillingCheckoutService, CheckoutSurface } from '../../core/services/billing-checkout.service';
 import { ConversionContextService } from '../../core/services/conversion-context.service';
 import { PlanId } from '../../core/utils/payments-provider.util';
 import { ConversionStickyCtaComponent } from '../../shared/components/conversion-sticky-cta/conversion-sticky-cta.component';
@@ -25,6 +28,10 @@ import { ConversionStickyCtaComponent } from '../../shared/components/conversion
         [paymentsEnabled]="paymentsEnabled"
         [paymentsConfigReady]="paymentsConfigReady"
         [checkoutAvailability]="checkoutAvailability"
+        [planDetails]="planDetails"
+        [offerVersion]="offerVersion"
+        [checkoutSurface]="checkoutSurface"
+        [analyticsReady]="paymentsConfigReady"
         [analyticsSource]="analyticsSource"
         analyticsSurface="pricing_page"
         ctaMode="checkout">
@@ -37,7 +44,11 @@ export class PricingComponent implements OnInit {
   paymentsEnabled = false;
   paymentsConfigReady = false;
   checkoutAvailability: Partial<Record<PlanId, boolean>> | null = null;
+  planDetails: PricingPlanDetails | null = null;
+  offerVersion = PRICING_BASELINE_OFFER_VERSION;
+  checkoutSurface: CheckoutSurface = 'hosted_new_tab';
   analyticsSource = 'pricing_page';
+  private pageViewTracked = false;
 
   constructor(
     private analytics: AnalyticsService,
@@ -51,16 +62,10 @@ export class PricingComponent implements OnInit {
       this.route.snapshot.queryParamMap.get('src'),
     );
     this.analyticsSource = context.src;
-    this.analytics.track('pricing_page_viewed', {
-      src: this.analyticsSource,
-      surface: 'pricing_page',
-      page: 'pricing',
-      page_layout: PRICING_PAGE_LAYOUT,
-      recommended_plan: RECOMMENDED_PRICING_PLAN,
-    });
-
     if (typeof window !== 'undefined') {
       void this.loadCheckoutConfig();
+    } else {
+      this.trackPricingPageViewed();
     }
   }
 
@@ -75,6 +80,25 @@ export class PricingComponent implements OnInit {
     }
     this.paymentsEnabled = config?.enabled ?? false;
     this.checkoutAvailability = config?.plans ?? null;
+    this.planDetails = config?.planDetails ?? null;
+    this.offerVersion = config?.offerVersion ?? PRICING_BASELINE_OFFER_VERSION;
+    this.checkoutSurface = config?.checkoutSurface ?? 'hosted_new_tab';
     this.paymentsConfigReady = true;
+    this.trackPricingPageViewed();
+  }
+
+  private trackPricingPageViewed(): void {
+    if (this.pageViewTracked) return;
+    this.pageViewTracked = true;
+    const isOfferV2 = this.offerVersion === PRICING_V2_OFFER_VERSION;
+    this.analytics.track('pricing_page_viewed', {
+      src: this.analyticsSource,
+      surface: 'pricing_page',
+      page: 'pricing',
+      page_layout: isOfferV2 ? PRICING_V2_OFFER_VERSION : PRICING_PAGE_LAYOUT,
+      offer_version: this.offerVersion,
+      checkout_surface: this.checkoutSurface,
+      recommended_plan: RECOMMENDED_PRICING_PLAN,
+    });
   }
 }

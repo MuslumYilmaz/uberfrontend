@@ -6,7 +6,19 @@ import { PUBLIC_CHANGELOG_ENTRIES } from '../../../../core/content/public-change
 import { AnalyticsService } from '../../../../core/services/analytics.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { BillingCheckoutService } from '../../../../core/services/billing-checkout.service';
-import { PricingPlansSectionComponent } from './pricing-plans-section.component';
+import { CheckoutIntentService } from '../../../../core/services/checkout-intent.service';
+import {
+  PRICING_V2_OFFER_VERSION,
+  PricingPlanDetails,
+  PricingPlansSectionComponent,
+} from './pricing-plans-section.component';
+
+const TEST_PLAN_DETAILS: PricingPlanDetails = {
+  monthly: { amountCents: 1200, currency: 'USD', interval: 'month', intervalCount: 1, taxInclusive: true },
+  quarterly: { amountCents: 2900, currency: 'USD', interval: 'month', intervalCount: 3, taxInclusive: true },
+  annual: { amountCents: 7900, currency: 'USD', interval: 'year', intervalCount: 1, taxInclusive: true },
+  lifetime: { amountCents: 19900, currency: 'USD', interval: 'one_time', intervalCount: null, taxInclusive: true },
+};
 
 describe('PricingPlansSectionComponent', () => {
   let fixture: ComponentFixture<PricingPlansSectionComponent>;
@@ -36,7 +48,7 @@ describe('PricingPlansSectionComponent', () => {
         },
         {
           provide: AnalyticsService,
-          useValue: jasmine.createSpyObj('AnalyticsService', ['track']),
+          useValue: jasmine.createSpyObj('AnalyticsService', ['track', 'getDecisionSessionId']),
         },
       ],
     }).compileComponents();
@@ -45,6 +57,7 @@ describe('PricingPlansSectionComponent', () => {
     component = fixture.componentInstance;
     component.variant = 'full';
     component.ctaMode = 'checkout';
+    component.planDetails = TEST_PLAN_DETAILS;
     const billingCheckout = TestBed.inject(BillingCheckoutService) as jasmine.SpyObj<BillingCheckoutService>;
     billingCheckout.reserveCheckoutWindow.and.returnValue(null);
     billingCheckout.recordAttemptClientState.and.returnValue(of({} as any));
@@ -160,6 +173,89 @@ describe('PricingPlansSectionComponent', () => {
     expect(quarterlyCard.textContent || '').toContain('Best for 4-12 week interview prep');
   });
 
+  it('keeps offer v2 gated while rendering authoritative config prices and a secondary lifetime offer', () => {
+    component.offerVersion = PRICING_V2_OFFER_VERSION;
+    component.planDetails = {
+      monthly: { amountCents: 1500, currency: 'USD', interval: 'month', intervalCount: 1, taxInclusive: true },
+      quarterly: { amountCents: 3600, currency: 'USD', interval: 'month', intervalCount: 3, taxInclusive: true },
+      annual: { amountCents: 10800, currency: 'USD', interval: 'year', intervalCount: 1, taxInclusive: true },
+      lifetime: { amountCents: 25000, currency: 'USD', interval: 'one_time', intervalCount: null, taxInclusive: true },
+    };
+
+    fixture.detectChanges();
+
+    const page = fixture.nativeElement as HTMLElement;
+    const primaryCards = Array.from(page.querySelectorAll('.pr-grid .pr-card')) as HTMLElement[];
+    const primaryCtas = primaryCards.map((card) => card.querySelector('button')?.dataset['testid']);
+    const badges = Array.from(page.querySelectorAll('.rec-badge')) as HTMLElement[];
+    const lifetime = page.querySelector('[data-testid="pricing-lifetime-secondary"]') as HTMLElement;
+
+    expect(primaryCtas).toEqual([
+      'pricing-cta-monthly',
+      'pricing-cta-quarterly',
+      'pricing-cta-annual',
+    ]);
+    expect(primaryCards.map((card) => card.textContent || '').join(' ')).toContain('$15');
+    expect(primaryCards.map((card) => card.textContent || '').join(' ')).toContain('$36');
+    expect(primaryCards.map((card) => card.textContent || '').join(' ')).toContain('$108');
+    expect(primaryCards[1].textContent || '').toContain('Save 20%');
+    expect(primaryCards[2].textContent || '').toContain('Save 40%');
+    expect(badges.length).toBe(1);
+    expect(badges[0].textContent || '').toContain('Recommended — 4–12 week interview sprint');
+    expect(lifetime.textContent || '').toContain('$250');
+    expect(page.querySelector('[data-testid="pricing-trust-strip"]')?.textContent || '').toContain('Taxes included');
+    expect(page.querySelector('[data-testid="pricing-trust-strip"]')?.textContent || '').toContain('Limited-use refund requests are reviewed under the Refund Policy');
+    expect(page.querySelector('[data-testid="pricing-trust-strip"] a')?.getAttribute('href') || '').toContain('/legal/refund');
+    const productProof = page.querySelector('[data-testid="pricing-product-proof"]') as HTMLElement;
+    const productProofImage = productProof.querySelector('img') as HTMLImageElement;
+    const productProofLinks = Array.from(productProof.querySelectorAll('a')) as HTMLAnchorElement[];
+    expect(productProofImage.getAttribute('src')).toBe('assets/images/product-proof/react-counter-workspace.jpg');
+    expect(productProofImage.getAttribute('alt')).toBe('FrontendAtlas React Counter workspace with prompt, code editor, live preview, and run checks controls');
+    expect(productProofImage.getAttribute('loading')).toBe('lazy');
+    expect(productProofImage.getAttribute('decoding')).toBe('async');
+    expect(productProofImage.getAttribute('width')).toBe('1512');
+    expect(productProofImage.getAttribute('height')).toBe('857');
+    expect(productProofLinks.map((link) => link.getAttribute('href'))).toEqual([
+      '/react/coding/react-counter?src=pricing_product_proof',
+      '/javascript/coding/js-throttle?src=pricing_product_proof',
+    ]);
+    expect(page.textContent || '').toContain('514 questions');
+    expect(page.textContent || '').toContain('141 Premium prompts');
+    expect(page.textContent || '').toContain('generally require limited Premium usage');
+    expect(page.textContent || '').toContain('Renewal charges and unused subscription time are generally non-refundable');
+    expect((page.textContent || '').toLowerCase()).not.toContain('money-back guarantee');
+    expect((page.textContent || '').toLowerCase()).not.toContain('where available');
+    expect((page.textContent || '').toLowerCase()).not.toContain('expanding');
+  });
+
+  it('keeps the real workspace proof out of the baseline offer', () => {
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('[data-testid="pricing-product-proof"]')).toBeNull();
+  });
+
+  it('derives the approved quarterly and annual savings from backend metadata', () => {
+    component.offerVersion = PRICING_V2_OFFER_VERSION;
+
+    expect(component.savingsLabel('quarterly')).toBe('Save 19%');
+    expect(component.savingsLabel('annual')).toBe('Save 45%');
+    expect(component.savingsLabel('monthly')).toBeNull();
+    expect(component.savingsLabel('lifetime')).toBeNull();
+  });
+
+  it('shows an unavailable price placeholder instead of a hard-coded price when config is missing', () => {
+    component.planDetails = null;
+
+    fixture.detectChanges();
+
+    const monthlyCard = fixture.nativeElement
+      .querySelector('[data-testid="pricing-cta-monthly"]')
+      ?.closest('.pr-card') as HTMLElement;
+    expect(monthlyCard.textContent || '').toContain('—');
+    expect(monthlyCard.textContent || '').toContain('Checkout unavailable');
+    expect(monthlyCard.textContent || '').not.toContain('$12');
+  });
+
   it('uses plan-specific CTA labels and keeps planned copy out of plan cards', () => {
     fixture.detectChanges();
 
@@ -199,7 +295,7 @@ describe('PricingPlansSectionComponent', () => {
     expect(page.textContent || '').toContain('Premium unlock preview');
     expect(page.textContent || '').toContain('Contact Form (Component + HTTP)');
     expect(page.textContent || '').toContain('Multi-step Form with Autosave');
-    expect(page.textContent || '').toContain('Solution depth where available');
+    expect(page.textContent || '').toContain('Guided implementation review');
     expect(links.map((link) => link.getAttribute('href'))).toEqual([
       '/react/coding/react-contact-form-starter',
       '/system-design/multi-step-form-autosave',
@@ -306,13 +402,69 @@ describe('PricingPlansSectionComponent', () => {
       annual: true,
       lifetime: true,
     };
+    component.campaignId = 'INTERVIEW_AUGUST';
 
     await component.onCta('quarterly');
 
     expect(component.loginRequiredOpen).toBeTrue();
     expect(component.loginRedirectTo).toBe('/pricing');
     expect(billingCheckout.checkout).not.toHaveBeenCalled();
-    expect(sessionStorage.getItem('fa:checkout:intent:v1')).toContain('quarterly');
+    const storedIntent = sessionStorage.getItem('fa:checkout:intent:v1') || '';
+    expect(storedIntent).toContain('quarterly');
+    expect(storedIntent).toContain('interview_august');
+  });
+
+  it('auto-continues a valid post-auth checkout intent only for offer v2', async () => {
+    const auth = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
+    const billingCheckout = TestBed.inject(BillingCheckoutService) as jasmine.SpyObj<BillingCheckoutService>;
+    const analytics = TestBed.inject(AnalyticsService) as jasmine.SpyObj<AnalyticsService>;
+    const checkoutIntent = TestBed.inject(CheckoutIntentService);
+    auth.user.and.returnValue({
+      _id: 'returning_user',
+      username: 'returning_user',
+      email: 'returning@example.com',
+    } as any);
+    billingCheckout.checkout.and.resolveTo({
+      ok: true,
+      provider: 'lemonsqueezy',
+      mode: 'overlay',
+      checkoutMode: 'live',
+      url: 'https://frontendatlas.lemonsqueezy.com/checkout/buy/live',
+      attemptId: 'chk_auto_continue',
+      reused: false,
+    });
+    checkoutIntent.save({
+      planId: 'quarterly',
+      src: 'showcase_pricing',
+      surface: 'showcase_pricing',
+      campaignId: 'interview_august',
+      returnUrl: '/pricing',
+    });
+    component.offerVersion = PRICING_V2_OFFER_VERSION;
+    component.checkoutSurface = 'overlay';
+    component.paymentsEnabled = true;
+    component.paymentsConfigReady = true;
+    component.checkoutAvailability = { monthly: true, quarterly: true, annual: true, lifetime: true };
+
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(billingCheckout.checkout).toHaveBeenCalledTimes(1);
+    expect(billingCheckout.checkout).toHaveBeenCalledWith(
+      'quarterly',
+      jasmine.objectContaining({
+        campaignId: 'interview_august',
+        offerVersion: PRICING_V2_OFFER_VERSION,
+        checkoutSurface: 'overlay',
+      }),
+      'showcase_pricing',
+      'showcase_pricing',
+    );
+    const checkoutOpened = analytics.track.calls.allArgs().find(([event]) => event === 'checkout_opened');
+    const beginCheckout = analytics.track.calls.allArgs().find(([event]) => event === 'begin_checkout');
+    expect(checkoutOpened?.[1]?.['offer_campaign_id']).toBeUndefined();
+    expect(beginCheckout?.[1]?.['offer_campaign_id']).toBeUndefined();
+    expect(fixture.nativeElement.querySelector('[data-testid="checkout-continuation"]')).toBeNull();
   });
 
   it('shows a blocked-popup notice when checkout window opening is blocked', async () => {
@@ -363,6 +515,56 @@ describe('PricingPlansSectionComponent', () => {
     expect(billingCheckout.recordAttemptClientState).toHaveBeenCalledWith('chk_blocked', 'popup_blocked');
   });
 
+  it('records state and checkout analytics before a Lemon.js same-tab fallback navigates', async () => {
+    const auth = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
+    const billingCheckout = TestBed.inject(BillingCheckoutService) as jasmine.SpyObj<BillingCheckoutService>;
+    const analytics = TestBed.inject(AnalyticsService) as jasmine.SpyObj<AnalyticsService>;
+    const order: string[] = [];
+    auth.user.and.returnValue({
+      _id: 'fallback_user',
+      username: 'fallback_user',
+      email: 'fallback@example.com',
+    } as any);
+    billingCheckout.checkout.and.resolveTo({
+      ok: true,
+      provider: 'lemonsqueezy',
+      mode: 'same-tab',
+      checkoutMode: 'live',
+      url: 'https://frontendatlas.lemonsqueezy.com/checkout/buy/fallback-quarterly',
+      attemptId: 'chk_fallback_order',
+      reused: false,
+      campaignId: 'interview_august',
+    });
+    billingCheckout.recordAttemptClientState.and.callFake(() => {
+      order.push('provider_opened');
+      return of({} as any);
+    });
+    analytics.track.and.callFake((eventName: string) => {
+      if (eventName === 'checkout_opened' || eventName === 'begin_checkout') order.push(eventName);
+      return true;
+    });
+    (window as any).__faCheckoutRedirect = () => { order.push('navigate'); };
+    component.offerVersion = PRICING_V2_OFFER_VERSION;
+    component.checkoutSurface = 'overlay';
+    component.campaignId = 'INTERVIEW_AUGUST';
+    component.paymentsEnabled = true;
+    component.paymentsConfigReady = true;
+    component.checkoutAvailability = { monthly: true, quarterly: true, annual: true, lifetime: true };
+
+    try {
+      await component.onCta('quarterly');
+    } finally {
+      delete (window as any).__faCheckoutRedirect;
+    }
+
+    expect(order).toEqual(['checkout_opened', 'begin_checkout', 'provider_opened', 'navigate']);
+    expect(sessionStorage.getItem('fa:checkout:intent:v1')).toContain('quarterly');
+    expect(analytics.track).toHaveBeenCalledWith('checkout_opened', jasmine.objectContaining({
+      offer_campaign_id: 'interview_august',
+      launch_mode: 'same_tab',
+    }));
+  });
+
   it('emits begin_checkout only after the provider tab opens', async () => {
     const auth = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
     const billingCheckout = TestBed.inject(BillingCheckoutService) as jasmine.SpyObj<BillingCheckoutService>;
@@ -395,8 +597,70 @@ describe('PricingPlansSectionComponent', () => {
       plan: 'quarterly',
       launch_mode: 'new_tab',
       checkout_mode: 'live',
+      currency: 'USD',
+      value: 29,
+      offer_version: 'pricing_baseline_v1',
+      checkout_surface: 'hosted_new_tab',
     }));
     expect(billingCheckout.recordAttemptClientState).toHaveBeenCalledWith('chk_opened', 'provider_opened');
+  });
+
+  it('uses the same backend plan metadata for rendered and begin_checkout prices', async () => {
+    const auth = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
+    const billingCheckout = TestBed.inject(BillingCheckoutService) as jasmine.SpyObj<BillingCheckoutService>;
+    const analytics = TestBed.inject(AnalyticsService) as jasmine.SpyObj<AnalyticsService>;
+    auth.user.and.returnValue({
+      _id: 'user_price_contract',
+      username: 'billing_user',
+      email: 'billing@example.com',
+    } as any);
+    billingCheckout.checkout.and.resolveTo({
+      ok: true,
+      provider: 'lemonsqueezy',
+      mode: 'overlay',
+      checkoutMode: 'live',
+      url: 'https://frontendatlas.lemonsqueezy.com/checkout/buy/live',
+      attemptId: 'chk_price_contract',
+      reused: false,
+      campaignId: 'interview_august',
+    });
+    component.offerVersion = PRICING_V2_OFFER_VERSION;
+    component.checkoutSurface = 'overlay';
+    component.campaignId = 'INTERVIEW_AUGUST';
+    component.planDetails = {
+      ...TEST_PLAN_DETAILS,
+      quarterly: { amountCents: 3100, currency: 'USD', interval: 'month', intervalCount: 3, taxInclusive: true },
+    };
+    component.paymentsEnabled = true;
+    component.paymentsConfigReady = true;
+    component.checkoutAvailability = { monthly: true, quarterly: true, annual: true, lifetime: true };
+
+    fixture.detectChanges();
+    const quarterlyCard = fixture.nativeElement
+      .querySelector('[data-testid="pricing-cta-quarterly"]')
+      ?.closest('.pr-card') as HTMLElement;
+    expect(quarterlyCard.textContent || '').toContain('$31');
+
+    await component.onCta('quarterly');
+
+    expect(analytics.track).toHaveBeenCalledWith('begin_checkout', jasmine.objectContaining({
+      plan_id: 'quarterly',
+      value: 31,
+      currency: 'USD',
+      offer_version: 'interview_sprint_v2',
+      checkout_surface: 'overlay',
+      offer_campaign_id: 'interview_august',
+    }));
+    expect(billingCheckout.checkout).toHaveBeenCalledWith(
+      'quarterly',
+      jasmine.objectContaining({
+        campaignId: 'interview_august',
+        offerVersion: 'interview_sprint_v2',
+        checkoutSurface: 'overlay',
+      }),
+      'pricing',
+      'pricing_page',
+    );
   });
 
   it('keeps the first plan intent when a second plan is clicked during checkout creation', async () => {

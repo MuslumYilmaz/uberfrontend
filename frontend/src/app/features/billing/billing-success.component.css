@@ -53,6 +53,7 @@ h1 {
 }
 
 .btn {
+  display: inline-block;
   margin-top: 12px;
   padding: 10px 18px;
   border-radius: 10px;
@@ -61,6 +62,7 @@ h1 {
   color: var(--uf-bg);
   font-weight: 700;
   cursor: pointer;
+  text-decoration: none;
   transition: border-color 160ms ease, background-color 160ms ease;
 }
 

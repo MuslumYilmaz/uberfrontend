@@ -58,6 +58,8 @@ describe('PricingComponent', () => {
       surface: 'pricing_page',
       page: 'pricing',
       page_layout: 'interview_sprint_v1',
+      offer_version: 'pricing_baseline_v1',
+      checkout_surface: 'hosted_new_tab',
       recommended_plan: 'quarterly',
     }));
     expect(analyticsStub.track).toHaveBeenCalledWith('checkout_config_failed', {
@@ -86,6 +88,14 @@ describe('PricingComponent', () => {
     resolveConfig({
       enabled: true,
       plans: { monthly: true, quarterly: false, annual: true, lifetime: false },
+      planDetails: {
+        monthly: { amountCents: 1200, currency: 'USD', interval: 'month', intervalCount: 1, taxInclusive: true },
+        quarterly: { amountCents: 2900, currency: 'USD', interval: 'month', intervalCount: 3, taxInclusive: true },
+        annual: { amountCents: 7900, currency: 'USD', interval: 'year', intervalCount: 1, taxInclusive: true },
+        lifetime: { amountCents: 19900, currency: 'USD', interval: 'one_time', intervalCount: null, taxInclusive: true },
+      },
+      offerVersion: 'pricing_baseline_v1',
+      checkoutSurface: 'hosted_new_tab',
     });
     await fixture.whenStable();
     fixture.detectChanges();
@@ -97,5 +107,39 @@ describe('PricingComponent', () => {
     expect(monthlyButton.disabled).toBeFalse();
     expect(quarterlyButton.disabled).toBeTrue();
     expect(planGrid.hasAttribute('aria-busy')).toBeFalse();
+  });
+
+  it('activates offer v2 only when the backend config selects it', async () => {
+    billingCheckoutStub.getCheckoutConfig.and.resolveTo({
+      configuredProvider: 'lemonsqueezy',
+      provider: 'lemonsqueezy',
+      mode: 'live',
+      enabled: true,
+      plans: { monthly: true, quarterly: true, annual: true, lifetime: true },
+      planDetails: {
+        monthly: { amountCents: 1200, currency: 'USD', interval: 'month', intervalCount: 1, taxInclusive: true },
+        quarterly: { amountCents: 2900, currency: 'USD', interval: 'month', intervalCount: 3, taxInclusive: true },
+        annual: { amountCents: 7900, currency: 'USD', interval: 'year', intervalCount: 1, taxInclusive: true },
+        lifetime: { amountCents: 19900, currency: 'USD', interval: 'one_time', intervalCount: null, taxInclusive: true },
+      },
+      offerVersion: 'interview_sprint_v2',
+      checkoutSurface: 'overlay',
+    });
+    fixture = TestBed.createComponent(PricingComponent);
+    component = fixture.componentInstance;
+
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(component.offerVersion).toBe('interview_sprint_v2');
+    expect(component.checkoutSurface).toBe('overlay');
+    expect(fixture.nativeElement.querySelectorAll('.pr-grid .pr-card').length).toBe(3);
+    expect(fixture.nativeElement.querySelector('[data-testid="pricing-lifetime-secondary"]')).toBeTruthy();
+    expect(analyticsStub.track).toHaveBeenCalledWith('pricing_page_viewed', jasmine.objectContaining({
+      page_layout: 'interview_sprint_v2',
+      offer_version: 'interview_sprint_v2',
+      checkout_surface: 'overlay',
+    }));
   });
 });

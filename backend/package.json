@@ -11,6 +11,8 @@
     "generate:interview-content:check": "node content/interview/tools/generate-interview-content.mjs --check",
     "validate:interview-content": "node content/interview/tools/validate-interview-content.mjs",
     "repair:prod-integrity": "node scripts/prod-integrity-repair.js",
+    "audit:billing-price-parity": "node scripts/check-billing-price-parity.js",
+    "audit:billing-reconciliation": "node scripts/check-billing-reconciliation.js",
     "test": "jest",
     "verify:ci": "npm run generate:interview-content:check && npm run validate:interview-content && npm test",
     "test:cv-calibration": "jest cv-linter.calibration"

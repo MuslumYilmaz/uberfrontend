@@ -13,18 +13,39 @@ import {
 import { apiUrl } from '../utils/api-base';
 import { ExternalWindowReservation } from '../utils/external-window.util';
 import { GumroadOverlayService } from './gumroad-overlay.service';
-import { LemonSqueezyCheckoutContext, LemonSqueezyCheckoutService } from './lemonsqueezy-checkout.service';
+import {
+  LemonSqueezyCheckoutContext,
+  LemonSqueezyCheckoutService,
+  LemonSqueezyCheckoutSurface,
+  LemonSqueezyLaunchResult,
+} from './lemonsqueezy-checkout.service';
+
+export type CheckoutSurface = LemonSqueezyCheckoutSurface;
+export type CheckoutOfferVersion = string;
+export type CheckoutPlanInterval = 'month' | 'year' | 'one_time';
+export type CheckoutPlanDetail = {
+  amountCents: number;
+  currency: string;
+  interval: CheckoutPlanInterval;
+  intervalCount: number | null;
+  taxInclusive: boolean;
+};
 
 export type CheckoutContext = LemonSqueezyCheckoutContext & {
   launchReservation?: ExternalWindowReservation | null;
+  analyticsSessionId?: string;
+  experimentId?: string;
+  campaignId?: string;
+  offerVersion?: CheckoutOfferVersion;
 };
 
 type BillingProvider = {
-  checkout: (url: string, context?: CheckoutContext) => Promise<CheckoutMode>;
-  prefetch?: () => Promise<void>;
+  checkout: (url: string, context?: CheckoutContext) => Promise<ProviderCheckoutMode>;
+  prefetch?: (checkoutSurface: CheckoutSurface) => Promise<void>;
 };
 
 type CheckoutMode = CheckoutLaunchMode;
+type ProviderCheckoutMode = CheckoutMode | LemonSqueezyLaunchResult;
 type CheckoutFailureReason =
   | 'missing-url'
   | 'provider-unavailable'
@@ -46,6 +67,9 @@ export type CheckoutResult =
     url: string;
     attemptId: string;
     reused: boolean;
+    campaignId?: string;
+    offerVersion?: CheckoutOfferVersion;
+    checkoutSurface?: CheckoutSurface;
   }
   | {
     ok: false;
@@ -53,7 +77,7 @@ export type CheckoutResult =
     provider: PaymentsProvider;
   };
 
-type CheckoutStartResponse = {
+export type CheckoutStartResponse = {
   attemptId: string;
   provider: PaymentsProvider;
   planId: PlanId;
@@ -62,6 +86,12 @@ type CheckoutStartResponse = {
   successUrl: string;
   cancelUrl: string;
   analyticsSurface?: string;
+  analyticsSessionId?: string | null;
+  experimentId?: string | null;
+  campaignId?: string | null;
+  providerDiscountId?: string | null;
+  offerVersion?: CheckoutOfferVersion;
+  checkoutSurface?: CheckoutSurface;
   reused?: boolean;
 };
 
@@ -95,6 +125,12 @@ export type CheckoutAttemptStatus = {
   lastErrorCode: string | null;
   lastErrorMessage: string | null;
   analyticsSurface?: string | null;
+  analyticsSessionId?: string | null;
+  experimentId?: string | null;
+  campaignId?: string | null;
+  providerDiscountId?: string | null;
+  offerVersion?: CheckoutOfferVersion | null;
+  checkoutSurface?: CheckoutSurface | null;
   providerOpenedAt?: string | null;
   popupBlockedAt?: string | null;
   successRedirectedAt?: string | null;
@@ -114,6 +150,9 @@ export type CheckoutConfig = {
   mode: 'test' | 'live';
   enabled: boolean;
   plans: Record<PlanId, boolean>;
+  planDetails: Partial<Record<PlanId, CheckoutPlanDetail>>;
+  offerVersion: CheckoutOfferVersion;
+  checkoutSurface: CheckoutSurface;
 };
 
 type CheckoutConfigResponse = CheckoutConfig;
@@ -140,12 +179,15 @@ export class BillingCheckoutService {
         prefetch: () => this.gumroadOverlay.prefetch(),
       },
       lemonsqueezy: {
-        checkout: (url, context) => this.lemonSqueezyCheckout.open(
-          url,
-          context,
-          context?.launchReservation || undefined,
-        ),
-        prefetch: () => this.lemonSqueezyCheckout.prefetch(),
+        checkout: async (url, context) => {
+          const result = await this.lemonSqueezyCheckout.open(
+            url,
+            context,
+            context?.launchReservation || undefined,
+          );
+          return result === 'same_tab' ? 'same-tab' : result;
+        },
+        prefetch: (surface) => this.lemonSqueezyCheckout.prefetch(surface),
       },
     };
   }
@@ -189,8 +231,10 @@ export class BillingCheckoutService {
   }
 
   reserveCheckoutWindow(): ExternalWindowReservation | null {
-    const cachedProvider = this.checkoutConfigCache?.value.provider;
+    const cachedConfig = this.checkoutConfigCache?.value;
+    const cachedProvider = cachedConfig?.provider;
     if (cachedProvider === 'gumroad') return null;
+    if (cachedProvider === 'lemonsqueezy' && cachedConfig?.checkoutSurface === 'overlay') return null;
     return this.lemonSqueezyCheckout.reserve();
   }
 
@@ -203,12 +247,13 @@ export class BillingCheckoutService {
       return;
     }
 
-    const provider = (await this.getCheckoutConfig())?.provider;
+    const config = await this.getCheckoutConfig();
+    const provider = config?.provider;
     if (!provider) return;
     const handler = this.providers[provider];
     if (!handler?.prefetch) return;
     try {
-      await handler.prefetch();
+      await handler.prefetch(config.checkoutSurface);
     } catch {
       // Ignore preload failures; checkout can still attempt to open later.
     }
@@ -220,17 +265,32 @@ export class BillingCheckoutService {
     analyticsSource = 'pricing',
     analyticsSurface = analyticsSource,
   ): Promise<CheckoutResult> {
+    const config = await this.getCheckoutConfig();
     const fallbackProvider =
-      (await this.getCheckoutConfig())?.provider ||
+      config?.provider ||
       resolveCheckoutPaymentsProvider(environment) ||
       'lemonsqueezy';
+
+    const requestBody: Record<string, unknown> = { planId, analyticsSource, analyticsSurface };
+    const analyticsSessionId = normalizeOptionalAttributionId(context?.analyticsSessionId);
+    const experimentId = normalizeOptionalAttributionId(context?.experimentId);
+    const campaignId = normalizeCampaignId(context?.campaignId);
+    const offerVersion = normalizeOfferVersion(context?.offerVersion || config?.offerVersion, null);
+    const requestedSurface = normalizeCheckoutSurface(context?.checkoutSurface || config?.checkoutSurface);
+    if (analyticsSessionId) requestBody['analyticsSessionId'] = analyticsSessionId;
+    if (experimentId) requestBody['experimentId'] = experimentId;
+    if (campaignId) requestBody['campaignId'] = campaignId;
+    if (offerVersion) requestBody['offerVersion'] = offerVersion;
+    if (context?.checkoutSurface || config?.checkoutSurface) {
+      requestBody['checkoutSurface'] = requestedSurface;
+    }
 
     let start: CheckoutStartResponse;
     try {
       start = await firstValueFrom(
         this.http.post<CheckoutStartResponse>(
           apiUrl('/billing/checkout/start'),
-          { planId, analyticsSource, analyticsSurface },
+          requestBody,
           { withCredentials: true }
         )
       );
@@ -258,13 +318,24 @@ export class BillingCheckoutService {
       return { ok: false, reason: 'invalid-url', provider: start.provider };
     }
 
-    let mode: CheckoutMode;
+    const checkoutSurface = normalizeCheckoutSurface(start.checkoutSurface);
+    let providerMode: ProviderCheckoutMode;
     try {
-      mode = await handler.checkout(start.checkoutUrl, context);
+      providerMode = await handler.checkout(start.checkoutUrl, {
+        ...context,
+        checkoutSurface,
+        successUrl: start.successUrl,
+      });
     } catch {
       this.releaseCheckoutWindow(context?.launchReservation);
       return { ok: false, reason: 'provider-unavailable', provider: start.provider };
     }
+    if (providerMode === 'failed') {
+      this.releaseCheckoutWindow(context?.launchReservation);
+      return { ok: false, reason: 'provider-unavailable', provider: start.provider };
+    }
+    const mode: CheckoutMode = providerMode === 'same_tab' ? 'same-tab' : providerMode;
+    const resolvedCampaignId = normalizeCampaignId(start.campaignId);
     return {
       ok: true,
       mode,
@@ -273,6 +344,9 @@ export class BillingCheckoutService {
       url: start.checkoutUrl,
       attemptId: start.attemptId,
       reused: start.reused === true,
+      ...(resolvedCampaignId ? { campaignId: resolvedCampaignId } : {}),
+      offerVersion: normalizeOfferVersion(start.offerVersion, 'pricing_baseline_v1') || 'pricing_baseline_v1',
+      checkoutSurface,
     };
   }
 
@@ -343,7 +417,56 @@ function normalizeCheckoutConfig(value: CheckoutConfigResponse | null | undefine
       annual: value.plans?.annual === true,
       lifetime: value.plans?.lifetime === true,
     },
+    planDetails: normalizePlanDetails(value.planDetails),
+    offerVersion: normalizeOfferVersion(value.offerVersion, 'pricing_baseline_v1') || 'pricing_baseline_v1',
+    checkoutSurface: normalizeCheckoutSurface(value.checkoutSurface),
   };
+}
+
+function normalizePlanDetails(
+  value: Partial<Record<PlanId, CheckoutPlanDetail>> | null | undefined,
+): Partial<Record<PlanId, CheckoutPlanDetail>> {
+  const result: Partial<Record<PlanId, CheckoutPlanDetail>> = {};
+  for (const planId of ['monthly', 'quarterly', 'annual', 'lifetime'] as const) {
+    const detail = value?.[planId];
+    if (!detail) continue;
+    const amountCents = Number(detail.amountCents);
+    const currency = String(detail.currency || '').trim().toUpperCase();
+    const interval = detail.interval;
+    const intervalCount = detail.intervalCount === null ? null : Number(detail.intervalCount);
+    if (!Number.isInteger(amountCents) || amountCents <= 0) continue;
+    if (!/^[A-Z]{3}$/.test(currency)) continue;
+    if (interval !== 'month' && interval !== 'year' && interval !== 'one_time') continue;
+    if (interval === 'one_time' && intervalCount !== null) continue;
+    if (interval !== 'one_time' && (!Number.isInteger(intervalCount) || Number(intervalCount) <= 0)) continue;
+    result[planId] = {
+      amountCents,
+      currency,
+      interval,
+      intervalCount,
+      taxInclusive: detail.taxInclusive === true,
+    };
+  }
+  return result;
+}
+
+function normalizeCheckoutSurface(value: unknown): CheckoutSurface {
+  return String(value || '').trim().toLowerCase() === 'overlay' ? 'overlay' : 'hosted_new_tab';
+}
+
+function normalizeOfferVersion(value: unknown, fallback: string | null): string | null {
+  const normalized = String(value || '').trim().toLowerCase();
+  return /^[a-z0-9][a-z0-9_-]{0,63}$/.test(normalized) ? normalized : fallback;
+}
+
+function normalizeCampaignId(value: unknown): string | null {
+  const normalized = String(value || '').trim().toLowerCase();
+  return /^[a-z0-9][a-z0-9_-]{0,63}$/.test(normalized) ? normalized : null;
+}
+
+function normalizeOptionalAttributionId(value: unknown): string | null {
+  const normalized = String(value || '').trim();
+  return /^[a-zA-Z0-9][a-zA-Z0-9._:-]{0,127}$/.test(normalized) ? normalized : null;
 }
 
 function isLemonSqueezyBuyUrl(value: string): boolean {
