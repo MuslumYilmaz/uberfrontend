@@ -1713,9 +1713,9 @@ const ANGULAR_SHORT_ANSWERS: AngularShortAnswerItem[] = [
     category: 'rxjs-forms',
     level: 'intermediate',
     q: 'What is the difference between template-driven and reactive forms?',
-    a: 'Template-driven forms keep more behavior in the template and fit simple workflows. Mature Reactive Forms model controls explicitly in TypeScript and remain a strong choice for complex or existing applications. Angular 22 also makes Signal Forms a stable production option for new signal-first applications. Choose among them by validation complexity, dynamic fields, testing, library compatibility, migration cost, and team familiarity.',
+    a: 'Template-driven forms keep more behavior in the template and fit small, static workflows. Reactive Forms model controls explicitly in TypeScript and scale better when dynamic fields, cross-field or async validation, or isolated tests become requirements. Stable Signal Forms in Angular 22 are a separate option for new signal-first applications, not a reason to blur the core template-driven vs reactive comparison.',
     route: ['/angular', 'trivia', 'angular-template-driven-vs-reactive-forms-which-scales'],
-    cta: 'Compare form strategies',
+    cta: 'Compare template-driven vs reactive forms',
   },
   {
     category: 'modern',
@@ -3566,9 +3566,9 @@ const ANGULAR_TOPIC_CARDS: AngularTopicCard[] = [
   },
   {
     title: 'Forms and validation',
-    answer: 'Angular forms questions usually test state ownership, validation timing, async validation, and reusable controls. Mature Reactive Forms remain a strong option for dynamic or established workflows, while stable Signal Forms in Angular 22 are a production option for new signal-first applications. The best answer states the interoperability and migration trade-offs instead of naming one universal winner.',
+    answer: 'Angular forms questions usually test state ownership, validation timing, async validation, and reusable controls. Template-driven forms fit small static workflows, while mature Reactive Forms scale better for dynamic controls and testable validation. Stable Signal Forms in Angular 22 remain a separate production option for new signal-first applications.',
     link: {
-      label: 'Compare Angular form strategies',
+      label: 'Compare template-driven vs reactive forms',
       route: ['/angular', 'trivia', 'angular-template-driven-vs-reactive-forms-which-scales'],
     },
   },

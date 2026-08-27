@@ -1675,12 +1675,12 @@ describe('TriviaDetailComponent', () => {
     });
   });
 
-  it('uses the common schema, hides source-only copy, and stacks Angular forms tables', async () => {
+  it('uses the common schema, shows verified sources, and stacks Angular forms tables', async () => {
     const question = {
       id: 'angular-template-driven-vs-reactive-forms-which-scales',
       title: 'Template-Driven vs Reactive Forms in Angular: Which One Scales and Why?',
       description:
-        'Reactive forms scale better for large or dynamic Angular forms because the form model, validators, and state transitions live explicitly in TypeScript.',
+        'Template-driven forms fit small, mostly static Angular forms. Reactive Forms scale better when dynamic controls, cross-field or async validation, explicit state transitions, or isolated tests become requirements. Stable Signal Forms are a production option in Angular 22 for new signal-first apps, but they are a separate architecture choice rather than the primary answer to this comparison.',
       answer: {
         blocks: [
           {
@@ -1739,11 +1739,6 @@ describe('TriviaDetailComponent', () => {
           {
             type: 'text',
             text:
-              '## Interactive form flow comparator\n\nThe comparator below turns the abstract choice into four traces: reactive input updates, template-driven updates, validation state, and migration triggers.',
-          },
-          {
-            type: 'text',
-            text:
               '## Validation state and error UX\n\nBoth approaches expose <code>touched</code>, <code>dirty</code>, <code>pristine</code>, <code>valid</code>, and <code>invalid</code>.',
           },
           {
@@ -1787,14 +1782,9 @@ describe('TriviaDetailComponent', () => {
             stackOnMobile: true,
           },
           {
-            type: 'list',
-            columns: ['Real-world requirement', 'Template-driven', 'Reactive'],
-            rows: [
-              ['Dynamic rows', 'High setup', 'Built-in support'],
-              ['Unit testing', 'Requires template rendering', 'Pure TypeScript tests'],
-            ],
-            caption: 'Large-form tradeoffs',
-            stackOnMobile: true,
+            type: 'text',
+            text:
+              '## Angular 22 note: where Signal Forms fit\n\nStable Signal Forms are a production option in Angular 22 for new signal-first applications, but they do not change the core template-driven vs reactive comparison.',
           },
           {
             type: 'text',
@@ -1825,12 +1815,12 @@ describe('TriviaDetailComponent', () => {
           {
             type: 'text',
             text:
-              '## FrontendAtlas review note\n\nWhen we review Angular forms answers, we look for where the form model lives and whether the workflow can be tested without rendering the template.',
+              '## What a strong interview answer includes\n\nState where the form model lives and whether the workflow can be tested without rendering the template.',
           },
           {
             type: 'text',
             text:
-              '## Source check\n\nCompare this answer with Angular\'s <a href="https://angular.dev/guide/forms" target="_blank" rel="noopener">forms guide</a>, <a href="https://angular.dev/guide/forms/reactive-forms" target="_blank" rel="noopener">reactive forms guide</a>, <a href="https://angular.dev/guide/forms/template-driven-forms" target="_blank" rel="noopener">template-driven forms guide</a>, and <a href="https://angular.dev/guide/forms/form-validation" target="_blank" rel="noopener">form validation guide</a>. FrontendAtlas content is maintained under the <a href="/legal/editorial-policy">Editorial Policy</a>.',
+              '## Verify the comparison\n\nCheck the decision boundaries against Angular\'s <a href="https://angular.dev/guide/forms/template-driven-forms" target="_blank" rel="noopener">template-driven forms guide</a>, <a href="https://angular.dev/guide/forms/reactive-forms" target="_blank" rel="noopener">Reactive Forms guide</a>, <a href="https://angular.dev/guide/forms/form-validation" target="_blank" rel="noopener">form validation guide</a>, and the official <a href="https://blog.angular.dev/announcing-angular-v22-c52bb83a4664" target="_blank" rel="noopener">Angular 22 release announcement</a>.',
           },
           {
             type: 'text',
@@ -1848,11 +1838,11 @@ describe('TriviaDetailComponent', () => {
       technology: 'angular',
       access: 'free',
       tags: ['angular', 'forms', 'reactive-forms', 'template-driven', 'basics'],
-      updatedAt: '2026-07-04',
+      updatedAt: '2026-08-27',
       seo: {
-        title: 'Reactive vs Template-Driven Forms: When ngModel Stops Scaling',
+        title: 'Template-Driven vs Reactive Forms: Angular Interview',
         description:
-          'Use 5 practical signals for when an Angular form outgrows ngModel: source of truth, validation state, dynamic fields, testability, and migration timing.',
+          'Angular interview answer comparing template-driven and reactive forms by state, validation, dynamic controls, testing, and when ngModel stops scaling.',
       },
     };
 
@@ -1882,16 +1872,17 @@ describe('TriviaDetailComponent', () => {
       'Reactive example',
       'Scaling pressure points',
       'Data flow timing',
-      'Interactive form flow comparator',
       'Validation state and error UX',
       'API ergonomics',
       'Migration threshold checklist',
       'Same form, three changes later',
+      'Angular 22 note: where Signal Forms fit',
       'Architecture fit',
       'When template-driven forms are still OK',
       'Senior-level pitfalls',
       'Testable proof',
-      'FrontendAtlas review note',
+      'What a strong interview answer includes',
+      'Verify the comparison',
       'Practice next',
       'Interview summary',
     ]);
@@ -1899,7 +1890,7 @@ describe('TriviaDetailComponent', () => {
     const stackedTables = Array.from(
       fixture.nativeElement.querySelectorAll('table.table.table--stacked-mobile')
     ) as HTMLTableElement[];
-    expect(stackedTables.length).toBe(4);
+    expect(stackedTables.length).toBe(3);
     const firstTableCells = Array.from(stackedTables[0].querySelectorAll('tbody td')) as HTMLTableCellElement[];
     expect(firstTableCells.map((cell) => cell.getAttribute('data-label')).slice(0, 3)).toEqual([
       'Dimension',
@@ -1915,10 +1906,13 @@ describe('TriviaDetailComponent', () => {
     expect(fixture.nativeElement.textContent).toContain('Step 1');
     expect(fixture.nativeElement.textContent).toContain('Email and password checks');
     expect(fixture.nativeElement.textContent).toContain('Reactive form rules can be checked without rendering the template');
-    expect(fixture.nativeElement.textContent).toContain('When we review Angular forms answers');
+    expect(fixture.nativeElement.textContent).toContain('What a strong interview answer includes');
+    expect(fixture.nativeElement.textContent).toContain('Angular 22 note: where Signal Forms fit');
+    expect(fixture.nativeElement.textContent).toContain('Verify the comparison');
     expect(fixture.nativeElement.textContent).not.toContain('Source check');
     expect(fixture.nativeElement.textContent).not.toContain('Editorial Policy');
-    expect(fixture.nativeElement.textContent).toContain('The comparator below turns the abstract choice into four traces');
+    expect(fixture.nativeElement.textContent).not.toContain('The comparator below turns the abstract choice into four traces');
+    expect(fixture.nativeElement.textContent).not.toContain('Large-form tradeoffs');
     expect(fixture.nativeElement.textContent).toContain('Angular prep path');
     expect(fixture.nativeElement.textContent).not.toContain('❌');
     expect(fixture.nativeElement.textContent).not.toContain('✅');
@@ -1934,13 +1928,16 @@ describe('TriviaDetailComponent', () => {
     ).toBeNull();
     expect(
       fixture.nativeElement.querySelector('a[href="https://angular.dev/guide/forms/reactive-forms"]')
-    ).toBeNull();
+    ).toBeTruthy();
     expect(
       fixture.nativeElement.querySelector('a[href="https://angular.dev/guide/forms/template-driven-forms"]')
-    ).toBeNull();
+    ).toBeTruthy();
     expect(
       fixture.nativeElement.querySelector('a[href="https://angular.dev/guide/forms/form-validation"]')
-    ).toBeNull();
+    ).toBeTruthy();
+    expect(
+      fixture.nativeElement.querySelector('a[href="https://blog.angular.dev/announcing-angular-v22-c52bb83a4664"]')
+    ).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/legal/editorial-policy"]')).toBeNull();
     expect(fixture.nativeElement.querySelector('a[href="/guides/framework-prep/angular-prep-path"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/angular/coding/angular-contact-form-starter"]')).toBeTruthy();
@@ -1952,6 +1949,10 @@ describe('TriviaDetailComponent', () => {
     const payload = seo.updateTags.calls.mostRecent().args[0] as any;
     const { article } = expectCommonTriviaSchema(payload);
 
+    expect(payload.title).toBe('Template-Driven vs Reactive Forms: Angular Interview');
+    expect(payload.description).toBe(
+      'Angular interview answer comparing template-driven and reactive forms by state, validation, dynamic controls, testing, and when ngModel stops scaling.'
+    );
     expect(article?.headline).toBe(`${question.title} - Frontend interview practice question`);
     expect(article?.author).toEqual({ '@type': 'Organization', name: 'FrontendAtlas Editorial' });
   });

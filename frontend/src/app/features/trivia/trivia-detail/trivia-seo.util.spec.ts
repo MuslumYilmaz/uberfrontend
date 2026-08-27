@@ -246,6 +246,29 @@ describe('trivia-seo.util', () => {
     expect(description.length).toBeLessThanOrEqual(155);
   });
 
+  it('preserves the Angular template-driven vs reactive forms pilot metadata', () => {
+    const expectedTitle = 'Template-Driven vs Reactive Forms: Angular Interview';
+    const expectedDescription =
+      'Angular interview answer comparing template-driven and reactive forms by state, validation, dynamic controls, testing, and when ngModel stops scaling.';
+    const question = {
+      id: 'angular-template-driven-vs-reactive-forms-which-scales',
+      title: 'Template-Driven vs Reactive Forms in Angular: Which One Scales and Why?',
+      technology: 'angular',
+      seo: {
+        title: expectedTitle,
+        description: expectedDescription,
+      },
+    } as any;
+
+    const title = seoTitleForQuestion(question);
+    const description = seoDescriptionForQuestion(question, 'fallback description', 'angular');
+
+    expect(title).toBe(expectedTitle);
+    expect(description).toBe(expectedDescription);
+    expect(title.length).toBeLessThanOrEqual(54);
+    expect(description.length).toBeLessThanOrEqual(155);
+  });
+
   it('preserves the CSS sticky debugging lab SEO contract', () => {
     const question = {
       id: 'css-position-sticky-not-working',

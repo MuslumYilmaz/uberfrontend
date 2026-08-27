@@ -1310,7 +1310,7 @@
     "route": "/angular/trivia/angular-template-driven-vs-reactive-forms-which-scales",
     "tech": "angular",
     "difficulty": "intermediate",
-    "summary": "Template-driven forms fit small static workflows, mature Reactive Forms remain a strong choice for complex or existing applications, and stable Signal Forms in Angular 22 are a production option for new signal-first form state.",
+    "summary": "Template-driven forms fit small, mostly static Angular forms. Reactive Forms scale better when dynamic controls, cross-field or async validation, explicit state transitions, or isolated tests become requirements.",
     "tags": [
       "angular",
       "forms",
@@ -1320,7 +1320,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-07-14",
+    "updatedAt": "2026-08-27",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#angular-template-driven-vs-reactive-forms-which-scales"
   },

@@ -3111,17 +3111,53 @@ const angularForms = json('cdn/questions/angular/trivia.json').find(
   (entry) => entry.id === 'angular-template-driven-vs-reactive-forms-which-scales'
 );
 assert.ok(angularForms);
-assert.equal(angularForms.updatedAt, '2026-07-14');
+assert.equal(angularForms.updatedAt, '2026-08-27');
+assert.equal(angularForms.access, 'free');
+assert.equal(
+  angularForms.seo?.title,
+  'Template-Driven vs Reactive Forms: Angular Interview'
+);
+assert.equal(
+  angularForms.seo?.description,
+  'Angular interview answer comparing template-driven and reactive forms by state, validation, dynamic controls, testing, and when ngModel stops scaling.'
+);
 const angularFormsContract = JSON.stringify(angularForms);
 assert.match(angularFormsContract, /Signal Forms are stable|stable Signal Forms/i);
 assert.match(angularFormsContract, /production option/i);
 assert.doesNotMatch(angularFormsContract, /Signal Forms[^.]{0,80}experimental/i);
+const angularFormsAnswer = (angularForms.answer?.blocks || [])
+  .map((block) => block?.text || '')
+  .join('\n');
+assert.match(angularForms.description, /Template-driven forms fit small, mostly static Angular forms\./);
+assert.match(angularForms.description, /Reactive Forms scale better when dynamic controls, cross-field or async validation/i);
+assert.match(angularFormsAnswer, /Migration threshold checklist/i);
+assert.match(angularFormsAnswer, /Same form, three changes later/i);
+assert.match(angularFormsAnswer, /Testable proof/i);
+assert.match(angularFormsAnswer, /Angular 22 note: where Signal Forms fit/i);
+assert.match(angularFormsAnswer, /Verify the comparison/i);
+assert.doesNotMatch(angularFormsAnswer, /Large-form tradeoffs/i);
+assert.doesNotMatch(angularFormsAnswer, /Interactive form flow comparator/i);
+const angularFormsOfficialSources = Array.from(
+  angularFormsAnswer.matchAll(/href="(https:\/\/(?:angular\.dev|blog\.angular\.dev)[^"]+)"/g),
+  (match) => match[1]
+);
+assert.equal(new Set(angularFormsOfficialSources).size, 4);
+const angularFormsInternalLinks = Array.from(
+  angularFormsAnswer.matchAll(/href="(\/[^"]+)"/g),
+  (match) => match[1]
+);
+assert.ok(new Set(angularFormsInternalLinks).size >= 2);
+assert.ok(angularForms.incidentCard, 'Angular forms pilot must retain its incident card');
 const angularPrepGuide = read(
   'frontend/src/app/features/guides/playbook/framework-prep-path-article.component.ts'
 );
 assert.match(
   angularPrepGuide,
   /Compare template-driven, Reactive Forms, and stable Signal Forms, then choose one for a concrete Angular 22 form\./
+);
+assert.match(
+  angularPrepGuide,
+  /label: 'Reactive vs template-driven forms', route: \['\/', 'angular', 'trivia', 'angular-template-driven-vs-reactive-forms-which-scales'\]/
 );
 
 const imageLinkTrivia = json('cdn/questions/html/trivia.json').find(
@@ -3144,6 +3180,8 @@ for (const [label, question] of [
 const interviewHubSource = read(
   'frontend/src/app/features/interview-questions/interview-questions-landing.component.ts'
 );
+assert.match(interviewHubSource, /cta: 'Compare template-driven vs reactive forms'/);
+assert.match(interviewHubSource, /label: 'Compare template-driven vs reactive forms'/);
 assert.match(interviewHubSource, /<a href="\/pricing"><img alt="arrow"><\/a>/);
 assert.match(interviewHubSource, /anchor without href is not a hyperlink/i);
 assert.doesNotMatch(interviewHubSource, /<a><img alt="arrow"><\/a>/);

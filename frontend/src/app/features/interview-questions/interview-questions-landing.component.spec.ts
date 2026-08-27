@@ -3359,7 +3359,17 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(fixture.nativeElement.querySelector('a[href="/angular/trivia/angular-change-detection-strategies"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/angular/trivia/angular-onpush-change-detection-debugging-real-bug"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/angular/trivia/angular-zonejs-change-detection"]')).toBeTruthy();
-    expect(fixture.nativeElement.querySelector('a[href="/angular/trivia/angular-template-driven-vs-reactive-forms-which-scales"]')).toBeTruthy();
+    const angularFormsLinks = Array.from(
+      fixture.nativeElement.querySelectorAll(
+        'a[href="/angular/trivia/angular-template-driven-vs-reactive-forms-which-scales"]'
+      ) as NodeListOf<HTMLAnchorElement>
+    );
+    expect(angularFormsLinks.length).toBeGreaterThanOrEqual(1);
+    expect(
+      angularFormsLinks.some(
+        (link) => String(link.textContent || '').includes('Compare template-driven vs reactive forms')
+      )
+    ).toBeTrue();
     expect(fixture.nativeElement.querySelector('a[href="/angular/trivia/angular-routing"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/angular/trivia/angular-template-compilation-and-binding"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/angular/trivia/angular-data-binding"]')).toBeTruthy();
