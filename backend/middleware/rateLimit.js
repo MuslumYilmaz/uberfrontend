@@ -1,4 +1,8 @@
 const crypto = require('crypto');
+const {
+    runUpstashPipeline,
+    upstashConfigured,
+} = require('../services/upstash-pipeline');
 
 const redisWarnings = new Set();
 
@@ -14,7 +18,7 @@ function normalizeStoreMode() {
 }
 
 function hasRedisConfig() {
-    return Boolean(process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN);
+    return upstashConfigured(process.env);
 }
 
 function shouldUseRedis() {
@@ -47,67 +51,91 @@ function safeLimiterName({ name, code, message, windowMs, max }) {
     return raw || `limit-${windowMs}-${max}`;
 }
 
-async function incrementRedis(key, ttlSeconds) {
-    if (typeof fetch !== 'function') {
-        throw new Error('global fetch is unavailable for Upstash Redis rate limiting');
+const INCREMENT_SCRIPT = [
+    "local count = redis.call('INCR', KEYS[1])",
+    "if count == 1 then redis.call('EXPIRE', KEYS[1], ARGV[1]) end",
+    "local ttl = redis.call('TTL', KEYS[1])",
+    'if ttl < 1 then',
+    "  redis.call('EXPIRE', KEYS[1], ARGV[1])",
+    '  ttl = tonumber(ARGV[1])',
+    'end',
+    'return {count, ttl}',
+].join('\n');
+
+const DEDUPED_INCREMENT_SCRIPT = [
+    "local first = redis.call('SET', KEYS[2], '1', 'NX', 'EX', ARGV[1])",
+    "local count = tonumber(redis.call('GET', KEYS[1]) or '0')",
+    'if first or count < 1 then',
+    "  count = redis.call('INCR', KEYS[1])",
+    "  if count == 1 then redis.call('EXPIRE', KEYS[1], ARGV[1]) end",
+    'end',
+    "local ttl = redis.call('TTL', KEYS[1])",
+    'if ttl < 1 then',
+    "  redis.call('EXPIRE', KEYS[1], ARGV[1])",
+    '  ttl = tonumber(ARGV[1])',
+    'end',
+    'return {count, ttl}',
+].join('\n');
+
+function parseIncrementResult(payload) {
+    const result = payload?.[0]?.result;
+    if (!Array.isArray(result) || result.length !== 2) {
+        const error = new Error('Invalid Redis limiter response');
+        error.code = 'invalid_response';
+        throw error;
     }
-
-    const baseUrl = String(process.env.UPSTASH_REDIS_REST_URL || '').replace(/\/+$/, '');
-    const token = String(process.env.UPSTASH_REDIS_REST_TOKEN || '');
-    if (!baseUrl || !token) {
-        throw new Error('UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN are required for Redis rate limiting');
+    const [count, ttl] = result;
+    if (
+        !Number.isSafeInteger(count)
+        || count < 1
+        || !Number.isSafeInteger(ttl)
+        || ttl < 1
+    ) {
+        const error = new Error('Invalid Redis limiter response');
+        error.code = 'invalid_response';
+        throw error;
     }
-
-    const response = await fetch(`${baseUrl}/pipeline`, {
-        method: 'POST',
-        headers: {
-            authorization: `Bearer ${token}`,
-            'content-type': 'application/json',
-        },
-        body: JSON.stringify([
-            ['INCR', key],
-            ['EXPIRE', key, ttlSeconds, 'NX'],
-            ['TTL', key],
-        ]),
-    });
-
-    if (!response.ok) {
-        throw new Error(`Upstash Redis rate limit request failed with HTTP ${response.status}`);
-    }
-
-    const payload = await response.json();
-    const count = Number(payload?.[0]?.result || 0);
-    const ttl = Number(payload?.[2]?.result || ttlSeconds);
     return {
         count,
-        resetAt: Date.now() + Math.max(1, ttl) * 1000,
+        resetAt: Date.now() + (ttl * 1000),
     };
 }
 
 async function runRedisCommand(command) {
-    if (typeof fetch !== 'function') {
-        throw new Error('global fetch is unavailable for Upstash Redis rate limiting');
-    }
+    return runUpstashPipeline([command]);
+}
 
-    const baseUrl = String(process.env.UPSTASH_REDIS_REST_URL || '').replace(/\/+$/, '');
-    const token = String(process.env.UPSTASH_REDIS_REST_TOKEN || '');
-    if (!baseUrl || !token) {
-        throw new Error('UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN are required for Redis rate limiting');
-    }
+async function incrementRedis(key, ttlSeconds) {
+    const payload = await runRedisCommand([
+        'EVAL',
+        INCREMENT_SCRIPT,
+        1,
+        key,
+        ttlSeconds,
+    ]);
+    return parseIncrementResult(payload);
+}
 
-    const response = await fetch(`${baseUrl}/pipeline`, {
-        method: 'POST',
-        headers: {
-            authorization: `Bearer ${token}`,
-            'content-type': 'application/json',
-        },
-        body: JSON.stringify([command]),
-    });
+async function incrementRedisDeduped(counterKey, dedupeKey, ttlSeconds) {
+    const payload = await runRedisCommand([
+        'EVAL',
+        DEDUPED_INCREMENT_SCRIPT,
+        2,
+        counterKey,
+        dedupeKey,
+        ttlSeconds,
+    ]);
+    return parseIncrementResult(payload);
+}
 
-    if (!response.ok) {
-        throw new Error(`Upstash Redis rate limit request failed with HTTP ${response.status}`);
+function boundMemoryEntries(entries, now) {
+    if (entries.size <= 10_000) return;
+    for (const [key, value] of entries) {
+        if (now >= value.resetAt) entries.delete(key);
     }
-    return response.json();
+    while (entries.size > 10_000) {
+        entries.delete(entries.keys().next().value);
+    }
 }
 
 function incrementMemory(hits, key, now, windowMsSafe) {
@@ -116,19 +144,26 @@ function incrementMemory(hits, key, now, windowMsSafe) {
     if (!entry || now >= entry.resetAt) {
         const next = { count: 1, resetAt: now + windowMsSafe };
         hits.set(key, next);
+        boundMemoryEntries(hits, now);
         return next;
     }
 
     entry.count += 1;
 
-    // Opportunistic cleanup to avoid unbounded growth.
-    if (hits.size > 10_000 && Math.random() < 0.01) {
-        for (const [k, v] of hits) {
-            if (now >= v.resetAt) hits.delete(k);
-        }
-    }
+    boundMemoryEntries(hits, now);
 
     return entry;
+}
+
+function incrementMemoryDeduped(hits, dedupeHits, key, dedupeKey, now, windowMsSafe) {
+    const existingDedupe = dedupeHits.get(dedupeKey);
+    if (existingDedupe && now < existingDedupe.resetAt) {
+        const current = hits.get(key);
+        if (current && now < current.resetAt) return current;
+    }
+    dedupeHits.set(dedupeKey, { resetAt: now + windowMsSafe });
+    boundMemoryEntries(dedupeHits, now);
+    return incrementMemory(hits, key, now, windowMsSafe);
 }
 
 function rateLimitStoreError(error) {
@@ -158,9 +193,10 @@ function createExpressRateLimitStore({ name, windowMs }) {
         try {
             return await operation();
         } catch (error) {
+            const failureCode = redisFailureCode(error);
             warnRedisLimiterOnce(
                 limitName,
-                `${limitName} Redis limiter unavailable; ${failClosed() ? 'failing closed' : 'falling back to in-memory limits'} (${error?.message || error})`
+                `${limitName} Redis limiter unavailable; ${failClosed() ? 'failing closed' : 'falling back to in-memory limits'} (${failureCode})`
             );
             if (failClosed()) throw rateLimitStoreError(error);
             return fallback();
@@ -202,50 +238,183 @@ function createExpressRateLimitStore({ name, windowMs }) {
     };
 }
 
-function rateLimit({ name, windowMs, max, keyGenerator, message, code }) {
+function normalizeRedisFailureMode(value) {
+    const raw = String(value || 'inherit').trim().toLowerCase();
+    if (['closed', 'fail-closed', 'required'].includes(raw)) return 'closed';
+    if (['open', 'fail-open', 'fallback'].includes(raw)) return 'open';
+    return 'inherit';
+}
+
+const REDIS_FAILURE_CODES = new Set([
+    'not_configured',
+    'timeout',
+    'network_error',
+    'http_error',
+    'invalid_response',
+    'command_error',
+]);
+
+function redisFailureCode(error) {
+    return REDIS_FAILURE_CODES.has(error?.code) ? error.code : 'invalid_response';
+}
+
+function setRateLimitMetadata(res, {
+    limiter,
+    outcome,
+    code,
+    storeFallback = false,
+}) {
+    if (!res.locals) res.locals = {};
+    res.locals.rateLimit = {
+        limiter,
+        outcome,
+        code,
+        storeFallback: Boolean(storeFallback || res.locals.rateLimit?.storeFallback),
+    };
+}
+
+function rateLimit({
+    name,
+    windowMs,
+    max,
+    keyGenerator,
+    message,
+    code,
+    redisFailureMode = 'inherit',
+    dedupeKeyGenerator,
+    storeMode = 'auto',
+}) {
     const hits = new Map(); // key -> { count, resetAt }
+    const dedupeHits = new Map();
     const msg = message || 'Too many requests';
     const errorCode = String(code || '').trim();
     const windowMsSafe = Math.max(1000, Number(windowMs) || 60_000);
     const maxSafe = Math.max(1, Number(max) || 60);
     const keyFn = typeof keyGenerator === 'function' ? keyGenerator : (req) => getClientIp(req);
+    const dedupeKeyFn = typeof dedupeKeyGenerator === 'function'
+        ? dedupeKeyGenerator
+        : null;
     const limitName = safeLimiterName({ name, code, message: msg, windowMs: windowMsSafe, max: maxSafe });
     const namespace = String(process.env.RATE_LIMIT_NAMESPACE || 'frontendatlas').trim() || 'frontendatlas';
     const ttlSeconds = Math.max(1, Math.ceil(windowMsSafe / 1000));
+    const failureMode = normalizeRedisFailureMode(redisFailureMode);
+    const normalizedStoreMode = String(storeMode || 'auto').trim().toLowerCase();
+
+    function redisFailureIsClosed() {
+        if (failureMode === 'closed') return true;
+        if (failureMode === 'open') return false;
+        return String(process.env.RATE_LIMIT_REDIS_FAIL_CLOSED || '').toLowerCase() === 'true';
+    }
 
     return async function rateLimitMiddleware(req, res, next) {
         const now = Date.now();
         const rawKey = String(keyFn(req) || 'unknown');
         const keyDigest = hashKey(rawKey);
         const storeKey = `rl:${namespace}:${limitName}:${keyDigest}`;
+        const rawDedupeKey = dedupeKeyFn ? String(dedupeKeyFn(req) || '').trim() : '';
+        const dedupeStoreKey = rawDedupeKey
+            ? `${storeKey}:dedupe:${hashKey(rawDedupeKey)}`
+            : '';
         let entry;
+        let storeFallback = false;
+        let fallbackCode = null;
 
-        if (shouldUseRedis()) {
+        // A process-local pre-auth guard can deliberately avoid a remote
+        // dependency while the authenticated route limiter enforces the
+        // shared Redis policy later in the request lifecycle.
+        const useRedis = normalizedStoreMode === 'memory' ? false : shouldUseRedis();
+        if (!useRedis && redisFailureIsClosed()) {
+            warnRedisLimiterOnce(
+                limitName,
+                `${limitName} requires Redis; failing closed because the store is not configured`
+            );
+            setRateLimitMetadata(res, {
+                limiter: limitName,
+                outcome: 'unavailable',
+                code: 'not_configured',
+            });
+            return res.status(503).json({
+                code: 'RATE_LIMIT_UNAVAILABLE',
+                error: 'Rate limiter unavailable',
+            });
+        }
+
+        if (useRedis) {
             try {
-                entry = await incrementRedis(storeKey, ttlSeconds);
+                entry = dedupeStoreKey
+                    ? await incrementRedisDeduped(storeKey, dedupeStoreKey, ttlSeconds)
+                    : await incrementRedis(storeKey, ttlSeconds);
             } catch (err) {
-                const failClosed = String(process.env.RATE_LIMIT_REDIS_FAIL_CLOSED || '').toLowerCase() === 'true';
+                const failClosed = redisFailureIsClosed();
+                const failureCode = redisFailureCode(err);
                 warnRedisLimiterOnce(
                     limitName,
-                    `${limitName} Redis limiter unavailable; ${failClosed ? 'failing closed' : 'falling back to in-memory limits'} (${err?.message || err})`
+                    `${limitName} Redis limiter unavailable; ${failClosed ? 'failing closed' : 'falling back to in-memory limits'} (${failureCode})`
                 );
                 if (failClosed) {
-                    return res.status(503).json({ error: 'Rate limiter unavailable' });
+                    setRateLimitMetadata(res, {
+                        limiter: limitName,
+                        outcome: 'unavailable',
+                        code: failureCode,
+                    });
+                    return res.status(503).json({
+                        code: 'RATE_LIMIT_UNAVAILABLE',
+                        error: 'Rate limiter unavailable',
+                    });
                 }
-                entry = incrementMemory(hits, storeKey, now, windowMsSafe);
+                storeFallback = true;
+                fallbackCode = failureCode;
+                entry = dedupeStoreKey
+                    ? incrementMemoryDeduped(
+                        hits,
+                        dedupeHits,
+                        storeKey,
+                        dedupeStoreKey,
+                        now,
+                        windowMsSafe
+                    )
+                    : incrementMemory(hits, storeKey, now, windowMsSafe);
             }
         } else {
-            entry = incrementMemory(hits, storeKey, now, windowMsSafe);
+            entry = dedupeStoreKey
+                ? incrementMemoryDeduped(
+                    hits,
+                    dedupeHits,
+                    storeKey,
+                    dedupeStoreKey,
+                    now,
+                    windowMsSafe
+                )
+                : incrementMemory(hits, storeKey, now, windowMsSafe);
         }
 
         if (entry.count > maxSafe) {
             const retryAfterSec = Math.max(1, Math.ceil((entry.resetAt - now) / 1000));
             res.setHeader('Retry-After', String(retryAfterSec));
+            setRateLimitMetadata(res, {
+                limiter: limitName,
+                outcome: 'denied',
+                code: errorCode || 'RATE_LIMITED',
+                storeFallback,
+            });
             return res.status(429).json(errorCode ? { code: errorCode, error: msg } : { error: msg });
         }
 
+        setRateLimitMetadata(res, {
+            limiter: limitName,
+            outcome: 'allowed',
+            code: fallbackCode || 'RATE_LIMIT_ALLOWED',
+            storeFallback,
+        });
         return next();
     };
 }
 
-module.exports = { createExpressRateLimitStore, rateLimit, getClientIp };
+module.exports = {
+    createExpressRateLimitStore,
+    getClientIp,
+    incrementRedisCounter: incrementRedis,
+    incrementRedisCounterDeduped: incrementRedisDeduped,
+    normalizeRedisFailureMode,
+    rateLimit,
+};

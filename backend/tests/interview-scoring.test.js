@@ -72,7 +72,7 @@ function scoringFixture(overrides = {}) {
 }
 
 describe('Interview result remediation', () => {
-  test('scores an opaque answer from the staged 170-question candidate', () => {
+  test('scores an opaque answer from the approved 185-question bank', () => {
     const original = {
       nodeEnv: process.env.NODE_ENV,
       allowCandidate: process.env.INTERVIEW_ALLOW_CANDIDATE_BANK,
@@ -80,23 +80,20 @@ describe('Interview result remediation', () => {
       privatePath: process.env.INTERVIEW_BANK_PRIVATE_PATH,
       releasePath: process.env.INTERVIEW_BANK_RELEASE_PATH,
     };
-    const candidateRoot = path.resolve(
-      __dirname,
-      '../../content-drafts/interview-mcq/generated/candidate-1.2.0'
-    );
+    const approvedRoot = path.resolve(__dirname, '../content/interview');
     try {
       process.env.NODE_ENV = 'test';
-      process.env.INTERVIEW_ALLOW_CANDIDATE_BANK = 'true';
+      process.env.INTERVIEW_ALLOW_CANDIDATE_BANK = 'false';
       process.env.INTERVIEW_BANK_PUBLIC_PATH = path.join(
-        candidateRoot,
+        approvedRoot,
         'frontend-interview-bank-v1.public.json'
       );
       process.env.INTERVIEW_BANK_PRIVATE_PATH = path.join(
-        candidateRoot,
+        approvedRoot,
         'frontend-interview-bank-v1.private.json'
       );
       process.env.INTERVIEW_BANK_RELEASE_PATH = path.join(
-        candidateRoot,
+        approvedRoot,
         'frontend-interview-bank-v1.release.json'
       );
       resetInterviewArtifactsCache();
@@ -118,7 +115,7 @@ describe('Interview result remediation', () => {
         }],
       }), { finalizedAt: new Date('2026-08-05T12:01:00.000Z') });
 
-      expect(artifacts.bank.version).toBe('1.2.0');
+      expect(artifacts.bank.version).toBe('1.3.0');
       expect(results.mcq).toEqual(expect.objectContaining({
         total: 1,
         correct: 1,

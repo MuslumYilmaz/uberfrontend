@@ -12,10 +12,15 @@ const { requireAuth } = require('./middleware/Auth');
 const { getJwtSecret } = require('./config/jwt');
 const cookieParser = require('cookie-parser');
 const { requireAdmin } = require('./middleware/RequireAdmin');
-const { createExpressRateLimitStore } = require('./middleware/rateLimit');
+const { createExpressRateLimitStore, rateLimit } = require('./middleware/rateLimit');
 const { cookieCsrfProtection } = require('./middleware/Csrf');
 const { createRequestMetricsMiddleware } = require('./middleware/observability');
 const { createSecurityHeadersMiddleware } = require('./middleware/securityHeaders');
+const { emitInterviewEvent } = require('./services/interview/telemetry');
+const {
+    interviewOperation,
+    isInterviewHttpPath,
+} = require('./services/interview/telemetry-path');
 const { connectToMongo, resolveMongoConnectionConfig } = require('./config/mongo');
 const { normalizeOrigin, resolveAllowedFrontendOrigins, resolveServerBase } = require('./config/urls');
 const { validateAuthRuntimeConfig } = require('./config/auth-runtime');
@@ -75,6 +80,16 @@ console.log(`🔧 Allowed frontend origins: ${ALLOWED_FRONTEND_ORIGINS.join(', '
 
 app.use(createSecurityHeadersMiddleware());
 app.use(createRequestMetricsMiddleware());
+app.use((req, _res, next) => {
+    if (
+        isInterviewHttpPath(req.originalUrl || req.url || req.path)
+        && !['GET', 'HEAD', 'OPTIONS'].includes(req.method)
+        && !req.interviewRequestReceivedAt
+    ) {
+        req.interviewRequestReceivedAt = new Date();
+    }
+    next();
+});
 app.use(
     cors({
         origin: (origin, cb) => {
@@ -98,9 +113,7 @@ const defaultUrlencodedParser = express.urlencoded({
     extended: false,
     verify: captureRawBody,
 });
-const isInterviewApiRequest = (req) => (
-    req.path === '/api/interviews' || req.path.startsWith('/api/interviews/')
-);
+const isInterviewApiRequest = (req) => isInterviewHttpPath(req.originalUrl || req.url || req.path);
 
 // Interview drafts have a separately bounded, authenticated JSON parser in
 // their router. Skipping the default 100 KiB parsers here keeps the advertised
@@ -141,8 +154,10 @@ const apiRateLimiter = expressRateLimit({
     skip: (req) => {
         if (req.method === 'OPTIONS') return true;
         const path = String(req.originalUrl || req.url || '').split('?')[0];
-        return path === '/api/hello' ||
+        return isInterviewHttpPath(path) ||
+            path === '/api/hello' ||
             path === '/api/health' ||
+            path === '/api/health/interview' ||
             path === '/api/contact' ||
             path === '/api/bug-report' ||
             path === '/api/billing/webhooks' ||
@@ -155,12 +170,59 @@ const apiRateLimiter = expressRateLimit({
     }),
 });
 
+const interviewOuterRateLimiterCore = rateLimit({
+    name: 'interview-outer-ip',
+    windowMs: API_RATE_LIMIT_WINDOW_MS,
+    max: API_RATE_LIMIT_MAX,
+    keyGenerator: (req) => req.ip || req.socket?.remoteAddress || 'unknown',
+    code: 'INTERVIEW_OUTER_RATE_LIMITED',
+    message: 'Too many interview requests. Please try again shortly.',
+    redisFailureMode: 'open',
+    storeMode: 'memory',
+});
+
+function interviewOuterRateLimiter(req, res, next) {
+    const operation = interviewOperation(req.originalUrl || req.url || req.path, req.method);
+    let enteredInterviewRouter = false;
+    res.once('finish', () => {
+        if (enteredInterviewRouter) return;
+        const metadata = res.locals?.rateLimit;
+        if (res.statusCode === 429 && metadata?.outcome === 'denied') {
+            emitInterviewEvent('rate_denied', {
+                operation,
+                httpStatus: res.statusCode,
+                limiter: metadata.limiter,
+                code: metadata.code,
+            });
+        }
+    });
+    return interviewOuterRateLimiterCore(req, res, () => {
+        enteredInterviewRouter = true;
+        next();
+    });
+}
+
 app.use('/api/billing/webhooks', webhookRateLimiter);
-app.use('/api', apiRateLimiter);
+app.use('/api/interviews', interviewOuterRateLimiter);
+app.use((req, res, next) => {
+    const path = String(req.originalUrl || req.url || '').split('?')[0];
+    // Express does not mount `//api/...` below `/api`. Still charge malformed
+    // API-looking paths to the global quota so repeated-slash probes cannot
+    // become an unbounded 404/DoS lane.
+    if (!/^\/+api(?:\/|$)/i.test(path)) return next();
+    return apiRateLimiter(req, res, next);
+});
 app.use('/api', cookieCsrfProtection);
 
 // ---- DB (lazy for serverless, fail-fast for local server) ----
-const SKIP_DB_PATHS = new Set(['/', '/api/hello', '/api/contact', '/api/bug-report', '/api/health']);
+const SKIP_DB_PATHS = new Set([
+    '/',
+    '/api/hello',
+    '/api/contact',
+    '/api/bug-report',
+    '/api/health',
+    '/api/health/interview',
+]);
 app.use(async (req, res, next) => {
     try {
         const isPublicCheckoutConfig =
@@ -214,6 +276,11 @@ app.get('/api/health', async (_req, res) => {
     } catch {
         return res.status(503).json({ error: 'Database unavailable' });
     }
+});
+app.get('/api/health/interview', async (_req, res) => {
+    const { interviewReleaseReadiness } = require('./services/interview/readiness');
+    const snapshot = await interviewReleaseReadiness();
+    return res.status(snapshot.ok ? 200 : 503).json(snapshot);
 });
 
 // Public contact and bug-report forms share fail-closed Turnstile, quota, and

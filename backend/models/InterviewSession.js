@@ -176,6 +176,7 @@ const MutationReceiptSchema = new Schema(
 const TimingPolicySchema = new Schema(
   {
     mcqSeconds: { type: Number, default: null, min: 60 },
+    mcqMaxIngressSeconds: { type: Number, default: null, min: 1, max: 30 },
     codingReadySeconds: { type: Number, default: null, min: 30 },
     codingSeconds: { type: Number, default: null, min: 60 },
     systemDesignSeconds: { type: Number, default: null, min: 60 },
@@ -187,6 +188,7 @@ const TimingPolicySchema = new Schema(
 const InterviewSessionSchema = new Schema(
   {
     userId: { type: Schema.Types.ObjectId, ref: 'User', required: true, index: true },
+    protocolVersion: { type: Number, enum: [1, 2], default: 1, required: true },
     createRequestId: { type: String, required: true, trim: true },
     createRequestHash: { type: String, required: true, trim: true },
     active: { type: Boolean, default: true, required: true },
@@ -396,6 +398,10 @@ InterviewSessionSchema.pre('validate', function validateFormatContract(next) {
       || !this.mcqStartedAt
       || !this.mcqDeadlineAt
       || !Number(this.timingPolicy?.mcqSeconds)
+      || (
+        Number(this.protocolVersion || 1) >= 2
+        && !Number(this.timingPolicy?.mcqMaxIngressSeconds)
+      )
       || !Number(this.timingPolicy?.codingReadySeconds)
       || !Number(this.timingPolicy?.codingSeconds)
     ) {

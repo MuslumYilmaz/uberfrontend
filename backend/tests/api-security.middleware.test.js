@@ -97,6 +97,34 @@ describe('global API security middleware', () => {
     expect((await request(app).get('/api/auth/ping')).status).toBe(429);
   });
 
+  test('keeps Interview health live but launch-disabled while the feature is off', async () => {
+    const app = loadApp({
+      INTERVIEW_MODE_ACCESS: 'off',
+      INTERVIEW_OPERATIONAL_STATE: 'normal',
+      RATE_LIMIT_STORE: 'memory',
+      INTERVIEW_MONITORING_READY: 'false',
+      INTERVIEW_NATIVE_SAFARI_READY: 'false',
+    });
+
+    const response = await request(app).get('/api/health/interview');
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual(expect.objectContaining({
+      ok: true,
+      launchReady: false,
+      releaseRequired: false,
+      dependencies: expect.objectContaining({
+        redisRateLimit: expect.objectContaining({
+          required: false,
+          configured: false,
+          ready: false,
+          code: 'not_configured',
+        }),
+        monitoring: expect.objectContaining({ required: false, ready: false }),
+        nativeSafari: expect.objectContaining({ required: false, ready: false }),
+      }),
+    }));
+  });
+
   test('exposes Retry-After to allowed browser origins without changing credentialed CORS', async () => {
     const app = loadApp();
     const response = await request(app)
@@ -173,6 +201,80 @@ describe('global API security middleware', () => {
     const response = await request(app).get('/api/auth/ping');
     expect(response.status).toBe(503);
     expect(response.body?.error).toBe('Internal server error');
+  });
+
+  test('keeps Interview resume paths on their bounded fail-open limiter during Redis outage', async () => {
+    global.fetch = jest.fn().mockRejectedValue(new Error('mock redis outage'));
+    const app = loadApp({
+      RATE_LIMIT_STORE: 'redis',
+      RATE_LIMIT_REDIS_FAIL_CLOSED: 'true',
+      UPSTASH_REDIS_REST_URL: 'https://redis.example.test',
+      UPSTASH_REDIS_REST_TOKEN: 'test-token',
+    });
+
+    const lower = await request(app).get('/api/interviews/active');
+    const upper = await request(app).get('/API/INTERVIEWS/active');
+
+    expect(lower.status).toBe(401);
+    expect(upper.status).toBe(401);
+    expect(lower.status).not.toBe(503);
+    expect(upper.status).not.toBe(503);
+  });
+
+  test('uses a process-local pre-auth guard without putting Interview writes through Redis', async () => {
+    global.fetch = jest.fn().mockRejectedValue(new Error('mock redis outage'));
+    const app = loadApp({
+      RATE_LIMIT_STORE: 'redis',
+      RATE_LIMIT_REDIS_FAIL_CLOSED: 'true',
+      UPSTASH_REDIS_REST_URL: 'https://redis.example.test',
+      UPSTASH_REDIS_REST_TOKEN: 'test-token',
+    });
+
+    const response = await request(app)
+      .put('/API/INTERVIEWS/session-id/mcq/question-id')
+      .send({ selectedOptionId: 'option-a' });
+
+    expect(response.status).toBe(401);
+    expect(global.fetch).not.toHaveBeenCalled();
+  });
+
+  test('bounds unauthenticated availability and unknown Interview writes before route auth', async () => {
+    const availabilityApp = loadApp({ API_RATE_LIMIT_MAX: '1' });
+    expect((await request(availabilityApp).get('/api/interviews/availability')).status).toBe(401);
+    const availabilityLimited = await request(availabilityApp).get('/api/interviews/availability');
+    expect(availabilityLimited.status).toBe(429);
+    expect(availabilityLimited.headers['retry-after']).toBeTruthy();
+    expect(availabilityLimited.body?.code).toBe('INTERVIEW_OUTER_RATE_LIMITED');
+
+    const unknownWriteApp = loadApp({ API_RATE_LIMIT_MAX: '1' });
+    expect((await request(unknownWriteApp).post('/api/interviews/not-a-route')).status).toBe(401);
+    const unknownLimited = await request(unknownWriteApp).post('/api/interviews/not-a-route');
+    expect(unknownLimited.status).toBe(429);
+    expect(unknownLimited.headers['retry-after']).toBeTruthy();
+    expect(unknownLimited.body?.code).toBe('INTERVIEW_OUTER_RATE_LIMITED');
+  });
+
+  test('does not exempt paths that merely contain the Interview prefix', async () => {
+    const app = loadApp({ API_RATE_LIMIT_MAX: '1' });
+    const nested = '/api/auth/foo/api/interviews/bar';
+
+    expect((await request(app).get(nested)).status).toBe(404);
+    const limited = await request(app).get(nested);
+    expect(limited.status).toBe(429);
+    expect(limited.body?.code).toBe('API_RATE_LIMITED');
+  });
+
+  test.each([
+    '//api/interviews/active',
+    '/api//interviews/active',
+  ])('keeps non-mounted repeated-slash path %s on the global limiter', async (path) => {
+    const app = loadApp({ API_RATE_LIMIT_MAX: '1' });
+
+    expect((await request(app).get(path)).status).toBe(404);
+    const limited = await request(app).get(path);
+    expect(limited.status).toBe(429);
+    expect(limited.headers['retry-after']).toBeTruthy();
+    expect(limited.body?.code).toBe('API_RATE_LIMITED');
   });
 
   test('lets Express trust-proxy configuration, not raw X-Forwarded-For parsing, select the client IP', async () => {

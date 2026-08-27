@@ -43,6 +43,65 @@ function enterCodingReady(session, at, config) {
   session.codingReadyDeadlineAt = addSeconds(at, codingReadySeconds);
 }
 
+function evaluateMcqMutationAdmission(session, {
+  requestReceivedAt,
+  requestCompletedAt,
+  config,
+} = {}) {
+  const receivedAt = new Date(requestReceivedAt);
+  const completedAt = new Date(requestCompletedAt);
+  const deadlineAt = new Date(session.mcqDeadlineAt);
+  const receivedMs = receivedAt.getTime();
+  const completedMs = completedAt.getTime();
+  const deadlineMs = deadlineAt.getTime();
+  const maxIngressSeconds = timingSeconds(
+    session,
+    'mcqMaxIngressSeconds',
+    config?.mcqMaxIngressSeconds
+  );
+  const maxIngressMs = maxIngressSeconds * 1000;
+
+  if (
+    !Number.isFinite(receivedMs)
+    || !Number.isFinite(completedMs)
+    || !Number.isFinite(deadlineMs)
+    || !Number.isFinite(maxIngressMs)
+    || maxIngressMs <= 0
+    || completedMs < receivedMs
+    || completedMs - receivedMs > maxIngressMs
+  ) {
+    return {
+      accepted: false,
+      code: 'INTERVIEW_MCQ_INGRESS_TIMEOUT',
+      deadlineAt,
+      maxIngressSeconds,
+      requestCompletedAt: completedAt,
+      requestReceivedAt: receivedAt,
+    };
+  }
+  if (receivedMs > deadlineMs) {
+    return {
+      accepted: false,
+      code: 'INTERVIEW_MCQ_DEADLINE_PASSED',
+      deadlineAt,
+      maxIngressSeconds,
+      requestCompletedAt: completedAt,
+      requestReceivedAt: receivedAt,
+    };
+  }
+  return {
+    accepted: true,
+    // A bounded request that straddles the deadline is admitted at the
+    // deadline, while a normally completed request uses its server completion
+    // time. Client clocks never participate in this decision.
+    acceptedAt: new Date(Math.min(completedMs, deadlineMs)),
+    deadlineAt,
+    maxIngressSeconds,
+    requestCompletedAt: completedAt,
+    requestReceivedAt: receivedAt,
+  };
+}
+
 function reconcileSession(session, now, config) {
   const nowDate = new Date(now);
   let changed = false;
@@ -147,6 +206,7 @@ module.exports = {
   TERMINAL_STATUSES,
   abandonSession,
   addSeconds,
+  evaluateMcqMutationAdmission,
   reconcileSession,
   startCoding,
   submitCoding,
