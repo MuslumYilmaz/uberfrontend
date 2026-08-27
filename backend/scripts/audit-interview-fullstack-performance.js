@@ -10,6 +10,7 @@
  * SLO; latency output is evidence for release review, not a pass threshold.
  */
 
+const crypto = require('crypto');
 const http = require('http');
 const jwt = require('jsonwebtoken');
 const { monitorEventLoopDelay, performance } = require('perf_hooks');
@@ -227,7 +228,7 @@ function installHealthyRedisStub() {
 }
 
 async function createPremiumUsers(User, label, count) {
-  const nonce = `${Date.now()}_${Math.random().toString(16).slice(2, 10)}`;
+  const nonce = `${Date.now()}_${crypto.randomBytes(8).toString('hex')}`;
   const users = await User.insertMany(Array.from({ length: count }, (_, index) => ({
     email: `${label}_${nonce}_${index}@example.com`,
     username: `${label}_${nonce}_${index}`,
