@@ -120,7 +120,7 @@
         <div class="phase__heading">
           <div>
             <p class="eyebrow">Step 1 of 5</p>
-            <h2>Clarify the brief</h2>
+            <h2 tabindex="-1" data-testid="system-design-step-heading">Clarify the brief</h2>
             <p>Choose up to three questions that would materially change your design.</p>
           </div>
           <span>{{ draft().selectedClarificationIds.length }}/{{ clarificationLimit() }} selected</span>
@@ -157,7 +157,7 @@
         <div class="phase__heading">
           <div>
             <p class="eyebrow">Step 2 of 5</p>
-            <h2>Set the priorities</h2>
+            <h2 tabindex="-1" data-testid="system-design-step-heading">Set the priorities</h2>
             <p>Select up to three requirements. Their order represents your priority.</p>
           </div>
           <span>{{ draft().prioritizedRequirementIds.length }}/{{ priorityLimit() }} selected</span>
@@ -215,7 +215,7 @@
         <div class="phase__heading">
           <div>
             <p class="eyebrow">Step 3 of 5</p>
-            <h2>Build the architecture</h2>
+            <h2 tabindex="-1" data-testid="system-design-step-heading">Build the architecture</h2>
             <p>Add component cards to lanes. Use the buttons to keep the board keyboard accessible.</p>
           </div>
           <span>{{ draft().placements.length }} cards placed</span>
@@ -286,7 +286,7 @@
         <div class="phase__heading">
           <div>
             <p class="eyebrow">Step 4 of 5</p>
-            <h2>Connect and defend the design</h2>
+            <h2 tabindex="-1" data-testid="system-design-step-heading">Connect and defend the design</h2>
             <p>Describe the flow, then choose an approach and concise reasons for each decision.</p>
           </div>
         </div>
@@ -388,7 +388,7 @@
         <div class="phase__heading">
           <div>
             <p class="eyebrow">Step 5 of 5</p>
-            <h2>Respond to a production twist</h2>
+            <h2 tabindex="-1" data-testid="system-design-step-heading">Respond to a production twist</h2>
             <p>Your priorities and clarifications lock when the twist is revealed. You can still adapt the architecture and decisions.</p>
           </div>
         </div>

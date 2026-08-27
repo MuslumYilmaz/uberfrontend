@@ -20,6 +20,8 @@ import {
   template: `
     <div
       class="timer"
+      role="timer"
+      aria-live="off"
       [class.timer--warning]="remainingSeconds() <= 300 && remainingSeconds() > 60"
       [class.timer--urgent]="remainingSeconds() <= 60"
       [attr.aria-label]="label + ': ' + remainingLabel()"

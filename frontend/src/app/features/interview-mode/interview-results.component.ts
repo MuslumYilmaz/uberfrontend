@@ -1,9 +1,8 @@
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
   OnInit,
-  PLATFORM_ID,
   inject,
   signal,
 } from '@angular/core';
@@ -15,6 +14,7 @@ import {
   InterviewSystemDesignPracticeSignal,
 } from '../../core/models/interview.model';
 import { InterviewService } from '../../core/services/interview.service';
+import { InterviewRecoveryStore } from '../../core/services/interview-recovery.store';
 import { FaButtonComponent, FaCardComponent } from '../../shared/ui';
 
 @Component({
@@ -28,12 +28,13 @@ import { FaButtonComponent, FaCardComponent } from '../../shared/ui';
 export class InterviewResultsComponent implements OnInit {
   private readonly interviews = inject(InterviewService);
   private readonly route = inject(ActivatedRoute);
-  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  private readonly recovery = inject(InterviewRecoveryStore);
 
   readonly result = signal<InterviewResult | null>(null);
   readonly loading = signal(true);
   readonly error = signal<string | null>(null);
   readonly voided = signal(false);
+  readonly abandoned = signal(false);
   readonly interviewStillActive = signal(false);
   sessionId = '';
 
@@ -51,6 +52,7 @@ export class InterviewResultsComponent implements OnInit {
     this.loading.set(true);
     this.error.set(null);
     this.voided.set(false);
+    this.abandoned.set(false);
     this.interviewStillActive.set(false);
     this.interviews.getResult(this.sessionId).subscribe({
       next: (result) => {
@@ -64,6 +66,15 @@ export class InterviewResultsComponent implements OnInit {
         if (code === 'INTERVIEW_SESSION_VOIDED') {
           this.voided.set(true);
           this.error.set('This interview was voided after a technical issue, so no answer report was created.');
+          this.clearTerminalLocalState();
+          return;
+        }
+        if (code === 'INTERVIEW_SESSION_ABANDONED') {
+          this.abandoned.set(true);
+          this.error.set(
+            'This interview was ended before completion. Answer review is withheld to prevent extraction of the question bank.',
+          );
+          this.clearTerminalLocalState();
           return;
         }
         if (code === 'INTERVIEW_RESULTS_NOT_READY') {
@@ -144,18 +155,7 @@ export class InterviewResultsComponent implements OnInit {
   }
 
   private clearTerminalLocalState(): void {
-    if (!this.isBrowser || !this.sessionId) return;
-    const keys = [
-      `fa:interview:mcq-timing:v1:${this.sessionId}`,
-      `fa:interview:coding-draft:v1:${this.sessionId}`,
-      `fa:interview:system-design-draft:v1:${this.sessionId}`,
-    ];
-    for (const key of keys) {
-      try {
-        localStorage.removeItem(key);
-      } catch {
-        // The result is authoritative even when browser storage is unavailable.
-      }
-    }
+    if (!this.sessionId) return;
+    this.recovery.clearSession(this.sessionId);
   }
 }

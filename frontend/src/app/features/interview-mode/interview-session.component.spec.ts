@@ -12,6 +12,7 @@ import {
 import { Subject, of } from 'rxjs';
 import { InterviewSession } from '../../core/models/interview.model';
 import { InterviewService } from '../../core/services/interview.service';
+import { InterviewRecoveryStore } from '../../core/services/interview-recovery.store';
 import { UserCodeSandboxService } from '../../core/services/user-code-sandbox.service';
 import { InterviewSessionComponent } from './interview-session.component';
 import { InterviewSystemDesignRoundComponent } from './interview-system-design-round.component';
@@ -22,9 +23,26 @@ describe('InterviewSessionComponent', () => {
   let service: jasmine.SpyObj<InterviewService>;
   let sandbox: jasmine.SpyObj<UserCodeSandboxService>;
   let router: jasmine.SpyObj<Router>;
+  let recovery: InterviewRecoveryStore;
+
+  const recoveryKey = (kind: 'mcq' | 'coding' | 'system-design', sessionId = 'session-1') =>
+    `fa:interview:recovery:v2:user-1:${kind}:${sessionId}`;
+
+  const recoveryPayload = <T>(kind: 'mcq' | 'coding' | 'system-design'): T | null => {
+    const raw = localStorage.getItem(recoveryKey(kind));
+    return raw ? (JSON.parse(raw).payload as T) : null;
+  };
+
+  const storeRecovery = (
+    kind: 'mcq' | 'coding' | 'system-design',
+    payload: unknown,
+  ): void => {
+    expect(recovery.saveForCurrentUser({ kind, sessionId: 'session-1', payload })).toBeTrue();
+  };
 
   const mcqSession = (): InterviewSession => ({
     id: 'session-1',
+    protocolVersion: 2,
     status: 'mcq_active',
     format: 'coding',
     level: 'mid',
@@ -50,6 +68,38 @@ describe('InterviewSessionComponent', () => {
     currentQuestionIndex: 0,
     coding: null,
     systemDesign: null,
+  });
+
+  const mcqSessionWithQuestions = (count = 5): InterviewSession => {
+    const session = mcqSession();
+    const template = session.questions[0];
+    session.questions = Array.from({ length: count }, (_, index) => ({
+      ...template,
+      id: `question-${index + 1}`,
+      prompt: `Interview question ${index + 1}?`,
+      options: template.options.map((option, optionIndex) => ({
+        ...option,
+        id: `q${index + 1}-option-${optionIndex + 1}`,
+      })),
+      selectedOptionId: null,
+    }));
+    return session;
+  };
+
+  const codingReadyFrom = (session: InterviewSession, version = 4): InterviewSession => ({
+    ...session,
+    status: 'coding_ready',
+    version,
+    mcqDeadlineAt: null,
+    codingReadyDeadlineAt: new Date(Date.now() + 300_000).toISOString(),
+    coding: {
+      readyDeadlineAt: new Date(Date.now() + 300_000).toISOString(),
+      deadlineAt: null,
+      task: null,
+      draft: null,
+      checkResults: [],
+      runCount: 0,
+    },
   });
 
   const codingSession = (): InterviewSession => ({
@@ -194,13 +244,81 @@ describe('InterviewSessionComponent', () => {
         },
       ],
     }).compileComponents();
+    recovery = TestBed.inject(InterviewRecoveryStore);
+    recovery.setUserScope('user-1');
   });
 
   afterEach(() => {
     if (fixture && !fixture.componentRef.hostView.destroyed) fixture.destroy();
-    localStorage.removeItem('fa:interview:coding-draft:v1:session-1');
-    localStorage.removeItem('fa:interview:system-design-draft:v1:session-1');
-    localStorage.removeItem('fa:interview:mcq-timing:v1:session-1');
+    localStorage.clear();
+  });
+
+  it('ends an interview without routing to an answer report', () => {
+    service.endSession.and.returnValue(of({
+      ...mcqSession(),
+      status: 'abandoned',
+    }));
+    spyOn(window, 'confirm').and.returnValue(true);
+    fixture = TestBed.createComponent(InterviewSessionComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    component.abandon();
+
+    expect(window.confirm).toHaveBeenCalledWith(
+      jasmine.stringMatching(/answer review will be withheld/i),
+    );
+    expect(service.endSession).toHaveBeenCalledWith('session-1', 3);
+    expect(router.navigate).toHaveBeenCalledWith(['/interview'], {
+      queryParams: { ended: 'abandoned' },
+      replaceUrl: true,
+    });
+    expect(router.navigate).not.toHaveBeenCalledWith([
+      '/interview',
+      'session-1',
+      'results',
+    ]);
+  });
+
+  it('freezes every active control on a hard halt and reloads only after control policy resumes', () => {
+    const getControl = jasmine.createSpy('getControl').and.returnValue(of({
+      id: 'session-1',
+      status: 'mcq_active',
+      version: 3,
+      active: true,
+      policy: 'halted' as const,
+      notice: {
+        code: 'INTERVIEW_HALTED',
+        message: 'Interview work is paused for incident recovery.',
+      },
+    }));
+    (service as any).getControl = getControl;
+
+    fixture = TestBed.createComponent(InterviewSessionComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    expect(component.operationalHalt()).toBeTrue();
+    expect(component.mcqControlsLocked()).toBeTrue();
+    expect(fixture.nativeElement.querySelector('[data-testid="interview-operational-halt"]'))
+      .not.toBeNull();
+    const answerFieldset = fixture.nativeElement.querySelector('fieldset') as HTMLFieldSetElement;
+    expect(answerFieldset.disabled).toBeTrue();
+
+    getControl.and.returnValue(of({
+      id: 'session-1',
+      status: 'mcq_active',
+      version: 3,
+      active: true,
+      policy: 'continue' as const,
+      notice: null,
+    }));
+    window.dispatchEvent(new Event('focus'));
+    fixture.detectChanges();
+
+    expect(component.operationalHalt()).toBeFalse();
+    expect(component.mcqControlsLocked()).toBeFalse();
+    expect(service.getSession).toHaveBeenCalledTimes(2);
   });
 
   it('renders native radios and saves stable option ids with client-measured response time', fakeAsync(() => {
@@ -217,11 +335,13 @@ describe('InterviewSessionComponent', () => {
     expect(service.saveAnswer).toHaveBeenCalledWith(
       'session-1',
       {
+        protocolVersion: 2,
         questionId: 'question-1',
         optionId: 'option-b',
         responseDurationMs: jasmine.any(Number),
+        mutationId: jasmine.stringMatching(/^mcq-answer-/),
+        expectedVersion: 3,
       },
-      3,
     );
     expect(component.session()?.questions[0].selectedOptionId).toBe('option-b');
     expect(component.session()?.version).toBe(4);
@@ -266,6 +386,7 @@ describe('InterviewSessionComponent', () => {
     fixture.detectChanges();
 
     component.selectAnswer(component.currentQuestion()!, 'option-b');
+    const firstMutationId = service.saveAnswer.calls.mostRecent().args[1].mutationId;
     fixture.destroy();
     pendingSave.error({ status: 0 });
 
@@ -278,16 +399,385 @@ describe('InterviewSessionComponent', () => {
     expect(service.saveAnswer.calls.mostRecent().args).toEqual([
       'session-1',
       jasmine.objectContaining({
+        protocolVersion: 2,
         questionId: 'question-1',
         optionId: 'option-b',
+        mutationId: jasmine.stringMatching(/^mcq-answer-/),
+        expectedVersion: 3,
       }),
-      3,
     ]);
+    expect(service.saveAnswer.calls.mostRecent().args[1].mutationId).toBe(firstMutationId);
     expect(component.session()?.questions[0].selectedOptionId).toBe('option-b');
-    const persisted = JSON.parse(
-      localStorage.getItem('fa:interview:mcq-timing:v1:session-1') || '{}',
+    const persisted = recoveryPayload<any>('mcq');
+    expect(persisted?.pendingAnswer).toBeNull();
+    discardPeriodicTasks();
+  }));
+
+  it('locks every MCQ control and handler while an answer save is in flight', fakeAsync(() => {
+    const session = mcqSessionWithQuestions(2);
+    const delayedSave = new Subject<{ version: number; session: InterviewSession | null }>();
+    service.getSession.and.returnValue(of(session));
+    service.saveAnswer.and.returnValue(delayedSave.asObservable());
+    fixture = TestBed.createComponent(InterviewSessionComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    const firstQuestion = component.currentQuestion()!;
+    component.selectAnswer(firstQuestion, firstQuestion.options[1].id);
+    fixture.detectChanges();
+
+    expect(component.mcqMutationState()).toBe('saving-answer');
+    expect(component.mcqControlsLocked()).toBeTrue();
+    expect(fixture.nativeElement.textContent).toContain('Saving answer before you continue');
+    const navigationButtons = Array.from(
+      fixture.nativeElement.querySelectorAll('.question-nav button') as NodeListOf<HTMLButtonElement>,
     );
-    expect(persisted.pendingAnswer).toBeNull();
+    expect(navigationButtons.every((button) => button.disabled)).toBeTrue();
+    expect(
+      Array.from(
+        fixture.nativeElement.querySelectorAll('fieldset input[type="radio"]') as NodeListOf<HTMLInputElement>,
+      ).every((radio) => radio.matches(':disabled')),
+    ).toBeTrue();
+
+    component.goToQuestion(1);
+    component.showReview();
+    component.submitMcq();
+    component.selectAnswer(session.questions[1], session.questions[1].options[0].id);
+
+    expect(component.currentIndex()).toBe(0);
+    expect(component.reviewing()).toBeFalse();
+    expect(component.session()?.questions[1].selectedOptionId).toBeNull();
+    expect(service.saveAnswer).toHaveBeenCalledTimes(1);
+    expect(service.submitMcq).not.toHaveBeenCalled();
+
+    delayedSave.next({ version: 4, session: null });
+    delayedSave.complete();
+    fixture.detectChanges();
+
+    expect(component.mcqMutationState()).toBe('idle');
+    component.goToQuestion(1);
+    expect(component.currentIndex()).toBe(1);
+    discardPeriodicTasks();
+  }));
+
+  it('names MCQ controls and moves focus to the selected question and review heading', fakeAsync(() => {
+    const session = mcqSessionWithQuestions(2);
+    service.getSession.and.returnValue(of(session));
+    fixture = TestBed.createComponent(InterviewSessionComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+    tick();
+    fixture.detectChanges();
+
+    const fieldset = fixture.nativeElement.querySelector('fieldset') as HTMLFieldSetElement;
+    expect(fieldset.querySelector('legend')?.textContent).toContain('Interview question 1?');
+    const navigationButtons = Array.from(
+      fixture.nativeElement.querySelectorAll('.question-nav button') as NodeListOf<HTMLButtonElement>,
+    );
+    expect(navigationButtons.map((button) => button.getAttribute('aria-label'))).toEqual([
+      'Question 1, unanswered',
+      'Question 2, unanswered',
+    ]);
+
+    component.goToQuestion(1);
+    fixture.detectChanges();
+    tick();
+    const prompt = fixture.nativeElement.querySelector(
+      '[data-testid="interview-question-prompt"]',
+    ) as HTMLElement;
+    expect(prompt.textContent).toContain('Interview question 2?');
+    expect(document.activeElement).toBe(prompt);
+
+    component.showReview();
+    fixture.detectChanges();
+    tick();
+    const reviewHeading = fixture.nativeElement.querySelector(
+      '[data-testid="interview-review-heading"]',
+    ) as HTMLElement;
+    expect(document.activeElement).toBe(reviewHeading);
+    discardPeriodicTasks();
+  }));
+
+  it('implements a labelled, roving-keyboard tab set for coding files', fakeAsync(() => {
+    const session = codingSession();
+    session.coding!.task!.files.push({
+      path: '/src/App.css',
+      language: 'css',
+      content: 'main { display: grid; }',
+      readOnly: false,
+    });
+    service.getSession.and.returnValue(of(session));
+    fixture = TestBed.createComponent(InterviewSessionComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+    tick();
+    fixture.detectChanges();
+
+    const codingBrief = fixture.nativeElement.querySelector('.coding-brief') as HTMLElement;
+    expect(codingBrief.tabIndex).toBe(0);
+    expect(codingBrief.getAttribute('aria-label')).toBe('Coding task brief');
+
+    let tabs = Array.from(
+      fixture.nativeElement.querySelectorAll('[role="tab"]') as NodeListOf<HTMLButtonElement>,
+    );
+    expect(tabs).toHaveSize(2);
+    expect(tabs[0].tabIndex).toBe(0);
+    expect(tabs[1].tabIndex).toBe(-1);
+    expect(tabs[0].getAttribute('aria-controls')).toBe('interview-code-panel-0');
+
+    tabs[0].focus();
+    tabs[0].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+    fixture.detectChanges();
+    tick();
+    fixture.detectChanges();
+    tabs = Array.from(
+      fixture.nativeElement.querySelectorAll('[role="tab"]') as NodeListOf<HTMLButtonElement>,
+    );
+
+    expect(component.activeFilePath()).toBe('/src/App.css');
+    expect(tabs[0].tabIndex).toBe(-1);
+    expect(tabs[1].tabIndex).toBe(0);
+    expect(tabs[1].getAttribute('aria-selected')).toBe('true');
+    expect(document.activeElement).toBe(tabs[1]);
+    const panel = fixture.nativeElement.querySelector('[role="tabpanel"]') as HTMLElement;
+    expect(panel.id).toBe('interview-code-panel-1');
+    expect(panel.getAttribute('aria-labelledby')).toBe(tabs[1].id);
+    fixture.destroy();
+    flush();
+    discardPeriodicTasks();
+  }));
+
+  it('submits one stable V2 snapshot for all five responses and blocks duplicate manual submit', fakeAsync(() => {
+    const session = mcqSessionWithQuestions();
+    session.questions.forEach((question, index) => {
+      question.selectedOptionId = index === 4 ? null : question.options[index % 3].id;
+    });
+    const delayedSubmit = new Subject<InterviewSession>();
+    service.getSession.and.returnValue(of(session));
+    service.submitMcq.and.returnValue(delayedSubmit.asObservable());
+    fixture = TestBed.createComponent(InterviewSessionComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    component.showReview();
+    component.submitMcq();
+    component.submitMcq();
+    fixture.detectChanges();
+
+    expect(service.submitMcq).toHaveBeenCalledTimes(1);
+    expect(component.mcqMutationState()).toBe('submitting');
+    const request = service.submitMcq.calls.mostRecent().args[1];
+    expect(request).toEqual(jasmine.objectContaining({
+      protocolVersion: 2,
+      mutationId: jasmine.stringMatching(/^mcq-submit-/),
+      expectedVersion: 3,
+    }));
+    expect(request.responses.length).toBe(5);
+    expect(request.responses.map((response) => ({
+      questionId: response.questionId,
+      optionId: response.optionId,
+    }))).toEqual(session.questions.map((question) => ({
+      questionId: question.id,
+      optionId: question.selectedOptionId,
+    })));
+    expect(
+      (fixture.nativeElement.querySelector('[data-testid="submit-mcq"]') as HTMLButtonElement)
+        .disabled,
+    ).toBeTrue();
+
+    delayedSubmit.next(codingReadyFrom(session));
+    delayedSubmit.complete();
+    expect(component.session()?.status).toBe('coding_ready');
+    expect(component.mcqMutationState()).toBe('locked');
+    flushMicrotasks();
+    discardPeriodicTasks();
+  }));
+
+  it('uses the acknowledged answer version when expiry follows the save acknowledgement', fakeAsync(() => {
+    const answerSave = new Subject<{ version: number; session: InterviewSession | null }>();
+    const submit = new Subject<InterviewSession>();
+    service.saveAnswer.and.returnValue(answerSave.asObservable());
+    service.submitMcq.and.returnValue(submit.asObservable());
+    fixture = TestBed.createComponent(InterviewSessionComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    component.selectAnswer(component.currentQuestion()!, 'option-b');
+    answerSave.next({ version: 4, session: null });
+    answerSave.complete();
+    component.handleMcqExpiry();
+
+    expect(service.submitMcq).toHaveBeenCalledTimes(1);
+    expect(service.submitMcq.calls.mostRecent().args[1]).toEqual(
+      jasmine.objectContaining({ expectedVersion: 4 }),
+    );
+    expect(service.submitMcq.calls.mostRecent().args[1].responses[0].optionId)
+      .toBe('option-b');
+    discardPeriodicTasks();
+  }));
+
+  it('waits for the in-flight answer acknowledgement when expiry arrives first', fakeAsync(() => {
+    const answerSave = new Subject<{ version: number; session: InterviewSession | null }>();
+    const submit = new Subject<InterviewSession>();
+    service.saveAnswer.and.returnValue(answerSave.asObservable());
+    service.submitMcq.and.returnValue(submit.asObservable());
+    fixture = TestBed.createComponent(InterviewSessionComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    component.selectAnswer(component.currentQuestion()!, 'option-b');
+    component.handleMcqExpiry();
+
+    expect(component.mcqMutationState()).toBe('expiry-wait');
+    expect(service.submitMcq).not.toHaveBeenCalled();
+
+    answerSave.next({ version: 4, session: null });
+    answerSave.complete();
+
+    expect(service.submitMcq).toHaveBeenCalledTimes(1);
+    expect(service.submitMcq.calls.mostRecent().args[1].expectedVersion).toBe(4);
+    discardPeriodicTasks();
+  }));
+
+  it('coalesces duplicate expiry events into one MCQ submit mutation', fakeAsync(() => {
+    const submit = new Subject<InterviewSession>();
+    service.submitMcq.and.returnValue(submit.asObservable());
+    fixture = TestBed.createComponent(InterviewSessionComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    component.handleMcqExpiry();
+    const mutationId = service.submitMcq.calls.mostRecent().args[1].mutationId;
+    component.handleMcqExpiry();
+    component.submitMcq(true);
+
+    expect(service.submitMcq).toHaveBeenCalledTimes(1);
+    expect(service.submitMcq.calls.mostRecent().args[1].mutationId).toBe(mutationId);
+    discardPeriodicTasks();
+  }));
+
+  it('reconciles a 409 as saved when the authoritative answer is present', fakeAsync(() => {
+    const initial = mcqSession();
+    const latest = mcqSession();
+    latest.version = 4;
+    latest.questions[0].selectedOptionId = 'option-b';
+    const answerSave = new Subject<{ version: number; session: InterviewSession | null }>();
+    service.getSession.and.returnValues(of(initial), of(latest));
+    service.saveAnswer.and.returnValue(answerSave.asObservable());
+    fixture = TestBed.createComponent(InterviewSessionComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    component.selectAnswer(component.currentQuestion()!, 'option-b');
+    answerSave.error({ status: 409 });
+    fixture.detectChanges();
+
+    expect(service.getSession).toHaveBeenCalledTimes(2);
+    expect(component.session()?.version).toBe(4);
+    expect(component.session()?.questions[0].selectedOptionId).toBe('option-b');
+    expect(component.mcqMutationState()).toBe('idle');
+    expect(component.mcqAlert()).toBeNull();
+    discardPeriodicTasks();
+  }));
+
+  it('announces that a 409 selection absent from the authoritative session was not counted', fakeAsync(() => {
+    const initial = mcqSession();
+    const latest = mcqSession();
+    latest.version = 4;
+    const answerSave = new Subject<{ version: number; session: InterviewSession | null }>();
+    service.getSession.and.returnValues(of(initial), of(latest));
+    service.saveAnswer.and.returnValue(answerSave.asObservable());
+    fixture = TestBed.createComponent(InterviewSessionComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    component.selectAnswer(component.currentQuestion()!, 'option-b');
+    answerSave.error({ status: 409 });
+    fixture.detectChanges();
+
+    const alert = fixture.nativeElement.querySelector('[data-testid="mcq-alert"]');
+    expect(alert?.getAttribute('role')).toBe('alert');
+    expect(alert?.textContent).toContain('not counted');
+    expect(component.session()?.questions[0].selectedOptionId).toBeNull();
+    expect(component.mcqMutationState()).toBe('idle');
+    discardPeriodicTasks();
+  }));
+
+  it('retries a lost answer response with the same mutation id after a same-version GET', fakeAsync(() => {
+    const initial = mcqSession();
+    const unchanged = mcqSession();
+    const firstSave = new Subject<{ version: number; session: InterviewSession | null }>();
+    const retrySave = new Subject<{ version: number; session: InterviewSession | null }>();
+    service.getSession.and.returnValues(of(initial), of(unchanged));
+    service.saveAnswer.and.returnValues(firstSave.asObservable(), retrySave.asObservable());
+    fixture = TestBed.createComponent(InterviewSessionComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    component.selectAnswer(component.currentQuestion()!, 'option-b');
+    const firstRequest = service.saveAnswer.calls.mostRecent().args[1];
+    firstSave.error({ status: 0 });
+    fixture.detectChanges();
+
+    expect(component.mcqAlert()).toContain('not counted');
+    expect(component.session()?.questions[0].selectedOptionId).toBeNull();
+    component.selectAnswer(component.currentQuestion()!, 'option-b');
+    const retryRequest = service.saveAnswer.calls.mostRecent().args[1];
+
+    expect(service.saveAnswer).toHaveBeenCalledTimes(2);
+    expect(retryRequest.mutationId).toBe(firstRequest.mutationId);
+    expect(retryRequest.expectedVersion).toBe(firstRequest.expectedVersion);
+
+    retrySave.next({ version: 4, session: null });
+    retrySave.complete();
+    expect(component.mcqMutationState()).toBe('idle');
+    expect(component.mcqAlert()).toBeNull();
+    discardPeriodicTasks();
+  }));
+
+  it('reports an uncounted final selection when expiry reconciliation has already locked MCQ', fakeAsync(() => {
+    const initial = mcqSession();
+    const latest = codingReadyFrom(mcqSession(), 4);
+    const answerSave = new Subject<{ version: number; session: InterviewSession | null }>();
+    service.getSession.and.returnValues(of(initial), of(latest));
+    service.saveAnswer.and.returnValue(answerSave.asObservable());
+    fixture = TestBed.createComponent(InterviewSessionComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    component.selectAnswer(component.currentQuestion()!, 'option-b');
+    component.handleMcqExpiry();
+    answerSave.error({ status: 0 });
+    fixture.detectChanges();
+
+    expect(component.session()?.status).toBe('coding_ready');
+    expect(component.mcqMutationState()).toBe('locked');
+    expect(component.mcqAlert()).toContain('not counted');
+    expect(fixture.nativeElement.querySelector('[data-testid="mcq-alert"]')?.textContent)
+      .toContain('not counted');
+    expect(service.submitMcq).not.toHaveBeenCalled();
+    discardPeriodicTasks();
+  }));
+
+  it('ignores a stale answer acknowledgement after an authoritative terminal session wins', fakeAsync(() => {
+    const answerSave = new Subject<{ version: number; session: InterviewSession | null }>();
+    service.saveAnswer.and.returnValue(answerSave.asObservable());
+    fixture = TestBed.createComponent(InterviewSessionComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    component.selectAnswer(component.currentQuestion()!, 'option-b');
+    (component as any).applySession({
+      ...mcqSession(),
+      status: 'completed',
+      version: 9,
+    });
+    answerSave.next({ version: 4, session: null });
+    answerSave.complete();
+
+    expect(component.session()?.status).toBe('completed');
+    expect(component.session()?.version).toBe(9);
+    expect(component.mcqMutationState()).toBe('locked');
     discardPeriodicTasks();
   }));
 
@@ -364,7 +854,7 @@ describe('InterviewSessionComponent', () => {
 
     expect(component.session()?.version).toBe(7);
     expect(component.syncedDraftHash()).toBeNull();
-    expect(localStorage.getItem('fa:interview:coding-draft:v1:session-1')).toBeNull();
+    expect(localStorage.getItem(recoveryKey('coding'))).toBeNull();
     discardPeriodicTasks();
   }));
 
@@ -400,22 +890,16 @@ describe('InterviewSessionComponent', () => {
     fixture = TestBed.createComponent(InterviewSessionComponent);
     component = fixture.componentInstance;
     (component as any).sessionId = 'session-1';
-    localStorage.setItem(
-      'fa:interview:coding-draft:v1:session-1',
-      JSON.stringify({ files: [{ path: 'src/App.tsx', content: 'private draft' }] }),
-    );
-    localStorage.setItem(
-      'fa:interview:system-design-draft:v1:session-1',
-      JSON.stringify({ scratchpad: 'private design notes' }),
-    );
+    storeRecovery('coding', { files: [{ path: 'src/App.tsx', content: 'private draft' }] });
+    storeRecovery('system-design', { scratchpad: 'private design notes' });
 
     (component as any).applySession({
       ...codingSession(),
       status: 'completed',
     });
 
-    expect(localStorage.getItem('fa:interview:coding-draft:v1:session-1')).toBeNull();
-    expect(localStorage.getItem('fa:interview:system-design-draft:v1:session-1')).toBeNull();
+    expect(localStorage.getItem(recoveryKey('coding'))).toBeNull();
+    expect(localStorage.getItem(recoveryKey('system-design'))).toBeNull();
     expect(router.navigate).toHaveBeenCalledWith(['/interview', 'session-1', 'results']);
   });
 
@@ -427,7 +911,7 @@ describe('InterviewSessionComponent', () => {
     fixture.detectChanges();
 
     component.onCodeChange('export default function App() { return null; }');
-    expect(localStorage.getItem('fa:interview:coding-draft:v1:session-1')).toContain('return null');
+    expect(recoveryPayload<any>('coding')?.files[0].content).toContain('return null');
     expect(service.saveCodingDraft).not.toHaveBeenCalled();
 
     tick(800);
@@ -476,6 +960,7 @@ describe('InterviewSessionComponent', () => {
     component = fixture.componentInstance;
     component.editorFallback.set(true);
     fixture.detectChanges();
+    expect(localStorage.getItem('fa:interview:coding-draft:v1:session-1')).toBeNull();
     tick(1_000);
 
     expect(component.codingDraftConflict()).toBeFalse();
@@ -483,7 +968,7 @@ describe('InterviewSessionComponent', () => {
     expect(component.syncedDraftHash()).toBe('acknowledged-server-hash');
     expect(component.draftSync()).toBe('saved');
     expect(service.saveCodingDraft).not.toHaveBeenCalled();
-    expect(localStorage.getItem('fa:interview:coding-draft:v1:session-1')).toBeNull();
+    expect(localStorage.getItem(recoveryKey('coding'))).toBeNull();
     discardPeriodicTasks();
   }));
 
@@ -495,7 +980,7 @@ describe('InterviewSessionComponent', () => {
     fixture.detectChanges();
 
     component.onCodeChange('export default function App() { return <p>This tab</p>; }');
-    localStorage.setItem('fa:interview:coding-draft:v1:session-1', JSON.stringify({
+    storeRecovery('coding', {
       sessionId: 'session-1',
       taskId: 'react-counter',
       files: [{
@@ -506,14 +991,12 @@ describe('InterviewSessionComponent', () => {
       activeFilePath: '/src/App.tsx',
       dirty: true,
       baseHash: null,
-    }));
+    });
 
     tick(800);
 
-    const stored = JSON.parse(
-      localStorage.getItem('fa:interview:coding-draft:v1:session-1') || '{}',
-    );
-    expect(stored.files[0].content).toContain('Other tab');
+    const stored = recoveryPayload<any>('coding');
+    expect(stored?.files[0].content).toContain('Other tab');
     expect(component.codingFiles()[0].content).toContain('This tab');
     expect(component.localCodingPersistenceAvailable()).toBeFalse();
     expect(component.syncedDraftHash()).toBe('saved-draft-hash');
@@ -569,7 +1052,7 @@ describe('InterviewSessionComponent', () => {
     expect(service.saveCodingDraft.calls.mostRecent().args[1].files[0].content)
       .toContain('This tab');
 
-    localStorage.setItem('fa:interview:coding-draft:v1:session-1', JSON.stringify({
+    storeRecovery('coding', {
       sessionId: 'session-1',
       taskId: 'react-counter',
       files: [{
@@ -580,7 +1063,7 @@ describe('InterviewSessionComponent', () => {
       activeFilePath: '/src/App.tsx',
       dirty: true,
       baseHash: 'base-hash',
-    }));
+    });
     conflictingSave.error({ status: 409 });
 
     expect(component.codingDraftConflict()).toBeTrue();
@@ -592,10 +1075,8 @@ describe('InterviewSessionComponent', () => {
     tick(0);
     expect(service.saveCodingDraft.calls.mostRecent().args[1].files[0].content)
       .toContain('This tab');
-    const stored = JSON.parse(
-      localStorage.getItem('fa:interview:coding-draft:v1:session-1') || '{}',
-    );
-    expect(stored.files[0].content).toContain('Other tab');
+    const stored = recoveryPayload<any>('coding');
+    expect(stored?.files[0].content).toContain('Other tab');
     expect(component.localCodingPersistenceAvailable()).toBeFalse();
     discardPeriodicTasks();
   }));
@@ -636,11 +1117,9 @@ describe('InterviewSessionComponent', () => {
     });
     firstSave.complete();
 
-    const localBeforeClose = JSON.parse(
-      localStorage.getItem('fa:interview:coding-draft:v1:session-1') || '{}',
-    );
-    expect(localBeforeClose.dirty).toBeTrue();
-    expect(localBeforeClose.baseHash).toBe('acknowledged-a-hash');
+    const localBeforeClose = recoveryPayload<any>('coding');
+    expect(localBeforeClose?.dirty).toBeTrue();
+    expect(localBeforeClose?.baseHash).toBe('acknowledged-a-hash');
     fixture.destroy();
 
     const resumed = codingSession();
@@ -874,7 +1353,7 @@ describe('InterviewSessionComponent', () => {
 
     expect(component.codingFiles()[0].content).toContain('New server');
     expect(component.syncedDraftHash()).toBe('new-server-hash');
-    expect(localStorage.getItem('fa:interview:coding-draft:v1:session-1')).toBeNull();
+    expect(localStorage.getItem(recoveryKey('coding'))).toBeNull();
   });
 
   it('restores newer local framework files when the asset-only server draft is missing', () => {
@@ -903,5 +1382,7 @@ describe('InterviewSessionComponent', () => {
 
     expect(component.codingFiles()[0].content).toContain('Offline local');
     expect(component.frameworkStarterFiles()?.['src/App.tsx']).toContain('Offline local');
+    expect(localStorage.getItem('fa:interview:coding-draft:v1:session-1')).toBeNull();
+    expect(recoveryPayload<any>('coding')?.files[0].content).toContain('Offline local');
   });
 });

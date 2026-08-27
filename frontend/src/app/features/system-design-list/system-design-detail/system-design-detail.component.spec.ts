@@ -4,6 +4,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { of } from 'rxjs';
 import { AnalyticsService } from '../../../core/services/analytics.service';
+import { InterviewAvailabilityStore } from '../../../core/services/interview-availability.store';
 import { AuthService } from '../../../core/services/auth.service';
 import { BugReportService } from '../../../core/services/bug-report.service';
 import { OnboardingService } from '../../../core/services/onboarding.service';
@@ -17,6 +18,7 @@ describe('SystemDesignDetailComponent', () => {
   let questionService: jasmine.SpyObj<QuestionService>;
   let analytics: jasmine.SpyObj<AnalyticsService>;
   let authUser: any;
+  let interviewAvailability: jasmine.SpyObj<InterviewAvailabilityStore>;
 
   beforeEach(async () => {
     bugReport = jasmine.createSpyObj<BugReportService>('BugReportService', ['open']);
@@ -30,6 +32,33 @@ describe('SystemDesignDetailComponent', () => {
     analytics = jasmine.createSpyObj<AnalyticsService>('AnalyticsService', ['track']);
     seo.buildCanonicalUrl.and.callFake((value: string) => value);
     authUser = null;
+    interviewAvailability = jasmine.createSpyObj<InterviewAvailabilityStore>(
+      'InterviewAvailabilityStore',
+      ['resolve'],
+    );
+    interviewAvailability.resolve.and.returnValue(of({
+      enabled: true,
+      accessMode: 'public',
+      unavailableReason: null,
+      quota: null,
+      quotas: { coding: null, 'system-design': null },
+      activeSession: null,
+      lastResults: [],
+      targets: [],
+      formats: [],
+      formatAvailability: [
+        { format: 'coding', enabled: true, unavailableReason: null },
+        { format: 'system-design', enabled: true, unavailableReason: null },
+      ],
+      levels: [],
+      tracks: [],
+      minViewportWidth: 768,
+      timing: {
+        mcqSeconds: 600,
+        codingReadySeconds: 300,
+        systemDesignSeconds: { junior: 600, mid: 900, senior: 1200 },
+      },
+    }));
 
     await TestBed.configureTestingModule({
       imports: [SystemDesignDetailComponent, RouterTestingModule, NoopAnimationsModule],
@@ -39,6 +68,7 @@ describe('SystemDesignDetailComponent', () => {
         { provide: AuthService, useValue: { user: () => authUser, isLoggedIn: () => !!authUser } },
         { provide: OnboardingService, useValue: { getProfile: () => null } },
         { provide: AnalyticsService, useValue: analytics },
+        { provide: InterviewAvailabilityStore, useValue: interviewAvailability },
         { provide: BugReportService, useValue: bugReport },
       ],
     }).compileComponents();
@@ -739,6 +769,7 @@ describe('SystemDesignDetailComponent', () => {
   });
 
   it('shows the exact-case CTA only when practice metadata enables guided mock', () => {
+    authUser = { _id: 'user-1', role: 'user' };
     const fixture = TestBed.createComponent(SystemDesignDetailComponent);
     const component = fixture.componentInstance;
     component.q.set({
@@ -761,6 +792,7 @@ describe('SystemDesignDetailComponent', () => {
       radio: [{ key: 'R', title: 'Requirements', blocks: [] }],
     });
     fixture.detectChanges();
+    fixture.detectChanges();
 
     const host = fixture.nativeElement as HTMLElement;
     const guided = Array.from(host.querySelectorAll('a')).find((link) =>
@@ -775,5 +807,89 @@ describe('SystemDesignDetailComponent', () => {
     } : question);
     fixture.detectChanges();
     expect(host.textContent).not.toContain('Practice this exact case');
+  });
+
+  it('removes the direct Interview href when System Design mocks are off', () => {
+    authUser = { _id: 'user-1', role: 'user' };
+    interviewAvailability.resolve.and.returnValue(of({
+      enabled: false,
+      accessMode: 'off',
+      unavailableReason: 'Interview Mode is unavailable.',
+      quota: null,
+      quotas: { coding: null, 'system-design': null },
+      activeSession: null,
+      lastResults: [],
+      targets: [],
+      formats: [],
+      formatAvailability: [
+        { format: 'coding', enabled: false, unavailableReason: null },
+        { format: 'system-design', enabled: false, unavailableReason: null },
+      ],
+      levels: [],
+      tracks: [],
+      minViewportWidth: 768,
+      timing: {
+        mcqSeconds: 600,
+        codingReadySeconds: 300,
+        systemDesignSeconds: { junior: 600, mid: 900, senior: 1200 },
+      },
+    }));
+    const fixture = TestBed.createComponent(SystemDesignDetailComponent);
+    fixture.componentInstance.q.set({
+      id: 'notification-toast-system',
+      title: 'Design a Toast Notification System',
+      description: 'Design global toast behavior.',
+      tags: ['toast'],
+      access: 'free',
+      contentSchemaVersion: 2,
+      practice: {
+        targetLevel: 'junior',
+        timeboxMinutes: 10,
+        candidatePrompt: 'Design a global toast system.',
+        constraints: ['Limit visible toasts.', 'Keep announcements accessible.'],
+        expectedDecisions: ['Queue ownership', 'Timer lifecycle', 'Announcement policy'],
+        prerequisites: ['DOM events', 'Accessible status messages'],
+        coreSkills: ['State machines', 'Accessibility'],
+        guidedMock: true,
+      },
+      radio: [{ key: 'R', title: 'Requirements', blocks: [] }],
+    });
+    fixture.detectChanges();
+    fixture.detectChanges();
+
+    const host = fixture.nativeElement as HTMLElement;
+    expect(host.textContent).toContain('Guided mock is currently unavailable.');
+    expect(host.textContent).not.toContain('Practice this exact case');
+    expect(host.querySelector('a[href*="/interview"]')).toBeNull();
+  });
+
+  it('sends guests to login without promising that the mock is enabled', () => {
+    const fixture = TestBed.createComponent(SystemDesignDetailComponent);
+    fixture.componentInstance.q.set({
+      id: 'notification-toast-system',
+      title: 'Design a Toast Notification System',
+      description: 'Design global toast behavior.',
+      tags: ['toast'],
+      access: 'free',
+      contentSchemaVersion: 2,
+      practice: {
+        targetLevel: 'junior',
+        timeboxMinutes: 10,
+        candidatePrompt: 'Design a global toast system.',
+        constraints: ['Limit visible toasts.', 'Keep announcements accessible.'],
+        expectedDecisions: ['Queue ownership', 'Timer lifecycle', 'Announcement policy'],
+        prerequisites: ['DOM events', 'Accessible status messages'],
+        coreSkills: ['State machines', 'Accessibility'],
+        guidedMock: true,
+      },
+      radio: [{ key: 'R', title: 'Requirements', blocks: [] }],
+    });
+    fixture.detectChanges();
+    fixture.detectChanges();
+
+    const host = fixture.nativeElement as HTMLElement;
+    expect(host.textContent).toContain('Sign in to check mock availability');
+    expect(host.textContent).not.toContain('Practice this exact case');
+    expect(interviewAvailability.resolve).not.toHaveBeenCalled();
   });
 });

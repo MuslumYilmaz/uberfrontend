@@ -1,7 +1,18 @@
 <main class="interview-page" data-testid="interview-setup">
+  <section *ngIf="abandonedNotice()" class="status-card" faCard role="status">
+    <strong>Interview ended</strong>
+    <p>
+      Your incomplete attempt was saved. Answer review is withheld to prevent extraction of the question bank.
+    </p>
+  </section>
+
   <header class="interview-hero">
     <p class="eyebrow" data-testid="interview-access-label">
-      {{ availability()?.accessMode === 'internal' ? 'Internal preview' : 'Timed simulation' }}
+      {{ availability()?.accessMode === 'internal'
+        ? 'Internal preview'
+        : availability()?.accessMode === 'cohort'
+          ? 'Controlled preview'
+          : 'Timed simulation' }}
     </p>
     <h1>Frontend mock interview</h1>
     <p>
@@ -26,11 +37,20 @@
       faCard
       role="alert"
       data-testid="interview-mobile-block">
-      <h2>A larger screen is required to start</h2>
-      <p>
-        The interview workspace needs at least {{ available.minViewportWidth }}px.
-        You can return on a tablet or desktop without using an attempt.
-      </p>
+      <ng-container *ngIf="available.activeSession; else newStartViewportBlock">
+        <h2>You can resume here, but a larger screen is recommended</h2>
+        <p>
+          Your active interview and server timer continue. Resume is available on this device,
+          though the workspace is designed for at least {{ available.minViewportWidth }}px.
+        </p>
+      </ng-container>
+      <ng-template #newStartViewportBlock>
+        <h2>A larger screen is required to start</h2>
+        <p>
+          The interview workspace needs at least {{ available.minViewportWidth }}px.
+          You can return on a tablet or desktop without using an attempt.
+        </p>
+      </ng-template>
     </section>
 
     <section *ngIf="available.activeSession as active" class="resume-card" faCard elevated>
@@ -39,8 +59,13 @@
         <h2>Continue your {{ active.format === 'system-design' ? 'system design' : (active.track || 'frontend') }} interview</h2>
         <p>Your server timer continues while the interview is active.</p>
       </div>
-      <button faButton variant="primary" type="button" (click)="resume(active.id)">
-        Resume interview
+      <button
+        faButton
+        variant="primary"
+        type="button"
+        [disabled]="available.activeSessionPolicy === 'halted'"
+        (click)="resume(active.id)">
+        {{ available.activeSessionPolicy === 'halted' ? 'Interview temporarily paused' : 'Resume interview' }}
       </button>
     </section>
 
@@ -50,7 +75,7 @@
       faCard
       role="status">
       <h2>Interview Mode is currently unavailable</h2>
-      <p>{{ available.unavailableReason || 'Please check back later.' }}</p>
+      <p>{{ available.shutdownNotice?.message || available.unavailableReason || 'Please check back later.' }}</p>
     </section>
 
     <section *ngIf="quotaExhausted()" class="status-card status-card--warning" faCard role="status">
@@ -60,7 +85,7 @@
       </p>
     </section>
 
-    <form class="setup-grid" (ngSubmit)="start()" *ngIf="available.enabled && !available.activeSession">
+    <form class="setup-grid" (ngSubmit)="start()" *ngIf="available.enabled && available.canCreate !== false && !available.activeSession">
       <section class="setup-card" faCard elevated>
         <div class="setup-card__header">
           <div>
@@ -220,6 +245,10 @@
               <li>Interview Mode awards 0 XP and does not update solved progress.</li>
             </ul>
           </ng-template>
+          <p class="recovery-disclosure" data-testid="interview-recovery-disclosure">
+            Crash-recovery copies use unencrypted storage in this browser: MCQ state for up to
+            2 hours, and coding or system design drafts for up to 24 hours. Signing out clears them.
+          </p>
         </div>
 
         <button

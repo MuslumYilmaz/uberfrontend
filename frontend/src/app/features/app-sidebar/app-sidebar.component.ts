@@ -10,7 +10,7 @@ import { PracticeCatalogEntry } from '../../core/models/practice.model';
 import { PracticeRegistryService } from '../../core/services/practice-registry.service';
 import { AppSidebarDrawerService } from '../../core/services/app-sidebar-drawer.service';
 import { AuthService } from '../../core/services/auth.service';
-import { InterviewService } from '../../core/services/interview.service';
+import { InterviewAvailabilityStore } from '../../core/services/interview-availability.store';
 import { interviewAvailabilityAllowsRole } from '../../core/models/interview.model';
 import { isProActive } from '../../core/utils/entitlements.util';
 
@@ -55,7 +55,7 @@ export class AppSidebarComponent implements OnInit, OnDestroy {
   private readonly bugReport = inject(BugReportService);
   private readonly practiceRegistry = inject(PracticeRegistryService);
   private readonly drawerState = inject(AppSidebarDrawerService);
-  private readonly interviews = inject(InterviewService);
+  private readonly interviewAvailability = inject(InterviewAvailabilityStore);
   readonly auth = inject(AuthService);
   readonly isPro = computed(() => isProActive(this.auth.user()));
   readonly drawerOpen = this.drawerState.isOpen;
@@ -71,10 +71,11 @@ export class AppSidebarComponent implements OnInit, OnDestroy {
     this.interviewNavVisible.set(false);
     if (!user) return;
 
-    const subscription = this.interviews.getAvailability().subscribe({
+    const subscription = this.interviewAvailability.resolve().subscribe({
       next: (availability) => {
         this.interviewNavVisible.set(
-          interviewAvailabilityAllowsRole(availability, user.role),
+          interviewAvailabilityAllowsRole(availability, user.role)
+          || availability.activeSession !== null,
         );
       },
       error: () => this.interviewNavVisible.set(false),

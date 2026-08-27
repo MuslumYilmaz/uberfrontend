@@ -23,6 +23,7 @@ import {
   SystemDesignListItem,
 } from '../../core/models/system-design.model';
 import { InterviewService } from '../../core/services/interview.service';
+import { InterviewAvailabilityStore } from '../../core/services/interview-availability.store';
 import { QuestionService } from '../../core/services/question.service';
 import {
   FaButtonComponent,
@@ -49,6 +50,7 @@ import {
 })
 export class InterviewSetupComponent implements OnInit, OnDestroy {
   private readonly interviews = inject(InterviewService);
+  private readonly availabilityStore = inject(InterviewAvailabilityStore);
   private readonly questions = inject(QuestionService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
@@ -58,6 +60,7 @@ export class InterviewSetupComponent implements OnInit, OnDestroy {
   readonly loading = signal(true);
   readonly starting = signal(false);
   readonly error = signal<string | null>(null);
+  readonly abandonedNotice = signal(false);
   readonly viewportWidth = signal(this.isBrowser ? window.innerWidth : 1366);
   readonly selectedLevel = signal<InterviewLevel>('mid');
   readonly selectedTrack = signal<InterviewTrack>('core-web');
@@ -112,6 +115,7 @@ export class InterviewSetupComponent implements OnInit, OnDestroy {
     const availability = this.availability();
     return !!availability
       && availability.enabled
+      && availability.canCreate !== false
       && !this.loading()
       && !availability.activeSession
       && !this.formatUnavailable()
@@ -129,7 +133,7 @@ export class InterviewSetupComponent implements OnInit, OnDestroy {
     if (this.isBrowser) window.addEventListener('resize', this.onResize, { passive: true });
     this.applyQueryDefaults();
     this.loadTargetedQuestion();
-    this.load();
+    this.load(false);
   }
 
   ngOnDestroy(): void {
@@ -138,11 +142,11 @@ export class InterviewSetupComponent implements OnInit, OnDestroy {
     if (this.isBrowser) window.removeEventListener('resize', this.onResize);
   }
 
-  load(): void {
+  load(force = true): void {
     const requestEpoch = ++this.availabilityRequestEpoch;
     this.loading.set(true);
     this.error.set(null);
-    this.interviews.getAvailability().subscribe({
+    this.availabilityStore.resolve({ force }).subscribe({
       next: (availability) => {
         if (requestEpoch !== this.availabilityRequestEpoch) return;
         this.availability.set(availability);
@@ -186,7 +190,8 @@ export class InterviewSetupComponent implements OnInit, OnDestroy {
         this.starting.set(false);
         if (error?.status === 409 || error?.status === 429) {
           this.createIdempotencyKey = null;
-          this.load();
+          this.availabilityStore.invalidate();
+          this.load(true);
           return;
         }
         this.error.set(this.createErrorMessage(error));
@@ -228,7 +233,10 @@ export class InterviewSetupComponent implements OnInit, OnDestroy {
   }
 
   mcqDurationLabel(): string {
-    const seconds = this.availability()?.timing.mcqSeconds ?? 600;
+    const timing = this.availability()?.timing;
+    const seconds = timing?.mcqSecondsByLevel?.[this.selectedLevel()]
+      ?? timing?.mcqSeconds
+      ?? 600;
     if (seconds % 60 === 0) return `${seconds / 60} minutes`;
     return `${Math.floor(seconds / 60)}m ${seconds % 60}s`;
   }
@@ -280,6 +288,9 @@ export class InterviewSetupComponent implements OnInit, OnDestroy {
   private applyQueryDefaults(): void {
     const format = this.route.snapshot.queryParamMap.get('format');
     const level = this.route.snapshot.queryParamMap.get('level');
+    this.abandonedNotice.set(
+      this.route.snapshot.queryParamMap.get('ended') === 'abandoned',
+    );
     if (format === 'coding' || format === 'system-design') this.selectedFormat.set(format);
     if (level === 'junior' || level === 'mid' || level === 'senior') this.selectedLevel.set(level);
   }

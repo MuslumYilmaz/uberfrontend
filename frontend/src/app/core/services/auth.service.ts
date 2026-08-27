@@ -1,5 +1,5 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { afterNextRender, AfterRenderPhase, computed, inject, Injectable, signal } from '@angular/core';
+import { afterNextRender, AfterRenderPhase, computed, effect, inject, Injectable, signal } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, finalize, map, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { Entitlements, Tech } from '../models/user.model';
@@ -10,6 +10,7 @@ import { sanitizeRedirectTarget } from '../utils/redirect.util';
 import { normalizeAuthAnalyticsSource } from '../utils/auth-analytics.util';
 import { AttemptInsightsService } from './attempt-insights.service';
 import { AuthSessionAuthorityService, AuthSyncEvent } from './auth-session-authority.service';
+import { InterviewRecoveryStore } from './interview-recovery.store';
 
 export type Role = 'user' | 'admin';
 export type Theme = 'dark' | 'light' | 'system';
@@ -140,9 +141,15 @@ export class AuthService {
   private static readonly OAUTH_SOURCE_KEY = 'oauth:source';
   private readonly attemptInsights = inject(AttemptInsightsService, { optional: true });
   private readonly authAuthority = inject(AuthSessionAuthorityService);
+  private readonly interviewRecovery = inject(InterviewRecoveryStore);
 
   /** Reactive user */
   user = signal<User | null>(null);
+
+  /** Browser recovery data is never shared across authenticated principals. */
+  private readonly syncInterviewRecoveryScope = effect(() => {
+    this.interviewRecovery.setUserScope(this.user()?._id ?? null);
+  });
 
   /** Reactive auth state */
   isLoggedIn = computed(() => !!this.user());
@@ -679,6 +686,7 @@ export class AuthService {
 
     this.meSeq++;
     this.user.set(null);
+    this.interviewRecovery.clearAll();
   }
 
 }

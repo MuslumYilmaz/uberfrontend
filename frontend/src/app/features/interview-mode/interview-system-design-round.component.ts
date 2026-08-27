@@ -1,7 +1,9 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
+  ElementRef,
   EventEmitter,
   Input,
   OnChanges,
@@ -24,6 +26,7 @@ import {
   InterviewSystemDesignStep,
 } from '../../core/models/interview.model';
 import { InterviewService } from '../../core/services/interview.service';
+import { InterviewRecoveryStore } from '../../core/services/interview-recovery.store';
 import { FaButtonComponent, FaCardComponent, FaSelectComponent } from '../../shared/ui';
 
 type DesignSyncState = 'idle' | 'saving' | 'saved' | 'offline' | 'error';
@@ -56,7 +59,10 @@ const STEPS: Array<{ id: InterviewSystemDesignStep; label: string }> = [
 })
 export class InterviewSystemDesignRoundComponent implements OnChanges, OnDestroy {
   private readonly interviews = inject(InterviewService);
+  private readonly recovery = inject(InterviewRecoveryStore);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly changeDetector = inject(ChangeDetectorRef);
 
   private readonly sessionState = signal<InterviewSession | null>(null);
 
@@ -161,6 +167,7 @@ export class InterviewSystemDesignRoundComponent implements OnChanges, OnDestroy
 
   private initializedKey = '';
   private saveTimer: ReturnType<typeof setTimeout> | null = null;
+  private focusRevision = 0;
   private saveInFlight = false;
   private changedWhileSaving = false;
   private conflictPending = false;
@@ -169,7 +176,7 @@ export class InterviewSystemDesignRoundComponent implements OnChanges, OnDestroy
   private conflictingLocalDraft: LocalDesignDraft | null = null;
   private destroyed = false;
   private localPersistenceDisabled = false;
-  private observedLocalRaw: string | null | undefined;
+  private observedRecoveryRevision: string | null | undefined;
   private asyncEpoch = 0;
 
   private readonly onOnline = () => {
@@ -236,7 +243,7 @@ export class InterviewSystemDesignRoundComponent implements OnChanges, OnDestroy
       return;
     }
     this.initializedKey = nextKey;
-    this.observedLocalRaw = undefined;
+    this.observedRecoveryRevision = undefined;
     this.connectionType.set(scenario.connectionTypes[0]?.value ?? 'data-flow');
     if (this.isBrowser) window.addEventListener('online', this.onOnline);
     this.restoreDraft();
@@ -245,11 +252,25 @@ export class InterviewSystemDesignRoundComponent implements OnChanges, OnDestroy
   ngOnDestroy(): void {
     this.destroyed = true;
     if (this.saveTimer !== null) clearTimeout(this.saveTimer);
+    this.focusRevision += 1;
     if (this.isBrowser) window.removeEventListener('online', this.onOnline);
   }
 
   selectStep(step: InterviewSystemDesignStep): void {
     this.updateDraft({ currentStep: step });
+    this.focusCurrentStepHeading();
+  }
+
+  private focusCurrentStepHeading(): void {
+    if (!this.isBrowser || this.destroyed) return;
+    const revision = ++this.focusRevision;
+    queueMicrotask(() => {
+      if (this.destroyed || revision !== this.focusRevision) return;
+      this.changeDetector.detectChanges();
+      this.host.nativeElement
+        .querySelector<HTMLElement>('[data-testid="system-design-step-heading"]')
+        ?.focus({ preventScroll: true });
+    });
   }
 
   nextStep(): void {
@@ -770,6 +791,7 @@ export class InterviewSystemDesignRoundComponent implements OnChanges, OnDestroy
             saved?.updatedAt ?? undefined,
             true,
             this.localBaseHash,
+            result.version ?? result.session?.version ?? this.session.version,
           );
           if (result.session) {
             this.session = result.session;
@@ -787,6 +809,7 @@ export class InterviewSystemDesignRoundComponent implements OnChanges, OnDestroy
           saved?.updatedAt ?? undefined,
           this.localDirty,
           this.localBaseHash,
+          result.version ?? result.session?.version ?? this.session.version,
         );
         if (result.session) {
           this.session = result.session;
@@ -917,6 +940,7 @@ export class InterviewSystemDesignRoundComponent implements OnChanges, OnDestroy
     updatedAt = new Date().toISOString(),
     dirty = this.localDirty,
     baseHash = dirty ? this.localBaseHash : this.syncedHash(),
+    serverVersion = this.session.version,
   ): void {
     const scenario = this.scenario();
     if (
@@ -935,21 +959,17 @@ export class InterviewSystemDesignRoundComponent implements OnChanges, OnDestroy
       dirty,
       baseHash,
     };
-    try {
-      const storageKey = this.storageKey();
-      const currentRaw = localStorage.getItem(storageKey);
-      if (
-        this.observedLocalRaw !== undefined
-        && currentRaw !== this.observedLocalRaw
-      ) {
-        this.localPersistenceAvailable.set(false);
-        return;
-      }
-      const serialized = JSON.stringify(payload);
-      localStorage.setItem(storageKey, serialized);
-      this.observedLocalRaw = serialized;
+    const result = this.recovery.compareAndSaveForCurrentUser({
+      kind: 'system-design',
+      sessionId: this.session.id,
+      payload,
+      serverVersion,
+      baseHash,
+    }, this.observedRecoveryRevision ?? null);
+    if (result.saved) {
+      this.observedRecoveryRevision = result.revision;
       this.localPersistenceAvailable.set(true);
-    } catch {
+    } else {
       this.localPersistenceAvailable.set(false);
     }
   }
@@ -957,31 +977,39 @@ export class InterviewSystemDesignRoundComponent implements OnChanges, OnDestroy
   private readLocal(observe = false): LocalDesignDraft | null {
     const scenario = this.scenario();
     if (!this.isBrowser || !scenario) return null;
-    try {
-      const raw = localStorage.getItem(this.storageKey());
-      if (observe) this.observedLocalRaw = raw;
-      if (!raw) return null;
-      const parsed = JSON.parse(raw) as Partial<LocalDesignDraft>;
-      const sanitized = this.sanitizeLocalDraft(parsed.draft);
-      return parsed.sessionId === this.session.id
-        && parsed.scenarioId === scenario.id
-        && parsed.scenarioRevision === scenario.revision
-        && sanitized
-        && typeof parsed.updatedAt === 'string'
-        && typeof parsed.dirty === 'boolean'
-        ? {
-          sessionId: parsed.sessionId,
-          scenarioId: parsed.scenarioId,
-          scenarioRevision: parsed.scenarioRevision,
-          draft: sanitized,
-          updatedAt: parsed.updatedAt,
-          dirty: parsed.dirty,
-          baseHash: typeof parsed.baseHash === 'string' ? parsed.baseHash : null,
-        }
-        : null;
-    } catch {
-      return null;
-    }
+    const recovered = this.recovery.readOrMigrateLegacyForCurrentUser<LocalDesignDraft>({
+      kind: 'system-design',
+      sessionId: this.session.id,
+      ownershipConfirmed: true,
+      serverVersion: this.session.version,
+      baseHash: (draft) => draft.baseHash,
+      normalize: (value) => this.normalizeLocalDesignDraft(value),
+    });
+    if (observe) this.observedRecoveryRevision = recovered?.revision ?? null;
+    return recovered ? this.normalizeLocalDesignDraft(recovered.envelope.payload) : null;
+  }
+
+  private normalizeLocalDesignDraft(value: unknown): LocalDesignDraft | null {
+    const scenario = this.scenario();
+    if (!scenario || !value || typeof value !== 'object' || Array.isArray(value)) return null;
+    const parsed = value as Partial<LocalDesignDraft>;
+    const sanitized = this.sanitizeLocalDraft(parsed.draft);
+    return parsed.sessionId === this.session.id
+      && parsed.scenarioId === scenario.id
+      && parsed.scenarioRevision === scenario.revision
+      && sanitized
+      && typeof parsed.updatedAt === 'string'
+      && typeof parsed.dirty === 'boolean'
+      ? {
+        sessionId: parsed.sessionId,
+        scenarioId: parsed.scenarioId,
+        scenarioRevision: parsed.scenarioRevision,
+        draft: sanitized,
+        updatedAt: parsed.updatedAt,
+        dirty: parsed.dirty,
+        baseHash: typeof parsed.baseHash === 'string' ? parsed.baseHash : null,
+      }
+      : null;
   }
 
   private sanitizeLocalDraft(value: unknown): EditableDesignDraft | null {
@@ -1177,18 +1205,19 @@ export class InterviewSystemDesignRoundComponent implements OnChanges, OnDestroy
 
   private removeStoredDraft(): void {
     if (!this.isBrowser) return;
-    try {
-      localStorage.removeItem(this.storageKey());
-      this.observedLocalRaw = null;
-    } catch {
-      // Completion is authoritative even if local cleanup is unavailable.
-    }
+    this.recovery.removeForCurrentUser('system-design', this.session.id);
+    this.observedRecoveryRevision = null;
   }
 
   private removeStoredDraftIfMatches(expected: LocalDesignDraft): void {
-    const current = this.readLocal();
+    const record = this.recovery.readForCurrentUserWithRevision<LocalDesignDraft>(
+      'system-design',
+      this.session.id,
+    );
+    const current = record ? this.normalizeLocalDesignDraft(record.envelope.payload) : null;
     if (
-      !current
+      !record
+      || !current
       || current.sessionId !== expected.sessionId
       || current.scenarioId !== expected.scenarioId
       || current.scenarioRevision !== expected.scenarioRevision
@@ -1197,7 +1226,11 @@ export class InterviewSystemDesignRoundComponent implements OnChanges, OnDestroy
       || current.updatedAt !== expected.updatedAt
       || !this.sameEditableDraft(current.draft, expected.draft)
     ) return;
-    this.removeStoredDraft();
+    if (this.recovery.removeForCurrentUserIfRevision(
+      'system-design',
+      this.session.id,
+      record.revision,
+    )) this.observedRecoveryRevision = null;
   }
 
   private sameEditableDraft(
@@ -1205,10 +1238,6 @@ export class InterviewSystemDesignRoundComponent implements OnChanges, OnDestroy
     right: EditableDesignDraft,
   ): boolean {
     return JSON.stringify(left) === JSON.stringify(right);
-  }
-
-  private storageKey(): string {
-    return `fa:interview:system-design-draft:v1:${this.session.id}`;
   }
 
   private isOnline(): boolean {

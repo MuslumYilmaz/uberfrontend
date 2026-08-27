@@ -1,7 +1,9 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
+  ElementRef,
   OnDestroy,
   OnInit,
   PLATFORM_ID,
@@ -16,12 +18,14 @@ import {
   InterviewCheckResult,
   InterviewCodingFile,
   InterviewFrameworkRunnerConfig,
+  InterviewMcqResponseSnapshot,
   InterviewPreparedCheckRun,
   InterviewMcqQuestion,
   InterviewSession,
 } from '../../core/models/interview.model';
 import { FrameworkTest, Question } from '../../core/models/question.model';
 import { InterviewService } from '../../core/services/interview.service';
+import { InterviewRecoveryStore } from '../../core/services/interview-recovery.store';
 import { UserCodeSandboxService } from '../../core/services/user-code-sandbox.service';
 import { MonacoEditorComponent } from '../../monaco-editor.component';
 import { FaButtonComponent, FaCardComponent } from '../../shared/ui';
@@ -30,6 +34,13 @@ import { InterviewDeadlineTimerComponent } from './interview-deadline-timer.comp
 import { InterviewSystemDesignRoundComponent } from './interview-system-design-round.component';
 
 type DraftSyncState = 'idle' | 'saving' | 'saved' | 'offline' | 'error';
+type McqMutationState =
+  | 'idle'
+  | 'saving-answer'
+  | 'expiry-wait'
+  | 'submitting'
+  | 'reconciling'
+  | 'locked';
 type LocalCodingDraft = {
   sessionId: string;
   taskId: string;
@@ -44,6 +55,14 @@ type PendingMcqAnswer = {
   optionId: string;
   baseOptionId: string | null;
   responseDurationMs: number;
+  mutationId: string;
+  expectedVersion: number;
+};
+type PendingMcqSubmission = {
+  mutationId: string;
+  expectedVersion: number;
+  responses: InterviewMcqResponseSnapshot[];
+  fromTimer: boolean;
 };
 type LocalMcqTiming = {
   sessionId: string;
@@ -53,6 +72,7 @@ type LocalMcqTiming = {
   viewQuestionId: string | null;
   reviewing: boolean;
   pendingAnswer: PendingMcqAnswer | null;
+  pendingSubmission: PendingMcqSubmission | null;
 };
 
 @Component({
@@ -77,7 +97,10 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly sandbox = inject(UserCodeSandboxService);
+  private readonly recovery = inject(InterviewRecoveryStore);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly changeDetector = inject(ChangeDetectorRef);
 
   @ViewChild('frameworkPanel') private frameworkPanel?: CodingFrameworkPanelComponent;
   @ViewChild(InterviewSystemDesignRoundComponent)
@@ -89,6 +112,8 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
   readonly currentIndex = signal(0);
   readonly reviewing = signal(false);
   readonly savingAnswerFor = signal<string | null>(null);
+  readonly mcqMutationState = signal<McqMutationState>('idle');
+  readonly mcqAlert = signal<string | null>(null);
   readonly transitioning = signal(false);
   readonly codingFiles = signal<InterviewCodingFile[]>([]);
   readonly activeFilePath = signal('');
@@ -105,6 +130,8 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
   readonly codingRoundFrozen = signal(false);
   readonly codingDraftConflict = signal(false);
   readonly localCodingPersistenceAvailable = signal(true);
+  readonly operationalHalt = signal(false);
+  readonly operationalNotice = signal<string | null>(null);
 
   readonly currentQuestion = computed<InterviewMcqQuestion | null>(() => {
     const session = this.session();
@@ -113,9 +140,26 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
   readonly answeredCount = computed(
     () => this.session()?.questions.filter((question) => !!question.selectedOptionId).length ?? 0,
   );
+  readonly mcqControlsLocked = computed(() => this.mcqMutationState() !== 'idle');
+  readonly mcqStatusMessage = computed(() => {
+    switch (this.mcqMutationState()) {
+      case 'saving-answer': return 'Saving answer before you continue…';
+      case 'expiry-wait': return 'Time is up. Waiting for your final answer save…';
+      case 'submitting': return this.mcqDeadlineExpired
+        ? 'Time is up. Submitting the MCQ section…'
+        : 'Submitting the MCQ section…';
+      case 'reconciling': return 'Checking the latest MCQ state with the server…';
+      case 'locked': return 'MCQ controls are locked while the server state is confirmed.';
+      default: return null;
+    }
+  });
   readonly activeFile = computed(
     () => this.codingFiles().find((file) => file.path === this.activeFilePath()) ?? null,
   );
+  readonly activeFileIndex = computed(() => Math.max(
+    0,
+    this.codingFiles().findIndex((file) => file.path === this.activeFilePath()),
+  ));
   readonly checkSummary = computed(() => ({
     passed: this.checkResults().filter((result) => result.passed).length,
     total: this.checkResults().length,
@@ -129,24 +173,37 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
   private codingLocalDirty = false;
   private codingLocalBaseHash: string | null = null;
   private conflictingCodingDraft: LocalCodingDraft | null = null;
-  private observedCodingLocalRaw: string | null | undefined;
+  private observedCodingRecoveryRevision: string | null | undefined;
+  private observedMcqRecoveryRevision: string | null | undefined;
   private mcqTimingInitializedForSession: string | null = null;
   private readonly mcqElapsedByQuestion = new Map<string, number>();
   private mcqActiveQuestionId: string | null = null;
   private mcqActiveSinceMs: number | null = null;
   private pendingMcqAnswer: PendingMcqAnswer | null = null;
+  private pendingMcqSubmission: PendingMcqSubmission | null = null;
   private readonly maxMcqResponseDurationMs = 10 * 60 * 1000;
+  private mcqDeadlineExpired = false;
+  private mcqAsyncEpoch = 0;
   private ending = false;
   private systemDesignDeadlineExpired = false;
   private codingDeadlineExpired = false;
   private loadEpoch = 0;
   private codingAsyncEpoch = 0;
   private destroyed = false;
+  private controlPollTimer: ReturnType<typeof setInterval> | null = null;
+  private focusRevision = 0;
+  private controlPollInFlight = false;
+  private readonly controlPollMs = 15_000;
 
   private readonly onOnline = () => {
+    this.pollControl();
     if (this.draftSync() === 'offline' || this.draftSync() === 'error') {
       this.scheduleDraftSave(0);
     }
+  };
+  private readonly onWindowFocus = () => this.pollControl();
+  private readonly onVisibilityChange = () => {
+    if (document.visibilityState === 'visible') this.pollControl();
   };
 
   ngOnInit(): void {
@@ -156,7 +213,11 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
       this.error.set('This interview link is invalid.');
       return;
     }
-    if (this.isBrowser) window.addEventListener('online', this.onOnline);
+    if (this.isBrowser) {
+      window.addEventListener('online', this.onOnline);
+      window.addEventListener('focus', this.onWindowFocus);
+      document.addEventListener('visibilitychange', this.onVisibilityChange);
+    }
     this.load();
   }
 
@@ -164,7 +225,13 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
     this.destroyed = true;
     this.loadEpoch += 1;
     this.codingAsyncEpoch += 1;
-    if (this.isBrowser) window.removeEventListener('online', this.onOnline);
+    if (this.isBrowser) {
+      window.removeEventListener('online', this.onOnline);
+      window.removeEventListener('focus', this.onWindowFocus);
+      document.removeEventListener('visibilitychange', this.onVisibilityChange);
+    }
+    if (this.controlPollTimer !== null) clearInterval(this.controlPollTimer);
+    this.focusRevision += 1;
     if (this.draftTimer !== null) clearTimeout(this.draftTimer);
     if (this.session()?.status === 'mcq_active') {
       this.persistMcqTiming();
@@ -187,14 +254,15 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
           this.systemDesignDeadlineExpired
           && session.status === 'system_design_active'
         );
-        this.systemDesignRoundFrozen.set(remainsFrozen);
+        this.systemDesignRoundFrozen.set(this.operationalHalt() || remainsFrozen);
         if (!remainsFrozen) this.systemDesignDeadlineExpired = false;
         const codingRemainsFrozen = (
           this.codingDeadlineExpired
           && (session.status === 'coding_ready' || session.status === 'coding_active')
         );
-        this.codingRoundFrozen.set(codingRemainsFrozen);
+        this.codingRoundFrozen.set(this.operationalHalt() || codingRemainsFrozen);
         if (!codingRemainsFrozen) this.codingDeadlineExpired = false;
+        this.startControlPolling();
       },
       error: (error) => {
         if (this.destroyed || requestEpoch !== this.loadEpoch) return;
@@ -217,54 +285,37 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
     if (
       !session
       || session.status !== 'mcq_active'
-      || this.savingAnswerFor()
+      || this.mcqControlsLocked()
       || !question.options.some((option) => option.id === optionId)
     ) {
       return;
     }
     const previous = question.selectedOptionId;
     const responseDurationMs = this.snapshotQuestionDuration(question.id);
-    this.pendingMcqAnswer = {
-      questionId: question.id,
-      optionId,
-      baseOptionId: previous,
-      responseDurationMs,
-    };
+    const retry = this.pendingMcqAnswer;
+    this.pendingMcqAnswer = retry
+      && retry.questionId === question.id
+      && retry.optionId === optionId
+      && retry.baseOptionId === previous
+      ? retry
+      : {
+        questionId: question.id,
+        optionId,
+        baseOptionId: previous,
+        responseDurationMs,
+        mutationId: this.newMutationId('mcq-answer'),
+        expectedVersion: session.version,
+      };
+    this.clearPendingMcqSubmission();
     this.patchQuestionAnswer(question.id, optionId);
     this.persistMcqTiming();
-    this.savingAnswerFor.set(question.id);
+    this.mcqAlert.set(null);
     this.error.set(null);
-    this.interviews.saveAnswer(
-      session.id,
-      { questionId: question.id, optionId, responseDurationMs },
-      session.version,
-    ).subscribe({
-      next: (ack) => {
-        if (this.destroyed) return;
-        this.savingAnswerFor.set(null);
-        this.clearPendingMcqAnswer(question.id, optionId);
-        if (ack.session) {
-          this.applySession(ack.session, { keepQuestionIndex: true });
-        } else if (ack.version !== null) {
-          this.patchSessionVersion(ack.version);
-        }
-      },
-      error: (error) => {
-        if (this.destroyed) return;
-        this.savingAnswerFor.set(null);
-        this.patchQuestionAnswer(question.id, previous);
-        if (error?.status === 409) {
-          this.error.set('This interview changed in another tab. Reloading the latest answers…');
-          this.load();
-        } else {
-          this.clearPendingMcqAnswer(question.id, optionId);
-          this.error.set('Your answer was not saved. Please select it again.');
-        }
-      },
-    });
+    this.sendPendingMcqAnswer(this.pendingMcqAnswer);
   }
 
   goToQuestion(index: number): void {
+    if (this.mcqControlsLocked()) return;
     const questions = this.session()?.questions ?? [];
     const total = questions.length;
     if (index < 0 || index >= total) return;
@@ -273,38 +324,56 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
     this.reviewing.set(false);
     this.persistMcqTiming();
     if (this.isBrowser) window.scrollTo({ top: 0, behavior: 'smooth' });
+    this.focusStage('[data-testid="interview-question-prompt"]');
   }
 
   showReview(): void {
-    if (this.savingAnswerFor()) return;
+    if (this.mcqControlsLocked()) return;
     this.pauseQuestionTiming();
     this.reviewing.set(true);
     this.persistMcqTiming();
+    this.focusStage('[data-testid="interview-review-heading"]');
   }
 
   submitMcq(fromTimer = false): void {
+    if (fromTimer) {
+      this.handleMcqExpiry();
+      return;
+    }
     const session = this.session();
-    if (!session || session.status !== 'mcq_active' || this.transitioning()) return;
+    if (
+      !session
+      || session.status !== 'mcq_active'
+      || this.mcqControlsLocked()
+      || this.pendingMcqAnswer
+    ) return;
+    this.beginMcqSubmit(false);
+  }
+
+  handleMcqExpiry(): void {
+    const session = this.session();
+    if (!session || session.status !== 'mcq_active' || this.mcqDeadlineExpired) return;
+    this.mcqDeadlineExpired = true;
     this.pauseQuestionTiming();
-    this.transitioning.set(true);
-    this.error.set(null);
-    this.interviews.submitMcq(session.id, session.version).subscribe({
-      next: (updated) => {
-        this.transitioning.set(false);
-        this.reviewing.set(false);
-        this.clearMcqTiming();
-        this.applySession(updated);
-      },
-      error: (error) => {
-        this.transitioning.set(false);
-        if (error?.status === 409 || fromTimer) {
-          this.load();
-        } else {
-          this.activateQuestionTiming(this.currentQuestion()?.id || null);
-          this.error.set('The MCQ section could not be submitted. Please try again.');
-        }
-      },
-    });
+
+    if (
+      this.mcqMutationState() === 'saving-answer'
+      && this.pendingMcqAnswer
+    ) {
+      this.mcqMutationState.set('expiry-wait');
+      return;
+    }
+    if (this.mcqMutationState() === 'submitting') return;
+    if (this.mcqMutationState() !== 'idle') return;
+
+    if (this.pendingMcqAnswer) {
+      const pending = this.pendingMcqAnswer;
+      this.clearPendingMcqAnswer(pending.questionId, pending.optionId);
+      this.mcqAlert.set(
+        'Your last selection was not received before time expired and was not counted.',
+      );
+    }
+    this.beginMcqSubmit(true);
   }
 
   startCoding(): void {
@@ -327,6 +396,7 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
       error: (error) => {
         if (this.ignoreCodingAsyncResult(requestEpoch)) return;
         this.transitioning.set(false);
+        if (this.handleOperationalError(error)) return;
         if (error?.status === 409) this.load();
         else this.error.set('The coding workspace could not be started. Please try again.');
       },
@@ -339,6 +409,34 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
       this.activeFilePath.set(path);
       this.persistLocalDraft();
     }
+  }
+
+  onFileTabKeydown(event: KeyboardEvent, index: number): void {
+    if (this.codingRoundFrozen() || this.codingDraftConflict()) return;
+    const files = this.codingFiles();
+    if (!files.length) return;
+    let nextIndex = index;
+    switch (event.key) {
+      case 'ArrowRight':
+      case 'ArrowDown':
+        nextIndex = (index + 1) % files.length;
+        break;
+      case 'ArrowLeft':
+      case 'ArrowUp':
+        nextIndex = (index - 1 + files.length) % files.length;
+        break;
+      case 'Home':
+        nextIndex = 0;
+        break;
+      case 'End':
+        nextIndex = files.length - 1;
+        break;
+      default:
+        return;
+    }
+    event.preventDefault();
+    this.selectFile(files[nextIndex].path);
+    this.focusStage(`#interview-code-tab-${nextIndex}`);
   }
 
   onCodeChange(content: string): void {
@@ -388,6 +486,7 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
       error: (error) => {
         if (this.ignoreCodingAsyncResult(requestEpoch)) return;
         this.runningChecks.set(false);
+        if (this.handleOperationalError(error)) return;
         if (error?.status === 409) {
           this.error.set('The session or draft changed. Your local draft is safe; reload before running checks.');
         } else {
@@ -430,6 +529,7 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
       error: (error) => {
         if (this.ignoreCodingAsyncResult(requestEpoch)) return;
         this.submittingCoding.set(false);
+        if (this.handleOperationalError(error)) return;
         if (error?.status === 409) {
           this.codingInitializedForTask = null;
           this.load();
@@ -499,8 +599,13 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
 
   abandon(): void {
     const session = this.session();
-    if (!session || this.ending) return;
-    if (this.isBrowser && !window.confirm('End this interview? Your current work will be submitted as incomplete.')) {
+    if (!session || this.ending || this.operationalHalt()) return;
+    if (
+      this.isBrowser
+      && !window.confirm(
+        'End this interview? Your work will be marked incomplete, and answer review will be withheld to prevent question-bank extraction.',
+      )
+    ) {
       return;
     }
     this.ending = true;
@@ -511,10 +616,14 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
         this.clearMcqTiming();
         this.clearLocalDraft();
         this.clearSystemDesignLocalDraft(session.id);
-        void this.router.navigate(['/interview', session.id, 'results']);
+        void this.router.navigate(['/interview'], {
+          queryParams: { ended: 'abandoned' },
+          replaceUrl: true,
+        });
       },
       error: (error) => {
         this.ending = false;
+        if (this.handleOperationalError(error)) return;
         if (error?.status === 409) this.load();
         else this.error.set('The interview could not be ended. Please try again.');
       },
@@ -616,6 +725,7 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
         error: (error) => {
           if (this.ignoreCodingAsyncResult(requestEpoch)) return;
           this.runningChecks.set(false);
+          if (this.handleOperationalError(error)) return;
           this.error.set(
             error?.status === 409
               ? 'The draft changed before check results were recorded. Run the checks again.'
@@ -777,8 +887,12 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
 
   private applySession(
     session: InterviewSession,
-    options: { keepQuestionIndex?: boolean } = {},
+    options: { keepQuestionIndex?: boolean; skipPendingMcqReplay?: boolean } = {},
   ): void {
+    const previousSession = this.session();
+    const stageChanged = !previousSession
+      || previousSession.id !== session.id
+      || previousSession.status !== session.status;
     this.session.set(session);
     const mcqResume = session.status === 'mcq_active'
       ? this.initializeMcqTiming(session)
@@ -797,13 +911,20 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
       this.reviewing.set(mcqResume?.reviewing === true);
     }
     if (session.status === 'mcq_active') {
-      if (!this.reviewing()) {
+      if (!this.mcqDeadlineExpired && !this.reviewing()) {
         this.activateQuestionTiming(
           session.questions[this.currentIndex()]?.id || null,
         );
       }
-      this.reconcilePendingMcqAnswer(session);
+      if (!options.skipPendingMcqReplay) {
+        if (this.pendingMcqAnswer) this.reconcilePendingMcqAnswer(session);
+        else this.reconcilePendingMcqSubmission(session);
+      }
     } else {
+      this.mcqAsyncEpoch += 1;
+      this.mcqMutationState.set('locked');
+      this.savingAnswerFor.set(null);
+      this.transitioning.set(false);
       this.clearMcqTiming();
     }
     if (session.status === 'coding_active') this.initializeCoding(session);
@@ -814,6 +935,16 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
     }
     if (session.status === 'completed') {
       void this.router.navigate(['/interview', session.id, 'results']);
+    } else if (stageChanged) {
+      const stageSelector: Partial<Record<InterviewSession['status'], string>> = {
+        mcq_active: '[data-testid="interview-question-prompt"]',
+        coding_ready: '[data-testid="interview-coding-ready-heading"]',
+        coding_active: '[data-testid="interview-coding-heading"]',
+        abandoned: '[data-testid="interview-terminal-heading"]',
+        voided_technical: '[data-testid="interview-terminal-heading"]',
+      };
+      const selector = stageSelector[session.status];
+      if (selector) this.focusStage(selector);
     }
   }
 
@@ -988,6 +1119,7 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
         this.codingLocalDirty = true;
         this.syncedDraftHash.set(null);
         this.draftSync.set(this.isOnline() ? 'error' : 'offline');
+        if (this.handleOperationalError(error)) return;
         if (error?.status === 409) {
           this.error.set('Draft sync paused because this interview changed in another tab.');
           this.conflictingCodingDraft = this.localCodingDraftSnapshot(true);
@@ -1071,13 +1203,22 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
     this.mcqActiveQuestionId = null;
     this.mcqActiveSinceMs = null;
     this.pendingMcqAnswer = null;
+    this.pendingMcqSubmission = null;
     this.mcqTimingInitializedForSession = session.id;
     if (!this.isBrowser) return null;
 
     try {
-      const raw = localStorage.getItem(this.mcqTimingKey());
-      if (!raw) return null;
-      const parsed = JSON.parse(raw) as Partial<LocalMcqTiming>;
+      const recovered = this.recovery.readOrMigrateLegacyForCurrentUser<LocalMcqTiming>({
+        kind: 'mcq',
+        sessionId: session.id,
+        ownershipConfirmed: true,
+        serverVersion: session.version,
+        baseHash: session.bankVersion,
+        normalize: (value) => this.normalizeLegacyMcqTiming(value, session),
+      });
+      this.observedMcqRecoveryRevision = recovered?.revision ?? null;
+      if (!recovered) return null;
+      const parsed = recovered.envelope.payload as Partial<LocalMcqTiming>;
       if (parsed.sessionId !== session.id || !parsed.elapsedByQuestion) return null;
       const validQuestionIds = new Set(session.questions.map((question) => question.id));
       Object.entries(parsed.elapsedByQuestion).forEach(([questionId, duration]) => {
@@ -1132,6 +1273,36 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
               this.maxMcqResponseDurationMs,
               Math.max(0, Math.round(Number(pending.responseDurationMs) || 0)),
             ),
+            mutationId: typeof pending.mutationId === 'string' && pending.mutationId.trim()
+              ? pending.mutationId
+              : this.newMutationId('mcq-answer'),
+            expectedVersion: Number.isInteger(Number(pending.expectedVersion))
+              && Number(pending.expectedVersion) >= 0
+              ? Number(pending.expectedVersion)
+              : session.version,
+          };
+        }
+      }
+      const pendingSubmission = parsed.pendingSubmission;
+      if (
+        !this.pendingMcqAnswer
+        && pendingSubmission
+        && typeof pendingSubmission.mutationId === 'string'
+        && pendingSubmission.mutationId.trim()
+        && Number.isInteger(Number(pendingSubmission.expectedVersion))
+        && Number(pendingSubmission.expectedVersion) >= 0
+        && Array.isArray(pendingSubmission.responses)
+      ) {
+        const responses = this.normalizeStoredMcqResponses(
+          pendingSubmission.responses,
+          session,
+        );
+        if (responses) {
+          this.pendingMcqSubmission = {
+            mutationId: pendingSubmission.mutationId,
+            expectedVersion: Number(pendingSubmission.expectedVersion),
+            responses,
+            fromTimer: pendingSubmission.fromTimer === true,
           };
         }
       }
@@ -1194,30 +1365,60 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
       viewQuestionId: this.currentQuestion()?.id ?? null,
       reviewing: this.reviewing(),
       pendingAnswer: this.pendingMcqAnswer,
+      pendingSubmission: this.pendingMcqSubmission,
     };
-    try {
-      localStorage.setItem(this.mcqTimingKey(), JSON.stringify(payload));
-    } catch {
-      // Calibration timing is best-effort and must not block answer saving.
-    }
+    const result = this.recovery.compareAndSaveForCurrentUser({
+      kind: 'mcq',
+      sessionId: this.sessionId,
+      payload,
+      serverVersion: this.session()?.version ?? null,
+      baseHash: this.session()?.bankVersion ?? null,
+    }, this.observedMcqRecoveryRevision ?? null);
+    if (result.saved) this.observedMcqRecoveryRevision = result.revision;
+    // Calibration timing is best-effort. A competing tab owns a changed revision,
+    // so this tab deliberately leaves that recovery copy untouched.
   }
 
   private clearMcqTiming(): void {
     this.mcqActiveQuestionId = null;
     this.mcqActiveSinceMs = null;
     this.pendingMcqAnswer = null;
+    this.pendingMcqSubmission = null;
     this.mcqElapsedByQuestion.clear();
     this.mcqTimingInitializedForSession = null;
+    this.observedMcqRecoveryRevision = null;
     if (!this.isBrowser || !this.sessionId) return;
-    try {
-      localStorage.removeItem(this.mcqTimingKey());
-    } catch {
-      // Ignore unavailable storage.
-    }
+    this.recovery.removeForCurrentUser('mcq', this.sessionId);
   }
 
-  private mcqTimingKey(): string {
-    return `fa:interview:mcq-timing:v1:${this.sessionId}`;
+  private normalizeLegacyMcqTiming(
+    value: unknown,
+    session: InterviewSession,
+  ): LocalMcqTiming | null {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+    const source = value as Partial<LocalMcqTiming>;
+    if (
+      source.sessionId !== session.id
+      || !source.elapsedByQuestion
+      || typeof source.elapsedByQuestion !== 'object'
+      || Array.isArray(source.elapsedByQuestion)
+    ) return null;
+    return {
+      sessionId: session.id,
+      elapsedByQuestion: source.elapsedByQuestion,
+      activeQuestionId: typeof source.activeQuestionId === 'string'
+        ? source.activeQuestionId
+        : null,
+      activeSinceMs: Number.isFinite(Number(source.activeSinceMs))
+        ? Number(source.activeSinceMs)
+        : null,
+      viewQuestionId: typeof source.viewQuestionId === 'string'
+        ? source.viewQuestionId
+        : null,
+      reviewing: source.reviewing === true,
+      pendingAnswer: source.pendingAnswer ?? null,
+      pendingSubmission: source.pendingSubmission ?? null,
+    };
   }
 
   private clearPendingMcqAnswer(questionId: string, optionId: string): void {
@@ -1229,9 +1430,19 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
     this.persistMcqTiming();
   }
 
+  private clearPendingMcqSubmission(): void {
+    if (!this.pendingMcqSubmission) return;
+    this.pendingMcqSubmission = null;
+    this.persistMcqTiming();
+  }
+
   private reconcilePendingMcqAnswer(session: InterviewSession): void {
     const pending = this.pendingMcqAnswer;
-    if (!pending || this.savingAnswerFor() || session.status !== 'mcq_active') return;
+    if (
+      !pending
+      || this.mcqMutationState() !== 'idle'
+      || session.status !== 'mcq_active'
+    ) return;
     const question = session.questions.find(
       (candidate) => candidate.id === pending.questionId,
     );
@@ -1244,69 +1455,407 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
       this.clearPendingMcqAnswer(pending.questionId, pending.optionId);
       return;
     }
-    if (question.selectedOptionId !== pending.baseOptionId) {
-      this.pendingMcqAnswer = null;
-      this.persistMcqTiming();
-      this.error.set(
-        'This answer changed in another tab. The server answer was kept so no work was overwritten.',
+    if (
+      question.selectedOptionId !== pending.baseOptionId
+      || session.version !== pending.expectedVersion
+    ) {
+      this.clearPendingMcqAnswer(pending.questionId, pending.optionId);
+      this.mcqAlert.set(
+        'Your last selection was not counted because the server answer changed in another tab.',
       );
       return;
     }
 
     this.patchQuestionAnswer(pending.questionId, pending.optionId);
+    this.sendPendingMcqAnswer(pending);
+  }
+
+  private sendPendingMcqAnswer(pending: PendingMcqAnswer): void {
+    const session = this.session();
+    if (
+      !session
+      || session.status !== 'mcq_active'
+      || this.destroyed
+      || this.pendingMcqAnswer?.mutationId !== pending.mutationId
+    ) return;
+
     this.savingAnswerFor.set(pending.questionId);
+    this.mcqMutationState.set(
+      this.mcqDeadlineExpired ? 'expiry-wait' : 'saving-answer',
+    );
+    const requestEpoch = ++this.mcqAsyncEpoch;
     this.interviews.saveAnswer(
       session.id,
       {
+        protocolVersion: 2,
         questionId: pending.questionId,
         optionId: pending.optionId,
         responseDurationMs: pending.responseDurationMs,
+        mutationId: pending.mutationId,
+        expectedVersion: pending.expectedVersion,
       },
-      session.version,
     ).subscribe({
       next: (ack) => {
-        if (this.destroyed) return;
+        if (!this.isCurrentMcqAnswerRequest(pending, requestEpoch)) return;
+        const expiredWhileSaving = this.mcqDeadlineExpired;
         this.savingAnswerFor.set(null);
-        this.clearPendingMcqAnswer(pending.questionId, pending.optionId);
         if (ack.session) {
-          this.applySession(ack.session, { keepQuestionIndex: true });
+          const acknowledgedQuestion = ack.session.questions.find(
+            (question) => question.id === pending.questionId,
+          );
+          const counted = acknowledgedQuestion?.selectedOptionId === pending.optionId;
+          this.applySession(ack.session, {
+            keepQuestionIndex: true,
+            skipPendingMcqReplay: true,
+          });
+          if (ack.session.status !== 'mcq_active') {
+            this.mcqMutationState.set('locked');
+            if (!counted) {
+              this.mcqAlert.set(
+                'Your last selection was not received before the MCQ section locked and was not counted.',
+              );
+            }
+            return;
+          }
+          if (!counted) {
+            this.patchQuestionAnswer(pending.questionId, pending.baseOptionId);
+            this.reconcileMcqAnswer(pending);
+            return;
+          }
         } else if (ack.version !== null) {
           this.patchSessionVersion(ack.version);
+        } else {
+          this.patchQuestionAnswer(pending.questionId, pending.baseOptionId);
+          this.reconcileMcqAnswer(pending);
+          return;
         }
+        this.clearPendingMcqAnswer(pending.questionId, pending.optionId);
+        this.mcqAlert.set(null);
+        this.mcqMutationState.set('idle');
+        if (expiredWhileSaving) this.beginMcqSubmit(true);
       },
       error: (error) => {
-        if (this.destroyed) return;
+        if (!this.isCurrentMcqAnswerRequest(pending, requestEpoch)) return;
         this.savingAnswerFor.set(null);
+        if (this.handleOperationalError(error)) return;
         this.patchQuestionAnswer(pending.questionId, pending.baseOptionId);
-        if (error?.status === 409) {
-          this.load();
-        } else {
-          this.clearPendingMcqAnswer(pending.questionId, pending.optionId);
-          this.error.set('Your pending answer could not be restored. Please select it again.');
-        }
+        this.reconcileMcqAnswer(pending);
       },
     });
+  }
+
+  private reconcileMcqAnswer(pending: PendingMcqAnswer): void {
+    if (this.destroyed || this.pendingMcqAnswer?.mutationId !== pending.mutationId) return;
+    this.mcqMutationState.set('reconciling');
+    this.error.set(null);
+    const requestEpoch = ++this.mcqAsyncEpoch;
+    this.interviews.getSession(this.sessionId).subscribe({
+      next: (latest) => {
+        if (!this.isCurrentMcqReconciliation(pending.mutationId, requestEpoch)) return;
+        const serverQuestion = latest.questions.find(
+          (question) => question.id === pending.questionId,
+        );
+        const counted = serverQuestion?.selectedOptionId === pending.optionId;
+        const retryIsSafe = (
+          latest.status === 'mcq_active'
+          && latest.version === pending.expectedVersion
+          && serverQuestion?.selectedOptionId === pending.baseOptionId
+        );
+        this.applySession(latest, {
+          keepQuestionIndex: true,
+          skipPendingMcqReplay: true,
+        });
+
+        if (latest.status !== 'mcq_active') {
+          this.mcqMutationState.set('locked');
+          if (!counted) {
+            this.mcqAlert.set(
+              'Your last selection was not received before the MCQ section locked and was not counted.',
+            );
+          }
+          return;
+        }
+        if (counted) {
+          this.clearPendingMcqAnswer(pending.questionId, pending.optionId);
+          this.mcqAlert.set(null);
+          this.mcqMutationState.set('idle');
+          if (this.mcqDeadlineExpired) this.beginMcqSubmit(true);
+          return;
+        }
+
+        if (!retryIsSafe || this.mcqDeadlineExpired) {
+          this.clearPendingMcqAnswer(pending.questionId, pending.optionId);
+        }
+        this.mcqAlert.set(
+          this.mcqDeadlineExpired
+            ? 'Your last selection was not received before time expired and was not counted.'
+            : retryIsSafe
+              ? 'Your last selection was not received by the server and was not counted. Select it again to retry.'
+              : 'Your last selection was not counted because the server answer changed in another tab.',
+        );
+        this.mcqMutationState.set('idle');
+        if (this.mcqDeadlineExpired) this.beginMcqSubmit(true);
+      },
+      error: () => {
+        if (!this.isCurrentMcqReconciliation(pending.mutationId, requestEpoch)) return;
+        this.mcqMutationState.set(this.mcqDeadlineExpired ? 'locked' : 'idle');
+        this.mcqAlert.set(
+          'The server could not confirm your last selection. It has not been shown as saved; reload or retry to reconcile it.',
+        );
+      },
+    });
+  }
+
+  private beginMcqSubmit(fromTimer: boolean): void {
+    const session = this.session();
+    if (
+      !session
+      || session.status !== 'mcq_active'
+      || this.mcqMutationState() !== 'idle'
+      || this.pendingMcqAnswer
+    ) return;
+    this.pauseQuestionTiming();
+
+    const reusable = this.pendingMcqSubmission;
+    const pending = reusable
+      && reusable.expectedVersion === session.version
+      && this.mcqResponsesMatchSession(reusable.responses, session)
+      ? { ...reusable, fromTimer: reusable.fromTimer || fromTimer }
+      : {
+        mutationId: this.newMutationId('mcq-submit'),
+        expectedVersion: session.version,
+        responses: this.mcqResponseSnapshot(session),
+        fromTimer,
+      };
+    this.pendingMcqSubmission = pending;
+    this.persistMcqTiming();
+    this.sendPendingMcqSubmission(pending);
+  }
+
+  private sendPendingMcqSubmission(pending: PendingMcqSubmission): void {
+    const session = this.session();
+    if (
+      !session
+      || session.status !== 'mcq_active'
+      || this.destroyed
+      || this.pendingMcqSubmission?.mutationId !== pending.mutationId
+    ) return;
+    this.mcqMutationState.set('submitting');
+    this.transitioning.set(true);
+    this.error.set(null);
+    const requestEpoch = ++this.mcqAsyncEpoch;
+    this.interviews.submitMcq(session.id, {
+      protocolVersion: 2,
+      mutationId: pending.mutationId,
+      expectedVersion: pending.expectedVersion,
+      responses: pending.responses,
+    }).subscribe({
+      next: (updated) => {
+        if (!this.isCurrentMcqSubmission(pending, requestEpoch)) return;
+        this.transitioning.set(false);
+        if (updated.status === 'mcq_active') {
+          this.reconcileMcqSubmission(pending);
+          return;
+        }
+        this.reviewing.set(false);
+        this.mcqMutationState.set('locked');
+        this.clearMcqTiming();
+        this.applySession(updated);
+      },
+      error: (error) => {
+        if (!this.isCurrentMcqSubmission(pending, requestEpoch)) return;
+        this.transitioning.set(false);
+        if (this.handleOperationalError(error)) return;
+        this.reconcileMcqSubmission(pending);
+      },
+    });
+  }
+
+  private reconcileMcqSubmission(pending: PendingMcqSubmission): void {
+    if (this.destroyed || this.pendingMcqSubmission?.mutationId !== pending.mutationId) return;
+    this.mcqMutationState.set('reconciling');
+    const requestEpoch = ++this.mcqAsyncEpoch;
+    this.interviews.getSession(this.sessionId).subscribe({
+      next: (latest) => {
+        if (!this.isCurrentMcqReconciliation(pending.mutationId, requestEpoch)) return;
+        const retryIsSafe = (
+          latest.status === 'mcq_active'
+          && latest.version === pending.expectedVersion
+          && this.mcqResponsesMatchSession(pending.responses, latest)
+        );
+        this.applySession(latest, {
+          keepQuestionIndex: true,
+          skipPendingMcqReplay: true,
+        });
+        if (latest.status !== 'mcq_active') {
+          this.mcqMutationState.set('locked');
+          return;
+        }
+        if (!retryIsSafe) this.clearPendingMcqSubmission();
+        if (this.mcqDeadlineExpired || pending.fromTimer) {
+          this.mcqMutationState.set('locked');
+          this.mcqAlert.set(
+            'The server did not confirm the timed MCQ submission. Reload the session to reconcile its authoritative state.',
+          );
+          return;
+        }
+        this.mcqMutationState.set('idle');
+        this.activateQuestionTiming(this.currentQuestion()?.id || null);
+        this.mcqAlert.set(
+          retryIsSafe
+            ? 'The MCQ submission was not confirmed. Review the answers and submit again to retry safely.'
+            : 'The MCQ submission was not confirmed because the server answers changed. Review them before submitting again.',
+        );
+      },
+      error: () => {
+        if (!this.isCurrentMcqReconciliation(pending.mutationId, requestEpoch)) return;
+        this.mcqMutationState.set(
+          this.mcqDeadlineExpired || pending.fromTimer ? 'locked' : 'idle',
+        );
+        this.mcqAlert.set(
+          'The server could not confirm the MCQ submission. It has not been shown as completed; reload or retry to reconcile it.',
+        );
+      },
+    });
+  }
+
+  private reconcilePendingMcqSubmission(session: InterviewSession): void {
+    const pending = this.pendingMcqSubmission;
+    if (
+      !pending
+      || this.mcqMutationState() !== 'idle'
+      || session.status !== 'mcq_active'
+    ) return;
+    if (
+      pending.expectedVersion !== session.version
+      || !this.mcqResponsesMatchSession(pending.responses, session)
+    ) {
+      this.clearPendingMcqSubmission();
+      this.mcqAlert.set(
+        'A previous MCQ submission was not confirmed and the server answers have changed. Review them before submitting again.',
+      );
+      return;
+    }
+    this.sendPendingMcqSubmission(pending);
+  }
+
+  private mcqResponseSnapshot(session: InterviewSession): InterviewMcqResponseSnapshot[] {
+    return session.questions.map((question) => ({
+      questionId: question.id,
+      optionId: question.selectedOptionId,
+      responseDurationMs: Math.min(
+        this.maxMcqResponseDurationMs,
+        Math.max(0, Math.round(this.mcqElapsedByQuestion.get(question.id) || 0)),
+      ),
+    }));
+  }
+
+  private mcqResponsesMatchSession(
+    responses: InterviewMcqResponseSnapshot[],
+    session: InterviewSession,
+  ): boolean {
+    if (responses.length !== session.questions.length) return false;
+    const responseByQuestion = new Map(
+      responses.map((response) => [response.questionId, response.optionId]),
+    );
+    return responseByQuestion.size === session.questions.length
+      && session.questions.every(
+        (question) => responseByQuestion.get(question.id) === question.selectedOptionId,
+      );
+  }
+
+  private normalizeStoredMcqResponses(
+    value: unknown,
+    session: InterviewSession,
+  ): InterviewMcqResponseSnapshot[] | null {
+    if (!Array.isArray(value) || value.length !== session.questions.length) return null;
+    const rawByQuestion = new Map<string, Record<string, unknown>>();
+    for (const entry of value) {
+      if (!entry || typeof entry !== 'object' || Array.isArray(entry)) return null;
+      const record = entry as Record<string, unknown>;
+      const questionId = String(record['questionId'] || '');
+      if (!questionId || rawByQuestion.has(questionId)) return null;
+      rawByQuestion.set(questionId, record);
+    }
+    const normalized: InterviewMcqResponseSnapshot[] = [];
+    for (const question of session.questions) {
+      const record = rawByQuestion.get(question.id);
+      if (!record) return null;
+      const optionId = record['optionId'] == null ? null : String(record['optionId']);
+      if (optionId !== null && !question.options.some((option) => option.id === optionId)) {
+        return null;
+      }
+      const rawDuration = record['responseDurationMs'];
+      const parsedDuration = Number(rawDuration);
+      normalized.push({
+        questionId: question.id,
+        optionId,
+        ...(rawDuration != null && Number.isFinite(parsedDuration) && parsedDuration >= 0
+          ? {
+            responseDurationMs: Math.min(
+              this.maxMcqResponseDurationMs,
+              Math.round(parsedDuration),
+            ),
+          }
+          : {}),
+      });
+    }
+    return normalized;
+  }
+
+  private isCurrentMcqAnswerRequest(
+    pending: PendingMcqAnswer,
+    requestEpoch: number,
+  ): boolean {
+    return (
+      !this.destroyed
+      && requestEpoch === this.mcqAsyncEpoch
+      && this.session()?.status === 'mcq_active'
+      && this.pendingMcqAnswer?.mutationId === pending.mutationId
+    );
+  }
+
+  private isCurrentMcqSubmission(
+    pending: PendingMcqSubmission,
+    requestEpoch: number,
+  ): boolean {
+    return (
+      !this.destroyed
+      && requestEpoch === this.mcqAsyncEpoch
+      && this.session()?.status === 'mcq_active'
+      && this.pendingMcqSubmission?.mutationId === pending.mutationId
+    );
+  }
+
+  private isCurrentMcqReconciliation(
+    mutationId: string,
+    requestEpoch: number,
+  ): boolean {
+    return (
+      !this.destroyed
+      && requestEpoch === this.mcqAsyncEpoch
+      && (
+        this.pendingMcqAnswer?.mutationId === mutationId
+        || this.pendingMcqSubmission?.mutationId === mutationId
+      )
+    );
   }
 
   private persistLocalDraft(): void {
     if (!this.isBrowser) return;
     const draft = this.localCodingDraftSnapshot();
     if (!draft) return;
-    try {
-      const storageKey = this.localDraftKey();
-      const currentRaw = localStorage.getItem(storageKey);
-      if (
-        this.observedCodingLocalRaw !== undefined
-        && currentRaw !== this.observedCodingLocalRaw
-      ) {
-        this.localCodingPersistenceAvailable.set(false);
-        return;
-      }
-      const serialized = JSON.stringify(draft);
-      localStorage.setItem(storageKey, serialized);
-      this.observedCodingLocalRaw = serialized;
+    const result = this.recovery.compareAndSaveForCurrentUser({
+      kind: 'coding',
+      sessionId: draft.sessionId,
+      payload: draft,
+      serverVersion: this.session()?.version ?? null,
+      baseHash: draft.baseHash,
+    }, this.observedCodingRecoveryRevision ?? null);
+    if (result.saved) {
+      this.observedCodingRecoveryRevision = result.revision;
       this.localCodingPersistenceAvailable.set(true);
-    } catch {
+    } else {
       this.localCodingPersistenceAvailable.set(false);
     }
   }
@@ -1330,36 +1879,41 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
 
   private readLocalDraft(observe = false): LocalCodingDraft | null {
     if (!this.isBrowser) return null;
-    try {
-      const raw = localStorage.getItem(this.localDraftKey());
-      if (observe) this.observedCodingLocalRaw = raw;
-      if (!raw) return null;
-      const parsed = JSON.parse(raw) as Partial<LocalCodingDraft>;
-      if (
-        parsed.sessionId !== this.sessionId
-        || typeof parsed.taskId !== 'string'
-        || !Array.isArray(parsed.files)
-      ) {
-        return null;
-      }
-      const files = parsed.files.filter(
-        (file): file is Pick<InterviewCodingFile, 'path' | 'content'> =>
-          !!file && typeof file.path === 'string' && typeof file.content === 'string',
-      );
-      return {
-        sessionId: parsed.sessionId,
-        taskId: parsed.taskId,
-        files,
-        updatedAt: typeof parsed.updatedAt === 'string' ? parsed.updatedAt : '',
-        activeFilePath: typeof parsed.activeFilePath === 'string'
-          ? parsed.activeFilePath
-          : null,
-        dirty: parsed.dirty === true,
-        baseHash: typeof parsed.baseHash === 'string' ? parsed.baseHash : null,
-      };
-    } catch {
-      return null;
-    }
+    const recovered = this.recovery.readOrMigrateLegacyForCurrentUser<LocalCodingDraft>({
+      kind: 'coding',
+      sessionId: this.sessionId,
+      ownershipConfirmed: true,
+      serverVersion: this.session()?.version ?? null,
+      baseHash: (draft) => draft.baseHash,
+      normalize: (value) => this.normalizeCodingDraft(value),
+    });
+    if (observe) this.observedCodingRecoveryRevision = recovered?.revision ?? null;
+    return recovered ? this.normalizeCodingDraft(recovered.envelope.payload) : null;
+  }
+
+  private normalizeCodingDraft(value: unknown): LocalCodingDraft | null {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+    const parsed = value as Partial<LocalCodingDraft>;
+    if (
+      parsed.sessionId !== this.sessionId
+      || typeof parsed.taskId !== 'string'
+      || !Array.isArray(parsed.files)
+    ) return null;
+    const files = parsed.files.filter(
+      (file): file is Pick<InterviewCodingFile, 'path' | 'content'> =>
+        !!file && typeof file.path === 'string' && typeof file.content === 'string',
+    );
+    return {
+      sessionId: parsed.sessionId,
+      taskId: parsed.taskId,
+      files,
+      updatedAt: typeof parsed.updatedAt === 'string' ? parsed.updatedAt : '',
+      activeFilePath: typeof parsed.activeFilePath === 'string'
+        ? parsed.activeFilePath
+        : null,
+      dirty: parsed.dirty === true,
+      baseHash: typeof parsed.baseHash === 'string' ? parsed.baseHash : null,
+    };
   }
 
   private mergeLocalFiles(
@@ -1420,36 +1974,130 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
 
   private clearLocalDraft(): void {
     if (!this.isBrowser) return;
-    try {
-      localStorage.removeItem(this.localDraftKey());
-      this.observedCodingLocalRaw = null;
-    } catch {
-      // Ignore unavailable storage.
-    }
+    this.recovery.removeForCurrentUser('coding', this.sessionId);
+    this.observedCodingRecoveryRevision = null;
   }
 
   private removeStoredCodingDraftIfMatches(expected: LocalCodingDraft): void {
-    const current = this.readLocalDraft();
-    if (!current || JSON.stringify(current) !== JSON.stringify(expected)) return;
-    this.clearLocalDraft();
+    const current = this.recovery.readForCurrentUserWithRevision<LocalCodingDraft>(
+      'coding',
+      this.sessionId,
+    );
+    const normalized = current ? this.normalizeCodingDraft(current.envelope.payload) : null;
+    if (!current || !normalized || JSON.stringify(normalized) !== JSON.stringify(expected)) return;
+    if (this.recovery.removeForCurrentUserIfRevision('coding', this.sessionId, current.revision)) {
+      this.observedCodingRecoveryRevision = null;
+    }
   }
 
   private clearSystemDesignLocalDraft(sessionId: string): void {
     this.systemDesignRound?.discardLocalDraft();
     if (!this.isBrowser || !sessionId) return;
-    try {
-      localStorage.removeItem(`fa:interview:system-design-draft:v1:${sessionId}`);
-    } catch {
-      // Ignore unavailable storage after an authoritative terminal transition.
-    }
-  }
-
-  private localDraftKey(): string {
-    return `fa:interview:coding-draft:v1:${this.sessionId}`;
+    this.recovery.removeForCurrentUser('system-design', sessionId);
   }
 
   private isOnline(): boolean {
     return !this.isBrowser || navigator.onLine !== false;
+  }
+
+  private startControlPolling(): void {
+    if (
+      !this.isBrowser
+      || this.destroyed
+      || typeof this.interviews.getControl !== 'function'
+    ) return;
+    this.pollControl();
+    if (this.controlPollTimer !== null) return;
+    this.controlPollTimer = setInterval(() => this.pollControl(), this.controlPollMs);
+  }
+
+  private pollControl(): void {
+    if (
+      !this.sessionId
+      || this.destroyed
+      || this.controlPollInFlight
+      || typeof this.interviews.getControl !== 'function'
+    ) return;
+    this.controlPollInFlight = true;
+    this.interviews.getControl(this.sessionId).subscribe({
+      next: (control) => {
+        this.controlPollInFlight = false;
+        if (this.destroyed || control.id !== this.sessionId) return;
+        if (control.policy === 'halted') {
+          this.freezeForOperationalHalt(
+            control.notice?.message
+              || 'Interview work is temporarily paused. Your server state remains saved.',
+          );
+          return;
+        }
+        const wasHalted = this.operationalHalt();
+        this.operationalHalt.set(false);
+        this.operationalNotice.set(control.notice?.message ?? null);
+        if (wasHalted) {
+          if (!this.mcqDeadlineExpired && this.mcqMutationState() === 'locked') {
+            this.mcqMutationState.set('idle');
+          }
+          if (!this.codingDeadlineExpired) this.codingRoundFrozen.set(false);
+          if (!this.systemDesignDeadlineExpired) this.systemDesignRoundFrozen.set(false);
+          this.load();
+          return;
+        }
+        if (!control.active && this.session()?.status !== 'completed') this.load();
+      },
+      error: () => {
+        this.controlPollInFlight = false;
+        // Mutating endpoints remain authoritative. A transient control read
+        // failure must not discard or unlock any existing local/server state.
+      },
+    });
+  }
+
+  private freezeForOperationalHalt(message: string): void {
+    this.operationalHalt.set(true);
+    this.operationalNotice.set(message);
+    if (this.session()?.status === 'mcq_active') this.mcqMutationState.set('locked');
+    this.codingRoundFrozen.set(true);
+    this.systemDesignRoundFrozen.set(true);
+    if (this.draftTimer !== null) {
+      clearTimeout(this.draftTimer);
+      this.draftTimer = null;
+    }
+    this.focusStage('[data-testid="interview-operational-halt"]');
+  }
+
+  private focusStage(selector: string): void {
+    if (!this.isBrowser || this.destroyed) return;
+    const revision = ++this.focusRevision;
+    queueMicrotask(() => {
+      if (this.destroyed || revision !== this.focusRevision) return;
+      this.changeDetector.detectChanges();
+      const target = this.host.nativeElement.querySelector<HTMLElement>(selector);
+      target?.focus({ preventScroll: true });
+    });
+  }
+
+  private handleOperationalError(error: any): boolean {
+    const code = String(error?.error?.code || error?.error?.error?.code || '');
+    if (code !== 'INTERVIEW_HALTED') return false;
+    const message = String(
+      error?.error?.error?.message
+      || error?.error?.error
+      || error?.error?.message
+      || 'Interview work is temporarily paused. Your server state remains saved.',
+    );
+    this.freezeForOperationalHalt(message);
+    return true;
+  }
+
+  private newMutationId(prefix: string): string {
+    if (
+      this.isBrowser
+      && typeof crypto !== 'undefined'
+      && typeof crypto.randomUUID === 'function'
+    ) {
+      return `${prefix}-${crypto.randomUUID()}`;
+    }
+    return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2)}`;
   }
 
   private ignoreCodingAsyncResult(requestEpoch: number): boolean {

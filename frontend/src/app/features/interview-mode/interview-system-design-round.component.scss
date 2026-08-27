@@ -454,6 +454,12 @@
   background: var(--uf-status-warn-bg);
 }
 
+[data-testid="system-design-step-heading"]:focus-visible {
+  outline: 2px solid var(--uf-accent);
+  outline-offset: 3px;
+  box-shadow: var(--uf-focus-ring);
+}
+
 .phase-actions,
 .submit-actions {
   display: flex;

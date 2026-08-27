@@ -2,7 +2,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { PUBLIC_EDITORIAL_FACTS, publicEditorialAuthorSchema } from '../../../core/content/public-editorial-facts';
 import {
   AfterViewInit, Component, ElementRef, OnDestroy, OnInit, PLATFORM_ID,
-  QueryList, ViewChild, ViewChildren, WritableSignal, computed, inject, signal
+  QueryList, ViewChild, ViewChildren, WritableSignal, computed, effect, inject, signal
 } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
@@ -31,6 +31,8 @@ import {
 } from './system-design-guide-link.util';
 import { OnboardingService } from '../../../core/services/onboarding.service';
 import { AnalyticsService } from '../../../core/services/analytics.service';
+import { InterviewAvailabilityStore } from '../../../core/services/interview-availability.store';
+import { interviewAvailabilityAllowsRole } from '../../../core/models/interview.model';
 import {
   normalizeSystemDesignDetail,
   SystemDesignDetailResolved,
@@ -100,6 +102,7 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
   private bugReport = inject(BugReportService);
   private onboarding = inject(OnboardingService);
   private analytics = inject(AnalyticsService);
+  private readonly interviewAvailability = inject(InterviewAvailabilityStore);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly guideTitleBySlug = new Map(SYSTEM.map((entry) => [entry.slug, entry.title]));
 
@@ -125,6 +128,38 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
     sourceQuestionId: this.q()?.id ?? '',
     src: 'system_design_detail',
   }));
+  guidedMockAccess = signal<'hidden' | 'signin' | 'loading' | 'available' | 'unavailable'>('hidden');
+  guidedMockLoginQueryParams = (): Record<string, string> => ({
+    redirectTo: this.router.url,
+  });
+  private readonly syncGuidedMockAccess = effect((onCleanup) => {
+    if (!this.practice().guidedMock) {
+      this.guidedMockAccess.set('hidden');
+      return;
+    }
+    const user = this.auth.user();
+    if (!user) {
+      this.guidedMockAccess.set('signin');
+      return;
+    }
+
+    this.guidedMockAccess.set('loading');
+    const subscription = this.interviewAvailability.resolve().subscribe({
+      next: (availability) => {
+        const systemDesign = availability.formatAvailability.find(
+          (entry) => entry.format === 'system-design',
+        );
+        this.guidedMockAccess.set(
+          interviewAvailabilityAllowsRole(availability, user.role)
+          && systemDesign?.enabled === true
+            ? 'available'
+            : 'unavailable',
+        );
+      },
+      error: () => this.guidedMockAccess.set('unavailable'),
+    });
+    onCleanup(() => subscription.unsubscribe());
+  }, { allowSignalWrites: true });
   contentLoadState = computed<'ready' | 'error'>(() =>
     this.q()?.contentLoadState === 'error' ? 'error' : 'ready'
   );

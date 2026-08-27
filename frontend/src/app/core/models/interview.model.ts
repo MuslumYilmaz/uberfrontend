@@ -1,7 +1,9 @@
 export type InterviewLevel = 'junior' | 'mid' | 'senior';
 export type InterviewTrack = 'core-web' | 'react' | 'angular' | 'vue';
 export type InterviewFormat = 'coding' | 'system-design';
-export type InterviewAccessMode = 'off' | 'internal' | 'public';
+export type InterviewAccessMode = 'off' | 'internal' | 'cohort' | 'public';
+export type InterviewOperationalState = 'normal' | 'drain' | 'halt';
+export type InterviewActiveSessionPolicy = 'continue' | 'halted';
 export type InterviewSessionStatus =
   | 'mcq_active'
   | 'coding_ready'
@@ -54,6 +56,7 @@ export interface InterviewTargetAvailability {
 
 export interface InterviewAvailabilityTiming {
   mcqSeconds: number;
+  mcqSecondsByLevel?: Record<InterviewLevel, number>;
   codingReadySeconds: number;
   systemDesignSeconds: Record<InterviewLevel, number>;
 }
@@ -64,9 +67,18 @@ export interface InterviewFormatAvailability {
   unavailableReason: string | null;
 }
 
+export interface InterviewShutdownNotice {
+  code: 'INTERVIEW_DRAINING' | 'INTERVIEW_HALTED' | string;
+  message: string;
+}
+
 export interface InterviewAvailability {
   enabled: boolean;
   accessMode: InterviewAccessMode;
+  canCreate?: boolean;
+  operationalState?: InterviewOperationalState;
+  activeSessionPolicy?: InterviewActiveSessionPolicy;
+  shutdownNotice?: InterviewShutdownNotice | null;
   unavailableReason: string | null;
   quota: InterviewQuota | null;
   quotas: Record<InterviewFormat, InterviewQuota | null>;
@@ -87,7 +99,16 @@ export function interviewAvailabilityAllowsRole(
 ): boolean {
   if (!availability?.enabled || availability.accessMode === 'off') return false;
   if (availability.accessMode === 'internal') return role === 'admin';
-  return availability.accessMode === 'public';
+  return availability.accessMode === 'cohort' || availability.accessMode === 'public';
+}
+
+export interface InterviewControl {
+  id: string;
+  status: InterviewSessionStatus;
+  version: number;
+  active: boolean;
+  policy: InterviewActiveSessionPolicy;
+  notice: InterviewShutdownNotice | null;
 }
 
 export interface InterviewMcqOption {
@@ -289,6 +310,7 @@ export interface InterviewSystemDesignState {
 
 export interface InterviewSession {
   id: string;
+  protocolVersion: 1 | 2;
   status: InterviewSessionStatus;
   format: InterviewFormat;
   level: InterviewLevel;
@@ -313,9 +335,25 @@ export interface CreateInterviewSessionRequest {
 }
 
 export interface SaveInterviewAnswerRequest {
+  protocolVersion: 2;
   questionId: string;
   optionId: string;
   responseDurationMs?: number;
+  mutationId: string;
+  expectedVersion: number;
+}
+
+export interface InterviewMcqResponseSnapshot {
+  questionId: string;
+  optionId: string | null;
+  responseDurationMs?: number;
+}
+
+export interface SubmitInterviewMcqRequest {
+  protocolVersion: 2;
+  mutationId: string;
+  expectedVersion: number;
+  responses: InterviewMcqResponseSnapshot[];
 }
 
 export interface SaveInterviewCodingDraftRequest {
