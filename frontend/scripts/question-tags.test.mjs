@@ -190,13 +190,39 @@ async function assertEditorialCorrections(errors) {
 
   const angularForms = await readQuestion("angular", "trivia", "angular-template-driven-vs-reactive-forms-which-scales");
   const angularContract = JSON.stringify(angularForms || {});
-  if (!angularForms || angularForms.updatedAt !== "2026-07-14") {
+  if (!angularForms || angularForms.updatedAt !== "2026-08-27") {
     errors.push("angular/trivia.json: forms comparison: missing current correction date");
+  }
+  if (angularForms?.seo?.title !== "Template-Driven vs Reactive Forms: Angular Interview"
+      || angularForms?.seo?.description !== "Angular interview answer comparing template-driven and reactive forms by state, validation, dynamic controls, testing, and when ngModel stops scaling.") {
+    errors.push("angular/trivia.json: forms comparison: pilot metadata drifted from the approved interview intent");
   }
   if (!/Signal Forms are stable|stable Signal Forms/i.test(angularContract)
       || !/production option/i.test(angularContract)
       || /Signal Forms[^.]{0,80}experimental/i.test(angularContract)) {
     errors.push("angular/trivia.json: forms comparison: Signal Forms must be a stable production option, not experimental");
+  }
+  const angularAnswer = (angularForms?.answer?.blocks || [])
+    .map((block) => block?.text || "")
+    .join("\n");
+  const officialSources = Array.from(
+    angularAnswer.matchAll(/href="(https:\/\/(?:angular\.dev|blog\.angular\.dev)[^"]+)"/g),
+    (match) => match[1]
+  );
+  const internalLinks = Array.from(
+    angularAnswer.matchAll(/href="(\/[^"]+)"/g),
+    (match) => match[1]
+  );
+  if (new Set(officialSources).size !== 4) {
+    errors.push("angular/trivia.json: forms comparison: pilot must retain exactly four official Angular sources");
+  }
+  if (new Set(internalLinks).size < 2) {
+    errors.push("angular/trivia.json: forms comparison: pilot must retain at least two contextual internal links");
+  }
+  if (!/Migration threshold checklist|Same form, three changes later|Testable proof/i.test(angularAnswer)
+      || /Large-form tradeoffs|Interactive form flow comparator/i.test(angularAnswer)
+      || !angularForms?.incidentCard) {
+    errors.push("angular/trivia.json: forms comparison: evidence or consolidation contract drifted");
   }
 
   const progress = await readQuestion("react", "coding", "react-progress-bar-thresholds");
