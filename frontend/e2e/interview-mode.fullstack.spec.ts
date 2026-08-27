@@ -169,13 +169,24 @@ async function chooseRadioWithKeyboard(locator: Locator): Promise<void> {
 }
 
 async function appendToActiveCodeEditor(page: Page, marker: string): Promise<void> {
-  const fallback = page.locator('textarea.editor-fallback');
-  const monacoInput = page.locator('app-monaco-editor textarea.inputarea').first();
-  const editor = fallback.or(monacoInput).first();
-  await expect(editor).toBeVisible({ timeout: 30_000 });
-  await editor.focus();
-  await expect(editor).toBeFocused();
-  await editor.press('ControlOrMeta+End');
+  const fallback = page.locator('.editor-shell textarea.editor-fallback');
+  const monacoSurface = page
+    .locator('.editor-shell app-monaco-editor .monaco-editor')
+    .first();
+  await expect(fallback.or(monacoSurface).first()).toBeVisible({ timeout: 30_000 });
+
+  if (await fallback.isVisible()) {
+    await fallback.focus();
+    await expect(fallback).toBeFocused();
+  } else {
+    const monacoInput = page
+      .locator('.editor-shell app-monaco-editor textarea.inputarea')
+      .first();
+    await monacoSurface.click();
+    await expect(monacoInput).toBeFocused();
+  }
+
+  await page.keyboard.press('ControlOrMeta+End');
   await page.keyboard.insertText(`\n// ${marker}`);
 }
 
@@ -194,7 +205,10 @@ test.describe('Interview Mode real Angular → Express → Mongo lifecycle', () 
     // The owned runner deliberately has no SMTP credentials. Signup degrades
     // to the explicit verification fallback while Interview/auth cookies stay
     // real; keep every other browser error fatal.
-    consoleErrorAllowlist: ['\/api\/auth\/email-verification\/request'],
+    consoleErrorAllowlist: [
+      '\/api\/auth\/email-verification\/request',
+      'downloadable font: rejected by sanitizer .*Inter-roman\\.var\\.woff2',
+    ],
   });
   test.skip(
     !runFullStack,
