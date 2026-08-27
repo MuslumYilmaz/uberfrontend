@@ -23,6 +23,7 @@ const WEB_PORT = 4237;
 const WEB_ORIGIN = `http://127.0.0.1:${WEB_PORT}`;
 const API_ORIGIN = `http://127.0.0.1:${API_PORT}`;
 const JWT_SECRET = 'interview_browser_e2e_jwt_secret_48_chars_minimum';
+const REDIS_STUB_ORIGIN = 'https://redis.interview.invalid';
 const BROWSER = String(process.env.E2E_INTERVIEW_BROWSER || 'chromium').trim().toLowerCase();
 const SUPPORTED_BROWSERS = new Set(['chromium', 'firefox', 'webkit']);
 
@@ -95,7 +96,7 @@ function configureEnvironment(mongoUri) {
     SMTP_PASS: '',
     SMTP_USER: '',
     UPSTASH_REDIS_REST_TOKEN: 'ephemeral-test-token',
-    UPSTASH_REDIS_REST_URL: 'https://redis.interview.invalid',
+    UPSTASH_REDIS_REST_URL: REDIS_STUB_ORIGIN,
   });
 }
 
@@ -104,7 +105,16 @@ function installHealthyRedisStub() {
   // request wiring without external network access. The separate staging CLI
   // remains the authority for real multi-instance Upstash behavior.
   global.fetch = async (url, options) => {
-    if (!String(url).startsWith('https://redis.interview.invalid')) {
+    let requestOrigin = '';
+    try {
+      const requestUrl = typeof url === 'string' || url instanceof URL
+        ? url
+        : url?.url;
+      requestOrigin = new URL(requestUrl).origin;
+    } catch {
+      requestOrigin = '';
+    }
+    if (requestOrigin !== REDIS_STUB_ORIGIN) {
       return originalFetch(url, options);
     }
     let payload = [];

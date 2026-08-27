@@ -1,3 +1,4 @@
+import { randomBytes } from 'node:crypto';
 import AxeBuilder from '@axe-core/playwright';
 import type {
   APIResponse,
@@ -173,7 +174,8 @@ async function appendToActiveCodeEditor(page: Page, marker: string): Promise<voi
   const monacoSurface = page
     .locator('.editor-shell app-monaco-editor .monaco-editor')
     .first();
-  await expect(fallback.or(monacoSurface).first()).toBeVisible({ timeout: 30_000 });
+  const monacoContent = monacoSurface.locator('.view-lines .view-line > span').first();
+  await expect(fallback.or(monacoContent).first()).toBeVisible({ timeout: 30_000 });
 
   if (await fallback.isVisible()) {
     await fallback.focus();
@@ -182,7 +184,8 @@ async function appendToActiveCodeEditor(page: Page, marker: string): Promise<voi
     const monacoInput = page
       .locator('.editor-shell app-monaco-editor textarea.inputarea')
       .first();
-    await monacoSurface.click();
+    await monacoContent.click();
+    await monacoInput.focus();
     await expect(monacoInput).toBeFocused();
   }
 
@@ -267,7 +270,7 @@ test.describe('Interview Mode real Angular → Express → Mongo lifecycle', () 
       }),
     }));
 
-    const stamp = `${Date.now()}-${Math.random().toString(16).slice(2, 8)}`;
+    const stamp = `${Date.now()}-${randomBytes(8).toString('hex')}`;
     const email = `interview-browser-${stamp}@example.com`;
     const username = `interview_browser_${stamp.replace(/-/g, '_')}`;
     const password = 'safePassword123';
