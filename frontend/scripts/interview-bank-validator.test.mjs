@@ -12,7 +12,9 @@ import {
   buildGeneratedPackages,
   contentHashForItem,
   loadAuthoringItems,
+  projectPrivateSelectionItem,
   projectPublicItem,
+  selectionMetadataHash,
   syncGeneratedFiles,
 } from "./interview-bank-lib.mjs";
 import {
@@ -20,6 +22,11 @@ import {
   validateInterviewBank,
   verifyBrowserConsoleOutputs,
 } from "./interview-bank-validator.mjs";
+import {
+  analyzeInterviewBankReleaseReadiness,
+  candidateCapacityPlanFor,
+  findExactDisjointFormPack,
+} from "./interview-bank-release-gate.mjs";
 import { repoRoot } from "./content-paths.mjs";
 
 const blueprint = JSON.parse(fs.readFileSync(
@@ -27,13 +34,13 @@ const blueprint = JSON.parse(fs.readFileSync(
   "utf8",
 ));
 const policies = loadInterviewBankPolicies();
-const NOW = new Date("2026-08-05T12:00:00.000Z");
+const NOW = new Date("2026-08-24T12:00:00.000Z");
 const V1_FIXTURE_HASHES = Object.freeze({
   public: "1f1aa6192519ed98af9b232276111745a89a711036dd9e8aaf8edf225df3980e",
   private: "b226a5b4168ffb2b94b075c62deac5cc3251719ff32b804127f031a8a739ff2e",
 });
 const LEVELS = ["junior", "mid", "senior"];
-const EXPECTED_V12_EXPANSION_IDS = Object.freeze([
+const EXPECTED_CANDIDATE_EXPANSION_IDS = Object.freeze([
   "int-js-number-finite-input-validation-jr-v1",
   "int-js-urlsearchparams-repeated-value-contract-jr-v1",
   "int-js-optional-chain-side-effect-short-circuit-jr-v1",
@@ -84,6 +91,21 @@ const EXPECTED_V12_EXPANSION_IDS = Object.freeze([
   "int-vue-error-capture-propagation-sr-v1",
   "int-vue-ssr-teleport-coordination-sr-v1",
   "int-vue-custom-directive-ssr-parity-sr-v1",
+  "int-js-map-object-key-identity-jr-v1",
+  "int-js-url-relative-base-resolution-jr-v1",
+  "int-js-array-negative-index-access-jr-v1",
+  "int-js-promise-all-result-order-jr-v1",
+  "int-js-live-collection-snapshot-jr-v1",
+  "int-js-storage-event-source-context-mid-v1",
+  "int-js-weakmap-key-reachability-mid-v1",
+  "int-js-intersection-threshold-crossing-mid-v1",
+  "int-js-intl-collator-bulk-sort-mid-v1",
+  "int-js-aes-gcm-iv-uniqueness-sr-v1",
+  "int-js-trusted-types-enforcement-sr-v1",
+  "int-js-shared-memory-isolation-sr-v1",
+  "int-js-indexeddb-upgrade-coordination-sr-v1",
+  "int-js-postmessage-peer-validation-sr-v1",
+  "int-js-websocket-buffered-flow-control-sr-v1",
 ]);
 function repeatedDistribution(distribution) {
   return Object.entries(distribution)
@@ -94,9 +116,9 @@ function repeatedDistribution(distribution) {
   const packageJson = JSON.parse(fs.readFileSync(path.join(repoRoot, "frontend", "package.json"), "utf8"));
   for (const scriptName of ["verify:unit-and-content", "verify:unit-and-content:prepush"]) {
     const command = packageJson.scripts[scriptName];
-    assert.match(command, /generate:interview-bank:candidate:check/);
+    assert.match(command, /generate:interview-bank:check/);
     assert.match(command, /lint:interview-bank/);
-    assert.doesNotMatch(command, /lint:interview-gold/);
+    assert.match(command, /lint:interview-gold/);
   }
   const prePush = fs.readFileSync(path.join(repoRoot, ".githooks", "pre-push"), "utf8");
   assert.match(prePush, /content-drafts\/interview-mcq\//);
@@ -128,31 +150,61 @@ function repeatedDistribution(distribution) {
   }, { executeBrowser: false, now: NOW });
 
   assert.deepEqual(result.errors, []);
-  assert.equal(itemEntries.length, 170);
-  assert.equal(manifest.itemRefs.length, 170);
-  assert.equal(reviews.items.length, 170);
-  assert.equal(manifest.bankVersion, "1.2.0");
-  assert.equal(manifest.status, "candidate");
-  assert.equal(reviews.finalApproval, null);
+  assert.equal(itemEntries.length, 185);
+  assert.equal(manifest.itemRefs.length, 185);
+  assert.equal(reviews.items.length, 185);
+  assert.equal(manifest.bankVersion, "1.3.0");
+  assert.equal(manifest.status, "editorial-gold");
+  assert.equal(reviews.status, "editorial-gold");
+  assert.deepEqual(reviews.finalApproval, {
+    approvedBy: "project-owner",
+    approvedAt: "2026-08-24",
+    bankVersion: "1.3.0",
+    bankContentHash: "9e2aed2606cf0fbaa54cad46c890d48e518be0266a3a91cb95cfb4777038a4e8",
+    selectionMetadataHash: "dcd3e26ee4aef17aed0f31ea29c979f2f3c3316f4701a627f1aa24f2be3c6590",
+    notes: [
+      "Project owner approved MCQ v1.3.0 for editorial-gold production use after the release-readiness audit.",
+    ],
+  });
   for (const review of reviews.items) {
     assert.equal(review.technical.checklistVersion, "1.3.0");
     assert.equal(review.editorial.checklistVersion, "1.3.0");
     assert.equal(review.blind.checklistVersion, "1.3.0");
   }
 
-  const goldRelease = JSON.parse(fs.readFileSync(
-    path.join(repoRoot, "backend", "content", "interview", "frontend-interview-bank-v1.release.json"),
+  const priorRelease = JSON.parse(fs.readFileSync(
+    path.join(
+      repoRoot,
+      "content-drafts",
+      "interview-mcq",
+      "generated",
+      "candidate-1.1.0",
+      "frontend-interview-bank-v1.release.json",
+    ),
     "utf8",
   ));
-  assert.equal(goldRelease.bankVersion, "1.1.0");
-  assert.equal(goldRelease.status, "editorial-gold");
-  assert.equal(goldRelease.itemRefs.length, 120);
+  assert.equal(priorRelease.bankVersion, "1.1.0");
+  assert.equal(priorRelease.status, "candidate");
+  assert.equal(priorRelease.itemRefs.length, 120);
   const authoredById = new Map(itemEntries.map(({ item }) => [item.id, item]));
   const approvedCandidateRevisionBumps = new Map([
     ["int-html-data-table-header-association-mid-v1", 2],
+    ["int-js-observer-lifecycle-mid-v1", 2],
     ["int-vue-next-tick-dom-read-timing-mid-v1", 2],
   ]);
-  for (const reference of goldRelease.itemRefs) {
+  const candidateTimingAdjustmentsFromGold = new Map([
+    ["int-js-observer-lifecycle-mid-v1", { gold: 180, candidate: 150 }],
+  ]);
+  const candidateExpansionTimingAdjustments = new Map([
+    ["int-angular-incremental-hydration-replay-sr-v1", {
+      priorRevision: 1,
+      candidateRevision: 2,
+      priorSeconds: 180,
+      candidateSeconds: 165,
+      priorContentHash: "1905c01de84128dd13182354919ddd877913af7e07025b694fb721f7b01d27f1",
+    }],
+  ]);
+  for (const reference of priorRelease.itemRefs) {
     const item = authoredById.get(reference.id);
     assert.ok(item, `${reference.id} from the active Gold bank must remain authored`);
     if (approvedCandidateRevisionBumps.has(reference.id)) {
@@ -166,6 +218,26 @@ function repeatedDistribution(distribution) {
         reference.contentHash,
         `${reference.id} candidate repair must not masquerade as the Gold revision`,
       );
+      const timingAdjustment = candidateTimingAdjustmentsFromGold.get(reference.id);
+      if (timingAdjustment) {
+        assert.equal(
+          item.public.estimatedSeconds,
+          timingAdjustment.candidate,
+          `${reference.id} must retain its reviewed candidate timing adjustment`,
+        );
+        assert.equal(
+          contentHashForItem({
+            ...item,
+            revision: reference.revision,
+            public: {
+              ...item.public,
+              estimatedSeconds: timingAdjustment.gold,
+            },
+          }),
+          reference.contentHash,
+          `${reference.id} candidate repair must remain duration-only relative to Gold`,
+        );
+      }
       continue;
     }
     assert.equal(item.revision, reference.revision, `${reference.id} revision drifted from Gold`);
@@ -175,27 +247,51 @@ function repeatedDistribution(distribution) {
       `${reference.id} content drifted from Gold`,
     );
   }
-  assert.equal(approvedCandidateRevisionBumps.size, 2);
+  assert.equal(approvedCandidateRevisionBumps.size, 3);
+  assert.equal(candidateTimingAdjustmentsFromGold.size, 1);
 
-  const goldIds = new Set(goldRelease.itemRefs.map((reference) => reference.id));
+  const goldIds = new Set(priorRelease.itemRefs.map((reference) => reference.id));
   const expansion = itemEntries
     .map(({ item }) => item)
     .filter((item) => !goldIds.has(item.id));
-  assert.equal(expansion.length, 50);
+  assert.equal(expansion.length, 65);
   assert.deepEqual(
     expansion.map((item) => item.id).sort(),
-    [...EXPECTED_V12_EXPANSION_IDS].sort(),
+    [...EXPECTED_CANDIDATE_EXPANSION_IDS].sort(),
   );
-  assert.equal(expansion.filter((item) => item.revision === 1).length, 50);
+  assert.equal(expansion.filter((item) => item.revision === 1).length, 64);
+  const revisedExpansion = expansion.filter((item) => item.revision !== 1);
+  assert.deepEqual(
+    revisedExpansion.map((item) => item.id).sort(),
+    [...candidateExpansionTimingAdjustments.keys()].sort(),
+  );
+  for (const item of revisedExpansion) {
+    const timingAdjustment = candidateExpansionTimingAdjustments.get(item.id);
+    assert.equal(item.revision, timingAdjustment.candidateRevision);
+    assert.equal(item.public.estimatedSeconds, timingAdjustment.candidateSeconds);
+    assert.equal(
+      contentHashForItem({
+        ...item,
+        revision: timingAdjustment.priorRevision,
+        public: {
+          ...item.public,
+          estimatedSeconds: timingAdjustment.priorSeconds,
+        },
+      }),
+      timingAdjustment.priorContentHash,
+      `${item.id} candidate repair must remain duration-only relative to its prior revision`,
+    );
+  }
+  assert.equal(candidateExpansionTimingAdjustments.size, 1);
   assert.equal(expansion.filter((item) => item.public.format === "conceptual").length, 12);
   assert.equal(
     expansion.filter((item) => item.public.format === "production-scenario").length,
-    38,
+    53,
   );
   const expectedExpansionPositions = {
-    junior: [5, 6, 5],
-    mid: [6, 5, 6],
-    senior: [6, 6, 5],
+    junior: [7, 8, 6],
+    mid: [7, 6, 8],
+    senior: [8, 8, 7],
   };
   for (const level of LEVELS) {
     const positions = [0, 0, 0];
@@ -293,6 +389,7 @@ function makeItem({ itemNumber, level, format, technology, band, correctPosition
   const item = {
     schemaVersion: "2.0.0",
     id,
+    conceptId: `mcq-${technology}-synthetic-${level}-${suffix}`,
     revision: 1,
     author: {
       id: "synthetic-author",
@@ -412,7 +509,7 @@ function makeCandidateContext() {
     schemaVersion: "2.0.0",
     manifestId: "bank-v1",
     bankId: blueprint.bankId,
-    bankVersion: "1.2.0",
+    bankVersion: "1.3.0",
     status: "candidate",
     language: "en",
     blueprintId: blueprint.blueprintId,
@@ -487,6 +584,9 @@ function promoteToEditorialGold(context) {
     approvedAt: "2026-07-22",
     bankVersion: context.manifest.bankVersion,
     bankContentHash: bankHash(context),
+    selectionMetadataHash: selectionMetadataHash(
+      context.itemEntries.map(({ item }) => item),
+    ),
     notes: [],
   };
 }
@@ -504,9 +604,80 @@ function expectError(result, expected) {
 }
 
 const candidate = makeCandidateContext();
-assert.equal(candidate.itemEntries.length, 170);
+assert.equal(candidate.itemEntries.length, 185);
 assert.deepEqual((await validate(candidate)).errors, []);
 expectError(await validate(candidate, { requireGold: true }), /gold lint requires/);
+
+{
+  const missingConcept = copy(candidate);
+  delete missingConcept.itemEntries[0].item.conceptId;
+  expectError(await validate(missingConcept), /conceptId|required/);
+}
+
+{
+  const conceptCollision = copy(candidate);
+  const junior = conceptCollision.itemEntries.find(({ item }) => item.public.level === "junior");
+  const senior = conceptCollision.itemEntries.find(({ item }) => item.public.level === "senior");
+  senior.item.conceptId = junior.item.conceptId;
+  expectError(await validate(conceptCollision), /conceptId collision spans multiple levels/);
+}
+
+{
+  const publicConceptLeak = copy(candidate);
+  publicConceptLeak.itemEntries[0].item.public.conceptId = "mcq-private-selection-leak";
+  expectError(await validate(publicConceptLeak), /additional properties|private key leaked/);
+}
+
+{
+  const actualEntries = loadAuthoringItems(path.join(
+    repoRoot,
+    "content-drafts",
+    "interview-mcq",
+    "items",
+  ));
+  const actualItems = actualEntries.map(({ item }) => item);
+  assert.equal(new Set(actualItems.map((item) => item.conceptId)).size, 185);
+  assert.equal(candidateCapacityPlanFor(actualItems, blueprint).minimumNetNewItems, 0);
+  const releaseReadiness = analyzeInterviewBankReleaseReadiness({
+    items: actualItems,
+    blueprint,
+  });
+  assert.equal(releaseReadiness.ready, true);
+  assert.match(releaseReadiness.selectionMetadataHash, /^[0-9a-f]{64}$/);
+  const byCombination = new Map(
+    releaseReadiness.matrix.map((entry) => [`${entry.track}/${entry.level}`, entry]),
+  );
+  for (const track of ["core-web", "react", "angular", "vue"]) {
+    for (const level of LEVELS) {
+      const entry = byCombination.get(`${track}/${level}`);
+      assert.equal(entry.deficits.minimumNetNewItems, 0);
+      assert.equal(entry.firstFivePack.length, 5);
+      assert.equal(entry.overBudgetFormCount, 0);
+      assert.ok(
+        entry.maximumFormSeconds
+          <= blueprint.releaseReadiness.sessionBudgetSecondsByLevel[level],
+        `${track}/${level} forms must fit the ${level} session budget`,
+      );
+    }
+  }
+  assert.equal(
+    releaseReadiness.matrix.reduce((total, entry) => total + entry.overBudgetFormCount, 0),
+    0,
+  );
+  assert.deepEqual(releaseReadiness.errors, []);
+}
+
+{
+  const forms = Array.from({ length: 5 }, (_, index) => ({
+    key: `form-${index}`,
+    itemIds: Array.from({ length: 5 }, (__, offset) => `item-${index}-${offset}`),
+    conceptIds: Array.from({ length: 5 }, (__, offset) => `concept-${index}-${offset}`),
+    totalEstimatedSeconds: 300,
+  }));
+  assert.equal(findExactDisjointFormPack(forms, 5).length, 5);
+  forms[4].conceptIds[0] = forms[0].conceptIds[0];
+  assert.equal(findExactDisjointFormPack(forms, 5), null);
+}
 
 {
   const weakenedWithoutChecklistBump = copy(candidate);
@@ -1054,6 +1225,13 @@ console.log("completed-after-deadline");`;
     await validate(prematureApproval, { requireGold: true }),
     /final approval may not predate an item review/,
   );
+
+  const staleSelectionApproval = copy(gold);
+  staleSelectionApproval.itemEntries[0].item.conceptId += "-retagged";
+  expectError(
+    await validate(staleSelectionApproval, { requireGold: true }),
+    /private selection metadata hash/,
+  );
 }
 
 {
@@ -1137,10 +1315,28 @@ console.log("completed-after-deadline");`;
       "content-drafts",
       "interview-mcq",
       "generated",
-      "candidate-1.2.0",
+      "candidate-1.3.0",
     ),
     candidate.manifest,
   ));
+  const approvedManifest = { ...candidate.manifest, status: "editorial-gold" };
+  assert.doesNotThrow(() => assertInterviewBankLifecycleOutputDir(
+    path.join(repoRoot, "content-drafts", "interview-mcq", "generated"),
+    approvedManifest,
+  ));
+  assert.throws(
+    () => assertInterviewBankLifecycleOutputDir(
+      path.join(
+        repoRoot,
+        "content-drafts",
+        "interview-mcq",
+        "generated",
+        "candidate-1.2.0",
+      ),
+      approvedManifest,
+    ),
+    /Approved interview-bank output must use canonical directory/,
+  );
 
   const nestedLeak = copy(candidate.itemEntries[0].item);
   nestedLeak.public.options[0].correctOptionId = "nested-answer-leak";
@@ -1148,13 +1344,22 @@ console.log("completed-after-deadline");`;
   if (nestedLeak.public.code) nestedLeak.public.code.expectedOutput = ["nested-output-leak"];
   const nestedProjection = JSON.stringify(projectPublicItem(nestedLeak));
   assert.doesNotMatch(nestedProjection, /nested-(?:answer|rationale|output)-leak/);
+  assert.doesNotMatch(nestedProjection, /conceptId/);
+  assert.equal(
+    projectPrivateSelectionItem(nestedLeak).conceptId,
+    nestedLeak.conceptId,
+  );
 
   const items = candidate.itemEntries.map((entry) => ({ item: entry.item }));
   const hashFixture = copy(items[0].item);
   const originalHash = contentHashForItem(hashFixture);
+  const originalSelectionHash = selectionMetadataHash([hashFixture]);
   hashFixture.author.id = "different-author";
   hashFixture.private.calibration = { status: "pending" };
   assert.equal(contentHashForItem(hashFixture), originalHash);
+  hashFixture.conceptId = `${hashFixture.conceptId}-semantic-revision`;
+  assert.equal(contentHashForItem(hashFixture), originalHash);
+  assert.notEqual(selectionMetadataHash([hashFixture]), originalSelectionHash);
   hashFixture.public.prompt += " Substantive change.";
   assert.notEqual(contentHashForItem(hashFixture), originalHash);
 
@@ -1172,8 +1377,13 @@ console.log("completed-after-deadline");`;
   });
   assert.deepEqual(first.files, second.files);
   assert.equal(JSON.stringify(first.publicPackage).includes("correctOptionId"), false);
+  assert.equal(JSON.stringify(first.publicPackage).includes("conceptId"), false);
   assert.equal(first.privatePackage.finalApproval, null);
   assert.equal(first.privatePackage.items.length, candidate.reviews.items.length);
+  assert.equal(
+    first.privatePackage.items.every((item) => /^mcq-[a-z0-9]+(?:-[a-z0-9]+)*$/.test(item.conceptId)),
+    true,
+  );
   assert.deepEqual(
     first.privatePackage.items[0].review,
     candidate.reviews.items.find((review) => review.id === first.privatePackage.items[0].id),

@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-react-stale-search-sr-v1",
+  "conceptId": "mcq-react-effect-async-race-ownership",
   "revision": 3,
   "author": {
     "id": "codex-react-author",

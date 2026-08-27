@@ -1,0 +1,81 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "nested-checkboxes-interview-candidate-v1",
+  "family": "nested-checkboxes",
+  "title": "Tri-state Checkbox Tree Interview",
+  "access": "candidate",
+  "estimatedMinutes": 35,
+  "supportedQuestions": {
+    "react": "react-nested-checkboxes",
+    "angular": "angular-nested-checkboxes",
+    "vue": "vue-nested-checkboxes"
+  },
+  "rounds": [
+    {
+      "id": "parent-child-sync",
+      "title": "Parent-child synchronization",
+      "interviewerPrompt": "Use child selection as the source of truth for the tree.",
+      "constraints": [
+        "The parent selects or clears every child in one transition.",
+        "All children selected means the parent is checked.",
+        "No children selected means the parent is unchecked."
+      ],
+      "frameworkTests": [
+        {
+          "id": "candidate-checkbox-parent",
+          "name": "Round 1 · Parent selects all children",
+          "steps": [
+            { "type": "expectCount", "selector": "input[type=\"checkbox\"]:checked", "count": 0 },
+            { "type": "click", "selector": ".parent input[type=\"checkbox\"]" },
+            { "type": "waitForCount", "selector": "input[type=\"checkbox\"]:checked", "count": 4 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "indeterminate-derivation",
+      "title": "Indeterminate derivation",
+      "interviewerPrompt": "Represent partial selection without storing contradictory parent state.",
+      "constraints": [
+        "Some but not all children selected puts the parent in an indeterminate state.",
+        "Derive checked and indeterminate from child IDs after every transition.",
+        "Expose partial selection as aria-checked mixed."
+      ],
+      "frameworkTests": [
+        {
+          "id": "candidate-checkbox-mixed",
+          "name": "Round 2 · One child creates mixed state",
+          "steps": [
+            { "type": "click", "selector": ".children input[type=\"checkbox\"]", "index": 0 },
+            { "type": "waitForCount", "selector": "input[type=\"checkbox\"]:checked", "count": 1 },
+            { "type": "expectAttribute", "selector": ".parent input[type=\"checkbox\"]", "attribute": "aria-checked", "expected": "mixed" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "stable-selection-contract",
+      "title": "Stable selection contract",
+      "interviewerPrompt": "Keep identity and status correct through alternating parent and child updates.",
+      "constraints": [
+        "Track children by stable IDs rather than array positions.",
+        "Clearing one child after Select all leaves the other children selected.",
+        "Render a polite selected-count status after every update.",
+        "Repeated transitions must not duplicate selected IDs."
+      ],
+      "frameworkTests": [
+        {
+          "id": "candidate-checkbox-identity",
+          "name": "Round 3 · Child update after Select all remains consistent",
+          "steps": [
+            { "type": "click", "selector": ".parent input[type=\"checkbox\"]" },
+            { "type": "click", "selector": ".children input[type=\"checkbox\"]", "index": 0 },
+            { "type": "waitForCount", "selector": "input[type=\"checkbox\"]:checked", "count": 2 },
+            { "type": "expectAttribute", "selector": ".parent input[type=\"checkbox\"]", "attribute": "aria-checked", "expected": "mixed" },
+            { "type": "expectText", "selector": "[role=\"status\"]", "text": "2 selected", "match": "contains" }
+          ]
+        }
+      ]
+    }
+  ]
+}

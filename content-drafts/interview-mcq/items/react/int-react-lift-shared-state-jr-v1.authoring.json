@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-react-lift-shared-state-jr-v1",
+  "conceptId": "mcq-react-shared-state-ownership",
   "revision": 8,
   "author": {
     "id": "codex-react-author",

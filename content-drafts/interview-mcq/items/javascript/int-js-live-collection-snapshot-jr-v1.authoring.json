@@ -1,0 +1,133 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-js-live-collection-snapshot-jr-v1",
+  "conceptId": "mcq-javascript-live-collection-snapshot",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-08-24"
+  },
+  "public": {
+    "technology": "javascript",
+    "level": "junior",
+    "difficultyBand": "stretch",
+    "format": "production-scenario",
+    "competency": "live-collection-snapshot",
+    "prompt": "A batch validator obtains `document.getElementsByClassName('pending')`. While an asynchronous validation loop runs, other code adds and removes matching elements. The batch must process exactly the elements present at capture time. Which boundary supplies that stable membership?",
+    "options": [
+      {
+        "id": "choice-6aa1096cb5",
+        "label": "Keep the returned HTMLCollection and cache its initial length before iterating the numbered entries."
+      },
+      {
+        "id": "choice-c693d63f93",
+        "label": "Keep the returned HTMLCollection and iterate it after each asynchronous validation has completed."
+      },
+      {
+        "id": "choice-7b83e86e3d",
+        "label": "Copy the returned HTMLCollection with `Array.from` before starting any asynchronous validation work."
+      }
+    ],
+    "estimatedSeconds": 115
+  },
+  "private": {
+    "correctOptionId": "choice-7b83e86e3d",
+    "answerProof": {
+      "summary": "The class-name query returns a live HTMLCollection whose membership follows DOM changes; converting it to an Array creates the required point-in-time list.",
+      "decisiveConstraints": [
+        "DOM membership may change while asynchronous work is pending.",
+        "The batch membership is fixed at capture time.",
+        "Each captured element must be processed once."
+      ],
+      "claims": [
+        {
+          "statement": "An HTMLCollection is live and updates as its underlying document changes.",
+          "sourceIds": [
+            "mdn-htmlcollection"
+          ]
+        },
+        {
+          "statement": "Array.from creates a new Array from an iterable or array-like value.",
+          "sourceIds": [
+            "mdn-array-from"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-6aa1096cb5",
+        "verdict": "incorrect",
+        "explanation": "Caching a length does not freeze which elements occupy the live collection's numbered entries.",
+        "plausibility": "A fixed loop bound can appear to isolate iteration from later additions.",
+        "misconceptionTag": "cached-length-freezes-live-membership",
+        "falsifyingConstraint": "Removals and insertions can shift the live entries even when the numeric bound stays fixed."
+      },
+      {
+        "optionId": "choice-c693d63f93",
+        "verdict": "incorrect",
+        "explanation": "Reading the live collection after awaits observes later DOM membership instead of the original batch.",
+        "plausibility": "Deferred iteration can ensure each element is checked against the latest rendered DOM.",
+        "misconceptionTag": "latest-dom-equals-captured-batch",
+        "falsifyingConstraint": "Elements added after capture must not join this validation batch."
+      },
+      {
+        "optionId": "choice-7b83e86e3d",
+        "verdict": "correct",
+        "explanation": "Array.from materializes the current members into a separate array before asynchronous DOM changes occur.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "remediationTopics": [
+      "live-dom-collections",
+      "array-from",
+      "snapshot-boundaries"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: HTMLCollection",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/API/HTMLCollection",
+        "sourceId": "mdn-htmlcollection"
+      },
+      {
+        "title": "MDN: Array.from()",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/from",
+        "sourceId": "mdn-array-from"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "mdn-htmlcollection",
+          "title": "MDN: HTMLCollection",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/HTMLCollection",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-08-24",
+          "revision": "mdn-page-snapshot-2026-08-24",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "mdn-array-from",
+          "title": "MDN: Array.from()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/from",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-08-24",
+          "revision": "mdn-page-snapshot-2026-08-24",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

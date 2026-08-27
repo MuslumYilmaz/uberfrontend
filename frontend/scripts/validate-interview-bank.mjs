@@ -10,11 +10,19 @@ import {
   loadInterviewBankContext,
   validateInterviewBank,
 } from "./interview-bank-validator.mjs";
+import { formatInterviewBankReleaseMatrix } from "./interview-bank-release-gate.mjs";
 
 function parseArguments(argv) {
   const requireGold = argv.includes("--gold");
-  const pathArguments = argv.filter((argument) => argument !== "--gold");
-  return { ...parseCliArgs(pathArguments, interviewBankDefaults), requireGold };
+  const requireReleaseReady = requireGold || argv.includes("--release-gate");
+  const pathArguments = argv.filter(
+    (argument) => argument !== "--gold" && argument !== "--release-gate",
+  );
+  return {
+    ...parseCliArgs(pathArguments, interviewBankDefaults),
+    requireGold,
+    requireReleaseReady,
+  };
 }
 
 async function main() {
@@ -36,10 +44,15 @@ async function main() {
   }
 
   const context = loadInterviewBankContext(paths);
-  const { errors, warnings } = await validateInterviewBank(context, {
+  const { errors, warnings, releaseReadiness } = await validateInterviewBank(context, {
+    executeBrowser: !paths.requireReleaseReady,
     requireGold: paths.requireGold,
+    requireReleaseReady: paths.requireReleaseReady,
   });
   warnings.forEach((warning) => console.warn(`[interview-bank] WARN: ${warning}`));
+  if (releaseReadiness) {
+    console.log(formatInterviewBankReleaseMatrix(releaseReadiness.matrix));
+  }
   if (errors.length) {
     console.error(`Interview bank validation failed with ${errors.length} error(s).`);
     errors.forEach((error) => console.error(`- ${error}`));

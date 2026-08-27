@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-html-label-submit-jr-v1",
+  "conceptId": "mcq-html-explicit-form-label-association",
   "revision": 2,
   "author": {
     "id": "codex-core-author",

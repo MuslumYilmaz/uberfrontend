@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-vue-ref-primitive-jr-v1",
+  "conceptId": "mcq-vue-composition-api-reactive-primitives",
   "revision": 2,
   "author": {
     "id": "codex-vue-author",

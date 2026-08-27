@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-react-error-boundary-catch-scope-mid-v1",
+  "conceptId": "mcq-react-error-boundary-catch-scope",
   "revision": 1,
   "author": {
     "id": "codex-react-author",

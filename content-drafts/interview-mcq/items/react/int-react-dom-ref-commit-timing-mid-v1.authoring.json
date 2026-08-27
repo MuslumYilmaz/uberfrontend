@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-react-dom-ref-commit-timing-mid-v1",
+  "conceptId": "mcq-react-dom-ref-commit-timing",
   "revision": 1,
   "author": {
     "id": "codex-react-author",

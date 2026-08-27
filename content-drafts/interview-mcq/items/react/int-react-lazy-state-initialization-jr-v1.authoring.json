@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-react-lazy-state-initialization-jr-v1",
+  "conceptId": "mcq-react-lazy-state-initialization",
   "revision": 1,
   "author": {
     "id": "codex-react-author",

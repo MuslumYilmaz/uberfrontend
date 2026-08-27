@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-vue-stable-row-props-sr-v1",
+  "conceptId": "mcq-vue-render-update-prop-stability",
   "revision": 3,
   "author": {
     "id": "codex-vue-author",

@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-js-indexeddb-transaction-lifetime-sr-v1",
+  "conceptId": "mcq-javascript-indexeddb-transaction-lifetime",
   "revision": 1,
   "author": {
     "id": "codex-core-author",

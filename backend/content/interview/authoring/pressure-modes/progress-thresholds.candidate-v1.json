@@ -1,0 +1,62 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "progress-thresholds-interview-candidate-v1",
+  "family": "progress-thresholds",
+  "title": "Bounded Progress Interview",
+  "access": "candidate",
+  "estimatedMinutes": 25,
+  "supportedQuestions": {
+    "react": "react-progress-bar-thresholds",
+    "angular": "angular-progress-bar-thresholds",
+    "vue": "vue-progress-bar-thresholds"
+  },
+  "rounds": [
+    {
+      "id": "bounded-progress",
+      "title": "Bounded progress state",
+      "interviewerPrompt": "Implement progress updates as a single bounded state transition.",
+      "constraints": [
+        "Start at 0 and update in ten-point increments.",
+        "Clamp every transition to the inclusive 0–100 range.",
+        "Keep the numeric label and visual fill synchronized."
+      ],
+      "frameworkTests": [
+        {
+          "id": "candidate-progress-bounds",
+          "name": "Round 1 · Progress increments and decrements",
+          "steps": [
+            { "type": "expectText", "selector": ".value", "text": "0", "match": "contains" },
+            { "type": "click", "selector": "[aria-label=\"increase\"]" },
+            { "type": "waitForText", "selector": ".value", "text": "10", "match": "contains" },
+            { "type": "click", "selector": "[aria-label=\"decrease\"]" },
+            { "type": "waitForText", "selector": ".value", "text": "0", "match": "contains" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "threshold-semantics",
+      "title": "Threshold and meter semantics",
+      "interviewerPrompt": "Make boundary behavior and progress semantics explicit.",
+      "constraints": [
+        "Use red below 34, orange from 34 through 66, and green above 66.",
+        "Disable decrement at 0 and increment at 100.",
+        "Expose the fill as a progressbar with aria-valuemin, aria-valuemax, and the current aria-valuenow.",
+        "Do not rely on color alone; keep the percentage text visible."
+      ],
+      "frameworkTests": [
+        {
+          "id": "candidate-progress-semantics",
+          "name": "Round 2 · Boundaries remain accessible",
+          "steps": [
+            { "type": "expectDisabled", "selector": "[aria-label=\"decrease\"]", "disabled": true },
+            { "type": "expectAttribute", "selector": "[role=\"progressbar\"]", "attribute": "aria-valuemin", "expected": "0" },
+            { "type": "expectAttribute", "selector": "[role=\"progressbar\"]", "attribute": "aria-valuemax", "expected": "100" },
+            { "type": "click", "selector": "[aria-label=\"increase\"]" },
+            { "type": "expectAttribute", "selector": "[role=\"progressbar\"]", "attribute": "aria-valuenow", "expected": "10" }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-js-fetch-http-status-handling-mid-v1",
+  "conceptId": "mcq-javascript-fetch-http-status-handling",
   "revision": 1,
   "author": {
     "id": "codex-core-author",

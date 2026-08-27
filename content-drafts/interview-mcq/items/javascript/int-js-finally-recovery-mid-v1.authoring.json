@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-js-finally-recovery-mid-v1",
+  "conceptId": "mcq-javascript-promise-finally-transparency",
   "revision": 4,
   "author": {
     "id": "codex-core-author",

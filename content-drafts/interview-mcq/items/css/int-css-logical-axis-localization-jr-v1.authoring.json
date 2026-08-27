@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-css-logical-axis-localization-jr-v1",
+  "conceptId": "mcq-css-logical-axis-localization",
   "revision": 1,
   "author": {
     "id": "codex-core-author",

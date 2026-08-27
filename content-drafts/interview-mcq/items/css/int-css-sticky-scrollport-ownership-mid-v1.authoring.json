@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-css-sticky-scrollport-ownership-mid-v1",
+  "conceptId": "mcq-css-sticky-scrollport-ownership",
   "revision": 1,
   "author": {
     "id": "codex-core-author",

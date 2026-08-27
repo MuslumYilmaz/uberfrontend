@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-js-async-return-rejection-sr-v1",
+  "conceptId": "mcq-javascript-async-rejection-propagation",
   "revision": 2,
   "author": {
     "id": "codex-core-author",

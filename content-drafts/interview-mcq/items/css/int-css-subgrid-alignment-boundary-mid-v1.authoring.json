@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-css-subgrid-alignment-boundary-mid-v1",
+  "conceptId": "mcq-css-subgrid-alignment-boundary",
   "revision": 1,
   "author": {
     "id": "codex-core-author",

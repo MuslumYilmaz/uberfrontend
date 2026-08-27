@@ -1,0 +1,110 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-js-url-relative-base-resolution-jr-v1",
+  "conceptId": "mcq-javascript-url-relative-base-resolution",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-08-24"
+  },
+  "public": {
+    "technology": "javascript",
+    "level": "junior",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "url-relative-base-resolution",
+    "prompt": "A documentation page needs to resolve `images/logo.svg` below `https://app.example/docs/guide/`. The route may later move to another origin, so string concatenation is disallowed. Which construction preserves the intended directory boundary?",
+    "options": [
+      {
+        "id": "choice-8a709ef725",
+        "label": "Pass a slash-terminated base so `guide` remains a directory: `new URL(relativeAsset, baseWithSlash)`."
+      },
+      {
+        "id": "choice-22e0689f60",
+        "label": "Pass the base without a terminal slash because the constructor infers that `guide` names a directory."
+      },
+      {
+        "id": "choice-271349bac2",
+        "label": "Prefix the reference with `/` because the constructor retains the base path before appending the resource."
+      }
+    ],
+    "estimatedSeconds": 90
+  },
+  "private": {
+    "correctOptionId": "choice-8a709ef725",
+    "answerProof": {
+      "summary": "A trailing slash makes the base end in a directory, so the relative reference resolves beneath `/docs/guide/` instead of replacing `guide` or resolving from the origin root.",
+      "decisiveConstraints": [
+        "The requested URL is relative to the guide directory.",
+        "The base URL must retain `/docs/guide/` as a directory path.",
+        "The solution must use URL resolution rather than string concatenation."
+      ],
+      "claims": [
+        {
+          "statement": "The URL constructor resolves a relative reference against the current directory of its base, determined by the base path through its last slash.",
+          "sourceIds": [
+            "mdn-url-constructor"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-8a709ef725",
+        "verdict": "correct",
+        "explanation": "The trailing slash makes `guide` a directory and produces `/docs/guide/images/logo.svg`.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-22e0689f60",
+        "verdict": "incorrect",
+        "explanation": "Without the trailing slash, `guide` is treated as the final path segment and is replaced by `images/logo.svg`.",
+        "plausibility": "The base text visually names the guide route, so it can appear equivalent to the slash-terminated form.",
+        "misconceptionTag": "url-base-slash-is-cosmetic",
+        "falsifyingConstraint": "The resolved resource must remain below the guide directory rather than beside it."
+      },
+      {
+        "optionId": "choice-271349bac2",
+        "verdict": "incorrect",
+        "explanation": "A leading slash makes the resource root-relative and drops the `/docs/guide/` path.",
+        "plausibility": "Root-relative paths can avoid accidental duplicate path separators during URL assembly.",
+        "misconceptionTag": "root-relative-preserves-base-directory",
+        "falsifyingConstraint": "The requested resource belongs under the guide directory, not at the origin root."
+      }
+    ],
+    "remediationTopics": [
+      "url-construction",
+      "relative-references",
+      "base-directory-semantics"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: URL() constructor",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/API/URL/URL",
+        "sourceId": "mdn-url-constructor"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "mdn-url-constructor",
+          "title": "MDN: URL() constructor",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/URL/URL",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-08-24",
+          "revision": "mdn-page-snapshot-2026-08-24",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

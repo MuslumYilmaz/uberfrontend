@@ -1,0 +1,116 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-js-shared-memory-isolation-sr-v1",
+  "conceptId": "mcq-javascript-shared-memory-isolation",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-08-24"
+  },
+  "public": {
+    "technology": "javascript",
+    "level": "senior",
+    "difficultyBand": "stretch",
+    "format": "production-scenario",
+    "competency": "shared-memory-isolation",
+    "prompt": "A production image editor sends a `SharedArrayBuffer` from its page to a worker. It works on a development origin but throws after deployment. The application also embeds third-party resources. Which deployment boundary should be established before enabling shared memory?",
+    "options": [
+      {
+        "id": "choice-e65d967c6d",
+        "label": "Add permissive CORS response headers to the editor document and check `window.isSecureContext` before posting."
+      },
+      {
+        "id": "choice-ec5564ac34",
+        "label": "Add a script-src CSP nonce to the editor bundle and check `document.hasFocus()` before posting."
+      },
+      {
+        "id": "choice-17f0b654d2",
+        "label": "Deploy COOP and COEP with compliant embedded resources, then check `crossOriginIsolated` before posting."
+      }
+    ],
+    "estimatedSeconds": 160
+  },
+  "private": {
+    "correctOptionId": "choice-17f0b654d2",
+    "answerProof": {
+      "summary": "Sharing SharedArrayBuffer across agents requires a cross-origin-isolated environment, conventionally established through compatible COOP and COEP response policies and verified with crossOriginIsolated.",
+      "decisiveConstraints": [
+        "The page must transfer shared memory to a worker.",
+        "The deployment includes cross-origin embedded resources.",
+        "The application needs a runtime capability check."
+      ],
+      "claims": [
+        {
+          "statement": "A cross-origin-isolated document can use restricted capabilities including sending SharedArrayBuffer through postMessage.",
+          "sourceIds": [
+            "mdn-cross-origin-isolated"
+          ]
+        },
+        {
+          "statement": "Cross-origin isolation is established with compatible Cross-Origin-Opener-Policy and Cross-Origin-Embedder-Policy headers, subject to embedded-resource policy requirements.",
+          "sourceIds": [
+            "mdn-cross-origin-isolated"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-e65d967c6d",
+        "verdict": "incorrect",
+        "explanation": "A secure context and permissive CORS alone do not place the page into the required isolated browsing context group.",
+        "plausibility": "Secure contexts and CORS govern access to several sensitive browser and cross-origin capabilities.",
+        "misconceptionTag": "cors-and-https-enable-shared-memory",
+        "falsifyingConstraint": "The runtime capability required for posting shared memory is cross-origin isolation."
+      },
+      {
+        "optionId": "choice-ec5564ac34",
+        "verdict": "incorrect",
+        "explanation": "A script nonce restricts script execution sources, and document focus says nothing about shared-memory eligibility.",
+        "plausibility": "CSP is a response-level security mechanism and focus checks can gate expensive worker activity.",
+        "misconceptionTag": "script-csp-creates-origin-isolation",
+        "falsifyingConstraint": "The page must enter a cross-origin-isolated browsing context before sharing the buffer."
+      },
+      {
+        "optionId": "choice-17f0b654d2",
+        "verdict": "correct",
+        "explanation": "COOP and COEP establish the isolation boundary when dependencies comply, and crossOriginIsolated verifies the capability at runtime.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "remediationTopics": [
+      "sharedarraybuffer",
+      "cross-origin-isolation",
+      "coop-coep"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: Window crossOriginIsolated",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/API/Window/crossOriginIsolated",
+        "sourceId": "mdn-cross-origin-isolated"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "mdn-cross-origin-isolated",
+          "title": "MDN: Window crossOriginIsolated",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/Window/crossOriginIsolated",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-08-24",
+          "revision": "mdn-page-snapshot-2026-08-24",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

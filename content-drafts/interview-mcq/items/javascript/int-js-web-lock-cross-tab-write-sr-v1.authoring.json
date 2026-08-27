@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-js-web-lock-cross-tab-write-sr-v1",
+  "conceptId": "mcq-javascript-web-lock-cross-tab-write",
   "revision": 1,
   "author": {
     "id": "codex-core-author",

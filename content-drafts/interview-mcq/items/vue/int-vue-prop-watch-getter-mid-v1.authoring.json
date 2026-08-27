@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-vue-prop-watch-getter-mid-v1",
+  "conceptId": "mcq-vue-reactive-prop-watch-sources",
   "revision": 1,
   "author": {
     "id": "codex-vue-author",

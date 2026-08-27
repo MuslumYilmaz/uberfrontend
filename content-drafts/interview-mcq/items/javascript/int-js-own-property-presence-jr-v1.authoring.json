@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-js-own-property-presence-jr-v1",
+  "conceptId": "mcq-javascript-own-property-presence",
   "revision": 1,
   "author": {
     "id": "codex-core-author",

@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-html-data-table-header-association-mid-v1",
+  "conceptId": "mcq-html-data-table-header-association",
   "revision": 2,
   "author": {
     "id": "codex-core-author",

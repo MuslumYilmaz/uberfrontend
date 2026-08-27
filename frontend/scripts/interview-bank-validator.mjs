@@ -10,7 +10,12 @@ import {
   loadAuthoringItems,
   projectPublicItem,
   readJson,
+  selectionMetadataHash,
 } from "./interview-bank-lib.mjs";
+import {
+  analyzeInterviewBankReleaseReadiness,
+  validateMcqConceptMetadata,
+} from "./interview-bank-release-gate.mjs";
 
 const schemaRoot = path.join(interviewBankRoot, "schemas", "v2");
 const policyRoot = path.join(interviewBankRoot, "policies");
@@ -28,28 +33,96 @@ export const interviewBankPolicyPaths = Object.freeze({
   runtimes: path.join(policyRoot, "runtime-profiles.json"),
 });
 
+const EMPTY_TECHNOLOGY_QUOTA = Object.freeze({
+  javascript: 0,
+  html: 0,
+  css: 0,
+  react: 0,
+  angular: 0,
+  vue: 0,
+});
+const DEFAULT_FORM_BANDS = Object.freeze({ foundation: 1, core: 3, stretch: 1 });
+const EXPECTED_RELEASE_READINESS = Object.freeze({
+  attemptsWithoutLiteralOrSemanticRepeat: 5,
+  adjacentOverlapMaximum: 0,
+  sessionBudgetSecondsByLevel: { junior: 600, mid: 720, senior: 900 },
+  formProfiles: {
+    technologyCountsByTrack: {
+      "core-web": { ...EMPTY_TECHNOLOGY_QUOTA, javascript: 3, html: 1, css: 1 },
+      react: { ...EMPTY_TECHNOLOGY_QUOTA, javascript: 1, html: 1, css: 1, react: 2 },
+      angular: { ...EMPTY_TECHNOLOGY_QUOTA, javascript: 1, html: 1, css: 1, angular: 2 },
+      vue: { ...EMPTY_TECHNOLOGY_QUOTA, javascript: 1, html: 1, css: 1, vue: 2 },
+    },
+    difficultyBandCountsByLevelAndTrack: {
+      junior: {
+        "core-web": DEFAULT_FORM_BANDS,
+        react: DEFAULT_FORM_BANDS,
+        angular: DEFAULT_FORM_BANDS,
+        vue: DEFAULT_FORM_BANDS,
+      },
+      mid: {
+        "core-web": DEFAULT_FORM_BANDS,
+        react: DEFAULT_FORM_BANDS,
+        angular: DEFAULT_FORM_BANDS,
+        vue: DEFAULT_FORM_BANDS,
+      },
+      senior: {
+        "core-web": { foundation: 1, core: 1, stretch: 3 },
+        react: DEFAULT_FORM_BANDS,
+        angular: { foundation: 1, core: 2, stretch: 2 },
+        vue: DEFAULT_FORM_BANDS,
+      },
+    },
+    minimumProductionScenarioCount: 1,
+    maximumCodeOutputCount: 1,
+  },
+  candidateCapacityPlan: {
+    scope: "literal-and-semantic-repeat-capacity-only",
+    baselineQuestionCount: 170,
+    minimumTargetQuestionCount: 185,
+    minimumNetNewItems: 15,
+    byLevel: {
+      junior: {
+        minimumNetNewItems: 5,
+        minimumByTechnology: { ...EMPTY_TECHNOLOGY_QUOTA, javascript: 4 },
+        minimumByDifficultyBand: { foundation: 0, core: 3, stretch: 2 },
+      },
+      mid: {
+        minimumNetNewItems: 4,
+        minimumByTechnology: { ...EMPTY_TECHNOLOGY_QUOTA, javascript: 4 },
+        minimumByDifficultyBand: { foundation: 0, core: 4, stretch: 0 },
+      },
+      senior: {
+        minimumNetNewItems: 6,
+        minimumByTechnology: { ...EMPTY_TECHNOLOGY_QUOTA, javascript: 3 },
+        minimumByDifficultyBand: { foundation: 0, core: 0, stretch: 6 },
+      },
+    },
+  },
+});
+
 const EXPECTED_BLUEPRINT = Object.freeze({
-  questionCount: 170,
-  level: { junior: 56, mid: 57, senior: 57 },
-  technology: { javascript: 34, html: 17, css: 17, react: 34, angular: 34, vue: 34 },
+  questionCount: 185,
+  level: { junior: 61, mid: 61, senior: 63 },
+  technology: { javascript: 49, html: 17, css: 17, react: 34, angular: 34, vue: 34 },
   technologyByLevel: {
-    junior: { javascript: 11, html: 6, css: 6, react: 11, angular: 11, vue: 11 },
-    mid: { javascript: 11, html: 6, css: 5, react: 11, angular: 12, vue: 12 },
-    senior: { javascript: 12, html: 5, css: 6, react: 12, angular: 11, vue: 11 },
+    junior: { javascript: 16, html: 6, css: 6, react: 11, angular: 11, vue: 11 },
+    mid: { javascript: 15, html: 6, css: 5, react: 11, angular: 12, vue: 12 },
+    senior: { javascript: 18, html: 5, css: 6, react: 12, angular: 11, vue: 11 },
   },
   difficultyBandByLevel: {
-    junior: { foundation: 14, core: 28, stretch: 14 },
-    mid: { foundation: 14, core: 29, stretch: 14 },
-    senior: { foundation: 14, core: 29, stretch: 14 },
+    junior: { foundation: 14, core: 31, stretch: 16 },
+    mid: { foundation: 14, core: 33, stretch: 14 },
+    senior: { foundation: 14, core: 29, stretch: 20 },
   },
   formatByLevel: {
-    junior: { conceptual: 21, "code-output": 2, "production-scenario": 33 },
-    mid: { conceptual: 15, "code-output": 2, "production-scenario": 40 },
-    senior: { conceptual: 7, "code-output": 2, "production-scenario": 48 },
+    junior: { conceptual: 21, "code-output": 2, "production-scenario": 38 },
+    mid: { conceptual: 15, "code-output": 2, "production-scenario": 44 },
+    senior: { conceptual: 7, "code-output": 2, "production-scenario": 54 },
   },
-  correctOptionPosition: { first: 57, second: 57, third: 56 },
+  correctOptionPosition: { first: 62, second: 62, third: 61 },
   competencyDistinctByTechnology: {
-    javascript: 34,
+    javascript: 49,
     html: 17,
     css: 17,
     react: 34,
@@ -63,9 +136,9 @@ const EXPECTED_BLUEPRINT = Object.freeze({
     coreTechnologies: ["javascript", "html", "css"],
     frameworkTechnologies: ["react", "angular", "vue"],
     eligiblePoolByLevelAndTrack: {
-      junior: { "core-web": 23, react: 34, angular: 34, vue: 34 },
-      mid: { "core-web": 22, react: 33, angular: 34, vue: 34 },
-      senior: { "core-web": 23, react: 35, angular: 34, vue: 34 },
+      junior: { "core-web": 28, react: 39, angular: 39, vue: 39 },
+      mid: { "core-web": 26, react: 37, angular: 38, vue: 38 },
+      senior: { "core-web": 29, react: 41, angular: 40, vue: 40 },
     },
   },
   codeOutputConstraint: {
@@ -75,6 +148,7 @@ const EXPECTED_BLUEPRINT = Object.freeze({
     runtime: "browser",
     verificationKind: "browser-console-output",
   },
+  releaseReadiness: EXPECTED_RELEASE_READINESS,
 });
 
 const APPROVED_BANK_STATUSES = Object.freeze([
@@ -156,6 +230,7 @@ const PUBLIC_LEAK_KEYS = new Set([
   "answerproof",
   "calibration",
   "contenthash",
+  "conceptid",
   "copiedtext",
   "correctoptionid",
   "expectedoutput",
@@ -709,7 +784,7 @@ function validateBlueprint(blueprint, errors) {
   }
   for (const field of ["level", "technology", "correctOptionPosition"]) {
     if (!exactCounts(blueprint.distributions[field], EXPECTED_BLUEPRINT[field])) {
-      errors.push(`blueprint.distributions.${field} does not match the approved 170-item plan.`);
+      errors.push(`blueprint.distributions.${field} does not match the approved 185-item plan.`);
     }
   }
   for (const level of Object.keys(EXPECTED_BLUEPRINT.level)) {
@@ -740,11 +815,15 @@ function validateBlueprint(blueprint, errors) {
     blueprint.competencyConstraint.distinctByTechnology,
     EXPECTED_BLUEPRINT.competencyDistinctByTechnology,
   )) {
-    errors.push("blueprint competency coverage does not match the approved 170-item plan.");
+    errors.push("blueprint competency coverage does not match the approved 185-item plan.");
   }
   if (canonicalJson(blueprint.selectionPolicy)
     !== canonicalJson(EXPECTED_BLUEPRINT.selectionPolicy)) {
     errors.push("blueprint selectionPolicy does not match the approved 3-core/2-framework plan.");
+  }
+  if (canonicalJson(blueprint.releaseReadiness)
+    !== canonicalJson(EXPECTED_BLUEPRINT.releaseReadiness)) {
+    errors.push("blueprint.releaseReadiness does not match the approved five-attempt capacity plan.");
   }
 }
 
@@ -1139,6 +1218,7 @@ function validateReviews(items, reviews, manifest, qualityPolicy, errors, warnin
   }
 
   const expectedBankHash = bankContentHash(itemRefs);
+  const expectedSelectionMetadataHash = selectionMetadataHash(items);
   if (manifest.status === "candidate") {
     if (reviews.finalApproval !== null) {
       errors.push("candidate bank finalApproval must remain null.");
@@ -1146,8 +1226,12 @@ function validateReviews(items, reviews, manifest, qualityPolicy, errors, warnin
   } else {
     const approval = reviews.finalApproval;
     if (!approval || approval.bankVersion !== manifest.bankVersion
-      || approval.bankContentHash !== expectedBankHash) {
-      errors.push(`${manifest.status}: final approval must bind the current bankVersion and bank content hash.`);
+      || approval.bankContentHash !== expectedBankHash
+      || approval.selectionMetadataHash !== expectedSelectionMetadataHash) {
+      errors.push(
+        `${manifest.status}: final approval must bind the current bankVersion, bank content hash, `
+        + "and private selection metadata hash.",
+      );
     } else if (new Date(`${approval.approvedAt}T00:00:00.000Z`) > now) {
       errors.push("final approval date may not be in the future.");
     } else {
@@ -1165,7 +1249,7 @@ function validateReviews(items, reviews, manifest, qualityPolicy, errors, warnin
       }
     }
   }
-  return { reviewsById, expectedBankHash };
+  return { reviewsById, expectedBankHash, expectedSelectionMetadataHash };
 }
 
 function validateCalibration(item, qualityPolicy, errors, now, finalApproval) {
@@ -1457,6 +1541,7 @@ export async function validateInterviewBank(
   {
     executeBrowser = true,
     requireGold = false,
+    requireReleaseReady = false,
     now = new Date(),
     schemaValidators = createSchemaValidators(),
   } = {},
@@ -1554,8 +1639,15 @@ export async function validateInterviewBank(
 
   validateBankDistributions(items, blueprint, errors);
   validateCrossItemDuplicates(items, policies.quality, errors);
+  let releaseReadiness = null;
+  if (requireReleaseReady) {
+    releaseReadiness = analyzeInterviewBankReleaseReadiness({ items, blueprint });
+    errors.push(...releaseReadiness.errors);
+  } else {
+    errors.push(...validateMcqConceptMetadata(items));
+  }
   if (executeBrowser) {
     await verifyBrowserConsoleOutputs(items, policies.runtimes, errors);
   }
-  return { errors, warnings };
+  return { errors, warnings, releaseReadiness };
 }

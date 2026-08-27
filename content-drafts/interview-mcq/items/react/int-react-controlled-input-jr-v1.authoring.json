@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-react-controlled-input-jr-v1",
+  "conceptId": "mcq-react-controlled-input-edit-normalization",
   "revision": 3,
   "author": {
     "id": "codex-react-author",

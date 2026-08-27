@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-js-async-iteration-completion-mid-v1",
+  "conceptId": "mcq-javascript-async-iteration-completion",
   "revision": 1,
   "author": {
     "id": "codex-core-author",

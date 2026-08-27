@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-react-stable-list-key-jr-v1",
+  "conceptId": "mcq-react-list-key-reconciliation-boundary",
   "revision": 1,
   "author": {
     "id": "codex-react-author",

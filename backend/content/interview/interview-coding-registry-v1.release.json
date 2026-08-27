@@ -2,23 +2,33 @@
   "artifacts": {
     "private": {
       "file": "interview-coding-registry-v1.private.json",
-      "sha256": "ccbc8deeebf508ee3fa6c0ad27d4cf9d4642490ad652f58a323f6730836ae155"
+      "sha256": "61e187fe3973b40fdb4efd6a051af18747adfce770d7528c4978e6bc4d8f5ad8"
     },
     "public": {
       "file": "interview-coding-registry-v1.public.json",
-      "sha256": "d120f45c64b3ea18f02b9349a36f6d2aa2ee6804c9a945e3a0663c5065bf874f"
+      "sha256": "21a56ab71298384ab1bc8444c1a5edb1b8320941c024c5ba39b42545a81abd6e"
     }
   },
-  "contentHash": "cc29adca541417505f594341c8016fa8d4f9abee737306489f96aa803d6f1f1b",
-  "definitionHash": "40415337fa3aaf091dbc7ae07edafa8ddda60c2605977b3fde9be4ea318d649b",
-  "enabledVariantCount": 24,
-  "finalApproval": null,
-  "registryContentHash": "cc29adca541417505f594341c8016fa8d4f9abee737306489f96aa803d6f1f1b",
+  "contentHash": "d84c6c6f733ae9aff4b4f516656bc93a10643f570ea85034d5cf1e924e35dae8",
+  "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+  "enabledVariantCount": 60,
+  "finalApproval": {
+    "approvedAt": "2026-08-24",
+    "approvedBy": "project-owner",
+    "notes": [
+      "Project owner approved coding registry v1.1.0 for editorial-gold production use after the release-readiness audit."
+    ],
+    "registryContentHash": "d84c6c6f733ae9aff4b4f516656bc93a10643f570ea85034d5cf1e924e35dae8",
+    "registryVersion": "1.1.0",
+    "selectionDefinitionHash": "95ae46b01019649017306384cd4928315a33ccb8d77c50f48306b2ecb5bc4c3e"
+  },
+  "registryContentHash": "d84c6c6f733ae9aff4b4f516656bc93a10643f570ea85034d5cf1e924e35dae8",
   "registryId": "frontend-interview-coding-registry-v1",
-  "registryVersion": "1.0.0",
+  "registryVersion": "1.1.0",
   "schemaVersion": "1.0.0",
-  "status": "candidate",
-  "variantCount": 24,
+  "selectionDefinitionHash": "95ae46b01019649017306384cd4928315a33ccb8d77c50f48306b2ecb5bc4c3e",
+  "status": "editorial-gold",
+  "variantCount": 60,
   "variantRefs": [
     {
       "contentHash": "04797a7d03d8affd6a13ae07171976abdd209f2a4693df5de93d45597ac56a66",
@@ -27,9 +37,39 @@
       "revision": 1
     },
     {
+      "contentHash": "1f193cf1828079f735b253b293440c21289e40d3512107c3bf033e8927bf8f8c",
+      "enabled": true,
+      "id": "int-code-angular-junior-filterable-user-list-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "cf4846dca9d8b5cc1901b84843017044a18530f56035d2b9362138363253ca89",
+      "enabled": true,
+      "id": "int-code-angular-junior-progress-thresholds-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "6e65ebc91dc1a76b3b536076dab5c7f62d30ab7405f15a6dedf16d6f83c3b868",
+      "enabled": true,
+      "id": "int-code-angular-junior-tabs-switcher-v1",
+      "revision": 1
+    },
+    {
       "contentHash": "18de554492733266341bd37fa07776ad0242dd41a81ee7649c874d7432e6d497",
       "enabled": true,
       "id": "int-code-angular-junior-todo-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "22605ebdb734033a820a7d8be6916bb691a02efa6750df095d1b999bf9a7ab96",
+      "enabled": true,
+      "id": "int-code-angular-mid-multi-step-form-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "84118ae8cbd1cce6204a3388544fd10b2f7ac50d61aa5fdb9478fe1258472f23",
+      "enabled": true,
+      "id": "int-code-angular-mid-nested-checkboxes-v1",
       "revision": 1
     },
     {
@@ -45,9 +85,21 @@
       "revision": 1
     },
     {
+      "contentHash": "71059fd19aeef7489dd0929a6299035ea1fc745385a9282c8e0135248de4ceb6",
+      "enabled": true,
+      "id": "int-code-angular-mid-theme-toggle-v1",
+      "revision": 1
+    },
+    {
       "contentHash": "b59941489c364a0e5c383461688868814c724b881c7850856acb0b0f9f5fd43a",
       "enabled": true,
       "id": "int-code-angular-senior-chips-autocomplete-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "7d1d298b8b3226918aa6016fa0c848b39f42bee1cb2fb1d96053959ad753f96b",
+      "enabled": true,
+      "id": "int-code-angular-senior-contact-form-v1",
       "revision": 1
     },
     {
@@ -57,9 +109,39 @@
       "revision": 1
     },
     {
+      "contentHash": "ad7053bcc1d4390d866052f4a8451ff95554d8395b77102cbd0434e42b66d316",
+      "enabled": true,
+      "id": "int-code-angular-senior-nested-comments-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "bd529822fa9573af9320418361a48114ef09de629e9a5fbe09e52308f78b0455",
+      "enabled": true,
+      "id": "int-code-angular-senior-transfer-list-v1",
+      "revision": 1
+    },
+    {
       "contentHash": "882884703e2bb0d404d314de45e382214cd3fb929b28cf21205a95f0acbefa17",
       "enabled": true,
       "id": "int-code-core-web-junior-escape-html-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "c7bd8c5cdb98b7759ad2574f615eafe7e4dcbfbd3c3eaca0fa656b4eb56ae11d",
+      "enabled": true,
+      "id": "int-code-core-web-junior-number-clamp-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "fa14fb89ed1e273da742a9c21c62190c445cb54507153d7f5e1939d2d56b0faf",
+      "enabled": true,
+      "id": "int-code-core-web-junior-once-wrapper-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "0485f010763eec89f62793bf913d61dbbcfed03fef8fb8ffe964ca7a77fed43c",
+      "enabled": true,
+      "id": "int-code-core-web-junior-unique-array-v1",
       "revision": 1
     },
     {
@@ -69,9 +151,27 @@
       "revision": 1
     },
     {
+      "contentHash": "4c8da20455c17d829fb5cc625051a7688856ffd593faff3d511b0f3f95a2f12a",
+      "enabled": true,
+      "id": "int-code-core-web-mid-debounce-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "ae28b3fc61abfc1977f4113e38461493ab31695aebe2388a3be23f1777f7203b",
+      "enabled": true,
+      "id": "int-code-core-web-mid-event-emitter-v1",
+      "revision": 1
+    },
+    {
       "contentHash": "df93f85ae99b2c7234c596f509b013146679c2a26d27b4a68660c9be531d4534",
       "enabled": true,
       "id": "int-code-core-web-mid-fetch-timeout-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "f2685d05968738500a4cd007f9e384656cb33b127efb7183d3ba7ad7ef9a94fd",
+      "enabled": true,
+      "id": "int-code-core-web-mid-group-by-v1",
       "revision": 1
     },
     {
@@ -81,9 +181,21 @@
       "revision": 1
     },
     {
+      "contentHash": "f2076171a37a169991ed1c204cc805ae10711573207f18dad8b6e778307b0266",
+      "enabled": true,
+      "id": "int-code-core-web-senior-abortable-helpers-v1",
+      "revision": 1
+    },
+    {
       "contentHash": "a46562a3755178280473a3aba3ca56d411c25b4f2733b4409a199ed6860aeece",
       "enabled": true,
       "id": "int-code-core-web-senior-concurrency-map-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "7d348ec8566efab4c387ec5cdc114af2da13488d2b00d8853ba47a07638b42bc",
+      "enabled": true,
+      "id": "int-code-core-web-senior-deep-equal-v1",
       "revision": 1
     },
     {
@@ -93,15 +205,51 @@
       "revision": 1
     },
     {
+      "contentHash": "20daae37965fdeb2f68367312c19b302064418d4f23195f500dacc7e6faaba87",
+      "enabled": true,
+      "id": "int-code-core-web-senior-streaming-ndjson-v1",
+      "revision": 1
+    },
+    {
       "contentHash": "56a8c441b543ba6cbaa94a5eccd6ec2883e6c84a290848b75f1a405e4fc4d8aa",
       "enabled": true,
       "id": "int-code-react-junior-counter-v1",
       "revision": 1
     },
     {
+      "contentHash": "a7b270f4f5482d8228053db2cac8e99a3ebd38835c99381312104884fbaa433c",
+      "enabled": true,
+      "id": "int-code-react-junior-filterable-user-list-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "c31eb3ce2a84c639ebb430bc78e44b340047f8c73fd6ccd4de1c8cbbcb039d63",
+      "enabled": true,
+      "id": "int-code-react-junior-progress-thresholds-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "5d9c859d01ca5272af2569d1bae8c5ae3f638890b94c899ff37e8581c6b49f05",
+      "enabled": true,
+      "id": "int-code-react-junior-tabs-switcher-v1",
+      "revision": 1
+    },
+    {
       "contentHash": "a2a0dd6d5e1d57e19ab9bfe333123dd78cbeda836901caa45936bbead24fcc93",
       "enabled": true,
       "id": "int-code-react-junior-todo-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "1b4fd9d66cf3d6d6ad3e36971a6e0b60467b031fe27d8d0082dfae38515405fc",
+      "enabled": true,
+      "id": "int-code-react-mid-multi-step-form-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "9052154fd5f82bc14b24a623f0b026717ded8021aea3c0323e8be23fb4d99122",
+      "enabled": true,
+      "id": "int-code-react-mid-nested-checkboxes-v1",
       "revision": 1
     },
     {
@@ -117,9 +265,21 @@
       "revision": 1
     },
     {
+      "contentHash": "73190fb1187c8f48227b44d340b58678e71cc8a9c05e944c8ddb1a983c053a9c",
+      "enabled": true,
+      "id": "int-code-react-mid-theme-toggle-v1",
+      "revision": 1
+    },
+    {
       "contentHash": "3b6e0fce1141b6aca00a6ba1cf78e5dd4f16a22435eb608a58a7d36ced2436ad",
       "enabled": true,
       "id": "int-code-react-senior-chips-autocomplete-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "d2a98846d26c204209b7d9a6081ba126f7b80e0e7cc1dcb0f84381cbe9e23fcd",
+      "enabled": true,
+      "id": "int-code-react-senior-contact-form-v1",
       "revision": 1
     },
     {
@@ -129,15 +289,57 @@
       "revision": 1
     },
     {
+      "contentHash": "c8daed7f741b6cab403f453151892a7e9d1c3494066b97d478c851039ad27777",
+      "enabled": true,
+      "id": "int-code-react-senior-nested-comments-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "8217d15cf01e71357c86c4ba04102d5fdc64ab11b8bce652ee1417ad25a46421",
+      "enabled": true,
+      "id": "int-code-react-senior-transfer-list-v1",
+      "revision": 1
+    },
+    {
       "contentHash": "1d74cb13400467d4e2f68246908edd48aa20da006a9be7e427a752528e51554f",
       "enabled": true,
       "id": "int-code-vue-junior-counter-v1",
       "revision": 1
     },
     {
+      "contentHash": "9acef8519ed948ac203f3ced99ec0c58b38ca677fa90f9acfda9aaf414ae3467",
+      "enabled": true,
+      "id": "int-code-vue-junior-filterable-user-list-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "44cd2098db8de6d16f4541ecf2a2ae264f22886e75551d3395c6d0a57679a462",
+      "enabled": true,
+      "id": "int-code-vue-junior-progress-thresholds-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "e15d3466f4ba72cefa0f0fff800f9965420584220d589a69f277e384b5cfa864",
+      "enabled": true,
+      "id": "int-code-vue-junior-tabs-switcher-v1",
+      "revision": 1
+    },
+    {
       "contentHash": "24028642630407880de1f004bb38dd82c96625850b87b6a369116ebc119346a8",
       "enabled": true,
       "id": "int-code-vue-junior-todo-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "95585f9b27f994c78e35d121c8e6ba3b5dc3f448b2e470116d0fc0abc582b0af",
+      "enabled": true,
+      "id": "int-code-vue-mid-multi-step-form-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "84316b60221181903c3accc25ca754d68329e648a0b420f6fc3f5c12c9d39896",
+      "enabled": true,
+      "id": "int-code-vue-mid-nested-checkboxes-v1",
       "revision": 1
     },
     {
@@ -153,15 +355,39 @@
       "revision": 1
     },
     {
+      "contentHash": "2a540d48d394f1db52e497d613824a27ce5fa3ab34758aae2d85f041bc3c8a37",
+      "enabled": true,
+      "id": "int-code-vue-mid-theme-toggle-v1",
+      "revision": 1
+    },
+    {
       "contentHash": "3bc2bb4e551a0d0d99315af7026a2d93b7f34d830f3d8f37fc875ead4830e240",
       "enabled": true,
       "id": "int-code-vue-senior-chips-autocomplete-v1",
       "revision": 1
     },
     {
+      "contentHash": "2ce356333cbbc1f0e9f8a5419a3679e100a193a56a2c7becea0557366f23218b",
+      "enabled": true,
+      "id": "int-code-vue-senior-contact-form-v1",
+      "revision": 1
+    },
+    {
       "contentHash": "5c12650312cca9f6fb8b26cd283c032d167a2b3e94a97858a99cfe9c10d7feff",
       "enabled": true,
       "id": "int-code-vue-senior-debounced-search-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "12d95fd90633a3f3f13a54bba4ec058fbefc8bd34048c3aeb0527ef84d97cab5",
+      "enabled": true,
+      "id": "int-code-vue-senior-nested-comments-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "a194dcdd79f03241e9db8fb95cff276b2f1a1f1c2b14eb4b07bf88dc269d0cc3",
+      "enabled": true,
+      "id": "int-code-vue-senior-transfer-list-v1",
       "revision": 1
     }
   ]

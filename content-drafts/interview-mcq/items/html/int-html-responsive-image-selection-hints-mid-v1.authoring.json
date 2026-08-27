@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-html-responsive-image-selection-hints-mid-v1",
+  "conceptId": "mcq-html-responsive-image-selection-hints",
   "revision": 1,
   "author": {
     "id": "codex-core-author",

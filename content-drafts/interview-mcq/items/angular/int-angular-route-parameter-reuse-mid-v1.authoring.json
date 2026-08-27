@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-angular-route-parameter-reuse-mid-v1",
+  "conceptId": "mcq-angular-route-parameter-reuse",
   "revision": 1,
   "author": {
     "id": "codex-angular-author",

@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-css-image-intrinsic-ratio-sr-v1",
+  "conceptId": "mcq-css-intrinsic-ratio-layout-reservation",
   "revision": 4,
   "author": {
     "id": "codex-core-author",

@@ -1,0 +1,116 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-js-trusted-types-enforcement-sr-v1",
+  "conceptId": "mcq-javascript-trusted-types-enforcement",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-08-24"
+  },
+  "public": {
+    "technology": "javascript",
+    "level": "senior",
+    "difficultyBand": "stretch",
+    "format": "production-scenario",
+    "competency": "trusted-types-enforcement",
+    "prompt": "A legacy application has many `innerHTML` sinks. The security team wants supporting browsers to reject raw strings at injection sinks and permit HTML only through one named sanitizing policy. Which rollout contract enforces both boundaries?",
+    "options": [
+      {
+        "id": "choice-51feaedbfa",
+        "label": "Create an unrestricted default policy that returns every input unchanged, without adding a Trusted Types CSP."
+      },
+      {
+        "id": "choice-33faeb8dcd",
+        "label": "Require Trusted Types for script sinks, allowlist one policy name, and make that policy sanitize before creating HTML."
+      },
+      {
+        "id": "choice-1777ed7d62",
+        "label": "Allowlist one policy name in CSP, keep passing strings to sinks, and sanitize only after assignment failures occur."
+      }
+    ],
+    "estimatedSeconds": 155
+  },
+  "private": {
+    "correctOptionId": "choice-33faeb8dcd",
+    "answerProof": {
+      "summary": "The require-trusted-types-for directive blocks string assignment to covered sinks, while trusted-types restricts policy creation; the allowed policy still needs a real sanitizer.",
+      "decisiveConstraints": [
+        "Raw strings must be rejected at covered injection sinks.",
+        "Only one expected policy name may be created.",
+        "Policy output must be sanitized rather than merely retyped."
+      ],
+      "claims": [
+        {
+          "statement": "The require-trusted-types-for CSP directive makes covered injection sinks reject strings, while the trusted-types directive restricts which policy names may be created.",
+          "sourceIds": [
+            "mdn-trusted-types-api"
+          ]
+        },
+        {
+          "statement": "Trusted Types policy code is application-defined and must perform the intended sanitization before creating TrustedHTML.",
+          "sourceIds": [
+            "mdn-trusted-types-api"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-51feaedbfa",
+        "verdict": "incorrect",
+        "explanation": "Without enforcement, strings remain accepted, and a pass-through default policy converts unsafe input without sanitizing it.",
+        "plausibility": "A default policy can ease migration by adapting legacy string assignments in one central location.",
+        "misconceptionTag": "trusted-wrapper-equals-sanitization",
+        "falsifyingConstraint": "The browser must reject uncovered raw strings and policy output must remove unsafe markup."
+      },
+      {
+        "optionId": "choice-33faeb8dcd",
+        "verdict": "correct",
+        "explanation": "The two CSP directives enforce typed sink input and policy naming, while the named policy owns sanitization.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-1777ed7d62",
+        "verdict": "incorrect",
+        "explanation": "Policy allowlisting alone does not require callers to use Trusted Types at injection sinks.",
+        "plausibility": "Restricting policy names reduces the chance that arbitrary code creates a permissive policy.",
+        "misconceptionTag": "policy-allowlist-enforces-sink-types",
+        "falsifyingConstraint": "Raw string assignment must fail before unsafe content reaches a covered sink."
+      }
+    ],
+    "remediationTopics": [
+      "trusted-types",
+      "content-security-policy",
+      "dom-xss-sinks"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: Trusted Types API",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/API/Trusted_Types_API",
+        "sourceId": "mdn-trusted-types-api"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "mdn-trusted-types-api",
+          "title": "MDN: Trusted Types API",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/Trusted_Types_API",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-08-24",
+          "revision": "mdn-page-snapshot-2026-08-24",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

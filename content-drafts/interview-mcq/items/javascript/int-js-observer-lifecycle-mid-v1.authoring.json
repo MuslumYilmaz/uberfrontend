@@ -1,7 +1,8 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-js-observer-lifecycle-mid-v1",
-  "revision": 1,
+  "conceptId": "mcq-javascript-observer-resource-lifecycle",
+  "revision": 2,
   "author": {
     "id": "codex-core-author",
     "type": "ai",
@@ -28,7 +29,7 @@
         "label": "Set the local observer variable to `null` on unmount and rely on garbage collection for its targets."
       }
     ],
-    "estimatedSeconds": 180
+    "estimatedSeconds": 150
   },
   "private": {
     "correctOptionId": "choice-6e87bf32ad",

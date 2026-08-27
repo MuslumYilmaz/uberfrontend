@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-vue-provide-inject-mutation-boundary-jr-v1",
+  "conceptId": "mcq-vue-provide-inject-mutation-boundary",
   "revision": 1,
   "author": {
     "id": "codex-vue-expansion-author",

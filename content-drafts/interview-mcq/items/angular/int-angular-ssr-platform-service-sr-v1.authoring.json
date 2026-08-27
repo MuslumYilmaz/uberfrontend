@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-angular-ssr-platform-service-sr-v1",
+  "conceptId": "mcq-angular-ssr-platform-specific-dependency-boundary",
   "revision": 1,
   "author": {
     "id": "codex-angular-author",

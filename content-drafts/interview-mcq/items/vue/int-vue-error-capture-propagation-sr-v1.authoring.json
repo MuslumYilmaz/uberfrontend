@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-vue-error-capture-propagation-sr-v1",
+  "conceptId": "mcq-vue-error-capture-propagation",
   "revision": 1,
   "author": {
     "id": "codex-vue-expansion-author",

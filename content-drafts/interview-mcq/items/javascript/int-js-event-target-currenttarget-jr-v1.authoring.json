@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-js-event-target-currenttarget-jr-v1",
+  "conceptId": "mcq-javascript-event-target-and-listener-owner",
   "revision": 1,
   "author": {
     "id": "codex-core-author",

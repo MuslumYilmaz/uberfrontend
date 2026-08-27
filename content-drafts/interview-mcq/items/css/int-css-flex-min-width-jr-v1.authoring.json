@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-css-flex-min-width-jr-v1",
+  "conceptId": "mcq-css-flex-item-minimum-size",
   "revision": 3,
   "author": {
     "id": "codex-core-author",

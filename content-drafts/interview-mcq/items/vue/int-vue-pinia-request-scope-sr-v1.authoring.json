@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-vue-pinia-request-scope-sr-v1",
+  "conceptId": "mcq-vue-ssr-store-request-ownership",
   "revision": 1,
   "author": {
     "id": "codex-vue-author",

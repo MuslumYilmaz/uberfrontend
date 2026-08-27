@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-angular-service-worker-version-coherency-sr-v1",
+  "conceptId": "mcq-angular-service-worker-version-coherency",
   "revision": 1,
   "author": {
     "id": "codex-angular-author",

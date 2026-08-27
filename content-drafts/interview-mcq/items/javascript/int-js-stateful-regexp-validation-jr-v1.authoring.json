@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-js-stateful-regexp-validation-jr-v1",
+  "conceptId": "mcq-javascript-stateful-regexp-validation",
   "revision": 1,
   "author": {
     "id": "codex-core-author",

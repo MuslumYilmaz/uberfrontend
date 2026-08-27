@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-react-profile-stable-props-sr-v1",
+  "conceptId": "mcq-react-profile-guided-render-memoization",
   "revision": 4,
   "author": {
     "id": "codex-react-author",

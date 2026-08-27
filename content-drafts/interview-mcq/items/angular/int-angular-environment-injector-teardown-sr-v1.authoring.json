@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-angular-environment-injector-teardown-sr-v1",
+  "conceptId": "mcq-angular-environment-injector-teardown",
   "revision": 1,
   "author": {
     "id": "codex-angular-author",

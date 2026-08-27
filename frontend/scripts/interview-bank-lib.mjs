@@ -28,16 +28,22 @@ export function assertSafeInterviewBankOutputDir(outputDir) {
 
 export function assertInterviewBankLifecycleOutputDir(outputDir, manifest) {
   assertSafeInterviewBankOutputDir(outputDir);
-  if (manifest?.status !== "candidate") return;
-
-  const expectedCandidateDir = path.resolve(
-    interviewBankDefaults.outputDir,
-    `candidate-${manifest.bankVersion}`,
-  );
   const resolvedOutputDir = path.resolve(outputDir);
-  if (resolvedOutputDir !== expectedCandidateDir) {
+  if (manifest?.status === "candidate") {
+    const expectedCandidateDir = path.resolve(
+      interviewBankDefaults.outputDir,
+      `candidate-${manifest.bankVersion}`,
+    );
+    if (resolvedOutputDir === expectedCandidateDir) return;
     throw new Error(
       `Candidate interview-bank output must use ${expectedCandidateDir}; refusing ${resolvedOutputDir}.`,
+    );
+  }
+
+  const canonicalOutputDir = path.resolve(interviewBankDefaults.outputDir);
+  if (resolvedOutputDir !== canonicalOutputDir) {
+    throw new Error(
+      `Approved interview-bank output must use canonical directory ${canonicalOutputDir}; refusing ${resolvedOutputDir}.`,
     );
   }
 }
@@ -172,11 +178,31 @@ export function projectPrivateItem(item, review = undefined) {
   const projected = {
     id: item.id,
     revision: item.revision,
+    conceptId: item.conceptId,
     contentHash: contentHashForItem(item),
     ...allowlist(item.private, PRIVATE_ITEM_FIELDS),
   };
   if (review !== undefined) projected.review = review;
   return projected;
+}
+
+export function projectPrivateSelectionItem(item) {
+  return {
+    id: item.id,
+    revision: item.revision,
+    conceptId: item.conceptId,
+    technology: item.public.technology,
+    level: item.public.level,
+    difficultyBand: item.public.difficultyBand,
+    format: item.public.format,
+    estimatedSeconds: item.public.estimatedSeconds,
+  };
+}
+
+export function selectionMetadataHash(items) {
+  return sha256(items
+    .map(projectPrivateSelectionItem)
+    .sort((left, right) => compareStrings(left.id, right.id)));
 }
 
 function selectedItems(items, manifest) {

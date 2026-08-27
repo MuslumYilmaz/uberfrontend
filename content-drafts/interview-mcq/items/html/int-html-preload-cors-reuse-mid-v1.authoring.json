@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-html-preload-cors-reuse-mid-v1",
+  "conceptId": "mcq-html-preload-cors-reuse",
   "revision": 1,
   "author": {
     "id": "codex-core-author",

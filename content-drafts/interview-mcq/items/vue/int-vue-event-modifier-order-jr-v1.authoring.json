@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-vue-event-modifier-order-jr-v1",
+  "conceptId": "mcq-vue-event-modifier-order",
   "revision": 1,
   "author": {
     "id": "codex-vue-expansion-author",

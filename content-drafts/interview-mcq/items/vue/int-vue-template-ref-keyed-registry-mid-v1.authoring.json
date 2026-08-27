@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-vue-template-ref-keyed-registry-mid-v1",
+  "conceptId": "mcq-vue-template-ref-keyed-registry",
   "revision": 1,
   "author": {
     "id": "codex-vue-expansion-author",

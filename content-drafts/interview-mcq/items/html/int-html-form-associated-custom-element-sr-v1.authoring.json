@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-html-form-associated-custom-element-sr-v1",
+  "conceptId": "mcq-html-form-associated-custom-element",
   "revision": 1,
   "author": {
     "id": "codex-core-author",

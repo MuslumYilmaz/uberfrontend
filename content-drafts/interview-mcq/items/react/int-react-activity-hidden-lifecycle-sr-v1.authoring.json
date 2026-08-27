@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-react-activity-hidden-lifecycle-sr-v1",
+  "conceptId": "mcq-react-activity-hidden-lifecycle",
   "revision": 1,
   "author": {
     "id": "codex-react-author",

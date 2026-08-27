@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-css-container-query-component-boundary-mid-v1",
+  "conceptId": "mcq-css-container-query-component-boundary",
   "revision": 1,
   "author": {
     "id": "codex-core-author",

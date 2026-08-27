@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-js-number-finite-input-validation-jr-v1",
+  "conceptId": "mcq-javascript-number-finite-input-validation",
   "revision": 1,
   "author": {
     "id": "codex-core-author",

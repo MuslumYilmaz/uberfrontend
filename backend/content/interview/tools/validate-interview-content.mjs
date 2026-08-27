@@ -4,6 +4,7 @@ import fs from "node:fs";
 import path from "node:path";
 import {
   buildInterviewContent,
+  codingReleaseReadinessReport,
   interviewContentDir,
   sha256,
   validateBuiltInterviewContent,
@@ -14,10 +15,17 @@ import {
   validateBuiltSystemDesignContent,
 } from "./system-design-content-lib.mjs";
 
+const args = new Set(process.argv.slice(2));
+for (const argument of args) {
+  if (argument !== "--release-gate") throw new Error(`Unknown argument: ${argument}`);
+}
+const requireReleaseReady = args.has("--release-gate");
 const built = buildInterviewContent();
 const systemDesignBuilt = buildSystemDesignContent();
+const codingReleaseReadiness = codingReleaseReadinessReport(built);
 const errors = [
   ...validateBuiltInterviewContent(built),
+  ...(requireReleaseReady ? codingReleaseReadiness.errors : []),
   ...validateBuiltSystemDesignContent(systemDesignBuilt),
   ...validateMcqRuntimeCopies(true),
 ];
@@ -61,6 +69,13 @@ for (const [kind, releaseName] of [
 }
 
 if (errors.length) {
+  if (requireReleaseReady) {
+    console.error("[interview-content] coding release-readiness matrix:");
+    codingReleaseReadiness.matrix.forEach((entry) => console.error(
+      `- ${entry.track}/${entry.level}: ${entry.enabledVariantCount} enabled, `
+      + `${entry.distinctConceptCount} concepts, ${entry.minimumNetNewVariants} minimum net-new`,
+    ));
+  }
   console.error(`[interview-content] validation failed (${errors.length}):`);
   errors.forEach((error) => console.error(`- ${error}`));
   process.exit(1);

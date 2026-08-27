@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-vue-computed-watch-mid-v1",
+  "conceptId": "mcq-vue-derived-state-and-reactive-side-effects",
   "revision": 6,
   "author": {
     "id": "codex-vue-author",

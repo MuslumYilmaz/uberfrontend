@@ -2,33 +2,38 @@
   "artifacts": {
     "private": {
       "file": "frontend-interview-bank-v1.private.json",
-      "sha256": "8f01d61eda38bf3464c296bd6ba4371e4250c2c39c14073f15ab022bef657562"
+      "sha256": "16680b96a8c5f892a4c4817599da7ddde70bbe33e3ff23865f8ebea283ed44ae"
     },
     "public": {
       "file": "frontend-interview-bank-v1.public.json",
-      "sha256": "b75d8c6c991bf30fbb245ce61b33b0f71d4b7163096acd5c398d6a247b457968"
+      "sha256": "3a6e84e5cf441deb83bfe62efbcc8b005a69cef37470fa691bd2d3dc3368cf00"
     }
   },
   "bankId": "frontend-interview-gold-bank",
-  "bankVersion": "1.1.0",
+  "bankVersion": "1.3.0",
   "blueprintId": "frontend-interview-bank-v1",
-  "contentHash": "e879b419e877f84088171eda3af9f327242435c4b99728c27e38d176fc0517e3",
+  "contentHash": "9e2aed2606cf0fbaa54cad46c890d48e518be0266a3a91cb95cfb4777038a4e8",
   "finalApproval": {
-    "approvedAt": "2026-07-29",
+    "approvedAt": "2026-08-24",
     "approvedBy": "project-owner",
-    "bankContentHash": "e879b419e877f84088171eda3af9f327242435c4b99728c27e38d176fc0517e3",
-    "bankVersion": "1.1.0",
+    "bankContentHash": "9e2aed2606cf0fbaa54cad46c890d48e518be0266a3a91cb95cfb4777038a4e8",
+    "bankVersion": "1.3.0",
     "notes": [
-      "Project owner approved the exact 1.1.0 candidate bank content hash for Interview Mode Gold promotion.",
-      "Approval was recorded after deterministic candidate generation, 120-item validation, blind review, Chromium code-output verification, backend/frontend tests, and Interview Mode E2E checks passed."
-    ]
+      "Project owner approved MCQ v1.3.0 for editorial-gold production use after the release-readiness audit."
+    ],
+    "selectionMetadataHash": "dcd3e26ee4aef17aed0f31ea29c979f2f3c3316f4701a627f1aa24f2be3c6590"
   },
-  "itemCount": 120,
+  "itemCount": 185,
   "itemRefs": [
     {
       "contentHash": "0eac21711a15beab255b7c5bcf5893e2dbae7182846699f1d9b028d5ff092d6d",
       "id": "int-angular-async-pipe-mid-v1",
       "revision": 3
+    },
+    {
+      "contentHash": "686c4dc3233aaee08fb9728bfb329d84a7122c2e766ff532e725db0bbc5f2d5f",
+      "id": "int-angular-async-validator-latest-result-mid-v1",
+      "revision": 1
     },
     {
       "contentHash": "676ea37c071a73f4584dec4921a3fdda38eb2728952b6f8fb69b348d971b1d0d",
@@ -39,6 +44,11 @@
       "contentHash": "41872245d7461c92e58f2616376a323ac61d9b4d4da350ac8a8766e4240b3f3a",
       "id": "int-angular-binding-direction-jr-v1",
       "revision": 2
+    },
+    {
+      "contentHash": "77b77ed3c7bf7147f4de834d52e0140ca1c8d06353426b50fd167b739fbc1795",
+      "id": "int-angular-content-projection-selection-jr-v1",
+      "revision": 1
     },
     {
       "contentHash": "39ec67ef5196c173201369fef1082b423200351184adf886c58c48d0112d67dd",
@@ -61,6 +71,16 @@
       "revision": 1
     },
     {
+      "contentHash": "47f25576b3152cd84f383fd8547cb0c3c5c9eb7959de85536c331948aff3bbc6",
+      "id": "int-angular-guard-redirect-contract-mid-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "a054d55c4cc79985a9848621c67d02a8f05ace1d84f046d627b09d6683b0c586",
+      "id": "int-angular-http-context-policy-mid-v1",
+      "revision": 1
+    },
+    {
       "contentHash": "e7ed84b3f2a8db3711cb6da1c3f5c5060a9e0d5861cfc33ca868a879b4dfc542",
       "id": "int-angular-http-request-immutability-mid-v1",
       "revision": 1
@@ -68,6 +88,11 @@
     {
       "contentHash": "5e58a8bfc232fabe210fb02fb08f572b79f028e73011621ee295c2d93a6ddcea",
       "id": "int-angular-hydration-dom-mismatch-sr-v1",
+      "revision": 2
+    },
+    {
+      "contentHash": "03cb15a36e66e7dda7f49a38cc5e7a6a5c9e7aa4ece0b0f3af4ad08c5295a80a",
+      "id": "int-angular-incremental-hydration-replay-sr-v1",
       "revision": 2
     },
     {
@@ -81,6 +106,11 @@
       "revision": 1
     },
     {
+      "contentHash": "ba0617c59fd6ea9f8173d91cbfcfed4b23e0cb936f8afc7acbed3cdb0ff8662f",
+      "id": "int-angular-prerender-parameter-boundary-sr-v1",
+      "revision": 1
+    },
+    {
       "contentHash": "90df2c0a15c3f3503c3c3d06b0a0aa6beda58ff9dec25883aa7a542b1ce3f991",
       "id": "int-angular-provider-scope-jr-v1",
       "revision": 2
@@ -91,8 +121,18 @@
       "revision": 2
     },
     {
+      "contentHash": "147a7772220e6d7ff635cbf9c61162989dac7286457b6eb162e69110a82951e9",
+      "id": "int-angular-required-input-contract-jr-v1",
+      "revision": 1
+    },
+    {
       "contentHash": "fe6be11f1606c77dddcb029292fc8710013916c14f69ff7d360bdfac5ca2fe69",
       "id": "int-angular-route-parameter-reuse-mid-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "9f82ded590665819a01828652507e4fdead04c610893de5d39f9a56ad57e1a78",
+      "id": "int-angular-route-provider-lifetime-sr-v1",
       "revision": 1
     },
     {
@@ -136,6 +176,16 @@
       "revision": 2
     },
     {
+      "contentHash": "5055a636a8948479574f1f67d5793441357603608d561165323d258df8a20467",
+      "id": "int-angular-untracked-incidental-read-mid-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "5c66daa423ed7558c575c8e780932cb8f381848fdce769bfab717f529ec7ec90",
+      "id": "int-angular-view-encapsulation-boundary-jr-v1",
+      "revision": 1
+    },
+    {
       "contentHash": "2c436496b0f11cd1a6d38e64fecf928a3e4b5bde87a8e900d6aa378d502c46af",
       "id": "int-angular-viewchild-chart-lifecycle-mid-v1",
       "revision": 1
@@ -161,9 +211,29 @@
       "revision": 1
     },
     {
+      "contentHash": "4ae5c317a261479cf82124c09b3397c9da5142250ed2db2d3a55921a53f53ffb",
+      "id": "int-css-content-visibility-scroll-estimation-sr-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "511c7a8e86d9271b01769fae251af0c320c506b7d7ab2ea2e9d2898737f20b06",
+      "id": "int-css-custom-property-fallback-resolution-jr-v1",
+      "revision": 1
+    },
+    {
       "contentHash": "f1cd8b54f61a006c29dc09c3ba82b277762121d785b627e583588ae511e08756",
       "id": "int-css-flex-min-width-jr-v1",
       "revision": 3
+    },
+    {
+      "contentHash": "af233cd16b64ea7509e6c621d240726c384e1de13e8aca7f24340dc1f3a97dee",
+      "id": "int-css-focus-visible-modality-jr-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "ffbbbb4b69557ff12cceb7d50f6dea2f8689c6d9991d0ce7231299badc172592",
+      "id": "int-css-font-metric-fallback-stability-sr-v1",
+      "revision": 1
     },
     {
       "contentHash": "c9bf0022a9c9407a5fdf1d547e1074fd98079870bb1ab07e8e94a53e03affa4a",
@@ -201,6 +271,11 @@
       "revision": 1
     },
     {
+      "contentHash": "398ace5152fa602b8c464926b938fe50bb6a2f6f475f6fc00810bc978d3d3ff5",
+      "id": "int-css-subgrid-alignment-boundary-mid-v1",
+      "revision": 1
+    },
+    {
       "contentHash": "a2ea24d29824505d791b2507119c0490de06f8fc118b0df64b37b4e2d35f7c25",
       "id": "int-css-user-preferences-containment-sr-v1",
       "revision": 2
@@ -211,8 +286,13 @@
       "revision": 1
     },
     {
-      "contentHash": "4ee65e8ec39a1bf96fa23b36d164b9b1f50efe5a0c5d79442f5fea4224ae324c",
+      "contentHash": "b8d9598f4c28f9c1ce8f41bcb769680091cdb13d2cf58c8ef68e2fbb62e6949f",
       "id": "int-html-data-table-header-association-mid-v1",
+      "revision": 2
+    },
+    {
+      "contentHash": "82bb52027c1d0dd7eb8b35b49897ad004d32ddaeb005dd1f52b0ab6d13e08aec",
+      "id": "int-html-decorative-image-alt-contract-jr-v1",
       "revision": 1
     },
     {
@@ -221,9 +301,19 @@
       "revision": 4
     },
     {
+      "contentHash": "932c7197ff8341b5145d5fe8defcca5c6abbf24cb71388f3f9534f2dc323aa57",
+      "id": "int-html-details-summary-disclosure-jr-v1",
+      "revision": 1
+    },
+    {
       "contentHash": "3a495d40fcb6df209bc280b5fef04b49d1b9e5008265a3ecb1ebf3b291a666e2",
       "id": "int-html-dialog-focus-contract-sr-v1",
       "revision": 4
+    },
+    {
+      "contentHash": "b0e3e856460f4b667837519c9b4aeee80339b482481e89d9f6d6f9fc394b183d",
+      "id": "int-html-form-associated-custom-element-sr-v1",
+      "revision": 1
     },
     {
       "contentHash": "28daabf523fb43cccb67b715470fbb075e3aecad56aa2e837839a8a26bd8a94d",
@@ -241,6 +331,11 @@
       "revision": 2
     },
     {
+      "contentHash": "d24122a4660e172e4272b5c7bc41fab1b6f8170b05385da263f4dd0a5ce21e95",
+      "id": "int-html-live-region-status-update-mid-v1",
+      "revision": 1
+    },
+    {
       "contentHash": "9fa2877eb3e83bfaf58c0c5185e915c4a5c54a7fa241a5387cae052a36331ad7",
       "id": "int-html-native-button-jr-v1",
       "revision": 3
@@ -248,6 +343,11 @@
     {
       "contentHash": "a3cf8356a545058a0024b5a97d17405be171fe71f61b0799897753374977fd7b",
       "id": "int-html-nonmodal-popover-interaction-sr-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "332b20f51ab979e42e829cf4e12e4bc5ee0ad45e60bb7ce62d753d0ccf2c5ab2",
+      "id": "int-html-preload-cors-reuse-mid-v1",
       "revision": 1
     },
     {
@@ -269,6 +369,21 @@
       "contentHash": "677c07fe90a492ab63792a5141ac74fde6f2bc77a684cb33c881fc9c42e29ba9",
       "id": "int-js-abort-ownership-sr-v1",
       "revision": 3
+    },
+    {
+      "contentHash": "f3b4c2ebfb5433cc98e5256cc28746cf6cf9e922a8e15db88836e9614f6a18cf",
+      "id": "int-js-aes-gcm-iv-uniqueness-sr-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "6563af1f24cbcf5ff97b2e88337966d2189d711a1832d566f07418ea825516b6",
+      "id": "int-js-array-negative-index-access-jr-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "fb1d4647bb3230e3cd38bf7e5e9139e9e37b929c0b7555ebf497ef253c789dd1",
+      "id": "int-js-async-generator-early-exit-mid-v1",
+      "revision": 1
     },
     {
       "contentHash": "3f1e6fde98ddf55522c49ddf58da6fca59a3aa975d8cee6026bb281f622cabd0",
@@ -331,9 +446,39 @@
       "revision": 1
     },
     {
+      "contentHash": "508f4a84455037945d6559c9e94614bf76eaaf7279b5604f445acd6c40ff05cc",
+      "id": "int-js-indexeddb-transaction-lifetime-sr-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "2b1be360ca477a238c03069c8088798c04b9f5274c81ea829d6470201365ab08",
+      "id": "int-js-indexeddb-upgrade-coordination-sr-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "e9e916c785eb3cb5ff70ec384ca5d06ff7c8f4f97664c67c1d4df589cebef642",
+      "id": "int-js-intersection-threshold-crossing-mid-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "d7c56b4de496bf2969d31bfe7a6c69fa037467cc30c96b590c72865eb24d4c2e",
+      "id": "int-js-intl-collator-bulk-sort-mid-v1",
+      "revision": 1
+    },
+    {
       "contentHash": "e7433b92786cc8d297a28b7599340871589b90a1cdae434ba768dd2d2781a7c9",
       "id": "int-js-listener-cleanup-mid-v1",
       "revision": 3
+    },
+    {
+      "contentHash": "9b1c43c7bfcc6699a681fa278b7e8fa7dbf169071533098e03399bda2ae1f1d4",
+      "id": "int-js-live-collection-snapshot-jr-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "93e6996ab9504d6dcdc14ec0c1f6b5b906a5cbb88920ef74d93b2049d36f1a64",
+      "id": "int-js-map-object-key-identity-jr-v1",
+      "revision": 1
     },
     {
       "contentHash": "0a52d9da3695575e06f1655bccf5060c05fca04b48e6b194ec672716ca68cc0e",
@@ -346,8 +491,18 @@
       "revision": 1
     },
     {
-      "contentHash": "7c93e9b72e5daa0ca9d1736988fd20220cf146dac66a25d375cc66f9685d3e5f",
+      "contentHash": "c3679f2d2992b7700b3b6359ec8359dc436047948fccb2f76d95a8192cb77cab",
+      "id": "int-js-number-finite-input-validation-jr-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "58971cff59259d05bd3803d8c0b7b7ecdf3897b354b0ecc9708c494311b67bd4",
       "id": "int-js-observer-lifecycle-mid-v1",
+      "revision": 2
+    },
+    {
+      "contentHash": "178a684a260dcd621c32086e7b9f1e509247909868ab15305ec8fd7dbb8506a9",
+      "id": "int-js-optional-chain-side-effect-short-circuit-jr-v1",
       "revision": 1
     },
     {
@@ -356,8 +511,43 @@
       "revision": 1
     },
     {
+      "contentHash": "e13e559fd0029136ce280da010b4cca1c7eae3e3e4e61ec17bb7890fd17ac4e1",
+      "id": "int-js-postmessage-peer-validation-sr-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "dddaba3623686075c551da81a4bd4fd766eb976dda3d237a6f0e28787f04eeb3",
+      "id": "int-js-promise-all-result-order-jr-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "3b667b16517ddc1995d08d31452a9fdf56c4a91c31e84b9b2eeb254a8d900b02",
+      "id": "int-js-readable-stream-reader-ownership-mid-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "c3e94f014f58840f26e42998a4ec8359a807d4babfec53ee53ca3a88a7f697e5",
+      "id": "int-js-service-worker-response-clone-sr-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "a4604040838f61a63f95cb912cd47404ea255ce0b405fe98e5378be0e0fcca0c",
+      "id": "int-js-shadow-dom-event-delegation-mid-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "e7bd73bdc690eda4f2c486a9c1828a4da1e9c0667e48d4502428747e87677431",
+      "id": "int-js-shared-memory-isolation-sr-v1",
+      "revision": 1
+    },
+    {
       "contentHash": "e047f29c44ca664f98f3fe6d2e7c46cd63cec083d2f8dfe64c03500b819c5f12",
       "id": "int-js-stateful-regexp-validation-jr-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "c660845014219661c59c944fe4caa294a5883bc546cb2e2c486a482e922fc723",
+      "id": "int-js-storage-event-source-context-mid-v1",
       "revision": 1
     },
     {
@@ -376,6 +566,41 @@
       "revision": 1
     },
     {
+      "contentHash": "35a2be214b735b6cb6869d9c74cd919b5c391e8d100e47ef5408e03f8fb95386",
+      "id": "int-js-thenable-assimilation-order-sr-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "07b648b77a4125b1fa948750ac8892d85cb5dc6caaf475165a3791f51bb15226",
+      "id": "int-js-trusted-types-enforcement-sr-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "18af99fac68f8a31b5611af5f4ecdbeb5e11b194ebba18aa71f727b7537ae3d6",
+      "id": "int-js-url-relative-base-resolution-jr-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "1bdf2b42e75514a89e903d4429cf0f9006b718f853349c4ddfc21e0262c4e6e8",
+      "id": "int-js-urlsearchparams-repeated-value-contract-jr-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "4225008ae53376b74c5996a44dd4211d41be7510b808ddfc54b7c7d17713638f",
+      "id": "int-js-weakmap-key-reachability-mid-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "0cc82d4196a882e54a301453a09089fc4f7eccd43c4a7553dff932fefd0af457",
+      "id": "int-js-web-lock-cross-tab-write-sr-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "a20b841494c1aa44346ad822e6602c1c69a8b477d438e6191732ee8a2892e1dc",
+      "id": "int-js-websocket-buffered-flow-control-sr-v1",
+      "revision": 1
+    },
+    {
       "contentHash": "ab7825a2ade0db7b668424086e65b3cb8dd933e353f2293739550f09b80ff870",
       "id": "int-js-worker-long-task-sr-v1",
       "revision": 3
@@ -386,9 +611,44 @@
       "revision": 1
     },
     {
+      "contentHash": "ed1335335bca6b0893d784a1939f6296868a7ef864b72bc6f8004cf5c8f7df57",
+      "id": "int-react-action-state-form-contract-sr-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "28c621c9f32d6969f37e49f74781901d17cd0d210cbc13ac192bf583f4431807",
+      "id": "int-react-activity-hidden-lifecycle-sr-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "421d035a5e8d2c3344a69c92cffc30a0f8f53f1e0af22bad45e41db7308a1cdb",
+      "id": "int-react-cache-request-lifetime-sr-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "f2811ca86fbe3da7eebfc3ff4dce7c63894d1145598e1f263e6ade14cc48f364",
+      "id": "int-react-callback-ref-cleanup-mid-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "469483eeb1b33fcb776013d9f7c71675871f7bb4b687eeca3ef890976e7cbaa4",
+      "id": "int-react-context-provider-resolution-jr-v1",
+      "revision": 1
+    },
+    {
       "contentHash": "be1d15dca5463cf6e8fd4316b6cea2a97d8be0b8cdbc4190f39008710540b7e0",
       "id": "int-react-controlled-input-jr-v1",
       "revision": 3
+    },
+    {
+      "contentHash": "f263629969d0e34aded504341d954ae844abbe5caa054b61bb6a7e1630451a07",
+      "id": "int-react-custom-hook-state-isolation-mid-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "9fd5a8fdcc8ea2650aff8b9d4e20e05ee6c41d8381929d6869e6edb7b918cdfd",
+      "id": "int-react-deferred-value-staleness-mid-v1",
+      "revision": 1
     },
     {
       "contentHash": "a768e4c87531619d718b6abb4b057cbc5d684eddf299896f09aa03de0542049c",
@@ -471,6 +731,16 @@
       "revision": 1
     },
     {
+      "contentHash": "e772f1a3a786bfc18fd85b6467d6b204da65f976e44f83a841e93371dbc410dd",
+      "id": "int-react-ref-nonrendering-state-jr-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "cf0109448328f31458bc11e140d24f7275a5a7090cf70b8546eac73451728cbd",
+      "id": "int-react-render-purity-jr-v1",
+      "revision": 1
+    },
+    {
       "contentHash": "9aacac45ea1752f5316d9045eb3e3076c0c99cc644016f4c95765e42c25ebdfa",
       "id": "int-react-server-client-serialization-boundary-sr-v1",
       "revision": 1
@@ -501,6 +771,11 @@
       "revision": 1
     },
     {
+      "contentHash": "5b86d48c11dc339abefbc02585f1742811c96d6a2d5c4d7df55b03c202929f8a",
+      "id": "int-react-streaming-suspense-shell-sr-v1",
+      "revision": 1
+    },
+    {
       "contentHash": "a8495d3ea833a3f3408da2d20a2fd38be3ea41ec0ebfca9da6366120108a8c41",
       "id": "int-react-transition-input-priority-sr-v1",
       "revision": 1
@@ -508,6 +783,11 @@
     {
       "contentHash": "3ead2859849543014b05d840348e4e5335d92865af6b18db1cf4d0f6221ebdb8",
       "id": "int-vue-async-component-retry-boundary-mid-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "fb61e75a72840658d03fc7c0f77de3005c369401f384d9c54e6a11de9656874d",
+      "id": "int-vue-component-registration-scope-jr-v1",
       "revision": 1
     },
     {
@@ -526,8 +806,33 @@
       "revision": 1
     },
     {
+      "contentHash": "9340f7bd0d28ce9fc05ca34c3b61e2f28970fb81e22bbcece47f4281fae60459",
+      "id": "int-vue-custom-directive-ssr-parity-sr-v1",
+      "revision": 1
+    },
+    {
       "contentHash": "1b29a846941f3de0d6d3bd5573bbde305791a8e05e49fbe2c10452979ff96273",
       "id": "int-vue-custom-input-model-jr-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "e3b033a8b651cf559c9f88317b1e51efeb623fbacf5ce370b5698a350bcf5171",
+      "id": "int-vue-effect-scope-disposal-mid-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "ff9d8184e8e903fdd214c084caaa5c70422d1c39b7b86d25863f4b01d41688cf",
+      "id": "int-vue-emits-listener-fallthrough-jr-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "ecff5e01b2c17d6c66f631b2c972afe6a3ef8bf9dea57623fd59f03d3f7de731",
+      "id": "int-vue-error-capture-propagation-sr-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "cc7995a455b80f866bbe5bd5b74cca8e42eced6edd9f2b88725a04b2d6d7c268",
+      "id": "int-vue-event-modifier-order-jr-v1",
       "revision": 1
     },
     {
@@ -546,9 +851,9 @@
       "revision": 1
     },
     {
-      "contentHash": "2eb23403ebf7e959ea5a3d64e8b55df94b95af448d80de7dcb509018ba37f400",
+      "contentHash": "00f242ccc391692d460ecf226b5ca480ecc0d4586e4668a6f91bdb63afb52279",
       "id": "int-vue-next-tick-dom-read-timing-mid-v1",
-      "revision": 1
+      "revision": 2
     },
     {
       "contentHash": "901e051b463e3fd43fbcffd020b4007cc171c9850152b202b95bbe0e09f5ace3",
@@ -606,9 +911,19 @@
       "revision": 1
     },
     {
+      "contentHash": "cb4f3db2c5aaf15cd14648f20455d76b54e3e3f9e5bd07c286cf4d40a99acbd0",
+      "id": "int-vue-ssr-teleport-coordination-sr-v1",
+      "revision": 1
+    },
+    {
       "contentHash": "cdd0c1c741b87902a508c2c2707cf3c393e76ca18fad30ec34976eecb5d34376",
       "id": "int-vue-stable-row-props-sr-v1",
       "revision": 3
+    },
+    {
+      "contentHash": "54c22d2f1f4290435bb1971a4ce102ed0b2c45045cd19ab6deb1515b9b76702c",
+      "id": "int-vue-teleport-logical-ownership-mid-v1",
+      "revision": 1
     },
     {
       "contentHash": "1819c3d723b7fc7508b385bc236082e839cf525fbfb699449be3c4fab6eae851",
@@ -621,6 +936,16 @@
       "revision": 1
     },
     {
+      "contentHash": "ec3955a17f76a3b0683b52237628b686a92406f610065bc6dc77a05e5726a1bd",
+      "id": "int-vue-vmemo-dependency-contract-mid-v1",
+      "revision": 1
+    },
+    {
+      "contentHash": "1d1a2bb04a53883d381d365e3e727498fc15d5f00c5085741001c079b9c23dc8",
+      "id": "int-vue-watcheffect-async-dependency-window-mid-v1",
+      "revision": 1
+    },
+    {
       "contentHash": "de813e489f3b5011c0776be6cc9f19f1cff477bf97d50bac25a2ae57ad7ba70e",
       "id": "int-vue-watcher-abort-cleanup-mid-v1",
       "revision": 2
@@ -630,5 +955,5 @@
   "manifestId": "frontend-interview-bank-v1",
   "schemaVersion": "2.0.0",
   "status": "editorial-gold",
-  "totalEstimatedSeconds": 14340
+  "totalEstimatedSeconds": 22390
 }

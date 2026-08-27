@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-vue-watcheffect-async-dependency-window-mid-v1",
+  "conceptId": "mcq-vue-watcheffect-async-dependency-window",
   "revision": 1,
   "author": {
     "id": "codex-vue-expansion-author",

@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-react-custom-hook-state-isolation-mid-v1",
+  "conceptId": "mcq-react-custom-hook-state-isolation",
   "revision": 1,
   "author": {
     "id": "codex-react-author",

@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-css-user-preferences-containment-sr-v1",
+  "conceptId": "mcq-css-adaptive-visual-effects-and-containment",
   "revision": 2,
   "author": {
     "id": "codex-core-author",

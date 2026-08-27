@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-vue-ssr-state-safe-serialization-sr-v1",
+  "conceptId": "mcq-vue-ssr-state-safe-serialization",
   "revision": 1,
   "author": {
     "id": "codex-vue-expansion-author",

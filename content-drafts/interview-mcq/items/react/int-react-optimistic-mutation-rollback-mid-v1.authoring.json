@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-react-optimistic-mutation-rollback-mid-v1",
+  "conceptId": "mcq-react-optimistic-mutation-rollback",
   "revision": 1,
   "author": {
     "id": "codex-react-author",

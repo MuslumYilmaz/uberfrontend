@@ -1,0 +1,63 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "tabs-switcher-interview-candidate-v1",
+  "family": "tabs-switcher",
+  "title": "Accessible Tabs Interview",
+  "access": "candidate",
+  "estimatedMinutes": 25,
+  "supportedQuestions": {
+    "react": "react-tabs-switcher",
+    "angular": "angular-tabs-switcher",
+    "vue": "vue-tabs-switcher"
+  },
+  "rounds": [
+    {
+      "id": "single-active-panel",
+      "title": "Single active panel",
+      "interviewerPrompt": "Implement deterministic tab selection without duplicating panel state.",
+      "constraints": [
+        "Start on Overview and render exactly one panel.",
+        "Selecting a tab updates both its active styling and the visible panel.",
+        "Repeatedly selecting the active tab is a no-op."
+      ],
+      "frameworkTests": [
+        {
+          "id": "candidate-tabs-single-panel",
+          "name": "Round 1 · One selected tab owns one panel",
+          "steps": [
+            { "type": "expectCount", "selector": ".panel", "count": 1 },
+            { "type": "expectText", "selector": ".panel", "text": "Overview", "match": "contains" },
+            { "type": "click", "selector": ".tabs button", "index": 1 },
+            { "type": "waitForText", "selector": ".panel", "text": "Details", "match": "contains" },
+            { "type": "expectCount", "selector": ".panel", "count": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "keyboard-tab-contract",
+      "title": "Keyboard and ARIA contract",
+      "interviewerPrompt": "Upgrade the control to the WAI-ARIA tabs keyboard pattern.",
+      "constraints": [
+        "Expose the tab container as tablist and each control as a tab.",
+        "Keep aria-selected, aria-controls, tab IDs, panel IDs, and aria-labelledby synchronized.",
+        "Use roving tabindex so only the selected tab is in the page tab order.",
+        "ArrowLeft and ArrowRight wrap focus and selection; Home and End select the first and last tabs."
+      ],
+      "frameworkTests": [
+        {
+          "id": "candidate-tabs-keyboard",
+          "name": "Round 2 · Arrow navigation updates selection and panel",
+          "steps": [
+            { "type": "expectAttribute", "selector": ".tabs", "attribute": "role", "expected": "tablist" },
+            { "type": "expectAttribute", "selector": ".tabs button", "index": 0, "attribute": "aria-selected", "expected": "true" },
+            { "type": "key", "selector": ".tabs button", "index": 0, "key": "ArrowRight" },
+            { "type": "waitForText", "selector": ".panel", "text": "Details", "match": "contains" },
+            { "type": "expectAttribute", "selector": ".tabs button", "index": 1, "attribute": "aria-selected", "expected": "true" },
+            { "type": "expectAttribute", "selector": ".panel", "attribute": "role", "expected": "tabpanel" }
+          ]
+        }
+      ]
+    }
+  ]
+}

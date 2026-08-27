@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-vue-lazy-hydration-strategy-boundary-sr-v1",
+  "conceptId": "mcq-vue-lazy-hydration-strategy-boundary",
   "revision": 1,
   "author": {
     "id": "codex-vue-expansion-author",

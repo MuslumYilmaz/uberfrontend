@@ -7,6 +7,7 @@
   "required": [
     "schemaVersion",
     "id",
+    "conceptId",
     "revision",
     "author",
     "public",
@@ -18,6 +19,9 @@
     },
     "id": {
       "$ref": "#/$defs/slug"
+    },
+    "conceptId": {
+      "$ref": "#/$defs/mcqConceptId"
     },
     "revision": {
       "type": "integer",
@@ -106,6 +110,10 @@
     "slug": {
       "type": "string",
       "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "mcqConceptId": {
+      "type": "string",
+      "pattern": "^mcq-[a-z0-9]+(?:-[a-z0-9]+)*$"
     },
     "opaqueOptionId": {
       "type": "string",

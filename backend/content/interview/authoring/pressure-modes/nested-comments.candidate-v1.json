@@ -1,0 +1,120 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "nested-comments-interview-candidate-v1",
+  "family": "nested-comments",
+  "title": "Recursive Comments Interview",
+  "access": "candidate",
+  "estimatedMinutes": 45,
+  "supportedQuestions": {
+    "react": "react-nested-comments",
+    "angular": "angular-nested-comments",
+    "vue": "vue-nested-comments"
+  },
+  "rounds": [
+    {
+      "id": "root-comment-boundary",
+      "title": "Root comment boundary",
+      "interviewerPrompt": "Start with a normalized root insertion that does not mutate the existing tree.",
+      "constraints": [
+        "Trim the draft and reject an empty or whitespace-only comment.",
+        "Append a valid root node with a stable unique ID and an empty children array.",
+        "Clear the root draft only after a successful insertion.",
+        "Preserve every existing node and its relative order."
+      ],
+      "frameworkTests": [
+        {
+          "id": "candidate-comments-root",
+          "name": "Round 1 · Valid root insertion preserves the tree",
+          "steps": [
+            { "type": "setValue", "selector": ".composer textarea", "value": "This is a new comment" },
+            { "type": "click", "selector": ".composer button" },
+            { "type": "waitForText", "selector": ".list", "text": "This is a new comment", "match": "contains" },
+            { "type": "expectCount", "selector": ".node", "count": 2 },
+            { "type": "expectValue", "selector": ".composer textarea", "value": "" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "single-reply-owner",
+      "title": "Single reply owner",
+      "interviewerPrompt": "Bind reply composition to one comment identity at a time.",
+      "constraints": [
+        "Clicking Reply opens exactly one editor beneath that comment.",
+        "Opening another editor transfers ownership instead of duplicating drafts.",
+        "Cancel closes the editor and clears its draft.",
+        "Submitting a non-empty reply inserts it under the owning parent and closes the editor."
+      ],
+      "frameworkTests": [
+        {
+          "id": "candidate-comments-reply-owner",
+          "name": "Round 2 · Reply is inserted under its owner",
+          "steps": [
+            { "type": "click", "selector": ".node .ghost", "index": 0 },
+            { "type": "expectCount", "selector": ".reply", "count": 1 },
+            { "type": "setValue", "selector": ".reply input", "value": "First nested reply" },
+            { "type": "click", "selector": ".replyActions button", "index": 0 },
+            { "type": "waitForText", "selector": ".list", "text": "First nested reply", "match": "contains" },
+            { "type": "expectCount", "selector": ".reply", "count": 0 },
+            { "type": "expectCount", "selector": ".node", "count": 2 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "arbitrary-depth-update",
+      "title": "Arbitrary-depth update",
+      "interviewerPrompt": "Apply a recursive path update without mutating ancestors or losing siblings.",
+      "constraints": [
+        "Locate parents by stable ID at any depth rather than by a hard-coded level.",
+        "Rebuild only the ancestor path to the changed node.",
+        "Preserve every unaffected branch by value and order.",
+        "Generate globally unique IDs for nested and root nodes."
+      ],
+      "frameworkTests": [
+        {
+          "id": "candidate-comments-depth",
+          "name": "Round 3 · Replying to a reply creates a third level",
+          "steps": [
+            { "type": "click", "selector": ".node .ghost", "index": 0 },
+            { "type": "setValue", "selector": ".reply input", "value": "Level two" },
+            { "type": "click", "selector": ".replyActions button", "index": 0 },
+            { "type": "click", "selector": ".node .node .ghost", "index": 0 },
+            { "type": "setValue", "selector": ".reply input", "value": "Level three" },
+            { "type": "click", "selector": ".replyActions button", "index": 0 },
+            { "type": "waitForText", "selector": ".node .node .node", "text": "Level three", "match": "contains" },
+            { "type": "expectCount", "selector": ".node", "count": 3 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "accessible-tree-focus",
+      "title": "Accessible tree and focus",
+      "interviewerPrompt": "Expose recursive structure and return focus predictably after editing.",
+      "constraints": [
+        "Expose the comment list as a tree and every comment as a treeitem with its one-based aria-level.",
+        "Give each Reply control an accessible name that identifies its comment.",
+        "Give the reply input a stable label associated with the owning comment.",
+        "After Post or Cancel, return focus to the Reply control that opened the editor.",
+        "Announce successful insertion in a polite status region without moving reading position."
+      ],
+      "frameworkTests": [
+        {
+          "id": "candidate-comments-accessibility",
+          "name": "Round 4 · Recursive structure and insertion are announced",
+          "steps": [
+            { "type": "expectAttribute", "selector": ".list", "attribute": "role", "expected": "tree" },
+            { "type": "expectAttribute", "selector": ".node", "index": 0, "attribute": "role", "expected": "treeitem" },
+            { "type": "expectAttribute", "selector": ".node", "index": 0, "attribute": "aria-level", "expected": "1" },
+            { "type": "click", "selector": ".node .ghost", "index": 0 },
+            { "type": "setValue", "selector": ".reply input", "value": "Accessible reply" },
+            { "type": "click", "selector": ".replyActions button", "index": 0 },
+            { "type": "expectText", "selector": "[role=\"status\"]", "text": "Reply added", "match": "contains" },
+            { "type": "expectAttribute", "selector": "[role=\"status\"]", "attribute": "aria-live", "expected": "polite" }
+          ]
+        }
+      ]
+    }
+  ]
+}

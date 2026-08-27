@@ -1,0 +1,123 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "contact-form-interview-candidate-v1",
+  "family": "contact-form",
+  "title": "Resilient Contact Form Interview",
+  "access": "candidate",
+  "estimatedMinutes": 45,
+  "supportedQuestions": {
+    "react": "react-contact-form-starter",
+    "angular": "angular-contact-form-starter",
+    "vue": "vue-contact-form-starter"
+  },
+  "rounds": [
+    {
+      "id": "validation-contract",
+      "title": "Validation contract",
+      "interviewerPrompt": "Make the submission boundary explicit before adding network behavior.",
+      "constraints": [
+        "Require a non-empty name and message plus a syntactically valid email.",
+        "Keep Submit disabled until all fields are valid.",
+        "Trim submitted values without rewriting the user's in-progress text.",
+        "Associate field-level validation messages with their controls."
+      ],
+      "frameworkTests": [
+        {
+          "id": "candidate-contact-validation",
+          "name": "Round 1 · Valid fields enable submission",
+          "steps": [
+            { "type": "expectDisabled", "selector": ".primary", "disabled": true },
+            { "type": "setValue", "selector": "#name", "value": "Jane Doe" },
+            { "type": "setValue", "selector": "#email", "value": "jane@example.com" },
+            { "type": "setValue", "selector": "#message", "value": "Hello from tests" },
+            { "type": "expectDisabled", "selector": ".primary", "disabled": false }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "single-flight-submit",
+      "title": "Single-flight submission",
+      "interviewerPrompt": "Submit once even when the user repeats an action while the request is pending.",
+      "constraints": [
+        "POST exactly one JSON payload to the documented endpoint.",
+        "Disable submission and show Sending while a request is pending.",
+        "Ignore duplicate click or submit events for the active request.",
+        "On success, clear fields once and show the documented success message."
+      ],
+      "frameworkTests": [
+        {
+          "id": "candidate-contact-single-flight",
+          "name": "Round 2 · Pending submission is single-flight",
+          "steps": [
+            { "type": "mockHttp", "status": 201, "durationMs": 300 },
+            { "type": "setValue", "selector": "#name", "value": "Jane Doe" },
+            { "type": "setValue", "selector": "#email", "value": "jane@example.com" },
+            { "type": "setValue", "selector": "#message", "value": "Hello from tests" },
+            { "type": "submit", "selector": ".panel" },
+            { "type": "submit", "selector": ".panel" },
+            { "type": "expectDisabled", "selector": ".primary", "disabled": true },
+            { "type": "expectHttpRequest", "method": "POST", "url": "https://jsonplaceholder.typicode.com/posts", "count": 1 },
+            { "type": "waitForText", "selector": ".success", "text": "Your message has been sent", "match": "contains", "timeoutMs": 1500 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "retry-state-machine",
+      "title": "Retry state machine",
+      "interviewerPrompt": "Recover from failure without losing user work or leaking stale status.",
+      "constraints": [
+        "A failed request ends loading and exposes a retryable error.",
+        "Keep the submitted field values after failure.",
+        "Starting a retry clears the stale error but does not create a second concurrent request.",
+        "Only the latest request may commit success or error state."
+      ],
+      "frameworkTests": [
+        {
+          "id": "candidate-contact-retry",
+          "name": "Round 3 · Failure preserves retry input",
+          "steps": [
+            { "type": "mockHttp", "error": "Network failed", "durationMs": 50 },
+            { "type": "setValue", "selector": "#name", "value": "Jane Doe" },
+            { "type": "setValue", "selector": "#email", "value": "jane@example.com" },
+            { "type": "setValue", "selector": "#message", "value": "Retry me" },
+            { "type": "submit", "selector": ".panel" },
+            { "type": "waitForText", "selector": ".error", "text": "try again", "match": "contains", "timeoutMs": 1000 },
+            { "type": "expectValue", "selector": "#message", "value": "Retry me" },
+            { "type": "expectDisabled", "selector": ".primary", "disabled": false }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "accessible-teardown",
+      "title": "Accessible async lifecycle",
+      "interviewerPrompt": "Finish with observable state semantics and teardown-safe request ownership.",
+      "constraints": [
+        "Expose the form's pending state through aria-busy.",
+        "Use a polite status for success and role alert for errors.",
+        "Abort or invalidate the active request when the component is destroyed.",
+        "Never update component state after unmount or leave preview work behind."
+      ],
+      "frameworkTests": [
+        {
+          "id": "candidate-contact-teardown",
+          "name": "Round 4 · Pending request is owned by the component",
+          "steps": [
+            { "type": "expectAttribute", "selector": ".panel", "attribute": "aria-busy", "expected": "false" },
+            { "type": "mockHttp", "status": 201, "durationMs": 1000 },
+            { "type": "setValue", "selector": "#name", "value": "Jane Doe" },
+            { "type": "setValue", "selector": "#email", "value": "jane@example.com" },
+            { "type": "setValue", "selector": "#message", "value": "Unmount test" },
+            { "type": "submit", "selector": ".panel" },
+            { "type": "expectAttribute", "selector": ".panel", "attribute": "aria-busy", "expected": "true" },
+            { "type": "unmountPreview" },
+            { "type": "expectNoPreviewLeaks" },
+            { "type": "expectNoPreviewTimers" }
+          ]
+        }
+      ]
+    }
+  ]
+}

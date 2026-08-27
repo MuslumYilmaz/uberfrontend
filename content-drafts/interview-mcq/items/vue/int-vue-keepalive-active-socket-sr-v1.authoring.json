@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-vue-keepalive-active-socket-sr-v1",
+  "conceptId": "mcq-vue-keepalive-shared-resource-ownership",
   "revision": 3,
   "author": {
     "id": "codex-vue-author",

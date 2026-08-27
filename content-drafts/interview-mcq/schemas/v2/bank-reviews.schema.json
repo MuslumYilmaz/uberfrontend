@@ -483,6 +483,7 @@
         "approvedAt",
         "bankVersion",
         "bankContentHash",
+        "selectionMetadataHash",
         "notes"
       ],
       "properties": {
@@ -498,6 +499,9 @@
           "$ref": "#/$defs/semanticVersion"
         },
         "bankContentHash": {
+          "$ref": "#/$defs/contentHash"
+        },
+        "selectionMetadataHash": {
           "$ref": "#/$defs/contentHash"
         },
         "notes": {

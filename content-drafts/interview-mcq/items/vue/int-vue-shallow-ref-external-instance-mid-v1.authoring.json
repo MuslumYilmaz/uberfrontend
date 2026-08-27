@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-vue-shallow-ref-external-instance-mid-v1",
+  "conceptId": "mcq-vue-shallow-ref-external-instance",
   "revision": 1,
   "author": {
     "id": "codex-vue-expansion-author",
