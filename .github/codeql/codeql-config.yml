@@ -1,0 +1,5 @@
+name: UberFrontend CodeQL configuration
+
+paths-ignore:
+  - "frontend/src/assets/monaco/**"
+  - "frontend/src/assets/vendor/**"
