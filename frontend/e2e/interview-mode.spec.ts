@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import AxeBuilder from '@axe-core/playwright';
 import type { Page, Request, Route } from '@playwright/test';
 import { buildMockUser, installAuthMock } from './auth-mocks';
 import { expect, test } from './fixtures';
@@ -28,7 +29,7 @@ type MockQuestion = {
   selectedOptionId: string | null;
 };
 
-type CandidatePublicQuestion = {
+type CanonicalPublicQuestion = {
   id: string;
   revision: number;
   technology: string;
@@ -109,6 +110,16 @@ const ACTIVE_STATUSES = new Set<SessionStatus>([
   'coding_active',
   'system_design_active',
 ]);
+const SERIOUS_AXE_IMPACTS = new Set(['serious', 'critical']);
+
+test.use({
+  // Firefox 144 rejects PrimeNG's bundled Inter variable font before app code
+  // executes. Keep the cross-engine Interview assertions visible while the
+  // repository-wide font asset issue is tracked independently.
+  consoleErrorAllowlist: [
+    'downloadable font: rejected by sanitizer .*Inter-roman\\.var\\.woff2',
+  ],
+});
 
 function nowIso(): string {
   return new Date().toISOString();
@@ -120,6 +131,20 @@ function futureIso(seconds: number): string {
 
 function clone<T>(value: T): T {
   return JSON.parse(JSON.stringify(value)) as T;
+}
+
+async function expectNoSeriousInterviewViolations(page: Page, label: string): Promise<void> {
+  const results = await new AxeBuilder({ page })
+    .include('[data-testid="interview-session"]')
+    .withTags(['wcag2a', 'wcag2aa'])
+    .analyze();
+  const violations = results.violations.filter((violation) =>
+    SERIOUS_AXE_IMPACTS.has(String(violation.impact || '')),
+  );
+  expect(
+    violations,
+    `${label}: ${violations.map((violation) => violation.id).join(', ')}`,
+  ).toEqual([]);
 }
 
 function jsonBody(request: Request): Record<string, unknown> {
@@ -621,6 +646,26 @@ class InterviewApiMock {
         return;
       }
 
+      if (method === 'GET' && path.endsWith('/control')) {
+        const session = this.currentSession;
+        const requestedSessionId = decodeURIComponent(path.split('/').at(-2) || '');
+        if (!session || session.id !== requestedSessionId) {
+          await this.reply(route, { error: 'Session not found.' }, 404);
+          return;
+        }
+        await this.reply(route, {
+          control: {
+            id: session.id,
+            status: session.status,
+            version: session.version,
+            active: ACTIVE_STATUSES.has(session.status),
+            policy: 'continue',
+            notice: null,
+          },
+        });
+        return;
+      }
+
       if (method === 'GET' && path.endsWith('/results')) {
         if (!this.result) {
           await this.reply(route, { error: 'Result not found.' }, 404);
@@ -842,8 +887,11 @@ class InterviewApiMock {
         const session = this.requireSession();
         session.status = 'abandoned';
         session.version += 1;
-        this.result = buildResult(session, { submitted: false, attempted: false });
-        await this.reply(route, { results: clone(this.result) });
+        this.result = null;
+        await this.reply(route, {
+          session: this.snapshotSession(),
+          resultAvailable: false,
+        });
         return;
       }
 
@@ -997,31 +1045,31 @@ test.describe('Interview Mode setup selection matrix', () => {
   }
 });
 
-test('loads the staged 170-question candidate contract into the MCQ UI', async ({ page }) => {
-  const candidateRoot = path.resolve(
+test('loads the approved canonical 185-question contract into the MCQ UI', async ({ page }) => {
+  const canonicalRoot = path.resolve(
     process.cwd(),
-    '../content-drafts/interview-mcq/generated/candidate-1.2.0',
+    '../content-drafts/interview-mcq/generated',
   );
   const publicArtifact = JSON.parse(fs.readFileSync(
-    path.join(candidateRoot, 'frontend-interview-bank-v1.public.json'),
+    path.join(canonicalRoot, 'frontend-interview-bank-v1.public.json'),
     'utf8',
   )) as {
     bankVersion: string;
     status: string;
-    items: CandidatePublicQuestion[];
+    items: CanonicalPublicQuestion[];
   };
   const releaseArtifact = JSON.parse(fs.readFileSync(
-    path.join(candidateRoot, 'frontend-interview-bank-v1.release.json'),
+    path.join(canonicalRoot, 'frontend-interview-bank-v1.release.json'),
     'utf8',
   )) as { itemCount: number; contentHash: string; status: string };
 
-  expect(publicArtifact.bankVersion).toBe('1.2.0');
-  expect(publicArtifact.status).toBe('candidate');
-  expect(publicArtifact.items).toHaveLength(170);
+  expect(publicArtifact.bankVersion).toBe('1.3.0');
+  expect(publicArtifact.status).toBe('editorial-gold');
+  expect(publicArtifact.items).toHaveLength(185);
   expect(releaseArtifact).toEqual(expect.objectContaining({
-    itemCount: 170,
-    status: 'candidate',
-    contentHash: expect.stringMatching(/^[a-f0-9]{64}$/),
+    itemCount: 185,
+    status: 'editorial-gold',
+    contentHash: '9e2aed2606cf0fbaa54cad46c890d48e518be0266a3a91cb95cfb4777038a4e8',
   }));
 
   const selectedIds = [
@@ -1034,8 +1082,8 @@ test('loads the staged 170-question candidate contract into the MCQ UI', async (
   const byId = new Map(publicArtifact.items.map((item) => [item.id, item]));
   const selected = selectedIds.map((id) => {
     const item = byId.get(id);
-    expect(item, `${id} must exist in the candidate artifact`).toBeTruthy();
-    return item as CandidatePublicQuestion;
+    expect(item, `${id} must exist in the canonical artifact`).toBeTruthy();
+    return item as CanonicalPublicQuestion;
   });
   expect(selected.map((item) => item.technology)).toEqual([
     'javascript',
@@ -1052,7 +1100,7 @@ test('loads the staged 170-question candidate contract into the MCQ UI', async (
     'stretch',
   ]);
 
-  const session = buildSession('junior', 'core-web', 'candidate-1-2-ui-session');
+  const session = buildSession('junior', 'core-web', 'canonical-1-3-ui-session');
   session.bankVersion = publicArtifact.bankVersion;
   session.questions = selected.map((item) => ({
     id: item.id,
@@ -1076,6 +1124,69 @@ test('loads the staged 170-question candidate contract into the MCQ UI', async (
       await expect(page.getByText(option.label, { exact: true })).toBeVisible();
     }
   }
+});
+
+test('mocked MCQ shell has named groups, deterministic focus, bounded timer semantics, and no serious axe violations', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  const session = buildSession('mid', 'react', 'a11y-mcq-session');
+  const api = new InterviewApiMock({ initialSession: session });
+  await seedAuthenticatedInterview(page, api);
+
+  await page.goto(`/interview/${session.id}`);
+  const firstPrompt = page.getByTestId('interview-question-prompt');
+  await expect(firstPrompt).toBeFocused();
+  await expect(page.getByRole('group', { name: session.questions[0].prompt })).toBeVisible();
+  await expect(page.getByRole('timer', { name: /MCQ time:/ })).toHaveAttribute('aria-live', 'off');
+  await expect(page.locator('.question-nav button').first()).toHaveAccessibleName(
+    'Question 1, unanswered',
+  );
+
+  await page.locator('.question-nav button').nth(1).click();
+  await expect(page.getByTestId('interview-question-prompt')).toBeFocused();
+  await expect(page.getByTestId('interview-question-prompt')).toContainText(
+    session.questions[1].prompt,
+  );
+  await page.getByRole('button', { name: 'Review answers', exact: true }).first().click();
+  await expect(page.getByTestId('interview-review-heading')).toBeFocused();
+  await expectNoHorizontalOverflow(page);
+  await expectNoSeriousInterviewViolations(page, 'mocked MCQ shell');
+});
+
+test('mocked coding file tabs expose labelled panels and support arrow-key roving focus', async ({ page }) => {
+  await page.setViewportSize({ width: 1366, height: 900 });
+  const session = buildSession('junior', 'core-web', 'a11y-coding-session');
+  const task = buildJavascriptTask();
+  task.files.push({
+    path: 'README.md',
+    language: 'markdown',
+    content: 'Use the public requirements as the source of truth.',
+    readOnly: true,
+  });
+  session.status = 'coding_active';
+  session.mcqDeadlineAt = null;
+  session.coding = {
+    readyDeadlineAt: null,
+    deadlineAt: futureIso(1500),
+    task,
+    draft: null,
+    checkResults: [],
+    runCount: 0,
+  };
+  const api = new InterviewApiMock({ initialSession: session });
+  await seedAuthenticatedInterview(page, api);
+
+  await page.goto(`/interview/${session.id}`);
+  const tabs = page.getByRole('tab');
+  await expect(tabs).toHaveCount(2);
+  await expect(tabs.first()).toHaveAttribute('tabindex', '0');
+  await expect(tabs.nth(1)).toHaveAttribute('tabindex', '-1');
+  await tabs.first().focus();
+  await page.keyboard.press('ArrowRight');
+  await expect(tabs.nth(1)).toBeFocused();
+  await expect(tabs.nth(1)).toHaveAttribute('aria-selected', 'true');
+  const labelledBy = await page.getByRole('tabpanel').getAttribute('aria-labelledby');
+  await expect(tabs.nth(1)).toHaveAttribute('id', labelledBy || '__missing__');
+  await expectNoSeriousInterviewViolations(page, 'mocked coding workspace');
 });
 
 test('completes MCQ → local JS checks → coding submit → raw results without progress writes', async ({ page }) => {
@@ -1284,9 +1395,11 @@ test('renders the bounded framework interview shell without normal solution/prog
   await expect(page.getByRole('heading', { name: 'React Counter (Guarded Decrement)' })).toBeVisible();
   const frameworkPanel = page.locator('app-coding-framework-panel');
   await expect(frameworkPanel).toBeVisible();
-  const frameworkEditor = frameworkPanel.getByRole('textbox');
-  await expect(frameworkEditor).toBeVisible();
-  await expect(frameworkEditor).toBeEditable();
+  // Monaco's input textarea is intentionally visually hidden in Firefox. The
+  // rendered editor surface is the cross-engine contract; the textarea remains
+  // present and labelled for Monaco's own keyboard/input handling.
+  await expect(frameworkPanel.locator('.monaco-editor')).toBeVisible();
+  await expect(frameworkPanel.getByRole('textbox')).toHaveAttribute('aria-label', 'Editor content');
   await expect(page.getByRole('button', { name: 'Run checks', exact: true }).first()).toBeVisible();
   await expect(page.getByRole('button', { name: 'Rebuild preview', exact: true })).toBeVisible();
   await expect(page.getByText('Interview coding awards 0 XP.')).toBeVisible();
@@ -1362,14 +1475,16 @@ test('free quota gate prevents a start request', async ({ page }) => {
   expect(api.createRequests).toEqual([]);
 });
 
-test('an off deployment keeps direct interview URLs out of the public app', async ({ page }) => {
+test('an off deployment keeps a direct URL in the authenticated safe shell', async ({ page }) => {
   const api = new InterviewApiMock({ enabled: false, accessMode: 'off' });
   await seedAuthenticatedInterview(page, api);
 
   await page.goto('/interview');
 
-  await expect(page).toHaveURL(/\/404$/);
-  await expect(page.getByTestId('interview-setup')).toHaveCount(0);
+  await expect(page).toHaveURL(/\/interview$/);
+  await expect(page.getByTestId('interview-setup')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Interview Mode is currently unavailable' }))
+    .toBeVisible();
   expect(api.createRequests).toEqual([]);
 });
 
@@ -1387,10 +1502,13 @@ test('premium users can abandon and immediately start a second unlimited session
 
   page.once('dialog', (dialog) => dialog.accept());
   await page.getByRole('button', { name: 'End interview' }).click();
-  await expect(page.getByTestId('interview-results')).toBeVisible();
+  await expect(page).toHaveURL(/\/interview\?ended=abandoned$/);
+  await expect(page.getByTestId('interview-setup')).toBeVisible();
+  await expect(page.getByText('Interview ended', { exact: true })).toBeVisible();
+  await expect(page.getByText(/Answer review is withheld/)).toBeVisible();
+  await expect(page.getByTestId('interview-results')).toHaveCount(0);
   expect(api.endRequests).toHaveLength(1);
 
-  await page.getByRole('link', { name: 'Interview home', exact: true }).click();
   await expect(page.getByText('Unlimited attempts')).toBeVisible();
   await page.getByTestId('interview-start').click();
   await expect(page).toHaveURL(/mock-session-2-mid-core-web$/);
@@ -1400,7 +1518,7 @@ test('premium users can abandon and immediately start a second unlimited session
   expect(api.quota.remaining).toBeNull();
 });
 
-for (const width of [834, 1366]) {
+for (const width of [360, 390, 834, 1366, 1440]) {
   test(`active MCQ snippets stay inside the session layout at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
     const active = buildSession('mid', 'react', `snippet-session-${width}`);

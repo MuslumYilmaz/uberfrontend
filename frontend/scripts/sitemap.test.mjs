@@ -18,6 +18,20 @@ const PRERENDER_PATH = path.join(SRC_DIR, 'prerender.routes.txt');
 const MAX_URLS = 50000;
 const GUIDE_REGISTRY_PATH = path.join(SRC_DIR, 'app', 'shared', 'guides', 'guide.registry.ts');
 const APP_ROUTES_PATH = path.join(SRC_DIR, 'app', 'app.routes.ts');
+const INFINITE_SCROLL_OPTIMIZATIONS_PATH = path.resolve(
+  '..',
+  'cdn',
+  'questions',
+  'system-design',
+  'infinite-scroll-list',
+  'optimizations.json',
+);
+const INFINITE_SCROLL_DRAFT_PATH = path.resolve(
+  '..',
+  'content-drafts',
+  'system-design',
+  'infinite-scroll-list.md',
+);
 const ROBOTS_PATH = path.join(SRC_DIR, 'robots.txt');
 const VERCEL_CONFIG_PATH = path.resolve('vercel.json');
 const CODING_QUERY_KEYS = ['reset', 'kind', 'view', 'category', 'tech', 'q', 'diff', 'imp', 'topic', 'focus'];
@@ -537,6 +551,35 @@ function assertInfiniteScrollSystemDesignSitemapEntry(entries) {
     throw new Error(
       `Infinite Scroll system design sitemap lastmod must be 2026-08-13, got ${matches[0].lastmod || '(missing)'}`,
     );
+  }
+}
+
+function assertInfiniteScrollResearchIsQuarantined(entries) {
+  const route = '/research/infinite-scroll-performance-benchmark';
+  const loc = `https://frontendatlas.com${route}`;
+  const indexedEntries = [
+    ...entries,
+    ...getAllSitemapEntries(['sitemap.xml']),
+  ];
+  if (indexedEntries.some((entry) => entry.loc === loc)) {
+    throw new Error(`Unreleased Infinite Scroll benchmark must not be indexed: ${loc}`);
+  }
+  const prerenderRoutes = fs.readFileSync(PRERENDER_PATH, 'utf8')
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+  if (prerenderRoutes.includes(route)) {
+    throw new Error(`Unreleased Infinite Scroll benchmark must not be prerendered: ${route}`);
+  }
+  if (fs.readFileSync(APP_ROUTES_PATH, 'utf8').includes(route.slice(1))) {
+    throw new Error(`Unreleased Infinite Scroll benchmark must not have a public route: ${route}`);
+  }
+  for (const contentPath of [INFINITE_SCROLL_OPTIMIZATIONS_PATH, INFINITE_SCROLL_DRAFT_PATH]) {
+    if (fs.readFileSync(contentPath, 'utf8').includes(route)) {
+      throw new Error(
+        `Unreleased Infinite Scroll benchmark must not be linked from shipped content: ${contentPath}`,
+      );
+    }
   }
 }
 
@@ -1156,6 +1199,7 @@ assertOpenAiCompanyPreviewSitemapEntry(entries);
 assertGoogleCompanyPreviewSitemapEntry(entries);
 assertNetflixCompanyPreviewSitemapEntry(entries);
 assertInfiniteScrollSystemDesignSitemapEntry(entries);
+assertInfiniteScrollResearchIsQuarantined(entries);
 assertAngularHttpCancellationLabSitemapEntry(entries);
 assertReactStaleClosuresSitemapEntry(entries);
 assertIndexableRouteTitlesUnique();

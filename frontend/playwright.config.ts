@@ -4,7 +4,8 @@ const isCI = !!process.env.CI;
 const useWebServer = process.env.PLAYWRIGHT_WEB_SERVER === '1';
 const ssrMode = process.env.PLAYWRIGHT_SSR === '1';
 // Keep critical E2E deterministic across local and CI by defaulting to Chromium.
-// WebKit remains opt-in via PLAYWRIGHT_ENABLE_WEBKIT=1 when explicitly requested.
+// Additional browser engines remain opt-in when a cross-engine contract is being verified.
+const includeFirefox = process.env.PLAYWRIGHT_ENABLE_FIREFOX === '1';
 const includeWebkit = process.env.PLAYWRIGHT_ENABLE_WEBKIT === '1';
 const webHost = process.env.PLAYWRIGHT_HOST || '127.0.0.1';
 const webPort = Number.parseInt(process.env.PLAYWRIGHT_PORT || '4200', 10);
@@ -50,6 +51,14 @@ export default defineConfig({
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
     },
+    ...(includeFirefox
+      ? [
+        {
+          name: 'firefox',
+          use: { ...devices['Desktop Firefox'] },
+        },
+      ]
+      : []),
     ...(includeWebkit
       ? [
         {

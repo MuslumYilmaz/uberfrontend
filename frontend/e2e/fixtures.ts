@@ -66,9 +66,11 @@ async function attachAndFailIfNeeded(testInfo: TestInfo, issues: CollectedIssue[
 
 export const test = baseTest.extend<{
   consoleErrorAllowlist: string[];
+  realBackendRequests: boolean;
 }>({
   consoleErrorAllowlist: [[], { option: true }],
-  page: async ({ page, consoleErrorAllowlist }, use, testInfo) => {
+  realBackendRequests: [false, { option: true }],
+  page: async ({ page, consoleErrorAllowlist, realBackendRequests }, use, testInfo) => {
     const issues: CollectedIssue[] = [];
     const extraAllowlist = compileAllowlist(consoleErrorAllowlist);
 
@@ -95,96 +97,98 @@ export const test = baseTest.extend<{
       });
     });
 
-    // Keep E2E deterministic in frontend-only runs: avoid backend/proxy dependency
-    // for assist sync while preserving request shape/flow on the client.
-    await page.route(/\/api\/editor-assist\/sync(?:\?.*)?$/, async (route) => {
-      const req = route.request();
-      if (req.method() === 'OPTIONS') {
-        await route.fulfill({ status: 204 });
-        return;
-      }
+    if (!realBackendRequests) {
+      // Keep E2E deterministic in frontend-only runs: avoid backend/proxy dependency
+      // for assist sync while preserving request shape/flow on the client.
+      await page.route(/\/api\/editor-assist\/sync(?:\?.*)?$/, async (route) => {
+        const req = route.request();
+        if (req.method() === 'OPTIONS') {
+          await route.fulfill({ status: 204 });
+          return;
+        }
 
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json; charset=utf-8',
-        body: JSON.stringify({
-          runs: [],
-          cursorTs: Date.now(),
-          stats: {
-            received: 0,
-            upserted: 0,
-            deduped: 0,
-            returned: 0,
-          },
-        }),
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json; charset=utf-8',
+          body: JSON.stringify({
+            runs: [],
+            cursorTs: Date.now(),
+            stats: {
+              received: 0,
+              upserted: 0,
+              deduped: 0,
+              returned: 0,
+            },
+          }),
+        });
       });
-    });
 
-    // Keep frontend-only E2E deterministic when showcase/pricing eagerly read billing config.
-    await page.route(/\/api\/billing\/checkout\/config(?:\?.*)?$/, async (route) => {
-      const req = route.request();
-      if (req.method() === 'OPTIONS') {
-        await route.fulfill({ status: 204 });
-        return;
-      }
+      // Keep frontend-only E2E deterministic when showcase/pricing eagerly read billing config.
+      await page.route(/\/api\/billing\/checkout\/config(?:\?.*)?$/, async (route) => {
+        const req = route.request();
+        if (req.method() === 'OPTIONS') {
+          await route.fulfill({ status: 204 });
+          return;
+        }
 
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json; charset=utf-8',
-        body: JSON.stringify({
-          configuredProvider: null,
-          provider: null,
-          mode: 'test',
-          enabled: false,
-          plans: {
-            monthly: false,
-            quarterly: false,
-            annual: false,
-            lifetime: false,
-          },
-          planDetails: {
-            monthly: { amountCents: 1200, currency: 'USD', interval: 'month', intervalCount: 1, taxInclusive: false },
-            quarterly: { amountCents: 2900, currency: 'USD', interval: 'month', intervalCount: 3, taxInclusive: false },
-            annual: { amountCents: 7900, currency: 'USD', interval: 'year', intervalCount: 1, taxInclusive: false },
-            lifetime: { amountCents: 19900, currency: 'USD', interval: 'one_time', intervalCount: null, taxInclusive: false },
-          },
-          offerVersion: 'pricing_baseline_v1',
-          checkoutSurface: 'hosted_new_tab',
-        }),
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json; charset=utf-8',
+          body: JSON.stringify({
+            configuredProvider: null,
+            provider: null,
+            mode: 'test',
+            enabled: false,
+            plans: {
+              monthly: false,
+              quarterly: false,
+              annual: false,
+              lifetime: false,
+            },
+            planDetails: {
+              monthly: { amountCents: 1200, currency: 'USD', interval: 'month', intervalCount: 1, taxInclusive: false },
+              quarterly: { amountCents: 2900, currency: 'USD', interval: 'month', intervalCount: 3, taxInclusive: false },
+              annual: { amountCents: 7900, currency: 'USD', interval: 'year', intervalCount: 1, taxInclusive: false },
+              lifetime: { amountCents: 19900, currency: 'USD', interval: 'one_time', intervalCount: null, taxInclusive: false },
+            },
+            offerVersion: 'pricing_baseline_v1',
+            checkoutSurface: 'hosted_new_tab',
+          }),
+        });
       });
-    });
 
-    // Interview Mode is fail-closed. Frontend-only suites should observe the
-    // production default without depending on a running API; interview specs
-    // register a more specific route later when they need enabled access.
-    await page.route(/\/api\/interviews\/availability(?:\?.*)?$/, async (route) => {
-      const req = route.request();
-      if (req.method() === 'OPTIONS') {
-        await route.fulfill({ status: 204 });
-        return;
-      }
+      // Interview Mode is fail-closed. Frontend-only suites should observe the
+      // production default without depending on a running API; interview specs
+      // register a more specific route later when they need enabled access.
+      await page.route(/\/api\/interviews\/availability(?:\?.*)?$/, async (route) => {
+        const req = route.request();
+        if (req.method() === 'OPTIONS') {
+          await route.fulfill({ status: 204 });
+          return;
+        }
 
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json; charset=utf-8',
-        body: JSON.stringify({
-          enabled: false,
-          accessMode: 'off',
-          unavailableReason: 'Interview Mode is not available.',
-          quota: null,
-          activeSession: null,
-          lastResults: [],
-          targets: [],
-          levels: [],
-          tracks: [],
-          minViewportWidth: 768,
-          timing: {
-            mcqSeconds: 600,
-            codingReadySeconds: 300,
-          },
-        }),
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json; charset=utf-8',
+          body: JSON.stringify({
+            enabled: false,
+            accessMode: 'off',
+            unavailableReason: 'Interview Mode is not available.',
+            quota: null,
+            activeSession: null,
+            lastResults: [],
+            targets: [],
+            levels: [],
+            tracks: [],
+            minViewportWidth: 768,
+            timing: {
+              mcqSeconds: 600,
+              codingReadySeconds: 300,
+            },
+          }),
+        });
       });
-    });
+    }
 
     page.on('console', (msg) => {
       if (msg.type() !== 'error') return;
