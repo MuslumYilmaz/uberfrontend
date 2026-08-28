@@ -1071,7 +1071,7 @@ describe('CodingDetailComponent', () => {
     expect(completion.textContent).not.toContain('Counter');
   });
 
-  it('does not advertise Pressure Mode for unsupported framework questions', async () => {
+  it('shows Pressure Mode coming soon for unsupported framework questions', async () => {
     const question = {
       id: 'react-autocomplete-search-starter',
       title: 'React Autocomplete Search',
@@ -1103,12 +1103,19 @@ describe('CodingDetailComponent', () => {
     component.isPhoneViewport.set(false);
     fixture.detectChanges();
 
-    expect(
-      fixture.nativeElement.querySelector('[data-testid="pressure-mode-entry"]')
-    ).toBeNull();
-    expect(
-      fixture.nativeElement.querySelector('[data-testid="pressure-mode-coming-soon"]')
-    ).toBeNull();
+    const entry = fixture.nativeElement.querySelector(
+      '[data-testid="pressure-mode-entry"]'
+    ) as HTMLElement;
+    expect(entry).not.toBeNull();
+    expect(entry.hasAttribute('data-nosnippet')).toBeTrue();
+    expect(entry.textContent).toContain(
+      'A tailored cumulative pressure mode for this challenge is coming soon.'
+    );
+    const comingSoonButton = fixture.nativeElement.querySelector(
+      '[data-testid="pressure-mode-coming-soon"]'
+    ) as HTMLButtonElement;
+    expect(comingSoonButton.disabled).toBeTrue();
+    expect(comingSoonButton.getAttribute('aria-label')).toBe('Interview Pressure Mode coming soon');
     expect(
       fixture.nativeElement.querySelector('[data-testid="pressure-mode-start"]')
     ).toBeNull();
@@ -1117,6 +1124,127 @@ describe('CodingDetailComponent', () => {
     const navigateSpy = spyOn(router, 'navigate');
     component.startPressureMode();
     expect(navigateSpy).not.toHaveBeenCalled();
+  });
+
+  it('removes an unsupported pressure query before returning to the normal framework view', async () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    const question = {
+      id: 'react-unsupported-pressure-route',
+      title: 'Unsupported React challenge',
+      access: 'free',
+      difficulty: 'intermediate',
+      frameworkTests: [],
+    } as any;
+    const router = TestBed.inject(Router);
+    const navigateSpy = spyOn(router, 'navigate').and.resolveTo(true);
+
+    component.tech = 'react';
+    component.kind = 'coding';
+    component.question.set(question);
+    component.pressureRequested.set(true);
+
+    await (component as any).activatePressureMode(question);
+
+    expect(component.pressureRequested()).toBeFalse();
+    expect(component.pressureScenario()).toBeNull();
+    expect(navigateSpy).toHaveBeenCalledWith([], jasmine.objectContaining({
+      queryParams: { mode: null },
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    }));
+  });
+
+  it('shows the unavailable Pressure Mode entry for React, Angular, and Vue coding questions', async () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    const question = {
+      id: 'react-unsupported',
+      title: 'Unsupported framework challenge',
+      access: 'free',
+      difficulty: 'intermediate',
+      frameworkTests: [],
+    } as any;
+
+    questionService.loadQuestions.and.returnValue(of([question]));
+    component.questionId = question.id;
+    component.questionTech = 'react';
+    component.disablePersistence = true;
+    component.hideFooterBar = true;
+    spyOn(component as any, 'resolveSolutionAsset').and.resolveTo({ files: {}, initialPath: '' });
+
+    fixture.detectChanges();
+    await fixture.whenStable();
+    component.kind = 'coding';
+    component.loadState.set('loaded');
+    component.isPhoneViewport.set(false);
+
+    for (const tech of ['react', 'angular', 'vue'] as const) {
+      component.tech = tech;
+      component.question.set({ ...question, id: `${tech}-unsupported`, technology: tech } as any);
+      fixture.detectChanges();
+
+      const comingSoonButton = fixture.nativeElement.querySelector(
+        '[data-testid="pressure-mode-coming-soon"]'
+      ) as HTMLButtonElement;
+      expect(comingSoonButton).withContext(tech).not.toBeNull();
+      expect(comingSoonButton.disabled).withContext(tech).toBeTrue();
+      expect(
+        fixture.nativeElement.querySelector('[data-testid="pressure-mode-start"]')
+      ).withContext(tech).toBeNull();
+    }
+  });
+
+  it('hides Pressure Mode entry outside non-demo framework coding questions', async () => {
+    const question = {
+      id: 'react-supported',
+      title: 'Supported framework challenge',
+      access: 'free',
+      difficulty: 'intermediate',
+      pressureModeAsset: 'assets/questions/pressure-modes/counter.v1.json',
+      frameworkTests: [],
+    } as any;
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+
+    questionService.loadQuestions.and.returnValue(of([question]));
+    component.questionId = question.id;
+    component.questionTech = 'react';
+    component.disablePersistence = true;
+    component.hideFooterBar = true;
+    spyOn(component as any, 'resolveSolutionAsset').and.resolveTo({ files: {}, initialPath: '' });
+
+    fixture.detectChanges();
+    await fixture.whenStable();
+    component.loadState.set('loaded');
+    component.isPhoneViewport.set(false);
+
+    const cases = [
+      { tech: 'javascript', kind: 'coding', demoMode: false, label: 'JavaScript coding' },
+      { tech: 'html', kind: 'coding', demoMode: false, label: 'HTML coding' },
+      { tech: 'css', kind: 'coding', demoMode: false, label: 'CSS coding' },
+      { tech: 'react', kind: 'debug', demoMode: false, label: 'framework debug' },
+      { tech: 'react', kind: 'trivia', demoMode: false, label: 'framework trivia' },
+      { tech: 'react', kind: 'coding', demoMode: true, label: 'framework demo' },
+    ] as const;
+
+    for (const testCase of cases) {
+      component.tech = testCase.tech as any;
+      component.kind = testCase.kind as any;
+      component.demoMode = testCase.demoMode;
+      component.question.set({ ...question, technology: testCase.tech } as any);
+      fixture.detectChanges();
+
+      expect(
+        fixture.nativeElement.querySelector('[data-testid="pressure-mode-entry"]')
+      ).withContext(testCase.label).toBeNull();
+      expect(
+        fixture.nativeElement.querySelector('[data-testid="pressure-mode-start"]')
+      ).withContext(testCase.label).toBeNull();
+      expect(
+        fixture.nativeElement.querySelector('[data-testid="pressure-mode-coming-soon"]')
+      ).withContext(testCase.label).toBeNull();
+    }
   });
 
   it('resets only the pressure workspace without unmarking the normal Counter completion', async () => {

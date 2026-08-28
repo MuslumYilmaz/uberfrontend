@@ -929,6 +929,7 @@
       "openFile": "/src/App.tsx",
       "storageKey": "v2:ui:react:react-accordion-faq"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/accordion-faq.v1.json",
     "solutionAsset": "assets/sb/react/solution/react-accordion-faq-solution.v1.json",
     "companies": [],
     "access": "premium",

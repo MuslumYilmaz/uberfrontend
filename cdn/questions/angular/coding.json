@@ -945,6 +945,7 @@
       "openFile": "/src/app/app.component.ts",
       "storageKey": "v2:ui:angular:angular-faq-accordion"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/accordion-faq.v1.json",
     "solutionAsset": "assets/sb/angular/solution/angular-faq-accordion-solution.v2.json",
     "decisionGraphAsset": "assets/questions/angular/decision-graphs/angular-faq-accordion.v1.json",
     "access": "premium",

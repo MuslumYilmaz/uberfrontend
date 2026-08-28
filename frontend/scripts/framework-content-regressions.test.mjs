@@ -173,7 +173,7 @@ function assertFrameworkCssFormatting() {
       canonicalRoot: path.join(repoRoot, 'cdn', 'sb'),
       mirrorRoot: path.join(repoRoot, 'frontend', 'src', 'assets', 'sb'),
     }),
-    { assets: 181, cssSources: 242, changedAssets: 0, changedCssSources: 0 },
+    { assets: 184, cssSources: 246, changedAssets: 0, changedCssSources: 0 },
     'The full framework CSS corpus must stay canonical and exactly mirrored'
   );
 }
@@ -1636,6 +1636,323 @@ function assertChipsInputPressureMode() {
   }
 }
 
+function assertAccordionFaqPressureMode() {
+  const expectedQuestions = {
+    react: {
+      id: 'react-accordion-faq',
+      starter: 'assets/sb/react/question/react-accordion-faq.v1.json',
+      solution: 'assets/sb/react/solution/react-accordion-faq-solution.v1.json',
+      updatedAt: '2026-01-30',
+    },
+    angular: {
+      id: 'angular-faq-accordion',
+      starter: 'assets/sb/angular/question/angular-faq-accordion.v2.json',
+      solution: 'assets/sb/angular/solution/angular-faq-accordion-solution.v2.json',
+      updatedAt: '2026-07-15',
+    },
+    vue: {
+      id: 'vue-accordion-faq',
+      starter: 'assets/sb/vue/question/vue-accordion-faq.v1.json',
+      solution: 'assets/sb/vue/solution/vue-accordion-faq-solution.v1.json',
+      updatedAt: '2026-01-30',
+    },
+  };
+  const expectedNormalChecks = [
+    {
+      id: 'accordion-toggle-answer',
+      name: 'Accordion toggles answer',
+      steps: [
+        {
+          type: 'expectCount',
+          selector: '.faq-body',
+          count: 0,
+        },
+        {
+          type: 'click',
+          selector: '.faq-header',
+        },
+        {
+          type: 'waitForCount',
+          selector: '.faq-body',
+          count: 1,
+        },
+      ],
+    },
+  ];
+  const pressureRefs = new Set();
+
+  for (const [framework, expected] of Object.entries(expectedQuestions)) {
+    const question = json(`cdn/questions/${framework}/coding.json`).find(
+      (entry) => entry.id === expected.id
+    );
+    assert.ok(question, `${framework}: Accordion FAQ question must exist`);
+    assert.equal(question.access, 'premium', `${framework}: Accordion FAQ must stay premium`);
+    assert.equal(
+      question.difficulty,
+      'intermediate',
+      `${framework}: Accordion FAQ difficulty changed`
+    );
+    assert.equal(
+      question.updatedAt,
+      expected.updatedAt,
+      `${framework}: pressure coverage must not rewrite normal Accordion FAQ updatedAt`
+    );
+    assert.equal(
+      question.sdk?.asset,
+      expected.starter,
+      `${framework}: normal Accordion FAQ starter changed`
+    );
+    assert.equal(
+      question.solutionAsset,
+      expected.solution,
+      `${framework}: normal Accordion FAQ solution changed`
+    );
+    assert.deepEqual(
+      question.frameworkTests,
+      expectedNormalChecks,
+      `${framework}: normal Accordion FAQ check must stay unchanged`
+    );
+    assert.equal(
+      question.pressureModeAsset,
+      'assets/questions/pressure-modes/accordion-faq.v1.json',
+      `${framework}: Accordion FAQ must reference the shared pressure scenario`
+    );
+    pressureRefs.add(question.pressureModeAsset);
+  }
+
+  assert.equal(
+    pressureRefs.size,
+    1,
+    'All Accordion FAQ frameworks must share one pressure scenario'
+  );
+
+  const scenario = json('cdn/questions/pressure-modes/accordion-faq.v1.json');
+  assert.equal(scenario.id, 'accordion-faq-pressure-v1');
+  assert.equal(scenario.family, 'accordion-faq');
+  assert.equal(scenario.access, 'premium');
+  assert.equal(scenario.estimatedMinutes, 45);
+  assert.deepEqual(scenario.supportedQuestions, {
+    react: 'react-accordion-faq',
+    angular: 'angular-faq-accordion',
+    vue: 'vue-accordion-faq',
+  });
+  assert.deepEqual(
+    scenario.rounds.map((round) => round.id),
+    [
+      'core-disclosure',
+      'mode-transition-invariant',
+      'keyboard-focus-navigation',
+      'accessible-disclosure-contract',
+    ]
+  );
+
+  const cumulativeCheckCounts = scenario.rounds.reduce((counts, round) => {
+    const previous = counts[counts.length - 1] ?? 0;
+    counts.push(previous + (round.frameworkTests?.length ?? 0));
+    return counts;
+  }, []);
+  assert.deepEqual(
+    cumulativeCheckCounts,
+    [1, 2, 3, 5],
+    'Accordion FAQ pressure checks must stay within the cumulative runner budget'
+  );
+
+  const checks = scenario.rounds.flatMap((round) => round.frameworkTests ?? []);
+  assert.deepEqual(
+    checks.map((test) => test.id),
+    [
+      'pressure-accordion-toggle',
+      'pressure-accordion-modes',
+      'pressure-accordion-keyboard',
+      'pressure-accordion-aria',
+      'pressure-accordion-native-buttons',
+    ]
+  );
+  for (const check of checks) {
+    assert.ok(check.steps?.length, `${check.id}: pressure check must be independently runnable`);
+  }
+
+  const modeCheck = checks.find((test) => test.id === 'pressure-accordion-modes');
+  assert.equal(
+    modeCheck.steps.filter(
+      (step) => step.type === 'click' && step.selector === '.mode-toggle input'
+    ).length,
+    2,
+    'Accordion FAQ mode flow must enter and leave multi-open mode'
+  );
+  assert.ok(
+    modeCheck.steps.some(
+      (step) =>
+        step.type === 'waitForCount' &&
+        step.selector === '.faq-body' &&
+        step.count === 2
+    ),
+    'Accordion FAQ mode flow must prove that multi-open mode can show two panels'
+  );
+  const finalModeSteps = modeCheck.steps.slice(-3);
+  assert.deepEqual(
+    finalModeSteps,
+    [
+      {
+        type: 'waitForCount',
+        selector: '.faq-body',
+        count: 1,
+        timeoutMs: 700,
+      },
+      {
+        type: 'expectAttribute',
+        selector: '.faq-header',
+        index: 0,
+        attribute: 'aria-expanded',
+        expected: 'false',
+      },
+      {
+        type: 'expectAttribute',
+        selector: '.faq-header',
+        index: 1,
+        attribute: 'aria-expanded',
+        expected: 'true',
+      },
+    ],
+    'Accordion FAQ multi-to-single normalization must retain first-opened faq-2'
+  );
+
+  const keyboardCheck = checks.find((test) => test.id === 'pressure-accordion-keyboard');
+  const keyboardSteps = keyboardCheck.steps.filter((step) => step.type === 'key');
+  assert.deepEqual(
+    keyboardSteps.map((step) => ({ selector: step.selector, index: step.index, key: step.key })),
+    [
+      { selector: '.faq-header', index: 0, key: 'ArrowUp' },
+      { selector: '.faq-header', index: 3, key: 'ArrowDown' },
+      { selector: '.faq-header', index: 0, key: 'ArrowDown' },
+      { selector: '.faq-header', index: 1, key: 'Home' },
+      { selector: '.faq-header', index: 0, key: 'End' },
+    ],
+    'Accordion FAQ keyboard flow must cover wrapping arrows and Home/End on question triggers'
+  );
+  assert.deepEqual(
+    keyboardCheck.steps
+      .filter((step) => step.type === 'expectFocused')
+      .map((step) => ({ selector: step.selector, index: step.index })),
+    [
+      { selector: '.faq-header', index: 3 },
+      { selector: '.faq-header', index: 0 },
+      { selector: '.faq-header', index: 1 },
+      { selector: '.faq-header', index: 0 },
+      { selector: '.faq-header', index: 3 },
+    ],
+    'Accordion FAQ keyboard flow must assert the exact wrapped focus destinations'
+  );
+  assert.deepEqual(
+    keyboardCheck.steps
+      .filter((step) => step.type === 'expectCount' && step.selector === '.faq-body')
+      .map((step) => step.count),
+    [0, 0],
+    'Accordion FAQ focus navigation must leave disclosure state unchanged'
+  );
+
+  const ariaCheck = checks.find((test) => test.id === 'pressure-accordion-aria');
+  for (let itemNumber = 1; itemNumber <= 4; itemNumber += 1) {
+    const itemIndex = itemNumber - 1;
+    assert.ok(
+      ariaCheck.steps.some(
+        (step) =>
+          step.type === 'expectAttribute' &&
+          step.selector === '.faq-header' &&
+          step.index === itemIndex &&
+          step.attribute === 'id' &&
+          step.expected === `faq-trigger-faq-${itemNumber}`
+      ),
+      `Accordion FAQ ARIA flow must keep stable trigger id faq-trigger-faq-${itemNumber}`
+    );
+    assert.ok(
+      ariaCheck.steps.some(
+        (step) =>
+          step.type === 'expectAttribute' &&
+          step.selector === '.faq-header' &&
+          step.index === itemIndex &&
+          step.attribute === 'aria-controls' &&
+          step.expected === `faq-panel-faq-${itemNumber}`
+      ),
+      `Accordion FAQ ARIA flow must connect faq-${itemNumber} to faq-panel-faq-${itemNumber}`
+    );
+  }
+  for (const expectedStep of [
+    {
+      type: 'expectCount',
+      selector: '.indicator[aria-hidden="true"]',
+      count: 4,
+    },
+    {
+      type: 'expectAttribute',
+      selector: '.faq-body',
+      attribute: 'id',
+      expected: 'faq-panel-faq-1',
+    },
+    {
+      type: 'expectAttribute',
+      selector: '.faq-body',
+      attribute: 'role',
+      expected: 'region',
+    },
+    {
+      type: 'expectAttribute',
+      selector: '.faq-body',
+      attribute: 'aria-labelledby',
+      expected: 'faq-trigger-faq-1',
+    },
+  ]) {
+    assert.ok(
+      ariaCheck.steps.some((step) =>
+        Object.entries(expectedStep).every(([key, value]) => step[key] === value)
+      ),
+      `Accordion FAQ ARIA flow is missing ${JSON.stringify(expectedStep)}`
+    );
+  }
+
+  const nativeButtonCheck = checks.find(
+    (test) => test.id === 'pressure-accordion-native-buttons'
+  );
+  assert.ok(
+    nativeButtonCheck.steps.some(
+      (step) =>
+        step.type === 'expectCount' &&
+        step.selector === 'button.faq-header' &&
+        step.count === 4
+    ),
+    'Accordion FAQ native-button flow must prove every trigger is a button'
+  );
+  assert.equal(
+    nativeButtonCheck.steps.filter(
+      (step) =>
+        step.type === 'expectAttribute' &&
+        step.selector === 'button.faq-header' &&
+        step.attribute === 'type' &&
+        step.expected === 'button'
+    ).length,
+    4,
+    'Accordion FAQ native-button flow must guard the type of every trigger'
+  );
+
+  const expectedPressureSolutions = {
+    react: 'assets/sb/react/solution/react-accordion-faq-pressure-solution.v1.json',
+    angular: 'assets/sb/angular/solution/angular-faq-accordion-pressure-solution.v1.json',
+    vue: 'assets/sb/vue/solution/vue-accordion-faq-pressure-solution.v1.json',
+  };
+  for (const [framework, expectedReference] of Object.entries(expectedPressureSolutions)) {
+    const reference = scenario.solutionAssets?.[framework];
+    assert.equal(
+      reference,
+      expectedReference,
+      `${framework}: invalid Accordion FAQ pressure solution reference`
+    );
+    assertMirror(
+      reference.replace(/^assets\//, ''),
+      `${framework}:accordion-faq-pressure-solution`
+    );
+  }
+}
+
 function assertPaginationTablePressureMode() {
   const expectedQuestions = {
     react: {
@@ -2635,6 +2952,7 @@ assertDebouncedSearchPressureMode();
 assertTodoListPressureMode();
 assertShoppingCartPressureMode();
 assertChipsInputPressureMode();
+assertAccordionFaqPressureMode();
 assertPaginationTablePressureMode();
 
 const angularCodingQuestions = json('cdn/questions/angular/coding.json');

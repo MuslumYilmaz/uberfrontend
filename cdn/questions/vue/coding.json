@@ -913,6 +913,7 @@
       "openFile": "/src/App.vue",
       "storageKey": "v1:ui:vue:vue-accordion-faq"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/accordion-faq.v1.json",
     "solutionAsset": "assets/sb/vue/solution/vue-accordion-faq-solution.v1.json",
     "access": "premium",
     "updatedAt": "2026-01-30",

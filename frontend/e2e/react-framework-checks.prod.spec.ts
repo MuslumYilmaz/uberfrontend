@@ -99,6 +99,18 @@ const PAGINATION_TABLE_PRESSURE_SOLUTIONS = {
   ),
 } as const;
 
+const ACCORDION_FAQ_PRESSURE_SOLUTIONS = {
+  react: readCanonicalFiles(
+    '../cdn/sb/react/solution/react-accordion-faq-pressure-solution.v1.json',
+  ),
+  angular: readCanonicalFiles(
+    '../cdn/sb/angular/solution/angular-faq-accordion-pressure-solution.v1.json',
+  ),
+  vue: readCanonicalFiles(
+    '../cdn/sb/vue/solution/vue-accordion-faq-pressure-solution.v1.json',
+  ),
+} as const;
+
 type PressureFlowContract = {
   checkCounts: number[];
   roundIds: string[];
@@ -169,6 +181,17 @@ const PAGINATION_TABLE_PRESSURE_FLOW: PressureFlowContract = {
     'selection-and-accessibility',
   ],
   debriefText: 'You kept table state predictable under pressure',
+};
+
+const ACCORDION_FAQ_PRESSURE_FLOW: PressureFlowContract = {
+  checkCounts: [1, 2, 3, 5],
+  roundIds: [
+    'core-disclosure',
+    'mode-transition-invariant',
+    'keyboard-focus-navigation',
+    'accessible-disclosure-contract',
+  ],
+  debriefText: 'You kept disclosure state predictable under pressure',
 };
 
 const AUTOCOMPLETE_SOLUTION = readCanonicalFile(
@@ -252,7 +275,7 @@ function checkResults(page: Page): Locator {
 
 async function waitForFrameworkPreview(page: Page, selector: string): Promise<void> {
   await expect(page.locator('iframe[title="Framework live preview"]')).toBeVisible({ timeout: 30_000 });
-  await expect(livePreview(page).locator(selector)).toBeVisible({ timeout: 30_000 });
+  await expect(livePreview(page).locator(selector).first()).toBeVisible({ timeout: 30_000 });
   await expect(page.locator('.preview-loading')).toHaveCount(0, { timeout: 30_000 });
   await expect(page.getByTestId('framework-preview-error')).toHaveCount(0);
 }
@@ -1037,18 +1060,111 @@ test.describe('Framework checks against the production SSR build', () => {
     });
   }
 
+  test('React Accordion keeps its premium pressure draft isolated and passes every round', async ({
+    page,
+    baseURL,
+  }) => {
+    if (!baseURL) throw new Error('Playwright baseURL is required for the premium pressure test');
+    await seedPremiumSession(page, baseURL);
+    await page.goto('/react/coding/react-accordion-faq');
+    await expect(page.getByTestId('coding-detail-page')).toBeVisible();
+    await waitForFrameworkPreview(page, '.faq-header');
+    await expect(page.getByTestId('pressure-mode-entry')).toBeVisible();
+    await expect(page.getByTestId('pressure-mode-coming-soon')).toHaveCount(0);
+
+    const normalMarker = `normal-accordion-draft-${Date.now()}`;
+    const normalDraft = `// ${normalMarker}\n${await getMonacoModelValue(page, 'src/App.tsx')}`;
+    await loadCanonicalFile(page, 'src/App.tsx', normalDraft);
+    await waitForIndexedDbKeyPrefixContains(page, {
+      dbName: 'frontendatlas',
+      storeName: 'fa_ng',
+      keyPrefix: 'v2:code:fw2:react:react-accordion-faq@',
+      substring: normalMarker,
+    });
+
+    await page.getByTestId('pressure-mode-start').click();
+    await expect(page).toHaveURL(/\/react\/coding\/react-accordion-faq\?mode=pressure$/);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      /\/react\/coding\/react-accordion-faq$/,
+    );
+    await expect(page.getByTestId('pressure-mode-panel')).toBeVisible();
+    await waitForFrameworkPreview(page, '.faq-header');
+    await expect.poll(() => getMonacoModelValue(page, 'src/App.tsx')).not.toContain(normalMarker);
+
+    await loadCanonicalBundle(page, ACCORDION_FAQ_PRESSURE_SOLUTIONS.react);
+    await rebuildPreview(page, '.faq-header');
+
+    const firstHeader = livePreview(page).locator('.faq-header').first();
+    await firstHeader.focus();
+    await firstHeader.press('Enter');
+    await expect(livePreview(page).locator('.faq-body')).toHaveCount(1);
+    await expect(firstHeader).toHaveAttribute('aria-expanded', 'true');
+    await firstHeader.press('Space');
+    await expect(livePreview(page).locator('.faq-body')).toHaveCount(0);
+    await expect(firstHeader).toHaveAttribute('aria-expanded', 'false');
+
+    for (const width of [834, 1366, 1440]) {
+      await page.setViewportSize({ width, height: 900 });
+      await expect(page.getByTestId('pressure-mode-panel')).toBeVisible();
+      await expectNoHorizontalOverflow(page);
+    }
+
+    await completePressureRounds(page, ACCORDION_FAQ_PRESSURE_FLOW);
+
+    await page.getByRole('button', { name: 'Interview', exact: true }).click();
+    await page.getByTestId('pressure-mode-exit').click();
+    await expect(page).toHaveURL(/\/react\/coding\/react-accordion-faq$/);
+    await waitForFrameworkPreview(page, '.faq-header');
+    await expect.poll(() => getMonacoModelValue(page, 'src/App.tsx')).toContain(normalMarker);
+  });
+
+  for (const framework of ['angular', 'vue'] as const) {
+    const questionId = framework === 'angular'
+      ? 'angular-faq-accordion'
+      : 'vue-accordion-faq';
+
+    test(`${framework} Accordion passes mode, keyboard, and accessibility pressure rounds`, async ({
+      page,
+      baseURL,
+    }) => {
+      if (!baseURL) throw new Error('Playwright baseURL is required for the premium pressure test');
+      await seedPremiumSession(page, baseURL);
+      await page.goto(`/${framework}/coding/${questionId}?mode=pressure`);
+      await expect(page.getByTestId('coding-detail-page')).toBeVisible();
+      await expect(page.getByTestId('pressure-mode-panel')).toBeVisible();
+      await waitForFrameworkPreview(page, '.faq-header');
+
+      await loadCanonicalBundle(page, ACCORDION_FAQ_PRESSURE_SOLUTIONS[framework]);
+      await rebuildPreview(page, '.faq-header');
+      await completePressureRounds(page, ACCORDION_FAQ_PRESSURE_FLOW);
+    });
+  }
+
   test('unsupported pressure URLs fall back to the normal canonical question flow', async ({ page }) => {
     await page.goto('/react/coding/react-autocomplete-search-starter?mode=pressure');
     await expect(page.getByTestId('coding-detail-page')).toBeVisible();
     await expect(page).toHaveURL(/\/react\/coding\/react-autocomplete-search-starter$/);
     await expect(page.getByTestId('pressure-mode-panel')).toHaveCount(0);
-    await expect(page.getByTestId('pressure-mode-entry')).toHaveCount(0);
-    await expect(page.getByTestId('pressure-mode-coming-soon')).toHaveCount(0);
+    const entry = page.getByTestId('pressure-mode-entry');
+    await expect(entry).toBeVisible();
+    await expect(entry).toHaveAttribute('data-nosnippet', '');
+    await expect(entry).toContainText(
+      'A tailored cumulative pressure mode for this challenge is coming soon.',
+    );
+    await expect(page.getByTestId('pressure-mode-coming-soon')).toBeVisible();
+    await expect(page.getByTestId('pressure-mode-coming-soon')).toBeDisabled();
     await expect(page.getByTestId('pressure-mode-start')).toHaveCount(0);
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
       'href',
       /\/react\/coding\/react-autocomplete-search-starter$/,
     );
+
+    for (const width of [834, 1366, 1440]) {
+      await page.setViewportSize({ width, height: 900 });
+      await expect(entry).toBeVisible();
+      await expectNoHorizontalOverflow(page);
+    }
   });
 
   test('pressure routes keep the existing mobile workspace guard at 360 and 390px', async ({ page }) => {
