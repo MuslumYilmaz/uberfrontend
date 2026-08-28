@@ -1,0 +1,493 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "accordion-faq-pressure-v1",
+  "family": "accordion-faq",
+  "title": "Accordion FAQ Interview Pressure Mode",
+  "access": "premium",
+  "estimatedMinutes": 45,
+  "supportedQuestions": {
+    "react": "react-accordion-faq",
+    "angular": "angular-faq-accordion",
+    "vue": "vue-accordion-faq"
+  },
+  "rounds": [
+    {
+      "id": "core-disclosure",
+      "title": "Core disclosure",
+      "interviewerPrompt": "Start with a predictable disclosure interaction. The parent must own the open-item state while each child reports only the user's toggle intent.",
+      "constraints": [
+        "Render four FAQ items from stable data owned by the parent.",
+        "Each child must receive its open state and emit or call a toggle event instead of owning disclosure state locally.",
+        "Activating a closed question must open its answer, and activating the same question again must close it.",
+        "Initially every FAQ answer must be closed."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-accordion-toggle",
+          "name": "Round 1 · A question opens and closes from parent-owned state",
+          "steps": [
+            {
+              "type": "expectCount",
+              "selector": ".faq-header",
+              "count": 4
+            },
+            {
+              "type": "expectCount",
+              "selector": ".faq-body",
+              "count": 0
+            },
+            {
+              "type": "click",
+              "selector": ".faq-header",
+              "index": 0
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".faq-body",
+              "count": 1,
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".faq-header",
+              "index": 0,
+              "attribute": "aria-expanded",
+              "expected": "true"
+            },
+            {
+              "type": "click",
+              "selector": ".faq-header",
+              "index": 0
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".faq-body",
+              "count": 0,
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".faq-header",
+              "index": 0,
+              "attribute": "aria-expanded",
+              "expected": "false"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mode-transition-invariant",
+      "title": "Mode transition invariant",
+      "interviewerPrompt": "Add single-open and multi-open modes without changing the state model. Mode transitions must preserve the first-opened item deterministically.",
+      "constraints": [
+        "Single-open mode must be the default and opening one item must close any previously open item.",
+        "Enabling multi-open mode must preserve the current disclosure and allow additional items to open.",
+        "Track open items in insertion order rather than sorting them by rendered position.",
+        "Disabling multi-open mode with several items open must keep only the first-opened item."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-accordion-modes",
+          "name": "Round 2 · Single, multi, and multi-to-single transitions stay deterministic",
+          "steps": [
+            {
+              "type": "expectCount",
+              "selector": ".faq-body",
+              "count": 0
+            },
+            {
+              "type": "click",
+              "selector": ".faq-header",
+              "index": 0
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".faq-body",
+              "count": 1,
+              "timeoutMs": 700
+            },
+            {
+              "type": "click",
+              "selector": ".faq-header",
+              "index": 1
+            },
+            {
+              "type": "expectCount",
+              "selector": ".faq-body",
+              "count": 1
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".faq-header",
+              "index": 0,
+              "attribute": "aria-expanded",
+              "expected": "false"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".faq-header",
+              "index": 1,
+              "attribute": "aria-expanded",
+              "expected": "true"
+            },
+            {
+              "type": "click",
+              "selector": ".mode-toggle input"
+            },
+            {
+              "type": "click",
+              "selector": ".faq-header",
+              "index": 0
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".faq-body",
+              "count": 2,
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".faq-header",
+              "index": 0,
+              "attribute": "aria-expanded",
+              "expected": "true"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".faq-header",
+              "index": 1,
+              "attribute": "aria-expanded",
+              "expected": "true"
+            },
+            {
+              "type": "click",
+              "selector": ".mode-toggle input"
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".faq-body",
+              "count": 1,
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".faq-header",
+              "index": 0,
+              "attribute": "aria-expanded",
+              "expected": "false"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".faq-header",
+              "index": 1,
+              "attribute": "aria-expanded",
+              "expected": "true"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "keyboard-focus-navigation",
+      "title": "Keyboard focus navigation",
+      "interviewerPrompt": "Add roving focus behavior without coupling focus movement to disclosure state. Navigation must wrap and leave every answer exactly as it was.",
+      "constraints": [
+        "ArrowDown must move focus to the next question trigger and wrap from the final trigger to the first.",
+        "ArrowUp must move focus to the previous question trigger and wrap from the first trigger to the final one.",
+        "Home must focus the first question trigger and End must focus the final question trigger.",
+        "ArrowUp, ArrowDown, Home, and End must not open or close any answer."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-accordion-keyboard",
+          "name": "Round 3 · Arrow and boundary keys wrap focus without changing disclosure state",
+          "steps": [
+            {
+              "type": "expectCount",
+              "selector": ".faq-body",
+              "count": 0
+            },
+            {
+              "type": "key",
+              "selector": ".faq-header",
+              "index": 0,
+              "key": "ArrowUp"
+            },
+            {
+              "type": "expectFocused",
+              "selector": ".faq-header",
+              "index": 3
+            },
+            {
+              "type": "key",
+              "selector": ".faq-header",
+              "index": 3,
+              "key": "ArrowDown"
+            },
+            {
+              "type": "expectFocused",
+              "selector": ".faq-header",
+              "index": 0
+            },
+            {
+              "type": "key",
+              "selector": ".faq-header",
+              "index": 0,
+              "key": "ArrowDown"
+            },
+            {
+              "type": "expectFocused",
+              "selector": ".faq-header",
+              "index": 1
+            },
+            {
+              "type": "key",
+              "selector": ".faq-header",
+              "index": 1,
+              "key": "Home"
+            },
+            {
+              "type": "expectFocused",
+              "selector": ".faq-header",
+              "index": 0
+            },
+            {
+              "type": "key",
+              "selector": ".faq-header",
+              "index": 0,
+              "key": "End"
+            },
+            {
+              "type": "expectFocused",
+              "selector": ".faq-header",
+              "index": 3
+            },
+            {
+              "type": "expectCount",
+              "selector": ".faq-body",
+              "count": 0
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".faq-header",
+              "index": 0,
+              "attribute": "aria-expanded",
+              "expected": "false"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".faq-header",
+              "index": 3,
+              "attribute": "aria-expanded",
+              "expected": "false"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "accessible-disclosure-contract",
+      "title": "Accessible disclosure contract",
+      "interviewerPrompt": "Finish with a durable disclosure contract. Native controls and stable trigger-to-panel relationships must survive every state transition.",
+      "constraints": [
+        "Render every question trigger as a native button with type button.",
+        "Give each trigger the stable id faq-trigger-{item-id} and connect it to faq-panel-{item-id} with aria-controls.",
+        "Expose aria-expanded on every trigger and render each open panel as a region labelled by its trigger.",
+        "Hide the decorative expand/collapse indicator from assistive technology."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-accordion-aria",
+          "name": "Round 4 · Stable ids and ARIA relationships describe each disclosure",
+          "steps": [
+            {
+              "type": "expectCount",
+              "selector": ".faq-header",
+              "count": 4
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".faq-header",
+              "index": 0,
+              "attribute": "id",
+              "expected": "faq-trigger-faq-1"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".faq-header",
+              "index": 0,
+              "attribute": "aria-controls",
+              "expected": "faq-panel-faq-1"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".faq-header",
+              "index": 1,
+              "attribute": "id",
+              "expected": "faq-trigger-faq-2"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".faq-header",
+              "index": 1,
+              "attribute": "aria-controls",
+              "expected": "faq-panel-faq-2"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".faq-header",
+              "index": 2,
+              "attribute": "id",
+              "expected": "faq-trigger-faq-3"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".faq-header",
+              "index": 2,
+              "attribute": "aria-controls",
+              "expected": "faq-panel-faq-3"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".faq-header",
+              "index": 3,
+              "attribute": "id",
+              "expected": "faq-trigger-faq-4"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".faq-header",
+              "index": 3,
+              "attribute": "aria-controls",
+              "expected": "faq-panel-faq-4"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".indicator[aria-hidden=\"true\"]",
+              "count": 4
+            },
+            {
+              "type": "click",
+              "selector": ".faq-header",
+              "index": 0
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".faq-body",
+              "count": 1,
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".faq-header",
+              "index": 0,
+              "attribute": "aria-expanded",
+              "expected": "true"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".faq-body",
+              "attribute": "id",
+              "expected": "faq-panel-faq-1"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".faq-body",
+              "attribute": "role",
+              "expected": "region"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".faq-body",
+              "attribute": "aria-labelledby",
+              "expected": "faq-trigger-faq-1"
+            }
+          ]
+        },
+        {
+          "id": "pressure-accordion-native-buttons",
+          "name": "Round 4 · Every trigger uses native button semantics",
+          "steps": [
+            {
+              "type": "expectCount",
+              "selector": ".faq-header",
+              "count": 4
+            },
+            {
+              "type": "expectCount",
+              "selector": "button.faq-header",
+              "count": 4
+            },
+            {
+              "type": "expectAttribute",
+              "selector": "button.faq-header",
+              "index": 0,
+              "attribute": "type",
+              "expected": "button"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": "button.faq-header",
+              "index": 1,
+              "attribute": "type",
+              "expected": "button"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": "button.faq-header",
+              "index": 2,
+              "attribute": "type",
+              "expected": "button"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": "button.faq-header",
+              "index": 3,
+              "attribute": "type",
+              "expected": "button"
+            },
+            {
+              "type": "click",
+              "selector": "button.faq-header",
+              "index": 2
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".faq-body",
+              "count": 1,
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectAttribute",
+              "selector": "button.faq-header",
+              "index": 2,
+              "attribute": "aria-expanded",
+              "expected": "true"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "debrief": {
+    "title": "You built a resilient accordion contract",
+    "summary": "You kept disclosure state predictable under pressure while mode changes, keyboard focus, and assistive-technology relationships expanded the interaction surface.",
+    "takeaways": [
+      "Keep the ordered open-item collection in the parent and let child items report intent through events or callbacks.",
+      "Normalize multi-open state at the mode boundary so returning to single-open preserves the first-opened item deterministically.",
+      "Move focus with ArrowUp, ArrowDown, Home, and End without coupling navigation to disclosure state.",
+      "Use native buttons and stable trigger-panel ids so ARIA relationships remain trustworthy across renders."
+    ],
+    "frameworkNotes": {
+      "react": "Keep ordered item ids in parent state, pass toggle and navigation callbacks to each child, and use refs to focus the requested trigger after keyboard events.",
+      "angular": "Keep ordered item ids in the parent component, let child outputs report toggle and navigation intent, and query stable trigger elements only when moving focus.",
+      "vue": "Keep ordered item ids in a parent ref, let child emits report toggle and navigation intent, and use template refs or stable ids for focus movement after keyboard events."
+    }
+  },
+  "solutionAssets": {
+    "react": "assets/sb/react/solution/react-accordion-faq-pressure-solution.v1.json",
+    "angular": "assets/sb/angular/solution/angular-faq-accordion-pressure-solution.v1.json",
+    "vue": "assets/sb/vue/solution/vue-accordion-faq-pressure-solution.v1.json"
+  }
+}

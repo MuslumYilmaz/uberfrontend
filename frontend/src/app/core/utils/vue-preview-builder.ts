@@ -376,7 +376,7 @@ function parseSfc(src: string): {
     const templateIds = new Set<string>();
 
     // {{ ... }}, :prop="...", v-foo="...", @click="..." içindeki expression'lar
-    const exprRE = /{{([^}]*)}}|:(\w+)="([^"]+)"|v-[\w-]+="([^"]+)"|@[\w-]+="([^"]+)"/g;
+    const exprRE = /{{([^}]*)}}|:([\w-]+)="([^"]+)"|v-[\w-]+="([^"]+)"|@[\w-]+="([^"]+)"/g;
     const identRE = /[A-Za-z_$][\w$]*/g;
     const reserved = new Set([
       'true', 'false', 'null', 'undefined',
