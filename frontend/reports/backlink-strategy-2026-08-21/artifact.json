@@ -1,0 +1,191 @@
+{
+  "surface": "report",
+  "manifest": {
+    "version": 1,
+    "surface": "report",
+    "title": "FrontendAtlas Backlink Portföy Stratejisi",
+    "description": "Semrush donor araştırması, yüksek otoriteli kurumsal fırsatlar ve düşük-AS niş sayfalar için karar notu.",
+    "generatedAt": "2026-08-21T12:01:33Z",
+    "charts": [
+      {
+        "id": "outcome_composition",
+        "title": "Temas sonuçlarının segmentlere göre durumu",
+        "subtitle": "21 Ağustos 2026; her çubuk ilgili segmentteki doğrulanmış temas izlerinin bileşimini gösterir.",
+        "type": "bar",
+        "dataset": "outcome_composition",
+        "sourceId": "registry_snapshot",
+        "valueFormat": "number",
+        "settings": {
+          "orientation": "horizontal",
+          "groupMode": "stacked100"
+        },
+        "encodings": {
+          "x": { "field": "segment", "type": "nominal", "label": "Segment" },
+          "y": { "field": "count", "type": "quantitative", "label": "Temas sayısı" },
+          "color": { "field": "outcome", "type": "nominal", "label": "Durum" },
+          "tooltip": [
+            { "field": "count", "type": "quantitative", "label": "Kayıt", "format": "number" }
+          ]
+        },
+        "layout": "full"
+      }
+    ],
+    "tables": [
+      {
+        "id": "segment_outcomes",
+        "title": "Outreach sonuç olgunluğu",
+        "subtitle": "21 Ağustos 2026 registry anlık görüntüsü; live_link satırları outreach'e bağlanamadığı için actioned sayılmadı.",
+        "dataset": "segment_outcomes",
+        "sourceId": "registry_snapshot",
+        "defaultSort": {
+          "field": "actioned",
+          "direction": "desc"
+        },
+        "density": "spacious",
+        "columns": [
+          { "field": "segment", "label": "Segment", "type": "text" },
+          { "field": "all_rows", "label": "Tüm kayıtlar", "format": "number" },
+          { "field": "actioned", "label": "Temas izi", "format": "number" },
+          { "field": "positive", "label": "Olumlu insan yanıtı", "format": "number" },
+          { "field": "negative", "label": "Açık olumsuz", "format": "number" },
+          { "field": "unresolved", "label": "Sonuçlanmamış", "format": "number" }
+        ]
+      }
+    ],
+    "sources": [
+      {
+        "id": "registry_snapshot",
+        "label": "FrontendAtlas backlink outreach registry — 21 Ağustos 2026",
+        "path": "frontend/reports/backlink-strategy-2026-08-21/analysis.sql",
+        "query": {
+          "engine": "sqlite",
+          "description": "Registry satırlarını kurumsal, resource/directory ve diğer segmentlere ayırır; doğrulanmış temas izlerini olumlu, açık olumsuz ve sonuçlanmamış olarak toplar. Grafik, bu üç toplu sonuç sütununun deterministik uzun-form dönüşümüdür.",
+          "sql": "WITH classified AS (SELECT *, CASE WHEN category IN ('academic','university_career','government_resource','official_docs','open_source_resource','open_source_data','security_standard') THEN 'Kurumsal proxy' WHEN category IN ('resource_library','directory') THEN 'Resource library + directory' ELSE 'Diğer' END AS segment, CASE WHEN state IN ('contacted','submitted','human_positive','human_negative') THEN 1 WHEN contacted_on <> '' AND state IN ('deferred','excluded','closed') THEN 1 ELSE 0 END AS is_actioned, CASE WHEN state = 'human_positive' THEN 1 ELSE 0 END AS is_positive, CASE WHEN state = 'human_negative' THEN 1 WHEN root_domain IN ('theodinproject.com','cssauthor.com') AND state = 'excluded' AND contacted_on <> '' THEN 1 ELSE 0 END AS is_negative FROM backlink_outreach_registry) SELECT segment, COUNT(*) AS all_rows, SUM(is_actioned) AS actioned, SUM(CASE WHEN is_actioned = 1 THEN is_positive ELSE 0 END) AS positive, SUM(CASE WHEN is_actioned = 1 THEN is_negative ELSE 0 END) AS negative, SUM(CASE WHEN is_actioned = 1 AND is_positive = 0 AND is_negative = 0 THEN 1 ELSE 0 END) AS unresolved FROM classified GROUP BY segment ORDER BY actioned DESC;",
+          "language": "sql",
+          "executed_at": "2026-08-21T12:01:33Z",
+          "tables_used": ["backlink_outreach_registry"]
+        }
+      }
+    ],
+    "blocks": [
+      {
+        "id": "title",
+        "type": "markdown",
+        "body": "# FrontendAtlas Backlink Portföy Stratejisi"
+      },
+      {
+        "id": "executive_summary",
+        "type": "markdown",
+        "body": "## Executive Summary\n\n- **Semrush araştırmasına devam edelim; ancak aracı hacim üretmek için değil, değerli donor kalıplarını keşfetmek için kullanalım.** AS 0–20 kişisel sayfalar ana kanal olmamalı.\n- **Eforun yaklaşık %80'i yüksek değerli kurumsal ve gerçek akademik fırsatlara ayrılmalı.** Önerilen dağılım: %55 devlet/standart/resmî dokümantasyon/aktif açık kaynak, %25 doğrulanmış öğretim üyesi veya güncel ders kaynağı, %15 güçlü niş resource hub ve %5 düşük-AS kişisel kaynak listesi.\n- **Düşük-AS fırsatlar yalnız fırsatçı kuyrukta kalmalı.** Sourav tipi aday; exact konu uyumu, gerçek sahip, indexlenebilir/followed bağlantı emsali ve beş dakikayı aşmayan outreach koşullarının tümünü geçerse denenebilir. UCL tipi öğrenci-template sayfaları doğrudan elenir.\n- **Henüz kanal bazlı kabul oranı çıkaramayız.** Registry'deki 50 doğrulanmış temas izinin 43'ü sonuçlanmamış durumda; mevcut sonuç örneği stratejiyi yalnızca yönlendirebilir, kanıtlayamaz."
+      },
+      {
+        "id": "evidence_maturity",
+        "type": "markdown",
+        "sourceId": "registry_snapshot",
+        "body": "## Mevcut sonuç verisi tek kanala kapanmak için çok erken\n\nRegistry'de **266** kayıt ve outreach'e bağlanabilen **50** temas/sonuç izi var. Bunların **43'ü (%86)** hâlâ `contacted`, `submitted` veya temas sonrası `deferred`; yalnız **2 olumlu insan yanıtı** ve **5 açık olumsuz sonuç** bulunuyor. Ayrıca iki `live_link` satırının `contacted_on` alanı boş olduğu için bu bağlantılar mevcut outreach çalışmalarına güvenle atfedilemiyor.\n\n**Sonuç:** Üniversitelerin veya yüksek-AS kurumların daha yüksek kabul oranına sahip olduğunu henüz söyleyemeyiz. Buna rağmen tek başarının beklenen değeri daha yüksek olduğu için ana eforu bu segmente vermek rasyonel; düşük-AS kanalını tamamen kapatmak ise konu uyumlu ve çok ucuz fırsatları gereksiz yere kaçırır."
+      },
+      {
+        "id": "outcome_chart",
+        "type": "chart",
+        "chartId": "outcome_composition",
+        "layout": "full"
+      },
+      {
+        "id": "outcome_table",
+        "type": "table",
+        "tableId": "segment_outcomes",
+        "layout": "full"
+      },
+      {
+        "id": "authority_interpretation",
+        "type": "markdown",
+        "body": "## AS bir veto değil, efor sınırı olmalı\n\n[Semrush](https://www.semrush.com/kb/747-authority-score-backlink-scores), Authority Score'u link gücü, tahmini organik trafik ve spam sinyallerinden oluşan karşılaştırmalı bir metrik olarak tanımlıyor; düşük skorun otomatik olarak spam anlamına gelmediğini ve niş uyumun sonucu değiştirebileceğini açıkça belirtiyor. [Google'ın bağlantı rehberi](https://developers.google.com/search/docs/crawling-indexing/links-crawlable) ise doğrudan `href`, açıklayıcı anchor ve çevresindeki bağlamın önemini vurguluyor.\n\nBu nedenle karar sırası `AS > her şey` olmamalı. Önce gerçek sahiplik, tam konu uyumu, bağlamsal yerleşim, indexlenebilirlik, doğrudan followed bağlantı emsali ve benzersiz referring root kontrol edilmeli; AS daha sonra beklenen link gücünü ve ayrılacak eforu belirlemeli."
+      },
+      {
+        "id": "allocation",
+        "type": "markdown",
+        "body": "## Önerilen efor dağılımı\n\n1. **%55 — yüksek otoriteli kurumsal kaynaklar:** devlet, standart kuruluşları, resmî dokümantasyon ve aktif açık kaynak projeleri. Kabul olasılığı düşük olabilir; fakat tek başarılı placement yüksek kalıcılık ve güven sinyali taşır.\n2. **%25 — gerçek akademik kaynaklar:** yalnız güncel veya evergreen ders/fakülte sayfası, aktif öğretim üyesi sahipliği ve mevcut harici kaynak kullanımı doğrulanırsa. Üniversite outreach'i mevcut politika gereği 15 Eylül 2026'ya kadar gönderilmemeli.\n3. **%15 — güçlü niş resource hub'lar:** açık submission kanalı, gerçek trafik, takip edilen yayın emsali ve FrontendAtlas varlığıyla tam uyum aranmalı. Bu segment değer ile kabul ihtimali arasındaki dengeyi sağlar.\n4. **%5 — AS 0–20 kişisel listeler:** yalnız 6/10 veya üzeri sayfa puanı ve en fazla beş dakikalık outreach maliyetiyle. İkinci takip gönderilmemeli."
+      },
+      {
+        "id": "operating_rules",
+        "type": "markdown",
+        "body": "## Uygulama kuralları\n\n- **8–10 puan:** aktif kuyruğa al ve kişiselleştirilmiş outreach yap.\n- **6–7 puan:** yalnız açık kanal varsa ve araştırma + outreach toplamı 10 dakikayı aşmıyorsa dene.\n- **5 ve altı:** ele.\n\nZorunlu veto nedenleri: öğrenci/template/profile/footer yerleşimi, UGC veya nofollow-only yüzey, ücretli/affiliate anlaşması, sahipliği belirsiz arşiv, yanlış canonical/noindex ve konu uyumsuzluğu. Başarı metriği ham backlink sayısı değil, **canlı bağlantı kalite puanı / harcanan outreach saati** olmalı. Referral trafik, Search Console görünürlüğü ve 60–90 günlük kalıcılık ikincil doğrulama ölçütleridir."
+      },
+      {
+        "id": "next_steps",
+        "type": "markdown",
+        "body": "## Sonraki adımlar\n\n- Semrush'ta her hafta en fazla 10 yeni donor'u sayfa seviyesinde puanla; yalnız 8+ puanlıları ana kuyruğa, 6–7 puanlıları fırsatçı kuyruğa geçir.\n- 15 Eylül'e kadar üç akademik adayı tamamen doğrula fakat iletişim gönderme; ardından üç kişilik pilotu başlat.\n- Düşük-AS kanalında Sourav dahil ilk 6 denemenin sonuçlarını ayrı etiketle. On denemede en az %25 canlı link veya orta segmente yakın puan/saat verimi görülmezse kanalı kapat.\n- Yüksek değerli kanalda 20 nitelikli denemede hiç anlamlı insan yanıtı oluşmazsa mesaj ve asset uyumunu yeniden tasarla; kalite eşiğini düşürme."
+      },
+      {
+        "id": "further_questions",
+        "type": "markdown",
+        "body": "## Further Questions\n\n- Hangi asset türü en çok insan yanıtı ve canlı link üretiyor: erişilebilirlik incident'ları, system-design rehberleri, coding lab'ları veya CV aracı?\n- Düşük-AS kişisel sayfalar gerçekten daha yüksek kabul oranı sağlıyor mu, yoksa yalnız daha hızlı cevap mı veriyor?\n- Üniversite pilotinde ders sahibi öğretim üyesi sayfaları, kariyer merkezi sayfalarından daha iyi kalıcılık ve referral sağlıyor mu?"
+      },
+      {
+        "id": "caveats",
+        "type": "markdown",
+        "sourceId": "registry_snapshot",
+        "body": "## Caveats and Assumptions\n\n- Registry bir anlık durum tablosu; tüm aşama geçmişini saklamıyor. Bu yüzden `live_link` ile belirli bir outreach'i ilişkilendirmek her zaman mümkün değil.\n- Tarihli temasların büyük bölümü 18–21 Ağustos 2026 arasında yapıldı; 14 günlük yanıt penceresi henüz dolmadı.\n- Registry her satırda standart AS/Page AS alanı tutmuyor. Kurumsal karşılaştırma kategori proxy'sidir; gerçek Semrush otorite karşılaştırması değildir.\n- 'Tek kurumsal backlink 100 düşük kaliteli backlink'e eşittir' şeklinde güvenilir bir katsayı yoktur. Bu rapor, mutlak link ağırlığı değil beklenen değer ve efor tahsisi önerir."
+      }
+    ]
+  },
+  "snapshot": {
+    "version": 1,
+    "generatedAt": "2026-08-21T12:01:33Z",
+    "status": "ready",
+    "datasets": {
+      "outcome_composition": [
+        { "segment": "Kurumsal", "outcome": "Olumlu", "count": 2 },
+        { "segment": "Kurumsal", "outcome": "Açık olumsuz", "count": 3 },
+        { "segment": "Kurumsal", "outcome": "Sonuçlanmamış", "count": 20 },
+        { "segment": "Resource/directory", "outcome": "Olumlu", "count": 0 },
+        { "segment": "Resource/directory", "outcome": "Açık olumsuz", "count": 1 },
+        { "segment": "Resource/directory", "outcome": "Sonuçlanmamış", "count": 12 },
+        { "segment": "Diğer", "outcome": "Olumlu", "count": 0 },
+        { "segment": "Diğer", "outcome": "Açık olumsuz", "count": 1 },
+        { "segment": "Diğer", "outcome": "Sonuçlanmamış", "count": 11 }
+      ],
+      "segment_outcomes": [
+        {
+          "segment": "Kurumsal proxy",
+          "all_rows": 93,
+          "actioned": 25,
+          "positive": 2,
+          "negative": 3,
+          "unresolved": 20
+        },
+        {
+          "segment": "Resource library + directory",
+          "all_rows": 39,
+          "actioned": 13,
+          "positive": 0,
+          "negative": 1,
+          "unresolved": 12
+        },
+        {
+          "segment": "Diğer",
+          "all_rows": 134,
+          "actioned": 12,
+          "positive": 0,
+          "negative": 1,
+          "unresolved": 11
+        }
+      ]
+    }
+  },
+  "sources": [
+    {
+      "id": "registry_snapshot",
+      "label": "FrontendAtlas backlink outreach registry — 21 Ağustos 2026",
+      "path": "frontend/reports/backlink-strategy-2026-08-21/analysis.sql",
+      "query": {
+        "engine": "sqlite",
+        "description": "Registry satırlarını kurumsal, resource/directory ve diğer segmentlere ayırır; doğrulanmış temas izlerini olumlu, açık olumsuz ve sonuçlanmamış olarak toplar. Grafik, bu üç toplu sonuç sütununun deterministik uzun-form dönüşümüdür.",
+        "sql": "WITH classified AS (SELECT *, CASE WHEN category IN ('academic','university_career','government_resource','official_docs','open_source_resource','open_source_data','security_standard') THEN 'Kurumsal proxy' WHEN category IN ('resource_library','directory') THEN 'Resource library + directory' ELSE 'Diğer' END AS segment, CASE WHEN state IN ('contacted','submitted','human_positive','human_negative') THEN 1 WHEN contacted_on <> '' AND state IN ('deferred','excluded','closed') THEN 1 ELSE 0 END AS is_actioned, CASE WHEN state = 'human_positive' THEN 1 ELSE 0 END AS is_positive, CASE WHEN state = 'human_negative' THEN 1 WHEN root_domain IN ('theodinproject.com','cssauthor.com') AND state = 'excluded' AND contacted_on <> '' THEN 1 ELSE 0 END AS is_negative FROM backlink_outreach_registry) SELECT segment, COUNT(*) AS all_rows, SUM(is_actioned) AS actioned, SUM(CASE WHEN is_actioned = 1 THEN is_positive ELSE 0 END) AS positive, SUM(CASE WHEN is_actioned = 1 THEN is_negative ELSE 0 END) AS negative, SUM(CASE WHEN is_actioned = 1 AND is_positive = 0 AND is_negative = 0 THEN 1 ELSE 0 END) AS unresolved FROM classified GROUP BY segment ORDER BY actioned DESC;",
+        "language": "sql",
+        "executed_at": "2026-08-21T12:01:33Z",
+        "tables_used": ["backlink_outreach_registry"]
+      }
+    }
+  ]
+}

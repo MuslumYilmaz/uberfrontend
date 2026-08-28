@@ -1,0 +1,289 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-08-25T08:27:59Z",
+  "decision_date": "2026-08-25",
+  "objective": "Run a non-US, GSC-qualified faculty/course-owner backlink pilot with individual preflights and without lowering the 7/10 hard gates.",
+  "scope": {
+    "pilot_capacity_roots": 12,
+    "send_caps_removed_by_user": true,
+    "individual_preflight_required": true,
+    "bcc_used": 0,
+    "institution_cooldown_days": 90,
+    "max_open_contacts_per_target": 2,
+    "emails_sent_today": 4,
+    "gmail_sent_verified_today": 4,
+    "immediate_bounces_today": 0,
+    "forms_submitted_today": 0,
+    "issues_or_pull_requests_today": 0,
+    "product_code_changes": 0,
+    "us_university_outreach": 0,
+    "generic_career_center_outreach": 0
+  },
+  "decision": {
+    "reviewed_opportunities": 13,
+    "new_sent": 4,
+    "prior_contact_suppression": 1,
+    "conditional_future_rechecks": 2,
+    "hard_or_policy_vetoed": 6,
+    "sent_countries": 4,
+    "sent_regions": 2,
+    "minimum_country_requirement": 6,
+    "minimum_region_requirement": 4,
+    "threshold_lowered": false,
+    "list_artificially_filled": false,
+    "reason": "Four opportunities passed their individual registry, Gmail, referring-domain, exact-page GSC, donor/target and official-route preflights and were Sent-verified without an immediate bounce. A fifth institution was not resent because the preflight found verified prior outreach to the exact course channel on 2026-08-18. Two opportunities remain conditional future rechecks and six fail an exact hard or policy gate."
+  },
+  "policy": {
+    "total_pilot_limit": 12,
+    "daily_or_weekly_send_cap": null,
+    "each_opportunity_requires_fresh_individual_preflight": true,
+    "bcc_permitted": false,
+    "maximum_one_faculty_or_course_owner_contact_per_institution_in_90_days": true,
+    "maximum_open_contacts_per_frontendatlas_target": 2,
+    "us_universities_paused_until": "2026-09-15",
+    "general_career_center_outreach_paused_until": "2026-09-15"
+  },
+  "scoring_contract": {
+    "topic_fit": 3,
+    "contextual_link_surface": 2,
+    "exact_donor_strength": 2,
+    "gsc_opportunity": 2,
+    "official_route_and_personalization": 1,
+    "minimum_total": 7,
+    "minimum_topic_fit": 3,
+    "minimum_link_surface": 1.5,
+    "bands": {
+      "priority": "8-10",
+      "experiment": "7-7.5",
+      "no_outreach": "below 7 or any hard-gate failure"
+    }
+  },
+  "gsc_contract": {
+    "window": "2026-07-20 through 2026-08-16",
+    "search_type": "Web",
+    "scope": "worldwide, all devices, exact page",
+    "source_generated_on": "2026-08-19",
+    "note": "Only exact-page rows materialized in the dated local GSC artifact were used. Where no row materialized, the report states: no materialized exact-page GSC evidence; score 0 by contract. This is not evidence of zero impressions."
+  },
+  "data_quality": {
+    "registry": {
+      "status": "complete",
+      "post_write_data_rows": 347,
+      "post_write_unique_roots": 346,
+      "collision_policy": "Root-domain history, the one-institution/90-day rule, same-target open-contact counts and opportunity-key collisions were checked before each send."
+    },
+    "gmail": {
+      "status": "complete_for_four_new_sends_and_one_prior_contact_collision",
+      "coverage": "Sent, Drafts and Scheduled collision checks; four Sent verifications; immediate bounce checks; historical collision verification",
+      "retained_data": "Counts, dates and non-sensitive states only"
+    },
+    "semrush": {
+      "status": "fresh_snapshot_reused",
+      "snapshot_date": "2026-08-24",
+      "total_referring_domains": 99,
+      "active_referring_domains": 91,
+      "active_domains_missing_from_registry": 0,
+      "live_api_limitation": "The connected Semrush API reported insufficient units; no missing metric was estimated."
+    },
+    "public_web": {
+      "status": "complete_for_four_actioned_opportunities",
+      "coverage": "HTTP response, English content, current ownership, canonical/indexability signals, contextual href/rel precedent, target sitemap/public access and official route",
+      "conditional_rechecks": "Manchester still requires live access plus exact-page GSC evidence; Lund requires fresh exact-page GSC evidence."
+    }
+  },
+  "historical_academic_baseline": {
+    "pre_pilot_minimum_verifiable_actioned_roots": 19,
+    "country_distribution": [
+      { "country": "United States", "roots": 13 },
+      { "country": "Spain", "roots": 2 },
+      { "country": "Canada", "roots": 2 },
+      { "country": "Austria", "roots": 1 },
+      { "country": "United Kingdom", "roots": 1 }
+    ],
+    "verified_live_academic_roots": 1,
+    "verified_live_example_country": "Austria",
+    "interpretation": "The pre-pilot history is US-heavy. The Austrian live result supports testing a broader geography, but does not prove that the academic link caused any ranking change. The four new contacts on 2026-08-25 are tracked separately as pilot actions."
+  },
+  "pilot_execution": [
+    {
+      "rank": 1,
+      "root_domain": "ubbcluj.ro",
+      "country": "Romania",
+      "region": "Europe",
+      "donor_url": "https://www.cs.ubbcluj.ro/~forest/wp/",
+      "frontendatlas_url": "https://frontendatlas.com/angular/interview-questions",
+      "gsc_impressions": 866,
+      "gsc_average_position": 18.6,
+      "gsc_score": 1.5,
+      "total_score": 8.5,
+      "state": "contacted",
+      "action_date": "2026-08-25",
+      "next_check_on": "2026-09-01",
+      "verification": "Current 2025-2026 English course; Angular module and theoretical exam questions; HTTP 200; safe absent canonical; normal followed learning links; current faculty ownership; target public, self-canonical and sitemap-listed; registry, Gmail and active-referrer snapshot clear; Gmail Sent verified; no immediate bounce.",
+      "risk": "A positive reply or live link is not guaranteed, and no causal ranking claim can be made."
+    },
+    {
+      "rank": 2,
+      "root_domain": "fullstackopen.com",
+      "country": "Finland",
+      "region": "Europe",
+      "donor_url": "https://fullstackopen.com/en/part2/getting_data_from_server",
+      "frontendatlas_url": "https://frontendatlas.com/javascript/trivia/js-async-race-conditions",
+      "gsc_impressions": 2025,
+      "gsc_average_position": 8.7,
+      "gsc_score": 2,
+      "total_score": 8.5,
+      "state": "contacted",
+      "action_date": "2026-08-25",
+      "next_check_on": "2026-09-01",
+      "verification": "Current University of Helsinki-backed English course; HTTP 200; self-canonical; no noindex signal; normal followed contextual references; promises, event loop, fetch, effects and server data; target public and sitemap-listed; registry, Gmail and active-referrer snapshot clear; Gmail Sent verified; no immediate bounce.",
+      "risk": "The course contribution guide emphasizes corrections and broken-link replacements, so the suggestion was framed as an optional student companion rather than a link-only demand."
+    },
+    {
+      "rank": 3,
+      "root_domain": "ut.ee",
+      "country": "Estonia",
+      "region": "Europe",
+      "donor_url": "https://courses.cs.ut.ee/2026/WAD/fall/Main/Lectures",
+      "frontendatlas_url": "https://frontendatlas.com/javascript/trivia/js-async-race-conditions",
+      "gsc_impressions": 2025,
+      "gsc_average_position": 8.7,
+      "gsc_score": 2,
+      "total_score": 9,
+      "state": "contacted",
+      "action_date": "2026-08-25",
+      "next_check_on": "2026-09-01",
+      "verification": "Current English 2026/27 course page; HTTP 200; index,follow; safe absent canonical; normal followed contextual references; active faculty ownership; the JavaScript module covers promises, call stack, event-loop queues, AJAX and Fetch; registry, Gmail and active-referrer snapshot clear; Gmail Sent verified; no immediate bounce.",
+      "risk": "The exact donor placement remains wholly at the course owner's discretion."
+    },
+    {
+      "rank": 4,
+      "root_domain": "iitm.ac.in",
+      "country": "India",
+      "region": "Asia",
+      "donor_url": "https://study.iitm.ac.in/ds/course_pages/BSCS2006.html",
+      "frontendatlas_url": "https://frontendatlas.com/vue/interview-questions",
+      "gsc_impressions": 2080,
+      "gsc_average_position": 18.4,
+      "gsc_score": 1.5,
+      "total_score": 8,
+      "state": "contacted",
+      "action_date": "2026-08-25",
+      "next_check_on": "2026-09-01",
+      "verification": "Live English institutional course page; HTTP 200; safe absent canonical; no noindex signal; normal followed course references; current course ownership; Weeks 4-7 cover Vue, APIs, advanced Vue and state management; target public, self-canonical and sitemap-listed; registry, Gmail and active-referrer snapshot clear; Gmail Sent verified; no immediate bounce.",
+      "risk": "A general interview-practice companion may be less likely to fit a curriculum page than a narrowly scoped exercise."
+    }
+  ],
+  "prior_contact_suppressions": [
+    {
+      "rank": 5,
+      "root_domain": "sun.ac.za",
+      "country": "South Africa",
+      "region": "Africa",
+      "donor_url": "https://cs.sun.ac.za/courses/cs334/",
+      "historical_frontendatlas_url": "https://frontendatlas.com/machine-coding",
+      "proposed_frontendatlas_url": "https://frontendatlas.com/react/interview-questions",
+      "gsc_impressions_for_proposed_target": 1309,
+      "gsc_average_position_for_proposed_target": 20.4,
+      "total_score_before_collision": 8.5,
+      "state": "contacted",
+      "historical_action_date": "2026-08-18",
+      "collision_verified_on": "2026-08-25",
+      "decision": "No resend. Gmail preflight found verified prior outreach to the exact course channel, so the institution is suppressed under the 90-day rule."
+    }
+  ],
+  "conditional_opportunities": [
+    {
+      "rank": 6,
+      "root_domain": "manchester.ac.uk",
+      "country": "United Kingdom",
+      "region": "Europe",
+      "donor_url": "https://elearning.bmh.manchester.ac.uk/accessibility/quick-checks-accessibility/",
+      "frontendatlas_url": "https://frontendatlas.com/html/trivia/web-accessibility-make-page-accessible",
+      "total_score": null,
+      "state": "conditional",
+      "next_check_condition": "Recheck live donor access and then refresh exact-page GSC evidence.",
+      "missing_gate": "Live access is unresolved; no materialized exact-page GSC evidence; score 0 by contract."
+    },
+    {
+      "rank": 7,
+      "root_domain": "lth.se",
+      "country": "Sweden",
+      "region": "Europe",
+      "donor_url": "https://kurser.lth.se/kursplaner/26_27-en/TNSN05.html",
+      "frontendatlas_url": "https://frontendatlas.com/html/trivia/web-accessibility-make-page-accessible",
+      "total_score": null,
+      "state": "conditional",
+      "next_check_condition": "Refresh exact-page GSC evidence; keep this non-parallel with Manchester.",
+      "missing_gate": "The current 2026/27 English course page is live and has a viable contextual surface, but there is no materialized exact-page GSC evidence; score 0 by contract."
+    }
+  ],
+  "hard_gate_vetoes": [
+    {
+      "rank": 8,
+      "root_domain": "mq.edu.au",
+      "country": "Australia",
+      "region": "Oceania",
+      "reason": "The current 2026 course page and ownership were verified, but comparable external learning links are rel=nofollow; the contextual link-surface minimum fails."
+    },
+    {
+      "rank": 9,
+      "root_domain": "icet-lab.eu",
+      "country": "Sweden",
+      "region": "Europe",
+      "reason": "The active 2026 institutional teaching page is current and canonical, but all external teaching links use external nofollow noopener; the link-surface minimum fails."
+    },
+    {
+      "rank": 10,
+      "root_domain": "unibo.it",
+      "country": "Italy",
+      "region": "Europe",
+      "reason": "The reviewed Bologna page has no contextual external href precedent, and there is no materialized exact-page GSC evidence; score 0 by contract."
+    },
+    {
+      "rank": 11,
+      "root_domain": "masoudkf.com",
+      "country": "Canada",
+      "region": "North America",
+      "donor_url": "https://comp3512.masoudkf.com/week-06",
+      "reason": "The reviewed Mount Royal COMP3512 page is an old archive without a verified institutional crawl path, and there is no materialized exact-page GSC evidence; score 0 by contract."
+    },
+    {
+      "rank": 12,
+      "root_domain": "otago.ac.nz",
+      "country": "New Zealand",
+      "region": "Oceania",
+      "reason": "The reviewed course page is an old term archive."
+    },
+    {
+      "rank": 13,
+      "root_domain": "canterbury.ac.nz",
+      "country": "New Zealand",
+      "region": "Oceania",
+      "reason": "The relevant course material is PDF-only."
+    }
+  ],
+  "monitoring": {
+    "contacted_roots": ["ubbcluj.ro", "fullstackopen.com", "ut.ee", "iitm.ac.in"],
+    "checks": [
+      { "offset": "+7 days", "date": "2026-09-01", "action": "Read-only reply and bounce checks for all four new sends; no automatic follow-up." },
+      { "offset": "+14 days", "date": "2026-09-08", "action": "Read-only reply, donor-page and referring-domain checks for all four new sends; no automatic follow-up." },
+      { "offset": "+28 days", "date": "2026-09-22", "action": "Final pilot response-state review before closing or preserving human-positive/live states." }
+    ],
+    "current_bounces": 0,
+    "current_sent_sample": 4,
+    "same_target_open_contacts": {
+      "https://frontendatlas.com/angular/interview-questions": 1,
+      "https://frontendatlas.com/javascript/trivia/js-async-race-conditions": 2,
+      "https://frontendatlas.com/vue/interview-questions": 1
+    },
+    "pause_rule": "After five sends, pause if the bounce rate exceeds 20 percent.",
+    "measurement_rule": "If a contextual live link appears, freeze title, H1, canonical and main internal-link structure for 56 days and evaluate GSC at T0, T+14, T+35, T+56, with permanence at T+84."
+  },
+  "privacy": {
+    "stored_email_addresses": 0,
+    "stored_person_names": 0,
+    "stored_message_bodies": 0,
+    "stored_gmail_urls": 0
+  }
+}
