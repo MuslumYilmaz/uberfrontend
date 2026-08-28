@@ -1,6 +1,7 @@
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { ActivatedRoute, Router, convertToParamMap, provideRouter } from '@angular/router';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { signal } from '@angular/core';
 import { of, Subject, throwError } from 'rxjs';
 import {
   InterviewAvailability,
@@ -8,6 +9,7 @@ import {
 } from '../../core/models/interview.model';
 import { SystemDesignListItem } from '../../core/models/system-design.model';
 import { InterviewService } from '../../core/services/interview.service';
+import { AuthService } from '../../core/services/auth.service';
 import { QuestionService } from '../../core/services/question.service';
 import { InterviewSetupComponent } from './interview-setup.component';
 
@@ -76,6 +78,7 @@ describe('InterviewSetupComponent', () => {
 
   const session: InterviewSession = {
     id: 'session-1',
+    protocolVersion: 2,
     status: 'mcq_active',
     format: 'coding',
     level: 'mid',
@@ -105,6 +108,10 @@ describe('InterviewSetupComponent', () => {
       imports: [InterviewSetupComponent],
       providers: [
         { provide: InterviewService, useValue: service },
+        {
+          provide: AuthService,
+          useValue: { user: signal({ _id: 'setup-user', role: 'user' }) },
+        },
         { provide: QuestionService, useValue: questionService },
         provideRouter([]),
         provideNoopAnimations(),
@@ -157,6 +164,27 @@ describe('InterviewSetupComponent', () => {
     expect(fixture.nativeElement.querySelector('[data-testid="interview-mobile-block"]')).not.toBeNull();
   });
 
+  it('allows an active session to resume below the start viewport and warns that its timer continues', () => {
+    service.getAvailability.and.returnValue(of(availability({
+      minViewportWidth: 5000,
+      activeSession: {
+        id: 'active-mobile',
+        status: 'mcq_active',
+        format: 'coding',
+        level: 'mid',
+        track: 'react',
+      },
+    })));
+    fixture.detectChanges();
+
+    const text = fixture.nativeElement.textContent as string;
+    expect(component.viewportBlocked()).toBeTrue();
+    expect(text).toContain('You can resume here');
+    expect(text).toContain('server timer continue');
+    expect(text).toContain('Resume interview');
+    expect(fixture.nativeElement.querySelector('[data-testid="interview-start"]')).toBeNull();
+  });
+
   it('does not treat an unlimited premium quota as exhausted', () => {
     service.getAvailability.and.returnValue(of(availability({
       quota: { unlimited: true, remaining: null, limit: null, resetAt: null },
@@ -202,6 +230,36 @@ describe('InterviewSetupComponent', () => {
 
     expect(fixture.nativeElement.querySelector('[data-testid="interview-start"]')).toBeNull();
     expect(fixture.nativeElement.textContent).toContain('Resume interview');
+  });
+
+  it('shows an owned active session during a hard halt without offering a working resume action', () => {
+    service.getAvailability.and.returnValue(of(availability({
+      enabled: false,
+      accessMode: 'public',
+      canCreate: false,
+      operationalState: 'halt',
+      activeSessionPolicy: 'halted',
+      shutdownNotice: {
+        code: 'INTERVIEW_HALTED',
+        message: 'Interview work is paused while an incident is investigated.',
+      },
+      activeSession: {
+        id: 'active-halted',
+        status: 'coding_active',
+        format: 'coding',
+        level: 'mid',
+        track: 'react',
+      },
+    })));
+    fixture.detectChanges();
+
+    const resume = Array.from(
+      fixture.nativeElement.querySelectorAll('button') as NodeListOf<HTMLButtonElement>,
+    ).find((button) => button.textContent?.includes('temporarily paused'));
+    expect(resume).toBeDefined();
+    expect(resume?.disabled).toBeTrue();
+    expect(fixture.nativeElement.textContent).toContain('incident is investigated');
+    expect(fixture.nativeElement.querySelector('[data-testid="interview-start"]')).toBeNull();
   });
 
   it('refreshes availability when another tab wins the create race', () => {
@@ -475,5 +533,15 @@ describe('InterviewSetupComponent', () => {
 
     expect(fixture.nativeElement.textContent).toContain('Not enough evidence');
     expect(fixture.nativeElement.textContent).not.toContain('Not-enough-evidence');
+  });
+
+  it('explains why an abandoned interview has no answer review', () => {
+    setRouteQuery({ ended: 'abandoned' });
+
+    fixture.detectChanges();
+
+    const text = fixture.nativeElement.textContent as string;
+    expect(text).toContain('Interview ended');
+    expect(text).toContain('withheld to prevent extraction of the question bank');
   });
 });

@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-react-functional-queue-mid-v1",
+  "conceptId": "mcq-react-subscription-stale-closure-updates",
   "revision": 1,
   "author": {
     "id": "codex-react-author",

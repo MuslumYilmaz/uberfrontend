@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-vue-vmemo-dependency-contract-mid-v1",
+  "conceptId": "mcq-vue-vmemo-dependency-contract",
   "revision": 1,
   "author": {
     "id": "codex-vue-expansion-author",

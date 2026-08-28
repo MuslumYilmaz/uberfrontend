@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-html-native-button-jr-v1",
+  "conceptId": "mcq-html-native-button-semantics",
   "revision": 3,
   "author": {
     "id": "codex-core-author",

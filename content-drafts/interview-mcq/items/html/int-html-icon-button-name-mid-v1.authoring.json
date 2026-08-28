@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-html-icon-button-name-mid-v1",
+  "conceptId": "mcq-html-stateful-icon-control-semantics",
   "revision": 3,
   "author": {
     "id": "codex-core-author",

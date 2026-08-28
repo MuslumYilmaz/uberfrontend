@@ -1,0 +1,133 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-js-websocket-buffered-flow-control-sr-v1",
+  "conceptId": "mcq-javascript-websocket-buffered-flow-control",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-08-24"
+  },
+  "public": {
+    "technology": "javascript",
+    "level": "senior",
+    "difficultyBand": "stretch",
+    "format": "production-scenario",
+    "competency": "websocket-buffered-flow-control",
+    "prompt": "A telemetry page produces outbound messages faster than a classic `WebSocket` can transmit on a slow connection. Memory grows because `send()` keeps accepting data. Without changing the server protocol, which client policy adds a practical pressure boundary?",
+    "options": [
+      {
+        "id": "choice-af6949b41e",
+        "label": "Continue calling `send()` and use each incoming `message` event as proof that the outbound queue drained."
+      },
+      {
+        "id": "choice-d5573c9624",
+        "label": "Continue calling `send()` until `readyState` changes, because OPEN reports the remaining outbound capacity."
+      },
+      {
+        "id": "choice-08ac50b19c",
+        "label": "Pause or shed producers above a `bufferedAmount` high-water mark and resume after it falls below a low-water mark."
+      }
+    ],
+    "estimatedSeconds": 155
+  },
+  "private": {
+    "correctOptionId": "choice-08ac50b19c",
+    "answerProof": {
+      "summary": "Classic WebSocket provides no built-in backpressure; bufferedAmount exposes queued application bytes, so application-level watermarks can bound further production.",
+      "decisiveConstraints": [
+        "The browser uses the classic WebSocket API.",
+        "The server protocol cannot be replaced in this release.",
+        "The client must stop unbounded growth before the connection closes."
+      ],
+      "claims": [
+        {
+          "statement": "The classic WebSocket API has no built-in backpressure mechanism when messages arrive or are produced faster than they can be processed.",
+          "sourceIds": [
+            "mdn-websocket"
+          ]
+        },
+        {
+          "statement": "WebSocket bufferedAmount reports the number of application bytes queued by send calls but not yet transmitted to the network.",
+          "sourceIds": [
+            "mdn-websocket-buffered-amount"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-af6949b41e",
+        "verdict": "incorrect",
+        "explanation": "Inbound messages do not acknowledge bytes in the browser's outbound queue, so their timing cannot bound queued sends.",
+        "plausibility": "Many request-response protocols use an incoming response as evidence that earlier outbound work completed.",
+        "misconceptionTag": "incoming-message-acknowledges-send-buffer",
+        "falsifyingConstraint": "The protocol provides no stated acknowledgement relationship between inbound messages and outbound browser buffering."
+      },
+      {
+        "optionId": "choice-d5573c9624",
+        "verdict": "incorrect",
+        "explanation": "OPEN indicates connection state, not available queue capacity, and it can remain OPEN while buffered data grows.",
+        "plausibility": "Ready state is the required gate before sending and changes when a connection starts closing.",
+        "misconceptionTag": "open-state-means-send-capacity",
+        "falsifyingConstraint": "The client needs a pressure signal before connection state changes."
+      },
+      {
+        "optionId": "choice-08ac50b19c",
+        "verdict": "correct",
+        "explanation": "Application watermarks turn bufferedAmount into a producer gate and prevent indefinite queue growth on slow links.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "remediationTopics": [
+      "websocket-backpressure",
+      "buffered-amount",
+      "producer-watermarks"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: WebSocket",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/API/WebSocket",
+        "sourceId": "mdn-websocket"
+      },
+      {
+        "title": "MDN: WebSocket bufferedAmount",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/API/WebSocket/bufferedAmount",
+        "sourceId": "mdn-websocket-buffered-amount"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "mdn-websocket",
+          "title": "MDN: WebSocket",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/WebSocket",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-08-24",
+          "revision": "mdn-page-snapshot-2026-08-24",
+          "official": true,
+          "copiedText": false
+        },
+        {
+          "id": "mdn-websocket-buffered-amount",
+          "title": "MDN: WebSocket bufferedAmount",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/WebSocket/bufferedAmount",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-08-24",
+          "revision": "mdn-page-snapshot-2026-08-24",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

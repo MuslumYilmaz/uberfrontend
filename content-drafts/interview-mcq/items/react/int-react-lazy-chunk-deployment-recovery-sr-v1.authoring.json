@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-react-lazy-chunk-deployment-recovery-sr-v1",
+  "conceptId": "mcq-react-lazy-chunk-deployment-recovery",
   "revision": 1,
   "author": {
     "id": "codex-react-author",

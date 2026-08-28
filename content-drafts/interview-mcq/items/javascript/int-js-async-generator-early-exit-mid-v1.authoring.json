@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-js-async-generator-early-exit-mid-v1",
+  "conceptId": "mcq-javascript-async-generator-early-exit",
   "revision": 1,
   "author": {
     "id": "codex-core-author",

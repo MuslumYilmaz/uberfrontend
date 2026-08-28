@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-vue-emits-listener-fallthrough-jr-v1",
+  "conceptId": "mcq-vue-emits-listener-fallthrough",
   "revision": 1,
   "author": {
     "id": "codex-vue-expansion-author",

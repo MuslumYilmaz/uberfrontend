@@ -4,6 +4,7 @@ const crypto = require('crypto');
 const fs = require('fs');
 
 const { interviewConfig } = require('./config');
+const INTERVIEW_ARTIFACT_PINS = require('../../content/interview/interview-artifact-pins-v1.json');
 
 const GOLD_STATUSES = new Set(['editorial-gold', 'calibrated-gold']);
 const PUBLIC_FORBIDDEN_KEYS = new Set([
@@ -29,8 +30,8 @@ const PUBLIC_FORBIDDEN_KEYS = new Set([
   'validationFixtures',
 ]);
 
-let artifactCache = null;
-let systemDesignArtifactCache = null;
+let artifactCache = new Map();
+let systemDesignArtifactCache = new Map();
 
 class InterviewContentError extends Error {
   constructor(message) {
@@ -62,6 +63,30 @@ function readJsonWithRaw(filePath, label) {
   } catch {
     fail(`${label} artifact is invalid JSON`);
   }
+}
+
+function canonicalize(value) {
+  if (Array.isArray(value)) return value.map(canonicalize);
+  if (!value || typeof value !== 'object') return value;
+  return Object.fromEntries(
+    Object.keys(value)
+      .sort()
+      .map((key) => [key, canonicalize(value[key])])
+  );
+}
+
+function canonicalSha256(value) {
+  return crypto
+    .createHash('sha256')
+    .update(JSON.stringify(canonicalize(value)))
+    .digest('hex');
+}
+
+function cacheKey(paths, allowCandidate) {
+  return JSON.stringify({
+    allowCandidate: Boolean(allowCandidate),
+    paths: Object.values(paths).map((value) => String(value)),
+  });
 }
 
 function assertSafeStatus(status, label, config) {
@@ -107,6 +132,66 @@ function assertFinalApproval({
   ) {
     fail(`${label} private approval does not match its release`);
   }
+}
+
+function assertPinnedArtifactFiles({ release, pin, artifacts, label }) {
+  if (!GOLD_STATUSES.has(release?.status)) return;
+  for (const kind of ['public', 'private', 'release']) {
+    const expected = String(pin?.artifactSha256?.[kind] || '').trim().toLowerCase();
+    if (!/^[a-f0-9]{64}$/.test(expected) || artifacts?.[kind]?.sha256 !== expected) {
+      fail(`${label} ${kind} artifact does not match the approved artifact pins`);
+    }
+  }
+}
+
+function assertPinnedBankRelease(release, artifacts) {
+  if (!GOLD_STATUSES.has(release?.status)) return;
+  const pin = INTERVIEW_ARTIFACT_PINS?.mcq || {};
+  const approval = release?.finalApproval || {};
+  if (
+    INTERVIEW_ARTIFACT_PINS?.schemaVersion !== '1.0.0'
+    || release.bankId !== pin.bankId
+    || release.bankVersion !== pin.bankVersion
+    || release.status !== pin.status
+    || release.contentHash !== pin.bankContentHash
+    || approval.approvedBy !== INTERVIEW_ARTIFACT_PINS.approvedBy
+    || approval.approvedAt !== INTERVIEW_ARTIFACT_PINS.approvedAt
+    || approval.selectionMetadataHash !== pin.selectionMetadataHash
+  ) {
+    fail('bank release does not match the approved artifact pins');
+  }
+  assertPinnedArtifactFiles({
+    release,
+    pin,
+    artifacts,
+    label: 'bank',
+  });
+}
+
+function assertPinnedCodingRelease(release, artifacts) {
+  if (!GOLD_STATUSES.has(release?.status)) return;
+  const pin = INTERVIEW_ARTIFACT_PINS?.coding || {};
+  const approval = release?.finalApproval || {};
+  if (
+    INTERVIEW_ARTIFACT_PINS?.schemaVersion !== '1.0.0'
+    || release.registryId !== pin.registryId
+    || release.registryVersion !== pin.registryVersion
+    || release.status !== pin.status
+    || release.registryContentHash !== pin.registryContentHash
+    || release.selectionDefinitionHash !== pin.selectionDefinitionHash
+    || release.definitionHash !== pin.definitionHash
+    || approval.approvedBy !== INTERVIEW_ARTIFACT_PINS.approvedBy
+    || approval.approvedAt !== INTERVIEW_ARTIFACT_PINS.approvedAt
+    || approval.selectionDefinitionHash !== pin.selectionDefinitionHash
+  ) {
+    fail('coding registry release does not match the approved artifact pins');
+  }
+  assertPinnedArtifactFiles({
+    release,
+    pin,
+    artifacts,
+    label: 'coding registry',
+  });
 }
 
 function assertArtifactHash(release, kind, artifact, label) {
@@ -226,13 +311,15 @@ function normalizeQuestion(raw, index) {
 }
 
 function normalizePrivateQuestion(raw, label) {
+  const id = requiredString(raw?.id, `${label}.id`);
   const correctOptionId = requiredString(raw?.correctOptionId, `${label}.correctOptionId`);
   const answerProofSummary = String(raw?.answerProof?.summary || '').trim();
   const explanation = String(raw?.explanation || answerProofSummary || '').trim();
   return {
-    id: requiredString(raw?.id, `${label}.id`),
+    id,
     revision: requiredRevision(raw?.revision, `${label}.revision`),
     contentHash: requiredString(raw?.contentHash, `${label}.contentHash`),
+    conceptId: String(raw?.conceptId || '').trim() || id,
     correctOptionId,
     explanation,
     optionRationales: Array.isArray(raw?.optionRationales)
@@ -271,6 +358,11 @@ function normalizeBank(publicArtifact, privateArtifact, releaseArtifact, config)
     expectedVersion: bankVersion,
     hashField: 'bankContentHash',
     expectedHash: contentHash,
+  });
+  assertPinnedBankRelease(release, {
+    public: publicArtifact,
+    private: privateArtifact,
+    release: releaseArtifact,
   });
   for (const [label, document] of [['public', publicDoc], ['private', privateDoc]]) {
     if (document?.bankId !== bankId || document?.bankVersion !== bankVersion) {
@@ -315,7 +407,28 @@ function normalizeBank(publicArtifact, privateArtifact, releaseArtifact, config)
     if (!question.options.some((option) => option.id === privateItem.correctOptionId)) {
       fail(`bank answer key is not an option for ${key}`);
     }
+    question.conceptId = privateItem.conceptId;
     answerByKey.set(key, privateItem);
+  }
+
+  if (GOLD_STATUSES.has(status)) {
+    const selectionMetadataHash = canonicalSha256(
+      questions
+        .map((question) => ({
+          id: question.id,
+          revision: question.revision,
+          conceptId: question.conceptId,
+          technology: question.technology,
+          level: question.level,
+          difficultyBand: question.difficultyBand,
+          format: question.format,
+          estimatedSeconds: question.estimatedSeconds,
+        }))
+        .sort((left, right) => left.id.localeCompare(right.id))
+    );
+    if (selectionMetadataHash !== INTERVIEW_ARTIFACT_PINS?.mcq?.selectionMetadataHash) {
+      fail('bank selection metadata does not match the approved artifact pins');
+    }
   }
 
   const refKeys = new Set(
@@ -414,10 +527,12 @@ function normalizeCodingVariant(raw, index) {
 }
 
 function normalizeCodingPrivate(raw, label) {
+  const id = requiredString(raw?.id, `${label}.id`);
   return {
-    id: requiredString(raw?.id, `${label}.id`),
+    id,
     revision: requiredRevision(raw?.revision, `${label}.revision`),
     contentHash: requiredString(raw?.contentHash, `${label}.contentHash`),
+    conceptId: String(raw?.conceptId || '').trim() || id,
     rubric: raw?.rubric && typeof raw.rubric === 'object' ? raw.rubric : {},
     remediationTopics: Array.isArray(raw?.remediationTopics)
       ? raw.remediationTopics.map((topic) => String(topic || '').trim()).filter(Boolean)
@@ -457,6 +572,11 @@ function normalizeCodingRegistry(publicArtifact, privateArtifact, releaseArtifac
     hashField: 'registryContentHash',
     expectedHash: contentHash,
   });
+  assertPinnedCodingRelease(release, {
+    public: publicArtifact,
+    private: privateArtifact,
+    release: releaseArtifact,
+  });
   for (const [label, document] of [['public', publicDoc], ['private', privateDoc]]) {
     if (document?.registryId !== registryId || document?.registryVersion !== registryVersion) {
       fail(`coding ${label} identity does not match its release`);
@@ -486,6 +606,26 @@ function normalizeCodingRegistry(publicArtifact, privateArtifact, releaseArtifac
     const privateVariant = privateByKey.get(key);
     if (!privateVariant || privateVariant.contentHash !== variant.contentHash) {
       fail(`coding private variant does not match ${key}`);
+    }
+    variant.conceptId = privateVariant.conceptId;
+  }
+
+  if (GOLD_STATUSES.has(status)) {
+    const selectionDefinitionHash = canonicalSha256({
+      schemaVersion: privateDoc.schemaVersion,
+      registryId,
+      registryVersion,
+      variants: variants
+        .map((variant) => ({
+          id: variant.id,
+          conceptId: variant.conceptId,
+          track: variant.track,
+          level: variant.level,
+        }))
+        .sort((left, right) => left.id.localeCompare(right.id)),
+    });
+    if (selectionDefinitionHash !== INTERVIEW_ARTIFACT_PINS?.coding?.selectionDefinitionHash) {
+      fail('coding selection metadata does not match the approved artifact pins');
     }
   }
 
@@ -910,6 +1050,14 @@ function normalizeSystemDesignRegistry(
     if (!privateScenario || privateScenario.contentHash !== scenario.contentHash) {
       fail(`system design private scenario does not match ${key}`);
     }
+    scenario.sourceContentId = String(
+      privateScenario.sourceEvidence?.sourceContentId || '',
+    ).trim() || null;
+    scenario.conceptId = String(
+      privateScenario.sourceEvidence?.conceptId
+      || privateScenario.sourceEvidence?.sourceContentId
+      || '',
+    ).trim() || scenario.id;
     const ref = refs.find((entry) => (
       entry?.id === scenario.id
       && Number(entry?.revision) === scenario.revision
@@ -954,28 +1102,27 @@ function loadInterviewArtifacts({
       || (allowInternalCandidate === true && baseConfig.accessMode === 'internal')
     ),
   };
+  const key = cacheKey({
+    bankPublic: config.bankPaths.public,
+    bankPrivate: config.bankPaths.private,
+    bankRelease: config.bankPaths.release,
+    codingPublic: config.codingPaths.public,
+    codingPrivate: config.codingPaths.private,
+    codingRelease: config.codingPaths.release,
+  }, config.allowCandidate);
+  if (!force && artifactCache.has(key)) return artifactCache.get(key);
+
   const bankPublic = readJsonWithRaw(config.bankPaths.public, 'bank public');
   const bankPrivate = readJsonWithRaw(config.bankPaths.private, 'bank private');
   const bankRelease = readJsonWithRaw(config.bankPaths.release, 'bank release');
   const codingPublic = readJsonWithRaw(config.codingPaths.public, 'coding public');
   const codingPrivate = readJsonWithRaw(config.codingPaths.private, 'coding private');
   const codingRelease = readJsonWithRaw(config.codingPaths.release, 'coding release');
-  const signature = [
-    bankPublic.signature,
-    bankPrivate.signature,
-    bankRelease.signature,
-    codingPublic.signature,
-    codingPrivate.signature,
-    codingRelease.signature,
-    config.allowCandidate,
-  ].join('|');
-  if (!force && artifactCache?.signature === signature) return artifactCache.value;
-
   const value = {
     bank: normalizeBank(bankPublic, bankPrivate, bankRelease, config),
     coding: normalizeCodingRegistry(codingPublic, codingPrivate, codingRelease, config),
   };
-  artifactCache = { signature, value };
+  artifactCache.set(key, value);
   return value;
 }
 
@@ -994,6 +1141,11 @@ function loadSystemDesignArtifacts({
       )
     ),
   };
+  const key = cacheKey(config.systemDesignPaths, config.allowCandidate);
+  if (!force && systemDesignArtifactCache.has(key)) {
+    return systemDesignArtifactCache.get(key);
+  }
+
   const publicArtifact = readJsonWithRaw(
     config.systemDesignPaths.public,
     'system design public'
@@ -1006,31 +1158,19 @@ function loadSystemDesignArtifacts({
     config.systemDesignPaths.release,
     'system design release'
   );
-  const signature = [
-    publicArtifact.signature,
-    privateArtifact.signature,
-    releaseArtifact.signature,
-    config.allowCandidate,
-  ].join('|');
-  if (
-    !force
-    && systemDesignArtifactCache?.signature === signature
-  ) {
-    return systemDesignArtifactCache.value;
-  }
   const value = normalizeSystemDesignRegistry(
     publicArtifact,
     privateArtifact,
     releaseArtifact,
     config
   );
-  systemDesignArtifactCache = { signature, value };
+  systemDesignArtifactCache.set(key, value);
   return value;
 }
 
 function resetInterviewArtifactsCache() {
-  artifactCache = null;
-  systemDesignArtifactCache = null;
+  artifactCache = new Map();
+  systemDesignArtifactCache = new Map();
 }
 
 module.exports = {

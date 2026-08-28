@@ -21,6 +21,7 @@ export class FaCardComponent {
   @Input({ transform: booleanAttribute }) disabled = false;
   @Input() interactive: boolean | '' | null = null;
   @Input() padding: FaCardPadding = 'md';
+  @Input('tabindex') requestedTabIndex: number | string | null = null;
   constructor(private readonly host: ElementRef<HTMLElement>) {}
 
   @HostBinding('class.fa-card')
@@ -74,10 +75,14 @@ export class FaCardComponent {
 
   @HostBinding('attr.tabindex')
   get tabIndexAttr(): string | null {
-    if (!this.disabled || (!this.isAnchor && !this.isButton)) {
-      return null;
-    }
-    return '-1';
+    if (this.disabled && (this.isAnchor || this.isButton)) return '-1';
+    if (
+      this.requestedTabIndex === null
+      || this.requestedTabIndex === undefined
+      || this.requestedTabIndex === ''
+    ) return null;
+    const parsed = Number(this.requestedTabIndex);
+    return Number.isInteger(parsed) ? String(parsed) : null;
   }
 
   @HostListener('click', ['$event'])

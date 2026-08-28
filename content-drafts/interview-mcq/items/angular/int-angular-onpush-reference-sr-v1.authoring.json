@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-angular-onpush-reference-sr-v1",
+  "conceptId": "mcq-angular-onpush-input-identity",
   "revision": 4,
   "author": {
     "id": "codex-angular-author",

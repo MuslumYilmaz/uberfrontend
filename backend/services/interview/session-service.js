@@ -6,6 +6,10 @@ const mongoose = require('mongoose');
 const InterviewSession = require('../../models/InterviewSession');
 const User = require('../../models/User');
 const { isProEntitlementActive } = require('../billing/entitlements');
+const {
+  claimAbandonSlot,
+  releaseAbandonSlot,
+} = require('./abandon-limit');
 const { interviewConfig } = require('./config');
 const {
   loadInterviewArtifacts,
@@ -19,6 +23,12 @@ const {
   selectSystemDesignScenario,
 } = require('./selection');
 const {
+  buildExposurePayload,
+  loadSelectionContext,
+  saveExposure,
+  selectionOverlapTelemetry,
+} = require('./exposure');
+const {
   consumeRunnerToken,
   createRunnerToken,
   releaseRunnerTokenConsumption,
@@ -27,6 +37,7 @@ const {
 const {
   abandonSession: transitionAbandon,
   addSeconds,
+  evaluateMcqMutationAdmission,
   reconcileSession,
   startCoding: transitionStartCoding,
   submitCoding: transitionSubmitCoding,
@@ -49,6 +60,8 @@ const PRIVATE_SELECT = (
   + '+systemDesignRevealedClarificationIds +resultSnapshot'
 );
 const MAX_MUTATION_RECEIPTS = 100;
+const MAX_AVAILABILITY_CACHE_ENTRIES = 8;
+const availabilityMatrixCache = new Map();
 
 class InterviewServiceError extends Error {
   constructor(statusCode, code, message, details = undefined) {
@@ -166,7 +179,7 @@ function normalizeSelection(
 
 function entitlementSnapshot(user, now) {
   const entitlement = user?.entitlements?.pro || {};
-  const premium = isProEntitlementActive(entitlement);
+  const premium = isProEntitlementActive(entitlement, now);
   return {
     tier: premium ? 'premium' : 'free',
     status: String(entitlement.status || 'none'),
@@ -417,6 +430,7 @@ function serializeSession(session, { now = new Date() } = {}) {
     : null;
   return {
     id: String(session._id),
+    protocolVersion: Number(session.protocolVersion || 1),
     format: interviewFormat,
     status: session.status,
     active: Boolean(session.active),
@@ -493,7 +507,7 @@ function serializeSession(session, { now = new Date() } = {}) {
       tier: session.entitlementSnapshot.tier,
       capturedAt: new Date(session.entitlementSnapshot.capturedAt).toISOString(),
     },
-    resultAvailable: session.status === 'completed' || session.status === 'abandoned',
+    resultAvailable: session.status === 'completed',
     xpAwarded: 0,
   };
 }
@@ -508,6 +522,23 @@ async function saveWithConflictHandling(session) {
     }
     throw error;
   }
+}
+
+function canonicalMutationDetails(session, now, extra = {}) {
+  return {
+    currentVersion: Number(session.__v || 0),
+    session: serializeSession(session, { now }),
+    ...extra,
+  };
+}
+
+function v2ServiceError(session, now, statusCode, code, message, extra) {
+  serviceError(
+    statusCode,
+    code,
+    message,
+    canonicalMutationDetails(session, now, extra)
+  );
 }
 
 async function findOwnedSession(userId, sessionId) {
@@ -531,38 +562,6 @@ async function reconcileAndSave(session, now, config) {
   return session;
 }
 
-function updateSeenStat(map, id, at) {
-  const existing = map.get(id) || { count: 0, lastSeenAt: null };
-  const timestamp = new Date(at || 0);
-  map.set(id, {
-    count: existing.count + 1,
-    lastSeenAt: (
-      !existing.lastSeenAt || timestamp.getTime() > new Date(existing.lastSeenAt).getTime()
-    ) ? timestamp : existing.lastSeenAt,
-  });
-}
-
-async function loadSeenStats(userId) {
-  const history = await InterviewSession.find({ userId })
-    .select('questions.id codingVariant.id systemDesignScenario.id createdAt')
-    .lean();
-  const questions = new Map();
-  const coding = new Map();
-  const systemDesign = new Map();
-  for (const session of history) {
-    for (const question of session.questions || []) {
-      updateSeenStat(questions, question.id, session.createdAt);
-    }
-    if (session.codingVariant?.id) {
-      updateSeenStat(coding, session.codingVariant.id, session.createdAt);
-    }
-    if (session.systemDesignScenario?.id) {
-      updateSeenStat(systemDesign, session.systemDesignScenario.id, session.createdAt);
-    }
-  }
-  return { questions, coding, systemDesign };
-}
-
 function answerSnapshotFor(artifacts, questions) {
   return questions.map((question) => {
     const answer = artifacts.bank.answerByKey.get(`${question.id}@${question.revision}`);
@@ -578,6 +577,123 @@ function answerSnapshotFor(artifacts, questions) {
       remediationTopics: answer.remediationTopics,
     };
   });
+}
+
+function serializeActiveSessionSummary(session) {
+  if (!session) return null;
+  return {
+    id: String(session._id),
+    format: session.format || 'coding',
+    status: session.status,
+    level: session.level,
+    track: session.track,
+    updatedAt: new Date(session.updatedAt).toISOString(),
+  };
+}
+
+function serializeRecentResultSummary(session) {
+  return {
+    id: String(session._id),
+    format: session.format || 'coding',
+    status: session.status,
+    level: session.level,
+    track: session.track,
+    completedAt: new Date(
+      session.completedAt || session.abandonedAt || session.updatedAt
+    ).toISOString(),
+    correct: Number(session.resultSnapshot?.mcq?.correct || 0),
+    total: Number(session.resultSnapshot?.mcq?.total || 0),
+    codingOutcome: session.resultSnapshot?.coding?.outcome || null,
+    systemDesignOutcome: session.resultSnapshot?.systemDesign?.outcome || null,
+    practiceSignal: session.resultSnapshot?.systemDesign?.practiceSignal || null,
+    xpAwarded: 0,
+  };
+}
+
+function availabilityMatrixFor({ artifacts, systemDesignArtifacts, config }) {
+  const key = JSON.stringify({
+    bank: artifacts.bank.contentHash,
+    coding: artifacts.coding.contentHash,
+    systemDesign: systemDesignArtifacts?.contentHash || null,
+    mcqSecondsByLevel: config.mcqSecondsByLevel,
+  });
+  const cached = availabilityMatrixCache.get(key);
+  if (cached) return cached;
+
+  const availability = [];
+  const systemDesignByLevel = new Map();
+  for (const level of LEVELS) {
+    let systemDesignAvailable = Boolean(systemDesignArtifacts);
+    if (systemDesignAvailable) {
+      try {
+        selectSystemDesignScenario({
+          scenarios: systemDesignArtifacts.scenarios,
+          level,
+          seed: `availability:system-design:${level}`,
+        });
+      } catch {
+        systemDesignAvailable = false;
+      }
+    }
+    systemDesignByLevel.set(level, systemDesignAvailable);
+
+    for (const track of TRACKS) {
+      let available = true;
+      try {
+        selectQuestions({
+          questions: artifacts.bank.questions,
+          track,
+          level,
+          maxEstimatedSeconds: config.mcqSecondsByLevel[level],
+          seed: `availability:${track}:${level}`,
+          targetExposureCount: 0,
+          remainingHardExclusionMocks: 4,
+        });
+        selectCodingVariant({
+          variants: artifacts.coding.variants,
+          track,
+          level,
+          seed: `availability:${track}:${level}`,
+        });
+      } catch {
+        available = false;
+      }
+      availability.push(Object.freeze({ format: 'coding', level, track, available }));
+    }
+  }
+  const systemDesignAvailability = LEVELS.flatMap((level) => TRACKS.map((track) => (
+    Object.freeze({
+      format: 'system-design',
+      level,
+      track,
+      available: systemDesignByLevel.get(level),
+    })
+  )));
+  const matrix = Object.freeze({
+    availability: Object.freeze(availability),
+    systemDesignAvailability: Object.freeze(systemDesignAvailability),
+  });
+  availabilityMatrixCache.set(key, matrix);
+  if (availabilityMatrixCache.size > MAX_AVAILABILITY_CACHE_ENTRIES) {
+    availabilityMatrixCache.delete(availabilityMatrixCache.keys().next().value);
+  }
+  return matrix;
+}
+
+async function getResumeSummaryForUser(userId, { now = new Date() } = {}) {
+  const active = await getActiveSession(userId, { now });
+  const recentResults = await InterviewSession.find({
+    userId,
+    status: 'completed',
+  })
+    .sort({ completedAt: -1, createdAt: -1 })
+    .limit(5)
+    .select('+resultSnapshot')
+    .lean();
+  return {
+    activeSession: serializeActiveSessionSummary(active),
+    lastResults: recentResults.map(serializeRecentResultSummary),
+  };
 }
 
 async function getConfigForUser(userId, {
@@ -631,64 +747,22 @@ async function getConfigForUser(userId, {
         format: 'system-design',
       })),
     };
-  const active = await getActiveSession(userId, { now });
-  const recentResults = await InterviewSession.find({
-    userId,
-    status: { $in: ['completed', 'abandoned'] },
-  })
-    .sort({ completedAt: -1, abandonedAt: -1, createdAt: -1 })
-    .limit(5)
-    .select('+resultSnapshot')
-    .lean();
-  const availability = [];
-  const systemDesignAvailability = [];
-  for (const level of LEVELS) {
-    for (const track of TRACKS) {
-      let available = true;
-      try {
-        selectQuestions({
-          questions: artifacts.bank.questions,
-          track,
-          level,
-          seed: `availability:${track}:${level}`,
-        });
-        selectCodingVariant({
-          variants: artifacts.coding.variants,
-          track,
-          level,
-          seed: `availability:${track}:${level}`,
-        });
-      } catch {
-        available = false;
-      }
-      availability.push({ format: 'coding', level, track, available });
-      let systemDesignAvailable = Boolean(systemDesignArtifacts);
-      if (systemDesignAvailable) {
-        try {
-          selectSystemDesignScenario({
-            scenarios: systemDesignArtifacts.scenarios,
-            level,
-            seed: `availability:system-design:${level}`,
-          });
-        } catch {
-          systemDesignAvailable = false;
-        }
-      }
-      systemDesignAvailability.push({
-        format: 'system-design',
-        level,
-        track,
-        available: systemDesignAvailable,
-      });
-    }
-  }
+  const resumeSummary = await getResumeSummaryForUser(userId, { now });
+  const { availability, systemDesignAvailability } = availabilityMatrixFor({
+    artifacts,
+    systemDesignArtifacts,
+    config,
+  });
   return {
     enabled: config.enabled,
+    protocolVersion: 2,
     levels: LEVELS,
     tracks: TRACKS,
     timingModes: ['standard'],
     timing: {
       mcqSeconds: config.mcqSeconds,
+      mcqSecondsByLevel: { ...config.mcqSecondsByLevel },
+      mcqMaxIngressSeconds: config.mcqMaxIngressSeconds,
       codingReadySeconds: config.codingReadySeconds,
       systemDesignSeconds: { ...config.systemDesignSeconds },
     },
@@ -709,32 +783,7 @@ async function getConfigForUser(userId, {
     ],
     availability,
     systemDesignAvailability,
-    activeSession: active
-      ? {
-        id: String(active._id),
-        format: active.format || 'coding',
-        status: active.status,
-        level: active.level,
-        track: active.track,
-        updatedAt: new Date(active.updatedAt).toISOString(),
-      }
-      : null,
-    lastResults: recentResults.map((session) => ({
-      id: String(session._id),
-      format: session.format || 'coding',
-      status: session.status,
-      level: session.level,
-      track: session.track,
-      completedAt: new Date(
-        session.completedAt || session.abandonedAt || session.updatedAt
-      ).toISOString(),
-      correct: Number(session.resultSnapshot?.mcq?.correct || 0),
-      total: Number(session.resultSnapshot?.mcq?.total || 0),
-      codingOutcome: session.resultSnapshot?.coding?.outcome || null,
-      systemDesignOutcome: session.resultSnapshot?.systemDesign?.outcome || null,
-      practiceSignal: session.resultSnapshot?.systemDesign?.practiceSignal || null,
-      xpAwarded: 0,
-    })),
+    ...resumeSummary,
     minViewportWidth: 768,
     xpAwarded: 0,
   };
@@ -813,10 +862,17 @@ async function createSession(userId, input, {
 
   const user = await User.findById(userId).select('entitlements.pro');
   if (!user) serviceError(404, 'USER_NOT_FOUND', 'User not found');
-  const seen = await loadSeenStats(userId);
+  const selectionContext = await loadSelectionContext(userId, {
+    format,
+    track,
+    level,
+  });
   const baseEntitlement = entitlementSnapshot(user, now);
   const expiresAt = addSeconds(now, config.retentionDays * 24 * 60 * 60);
   let buildDocument;
+  let exposureSelection;
+  let exposureArtifacts;
+  let selectionTelemetry;
   if (format === 'coding') {
     const artifacts = loadInterviewArtifacts({
       allowInternalCandidate: allowCandidateArtifacts,
@@ -825,14 +881,26 @@ async function createSession(userId, input, {
       questions: artifacts.bank.questions,
       track,
       level,
-      seenCounts: seen.questions,
+      seenCounts: selectionContext.mcq.seenIds,
+      seenConceptCounts: selectionContext.mcq.seenConceptIds,
+      excludedIds: selectionContext.mcq.excludedIds,
+      excludedConceptIds: selectionContext.mcq.excludedConceptIds,
+      maxEstimatedSeconds: config.mcqSecondsByLevel[level],
       seed,
+      targetExposureCount: selectionContext.targetExposureCount,
+      remainingHardExclusionMocks: Math.max(
+        0,
+        4 - selectionContext.targetExposureCount
+      ),
     });
     const selectedCoding = selectCodingVariant({
       variants: artifacts.coding.variants,
       track,
       level,
-      seenCounts: seen.coding,
+      seenCounts: selectionContext.coding.seenIds,
+      seenConceptCounts: selectionContext.coding.seenConceptIds,
+      excludedIds: selectionContext.coding.excludedIds,
+      excludedConceptIds: selectionContext.coding.excludedConceptIds,
       seed,
     });
     const codingPrivate = artifacts.coding.privateByKey.get(
@@ -842,14 +910,24 @@ async function createSession(userId, input, {
       serviceError(503, 'INTERVIEW_CONTENT_UNAVAILABLE', 'Interview content is unavailable');
     }
     const timingPolicy = {
-      mcqSeconds: config.mcqSeconds,
+      mcqSeconds: config.mcqSecondsByLevel[level],
+      mcqMaxIngressSeconds: config.mcqMaxIngressSeconds,
       codingReadySeconds: config.codingReadySeconds,
       codingSeconds: selectedCoding.timeLimitSeconds,
       capturedAt: now,
     };
     const answerKey = answerSnapshotFor(artifacts, selectedQuestions);
+    exposureSelection = { selectedQuestions, selectedCoding };
+    exposureArtifacts = { bank: artifacts.bank, coding: artifacts.coding };
+    selectionTelemetry = selectionOverlapTelemetry({
+      format,
+      context: selectionContext,
+      selectedQuestions,
+      selectedCoding,
+    });
     buildDocument = (entitlement) => new InterviewSession({
       userId,
+      protocolVersion: 2,
       createRequestId: requestId,
       createRequestHash: requestHash,
       active: true,
@@ -889,7 +967,10 @@ async function createSession(userId, input, {
     const selectedScenario = selectSystemDesignScenario({
       scenarios: artifacts.scenarios,
       level,
-      seenCounts: seen.systemDesign,
+      seenCounts: selectionContext.systemDesign.seenIds,
+      seenConceptCounts: selectionContext.systemDesign.seenConceptIds,
+      excludedIds: selectionContext.systemDesign.excludedIds,
+      excludedConceptIds: selectionContext.systemDesign.excludedConceptIds,
       seed,
       sourceContentId: systemDesignSourceContentId,
       privateByKey: artifacts.privateByKey,
@@ -906,8 +987,16 @@ async function createSession(userId, input, {
       seed,
     });
     const designSeconds = Number(selectedScenario.timeLimitSeconds);
+    exposureSelection = { selectedSystemDesign: selectedScenario };
+    exposureArtifacts = { systemDesign: artifacts };
+    selectionTelemetry = selectionOverlapTelemetry({
+      format,
+      context: selectionContext,
+      selectedSystemDesign: selectedScenario,
+    });
     buildDocument = (entitlement) => new InterviewSession({
       userId,
+      protocolVersion: 2,
       createRequestId: requestId,
       createRequestHash: requestHash,
       active: true,
@@ -943,6 +1032,7 @@ async function createSession(userId, input, {
   }
 
   let lastQuotaReservation = null;
+  let lastCreatedDocument = null;
   const persistSession = async (mongoSession = null) => {
     const entitlement = { ...baseEntitlement };
     let quotaReservation = null;
@@ -973,40 +1063,63 @@ async function createSession(userId, input, {
     lastQuotaReservation = quotaReservation;
     const document = buildDocument(entitlement);
     await document.save(mongoSession ? { session: mongoSession } : undefined);
+    lastCreatedDocument = document;
+    await saveExposure(buildExposurePayload({
+      userId,
+      sessionId: document._id,
+      format,
+      track,
+      level,
+      ...exposureSelection,
+      artifacts: exposureArtifacts,
+      now,
+    }), { session: mongoSession });
     return { document, quotaReservation };
   };
 
   let persisted = null;
   let transactionUsed = false;
   try {
-    if (baseEntitlement.tier === 'free') {
-      const mongoSession = await mongoose.startSession();
+    const mongoSession = await mongoose.startSession();
+    try {
       try {
-        try {
-          transactionUsed = true;
-          await mongoSession.withTransaction(async () => {
-            persisted = await persistSession(mongoSession);
-          });
-        } catch (error) {
-          if (!isTransactionUnsupportedError(error)) throw error;
-          transactionUsed = false;
-          console.warn(
-            '[interview] Mongo transactions unavailable; using compensated quota reservation.'
-          );
-          persisted = await persistSession();
-        }
-      } finally {
-        await mongoSession.endSession();
+        transactionUsed = true;
+        await mongoSession.withTransaction(async () => {
+          persisted = await persistSession(mongoSession);
+        });
+      } catch (error) {
+        if (!isTransactionUnsupportedError(error)) throw error;
+        transactionUsed = false;
+        lastCreatedDocument = null;
+        console.warn(
+          '[interview] Mongo transactions unavailable; using compensated session creation.'
+        );
+        persisted = await persistSession();
       }
-    } else {
-      persisted = await persistSession();
+    } finally {
+      await mongoSession.endSession();
     }
     if (!persisted?.document) {
       throw new Error('Interview session creation completed without a document');
     }
-    return { session: persisted.document, created: true };
+    return {
+      session: persisted.document,
+      created: true,
+      selectionTelemetry,
+    };
   } catch (error) {
     const quotaReservation = persisted?.quotaReservation || lastQuotaReservation;
+    if (!transactionUsed && lastCreatedDocument?._id && !persisted?.document) {
+      try {
+        await InterviewSession.deleteOne({ _id: lastCreatedDocument._id, userId });
+      } catch {
+        serviceError(
+          503,
+          'INTERVIEW_EXPOSURE_RECOVERY_REQUIRED',
+          'Interview start could not safely record content exposure; contact support'
+        );
+      }
+    }
     const compensateUnusedReservation = async (winningSession = null) => {
       if (
         transactionUsed
@@ -1082,13 +1195,277 @@ async function getSession(userId, sessionId, { now = new Date() } = {}) {
   return reconcileAndSave(session, now, config);
 }
 
+function sessionProtocolVersion(session) {
+  return Number(session.protocolVersion || 1);
+}
+
+function v2ProcessingNow(options) {
+  return options?.now ? new Date(options.now) : new Date();
+}
+
+function v2RequestTiming(options) {
+  const fallback = v2ProcessingNow(options);
+  const requestCompletedAt = options?.requestCompletedAt
+    ? new Date(options.requestCompletedAt)
+    : fallback;
+  const requestReceivedAt = options?.requestReceivedAt
+    ? new Date(options.requestReceivedAt)
+    : requestCompletedAt;
+  return { requestCompletedAt, requestReceivedAt };
+}
+
+function inspectV2Mutation(session, input, operation, now) {
+  if (Number(input?.protocolVersion) !== 2) {
+    v2ServiceError(
+      session,
+      now,
+      400,
+      'INTERVIEW_PROTOCOL_VERSION_REQUIRED',
+      'Interview protocolVersion 2 is required for this session'
+    );
+  }
+  let mutationId;
+  try {
+    mutationId = normalizeId(input?.mutationId, 'mutationId');
+  } catch (error) {
+    if (error instanceof InterviewServiceError) {
+      error.details = canonicalMutationDetails(session, now);
+    }
+    throw error;
+  }
+  const expectedVersion = Number(input?.expectedVersion);
+  if (!Number.isInteger(expectedVersion) || expectedVersion < 0) {
+    v2ServiceError(
+      session,
+      now,
+      400,
+      'INTERVIEW_INVALID_VERSION',
+      'A valid expectedVersion is required'
+    );
+  }
+  const payloadHash = mutationPayloadHash(input);
+  const existing = receiptFor(session, mutationId);
+  if (existing) {
+    if (
+      existing.operation !== operation
+      || existing.payloadHash !== payloadHash
+    ) {
+      v2ServiceError(
+        session,
+        now,
+        409,
+        'INTERVIEW_IDEMPOTENCY_CONFLICT',
+        'Idempotency key was already used with a different request'
+      );
+    }
+    return {
+      expectedVersion,
+      mutationId,
+      payloadHash,
+      replay: true,
+    };
+  }
+  return {
+    expectedVersion,
+    mutationId,
+    payloadHash,
+    replay: false,
+  };
+}
+
+function assertV2CurrentVersion(session, expectedVersion, now) {
+  if (Number(session.__v || 0) !== expectedVersion) {
+    v2ServiceError(
+      session,
+      now,
+      409,
+      'INTERVIEW_VERSION_CONFLICT',
+      'Session changed in another tab'
+    );
+  }
+}
+
+async function reconcileV2Canonical(session, now, config) {
+  let current = session;
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    if (!reconcileSession(current, now, config)) return current;
+    try {
+      await current.save();
+      return current;
+    } catch (error) {
+      if (error?.name !== 'VersionError') throw error;
+      current = await findOwnedSession(current.userId, current._id);
+    }
+  }
+  return current;
+}
+
+async function saveV2WithConflictHandling(session, now) {
+  try {
+    await session.save();
+    return session;
+  } catch (error) {
+    if (error?.name === 'VersionError') {
+      const current = await findOwnedSession(session.userId, session._id);
+      v2ServiceError(
+        current,
+        now,
+        409,
+        'INTERVIEW_VERSION_CONFLICT',
+        'Session changed in another tab'
+      );
+    }
+    throw error;
+  }
+}
+
+async function requireV2McqAdmission(session, timing, config, now) {
+  const admission = evaluateMcqMutationAdmission(session, {
+    ...timing,
+    config,
+  });
+  if (admission.accepted) return admission;
+  const canonical = await reconcileV2Canonical(session, now, config);
+  const extra = {
+    deadlineAt: Number.isFinite(admission.deadlineAt?.getTime())
+      ? admission.deadlineAt.toISOString()
+      : null,
+    maxIngressSeconds: admission.maxIngressSeconds,
+  };
+  if (admission.code === 'INTERVIEW_MCQ_DEADLINE_PASSED') {
+    v2ServiceError(
+      canonical,
+      now,
+      409,
+      admission.code,
+      'MCQ mutation arrived after the server deadline',
+      extra
+    );
+  }
+  v2ServiceError(
+    canonical,
+    now,
+    409,
+    admission.code,
+    'MCQ request body exceeded the allowed ingress window',
+    extra
+  );
+}
+
+function applyV2McqResponse(session, questionIdRaw, input, answeredAt, config, now) {
+  const questionId = String(questionIdRaw || '').trim();
+  const question = session.questions.find((item) => item.id === questionId);
+  if (!question) {
+    v2ServiceError(
+      session,
+      now,
+      404,
+      'INTERVIEW_QUESTION_NOT_FOUND',
+      'Interview question not found'
+    );
+  }
+  const rawOptionId = input?.optionId ?? input?.selectedOptionId;
+  const selectedOptionId = rawOptionId == null
+    ? null
+    : String(rawOptionId).trim();
+  if (
+    selectedOptionId
+    && !question.options.some((option) => option.id === selectedOptionId)
+  ) {
+    v2ServiceError(
+      session,
+      now,
+      400,
+      'INTERVIEW_INVALID_OPTION',
+      'Option does not belong to this question'
+    );
+  }
+  const rawResponseDurationMs = input?.responseDurationMs;
+  let responseDurationMs = null;
+  if (rawResponseDurationMs != null) {
+    const parsedDuration = Number(rawResponseDurationMs);
+    if (!Number.isFinite(parsedDuration) || parsedDuration < 0) {
+      v2ServiceError(
+        session,
+        now,
+        400,
+        'INTERVIEW_INVALID_RESPONSE_DURATION',
+        'Question response duration is invalid'
+      );
+    }
+    responseDurationMs = Math.min(
+      Math.round(parsedDuration),
+      Number(
+        session.timingPolicy?.mcqSeconds
+        || config.mcqSecondsByLevel?.[session.level]
+        || config.mcqSeconds
+      ) * 1000
+    );
+  }
+  const existing = session.mcqResponses.find((entry) => entry.questionId === questionId);
+  if (existing) {
+    existing.selectedOptionId = selectedOptionId;
+    if (responseDurationMs != null) {
+      existing.responseDurationMs = Math.max(
+        Number(existing.responseDurationMs || 0),
+        responseDurationMs
+      );
+    }
+    existing.answeredAt = answeredAt;
+  } else {
+    session.mcqResponses.push({
+      questionId,
+      selectedOptionId,
+      responseDurationMs,
+      answeredAt,
+    });
+  }
+}
+
+function mergeV2McqSnapshot(session, responses, answeredAt, config, now) {
+  if (!Array.isArray(responses) || responses.length > session.questions.length) {
+    v2ServiceError(
+      session,
+      now,
+      400,
+      'INTERVIEW_INVALID_MCQ_SNAPSHOT',
+      'responses must be a full or sparse MCQ response snapshot'
+    );
+  }
+  const seen = new Set();
+  for (const response of responses) {
+    if (!response || typeof response !== 'object') {
+      v2ServiceError(
+        session,
+        now,
+        400,
+        'INTERVIEW_INVALID_MCQ_SNAPSHOT',
+        'MCQ snapshot entries must be objects'
+      );
+    }
+    const questionId = String(response.questionId || '').trim();
+    if (!questionId || seen.has(questionId)) {
+      v2ServiceError(
+        session,
+        now,
+        400,
+        'INTERVIEW_INVALID_MCQ_SNAPSHOT',
+        'MCQ snapshot question ids must be unique'
+      );
+    }
+    seen.add(questionId);
+    applyV2McqResponse(session, questionId, response, answeredAt, config, now);
+  }
+}
+
 async function mutateSession(userId, sessionId, input, operation, mutator, {
   now = new Date(),
+  existingSession = null,
 } = {}) {
   const config = interviewConfig();
   const mutationId = mutationIdFor(input, operation);
   const payloadHash = mutationPayloadHash(input);
-  const session = await findOwnedSession(userId, sessionId);
+  const session = existingSession || await findOwnedSession(userId, sessionId);
   await reconcileAndSave(session, now, config);
   const availability = assertMutationAvailable(
     session,
@@ -1119,6 +1496,62 @@ async function mutateSession(userId, sessionId, input, operation, mutator, {
 
 async function saveMcqAnswer(userId, sessionId, questionIdRaw, input, options) {
   const questionId = String(questionIdRaw || '').trim();
+  const session = await findOwnedSession(userId, sessionId);
+  if (sessionProtocolVersion(session) >= 2) {
+    const config = interviewConfig();
+    const timing = v2RequestTiming(options);
+    const inspectionNow = v2ProcessingNow(options);
+    const operation = `mcq-answer:${questionId}`;
+    const mutation = inspectV2Mutation(session, input, operation, inspectionNow);
+    if (mutation.replay) {
+      const canonical = await reconcileV2Canonical(
+        session,
+        v2ProcessingNow(options),
+        config
+      );
+      return { session: canonical, replayed: true };
+    }
+    const admission = await requireV2McqAdmission(
+      session,
+      timing,
+      config,
+      inspectionNow
+    );
+    assertV2CurrentVersion(session, mutation.expectedVersion, inspectionNow);
+    if (session.status !== 'mcq_active') {
+      v2ServiceError(
+        session,
+        inspectionNow,
+        409,
+        'INTERVIEW_MCQ_LOCKED',
+        'MCQ answers are locked'
+      );
+    }
+    applyV2McqResponse(
+      session,
+      questionId,
+      input,
+      admission.acceptedAt,
+      config,
+      inspectionNow
+    );
+    recordMutation(
+      session,
+      mutation.mutationId,
+      operation,
+      mutation.payloadHash,
+      admission.acceptedAt
+    );
+    // The admitted answer and its idempotency receipt are durable before any
+    // deadline-driven stage reconciliation is attempted.
+    await saveV2WithConflictHandling(session, v2ProcessingNow(options));
+    const canonical = await reconcileV2Canonical(
+      session,
+      v2ProcessingNow(options),
+      config
+    );
+    return { session: canonical, replayed: false };
+  }
   return mutateSession(
     userId,
     sessionId,
@@ -1155,7 +1588,11 @@ async function saveMcqAnswer(userId, sessionId, questionIdRaw, input, options) {
         }
         responseDurationMs = Math.min(
           Math.round(parsedDuration),
-          Number(session.timingPolicy?.mcqSeconds || config.mcqSeconds) * 1000
+          Number(
+            session.timingPolicy?.mcqSeconds
+            || config.mcqSecondsByLevel?.[session.level]
+            || config.mcqSeconds
+          ) * 1000
         );
       }
       const existing = session.mcqResponses.find((entry) => entry.questionId === questionId);
@@ -1177,11 +1614,74 @@ async function saveMcqAnswer(userId, sessionId, questionIdRaw, input, options) {
         });
       }
     },
-    options
+    { ...(options || {}), existingSession: session }
   );
 }
 
 async function submitMcq(userId, sessionId, input, options) {
+  const session = await findOwnedSession(userId, sessionId);
+  if (sessionProtocolVersion(session) >= 2) {
+    const config = interviewConfig();
+    const timing = v2RequestTiming(options);
+    const inspectionNow = v2ProcessingNow(options);
+    const operation = 'mcq-submit';
+    const mutation = inspectV2Mutation(session, input, operation, inspectionNow);
+    if (mutation.replay) {
+      const canonical = await reconcileV2Canonical(
+        session,
+        v2ProcessingNow(options),
+        config
+      );
+      return { session: canonical, replayed: true };
+    }
+    const admission = await requireV2McqAdmission(
+      session,
+      timing,
+      config,
+      inspectionNow
+    );
+    assertV2CurrentVersion(session, mutation.expectedVersion, inspectionNow);
+    if (session.status !== 'mcq_active') {
+      v2ServiceError(
+        session,
+        inspectionNow,
+        409,
+        'INTERVIEW_MCQ_LOCKED',
+        'MCQ stage cannot be submitted'
+      );
+    }
+    mergeV2McqSnapshot(
+      session,
+      input?.responses,
+      admission.acceptedAt,
+      config,
+      inspectionNow
+    );
+    if (!transitionSubmitMcq(session, admission.acceptedAt, config)) {
+      v2ServiceError(
+        session,
+        inspectionNow,
+        409,
+        'INTERVIEW_MCQ_LOCKED',
+        'MCQ stage cannot be submitted'
+      );
+    }
+    recordMutation(
+      session,
+      mutation.mutationId,
+      operation,
+      mutation.payloadHash,
+      admission.acceptedAt
+    );
+    // Snapshot merge, state transition and receipt share one optimistic write.
+    await saveV2WithConflictHandling(session, v2ProcessingNow(options));
+    const canonical = await reconcileV2Canonical(
+      session,
+      v2ProcessingNow(options),
+      config
+    );
+    return { session: canonical, replayed: false };
+  }
   return mutateSession(
     userId,
     sessionId,
@@ -1192,7 +1692,7 @@ async function submitMcq(userId, sessionId, input, options) {
         serviceError(409, 'INTERVIEW_INVALID_STATE', 'MCQ stage cannot be submitted');
       }
     },
-    options
+    { ...(options || {}), existingSession: session }
   );
 }
 
@@ -1876,10 +2376,35 @@ async function abandonSession(userId, sessionId, input, options) {
     sessionId,
     input,
     'session-abandon',
-    async (session, { now }) => {
-      if (!transitionAbandon(session, now)) {
+    async (session, { now, config }) => {
+      if (['completed', 'abandoned', 'voided_technical'].includes(session.status)) {
         serviceError(409, 'INTERVIEW_INVALID_STATE', 'Interview cannot be abandoned');
       }
+      const claim = await claimAbandonSlot(userId, session._id, {
+        limit: config.abandonRateLimitMax,
+        now,
+      });
+      if (!claim.accepted) {
+        serviceError(
+          429,
+          'INTERVIEW_ABANDON_RATE_LIMITED',
+          'Too many interviews were abandoned in the last 24 hours',
+          {
+            retryAfter: claim.retryAfter?.toISOString() || null,
+            windowSeconds: 24 * 60 * 60,
+            limit: config.abandonRateLimitMax,
+          }
+        );
+      }
+      if (!transitionAbandon(session, now)) {
+        if (!claim.replayed) {
+          await releaseAbandonSlot(userId, session._id);
+        }
+        serviceError(409, 'INTERVIEW_INVALID_STATE', 'Interview cannot be abandoned');
+      }
+      return claim.replayed
+        ? null
+        : { rollback: () => releaseAbandonSlot(userId, session._id) };
     },
     options
   );
@@ -1949,6 +2474,9 @@ async function voidSessionTechnicalByAdmin(sessionId, {
     };
     await saveWithConflictHandling(session);
   }
+  if (session.status === 'voided_technical') {
+    await releaseAbandonSlot(session.userId, session._id);
+  }
   if (
     session.entitlementSnapshot?.tier === 'free'
     && session.entitlementSnapshot?.quotaMonthKey
@@ -1973,7 +2501,14 @@ async function getResults(userId, sessionId, { now = new Date() } = {}) {
       'This interview was voided because of a technical issue'
     );
   }
-  if (!['completed', 'abandoned'].includes(session.status)) {
+  if (session.status === 'abandoned') {
+    serviceError(
+      409,
+      'INTERVIEW_SESSION_ABANDONED',
+      'Answer review is not available for an abandoned interview'
+    );
+  }
+  if (session.status !== 'completed') {
     serviceError(409, 'INTERVIEW_RESULTS_NOT_READY', 'Interview results are not ready');
   }
   if (!session.resultSnapshot) {
@@ -1988,6 +2523,7 @@ module.exports = {
   createSession,
   getActiveSession,
   getConfigForUser,
+  getResumeSummaryForUser,
   getResults,
   getSession,
   normalizeDraft,

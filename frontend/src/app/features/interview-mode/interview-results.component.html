@@ -5,7 +5,7 @@
 
   <section *ngIf="error()" class="state-card state-card--error" faCard role="alert">
     <p>{{ error() }}</p>
-    <a *ngIf="voided()" faButton variant="primary" routerLink="/interview">
+    <a *ngIf="voided() || abandoned()" faButton variant="primary" routerLink="/interview">
       Return to interview home
     </a>
     <a
@@ -15,7 +15,7 @@
       [routerLink]="['/interview', sessionId]">
       Resume interview
     </a>
-    <ng-container *ngIf="!voided() && !interviewStillActive()">
+    <ng-container *ngIf="!voided() && !abandoned() && !interviewStillActive()">
       <button faButton variant="ghost" type="button" (click)="load()">Try again</button>
     </ng-container>
   </section>

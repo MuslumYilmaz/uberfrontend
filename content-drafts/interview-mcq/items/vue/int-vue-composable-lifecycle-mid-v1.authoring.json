@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-vue-composable-lifecycle-mid-v1",
+  "conceptId": "mcq-vue-composable-effect-lifetime",
   "revision": 1,
   "author": {
     "id": "codex-vue-author",

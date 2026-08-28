@@ -1,0 +1,110 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-js-intersection-threshold-crossing-mid-v1",
+  "conceptId": "mcq-javascript-intersection-threshold-crossing",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-08-24"
+  },
+  "public": {
+    "technology": "javascript",
+    "level": "mid",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "intersection-threshold-crossing",
+    "prompt": "An analytics observer is configured with `{ threshold: [0.25, 0.75] }`. Product expects a callback as an element moves through those visibility boundaries in either direction, not a continuous report for every pixel. Which implementation assumption is sound?",
+    "options": [
+      {
+        "id": "choice-66dd00ef40",
+        "label": "Treat the array as millisecond sampling intervals and read the ratio at each scheduled sample."
+      },
+      {
+        "id": "choice-94f6f32d2a",
+        "label": "Treat the array as exact ratios that trigger only while the ratio equals one listed number."
+      },
+      {
+        "id": "choice-00b8f00b56",
+        "label": "Treat the array as ratio boundaries and reconcile state whenever an observed target crosses one."
+      }
+    ],
+    "estimatedSeconds": 130
+  },
+  "private": {
+    "correctOptionId": "choice-00b8f00b56",
+    "answerProof": {
+      "summary": "IntersectionObserver thresholds are visibility-ratio boundaries; callbacks are queued when a target crosses a configured threshold in either direction.",
+      "decisiveConstraints": [
+        "The observer uses the `threshold` constructor option.",
+        "The requested behavior is boundary-driven rather than continuous sampling.",
+        "Visibility may increase or decrease."
+      ],
+      "claims": [
+        {
+          "statement": "The thresholds list contains the intersection-ratio values at which notifications are generated when a target crosses a threshold.",
+          "sourceIds": [
+            "mdn-intersection-thresholds"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-66dd00ef40",
+        "verdict": "incorrect",
+        "explanation": "Threshold numbers represent intersection ratios, not time intervals or a polling schedule.",
+        "plausibility": "Observer APIs often support periodic sampling or debouncing controls expressed numerically.",
+        "misconceptionTag": "threshold-array-is-sampling-schedule",
+        "falsifyingConstraint": "The numbers 0.25 and 0.75 describe visibility fractions."
+      },
+      {
+        "optionId": "choice-94f6f32d2a",
+        "verdict": "incorrect",
+        "explanation": "Notification is based on crossing a threshold, so the browser need not observe an exact floating-point equality.",
+        "plausibility": "The option values look like exact ratios that can be compared directly with each entry's intersection ratio.",
+        "misconceptionTag": "threshold-requires-exact-ratio-equality",
+        "falsifyingConstraint": "A target can move across a boundary between two rendering updates without reporting the exact listed ratio."
+      },
+      {
+        "optionId": "choice-00b8f00b56",
+        "verdict": "correct",
+        "explanation": "The observer reports transitions across the configured ratio boundaries, allowing the callback to reconcile current state.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "remediationTopics": [
+      "intersection-observer",
+      "visibility-thresholds",
+      "boundary-events"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: IntersectionObserver thresholds",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/thresholds",
+        "sourceId": "mdn-intersection-thresholds"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "mdn-intersection-thresholds",
+          "title": "MDN: IntersectionObserver thresholds",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/thresholds",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-08-24",
+          "revision": "mdn-page-snapshot-2026-08-24",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

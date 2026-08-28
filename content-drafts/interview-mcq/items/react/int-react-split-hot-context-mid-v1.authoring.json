@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-react-split-hot-context-mid-v1",
+  "conceptId": "mcq-react-context-update-boundaries",
   "revision": 2,
   "author": {
     "id": "codex-react-author",

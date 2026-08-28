@@ -2,8 +2,8 @@
   "schemaVersion": "2.0.0",
   "manifestId": "frontend-interview-bank-v1",
   "bankId": "frontend-interview-gold-bank",
-  "bankVersion": "1.2.0",
-  "status": "candidate",
+  "bankVersion": "1.3.0",
+  "status": "editorial-gold",
   "language": "en",
   "blueprintId": "frontend-interview-bank-v1",
   "itemRefs": [
@@ -61,7 +61,7 @@
     },
     {
       "id": "int-angular-incremental-hydration-replay-sr-v1",
-      "revision": 1
+      "revision": 2
     },
     {
       "id": "int-angular-onpush-reference-sr-v1",
@@ -284,6 +284,14 @@
       "revision": 3
     },
     {
+      "id": "int-js-aes-gcm-iv-uniqueness-sr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-js-array-negative-index-access-jr-v1",
+      "revision": 1
+    },
+    {
       "id": "int-js-async-generator-early-exit-mid-v1",
       "revision": 1
     },
@@ -340,8 +348,28 @@
       "revision": 1
     },
     {
+      "id": "int-js-indexeddb-upgrade-coordination-sr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-js-intersection-threshold-crossing-mid-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-js-intl-collator-bulk-sort-mid-v1",
+      "revision": 1
+    },
+    {
       "id": "int-js-listener-cleanup-mid-v1",
       "revision": 3
+    },
+    {
+      "id": "int-js-live-collection-snapshot-jr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-js-map-object-key-identity-jr-v1",
+      "revision": 1
     },
     {
       "id": "int-js-nested-microtask-mid-v1",
@@ -357,7 +385,7 @@
     },
     {
       "id": "int-js-observer-lifecycle-mid-v1",
-      "revision": 1
+      "revision": 2
     },
     {
       "id": "int-js-optional-chain-side-effect-short-circuit-jr-v1",
@@ -365,6 +393,14 @@
     },
     {
       "id": "int-js-own-property-presence-jr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-js-postmessage-peer-validation-sr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-js-promise-all-result-order-jr-v1",
       "revision": 1
     },
     {
@@ -380,7 +416,15 @@
       "revision": 1
     },
     {
+      "id": "int-js-shared-memory-isolation-sr-v1",
+      "revision": 1
+    },
+    {
       "id": "int-js-stateful-regexp-validation-jr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-js-storage-event-source-context-mid-v1",
       "revision": 1
     },
     {
@@ -400,11 +444,27 @@
       "revision": 1
     },
     {
+      "id": "int-js-trusted-types-enforcement-sr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-js-url-relative-base-resolution-jr-v1",
+      "revision": 1
+    },
+    {
       "id": "int-js-urlsearchparams-repeated-value-contract-jr-v1",
       "revision": 1
     },
     {
+      "id": "int-js-weakmap-key-reachability-mid-v1",
+      "revision": 1
+    },
+    {
       "id": "int-js-web-lock-cross-tab-write-sr-v1",
+      "revision": 1
+    },
+    {
+      "id": "int-js-websocket-buffered-flow-control-sr-v1",
       "revision": 1
     },
     {

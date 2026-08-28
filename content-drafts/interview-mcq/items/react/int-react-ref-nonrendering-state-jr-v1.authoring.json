@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-react-ref-nonrendering-state-jr-v1",
+  "conceptId": "mcq-react-ref-nonrendering-state",
   "revision": 1,
   "author": {
     "id": "codex-react-author",

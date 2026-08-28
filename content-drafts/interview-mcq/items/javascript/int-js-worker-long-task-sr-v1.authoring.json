@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-js-worker-long-task-sr-v1",
+  "conceptId": "mcq-javascript-bounded-worker-generation-ownership",
   "revision": 3,
   "author": {
     "id": "codex-core-author",

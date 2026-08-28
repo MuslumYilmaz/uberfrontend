@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-html-valid-navigation-ssr-sr-v1",
+  "conceptId": "mcq-html-valid-interactive-content-for-ssr",
   "revision": 1,
   "author": {
     "id": "codex-core-author",

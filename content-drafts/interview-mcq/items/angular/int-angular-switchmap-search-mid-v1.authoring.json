@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-angular-switchmap-search-mid-v1",
+  "conceptId": "mcq-angular-rxjs-latest-request-ownership",
   "revision": 2,
   "author": {
     "id": "codex-angular-author",

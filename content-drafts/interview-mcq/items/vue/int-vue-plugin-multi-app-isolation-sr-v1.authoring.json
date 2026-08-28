@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-vue-plugin-multi-app-isolation-sr-v1",
+  "conceptId": "mcq-vue-plugin-multi-app-isolation",
   "revision": 1,
   "author": {
     "id": "codex-vue-expansion-author",

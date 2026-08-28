@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-css-custom-property-fallback-resolution-jr-v1",
+  "conceptId": "mcq-css-custom-property-fallback-resolution",
   "revision": 1,
   "author": {
     "id": "codex-core-author",

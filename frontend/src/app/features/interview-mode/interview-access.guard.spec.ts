@@ -7,47 +7,13 @@ import {
   UrlTree,
   provideRouter,
 } from '@angular/router';
-import { Observable, firstValueFrom, of, throwError } from 'rxjs';
-import { InterviewAvailability } from '../../core/models/interview.model';
+import { Observable, firstValueFrom, of } from 'rxjs';
 import { AuthService, User } from '../../core/services/auth.service';
-import { InterviewService } from '../../core/services/interview.service';
 import { interviewAccessGuard } from './interview-access.guard';
 
 describe('interviewAccessGuard', () => {
-  const availability = (
-    overrides: Partial<InterviewAvailability> = {},
-  ): InterviewAvailability => ({
-    enabled: true,
-    accessMode: 'public',
-    unavailableReason: null,
-    quota: null,
-    quotas: { coding: null, 'system-design': null },
-    activeSession: null,
-    lastResults: [],
-    targets: [],
-    formats: [
-      { value: 'coding', label: 'Coding mock' },
-      { value: 'system-design', label: 'System design mock' },
-    ],
-    formatAvailability: [
-      { format: 'coding', enabled: true, unavailableReason: null },
-      { format: 'system-design', enabled: false, unavailableReason: null },
-    ],
-    levels: [],
-    tracks: [],
-    minViewportWidth: 768,
-    timing: {
-      mcqSeconds: 600,
-      codingReadySeconds: 300,
-      systemDesignSeconds: { junior: 600, mid: 900, senior: 1200 },
-    },
-    ...overrides,
-  });
-
   async function runGuard(options: {
     role?: 'user' | 'admin' | null;
-    availability?: InterviewAvailability;
-    availabilityError?: boolean;
   }): Promise<boolean | UrlTree> {
     const user = options.role
       ? ({
@@ -61,21 +27,11 @@ describe('interviewAccessGuard', () => {
       user: signal<User | null>(user),
       ensureMe: jasmine.createSpy('ensureMe').and.returnValue(of(user)),
     };
-    const interviews = jasmine.createSpyObj<InterviewService>('InterviewService', [
-      'getAvailability',
-    ]);
-    interviews.getAvailability.and.returnValue(
-      options.availabilityError
-        ? throwError(() => new Error('unavailable'))
-        : of(options.availability ?? availability()),
-    );
-
     TestBed.resetTestingModule();
     TestBed.configureTestingModule({
       providers: [
         provideRouter([]),
         { provide: AuthService, useValue: auth },
-        { provide: InterviewService, useValue: interviews },
       ],
     });
 
@@ -88,32 +44,13 @@ describe('interviewAccessGuard', () => {
     return firstValueFrom(result);
   }
 
-  it('allows a signed-in user when the mode is public', async () => {
+  it('allows a signed-in user into the safe shell', async () => {
     expect(await runGuard({ role: 'user' })).toBeTrue();
   });
 
-  it('allows only admins when the mode is internal', async () => {
-    expect(await runGuard({
-      role: 'admin',
-      availability: availability({ accessMode: 'internal' }),
-    })).toBeTrue();
-
-    const denied = await runGuard({
-      role: 'user',
-      availability: availability({ accessMode: 'internal' }),
-    });
-    expect(TestBed.inject(Router).serializeUrl(denied as UrlTree)).toBe('/404');
-  });
-
-  it('fails closed when the backend disables the feature or availability fails', async () => {
-    const disabled = await runGuard({
-      role: 'user',
-      availability: availability({ enabled: false, accessMode: 'off' }),
-    });
-    expect(TestBed.inject(Router).serializeUrl(disabled as UrlTree)).toBe('/404');
-
-    const failed = await runGuard({ role: 'user', availabilityError: true });
-    expect(TestBed.inject(Router).serializeUrl(failed as UrlTree)).toBe('/404');
+  it('lets availability render off/internal/error states instead of converting them to 404', async () => {
+    expect(await runGuard({ role: 'user' })).toBeTrue();
+    expect(await runGuard({ role: 'admin' })).toBeTrue();
   });
 
   it('sends signed-out visitors to login with the original route', async () => {

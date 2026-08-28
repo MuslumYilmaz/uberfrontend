@@ -12,7 +12,8 @@
     "distributions",
     "competencyConstraint",
     "selectionPolicy",
-    "codeOutputConstraint"
+    "codeOutputConstraint",
+    "releaseReadiness"
   ],
   "properties": {
     "schemaVersion": {
@@ -39,6 +40,9 @@
     },
     "codeOutputConstraint": {
       "$ref": "#/$defs/codeOutputConstraint"
+    },
+    "releaseReadiness": {
+      "$ref": "#/$defs/releaseReadiness"
     }
   },
   "$defs": {
@@ -356,6 +360,218 @@
         },
         "vue": {
           "$ref": "#/$defs/quota"
+        }
+      }
+    },
+    "releaseReadiness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "attemptsWithoutLiteralOrSemanticRepeat",
+        "adjacentOverlapMaximum",
+        "sessionBudgetSecondsByLevel",
+        "formProfiles",
+        "candidateCapacityPlan"
+      ],
+      "properties": {
+        "attemptsWithoutLiteralOrSemanticRepeat": {
+          "const": 5
+        },
+        "adjacentOverlapMaximum": {
+          "const": 0
+        },
+        "sessionBudgetSecondsByLevel": {
+          "$ref": "#/$defs/positiveLevelQuota"
+        },
+        "formProfiles": {
+          "$ref": "#/$defs/formProfiles"
+        },
+        "candidateCapacityPlan": {
+          "$ref": "#/$defs/candidateCapacityPlan"
+        }
+      }
+    },
+    "positiveLevelQuota": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "junior",
+        "mid",
+        "senior"
+      ],
+      "properties": {
+        "junior": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "mid": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "senior": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "trackTechnologyCounts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "core-web",
+        "react",
+        "angular",
+        "vue"
+      ],
+      "properties": {
+        "core-web": {
+          "$ref": "#/$defs/technologyQuota"
+        },
+        "react": {
+          "$ref": "#/$defs/technologyQuota"
+        },
+        "angular": {
+          "$ref": "#/$defs/technologyQuota"
+        },
+        "vue": {
+          "$ref": "#/$defs/technologyQuota"
+        }
+      }
+    },
+    "trackBandCounts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "core-web",
+        "react",
+        "angular",
+        "vue"
+      ],
+      "properties": {
+        "core-web": {
+          "$ref": "#/$defs/difficultyBandQuota"
+        },
+        "react": {
+          "$ref": "#/$defs/difficultyBandQuota"
+        },
+        "angular": {
+          "$ref": "#/$defs/difficultyBandQuota"
+        },
+        "vue": {
+          "$ref": "#/$defs/difficultyBandQuota"
+        }
+      }
+    },
+    "trackBandCountsByLevel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "junior",
+        "mid",
+        "senior"
+      ],
+      "properties": {
+        "junior": {
+          "$ref": "#/$defs/trackBandCounts"
+        },
+        "mid": {
+          "$ref": "#/$defs/trackBandCounts"
+        },
+        "senior": {
+          "$ref": "#/$defs/trackBandCounts"
+        }
+      }
+    },
+    "formProfiles": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "technologyCountsByTrack",
+        "difficultyBandCountsByLevelAndTrack",
+        "minimumProductionScenarioCount",
+        "maximumCodeOutputCount"
+      ],
+      "properties": {
+        "technologyCountsByTrack": {
+          "$ref": "#/$defs/trackTechnologyCounts"
+        },
+        "difficultyBandCountsByLevelAndTrack": {
+          "$ref": "#/$defs/trackBandCountsByLevel"
+        },
+        "minimumProductionScenarioCount": {
+          "const": 1
+        },
+        "maximumCodeOutputCount": {
+          "const": 1
+        }
+      }
+    },
+    "candidateCapacityLevelPlan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "minimumNetNewItems",
+        "minimumByTechnology",
+        "minimumByDifficultyBand"
+      ],
+      "properties": {
+        "minimumNetNewItems": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "minimumByTechnology": {
+          "$ref": "#/$defs/technologyQuota"
+        },
+        "minimumByDifficultyBand": {
+          "$ref": "#/$defs/difficultyBandQuota"
+        }
+      }
+    },
+    "candidateCapacityByLevel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "junior",
+        "mid",
+        "senior"
+      ],
+      "properties": {
+        "junior": {
+          "$ref": "#/$defs/candidateCapacityLevelPlan"
+        },
+        "mid": {
+          "$ref": "#/$defs/candidateCapacityLevelPlan"
+        },
+        "senior": {
+          "$ref": "#/$defs/candidateCapacityLevelPlan"
+        }
+      }
+    },
+    "candidateCapacityPlan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scope",
+        "baselineQuestionCount",
+        "minimumTargetQuestionCount",
+        "minimumNetNewItems",
+        "byLevel"
+      ],
+      "properties": {
+        "scope": {
+          "const": "literal-and-semantic-repeat-capacity-only"
+        },
+        "baselineQuestionCount": {
+          "const": 170
+        },
+        "minimumTargetQuestionCount": {
+          "const": 185
+        },
+        "minimumNetNewItems": {
+          "const": 15
+        },
+        "byLevel": {
+          "$ref": "#/$defs/candidateCapacityByLevel"
         }
       }
     },

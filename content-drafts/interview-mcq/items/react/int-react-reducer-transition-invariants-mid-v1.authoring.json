@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-react-reducer-transition-invariants-mid-v1",
+  "conceptId": "mcq-react-reducer-transition-invariants",
   "revision": 1,
   "author": {
     "id": "codex-react-author",

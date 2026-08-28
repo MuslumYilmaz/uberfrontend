@@ -3,11 +3,14 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 import { InterviewResult } from '../../core/models/interview.model';
 import { InterviewService } from '../../core/services/interview.service';
+import { InterviewRecoveryStore } from '../../core/services/interview-recovery.store';
 import { InterviewResultsComponent } from './interview-results.component';
 
 describe('InterviewResultsComponent', () => {
   let fixture: ComponentFixture<InterviewResultsComponent>;
   let service: jasmine.SpyObj<InterviewService>;
+  let recovery: InterviewRecoveryStore;
+  const recoveryKey = 'fa:interview:recovery:v2:user-1:coding:session-1';
 
   const result: InterviewResult = {
     sessionId: 'session-1',
@@ -79,14 +82,17 @@ describe('InterviewResultsComponent', () => {
         },
       ],
     }).compileComponents();
+    recovery = TestBed.inject(InterviewRecoveryStore);
+    recovery.setUserScope('user-1');
     fixture = TestBed.createComponent(InterviewResultsComponent);
   });
 
   it('shows diagnostic details, the disclaimer, and zero-XP semantics', () => {
-    localStorage.setItem(
-      'fa:interview:coding-draft:v1:session-1',
-      JSON.stringify({ local: 'stale' }),
-    );
+    expect(recovery.saveForCurrentUser({
+      kind: 'coding',
+      sessionId: 'session-1',
+      payload: { local: 'stale' },
+    })).toBeTrue();
     fixture.detectChanges();
     const text = fixture.nativeElement.textContent as string;
 
@@ -103,7 +109,7 @@ describe('InterviewResultsComponent', () => {
     expect(text).not.toContain('80%');
     expect(text).not.toContain('Strong hire');
     expect(text).not.toContain('Hire');
-    expect(localStorage.getItem('fa:interview:coding-draft:v1:session-1')).toBeNull();
+    expect(localStorage.getItem(recoveryKey)).toBeNull();
   });
 
   it('does not describe an abandoned checked draft as submitted', () => {
@@ -135,6 +141,27 @@ describe('InterviewResultsComponent', () => {
     expect(text).toContain('no answer report was created');
     expect(text).toContain('Return to interview home');
     expect(text).not.toContain('Answer review');
+  });
+
+  it('returns an abandoned session home without retrying or rendering answer data', () => {
+    expect(recovery.saveForCurrentUser({
+      kind: 'coding',
+      sessionId: 'session-1',
+      payload: { local: 'stale' },
+    })).toBeTrue();
+    service.getResult.and.returnValue(throwError(() => ({
+      status: 409,
+      error: { code: 'INTERVIEW_SESSION_ABANDONED' },
+    })));
+
+    fixture.detectChanges();
+    const text = fixture.nativeElement.textContent as string;
+
+    expect(text).toContain('withheld to prevent extraction of the question bank');
+    expect(text).toContain('Return to interview home');
+    expect(text).not.toContain('Try again');
+    expect(fixture.nativeElement.querySelector('#answers-title')).toBeNull();
+    expect(localStorage.getItem(recoveryKey)).toBeNull();
   });
 
   it('offers an exact resume link when the report route is opened before completion', () => {

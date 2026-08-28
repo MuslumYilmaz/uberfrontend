@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-react-derived-filter-mid-v1",
+  "conceptId": "mcq-react-derived-state",
   "revision": 3,
   "author": {
     "id": "codex-react-author",

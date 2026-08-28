@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-angular-ssr-transfer-cache-sensitivity-sr-v1",
+  "conceptId": "mcq-angular-ssr-transfer-cache-sensitivity",
   "revision": 1,
   "author": {
     "id": "codex-angular-author",

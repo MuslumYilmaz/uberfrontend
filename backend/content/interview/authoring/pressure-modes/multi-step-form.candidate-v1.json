@@ -1,0 +1,88 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "multi-step-form-interview-candidate-v1",
+  "family": "multi-step-form",
+  "title": "Validated Multi-step Form Interview",
+  "access": "candidate",
+  "estimatedMinutes": 35,
+  "supportedQuestions": {
+    "react": "react-multi-step-signup",
+    "angular": "angular-multi-step-form-starter",
+    "vue": "vue-multi-step-form"
+  },
+  "rounds": [
+    {
+      "id": "validated-navigation",
+      "title": "Validated navigation",
+      "interviewerPrompt": "Model progression so invalid steps cannot be skipped.",
+      "constraints": [
+        "Start on Basic info and expose the current step title.",
+        "Validate the fields owned by the current step before advancing.",
+        "Advance through Address to a read-only Summary without losing earlier values."
+      ],
+      "frameworkTests": [
+        {
+          "id": "candidate-wizard-advance",
+          "name": "Round 1 · Valid data advances to Address",
+          "steps": [
+            { "type": "expectText", "selector": ".step-title", "text": "Basic info", "match": "contains" },
+            { "type": "setValue", "selector": ".field input", "index": 0, "value": "Jane Doe" },
+            { "type": "setValue", "selector": ".field input", "index": 1, "value": "jane@example.com" },
+            { "type": "click", "selector": ".actions button", "index": 1 },
+            { "type": "waitForText", "selector": ".step-title", "text": "Address", "match": "contains" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "state-preserving-backtrack",
+      "title": "State-preserving backtracking",
+      "interviewerPrompt": "Let candidates revise earlier steps without resetting valid work.",
+      "constraints": [
+        "Back returns to the previous step and preserves every entered field.",
+        "Revalidation happens against the latest edited values.",
+        "The Summary is derived from form state rather than a copied snapshot.",
+        "Submission is available only from a valid Summary."
+      ],
+      "frameworkTests": [
+        {
+          "id": "candidate-wizard-backtrack",
+          "name": "Round 2 · Back preserves Basic info",
+          "steps": [
+            { "type": "setValue", "selector": ".field input", "index": 0, "value": "Jane Doe" },
+            { "type": "setValue", "selector": ".field input", "index": 1, "value": "jane@example.com" },
+            { "type": "click", "selector": ".actions button", "index": 1 },
+            { "type": "click", "selector": ".actions button", "index": 0 },
+            { "type": "waitForText", "selector": ".step-title", "text": "Basic info", "match": "contains" },
+            { "type": "expectValue", "selector": ".field input", "index": 0, "value": "Jane Doe" },
+            { "type": "expectValue", "selector": ".field input", "index": 1, "value": "jane@example.com" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "accessible-step-state",
+      "title": "Accessible step state",
+      "interviewerPrompt": "Make validation and progress understandable without relying on layout alone.",
+      "constraints": [
+        "Expose a stable progress element with the one-based current step and total step count.",
+        "Associate field errors with their controls and move focus to the first invalid field.",
+        "Announce step changes through a polite live region.",
+        "Prevent double submission while the final action is pending."
+      ],
+      "frameworkTests": [
+        {
+          "id": "candidate-wizard-a11y",
+          "name": "Round 3 · Progress and validation are announced",
+          "steps": [
+            { "type": "expectAttribute", "selector": "[role=\"progressbar\"]", "attribute": "aria-valuemin", "expected": "1" },
+            { "type": "expectAttribute", "selector": "[role=\"progressbar\"]", "attribute": "aria-valuemax", "expected": "3" },
+            { "type": "click", "selector": ".actions button", "index": 1 },
+            { "type": "expectFocused", "selector": ".field input", "index": 0 },
+            { "type": "expectAttribute", "selector": ".step-title", "attribute": "aria-live", "expected": "polite" }
+          ]
+        }
+      ]
+    }
+  ]
+}

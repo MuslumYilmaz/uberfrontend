@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-vue-conditional-mount-visibility-choice-jr-v1",
+  "conceptId": "mcq-vue-conditional-mount-visibility-choice",
   "revision": 1,
   "author": {
     "id": "codex-vue-expansion-author",

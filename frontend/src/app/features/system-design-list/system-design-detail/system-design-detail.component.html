@@ -254,7 +254,7 @@
                         Start reference answer
                     </button>
                     <a
-                        *ngIf="practice().guidedMock"
+                        *ngIf="guidedMockAccess() === 'available'"
                         faButton
                         variant="neutral"
                         [routerLink]="['/interview']"
@@ -262,8 +262,31 @@
                         (click)="trackGuidedMockClick()">
                         Practice this exact case
                     </a>
+                    <a
+                        *ngIf="guidedMockAccess() === 'signin'"
+                        faButton
+                        variant="neutral"
+                        [routerLink]="['/auth/login']"
+                        [queryParams]="guidedMockLoginQueryParams()"
+                        data-testid="guided-mock-signin">
+                        Sign in to check mock availability
+                    </a>
                 </div>
-                <p *ngIf="practice().guidedMock" class="sd-try-first__device-note">
+                <p
+                    *ngIf="guidedMockAccess() === 'loading'"
+                    class="sd-try-first__device-note"
+                    aria-live="polite"
+                    data-testid="guided-mock-loading">
+                    Checking guided mock availability…
+                </p>
+                <p
+                    *ngIf="guidedMockAccess() === 'unavailable'"
+                    class="sd-try-first__device-note"
+                    aria-live="polite"
+                    data-testid="guided-mock-unavailable">
+                    Guided mock is currently unavailable.
+                </p>
+                <p *ngIf="guidedMockAccess() === 'available'" class="sd-try-first__device-note">
                     Guided mock requires a tablet or desktop viewport of at least 768px. It will not start automatically.
                 </p>
             </section>

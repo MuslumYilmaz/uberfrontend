@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-angular-control-value-accessor-contract-jr-v1",
+  "conceptId": "mcq-angular-control-value-accessor-contract",
   "revision": 1,
   "author": {
     "id": "codex-angular-author",

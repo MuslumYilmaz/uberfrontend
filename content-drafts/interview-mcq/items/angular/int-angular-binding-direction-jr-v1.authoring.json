@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-angular-binding-direction-jr-v1",
+  "conceptId": "mcq-angular-template-binding-direction",
   "revision": 2,
   "author": {
     "id": "codex-angular-author",

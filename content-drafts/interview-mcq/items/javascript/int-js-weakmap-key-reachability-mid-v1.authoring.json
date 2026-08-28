@@ -1,0 +1,110 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-js-weakmap-key-reachability-mid-v1",
+  "conceptId": "mcq-javascript-weakmap-key-reachability",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-08-24"
+  },
+  "public": {
+    "technology": "javascript",
+    "level": "mid",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "weakmap-key-reachability",
+    "prompt": "A component library associates private measurement metadata with DOM elements. Removed elements should become collectible when no application reference remains, and the library must not add properties to those elements or enumerate all tracked entries. Which store fits?",
+    "options": [
+      {
+        "id": "choice-6ba8e5baa2",
+        "label": "Use a `Map` keyed by each element and delete entries during a periodic scan of disconnected nodes."
+      },
+      {
+        "id": "choice-c3054febf8",
+        "label": "Use a `WeakMap` keyed by each element and read metadata only while the element reference is available."
+      },
+      {
+        "id": "choice-f5db66ec86",
+        "label": "Use an array of weak references and scan it to recover metadata for every element still reachable."
+      }
+    ],
+    "estimatedSeconds": 125
+  },
+  "private": {
+    "correctOptionId": "choice-c3054febf8",
+    "answerProof": {
+      "summary": "WeakMap associates data with object keys without creating a strong reference to those keys and intentionally provides no key enumeration surface.",
+      "decisiveConstraints": [
+        "Metadata lookup begins with a live element reference.",
+        "The metadata store must not keep otherwise unreachable elements alive.",
+        "Tracked elements do not need to be enumerated."
+      ],
+      "claims": [
+        {
+          "statement": "WeakMap keys are held weakly, so being a key does not prevent an otherwise unreachable object from being garbage collected, and WeakMap keys are not enumerable.",
+          "sourceIds": [
+            "mdn-weakmap"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-6ba8e5baa2",
+        "verdict": "incorrect",
+        "explanation": "Map strongly retains its element keys until explicit deletion, making correctness depend on a complete cleanup scan.",
+        "plausibility": "Map supports direct lookup and enumeration needed to identify disconnected nodes.",
+        "misconceptionTag": "periodic-map-scan-guarantees-release",
+        "falsifyingConstraint": "The store itself must not extend the lifetime of an element that has no other references."
+      },
+      {
+        "optionId": "choice-c3054febf8",
+        "verdict": "correct",
+        "explanation": "WeakMap supports reference-based lookup without exposing enumeration or strongly retaining the element key.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-f5db66ec86",
+        "verdict": "incorrect",
+        "explanation": "Weak references can clear unpredictably and an array scan does not provide the required direct element-keyed association.",
+        "plausibility": "Weak references avoid keeping their targets alive and can be collected into a custom registry.",
+        "misconceptionTag": "weakref-array-is-a-weakmap",
+        "falsifyingConstraint": "Metadata lookup must be reliable whenever the caller already holds the element reference."
+      }
+    ],
+    "remediationTopics": [
+      "weakmap",
+      "garbage-collection-reachability",
+      "object-metadata"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: WeakMap",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap",
+        "sourceId": "mdn-weakmap"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "mdn-weakmap",
+          "title": "MDN: WeakMap",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-08-24",
+          "revision": "mdn-page-snapshot-2026-08-24",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

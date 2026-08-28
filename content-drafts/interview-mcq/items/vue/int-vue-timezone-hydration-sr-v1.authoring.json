@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-vue-timezone-hydration-sr-v1",
+  "conceptId": "mcq-vue-ssr-hydration-determinism",
   "revision": 1,
   "author": {
     "id": "codex-vue-author",

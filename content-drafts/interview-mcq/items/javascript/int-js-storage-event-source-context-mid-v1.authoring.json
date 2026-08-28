@@ -1,0 +1,110 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-js-storage-event-source-context-mid-v1",
+  "conceptId": "mcq-javascript-storage-event-source-context",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-08-24"
+  },
+  "public": {
+    "technology": "javascript",
+    "level": "mid",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "storage-event-source-context",
+    "prompt": "A preferences service writes a theme to `localStorage` and relies on the window `storage` event to update UI state. Other open tabs update, but the tab that performed the write does not. Which synchronization design matches the platform contract?",
+    "options": [
+      {
+        "id": "choice-5f4f4b1667",
+        "label": "Update the writing tab's state directly, and use the `storage` event to reconcile other same-origin tabs."
+      },
+      {
+        "id": "choice-7dd19582ef",
+        "label": "Dispatch a synthetic `storage` event before each write, and use it to reconcile every same-origin tab."
+      },
+      {
+        "id": "choice-e19abc55a4",
+        "label": "Repeat the same `localStorage` write in a microtask, and use its event to reconcile the writing tab."
+      }
+    ],
+    "estimatedSeconds": 120
+  },
+  "private": {
+    "correctOptionId": "choice-5f4f4b1667",
+    "answerProof": {
+      "summary": "The native storage event is delivered to other eligible browsing contexts, not the context that changed localStorage, so the writer needs a local state update path.",
+      "decisiveConstraints": [
+        "The storage area is localStorage.",
+        "The initiating tab must reflect its own write immediately.",
+        "Other same-origin tabs must reconcile the persisted change."
+      ],
+      "claims": [
+        {
+          "statement": "A localStorage change fires a storage event in other same-origin browsing contexts but not in the window that made the change.",
+          "sourceIds": [
+            "mdn-window-storage-event"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-5f4f4b1667",
+        "verdict": "correct",
+        "explanation": "A direct local update covers the source tab while native storage events cover the other eligible tabs.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-7dd19582ef",
+        "verdict": "incorrect",
+        "explanation": "A synthetic event is local script activity and does not reproduce the browser's cross-context storage delivery.",
+        "plausibility": "Dispatching the same event type can reuse an existing state reconciliation handler in the source tab.",
+        "misconceptionTag": "synthetic-storage-event-broadcasts",
+        "falsifyingConstraint": "Other tabs require a real storage mutation notification from the browser."
+      },
+      {
+        "optionId": "choice-e19abc55a4",
+        "verdict": "incorrect",
+        "explanation": "Changing task timing does not make the storage event fire in the context that performed the write.",
+        "plausibility": "Deferring work to a microtask can change when observers see other asynchronous state updates.",
+        "misconceptionTag": "microtask-enables-source-storage-event",
+        "falsifyingConstraint": "Event recipient selection is based on browsing context, not the task that performs the mutation."
+      }
+    ],
+    "remediationTopics": [
+      "storage-events",
+      "cross-tab-state",
+      "source-context-updates"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: Window storage event",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/API/Window/storage_event",
+        "sourceId": "mdn-window-storage-event"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "mdn-window-storage-event",
+          "title": "MDN: Window storage event",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/Window/storage_event",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-08-24",
+          "revision": "mdn-page-snapshot-2026-08-24",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

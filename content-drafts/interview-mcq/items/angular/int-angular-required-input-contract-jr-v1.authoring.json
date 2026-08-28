@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-angular-required-input-contract-jr-v1",
+  "conceptId": "mcq-angular-required-input-contract",
   "revision": 1,
   "author": {
     "id": "codex-angular-expansion-author",

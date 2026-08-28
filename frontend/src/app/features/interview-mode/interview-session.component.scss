@@ -94,6 +94,17 @@
   align-items: start;
 }
 
+.mcq-status {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: var(--uf-space-3) var(--uf-space-4);
+  border: 1px solid var(--uf-border-subtle);
+  border-radius: var(--uf-radius-8);
+  background: var(--uf-surface-muted);
+  color: var(--uf-text-secondary);
+  font-size: var(--uf-meta-size);
+}
+
 .progress-card {
   position: sticky;
   top: 104px;
@@ -122,6 +133,11 @@
   border-radius: 50%;
   background: var(--uf-surface-alt);
   color: var(--uf-text-secondary);
+
+  &:disabled {
+    cursor: wait;
+    opacity: .6;
+  }
 }
 
 .question-nav__item--answered {
@@ -132,6 +148,21 @@
   background: var(--uf-accent) !important;
   color: var(--uf-bg) !important;
   font-weight: 800;
+}
+
+.question-nav button:focus-visible,
+.review-list button:focus-visible,
+.file-tabs button:focus-visible,
+.coding-brief:focus-visible,
+[data-testid="interview-question-prompt"]:focus-visible,
+[data-testid="interview-review-heading"]:focus-visible,
+[data-testid="interview-coding-ready-heading"]:focus-visible,
+[data-testid="interview-coding-heading"]:focus-visible,
+[data-testid="interview-terminal-heading"]:focus-visible,
+[data-testid="interview-operational-halt"]:focus-visible {
+  outline: 2px solid var(--uf-accent);
+  outline-offset: 3px;
+  box-shadow: var(--uf-focus-ring);
 }
 
 .question-card,
@@ -161,6 +192,7 @@ legend {
   font-size: clamp(18px, 2vw, 23px);
   font-weight: 600;
   line-height: 1.45;
+  overflow-wrap: anywhere;
 }
 
 .question-code {
@@ -188,6 +220,8 @@ legend {
   background: var(--uf-surface-muted);
   cursor: pointer;
   line-height: 1.55;
+
+  span { min-width: 0; overflow-wrap: anywhere; }
 
   &:hover { border-color: var(--uf-border-strong); }
   &:focus-within { box-shadow: var(--uf-focus-ring); }
@@ -280,6 +314,7 @@ legend {
   h3 { margin: var(--uf-space-5) 0 var(--uf-space-2); }
   p, li { color: var(--uf-text-secondary); line-height: 1.55; }
   ul { padding-left: 20px; }
+  h2, h3, p, li, strong { overflow-wrap: anywhere; }
 }
 
 .requirement-group {
@@ -360,6 +395,13 @@ legend {
 }
 
 .draft-status--warning { color: var(--uf-status-warn-text); }
+
+.recovery-disclosure {
+  margin: -0.5rem 0 1rem;
+  color: var(--uf-text-secondary);
+  font-size: 0.8125rem;
+  line-height: 1.45;
+}
 
 .editor-shell {
   height: min(52vh, 560px);

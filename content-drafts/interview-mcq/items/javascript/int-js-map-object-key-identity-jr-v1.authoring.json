@@ -1,0 +1,110 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-js-map-object-key-identity-jr-v1",
+  "conceptId": "mcq-javascript-map-object-key-identity",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-08-24"
+  },
+  "public": {
+    "technology": "javascript",
+    "level": "junior",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "map-object-key-identity",
+    "prompt": "A preview cache stores a rendered result under a configuration object. A later lookup builds a new object with the same fields and unexpectedly misses the cache. Which change matches how `Map` compares object keys?",
+    "options": [
+      {
+        "id": "choice-158e97d16a",
+        "label": "Retain the original configuration object as the key, because object keys match by reference identity."
+      },
+      {
+        "id": "choice-305c2924cf",
+        "label": "Recreate an object with the same fields for lookup, because object keys match by serialized field values."
+      },
+      {
+        "id": "choice-a07d6abd74",
+        "label": "Spread the configuration into a fresh object for lookup, because object keys match by shallow field values."
+      }
+    ],
+    "estimatedSeconds": 80
+  },
+  "private": {
+    "correctOptionId": "choice-158e97d16a",
+    "answerProof": {
+      "summary": "Map compares object keys by identity, so a separately constructed object is a different key even when its properties have equal values.",
+      "decisiveConstraints": [
+        "The cache key is an object rather than a primitive value.",
+        "The lookup object is newly constructed.",
+        "The cached entry must be found without scanning and comparing object fields."
+      ],
+      "claims": [
+        {
+          "statement": "Map uses SameValueZero for key equality and compares object keys by reference identity rather than by their property values.",
+          "sourceIds": [
+            "mdn-map-key-equality"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-158e97d16a",
+        "verdict": "correct",
+        "explanation": "Reusing the same object reference addresses the existing Map entry.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-305c2924cf",
+        "verdict": "incorrect",
+        "explanation": "Map does not serialize object fields when deciding whether two keys match.",
+        "plausibility": "Value-based caches commonly derive a serialized key from configuration fields.",
+        "misconceptionTag": "map-serializes-object-keys",
+        "falsifyingConstraint": "The implementation stores the object itself as the Map key, with no serialization step."
+      },
+      {
+        "optionId": "choice-a07d6abd74",
+        "verdict": "incorrect",
+        "explanation": "A spread result is another object reference and therefore cannot address the original key.",
+        "plausibility": "Object spread copies enumerable top-level fields and can look equivalent for shallow data.",
+        "misconceptionTag": "shallow-equality-controls-map-keys",
+        "falsifyingConstraint": "Reference identity, not equality of copied fields, determines whether the key matches."
+      }
+    ],
+    "remediationTopics": [
+      "map-key-equality",
+      "object-identity",
+      "stable-cache-keys"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: Map",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map",
+        "sourceId": "mdn-map-key-equality"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "mdn-map-key-equality",
+          "title": "MDN: Map",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-08-24",
+          "revision": "mdn-page-snapshot-2026-08-24",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

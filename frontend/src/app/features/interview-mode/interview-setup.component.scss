@@ -222,6 +222,13 @@ fa-select { width: 100%; }
   li + li { margin-top: 6px; }
 }
 
+.recovery-disclosure {
+  margin: 0.75rem 0 0;
+  color: var(--uf-text-secondary);
+  font-size: 0.8125rem;
+  line-height: 1.45;
+}
+
 .recent {
   margin-top: var(--uf-space-6);
 

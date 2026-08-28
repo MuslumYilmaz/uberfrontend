@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-html-successful-control-name-contract-jr-v1",
+  "conceptId": "mcq-html-successful-control-name-contract",
   "revision": 1,
   "author": {
     "id": "codex-core-author",

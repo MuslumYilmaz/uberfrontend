@@ -1,0 +1,110 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-js-array-negative-index-access-jr-v1",
+  "conceptId": "mcq-javascript-array-negative-index-access",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-08-24"
+  },
+  "public": {
+    "technology": "javascript",
+    "level": "junior",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "array-negative-index-access",
+    "prompt": "A notification list may be empty. A developer wants the most recent item without mutating the array and writes `notifications[-1]`, which returns `undefined` even for a populated list. Which replacement has the intended indexing semantics?",
+    "options": [
+      {
+        "id": "choice-0f1df4d0a7",
+        "label": "Read `notifications.slice(-1)` because it returns the final notification value directly."
+      },
+      {
+        "id": "choice-79b2cd4695",
+        "label": "Read `notifications.at(-1)` because a negative index counts backward from the array end."
+      },
+      {
+        "id": "choice-212623719d",
+        "label": "Read `notifications[-1]` after freezing the array because frozen arrays enable relative indexes."
+      }
+    ],
+    "estimatedSeconds": 75
+  },
+  "private": {
+    "correctOptionId": "choice-79b2cd4695",
+    "answerProof": {
+      "summary": "Array.prototype.at supports relative negative indexing and returns the final element for -1, while bracket syntax treats -1 as an ordinary property name.",
+      "decisiveConstraints": [
+        "The operation must return one item rather than a one-element array.",
+        "The source array must not be mutated.",
+        "The empty-list result may be undefined."
+      ],
+      "claims": [
+        {
+          "statement": "Array.prototype.at accepts negative integers that count from the array end, while bracket access with -1 reads a normal string-named property.",
+          "sourceIds": [
+            "mdn-array-at"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-0f1df4d0a7",
+        "verdict": "incorrect",
+        "explanation": "Slice does not mutate the input, but `slice(-1)` returns a new array rather than the contained item.",
+        "plausibility": "A negative slice boundary correctly selects the final portion of an array.",
+        "misconceptionTag": "slice-returns-selected-element",
+        "falsifyingConstraint": "The caller expects either the notification object or undefined, not another array."
+      },
+      {
+        "optionId": "choice-79b2cd4695",
+        "verdict": "correct",
+        "explanation": "At interprets -1 relative to length and returns the last item or undefined for an empty array.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-212623719d",
+        "verdict": "incorrect",
+        "explanation": "Freezing affects mutation permissions, not the property-key rules used by bracket access.",
+        "plausibility": "Freezing an array changes several operations and is sometimes used to enforce safer access patterns.",
+        "misconceptionTag": "freezing-enables-relative-indexes",
+        "falsifyingConstraint": "The access mechanism must interpret -1 relative to array length."
+      }
+    ],
+    "remediationTopics": [
+      "array-at",
+      "negative-indexing",
+      "nonmutating-access"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: Array.prototype.at()",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/at",
+        "sourceId": "mdn-array-at"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "mdn-array-at",
+          "title": "MDN: Array.prototype.at()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/at",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-08-24",
+          "revision": "mdn-page-snapshot-2026-08-24",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

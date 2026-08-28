@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-html-details-summary-disclosure-jr-v1",
+  "conceptId": "mcq-html-details-summary-disclosure",
   "revision": 1,
   "author": {
     "id": "codex-core-author",

@@ -1,0 +1,114 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "transfer-list-interview-candidate-v1",
+  "family": "transfer-list",
+  "title": "Identity-safe Transfer List Interview",
+  "access": "candidate",
+  "estimatedMinutes": 45,
+  "supportedQuestions": {
+    "react": "react-transfer-list",
+    "angular": "angular-transfer-list",
+    "vue": "vue-transfer-list"
+  },
+  "rounds": [
+    {
+      "id": "atomic-transfer",
+      "title": "Atomic transfer",
+      "interviewerPrompt": "Move selected identities between lists in one deterministic transition.",
+      "constraints": [
+        "Move only selected source items to the target list.",
+        "Preserve the relative order of moved and existing items.",
+        "Clear moved selections after a successful transfer.",
+        "Disable transfer actions when their source has no selection."
+      ],
+      "frameworkTests": [
+        {
+          "id": "candidate-transfer-atomic",
+          "name": "Round 1 · Selected item moves once",
+          "steps": [
+            { "type": "expectCount", "selector": ".layout .listCard:nth-child(1) .row", "count": 5 },
+            { "type": "click", "selector": ".layout .listCard:nth-child(1) .row input", "index": 0 },
+            { "type": "click", "selector": ".controls .btn", "index": 0 },
+            { "type": "waitForCount", "selector": ".layout .listCard:last-child .row", "count": 4 },
+            { "type": "expectCount", "selector": ".layout input[type=\"checkbox\"]:checked", "count": 0 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bidirectional-consistency",
+      "title": "Bidirectional consistency",
+      "interviewerPrompt": "Apply the same identity rules in both directions and reject no-op transitions.",
+      "constraints": [
+        "Move-left is the inverse of move-right for the selected IDs.",
+        "An item can exist in exactly one list at a time.",
+        "No-op actions do not reorder lists or change selection.",
+        "Use stable item IDs rather than display labels or array indexes."
+      ],
+      "frameworkTests": [
+        {
+          "id": "candidate-transfer-bidirectional",
+          "name": "Round 2 · Item can return without duplication",
+          "steps": [
+            { "type": "click", "selector": ".layout .listCard:nth-child(1) .row input", "index": 0 },
+            { "type": "click", "selector": ".controls .btn", "index": 0 },
+            { "type": "click", "selector": ".layout .listCard:last-child .row input", "index": 3 },
+            { "type": "click", "selector": ".controls .btn", "index": 1 },
+            { "type": "waitForCount", "selector": ".layout .listCard:nth-child(1) .row", "count": 5 },
+            { "type": "expectCount", "selector": ".layout .listCard:last-child .row", "count": 3 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bulk-boundaries",
+      "title": "Bulk boundaries",
+      "interviewerPrompt": "Make multi-selection deterministic under alternating moves.",
+      "constraints": [
+        "Transfer every selected item exactly once in source order.",
+        "A second action during the same state cannot duplicate items.",
+        "Selections belong to their source list and never cross list ownership.",
+        "Render an accurate item count for each list after every transition."
+      ],
+      "frameworkTests": [
+        {
+          "id": "candidate-transfer-bulk",
+          "name": "Round 3 · Two selected identities move in source order",
+          "steps": [
+            { "type": "click", "selector": ".layout .listCard:nth-child(1) .row input", "index": 0 },
+            { "type": "click", "selector": ".layout .listCard:nth-child(1) .row input", "index": 1 },
+            { "type": "click", "selector": ".controls .btn", "index": 0 },
+            { "type": "waitForCount", "selector": ".layout .listCard:nth-child(1) .row", "count": 3 },
+            { "type": "expectCount", "selector": ".layout .listCard:last-child .row", "count": 5 },
+            { "type": "expectText", "selector": ".layout .listCard:last-child .count", "text": "5", "match": "contains" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "accessible-transfer",
+      "title": "Accessible transfer workflow",
+      "interviewerPrompt": "Expose list ownership, action direction, and completed moves to assistive technology.",
+      "constraints": [
+        "Give both lists distinct accessible names and group each row with its checkbox label.",
+        "Give transfer controls directional accessible names independent of arrow glyphs.",
+        "Preserve native checkbox keyboard behavior.",
+        "Announce the number and direction of moved items in a polite status region."
+      ],
+      "frameworkTests": [
+        {
+          "id": "candidate-transfer-accessibility",
+          "name": "Round 4 · Direction and result are announced",
+          "steps": [
+            { "type": "expectAttribute", "selector": ".controls .btn", "index": 0, "attribute": "aria-label", "expected": "Move selected to chosen" },
+            { "type": "expectAttribute", "selector": ".controls .btn", "index": 1, "attribute": "aria-label", "expected": "Move selected to available" },
+            { "type": "click", "selector": ".layout .listCard:nth-child(1) .row input", "index": 0 },
+            { "type": "click", "selector": ".controls .btn", "index": 0 },
+            { "type": "expectText", "selector": "[role=\"status\"]", "text": "Moved 1 item to chosen", "match": "contains" },
+            { "type": "expectAttribute", "selector": "[role=\"status\"]", "attribute": "aria-live", "expected": "polite" }
+          ]
+        }
+      ]
+    }
+  ]
+}

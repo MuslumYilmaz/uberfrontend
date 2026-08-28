@@ -1,0 +1,85 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "theme-toggle-interview-candidate-v1",
+  "family": "theme-toggle",
+  "title": "Persistent Theme Preference Interview",
+  "access": "candidate",
+  "estimatedMinutes": 35,
+  "supportedQuestions": {
+    "react": "react-theme-toggle",
+    "angular": "angular-theme-toggle",
+    "vue": "vue-theme-toggle"
+  },
+  "rounds": [
+    {
+      "id": "single-theme-source",
+      "title": "Single theme source",
+      "interviewerPrompt": "Make the visible theme, label, and document state derive from one value.",
+      "constraints": [
+        "Start in the resolved light theme when no preference exists.",
+        "Toggle atomically between light and dark.",
+        "Apply the current theme to the application root and keep the visible label synchronized."
+      ],
+      "frameworkTests": [
+        {
+          "id": "candidate-theme-toggle-state",
+          "name": "Round 1 · Toggle has one observable state",
+          "steps": [
+            { "type": "expectText", "selector": ".label", "text": "Light", "match": "contains" },
+            { "type": "click", "selector": ".theme-toggle" },
+            { "type": "waitForText", "selector": ".label", "text": "Dark", "match": "contains" },
+            { "type": "expectAttribute", "selector": "[data-theme]", "attribute": "data-theme", "expected": "dark" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "preference-resolution",
+      "title": "Preference resolution",
+      "interviewerPrompt": "Treat persistence as an explicit user preference rather than an incidental render effect.",
+      "constraints": [
+        "Read a valid saved preference once during initialization.",
+        "Persist only explicit light or dark values and ignore malformed storage data.",
+        "Use the system color-scheme preference only when no explicit preference exists.",
+        "Keep browser storage access safe when rendering outside the browser."
+      ],
+      "frameworkTests": [
+        {
+          "id": "candidate-theme-preference-contract",
+          "name": "Round 2 · Explicit preference remains synchronized",
+          "steps": [
+            { "type": "click", "selector": ".theme-toggle" },
+            { "type": "expectAttribute", "selector": "[data-theme]", "attribute": "data-theme", "expected": "dark" },
+            { "type": "click", "selector": ".theme-toggle" },
+            { "type": "expectAttribute", "selector": "[data-theme]", "attribute": "data-theme", "expected": "light" },
+            { "type": "expectText", "selector": ".label", "text": "Light", "match": "contains" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "accessible-toggle",
+      "title": "Accessible toggle contract",
+      "interviewerPrompt": "Expose the current preference without making users infer it from color.",
+      "constraints": [
+        "Use a native button with an unambiguous accessible name.",
+        "Expose dark-mode selection through aria-pressed.",
+        "Announce the current theme in a polite status element.",
+        "Rapid input must not desynchronize label, pressed state, and root theme."
+      ],
+      "frameworkTests": [
+        {
+          "id": "candidate-theme-accessibility",
+          "name": "Round 3 · Pressed state and announcement match",
+          "steps": [
+            { "type": "expectAttribute", "selector": ".theme-toggle", "attribute": "aria-pressed", "expected": "false" },
+            { "type": "click", "selector": ".theme-toggle" },
+            { "type": "expectAttribute", "selector": ".theme-toggle", "attribute": "aria-pressed", "expected": "true" },
+            { "type": "expectText", "selector": "[role=\"status\"]", "text": "Dark", "match": "contains" },
+            { "type": "expectAttribute", "selector": "[role=\"status\"]", "attribute": "aria-live", "expected": "polite" }
+          ]
+        }
+      ]
+    }
+  ]
+}

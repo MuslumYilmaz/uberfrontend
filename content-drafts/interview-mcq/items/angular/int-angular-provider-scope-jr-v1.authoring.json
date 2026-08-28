@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-angular-provider-scope-jr-v1",
+  "conceptId": "mcq-angular-dependency-provider-scope",
   "revision": 2,
   "author": {
     "id": "codex-angular-author",

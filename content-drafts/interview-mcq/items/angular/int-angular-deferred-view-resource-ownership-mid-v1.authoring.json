@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-angular-deferred-view-resource-ownership-mid-v1",
+  "conceptId": "mcq-angular-deferred-view-resource-ownership",
   "revision": 1,
   "author": {
     "id": "codex-angular-author",

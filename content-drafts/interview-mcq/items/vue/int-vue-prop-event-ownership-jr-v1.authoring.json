@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-vue-prop-event-ownership-jr-v1",
+  "conceptId": "mcq-vue-component-state-ownership",
   "revision": 1,
   "author": {
     "id": "codex-vue-author",

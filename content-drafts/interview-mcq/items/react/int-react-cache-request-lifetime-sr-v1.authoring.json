@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-react-cache-request-lifetime-sr-v1",
+  "conceptId": "mcq-react-cache-request-lifetime",
   "revision": 1,
   "author": {
     "id": "codex-react-author",

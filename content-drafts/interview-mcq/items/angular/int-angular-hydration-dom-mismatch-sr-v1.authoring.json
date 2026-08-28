@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-angular-hydration-dom-mismatch-sr-v1",
+  "conceptId": "mcq-angular-ssr-hydration-dom-ownership",
   "revision": 2,
   "author": {
     "id": "codex-angular-author",

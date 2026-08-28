@@ -10,7 +10,70 @@ const { selectQuestions } = require('../services/interview/selection');
 const { serializeSession } = require('../services/interview/session-service');
 
 describe('interview session serialization', () => {
-  test('serializes a selected five-question candidate snapshot without answer data', () => {
+  test('marks abandoned sessions as having no result and exposes no answer material', () => {
+    const serialized = serializeSession({
+      _id: 'abandoned-session',
+      __v: 4,
+      format: 'coding',
+      status: 'abandoned',
+      active: false,
+      level: 'mid',
+      track: 'react',
+      timingMode: 'standard',
+      bank: {
+        id: 'frontend-interview-bank',
+        version: '1.0.0',
+        contentHash: 'bank-hash',
+      },
+      questions: [{
+        id: 'question-one',
+        revision: 1,
+        contentHash: 'question-hash',
+        technology: 'react',
+        level: 'mid',
+        difficultyBand: 'core',
+        format: 'production-scenario',
+        competency: 'effect-ownership',
+        prompt: 'Which owner should release the resource?',
+        estimatedSeconds: 90,
+        options: [
+          { id: 'option-one', label: 'The resource owner.' },
+          { id: 'option-two', label: 'An unrelated render.' },
+        ],
+      }],
+      answerKey: [{
+        id: 'question-one',
+        correctOptionId: 'option-one',
+        explanation: 'Private answer explanation.',
+      }],
+      resultSnapshot: {
+        mcq: {
+          correct: 1,
+          questions: [{
+            correctOptionId: 'option-one',
+            explanation: 'Private answer explanation.',
+          }],
+        },
+      },
+      mcqResponses: [{
+        questionId: 'question-one',
+        selectedOptionId: 'option-one',
+        answeredAt: new Date('2026-08-24T08:00:00.000Z'),
+      }],
+      codingOutcome: 'abandoned',
+      entitlementSnapshot: {
+        tier: 'premium',
+        capturedAt: new Date('2026-08-24T08:00:00.000Z'),
+      },
+    }, { now: new Date('2026-08-24T08:01:00.000Z') });
+
+    expect(serialized.resultAvailable).toBe(false);
+    expect(JSON.stringify(serialized)).not.toMatch(
+      /correctOptionId|explanation|Private answer explanation/
+    );
+  });
+
+  test('serializes a selected five-question approved snapshot without answer data', () => {
     const original = {
       nodeEnv: process.env.NODE_ENV,
       allowCandidate: process.env.INTERVIEW_ALLOW_CANDIDATE_BANK,
@@ -18,23 +81,20 @@ describe('interview session serialization', () => {
       privatePath: process.env.INTERVIEW_BANK_PRIVATE_PATH,
       releasePath: process.env.INTERVIEW_BANK_RELEASE_PATH,
     };
-    const candidateRoot = path.resolve(
-      __dirname,
-      '../../content-drafts/interview-mcq/generated/candidate-1.2.0'
-    );
+    const approvedRoot = path.resolve(__dirname, '../content/interview');
     try {
       process.env.NODE_ENV = 'test';
-      process.env.INTERVIEW_ALLOW_CANDIDATE_BANK = 'true';
+      process.env.INTERVIEW_ALLOW_CANDIDATE_BANK = 'false';
       process.env.INTERVIEW_BANK_PUBLIC_PATH = path.join(
-        candidateRoot,
+        approvedRoot,
         'frontend-interview-bank-v1.public.json'
       );
       process.env.INTERVIEW_BANK_PRIVATE_PATH = path.join(
-        candidateRoot,
+        approvedRoot,
         'frontend-interview-bank-v1.private.json'
       );
       process.env.INTERVIEW_BANK_RELEASE_PATH = path.join(
-        candidateRoot,
+        approvedRoot,
         'frontend-interview-bank-v1.release.json'
       );
       resetInterviewArtifactsCache();
@@ -43,7 +103,7 @@ describe('interview session serialization', () => {
         questions: bank.questions,
         track: 'core-web',
         level: 'junior',
-        seed: 'candidate-1.2.0:serialization',
+        seed: 'approved-1.3.0:serialization',
       });
       const serialized = serializeSession({
         _id: 'candidate-session-snapshot',
@@ -69,7 +129,7 @@ describe('interview session serialization', () => {
       }, { now: new Date('2026-08-05T12:00:00.000Z') });
 
       expect(serialized.bank).toEqual(expect.objectContaining({
-        version: '1.2.0',
+        version: '1.3.0',
         contentHash: bank.contentHash,
       }));
       expect(serialized.questions).toHaveLength(5);

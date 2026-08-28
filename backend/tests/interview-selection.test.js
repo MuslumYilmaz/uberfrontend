@@ -144,7 +144,7 @@ describe('interview form selection', () => {
     const questions = loadAuthoringQuestions();
     const reachableIds = new Set();
 
-    expect(questions).toHaveLength(170);
+    expect(questions).toHaveLength(185);
     for (const level of ['junior', 'mid', 'senior']) {
       for (const track of ['core-web', 'react', 'angular', 'vue']) {
         const forms = eligibleQuestionForms({ questions, track, level });
@@ -159,7 +159,7 @@ describe('interview form selection', () => {
       .toEqual([]);
   });
 
-  test('optimized form enumeration matches the brute-force contract for the 170-item bank', () => {
+  test('optimized form enumeration matches the brute-force contract for the 185-item bank', () => {
     const questions = loadAuthoringQuestions();
     for (const level of ['junior', 'mid', 'senior']) {
       for (const track of ['core-web', 'react', 'angular', 'vue']) {
@@ -337,18 +337,20 @@ describe('interview form selection', () => {
     const artifacts = loadInterviewArtifacts();
     const variants = artifacts.coding.variants.filter(
       (variant) => variant.enabled && variant.track === 'react' && variant.level === 'junior'
-    );
-    expect(variants).toHaveLength(2);
+    ).sort((left, right) => left.id.localeCompare(right.id));
+    expect(variants).toHaveLength(5);
 
     const leastSeen = selectCodingVariant({
       variants,
       track: 'react',
       level: 'junior',
       seed: 'any-seed',
-      seenCounts: new Map([
-        [variants[0].id, { count: 4, lastSeenAt: '2026-07-01T00:00:00Z' }],
-        [variants[1].id, { count: 1, lastSeenAt: '2026-07-25T00:00:00Z' }],
-      ]),
+      seenCounts: new Map(variants.map((variant, index) => [variant.id, {
+        count: index === 1 ? 1 : 4,
+        lastSeenAt: index === 1
+          ? '2026-07-25T00:00:00Z'
+          : '2026-07-01T00:00:00Z',
+      }])),
     });
     expect(leastSeen.id).toBe(variants[1].id);
 
@@ -357,12 +359,42 @@ describe('interview form selection', () => {
       track: 'react',
       level: 'junior',
       seed: 'different-seed',
-      seenCounts: new Map([
-        [variants[0].id, { count: 2, lastSeenAt: '2026-05-01T00:00:00Z' }],
-        [variants[1].id, { count: 2, lastSeenAt: '2026-07-25T00:00:00Z' }],
-      ]),
+      seenCounts: new Map(variants.map((variant, index) => [variant.id, {
+        count: 2,
+        lastSeenAt: index === 0
+          ? '2026-05-01T00:00:00Z'
+          : '2026-07-25T00:00:00Z',
+      }])),
     });
     expect(oldest.id).toBe(variants[0].id);
+  });
+
+  test('every track and level supports five literal and semantic-disjoint coding selections', () => {
+    const artifacts = loadInterviewArtifacts({ force: true });
+    for (const track of ['core-web', 'react', 'angular', 'vue']) {
+      for (const level of ['junior', 'mid', 'senior']) {
+        for (let seedIndex = 0; seedIndex < 100; seedIndex += 1) {
+          const excludedIds = new Set();
+          const excludedConceptIds = new Set();
+          for (let attempt = 1; attempt <= 5; attempt += 1) {
+            const selected = selectCodingVariant({
+              variants: artifacts.coding.variants,
+              track,
+              level,
+              excludedIds,
+              excludedConceptIds,
+              seed: `capacity:${track}:${level}:${seedIndex}:${attempt}`,
+            });
+            expect(excludedIds.has(selected.id)).toBe(false);
+            expect(excludedConceptIds.has(selected.conceptId)).toBe(false);
+            excludedIds.add(selected.id);
+            excludedConceptIds.add(selected.conceptId);
+          }
+          expect(excludedIds.size).toBe(5);
+          expect(excludedConceptIds.size).toBe(5);
+        }
+      }
+    }
   });
 
   test('selects the enabled framework-independent System Design scenario by level', () => {

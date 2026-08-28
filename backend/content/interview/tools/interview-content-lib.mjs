@@ -13,6 +13,10 @@ export const authoringPath = path.join(
   "authoring",
   "interview-coding-registry-v1.authoring.json",
 );
+export const artifactPinsPath = path.join(
+  interviewContentDir,
+  "interview-artifact-pins-v1.json",
+);
 
 const levels = Object.freeze(["junior", "mid", "senior"]);
 const tracks = Object.freeze(["core-web", "react", "angular", "vue"]);
@@ -20,13 +24,16 @@ const expectedTimes = Object.freeze({ junior: 1500, mid: 2100, senior: 2700 });
 const expectedRoundLimits = Object.freeze({ junior: 2, mid: 3, senior: 4 });
 const forbiddenPublicKeys = new Set([
   "answer",
+  "conceptId",
   "correctOptionId",
   "debrief",
   "hint",
   "private",
+  "pressureAsset",
   "remediationTopics",
   "review",
   "rubric",
+  "selectionDefinitionHash",
   "solution",
   "solutionAsset",
   "solutionBlock",
@@ -60,6 +67,121 @@ export function readJson(filePath) {
   return JSON.parse(fs.readFileSync(filePath, "utf8"));
 }
 
+export function loadInterviewArtifactPins() {
+  return readJson(artifactPinsPath);
+}
+
+function validatePinnedValue(errors, label, actual, expected) {
+  if (String(actual ?? "") !== String(expected ?? "")) {
+    errors.push(`${label} does not match interview-artifact-pins-v1.json.`);
+  }
+}
+
+function validatePinnedArtifactFiles(errors, label, artifacts, pin) {
+  for (const kind of ["public", "private", "release"]) {
+    const expected = String(pin?.artifactSha256?.[kind] || "").trim().toLowerCase();
+    const text = artifacts?.[kind];
+    if (!/^[a-f0-9]{64}$/.test(expected) || typeof text !== "string" || sha256(text) !== expected) {
+      errors.push(
+        `${label} ${kind} artifact SHA-256 does not match interview-artifact-pins-v1.json.`,
+      );
+    }
+  }
+}
+
+export function validateInterviewArtifactPins({
+  codingArtifacts,
+  codingRelease,
+  mcqArtifacts,
+  mcqRelease,
+  pins = loadInterviewArtifactPins(),
+} = {}) {
+  const errors = [];
+  if (pins?.schemaVersion !== "1.0.0" || !String(pins?.releaseId || "").trim()) {
+    errors.push("Interview artifact pin manifest identity is invalid.");
+    return errors;
+  }
+  if (!String(pins.approvedBy || "").trim()
+    || !/^\d{4}-\d{2}-\d{2}$/.test(String(pins.approvedAt || ""))) {
+    errors.push("Interview artifact pin manifest approval is invalid.");
+  }
+
+  if (mcqRelease) {
+    const pin = pins.mcq || {};
+    validatePinnedValue(errors, "MCQ bankId", mcqRelease.bankId, pin.bankId);
+    validatePinnedValue(errors, "MCQ bankVersion", mcqRelease.bankVersion, pin.bankVersion);
+    validatePinnedValue(errors, "MCQ status", mcqRelease.status, pin.status);
+    validatePinnedValue(errors, "MCQ contentHash", mcqRelease.contentHash, pin.bankContentHash);
+    validatePinnedValue(
+      errors,
+      "MCQ approval approvedBy",
+      mcqRelease.finalApproval?.approvedBy,
+      pins.approvedBy,
+    );
+    validatePinnedValue(
+      errors,
+      "MCQ approval approvedAt",
+      mcqRelease.finalApproval?.approvedAt,
+      pins.approvedAt,
+    );
+    validatePinnedValue(
+      errors,
+      "MCQ approval selectionMetadataHash",
+      mcqRelease.finalApproval?.selectionMetadataHash,
+      pin.selectionMetadataHash,
+    );
+    if (["editorial-gold", "calibrated-gold"].includes(mcqRelease.status)) {
+      validatePinnedArtifactFiles(errors, "MCQ", mcqArtifacts, pin);
+    }
+  }
+
+  if (codingRelease) {
+    const pin = pins.coding || {};
+    validatePinnedValue(errors, "Coding registryId", codingRelease.registryId, pin.registryId);
+    validatePinnedValue(
+      errors,
+      "Coding registryVersion",
+      codingRelease.registryVersion,
+      pin.registryVersion,
+    );
+    validatePinnedValue(errors, "Coding status", codingRelease.status, pin.status);
+    validatePinnedValue(
+      errors,
+      "Coding registryContentHash",
+      codingRelease.registryContentHash,
+      pin.registryContentHash,
+    );
+    validatePinnedValue(
+      errors,
+      "Coding selectionDefinitionHash",
+      codingRelease.selectionDefinitionHash,
+      pin.selectionDefinitionHash,
+    );
+    validatePinnedValue(
+      errors,
+      "Coding definitionHash",
+      codingRelease.definitionHash,
+      pin.definitionHash,
+    );
+    validatePinnedValue(
+      errors,
+      "Coding approval approvedBy",
+      codingRelease.finalApproval?.approvedBy,
+      pins.approvedBy,
+    );
+    validatePinnedValue(
+      errors,
+      "Coding approval approvedAt",
+      codingRelease.finalApproval?.approvedAt,
+      pins.approvedAt,
+    );
+    if (["editorial-gold", "calibrated-gold"].includes(codingRelease.status)) {
+      validatePinnedArtifactFiles(errors, "Coding", codingArtifacts, pin);
+    }
+  }
+  return errors;
+}
+
 function runtimeAssetToFile(asset) {
   if (typeof asset !== "string" || !asset.startsWith("assets/")) {
     throw new Error(`Invalid runtime asset path: ${String(asset)}`);
@@ -72,17 +194,65 @@ function runtimeAssetToFile(asset) {
   return filePath;
 }
 
+function pressureAssetToFile(asset) {
+  const authoringPrefix = "authoring://pressure-modes/";
+  if (!String(asset || "").startsWith(authoringPrefix)) {
+    return runtimeAssetToFile(asset);
+  }
+  const root = path.join(interviewContentDir, "authoring", "pressure-modes");
+  const filePath = path.resolve(root, asset.slice(authoringPrefix.length));
+  const relative = path.relative(root, filePath);
+  if (!relative || relative.startsWith("..") || path.isAbsolute(relative)) {
+    throw new Error(`Authoring pressure asset escapes pressure-modes/: ${asset}`);
+  }
+  return filePath;
+}
+
 function sourceDefinition(authoring) {
   return {
     schemaVersion: authoring.schemaVersion,
     registryId: authoring.registryId,
     registryVersion: authoring.registryVersion,
-    variants: authoring.variants,
+    // Selection taxonomy is versioned and hashed independently so adding private-only
+    // semantic metadata cannot mutate an already generated candidate artifact.
+    variants: authoring.variants.map((variant) => Object.fromEntries(
+      Object.entries(variant).filter(([key]) => key !== "conceptId"),
+    )),
   };
 }
 
 export function definitionHash(authoring) {
   return sha256(sourceDefinition(authoring));
+}
+
+function codingSelectionRefs(authoring) {
+  return authoring.variants
+    .map((variant) => ({
+      id: variant.id,
+      conceptId: variant.conceptId,
+      track: variant.track,
+      level: variant.level,
+    }))
+    .sort((left, right) => left.id.localeCompare(right.id));
+}
+
+export function selectionDefinitionHash(authoring) {
+  return sha256({
+    schemaVersion: authoring.selectionMetadataVersion,
+    registryId: authoring.registryId,
+    registryVersion: authoring.registryVersion,
+    variants: codingSelectionRefs(authoring),
+  });
+}
+
+export function buildCodingSelectionMetadata(authoring) {
+  return {
+    schemaVersion: authoring.selectionMetadataVersion,
+    registryId: authoring.registryId,
+    registryVersion: authoring.registryVersion,
+    selectionDefinitionHash: selectionDefinitionHash(authoring),
+    variants: codingSelectionRefs(authoring),
+  };
 }
 
 function loadCatalog(catalog, cache) {
@@ -181,13 +351,15 @@ function javascriptChecks(question, spec) {
 
 function frameworkContext(spec, question) {
   const starterAsset = question.sdk?.asset;
-  const pressureAsset = question.pressureModeAsset;
+  const pressureAsset = spec.pressureAsset || question.pressureModeAsset;
   if (!starterAsset || !pressureAsset) {
-    throw new Error(`${spec.id}: framework source must declare sdk.asset and pressureModeAsset.`);
+    throw new Error(
+      `${spec.id}: framework source must declare sdk.asset and a catalog or authoring pressure asset.`,
+    );
   }
 
   const starterFile = runtimeAssetToFile(starterAsset);
-  const pressureFile = runtimeAssetToFile(pressureAsset);
+  const pressureFile = pressureAssetToFile(pressureAsset);
   const starter = readJson(starterFile);
   const pressure = readJson(pressureFile);
   const starterHash = sha256(starter);
@@ -233,12 +405,32 @@ function frameworkContext(spec, question) {
     throw new Error(`${spec.id}: starter asset does not contain public files.`);
   }
   const rounds = pressure.rounds.slice(0, spec.roundLimit);
+  if (new Set(rounds.map((round) => round.id)).size !== rounds.length) {
+    throw new Error(`${spec.id}: framework round IDs must be unique.`);
+  }
+  const frameworkCheckIds = new Set();
   for (const round of rounds) {
-    if (!Array.isArray(round.constraints) || !round.constraints.length) {
+    if (!round.id || !round.title || !round.interviewerPrompt) {
+      throw new Error(`${spec.id}: framework round identity or prompt is missing.`);
+    }
+    if (!Array.isArray(round.constraints) || !round.constraints.length
+      || round.constraints.some((constraint) => !String(constraint || "").trim())) {
       throw new Error(`${spec.id}/${round.id}: public constraints are missing.`);
     }
     if (!Array.isArray(round.frameworkTests) || !round.frameworkTests.length) {
       throw new Error(`${spec.id}/${round.id}: framework check contract is missing.`);
+    }
+    for (const check of round.frameworkTests) {
+      if (!check?.id || !check?.name || !Array.isArray(check.steps) || !check.steps.length) {
+        throw new Error(`${spec.id}/${round.id}: framework check is incomplete.`);
+      }
+      if (frameworkCheckIds.has(check.id)) {
+        throw new Error(`${spec.id}: framework check IDs must be unique across selected rounds.`);
+      }
+      frameworkCheckIds.add(check.id);
+      if (check.steps.some((step) => !step || typeof step !== "object" || !step.type)) {
+        throw new Error(`${spec.id}/${round.id}/${check.id}: framework check step is invalid.`);
+      }
     }
   }
   return {
@@ -417,6 +609,7 @@ function buildVariant(authoring, spec, catalogCache) {
     private: {
       id: spec.id,
       revision: spec.revision,
+      conceptId: spec.conceptId,
       contentHash: hash,
       ...privateContent,
       review,
@@ -435,6 +628,13 @@ export function buildInterviewContent() {
   }
   if (authoring.reviewBatch.reviewedDefinitionHash !== computedDefinitionHash) {
     throw new Error("Coding registry review batch is not bound to the current definitionHash.");
+  }
+  const computedSelectionDefinitionHash = selectionDefinitionHash(authoring);
+  if (authoring.selectionDefinitionHash !== computedSelectionDefinitionHash) {
+    throw new Error(
+      `Coding registry selectionDefinitionHash is stale; expected `
+      + `${computedSelectionDefinitionHash}, received ${authoring.selectionDefinitionHash}.`,
+    );
   }
 
   const catalogCache = new Map();
@@ -466,6 +666,7 @@ export function buildInterviewContent() {
     status: authoring.status,
     finalApproval: authoring.finalApproval,
     definitionHash: computedDefinitionHash,
+    selectionDefinitionHash: computedSelectionDefinitionHash,
     variants: privateVariants,
   };
   const publicText = canonicalJson(publicPackage, true);
@@ -477,6 +678,7 @@ export function buildInterviewContent() {
     status: authoring.status,
     finalApproval: authoring.finalApproval,
     definitionHash: computedDefinitionHash,
+    selectionDefinitionHash: computedSelectionDefinitionHash,
     variantCount: variantRefs.length,
     enabledVariantCount: variantRefs.filter((entry) => entry.enabled).length,
     contentHash: registryContentHash,
@@ -495,6 +697,7 @@ export function buildInterviewContent() {
   };
   return {
     authoring,
+    selectionMetadata: buildCodingSelectionMetadata(authoring),
     publicPackage,
     privatePackage,
     release,
@@ -504,6 +707,53 @@ export function buildInterviewContent() {
       "interview-coding-registry-v1.release.json": canonicalJson(release, true),
     },
   };
+}
+
+export function codingReleaseReadinessReport(
+  built,
+  { minimumVariantsPerCombination = 5 } = {},
+) {
+  const conceptsById = new Map(
+    built.authoring.variants.map((variant) => [variant.id, variant.conceptId]),
+  );
+  const matrix = [];
+  const errors = [];
+  for (const track of tracks) {
+    for (const level of levels) {
+      const variants = built.publicPackage.variants.filter(
+        (variant) => variant.track === track && variant.level === level,
+      );
+      const enabled = variants.filter((variant) => variant.enabled);
+      const distinctConceptCount = new Set(
+        enabled.map((variant) => conceptsById.get(variant.id)).filter(Boolean),
+      ).size;
+      const entry = {
+        track,
+        level,
+        requiredVariantCount: minimumVariantsPerCombination,
+        variantCount: variants.length,
+        enabledVariantCount: enabled.length,
+        distinctConceptCount,
+        minimumNetNewVariants: Math.max(
+          0,
+          minimumVariantsPerCombination - Math.min(enabled.length, distinctConceptCount),
+        ),
+      };
+      entry.ready = entry.enabledVariantCount >= minimumVariantsPerCombination
+        && entry.distinctConceptCount >= minimumVariantsPerCombination;
+      matrix.push(entry);
+      if (!entry.ready) {
+        errors.push(
+          `${track}/${level}: coding release gate requires at least `
+          + `${minimumVariantsPerCombination} enabled variants with `
+          + `${minimumVariantsPerCombination} distinct conceptIds; received `
+          + `${entry.enabledVariantCount} enabled and ${entry.distinctConceptCount} concepts `
+          + `(minimum ${entry.minimumNetNewVariants} net-new variants).`,
+        );
+      }
+    }
+  }
+  return { ready: errors.length === 0, errors, matrix };
 }
 
 function walkKeys(value, pathParts = [], findings = []) {
@@ -521,19 +771,70 @@ function walkKeys(value, pathParts = [], findings = []) {
 
 export function validateBuiltInterviewContent(built) {
   const errors = [];
-  const { authoring, publicPackage, privatePackage, release } = built;
+  const {
+    authoring,
+    selectionMetadata,
+    publicPackage,
+    privatePackage,
+    release,
+  } = built;
   const ids = publicPackage.variants.map((variant) => variant.id);
-  if (ids.length !== 24 || new Set(ids).size !== 24) {
-    errors.push(`Registry must contain exactly 24 unique variants; received ${ids.length}.`);
+  if (!ids.length || new Set(ids).size !== ids.length) {
+    errors.push(`Registry variant IDs must be present and unique; received ${ids.length}.`);
   }
   for (const track of tracks) {
     for (const level of levels) {
       const matches = publicPackage.variants.filter(
         (variant) => variant.track === track && variant.level === level,
       );
-      if (matches.length !== 2) {
-        errors.push(`${track}/${level} must contain exactly two variants; received ${matches.length}.`);
+      if (!matches.length) {
+        errors.push(`${track}/${level} must contain at least one candidate variant.`);
       }
+    }
+  }
+  const conceptPattern = /^coding-[a-z0-9]+(?:-[a-z0-9]+)*$/;
+  const authoringById = new Map(authoring.variants.map((variant) => [variant.id, variant]));
+  for (const variant of authoring.variants) {
+    if (!conceptPattern.test(String(variant.conceptId || ""))) {
+      errors.push(`${variant.id}: missing or invalid private conceptId.`);
+    }
+  }
+  const conceptGroups = new Map();
+  for (const variant of authoring.variants) {
+    const group = conceptGroups.get(variant.conceptId) || [];
+    group.push(variant);
+    conceptGroups.set(variant.conceptId, group);
+  }
+  for (const [conceptId, variants] of conceptGroups) {
+    if (!conceptId) continue;
+    const levelsForConcept = new Set(variants.map((variant) => variant.level));
+    if (levelsForConcept.size > 1) {
+      errors.push(`${conceptId}: conceptId collision spans multiple levels.`);
+    }
+    const combinationKeys = variants.map((variant) => `${variant.track}/${variant.level}`);
+    if (new Set(combinationKeys).size !== combinationKeys.length) {
+      errors.push(`${conceptId}: conceptId collision repeats within a track/level combination.`);
+    }
+  }
+  if (selectionMetadata?.schemaVersion !== authoring.selectionMetadataVersion
+    || selectionMetadata?.selectionDefinitionHash !== authoring.selectionDefinitionHash) {
+    errors.push("Coding private selection metadata is absent or stale.");
+  }
+  if (privatePackage.selectionDefinitionHash !== authoring.selectionDefinitionHash
+    || release.selectionDefinitionHash !== authoring.selectionDefinitionHash) {
+    errors.push("Coding artifacts do not pin the private selectionDefinitionHash.");
+  }
+  const selectionById = new Map(
+    (selectionMetadata?.variants || []).map((variant) => [variant.id, variant]),
+  );
+  for (const variant of publicPackage.variants) {
+    const authoringVariant = authoringById.get(variant.id);
+    const selectionVariant = selectionById.get(variant.id);
+    if (!authoringVariant || !selectionVariant
+      || selectionVariant.conceptId !== authoringVariant.conceptId
+      || selectionVariant.track !== variant.track
+      || selectionVariant.level !== variant.level) {
+      errors.push(`${variant.id}: private selection metadata does not match authoring.`);
     }
   }
   for (const variant of publicPackage.variants) {
@@ -572,8 +873,9 @@ export function validateBuiltInterviewContent(built) {
     const privateVariant = privateById.get(variant.id);
     if (!privateVariant
       || privateVariant.revision !== variant.revision
-      || privateVariant.contentHash !== variant.contentHash) {
-      errors.push(`${variant.id}: public/private revision or contentHash mismatch.`);
+      || privateVariant.contentHash !== variant.contentHash
+      || privateVariant.conceptId !== authoringById.get(variant.id)?.conceptId) {
+      errors.push(`${variant.id}: public/private revision, contentHash, or conceptId mismatch.`);
     }
     const rubricCheckIds = new Set(
       privateVariant?.rubric?.groups?.flatMap((group) => group.checkIds || []) || [],
@@ -592,8 +894,9 @@ export function validateBuiltInterviewContent(built) {
     }
     if (!runnerCheckIds.size) errors.push(`${variant.id}: runnerConfig has no executable checks.`);
   }
-  if (release.variantCount !== 24 || release.enabledVariantCount !== 24) {
-    errors.push("Release counts must report 24 total and 24 review-enabled variants.");
+  const enabledCount = publicPackage.variants.filter((variant) => variant.enabled).length;
+  if (release.variantCount !== ids.length || release.enabledVariantCount !== enabledCount) {
+    errors.push("Release counts must match the generated variants.");
   }
   if (release.registryContentHash !== release.contentHash) {
     errors.push("release.registryContentHash must equal release.contentHash.");
@@ -602,13 +905,26 @@ export function validateBuiltInterviewContent(built) {
     errors.push("Candidate coding registry finalApproval must be null.");
   }
   if (authoring.status !== "candidate") {
+    errors.push(...codingReleaseReadinessReport(built).errors);
     const approval = authoring.finalApproval;
     if (!approval
       || approval.registryVersion !== authoring.registryVersion
-      || approval.registryContentHash !== release.registryContentHash) {
-      errors.push("Gold coding registry approval must bind registryVersion and registryContentHash.");
+      || approval.registryContentHash !== release.registryContentHash
+      || approval.selectionDefinitionHash !== authoring.selectionDefinitionHash) {
+      errors.push(
+        "Gold coding registry approval must bind registryVersion, registryContentHash, "
+        + "and selectionDefinitionHash.",
+      );
     }
   }
+  errors.push(...validateInterviewArtifactPins({
+    codingRelease: release,
+    codingArtifacts: {
+      public: built.files["interview-coding-registry-v1.public.json"],
+      private: built.files["interview-coding-registry-v1.private.json"],
+      release: built.files["interview-coding-registry-v1.release.json"],
+    },
+  }));
   return errors;
 }
 
@@ -649,16 +965,50 @@ export function validateMcqRuntimeCopies(checkFiles = true) {
   if (!["editorial-gold", "calibrated-gold"].includes(sourceRelease.status)) {
     errors.push(`MCQ source release is not gold: ${sourceRelease.status}.`);
   }
-  if (sourceRelease.contentHash !== "e879b419e877f84088171eda3af9f327242435c4b99728c27e38d176fc0517e3") {
-    errors.push(`MCQ source content hash drifted: ${sourceRelease.contentHash}.`);
-  }
+  errors.push(...validateInterviewArtifactPins({
+    mcqRelease: sourceRelease,
+    mcqArtifacts: {
+      public: sourceFiles["frontend-interview-bank-v1.public.json"],
+      private: sourceFiles["frontend-interview-bank-v1.private.json"],
+      release: sourceFiles["frontend-interview-bank-v1.release.json"],
+    },
+  }));
   if (sourceRelease.finalApproval?.approvedBy !== "project-owner"
     || sourceRelease.finalApproval?.bankContentHash !== sourceRelease.contentHash) {
     errors.push("MCQ source approval is absent or stale.");
   }
   const publicPackage = JSON.parse(sourceFiles["frontend-interview-bank-v1.public.json"]);
+  const privatePackage = JSON.parse(sourceFiles["frontend-interview-bank-v1.private.json"]);
   const leaks = walkKeys(publicPackage);
   if (leaks.length) errors.push(`MCQ public package leaked private keys: ${leaks.join(", ")}.`);
+  const privateByKey = new Map(
+    (privatePackage.items || []).map((item) => [`${item.id}@${item.revision}`, item]),
+  );
+  const selectionItems = [];
+  for (const item of publicPackage.items || []) {
+    const privateItem = privateByKey.get(`${item.id}@${item.revision}`);
+    if (!privateItem?.conceptId) {
+      errors.push(`MCQ private selection metadata is missing for ${item.id}@${item.revision}.`);
+      continue;
+    }
+    selectionItems.push({
+      id: item.id,
+      revision: item.revision,
+      conceptId: privateItem.conceptId,
+      technology: item.technology,
+      level: item.level,
+      difficultyBand: item.difficultyBand,
+      format: item.format,
+      estimatedSeconds: item.estimatedSeconds,
+    });
+  }
+  const computedSelectionMetadataHash = sha256(
+    selectionItems.sort((left, right) => left.id.localeCompare(right.id)),
+  );
+  if (computedSelectionMetadataHash
+    !== loadInterviewArtifactPins().mcq.selectionMetadataHash) {
+    errors.push("MCQ selection metadata does not match interview-artifact-pins-v1.json.");
+  }
   for (const kind of ["public", "private"]) {
     const file = sourceRelease.artifacts[kind].file;
     if (sha256(sourceFiles[file]) !== sourceRelease.artifacts[kind].sha256) {

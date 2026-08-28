@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-react-ssr-multiroot-useid-sr-v1",
+  "conceptId": "mcq-react-ssr-multiroot-id-coordination",
   "revision": 1,
   "author": {
     "id": "codex-react-author",

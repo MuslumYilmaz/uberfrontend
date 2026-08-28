@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-react-immutable-object-state-jr-v1",
+  "conceptId": "mcq-react-immutable-object-state-update",
   "revision": 1,
   "author": {
     "id": "codex-react-author",

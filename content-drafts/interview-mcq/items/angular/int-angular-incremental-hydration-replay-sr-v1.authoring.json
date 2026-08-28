@@ -1,7 +1,8 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-angular-incremental-hydration-replay-sr-v1",
-  "revision": 1,
+  "conceptId": "mcq-angular-incremental-hydration-replay",
+  "revision": 2,
   "author": {
     "id": "codex-angular-expansion-author",
     "type": "ai",
@@ -28,7 +29,7 @@
         "label": "Disable incremental hydration for the review controls and dispatch stored clicks to their server-rendered elements manually."
       }
     ],
-    "estimatedSeconds": 180
+    "estimatedSeconds": 165
   },
   "private": {
     "correctOptionId": "choice-b0846f49a4",

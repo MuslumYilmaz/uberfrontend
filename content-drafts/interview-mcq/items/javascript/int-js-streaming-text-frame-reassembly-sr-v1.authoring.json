@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-js-streaming-text-frame-reassembly-sr-v1",
+  "conceptId": "mcq-javascript-streaming-text-frame-reassembly",
   "revision": 1,
   "author": {
     "id": "codex-core-author",

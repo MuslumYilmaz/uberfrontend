@@ -61,6 +61,7 @@ describe('InterviewService', () => {
     expect(result?.minViewportWidth).toBe(720);
     expect(result?.timing).toEqual({
       mcqSeconds: 600,
+      mcqSecondsByLevel: { junior: 600, mid: 600, senior: 600 },
       codingReadySeconds: 300,
       systemDesignSeconds: { junior: 600, mid: 900, senior: 1200 },
     });
@@ -105,14 +106,56 @@ describe('InterviewService', () => {
     expect(result.accessMode).toBe('off');
   });
 
-  it('does not retain a preview mode when the backend marks access disabled', () => {
+  it('retains a known rollout label without granting access when the backend marks access disabled', () => {
     const result = service.normalizeAvailability({
       enabled: false,
       accessMode: 'internal',
     });
 
     expect(result.enabled).toBeFalse();
-    expect(result.accessMode).toBe('off');
+    expect(result.accessMode).toBe('internal');
+  });
+
+  it('normalizes cohort, drain and halt control metadata without treating it as authority', () => {
+    const draining = service.normalizeAvailability({
+      enabled: false,
+      accessMode: 'cohort',
+      canCreate: false,
+      operationalState: 'drain',
+      activeSessionPolicy: 'continue',
+      shutdownNotice: {
+        code: 'INTERVIEW_DRAINING',
+        message: 'New sessions are paused.',
+      },
+    });
+
+    expect(draining).toEqual(jasmine.objectContaining({
+      enabled: false,
+      accessMode: 'cohort',
+      canCreate: false,
+      operationalState: 'drain',
+      activeSessionPolicy: 'continue',
+      shutdownNotice: {
+        code: 'INTERVIEW_DRAINING',
+        message: 'New sessions are paused.',
+      },
+    }));
+
+    expect(service.normalizeControl({
+      id: 'session-1',
+      status: 'mcq_active',
+      version: 4,
+      active: true,
+      policy: 'halted',
+      notice: { code: 'INTERVIEW_HALTED', message: 'Stop working.' },
+    })).toEqual({
+      id: 'session-1',
+      status: 'mcq_active',
+      version: 4,
+      active: true,
+      policy: 'halted',
+      notice: { code: 'INTERVIEW_HALTED', message: 'Stop working.' },
+    });
   });
 
   it('projects a session without retaining answer keys or solution fields', () => {
@@ -145,10 +188,48 @@ describe('InterviewService', () => {
     });
 
     expect(session.status).toBe('mcq_active');
+    expect(session.protocolVersion).toBe(1);
     expect(session.questions[0].selectedOptionId).toBe('option_b');
     expect(Object.keys(session.questions[0])).not.toContain('correctOptionId');
     expect(Object.keys(session.questions[0])).not.toContain('explanation');
     expect(Object.keys(session.questions[0])).not.toContain('provenance');
+  });
+
+  it('normalizes abandon responses as terminal sessions without answer fields', () => {
+    let result: ReturnType<InterviewService['normalizeSession']> | undefined;
+    service.endSession('session-1', 3).subscribe((value) => { result = value; });
+
+    const request = http.expectOne(apiUrl('/interviews/session-1/end'));
+    expect(request.request.body).toEqual({ expectedVersion: 3 });
+    request.flush({
+      session: {
+        id: 'session-1',
+        status: 'abandoned',
+        level: 'mid',
+        track: 'react',
+        version: 4,
+        serverNow: '2026-07-27T12:00:00.000Z',
+        resultAvailable: false,
+        deadlines: {},
+        questions: [{
+          id: 'question-1',
+          revision: 1,
+          technology: 'react',
+          competency: 'effects',
+          prompt: 'Which cleanup belongs to this Effect?',
+          correctOptionId: 'option-a',
+          explanation: 'Private explanation',
+          options: [
+            { id: 'option-a', label: 'Return cleanup.' },
+            { id: 'option-b', label: 'Keep it in render.' },
+          ],
+        }],
+      },
+    });
+
+    expect(result?.status).toBe('abandoned');
+    expect(Object.keys(result?.questions[0] || {})).not.toContain('correctOptionId');
+    expect(Object.keys(result?.questions[0] || {})).not.toContain('explanation');
   });
 
   it('normalizes structured, legacy-string, and missing MCQ snippets', () => {
@@ -247,11 +328,13 @@ describe('InterviewService', () => {
     service.saveAnswer(
       'session /1',
       {
+        protocolVersion: 2,
         questionId: 'question 1',
         optionId: 'option_c',
         responseDurationMs: 12_345,
+        mutationId: 'mcq-answer-request-1',
+        expectedVersion: 4,
       },
-      4,
     ).subscribe();
 
     const request = http.expectOne(
@@ -261,16 +344,56 @@ describe('InterviewService', () => {
     expect(request.request.body).toEqual({
       optionId: 'option_c',
       responseDurationMs: 12_345,
+      protocolVersion: 2,
+      mutationId: 'mcq-answer-request-1',
       expectedVersion: 4,
     });
     request.flush({ ok: true });
   });
 
+  it('submits a V2 idempotent snapshot of every current MCQ response', () => {
+    service.submitMcq('session-1', {
+      protocolVersion: 2,
+      mutationId: 'mcq-submit-request-1',
+      expectedVersion: 9,
+      responses: [
+        { questionId: 'question-1', optionId: 'option-b', responseDurationMs: 1_234.4 },
+        { questionId: 'question-2', optionId: null },
+      ],
+    }).subscribe();
+
+    const request = http.expectOne(
+      `${apiUrl('/interviews')}/session-1/mcq/submit`,
+    );
+    expect(request.request.method).toBe('POST');
+    expect(request.request.body).toEqual({
+      protocolVersion: 2,
+      mutationId: 'mcq-submit-request-1',
+      expectedVersion: 9,
+      responses: [
+        { questionId: 'question-1', optionId: 'option-b', responseDurationMs: 1_234 },
+        { questionId: 'question-2', optionId: null },
+      ],
+    });
+    request.flush({
+      session: {
+        id: 'session-1',
+        status: 'coding_ready',
+        format: 'coding',
+        level: 'mid',
+        track: 'react',
+        version: 10,
+        questions: [],
+      },
+    });
+  });
+
   it('creates a fixed-timing session with the idempotency header and no duration input', () => {
+    let createdProtocolVersion: 1 | 2 | undefined;
     service.createSession(
       { level: 'senior', track: 'vue', viewportWidth: 1366 },
       'interview-request-123',
-    ).subscribe();
+    ).subscribe((session) => { createdProtocolVersion = session.protocolVersion; });
 
     const request = http.expectOne(apiUrl('/interviews'));
     expect(request.request.method).toBe('POST');
@@ -284,6 +407,7 @@ describe('InterviewService', () => {
     request.flush({
       session: {
         id: 'session-created',
+        protocolVersion: 2,
         status: 'mcq_active',
         level: 'senior',
         track: 'vue',
@@ -291,6 +415,7 @@ describe('InterviewService', () => {
         questions: [],
       },
     });
+    expect(createdProtocolVersion).toBe(2);
   });
 
   it('prepares browser checks for a synced draft without asking the server to execute code', () => {

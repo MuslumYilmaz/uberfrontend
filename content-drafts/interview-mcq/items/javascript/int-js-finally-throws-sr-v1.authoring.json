@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-js-finally-throws-sr-v1",
+  "conceptId": "mcq-javascript-promise-recovery-and-finally-failure",
   "revision": 1,
   "author": {
     "id": "codex-core-author",

@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-html-iframe-capability-isolation-sr-v1",
+  "conceptId": "mcq-html-iframe-capability-isolation",
   "revision": 1,
   "author": {
     "id": "codex-core-author",

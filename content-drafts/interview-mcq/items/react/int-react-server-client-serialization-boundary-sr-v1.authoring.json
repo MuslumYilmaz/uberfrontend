@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-react-server-client-serialization-boundary-sr-v1",
+  "conceptId": "mcq-react-server-client-serialization-boundary",
   "revision": 1,
   "author": {
     "id": "codex-react-author",

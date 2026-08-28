@@ -13,6 +13,7 @@ import {
   InterviewCodingResult,
   InterviewCodingState,
   InterviewCodingTask,
+  InterviewControl,
   InterviewDraftSaveResult,
   InterviewFrameworkCheck,
   InterviewFrameworkRunnerConfig,
@@ -22,8 +23,11 @@ import {
   InterviewLevel,
   InterviewMcqOption,
   InterviewMcqQuestion,
+  InterviewMcqResponseSnapshot,
   InterviewMcqResult,
   InterviewMutationAck,
+  InterviewOperationalState,
+  InterviewActiveSessionPolicy,
   InterviewPreparedCheckRun,
   InterviewQuota,
   InterviewResult,
@@ -32,6 +36,7 @@ import {
   InterviewSession,
   InterviewSessionLink,
   InterviewSessionStatus,
+  InterviewShutdownNotice,
   InterviewSystemDesignCard,
   InterviewSystemDesignClarification,
   InterviewSystemDesignConnection,
@@ -54,6 +59,7 @@ import {
   SaveInterviewAnswerRequest,
   SaveInterviewCodingDraftRequest,
   SaveInterviewSystemDesignDraftRequest,
+  SubmitInterviewMcqRequest,
 } from '../models/interview.model';
 import { apiUrl } from '../utils/api-base';
 
@@ -94,10 +100,15 @@ export class InterviewService {
       .pipe(map((payload) => this.normalizeSession(payload)));
   }
 
+  getControl(sessionId: string): Observable<InterviewControl> {
+    return this.http
+      .get<unknown>(`${this.base}/${this.encode(sessionId)}/control`, { withCredentials: true })
+      .pipe(map((payload) => this.normalizeControl(payload)));
+  }
+
   saveAnswer(
     sessionId: string,
     request: SaveInterviewAnswerRequest,
-    expectedVersion: number,
   ): Observable<InterviewMutationAck> {
     return this.http
       .put<unknown>(
@@ -107,7 +118,9 @@ export class InterviewService {
           ...(Number.isFinite(request.responseDurationMs)
             ? { responseDurationMs: Math.max(0, Math.round(request.responseDurationMs!)) }
             : {}),
-          expectedVersion,
+          protocolVersion: request.protocolVersion,
+          mutationId: request.mutationId,
+          expectedVersion: request.expectedVersion,
         },
         { withCredentials: true },
       )
@@ -117,14 +130,36 @@ export class InterviewService {
       })));
   }
 
-  submitMcq(sessionId: string, expectedVersion: number): Observable<InterviewSession> {
+  submitMcq(
+    sessionId: string,
+    request: SubmitInterviewMcqRequest,
+  ): Observable<InterviewSession> {
     return this.http
       .post<unknown>(
         `${this.base}/${this.encode(sessionId)}/mcq/submit`,
-        { expectedVersion },
+        {
+          protocolVersion: request.protocolVersion,
+          mutationId: request.mutationId,
+          expectedVersion: request.expectedVersion,
+          responses: request.responses.map((response) => (
+            this.serializeMcqResponse(response)
+          )),
+        },
         { withCredentials: true },
       )
       .pipe(map((payload) => this.normalizeSession(payload)));
+  }
+
+  private serializeMcqResponse(
+    response: InterviewMcqResponseSnapshot,
+  ): InterviewMcqResponseSnapshot {
+    return {
+      questionId: response.questionId,
+      optionId: response.optionId,
+      ...(Number.isFinite(response.responseDurationMs)
+        ? { responseDurationMs: Math.max(0, Math.round(response.responseDurationMs!)) }
+        : {}),
+    };
   }
 
   startCoding(sessionId: string, expectedVersion: number): Observable<InterviewSession> {
@@ -254,14 +289,14 @@ export class InterviewService {
       .pipe(map((payload) => this.normalizeSystemDesignMutation(payload)));
   }
 
-  endSession(sessionId: string, expectedVersion: number): Observable<InterviewResult | null> {
+  endSession(sessionId: string, expectedVersion: number): Observable<InterviewSession> {
     return this.http
       .post<unknown>(
         `${this.base}/${this.encode(sessionId)}/end`,
         { expectedVersion },
         { withCredentials: true },
       )
-      .pipe(map((payload) => this.normalizeOptionalResult(payload)));
+      .pipe(map((payload) => this.normalizeSession(payload)));
   }
 
   getResult(sessionId: string): Observable<InterviewResult> {
@@ -276,9 +311,7 @@ export class InterviewService {
   normalizeAvailability(payload: unknown): InterviewAvailability {
     const source = this.unwrap(payload, 'availability');
     const advertisedEnabled = source['enabled'] === true;
-    const accessMode = advertisedEnabled
-      ? this.normalizeAccessMode(source['accessMode'])
-      : 'off';
+    const accessMode = this.normalizeAccessMode(source['accessMode']);
     const quotaSource = this.record(source['quota']);
     const quotasSource = this.record(source['quotas']);
     const activeSource = this.record(source['activeSession'] ?? source['active']);
@@ -307,9 +340,19 @@ export class InterviewService {
     const systemDesignTiming = this.record(
       timing?.['systemDesignSeconds'] ?? timing?.['system-design'],
     );
+    const mcqTimingByLevel = this.record(timing?.['mcqSecondsByLevel']);
     return {
       enabled: advertisedEnabled && accessMode !== 'off',
       accessMode,
+      canCreate: source['canCreate'] === undefined
+        ? advertisedEnabled && accessMode !== 'off'
+        : source['canCreate'] === true && advertisedEnabled && accessMode !== 'off',
+      operationalState: this.normalizeOperationalState(source['operationalState']),
+      activeSessionPolicy: this.normalizeActiveSessionPolicy(
+        source['activeSessionPolicy'],
+        source['operationalState'],
+      ),
+      shutdownNotice: this.normalizeShutdownNotice(source['shutdownNotice']),
       unavailableReason: this.optionalText(source['unavailableReason'] ?? source['reason']),
       quota: legacyQuota,
       quotas: {
@@ -338,6 +381,17 @@ export class InterviewService {
       minViewportWidth: this.positiveInteger(source['minViewportWidth']) ?? 768,
       timing: {
         mcqSeconds: this.positiveInteger(timing?.['mcqSeconds']) ?? 600,
+        mcqSecondsByLevel: {
+          junior: this.positiveInteger(mcqTimingByLevel?.['junior'])
+            ?? this.positiveInteger(timing?.['mcqSeconds'])
+            ?? 600,
+          mid: this.positiveInteger(mcqTimingByLevel?.['mid'])
+            ?? this.positiveInteger(timing?.['mcqSeconds'])
+            ?? 600,
+          senior: this.positiveInteger(mcqTimingByLevel?.['senior'])
+            ?? this.positiveInteger(timing?.['mcqSeconds'])
+            ?? 600,
+        },
         codingReadySeconds:
           this.positiveInteger(timing?.['codingReadySeconds']) ?? 300,
         systemDesignSeconds: {
@@ -398,10 +452,54 @@ export class InterviewService {
     const normalized = this.text(value).toLowerCase();
     if (!normalized) return 'off';
     if (normalized === 'on') return 'public';
-    if (normalized === 'off' || normalized === 'internal' || normalized === 'public') {
+    if (
+      normalized === 'off'
+      || normalized === 'internal'
+      || normalized === 'cohort'
+      || normalized === 'public'
+    ) {
       return normalized;
     }
     return 'off';
+  }
+
+  private normalizeOperationalState(value: unknown): InterviewOperationalState {
+    const normalized = this.text(value).toLowerCase();
+    return normalized === 'drain' || normalized === 'halt' ? normalized : 'normal';
+  }
+
+  private normalizeActiveSessionPolicy(
+    value: unknown,
+    operationalState: unknown,
+  ): InterviewActiveSessionPolicy {
+    const normalized = this.text(value).toLowerCase();
+    if (normalized === 'halted') return 'halted';
+    if (normalized === 'continue') return 'continue';
+    return this.normalizeOperationalState(operationalState) === 'halt' ? 'halted' : 'continue';
+  }
+
+  private normalizeShutdownNotice(value: unknown): InterviewShutdownNotice | null {
+    const source = this.record(value);
+    const message = this.optionalText(source?.['message']);
+    if (!source || !message) return null;
+    return {
+      code: this.text(source['code']) || 'INTERVIEW_DRAINING',
+      message,
+    };
+  }
+
+  normalizeControl(payload: unknown): InterviewControl {
+    const source = this.unwrap(payload, 'control');
+    const id = this.text(source['id'] ?? source['sessionId']);
+    if (!id) throw new Error('Interview control response is missing an id.');
+    return {
+      id,
+      status: this.normalizeStatus(source['status']),
+      version: this.nonNegativeInteger(source['version']) ?? 0,
+      active: source['active'] === true,
+      policy: this.normalizeActiveSessionPolicy(source['policy'], undefined),
+      notice: this.normalizeShutdownNotice(source['notice']),
+    };
   }
 
   private normalizeTargetAvailability(value: unknown): InterviewTargetAvailability | null {
@@ -435,6 +533,7 @@ export class InterviewService {
 
     return {
       id,
+      protocolVersion: Number(source['protocolVersion']) === 2 ? 2 : 1,
       status: this.normalizeStatus(source['status'] ?? source['phase']),
       format: this.normalizeFormat(
         source['format'] ?? source['interviewFormat'],

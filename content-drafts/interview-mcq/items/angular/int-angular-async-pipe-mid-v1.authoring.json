@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-angular-async-pipe-mid-v1",
+  "conceptId": "mcq-angular-template-observable-subscription",
   "revision": 3,
   "author": {
     "id": "codex-angular-author",

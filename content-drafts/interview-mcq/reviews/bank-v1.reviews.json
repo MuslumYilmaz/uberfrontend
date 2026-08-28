@@ -1,8 +1,17 @@
 {
   "schemaVersion": "2.0.0",
   "bankId": "frontend-interview-gold-bank",
-  "bankVersion": "1.2.0",
-  "finalApproval": null,
+  "bankVersion": "1.3.0",
+  "finalApproval": {
+    "approvedBy": "project-owner",
+    "approvedAt": "2026-08-24",
+    "bankVersion": "1.3.0",
+    "bankContentHash": "9e2aed2606cf0fbaa54cad46c890d48e518be0266a3a91cb95cfb4777038a4e8",
+    "selectionMetadataHash": "dcd3e26ee4aef17aed0f31ea29c979f2f3c3316f4701a627f1aa24f2be3c6590",
+    "notes": [
+      "Project owner approved MCQ v1.3.0 for editorial-gold production use after the release-readiness audit."
+    ]
+  },
   "items": [
     {
       "id": "int-angular-async-pipe-mid-v1",
@@ -908,22 +917,23 @@
     },
     {
       "id": "int-angular-incremental-hydration-replay-sr-v1",
-      "revision": 1,
-      "contentHash": "1905c01de84128dd13182354919ddd877913af7e07025b694fb721f7b01d27f1",
+      "revision": 2,
+      "contentHash": "03cb15a36e66e7dda7f49a38cc5e7a6a5c9e7aa4ece0b0f3af4ad08c5295a80a",
       "technical": {
         "status": "passed",
         "reviewer": "codex-mcq-technical-v1.2",
         "reviewerType": "ai",
-        "reviewedAt": "2026-08-05",
-        "reviewedRevision": 1,
-        "contentHash": "1905c01de84128dd13182354919ddd877913af7e07025b694fb721f7b01d27f1",
+        "reviewedAt": "2026-08-24",
+        "reviewedRevision": 2,
+        "contentHash": "03cb15a36e66e7dda7f49a38cc5e7a6a5c9e7aa4ece0b0f3af4ad08c5295a80a",
         "checklistVersion": "1.3.0",
         "notes": [
           "Key choice-b0846f49a4 independently verified: Angular 22 client hydration enables incremental hydration by default; it renders the real deferred view during SSR, transfers ownership on the interaction trigger, and replays pre-hydration events.",
           "Rejected choice-299b5aa530: A regular defer trigger uses its placeholder for the deferred client-rendering case and a document listener cannot reproduce Angular's component event semantics safely. Plausibility: The regular interaction trigger can postpone loading a deferrable view until the user acts. Falsifying constraint: The main interactive review markup must already be present in the server response.",
           "Rejected choice-761cefcc54: Disabling incremental hydration leaves no interaction-triggered transfer for this subtree, so manual DOM dispatch cannot establish the requested component ownership boundary. Plausibility: Server-rendered content can remain visible before its Angular component code becomes interactive. Falsifying constraint: The controls must become client-owned and execute their Angular handlers after interaction.",
           "Source chain verified for angular22-incremental-hydration: decisive claims map to current official provenance records with HTTPS URLs, approved licenses, explicit revisions, and copiedText false.",
-          "Revalidated under checklist 1.3.0 against the complete 170-item manifest and blueprint corpus."
+          "Revalidated under checklist 1.3.0 against the complete 185-item manifest and blueprint corpus.",
+          "Timing-only revalidation: 165 seconds remains conservative for a 96-word, three-option, code-free senior production scenario; prompt, options, answer key, proof, and sources are unchanged."
         ],
         "verifiedCorrectOptionId": "choice-b0846f49a4",
         "rejectedDistractorOptionIds": [
@@ -938,9 +948,9 @@
         "status": "passed",
         "reviewer": "codex-mcq-editorial-v1.2",
         "reviewerType": "ai",
-        "reviewedAt": "2026-08-05",
-        "reviewedRevision": 1,
-        "contentHash": "1905c01de84128dd13182354919ddd877913af7e07025b694fb721f7b01d27f1",
+        "reviewedAt": "2026-08-24",
+        "reviewedRevision": 2,
+        "contentHash": "03cb15a36e66e7dda7f49a38cc5e7a6a5c9e7aa4ece0b0f3af4ad08c5295a80a",
         "checklistVersion": "1.3.0",
         "notes": [
           "Originality: original wording, copiedText false, and 1 technical source record(s) used for verification rather than copied content.",
@@ -948,7 +958,8 @@
           "Distractor design: regular-defer-is-incremental-hydration and event-dispatch-can-replace-component-hydration are distinct misconceptions with separate falsifying constraints.",
           "Option construction: three opaque choices use parallel scope and comparable detail; automated clue, containment, similarity, stem-echo, and duplicate gates passed.",
           "Level fit: senior/core is defensible under the checklist 1.3.0 scope rubric.",
-          "Revalidated for production relevance, originality, and comparative placement against the complete 170-item corpus and local CDN wording."
+          "Revalidated for production relevance, originality, and comparative placement against the complete 185-item corpus and local CDN wording.",
+          "Timing estimate revalidated at 165 seconds, matching the median for code-free senior production scenarios with comparable visible length."
         ],
         "originalityConfirmed": true,
         "oneBestAnswerConfirmed": true,
@@ -959,12 +970,13 @@
         "status": "passed",
         "reviewer": "codex-mcq-blind-v1.2",
         "reviewerType": "ai",
-        "reviewedAt": "2026-08-05",
-        "reviewedRevision": 1,
-        "contentHash": "1905c01de84128dd13182354919ddd877913af7e07025b694fb721f7b01d27f1",
+        "reviewedAt": "2026-08-24",
+        "reviewedRevision": 2,
+        "contentHash": "03cb15a36e66e7dda7f49a38cc5e7a6a5c9e7aa4ece0b0f3af4ad08c5295a80a",
         "checklistVersion": "1.3.0",
         "notes": [
-          "Selected strategy: Configure `provideClientHydration()` with `@defer (hydrate on interaction)` so Angular 22 replays the captured event after hydration."
+          "Selected strategy: Configure `provideClientHydration()` with `@defer (hydrate on interaction)` so Angular 22 replays the captured event after hydration.",
+          "The timing-only adjustment to 165 seconds does not change the selected option, assessed level, or assessed difficulty band."
         ],
         "selectedOptionId": "choice-b0846f49a4",
         "confidence": "high",
@@ -6054,22 +6066,23 @@
     },
     {
       "id": "int-js-observer-lifecycle-mid-v1",
-      "revision": 1,
-      "contentHash": "7c93e9b72e5daa0ca9d1736988fd20220cf146dac66a25d375cc66f9685d3e5f",
+      "revision": 2,
+      "contentHash": "58971cff59259d05bd3803d8c0b7b7ecdf3897b354b0ecc9708c494311b67bd4",
       "technical": {
         "status": "passed",
         "reviewer": "codex-mcq-technical-v1.2",
         "reviewerType": "ai",
-        "reviewedAt": "2026-08-05",
-        "reviewedRevision": 1,
-        "contentHash": "7c93e9b72e5daa0ca9d1736988fd20220cf146dac66a25d375cc66f9685d3e5f",
+        "reviewedAt": "2026-08-24",
+        "reviewedRevision": 2,
+        "contentHash": "58971cff59259d05bd3803d8c0b7b7ecdf3897b354b0ecc9708c494311b67bd4",
         "checklistVersion": "1.3.0",
         "notes": [
           "Key choice-6e87bf32ad independently verified: The observer lifetime should match the list instance: targets are removed when obsolete and disconnect releases all remaining observations at teardown.",
           "Rejected choice-aee99617f4: A permanent observer keeps unrelated route lifetimes coupled and preserves obsolete sentinels unless each is explicitly removed. Plausibility: Reusing one observer avoids repeatedly constructing observer objects. Falsifying constraint: The route instances require isolated ownership and complete cleanup on unmount.",
           "Rejected choice-8aab4d7334: Dropping one reference does not express observer teardown and leaves the observer registered with its targets until it becomes collectible. Plausibility: Unreachable JavaScript objects are normally eligible for garbage collection. Falsifying constraint: The requirement is deterministic teardown of active observation and callbacks at unmount.",
           "Source chain verified for mdn-intersectionobserver-unobserve, mdn-intersectionobserver-disconnect: decisive claims map to current official provenance records with HTTPS URLs, approved licenses, explicit revisions, and copiedText false.",
-          "Revalidated under checklist 1.3.0 against the complete 170-item manifest and blueprint corpus."
+          "Revalidated under checklist 1.3.0 against the complete 185-item manifest and blueprint corpus.",
+          "Timing-only revalidation: 150 seconds remains conservative for an 83-word, three-option, code-free mid production scenario; prompt, options, answer key, proof, and sources are unchanged."
         ],
         "verifiedCorrectOptionId": "choice-6e87bf32ad",
         "rejectedDistractorOptionIds": [
@@ -6085,9 +6098,9 @@
         "status": "passed",
         "reviewer": "codex-mcq-editorial-v1.2",
         "reviewerType": "ai",
-        "reviewedAt": "2026-08-05",
-        "reviewedRevision": 1,
-        "contentHash": "7c93e9b72e5daa0ca9d1736988fd20220cf146dac66a25d375cc66f9685d3e5f",
+        "reviewedAt": "2026-08-24",
+        "reviewedRevision": 2,
+        "contentHash": "58971cff59259d05bd3803d8c0b7b7ecdf3897b354b0ecc9708c494311b67bd4",
         "checklistVersion": "1.3.0",
         "notes": [
           "Originality: original wording, copiedText false, and 2 technical source record(s) used for verification rather than copied content.",
@@ -6095,7 +6108,8 @@
           "Distractor design: global-singleton-prevents-resource-leaks and garbage-collection-replaces-disconnect are distinct misconceptions with separate falsifying constraints.",
           "Option construction: three opaque choices use parallel scope and comparable detail; automated clue, containment, similarity, stem-echo, and duplicate gates passed.",
           "Level fit: mid/core is defensible under the checklist 1.3.0 scope rubric.",
-          "Revalidated for production relevance, originality, and comparative placement against the complete 170-item corpus and local CDN wording."
+          "Revalidated for production relevance, originality, and comparative placement against the complete 185-item corpus and local CDN wording.",
+          "Timing estimate revalidated at 150 seconds, above the median for code-free mid production scenarios with comparable visible length."
         ],
         "originalityConfirmed": true,
         "oneBestAnswerConfirmed": true,
@@ -6106,12 +6120,13 @@
         "status": "passed",
         "reviewer": "codex-mcq-blind-v1.2",
         "reviewerType": "ai",
-        "reviewedAt": "2026-08-05",
-        "reviewedRevision": 1,
-        "contentHash": "7c93e9b72e5daa0ca9d1736988fd20220cf146dac66a25d375cc66f9685d3e5f",
+        "reviewedAt": "2026-08-24",
+        "reviewedRevision": 2,
+        "contentHash": "58971cff59259d05bd3803d8c0b7b7ecdf3897b354b0ecc9708c494311b67bd4",
         "checklistVersion": "1.3.0",
         "notes": [
-          "Selected strategy: Own one observer per mount, unobserve removed sentinels, and disconnect it when that list unmounts."
+          "Selected strategy: Own one observer per mount, unobserve removed sentinels, and disconnect it when that list unmounts.",
+          "The timing-only adjustment to 150 seconds does not change the selected option, assessed level, or assessed difficulty band."
         ],
         "selectedOptionId": "choice-6e87bf32ad",
         "confidence": "high",
@@ -11809,7 +11824,924 @@
         "assessedDifficultyBand": "core"
       },
       "waivers": []
+    },
+    {
+      "id": "int-js-aes-gcm-iv-uniqueness-sr-v1",
+      "revision": 1,
+      "contentHash": "f3b4c2ebfb5433cc98e5256cc28746cf6cf9e922a8e15db88836e9614f6a18cf",
+      "technical": {
+        "status": "passed",
+        "reviewer": "codex-mcq-technical-v1.3",
+        "reviewerType": "ai",
+        "reviewedAt": "2026-08-24",
+        "reviewedRevision": 1,
+        "contentHash": "f3b4c2ebfb5433cc98e5256cc28746cf6cf9e922a8e15db88836e9614f6a18cf",
+        "checklistVersion": "1.3.0",
+        "notes": [
+          "Independently verified choice-35c9a98029: AES-GCM requires IV uniqueness for every encryption performed with a given key; the IV can travel with the ciphertext because secrecy is not its requirement.",
+          "Both distractors were rejected against their distinct falsifying constraints; official evidence checked for mdn-aes-gcm-params."
+        ],
+        "verifiedCorrectOptionId": "choice-35c9a98029",
+        "rejectedDistractorOptionIds": [
+          "choice-93c040b4ff",
+          "choice-294e034fe4"
+        ],
+        "verifiedSourceIds": [
+          "mdn-aes-gcm-params"
+        ]
+      },
+      "editorial": {
+        "status": "passed",
+        "reviewer": "codex-mcq-editorial-v1.3",
+        "reviewerType": "ai",
+        "reviewedAt": "2026-08-24",
+        "reviewedRevision": 1,
+        "contentHash": "f3b4c2ebfb5433cc98e5256cc28746cf6cf9e922a8e15db88836e9614f6a18cf",
+        "checklistVersion": "1.3.0",
+        "notes": [
+          "Originality, one-best-answer construction, three-option parallelism, senior/stretch fit, and 150s estimate independently reviewed."
+        ],
+        "originalityConfirmed": true,
+        "oneBestAnswerConfirmed": true,
+        "parallelOptionsConfirmed": true,
+        "clueFlags": []
+      },
+      "blind": {
+        "status": "passed",
+        "reviewer": "codex-mcq-blind-v1.3",
+        "reviewerType": "ai",
+        "reviewedAt": "2026-08-24",
+        "reviewedRevision": 1,
+        "contentHash": "f3b4c2ebfb5433cc98e5256cc28746cf6cf9e922a8e15db88836e9614f6a18cf",
+        "checklistVersion": "1.3.0",
+        "notes": [
+          "Selected without the answer key: Generate a fresh unique 96-bit IV for each encryption under the key and store it beside the ciphertext."
+        ],
+        "selectedOptionId": "choice-35c9a98029",
+        "confidence": "high",
+        "alternativeValidOptionIds": [],
+        "clueFlags": [],
+        "assessedLevel": "senior",
+        "assessedDifficultyBand": "stretch"
+      },
+      "waivers": []
+    },
+    {
+      "id": "int-js-array-negative-index-access-jr-v1",
+      "revision": 1,
+      "contentHash": "6563af1f24cbcf5ff97b2e88337966d2189d711a1832d566f07418ea825516b6",
+      "technical": {
+        "status": "passed",
+        "reviewer": "codex-mcq-technical-v1.3",
+        "reviewerType": "ai",
+        "reviewedAt": "2026-08-24",
+        "reviewedRevision": 1,
+        "contentHash": "6563af1f24cbcf5ff97b2e88337966d2189d711a1832d566f07418ea825516b6",
+        "checklistVersion": "1.3.0",
+        "notes": [
+          "Independently verified choice-79b2cd4695: Array.prototype.at supports relative negative indexing and returns the final element for -1, while bracket syntax treats -1 as an ordinary property name.",
+          "Both distractors were rejected against their distinct falsifying constraints; official evidence checked for mdn-array-at."
+        ],
+        "verifiedCorrectOptionId": "choice-79b2cd4695",
+        "rejectedDistractorOptionIds": [
+          "choice-0f1df4d0a7",
+          "choice-212623719d"
+        ],
+        "verifiedSourceIds": [
+          "mdn-array-at"
+        ]
+      },
+      "editorial": {
+        "status": "passed",
+        "reviewer": "codex-mcq-editorial-v1.3",
+        "reviewerType": "ai",
+        "reviewedAt": "2026-08-24",
+        "reviewedRevision": 1,
+        "contentHash": "6563af1f24cbcf5ff97b2e88337966d2189d711a1832d566f07418ea825516b6",
+        "checklistVersion": "1.3.0",
+        "notes": [
+          "Originality, one-best-answer construction, three-option parallelism, junior/core fit, and 75s estimate independently reviewed."
+        ],
+        "originalityConfirmed": true,
+        "oneBestAnswerConfirmed": true,
+        "parallelOptionsConfirmed": true,
+        "clueFlags": []
+      },
+      "blind": {
+        "status": "passed",
+        "reviewer": "codex-mcq-blind-v1.3",
+        "reviewerType": "ai",
+        "reviewedAt": "2026-08-24",
+        "reviewedRevision": 1,
+        "contentHash": "6563af1f24cbcf5ff97b2e88337966d2189d711a1832d566f07418ea825516b6",
+        "checklistVersion": "1.3.0",
+        "notes": [
+          "Selected without the answer key: Read `notifications.at(-1)` because a negative index counts backward from the array end."
+        ],
+        "selectedOptionId": "choice-79b2cd4695",
+        "confidence": "high",
+        "alternativeValidOptionIds": [],
+        "clueFlags": [],
+        "assessedLevel": "junior",
+        "assessedDifficultyBand": "core"
+      },
+      "waivers": []
+    },
+    {
+      "id": "int-js-indexeddb-upgrade-coordination-sr-v1",
+      "revision": 1,
+      "contentHash": "2b1be360ca477a238c03069c8088798c04b9f5274c81ea829d6470201365ab08",
+      "technical": {
+        "status": "passed",
+        "reviewer": "codex-mcq-technical-v1.3",
+        "reviewerType": "ai",
+        "reviewedAt": "2026-08-24",
+        "reviewedRevision": 1,
+        "contentHash": "2b1be360ca477a238c03069c8088798c04b9f5274c81ea829d6470201365ab08",
+        "checklistVersion": "1.3.0",
+        "notes": [
+          "Independently verified choice-9d40d5b556: Existing connections must acknowledge a requested version change by closing; the new opener should handle the blocked state while users are guided to reload old application instances.",
+          "Both distractors were rejected against their distinct falsifying constraints; official evidence checked for mdn-using-indexeddb."
+        ],
+        "verifiedCorrectOptionId": "choice-9d40d5b556",
+        "rejectedDistractorOptionIds": [
+          "choice-4c607ac328",
+          "choice-f47f902e07"
+        ],
+        "verifiedSourceIds": [
+          "mdn-using-indexeddb"
+        ]
+      },
+      "editorial": {
+        "status": "passed",
+        "reviewer": "codex-mcq-editorial-v1.3",
+        "reviewerType": "ai",
+        "reviewedAt": "2026-08-24",
+        "reviewedRevision": 1,
+        "contentHash": "2b1be360ca477a238c03069c8088798c04b9f5274c81ea829d6470201365ab08",
+        "checklistVersion": "1.3.0",
+        "notes": [
+          "Originality, one-best-answer construction, three-option parallelism, senior/stretch fit, and 165s estimate independently reviewed."
+        ],
+        "originalityConfirmed": true,
+        "oneBestAnswerConfirmed": true,
+        "parallelOptionsConfirmed": true,
+        "clueFlags": []
+      },
+      "blind": {
+        "status": "passed",
+        "reviewer": "codex-mcq-blind-v1.3",
+        "reviewerType": "ai",
+        "reviewedAt": "2026-08-24",
+        "reviewedRevision": 1,
+        "contentHash": "2b1be360ca477a238c03069c8088798c04b9f5274c81ea829d6470201365ab08",
+        "checklistVersion": "1.3.0",
+        "notes": [
+          "Selected without the answer key: Have open connections close on `versionchange`, prompt old tabs to reload, and surface `blocked` in the upgrading tab."
+        ],
+        "selectedOptionId": "choice-9d40d5b556",
+        "confidence": "high",
+        "alternativeValidOptionIds": [],
+        "clueFlags": [],
+        "assessedLevel": "senior",
+        "assessedDifficultyBand": "stretch"
+      },
+      "waivers": []
+    },
+    {
+      "id": "int-js-intersection-threshold-crossing-mid-v1",
+      "revision": 1,
+      "contentHash": "e9e916c785eb3cb5ff70ec384ca5d06ff7c8f4f97664c67c1d4df589cebef642",
+      "technical": {
+        "status": "passed",
+        "reviewer": "codex-mcq-technical-v1.3",
+        "reviewerType": "ai",
+        "reviewedAt": "2026-08-24",
+        "reviewedRevision": 1,
+        "contentHash": "e9e916c785eb3cb5ff70ec384ca5d06ff7c8f4f97664c67c1d4df589cebef642",
+        "checklistVersion": "1.3.0",
+        "notes": [
+          "Independently verified choice-00b8f00b56: IntersectionObserver thresholds are visibility-ratio boundaries; callbacks are queued when a target crosses a configured threshold in either direction.",
+          "Both distractors were rejected against their distinct falsifying constraints; official evidence checked for mdn-intersection-thresholds."
+        ],
+        "verifiedCorrectOptionId": "choice-00b8f00b56",
+        "rejectedDistractorOptionIds": [
+          "choice-66dd00ef40",
+          "choice-94f6f32d2a"
+        ],
+        "verifiedSourceIds": [
+          "mdn-intersection-thresholds"
+        ]
+      },
+      "editorial": {
+        "status": "passed",
+        "reviewer": "codex-mcq-editorial-v1.3",
+        "reviewerType": "ai",
+        "reviewedAt": "2026-08-24",
+        "reviewedRevision": 1,
+        "contentHash": "e9e916c785eb3cb5ff70ec384ca5d06ff7c8f4f97664c67c1d4df589cebef642",
+        "checklistVersion": "1.3.0",
+        "notes": [
+          "Originality, one-best-answer construction, three-option parallelism, mid/core fit, and 130s estimate independently reviewed."
+        ],
+        "originalityConfirmed": true,
+        "oneBestAnswerConfirmed": true,
+        "parallelOptionsConfirmed": true,
+        "clueFlags": []
+      },
+      "blind": {
+        "status": "passed",
+        "reviewer": "codex-mcq-blind-v1.3",
+        "reviewerType": "ai",
+        "reviewedAt": "2026-08-24",
+        "reviewedRevision": 1,
+        "contentHash": "e9e916c785eb3cb5ff70ec384ca5d06ff7c8f4f97664c67c1d4df589cebef642",
+        "checklistVersion": "1.3.0",
+        "notes": [
+          "Selected without the answer key: Treat the array as ratio boundaries and reconcile state whenever an observed target crosses one."
+        ],
+        "selectedOptionId": "choice-00b8f00b56",
+        "confidence": "high",
+        "alternativeValidOptionIds": [],
+        "clueFlags": [],
+        "assessedLevel": "mid",
+        "assessedDifficultyBand": "core"
+      },
+      "waivers": []
+    },
+    {
+      "id": "int-js-intl-collator-bulk-sort-mid-v1",
+      "revision": 1,
+      "contentHash": "d7c56b4de496bf2969d31bfe7a6c69fa037467cc30c96b590c72865eb24d4c2e",
+      "technical": {
+        "status": "passed",
+        "reviewer": "codex-mcq-technical-v1.3",
+        "reviewerType": "ai",
+        "reviewedAt": "2026-08-24",
+        "reviewedRevision": 1,
+        "contentHash": "d7c56b4de496bf2969d31bfe7a6c69fa037467cc30c96b590c72865eb24d4c2e",
+        "checklistVersion": "1.3.0",
+        "notes": [
+          "Independently verified choice-f31319dbed: A configured Intl.Collator owns the locale and comparison options once, and its compare function can be reused efficiently for a large sort.",
+          "Both distractors were rejected against their distinct falsifying constraints; official evidence checked for mdn-intl-collator."
+        ],
+        "verifiedCorrectOptionId": "choice-f31319dbed",
+        "rejectedDistractorOptionIds": [
+          "choice-4911b92ff2",
+          "choice-20d9e540f6"
+        ],
+        "verifiedSourceIds": [
+          "mdn-intl-collator"
+        ]
+      },
+      "editorial": {
+        "status": "passed",
+        "reviewer": "codex-mcq-editorial-v1.3",
+        "reviewerType": "ai",
+        "reviewedAt": "2026-08-24",
+        "reviewedRevision": 1,
+        "contentHash": "d7c56b4de496bf2969d31bfe7a6c69fa037467cc30c96b590c72865eb24d4c2e",
+        "checklistVersion": "1.3.0",
+        "notes": [
+          "Originality, one-best-answer construction, three-option parallelism, mid/core fit, and 135s estimate independently reviewed."
+        ],
+        "originalityConfirmed": true,
+        "oneBestAnswerConfirmed": true,
+        "parallelOptionsConfirmed": true,
+        "clueFlags": []
+      },
+      "blind": {
+        "status": "passed",
+        "reviewer": "codex-mcq-blind-v1.3",
+        "reviewerType": "ai",
+        "reviewedAt": "2026-08-24",
+        "reviewedRevision": 1,
+        "contentHash": "d7c56b4de496bf2969d31bfe7a6c69fa037467cc30c96b590c72865eb24d4c2e",
+        "checklistVersion": "1.3.0",
+        "notes": [
+          "Selected without the answer key: Create one configured `Intl.Collator` for the locale and pass its `compare` function to `sort()`."
+        ],
+        "selectedOptionId": "choice-f31319dbed",
+        "confidence": "high",
+        "alternativeValidOptionIds": [],
+        "clueFlags": [],
+        "assessedLevel": "mid",
+        "assessedDifficultyBand": "core"
+      },
+      "waivers": []
+    },
+    {
+      "id": "int-js-live-collection-snapshot-jr-v1",
+      "revision": 1,
+      "contentHash": "9b1c43c7bfcc6699a681fa278b7e8fa7dbf169071533098e03399bda2ae1f1d4",
+      "technical": {
+        "status": "passed",
+        "reviewer": "codex-mcq-technical-v1.3",
+        "reviewerType": "ai",
+        "reviewedAt": "2026-08-24",
+        "reviewedRevision": 1,
+        "contentHash": "9b1c43c7bfcc6699a681fa278b7e8fa7dbf169071533098e03399bda2ae1f1d4",
+        "checklistVersion": "1.3.0",
+        "notes": [
+          "Independently verified choice-7b83e86e3d: The class-name query returns a live HTMLCollection whose membership follows DOM changes; converting it to an Array creates the required point-in-time list.",
+          "Both distractors were rejected against their distinct falsifying constraints; official evidence checked for mdn-htmlcollection, mdn-array-from."
+        ],
+        "verifiedCorrectOptionId": "choice-7b83e86e3d",
+        "rejectedDistractorOptionIds": [
+          "choice-6aa1096cb5",
+          "choice-c693d63f93"
+        ],
+        "verifiedSourceIds": [
+          "mdn-htmlcollection",
+          "mdn-array-from"
+        ]
+      },
+      "editorial": {
+        "status": "passed",
+        "reviewer": "codex-mcq-editorial-v1.3",
+        "reviewerType": "ai",
+        "reviewedAt": "2026-08-24",
+        "reviewedRevision": 1,
+        "contentHash": "9b1c43c7bfcc6699a681fa278b7e8fa7dbf169071533098e03399bda2ae1f1d4",
+        "checklistVersion": "1.3.0",
+        "notes": [
+          "Originality, one-best-answer construction, three-option parallelism, junior/stretch fit, and 115s estimate independently reviewed."
+        ],
+        "originalityConfirmed": true,
+        "oneBestAnswerConfirmed": true,
+        "parallelOptionsConfirmed": true,
+        "clueFlags": []
+      },
+      "blind": {
+        "status": "passed",
+        "reviewer": "codex-mcq-blind-v1.3",
+        "reviewerType": "ai",
+        "reviewedAt": "2026-08-24",
+        "reviewedRevision": 1,
+        "contentHash": "9b1c43c7bfcc6699a681fa278b7e8fa7dbf169071533098e03399bda2ae1f1d4",
+        "checklistVersion": "1.3.0",
+        "notes": [
+          "Selected without the answer key: Copy the returned HTMLCollection with `Array.from` before starting any asynchronous validation work."
+        ],
+        "selectedOptionId": "choice-7b83e86e3d",
+        "confidence": "high",
+        "alternativeValidOptionIds": [],
+        "clueFlags": [],
+        "assessedLevel": "junior",
+        "assessedDifficultyBand": "stretch"
+      },
+      "waivers": []
+    },
+    {
+      "id": "int-js-map-object-key-identity-jr-v1",
+      "revision": 1,
+      "contentHash": "93e6996ab9504d6dcdc14ec0c1f6b5b906a5cbb88920ef74d93b2049d36f1a64",
+      "technical": {
+        "status": "passed",
+        "reviewer": "codex-mcq-technical-v1.3",
+        "reviewerType": "ai",
+        "reviewedAt": "2026-08-24",
+        "reviewedRevision": 1,
+        "contentHash": "93e6996ab9504d6dcdc14ec0c1f6b5b906a5cbb88920ef74d93b2049d36f1a64",
+        "checklistVersion": "1.3.0",
+        "notes": [
+          "Independently verified choice-158e97d16a: Map compares object keys by identity, so a separately constructed object is a different key even when its properties have equal values.",
+          "Both distractors were rejected against their distinct falsifying constraints; official evidence checked for mdn-map-key-equality."
+        ],
+        "verifiedCorrectOptionId": "choice-158e97d16a",
+        "rejectedDistractorOptionIds": [
+          "choice-305c2924cf",
+          "choice-a07d6abd74"
+        ],
+        "verifiedSourceIds": [
+          "mdn-map-key-equality"
+        ]
+      },
+      "editorial": {
+        "status": "passed",
+        "reviewer": "codex-mcq-editorial-v1.3",
+        "reviewerType": "ai",
+        "reviewedAt": "2026-08-24",
+        "reviewedRevision": 1,
+        "contentHash": "93e6996ab9504d6dcdc14ec0c1f6b5b906a5cbb88920ef74d93b2049d36f1a64",
+        "checklistVersion": "1.3.0",
+        "notes": [
+          "Originality, one-best-answer construction, three-option parallelism, junior/core fit, and 80s estimate independently reviewed."
+        ],
+        "originalityConfirmed": true,
+        "oneBestAnswerConfirmed": true,
+        "parallelOptionsConfirmed": true,
+        "clueFlags": []
+      },
+      "blind": {
+        "status": "passed",
+        "reviewer": "codex-mcq-blind-v1.3",
+        "reviewerType": "ai",
+        "reviewedAt": "2026-08-24",
+        "reviewedRevision": 1,
+        "contentHash": "93e6996ab9504d6dcdc14ec0c1f6b5b906a5cbb88920ef74d93b2049d36f1a64",
+        "checklistVersion": "1.3.0",
+        "notes": [
+          "Selected without the answer key: Retain the original configuration object as the key, because object keys match by reference identity."
+        ],
+        "selectedOptionId": "choice-158e97d16a",
+        "confidence": "high",
+        "alternativeValidOptionIds": [],
+        "clueFlags": [],
+        "assessedLevel": "junior",
+        "assessedDifficultyBand": "core"
+      },
+      "waivers": []
+    },
+    {
+      "id": "int-js-postmessage-peer-validation-sr-v1",
+      "revision": 1,
+      "contentHash": "e13e559fd0029136ce280da010b4cca1c7eae3e3e4e61ec17bb7890fd17ac4e1",
+      "technical": {
+        "status": "passed",
+        "reviewer": "codex-mcq-technical-v1.3",
+        "reviewerType": "ai",
+        "reviewedAt": "2026-08-24",
+        "reviewedRevision": 1,
+        "contentHash": "e13e559fd0029136ce280da010b4cca1c7eae3e3e4e61ec17bb7890fd17ac4e1",
+        "checklistVersion": "1.3.0",
+        "notes": [
+          "Independently verified choice-9b37418501: An exact target origin constrains delivery, while the receiver must independently authenticate the sender origin and window reference and validate untrusted message data.",
+          "Both distractors were rejected against their distinct falsifying constraints; official evidence checked for mdn-window-postmessage."
+        ],
+        "verifiedCorrectOptionId": "choice-9b37418501",
+        "rejectedDistractorOptionIds": [
+          "choice-112d097b50",
+          "choice-4d504ef26c"
+        ],
+        "verifiedSourceIds": [
+          "mdn-window-postmessage"
+        ]
+      },
+      "editorial": {
+        "status": "passed",
+        "reviewer": "codex-mcq-editorial-v1.3",
+        "reviewerType": "ai",
+        "reviewedAt": "2026-08-24",
+        "reviewedRevision": 1,
+        "contentHash": "e13e559fd0029136ce280da010b4cca1c7eae3e3e4e61ec17bb7890fd17ac4e1",
+        "checklistVersion": "1.3.0",
+        "notes": [
+          "Originality, one-best-answer construction, three-option parallelism, senior/stretch fit, and 150s estimate independently reviewed."
+        ],
+        "originalityConfirmed": true,
+        "oneBestAnswerConfirmed": true,
+        "parallelOptionsConfirmed": true,
+        "clueFlags": []
+      },
+      "blind": {
+        "status": "passed",
+        "reviewer": "codex-mcq-blind-v1.3",
+        "reviewerType": "ai",
+        "reviewedAt": "2026-08-24",
+        "reviewedRevision": 1,
+        "contentHash": "e13e559fd0029136ce280da010b4cca1c7eae3e3e4e61ec17bb7890fd17ac4e1",
+        "checklistVersion": "1.3.0",
+        "notes": [
+          "Selected without the answer key: Send to the exact origin, then verify inbound `origin`, `source`, and payload schema before acting."
+        ],
+        "selectedOptionId": "choice-9b37418501",
+        "confidence": "high",
+        "alternativeValidOptionIds": [],
+        "clueFlags": [],
+        "assessedLevel": "senior",
+        "assessedDifficultyBand": "stretch"
+      },
+      "waivers": []
+    },
+    {
+      "id": "int-js-promise-all-result-order-jr-v1",
+      "revision": 1,
+      "contentHash": "dddaba3623686075c551da81a4bd4fd766eb976dda3d237a6f0e28787f04eeb3",
+      "technical": {
+        "status": "passed",
+        "reviewer": "codex-mcq-technical-v1.3",
+        "reviewerType": "ai",
+        "reviewedAt": "2026-08-24",
+        "reviewedRevision": 1,
+        "contentHash": "dddaba3623686075c551da81a4bd4fd766eb976dda3d237a6f0e28787f04eeb3",
+        "checklistVersion": "1.3.0",
+        "notes": [
+          "Independently verified choice-10d94e613a: Promise.all fulfills with values in iterable order, so completion timing does not change the index relationship between requests and results.",
+          "Both distractors were rejected against their distinct falsifying constraints; official evidence checked for mdn-promise-all."
+        ],
+        "verifiedCorrectOptionId": "choice-10d94e613a",
+        "rejectedDistractorOptionIds": [
+          "choice-312fc88149",
+          "choice-85aed1f5d5"
+        ],
+        "verifiedSourceIds": [
+          "mdn-promise-all"
+        ]
+      },
+      "editorial": {
+        "status": "passed",
+        "reviewer": "codex-mcq-editorial-v1.3",
+        "reviewerType": "ai",
+        "reviewedAt": "2026-08-24",
+        "reviewedRevision": 1,
+        "contentHash": "dddaba3623686075c551da81a4bd4fd766eb976dda3d237a6f0e28787f04eeb3",
+        "checklistVersion": "1.3.0",
+        "notes": [
+          "Originality, one-best-answer construction, three-option parallelism, junior/stretch fit, and 105s estimate independently reviewed."
+        ],
+        "originalityConfirmed": true,
+        "oneBestAnswerConfirmed": true,
+        "parallelOptionsConfirmed": true,
+        "clueFlags": []
+      },
+      "blind": {
+        "status": "passed",
+        "reviewer": "codex-mcq-blind-v1.3",
+        "reviewerType": "ai",
+        "reviewedAt": "2026-08-24",
+        "reviewedRevision": 1,
+        "contentHash": "dddaba3623686075c551da81a4bd4fd766eb976dda3d237a6f0e28787f04eeb3",
+        "checklistVersion": "1.3.0",
+        "notes": [
+          "Selected without the answer key: Await `Promise.all(requests)`, then pair its result array with product IDs by input position."
+        ],
+        "selectedOptionId": "choice-10d94e613a",
+        "confidence": "high",
+        "alternativeValidOptionIds": [],
+        "clueFlags": [],
+        "assessedLevel": "junior",
+        "assessedDifficultyBand": "stretch"
+      },
+      "waivers": []
+    },
+    {
+      "id": "int-js-shared-memory-isolation-sr-v1",
+      "revision": 1,
+      "contentHash": "e7bd73bdc690eda4f2c486a9c1828a4da1e9c0667e48d4502428747e87677431",
+      "technical": {
+        "status": "passed",
+        "reviewer": "codex-mcq-technical-v1.3",
+        "reviewerType": "ai",
+        "reviewedAt": "2026-08-24",
+        "reviewedRevision": 1,
+        "contentHash": "e7bd73bdc690eda4f2c486a9c1828a4da1e9c0667e48d4502428747e87677431",
+        "checklistVersion": "1.3.0",
+        "notes": [
+          "Independently verified choice-17f0b654d2: Sharing SharedArrayBuffer across agents requires a cross-origin-isolated environment, conventionally established through compatible COOP and COEP response policies and verified with crossOriginIsolated.",
+          "Both distractors were rejected against their distinct falsifying constraints; official evidence checked for mdn-cross-origin-isolated."
+        ],
+        "verifiedCorrectOptionId": "choice-17f0b654d2",
+        "rejectedDistractorOptionIds": [
+          "choice-e65d967c6d",
+          "choice-ec5564ac34"
+        ],
+        "verifiedSourceIds": [
+          "mdn-cross-origin-isolated"
+        ]
+      },
+      "editorial": {
+        "status": "passed",
+        "reviewer": "codex-mcq-editorial-v1.3",
+        "reviewerType": "ai",
+        "reviewedAt": "2026-08-24",
+        "reviewedRevision": 1,
+        "contentHash": "e7bd73bdc690eda4f2c486a9c1828a4da1e9c0667e48d4502428747e87677431",
+        "checklistVersion": "1.3.0",
+        "notes": [
+          "Originality, one-best-answer construction, three-option parallelism, senior/stretch fit, and 160s estimate independently reviewed."
+        ],
+        "originalityConfirmed": true,
+        "oneBestAnswerConfirmed": true,
+        "parallelOptionsConfirmed": true,
+        "clueFlags": []
+      },
+      "blind": {
+        "status": "passed",
+        "reviewer": "codex-mcq-blind-v1.3",
+        "reviewerType": "ai",
+        "reviewedAt": "2026-08-24",
+        "reviewedRevision": 1,
+        "contentHash": "e7bd73bdc690eda4f2c486a9c1828a4da1e9c0667e48d4502428747e87677431",
+        "checklistVersion": "1.3.0",
+        "notes": [
+          "Selected without the answer key: Deploy COOP and COEP with compliant embedded resources, then check `crossOriginIsolated` before posting."
+        ],
+        "selectedOptionId": "choice-17f0b654d2",
+        "confidence": "high",
+        "alternativeValidOptionIds": [],
+        "clueFlags": [],
+        "assessedLevel": "senior",
+        "assessedDifficultyBand": "stretch"
+      },
+      "waivers": []
+    },
+    {
+      "id": "int-js-storage-event-source-context-mid-v1",
+      "revision": 1,
+      "contentHash": "c660845014219661c59c944fe4caa294a5883bc546cb2e2c486a482e922fc723",
+      "technical": {
+        "status": "passed",
+        "reviewer": "codex-mcq-technical-v1.3",
+        "reviewerType": "ai",
+        "reviewedAt": "2026-08-24",
+        "reviewedRevision": 1,
+        "contentHash": "c660845014219661c59c944fe4caa294a5883bc546cb2e2c486a482e922fc723",
+        "checklistVersion": "1.3.0",
+        "notes": [
+          "Independently verified choice-5f4f4b1667: The native storage event is delivered to other eligible browsing contexts, not the context that changed localStorage, so the writer needs a local state update path.",
+          "Both distractors were rejected against their distinct falsifying constraints; official evidence checked for mdn-window-storage-event."
+        ],
+        "verifiedCorrectOptionId": "choice-5f4f4b1667",
+        "rejectedDistractorOptionIds": [
+          "choice-7dd19582ef",
+          "choice-e19abc55a4"
+        ],
+        "verifiedSourceIds": [
+          "mdn-window-storage-event"
+        ]
+      },
+      "editorial": {
+        "status": "passed",
+        "reviewer": "codex-mcq-editorial-v1.3",
+        "reviewerType": "ai",
+        "reviewedAt": "2026-08-24",
+        "reviewedRevision": 1,
+        "contentHash": "c660845014219661c59c944fe4caa294a5883bc546cb2e2c486a482e922fc723",
+        "checklistVersion": "1.3.0",
+        "notes": [
+          "Originality, one-best-answer construction, three-option parallelism, mid/core fit, and 120s estimate independently reviewed."
+        ],
+        "originalityConfirmed": true,
+        "oneBestAnswerConfirmed": true,
+        "parallelOptionsConfirmed": true,
+        "clueFlags": []
+      },
+      "blind": {
+        "status": "passed",
+        "reviewer": "codex-mcq-blind-v1.3",
+        "reviewerType": "ai",
+        "reviewedAt": "2026-08-24",
+        "reviewedRevision": 1,
+        "contentHash": "c660845014219661c59c944fe4caa294a5883bc546cb2e2c486a482e922fc723",
+        "checklistVersion": "1.3.0",
+        "notes": [
+          "Selected without the answer key: Update the writing tab's state directly, and use the `storage` event to reconcile other same-origin tabs."
+        ],
+        "selectedOptionId": "choice-5f4f4b1667",
+        "confidence": "high",
+        "alternativeValidOptionIds": [],
+        "clueFlags": [],
+        "assessedLevel": "mid",
+        "assessedDifficultyBand": "core"
+      },
+      "waivers": []
+    },
+    {
+      "id": "int-js-trusted-types-enforcement-sr-v1",
+      "revision": 1,
+      "contentHash": "07b648b77a4125b1fa948750ac8892d85cb5dc6caaf475165a3791f51bb15226",
+      "technical": {
+        "status": "passed",
+        "reviewer": "codex-mcq-technical-v1.3",
+        "reviewerType": "ai",
+        "reviewedAt": "2026-08-24",
+        "reviewedRevision": 1,
+        "contentHash": "07b648b77a4125b1fa948750ac8892d85cb5dc6caaf475165a3791f51bb15226",
+        "checklistVersion": "1.3.0",
+        "notes": [
+          "Independently verified choice-33faeb8dcd: The require-trusted-types-for directive blocks string assignment to covered sinks, while trusted-types restricts policy creation; the allowed policy still needs a real sanitizer.",
+          "Both distractors were rejected against their distinct falsifying constraints; official evidence checked for mdn-trusted-types-api."
+        ],
+        "verifiedCorrectOptionId": "choice-33faeb8dcd",
+        "rejectedDistractorOptionIds": [
+          "choice-51feaedbfa",
+          "choice-1777ed7d62"
+        ],
+        "verifiedSourceIds": [
+          "mdn-trusted-types-api"
+        ]
+      },
+      "editorial": {
+        "status": "passed",
+        "reviewer": "codex-mcq-editorial-v1.3",
+        "reviewerType": "ai",
+        "reviewedAt": "2026-08-24",
+        "reviewedRevision": 1,
+        "contentHash": "07b648b77a4125b1fa948750ac8892d85cb5dc6caaf475165a3791f51bb15226",
+        "checklistVersion": "1.3.0",
+        "notes": [
+          "Originality, one-best-answer construction, three-option parallelism, senior/stretch fit, and 155s estimate independently reviewed."
+        ],
+        "originalityConfirmed": true,
+        "oneBestAnswerConfirmed": true,
+        "parallelOptionsConfirmed": true,
+        "clueFlags": []
+      },
+      "blind": {
+        "status": "passed",
+        "reviewer": "codex-mcq-blind-v1.3",
+        "reviewerType": "ai",
+        "reviewedAt": "2026-08-24",
+        "reviewedRevision": 1,
+        "contentHash": "07b648b77a4125b1fa948750ac8892d85cb5dc6caaf475165a3791f51bb15226",
+        "checklistVersion": "1.3.0",
+        "notes": [
+          "Selected without the answer key: Require Trusted Types for script sinks, allowlist one policy name, and make that policy sanitize before creating HTML."
+        ],
+        "selectedOptionId": "choice-33faeb8dcd",
+        "confidence": "high",
+        "alternativeValidOptionIds": [],
+        "clueFlags": [],
+        "assessedLevel": "senior",
+        "assessedDifficultyBand": "stretch"
+      },
+      "waivers": []
+    },
+    {
+      "id": "int-js-url-relative-base-resolution-jr-v1",
+      "revision": 1,
+      "contentHash": "18af99fac68f8a31b5611af5f4ecdbeb5e11b194ebba18aa71f727b7537ae3d6",
+      "technical": {
+        "status": "passed",
+        "reviewer": "codex-mcq-technical-v1.3",
+        "reviewerType": "ai",
+        "reviewedAt": "2026-08-24",
+        "reviewedRevision": 1,
+        "contentHash": "18af99fac68f8a31b5611af5f4ecdbeb5e11b194ebba18aa71f727b7537ae3d6",
+        "checklistVersion": "1.3.0",
+        "notes": [
+          "Independently verified choice-8a709ef725: A trailing slash makes the base end in a directory, so the relative reference resolves beneath `/docs/guide/` instead of replacing `guide` or resolving from the origin root.",
+          "Both distractors were rejected against their distinct falsifying constraints; official evidence checked for mdn-url-constructor."
+        ],
+        "verifiedCorrectOptionId": "choice-8a709ef725",
+        "rejectedDistractorOptionIds": [
+          "choice-22e0689f60",
+          "choice-271349bac2"
+        ],
+        "verifiedSourceIds": [
+          "mdn-url-constructor"
+        ]
+      },
+      "editorial": {
+        "status": "passed",
+        "reviewer": "codex-mcq-editorial-v1.3",
+        "reviewerType": "ai",
+        "reviewedAt": "2026-08-24",
+        "reviewedRevision": 1,
+        "contentHash": "18af99fac68f8a31b5611af5f4ecdbeb5e11b194ebba18aa71f727b7537ae3d6",
+        "checklistVersion": "1.3.0",
+        "notes": [
+          "Originality, one-best-answer construction, three-option parallelism, junior/core fit, and 90s estimate independently reviewed."
+        ],
+        "originalityConfirmed": true,
+        "oneBestAnswerConfirmed": true,
+        "parallelOptionsConfirmed": true,
+        "clueFlags": []
+      },
+      "blind": {
+        "status": "passed",
+        "reviewer": "codex-mcq-blind-v1.3",
+        "reviewerType": "ai",
+        "reviewedAt": "2026-08-24",
+        "reviewedRevision": 1,
+        "contentHash": "18af99fac68f8a31b5611af5f4ecdbeb5e11b194ebba18aa71f727b7537ae3d6",
+        "checklistVersion": "1.3.0",
+        "notes": [
+          "Selected without the answer key: Pass a slash-terminated base so `guide` remains a directory: `new URL(relativeAsset, baseWithSlash)`."
+        ],
+        "selectedOptionId": "choice-8a709ef725",
+        "confidence": "high",
+        "alternativeValidOptionIds": [],
+        "clueFlags": [],
+        "assessedLevel": "junior",
+        "assessedDifficultyBand": "core"
+      },
+      "waivers": []
+    },
+    {
+      "id": "int-js-weakmap-key-reachability-mid-v1",
+      "revision": 1,
+      "contentHash": "4225008ae53376b74c5996a44dd4211d41be7510b808ddfc54b7c7d17713638f",
+      "technical": {
+        "status": "passed",
+        "reviewer": "codex-mcq-technical-v1.3",
+        "reviewerType": "ai",
+        "reviewedAt": "2026-08-24",
+        "reviewedRevision": 1,
+        "contentHash": "4225008ae53376b74c5996a44dd4211d41be7510b808ddfc54b7c7d17713638f",
+        "checklistVersion": "1.3.0",
+        "notes": [
+          "Independently verified choice-c3054febf8: WeakMap associates data with object keys without creating a strong reference to those keys and intentionally provides no key enumeration surface.",
+          "Both distractors were rejected against their distinct falsifying constraints; official evidence checked for mdn-weakmap."
+        ],
+        "verifiedCorrectOptionId": "choice-c3054febf8",
+        "rejectedDistractorOptionIds": [
+          "choice-6ba8e5baa2",
+          "choice-f5db66ec86"
+        ],
+        "verifiedSourceIds": [
+          "mdn-weakmap"
+        ]
+      },
+      "editorial": {
+        "status": "passed",
+        "reviewer": "codex-mcq-editorial-v1.3",
+        "reviewerType": "ai",
+        "reviewedAt": "2026-08-24",
+        "reviewedRevision": 1,
+        "contentHash": "4225008ae53376b74c5996a44dd4211d41be7510b808ddfc54b7c7d17713638f",
+        "checklistVersion": "1.3.0",
+        "notes": [
+          "Originality, one-best-answer construction, three-option parallelism, mid/core fit, and 125s estimate independently reviewed."
+        ],
+        "originalityConfirmed": true,
+        "oneBestAnswerConfirmed": true,
+        "parallelOptionsConfirmed": true,
+        "clueFlags": []
+      },
+      "blind": {
+        "status": "passed",
+        "reviewer": "codex-mcq-blind-v1.3",
+        "reviewerType": "ai",
+        "reviewedAt": "2026-08-24",
+        "reviewedRevision": 1,
+        "contentHash": "4225008ae53376b74c5996a44dd4211d41be7510b808ddfc54b7c7d17713638f",
+        "checklistVersion": "1.3.0",
+        "notes": [
+          "Selected without the answer key: Use a `WeakMap` keyed by each element and read metadata only while the element reference is available."
+        ],
+        "selectedOptionId": "choice-c3054febf8",
+        "confidence": "high",
+        "alternativeValidOptionIds": [],
+        "clueFlags": [],
+        "assessedLevel": "mid",
+        "assessedDifficultyBand": "core"
+      },
+      "waivers": []
+    },
+    {
+      "id": "int-js-websocket-buffered-flow-control-sr-v1",
+      "revision": 1,
+      "contentHash": "a20b841494c1aa44346ad822e6602c1c69a8b477d438e6191732ee8a2892e1dc",
+      "technical": {
+        "status": "passed",
+        "reviewer": "codex-mcq-technical-v1.3",
+        "reviewerType": "ai",
+        "reviewedAt": "2026-08-24",
+        "reviewedRevision": 1,
+        "contentHash": "a20b841494c1aa44346ad822e6602c1c69a8b477d438e6191732ee8a2892e1dc",
+        "checklistVersion": "1.3.0",
+        "notes": [
+          "Independently verified choice-08ac50b19c: Classic WebSocket provides no built-in backpressure; bufferedAmount exposes queued application bytes, so application-level watermarks can bound further production.",
+          "Both distractors were rejected against their distinct falsifying constraints; official evidence checked for mdn-websocket, mdn-websocket-buffered-amount."
+        ],
+        "verifiedCorrectOptionId": "choice-08ac50b19c",
+        "rejectedDistractorOptionIds": [
+          "choice-af6949b41e",
+          "choice-d5573c9624"
+        ],
+        "verifiedSourceIds": [
+          "mdn-websocket",
+          "mdn-websocket-buffered-amount"
+        ]
+      },
+      "editorial": {
+        "status": "passed",
+        "reviewer": "codex-mcq-editorial-v1.3",
+        "reviewerType": "ai",
+        "reviewedAt": "2026-08-24",
+        "reviewedRevision": 1,
+        "contentHash": "a20b841494c1aa44346ad822e6602c1c69a8b477d438e6191732ee8a2892e1dc",
+        "checklistVersion": "1.3.0",
+        "notes": [
+          "Originality, one-best-answer construction, three-option parallelism, senior/stretch fit, and 155s estimate independently reviewed."
+        ],
+        "originalityConfirmed": true,
+        "oneBestAnswerConfirmed": true,
+        "parallelOptionsConfirmed": true,
+        "clueFlags": []
+      },
+      "blind": {
+        "status": "passed",
+        "reviewer": "codex-mcq-blind-v1.3",
+        "reviewerType": "ai",
+        "reviewedAt": "2026-08-24",
+        "reviewedRevision": 1,
+        "contentHash": "a20b841494c1aa44346ad822e6602c1c69a8b477d438e6191732ee8a2892e1dc",
+        "checklistVersion": "1.3.0",
+        "notes": [
+          "Selected without the answer key: Pause or shed producers above a `bufferedAmount` high-water mark and resume after it falls below a low-water mark."
+        ],
+        "selectedOptionId": "choice-08ac50b19c",
+        "confidence": "high",
+        "alternativeValidOptionIds": [],
+        "clueFlags": [],
+        "assessedLevel": "senior",
+        "assessedDifficultyBand": "stretch"
+      },
+      "waivers": []
     }
   ],
-  "status": "candidate"
+  "status": "editorial-gold"
 }

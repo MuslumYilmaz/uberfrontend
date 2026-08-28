@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-css-box-sizing-jr-v1",
+  "conceptId": "mcq-css-content-box-size-calculation",
   "revision": 1,
   "author": {
     "id": "codex-core-author",

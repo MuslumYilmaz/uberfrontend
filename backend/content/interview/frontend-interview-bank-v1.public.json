@@ -1,6 +1,6 @@
 {
   "bankId": "frontend-interview-gold-bank",
-  "bankVersion": "1.1.0",
+  "bankVersion": "1.3.0",
   "items": [
     {
       "competency": "template-observable-subscription",
@@ -25,6 +25,31 @@
       ],
       "prompt": "An `OnPush` price component renders a long-lived `price$` whose emissions occur after initial rendering. The template must show every emission, and the subscription must end when the view is destroyed. Which approach meets both requirements?",
       "revision": 3,
+      "technology": "angular"
+    },
+    {
+      "competency": "async-validator-latest-result",
+      "difficultyBand": "stretch",
+      "estimatedSeconds": 150,
+      "format": "production-scenario",
+      "id": "int-angular-async-validator-latest-result-mid-v1",
+      "level": "mid",
+      "options": [
+        {
+          "id": "choice-2442dcc2f2",
+          "label": "Use Signal Forms `validateHttp`, derive request params from the field, and render the form-owned `pending()` state."
+        },
+        {
+          "id": "choice-ce344aaddd",
+          "label": "Use `mergeMap` for requests, count active checks for pending, and apply each response to the field as it arrives."
+        },
+        {
+          "id": "choice-3c73305aab",
+          "label": "Set a shared pending flag before `switchMap`, then clear it in each canceled or completed inner request's `finalize`."
+        }
+      ],
+      "prompt": "An Angular 22 Signal Form checks username availability. Users type quickly, and a slower response for an older value must not replace the current field's validity. The UI also needs the field's real pending state. Which validation boundary supplies both behaviors?",
+      "revision": 1,
       "technology": "angular"
     },
     {
@@ -75,6 +100,31 @@
       ],
       "prompt": "A Save button must be disabled while `isSaving` is true and call the component's `save()` method when the user activates it. Which Angular template expresses both data flows correctly?",
       "revision": 2,
+      "technology": "angular"
+    },
+    {
+      "competency": "content-projection-selection",
+      "difficultyBand": "core",
+      "estimatedSeconds": 90,
+      "format": "production-scenario",
+      "id": "int-angular-content-projection-selection-jr-v1",
+      "level": "junior",
+      "options": [
+        {
+          "id": "choice-92e6626faa",
+          "label": "Wrap one `<ng-content>` in `@if (showActions)` and change its `select` binding between `[panel-actions]` and `*`."
+        },
+        {
+          "id": "choice-24854c683c",
+          "label": "Query projected nodes in `ngAfterContentInit`, then move matching elements into the footer with native DOM methods."
+        },
+        {
+          "id": "choice-2869388d11",
+          "label": "Place `<ng-content />` as the fallback in the panel body and `<ng-content select=\"[panel-actions]\" />` in its footer."
+        }
+      ],
+      "prompt": "An Angular 22 `Panel` component must render consumer children marked with the static `panel-actions` attribute in its footer and render every unmatched child in its body. The component does not inspect or recreate those children at runtime. Which template implements the boundary?",
+      "revision": 1,
       "technology": "angular"
     },
     {
@@ -183,6 +233,56 @@
       "technology": "angular"
     },
     {
+      "competency": "guard-redirect-contract",
+      "difficultyBand": "core",
+      "estimatedSeconds": 105,
+      "format": "conceptual",
+      "id": "int-angular-guard-redirect-contract-mid-v1",
+      "level": "mid",
+      "options": [
+        {
+          "id": "choice-283a09e7b7",
+          "label": "Return `false`, then queue the login navigation in a microtask so it starts after the guard result is processed."
+        },
+        {
+          "id": "choice-26c4368454",
+          "label": "Return `true`, start `router.navigate` immediately, and let the newer login navigation replace the protected route."
+        },
+        {
+          "id": "choice-1e103ee373",
+          "label": "Return a login `UrlTree` or `RedirectCommand` containing the return URL instead of calling `navigate` inside the guard."
+        }
+      ],
+      "prompt": "An Angular 22 `CanActivateFn` finds an expired session. It currently returns `false` and separately calls `router.navigate`, producing competing navigation lifecycles. The router should cancel the protected navigation and redirect to login with a return URL as one guard result. What should the guard do?",
+      "revision": 1,
+      "technology": "angular"
+    },
+    {
+      "competency": "http-context-policy",
+      "difficultyBand": "core",
+      "estimatedSeconds": 105,
+      "format": "conceptual",
+      "id": "int-angular-http-context-policy-mid-v1",
+      "level": "mid",
+      "options": [
+        {
+          "id": "choice-0b5105809c",
+          "label": "Define a typed `HttpContextToken`, set it in that request's `HttpContext`, and read it in the caching interceptor."
+        },
+        {
+          "id": "choice-ea449f7e8d",
+          "label": "Clone that request with an `X-Skip-Cache` header, then remove the header in a response interceptor after transport."
+        },
+        {
+          "id": "choice-55c0ff9676",
+          "label": "Create a second component-level `HttpClient` configuration that omits the caching interceptor for the account screen."
+        }
+      ],
+      "prompt": "An Angular 22 caching interceptor caches ordinary GET requests. One account request must opt out, but the policy marker must stay inside the client and must not become a header sent to the server. Which design carries this per-request policy through the interceptor chain?",
+      "revision": 1,
+      "technology": "angular"
+    },
+    {
       "code": {
         "language": "typescript",
         "runtime": "angular-22",
@@ -243,6 +343,31 @@
       "technology": "angular"
     },
     {
+      "competency": "incremental-hydration-replay",
+      "difficultyBand": "core",
+      "estimatedSeconds": 165,
+      "format": "production-scenario",
+      "id": "int-angular-incremental-hydration-replay-sr-v1",
+      "level": "senior",
+      "options": [
+        {
+          "id": "choice-b0846f49a4",
+          "label": "Configure `provideClientHydration()` with `@defer (hydrate on interaction)` so Angular 22 replays the captured event after hydration."
+        },
+        {
+          "id": "choice-299b5aa530",
+          "label": "Use `@defer (on interaction)` with a review placeholder and add a document click listener that recreates the first action."
+        },
+        {
+          "id": "choice-761cefcc54",
+          "label": "Disable incremental hydration for the review controls and dispatch stored clicks to their server-rendered elements manually."
+        }
+      ],
+      "prompt": "An Angular 22 SSR product page must send the real review controls in its initial HTML but delay their client code until a user interacts. A click that occurs before ownership transfers must be replayed after hydration rather than lost. Which configuration establishes that boundary?",
+      "revision": 2,
+      "technology": "angular"
+    },
+    {
       "code": {
         "language": "typescript",
         "runtime": "angular-17",
@@ -294,6 +419,31 @@
         }
       ],
       "prompt": "A `<profile-editor>` inside `<settings-panel>` emits `saveRequested`. The application shell binds `(saveRequested)` on `<settings-panel>`, but its handler does not run. The editor must remain nested, and the shell should receive one explicit component event. Which change fixes the boundary?",
+      "revision": 1,
+      "technology": "angular"
+    },
+    {
+      "competency": "prerender-parameter-boundary",
+      "difficultyBand": "stretch",
+      "estimatedSeconds": 195,
+      "format": "production-scenario",
+      "id": "int-angular-prerender-parameter-boundary-sr-v1",
+      "level": "senior",
+      "options": [
+        {
+          "id": "choice-efda02a161",
+          "label": "Read the current request cookie inside `getPrerenderParams` after an await, then return the SKUs visible to that request's user."
+        },
+        {
+          "id": "choice-fb8d249218",
+          "label": "Use `RenderMode.Prerender`, inject the catalog before awaiting, return `{ sku }` entries, and choose `PrerenderFallback.Server`."
+        },
+        {
+          "id": "choice-7bb4bb5830",
+          "label": "Prerender one wildcard document with `PrerenderFallback.None`, then look up any requested SKU from browser state at hydration time."
+        }
+      ],
+      "prompt": "An Angular 22 hybrid app has `product/:sku`. Public catalog SKUs are discoverable during the build and should become static pages; a newly added SKU not in that build must fall back to SSR. Parameter generation cannot depend on request cookies. Which server-route contract fits?",
       "revision": 1,
       "technology": "angular"
     },
@@ -353,6 +503,31 @@
       "technology": "angular"
     },
     {
+      "competency": "required-input-contract",
+      "difficultyBand": "core",
+      "estimatedSeconds": 75,
+      "format": "conceptual",
+      "id": "int-angular-required-input-contract-jr-v1",
+      "level": "junior",
+      "options": [
+        {
+          "id": "choice-ad29ecc3fb",
+          "label": "Declare `product = input<Product | undefined>()` and throw from `ngOnInit` when the first value is missing."
+        },
+        {
+          "id": "choice-78ae080df9",
+          "label": "Declare `product = input.required<Product>()` and read the current bound value by calling `product()`."
+        },
+        {
+          "id": "choice-1d7a233d74",
+          "label": "Declare `@Input({ required: true }) product!: Product` and read updates from the assigned class property."
+        }
+      ],
+      "prompt": "In Angular 22, `ProductCard` cannot render meaningfully without a `Product`. Consumers should get a template build error when they omit the binding, and the component should read the latest bound value as a signal. Which declaration matches that contract?",
+      "revision": 1,
+      "technology": "angular"
+    },
+    {
       "competency": "route-parameter-reuse",
       "difficultyBand": "foundation",
       "estimatedSeconds": 90,
@@ -374,6 +549,31 @@
         }
       ],
       "prompt": "Navigating from `/products/41` to `/products/42` reuses the same Angular product component. It reads `route.snapshot.paramMap` once in its constructor, so the screen keeps product 41. Which data flow follows later parameter changes without forcing a page reload?",
+      "revision": 1,
+      "technology": "angular"
+    },
+    {
+      "competency": "route-provider-lifetime",
+      "difficultyBand": "foundation",
+      "estimatedSeconds": 180,
+      "format": "production-scenario",
+      "id": "int-angular-route-provider-lifetime-sr-v1",
+      "level": "senior",
+      "options": [
+        {
+          "id": "choice-35ca2dd78d",
+          "label": "Provide one root draft session, reset it on every `NavigationEnd`, and let both branches share the application injector while handles retain components."
+        },
+        {
+          "id": "choice-0708dfca59",
+          "label": "Provide a draft session in every routed component and serialize each child before the reuse strategy detaches its top-level branch."
+        },
+        {
+          "id": "choice-cc726ebfc7",
+          "label": "Provide a session on each top-level route and let the reuse strategy retain that route's detached handle for its branch-cache lifetime."
+        }
+      ],
+      "prompt": "An Angular 22 workspace has separate top-level `editor` and `review` route branches. Each branch needs one draft session shared by its descendants, the two branches must never share a session, and editor state must survive while its detached route handle is cached for reattachment. Which ownership design aligns those lifetimes?",
       "revision": 1,
       "technology": "angular"
     },
@@ -583,6 +783,56 @@
       "technology": "angular"
     },
     {
+      "competency": "untracked-incidental-read",
+      "difficultyBand": "core",
+      "estimatedSeconds": 135,
+      "format": "production-scenario",
+      "id": "int-angular-untracked-incidental-read-mid-v1",
+      "level": "mid",
+      "options": [
+        {
+          "id": "choice-6fb24856f4",
+          "label": "Read `activeUser()` and `debugCounter()` normally inside the effect, then ignore runs where the user object is unchanged."
+        },
+        {
+          "id": "choice-8ed768f342",
+          "label": "Read `activeUser()` normally, read `debugCounter` with `untracked`, then send both captured values to the audit client."
+        },
+        {
+          "id": "choice-20c6147d57",
+          "label": "Wrap both signal reads and the audit call in `untracked`, then keep the surrounding effect for lifecycle cleanup."
+        }
+      ],
+      "prompt": "An Angular 22 effect sends an audit entry whenever `activeUser` changes. The entry should include the current `debugCounter` value for context, but counter increments alone must not resend the audit. Which implementation gives the effect the intended dependency graph?",
+      "revision": 1,
+      "technology": "angular"
+    },
+    {
+      "competency": "view-encapsulation-boundary",
+      "difficultyBand": "stretch",
+      "estimatedSeconds": 105,
+      "format": "production-scenario",
+      "id": "int-angular-view-encapsulation-boundary-jr-v1",
+      "level": "junior",
+      "options": [
+        {
+          "id": "choice-ddc2f4329d",
+          "label": "Use `ViewEncapsulation.Emulated` so Angular scopes the card's selectors with generated attributes without creating a shadow root."
+        },
+        {
+          "id": "choice-ab5cd6c20a",
+          "label": "Use `ViewEncapsulation.None` so the card's selectors join the global stylesheet while the component keeps a light-DOM tree."
+        },
+        {
+          "id": "choice-9677a138cb",
+          "label": "Use `ViewEncapsulation.ShadowDom` so the browser isolates the card's selectors inside a native shadow-root tree."
+        }
+      ],
+      "prompt": "An Angular 22 reusable card defines a `.title` rule that must not style unrelated `.title` elements elsewhere. The team also requires ordinary global inheritance and does not want a native shadow root because an integration queries the card's DOM. Which encapsulation mode fits?",
+      "revision": 1,
+      "technology": "angular"
+    },
+    {
       "code": {
         "language": "typescript",
         "runtime": "angular-22",
@@ -713,6 +963,56 @@
       "technology": "css"
     },
     {
+      "competency": "content-visibility-scroll-estimation",
+      "difficultyBand": "stretch",
+      "estimatedSeconds": 165,
+      "format": "production-scenario",
+      "id": "int-css-content-visibility-scroll-estimation-sr-v1",
+      "level": "senior",
+      "options": [
+        {
+          "id": "choice-f5f60f7d53",
+          "label": "Pair `content-visibility: auto` with `contain-intrinsic-size: auto <estimate>` tuned from representative sections."
+        },
+        {
+          "id": "choice-a3b94a5a1a",
+          "label": "Pair `content-visibility: hidden` with fixed heights on each section and reveal only the active heading."
+        },
+        {
+          "id": "choice-af9684fd5e",
+          "label": "Pair `content-visibility: auto` with `overflow: hidden` and measure every section height during startup."
+        }
+      ],
+      "prompt": "A documentation reader contains hundreds of off-screen sections with uneven heights. `content-visibility: auto` cuts initial rendering work, but the scrollbar thumb and scroll position shift before sections are visited. After a section is rendered once, future skips should reuse its measured size. Which sizing contract fits?",
+      "revision": 1,
+      "technology": "css"
+    },
+    {
+      "competency": "custom-property-fallback-resolution",
+      "difficultyBand": "core",
+      "estimatedSeconds": 65,
+      "format": "conceptual",
+      "id": "int-css-custom-property-fallback-resolution-jr-v1",
+      "level": "junior",
+      "options": [
+        {
+          "id": "choice-829d2f4452",
+          "label": "Teal, because nested fallbacks skip another custom property when the first property is missing."
+        },
+        {
+          "id": "choice-00b5c060c4",
+          "label": "The inherited color, because a missing outer custom property invalidates the entire declaration."
+        },
+        {
+          "id": "choice-4ca89e0df8",
+          "label": "Rebeccapurple, because the outer fallback runs and its nested custom property has a usable value."
+        }
+      ],
+      "prompt": "An unthemed badge defines `--badge-fallback: rebeccapurple` but does not define `--badge-color`. Its rule is `color: var(--badge-color, var(--badge-fallback, teal))`. Which color is used?",
+      "revision": 1,
+      "technology": "css"
+    },
+    {
       "competency": "flex-item-minimum-size",
       "difficultyBand": "core",
       "estimatedSeconds": 120,
@@ -735,6 +1035,56 @@
       ],
       "prompt": "A flex row has a fixed-width sidebar and `.main { flex: 1; }`. One unbreakable filename makes `.main` wider than the remaining space. Which declaration directly allows that flex item to shrink below its automatic content minimum?",
       "revision": 3,
+      "technology": "css"
+    },
+    {
+      "competency": "focus-visible-modality",
+      "difficultyBand": "core",
+      "estimatedSeconds": 80,
+      "format": "production-scenario",
+      "id": "int-css-focus-visible-modality-jr-v1",
+      "level": "junior",
+      "options": [
+        {
+          "id": "choice-e4776fabfd",
+          "label": "Style the native button with `:focus-visible`, retaining a clear outline when browser heuristics expose focus."
+        },
+        {
+          "id": "choice-7bf26ff4ba",
+          "label": "Style every focused button with `:focus`, keeping the same strong outline for keyboard navigation and pointer clicks."
+        },
+        {
+          "id": "choice-9110363372",
+          "label": "Remove the native outline and style `:active` so a ring appears only while the button is being pressed."
+        }
+      ],
+      "prompt": "A toolbar uses native buttons. Keyboard users need a strong focus indicator, while pointer clicks should follow the browser's modality heuristics instead of forcing the same ring. Which styling policy preserves that behavior?",
+      "revision": 1,
+      "technology": "css"
+    },
+    {
+      "competency": "font-metric-fallback-stability",
+      "difficultyBand": "core",
+      "estimatedSeconds": 155,
+      "format": "production-scenario",
+      "id": "int-css-font-metric-fallback-stability-sr-v1",
+      "level": "senior",
+      "options": [
+        {
+          "id": "choice-d0425874e9",
+          "label": "Preload every brand file and keep `font-display: block` so fallback text stays hidden until each file arrives."
+        },
+        {
+          "id": "choice-ff4c3cde5d",
+          "label": "Apply one `transform: scale()` to text containers and reserve fixed heights from the default locale."
+        },
+        {
+          "id": "choice-08e68dcdab",
+          "label": "Define an adjusted fallback face with `size-adjust` plus ascent, descent, and line-gap metric overrides."
+        }
+      ],
+      "prompt": "A global UI serves a brand web font, but first paint uses a system fallback. When the brand font loads, line boxes and card heights shift even though text sizes look similar. The fallback and final faces have measured metric differences across scripts. Which `@font-face` policy most directly stabilizes the swap without delaying all text?",
+      "revision": 1,
       "technology": "css"
     },
     {
@@ -913,6 +1263,31 @@
       "technology": "css"
     },
     {
+      "competency": "subgrid-alignment-boundary",
+      "difficultyBand": "foundation",
+      "estimatedSeconds": 110,
+      "format": "production-scenario",
+      "id": "int-css-subgrid-alignment-boundary-mid-v1",
+      "level": "mid",
+      "options": [
+        {
+          "id": "choice-1fd4fbeb64",
+          "label": "Give `.advanced-row` copied column sizes and repeat the parent's gap value in its nested grid."
+        },
+        {
+          "id": "choice-38d5b0425b",
+          "label": "Make `.advanced-row` a flex container and calculate both child widths from the viewport."
+        },
+        {
+          "id": "choice-e14b885e5a",
+          "label": "Make `.advanced-row` span both tracks, display it as grid, and set `grid-template-columns: subgrid`."
+        }
+      ],
+      "prompt": "A two-column settings panel defines parent tracks as `minmax(12rem, 1fr) auto`. A nested `.advanced-row` spans both columns, and its label and control must align to those same tracks while retaining the parent's gap. Which CSS boundary provides that alignment?",
+      "revision": 1,
+      "technology": "css"
+    },
+    {
       "competency": "adaptive-visual-effects-and-containment",
       "difficultyBand": "stretch",
       "estimatedSeconds": 180,
@@ -972,7 +1347,7 @@
       "options": [
         {
           "id": "choice-b532cfa3aa",
-          "label": "Replace the table with a `role=\"grid\"`, cache header positions on first render, and reuse those indexes after each reorder."
+          "label": "Derive stable IDs for every `th`, but omit the quarter ID from each cell's `headers` because its visual tier implies that label."
         },
         {
           "id": "choice-8cc9c8c619",
@@ -984,6 +1359,31 @@
         }
       ],
       "prompt": "A financial table has row headers plus quarter and measure header tiers. Users can reorder Revenue and Cost columns, and the UI then rerenders only affected rows. Assistive technology must announce every applicable label after each reorder without relying on inferred positions. Which ownership policy keeps those associations correct?",
+      "revision": 2,
+      "technology": "html"
+    },
+    {
+      "competency": "decorative-image-alt-contract",
+      "difficultyBand": "foundation",
+      "estimatedSeconds": 65,
+      "format": "conceptual",
+      "id": "int-html-decorative-image-alt-contract-jr-v1",
+      "level": "junior",
+      "options": [
+        {
+          "id": "choice-b1b363e89a",
+          "label": "Keep the `img` and provide `alt=\"\"` to mark its text alternative as intentionally empty."
+        },
+        {
+          "id": "choice-38622abc99",
+          "label": "Keep the `img` and omit `alt` so user agents infer that its text alternative is empty."
+        },
+        {
+          "id": "choice-5022fc1052",
+          "label": "Keep the `img` and provide `alt=\"Decorative flourish\"` to describe its visual purpose."
+        }
+      ],
+      "prompt": "A flourish beside an article heading is purely decorative: removing it would not remove information or functionality. The image must remain visible but should contribute no redundant text alternative. Which markup policy expresses that intent?",
       "revision": 1,
       "technology": "html"
     },
@@ -1013,6 +1413,31 @@
       "technology": "html"
     },
     {
+      "competency": "details-summary-disclosure",
+      "difficultyBand": "core",
+      "estimatedSeconds": 80,
+      "format": "production-scenario",
+      "id": "int-html-details-summary-disclosure-jr-v1",
+      "level": "junior",
+      "options": [
+        {
+          "id": "choice-b6d545d48c",
+          "label": "Use a native `button` with `aria-expanded` and JavaScript that toggles the answer's `hidden` state."
+        },
+        {
+          "id": "choice-fea759b0ea",
+          "label": "Place the question in `summary` as the first child of `details`, followed by the answer."
+        },
+        {
+          "id": "choice-55a95611a4",
+          "label": "Add `open` to a `details` element, then place the question in `summary` and the answer after it."
+        }
+      ],
+      "prompt": "An FAQ answer should start collapsed and be operable with native keyboard behavior. The implementation must use no custom animation, cross-item coordination, or JavaScript state. Which structure supplies the disclosure behavior?",
+      "revision": 1,
+      "technology": "html"
+    },
+    {
       "competency": "modal-dialog-focus-contract",
       "difficultyBand": "core",
       "estimatedSeconds": 180,
@@ -1035,6 +1460,31 @@
       ],
       "prompt": "A design-system modal accepts requests from several portal-mounted features. An audit finds competing dialogs, background controls in the Tab order, and route changes that can detach an opener before close. If detached, focus must move to a stable heading in the new route. The browser supports native `<dialog>`. Which policy enforces the contract?",
       "revision": 4,
+      "technology": "html"
+    },
+    {
+      "competency": "form-associated-custom-element",
+      "difficultyBand": "core",
+      "estimatedSeconds": 175,
+      "format": "production-scenario",
+      "id": "int-html-form-associated-custom-element-sr-v1",
+      "level": "senior",
+      "options": [
+        {
+          "id": "choice-cb3e4489a2",
+          "label": "Mirror edits into hidden inputs and rely on their submission, reset, and disabled behavior without element callbacks."
+        },
+        {
+          "id": "choice-8a8f5a2d7c",
+          "label": "Enable form association, attach `ElementInternals`, set the form value, and implement lifecycle callbacks."
+        },
+        {
+          "id": "choice-5a592c422a",
+          "label": "Reflect `name`, `value`, and `disabled` on the custom-element host and let the form discover those attributes."
+        }
+      ],
+      "prompt": "A reusable `<date-range name=\"travel\">` custom element must contribute normalized values to `FormData`, restore its original state on form reset, and react when a fieldset disables it. Which integration owns the complete native form lifecycle?",
+      "revision": 1,
       "technology": "html"
     },
     {
@@ -1113,6 +1563,31 @@
       "technology": "html"
     },
     {
+      "competency": "live-region-status-update",
+      "difficultyBand": "core",
+      "estimatedSeconds": 110,
+      "format": "production-scenario",
+      "id": "int-html-live-region-status-update-mid-v1",
+      "level": "mid",
+      "options": [
+        {
+          "id": "choice-6688c92ee4",
+          "label": "Create a new `role=\"alert\"` node for each result count, then focus it after insertion."
+        },
+        {
+          "id": "choice-43dbbd8483",
+          "label": "Keep an existing `role=\"status\"` node and replace its text when the active query finishes."
+        },
+        {
+          "id": "choice-445aa366ab",
+          "label": "Insert the result text first, then add `aria-live=\"polite\"` to that node after the update."
+        }
+      ],
+      "prompt": "An autocomplete keeps focus in its text field while results load. After each settled request, assistive technology should announce a short result count without interrupting typing or moving focus. Which status pattern fits?",
+      "revision": 1,
+      "technology": "html"
+    },
+    {
       "competency": "native-button-semantics",
       "difficultyBand": "foundation",
       "estimatedSeconds": 60,
@@ -1159,6 +1634,31 @@
         }
       ],
       "prompt": "A dashboard toolbar sits inside a transformed, `overflow: hidden` panel whose local stacking and clipping boundary cuts off its custom Help overlay behind adjacent charts. Help must escape that rendering boundary, remain non-modal, support outside-click and Escape dismissal, and preserve its invoker relationship. Which primitive spans both contracts?",
+      "revision": 1,
+      "technology": "html"
+    },
+    {
+      "competency": "preload-cors-reuse",
+      "difficultyBand": "core",
+      "estimatedSeconds": 115,
+      "format": "production-scenario",
+      "id": "int-html-preload-cors-reuse-mid-v1",
+      "level": "mid",
+      "options": [
+        {
+          "id": "choice-ca76474328",
+          "label": "Use `rel=\"preload\"`, `as=\"font\"`, the WOFF2 type, and a `crossorigin` attribute on the link."
+        },
+        {
+          "id": "choice-31ea189c7e",
+          "label": "Use `rel=\"preload\"`, `as=\"font\"`, the WOFF2 type, and a `fetchpriority=\"high\"` attribute."
+        },
+        {
+          "id": "choice-a2bae4d8d2",
+          "label": "Use `rel=\"preload\"`, `as=\"style\"`, the WOFF2 type, and a `media=\"all\"` attribute on the link."
+        }
+      ],
+      "prompt": "A stylesheet uses a WOFF2 font from a CDN that returns a valid CORS response. DevTools shows one preload request and another request when the font is used because the preload's request mode does not match the eventual font fetch. Which hint is reusable?",
       "revision": 1,
       "technology": "html"
     },
@@ -1260,6 +1760,81 @@
       ],
       "prompt": "Two autocomplete widgets can be mounted together, and each accepts overlapping queries through an endpoint that honors `AbortSignal`. A new query must cancel only that widget's prior request; stale settlements must not write results, loading, or errors; expected cancellation stays silent. Which ownership policy spans both instance and request lifetimes?",
       "revision": 3,
+      "technology": "javascript"
+    },
+    {
+      "competency": "aes-gcm-iv-uniqueness",
+      "difficultyBand": "stretch",
+      "estimatedSeconds": 150,
+      "format": "production-scenario",
+      "id": "int-js-aes-gcm-iv-uniqueness-sr-v1",
+      "level": "senior",
+      "options": [
+        {
+          "id": "choice-35c9a98029",
+          "label": "Generate a fresh unique 96-bit IV for each encryption under the key and store it beside the ciphertext."
+        },
+        {
+          "id": "choice-93c040b4ff",
+          "label": "Derive one 96-bit IV from the key identifier and reuse it for each ciphertext made with that key."
+        },
+        {
+          "id": "choice-294e034fe4",
+          "label": "Generate a fresh IV for each browser launch and reuse it for all ciphertexts produced in that launch."
+        }
+      ],
+      "prompt": "A browser encrypts many autosave records with AES-GCM under one long-lived `CryptoKey`. A review finds the same fixed IV used for every record so decryption is easy to reproduce. Which IV policy repairs the cryptographic boundary?",
+      "revision": 1,
+      "technology": "javascript"
+    },
+    {
+      "competency": "array-negative-index-access",
+      "difficultyBand": "core",
+      "estimatedSeconds": 75,
+      "format": "production-scenario",
+      "id": "int-js-array-negative-index-access-jr-v1",
+      "level": "junior",
+      "options": [
+        {
+          "id": "choice-0f1df4d0a7",
+          "label": "Read `notifications.slice(-1)` because it returns the final notification value directly."
+        },
+        {
+          "id": "choice-79b2cd4695",
+          "label": "Read `notifications.at(-1)` because a negative index counts backward from the array end."
+        },
+        {
+          "id": "choice-212623719d",
+          "label": "Read `notifications[-1]` after freezing the array because frozen arrays enable relative indexes."
+        }
+      ],
+      "prompt": "A notification list may be empty. A developer wants the most recent item without mutating the array and writes `notifications[-1]`, which returns `undefined` even for a populated list. Which replacement has the intended indexing semantics?",
+      "revision": 1,
+      "technology": "javascript"
+    },
+    {
+      "competency": "async-generator-early-exit",
+      "difficultyBand": "stretch",
+      "estimatedSeconds": 125,
+      "format": "production-scenario",
+      "id": "int-js-async-generator-early-exit-mid-v1",
+      "level": "mid",
+      "options": [
+        {
+          "id": "choice-bb76c30af9",
+          "label": "Dispose after each consumer's loop, relying on statements after `break` to cover every exit path."
+        },
+        {
+          "id": "choice-0178920815",
+          "label": "Dispose in a catch around each `yield`, relying on rejected iterations to signal every early exit."
+        },
+        {
+          "id": "choice-fa94ba2b95",
+          "label": "Dispose in the generator's `finally`, relying on iterator `return()` when the loop exits early."
+        }
+      ],
+      "prompt": "An async generator subscribes to a message source and yields messages. Consumers commonly stop with `break` inside `for await...of`, and the subscription must be released on normal completion, early exit, or an error. Where should the cleanup live?",
+      "revision": 1,
       "technology": "javascript"
     },
     {
@@ -1588,6 +2163,106 @@
       "technology": "javascript"
     },
     {
+      "competency": "indexeddb-transaction-lifetime",
+      "difficultyBand": "core",
+      "estimatedSeconds": 165,
+      "format": "production-scenario",
+      "id": "int-js-indexeddb-transaction-lifetime-sr-v1",
+      "level": "senior",
+      "options": [
+        {
+          "id": "choice-ace94e02e2",
+          "label": "Open the transaction first, await the patch, then issue both the revision read and conditional write."
+        },
+        {
+          "id": "choice-7eefb97611",
+          "label": "Await the patch first, read the revision in a readonly transaction, then use that cached revision in a later readwrite transaction."
+        },
+        {
+          "id": "choice-486564aa8e",
+          "label": "Await the patch first, then open a transaction and queue the revision read plus conditional write there."
+        }
+      ],
+      "prompt": "A sync routine fetches a remote patch, compares its base revision with the current IndexedDB record, and conditionally writes the result. A production bug opens a readwrite transaction, awaits the network, then gets `TransactionInactiveError`. Which restructuring preserves the check-and-write boundary?",
+      "revision": 1,
+      "technology": "javascript"
+    },
+    {
+      "competency": "indexeddb-upgrade-coordination",
+      "difficultyBand": "stretch",
+      "estimatedSeconds": 165,
+      "format": "production-scenario",
+      "id": "int-js-indexeddb-upgrade-coordination-sr-v1",
+      "level": "senior",
+      "options": [
+        {
+          "id": "choice-9d40d5b556",
+          "label": "Have open connections close on `versionchange`, prompt old tabs to reload, and surface `blocked` in the upgrading tab."
+        },
+        {
+          "id": "choice-4c607ac328",
+          "label": "Have the upgrading tab retry `open()` on a timer while old connections continue reading and writing the prior schema."
+        },
+        {
+          "id": "choice-f47f902e07",
+          "label": "Have the upgrading tab delete the database on `blocked`, then recreate the stores without notifying older tabs."
+        }
+      ],
+      "prompt": "A new application version opens IndexedDB with a higher version, but the request remains blocked while an older tab holds a database connection. The rollout must let the upgrade proceed without silently using mixed schemas. Which coordination policy is appropriate?",
+      "revision": 1,
+      "technology": "javascript"
+    },
+    {
+      "competency": "intersection-threshold-crossing",
+      "difficultyBand": "core",
+      "estimatedSeconds": 130,
+      "format": "production-scenario",
+      "id": "int-js-intersection-threshold-crossing-mid-v1",
+      "level": "mid",
+      "options": [
+        {
+          "id": "choice-66dd00ef40",
+          "label": "Treat the array as millisecond sampling intervals and read the ratio at each scheduled sample."
+        },
+        {
+          "id": "choice-94f6f32d2a",
+          "label": "Treat the array as exact ratios that trigger only while the ratio equals one listed number."
+        },
+        {
+          "id": "choice-00b8f00b56",
+          "label": "Treat the array as ratio boundaries and reconcile state whenever an observed target crosses one."
+        }
+      ],
+      "prompt": "An analytics observer is configured with `{ threshold: [0.25, 0.75] }`. Product expects a callback as an element moves through those visibility boundaries in either direction, not a continuous report for every pixel. Which implementation assumption is sound?",
+      "revision": 1,
+      "technology": "javascript"
+    },
+    {
+      "competency": "intl-collator-bulk-sort",
+      "difficultyBand": "core",
+      "estimatedSeconds": 135,
+      "format": "production-scenario",
+      "id": "int-js-intl-collator-bulk-sort-mid-v1",
+      "level": "mid",
+      "options": [
+        {
+          "id": "choice-4911b92ff2",
+          "label": "Lowercase each name once and use the default `sort()` comparison over the resulting strings."
+        },
+        {
+          "id": "choice-20d9e540f6",
+          "label": "Call `localeCompare` with no locale or options inside the comparator for every name pair."
+        },
+        {
+          "id": "choice-f31319dbed",
+          "label": "Create one configured `Intl.Collator` for the locale and pass its `compare` function to `sort()`."
+        }
+      ],
+      "prompt": "A customer directory repeatedly sorts thousands of display names for the selected locale. Case and accents must follow an explicit product setting, and comparator setup should not be repeated for every pair. Which strategy fits?",
+      "revision": 1,
+      "technology": "javascript"
+    },
+    {
       "competency": "event-listener-identity-cleanup",
       "difficultyBand": "foundation",
       "estimatedSeconds": 90,
@@ -1610,6 +2285,56 @@
       ],
       "prompt": "A panel registers a resize listener with an inline arrow and `{ capture: true }`, then removes a new inline arrow without specifying capture. Repeated mounts leave old callbacks active. Which cleanup fixes both matching boundaries without removing other components' listeners?",
       "revision": 3,
+      "technology": "javascript"
+    },
+    {
+      "competency": "live-collection-snapshot",
+      "difficultyBand": "stretch",
+      "estimatedSeconds": 115,
+      "format": "production-scenario",
+      "id": "int-js-live-collection-snapshot-jr-v1",
+      "level": "junior",
+      "options": [
+        {
+          "id": "choice-6aa1096cb5",
+          "label": "Keep the returned HTMLCollection and cache its initial length before iterating the numbered entries."
+        },
+        {
+          "id": "choice-c693d63f93",
+          "label": "Keep the returned HTMLCollection and iterate it after each asynchronous validation has completed."
+        },
+        {
+          "id": "choice-7b83e86e3d",
+          "label": "Copy the returned HTMLCollection with `Array.from` before starting any asynchronous validation work."
+        }
+      ],
+      "prompt": "A batch validator obtains `document.getElementsByClassName('pending')`. While an asynchronous validation loop runs, other code adds and removes matching elements. The batch must process exactly the elements present at capture time. Which boundary supplies that stable membership?",
+      "revision": 1,
+      "technology": "javascript"
+    },
+    {
+      "competency": "map-object-key-identity",
+      "difficultyBand": "core",
+      "estimatedSeconds": 80,
+      "format": "production-scenario",
+      "id": "int-js-map-object-key-identity-jr-v1",
+      "level": "junior",
+      "options": [
+        {
+          "id": "choice-158e97d16a",
+          "label": "Retain the original configuration object as the key, because object keys match by reference identity."
+        },
+        {
+          "id": "choice-305c2924cf",
+          "label": "Recreate an object with the same fields for lookup, because object keys match by serialized field values."
+        },
+        {
+          "id": "choice-a07d6abd74",
+          "label": "Spread the configuration into a fresh object for lookup, because object keys match by shallow field values."
+        }
+      ],
+      "prompt": "A preview cache stores a rendered result under a configuration object. A later lookup builds a new object with the same fields and unexpectedly misses the cache. Which change matches how `Map` compares object keys?",
+      "revision": 1,
       "technology": "javascript"
     },
     {
@@ -1668,9 +2393,34 @@
       "technology": "javascript"
     },
     {
+      "competency": "number-finite-input-validation",
+      "difficultyBand": "foundation",
+      "estimatedSeconds": 70,
+      "format": "conceptual",
+      "id": "int-js-number-finite-input-validation-jr-v1",
+      "level": "junior",
+      "options": [
+        {
+          "id": "choice-c1649e26b1",
+          "label": "Use `Number.isFinite(value)`, which tests finite values without converting non-number inputs."
+        },
+        {
+          "id": "choice-1339bd0e55",
+          "label": "Use global `isFinite(value)`, which converts the supplied input before checking its result."
+        },
+        {
+          "id": "choice-5927f75047",
+          "label": "Use `!Number.isNaN(value)`, which excludes numeric `NaN` while allowing other input types."
+        }
+      ],
+      "prompt": "A validation boundary accepts a value only when it is already a JavaScript number that is neither `Infinity`, `-Infinity`, nor `NaN`. Numeric strings such as `\"42\"` must be rejected rather than coerced. Which check matches that contract?",
+      "revision": 1,
+      "technology": "javascript"
+    },
+    {
       "competency": "observer-resource-lifecycle",
       "difficultyBand": "core",
-      "estimatedSeconds": 180,
+      "estimatedSeconds": 150,
       "format": "production-scenario",
       "id": "int-js-observer-lifecycle-mid-v1",
       "level": "mid",
@@ -1689,6 +2439,31 @@
         }
       ],
       "prompt": "A routed infinite list creates a new `IntersectionObserver` on every mount. After several visits, detached sentinels remain observed and old callbacks still request pages. Which lifecycle policy fixes the retained work without sharing route state globally?",
+      "revision": 2,
+      "technology": "javascript"
+    },
+    {
+      "competency": "optional-chain-side-effect-short-circuit",
+      "difficultyBand": "stretch",
+      "estimatedSeconds": 95,
+      "format": "production-scenario",
+      "id": "int-js-optional-chain-side-effect-short-circuit-jr-v1",
+      "level": "junior",
+      "options": [
+        {
+          "id": "choice-69d894a609",
+          "label": "Group `(sessions.get(id)?.events)` before `[cursor++]` so the computed access follows the optional lookup."
+        },
+        {
+          "id": "choice-4976bc8a15",
+          "label": "Put `?.[cursor++]` after `sessions.get(id).events` so only the computed array access is optional."
+        },
+        {
+          "id": "choice-bcc193641c",
+          "label": "Keep `sessions.get(id)?.events[cursor++]` continuous so a missing session skips the computed key."
+        }
+      ],
+      "prompt": "A cache lookup returns either a session object with an `events` array or `undefined`. Reading the next event increments `cursor`, but a missing session must return `undefined` without incrementing the cursor or throwing. Which expression preserves that behavior?",
       "revision": 1,
       "technology": "javascript"
     },
@@ -1718,6 +2493,156 @@
       "technology": "javascript"
     },
     {
+      "competency": "postmessage-peer-validation",
+      "difficultyBand": "stretch",
+      "estimatedSeconds": 150,
+      "format": "production-scenario",
+      "id": "int-js-postmessage-peer-validation-sr-v1",
+      "level": "senior",
+      "options": [
+        {
+          "id": "choice-112d097b50",
+          "label": "Send with `'*'`, then accept inbound data when its payload includes the expected iframe URL string."
+        },
+        {
+          "id": "choice-9b37418501",
+          "label": "Send to the exact origin, then verify inbound `origin`, `source`, and payload schema before acting."
+        },
+        {
+          "id": "choice-4d504ef26c",
+          "label": "Send to the iframe URL path, then accept inbound data when the browser reports a trusted event type."
+        }
+      ],
+      "prompt": "A checkout page exchanges payment state with one known cross-origin iframe through `postMessage`. The payload can trigger a privileged transition. Which protocol boundary limits both accidental disclosure and forged inbound messages?",
+      "revision": 1,
+      "technology": "javascript"
+    },
+    {
+      "competency": "promise-all-result-order",
+      "difficultyBand": "stretch",
+      "estimatedSeconds": 105,
+      "format": "production-scenario",
+      "id": "int-js-promise-all-result-order-jr-v1",
+      "level": "junior",
+      "options": [
+        {
+          "id": "choice-312fc88149",
+          "label": "Push each fulfillment into a shared array, then pair that array with product IDs by position."
+        },
+        {
+          "id": "choice-10d94e613a",
+          "label": "Await `Promise.all(requests)`, then pair its result array with product IDs by input position."
+        },
+        {
+          "id": "choice-85aed1f5d5",
+          "label": "Await `Promise.race(requests)` repeatedly, then pair each winner with product IDs by position."
+        }
+      ],
+      "prompt": "A dashboard requests details for product IDs in display order. Network responses finish in a different order, but each result must still be paired with the ID at the same input index. Which aggregation provides that ordering contract when every request fulfills?",
+      "revision": 1,
+      "technology": "javascript"
+    },
+    {
+      "competency": "readable-stream-reader-ownership",
+      "difficultyBand": "foundation",
+      "estimatedSeconds": 105,
+      "format": "production-scenario",
+      "id": "int-js-readable-stream-reader-ownership-mid-v1",
+      "level": "mid",
+      "options": [
+        {
+          "id": "choice-41b7f97f02",
+          "label": "Release the first reader's lock, then let the body parser acquire a new reader from the stream."
+        },
+        {
+          "id": "choice-25f550d122",
+          "label": "Cancel the first reader after the header, then let the body parser acquire a replacement reader."
+        },
+        {
+          "id": "choice-1c41ed6e42",
+          "label": "Retain the first reader after the header, then let the body parser call `getReader()` again."
+        }
+      ],
+      "prompt": "A decoder acquires a `ReadableStreamDefaultReader`, consumes a header, and must hand the unread remainder to a body parser. Its last `read()` has settled, and neither phase should cancel the source. Which ownership transition is valid?",
+      "revision": 1,
+      "technology": "javascript"
+    },
+    {
+      "competency": "service-worker-response-clone",
+      "difficultyBand": "core",
+      "estimatedSeconds": 160,
+      "format": "production-scenario",
+      "id": "int-js-service-worker-response-clone-sr-v1",
+      "level": "senior",
+      "options": [
+        {
+          "id": "choice-ba26437507",
+          "label": "Pass the original to both `respondWith()` and `cache.put()`, wrapping the cache promise with `waitUntil()`."
+        },
+        {
+          "id": "choice-fe10599182",
+          "label": "Clone before consumption, return the original, and pass `cache.put(request, clone)` to `waitUntil()`."
+        },
+        {
+          "id": "choice-d48350335c",
+          "label": "Clone before consumption, return the original, and start `cache.put(request, clone)` without `waitUntil()`."
+        }
+      ],
+      "prompt": "A service worker's fetch handler gets a network `Response`. It should return the body to the page immediately and populate a cache in parallel. The cache operation must survive beyond the handler, and each consumer needs a readable body. Which ownership sequence is correct?",
+      "revision": 1,
+      "technology": "javascript"
+    },
+    {
+      "competency": "shadow-dom-event-delegation",
+      "difficultyBand": "core",
+      "estimatedSeconds": 120,
+      "format": "production-scenario",
+      "id": "int-js-shadow-dom-event-delegation-mid-v1",
+      "level": "mid",
+      "options": [
+        {
+          "id": "choice-0a91c9db45",
+          "label": "Call `event.target.closest('[data-action]')` because bubbling restores the original inner target."
+        },
+        {
+          "id": "choice-9f74d6456d",
+          "label": "Inspect `event.composedPath()` and select the first Element that matches `[data-action]`."
+        },
+        {
+          "id": "choice-ad9468f978",
+          "label": "Call `event.currentTarget.closest('[data-action]')` because it tracks the click origin while bubbling."
+        }
+      ],
+      "prompt": "A document-level click delegate must identify a `[data-action]` button rendered inside an open shadow root. The composed click reaches the document, but `event.target` is retargeted to the custom-element host. Which lookup preserves delegation across the boundary?",
+      "revision": 1,
+      "technology": "javascript"
+    },
+    {
+      "competency": "shared-memory-isolation",
+      "difficultyBand": "stretch",
+      "estimatedSeconds": 160,
+      "format": "production-scenario",
+      "id": "int-js-shared-memory-isolation-sr-v1",
+      "level": "senior",
+      "options": [
+        {
+          "id": "choice-e65d967c6d",
+          "label": "Add permissive CORS response headers to the editor document and check `window.isSecureContext` before posting."
+        },
+        {
+          "id": "choice-ec5564ac34",
+          "label": "Add a script-src CSP nonce to the editor bundle and check `document.hasFocus()` before posting."
+        },
+        {
+          "id": "choice-17f0b654d2",
+          "label": "Deploy COOP and COEP with compliant embedded resources, then check `crossOriginIsolated` before posting."
+        }
+      ],
+      "prompt": "A production image editor sends a `SharedArrayBuffer` from its page to a worker. It works on a development origin but throws after deployment. The application also embeds third-party resources. Which deployment boundary should be established before enabling shared memory?",
+      "revision": 1,
+      "technology": "javascript"
+    },
+    {
       "competency": "stateful-regexp-validation",
       "difficultyBand": "stretch",
       "estimatedSeconds": 95,
@@ -1739,6 +2664,31 @@
         }
       ],
       "prompt": "A module reuses `const skuPattern = /^[A-Z]{3}-\\d{4}$/g` and calls `skuPattern.test(value)` for each field. The same valid SKU passes once and fails on the next call. The validator only needs a whole-string yes/no result. Which correction removes the hidden state?",
+      "revision": 1,
+      "technology": "javascript"
+    },
+    {
+      "competency": "storage-event-source-context",
+      "difficultyBand": "core",
+      "estimatedSeconds": 120,
+      "format": "production-scenario",
+      "id": "int-js-storage-event-source-context-mid-v1",
+      "level": "mid",
+      "options": [
+        {
+          "id": "choice-5f4f4b1667",
+          "label": "Update the writing tab's state directly, and use the `storage` event to reconcile other same-origin tabs."
+        },
+        {
+          "id": "choice-7dd19582ef",
+          "label": "Dispatch a synthetic `storage` event before each write, and use it to reconcile every same-origin tab."
+        },
+        {
+          "id": "choice-e19abc55a4",
+          "label": "Repeat the same `localStorage` write in a microtask, and use its event to reconcile the writing tab."
+        }
+      ],
+      "prompt": "A preferences service writes a theme to `localStorage` and relies on the window `storage` event to update UI state. Other open tabs update, but the tab that performed the write does not. Which synchronization design matches the platform contract?",
       "revision": 1,
       "technology": "javascript"
     },
@@ -1823,6 +2773,181 @@
       "technology": "javascript"
     },
     {
+      "competency": "thenable-assimilation-order",
+      "difficultyBand": "core",
+      "estimatedSeconds": 155,
+      "format": "production-scenario",
+      "id": "int-js-thenable-assimilation-order-sr-v1",
+      "level": "senior",
+      "options": [
+        {
+          "id": "choice-048e17c8ee",
+          "label": "Each call assimilates the thenable into its own native promise and fulfills with `cachedValue`; later failure attempts replace neither settlement."
+        },
+        {
+          "id": "choice-83570f82ee",
+          "label": "Each call fulfills with the shared thenable object, because `Promise.resolve` preserves non-native promise-like objects instead of invoking `then`."
+        },
+        {
+          "id": "choice-da0fe551b7",
+          "label": "The first wrapper fulfills with `cachedValue`, but the second rejects with the throw because settlement state is stored on the shared thenable."
+        }
+      ],
+      "prompt": "Two independent request coordinators receive the same legacy SDK thenable and each calls `Promise.resolve(thenable)`. Every invocation of its `then(resolve, reject)` calls `resolve(cachedValue)`, then `reject(error)`, and finally throws another error. Which cross-instance result follows the native settlement contract?",
+      "revision": 1,
+      "technology": "javascript"
+    },
+    {
+      "competency": "trusted-types-enforcement",
+      "difficultyBand": "stretch",
+      "estimatedSeconds": 155,
+      "format": "production-scenario",
+      "id": "int-js-trusted-types-enforcement-sr-v1",
+      "level": "senior",
+      "options": [
+        {
+          "id": "choice-51feaedbfa",
+          "label": "Create an unrestricted default policy that returns every input unchanged, without adding a Trusted Types CSP."
+        },
+        {
+          "id": "choice-33faeb8dcd",
+          "label": "Require Trusted Types for script sinks, allowlist one policy name, and make that policy sanitize before creating HTML."
+        },
+        {
+          "id": "choice-1777ed7d62",
+          "label": "Allowlist one policy name in CSP, keep passing strings to sinks, and sanitize only after assignment failures occur."
+        }
+      ],
+      "prompt": "A legacy application has many `innerHTML` sinks. The security team wants supporting browsers to reject raw strings at injection sinks and permit HTML only through one named sanitizing policy. Which rollout contract enforces both boundaries?",
+      "revision": 1,
+      "technology": "javascript"
+    },
+    {
+      "competency": "url-relative-base-resolution",
+      "difficultyBand": "core",
+      "estimatedSeconds": 90,
+      "format": "production-scenario",
+      "id": "int-js-url-relative-base-resolution-jr-v1",
+      "level": "junior",
+      "options": [
+        {
+          "id": "choice-8a709ef725",
+          "label": "Pass a slash-terminated base so `guide` remains a directory: `new URL(relativeAsset, baseWithSlash)`."
+        },
+        {
+          "id": "choice-22e0689f60",
+          "label": "Pass the base without a terminal slash because the constructor infers that `guide` names a directory."
+        },
+        {
+          "id": "choice-271349bac2",
+          "label": "Prefix the reference with `/` because the constructor retains the base path before appending the resource."
+        }
+      ],
+      "prompt": "A documentation page needs to resolve `images/logo.svg` below `https://app.example/docs/guide/`. The route may later move to another origin, so string concatenation is disallowed. Which construction preserves the intended directory boundary?",
+      "revision": 1,
+      "technology": "javascript"
+    },
+    {
+      "competency": "urlsearchparams-repeated-value-contract",
+      "difficultyBand": "core",
+      "estimatedSeconds": 90,
+      "format": "production-scenario",
+      "id": "int-js-urlsearchparams-repeated-value-contract-jr-v1",
+      "level": "junior",
+      "options": [
+        {
+          "id": "choice-cf33e80a12",
+          "label": "Call `set('tag', 'testing')` on the existing parameters, then serialize the result without rebuilding the URL."
+        },
+        {
+          "id": "choice-3ba2b7dbd7",
+          "label": "Keep the existing parameters, add the new value with `append('tag', 'testing')`, then serialize."
+        },
+        {
+          "id": "choice-a26fdbb91c",
+          "label": "Read every tag with `getAll()`, join them with `testing` using commas, then store the combined text with `set()`."
+        }
+      ],
+      "prompt": "A filter URL contains `?tag=accessibility&tag=performance`. Adding `tag=testing` must preserve all three values as separate `tag` entries so the server's repeated-key parser receives them. Which update keeps that representation?",
+      "revision": 1,
+      "technology": "javascript"
+    },
+    {
+      "competency": "weakmap-key-reachability",
+      "difficultyBand": "core",
+      "estimatedSeconds": 125,
+      "format": "production-scenario",
+      "id": "int-js-weakmap-key-reachability-mid-v1",
+      "level": "mid",
+      "options": [
+        {
+          "id": "choice-6ba8e5baa2",
+          "label": "Use a `Map` keyed by each element and delete entries during a periodic scan of disconnected nodes."
+        },
+        {
+          "id": "choice-c3054febf8",
+          "label": "Use a `WeakMap` keyed by each element and read metadata only while the element reference is available."
+        },
+        {
+          "id": "choice-f5db66ec86",
+          "label": "Use an array of weak references and scan it to recover metadata for every element still reachable."
+        }
+      ],
+      "prompt": "A component library associates private measurement metadata with DOM elements. Removed elements should become collectible when no application reference remains, and the library must not add properties to those elements or enumerate all tracked entries. Which store fits?",
+      "revision": 1,
+      "technology": "javascript"
+    },
+    {
+      "competency": "web-lock-cross-tab-write",
+      "difficultyBand": "foundation",
+      "estimatedSeconds": 145,
+      "format": "production-scenario",
+      "id": "int-js-web-lock-cross-tab-write-sr-v1",
+      "level": "senior",
+      "options": [
+        {
+          "id": "choice-bc3ac4aa48",
+          "label": "Request one exclusive named lock, re-read inside its callback, apply the delta, and await the commit there."
+        },
+        {
+          "id": "choice-f851a3cbfc",
+          "label": "Read before requesting one exclusive named lock, then write that cached value from inside its callback."
+        },
+        {
+          "id": "choice-cd3c51f1c2",
+          "label": "Request one shared named lock, read inside its callback, then write the increment before it resolves."
+        }
+      ],
+      "prompt": "Two same-origin tabs increment the same IndexedDB counter. Every participating tab supports Web Locks and uses the same protocol. Concurrent increments must not overwrite one another, including when both tabs observed the same old value before requesting a lock. Which write boundary is safe?",
+      "revision": 1,
+      "technology": "javascript"
+    },
+    {
+      "competency": "websocket-buffered-flow-control",
+      "difficultyBand": "stretch",
+      "estimatedSeconds": 155,
+      "format": "production-scenario",
+      "id": "int-js-websocket-buffered-flow-control-sr-v1",
+      "level": "senior",
+      "options": [
+        {
+          "id": "choice-af6949b41e",
+          "label": "Continue calling `send()` and use each incoming `message` event as proof that the outbound queue drained."
+        },
+        {
+          "id": "choice-d5573c9624",
+          "label": "Continue calling `send()` until `readyState` changes, because OPEN reports the remaining outbound capacity."
+        },
+        {
+          "id": "choice-08ac50b19c",
+          "label": "Pause or shed producers above a `bufferedAmount` high-water mark and resume after it falls below a low-water mark."
+        }
+      ],
+      "prompt": "A telemetry page produces outbound messages faster than a classic `WebSocket` can transmit on a slow connection. Memory grows because `send()` keeps accepting data. Without changing the server protocol, which client policy adds a practical pressure boundary?",
+      "revision": 1,
+      "technology": "javascript"
+    },
+    {
       "competency": "bounded-worker-generation-ownership",
       "difficultyBand": "foundation",
       "estimatedSeconds": 180,
@@ -1873,6 +2998,131 @@
       "technology": "javascript"
     },
     {
+      "competency": "action-state-form-contract",
+      "difficultyBand": "foundation",
+      "estimatedSeconds": 135,
+      "format": "production-scenario",
+      "id": "int-react-action-state-form-contract-sr-v1",
+      "level": "senior",
+      "options": [
+        {
+          "id": "choice-1eaf5dc478",
+          "label": "Keep `FormData` first, put the returned `formAction` on the form, render the same form at the permalink, and read the third tuple value."
+        },
+        {
+          "id": "choice-5a78d98535",
+          "label": "Define `save(previousState, formData)`, put the returned `formAction` on the form, render the same Action at the permalink, and read the third tuple value."
+        },
+        {
+          "id": "choice-f5c6e218cf",
+          "label": "Define `save(previousState, formData)`, put the original `save` on the form, render a different destination form, and derive pending from its Promise."
+        }
+      ],
+      "prompt": "A React 19.2 app server-renders an account form that may be submitted before hydration. It wraps a server `save` Action with `useActionState(save, initialState, '/account')` so validation state survives the permalink navigation and pending status follows hydrated submissions. After a refactor, `save` mistakes previous state for `FormData`. Which contract preserves the full boundary?",
+      "revision": 1,
+      "technology": "react"
+    },
+    {
+      "competency": "activity-hidden-lifecycle",
+      "difficultyBand": "stretch",
+      "estimatedSeconds": 165,
+      "format": "production-scenario",
+      "id": "int-react-activity-hidden-lifecycle-sr-v1",
+      "level": "senior",
+      "options": [
+        {
+          "id": "choice-3261425732",
+          "label": "Render each panel normally and use CSS `visibility: hidden`; React will clean up Effects for invisible DOM."
+        },
+        {
+          "id": "choice-9e3ea2c7dc",
+          "label": "Wrap each panel in `<Activity mode={active ? 'visible' : 'hidden'}>` and give its Effects symmetric cleanup."
+        },
+        {
+          "id": "choice-20a87c8edf",
+          "label": "Conditionally omit inactive panels from JSX and store their complete component state in a module variable."
+        }
+      ],
+      "prompt": "A React 19.2 workspace keeps several heavy tab panels mounted so their local form state returns instantly. Hidden panels still run subscription Effects and compete with the active tab. The DOM and local state should survive, but those Effects should stop until a panel is shown again. Which boundary fits?",
+      "revision": 1,
+      "technology": "react"
+    },
+    {
+      "competency": "cache-request-lifetime",
+      "difficultyBand": "core",
+      "estimatedSeconds": 145,
+      "format": "conceptual",
+      "id": "int-react-cache-request-lifetime-sr-v1",
+      "level": "senior",
+      "options": [
+        {
+          "id": "choice-1d3d5989d0",
+          "label": "The result is shared for the browser session, so client navigation keeps one product object until reload."
+        },
+        {
+          "id": "choice-dbfb8ccf1c",
+          "label": "The result is shared for the server process, so later requests reuse it until the deployment restarts."
+        },
+        {
+          "id": "choice-19f2d1c34e",
+          "label": "Matching calls deduplicate within one server request; React invalidates the memoized cache before the next request."
+        }
+      ],
+      "prompt": "A React 19.2 Server Components app wraps `readProduct` once at module scope with `cache`. Two components in one render request call it with the same ID, and a later HTTP request calls it again. What lifetime should the architecture assume?",
+      "revision": 1,
+      "technology": "react"
+    },
+    {
+      "competency": "callback-ref-cleanup",
+      "difficultyBand": "stretch",
+      "estimatedSeconds": 135,
+      "format": "production-scenario",
+      "id": "int-react-callback-ref-cleanup-mid-v1",
+      "level": "mid",
+      "options": [
+        {
+          "id": "choice-1809451564",
+          "label": "Insert each node into the map and clear the entire registry from the parent component's passive Effect."
+        },
+        {
+          "id": "choice-45603210d0",
+          "label": "Insert each node into the map and remove its key only when the list's item count changes."
+        },
+        {
+          "id": "choice-a49841ae0c",
+          "label": "Insert the received node and return a cleanup function that removes that row's exact map entry."
+        }
+      ],
+      "prompt": "React 19.2 list virtualization stores each mounted row node in a `Map` through a callback ref. Rows can be replaced, and Strict Mode probes setup and cleanup. Which callback contract keeps the registry aligned without depending on a later `null` callback?",
+      "revision": 1,
+      "technology": "react"
+    },
+    {
+      "competency": "context-provider-resolution",
+      "difficultyBand": "foundation",
+      "estimatedSeconds": 60,
+      "format": "conceptual",
+      "id": "int-react-context-provider-resolution-jr-v1",
+      "level": "junior",
+      "options": [
+        {
+          "id": "choice-0fec69c51e",
+          "label": "`\"light\"`, because the first provider mounted for a context remains the source for every consumer below it."
+        },
+        {
+          "id": "choice-69b99859e1",
+          "label": "`\"dark\"`, because React reads the closest matching provider in the rendered tree rather than the button's declaration module."
+        },
+        {
+          "id": "choice-a19a8fd7db",
+          "label": "The context default, because provider lookup follows the module where the button was declared rather than where it renders."
+        }
+      ],
+      "prompt": "In React 19.2, an app-level `ThemeContext` provides `\"light\"`. A nested settings panel provides `\"dark\"`. A button component declared in another module is rendered inside that panel and calls `useContext(ThemeContext)`. Which value does it read?",
+      "revision": 1,
+      "technology": "react"
+    },
+    {
       "competency": "controlled-input-edit-normalization",
       "difficultyBand": "stretch",
       "estimatedSeconds": 120,
@@ -1895,6 +3145,56 @@
       ],
       "prompt": "A React price field must let a parent Reset replace its displayed text immediately. During editing, users may temporarily enter `''`, `'-'`, or `'12.'`; that exact text must remain visible until blur, when valid input is normalized and committed as a number. Which state design preserves both contracts?",
       "revision": 3,
+      "technology": "react"
+    },
+    {
+      "competency": "custom-hook-state-isolation",
+      "difficultyBand": "foundation",
+      "estimatedSeconds": 95,
+      "format": "conceptual",
+      "id": "int-react-custom-hook-state-isolation-mid-v1",
+      "level": "mid",
+      "options": [
+        {
+          "id": "choice-0c9bcc5d12",
+          "label": "Each Hook call owns separate state; lift the draft to their common parent or a shared external store."
+        },
+        {
+          "id": "choice-7516ab19e4",
+          "label": "Both Hook calls share one state slot; wrap the returned setter with `useCallback` to publish updates."
+        },
+        {
+          "id": "choice-e463149867",
+          "label": "Custom Hooks cannot own state; replace the Hook with duplicated `useState` calls in both editors."
+        }
+      ],
+      "prompt": "`useDraftName()` contains `useState` and is called by two sibling React 19.2 editors. Updating one editor leaves the other unchanged, but product now requires one shared draft. What does the current behavior mean, and where should the shared value move?",
+      "revision": 1,
+      "technology": "react"
+    },
+    {
+      "competency": "deferred-value-staleness",
+      "difficultyBand": "core",
+      "estimatedSeconds": 120,
+      "format": "production-scenario",
+      "id": "int-react-deferred-value-staleness-mid-v1",
+      "level": "mid",
+      "options": [
+        {
+          "id": "choice-0ca0e47e84",
+          "label": "Control the input from `deferredQuery` and pass `query` to results so typing waits for deferred state."
+        },
+        {
+          "id": "choice-1f2558b51b",
+          "label": "Control the input from `query`, pass `deferredQuery` to results, and mark stale results with a visual cue."
+        },
+        {
+          "id": "choice-b4accb2e3d",
+          "label": "Control both input and results from `query`, then wrap the input change handler with `useDeferredValue`."
+        }
+      ],
+      "prompt": "A React 19.2 search page controls an input with `query`, while a large results tree is expensive to rerender. The input must remain current, but the existing results may stay visibly stale while React prepares results for the new query. Which boundary uses `useDeferredValue` correctly?",
+      "revision": 1,
       "technology": "react"
     },
     {
@@ -2318,6 +3618,56 @@
       "technology": "react"
     },
     {
+      "competency": "ref-nonrendering-state",
+      "difficultyBand": "stretch",
+      "estimatedSeconds": 90,
+      "format": "production-scenario",
+      "id": "int-react-ref-nonrendering-state-jr-v1",
+      "level": "junior",
+      "options": [
+        {
+          "id": "choice-df1214c942",
+          "label": "Store it in `useRef`, replace `.current` while scheduling, and clear the saved handle when canceling."
+        },
+        {
+          "id": "choice-28b32ef29a",
+          "label": "Store it in `useState`, update state for each schedule, and ignore the renders caused by the handle."
+        },
+        {
+          "id": "choice-17cd3b92f5",
+          "label": "Store it in a local variable inside the component, assigning a new value on each rendered call."
+        }
+      ],
+      "prompt": "A React 19.2 audio player keeps a timeout handle used only to cancel a pending fade. Replacing the handle should not repaint the UI, and the value must survive renders. Where should this handle live?",
+      "revision": 1,
+      "technology": "react"
+    },
+    {
+      "competency": "render-purity",
+      "difficultyBand": "foundation",
+      "estimatedSeconds": 80,
+      "format": "production-scenario",
+      "id": "int-react-render-purity-jr-v1",
+      "level": "junior",
+      "options": [
+        {
+          "id": "choice-eacf677635",
+          "label": "Move the call to `useEffect` keyed by `ready` and `cart`, treating readiness as the submission trigger."
+        },
+        {
+          "id": "choice-0d9f5d65b0",
+          "label": "Move the call into `useMemo` keyed by the cart, using memo reuse to suppress repeated submissions."
+        },
+        {
+          "id": "choice-1c7f57d5ce",
+          "label": "Invoke the call from the Place order event handler, then update state from the submission result."
+        }
+      ],
+      "prompt": "A React 19.2 checkout component calls `orders.submit(cart)` while rendering after `ready` becomes true. Development Strict Mode exposes duplicate submissions, and React may retry rendering. The submission should happen only when the shopper presses Place order. Which refactor respects React's contract?",
+      "revision": 1,
+      "technology": "react"
+    },
+    {
       "code": {
         "language": "jsx",
         "runtime": "react-19.2",
@@ -2478,6 +3828,31 @@
       "technology": "react"
     },
     {
+      "competency": "streaming-suspense-shell",
+      "difficultyBand": "core",
+      "estimatedSeconds": 155,
+      "format": "production-scenario",
+      "id": "int-react-streaming-suspense-shell-sr-v1",
+      "level": "senior",
+      "options": [
+        {
+          "id": "choice-8eb3221f5f",
+          "label": "Set headers and call `pipe(response)` from `onShellReady`; reserve `onAllReady` for crawlers or buffered output."
+        },
+        {
+          "id": "choice-703a09d55e",
+          "label": "Wait for `onAllReady`, then call `pipe(response)` so each Suspense boundary resolves before any shell byte is sent."
+        },
+        {
+          "id": "choice-14537c6c17",
+          "label": "Call `pipe(response)` immediately after `renderToPipeableStream`, before React reports that the shell can be emitted."
+        }
+      ],
+      "prompt": "A React 19.2 Node server uses `renderToPipeableStream` with Suspense around a slow recommendations panel. The header and product details form a usable shell, so the response should start before recommendations finish while retaining their fallback. Which callback policy implements that streaming boundary?",
+      "revision": 1,
+      "technology": "react"
+    },
+    {
       "competency": "concurrent-update-priorities",
       "difficultyBand": "core",
       "estimatedSeconds": 165,
@@ -2529,6 +3904,31 @@
         }
       ],
       "prompt": "An analytics widget is loaded as a Vue 3.5 async component from a flaky CDN. A transient network failure may be retried at most twice after the initial attempt; any non-transient error or exhausted retry budget must render the error component. Which definition owns that policy without an unbounded import loop?",
+      "revision": 1,
+      "technology": "vue"
+    },
+    {
+      "competency": "component-registration-scope",
+      "difficultyBand": "core",
+      "estimatedSeconds": 75,
+      "format": "conceptual",
+      "id": "int-vue-component-registration-scope-jr-v1",
+      "level": "junior",
+      "options": [
+        {
+          "id": "choice-7ec7a1af9b",
+          "label": "Register `DateBadge` with `app.component()` before mounting so every component in the application can resolve it."
+        },
+        {
+          "id": "choice-4d6611a3f7",
+          "label": "Import `DateBadge` inside the screen's `<script setup>` and reference it directly in that screen's template."
+        },
+        {
+          "id": "choice-3f0172abb2",
+          "label": "Reference `<DateBadge>` in the screen template and rely on SFC compilation to discover and import the sibling file."
+        }
+      ],
+      "prompt": "A Vue 3 single-file component is the only place that renders `DateBadge`. Its descendants do not use that component, and the build should be able to omit it from entry points that never import this screen. Which registration expresses that dependency?",
       "revision": 1,
       "technology": "vue"
     },
@@ -2608,6 +4008,31 @@
       "technology": "vue"
     },
     {
+      "competency": "custom-directive-ssr-parity",
+      "difficultyBand": "stretch",
+      "estimatedSeconds": 195,
+      "format": "production-scenario",
+      "id": "int-vue-custom-directive-ssr-parity-sr-v1",
+      "level": "senior",
+      "options": [
+        {
+          "id": "choice-d68558f3fd",
+          "label": "Move the attribute write into the directive's `created` hook so the same element mutation executes during server rendering."
+        },
+        {
+          "id": "choice-acf21384d8",
+          "label": "Add `getSSRProps(binding)` that returns the matching `aria-busy` prop, while retaining client hooks for later updates."
+        },
+        {
+          "id": "choice-97e99c0eca",
+          "label": "Keep the server attribute absent and add `data-allow-mismatch` so hydration suppresses the difference before `mounted` runs."
+        }
+      ],
+      "prompt": "A Vue 3 custom `v-busy` directive sets `aria-busy` in its client `mounted` and `updated` hooks. On SSR pages, the initial HTML lacks the attribute even though the same binding is already true, creating semantic and hydration disagreement. Which directive contract restores parity?",
+      "revision": 1,
+      "technology": "vue"
+    },
+    {
       "competency": "component-v-model-contract",
       "difficultyBand": "stretch",
       "estimatedSeconds": 120,
@@ -2629,6 +4054,106 @@
         }
       ],
       "prompt": "A Vue 3.5 `PriceInput` wraps a native input and is used as `<PriceInput v-model=\"price\" />`. The parent value must update on typing and later parent changes must appear in the input. Which child implementation best establishes that contract?",
+      "revision": 1,
+      "technology": "vue"
+    },
+    {
+      "competency": "effect-scope-disposal",
+      "difficultyBand": "core",
+      "estimatedSeconds": 150,
+      "format": "production-scenario",
+      "id": "int-vue-effect-scope-disposal-mid-v1",
+      "level": "mid",
+      "options": [
+        {
+          "id": "choice-b4829799e2",
+          "label": "Create an `effectScope`, build the session inside `scope.run`, register socket closure with `onScopeDispose`, and call `scope.stop`."
+        },
+        {
+          "id": "choice-c88372d309",
+          "label": "Store the latest watch stop handle, call it when the session ends, and let computed values and the socket expire independently."
+        },
+        {
+          "id": "choice-3c397d21b2",
+          "label": "Create the session effects in component setup and rely on `onUnmounted` to close every socket after the component eventually leaves."
+        }
+      ],
+      "prompt": "A Vue 3 composable starts a preview session containing several watchers, computed values, and one WebSocket. A component can start and stop multiple sessions without unmounting. Stopping a session must dispose its complete reactive graph and socket together. Which ownership model fits?",
+      "revision": 1,
+      "technology": "vue"
+    },
+    {
+      "competency": "emits-listener-fallthrough",
+      "difficultyBand": "core",
+      "estimatedSeconds": 90,
+      "format": "production-scenario",
+      "id": "int-vue-emits-listener-fallthrough-jr-v1",
+      "level": "junior",
+      "options": [
+        {
+          "id": "choice-b8de3c055f",
+          "label": "Keep the event undeclared and call `stopPropagation()` before emitting the normalized payload from the root handler."
+        },
+        {
+          "id": "choice-70cda40947",
+          "label": "Remove the component emission and let the parent's listener receive only the root button's native event object."
+        },
+        {
+          "id": "choice-b1e0e68f8f",
+          "label": "Declare `click` with `defineEmits`, then emit the normalized payload once from the root button's handler."
+        }
+      ],
+      "prompt": "A single-root Vue 3 `SaveButton` validates a click and emits a normalized `click` payload. A parent's `@click` handler currently runs twice: once for the emitted event and once as a native listener falling through to the root button. Other attributes must keep their default fallthrough. Which fix preserves the component contract?",
+      "revision": 1,
+      "technology": "vue"
+    },
+    {
+      "competency": "error-capture-propagation",
+      "difficultyBand": "foundation",
+      "estimatedSeconds": 150,
+      "format": "conceptual",
+      "id": "int-vue-error-capture-propagation-sr-v1",
+      "level": "senior",
+      "options": [
+        {
+          "id": "choice-2eb2b856af",
+          "label": "Render the local fallback and return `false` for every captured error so the feature owns the complete descendant error channel."
+        },
+        {
+          "id": "choice-4af03addf4",
+          "label": "Render the fallback for the known error but return nothing; return `false` only when the captured error type is unknown."
+        },
+        {
+          "id": "choice-a18ddffa43",
+          "label": "Render the fallback and return `false` for the known error; return nothing for unknown errors so they keep propagating."
+        }
+      ],
+      "prompt": "A Vue 3 feature boundary uses `onErrorCaptured`. It can recover locally from a known `InvalidReportError`, and policy says that handled error must not reach higher boundaries or `app.config.errorHandler`. Every unknown error must continue to centralized reporting. Which hook result enforces that split?",
+      "revision": 1,
+      "technology": "vue"
+    },
+    {
+      "competency": "event-modifier-order",
+      "difficultyBand": "stretch",
+      "estimatedSeconds": 105,
+      "format": "production-scenario",
+      "id": "int-vue-event-modifier-order-jr-v1",
+      "level": "junior",
+      "options": [
+        {
+          "id": "choice-0dc47a044b",
+          "label": "Write `@click.prevent.self=\"select\"`; its first modifier cancels navigation before the later target-only guard can exit."
+        },
+        {
+          "id": "choice-ea4c9c5a6f",
+          "label": "Use `@click.self.prevent=\"select\"` so Vue checks the event target before applying default prevention."
+        },
+        {
+          "id": "choice-90c90b5677",
+          "label": "Use `@click.stop.self=\"select\"` so propagation stops before Vue checks whether the link is the target."
+        }
+      ],
+      "prompt": "A Vue 3 link contains styled child elements. Product wants a click directly on the link element to run `select` without navigation, while a click whose target is a child must keep the link's default navigation and skip `select`. Which listener has that exact behavior?",
       "revision": 1,
       "technology": "vue"
     },
@@ -2740,11 +4265,11 @@
         },
         {
           "id": "choice-03dacc67f6",
-          "label": "Read `scrollHeight`, set `expanded`, then place the overlay in `requestAnimationFrame`."
+          "label": "Set `expanded`, then read `scrollHeight` and place the overlay in `onUpdated()`."
         }
       ],
       "prompt": "A click handler expands a Vue 3.5 panel and immediately reads its template ref's `scrollHeight` to position an overlay. The measurement still describes the collapsed DOM. The same handler must measure exactly once after Vue applies that state change. Which sequence provides that guarantee?",
-      "revision": 1,
+      "revision": 2,
       "technology": "vue"
     },
     {
@@ -3048,6 +4573,31 @@
       "technology": "vue"
     },
     {
+      "competency": "ssr-teleport-coordination",
+      "difficultyBand": "core",
+      "estimatedSeconds": 180,
+      "format": "production-scenario",
+      "id": "int-vue-ssr-teleport-coordination-sr-v1",
+      "level": "senior",
+      "options": [
+        {
+          "id": "choice-389b5924b6",
+          "label": "Pass an SSR context to `renderToString`, inject `ctx.teleports['#modals']` into that container, then hydrate the same app."
+        },
+        {
+          "id": "choice-3975a0fa76",
+          "label": "Append the main app string to `body` twice so Vue can discover the missing Teleport nodes during client hydration."
+        },
+        {
+          "id": "choice-cc653e9486",
+          "label": "Leave the server target empty and mount a second client-only Vue app in `#modals` after the main app hydrates."
+        }
+      ],
+      "prompt": "A Vue 3 SSR page renders a modal through `<Teleport to=\"#modals\">`. The main app string arrives, but the modal is absent from the response and hydration needs an unambiguous target. The HTML shell already has an empty dedicated `#modals` container. What should the renderer do?",
+      "revision": 1,
+      "technology": "vue"
+    },
+    {
       "competency": "render-update-prop-stability",
       "difficultyBand": "core",
       "estimatedSeconds": 150,
@@ -3070,6 +4620,31 @@
       ],
       "prompt": "Profiling a Vue 3.5 trading UI with several large virtualized product viewports shows that high-frequency `selectedId` changes update every mounted `ProductRow`. A shared row-prop adapter creates a new `viewConfig` object for each row containing `selected` and unchanged `currency`; every viewport uses that contract, so its fan-out consumes the render budget. Which contract redesign most directly narrows updates across the system?",
       "revision": 3,
+      "technology": "vue"
+    },
+    {
+      "competency": "teleport-logical-ownership",
+      "difficultyBand": "core",
+      "estimatedSeconds": 135,
+      "format": "production-scenario",
+      "id": "int-vue-teleport-logical-ownership-mid-v1",
+      "level": "mid",
+      "options": [
+        {
+          "id": "choice-898e6fe4e3",
+          "label": "Provide the theme again from the root app and dispatch a bubbling DOM `CustomEvent` from the teleported dialog."
+        },
+        {
+          "id": "choice-34a82fe9e0",
+          "label": "Mount a second Vue app on `#overlays`, pass the theme through its root props, and bridge close through a shared store."
+        },
+        {
+          "id": "choice-aef279ab76",
+          "label": "Keep the dialog inside the feature's Teleport; use the existing injection and component emit relationships unchanged."
+        }
+      ],
+      "prompt": "A Vue 3 dialog is authored under a feature component but teleported into an existing `#overlays` element near `body`. The dialog must still inject the feature's theme and emit `close` to its direct component parent. How should those relationships be wired?",
+      "revision": 1,
       "technology": "vue"
     },
     {
@@ -3124,6 +4699,56 @@
         }
       ],
       "prompt": "A Vue 3.5 SSR page renders an event time. The server does not know the browser's time zone, so formatting locally during both renders produces different text and a hydration warning. SEO still requires meaningful server text. Which change best removes the mismatch?",
+      "revision": 1,
+      "technology": "vue"
+    },
+    {
+      "competency": "vmemo-dependency-contract",
+      "difficultyBand": "stretch",
+      "estimatedSeconds": 150,
+      "format": "production-scenario",
+      "id": "int-vue-vmemo-dependency-contract-mid-v1",
+      "level": "mid",
+      "options": [
+        {
+          "id": "choice-b20f74194c",
+          "label": "Keep the current memo array and call `nextTick()` after price writes so Vue revisits every skipped row subtree."
+        },
+        {
+          "id": "choice-be0fce7ce0",
+          "label": "Move `v-memo` to a child inside each row and keep only the selection expression in its dependency array."
+        },
+        {
+          "id": "choice-6632911b94",
+          "label": "Keep `v-memo` on the keyed `v-for` row and include both the selection expression and `item.price` as dependencies."
+        }
+      ],
+      "prompt": "A Vue 3.2+ table uses `v-for`, a stable `:key`, and `v-memo=\"[item.id === selectedId]\"` on each row. Selection updates efficiently, but a row also renders `item.price`, which can change independently and now stays stale. Which correction preserves safe memoization?",
+      "revision": 1,
+      "technology": "vue"
+    },
+    {
+      "competency": "watcheffect-async-dependency-window",
+      "difficultyBand": "foundation",
+      "estimatedSeconds": 105,
+      "format": "conceptual",
+      "id": "int-vue-watcheffect-async-dependency-window-mid-v1",
+      "level": "mid",
+      "options": [
+        {
+          "id": "choice-314e7b9d4d",
+          "label": "Read both refs before the await, but build the request from captured query and a fresh locale read afterward."
+        },
+        {
+          "id": "choice-fb80f7a3ec",
+          "label": "Read and capture both refs before the first await, then use those captured values for the asynchronous request."
+        },
+        {
+          "id": "choice-6885992618",
+          "label": "Replace `watchEffect` with `watch(query, callback)` while reading locale only after the callback's first await."
+        }
+      ],
+      "prompt": "A Vue 3 `watchEffect` reads `query.value`, awaits a cached-token lookup, then reads `locale.value` to fetch results. Query changes rerun the effect, but locale changes do not. Both values must invalidate the request, and each run must use its captured query-locale pair. Which change fixes the boundary?",
       "revision": 1,
       "technology": "vue"
     },

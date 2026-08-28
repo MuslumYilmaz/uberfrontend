@@ -1,0 +1,110 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-js-indexeddb-upgrade-coordination-sr-v1",
+  "conceptId": "mcq-javascript-indexeddb-upgrade-coordination",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-08-24"
+  },
+  "public": {
+    "technology": "javascript",
+    "level": "senior",
+    "difficultyBand": "stretch",
+    "format": "production-scenario",
+    "competency": "indexeddb-upgrade-coordination",
+    "prompt": "A new application version opens IndexedDB with a higher version, but the request remains blocked while an older tab holds a database connection. The rollout must let the upgrade proceed without silently using mixed schemas. Which coordination policy is appropriate?",
+    "options": [
+      {
+        "id": "choice-9d40d5b556",
+        "label": "Have open connections close on `versionchange`, prompt old tabs to reload, and surface `blocked` in the upgrading tab."
+      },
+      {
+        "id": "choice-4c607ac328",
+        "label": "Have the upgrading tab retry `open()` on a timer while old connections continue reading and writing the prior schema."
+      },
+      {
+        "id": "choice-f47f902e07",
+        "label": "Have the upgrading tab delete the database on `blocked`, then recreate the stores without notifying older tabs."
+      }
+    ],
+    "estimatedSeconds": 165
+  },
+  "private": {
+    "correctOptionId": "choice-9d40d5b556",
+    "answerProof": {
+      "summary": "Existing connections must acknowledge a requested version change by closing; the new opener should handle the blocked state while users are guided to reload old application instances.",
+      "decisiveConstraints": [
+        "An older tab still holds an open connection.",
+        "The new version requires a schema upgrade transaction.",
+        "User data must not be deleted to resolve rollout coordination."
+      ],
+      "claims": [
+        {
+          "statement": "An IndexedDB upgrade is blocked until other open connections close, and existing connections can handle versionchange by closing and asking their page to reload.",
+          "sourceIds": [
+            "mdn-using-indexeddb"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-9d40d5b556",
+        "verdict": "correct",
+        "explanation": "Closing on versionchange releases the upgrade blocker, while explicit UI keeps old tabs from continuing against stale assumptions.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-4c607ac328",
+        "verdict": "incorrect",
+        "explanation": "Retries cannot complete while old connections remain open, and continued old-schema writes prolong the incompatible state.",
+        "plausibility": "Timed retry is a common recovery strategy for transient resource contention.",
+        "misconceptionTag": "indexeddb-upgrade-block-is-transient-retry",
+        "falsifyingConstraint": "The blocking connection must explicitly close before the version-change transaction can begin."
+      },
+      {
+        "optionId": "choice-f47f902e07",
+        "verdict": "incorrect",
+        "explanation": "Deletion is itself coordinated through open connections and would introduce unacceptable data-loss behavior.",
+        "plausibility": "Recreating a local cache can appear simpler than maintaining migrations across application versions.",
+        "misconceptionTag": "blocked-upgrade-justifies-database-deletion",
+        "falsifyingConstraint": "The rollout must preserve stored user data while coordinating schema ownership."
+      }
+    ],
+    "remediationTopics": [
+      "indexeddb-versionchange",
+      "multi-tab-upgrades",
+      "blocked-open-requests"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: Using IndexedDB",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Using_IndexedDB",
+        "sourceId": "mdn-using-indexeddb"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "mdn-using-indexeddb",
+          "title": "MDN: Using IndexedDB",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Using_IndexedDB",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-08-24",
+          "revision": "mdn-page-snapshot-2026-08-24",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

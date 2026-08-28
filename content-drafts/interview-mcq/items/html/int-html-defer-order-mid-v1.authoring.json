@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-html-defer-order-mid-v1",
+  "conceptId": "mcq-html-script-loading-order",
   "revision": 4,
   "author": {
     "id": "codex-core-author",

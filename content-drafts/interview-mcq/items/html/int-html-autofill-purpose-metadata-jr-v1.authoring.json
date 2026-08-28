@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-html-autofill-purpose-metadata-jr-v1",
+  "conceptId": "mcq-html-autofill-purpose-metadata",
   "revision": 1,
   "author": {
     "id": "codex-core-author",

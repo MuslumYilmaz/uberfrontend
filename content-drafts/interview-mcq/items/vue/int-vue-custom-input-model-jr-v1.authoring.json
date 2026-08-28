@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-vue-custom-input-model-jr-v1",
+  "conceptId": "mcq-vue-component-v-model-contract",
   "revision": 1,
   "author": {
     "id": "codex-vue-author",

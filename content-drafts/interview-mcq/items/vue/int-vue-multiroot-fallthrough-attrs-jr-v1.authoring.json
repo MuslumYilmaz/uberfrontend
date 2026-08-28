@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-vue-multiroot-fallthrough-attrs-jr-v1",
+  "conceptId": "mcq-vue-multiroot-fallthrough-attribute-forwarding",
   "revision": 1,
   "author": {
     "id": "codex-vue-author",

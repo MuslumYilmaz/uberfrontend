@@ -1,0 +1,110 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-js-aes-gcm-iv-uniqueness-sr-v1",
+  "conceptId": "mcq-javascript-aes-gcm-iv-uniqueness",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-08-24"
+  },
+  "public": {
+    "technology": "javascript",
+    "level": "senior",
+    "difficultyBand": "stretch",
+    "format": "production-scenario",
+    "competency": "aes-gcm-iv-uniqueness",
+    "prompt": "A browser encrypts many autosave records with AES-GCM under one long-lived `CryptoKey`. A review finds the same fixed IV used for every record so decryption is easy to reproduce. Which IV policy repairs the cryptographic boundary?",
+    "options": [
+      {
+        "id": "choice-35c9a98029",
+        "label": "Generate a fresh unique 96-bit IV for each encryption under the key and store it beside the ciphertext."
+      },
+      {
+        "id": "choice-93c040b4ff",
+        "label": "Derive one 96-bit IV from the key identifier and reuse it for each ciphertext made with that key."
+      },
+      {
+        "id": "choice-294e034fe4",
+        "label": "Generate a fresh IV for each browser launch and reuse it for all ciphertexts produced in that launch."
+      }
+    ],
+    "estimatedSeconds": 150
+  },
+  "private": {
+    "correctOptionId": "choice-35c9a98029",
+    "answerProof": {
+      "summary": "AES-GCM requires IV uniqueness for every encryption performed with a given key; the IV can travel with the ciphertext because secrecy is not its requirement.",
+      "decisiveConstraints": [
+        "One CryptoKey encrypts multiple distinct records.",
+        "The mode is AES-GCM.",
+        "Each ciphertext must remain independently decryptable."
+      ],
+      "claims": [
+        {
+          "statement": "For AES-GCM, an IV must be unique for every encryption operation performed with the same key, and a 96-bit IV is recommended.",
+          "sourceIds": [
+            "mdn-aes-gcm-params"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-35c9a98029",
+        "verdict": "correct",
+        "explanation": "Per-encryption uniqueness under the key protects GCM's security requirements while stored IVs permit decryption.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-93c040b4ff",
+        "verdict": "incorrect",
+        "explanation": "A deterministic key-level IV repeats for every record and violates the per-encryption uniqueness requirement.",
+        "plausibility": "A stable key-derived parameter is reproducible at decryption time without storing extra metadata.",
+        "misconceptionTag": "gcm-iv-may-repeat-per-key",
+        "falsifyingConstraint": "Every encryption under the same key needs a distinct IV."
+      },
+      {
+        "optionId": "choice-294e034fe4",
+        "verdict": "incorrect",
+        "explanation": "A launch-scoped IV still repeats across all records encrypted during that launch.",
+        "plausibility": "Session-level randomness avoids a globally fixed value and can simplify autosave metadata.",
+        "misconceptionTag": "gcm-iv-unique-per-session",
+        "falsifyingConstraint": "Uniqueness is scoped to each encryption operation under the key, not each application launch."
+      }
+    ],
+    "remediationTopics": [
+      "web-crypto",
+      "aes-gcm",
+      "iv-uniqueness"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: AesGcmParams",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/API/AesGcmParams",
+        "sourceId": "mdn-aes-gcm-params"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "mdn-aes-gcm-params",
+          "title": "MDN: AesGcmParams",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/AesGcmParams",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-08-24",
+          "revision": "mdn-page-snapshot-2026-08-24",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

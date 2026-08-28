@@ -70,4 +70,33 @@ describe('InterviewDeadlineTimerComponent', () => {
     jasmine.clock().tick(1000);
     expect(component.announcement()).toBe('1 minute remaining.');
   });
+
+  it('exposes the visible countdown as a non-live timer while using bounded live announcements', () => {
+    jasmine.clock().install();
+    jasmine.clock().mockDate(new Date('2026-07-27T10:00:00.000Z'));
+    component.serverNow = '2026-07-27T10:00:00.000Z';
+    component.deadlineAt = '2026-07-27T10:10:00.000Z';
+    component.label = 'MCQ time';
+    component.ngOnChanges({
+      serverNow: {
+        currentValue: component.serverNow,
+        previousValue: null,
+        firstChange: true,
+        isFirstChange: () => true,
+      },
+      deadlineAt: {
+        currentValue: component.deadlineAt,
+        previousValue: null,
+        firstChange: true,
+        isFirstChange: () => true,
+      },
+    });
+    fixture.detectChanges();
+
+    const timer = fixture.nativeElement.querySelector('[role="timer"]') as HTMLElement;
+    expect(timer).not.toBeNull();
+    expect(timer.getAttribute('aria-live')).toBe('off');
+    expect(timer.getAttribute('aria-label')).toContain('MCQ time');
+    expect(fixture.nativeElement.querySelector('[aria-live="polite"]')).not.toBeNull();
+  });
 });

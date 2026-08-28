@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-react-context-provider-resolution-jr-v1",
+  "conceptId": "mcq-react-context-provider-resolution",
   "revision": 1,
   "author": {
     "id": "codex-react-author",

@@ -11,12 +11,22 @@ import {
   InterviewSystemDesignDraft,
 } from '../../core/models/interview.model';
 import { InterviewService } from '../../core/services/interview.service';
+import { InterviewRecoveryStore } from '../../core/services/interview-recovery.store';
 import { InterviewSystemDesignRoundComponent } from './interview-system-design-round.component';
 
 describe('InterviewSystemDesignRoundComponent', () => {
   let fixture: ComponentFixture<InterviewSystemDesignRoundComponent>;
   let component: InterviewSystemDesignRoundComponent;
   let service: jasmine.SpyObj<InterviewService>;
+  let recovery: InterviewRecoveryStore;
+
+  const recoveryKey =
+    'fa:interview:recovery:v2:user-1:system-design:design-session';
+
+  const readLocalDraft = (): any | null => {
+    const raw = localStorage.getItem(recoveryKey);
+    return raw ? JSON.parse(raw).payload : null;
+  };
 
   const draft = (
     overrides: Partial<InterviewSystemDesignDraft> = {},
@@ -40,6 +50,7 @@ describe('InterviewSystemDesignRoundComponent', () => {
     serverDraft: InterviewSystemDesignDraft | null = draft(),
   ): InterviewSession => ({
     id: 'design-session',
+    protocolVersion: 2,
     format: 'system-design',
     status: 'system_design_active',
     level: 'mid',
@@ -118,9 +129,10 @@ describe('InterviewSystemDesignRoundComponent', () => {
     selectedClarificationIds: string[] = ['keyboard'],
     updatedAt = '2000-01-01T00:00:00.000Z',
   ): void => {
-    localStorage.setItem(
-      'fa:interview:system-design-draft:v1:design-session',
-      JSON.stringify({
+    expect(recovery.saveForCurrentUser({
+      kind: 'system-design',
+      sessionId: 'design-session',
+      payload: {
         sessionId: 'design-session',
         scenarioId: 'int-sd-autocomplete-race-mid-v1',
         scenarioRevision: 1,
@@ -137,8 +149,10 @@ describe('InterviewSystemDesignRoundComponent', () => {
           selectedTwistActionIds: [],
           scratchpad: 'Device-only reasoning',
         },
-      }),
-    );
+      },
+      serverVersion: 3,
+      baseHash,
+    })).toBeTrue();
   };
 
   beforeEach(async () => {
@@ -162,6 +176,9 @@ describe('InterviewSystemDesignRoundComponent', () => {
       ],
     }).compileComponents();
 
+    recovery = TestBed.inject(InterviewRecoveryStore);
+    recovery.setUserScope('user-1');
+
     fixture = TestBed.createComponent(InterviewSystemDesignRoundComponent);
     component = fixture.componentInstance;
     fixture.componentRef.setInput('session', session());
@@ -169,7 +186,7 @@ describe('InterviewSystemDesignRoundComponent', () => {
 
   afterEach(() => {
     if (fixture && !fixture.componentRef.hostView.destroyed) fixture.destroy();
-    localStorage.removeItem('fa:interview:system-design-draft:v1:design-session');
+    localStorage.clear();
   });
 
   it('stores each interaction locally and debounces the allowlisted server projection', fakeAsync(() => {
@@ -177,9 +194,7 @@ describe('InterviewSystemDesignRoundComponent', () => {
 
     component.toggleClarification('keyboard');
 
-    expect(
-      localStorage.getItem('fa:interview:system-design-draft:v1:design-session'),
-    ).toContain('keyboard');
+    expect(readLocalDraft()?.draft.selectedClarificationIds).toContain('keyboard');
     expect(service.saveSystemDesignDraft).not.toHaveBeenCalled();
 
     tick(800);
@@ -199,6 +214,21 @@ describe('InterviewSystemDesignRoundComponent', () => {
     expect(component.syncedHash()).toBe('saved-hash');
   }));
 
+  it('moves focus to the newly selected workflow stage heading', fakeAsync(() => {
+    fixture.detectChanges();
+
+    component.nextStep();
+    fixture.detectChanges();
+    tick();
+
+    const heading = fixture.nativeElement.querySelector(
+      '[data-testid="system-design-step-heading"]',
+    ) as HTMLElement;
+    expect(heading.textContent).toContain('Set the priorities');
+    expect(document.activeElement).toBe(heading);
+    tick(800);
+  }));
+
   it('does not let a clean save acknowledgement overwrite another tab recovery record', fakeAsync(() => {
     fixture.detectChanges();
     component.toggleClarification('keyboard');
@@ -210,10 +240,8 @@ describe('InterviewSystemDesignRoundComponent', () => {
 
     tick(800);
 
-    const stored = JSON.parse(
-      localStorage.getItem('fa:interview:system-design-draft:v1:design-session') || '{}',
-    );
-    expect(stored.draft.selectedClarificationIds).toEqual(['stale-ui']);
+    const stored = readLocalDraft();
+    expect(stored?.draft.selectedClarificationIds).toEqual(['stale-ui']);
     expect(component.draft().selectedClarificationIds).toEqual(['keyboard']);
     expect(component.localPersistenceAvailable()).toBeFalse();
     expect(component.syncedHash()).toBe('saved-hash');
@@ -284,9 +312,7 @@ describe('InterviewSystemDesignRoundComponent', () => {
     component.toggleClarification('stale-ui');
     component.updateScratchpad('Second unsynced edit');
 
-    expect(JSON.parse(
-      localStorage.getItem('fa:interview:system-design-draft:v1:design-session') || '{}',
-    ).baseHash).toBe('server-hash');
+    expect(readLocalDraft()?.baseHash).toBe('server-hash');
 
     const acknowledgedSession = session({ version: 4 }, draft({
       selectedClarificationIds: ['keyboard'],
@@ -444,9 +470,7 @@ describe('InterviewSystemDesignRoundComponent', () => {
     expect(component.syncState()).toBe('error');
     expect(component.syncedHash()).toBeNull();
     expect(component.error()).toContain('already revealed 3 clarification answers');
-    expect(JSON.parse(
-      localStorage.getItem('fa:interview:system-design-draft:v1:design-session') || '{}',
-    ).dirty).toBeTrue();
+    expect(readLocalDraft()?.dirty).toBeTrue();
   }));
 
   it('restores a dirty local draft even when its timestamp is older than the server draft', fakeAsync(() => {
@@ -476,6 +500,10 @@ describe('InterviewSystemDesignRoundComponent', () => {
 
     expect(component.draft().selectedClarificationIds).toEqual(['keyboard']);
     expect(component.syncedHash()).toBeNull();
+    expect(localStorage.getItem(
+      'fa:interview:system-design-draft:v1:design-session',
+    )).toBeNull();
+    expect(readLocalDraft()?.draft.selectedClarificationIds).toEqual(['keyboard']);
 
     tick(0);
 
@@ -501,11 +529,9 @@ describe('InterviewSystemDesignRoundComponent', () => {
     expect(component.syncedHash()).toBe('acknowledged-server-hash');
     expect(component.syncState()).toBe('saved');
     expect(service.saveSystemDesignDraft).not.toHaveBeenCalled();
-    const stored = JSON.parse(
-      localStorage.getItem('fa:interview:system-design-draft:v1:design-session') || '{}',
-    );
-    expect(stored.dirty).toBeFalse();
-    expect(stored.baseHash).toBe('acknowledged-server-hash');
+    const stored = readLocalDraft();
+    expect(stored?.dirty).toBeFalse();
+    expect(stored?.baseHash).toBe('acknowledged-server-hash');
   }));
 
   it('does not autosave a device draft based on a different server hash and can keep the server version', fakeAsync(() => {
@@ -527,9 +553,7 @@ describe('InterviewSystemDesignRoundComponent', () => {
     expect(fixture.nativeElement.querySelector(
       '[data-testid="system-design-draft-conflict"]',
     )).not.toBeNull();
-    expect(JSON.parse(
-      localStorage.getItem('fa:interview:system-design-draft:v1:design-session') || '{}',
-    ).draft.selectedClarificationIds).toEqual(['keyboard']);
+    expect(readLocalDraft()?.draft.selectedClarificationIds).toEqual(['keyboard']);
 
     component.useServerDraft();
     tick(1_000);
@@ -538,9 +562,7 @@ describe('InterviewSystemDesignRoundComponent', () => {
     expect(component.draft().selectedClarificationIds).toEqual(['stale-ui']);
     expect(component.syncedHash()).toBe('newer-server-hash');
     expect(service.saveSystemDesignDraft).not.toHaveBeenCalled();
-    expect(localStorage.getItem(
-      'fa:interview:system-design-draft:v1:design-session',
-    )).toBeNull();
+    expect(localStorage.getItem(recoveryKey)).toBeNull();
   }));
 
   it('does not delete another tab draft written after the recovery dialog opened', () => {
@@ -559,11 +581,9 @@ describe('InterviewSystemDesignRoundComponent', () => {
     );
     component.useServerDraft();
 
-    const remaining = JSON.parse(
-      localStorage.getItem('fa:interview:system-design-draft:v1:design-session') || '{}',
-    );
-    expect(remaining.draft.selectedClarificationIds).toEqual(['cache-scope']);
-    expect(remaining.baseHash).toBe('newer-server-hash');
+    const remaining = readLocalDraft();
+    expect(remaining?.draft.selectedClarificationIds).toEqual(['cache-scope']);
+    expect(remaining?.baseHash).toBe('newer-server-hash');
   });
 
   it('requires a second confirmation before intentionally restoring a mismatched device draft', fakeAsync(() => {
@@ -630,9 +650,7 @@ describe('InterviewSystemDesignRoundComponent', () => {
     expect(component.syncLabel()).toContain('saved on this device');
     expect(component.syncedHash()).toBeNull();
     expect(component.canRevealTwist()).toBeFalse();
-    expect(JSON.parse(
-      localStorage.getItem('fa:interview:system-design-draft:v1:design-session') || '{}',
-    ).dirty).toBeTrue();
+    expect(readLocalDraft()?.dirty).toBeTrue();
   }));
 
   it('does not claim an offline design is stored when localStorage rejects it', fakeAsync(() => {
@@ -746,9 +764,7 @@ describe('InterviewSystemDesignRoundComponent', () => {
     expect(component.syncedHash()).toBe('server-hash');
     expect(component.syncState()).toBe('saved');
     expect(service.saveSystemDesignDraft).not.toHaveBeenCalled();
-    expect(JSON.parse(
-      localStorage.getItem('fa:interview:system-design-draft:v1:design-session') || '{}',
-    )).toEqual(jasmine.objectContaining({
+    expect(readLocalDraft()).toEqual(jasmine.objectContaining({
       dirty: false,
       baseHash: 'server-hash',
     }));
@@ -825,9 +841,7 @@ describe('InterviewSystemDesignRoundComponent', () => {
     tick(800);
     component.discardLocalDraft();
 
-    expect(
-      localStorage.getItem('fa:interview:system-design-draft:v1:design-session'),
-    ).toBeNull();
+    expect(localStorage.getItem(recoveryKey)).toBeNull();
 
     delayedSave.next({
       version: 4,
@@ -840,9 +854,7 @@ describe('InterviewSystemDesignRoundComponent', () => {
     });
     delayedSave.complete();
 
-    expect(
-      localStorage.getItem('fa:interview:system-design-draft:v1:design-session'),
-    ).toBeNull();
+    expect(localStorage.getItem(recoveryKey)).toBeNull();
     expect(component.syncedHash()).toBeNull();
   }));
 

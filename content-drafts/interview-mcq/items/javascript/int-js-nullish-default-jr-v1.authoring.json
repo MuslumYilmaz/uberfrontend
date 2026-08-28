@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-js-nullish-default-jr-v1",
+  "conceptId": "mcq-javascript-nullish-default-handling",
   "revision": 1,
   "author": {
     "id": "codex-core-author",

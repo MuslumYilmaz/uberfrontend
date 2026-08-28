@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-angular-route-provider-lifetime-sr-v1",
+  "conceptId": "mcq-angular-route-provider-lifetime",
   "revision": 1,
   "author": {
     "id": "codex-angular-expansion-author",

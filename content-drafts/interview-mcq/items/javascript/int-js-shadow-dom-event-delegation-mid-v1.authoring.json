@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-js-shadow-dom-event-delegation-mid-v1",
+  "conceptId": "mcq-javascript-shadow-dom-event-delegation",
   "revision": 1,
   "author": {
     "id": "codex-core-author",

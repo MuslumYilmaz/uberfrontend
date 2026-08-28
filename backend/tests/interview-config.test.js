@@ -158,4 +158,44 @@ describe('interview access configuration', () => {
       }
     }
   });
+
+  test('uses level-specific MCQ budgets while preserving the legacy override', () => {
+    const names = [
+      'INTERVIEW_MCQ_SECONDS',
+      'INTERVIEW_MCQ_JUNIOR_SECONDS',
+      'INTERVIEW_MCQ_MID_SECONDS',
+      'INTERVIEW_MCQ_SENIOR_SECONDS',
+    ];
+    const originals = Object.fromEntries(names.map((name) => [name, process.env[name]]));
+    try {
+      for (const name of names) delete process.env[name];
+      expect(interviewConfig()).toEqual(expect.objectContaining({
+        mcqSeconds: 600,
+        mcqSecondsByLevel: {
+          junior: 600,
+          mid: 720,
+          senior: 900,
+        },
+      }));
+
+      process.env.INTERVIEW_MCQ_SECONDS = '660';
+      expect(interviewConfig().mcqSecondsByLevel).toEqual({
+        junior: 660,
+        mid: 660,
+        senior: 660,
+      });
+
+      process.env.INTERVIEW_MCQ_SENIOR_SECONDS = '840';
+      expect(interviewConfig().mcqSecondsByLevel).toEqual({
+        junior: 660,
+        mid: 660,
+        senior: 840,
+      });
+    } finally {
+      for (const name of names) {
+        if (originals[name] == null) delete process.env[name];
+        else process.env[name] = originals[name];
+      }
+    }
+  });
 });

@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-react-effect-connection-cleanup-mid-v1",
+  "conceptId": "mcq-react-effect-resource-lifecycle",
   "revision": 3,
   "author": {
     "id": "codex-react-author",

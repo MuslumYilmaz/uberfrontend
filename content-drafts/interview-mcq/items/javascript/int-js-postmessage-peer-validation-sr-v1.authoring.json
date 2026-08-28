@@ -1,0 +1,110 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-js-postmessage-peer-validation-sr-v1",
+  "conceptId": "mcq-javascript-postmessage-peer-validation",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-08-24"
+  },
+  "public": {
+    "technology": "javascript",
+    "level": "senior",
+    "difficultyBand": "stretch",
+    "format": "production-scenario",
+    "competency": "postmessage-peer-validation",
+    "prompt": "A checkout page exchanges payment state with one known cross-origin iframe through `postMessage`. The payload can trigger a privileged transition. Which protocol boundary limits both accidental disclosure and forged inbound messages?",
+    "options": [
+      {
+        "id": "choice-112d097b50",
+        "label": "Send with `'*'`, then accept inbound data when its payload includes the expected iframe URL string."
+      },
+      {
+        "id": "choice-9b37418501",
+        "label": "Send to the exact origin, then verify inbound `origin`, `source`, and payload schema before acting."
+      },
+      {
+        "id": "choice-4d504ef26c",
+        "label": "Send to the iframe URL path, then accept inbound data when the browser reports a trusted event type."
+      }
+    ],
+    "estimatedSeconds": 150
+  },
+  "private": {
+    "correctOptionId": "choice-9b37418501",
+    "answerProof": {
+      "summary": "An exact target origin constrains delivery, while the receiver must independently authenticate the sender origin and window reference and validate untrusted message data.",
+      "decisiveConstraints": [
+        "Only one known cross-origin iframe is an authorized peer.",
+        "Outbound payment state is sensitive.",
+        "Inbound data can trigger a privileged state transition."
+      ],
+      "claims": [
+        {
+          "statement": "Sensitive postMessage data should be sent with an exact target origin, and receivers should verify the sender with origin and possibly source before validating message syntax.",
+          "sourceIds": [
+            "mdn-window-postmessage"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-112d097b50",
+        "verdict": "incorrect",
+        "explanation": "A wildcard can disclose data after navigation, and an attacker controls ordinary strings inside its message payload.",
+        "plausibility": "Embedding the expected peer URL in the message creates a lightweight application-level identity field.",
+        "misconceptionTag": "payload-claim-authenticates-message-peer",
+        "falsifyingConstraint": "Peer identity must come from browser-supplied origin and source properties, not attacker-controlled data."
+      },
+      {
+        "optionId": "choice-9b37418501",
+        "verdict": "correct",
+        "explanation": "Exact delivery plus origin, window, and schema validation creates independent outbound and inbound trust checks.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-4d504ef26c",
+        "verdict": "incorrect",
+        "explanation": "Target origin does not include a URL path, and a message event's type does not authenticate the sender.",
+        "plausibility": "A full iframe URL looks more specific than an origin and the browser creates the MessageEvent object.",
+        "misconceptionTag": "message-event-type-authenticates-sender",
+        "falsifyingConstraint": "The receiver must distinguish the authorized window and origin from other windows able to send messages."
+      }
+    ],
+    "remediationTopics": [
+      "window-postmessage",
+      "origin-validation",
+      "cross-window-protocols"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: Window.postMessage()",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage",
+        "sourceId": "mdn-window-postmessage"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "mdn-window-postmessage",
+          "title": "MDN: Window.postMessage()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-08-24",
+          "revision": "mdn-page-snapshot-2026-08-24",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

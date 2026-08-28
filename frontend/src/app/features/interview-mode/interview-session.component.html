@@ -8,6 +8,28 @@
     <button faButton variant="ghost" type="button" (click)="load()">Reload session</button>
   </section>
 
+  <section
+    *ngIf="mcqAlert() as alert"
+    class="state-card state-card--error mcq-alert"
+    faCard
+    role="alert"
+    data-testid="mcq-alert">
+    <p>{{ alert }}</p>
+  </section>
+
+  <section
+    *ngIf="operationalHalt()"
+    class="state-card state-card--error"
+    faCard
+    role="alert"
+    aria-live="assertive"
+    tabindex="-1"
+    data-testid="interview-operational-halt">
+    <h2>Interview work is temporarily paused</h2>
+    <p>{{ operationalNotice() }}</p>
+    <p>Your server state and device recovery copy remain unchanged. Keep this page open for automatic recovery.</p>
+  </section>
+
   <ng-container *ngIf="session() as active">
     <header class="session-header">
       <div>
@@ -23,7 +45,7 @@
           label="MCQ time"
           [serverNow]="active.serverNow"
           [deadlineAt]="active.mcqDeadlineAt"
-          (expired)="submitMcq(true)">
+          (expired)="handleMcqExpiry()">
         </app-interview-deadline-timer>
         <app-interview-deadline-timer
           *ngIf="active.status === 'system_design_active'"
@@ -46,11 +68,22 @@
           [deadlineAt]="active.coding?.deadlineAt || null"
           (expired)="reconcileAfterCodingDeadline(true)">
         </app-interview-deadline-timer>
-        <button faButton variant="ghost" size="sm" type="button" (click)="abandon()">
+        <button
+          faButton
+          variant="ghost"
+          size="sm"
+          type="button"
+          [disabled]="operationalHalt()"
+          (click)="abandon()">
           End interview
         </button>
       </div>
     </header>
+
+    <p class="recovery-disclosure" data-testid="interview-session-recovery-disclosure">
+      This browser keeps an unencrypted recovery copy scoped to your account and this interview.
+      MCQ state expires within 2 hours; coding and system design drafts expire within 24 hours.
+    </p>
 
     <app-interview-system-design-round
       *ngIf="active.status === 'system_design_active' && active.systemDesign?.scenario"
@@ -61,7 +94,18 @@
       (reconcileRequested)="reconcileAfterSystemDesignDeadline(false)">
     </app-interview-system-design-round>
 
-    <section *ngIf="active.status === 'mcq_active'" class="mcq-layout">
+    <section
+      *ngIf="active.status === 'mcq_active'"
+      class="mcq-layout"
+      [attr.aria-busy]="mcqControlsLocked()">
+      <p
+        *ngIf="mcqStatusMessage() as statusMessage"
+        class="mcq-status"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true">
+        {{ statusMessage }}
+      </p>
       <aside class="progress-card" faCard aria-label="Question progress">
         <div class="progress-card__summary">
           <strong>{{ answeredCount() }}/{{ active.questions.length }} answered</strong>
@@ -74,14 +118,19 @@
             [class.question-nav__item--active]="!reviewing() && currentIndex() === index"
             [class.question-nav__item--answered]="!!question.selectedOptionId"
             [attr.aria-current]="!reviewing() && currentIndex() === index ? 'step' : null"
+            [attr.aria-label]="'Question ' + (index + 1) + ', ' + (question.selectedOptionId ? 'answered' : 'unanswered')"
+            [disabled]="mcqControlsLocked()"
             (click)="goToQuestion(index)">
-            <span>{{ index + 1 }}</span>
-            <span class="sr-only">
-              Question {{ index + 1 }}, {{ question.selectedOptionId ? 'answered' : 'unanswered' }}
-            </span>
+            <span aria-hidden="true">{{ index + 1 }}</span>
           </button>
         </nav>
-        <button faButton variant="ghost" block type="button" (click)="showReview()">
+        <button
+          faButton
+          variant="ghost"
+          block
+          type="button"
+          [disabled]="mcqControlsLocked()"
+          (click)="showReview()">
           Review answers
         </button>
       </aside>
@@ -92,8 +141,12 @@
           <span>{{ question.technology }} · {{ question.competency }}</span>
         </div>
 
-        <fieldset [disabled]="savingAnswerFor() === question.id || transitioning()">
-          <legend>{{ question.prompt }}</legend>
+        <fieldset [disabled]="mcqControlsLocked()">
+          <legend>
+            <span
+              tabindex="-1"
+              data-testid="interview-question-prompt">{{ question.prompt }}</span>
+          </legend>
           <pre *ngIf="question.code" class="question-code"><code>{{ question.code }}</code></pre>
           <label
             *ngFor="let option of question.options"
@@ -109,16 +162,12 @@
           </label>
         </fieldset>
 
-        <p *ngIf="savingAnswerFor() === question.id" class="save-note" role="status">
-          Saving answer…
-        </p>
-
         <div class="question-actions">
           <button
             faButton
             variant="ghost"
             type="button"
-            [disabled]="currentIndex() === 0"
+            [disabled]="currentIndex() === 0 || mcqControlsLocked()"
             (click)="goToQuestion(currentIndex() - 1)">
             Previous
           </button>
@@ -127,11 +176,17 @@
             faButton
             variant="primary"
             type="button"
+            [disabled]="mcqControlsLocked()"
             (click)="goToQuestion(currentIndex() + 1)">
             Next
           </button>
           <ng-template #reviewButton>
-            <button faButton variant="primary" type="button" (click)="showReview()">
+            <button
+              faButton
+              variant="primary"
+              type="button"
+              [disabled]="mcqControlsLocked()"
+              (click)="showReview()">
               Review answers
             </button>
           </ng-template>
@@ -140,14 +195,17 @@
 
       <section *ngIf="reviewing()" class="review-card" faCard elevated>
         <p class="eyebrow">MCQ review</p>
-        <h2>Check for unanswered questions</h2>
+        <h2 tabindex="-1" data-testid="interview-review-heading">Check for unanswered questions</h2>
         <p>
           You can return to any question. Submitting locks this section and reveals no
           correctness feedback until the complete interview ends.
         </p>
         <ol class="review-list">
           <li *ngFor="let question of active.questions; let index = index">
-            <button type="button" (click)="goToQuestion(index)">
+            <button
+              type="button"
+              [disabled]="mcqControlsLocked()"
+              (click)="goToQuestion(index)">
               <span>Question {{ index + 1 }}</span>
               <strong [class.unanswered]="!question.selectedOptionId">
                 {{ question.selectedOptionId ? 'Answered' : 'Unanswered' }}
@@ -156,15 +214,20 @@
           </li>
         </ol>
         <div class="review-actions">
-          <button faButton variant="ghost" type="button" (click)="goToQuestion(currentIndex())">
+          <button
+            faButton
+            variant="ghost"
+            type="button"
+            [disabled]="mcqControlsLocked()"
+            (click)="goToQuestion(currentIndex())">
             Return to questions
           </button>
           <button
             faButton
             variant="primary"
             type="button"
-            [loading]="transitioning()"
-            [disabled]="!!savingAnswerFor()"
+            [loading]="mcqMutationState() === 'submitting'"
+            [disabled]="mcqControlsLocked()"
             (click)="submitMcq()"
             data-testid="submit-mcq">
             Submit MCQ section
@@ -181,7 +244,7 @@
       [attr.inert]="codingRoundFrozen() ? '' : null"
       [attr.aria-busy]="codingRoundFrozen()">
       <p class="eyebrow">MCQ answers locked</p>
-      <h2>Your coding task is next</h2>
+      <h2 tabindex="-1" data-testid="interview-coding-ready-heading">Your coding task is next</h2>
       <p>
         The coding timer starts when you continue. You will receive only the prompt,
         requirements, starter files, and bounded check results—never solutions.
@@ -240,9 +303,13 @@
       class="coding-layout"
       [attr.inert]="codingRoundFrozen() || codingDraftConflict() ? '' : null"
       [attr.aria-busy]="codingRoundFrozen()">
-      <aside class="coding-brief" faCard>
+      <aside
+        class="coding-brief"
+        faCard
+        [tabindex]="0"
+        aria-label="Coding task brief">
         <p class="eyebrow">Final stage</p>
-        <h2>{{ task.title }}</h2>
+        <h2 tabindex="-1" data-testid="interview-coding-heading">{{ task.title }}</h2>
         <p>{{ task.prompt }}</p>
         <h3>Requirements</h3>
         <div *ngFor="let requirement of task.requirements" class="requirement-group">
@@ -263,12 +330,16 @@
         <div class="workspace__bar">
           <div class="file-tabs" role="tablist" aria-label="Starter files">
             <button
-              *ngFor="let file of codingFiles()"
+              *ngFor="let file of codingFiles(); let index = index"
               type="button"
               role="tab"
+              [id]="'interview-code-tab-' + index"
+              [attr.aria-controls]="'interview-code-panel-' + index"
               [attr.aria-selected]="activeFilePath() === file.path"
+              [attr.tabindex]="activeFilePath() === file.path ? 0 : -1"
               [class.file-tab--active]="activeFilePath() === file.path"
-              (click)="selectFile(file.path)">
+              (click)="selectFile(file.path)"
+              (keydown)="onFileTabKeydown($event, index)">
               {{ file.path }}
             </button>
           </div>
@@ -280,7 +351,12 @@
           </span>
         </div>
 
-        <div class="editor-shell" *ngIf="activeFile() as file">
+        <div
+          class="editor-shell"
+          *ngIf="activeFile() as file"
+          role="tabpanel"
+          [id]="'interview-code-panel-' + activeFileIndex()"
+          [attr.aria-labelledby]="'interview-code-tab-' + activeFileIndex()">
           <app-monaco-editor
             *ngIf="!editorFallback(); else textareaEditor"
             [modelKey]="'interview-' + active.id + '-' + file.path"
@@ -416,20 +492,14 @@
       class="state-card"
       faCard
       elevated>
-      <h2>{{ active.status === 'voided_technical' ? 'Interview voided for a technical issue' : 'Interview ended' }}</h2>
+      <h2 tabindex="-1" data-testid="interview-terminal-heading">{{ active.status === 'voided_technical' ? 'Interview voided for a technical issue' : 'Interview ended' }}</h2>
       <p *ngIf="active.status === 'voided_technical'">
         This attempt should not count against your quota. No answer report is created for a voided session.
       </p>
-      <a
-        *ngIf="active.status === 'abandoned'; else interviewHome"
-        faButton
-        variant="primary"
-        [routerLink]="['/interview', active.id, 'results']">
-        View report
-      </a>
-      <ng-template #interviewHome>
-        <a faButton variant="primary" routerLink="/interview">Return to interview home</a>
-      </ng-template>
+      <p *ngIf="active.status === 'abandoned'">
+        Answer review is withheld for incomplete interviews to prevent extraction of the question bank.
+      </p>
+      <a faButton variant="primary" routerLink="/interview">Return to interview home</a>
     </section>
   </ng-container>
 </main>

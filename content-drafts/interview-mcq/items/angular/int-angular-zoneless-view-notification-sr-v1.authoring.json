@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-angular-zoneless-view-notification-sr-v1",
+  "conceptId": "mcq-angular-zoneless-onpush-view-notification",
   "revision": 2,
   "author": {
     "id": "codex-angular-author",

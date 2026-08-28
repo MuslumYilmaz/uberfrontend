@@ -2,15 +2,15 @@
   "schemaVersion": "2.0.0",
   "blueprintId": "frontend-interview-bank-v1",
   "bankId": "frontend-interview-gold-bank",
-  "questionCount": 170,
+  "questionCount": 185,
   "distributions": {
     "level": {
-      "junior": 56,
-      "mid": 57,
-      "senior": 57
+      "junior": 61,
+      "mid": 61,
+      "senior": 63
     },
     "technology": {
-      "javascript": 34,
+      "javascript": 49,
       "html": 17,
       "css": 17,
       "react": 34,
@@ -19,7 +19,7 @@
     },
     "technologyByLevel": {
       "junior": {
-        "javascript": 11,
+        "javascript": 16,
         "html": 6,
         "css": 6,
         "react": 11,
@@ -27,7 +27,7 @@
         "vue": 11
       },
       "mid": {
-        "javascript": 11,
+        "javascript": 15,
         "html": 6,
         "css": 5,
         "react": 11,
@@ -35,7 +35,7 @@
         "vue": 12
       },
       "senior": {
-        "javascript": 12,
+        "javascript": 18,
         "html": 5,
         "css": 6,
         "react": 12,
@@ -46,46 +46,46 @@
     "difficultyBandByLevel": {
       "junior": {
         "foundation": 14,
-        "core": 28,
-        "stretch": 14
+        "core": 31,
+        "stretch": 16
       },
       "mid": {
         "foundation": 14,
-        "core": 29,
+        "core": 33,
         "stretch": 14
       },
       "senior": {
         "foundation": 14,
         "core": 29,
-        "stretch": 14
+        "stretch": 20
       }
     },
     "formatByLevel": {
       "junior": {
         "conceptual": 21,
         "code-output": 2,
-        "production-scenario": 33
+        "production-scenario": 38
       },
       "mid": {
         "conceptual": 15,
         "code-output": 2,
-        "production-scenario": 40
+        "production-scenario": 44
       },
       "senior": {
         "conceptual": 7,
         "code-output": 2,
-        "production-scenario": 48
+        "production-scenario": 54
       }
     },
     "correctOptionPosition": {
-      "first": 57,
-      "second": 57,
-      "third": 56
+      "first": 62,
+      "second": 62,
+      "third": 61
     }
   },
   "competencyConstraint": {
     "distinctByTechnology": {
-      "javascript": 34,
+      "javascript": 49,
       "html": 17,
       "css": 17,
       "react": 34,
@@ -109,22 +109,22 @@
     ],
     "eligiblePoolByLevelAndTrack": {
       "junior": {
-        "core-web": 23,
-        "react": 34,
-        "angular": 34,
-        "vue": 34
+        "core-web": 28,
+        "react": 39,
+        "angular": 39,
+        "vue": 39
       },
       "mid": {
-        "core-web": 22,
-        "react": 33,
-        "angular": 34,
-        "vue": 34
+        "core-web": 26,
+        "react": 37,
+        "angular": 38,
+        "vue": 38
       },
       "senior": {
-        "core-web": 23,
-        "react": 35,
-        "angular": 34,
-        "vue": 34
+        "core-web": 29,
+        "react": 41,
+        "angular": 40,
+        "vue": 40
       }
     }
   },
@@ -134,5 +134,176 @@
     "codeLanguage": "javascript",
     "runtime": "browser",
     "verificationKind": "browser-console-output"
+  },
+  "releaseReadiness": {
+    "attemptsWithoutLiteralOrSemanticRepeat": 5,
+    "adjacentOverlapMaximum": 0,
+    "sessionBudgetSecondsByLevel": {
+      "junior": 600,
+      "mid": 720,
+      "senior": 900
+    },
+    "formProfiles": {
+      "technologyCountsByTrack": {
+        "core-web": {
+          "javascript": 3,
+          "html": 1,
+          "css": 1,
+          "react": 0,
+          "angular": 0,
+          "vue": 0
+        },
+        "react": {
+          "javascript": 1,
+          "html": 1,
+          "css": 1,
+          "react": 2,
+          "angular": 0,
+          "vue": 0
+        },
+        "angular": {
+          "javascript": 1,
+          "html": 1,
+          "css": 1,
+          "react": 0,
+          "angular": 2,
+          "vue": 0
+        },
+        "vue": {
+          "javascript": 1,
+          "html": 1,
+          "css": 1,
+          "react": 0,
+          "angular": 0,
+          "vue": 2
+        }
+      },
+      "difficultyBandCountsByLevelAndTrack": {
+        "junior": {
+          "core-web": {
+            "foundation": 1,
+            "core": 3,
+            "stretch": 1
+          },
+          "react": {
+            "foundation": 1,
+            "core": 3,
+            "stretch": 1
+          },
+          "angular": {
+            "foundation": 1,
+            "core": 3,
+            "stretch": 1
+          },
+          "vue": {
+            "foundation": 1,
+            "core": 3,
+            "stretch": 1
+          }
+        },
+        "mid": {
+          "core-web": {
+            "foundation": 1,
+            "core": 3,
+            "stretch": 1
+          },
+          "react": {
+            "foundation": 1,
+            "core": 3,
+            "stretch": 1
+          },
+          "angular": {
+            "foundation": 1,
+            "core": 3,
+            "stretch": 1
+          },
+          "vue": {
+            "foundation": 1,
+            "core": 3,
+            "stretch": 1
+          }
+        },
+        "senior": {
+          "core-web": {
+            "foundation": 1,
+            "core": 1,
+            "stretch": 3
+          },
+          "react": {
+            "foundation": 1,
+            "core": 3,
+            "stretch": 1
+          },
+          "angular": {
+            "foundation": 1,
+            "core": 2,
+            "stretch": 2
+          },
+          "vue": {
+            "foundation": 1,
+            "core": 3,
+            "stretch": 1
+          }
+        }
+      },
+      "minimumProductionScenarioCount": 1,
+      "maximumCodeOutputCount": 1
+    },
+    "candidateCapacityPlan": {
+      "scope": "literal-and-semantic-repeat-capacity-only",
+      "baselineQuestionCount": 170,
+      "minimumTargetQuestionCount": 185,
+      "minimumNetNewItems": 15,
+      "byLevel": {
+        "junior": {
+          "minimumNetNewItems": 5,
+          "minimumByTechnology": {
+            "javascript": 4,
+            "html": 0,
+            "css": 0,
+            "react": 0,
+            "angular": 0,
+            "vue": 0
+          },
+          "minimumByDifficultyBand": {
+            "foundation": 0,
+            "core": 3,
+            "stretch": 2
+          }
+        },
+        "mid": {
+          "minimumNetNewItems": 4,
+          "minimumByTechnology": {
+            "javascript": 4,
+            "html": 0,
+            "css": 0,
+            "react": 0,
+            "angular": 0,
+            "vue": 0
+          },
+          "minimumByDifficultyBand": {
+            "foundation": 0,
+            "core": 4,
+            "stretch": 0
+          }
+        },
+        "senior": {
+          "minimumNetNewItems": 6,
+          "minimumByTechnology": {
+            "javascript": 3,
+            "html": 0,
+            "css": 0,
+            "react": 0,
+            "angular": 0,
+            "vue": 0
+          },
+          "minimumByDifficultyBand": {
+            "foundation": 0,
+            "core": 0,
+            "stretch": 6
+          }
+        }
+      }
+    }
   }
 }

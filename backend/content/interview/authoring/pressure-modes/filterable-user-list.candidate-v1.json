@@ -1,0 +1,62 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "filterable-user-list-interview-candidate-v1",
+  "family": "filterable-user-list",
+  "title": "Derived User Filtering Interview",
+  "access": "candidate",
+  "estimatedMinutes": 25,
+  "supportedQuestions": {
+    "react": "react-filterable-user-list",
+    "angular": "angular-filterable-user-list",
+    "vue": "vue-filterable-user-list"
+  },
+  "rounds": [
+    {
+      "id": "derived-search",
+      "title": "Derived search results",
+      "interviewerPrompt": "Derive the visible list from the immutable source and current controls.",
+      "constraints": [
+        "Search names case-insensitively without mutating the source array.",
+        "An empty query shows all users.",
+        "Render stable row identity and a single empty state when no users match."
+      ],
+      "frameworkTests": [
+        {
+          "id": "candidate-user-filter-search",
+          "name": "Round 1 · Search narrows the derived list",
+          "steps": [
+            { "type": "expectCount", "selector": ".row", "count": 5 },
+            { "type": "setValue", "selector": "#search", "value": "alice" },
+            { "type": "waitForCount", "selector": ".row", "count": 1 },
+            { "type": "expectText", "selector": ".row", "text": "Alice", "match": "contains" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "composed-filters",
+      "title": "Composed filters and empty state",
+      "interviewerPrompt": "Compose role, activity, and text predicates without stale results.",
+      "constraints": [
+        "Apply search, role, and active-only predicates together.",
+        "Changing any control recomputes from the original user list.",
+        "Announce result-count changes through a polite status region.",
+        "When no users match, render the documented empty message and no user rows."
+      ],
+      "frameworkTests": [
+        {
+          "id": "candidate-user-filter-composition",
+          "name": "Round 2 · Role and search compose",
+          "steps": [
+            { "type": "setValue", "selector": "#role", "value": "editor" },
+            { "type": "waitForCount", "selector": ".row", "count": 2 },
+            { "type": "setValue", "selector": "#search", "value": "not-a-user" },
+            { "type": "waitForCount", "selector": ".row", "count": 0 },
+            { "type": "expectText", "selector": ".empty", "text": "No users match", "match": "contains" },
+            { "type": "expectAttribute", "selector": ".list", "attribute": "aria-live", "expected": "polite" }
+          ]
+        }
+      ]
+    }
+  ]
+}

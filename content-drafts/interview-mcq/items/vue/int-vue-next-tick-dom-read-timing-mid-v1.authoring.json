@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-vue-next-tick-dom-read-timing-mid-v1",
+  "conceptId": "mcq-vue-next-tick-dom-read-timing",
   "revision": 2,
   "author": {
     "id": "codex-vue-expansion-author",

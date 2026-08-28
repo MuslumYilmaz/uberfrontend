@@ -4,11 +4,13 @@ import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { firstValueFrom } from 'rxjs';
 import { AuthService, User } from './auth.service';
 import { AuthSessionAuthorityService } from './auth-session-authority.service';
+import { InterviewRecoveryStore } from './interview-recovery.store';
 
 describe('AuthService', () => {
   let service: AuthService;
   let httpMock: HttpTestingController;
   let authority: AuthSessionAuthorityService;
+  let interviewRecovery: InterviewRecoveryStore;
 
   const sampleUser: User = {
     _id: 'user-1',
@@ -39,6 +41,7 @@ describe('AuthService', () => {
     service = TestBed.inject(AuthService);
     httpMock = TestBed.inject(HttpTestingController);
     authority = TestBed.inject(AuthSessionAuthorityService);
+    interviewRecovery = TestBed.inject(InterviewRecoveryStore);
   });
 
   afterEach(() => {
@@ -165,7 +168,13 @@ describe('AuthService', () => {
 
   it('signs out when another tab broadcasts logout', () => {
     service.user.set(sampleUser);
+    TestBed.flushEffects();
     authority.noteSessionHintPresent();
+    expect(interviewRecovery.saveForCurrentUser({
+      kind: 'coding',
+      sessionId: 'session-1',
+      payload: { code: 'device-only draft' },
+    })).toBeTrue();
 
     window.dispatchEvent(new StorageEvent('storage', {
       key: 'fa:auth:event',
@@ -181,6 +190,7 @@ describe('AuthService', () => {
     expect(service.user()).toBeNull();
     expect(authority.state()).toBe('signed_out');
     expect(authority.hasSessionHint()).toBeFalse();
+    expect(interviewRecovery.read('coding', 'user-1', 'session-1')).toBeNull();
   });
 
   it('hydrates the signed-in user after another tab broadcasts login', () => {

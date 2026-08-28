@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-js-bfcache-page-lifecycle-sr-v1",
+  "conceptId": "mcq-javascript-bfcache-page-lifecycle",
   "revision": 1,
   "author": {
     "id": "codex-core-author",

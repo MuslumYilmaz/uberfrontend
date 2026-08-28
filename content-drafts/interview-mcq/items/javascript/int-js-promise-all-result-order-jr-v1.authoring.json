@@ -1,0 +1,110 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-js-promise-all-result-order-jr-v1",
+  "conceptId": "mcq-javascript-promise-all-result-order",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-08-24"
+  },
+  "public": {
+    "technology": "javascript",
+    "level": "junior",
+    "difficultyBand": "stretch",
+    "format": "production-scenario",
+    "competency": "promise-all-result-order",
+    "prompt": "A dashboard requests details for product IDs in display order. Network responses finish in a different order, but each result must still be paired with the ID at the same input index. Which aggregation provides that ordering contract when every request fulfills?",
+    "options": [
+      {
+        "id": "choice-312fc88149",
+        "label": "Push each fulfillment into a shared array, then pair that array with product IDs by position."
+      },
+      {
+        "id": "choice-10d94e613a",
+        "label": "Await `Promise.all(requests)`, then pair its result array with product IDs by input position."
+      },
+      {
+        "id": "choice-85aed1f5d5",
+        "label": "Await `Promise.race(requests)` repeatedly, then pair each winner with product IDs by position."
+      }
+    ],
+    "estimatedSeconds": 105
+  },
+  "private": {
+    "correctOptionId": "choice-10d94e613a",
+    "answerProof": {
+      "summary": "Promise.all fulfills with values in iterable order, so completion timing does not change the index relationship between requests and results.",
+      "decisiveConstraints": [
+        "Every input request is assumed to fulfill.",
+        "The input array order already matches the display order.",
+        "The mapping must not depend on network completion order."
+      ],
+      "claims": [
+        {
+          "statement": "Promise.all returns fulfillment values in the order of the input iterable regardless of the order in which the input promises settle.",
+          "sourceIds": [
+            "mdn-promise-all"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-312fc88149",
+        "verdict": "incorrect",
+        "explanation": "Independent fulfillment handlers append in completion order, so array positions can drift from product IDs.",
+        "plausibility": "Collecting results as requests finish is simple and avoids waiting before storing each value.",
+        "misconceptionTag": "completion-order-matches-input-order",
+        "falsifyingConstraint": "A slower earlier request must retain its earlier display index."
+      },
+      {
+        "optionId": "choice-10d94e613a",
+        "verdict": "correct",
+        "explanation": "Promise.all preserves iterable positions in its fulfilled result array even when requests finish out of order.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      },
+      {
+        "optionId": "choice-85aed1f5d5",
+        "verdict": "incorrect",
+        "explanation": "Promise.race exposes settlement winners and does not remove settled inputs, so repeating it does not produce an indexed batch.",
+        "plausibility": "Racing requests appears to provide direct access to their actual completion order.",
+        "misconceptionTag": "repeated-race-collects-each-result",
+        "falsifyingConstraint": "The result must retain a stable one-to-one index mapping for the complete input batch."
+      }
+    ],
+    "remediationTopics": [
+      "promise-all",
+      "input-order",
+      "concurrent-aggregation"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: Promise.all()",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all",
+        "sourceId": "mdn-promise-all"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "mdn-promise-all",
+          "title": "MDN: Promise.all()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-08-24",
+          "revision": "mdn-page-snapshot-2026-08-24",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-angular-async-validator-latest-result-mid-v1",
+  "conceptId": "mcq-angular-async-validator-latest-result",
   "revision": 1,
   "author": {
     "id": "codex-angular-expansion-author",

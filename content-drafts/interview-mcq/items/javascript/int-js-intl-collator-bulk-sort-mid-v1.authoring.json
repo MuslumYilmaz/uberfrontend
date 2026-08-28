@@ -1,0 +1,110 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "int-js-intl-collator-bulk-sort-mid-v1",
+  "conceptId": "mcq-javascript-intl-collator-bulk-sort",
+  "revision": 1,
+  "author": {
+    "id": "codex-core-author",
+    "type": "ai",
+    "authoredAt": "2026-08-24"
+  },
+  "public": {
+    "technology": "javascript",
+    "level": "mid",
+    "difficultyBand": "core",
+    "format": "production-scenario",
+    "competency": "intl-collator-bulk-sort",
+    "prompt": "A customer directory repeatedly sorts thousands of display names for the selected locale. Case and accents must follow an explicit product setting, and comparator setup should not be repeated for every pair. Which strategy fits?",
+    "options": [
+      {
+        "id": "choice-4911b92ff2",
+        "label": "Lowercase each name once and use the default `sort()` comparison over the resulting strings."
+      },
+      {
+        "id": "choice-20d9e540f6",
+        "label": "Call `localeCompare` with no locale or options inside the comparator for every name pair."
+      },
+      {
+        "id": "choice-f31319dbed",
+        "label": "Create one configured `Intl.Collator` for the locale and pass its `compare` function to `sort()`."
+      }
+    ],
+    "estimatedSeconds": 135
+  },
+  "private": {
+    "correctOptionId": "choice-f31319dbed",
+    "answerProof": {
+      "summary": "A configured Intl.Collator owns the locale and comparison options once, and its compare function can be reused efficiently for a large sort.",
+      "decisiveConstraints": [
+        "Ordering is locale-sensitive.",
+        "Case and accent handling are explicit product behavior.",
+        "The same comparison policy is used across many pairwise comparisons."
+      ],
+      "claims": [
+        {
+          "statement": "Intl.Collator provides language-sensitive string comparison and exposes a compare function suitable for Array sorting.",
+          "sourceIds": [
+            "mdn-intl-collator"
+          ]
+        }
+      ]
+    },
+    "optionRationales": [
+      {
+        "optionId": "choice-4911b92ff2",
+        "verdict": "incorrect",
+        "explanation": "Default string sorting compares UTF-16 code units and lowercasing does not implement locale collation rules.",
+        "plausibility": "Normalizing case once can reduce repeated work and gives deterministic ordering for basic Latin names.",
+        "misconceptionTag": "lowercasing-implements-locale-collation",
+        "falsifyingConstraint": "Accents and locale-specific letter ordering must follow the selected locale."
+      },
+      {
+        "optionId": "choice-20d9e540f6",
+        "verdict": "incorrect",
+        "explanation": "Omitting locale and options leaves the product's comparison policy implicit and does not provide the requested reusable setup boundary.",
+        "plausibility": "LocaleCompare performs language-sensitive comparisons and works directly as an inline comparator.",
+        "misconceptionTag": "default-localecompare-is-explicit-policy",
+        "falsifyingConstraint": "The selected locale plus case and accent behavior must be configured consistently."
+      },
+      {
+        "optionId": "choice-f31319dbed",
+        "verdict": "correct",
+        "explanation": "One collator captures the requested locale policy and its compare method is reusable across the full sort.",
+        "plausibility": null,
+        "misconceptionTag": null,
+        "falsifyingConstraint": null
+      }
+    ],
+    "remediationTopics": [
+      "intl-collator",
+      "locale-aware-sorting",
+      "comparator-reuse"
+    ],
+    "learnMore": [
+      {
+        "title": "MDN: Intl.Collator",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Collator",
+        "sourceId": "mdn-intl-collator"
+      }
+    ],
+    "provenance": {
+      "wordingOrigin": "original",
+      "copiedText": false,
+      "relatedContentIds": [],
+      "sources": [
+        {
+          "id": "mdn-intl-collator",
+          "title": "MDN: Intl.Collator",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Collator",
+          "role": "technical-verification",
+          "licenseId": "CC-BY-SA-2.5",
+          "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+          "retrievedAt": "2026-08-24",
+          "revision": "mdn-page-snapshot-2026-08-24",
+          "official": true,
+          "copiedText": false
+        }
+      ]
+    }
+  }
+}

@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-react-external-store-snapshot-consistency-sr-v1",
+  "conceptId": "mcq-react-external-store-snapshot-consistency",
   "revision": 1,
   "author": {
     "id": "codex-react-author",

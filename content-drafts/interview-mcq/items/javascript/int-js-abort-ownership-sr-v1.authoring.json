@@ -1,6 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "id": "int-js-abort-ownership-sr-v1",
+  "conceptId": "mcq-javascript-abortable-request-ownership",
   "revision": 3,
   "author": {
     "id": "codex-core-author",
