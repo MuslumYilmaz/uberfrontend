@@ -111,6 +111,42 @@ const ACCORDION_FAQ_PRESSURE_SOLUTIONS = {
   ),
 } as const;
 
+const TICTACTOE_PRESSURE_SOLUTIONS = {
+  react: readCanonicalFiles(
+    '../cdn/sb/react/solution/react-tictactoe-pressure-solution.v1.json',
+  ),
+  angular: readCanonicalFiles(
+    '../cdn/sb/angular/solution/angular-tictactoe-pressure-solution.v1.json',
+  ),
+  vue: readCanonicalFiles(
+    '../cdn/sb/vue/solution/vue-tictactoe-pressure-solution.v1.json',
+  ),
+} as const;
+
+const CHESSBOARD_PRESSURE_SOLUTIONS = {
+  react: readCanonicalFiles(
+    '../cdn/sb/react/solution/react-chessboard-click-highlight-pressure-solution.v1.json',
+  ),
+  angular: readCanonicalFiles(
+    '../cdn/sb/angular/solution/angular-chessboard-click-highlight-pressure-solution.v1.json',
+  ),
+  vue: readCanonicalFiles(
+    '../cdn/sb/vue/solution/vue-chessboard-click-highlight-pressure-solution.v1.json',
+  ),
+} as const;
+
+const DYNAMIC_COUNTER_BUTTONS_PRESSURE_SOLUTIONS = {
+  react: readCanonicalFiles(
+    '../cdn/sb/react/solution/react-dynamic-counter-buttons-pressure-solution.v1.json',
+  ),
+  angular: readCanonicalFiles(
+    '../cdn/sb/angular/solution/angular-dynamic-counter-buttons-pressure-solution.v1.json',
+  ),
+  vue: readCanonicalFiles(
+    '../cdn/sb/vue/solution/vue-dynamic-counter-buttons-pressure-solution.v1.json',
+  ),
+} as const;
+
 type PressureFlowContract = {
   checkCounts: number[];
   roundIds: string[];
@@ -192,6 +228,39 @@ const ACCORDION_FAQ_PRESSURE_FLOW: PressureFlowContract = {
     'accessible-disclosure-contract',
   ],
   debriefText: 'You kept disclosure state predictable under pressure',
+};
+
+const TICTACTOE_PRESSURE_FLOW: PressureFlowContract = {
+  checkCounts: [1, 2, 3, 5],
+  roundIds: [
+    'core-turn-invariants',
+    'outcome-and-reset',
+    'branching-history',
+    'accessible-grid-navigation',
+  ],
+  debriefText: 'You kept branching game state correct under pressure',
+};
+
+const CHESSBOARD_PRESSURE_FLOW: PressureFlowContract = {
+  checkCounts: [1, 2, 3, 5],
+  roundIds: [
+    'core-single-selection',
+    'dynamic-size-boundaries',
+    'queen-reachable-highlights',
+    'accessible-grid-navigation',
+  ],
+  debriefText: 'You kept dynamic board state predictable under pressure',
+};
+
+const DYNAMIC_COUNTER_BUTTONS_PRESSURE_FLOW: PressureFlowContract = {
+  checkCounts: [1, 2, 3, 5],
+  roundIds: [
+    'core-grow-invariants',
+    'stable-removal-boundaries',
+    'bounded-growth-reset',
+    'accessible-list-navigation',
+  ],
+  debriefText: 'You kept dynamic counter state predictable under pressure',
 };
 
 const AUTOCOMPLETE_SOLUTION = readCanonicalFile(
@@ -429,9 +498,176 @@ async function expectNoHorizontalOverflow(page: Page): Promise<void> {
   expect(overflow).toBeLessThanOrEqual(1);
 }
 
+async function expectNoPreviewHorizontalOverflow(page: Page): Promise<void> {
+  const metrics = await livePreview(page).locator('html').evaluate(() => ({
+    viewportWidth: window.innerWidth,
+    documentWidth: document.documentElement.scrollWidth,
+  }));
+  expect(metrics.documentWidth - metrics.viewportWidth).toBeLessThanOrEqual(1);
+}
+
 async function rebuildPreview(page: Page, readySelector: string): Promise<void> {
   await page.getByTestId('framework-rebuild-preview').click();
   await waitForFrameworkPreview(page, readySelector);
+}
+
+async function exerciseTicTacToeKeyboardPreview(page: Page): Promise<void> {
+  const preview = livePreview(page);
+  const board = preview.locator('.board');
+  const cell = (index: number) => preview.locator(`#tic-tac-toe-cell-${index}`);
+
+  await expect(board).toHaveAttribute('role', 'grid');
+  await expect(board).toHaveAttribute('aria-describedby', 'game-status');
+  await expect(preview.locator('.cell-slot[role="gridcell"]')).toHaveCount(9);
+  await expect(preview.locator('button.cell')).toHaveCount(9);
+  await expect(preview.locator('button.cell:disabled')).toHaveCount(0);
+
+  await cell(0).focus();
+  await cell(0).press('ArrowLeft');
+  await expect(cell(2)).toBeFocused();
+  await cell(2).press('ArrowRight');
+  await expect(cell(0)).toBeFocused();
+  await cell(0).press('ArrowUp');
+  await expect(cell(6)).toBeFocused();
+  await cell(6).press('ArrowDown');
+  await expect(cell(0)).toBeFocused();
+  await cell(0).press('End');
+  await expect(cell(2)).toBeFocused();
+  await cell(2).press('Home');
+  await expect(cell(0)).toBeFocused();
+
+  await cell(0).press('Enter');
+  await expect(cell(0)).toHaveAttribute('data-mark', 'X');
+  await expect(cell(0)).toHaveAttribute('aria-disabled', 'true');
+  expect(await cell(0).evaluate((element: HTMLButtonElement) => element.disabled)).toBe(false);
+  await cell(1).focus();
+  await cell(1).press('Space');
+  await expect(cell(1)).toHaveAttribute('data-mark', 'O');
+  await expect(cell(1)).toHaveAttribute('aria-disabled', 'true');
+  expect(await cell(1).evaluate((element: HTMLButtonElement) => element.disabled)).toBe(false);
+}
+
+async function exerciseChessboardKeyboardPreview(page: Page): Promise<void> {
+  const preview = livePreview(page);
+  const board = preview.locator('.board');
+  const cells = preview.locator('button.cell');
+  const cell = (row: number, column: number) =>
+    preview.locator(`#chessboard-cell-${row}-${column}`);
+
+  await expect(board).toHaveAttribute('role', 'grid');
+  await expect(board).toHaveAttribute('aria-describedby', 'board-status');
+  await expect(cells).toHaveCount(64);
+  await expect(preview.locator('button.cell:disabled')).toHaveCount(0);
+
+  await cell(0, 0).focus();
+  await cell(0, 0).press('ArrowLeft');
+  await expect(cell(0, 7)).toBeFocused();
+  await cell(0, 7).press('ArrowRight');
+  await expect(cell(0, 0)).toBeFocused();
+  await cell(0, 0).press('ArrowUp');
+  await expect(cell(7, 0)).toBeFocused();
+  await cell(7, 0).press('ArrowDown');
+  await expect(cell(0, 0)).toBeFocused();
+  await cell(1, 2).focus();
+  await cell(1, 2).press('Home');
+  await expect(cell(1, 0)).toBeFocused();
+  await cell(1, 0).press('End');
+  await expect(cell(1, 7)).toBeFocused();
+  await expect(preview.locator('.cell--active')).toHaveCount(0);
+
+  await cell(0, 0).focus();
+  await cell(0, 0).press('Enter');
+  await expect(cell(0, 0)).toHaveClass(/cell--active/);
+  await expect(cell(0, 0)).toHaveAttribute('aria-pressed', 'true');
+  expect(await cell(0, 0).evaluate((element: HTMLButtonElement) => element.disabled)).toBe(false);
+
+  await cell(0, 0).press('ArrowRight');
+  await expect(cell(0, 1)).toBeFocused();
+  await cell(0, 1).press('Space');
+  await expect(cell(0, 0)).toHaveAttribute('aria-pressed', 'false');
+  await expect(cell(0, 1)).toHaveClass(/cell--active/);
+  await expect(cell(0, 1)).toHaveAttribute('aria-pressed', 'true');
+  expect(await cell(0, 1).evaluate((element: HTMLButtonElement) => element.disabled)).toBe(false);
+  await expect(preview.locator('.cell--active')).toHaveCount(1);
+  await expect(preview.locator('.selection-status')).toHaveText('Selected: row 1, column 2');
+
+  await cells.nth(27).click();
+  await expect(preview.locator('.cell--reachable[data-reachable="true"]')).toHaveCount(27);
+  await cells.nth(0).click();
+  await expect(preview.locator('.cell--reachable[data-reachable="true"]')).toHaveCount(21);
+}
+
+async function exerciseDynamicCountersKeyboardPreview(page: Page): Promise<void> {
+  const preview = livePreview(page);
+  const counter = (id: number) => preview.locator(`#counter-button-${id}`);
+  const remove = (id: number) => preview.locator(`#remove-counter-${id}`);
+  const rows = preview.locator('.counter-row[role="listitem"]');
+
+  await expect(preview.locator('#counter-limit')).toHaveAttribute('type', 'number');
+  await expect(preview.locator('#counter-limit')).toHaveAttribute('min', '1');
+  await expect(preview.locator('#counter-limit')).toHaveAttribute('max', '10');
+  await expect(preview.locator('.counter-list')).toHaveAttribute('role', 'list');
+  await expect(preview.locator('.counter-list')).toHaveAttribute(
+    'aria-label',
+    'Dynamic counter buttons',
+  );
+  await expect(preview.locator('.counter-list')).toHaveAttribute(
+    'aria-describedby',
+    'counter-status',
+  );
+  await expect(rows).toHaveCount(1);
+  await expect(remove(1)).toBeDisabled();
+  await expect(preview.locator('#counter-status')).toHaveText(
+    'Counters: 1 of 5. Combined value: 0.',
+  );
+
+  await counter(1).click();
+  await counter(2).click();
+  await counter(2).click();
+  await expect(rows).toHaveCount(4);
+  await expect.poll(() => rows.evaluateAll((elements) =>
+    elements.map((element) => element.getAttribute('data-counter-id')),
+  )).toEqual(['1', '2', '3', '4']);
+  await expect(preview.locator('.counter-value')).toHaveText(['1', '2', '0', '0']);
+
+  await counter(1).focus();
+  await counter(1).press('ArrowUp');
+  await expect(counter(4)).toBeFocused();
+  await counter(4).press('ArrowDown');
+  await expect(counter(1)).toBeFocused();
+  await counter(1).press('End');
+  await expect(counter(4)).toBeFocused();
+  await counter(4).press('Home');
+  await expect(counter(1)).toBeFocused();
+  await expect(preview.locator('.counter-value')).toHaveText(['1', '2', '0', '0']);
+
+  await counter(1).press('Enter');
+  await expect(rows).toHaveCount(5);
+  await expect(counter(1).locator('.counter-value')).toHaveText('2');
+  await counter(2).focus();
+  await counter(2).press('Space');
+  await expect(rows).toHaveCount(5);
+  await expect(counter(2).locator('.counter-value')).toHaveText('3');
+
+  await remove(2).focus();
+  await remove(2).press('Enter');
+  await expect.poll(() => rows.evaluateAll((elements) =>
+    elements.map((element) => element.getAttribute('data-counter-id')),
+  )).toEqual(['1', '3', '4', '5']);
+  await expect(counter(3)).toBeFocused();
+
+  await remove(5).focus();
+  await remove(5).press('Enter');
+  await expect.poll(() => rows.evaluateAll((elements) =>
+    elements.map((element) => element.getAttribute('data-counter-id')),
+  )).toEqual(['1', '3', '4']);
+  await expect(counter(4)).toBeFocused();
+
+  await preview.locator('#reset-counters').click();
+  await expect(rows).toHaveCount(1);
+  await expect(counter(1).locator('.counter-value')).toHaveText('0');
+  await expect(preview.locator('#reset-counters')).toBeDisabled();
+  await expect(remove(1)).toBeDisabled();
 }
 
 async function expectAssertionLayer(resultsPanel: Locator): Promise<void> {
@@ -1138,6 +1374,258 @@ test.describe('Framework checks against the production SSR build', () => {
       await loadCanonicalBundle(page, ACCORDION_FAQ_PRESSURE_SOLUTIONS[framework]);
       await rebuildPreview(page, '.faq-header');
       await completePressureRounds(page, ACCORDION_FAQ_PRESSURE_FLOW);
+    });
+  }
+
+  test('React Tic-Tac-Toe keeps its premium pressure draft isolated and supports native grid keyboard input', async ({
+    page,
+    baseURL,
+  }) => {
+    if (!baseURL) throw new Error('Playwright baseURL is required for the premium pressure test');
+    await seedPremiumSession(page, baseURL);
+    await page.goto('/react/coding/react-tictactoe');
+    await expect(page.getByTestId('coding-detail-page')).toBeVisible();
+    await waitForFrameworkPreview(page, '.board');
+    await expect(page.getByTestId('pressure-mode-entry')).toBeVisible();
+    await expect(page.getByTestId('pressure-mode-start')).toBeEnabled();
+    await expect(page.getByTestId('pressure-mode-coming-soon')).toHaveCount(0);
+
+    const normalMarker = `normal-tictactoe-draft-${Date.now()}`;
+    const normalDraft = `// ${normalMarker}\n${await getMonacoModelValue(page, 'src/App.tsx')}`;
+    await loadCanonicalFile(page, 'src/App.tsx', normalDraft);
+    await waitForIndexedDbKeyPrefixContains(page, {
+      dbName: 'frontendatlas',
+      storeName: 'fa_ng',
+      keyPrefix: 'v2:code:fw2:react:react-tictactoe@',
+      substring: normalMarker,
+    });
+
+    await page.getByTestId('pressure-mode-start').click();
+    await expect(page).toHaveURL(/\/react\/coding\/react-tictactoe\?mode=pressure$/);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      /\/react\/coding\/react-tictactoe$/,
+    );
+    await expect(page.getByTestId('pressure-mode-panel')).toBeVisible();
+    await waitForFrameworkPreview(page, '.board');
+    await expect.poll(() => getMonacoModelValue(page, 'src/App.tsx')).not.toContain(normalMarker);
+
+    await loadCanonicalBundle(page, TICTACTOE_PRESSURE_SOLUTIONS.react);
+    await rebuildPreview(page, '.board');
+    await exerciseTicTacToeKeyboardPreview(page);
+
+    for (const width of [834, 1366, 1440]) {
+      await page.setViewportSize({ width, height: 900 });
+      await expect(page.getByTestId('pressure-mode-panel')).toBeVisible();
+      await expectNoHorizontalOverflow(page);
+    }
+
+    await completePressureRounds(page, TICTACTOE_PRESSURE_FLOW);
+
+    await page.getByRole('button', { name: 'Interview', exact: true }).click();
+    await page.getByTestId('pressure-mode-exit').click();
+    await expect(page).toHaveURL(/\/react\/coding\/react-tictactoe$/);
+    await waitForFrameworkPreview(page, '.board');
+    await expect.poll(() => getMonacoModelValue(page, 'src/App.tsx')).toContain(normalMarker);
+    await expect(page.getByTestId('pressure-mode-panel')).toHaveCount(0);
+  });
+
+  for (const framework of ['angular', 'vue'] as const) {
+    const questionId = framework === 'angular'
+      ? 'angular-tictactoe-starter'
+      : 'vue-tictactoe';
+
+    test(`${framework} Tic-Tac-Toe passes turn, history, keyboard, and accessibility pressure rounds`, async ({
+      page,
+      baseURL,
+    }) => {
+      if (!baseURL) throw new Error('Playwright baseURL is required for the premium pressure test');
+      await seedPremiumSession(page, baseURL);
+      await page.goto(`/${framework}/coding/${questionId}?mode=pressure`);
+      await expect(page.getByTestId('coding-detail-page')).toBeVisible();
+      await expect(page.getByTestId('pressure-mode-panel')).toBeVisible();
+      await waitForFrameworkPreview(page, '.board');
+
+      await loadCanonicalBundle(page, TICTACTOE_PRESSURE_SOLUTIONS[framework]);
+      await rebuildPreview(page, '.board');
+      await exerciseTicTacToeKeyboardPreview(page);
+      await completePressureRounds(page, TICTACTOE_PRESSURE_FLOW);
+    });
+  }
+
+  test('React Chessboard keeps its premium pressure draft isolated and remains responsive at 20x20', async ({
+    page,
+    baseURL,
+  }) => {
+    if (!baseURL) throw new Error('Playwright baseURL is required for the premium pressure test');
+    await seedPremiumSession(page, baseURL);
+    await page.goto('/react/coding/react-chessboard-click-highlight');
+    await expect(page.getByTestId('coding-detail-page')).toBeVisible();
+    await waitForFrameworkPreview(page, '.board');
+    await expect(page.getByTestId('pressure-mode-entry')).toBeVisible();
+    await expect(page.getByTestId('pressure-mode-start')).toBeEnabled();
+    await expect(page.getByTestId('pressure-mode-coming-soon')).toHaveCount(0);
+
+    const normalMarker = `normal-chessboard-draft-${Date.now()}`;
+    const normalDraft = `// ${normalMarker}\n${await getMonacoModelValue(page, 'src/App.tsx')}`;
+    await loadCanonicalFile(page, 'src/App.tsx', normalDraft);
+    await waitForIndexedDbKeyPrefixContains(page, {
+      dbName: 'frontendatlas',
+      storeName: 'fa_ng',
+      keyPrefix: 'v2:code:fw2:react:react-chessboard-click-highlight@',
+      substring: normalMarker,
+    });
+
+    await page.getByTestId('pressure-mode-start').click();
+    await expect(page).toHaveURL(
+      /\/react\/coding\/react-chessboard-click-highlight\?mode=pressure$/,
+    );
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      /\/react\/coding\/react-chessboard-click-highlight$/,
+    );
+    await expect(page.getByTestId('pressure-mode-panel')).toBeVisible();
+    await waitForFrameworkPreview(page, '.board');
+    await expect.poll(() => getMonacoModelValue(page, 'src/App.tsx')).not.toContain(normalMarker);
+
+    await loadCanonicalBundle(page, CHESSBOARD_PRESSURE_SOLUTIONS.react);
+    await rebuildPreview(page, '.board');
+
+    const preview = livePreview(page);
+    const sizeInput = preview.locator('#board-size');
+    await sizeInput.fill('20');
+    await expect(sizeInput).toHaveValue('20');
+    await expect(preview.locator('button.cell')).toHaveCount(400);
+
+    for (const width of [834, 1366, 1440]) {
+      await page.setViewportSize({ width, height: 900 });
+      await expect(page.getByTestId('pressure-mode-panel')).toBeVisible();
+      await expectNoHorizontalOverflow(page);
+      await expectNoPreviewHorizontalOverflow(page);
+    }
+
+    await sizeInput.fill('8');
+    await expect(sizeInput).toHaveValue('8');
+    await expect(preview.locator('button.cell')).toHaveCount(64);
+    await exerciseChessboardKeyboardPreview(page);
+    await completePressureRounds(page, CHESSBOARD_PRESSURE_FLOW);
+
+    await page.getByRole('button', { name: 'Interview', exact: true }).click();
+    await page.getByTestId('pressure-mode-exit').click();
+    await expect(page).toHaveURL(/\/react\/coding\/react-chessboard-click-highlight$/);
+    await waitForFrameworkPreview(page, '.board');
+    await expect.poll(() => getMonacoModelValue(page, 'src/App.tsx')).toContain(normalMarker);
+    await expect(page.getByTestId('pressure-mode-panel')).toHaveCount(0);
+  });
+
+  for (const framework of ['angular', 'vue'] as const) {
+    test(`${framework} Chessboard passes resize, queen reachability, keyboard, and accessibility pressure rounds`, async ({
+      page,
+      baseURL,
+    }) => {
+      if (!baseURL) throw new Error('Playwright baseURL is required for the premium pressure test');
+      await seedPremiumSession(page, baseURL);
+      await page.goto(`/${framework}/coding/${framework}-chessboard-click-highlight?mode=pressure`);
+      await expect(page.getByTestId('coding-detail-page')).toBeVisible();
+      await expect(page.getByTestId('pressure-mode-panel')).toBeVisible();
+      await waitForFrameworkPreview(page, '.board');
+
+      await loadCanonicalBundle(page, CHESSBOARD_PRESSURE_SOLUTIONS[framework]);
+      await rebuildPreview(page, '.board');
+      await exerciseChessboardKeyboardPreview(page);
+      await completePressureRounds(page, CHESSBOARD_PRESSURE_FLOW);
+    });
+  }
+
+  test('React Dynamic Counter Buttons isolates its pressure draft and stays responsive with a long list', async ({
+    page,
+    baseURL,
+  }) => {
+    if (!baseURL) throw new Error('Playwright baseURL is required for the premium pressure test');
+    await seedPremiumSession(page, baseURL);
+    await page.goto('/react/coding/react-dynamic-counter-buttons');
+    await expect(page.getByTestId('coding-detail-page')).toBeVisible();
+    await waitForFrameworkPreview(page, '.counterBtn');
+    await expect(page.getByTestId('pressure-mode-entry')).toBeVisible();
+    await expect(page.getByTestId('pressure-mode-start')).toBeEnabled();
+    await expect(page.getByTestId('pressure-mode-coming-soon')).toHaveCount(0);
+
+    const normalMarker = `normal-dynamic-counters-draft-${Date.now()}`;
+    const normalDraft = `// ${normalMarker}\n${await getMonacoModelValue(page, 'src/App.tsx')}`;
+    await loadCanonicalFile(page, 'src/App.tsx', normalDraft);
+    await waitForIndexedDbKeyPrefixContains(page, {
+      dbName: 'frontendatlas',
+      storeName: 'fa_ng',
+      keyPrefix: 'v2:code:fw2:react:react-dynamic-counter-buttons@',
+      substring: normalMarker,
+    });
+
+    await page.getByTestId('pressure-mode-start').click();
+    await expect(page).toHaveURL(
+      /\/react\/coding\/react-dynamic-counter-buttons\?mode=pressure$/,
+    );
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      /\/react\/coding\/react-dynamic-counter-buttons$/,
+    );
+    await expect(page.getByTestId('pressure-mode-panel')).toBeVisible();
+    await waitForFrameworkPreview(page, '.counterBtn');
+    await expect.poll(() => getMonacoModelValue(page, 'src/App.tsx')).not.toContain(normalMarker);
+
+    await loadCanonicalBundle(page, DYNAMIC_COUNTER_BUTTONS_PRESSURE_SOLUTIONS.react);
+    await rebuildPreview(page, '.counter-list');
+
+    const preview = livePreview(page);
+    const firstCounter = preview.locator('#counter-button-1');
+    await firstCounter.evaluate((element: HTMLButtonElement) => {
+      for (let index = 0; index < 5; index += 1) element.click();
+    });
+    await expect(preview.locator('.counter-row')).toHaveCount(5);
+    await expect(firstCounter.locator('.counter-value')).toHaveText('5');
+
+    await preview.locator('#reset-counters').click();
+    await preview.locator('#counter-limit').fill('10');
+    await expect(preview.locator('#counter-limit')).toHaveValue('10');
+    for (let index = 0; index < 9; index += 1) {
+      await firstCounter.click();
+    }
+    await expect(preview.locator('.counter-row')).toHaveCount(10);
+
+    for (const width of [834, 1366, 1440]) {
+      await page.setViewportSize({ width, height: 900 });
+      await expect(page.getByTestId('pressure-mode-panel')).toBeVisible();
+      await expectNoHorizontalOverflow(page);
+      await expectNoPreviewHorizontalOverflow(page);
+    }
+
+    await preview.locator('#reset-counters').click();
+    await exerciseDynamicCountersKeyboardPreview(page);
+    await completePressureRounds(page, DYNAMIC_COUNTER_BUTTONS_PRESSURE_FLOW);
+
+    await page.getByRole('button', { name: 'Interview', exact: true }).click();
+    await page.getByTestId('pressure-mode-exit').click();
+    await expect(page).toHaveURL(/\/react\/coding\/react-dynamic-counter-buttons$/);
+    await waitForFrameworkPreview(page, '.counterBtn');
+    await expect.poll(() => getMonacoModelValue(page, 'src/App.tsx')).toContain(normalMarker);
+    await expect(page.getByTestId('pressure-mode-panel')).toHaveCount(0);
+  });
+
+  for (const framework of ['angular', 'vue'] as const) {
+    test(`${framework} Dynamic Counter Buttons passes growth, removal, keyboard, and accessibility pressure rounds`, async ({
+      page,
+      baseURL,
+    }) => {
+      if (!baseURL) throw new Error('Playwright baseURL is required for the premium pressure test');
+      await seedPremiumSession(page, baseURL);
+      await page.goto(`/${framework}/coding/${framework}-dynamic-counter-buttons?mode=pressure`);
+      await expect(page.getByTestId('coding-detail-page')).toBeVisible();
+      await expect(page.getByTestId('pressure-mode-panel')).toBeVisible();
+      await waitForFrameworkPreview(page, '.counterBtn');
+
+      await loadCanonicalBundle(page, DYNAMIC_COUNTER_BUTTONS_PRESSURE_SOLUTIONS[framework]);
+      await rebuildPreview(page, '.counter-list');
+      await exerciseDynamicCountersKeyboardPreview(page);
+      await completePressureRounds(page, DYNAMIC_COUNTER_BUTTONS_PRESSURE_FLOW);
     });
   }
 

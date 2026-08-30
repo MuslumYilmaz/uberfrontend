@@ -1,0 +1,838 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "tic-tac-toe-pressure-v1",
+  "family": "tic-tac-toe",
+  "title": "Tic-Tac-Toe Interview Pressure Mode",
+  "access": "premium",
+  "estimatedMinutes": 45,
+  "supportedQuestions": {
+    "react": "react-tictactoe",
+    "angular": "angular-tictactoe-starter",
+    "vue": "vue-tictactoe"
+  },
+  "rounds": [
+    {
+      "id": "core-turn-invariants",
+      "title": "Core turn invariants",
+      "interviewerPrompt": "Start with a trustworthy turn model. Every accepted move must update exactly one cell, and rejected moves must leave the game unchanged.",
+      "constraints": [
+        "Render a stable nine-cell board with X taking the first turn.",
+        "An accepted move must mark exactly one empty cell and then alternate the active player.",
+        "Selecting an occupied cell must not overwrite its mark or advance the turn.",
+        "Derive the visible status from the board and active player rather than maintaining duplicate display state."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-tictactoe-core-play",
+          "name": "Round 1 · Accepted and rejected moves preserve turn ownership",
+          "steps": [
+            {
+              "type": "expectCount",
+              "selector": "button.cell",
+              "count": 9
+            },
+            {
+              "type": "expectCount",
+              "selector": ".cell[data-mark]",
+              "count": 0
+            },
+            {
+              "type": "expectText",
+              "selector": "#game-status",
+              "text": "Next: X"
+            },
+            {
+              "type": "click",
+              "selector": ".cell",
+              "index": 0
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cell",
+              "index": 0,
+              "attribute": "data-mark",
+              "expected": "X"
+            },
+            {
+              "type": "expectText",
+              "selector": ".cell",
+              "index": 0,
+              "text": "X"
+            },
+            {
+              "type": "expectText",
+              "selector": "#game-status",
+              "text": "Next: O"
+            },
+            {
+              "type": "click",
+              "selector": ".cell",
+              "index": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": ".cell[data-mark]",
+              "count": 1
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cell",
+              "index": 0,
+              "attribute": "data-mark",
+              "expected": "X"
+            },
+            {
+              "type": "expectText",
+              "selector": "#game-status",
+              "text": "Next: O"
+            },
+            {
+              "type": "click",
+              "selector": ".cell",
+              "index": 4
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cell",
+              "index": 4,
+              "attribute": "data-mark",
+              "expected": "O"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".cell[data-mark]",
+              "count": 2
+            },
+            {
+              "type": "expectText",
+              "selector": "#game-status",
+              "text": "Next: X"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "outcome-and-reset",
+      "title": "Outcome and reset",
+      "interviewerPrompt": "Now make terminal outcomes authoritative. Wins and draws must lock play, winning cells must be visible, and reset must restore every game invariant.",
+      "constraints": [
+        "Detect all row, column, and diagonal wins and expose the three winning cells with the winning class.",
+        "Detect a full-board draw only when no winning line exists.",
+        "After a win or draw, reject further moves without natively disabling the cell buttons.",
+        "Reset must clear every mark, winning class, and history entry, restore X as the next player, and leave undo and redo disabled."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-tictactoe-outcomes-reset",
+          "name": "Round 2 · Win, draw, lockout, and reset stay synchronized",
+          "steps": [
+            {
+              "type": "expectCount",
+              "selector": ".cell[data-mark]",
+              "count": 0
+            },
+            {
+              "type": "expectText",
+              "selector": "#game-status",
+              "text": "Next: X"
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".undo",
+              "disabled": true
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".redo",
+              "disabled": true
+            },
+            {
+              "type": "click",
+              "selector": ".cell",
+              "index": 0
+            },
+            {
+              "type": "click",
+              "selector": ".cell",
+              "index": 3
+            },
+            {
+              "type": "click",
+              "selector": ".cell",
+              "index": 1
+            },
+            {
+              "type": "click",
+              "selector": ".cell",
+              "index": 4
+            },
+            {
+              "type": "click",
+              "selector": ".cell",
+              "index": 2
+            },
+            {
+              "type": "waitForText",
+              "selector": "#game-status",
+              "text": "Winner: X",
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectCount",
+              "selector": ".cell[data-mark]",
+              "count": 5
+            },
+            {
+              "type": "expectCount",
+              "selector": ".cell.winning",
+              "count": 3
+            },
+            {
+              "type": "expectClass",
+              "selector": ".cell",
+              "index": 0,
+              "className": "winning"
+            },
+            {
+              "type": "expectClass",
+              "selector": ".cell",
+              "index": 1,
+              "className": "winning"
+            },
+            {
+              "type": "expectClass",
+              "selector": ".cell",
+              "index": 2,
+              "className": "winning"
+            },
+            {
+              "type": "click",
+              "selector": ".cell",
+              "index": 8
+            },
+            {
+              "type": "expectCount",
+              "selector": ".cell[data-mark]",
+              "count": 5
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cell",
+              "index": 8,
+              "attribute": "data-mark",
+              "expected": false
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cell",
+              "index": 8,
+              "attribute": "aria-disabled",
+              "expected": "true"
+            },
+            {
+              "type": "expectCount",
+              "selector": "button.cell:not([disabled])",
+              "count": 9
+            },
+            {
+              "type": "click",
+              "selector": ".reset"
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".cell[data-mark]",
+              "count": 0,
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectCount",
+              "selector": ".cell.winning",
+              "count": 0
+            },
+            {
+              "type": "expectText",
+              "selector": "#game-status",
+              "text": "Next: X"
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".undo",
+              "disabled": true
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".redo",
+              "disabled": true
+            },
+            {
+              "type": "click",
+              "selector": ".cell",
+              "index": 0
+            },
+            {
+              "type": "click",
+              "selector": ".cell",
+              "index": 1
+            },
+            {
+              "type": "click",
+              "selector": ".cell",
+              "index": 2
+            },
+            {
+              "type": "click",
+              "selector": ".cell",
+              "index": 4
+            },
+            {
+              "type": "click",
+              "selector": ".cell",
+              "index": 3
+            },
+            {
+              "type": "click",
+              "selector": ".cell",
+              "index": 5
+            },
+            {
+              "type": "click",
+              "selector": ".cell",
+              "index": 7
+            },
+            {
+              "type": "click",
+              "selector": ".cell",
+              "index": 6
+            },
+            {
+              "type": "click",
+              "selector": ".cell",
+              "index": 8
+            },
+            {
+              "type": "waitForText",
+              "selector": "#game-status",
+              "text": "Draw",
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectCount",
+              "selector": ".cell[data-mark]",
+              "count": 9
+            },
+            {
+              "type": "expectCount",
+              "selector": ".cell.winning",
+              "count": 0
+            },
+            {
+              "type": "click",
+              "selector": ".reset"
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".cell[data-mark]",
+              "count": 0,
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectText",
+              "selector": "#game-status",
+              "text": "Next: X"
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".undo",
+              "disabled": true
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".redo",
+              "disabled": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "branching-history",
+      "title": "Branching history",
+      "interviewerPrompt": "Add reversible history without creating a second game model. Undo and redo must cross terminal states correctly, and a divergent move must discard the abandoned future.",
+      "constraints": [
+        "Represent game history as ordered moves or snapshots with one explicit current position.",
+        "Undo from a win or draw must reopen the game and restore the correct next player.",
+        "Redo must restore the exact move and terminal outcome that was undone.",
+        "After undo, accepting a different move must truncate the redo branch.",
+        "Undo and redo must be native buttons whose disabled state reflects the current history boundary."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-tictactoe-history",
+          "name": "Round 3 · Terminal undo, redo, and divergent branches remain exact",
+          "steps": [
+            {
+              "type": "expectCount",
+              "selector": ".cell[data-mark]",
+              "count": 0
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".undo",
+              "disabled": true
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".redo",
+              "disabled": true
+            },
+            {
+              "type": "click",
+              "selector": ".cell",
+              "index": 0
+            },
+            {
+              "type": "click",
+              "selector": ".cell",
+              "index": 3
+            },
+            {
+              "type": "click",
+              "selector": ".cell",
+              "index": 1
+            },
+            {
+              "type": "click",
+              "selector": ".cell",
+              "index": 4
+            },
+            {
+              "type": "click",
+              "selector": ".cell",
+              "index": 2
+            },
+            {
+              "type": "waitForText",
+              "selector": "#game-status",
+              "text": "Winner: X",
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".undo",
+              "disabled": false
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".redo",
+              "disabled": true
+            },
+            {
+              "type": "click",
+              "selector": ".undo"
+            },
+            {
+              "type": "waitForText",
+              "selector": "#game-status",
+              "text": "Next: X",
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectCount",
+              "selector": ".cell[data-mark]",
+              "count": 4
+            },
+            {
+              "type": "expectCount",
+              "selector": ".cell.winning",
+              "count": 0
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".redo",
+              "disabled": false
+            },
+            {
+              "type": "click",
+              "selector": ".redo"
+            },
+            {
+              "type": "waitForText",
+              "selector": "#game-status",
+              "text": "Winner: X",
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectCount",
+              "selector": ".cell[data-mark]",
+              "count": 5
+            },
+            {
+              "type": "expectCount",
+              "selector": ".cell.winning",
+              "count": 3
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".redo",
+              "disabled": true
+            },
+            {
+              "type": "click",
+              "selector": ".undo"
+            },
+            {
+              "type": "waitForText",
+              "selector": "#game-status",
+              "text": "Next: X",
+              "timeoutMs": 700
+            },
+            {
+              "type": "click",
+              "selector": ".cell",
+              "index": 8
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cell",
+              "index": 8,
+              "attribute": "data-mark",
+              "expected": "X"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cell",
+              "index": 2,
+              "attribute": "data-mark",
+              "expected": false
+            },
+            {
+              "type": "expectCount",
+              "selector": ".cell[data-mark]",
+              "count": 5
+            },
+            {
+              "type": "expectCount",
+              "selector": ".cell.winning",
+              "count": 0
+            },
+            {
+              "type": "expectText",
+              "selector": "#game-status",
+              "text": "Next: O"
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".redo",
+              "disabled": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "accessible-grid-navigation",
+      "title": "Accessible grid navigation",
+      "interviewerPrompt": "Finish with an operable grid contract. Focus movement, status announcements, and cell availability must remain accurate without changing game state.",
+      "constraints": [
+        "Expose the board as a grid described by the polite game status, with nine gridcell wrappers and nine native cell buttons.",
+        "Give cell buttons stable ids tic-tac-toe-cell-0 through tic-tac-toe-cell-8 and dynamic coordinate-and-mark labels.",
+        "Use roving tabindex with one cell in the tab order; Left and Right wrap within a row, Up and Down wrap within a column, and Home and End move to row boundaries.",
+        "Arrow and boundary navigation must move focus without placing a mark.",
+        "Expose unavailable moves with aria-disabled while keeping every cell button natively enabled."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-tictactoe-keyboard-grid",
+          "name": "Round 4 · Grid keys wrap focus without making moves",
+          "steps": [
+            {
+              "type": "expectCount",
+              "selector": ".cell[data-mark]",
+              "count": 0
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cell",
+              "index": 0,
+              "attribute": "tabindex",
+              "expected": "0"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cell",
+              "index": 1,
+              "attribute": "tabindex",
+              "expected": "-1"
+            },
+            {
+              "type": "key",
+              "selector": ".cell",
+              "index": 0,
+              "key": "ArrowLeft"
+            },
+            {
+              "type": "expectFocused",
+              "selector": ".cell",
+              "index": 2
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cell",
+              "index": 2,
+              "attribute": "tabindex",
+              "expected": "0"
+            },
+            {
+              "type": "key",
+              "selector": ".cell",
+              "index": 2,
+              "key": "ArrowRight"
+            },
+            {
+              "type": "expectFocused",
+              "selector": ".cell",
+              "index": 0
+            },
+            {
+              "type": "key",
+              "selector": ".cell",
+              "index": 0,
+              "key": "ArrowUp"
+            },
+            {
+              "type": "expectFocused",
+              "selector": ".cell",
+              "index": 6
+            },
+            {
+              "type": "key",
+              "selector": ".cell",
+              "index": 6,
+              "key": "ArrowDown"
+            },
+            {
+              "type": "expectFocused",
+              "selector": ".cell",
+              "index": 0
+            },
+            {
+              "type": "key",
+              "selector": ".cell",
+              "index": 0,
+              "key": "End"
+            },
+            {
+              "type": "expectFocused",
+              "selector": ".cell",
+              "index": 2
+            },
+            {
+              "type": "key",
+              "selector": ".cell",
+              "index": 2,
+              "key": "Home"
+            },
+            {
+              "type": "expectFocused",
+              "selector": ".cell",
+              "index": 0
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cell",
+              "index": 0,
+              "attribute": "tabindex",
+              "expected": "0"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".cell[data-mark]",
+              "count": 0
+            }
+          ]
+        },
+        {
+          "id": "pressure-tictactoe-aria",
+          "name": "Round 4 · Grid, status, cell ids, labels, and availability stay truthful",
+          "steps": [
+            {
+              "type": "expectAttribute",
+              "selector": ".board",
+              "attribute": "role",
+              "expected": "grid"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".board",
+              "attribute": "aria-describedby",
+              "expected": "game-status"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".cell-slot[role=\"gridcell\"]",
+              "count": 9
+            },
+            {
+              "type": "expectCount",
+              "selector": "button.cell[type=\"button\"]",
+              "count": 9
+            },
+            {
+              "type": "expectCount",
+              "selector": "button.cell:not([disabled])",
+              "count": 9
+            },
+            {
+              "type": "expectAttribute",
+              "selector": "#game-status",
+              "attribute": "role",
+              "expected": "status"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": "#game-status",
+              "attribute": "aria-live",
+              "expected": "polite"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cell",
+              "index": 0,
+              "attribute": "id",
+              "expected": "tic-tac-toe-cell-0"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cell",
+              "index": 1,
+              "attribute": "id",
+              "expected": "tic-tac-toe-cell-1"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cell",
+              "index": 2,
+              "attribute": "id",
+              "expected": "tic-tac-toe-cell-2"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cell",
+              "index": 3,
+              "attribute": "id",
+              "expected": "tic-tac-toe-cell-3"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cell",
+              "index": 4,
+              "attribute": "id",
+              "expected": "tic-tac-toe-cell-4"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cell",
+              "index": 5,
+              "attribute": "id",
+              "expected": "tic-tac-toe-cell-5"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cell",
+              "index": 6,
+              "attribute": "id",
+              "expected": "tic-tac-toe-cell-6"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cell",
+              "index": 7,
+              "attribute": "id",
+              "expected": "tic-tac-toe-cell-7"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cell",
+              "index": 8,
+              "attribute": "id",
+              "expected": "tic-tac-toe-cell-8"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cell",
+              "index": 0,
+              "attribute": "aria-label",
+              "expected": "Row 1, column 1: empty"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cell",
+              "index": 0,
+              "attribute": "aria-disabled",
+              "expected": "false"
+            },
+            {
+              "type": "click",
+              "selector": ".cell",
+              "index": 0
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cell",
+              "index": 0,
+              "attribute": "aria-label",
+              "expected": "Row 1, column 1: X"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cell",
+              "index": 0,
+              "attribute": "aria-disabled",
+              "expected": "true"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cell",
+              "index": 1,
+              "attribute": "aria-label",
+              "expected": "Row 1, column 2: empty"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cell",
+              "index": 1,
+              "attribute": "aria-disabled",
+              "expected": "false"
+            },
+            {
+              "type": "expectCount",
+              "selector": "button.cell:not([disabled])",
+              "count": 9
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "debrief": {
+    "title": "You kept branching game state correct under pressure",
+    "summary": "You preserved turn ownership, terminal outcomes, reversible history, and accessible grid behavior while the game contract expanded.",
+    "takeaways": [
+      "Derive the board, active player, winner, draw, and controls from one history position instead of synchronizing parallel game states.",
+      "Treat undo and redo as movement through an ordered history, and truncate future snapshots when a divergent move is accepted.",
+      "Keep terminal lockout in the move guard while exposing availability with aria-disabled so cells remain reachable for grid navigation.",
+      "Make focus position independent from game position and implement row and column wrapping as explicit index transforms."
+    ],
+    "frameworkNotes": {
+      "react": "Keep history and its cursor in parent state, derive the visible snapshot with memoized values, and use stable cell refs for roving focus.",
+      "angular": "Keep immutable history snapshots and the cursor in the standalone component, derive outcome getters from the active snapshot, and move focus through ViewChildren cell references.",
+      "vue": "Keep immutable history snapshots and the cursor in refs, derive board and outcome through computed values, and use template refs for roving focus."
+    }
+  },
+  "solutionAssets": {
+    "react": "assets/sb/react/solution/react-tictactoe-pressure-solution.v1.json",
+    "angular": "assets/sb/angular/solution/angular-tictactoe-pressure-solution.v1.json",
+    "vue": "assets/sb/vue/solution/vue-tictactoe-pressure-solution.v1.json"
+  }
+}

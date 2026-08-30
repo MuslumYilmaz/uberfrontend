@@ -1071,6 +1071,150 @@ describe('CodingDetailComponent', () => {
     expect(completion.textContent).not.toContain('Counter');
   });
 
+  it('offers Pressure Mode for the supported premium Tic-Tac-Toe question', async () => {
+    const question = {
+      id: 'react-tictactoe',
+      title: 'Tic-Tac-Toe',
+      access: 'premium',
+      difficulty: 'easy',
+      pressureModeAsset: 'assets/questions/pressure-modes/tic-tac-toe.v1.json',
+      sdk: {
+        asset: 'assets/sb/react/question/react-tictactoe.v1.json',
+        openFile: '/src/App.tsx',
+        storageKey: 'v2:ui:react:react-tictactoe',
+      },
+      frameworkTests: [],
+    } as any;
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+
+    authUser.set({ _id: 'premium-user', accessTier: 'premium' });
+    auth.isLoggedIn.and.returnValue(true);
+    questionService.loadQuestions.and.returnValue(of([question]));
+    component.questionId = question.id;
+    component.questionTech = 'react';
+    component.disablePersistence = true;
+    component.hideFooterBar = true;
+    spyOn(component as any, 'resolveSolutionAsset').and.resolveTo({ files: {}, initialPath: '' });
+
+    fixture.detectChanges();
+    await fixture.whenStable();
+    component.tech = 'react';
+    component.kind = 'coding';
+    component.question.set(question);
+    component.loadState.set('loaded');
+    component.isPhoneViewport.set(false);
+    fixture.detectChanges();
+
+    const entry = fixture.nativeElement.querySelector(
+      '[data-testid="pressure-mode-entry"]'
+    ) as HTMLElement;
+    expect(entry.textContent).toContain('Continue the same challenge through cumulative rounds');
+    const startButton = fixture.nativeElement.querySelector(
+      '[data-testid="pressure-mode-start"]'
+    ) as HTMLButtonElement;
+    expect(startButton.disabled).toBeFalse();
+    expect(
+      fixture.nativeElement.querySelector('[data-testid="pressure-mode-coming-soon"]')
+    ).toBeNull();
+  });
+
+  it('offers Pressure Mode for the supported premium Chessboard question', async () => {
+    const question = {
+      id: 'react-chessboard-click-highlight',
+      title: 'React Chessboard Click/Highlight',
+      access: 'premium',
+      difficulty: 'easy',
+      pressureModeAsset: 'assets/questions/pressure-modes/chessboard-click-highlight.v1.json',
+      sdk: {
+        asset: 'assets/sb/react/question/react-chessboard-click-highlight.v1.json',
+        openFile: '/src/App.tsx',
+        storageKey: 'v1:ui:react:react-chessboard-click-highlight',
+      },
+      frameworkTests: [],
+    } as any;
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+
+    authUser.set({ _id: 'premium-user', accessTier: 'premium' });
+    auth.isLoggedIn.and.returnValue(true);
+    questionService.loadQuestions.and.returnValue(of([question]));
+    component.questionId = question.id;
+    component.questionTech = 'react';
+    component.disablePersistence = true;
+    component.hideFooterBar = true;
+    spyOn(component as any, 'resolveSolutionAsset').and.resolveTo({ files: {}, initialPath: '' });
+
+    fixture.detectChanges();
+    await fixture.whenStable();
+    component.tech = 'react';
+    component.kind = 'coding';
+    component.question.set(question);
+    component.loadState.set('loaded');
+    component.isPhoneViewport.set(false);
+    fixture.detectChanges();
+
+    const entry = fixture.nativeElement.querySelector(
+      '[data-testid="pressure-mode-entry"]'
+    ) as HTMLElement;
+    expect(entry.textContent).toContain('Continue the same challenge through cumulative rounds');
+    const startButton = fixture.nativeElement.querySelector(
+      '[data-testid="pressure-mode-start"]'
+    ) as HTMLButtonElement;
+    expect(startButton.disabled).toBeFalse();
+    expect(
+      fixture.nativeElement.querySelector('[data-testid="pressure-mode-coming-soon"]')
+    ).toBeNull();
+  });
+
+  it('offers Pressure Mode for the supported premium Dynamic Counter Buttons question', async () => {
+    const question = {
+      id: 'react-dynamic-counter-buttons',
+      title: 'React Dynamic Counter Buttons (Grow-on-Click)',
+      access: 'premium',
+      difficulty: 'intermediate',
+      pressureModeAsset: 'assets/questions/pressure-modes/dynamic-counter-buttons.v1.json',
+      sdk: {
+        asset: 'assets/sb/react/question/react-dynamic-counter-buttons.v1.json',
+        openFile: '/src/App.tsx',
+        storageKey: 'v1:ui:react:react-dynamic-counter-buttons',
+      },
+      frameworkTests: [],
+    } as any;
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+
+    authUser.set({ _id: 'premium-user', accessTier: 'premium' });
+    auth.isLoggedIn.and.returnValue(true);
+    questionService.loadQuestions.and.returnValue(of([question]));
+    component.questionId = question.id;
+    component.questionTech = 'react';
+    component.disablePersistence = true;
+    component.hideFooterBar = true;
+    spyOn(component as any, 'resolveSolutionAsset').and.resolveTo({ files: {}, initialPath: '' });
+
+    fixture.detectChanges();
+    await fixture.whenStable();
+    component.tech = 'react';
+    component.kind = 'coding';
+    component.question.set(question);
+    component.loadState.set('loaded');
+    component.isPhoneViewport.set(false);
+    fixture.detectChanges();
+
+    const entry = fixture.nativeElement.querySelector(
+      '[data-testid="pressure-mode-entry"]'
+    ) as HTMLElement;
+    expect(entry.textContent).toContain('Continue the same challenge through cumulative rounds');
+    const startButton = fixture.nativeElement.querySelector(
+      '[data-testid="pressure-mode-start"]'
+    ) as HTMLButtonElement;
+    expect(startButton.disabled).toBeFalse();
+    expect(
+      fixture.nativeElement.querySelector('[data-testid="pressure-mode-coming-soon"]')
+    ).toBeNull();
+  });
+
   it('shows Pressure Mode coming soon for unsupported framework questions', async () => {
     const question = {
       id: 'react-autocomplete-search-starter',
