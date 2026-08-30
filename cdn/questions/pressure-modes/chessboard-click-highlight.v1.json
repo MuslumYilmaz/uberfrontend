@@ -1,0 +1,799 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "chessboard-click-highlight-pressure-v1",
+  "family": "chessboard-click-highlight",
+  "title": "Chessboard Highlight Interview Pressure Mode",
+  "access": "premium",
+  "estimatedMinutes": 45,
+  "supportedQuestions": {
+    "react": "react-chessboard-click-highlight",
+    "angular": "angular-chessboard-click-highlight",
+    "vue": "vue-chessboard-click-highlight"
+  },
+  "rounds": [
+    {
+      "id": "core-single-selection",
+      "title": "Core single selection",
+      "interviewerPrompt": "Start with a deterministic board and one source of selection truth. Color parity, selected coordinates, and the active cell must stay synchronized.",
+      "constraints": [
+        "Render an 8 by 8 board with 64 native cell buttons and exactly 32 light and 32 dark cells.",
+        "Selecting a cell must replace the previous selection rather than accumulating active cells.",
+        "Expose the selected row and column with one-based coordinates in the visible selection status.",
+        "Keep cell identity based on row and column rather than rendered array position alone."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-chessboard-core-selection",
+          "name": "Round 1 · Color parity and single selection stay synchronized",
+          "steps": [
+            {
+              "type": "expectValue",
+              "selector": "#board-size",
+              "value": "8"
+            },
+            {
+              "type": "expectCount",
+              "selector": "button.cell",
+              "count": 64
+            },
+            {
+              "type": "expectCount",
+              "selector": ".cell--light",
+              "count": 32
+            },
+            {
+              "type": "expectCount",
+              "selector": ".cell--dark",
+              "count": 32
+            },
+            {
+              "type": "expectCount",
+              "selector": ".cell--active",
+              "count": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".selection-status",
+              "text": "Selected: none"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".reachability-status",
+              "count": 0
+            },
+            {
+              "type": "click",
+              "selector": ".cell",
+              "index": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": ".cell--active",
+              "count": 1
+            },
+            {
+              "type": "expectClass",
+              "selector": ".cell",
+              "index": 0,
+              "className": "cell--active"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cell",
+              "index": 0,
+              "attribute": "aria-pressed",
+              "expected": "true"
+            },
+            {
+              "type": "expectText",
+              "selector": ".selection-status",
+              "text": "Selected: row 1, column 1"
+            },
+            {
+              "type": "click",
+              "selector": ".cell",
+              "index": 10
+            },
+            {
+              "type": "expectCount",
+              "selector": ".cell--active",
+              "count": 1
+            },
+            {
+              "type": "expectClass",
+              "selector": ".cell",
+              "index": 0,
+              "className": "cell--active",
+              "expected": false
+            },
+            {
+              "type": "expectClass",
+              "selector": ".cell",
+              "index": 10,
+              "className": "cell--active"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cell",
+              "index": 0,
+              "attribute": "aria-pressed",
+              "expected": "false"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cell",
+              "index": 10,
+              "attribute": "aria-pressed",
+              "expected": "true"
+            },
+            {
+              "type": "expectText",
+              "selector": ".selection-status",
+              "text": "Selected: row 2, column 3"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dynamic-size-boundaries",
+      "title": "Dynamic size boundaries",
+      "interviewerPrompt": "Make board size a bounded state transition. Every accepted resize must rebuild the grid and clear selection-derived state.",
+      "constraints": [
+        "Expose a numeric board-size control and clamp integral size to the inclusive range 2 through 20.",
+        "A value below the minimum must render a 2 by 2 board and a value above the maximum must render a 20 by 20 board.",
+        "Resizing must clear the selected cell and every derived reachable-cell highlight.",
+        "Recompute light and dark color parity from the new row and column coordinates."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-chessboard-resize-boundaries",
+          "name": "Round 2 · Size clamping rebuilds parity and clears selection",
+          "steps": [
+            {
+              "type": "expectCount",
+              "selector": ".cell",
+              "count": 64
+            },
+            {
+              "type": "click",
+              "selector": ".cell",
+              "index": 63
+            },
+            {
+              "type": "expectCount",
+              "selector": ".cell--active",
+              "count": 1
+            },
+            {
+              "type": "setValue",
+              "selector": "#board-size",
+              "value": "1"
+            },
+            {
+              "type": "expectValue",
+              "selector": "#board-size",
+              "value": "2"
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".cell",
+              "count": 4,
+              "timeoutMs": 1500
+            },
+            {
+              "type": "expectCount",
+              "selector": ".cell--light",
+              "count": 2
+            },
+            {
+              "type": "expectCount",
+              "selector": ".cell--dark",
+              "count": 2
+            },
+            {
+              "type": "expectCount",
+              "selector": ".cell--active",
+              "count": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": ".cell--reachable",
+              "count": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".selection-status",
+              "text": "Selected: none"
+            },
+            {
+              "type": "setValue",
+              "selector": "#board-size",
+              "value": "21"
+            },
+            {
+              "type": "expectValue",
+              "selector": "#board-size",
+              "value": "20"
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".cell",
+              "count": 400,
+              "timeoutMs": 1500
+            },
+            {
+              "type": "expectCount",
+              "selector": ".cell--light",
+              "count": 200
+            },
+            {
+              "type": "expectCount",
+              "selector": ".cell--dark",
+              "count": 200
+            },
+            {
+              "type": "expectCount",
+              "selector": ".cell--active",
+              "count": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": ".cell--reachable",
+              "count": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".selection-status",
+              "text": "Selected: none"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "queen-reachable-highlights",
+      "title": "Queen-reachable highlights",
+      "interviewerPrompt": "Add derived queen movement without storing a second board. Reachability must be recomputed from the selected coordinates and current size.",
+      "constraints": [
+        "Highlight every other cell in the selected cell's row, column, and diagonals as reachable by a queen.",
+        "Exclude the selected cell itself from reachable cells.",
+        "Expose data-reachable=true only on reachable cells and omit the attribute for selected and unreachable cells.",
+        "Show the exact number of queen-reachable cells and recompute it when selection changes."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-chessboard-queen-reachability",
+          "name": "Round 3 · Queen reachability is derived and recomputed",
+          "steps": [
+            {
+              "type": "expectCount",
+              "selector": ".cell--active",
+              "count": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": ".cell--reachable",
+              "count": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": ".reachability-status",
+              "count": 0
+            },
+            {
+              "type": "click",
+              "selector": ".cell",
+              "index": 27
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".cell--reachable[data-reachable=\"true\"]",
+              "count": 27,
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectCount",
+              "selector": ".cell--active",
+              "count": 1
+            },
+            {
+              "type": "expectClass",
+              "selector": ".cell",
+              "index": 27,
+              "className": "cell--active"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cell",
+              "index": 27,
+              "attribute": "data-reachable",
+              "expected": false
+            },
+            {
+              "type": "expectClass",
+              "selector": ".cell",
+              "index": 0,
+              "className": "cell--reachable"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cell",
+              "index": 0,
+              "attribute": "data-reachable",
+              "expected": "true"
+            },
+            {
+              "type": "expectText",
+              "selector": ".selection-status",
+              "text": "Selected: row 4, column 4"
+            },
+            {
+              "type": "expectText",
+              "selector": ".reachability-status",
+              "text": "Queen moves: 27"
+            },
+            {
+              "type": "click",
+              "selector": ".cell",
+              "index": 0
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".cell--reachable[data-reachable=\"true\"]",
+              "count": 21,
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectCount",
+              "selector": ".cell--active",
+              "count": 1
+            },
+            {
+              "type": "expectClass",
+              "selector": ".cell",
+              "index": 0,
+              "className": "cell--active"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cell",
+              "index": 0,
+              "attribute": "data-reachable",
+              "expected": false
+            },
+            {
+              "type": "expectClass",
+              "selector": ".cell",
+              "index": 27,
+              "className": "cell--reachable"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cell",
+              "index": 27,
+              "attribute": "data-reachable",
+              "expected": "true"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cell",
+              "index": 10,
+              "attribute": "data-reachable",
+              "expected": false
+            },
+            {
+              "type": "expectText",
+              "selector": ".selection-status",
+              "text": "Selected: row 1, column 1"
+            },
+            {
+              "type": "expectText",
+              "selector": ".reachability-status",
+              "text": "Queen moves: 21"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "accessible-grid-navigation",
+      "title": "Accessible grid navigation",
+      "interviewerPrompt": "Finish with an operable dynamic grid. Focus movement and cell metadata must remain correct without selecting or highlighting queen moves.",
+      "constraints": [
+        "Expose the board as a grid described by a polite status and keep rowcount and colcount synchronized with size.",
+        "Give every cell a stable row-column id, zero-based data coordinates, one-based ARIA coordinates, pressed state, and dynamic selection or reachability label suffix.",
+        "Use roving tabindex with one cell in the tab order; Left and Right wrap within a row, Up and Down wrap within a column, and Home and End move to row boundaries.",
+        "Keyboard navigation must move focus without changing selection or queen reachability."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-chessboard-keyboard-grid",
+          "name": "Round 4 · Grid keys wrap focus without selecting a cell",
+          "steps": [
+            {
+              "type": "expectAttribute",
+              "selector": ".cell",
+              "index": 0,
+              "attribute": "tabindex",
+              "expected": "0"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cell",
+              "index": 1,
+              "attribute": "tabindex",
+              "expected": "-1"
+            },
+            {
+              "type": "key",
+              "selector": ".cell",
+              "index": 0,
+              "key": "ArrowLeft"
+            },
+            {
+              "type": "expectFocused",
+              "selector": ".cell",
+              "index": 7
+            },
+            {
+              "type": "key",
+              "selector": ".cell",
+              "index": 7,
+              "key": "ArrowRight"
+            },
+            {
+              "type": "expectFocused",
+              "selector": ".cell",
+              "index": 0
+            },
+            {
+              "type": "key",
+              "selector": ".cell",
+              "index": 0,
+              "key": "ArrowUp"
+            },
+            {
+              "type": "expectFocused",
+              "selector": ".cell",
+              "index": 56
+            },
+            {
+              "type": "key",
+              "selector": ".cell",
+              "index": 56,
+              "key": "ArrowDown"
+            },
+            {
+              "type": "expectFocused",
+              "selector": ".cell",
+              "index": 0
+            },
+            {
+              "type": "key",
+              "selector": ".cell",
+              "index": 10,
+              "key": "Home"
+            },
+            {
+              "type": "expectFocused",
+              "selector": ".cell",
+              "index": 8
+            },
+            {
+              "type": "key",
+              "selector": ".cell",
+              "index": 8,
+              "key": "End"
+            },
+            {
+              "type": "expectFocused",
+              "selector": ".cell",
+              "index": 15
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cell",
+              "index": 15,
+              "attribute": "tabindex",
+              "expected": "0"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cell",
+              "index": 8,
+              "attribute": "tabindex",
+              "expected": "-1"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".cell--active",
+              "count": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": ".cell--reachable",
+              "count": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".selection-status",
+              "text": "Selected: none"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".reachability-status",
+              "count": 0
+            }
+          ]
+        },
+        {
+          "id": "pressure-chessboard-aria",
+          "name": "Round 4 · Dynamic grid metadata and status remain truthful",
+          "steps": [
+            {
+              "type": "expectAttribute",
+              "selector": "#board-size",
+              "attribute": "type",
+              "expected": "number"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": "#board-size",
+              "attribute": "min",
+              "expected": "2"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": "#board-size",
+              "attribute": "max",
+              "expected": "20"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".board",
+              "attribute": "role",
+              "expected": "grid"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".board",
+              "attribute": "aria-label",
+              "expected": "Interactive chessboard"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".board",
+              "attribute": "aria-describedby",
+              "expected": "board-status"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".board",
+              "attribute": "aria-rowcount",
+              "expected": "8"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".board",
+              "attribute": "aria-colcount",
+              "expected": "8"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": "#board-status",
+              "attribute": "role",
+              "expected": "status"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": "#board-status",
+              "attribute": "aria-live",
+              "expected": "polite"
+            },
+            {
+              "type": "expectText",
+              "selector": ".selection-status",
+              "text": "Selected: none"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".reachability-status",
+              "count": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": "button.cell[type=\"button\"][role=\"gridcell\"]",
+              "count": 64
+            },
+            {
+              "type": "expectCount",
+              "selector": "button.cell:not([disabled])",
+              "count": 64
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cell",
+              "index": 0,
+              "attribute": "id",
+              "expected": "chessboard-cell-0-0"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cell",
+              "index": 0,
+              "attribute": "data-row",
+              "expected": "0"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cell",
+              "index": 0,
+              "attribute": "data-col",
+              "expected": "0"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cell",
+              "index": 0,
+              "attribute": "aria-rowindex",
+              "expected": "1"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cell",
+              "index": 0,
+              "attribute": "aria-colindex",
+              "expected": "1"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cell",
+              "index": 0,
+              "attribute": "aria-pressed",
+              "expected": "false"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cell",
+              "index": 0,
+              "attribute": "tabindex",
+              "expected": "0"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cell",
+              "index": 0,
+              "attribute": "aria-label",
+              "expected": "Row 1, column 1"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cell",
+              "index": 63,
+              "attribute": "id",
+              "expected": "chessboard-cell-7-7"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cell",
+              "index": 63,
+              "attribute": "data-row",
+              "expected": "7"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cell",
+              "index": 63,
+              "attribute": "data-col",
+              "expected": "7"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cell",
+              "index": 63,
+              "attribute": "aria-rowindex",
+              "expected": "8"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cell",
+              "index": 63,
+              "attribute": "aria-colindex",
+              "expected": "8"
+            },
+            {
+              "type": "click",
+              "selector": ".cell",
+              "index": 0
+            },
+            {
+              "type": "expectClass",
+              "selector": ".cell",
+              "index": 0,
+              "className": "cell--active"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cell",
+              "index": 0,
+              "attribute": "aria-pressed",
+              "expected": "true"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cell",
+              "index": 0,
+              "attribute": "aria-label",
+              "expected": "Row 1, column 1, selected"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cell",
+              "index": 0,
+              "attribute": "data-reachable",
+              "expected": false
+            },
+            {
+              "type": "expectClass",
+              "selector": ".cell",
+              "index": 1,
+              "className": "cell--reachable"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cell",
+              "index": 1,
+              "attribute": "data-reachable",
+              "expected": "true"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cell",
+              "index": 1,
+              "attribute": "aria-pressed",
+              "expected": "false"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".cell",
+              "index": 1,
+              "attribute": "aria-label",
+              "expected": "Row 1, column 2, reachable by queen"
+            },
+            {
+              "type": "expectText",
+              "selector": ".selection-status",
+              "text": "Selected: row 1, column 1"
+            },
+            {
+              "type": "expectText",
+              "selector": ".reachability-status",
+              "text": "Queen moves: 21"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "debrief": {
+    "title": "You kept dynamic board state predictable under pressure",
+    "summary": "You preserved size boundaries, single selection, derived queen reachability, and accessible grid focus while the board changed shape.",
+    "takeaways": [
+      "Keep board size and selected coordinates as the source state and derive color, queen reachability, labels, and counts from them.",
+      "Treat resize as one bounded transition that clears coordinate-dependent selection and focus state.",
+      "Derive queen movement with same-row, same-column, or equal row-and-column distance checks while excluding the selected cell.",
+      "Keep roving focus independent from selection so navigation never changes highlighted board state."
+    ],
+    "frameworkNotes": {
+      "react": "Use memoized rows and cells, derive queen reachability from selected coordinates, and keep stable button refs for roving focus.",
+      "angular": "Use derived getters for board cells and queen reachability, and move focus through ViewChildren cell references after bounded size changes.",
+      "vue": "Use computed board and reachability state, and keep a template-ref collection for roving focus across dynamic sizes."
+    }
+  },
+  "solutionAssets": {
+    "react": "assets/sb/react/solution/react-chessboard-click-highlight-pressure-solution.v1.json",
+    "angular": "assets/sb/angular/solution/angular-chessboard-click-highlight-pressure-solution.v1.json",
+    "vue": "assets/sb/vue/solution/vue-chessboard-click-highlight-pressure-solution.v1.json"
+  }
+}
