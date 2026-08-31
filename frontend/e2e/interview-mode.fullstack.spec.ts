@@ -302,7 +302,13 @@ test.describe('Interview Mode real Angular → Express → Mongo lifecycle', () 
         track: 'core-web',
         viewportWidth: 1366,
       },
-      headers: { 'content-type': 'application/json' },
+      headers: {
+        'content-type': 'application/json',
+        'idempotency-key': `csrf-negative-${stamp}`,
+      },
+      // Signup can outlive Node's pooled keep-alive socket. Playwright retries
+      // only ECONNRESET here; the missing-CSRF request must remain side-effect free.
+      maxRetries: 1,
     });
     expect(rejectedCsrf.status()).toBe(403);
     expect(await responseJson(rejectedCsrf)).toEqual(expect.objectContaining({
