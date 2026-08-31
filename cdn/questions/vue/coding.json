@@ -913,6 +913,7 @@
       "openFile": "/src/App.vue",
       "storageKey": "v1:ui:vue:vue-accordion-faq"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/accordion-faq.v1.json",
     "solutionAsset": "assets/sb/vue/solution/vue-accordion-faq-solution.v1.json",
     "access": "premium",
     "updatedAt": "2026-01-30",
@@ -2152,6 +2153,7 @@
       "openFile": "/src/App.vue",
       "storageKey": "v1:ui:vue:vue-tictactoe"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/tic-tac-toe.v1.json",
     "solutionAsset": "assets/sb/vue/solution/vue-tictactoe-solution.v1.json",
     "companies": [
       "amazon"
@@ -2538,6 +2540,7 @@
       "openFile": "/src/App.vue",
       "storageKey": "v1:ui:vue:vue-dynamic-counter-buttons"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/dynamic-counter-buttons.v1.json",
     "solutionAsset": "assets/sb/vue/solution/vue-dynamic-counter-buttons-solution.v1.json",
     "access": "premium",
     "updatedAt": "2026-01-30",
@@ -2743,6 +2746,7 @@
       "openFile": "/src/App.vue",
       "storageKey": "v1:ui:vue:vue-chessboard-click-highlight"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/chessboard-click-highlight.v1.json",
     "solutionAsset": "assets/sb/vue/solution/vue-chessboard-click-highlight-solution.v1.json",
     "companies": [
       "amazon",

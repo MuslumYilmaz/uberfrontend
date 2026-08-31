@@ -173,24 +173,40 @@
               <ng-container *ngIf="updatedLabel(question()) as updated"> · Updated {{ updated }}</ng-container>
             </div>
 
-            <section
-              *ngIf="pressureSupported()"
-              class="pressure-entry"
-              data-testid="pressure-mode-entry"
-            >
-              <div>
-                <p class="pressure-entry__eyebrow">Optional interview simulation</p>
-                <h2>Keep coding as the requirements change</h2>
-                <p>
-                  Continue the same challenge through cumulative rounds. Each round adds a new behavioral,
-                  accessibility, or lifecycle constraint without resetting your draft.
-                </p>
-              </div>
-              <button type="button" faButton variant="primary" data-testid="pressure-mode-start"
-                (click)="startPressureMode()">
-                Start Interview Pressure Mode
-              </button>
-            </section>
+            <ng-container *ngIf="!demoMode && kind === 'coding' && isFrameworkTech()">
+              <section
+                *ngIf="pressureSupported(); else pressureModeComingSoon"
+                class="pressure-entry"
+                data-testid="pressure-mode-entry"
+              >
+                <div>
+                  <p class="pressure-entry__eyebrow">Optional interview simulation</p>
+                  <h2>Keep coding as the requirements change</h2>
+                  <p>
+                    Continue the same challenge through cumulative rounds. Each round adds a new behavioral,
+                    accessibility, or lifecycle constraint without resetting your draft.
+                  </p>
+                </div>
+                <button type="button" faButton variant="primary" data-testid="pressure-mode-start"
+                  (click)="startPressureMode()">
+                  Start Interview Pressure Mode
+                </button>
+              </section>
+
+              <ng-template #pressureModeComingSoon>
+                <section class="pressure-entry" data-testid="pressure-mode-entry" data-nosnippet>
+                  <div>
+                    <p class="pressure-entry__eyebrow">Optional interview simulation</p>
+                    <h2>Keep coding as the requirements change</h2>
+                    <p>A tailored cumulative pressure mode for this challenge is coming soon.</p>
+                  </div>
+                  <button type="button" faButton variant="primary" data-testid="pressure-mode-coming-soon"
+                    aria-label="Interview Pressure Mode coming soon" disabled>
+                    Coming soon
+                  </button>
+                </section>
+              </ng-template>
+            </ng-container>
 
             <section class="detail-interview-hero" *ngIf="hasInterviewHeroMeta()" data-testid="coding-interview-hero">
               <p class="detail-interview-hero__intent" *ngIf="interviewFocusSummary()">

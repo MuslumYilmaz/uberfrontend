@@ -1,0 +1,370 @@
+{
+  "surface": "report",
+  "manifest": {
+    "version": 1,
+    "surface": "report",
+    "title": "FrontendAtlas Elit Backlink Araştırması — 0/7 Kalite Kapısı",
+    "description": "Kırık rakip bağlantısı, link-intersect ve GitHub üzerinden bağımsız docs yayını fırsatlarının katı 9/10 eşiğiyle teknik değerlendirmesi.",
+    "generatedAt": "2026-08-24T08:06:49Z",
+    "cards": [
+      {
+        "id": "research_summary",
+        "description": "Katı kalite kapısının araştırma sonucu.",
+        "dataset": "summary",
+        "sourceId": "prospect_research",
+        "metrics": [
+          { "label": "İncelenen lead/domain", "field": "reviewed", "format": "number" },
+          { "label": "9+ finalist", "field": "qualified", "format": "number" },
+          { "label": "Yeni aktif suppression", "field": "suppressions", "format": "number" },
+          { "label": "Kalite eşiği", "field": "threshold", "format": "number" }
+        ]
+      }
+    ],
+    "charts": [
+      {
+        "id": "score_ceiling",
+        "title": "En güçlü adayların hiçbiri 9 puan eşiğine ulaşmadı",
+        "subtitle": "10 üzerinden katı skor veya açıkça belirtilen iyimser tavan; finalist eşiği 9. Eksik Page AS, kök AS'ye taşınmadı.",
+        "type": "bar",
+        "dataset": "score_ceiling",
+        "sourceId": "prospect_research",
+        "valueFormat": "number",
+        "settings": {
+          "orientation": "horizontal",
+          "groupMode": "grouped"
+        },
+        "encodings": {
+          "x": { "field": "opportunity", "type": "nominal", "label": "Fırsat" },
+          "y": { "field": "score", "type": "quantitative", "label": "Puan" },
+          "tooltip": [
+            { "field": "category", "type": "nominal", "label": "Kategori" },
+            { "field": "root_authority_score", "type": "quantitative", "label": "Root AS", "format": "number" },
+            { "field": "root_referring_domains", "type": "quantitative", "label": "Root RD", "format": "number" }
+          ]
+        },
+        "layout": "full"
+      }
+    ],
+    "tables": [
+      {
+        "id": "review_counts",
+        "title": "Araştırma kapsamı ve kalite kapısı sonucu",
+        "subtitle": "Eşik kategori bazında düşürülmedi; her üç kategoride de sıfır finalist kaldı.",
+        "dataset": "review_counts",
+        "sourceId": "prospect_research",
+        "defaultSort": { "field": "researched", "direction": "desc" },
+        "columns": [
+          { "field": "category", "label": "Kategori", "type": "text" },
+          { "field": "researched", "label": "İncelenen", "format": "number" },
+          { "field": "qualified", "label": "9+", "format": "number" },
+          { "field": "definition", "label": "Kabul tanımı", "type": "text" }
+        ]
+      },
+      {
+        "id": "vetoed_detail",
+        "title": "En güçlü ancak veto edilen fırsatlar",
+        "subtitle": "Root metrikleri exact Page AS yerine geçmez; URL, kanal, risk ve veto birlikte okunmalıdır.",
+        "dataset": "vetoed_detail",
+        "sourceId": "prospect_research",
+        "defaultSort": { "field": "score", "direction": "desc" },
+        "density": "compact",
+        "layout": "full",
+        "columns": [
+          { "field": "opportunity", "label": "Fırsat", "type": "text" },
+          { "field": "category", "label": "Kategori", "type": "text" },
+          { "field": "donor_url", "label": "Donor URL", "type": "text" },
+          { "field": "target_url", "label": "FrontendAtlas hedefi", "type": "text" },
+          { "field": "page_as", "label": "Page AS", "type": "text" },
+          { "field": "root_authority_score", "label": "Root AS", "format": "number" },
+          { "field": "root_organic_traffic", "label": "Organik", "type": "text" },
+          { "field": "root_referring_domains", "label": "Root RD", "format": "number" },
+          { "field": "score", "label": "Puan/tavan", "format": "number" },
+          { "field": "channel", "label": "Resmî kanal", "type": "text" },
+          { "field": "veto", "label": "Kesin veto", "type": "text" }
+        ]
+      },
+      {
+        "id": "broken_checks",
+        "title": "Kırık rakip bağlantısı kanıtları ve vetolar",
+        "subtitle": "Semrush hata etiketi, canlı HTTP durumu ve exact donor kalitesi ayrı doğrulandı.",
+        "dataset": "broken_checks",
+        "sourceId": "prospect_research",
+        "defaultSort": { "field": "page_authority_score", "direction": "desc" },
+        "density": "compact",
+        "layout": "full",
+        "columns": [
+          { "field": "donor_root", "label": "Donor", "type": "text" },
+          { "field": "donor_url", "label": "Kaynak URL", "type": "text" },
+          { "field": "competitor_target_url", "label": "Rakip hedef", "type": "text" },
+          { "field": "page_authority_score", "label": "Page AS", "format": "number" },
+          { "field": "broken_evidence", "label": "Kırık kanıtı", "type": "text" },
+          { "field": "veto", "label": "Veto", "type": "text" }
+        ]
+      }
+    ],
+    "sources": [
+      {
+        "id": "prospect_research",
+        "label": "Elit backlink aday araştırması ve veto kanıtları — 24 Ağustos 2026",
+        "path": "frontend/reports/elite-backlink-benchmark-2026-08-24/research.json",
+        "query": {
+          "engine": "snapshot",
+          "sql": "SELECT * FROM prospect_research_snapshot",
+          "description": "Loads the reviewed opportunity, score, metric, channel, risk, and veto rows materialized in research.json.",
+          "id": "prospect-research-2026-08-24",
+          "executed_at": "2026-08-24T08:06:49Z",
+          "tables_used": ["prospect_research_snapshot"]
+        }
+      },
+      {
+        "id": "registry_snapshot",
+        "label": "FrontendAtlas backlink outreach registry — 24 Ağustos 2026",
+        "path": "docs/references/backlink-outreach-registry.tsv"
+      },
+      {
+        "id": "semrush_ui",
+        "label": "Semrush Backlink Analytics ve Domain Overview — salt-okunur UI doğrulaması",
+        "url": "https://www.semrush.com/analytics/backlinks/"
+      }
+    ],
+    "blocks": [
+      {
+        "id": "title",
+        "type": "markdown",
+        "body": "# FrontendAtlas Elit Backlink Araştırması — 0/7 Kalite Kapısı\n\n**Karar tarihi:** 24 Ağustos 2026 · **Amaç:** Sayı tamamlamak değil, yalnız 9/10 ve üzerindeki benzersiz bağlamsal fırsatları korumak."
+      },
+      {
+        "id": "technical_summary",
+        "type": "markdown",
+        "sourceId": "prospect_research",
+        "body": "## Teknik özet\n\n**21 lead/domain incelendi ve 9/10 eşiğini geçen finalist çıkmadı.** En iyi üç yeni kök 8 puanda kaldı: Front-End Checklist ve Awesome WPO, güçlü konu/kanal uyumuna rağmen Semrush authority+traffic bileşeninden 0/2 aldı; FrontEndArk ise iki rakibe gerçekten followed bağlantı verse de AS 2 ve `Dangerous` ağ sinyaliyle elendi. Kırık-link adaylarında Page AS 0–16 aralığı, UGC/mirror yüzeyleri, stale hata etiketleri veya registry kapıları bulundu.\n\nBu nedenle **Gmail Sent/Drafts/Scheduled araması kısa devre edildi**: kamuya açık ve Semrush kontrollerinde kesin veto alan kökler için özel posta geçmişi aranmadı ve hiçbirine “Gmail temiz” denmedi. Yeni outreach adayı registry'ye eklenmedi. Yalnız Semrush'ın yeni bulduğu iki off-topic aktif donor `existing_ref_domain` suppression olarak kaydedildi. Hiçbir e-posta, form, issue veya PR açılmadı."
+      },
+      {
+        "id": "summary_metrics",
+        "type": "metric-strip",
+        "cardIds": ["research_summary"]
+      },
+      {
+        "id": "score_interpretation",
+        "type": "markdown",
+        "sourceId": "prospect_research",
+        "body": "## En güçlü görünen adaylarda otorite ya da yayın sözleşmesi eksik kaldı\n\nAşağıdaki skorlar link değerinin Google tarafından garanti edilen bir ölçümü değildir. Değerlendirme; konu/hedef uyumu (3), Semrush authority+traffic (2), contextual followed-link emsali (2), kalıcılık/editoryal kontrol (2) ve resmî kanal açıklığı (1) bileşimidir. `h5bp.org` skoru iyimser tavandır: sayfa scroll performance konusuna tam otursa da repo yalnız soru yayımlar, cevap veya kaynak listesi yayımlamaz."
+      },
+      {
+        "id": "score_chart",
+        "type": "chart",
+        "chartId": "score_ceiling",
+        "layout": "full"
+      },
+      {
+        "id": "score_chart_note",
+        "type": "markdown",
+        "sourceId": "prospect_research",
+        "body": "**Grafik okuma notu:** Front-End Checklist (AS 6, organik 0), Awesome WPO (AS 2, organik 0) ve FrontEndArk (AS 2, organik veri yok) authority+traffic bileşeninden puan alamadı. Root referring-domain sayıları bu açığı kapatmadı; exact Page AS gözlenmediğinde kök AS sayfaya aktarılmadı."
+      },
+      {
+        "id": "scope_heading",
+        "type": "markdown",
+        "body": "## Kapsam, veri ve kabul tanımları\n\nKırık-link için rakip hedefin yalnız Semrush'ta hata etiketi alması yeterli sayılmadı; canlı hedefin gerçekten 404/410, noindex veya alakasız yönlendirme olması gerekti. Link-intersect için tek bir public sayfada en az iki in-scope rakibe contextual followed href arandı. Docs kategorisi yalnız GitHub katkısının `github.com` dışında canonical ve indexable bir dokümantasyon sayfasına dönüşebildiği durumda kabul edildi."
+      },
+      {
+        "id": "review_table",
+        "type": "table",
+        "tableId": "review_counts",
+        "layout": "full"
+      },
+      {
+        "id": "veto_table_intro",
+        "type": "markdown",
+        "sourceId": "prospect_research",
+        "body": "## Page-level kanıtlar kök-domain cazibesini geçersiz kıldı\n\n[Front-End Checklist](https://frontendchecklist.io/rules/performance/list-virtualization) ve [Awesome WPO](https://awesome-wpo.dev/) gelecekte benchmark için mantıklı konu eşleşmeleri olarak yeniden düşünülebilir; fakat bugün elit SEO eşiğini geçmiyorlar. [FrontEndArk](https://frontendark.com/resource) gerçek bir intersect olsa da spam/trust sinyali nedeniyle yeniden kontrol önerilmez. [H5BP performance questions](https://h5bp.org/Front-end-Developer-Interview-Questions/questions/performance-questions/) ise link değeri yüksek olabilecek bir domain olmasına rağmen yayının soru-only sözleşmesine aykırı bir kaynak eklemeyi gerektiriyor."
+      },
+      {
+        "id": "veto_table",
+        "type": "table",
+        "tableId": "vetoed_detail",
+        "layout": "full"
+      },
+      {
+        "id": "methodology",
+        "type": "markdown",
+        "sourceId": "prospect_research",
+        "body": "## Metodoloji ve doğrulama sırası\n\n1. Registry kökleri ve mevcut target kapıları okundu.\n2. Rakiplerin aktif followed backlinkleri ve Semrush Backlink Gap turları salt-okunur tarandı.\n3. Exact donor URL, target URL, canonical/indexability, `href`/`rel`, editoryal sahiplik ve resmî kanal kontrol edildi.\n4. Root AS/trafik/RD sinyalleri exact Page AS'den ayrı tutuldu.\n5. Kamuya açık veto oluştuğunda Gmail kontrolü çalıştırılmadan aday kapatıldı. Finalist olmadığı için özel mail geçmişine ilişkin temizlik iddiası yapılmadı.\n6. 91 aktif referring domain registry ile karşılaştırıldı; eksik iki off-topic donor suppression olarak eklendi ve kapsam 91/91'e çıktı."
+      },
+      {
+        "id": "broken_heading",
+        "type": "markdown",
+        "sourceId": "prospect_research",
+        "body": "## Kırık-link etiketleri canlı kanıt olmadan kabul edilmedi\n\nEn somut aday, `echo.cool` üzerindeki followed bağlantının Front End Interview Handbook `array-methods` hedefine gitmesiydi; fakat exact donor Page AS 0 olduğundan kanal ve hedef eşleme aşamasına taşınmadı. `frontendinterviewhandbook.com/coding/` Semrush'ta 404 görünmesine rağmen 24 Ağustos canlı kontrolde “Coding round” içeriğini render etti. GreatFrontend `/prepare` anomalisi için bulunan donorların tamamı UGC, scraper, mirror veya mevcut registry engeline takıldı."
+      },
+      {
+        "id": "broken_table",
+        "type": "table",
+        "tableId": "broken_checks",
+        "layout": "full"
+      },
+      {
+        "id": "limitations",
+        "type": "markdown",
+        "sourceId": "prospect_research",
+        "body": "## Sınırlamalar, belirsizlik ve sağlamlık kontrolleri\n\n- Semrush Authority Score, Page AS, trafik ve network etiketleri Google metriği değildir.\n- Semrush API birimleri yetersiz olduğu için raporlar çalışmadı; aynı hesapta oturum açık tarayıcı UI'ı salt-okunur kullanıldı.\n- Page AS bulunamadığında değer tahmin edilmedi ve root AS ile doldurulmadı.\n- 404/522 etiketleri canlı kontrolle çeliştiğinde stale/transient kabul edildi.\n- Benchmark target'ı 10 Eylül 2026'dan önce deploy edilmeyecek; canlı canonical, sitemap ve download doğrulaması olmadan hiçbir docs fırsatına önerilmeyecek.\n- “Bir link yüz linke bedel” doğrulanabilir bir katsayı değildir. Buradaki eşik yalnız düşük kaliteli yüzeylere karşı sıkı bir seçim politikasıdır."
+      },
+      {
+        "id": "next_steps",
+        "type": "markdown",
+        "sourceId": "prospect_research",
+        "body": "## Önerilen sonraki adımlar\n\n1. 5 Eylül'de yalnız mevcut outreach sonuçlarını okuyup raporla; otomatik follow-up gönderme.\n2. Benchmark'ı 10 Eylül veya sonrasında indexable olarak yayımladıktan sonra canonical, robots, sitemap, JSON-LD ve tüm indirmeleri canlı ortamda doğrula.\n3. Front-End Checklist ve Awesome WPO'yu ancak Page AS/root görünürlüğü belirgin biçimde güçlenirse ve yeni skor gerçekten 9'a çıkarsa yeniden değerlendir; yalnız hedefin canlı olmasından puan türetme.\n4. Yeni turda yüksek-AS domain aramak yerine exact Page AS 15+, gerçek third-party followed emsali ve açık correction/docs kanalını arama ön-filtresi yap.\n5. Yeni aktif `betulcrime.com` ve `betwinnermirror.com` donorlarını yalnız suppression olarak tut; outreach yapma."
+      },
+      {
+        "id": "further_questions",
+        "type": "markdown",
+        "body": "## Sonraki araştırma soruları\n\n- Benchmark yayına girdikten sonra hangi bağımsız performans yayınları kendi kaynak sayfalarında framework-agnostic, ham verili benchmarklara zaten followed bağlantı veriyor?\n- Page AS 15+ ve organik trafik taşıyan donorları, root-domain gap listesinden önce exact URL indeksinden bulmak araştırma verimini artırır mı?\n- İlk canlı yüksek-kalite linkin 14/28/35 günlük GSC etkisi, donor root AS'den çok donor-target konu yakınlığıyla mı açıklanacak?"
+      }
+    ]
+  },
+  "snapshot": {
+    "version": 1,
+    "generatedAt": "2026-08-24T08:06:49Z",
+    "status": "ready",
+    "datasets": {
+      "summary": [
+        { "reviewed": 21, "qualified": 0, "suppressions": 2, "threshold": 9 }
+      ],
+      "score_ceiling": [
+        { "opportunity": "Front-End Checklist", "category": "GitHub → docs", "score": 8, "root_authority_score": 6, "root_referring_domains": 725 },
+        { "opportunity": "Awesome WPO", "category": "GitHub → docs", "score": 8, "root_authority_score": 2, "root_referring_domains": 140 },
+        { "opportunity": "FrontEndArk", "category": "Link intersect", "score": 8, "root_authority_score": 2, "root_referring_domains": 39 },
+        { "opportunity": "H5BP performance questions", "category": "GitHub → docs", "score": 8, "root_authority_score": 18, "root_referring_domains": 737 },
+        { "opportunity": "WebDevHub resources", "category": "Link intersect", "score": 7, "root_authority_score": 10, "root_referring_domains": 41 }
+      ],
+      "review_counts": [
+        { "category": "Broken competitor link", "researched": 10, "qualified": 0, "definition": "Live donor + competitor 404/410, noindex, or irrelevant redirect" },
+        { "category": "GitHub → off-GitHub docs", "researched": 6, "qualified": 0, "definition": "GitHub contribution publishes on independent indexable docs domain" },
+        { "category": "Link intersect", "researched": 5, "qualified": 0, "definition": "One donor links contextually to at least two in-scope competitors" }
+      ],
+      "vetoed_detail": [
+        {
+          "opportunity": "Front-End Checklist",
+          "category": "GitHub → docs",
+          "donor_url": "https://frontendchecklist.io/rules/performance/list-virtualization",
+          "target_url": "https://frontendatlas.com/research/infinite-scroll-performance-benchmark",
+          "page_as": "Not observed",
+          "root_authority_score": 6,
+          "root_organic_traffic": "0",
+          "root_referring_domains": 725,
+          "score": 8,
+          "channel": "https://github.com/thedaviddias/Front-End-Checklist",
+          "veto": "Authority/traffic 0 of 2; target not live before Sep 10"
+        },
+        {
+          "opportunity": "Awesome WPO",
+          "category": "GitHub → docs",
+          "donor_url": "https://awesome-wpo.dev/",
+          "target_url": "https://frontendatlas.com/research/infinite-scroll-performance-benchmark",
+          "page_as": "Not observed",
+          "root_authority_score": 2,
+          "root_organic_traffic": "0",
+          "root_referring_domains": 140,
+          "score": 8,
+          "channel": "https://github.com/davidsonfellipe/awesome-wpo/blob/main/contributing.md",
+          "veto": "Authority/traffic 0 of 2"
+        },
+        {
+          "opportunity": "FrontEndArk resources",
+          "category": "Link intersect",
+          "donor_url": "https://frontendark.com/resource",
+          "target_url": "https://frontendatlas.com/guides/interview-blueprint/javascript-interviews",
+          "page_as": "Not observed",
+          "root_authority_score": 2,
+          "root_organic_traffic": "n/a",
+          "root_referring_domains": 39,
+          "score": 8,
+          "channel": "https://frontendark.com/contact",
+          "veto": "Dangerous network/spam signals; authority/trust 0 of 2"
+        },
+        {
+          "opportunity": "H5BP performance questions",
+          "category": "GitHub → docs",
+          "donor_url": "https://h5bp.org/Front-end-Developer-Interview-Questions/questions/performance-questions/",
+          "target_url": "https://frontendatlas.com/research/infinite-scroll-performance-benchmark",
+          "page_as": "Not observed",
+          "root_authority_score": 18,
+          "root_organic_traffic": "13",
+          "root_referring_domains": 737,
+          "score": 8,
+          "channel": "https://github.com/h5bp/Front-end-Developer-Interview-Questions",
+          "veto": "Question-only publication contract; no contextual resource precedent"
+        },
+        {
+          "opportunity": "WebDevHub resources",
+          "category": "Link intersect",
+          "donor_url": "https://webdevhub.link/learning-resources",
+          "target_url": "https://frontendatlas.com/guides/interview-blueprint/javascript-interviews",
+          "page_as": "Not observed",
+          "root_authority_score": 10,
+          "root_organic_traffic": "278",
+          "root_referring_domains": 41,
+          "score": 7,
+          "channel": "Not verified",
+          "veto": "Dangerous network; 96% low-AS referring domains; no strong route"
+        }
+      ],
+      "broken_checks": [
+        {
+          "donor_root": "echo.cool",
+          "donor_url": "https://www.echo.cool/docs/language/javascript/javascript-array/javascript-array-search/",
+          "competitor_target_url": "https://www.frontendinterviewhandbook.com/performance/array-methods",
+          "page_authority_score": 0,
+          "broken_evidence": "Semrush Indexed Pages: 404; active followed donor",
+          "veto": "Page AS 0"
+        },
+        {
+          "donor_root": "apachecn.org",
+          "donor_url": "https://interview.apachecn.org/fe-inter-hb/03/",
+          "competitor_target_url": "https://www.frontendinterviewhandbook.com/coding/",
+          "page_authority_score": 3,
+          "broken_evidence": "Semrush: 404; fresh live check rendered Coding round",
+          "veto": "Stale broken signal; copy/mirror; Page AS 3"
+        },
+        {
+          "donor_root": "GreatFrontend /prepare mixed donors",
+          "donor_url": "dev.to + npm.io + systemdesign.one + gitflic.ru",
+          "competitor_target_url": "https://www.greatfrontend.com/prepare",
+          "page_authority_score": 16,
+          "broken_evidence": "Durable allowed broken state not established",
+          "veto": "UGC, scraper, prior human-negative, or mirror; other Page AS values 7"
+        }
+      ]
+    }
+  },
+  "sources": [
+    {
+      "id": "prospect_research",
+      "label": "Elit backlink aday araştırması ve veto kanıtları — 24 Ağustos 2026",
+      "path": "frontend/reports/elite-backlink-benchmark-2026-08-24/research.json",
+      "query": {
+        "engine": "snapshot",
+        "sql": "SELECT * FROM prospect_research_snapshot",
+        "description": "Loads the reviewed opportunity, score, metric, channel, risk, and veto rows materialized in research.json.",
+        "id": "prospect-research-2026-08-24",
+        "executed_at": "2026-08-24T08:06:49Z",
+        "tables_used": ["prospect_research_snapshot"]
+      }
+    },
+    {
+      "id": "registry_snapshot",
+      "label": "FrontendAtlas backlink outreach registry — 24 Ağustos 2026",
+      "path": "docs/references/backlink-outreach-registry.tsv"
+    },
+    {
+      "id": "semrush_ui",
+      "label": "Semrush Backlink Analytics ve Domain Overview — salt-okunur UI doğrulaması",
+      "url": "https://www.semrush.com/analytics/backlinks/"
+    }
+  ],
+  "package_info": {
+    "root": "frontend/reports/elite-backlink-benchmark-2026-08-24",
+    "manifestPath": "artifact.json",
+    "snapshotPath": "artifact.json"
+  }
+}

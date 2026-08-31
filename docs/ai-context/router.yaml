@@ -25,6 +25,31 @@ selection:
   reference: load only when the task explicitly needs audit/history detail
 
 topic_rules:
+  - id: backlink_outreach
+    priority: 120
+    role: primary
+    keywords:
+      - backlink
+      - backlinks
+      - outreach
+      - link building
+      - link outreach
+      - link suggestion
+      - referring domain
+      - referring domains
+      - referring-domain
+      - semrush
+      - editorial pitch
+    paths:
+      - docs/references/backlink-outreach-registry.tsv
+      - docs/ai-context/backlink-outreach.md
+    load:
+      - docs/ai-context/backlink-outreach.md
+    avoid:
+      - docs/ai-context/frontend-ui.md
+      - docs/ai-context/content-authoring.md
+    max_docs: 1
+
   - id: frontend_ui
     priority: 100
     role: primary

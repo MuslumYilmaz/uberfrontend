@@ -173,7 +173,7 @@ function assertFrameworkCssFormatting() {
       canonicalRoot: path.join(repoRoot, 'cdn', 'sb'),
       mirrorRoot: path.join(repoRoot, 'frontend', 'src', 'assets', 'sb'),
     }),
-    { assets: 181, cssSources: 242, changedAssets: 0, changedCssSources: 0 },
+    { assets: 193, cssSources: 258, changedAssets: 0, changedCssSources: 0 },
     'The full framework CSS corpus must stay canonical and exactly mirrored'
   );
 }
@@ -1636,6 +1636,1849 @@ function assertChipsInputPressureMode() {
   }
 }
 
+function assertAccordionFaqPressureMode() {
+  const expectedQuestions = {
+    react: {
+      id: 'react-accordion-faq',
+      starter: 'assets/sb/react/question/react-accordion-faq.v1.json',
+      solution: 'assets/sb/react/solution/react-accordion-faq-solution.v1.json',
+      updatedAt: '2026-01-30',
+    },
+    angular: {
+      id: 'angular-faq-accordion',
+      starter: 'assets/sb/angular/question/angular-faq-accordion.v2.json',
+      solution: 'assets/sb/angular/solution/angular-faq-accordion-solution.v2.json',
+      updatedAt: '2026-07-15',
+    },
+    vue: {
+      id: 'vue-accordion-faq',
+      starter: 'assets/sb/vue/question/vue-accordion-faq.v1.json',
+      solution: 'assets/sb/vue/solution/vue-accordion-faq-solution.v1.json',
+      updatedAt: '2026-01-30',
+    },
+  };
+  const expectedNormalChecks = [
+    {
+      id: 'accordion-toggle-answer',
+      name: 'Accordion toggles answer',
+      steps: [
+        {
+          type: 'expectCount',
+          selector: '.faq-body',
+          count: 0,
+        },
+        {
+          type: 'click',
+          selector: '.faq-header',
+        },
+        {
+          type: 'waitForCount',
+          selector: '.faq-body',
+          count: 1,
+        },
+      ],
+    },
+  ];
+  const pressureRefs = new Set();
+
+  for (const [framework, expected] of Object.entries(expectedQuestions)) {
+    const question = json(`cdn/questions/${framework}/coding.json`).find(
+      (entry) => entry.id === expected.id
+    );
+    assert.ok(question, `${framework}: Accordion FAQ question must exist`);
+    assert.equal(question.access, 'premium', `${framework}: Accordion FAQ must stay premium`);
+    assert.equal(
+      question.difficulty,
+      'intermediate',
+      `${framework}: Accordion FAQ difficulty changed`
+    );
+    assert.equal(
+      question.updatedAt,
+      expected.updatedAt,
+      `${framework}: pressure coverage must not rewrite normal Accordion FAQ updatedAt`
+    );
+    assert.equal(
+      question.sdk?.asset,
+      expected.starter,
+      `${framework}: normal Accordion FAQ starter changed`
+    );
+    assert.equal(
+      question.solutionAsset,
+      expected.solution,
+      `${framework}: normal Accordion FAQ solution changed`
+    );
+    assert.deepEqual(
+      question.frameworkTests,
+      expectedNormalChecks,
+      `${framework}: normal Accordion FAQ check must stay unchanged`
+    );
+    assert.equal(
+      question.pressureModeAsset,
+      'assets/questions/pressure-modes/accordion-faq.v1.json',
+      `${framework}: Accordion FAQ must reference the shared pressure scenario`
+    );
+    pressureRefs.add(question.pressureModeAsset);
+  }
+
+  assert.equal(
+    pressureRefs.size,
+    1,
+    'All Accordion FAQ frameworks must share one pressure scenario'
+  );
+
+  const scenario = json('cdn/questions/pressure-modes/accordion-faq.v1.json');
+  assert.equal(scenario.id, 'accordion-faq-pressure-v1');
+  assert.equal(scenario.family, 'accordion-faq');
+  assert.equal(scenario.access, 'premium');
+  assert.equal(scenario.estimatedMinutes, 45);
+  assert.deepEqual(scenario.supportedQuestions, {
+    react: 'react-accordion-faq',
+    angular: 'angular-faq-accordion',
+    vue: 'vue-accordion-faq',
+  });
+  assert.deepEqual(
+    scenario.rounds.map((round) => round.id),
+    [
+      'core-disclosure',
+      'mode-transition-invariant',
+      'keyboard-focus-navigation',
+      'accessible-disclosure-contract',
+    ]
+  );
+
+  const cumulativeCheckCounts = scenario.rounds.reduce((counts, round) => {
+    const previous = counts[counts.length - 1] ?? 0;
+    counts.push(previous + (round.frameworkTests?.length ?? 0));
+    return counts;
+  }, []);
+  assert.deepEqual(
+    cumulativeCheckCounts,
+    [1, 2, 3, 5],
+    'Accordion FAQ pressure checks must stay within the cumulative runner budget'
+  );
+
+  const checks = scenario.rounds.flatMap((round) => round.frameworkTests ?? []);
+  assert.deepEqual(
+    checks.map((test) => test.id),
+    [
+      'pressure-accordion-toggle',
+      'pressure-accordion-modes',
+      'pressure-accordion-keyboard',
+      'pressure-accordion-aria',
+      'pressure-accordion-native-buttons',
+    ]
+  );
+  for (const check of checks) {
+    assert.ok(check.steps?.length, `${check.id}: pressure check must be independently runnable`);
+  }
+
+  const modeCheck = checks.find((test) => test.id === 'pressure-accordion-modes');
+  assert.equal(
+    modeCheck.steps.filter(
+      (step) => step.type === 'click' && step.selector === '.mode-toggle input'
+    ).length,
+    2,
+    'Accordion FAQ mode flow must enter and leave multi-open mode'
+  );
+  assert.ok(
+    modeCheck.steps.some(
+      (step) =>
+        step.type === 'waitForCount' &&
+        step.selector === '.faq-body' &&
+        step.count === 2
+    ),
+    'Accordion FAQ mode flow must prove that multi-open mode can show two panels'
+  );
+  const finalModeSteps = modeCheck.steps.slice(-3);
+  assert.deepEqual(
+    finalModeSteps,
+    [
+      {
+        type: 'waitForCount',
+        selector: '.faq-body',
+        count: 1,
+        timeoutMs: 700,
+      },
+      {
+        type: 'expectAttribute',
+        selector: '.faq-header',
+        index: 0,
+        attribute: 'aria-expanded',
+        expected: 'false',
+      },
+      {
+        type: 'expectAttribute',
+        selector: '.faq-header',
+        index: 1,
+        attribute: 'aria-expanded',
+        expected: 'true',
+      },
+    ],
+    'Accordion FAQ multi-to-single normalization must retain first-opened faq-2'
+  );
+
+  const keyboardCheck = checks.find((test) => test.id === 'pressure-accordion-keyboard');
+  const keyboardSteps = keyboardCheck.steps.filter((step) => step.type === 'key');
+  assert.deepEqual(
+    keyboardSteps.map((step) => ({ selector: step.selector, index: step.index, key: step.key })),
+    [
+      { selector: '.faq-header', index: 0, key: 'ArrowUp' },
+      { selector: '.faq-header', index: 3, key: 'ArrowDown' },
+      { selector: '.faq-header', index: 0, key: 'ArrowDown' },
+      { selector: '.faq-header', index: 1, key: 'Home' },
+      { selector: '.faq-header', index: 0, key: 'End' },
+    ],
+    'Accordion FAQ keyboard flow must cover wrapping arrows and Home/End on question triggers'
+  );
+  assert.deepEqual(
+    keyboardCheck.steps
+      .filter((step) => step.type === 'expectFocused')
+      .map((step) => ({ selector: step.selector, index: step.index })),
+    [
+      { selector: '.faq-header', index: 3 },
+      { selector: '.faq-header', index: 0 },
+      { selector: '.faq-header', index: 1 },
+      { selector: '.faq-header', index: 0 },
+      { selector: '.faq-header', index: 3 },
+    ],
+    'Accordion FAQ keyboard flow must assert the exact wrapped focus destinations'
+  );
+  assert.deepEqual(
+    keyboardCheck.steps
+      .filter((step) => step.type === 'expectCount' && step.selector === '.faq-body')
+      .map((step) => step.count),
+    [0, 0],
+    'Accordion FAQ focus navigation must leave disclosure state unchanged'
+  );
+
+  const ariaCheck = checks.find((test) => test.id === 'pressure-accordion-aria');
+  for (let itemNumber = 1; itemNumber <= 4; itemNumber += 1) {
+    const itemIndex = itemNumber - 1;
+    assert.ok(
+      ariaCheck.steps.some(
+        (step) =>
+          step.type === 'expectAttribute' &&
+          step.selector === '.faq-header' &&
+          step.index === itemIndex &&
+          step.attribute === 'id' &&
+          step.expected === `faq-trigger-faq-${itemNumber}`
+      ),
+      `Accordion FAQ ARIA flow must keep stable trigger id faq-trigger-faq-${itemNumber}`
+    );
+    assert.ok(
+      ariaCheck.steps.some(
+        (step) =>
+          step.type === 'expectAttribute' &&
+          step.selector === '.faq-header' &&
+          step.index === itemIndex &&
+          step.attribute === 'aria-controls' &&
+          step.expected === `faq-panel-faq-${itemNumber}`
+      ),
+      `Accordion FAQ ARIA flow must connect faq-${itemNumber} to faq-panel-faq-${itemNumber}`
+    );
+  }
+  for (const expectedStep of [
+    {
+      type: 'expectCount',
+      selector: '.indicator[aria-hidden="true"]',
+      count: 4,
+    },
+    {
+      type: 'expectAttribute',
+      selector: '.faq-body',
+      attribute: 'id',
+      expected: 'faq-panel-faq-1',
+    },
+    {
+      type: 'expectAttribute',
+      selector: '.faq-body',
+      attribute: 'role',
+      expected: 'region',
+    },
+    {
+      type: 'expectAttribute',
+      selector: '.faq-body',
+      attribute: 'aria-labelledby',
+      expected: 'faq-trigger-faq-1',
+    },
+  ]) {
+    assert.ok(
+      ariaCheck.steps.some((step) =>
+        Object.entries(expectedStep).every(([key, value]) => step[key] === value)
+      ),
+      `Accordion FAQ ARIA flow is missing ${JSON.stringify(expectedStep)}`
+    );
+  }
+
+  const nativeButtonCheck = checks.find(
+    (test) => test.id === 'pressure-accordion-native-buttons'
+  );
+  assert.ok(
+    nativeButtonCheck.steps.some(
+      (step) =>
+        step.type === 'expectCount' &&
+        step.selector === 'button.faq-header' &&
+        step.count === 4
+    ),
+    'Accordion FAQ native-button flow must prove every trigger is a button'
+  );
+  assert.equal(
+    nativeButtonCheck.steps.filter(
+      (step) =>
+        step.type === 'expectAttribute' &&
+        step.selector === 'button.faq-header' &&
+        step.attribute === 'type' &&
+        step.expected === 'button'
+    ).length,
+    4,
+    'Accordion FAQ native-button flow must guard the type of every trigger'
+  );
+
+  const expectedPressureSolutions = {
+    react: 'assets/sb/react/solution/react-accordion-faq-pressure-solution.v1.json',
+    angular: 'assets/sb/angular/solution/angular-faq-accordion-pressure-solution.v1.json',
+    vue: 'assets/sb/vue/solution/vue-accordion-faq-pressure-solution.v1.json',
+  };
+  for (const [framework, expectedReference] of Object.entries(expectedPressureSolutions)) {
+    const reference = scenario.solutionAssets?.[framework];
+    assert.equal(
+      reference,
+      expectedReference,
+      `${framework}: invalid Accordion FAQ pressure solution reference`
+    );
+    assertMirror(
+      reference.replace(/^assets\//, ''),
+      `${framework}:accordion-faq-pressure-solution`
+    );
+  }
+}
+
+function assertTicTacToePressureMode() {
+  const expectedQuestions = {
+    react: {
+      id: 'react-tictactoe',
+      starter: 'assets/sb/react/question/react-tictactoe.v1.json',
+      solution: 'assets/sb/react/solution/react-tictactoe-solution.v1.json',
+      updatedAt: '2026-01-30',
+    },
+    angular: {
+      id: 'angular-tictactoe-starter',
+      starter: 'assets/sb/angular/question/angular-tictactoe.v1.json',
+      solution: 'assets/sb/angular/solution/angular-tictactoe-solution.v1.json',
+      updatedAt: '2026-07-15',
+    },
+    vue: {
+      id: 'vue-tictactoe',
+      starter: 'assets/sb/vue/question/vue-tictactoe.v1.json',
+      solution: 'assets/sb/vue/solution/vue-tictactoe-solution.v1.json',
+      updatedAt: '2026-01-30',
+    },
+  };
+  const pressureRefs = new Set();
+
+  for (const [framework, expected] of Object.entries(expectedQuestions)) {
+    const question = json(`cdn/questions/${framework}/coding.json`).find(
+      (entry) => entry.id === expected.id
+    );
+    assert.ok(question, `${framework}: Tic-Tac-Toe question must exist`);
+    assert.equal(question.access, 'premium', `${framework}: Tic-Tac-Toe must stay premium`);
+    assert.equal(question.difficulty, 'easy', `${framework}: Tic-Tac-Toe difficulty changed`);
+    assert.equal(
+      question.updatedAt,
+      expected.updatedAt,
+      `${framework}: pressure coverage must not rewrite normal Tic-Tac-Toe updatedAt`
+    );
+    assert.equal(
+      question.sdk?.asset,
+      expected.starter,
+      `${framework}: normal Tic-Tac-Toe starter changed`
+    );
+    assert.equal(
+      question.solutionAsset,
+      expected.solution,
+      `${framework}: normal Tic-Tac-Toe solution changed`
+    );
+    assert.equal(
+      Object.hasOwn(question, 'frameworkTests'),
+      false,
+      `${framework}: pressure coverage must not introduce or rewrite normal Tic-Tac-Toe checks`
+    );
+    assert.equal(
+      question.pressureModeAsset,
+      'assets/questions/pressure-modes/tic-tac-toe.v1.json',
+      `${framework}: Tic-Tac-Toe must reference the shared pressure scenario`
+    );
+    pressureRefs.add(question.pressureModeAsset);
+  }
+
+  assert.equal(
+    pressureRefs.size,
+    1,
+    'All Tic-Tac-Toe frameworks must share one pressure scenario'
+  );
+
+  const scenario = json('cdn/questions/pressure-modes/tic-tac-toe.v1.json');
+  assert.equal(scenario.id, 'tic-tac-toe-pressure-v1');
+  assert.equal(scenario.family, 'tic-tac-toe');
+  assert.equal(scenario.access, 'premium');
+  assert.equal(scenario.estimatedMinutes, 45);
+  assert.deepEqual(scenario.supportedQuestions, {
+    react: 'react-tictactoe',
+    angular: 'angular-tictactoe-starter',
+    vue: 'vue-tictactoe',
+  });
+  assert.deepEqual(
+    scenario.rounds.map((round) => round.id),
+    [
+      'core-turn-invariants',
+      'outcome-and-reset',
+      'branching-history',
+      'accessible-grid-navigation',
+    ]
+  );
+
+  const cumulativeCheckCounts = scenario.rounds.reduce((counts, round) => {
+    const previous = counts[counts.length - 1] ?? 0;
+    counts.push(previous + (round.frameworkTests?.length ?? 0));
+    return counts;
+  }, []);
+  assert.deepEqual(
+    cumulativeCheckCounts,
+    [1, 2, 3, 5],
+    'Tic-Tac-Toe pressure checks must stay within the cumulative runner budget'
+  );
+
+  const checks = scenario.rounds.flatMap((round) => round.frameworkTests ?? []);
+  assert.deepEqual(
+    checks.map((test) => test.id),
+    [
+      'pressure-tictactoe-core-play',
+      'pressure-tictactoe-outcomes-reset',
+      'pressure-tictactoe-history',
+      'pressure-tictactoe-keyboard-grid',
+      'pressure-tictactoe-aria',
+    ]
+  );
+  for (const check of checks) {
+    assert.ok(check.steps?.length, `${check.id}: pressure check must be independently runnable`);
+  }
+
+  const coreCheck = checks.find((test) => test.id === 'pressure-tictactoe-core-play');
+  assert.deepEqual(
+    coreCheck.steps
+      .filter((step) => step.type === 'click' && step.selector === '.cell')
+      .map((step) => step.index),
+    [0, 0, 4],
+    'Tic-Tac-Toe core flow must prove occupied-cell rejection without advancing the turn'
+  );
+  assert.ok(
+    coreCheck.steps.some(
+      (step) =>
+        step.type === 'expectAttribute' &&
+        step.selector === '.cell' &&
+        step.index === 0 &&
+        step.attribute === 'data-mark' &&
+        step.expected === 'X'
+    ) &&
+      coreCheck.steps.some(
+        (step) =>
+          step.type === 'expectAttribute' &&
+          step.selector === '.cell' &&
+          step.index === 4 &&
+          step.attribute === 'data-mark' &&
+          step.expected === 'O'
+      ),
+    'Tic-Tac-Toe core flow must verify alternating X and O marks'
+  );
+
+  const outcomeCheck = checks.find(
+    (test) => test.id === 'pressure-tictactoe-outcomes-reset'
+  );
+  assert.deepEqual(
+    outcomeCheck.steps
+      .filter((step) => step.type === 'click' && step.selector === '.cell')
+      .map((step) => step.index),
+    [0, 3, 1, 4, 2, 8, 0, 1, 2, 4, 3, 5, 7, 6, 8],
+    'Tic-Tac-Toe outcome flow must cover a win, rejected terminal move, and deterministic draw'
+  );
+  assert.equal(
+    outcomeCheck.steps.filter(
+      (step) => step.type === 'click' && step.selector === '.reset'
+    ).length,
+    2,
+    'Tic-Tac-Toe outcome flow must reset after both terminal outcomes'
+  );
+  assert.deepEqual(
+    outcomeCheck.steps
+      .filter(
+        (step) =>
+          step.type === 'expectDisabled' &&
+          (step.selector === '.undo' || step.selector === '.redo')
+      )
+      .map((step) => ({ selector: step.selector, disabled: step.disabled })),
+    [
+      { selector: '.undo', disabled: true },
+      { selector: '.redo', disabled: true },
+      { selector: '.undo', disabled: true },
+      { selector: '.redo', disabled: true },
+      { selector: '.undo', disabled: true },
+      { selector: '.redo', disabled: true },
+    ],
+    'Tic-Tac-Toe reset flow must clear history and restore both native disabled boundaries'
+  );
+  for (const status of ['Winner: X', 'Draw', 'Next: X']) {
+    assert.ok(
+      outcomeCheck.steps.some(
+        (step) =>
+          (step.type === 'expectText' || step.type === 'waitForText') &&
+          step.selector === '#game-status' &&
+          step.text === status
+      ),
+      `Tic-Tac-Toe outcome flow must expose ${status}`
+    );
+  }
+  assert.ok(
+    outcomeCheck.steps.some(
+      (step) =>
+        step.type === 'expectCount' &&
+        step.selector === '.cell.winning' &&
+        step.count === 3
+    ),
+    'Tic-Tac-Toe outcome flow must expose exactly three winning cells'
+  );
+  assert.ok(
+    outcomeCheck.steps.some(
+      (step) =>
+        step.type === 'expectCount' &&
+        step.selector === 'button.cell:not([disabled])' &&
+        step.count === 9
+    ),
+    'Tic-Tac-Toe terminal lockout must not natively disable grid buttons'
+  );
+
+  const historyCheck = checks.find((test) => test.id === 'pressure-tictactoe-history');
+  assert.equal(
+    historyCheck.steps.filter(
+      (step) => step.type === 'click' && step.selector === '.undo'
+    ).length,
+    2,
+    'Tic-Tac-Toe history flow must undo the terminal state twice'
+  );
+  assert.equal(
+    historyCheck.steps.filter(
+      (step) => step.type === 'click' && step.selector === '.redo'
+    ).length,
+    1,
+    'Tic-Tac-Toe history flow must restore the terminal state through redo'
+  );
+  assert.ok(
+    historyCheck.steps.some(
+      (step) =>
+        step.type === 'expectAttribute' &&
+        step.selector === '.cell' &&
+        step.index === 8 &&
+        step.attribute === 'data-mark' &&
+        step.expected === 'X'
+    ) &&
+      historyCheck.steps.some(
+        (step) =>
+          step.type === 'expectAttribute' &&
+          step.selector === '.cell' &&
+          step.index === 2 &&
+          step.attribute === 'data-mark' &&
+          step.expected === false
+      ),
+    'Tic-Tac-Toe history flow must replace the abandoned winning move with a divergent branch'
+  );
+  assert.deepEqual(
+    historyCheck.steps
+      .filter((step) => step.type === 'expectDisabled' && step.selector === '.redo')
+      .map((step) => step.disabled),
+    [true, true, false, true, true],
+    'Tic-Tac-Toe redo boundaries must close, reopen after undo, and close after divergence'
+  );
+
+  const keyboardCheck = checks.find(
+    (test) => test.id === 'pressure-tictactoe-keyboard-grid'
+  );
+  assert.deepEqual(
+    keyboardCheck.steps
+      .filter((step) => step.type === 'key')
+      .map((step) => ({ index: step.index, key: step.key })),
+    [
+      { index: 0, key: 'ArrowLeft' },
+      { index: 2, key: 'ArrowRight' },
+      { index: 0, key: 'ArrowUp' },
+      { index: 6, key: 'ArrowDown' },
+      { index: 0, key: 'End' },
+      { index: 2, key: 'Home' },
+    ],
+    'Tic-Tac-Toe keyboard flow must cover row and column wrapping plus row boundaries'
+  );
+  assert.deepEqual(
+    keyboardCheck.steps
+      .filter((step) => step.type === 'expectFocused')
+      .map((step) => step.index),
+    [2, 0, 6, 0, 2, 0],
+    'Tic-Tac-Toe keyboard flow must assert every wrapped focus destination'
+  );
+  assert.ok(
+    keyboardCheck.steps.some(
+      (step) =>
+        step.type === 'expectCount' &&
+        step.selector === '.cell[data-mark]' &&
+        step.count === 0
+    ),
+    'Tic-Tac-Toe navigation must not place a mark'
+  );
+
+  const ariaCheck = checks.find((test) => test.id === 'pressure-tictactoe-aria');
+  for (let index = 0; index < 9; index += 1) {
+    assert.ok(
+      ariaCheck.steps.some(
+        (step) =>
+          step.type === 'expectAttribute' &&
+          step.selector === '.cell' &&
+          step.index === index &&
+          step.attribute === 'id' &&
+          step.expected === `tic-tac-toe-cell-${index}`
+      ),
+      `Tic-Tac-Toe ARIA flow must keep stable cell id tic-tac-toe-cell-${index}`
+    );
+  }
+  for (const expectedStep of [
+    {
+      type: 'expectAttribute',
+      selector: '.board',
+      attribute: 'role',
+      expected: 'grid',
+    },
+    {
+      type: 'expectAttribute',
+      selector: '.board',
+      attribute: 'aria-describedby',
+      expected: 'game-status',
+    },
+    {
+      type: 'expectCount',
+      selector: '.cell-slot[role="gridcell"]',
+      count: 9,
+    },
+    {
+      type: 'expectCount',
+      selector: 'button.cell[type="button"]',
+      count: 9,
+    },
+    {
+      type: 'expectAttribute',
+      selector: '#game-status',
+      attribute: 'role',
+      expected: 'status',
+    },
+    {
+      type: 'expectAttribute',
+      selector: '#game-status',
+      attribute: 'aria-live',
+      expected: 'polite',
+    },
+    {
+      type: 'expectAttribute',
+      selector: '.cell',
+      index: 0,
+      attribute: 'aria-label',
+      expected: 'Row 1, column 1: empty',
+    },
+    {
+      type: 'expectAttribute',
+      selector: '.cell',
+      index: 0,
+      attribute: 'aria-label',
+      expected: 'Row 1, column 1: X',
+    },
+  ]) {
+    assert.ok(
+      ariaCheck.steps.some((step) =>
+        Object.entries(expectedStep).every(([key, value]) => step[key] === value)
+      ),
+      `Tic-Tac-Toe ARIA flow is missing ${JSON.stringify(expectedStep)}`
+    );
+  }
+  assert.deepEqual(
+    ariaCheck.steps
+      .filter(
+        (step) =>
+          step.type === 'expectAttribute' &&
+          step.selector === '.cell' &&
+          step.index === 0 &&
+          step.attribute === 'aria-disabled'
+      )
+      .map((step) => step.expected),
+    ['false', 'true'],
+    'Tic-Tac-Toe cell availability must move from playable to occupied through aria-disabled'
+  );
+
+  assert.equal(
+    scenario.debrief?.title,
+    'You kept branching game state correct under pressure',
+    'Tic-Tac-Toe debrief title changed'
+  );
+
+  const expectedPressureSolutions = {
+    react: 'assets/sb/react/solution/react-tictactoe-pressure-solution.v1.json',
+    angular: 'assets/sb/angular/solution/angular-tictactoe-pressure-solution.v1.json',
+    vue: 'assets/sb/vue/solution/vue-tictactoe-pressure-solution.v1.json',
+  };
+  for (const [framework, expectedReference] of Object.entries(expectedPressureSolutions)) {
+    const reference = scenario.solutionAssets?.[framework];
+    assert.equal(
+      reference,
+      expectedReference,
+      `${framework}: invalid Tic-Tac-Toe pressure solution reference`
+    );
+    assertMirror(
+      reference.replace(/^assets\//, ''),
+      `${framework}:tic-tac-toe-pressure-solution`
+    );
+  }
+}
+
+function assertChessboardClickHighlightPressureMode() {
+  const expectedQuestions = {
+    react: {
+      id: 'react-chessboard-click-highlight',
+      starter: 'assets/sb/react/question/react-chessboard-click-highlight.v1.json',
+      solution: 'assets/sb/react/solution/react-chessboard-click-highlight-solution.v1.json',
+      updatedAt: '2026-02-09',
+    },
+    angular: {
+      id: 'angular-chessboard-click-highlight',
+      starter: 'assets/sb/angular/question/angular-chessboard-click-highlight.v1.json',
+      solution: 'assets/sb/angular/solution/angular-chessboard-click-highlight-solution.v1.json',
+      updatedAt: '2026-07-15',
+    },
+    vue: {
+      id: 'vue-chessboard-click-highlight',
+      starter: 'assets/sb/vue/question/vue-chessboard-click-highlight.v1.json',
+      solution: 'assets/sb/vue/solution/vue-chessboard-click-highlight-solution.v1.json',
+      updatedAt: '2026-02-09',
+    },
+  };
+  const pressureRefs = new Set();
+
+  for (const [framework, expected] of Object.entries(expectedQuestions)) {
+    const question = json(`cdn/questions/${framework}/coding.json`).find(
+      (entry) => entry.id === expected.id
+    );
+    assert.ok(question, `${framework}: Chessboard Click / Highlight question must exist`);
+    assert.equal(
+      question.access,
+      'premium',
+      `${framework}: Chessboard Click / Highlight must stay premium`
+    );
+    assert.equal(
+      question.difficulty,
+      'easy',
+      `${framework}: Chessboard Click / Highlight difficulty changed`
+    );
+    assert.equal(
+      question.updatedAt,
+      expected.updatedAt,
+      `${framework}: pressure coverage must not rewrite normal Chessboard updatedAt`
+    );
+    assert.equal(
+      question.sdk?.asset,
+      expected.starter,
+      `${framework}: normal Chessboard starter changed`
+    );
+    assert.equal(
+      question.solutionAsset,
+      expected.solution,
+      `${framework}: normal Chessboard solution changed`
+    );
+    assert.equal(
+      Object.hasOwn(question, 'frameworkTests'),
+      false,
+      `${framework}: pressure coverage must not introduce normal Chessboard checks`
+    );
+    assert.equal(
+      question.pressureModeAsset,
+      'assets/questions/pressure-modes/chessboard-click-highlight.v1.json',
+      `${framework}: Chessboard must reference the shared pressure scenario`
+    );
+    pressureRefs.add(question.pressureModeAsset);
+  }
+
+  assert.equal(
+    pressureRefs.size,
+    1,
+    'All Chessboard frameworks must share one pressure scenario'
+  );
+
+  const scenario = json('cdn/questions/pressure-modes/chessboard-click-highlight.v1.json');
+  assert.equal(scenario.id, 'chessboard-click-highlight-pressure-v1');
+  assert.equal(scenario.family, 'chessboard-click-highlight');
+  assert.equal(scenario.access, 'premium');
+  assert.equal(scenario.estimatedMinutes, 45);
+  assert.deepEqual(scenario.supportedQuestions, {
+    react: 'react-chessboard-click-highlight',
+    angular: 'angular-chessboard-click-highlight',
+    vue: 'vue-chessboard-click-highlight',
+  });
+  assert.deepEqual(
+    scenario.rounds.map((round) => round.id),
+    [
+      'core-single-selection',
+      'dynamic-size-boundaries',
+      'queen-reachable-highlights',
+      'accessible-grid-navigation',
+    ]
+  );
+
+  const cumulativeCheckCounts = scenario.rounds.reduce((counts, round) => {
+    const previous = counts[counts.length - 1] ?? 0;
+    counts.push(previous + (round.frameworkTests?.length ?? 0));
+    return counts;
+  }, []);
+  assert.deepEqual(
+    cumulativeCheckCounts,
+    [1, 2, 3, 5],
+    'Chessboard pressure checks must stay within the cumulative runner budget'
+  );
+
+  const checks = scenario.rounds.flatMap((round) => round.frameworkTests ?? []);
+  assert.deepEqual(
+    checks.map((test) => test.id),
+    [
+      'pressure-chessboard-core-selection',
+      'pressure-chessboard-resize-boundaries',
+      'pressure-chessboard-queen-reachability',
+      'pressure-chessboard-keyboard-grid',
+      'pressure-chessboard-aria',
+    ]
+  );
+  for (const check of checks) {
+    assert.ok(check.steps?.length, `${check.id}: pressure check must be independently runnable`);
+  }
+
+  const hasStep = (check, expectedStep) => check.steps.some((step) =>
+    Object.entries(expectedStep).every(([key, value]) => step[key] === value)
+  );
+
+  const coreCheck = checks.find(
+    (test) => test.id === 'pressure-chessboard-core-selection'
+  );
+  for (const expectedStep of [
+    { type: 'expectValue', selector: '#board-size', value: '8' },
+    { type: 'expectCount', selector: 'button.cell', count: 64 },
+    { type: 'expectCount', selector: '.cell--light', count: 32 },
+    { type: 'expectCount', selector: '.cell--dark', count: 32 },
+    { type: 'expectCount', selector: '.cell--active', count: 0 },
+    { type: 'expectText', selector: '.selection-status', text: 'Selected: none' },
+    { type: 'expectCount', selector: '.reachability-status', count: 0 },
+    {
+      type: 'expectText',
+      selector: '.selection-status',
+      text: 'Selected: row 1, column 1',
+    },
+    {
+      type: 'expectText',
+      selector: '.selection-status',
+      text: 'Selected: row 2, column 3',
+    },
+  ]) {
+    assert.ok(
+      hasStep(coreCheck, expectedStep),
+      `Chessboard core flow is missing ${JSON.stringify(expectedStep)}`
+    );
+  }
+  assert.deepEqual(
+    coreCheck.steps
+      .filter((step) => step.type === 'click' && step.selector === '.cell')
+      .map((step) => step.index),
+    [0, 10],
+    'Chessboard core flow must replace the first selection with a second one'
+  );
+  assert.deepEqual(
+    coreCheck.steps
+      .filter(
+        (step) =>
+          step.type === 'expectAttribute' &&
+          step.selector === '.cell' &&
+          step.attribute === 'aria-pressed'
+      )
+      .map((step) => ({ index: step.index, expected: step.expected })),
+    [
+      { index: 0, expected: 'true' },
+      { index: 0, expected: 'false' },
+      { index: 10, expected: 'true' },
+    ],
+    'Chessboard core flow must keep exactly one pressed cell as selection moves'
+  );
+
+  const resizeCheck = checks.find(
+    (test) => test.id === 'pressure-chessboard-resize-boundaries'
+  );
+  assert.deepEqual(
+    resizeCheck.steps
+      .filter((step) => step.type === 'setValue' && step.selector === '#board-size')
+      .map((step) => step.value),
+    ['1', '21'],
+    'Chessboard resize flow must exercise both clamp boundaries'
+  );
+  assert.deepEqual(
+    resizeCheck.steps
+      .filter((step) => step.type === 'expectValue' && step.selector === '#board-size')
+      .map((step) => step.value),
+    ['2', '20'],
+    'Chessboard resize flow must clamp to 2 and 20'
+  );
+  assert.deepEqual(
+    resizeCheck.steps
+      .filter((step) => step.type === 'waitForCount' && step.selector === '.cell')
+      .map((step) => ({ count: step.count, timeoutMs: step.timeoutMs })),
+    [
+      { count: 4, timeoutMs: 1500 },
+      { count: 400, timeoutMs: 1500 },
+    ],
+    'Chessboard resize flow must wait for bounded 2x2 and 20x20 grids'
+  );
+  for (const expectedStep of [
+    { type: 'expectCount', selector: '.cell--light', count: 2 },
+    { type: 'expectCount', selector: '.cell--dark', count: 2 },
+    { type: 'expectCount', selector: '.cell--light', count: 200 },
+    { type: 'expectCount', selector: '.cell--dark', count: 200 },
+  ]) {
+    assert.ok(
+      hasStep(resizeCheck, expectedStep),
+      `Chessboard resize parity is missing ${JSON.stringify(expectedStep)}`
+    );
+  }
+  assert.equal(
+    resizeCheck.steps.filter(
+      (step) =>
+        step.type === 'expectCount' &&
+        step.selector === '.cell--active' &&
+        step.count === 0
+    ).length,
+    2,
+    'Every Chessboard resize must clear selection'
+  );
+  assert.equal(
+    resizeCheck.steps.filter(
+      (step) =>
+        step.type === 'expectCount' &&
+        step.selector === '.cell--reachable' &&
+        step.count === 0
+    ).length,
+    2,
+    'Every Chessboard resize must clear derived reachability'
+  );
+
+  const queenCheck = checks.find(
+    (test) => test.id === 'pressure-chessboard-queen-reachability'
+  );
+  assert.deepEqual(
+    queenCheck.steps
+      .filter((step) => step.type === 'click' && step.selector === '.cell')
+      .map((step) => step.index),
+    [27, 0],
+    'Chessboard queen flow must cover a central square and a corner'
+  );
+  assert.deepEqual(
+    queenCheck.steps
+      .filter(
+        (step) =>
+          step.type === 'waitForCount' &&
+          step.selector === '.cell--reachable[data-reachable="true"]'
+      )
+      .map((step) => step.count),
+    [27, 21],
+    'Chessboard queen flow must derive the correct center and corner move counts'
+  );
+  for (const expectedStep of [
+    {
+      type: 'expectAttribute',
+      selector: '.cell',
+      index: 27,
+      attribute: 'data-reachable',
+      expected: false,
+    },
+    {
+      type: 'expectAttribute',
+      selector: '.cell',
+      index: 0,
+      attribute: 'data-reachable',
+      expected: 'true',
+    },
+    {
+      type: 'expectAttribute',
+      selector: '.cell',
+      index: 0,
+      attribute: 'data-reachable',
+      expected: false,
+    },
+    {
+      type: 'expectAttribute',
+      selector: '.cell',
+      index: 27,
+      attribute: 'data-reachable',
+      expected: 'true',
+    },
+    {
+      type: 'expectAttribute',
+      selector: '.cell',
+      index: 10,
+      attribute: 'data-reachable',
+      expected: false,
+    },
+    {
+      type: 'expectText',
+      selector: '.selection-status',
+      text: 'Selected: row 4, column 4',
+    },
+    { type: 'expectText', selector: '.reachability-status', text: 'Queen moves: 27' },
+    {
+      type: 'expectText',
+      selector: '.selection-status',
+      text: 'Selected: row 1, column 1',
+    },
+    { type: 'expectText', selector: '.reachability-status', text: 'Queen moves: 21' },
+  ]) {
+    assert.ok(
+      hasStep(queenCheck, expectedStep),
+      `Chessboard queen flow is missing ${JSON.stringify(expectedStep)}`
+    );
+  }
+
+  const keyboardCheck = checks.find(
+    (test) => test.id === 'pressure-chessboard-keyboard-grid'
+  );
+  assert.deepEqual(
+    keyboardCheck.steps
+      .filter((step) => step.type === 'key')
+      .map((step) => ({ index: step.index, key: step.key })),
+    [
+      { index: 0, key: 'ArrowLeft' },
+      { index: 7, key: 'ArrowRight' },
+      { index: 0, key: 'ArrowUp' },
+      { index: 56, key: 'ArrowDown' },
+      { index: 10, key: 'Home' },
+      { index: 8, key: 'End' },
+    ],
+    'Chessboard keyboard flow must cover both wrapped axes and row boundaries'
+  );
+  assert.deepEqual(
+    keyboardCheck.steps
+      .filter((step) => step.type === 'expectFocused')
+      .map((step) => step.index),
+    [7, 0, 56, 0, 8, 15],
+    'Chessboard keyboard flow must assert every focus destination'
+  );
+  for (const expectedStep of [
+    {
+      type: 'expectAttribute',
+      selector: '.cell',
+      index: 0,
+      attribute: 'tabindex',
+      expected: '0',
+    },
+    {
+      type: 'expectAttribute',
+      selector: '.cell',
+      index: 15,
+      attribute: 'tabindex',
+      expected: '0',
+    },
+    {
+      type: 'expectAttribute',
+      selector: '.cell',
+      index: 8,
+      attribute: 'tabindex',
+      expected: '-1',
+    },
+    { type: 'expectCount', selector: '.cell--active', count: 0 },
+    { type: 'expectCount', selector: '.cell--reachable', count: 0 },
+    { type: 'expectText', selector: '.selection-status', text: 'Selected: none' },
+    { type: 'expectCount', selector: '.reachability-status', count: 0 },
+  ]) {
+    assert.ok(
+      hasStep(keyboardCheck, expectedStep),
+      `Chessboard keyboard flow is missing ${JSON.stringify(expectedStep)}`
+    );
+  }
+
+  const ariaCheck = checks.find((test) => test.id === 'pressure-chessboard-aria');
+  for (const expectedStep of [
+    { type: 'expectAttribute', selector: '#board-size', attribute: 'type', expected: 'number' },
+    { type: 'expectAttribute', selector: '#board-size', attribute: 'min', expected: '2' },
+    { type: 'expectAttribute', selector: '#board-size', attribute: 'max', expected: '20' },
+    { type: 'expectAttribute', selector: '.board', attribute: 'role', expected: 'grid' },
+    {
+      type: 'expectAttribute',
+      selector: '.board',
+      attribute: 'aria-label',
+      expected: 'Interactive chessboard',
+    },
+    {
+      type: 'expectAttribute',
+      selector: '.board',
+      attribute: 'aria-describedby',
+      expected: 'board-status',
+    },
+    { type: 'expectAttribute', selector: '.board', attribute: 'aria-rowcount', expected: '8' },
+    { type: 'expectAttribute', selector: '.board', attribute: 'aria-colcount', expected: '8' },
+    {
+      type: 'expectAttribute',
+      selector: '#board-status',
+      attribute: 'role',
+      expected: 'status',
+    },
+    {
+      type: 'expectAttribute',
+      selector: '#board-status',
+      attribute: 'aria-live',
+      expected: 'polite',
+    },
+    {
+      type: 'expectCount',
+      selector: 'button.cell[type="button"][role="gridcell"]',
+      count: 64,
+    },
+    { type: 'expectCount', selector: 'button.cell:not([disabled])', count: 64 },
+    {
+      type: 'expectAttribute',
+      selector: '.cell',
+      index: 0,
+      attribute: 'id',
+      expected: 'chessboard-cell-0-0',
+    },
+    {
+      type: 'expectAttribute',
+      selector: '.cell',
+      index: 0,
+      attribute: 'data-row',
+      expected: '0',
+    },
+    {
+      type: 'expectAttribute',
+      selector: '.cell',
+      index: 0,
+      attribute: 'data-col',
+      expected: '0',
+    },
+    {
+      type: 'expectAttribute',
+      selector: '.cell',
+      index: 0,
+      attribute: 'aria-rowindex',
+      expected: '1',
+    },
+    {
+      type: 'expectAttribute',
+      selector: '.cell',
+      index: 0,
+      attribute: 'aria-colindex',
+      expected: '1',
+    },
+    {
+      type: 'expectAttribute',
+      selector: '.cell',
+      index: 0,
+      attribute: 'aria-pressed',
+      expected: 'false',
+    },
+    {
+      type: 'expectAttribute',
+      selector: '.cell',
+      index: 0,
+      attribute: 'aria-label',
+      expected: 'Row 1, column 1',
+    },
+    {
+      type: 'expectAttribute',
+      selector: '.cell',
+      index: 63,
+      attribute: 'id',
+      expected: 'chessboard-cell-7-7',
+    },
+    {
+      type: 'expectAttribute',
+      selector: '.cell',
+      index: 63,
+      attribute: 'data-row',
+      expected: '7',
+    },
+    {
+      type: 'expectAttribute',
+      selector: '.cell',
+      index: 63,
+      attribute: 'data-col',
+      expected: '7',
+    },
+    {
+      type: 'expectAttribute',
+      selector: '.cell',
+      index: 63,
+      attribute: 'aria-rowindex',
+      expected: '8',
+    },
+    {
+      type: 'expectAttribute',
+      selector: '.cell',
+      index: 63,
+      attribute: 'aria-colindex',
+      expected: '8',
+    },
+    {
+      type: 'expectAttribute',
+      selector: '.cell',
+      index: 0,
+      attribute: 'aria-pressed',
+      expected: 'true',
+    },
+    {
+      type: 'expectAttribute',
+      selector: '.cell',
+      index: 0,
+      attribute: 'aria-label',
+      expected: 'Row 1, column 1, selected',
+    },
+    {
+      type: 'expectAttribute',
+      selector: '.cell',
+      index: 0,
+      attribute: 'data-reachable',
+      expected: false,
+    },
+    {
+      type: 'expectAttribute',
+      selector: '.cell',
+      index: 1,
+      attribute: 'data-reachable',
+      expected: 'true',
+    },
+    {
+      type: 'expectAttribute',
+      selector: '.cell',
+      index: 1,
+      attribute: 'aria-label',
+      expected: 'Row 1, column 2, reachable by queen',
+    },
+  ]) {
+    assert.ok(
+      hasStep(ariaCheck, expectedStep),
+      `Chessboard ARIA flow is missing ${JSON.stringify(expectedStep)}`
+    );
+  }
+
+  assert.equal(
+    scenario.debrief?.title,
+    'You kept dynamic board state predictable under pressure',
+    'Chessboard pressure debrief title changed'
+  );
+
+  const expectedPressureSolutions = {
+    react: 'assets/sb/react/solution/react-chessboard-click-highlight-pressure-solution.v1.json',
+    angular: 'assets/sb/angular/solution/angular-chessboard-click-highlight-pressure-solution.v1.json',
+    vue: 'assets/sb/vue/solution/vue-chessboard-click-highlight-pressure-solution.v1.json',
+  };
+  const frameworkSourceMarkers = {
+    react: [
+      /useRef<Array<HTMLButtonElement \| null>>/,
+      /cellRefs\.current\[index\]\?\.focus\(\)/,
+    ],
+    angular: [
+      /@ViewChildren\('cellButton'\)/,
+      /QueryList<ElementRef<HTMLButtonElement>>/,
+      /cellButtons\.get\(index\)\?\.nativeElement\.focus\(\)/,
+    ],
+    vue: [
+      /new Map<string, HTMLButtonElement>/,
+      /cellRefs\.get\(cellId\(row, col\)\)\?\.focus\(\)/,
+    ],
+  };
+
+  for (const [framework, expectedReference] of Object.entries(expectedPressureSolutions)) {
+    const reference = scenario.solutionAssets?.[framework];
+    assert.equal(
+      reference,
+      expectedReference,
+      `${framework}: invalid Chessboard pressure solution reference`
+    );
+    const relative = reference.replace(/^assets\//, '');
+    assertMirror(relative, `${framework}:chessboard-pressure-solution`);
+
+    const starterFiles = normalizedAssetFiles(
+      json(`cdn/${expectedQuestions[framework].starter.replace(/^assets\//, '')}`),
+      `${framework}:chessboard-starter`
+    );
+    const pressureFiles = normalizedAssetFiles(
+      json(`cdn/${relative}`),
+      `${framework}:chessboard-pressure-solution`
+    );
+    assert.deepEqual(
+      Object.keys(pressureFiles).sort(),
+      Object.keys(starterFiles).sort(),
+      `${framework}: Chessboard pressure solution tree must exactly match its normal starter`
+    );
+
+    const source = Object.values(pressureFiles).join('\n');
+    for (const marker of [
+      /isQueenReachable/,
+      /Math\.abs\(/,
+      /rowDistance === 0 \|\| colDistance === 0 \|\| rowDistance === colDistance/,
+      /cell--reachable/,
+      /data-reachable/,
+      /Queen moves:/,
+      /chessboard-cell-/,
+      /ArrowLeft/,
+      /ArrowRight/,
+      /ArrowUp/,
+      /ArrowDown/,
+      /Home/,
+      /End/,
+      /aria-rowcount/,
+      /aria-colcount/,
+    ]) {
+      assert.match(
+        source,
+        marker,
+        `${framework}: Chessboard pressure solution is missing ${marker}`
+      );
+    }
+    for (const marker of frameworkSourceMarkers[framework]) {
+      assert.match(
+        source,
+        marker,
+        `${framework}: Chessboard pressure solution must use framework-native focus refs (${marker})`
+      );
+    }
+  }
+}
+
+function assertDynamicCounterButtonsPressureMode() {
+  const expectedQuestions = {
+    react: {
+      id: 'react-dynamic-counter-buttons',
+      starter: 'assets/sb/react/question/react-dynamic-counter-buttons.v1.json',
+      solution: 'assets/sb/react/solution/react-dynamic-counter-buttons-solution.v1.json',
+      openFile: '/src/App.tsx',
+      storageKey: 'v1:ui:react:react-dynamic-counter-buttons',
+      updatedAt: '2026-01-30',
+    },
+    angular: {
+      id: 'angular-dynamic-counter-buttons',
+      starter: 'assets/sb/angular/question/angular-dynamic-counter-buttons.v2.json',
+      solution: 'assets/sb/angular/solution/angular-dynamic-counter-buttons-solution.v2.json',
+      openFile: '/src/app/app.component.ts',
+      storageKey: 'v2:ui:angular:angular-dynamic-counter-buttons',
+      updatedAt: '2026-07-15',
+    },
+    vue: {
+      id: 'vue-dynamic-counter-buttons',
+      starter: 'assets/sb/vue/question/vue-dynamic-counter-buttons.v1.json',
+      solution: 'assets/sb/vue/solution/vue-dynamic-counter-buttons-solution.v1.json',
+      openFile: '/src/App.vue',
+      storageKey: 'v1:ui:vue:vue-dynamic-counter-buttons',
+      updatedAt: '2026-01-30',
+    },
+  };
+  const pressureRefs = new Set();
+
+  for (const [framework, expected] of Object.entries(expectedQuestions)) {
+    const question = json(`cdn/questions/${framework}/coding.json`).find(
+      (entry) => entry.id === expected.id
+    );
+    assert.ok(question, `${framework}: Dynamic Counter Buttons question must exist`);
+    assert.equal(
+      question.access,
+      'premium',
+      `${framework}: Dynamic Counter Buttons must stay premium`
+    );
+    assert.equal(
+      question.difficulty,
+      'intermediate',
+      `${framework}: Dynamic Counter Buttons difficulty changed`
+    );
+    assert.equal(
+      question.updatedAt,
+      expected.updatedAt,
+      `${framework}: pressure coverage must not rewrite normal Dynamic Counter updatedAt`
+    );
+    assert.equal(
+      question.sdk?.asset,
+      expected.starter,
+      `${framework}: normal Dynamic Counter starter changed`
+    );
+    assert.equal(
+      question.sdk?.openFile,
+      expected.openFile,
+      `${framework}: normal Dynamic Counter open file changed`
+    );
+    assert.equal(
+      question.sdk?.storageKey,
+      expected.storageKey,
+      `${framework}: normal Dynamic Counter draft key changed`
+    );
+    assert.equal(
+      question.solutionAsset,
+      expected.solution,
+      `${framework}: normal Dynamic Counter solution changed`
+    );
+    assert.equal(
+      Object.hasOwn(question, 'frameworkTests'),
+      false,
+      `${framework}: pressure coverage must not introduce normal Dynamic Counter checks`
+    );
+    assert.equal(
+      question.pressureModeAsset,
+      'assets/questions/pressure-modes/dynamic-counter-buttons.v1.json',
+      `${framework}: Dynamic Counter Buttons must reference the shared pressure scenario`
+    );
+    pressureRefs.add(question.pressureModeAsset);
+  }
+
+  assert.equal(
+    pressureRefs.size,
+    1,
+    'All Dynamic Counter frameworks must share one pressure scenario'
+  );
+
+  const scenario = json('cdn/questions/pressure-modes/dynamic-counter-buttons.v1.json');
+  assert.equal(scenario.schemaVersion, '1.0.0');
+  assert.equal(scenario.id, 'dynamic-counter-buttons-pressure-v1');
+  assert.equal(scenario.family, 'dynamic-counter-buttons');
+  assert.equal(scenario.access, 'premium');
+  assert.equal(scenario.estimatedMinutes, 45);
+  assert.deepEqual(scenario.supportedQuestions, {
+    react: 'react-dynamic-counter-buttons',
+    angular: 'angular-dynamic-counter-buttons',
+    vue: 'vue-dynamic-counter-buttons',
+  });
+  assert.deepEqual(
+    scenario.rounds.map((round) => round.id),
+    [
+      'core-grow-invariants',
+      'stable-removal-boundaries',
+      'bounded-growth-reset',
+      'accessible-list-navigation',
+    ]
+  );
+
+  const cumulativeCheckCounts = scenario.rounds.reduce((counts, round) => {
+    const previous = counts[counts.length - 1] ?? 0;
+    counts.push(previous + (round.frameworkTests?.length ?? 0));
+    return counts;
+  }, []);
+  assert.deepEqual(
+    cumulativeCheckCounts,
+    [1, 2, 3, 5],
+    'Dynamic Counter pressure checks must stay within the cumulative runner budget'
+  );
+
+  const checks = scenario.rounds.flatMap((round) => round.frameworkTests ?? []);
+  assert.deepEqual(
+    checks.map((test) => test.id),
+    [
+      'pressure-dynamic-counters-core',
+      'pressure-dynamic-counters-removal',
+      'pressure-dynamic-counters-limit-reset',
+      'pressure-dynamic-counters-keyboard',
+      'pressure-dynamic-counters-aria',
+    ]
+  );
+  for (const check of checks) {
+    assert.ok(check.steps?.length, `${check.id}: pressure check must be independently runnable`);
+  }
+
+  const hasStep = (check, expectedStep) => check.steps.some((step) =>
+    Object.entries(expectedStep).every(([key, value]) => step[key] === value)
+  );
+
+  const coreCheck = checks.find((test) => test.id === 'pressure-dynamic-counters-core');
+  assert.deepEqual(
+    coreCheck.steps
+      .filter((step) => step.type === 'click' && step.selector === '.counter-button')
+      .map((step) => step.index),
+    [0, 1, 1],
+    'Dynamic Counter core flow must increment the first counter once and second twice'
+  );
+  assert.deepEqual(
+    coreCheck.steps
+      .filter((step) =>
+        step.type === 'expectAttribute' &&
+        step.selector === '.counter-row' &&
+        step.attribute === 'data-counter-id'
+      )
+      .map((step) => step.expected),
+    ['1', '1', '2', '3', '4'],
+    'Dynamic Counter core flow must prove monotonic ids 1 through 4'
+  );
+  for (const expectedStep of [
+    { type: 'expectValue', selector: '#counter-limit', value: '5' },
+    { type: 'expectText', selector: '.counter-value', index: 0, text: '1' },
+    { type: 'expectText', selector: '.counter-value', index: 1, text: '2' },
+    { type: 'expectText', selector: '.counter-value', index: 2, text: '0' },
+    { type: 'expectText', selector: '.counter-value', index: 3, text: '0' },
+    {
+      type: 'expectText',
+      selector: '#counter-status',
+      text: 'Counters: 4 of 5. Combined value: 3.',
+    },
+  ]) {
+    assert.ok(
+      hasStep(coreCheck, expectedStep),
+      `Dynamic Counter core flow is missing ${JSON.stringify(expectedStep)}`
+    );
+  }
+
+  const removalCheck = checks.find(
+    (test) => test.id === 'pressure-dynamic-counters-removal'
+  );
+  assert.deepEqual(
+    removalCheck.steps
+      .filter((step) => step.type === 'click' && step.selector === '.remove-button')
+      .map((step) => step.index),
+    [1, 2, 1, 1],
+    'Dynamic Counter removal flow must cover middle, last, and final-boundary removal'
+  );
+  assert.deepEqual(
+    removalCheck.steps
+      .filter((step) => step.type === 'expectFocused')
+      .map((step) => ({ selector: step.selector, index: step.index })),
+    [
+      { selector: '.counter-button', index: 1 },
+      { selector: '.counter-button', index: 1 },
+      { selector: '.counter-button', index: 0 },
+    ],
+    'Dynamic Counter removal flow must restore focus to next or previous survivors'
+  );
+  for (const expectedStep of [
+    {
+      type: 'expectAttribute',
+      selector: '.counter-row',
+      index: 1,
+      attribute: 'data-counter-id',
+      expected: '3',
+    },
+    {
+      type: 'expectAttribute',
+      selector: '.counter-row',
+      index: 2,
+      attribute: 'data-counter-id',
+      expected: '4',
+    },
+    {
+      type: 'expectAttribute',
+      selector: '.counter-row',
+      index: 2,
+      attribute: 'data-counter-id',
+      expected: '5',
+    },
+    {
+      type: 'expectDisabled',
+      selector: '.remove-button',
+      index: 0,
+      disabled: true,
+    },
+    {
+      type: 'expectText',
+      selector: '#counter-status',
+      text: 'Counters: 3 of 5. Combined value: 1.',
+    },
+  ]) {
+    assert.ok(
+      hasStep(removalCheck, expectedStep),
+      `Dynamic Counter removal flow is missing ${JSON.stringify(expectedStep)}`
+    );
+  }
+
+  const limitCheck = checks.find(
+    (test) => test.id === 'pressure-dynamic-counters-limit-reset'
+  );
+  assert.deepEqual(
+    limitCheck.steps
+      .filter((step) => step.type === 'setValue' && step.selector === '#counter-limit')
+      .map((step) => step.value),
+    ['3', '12', '0'],
+    'Dynamic Counter limit flow must cover truncation and both clamp boundaries'
+  );
+  assert.deepEqual(
+    limitCheck.steps
+      .filter((step) => step.type === 'expectValue' && step.selector === '#counter-limit')
+      .map((step) => step.value),
+    ['3', '10', '1', '5'],
+    'Dynamic Counter limit flow must clamp to 1 and 10 before reset restores 5'
+  );
+  for (const expectedStep of [
+    { type: 'expectCount', selector: '.counter-row', count: 5 },
+    { type: 'expectText', selector: '.counter-value', index: 4, text: '2' },
+    {
+      type: 'expectText',
+      selector: '#counter-status',
+      text: 'Counters: 5 of 5. Combined value: 6.',
+    },
+    {
+      type: 'expectAttribute',
+      selector: '.counter-button',
+      index: 2,
+      attribute: 'tabindex',
+      expected: '0',
+    },
+    {
+      type: 'expectAttribute',
+      selector: '.counter-row',
+      index: 1,
+      attribute: 'data-counter-id',
+      expected: '2',
+    },
+    {
+      type: 'expectText',
+      selector: '#counter-status',
+      text: 'Counters: 1 of 5. Combined value: 0.',
+    },
+  ]) {
+    assert.ok(
+      hasStep(limitCheck, expectedStep),
+      `Dynamic Counter limit/reset flow is missing ${JSON.stringify(expectedStep)}`
+    );
+  }
+  assert.equal(
+    limitCheck.steps.filter(
+      (step) => step.type === 'expectFocused' && step.selector === '#counter-limit'
+    ).length,
+    2,
+    'Dynamic Counter limit and reset normalization must not steal DOM focus from the limit control'
+  );
+  assert.deepEqual(
+    limitCheck.steps
+      .filter((step) => step.type === 'expectDisabled' && step.selector === '#reset-counters')
+      .map((step) => step.disabled),
+    [true, false, true],
+    'Dynamic Counter reset must be enabled only away from the initial model'
+  );
+
+  const keyboardCheck = checks.find(
+    (test) => test.id === 'pressure-dynamic-counters-keyboard'
+  );
+  assert.deepEqual(
+    keyboardCheck.steps
+      .filter((step) => step.type === 'key')
+      .map((step) => ({ index: step.index, key: step.key })),
+    [
+      { index: 0, key: 'ArrowUp' },
+      { index: 3, key: 'ArrowDown' },
+      { index: 2, key: 'Home' },
+      { index: 0, key: 'End' },
+    ],
+    'Dynamic Counter keyboard flow must cover wrapped vertical navigation and boundaries'
+  );
+  assert.deepEqual(
+    keyboardCheck.steps
+      .filter((step) => step.type === 'expectFocused')
+      .map((step) => step.index),
+    [3, 0, 0, 3],
+    'Dynamic Counter keyboard flow must assert every focus destination'
+  );
+  for (const expectedStep of [
+    {
+      type: 'expectAttribute',
+      selector: '.counter-button',
+      index: 3,
+      attribute: 'tabindex',
+      expected: '0',
+    },
+    {
+      type: 'expectAttribute',
+      selector: '.counter-button',
+      index: 0,
+      attribute: 'tabindex',
+      expected: '-1',
+    },
+    {
+      type: 'expectText',
+      selector: '#counter-status',
+      text: 'Counters: 4 of 5. Combined value: 3.',
+    },
+  ]) {
+    assert.ok(
+      hasStep(keyboardCheck, expectedStep),
+      `Dynamic Counter keyboard flow is missing ${JSON.stringify(expectedStep)}`
+    );
+  }
+
+  const ariaCheck = checks.find((test) => test.id === 'pressure-dynamic-counters-aria');
+  for (const expectedStep of [
+    { type: 'expectAttribute', selector: '#counter-limit', attribute: 'type', expected: 'number' },
+    { type: 'expectAttribute', selector: '#counter-limit', attribute: 'min', expected: '1' },
+    { type: 'expectAttribute', selector: '#counter-limit', attribute: 'max', expected: '10' },
+    { type: 'expectAttribute', selector: '.counter-list', attribute: 'role', expected: 'list' },
+    {
+      type: 'expectAttribute',
+      selector: '.counter-list',
+      attribute: 'aria-label',
+      expected: 'Dynamic counter buttons',
+    },
+    {
+      type: 'expectAttribute',
+      selector: '.counter-list',
+      attribute: 'aria-describedby',
+      expected: 'counter-status',
+    },
+    {
+      type: 'expectAttribute',
+      selector: '#counter-status',
+      attribute: 'role',
+      expected: 'status',
+    },
+    {
+      type: 'expectAttribute',
+      selector: '#counter-status',
+      attribute: 'aria-live',
+      expected: 'polite',
+    },
+    {
+      type: 'expectAttribute',
+      selector: '.counter-row',
+      index: 0,
+      attribute: 'id',
+      expected: 'counter-row-1',
+    },
+    {
+      type: 'expectAttribute',
+      selector: '.counter-button',
+      index: 0,
+      attribute: 'id',
+      expected: 'counter-button-1',
+    },
+    {
+      type: 'expectAttribute',
+      selector: '.counter-button',
+      index: 0,
+      attribute: 'aria-label',
+      expected: 'Counter 1, value 0',
+    },
+    {
+      type: 'expectAttribute',
+      selector: '.remove-button',
+      index: 0,
+      attribute: 'id',
+      expected: 'remove-counter-1',
+    },
+    {
+      type: 'expectAttribute',
+      selector: '.remove-button',
+      index: 0,
+      attribute: 'aria-controls',
+      expected: 'counter-row-1',
+    },
+    {
+      type: 'expectAttribute',
+      selector: '.remove-button',
+      index: 0,
+      attribute: 'aria-label',
+      expected: 'Remove counter 1',
+    },
+    {
+      type: 'expectAttribute',
+      selector: '.counter-button',
+      index: 0,
+      attribute: 'aria-label',
+      expected: 'Counter 1, value 1',
+    },
+    {
+      type: 'expectAttribute',
+      selector: '.counter-button',
+      index: 1,
+      attribute: 'id',
+      expected: 'counter-button-2',
+    },
+    {
+      type: 'expectAttribute',
+      selector: '.counter-button',
+      index: 1,
+      attribute: 'aria-label',
+      expected: 'Counter 2, value 0',
+    },
+    { type: 'expectCount', selector: 'button#reset-counters[type="button"]', count: 1 },
+  ]) {
+    assert.ok(
+      hasStep(ariaCheck, expectedStep),
+      `Dynamic Counter ARIA flow is missing ${JSON.stringify(expectedStep)}`
+    );
+  }
+
+  assert.equal(
+    scenario.debrief?.title,
+    'You kept dynamic counter state predictable under pressure',
+    'Dynamic Counter pressure debrief title changed'
+  );
+
+  const expectedPressureSolutions = {
+    react: 'assets/sb/react/solution/react-dynamic-counter-buttons-pressure-solution.v1.json',
+    angular: 'assets/sb/angular/solution/angular-dynamic-counter-buttons-pressure-solution.v1.json',
+    vue: 'assets/sb/vue/solution/vue-dynamic-counter-buttons-pressure-solution.v1.json',
+  };
+  const frameworkSourceMarkers = {
+    react: [/useRef/, /Map<number, HTMLButtonElement/, /setCounters\(\(current\)/],
+    angular: [/@ViewChildren/, /QueryList<ElementRef<HTMLButtonElement>>/, /onClick\(id: number\)/],
+    vue: [/nextTick/, /Map<number, HTMLButtonElement/, /setCounterRef/],
+  };
+
+  for (const [framework, expectedReference] of Object.entries(expectedPressureSolutions)) {
+    const reference = scenario.solutionAssets?.[framework];
+    assert.equal(
+      reference,
+      expectedReference,
+      `${framework}: invalid Dynamic Counter pressure solution reference`
+    );
+    const relative = reference.replace(/^assets\//, '');
+    assertMirror(relative, `${framework}:dynamic-counter-pressure-solution`);
+
+    const starterFiles = normalizedAssetFiles(
+      json(`cdn/${expectedQuestions[framework].starter.replace(/^assets\//, '')}`),
+      `${framework}:dynamic-counter-starter`
+    );
+    const pressureFiles = normalizedAssetFiles(
+      json(`cdn/${relative}`),
+      `${framework}:dynamic-counter-pressure-solution`
+    );
+    assert.deepEqual(
+      Object.keys(pressureFiles).sort(),
+      Object.keys(starterFiles).sort(),
+      `${framework}: Dynamic Counter pressure solution tree must exactly match its normal starter`
+    );
+
+    const source = Object.values(pressureFiles).join('\n');
+    for (const marker of [
+      /nextId/,
+      /counter-row-/,
+      /counter-button-/,
+      /remove-counter-/,
+      /Counters:/,
+      /Combined value:/,
+      /ArrowUp/,
+      /ArrowDown/,
+      /Home/,
+      /End/,
+      /aria-describedby/,
+    ]) {
+      assert.match(
+        source,
+        marker,
+        `${framework}: Dynamic Counter pressure solution is missing ${marker}`
+      );
+    }
+    for (const marker of frameworkSourceMarkers[framework]) {
+      assert.match(
+        source,
+        marker,
+        `${framework}: Dynamic Counter pressure solution must use framework-native state and focus (${marker})`
+      );
+    }
+  }
+}
+
 function assertPaginationTablePressureMode() {
   const expectedQuestions = {
     react: {
@@ -2635,6 +4478,10 @@ assertDebouncedSearchPressureMode();
 assertTodoListPressureMode();
 assertShoppingCartPressureMode();
 assertChipsInputPressureMode();
+assertAccordionFaqPressureMode();
+assertTicTacToePressureMode();
+assertChessboardClickHighlightPressureMode();
+assertDynamicCounterButtonsPressureMode();
 assertPaginationTablePressureMode();
 
 const angularCodingQuestions = json('cdn/questions/angular/coding.json');

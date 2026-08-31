@@ -1,0 +1,920 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "dynamic-counter-buttons-pressure-v1",
+  "family": "dynamic-counter-buttons",
+  "title": "Dynamic Counter Buttons Interview Pressure Mode",
+  "access": "premium",
+  "estimatedMinutes": 45,
+  "supportedQuestions": {
+    "react": "react-dynamic-counter-buttons",
+    "angular": "angular-dynamic-counter-buttons",
+    "vue": "vue-dynamic-counter-buttons"
+  },
+  "rounds": [
+    {
+      "id": "core-grow-invariants",
+      "title": "Core grow invariants",
+      "interviewerPrompt": "Start with one stable counter and grow the list without losing independent values. Every activation must update exactly one existing item before capacity allows one new item.",
+      "constraints": [
+        "Start with exactly one counter object whose id is 1 and whose count is 0.",
+        "Activating a counter must increment only that counter and append one zero-value counter while the current limit has room.",
+        "Allocate monotonically increasing ids so rendered position is never the source of counter identity.",
+        "Derive the visible counter count and combined value from the current collection."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-dynamic-counters-core",
+          "name": "Round 1 · Independent values grow with stable identities",
+          "steps": [
+            {
+              "type": "expectValue",
+              "selector": "#counter-limit",
+              "value": "5"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".counter-row",
+              "count": 1
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".counter-row",
+              "index": 0,
+              "attribute": "data-counter-id",
+              "expected": "1"
+            },
+            {
+              "type": "expectText",
+              "selector": ".counter-value",
+              "index": 0,
+              "text": "0"
+            },
+            {
+              "type": "expectText",
+              "selector": "#counter-status",
+              "text": "Counters: 1 of 5. Combined value: 0."
+            },
+            {
+              "type": "click",
+              "selector": ".counter-button",
+              "index": 0
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".counter-row",
+              "count": 2,
+              "timeoutMs": 700
+            },
+            {
+              "type": "click",
+              "selector": ".counter-button",
+              "index": 1
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".counter-row",
+              "count": 3,
+              "timeoutMs": 700
+            },
+            {
+              "type": "click",
+              "selector": ".counter-button",
+              "index": 1
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".counter-row",
+              "count": 4,
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectText",
+              "selector": ".counter-value",
+              "index": 0,
+              "text": "1"
+            },
+            {
+              "type": "expectText",
+              "selector": ".counter-value",
+              "index": 1,
+              "text": "2"
+            },
+            {
+              "type": "expectText",
+              "selector": ".counter-value",
+              "index": 2,
+              "text": "0"
+            },
+            {
+              "type": "expectText",
+              "selector": ".counter-value",
+              "index": 3,
+              "text": "0"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".counter-row",
+              "index": 0,
+              "attribute": "data-counter-id",
+              "expected": "1"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".counter-row",
+              "index": 1,
+              "attribute": "data-counter-id",
+              "expected": "2"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".counter-row",
+              "index": 2,
+              "attribute": "data-counter-id",
+              "expected": "3"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".counter-row",
+              "index": 3,
+              "attribute": "data-counter-id",
+              "expected": "4"
+            },
+            {
+              "type": "expectText",
+              "selector": "#counter-status",
+              "text": "Counters: 4 of 5. Combined value: 3."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "stable-removal-boundaries",
+      "title": "Stable removal boundaries",
+      "interviewerPrompt": "Add removal without turning array position into identity. Surviving counters, allocator state, and keyboard focus must remain deterministic when an item disappears.",
+      "constraints": [
+        "Removing a counter must preserve every surviving id and count and must never recycle a removed id.",
+        "Keep at least one counter and expose each remove control as disabled when only one row remains.",
+        "When a focused remove control deletes its row, focus the next surviving counter or the previous counter when the removed row was last.",
+        "A removal must not allocate a replacement counter or change any surviving value."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-dynamic-counters-removal",
+          "name": "Round 2 · Removal preserves identity and restores focus",
+          "steps": [
+            {
+              "type": "click",
+              "selector": ".counter-button",
+              "index": 0
+            },
+            {
+              "type": "click",
+              "selector": ".counter-button",
+              "index": 1
+            },
+            {
+              "type": "click",
+              "selector": ".counter-button",
+              "index": 1
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".counter-row",
+              "count": 4,
+              "timeoutMs": 700
+            },
+            {
+              "type": "key",
+              "selector": ".remove-button",
+              "index": 1,
+              "key": "Tab"
+            },
+            {
+              "type": "click",
+              "selector": ".remove-button",
+              "index": 1
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".counter-row",
+              "count": 3,
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectFocused",
+              "selector": ".counter-button",
+              "index": 1
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".counter-row",
+              "index": 0,
+              "attribute": "data-counter-id",
+              "expected": "1"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".counter-row",
+              "index": 1,
+              "attribute": "data-counter-id",
+              "expected": "3"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".counter-row",
+              "index": 2,
+              "attribute": "data-counter-id",
+              "expected": "4"
+            },
+            {
+              "type": "expectText",
+              "selector": ".counter-value",
+              "index": 0,
+              "text": "1"
+            },
+            {
+              "type": "expectText",
+              "selector": ".counter-value",
+              "index": 1,
+              "text": "0"
+            },
+            {
+              "type": "expectText",
+              "selector": ".counter-value",
+              "index": 2,
+              "text": "0"
+            },
+            {
+              "type": "expectText",
+              "selector": "#counter-status",
+              "text": "Counters: 3 of 5. Combined value: 1."
+            },
+            {
+              "type": "key",
+              "selector": ".remove-button",
+              "index": 2,
+              "key": "Tab"
+            },
+            {
+              "type": "click",
+              "selector": ".remove-button",
+              "index": 2
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".counter-row",
+              "count": 2,
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectFocused",
+              "selector": ".counter-button",
+              "index": 1
+            },
+            {
+              "type": "click",
+              "selector": ".counter-button",
+              "index": 1
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".counter-row",
+              "count": 3,
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".counter-row",
+              "index": 2,
+              "attribute": "data-counter-id",
+              "expected": "5"
+            },
+            {
+              "type": "key",
+              "selector": ".remove-button",
+              "index": 1,
+              "key": "Tab"
+            },
+            {
+              "type": "click",
+              "selector": ".remove-button",
+              "index": 1
+            },
+            {
+              "type": "key",
+              "selector": ".remove-button",
+              "index": 1,
+              "key": "Tab"
+            },
+            {
+              "type": "click",
+              "selector": ".remove-button",
+              "index": 1
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".counter-row",
+              "count": 1,
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectFocused",
+              "selector": ".counter-button",
+              "index": 0
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".remove-button",
+              "index": 0,
+              "disabled": true
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".counter-row",
+              "index": 0,
+              "attribute": "data-counter-id",
+              "expected": "1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bounded-growth-reset",
+      "title": "Bounded growth and reset",
+      "interviewerPrompt": "Introduce a bounded limit and a complete reset. Capacity changes must normalize the existing list without corrupting allocator or logical focus state.",
+      "constraints": [
+        "Expose a numeric limit control, normalize integral values, and clamp them to the inclusive range 1 through 10.",
+        "When the limit shrinks, preserve the oldest counters in insertion order and discard only overflow rows.",
+        "At capacity, activating a counter must still increment it but must not append another row.",
+        "Reset must restore limit 5, counter id 1 with value 0, next id 2, and logical focus id 1 without forcing DOM focus from the reset or limit control."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-dynamic-counters-limit-reset",
+          "name": "Round 3 · Limits normalize growth and reset the full model",
+          "steps": [
+            {
+              "type": "expectDisabled",
+              "selector": "#reset-counters",
+              "disabled": true
+            },
+            {
+              "type": "click",
+              "selector": ".counter-button",
+              "index": 0
+            },
+            {
+              "type": "click",
+              "selector": ".counter-button",
+              "index": 1
+            },
+            {
+              "type": "click",
+              "selector": ".counter-button",
+              "index": 2
+            },
+            {
+              "type": "click",
+              "selector": ".counter-button",
+              "index": 3
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".counter-row",
+              "count": 5,
+              "timeoutMs": 700
+            },
+            {
+              "type": "click",
+              "selector": ".counter-button",
+              "index": 4
+            },
+            {
+              "type": "click",
+              "selector": ".counter-button",
+              "index": 4
+            },
+            {
+              "type": "expectCount",
+              "selector": ".counter-row",
+              "count": 5
+            },
+            {
+              "type": "expectText",
+              "selector": ".counter-value",
+              "index": 4,
+              "text": "2"
+            },
+            {
+              "type": "expectText",
+              "selector": "#counter-status",
+              "text": "Counters: 5 of 5. Combined value: 6."
+            },
+            {
+              "type": "key",
+              "selector": "#counter-limit",
+              "key": "Tab"
+            },
+            {
+              "type": "setValue",
+              "selector": "#counter-limit",
+              "value": "3"
+            },
+            {
+              "type": "expectValue",
+              "selector": "#counter-limit",
+              "value": "3"
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".counter-row",
+              "count": 3,
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".counter-row",
+              "index": 0,
+              "attribute": "data-counter-id",
+              "expected": "1"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".counter-row",
+              "index": 1,
+              "attribute": "data-counter-id",
+              "expected": "2"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".counter-row",
+              "index": 2,
+              "attribute": "data-counter-id",
+              "expected": "3"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".counter-button",
+              "index": 2,
+              "attribute": "tabindex",
+              "expected": "0"
+            },
+            {
+              "type": "expectFocused",
+              "selector": "#counter-limit"
+            },
+            {
+              "type": "setValue",
+              "selector": "#counter-limit",
+              "value": "12"
+            },
+            {
+              "type": "expectValue",
+              "selector": "#counter-limit",
+              "value": "10"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".counter-row",
+              "count": 3
+            },
+            {
+              "type": "setValue",
+              "selector": "#counter-limit",
+              "value": "0"
+            },
+            {
+              "type": "expectValue",
+              "selector": "#counter-limit",
+              "value": "1"
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".counter-row",
+              "count": 1,
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".counter-row",
+              "index": 0,
+              "attribute": "data-counter-id",
+              "expected": "1"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".counter-button",
+              "index": 0,
+              "attribute": "tabindex",
+              "expected": "0"
+            },
+            {
+              "type": "expectDisabled",
+              "selector": "#reset-counters",
+              "disabled": false
+            },
+            {
+              "type": "click",
+              "selector": "#reset-counters"
+            },
+            {
+              "type": "expectFocused",
+              "selector": "#counter-limit"
+            },
+            {
+              "type": "expectValue",
+              "selector": "#counter-limit",
+              "value": "5"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".counter-row",
+              "count": 1
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".counter-row",
+              "index": 0,
+              "attribute": "data-counter-id",
+              "expected": "1"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".counter-button",
+              "index": 0,
+              "attribute": "tabindex",
+              "expected": "0"
+            },
+            {
+              "type": "expectText",
+              "selector": ".counter-value",
+              "index": 0,
+              "text": "0"
+            },
+            {
+              "type": "expectText",
+              "selector": "#counter-status",
+              "text": "Counters: 1 of 5. Combined value: 0."
+            },
+            {
+              "type": "expectDisabled",
+              "selector": "#reset-counters",
+              "disabled": true
+            },
+            {
+              "type": "click",
+              "selector": ".counter-button",
+              "index": 0
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".counter-row",
+              "count": 2,
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".counter-row",
+              "index": 1,
+              "attribute": "data-counter-id",
+              "expected": "2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "accessible-list-navigation",
+      "title": "Accessible list navigation",
+      "interviewerPrompt": "Finish with native controls and roving list navigation. Moving focus must stay separate from every counter, limit, and allocator transition.",
+      "constraints": [
+        "Expose the rows as a named list described by one polite, derived status message.",
+        "Give every row, counter button, and remove button a stable id or relationship based on the counter id.",
+        "Use roving tabindex across counter buttons; ArrowUp and ArrowDown wrap while Home and End move to the first and last counter.",
+        "Navigation keys must move focus without incrementing, appending, removing, or resetting anything, and native Enter or Space activation must continue through the normal click path."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-dynamic-counters-keyboard",
+          "name": "Round 4 · List keys wrap focus without changing counters",
+          "steps": [
+            {
+              "type": "click",
+              "selector": ".counter-button",
+              "index": 0
+            },
+            {
+              "type": "click",
+              "selector": ".counter-button",
+              "index": 1
+            },
+            {
+              "type": "click",
+              "selector": ".counter-button",
+              "index": 2
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".counter-row",
+              "count": 4,
+              "timeoutMs": 700
+            },
+            {
+              "type": "key",
+              "selector": ".counter-button",
+              "index": 0,
+              "key": "ArrowUp"
+            },
+            {
+              "type": "expectFocused",
+              "selector": ".counter-button",
+              "index": 3
+            },
+            {
+              "type": "key",
+              "selector": ".counter-button",
+              "index": 3,
+              "key": "ArrowDown"
+            },
+            {
+              "type": "expectFocused",
+              "selector": ".counter-button",
+              "index": 0
+            },
+            {
+              "type": "key",
+              "selector": ".counter-button",
+              "index": 2,
+              "key": "Home"
+            },
+            {
+              "type": "expectFocused",
+              "selector": ".counter-button",
+              "index": 0
+            },
+            {
+              "type": "key",
+              "selector": ".counter-button",
+              "index": 0,
+              "key": "End"
+            },
+            {
+              "type": "expectFocused",
+              "selector": ".counter-button",
+              "index": 3
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".counter-button",
+              "index": 3,
+              "attribute": "tabindex",
+              "expected": "0"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".counter-button",
+              "index": 0,
+              "attribute": "tabindex",
+              "expected": "-1"
+            },
+            {
+              "type": "expectText",
+              "selector": ".counter-value",
+              "index": 0,
+              "text": "1"
+            },
+            {
+              "type": "expectText",
+              "selector": ".counter-value",
+              "index": 1,
+              "text": "1"
+            },
+            {
+              "type": "expectText",
+              "selector": ".counter-value",
+              "index": 2,
+              "text": "1"
+            },
+            {
+              "type": "expectText",
+              "selector": ".counter-value",
+              "index": 3,
+              "text": "0"
+            },
+            {
+              "type": "expectText",
+              "selector": "#counter-status",
+              "text": "Counters: 4 of 5. Combined value: 3."
+            }
+          ]
+        },
+        {
+          "id": "pressure-dynamic-counters-aria",
+          "name": "Round 4 · Native controls and stable relationships remain truthful",
+          "steps": [
+            {
+              "type": "expectAttribute",
+              "selector": "#counter-limit",
+              "attribute": "type",
+              "expected": "number"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": "#counter-limit",
+              "attribute": "min",
+              "expected": "1"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": "#counter-limit",
+              "attribute": "max",
+              "expected": "10"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".counter-list",
+              "attribute": "role",
+              "expected": "list"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".counter-list",
+              "attribute": "aria-label",
+              "expected": "Dynamic counter buttons"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".counter-list",
+              "attribute": "aria-describedby",
+              "expected": "counter-status"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": "#counter-status",
+              "attribute": "role",
+              "expected": "status"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": "#counter-status",
+              "attribute": "aria-live",
+              "expected": "polite"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".counter-row[role=\"listitem\"]",
+              "count": 1
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".counter-row",
+              "index": 0,
+              "attribute": "id",
+              "expected": "counter-row-1"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".counter-row",
+              "index": 0,
+              "attribute": "data-counter-id",
+              "expected": "1"
+            },
+            {
+              "type": "expectCount",
+              "selector": "button.counter-button[type=\"button\"]",
+              "count": 1
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".counter-button",
+              "index": 0,
+              "attribute": "id",
+              "expected": "counter-button-1"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".counter-button",
+              "index": 0,
+              "attribute": "aria-label",
+              "expected": "Counter 1, value 0"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".counter-button",
+              "index": 0,
+              "attribute": "tabindex",
+              "expected": "0"
+            },
+            {
+              "type": "expectCount",
+              "selector": "button.remove-button[type=\"button\"]",
+              "count": 1
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".remove-button",
+              "index": 0,
+              "attribute": "id",
+              "expected": "remove-counter-1"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".remove-button",
+              "index": 0,
+              "attribute": "aria-controls",
+              "expected": "counter-row-1"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".remove-button",
+              "index": 0,
+              "attribute": "aria-label",
+              "expected": "Remove counter 1"
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".remove-button",
+              "index": 0,
+              "disabled": true
+            },
+            {
+              "type": "expectCount",
+              "selector": "button#reset-counters[type=\"button\"]",
+              "count": 1
+            },
+            {
+              "type": "expectDisabled",
+              "selector": "#reset-counters",
+              "disabled": true
+            },
+            {
+              "type": "click",
+              "selector": ".counter-button",
+              "index": 0
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".counter-row",
+              "count": 2,
+              "timeoutMs": 700
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".counter-button",
+              "index": 0,
+              "attribute": "aria-label",
+              "expected": "Counter 1, value 1"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".counter-button",
+              "index": 1,
+              "attribute": "id",
+              "expected": "counter-button-2"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".counter-button",
+              "index": 1,
+              "attribute": "aria-label",
+              "expected": "Counter 2, value 0"
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".remove-button",
+              "index": 0,
+              "disabled": false
+            },
+            {
+              "type": "expectText",
+              "selector": "#counter-status",
+              "text": "Counters: 2 of 5. Combined value: 1."
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "debrief": {
+    "title": "You kept dynamic counter state predictable under pressure",
+    "summary": "You preserved stable identity, bounded growth, derived totals, and accessible focus while counters were added, removed, truncated, and reset.",
+    "takeaways": [
+      "Model each counter with a stable id and count, and keep the monotonic allocator separate from rendered position.",
+      "Normalize limit changes as one transition that preserves the oldest surviving counters and repairs logical focus without stealing DOM focus.",
+      "Derive list size, combined value, labels, and reset availability from the current model instead of synchronizing duplicate state.",
+      "Keep roving focus independent from counter values so list navigation never triggers a domain action."
+    ],
+    "frameworkNotes": {
+      "react": "Use functional immutable state updates, keep the id allocator and button map in refs, and restore removal focus only after the surviving row has rendered.",
+      "angular": "Track rows by id, preserve the starter-compatible onClick API, and use ViewChildren references after change detection to restore or move focus.",
+      "vue": "Keep keyed id-count objects in a ref, collect callback refs by id, and wait for nextTick before restoring focus after removal."
+    }
+  },
+  "solutionAssets": {
+    "react": "assets/sb/react/solution/react-dynamic-counter-buttons-pressure-solution.v1.json",
+    "angular": "assets/sb/angular/solution/angular-dynamic-counter-buttons-pressure-solution.v1.json",
+    "vue": "assets/sb/vue/solution/vue-dynamic-counter-buttons-pressure-solution.v1.json"
+  }
+}

@@ -1,0 +1,279 @@
+{
+  "surface": "report",
+  "manifest": {
+    "version": 1,
+    "surface": "report",
+    "title": "FrontendAtlas Elit Backlink Kuyruğu",
+    "description": "Daha önce outreach yapılmamış kök domainlerden, Google görünürlüğü açısından yüksek beklenen değer taşıyan beş backlink fırsatı ve sıralı uygulama kararı.",
+    "generatedAt": "2026-08-23T07:28:11Z",
+    "charts": [
+      {
+        "id": "target_impression_base",
+        "title": "Adayların hedeflediği sayfalardaki mevcut arama fırsatı",
+        "subtitle": "FrontendAtlas hedef sayfası; GSC son 28 gün, 20 Ağustos 2026'ya kadar. Gösterim yüksekliği tek başına link değerini belirlemez.",
+        "type": "bar",
+        "dataset": "target_impression_base",
+        "sourceId": "analysis_query",
+        "valueFormat": "number",
+        "settings": {
+          "orientation": "horizontal",
+          "groupMode": "grouped"
+        },
+        "encodings": {
+          "x": { "field": "opportunity", "type": "nominal", "label": "Fırsat" },
+          "y": { "field": "gsc_impressions", "type": "quantitative", "label": "28 günlük gösterim" },
+          "tooltip": [
+            { "field": "average_position", "type": "quantitative", "label": "Ortalama konum", "format": "number" },
+            { "field": "authority_score", "type": "quantitative", "label": "Donor AS", "format": "number" },
+            { "field": "score", "type": "quantitative", "label": "Kalite puanı", "format": "number" }
+          ]
+        },
+        "layout": "full"
+      }
+    ],
+    "tables": [
+      {
+        "id": "elite_candidates",
+        "title": "Beş yeni elit backlink fırsatı",
+        "subtitle": "Semrush otorite sinyali, hedef sayfanın GSC fırsatı, konu uyumu ve ulaşılabilir kanal birlikte değerlendirildi.",
+        "dataset": "elite_candidates",
+        "sourceId": "analysis_query",
+        "defaultSort": {
+          "field": "priority",
+          "direction": "asc"
+        },
+        "density": "compact",
+        "columns": [
+          { "field": "priority", "label": "Sıra", "format": "number" },
+          { "field": "opportunity", "label": "Fırsat", "type": "text" },
+          { "field": "tier", "label": "Rol", "type": "text" },
+          { "field": "authority_score", "label": "AS", "format": "number" },
+          { "field": "organic_traffic", "label": "US organik", "format": "number" },
+          { "field": "referring_domains", "label": "RD", "format": "number" },
+          { "field": "gsc_impressions", "label": "Hedef GSC gösterim", "format": "number" },
+          { "field": "average_position", "label": "Ort. konum", "format": "number" },
+          { "field": "score", "label": "Puan", "format": "number" }
+        ]
+      }
+    ],
+    "sources": [
+      {
+        "id": "analysis_query",
+        "label": "Elit aday karar tablosu — deterministik SQL materialization",
+        "path": "frontend/reports/backlink-elite-next-2026-08-23/analysis.sql"
+      },
+      {
+        "id": "candidate_research",
+        "label": "Elit backlink aday araştırması — 23 Ağustos 2026",
+        "path": "frontend/reports/backlink-elite-next-2026-08-23/research.json"
+      },
+      {
+        "id": "registry_snapshot",
+        "label": "FrontendAtlas backlink outreach registry — 23 Ağustos 2026",
+        "path": "docs/references/backlink-outreach-registry.tsv"
+      },
+      {
+        "id": "gsc_snapshot",
+        "label": "FrontendAtlas GSC 28 günlük hedef sayfa anlık görüntüsü — 20 Ağustos 2026'ya kadar",
+        "path": "frontend/reports/gsc-commit-impact-2026-08-19/artifact.json"
+      }
+    ],
+    "blocks": [
+      {
+        "id": "title",
+        "type": "markdown",
+        "body": "# FrontendAtlas Elit Backlink Kuyruğu\n\n**Karar tarihi:** 23 Ağustos 2026 · **Amaç:** Daha fazla link değil, Google sıralamasını etkileme potansiyeli yüksek benzersiz bağlamsal linkler."
+      },
+      {
+        "id": "executive_summary",
+        "type": "markdown",
+        "sourceId": "candidate_research",
+        "body": "## Executive Summary\n\n- **Saeloun'a henüz ulaşılmadı.** Formspree 23 Ağustos'taki tek dış eylemi tüketti; Saeloun, 24 Ağustos'ta altı aşamalı taze preflight'tan sonra sıradaki temastır.\n- **Yeni beşlinin ham link tavanı Indeed'de; en iyi beklenen değer dengesi Scrimba ve Angular University'de.** Indeed AS 100 ve çok büyük arama görünürlüğü sunuyor, fakat exact donor sayfasında üçüncü taraf editoryal-link emsali olmadığı için kabul olasılığı daha düşük.\n- **Angular University en doğrudan sıralama kaldıracı.** Eşleşen FrontendAtlas RxJS sayfası 28 günlük ortalama 10,0 konumda; tam konu eşleşmeli bir link sayfa-1 eşiğindeki hedefi destekleyebilir.\n- **Beş kökün tamamı registry, Gmail Sent/Drafts/Scheduled ve mevcut Semrush referring-domain görünümünde temizdi.** GreatFrontend ise Gmail'deki önceki temaslar nedeniyle yeni fırsat sayılmayıp suppression kaydı olarak eklendi."
+      },
+      {
+        "id": "candidate_table",
+        "type": "table",
+        "tableId": "elite_candidates",
+        "layout": "full"
+      },
+      {
+        "id": "target_impression_chart",
+        "type": "chart",
+        "chartId": "target_impression_base",
+        "layout": "full"
+      },
+      {
+        "id": "candidate_evidence",
+        "type": "markdown",
+        "sourceId": "candidate_research",
+        "body": "## Bulgular ve Kanıt\n\n### 1. Indeed — en yüksek tavanlı moonshot\n\n[Angular Interview Questions](https://www.indeed.com/career-advice/interviewing/angular-interview-questions) → [Angular Preparation Path](https://frontendatlas.com/guides/framework-prep/angular-prep-path)\n\nAS 100, yaklaşık 152,2 milyon US organik trafik ve 315.984 referring domain ile listedeki en yüksek otorite tavanı. Hedef sayfa 28 günde 1.958 gösterim ve 18,2 ortalama konuma sahip. Indeed'in staff-editoryal güncelleme/düzeltme rotası herkese açık; fakat exact donor'da bağımsız üçüncü taraf link emsali bulunmadı. Bu nedenle link değeri çok yüksek, kazanma olasılığı daha düşük.\n\n### 2. Scrimba — en iyi beklenen değer dengesi\n\n[Frontend Interview Prep Guide 2026](https://scrimba.com/articles/frontend-interview-prep-guide-2026/) → [React Preparation Path](https://frontendatlas.com/guides/framework-prep/react-prep-path)\n\nAS 49, 70.639 US organik trafik ve 5.888 referring domain. Güncel donor'da React bölümü, dört haftalık çalışma planı ve followed React/MDN/WCAG/web.dev emsalleri var. Resmî içerik hata/öneri kanalı hesapsız çalışıyor. Ticari rakip olması ana risktir.\n\n### 3. Angular University — sayfa-1 eşiğindeki en kesin konu eşleşmesi\n\n[RxJS Higher-Order Mapping](https://blog.angular-university.io/rxjs-higher-order-mapping/) → [Angular RxJS Operator Decision Drill](https://frontendatlas.com/angular/trivia/rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use)\n\nAS 36, 6.534 US organik trafik ve 2.012 referring domain. Her iki sayfa da switchMap, mergeMap, concatMap ve exhaustMap kararını anlatıyor; hedef 346 gösterim ve 10,0 ortalama konumda. Bu, ham otoriteden çok tam konu uyumu ve hedefin mevcut konumu nedeniyle değerli.\n\n### 4. SitePoint — yüksek otoriteli gerçekçi güncelleme\n\n[Angular Change Detection](https://www.sitepoint.com/change-detection-angular/) → [Angular Lifecycle Ordering Drill](https://frontendatlas.com/angular/trivia/angular-lifecycle-constructor-oninit-afterviewinit-dom)\n\nAS 55, 262.783 US organik trafik ve 45.940 referring domain. Donor OnInit, DOM, child view ve AfterViewInit akışını anlatıyor; hedef bunu çalıştırılabilir sıralama alıştırmasına dönüştürüyor. Yazının eski kökeni ana risk; yalnız güncel ve destekleyici kaynak önerisi yapılmalı.\n\n### 5. Vue School — yüksek hedef gösterimine sahip niş uzman\n\n[What Employers Look For in a Good Vue Developer](https://vueschool.io/articles/news/what-employers-are-looking-for-in-a-good-vue-developer/) → [Vue Preparation Path](https://frontendatlas.com/guides/framework-prep/vue-prep-path)\n\nAS 32, 4.845 US organik trafik ve 3.278 referring domain. Hedef 1.610 gösterim ve 17,0 ortalama konumla güçlü bir iyileştirme tabanına sahip. Donor güncel ve tam hazırlık niyetinde; fakat Vue School doğrudan eğitim rakibi ve iletişim rotası sayfa-seviyesinde değil."
+      },
+      {
+        "id": "recommended_next_steps",
+        "type": "markdown",
+        "sourceId": "candidate_research",
+        "body": "## Önerilen Sonraki Adımlar\n\n1. **24 Ağustos — Saeloun:** registry → Gmail → Semrush referring domains → donor → hedef → yazar kanalı yeniden doğrulandıktan sonra mevcut yazıya küçük React 18 güncelleme önerisini gönder. Yeni hesap isterse otomatik kapat.\n2. **Sonraki uygun dış eylem — Scrimba:** React prep hedefi için editoryal içerik geri bildirim kanalını kullan; guest post veya ürün ortaklığı önermeden yalnız mevcut sayfaya bağımsız kaynak öner.\n3. **Angular University:** exact RxJS operator eşleşmesini kısa ve teknik bir güncelleme önerisiyle değerlendir.\n4. **Indeed:** yüksek tavanlı moonshot olarak staff-editoryal correction route üzerinden doğru editörü veya kaynak değerlendirmesini iste.\n5. **SitePoint ve Vue School:** günlük tek eylem sınırı ve taze veto kontrolleriyle sırayla ilerle.\n\nAynı hedefte `human_positive`, `published` veya `live_link` oluşursa o hedefin bütün alternatifleri durdurulmalı. Hiçbir gönderimde dofollow, ücretli yerleşim, yeni yazı, hesap veya satış kanalı talep edilmemeli."
+      },
+      {
+        "id": "reserves",
+        "type": "markdown",
+        "sourceId": "candidate_research",
+        "body": "## Yedekler ve Elemeler\n\n- **W3Schools:** AS 87 tavanı güçlü; fakat exact sayfada bağımsız contextual-link emsali yok.\n- **Ionic Framework:** resmî Angular lifecycle dokümantasyonu ve açık GitHub edit rotası var; SitePoint sonucunun arkasında tutulmalı ve yalnız gerçek bir dokümantasyon açığı varsa kullanılmalı.\n- **RxJS.dev:** resmî operator dokümanı; Angular University sonucunun arkasında ve link-only katkı olmadan.\n- **Gatsby:** React dokümantasyon edit rotası; Scrimba'nın arkasında.\n- **Ultimate Courses:** exact lifecycle uyumu var, fakat düşük otorite, eski yazı ve CAPTCHA nedeniyle yedek.\n- **GreatFrontend:** Gmail'de önceki FrontendAtlas outreach izleri bulundu; suppression kaydı eklendi.\n- **Patterns.dev, DigitalOcean ve 2ality:** sırasıyla uygun kanal yokluğu, link emsali/kanal yokluğu ve canlı donor 404 nedeniyle elendi."
+      },
+      {
+        "id": "further_questions",
+        "type": "markdown",
+        "body": "## Further Questions\n\n- Scrimba ve Angular University gibi doğrudan eğitim rakiplerinde kabul oranı, yüksek-AS genel yayıncılardan daha mı iyi olacak?\n- GSC'de ortalama konumu 8–12 aralığındaki hedeflere exact topical link vermek, 15–20 konumdaki daha yüksek gösterimli hedeflerden daha hızlı sonuç üretecek mi?\n- İlk üç canlı link sonrasında ölçülen etki, donor AS'den çok donor-hedef konu yakınlığıyla mı açıklanıyor?"
+      },
+      {
+        "id": "caveats",
+        "type": "markdown",
+        "sourceId": "candidate_research",
+        "body": "## Caveats and Assumptions\n\n- Semrush Authority Score Google metriği değildir; organik trafik ve referring-domain rakamları üçüncü taraf tahminleridir.\n- GSC gösterim ve konum değerleri 20 Ağustos 2026'ya kadar olan 28 günlük tarihsel anlık görüntüdür; backlink etkisi için nedensel tahmin değildir.\n- 'Bir link 100 linke bedel' doğrulanabilir bir katsayı değildir. Buradaki ölçüt, zayıf veya yapay yüzeyler yerine yüksek otorite, tam konu uyumu, kalıcılık ve editoryal kontrolün birlikte aranmasıdır.\n- Link kazanımı sıralama artışını garanti etmez. Etki, link canlı olduktan sonra 14, 28 ve 35 günlük GSC hedef-sayfa sorguları ve 7–14 günlük Semrush keşfiyle ölçülmelidir.\n- Bu rapor araştırma ve sıralama kararıdır; yeni dış gönderim yetkisi olarak yorumlanmamalıdır. Her eylemden hemen önce veto kontrolleri yeniden çalıştırılacaktır."
+      }
+    ]
+  },
+  "snapshot": {
+    "version": 1,
+    "generatedAt": "2026-08-23T07:28:11Z",
+    "status": "ready",
+    "datasets": {
+      "target_impression_base": [
+        {
+          "opportunity": "Indeed · Angular prep",
+          "domain": "indeed.com",
+          "target": "Angular preparation path",
+          "gsc_impressions": 1958,
+          "average_position": 18.2,
+          "authority_score": 100,
+          "organic_traffic": 152200000,
+          "referring_domains": 315984,
+          "score": 8
+        },
+        {
+          "opportunity": "Vue School · Vue prep",
+          "domain": "vueschool.io",
+          "target": "Vue preparation path",
+          "gsc_impressions": 1610,
+          "average_position": 17.0,
+          "authority_score": 32,
+          "organic_traffic": 4845,
+          "referring_domains": 3278,
+          "score": 9
+        },
+        {
+          "opportunity": "Scrimba · React prep",
+          "domain": "scrimba.com",
+          "target": "React preparation path",
+          "gsc_impressions": 915,
+          "average_position": 18.7,
+          "authority_score": 49,
+          "organic_traffic": 70639,
+          "referring_domains": 5888,
+          "score": 9
+        },
+        {
+          "opportunity": "SitePoint · Angular lifecycle",
+          "domain": "sitepoint.com",
+          "target": "Angular lifecycle ordering drill",
+          "gsc_impressions": 520,
+          "average_position": 18.3,
+          "authority_score": 55,
+          "organic_traffic": 262783,
+          "referring_domains": 45940,
+          "score": 9
+        },
+        {
+          "opportunity": "Angular University · RxJS",
+          "domain": "angular-university.io",
+          "target": "RxJS operator decision drill",
+          "gsc_impressions": 346,
+          "average_position": 10.0,
+          "authority_score": 36,
+          "organic_traffic": 6534,
+          "referring_domains": 2012,
+          "score": 9
+        }
+      ],
+      "elite_candidates": [
+        {
+          "priority": 1,
+          "opportunity": "Indeed — Angular interviews",
+          "tier": "Moonshot",
+          "authority_score": 100,
+          "organic_traffic": 152200000,
+          "referring_domains": 315984,
+          "gsc_impressions": 1958,
+          "average_position": 18.2,
+          "score": 8
+        },
+        {
+          "priority": 2,
+          "opportunity": "Scrimba — Interview Prep 2026",
+          "tier": "Beklenen değer",
+          "authority_score": 49,
+          "organic_traffic": 70639,
+          "referring_domains": 5888,
+          "gsc_impressions": 915,
+          "average_position": 18.7,
+          "score": 9
+        },
+        {
+          "priority": 3,
+          "opportunity": "Angular University — RxJS mapping",
+          "tier": "Sayfa-1 kaldıracı",
+          "authority_score": 36,
+          "organic_traffic": 6534,
+          "referring_domains": 2012,
+          "gsc_impressions": 346,
+          "average_position": 10.0,
+          "score": 9
+        },
+        {
+          "priority": 4,
+          "opportunity": "SitePoint — Angular lifecycle",
+          "tier": "Gerçekçi otorite",
+          "authority_score": 55,
+          "organic_traffic": 262783,
+          "referring_domains": 45940,
+          "gsc_impressions": 520,
+          "average_position": 18.3,
+          "score": 9
+        },
+        {
+          "priority": 5,
+          "opportunity": "Vue School — Vue hiring",
+          "tier": "Niş uzman",
+          "authority_score": 32,
+          "organic_traffic": 4845,
+          "referring_domains": 3278,
+          "gsc_impressions": 1610,
+          "average_position": 17.0,
+          "score": 9
+        }
+      ]
+    }
+  },
+  "sources": [
+    {
+      "id": "analysis_query",
+      "label": "Elit aday karar tablosu — deterministik SQL materialization",
+      "path": "frontend/reports/backlink-elite-next-2026-08-23/analysis.sql"
+    },
+    {
+      "id": "candidate_research",
+      "label": "Elit backlink aday araştırması — 23 Ağustos 2026",
+      "path": "frontend/reports/backlink-elite-next-2026-08-23/research.json"
+    },
+    {
+      "id": "registry_snapshot",
+      "label": "FrontendAtlas backlink outreach registry — 23 Ağustos 2026",
+      "path": "docs/references/backlink-outreach-registry.tsv"
+    },
+    {
+      "id": "gsc_snapshot",
+      "label": "FrontendAtlas GSC 28 günlük hedef sayfa anlık görüntüsü — 20 Ağustos 2026'ya kadar",
+      "path": "frontend/reports/gsc-commit-impact-2026-08-19/artifact.json"
+    }
+  ]
+}

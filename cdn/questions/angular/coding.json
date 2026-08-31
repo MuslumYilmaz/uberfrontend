@@ -945,6 +945,7 @@
       "openFile": "/src/app/app.component.ts",
       "storageKey": "v2:ui:angular:angular-faq-accordion"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/accordion-faq.v1.json",
     "solutionAsset": "assets/sb/angular/solution/angular-faq-accordion-solution.v2.json",
     "decisionGraphAsset": "assets/questions/angular/decision-graphs/angular-faq-accordion.v1.json",
     "access": "premium",
@@ -2202,6 +2203,7 @@
       "openFile": "/src/app/app.component.ts",
       "storageKey": "v2:ui:angular:angular-tictactoe-starter"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/tic-tac-toe.v1.json",
     "companies": [
       "amazon"
     ],
@@ -2673,6 +2675,7 @@
       "openFile": "/src/app/app.component.ts",
       "storageKey": "v2:ui:angular:angular-dynamic-counter-buttons"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/dynamic-counter-buttons.v1.json",
     "solutionAsset": "assets/sb/angular/solution/angular-dynamic-counter-buttons-solution.v2.json",
     "companies": [],
     "access": "premium",
@@ -2879,6 +2882,7 @@
       "openFile": "/src/app/app.component.ts",
       "storageKey": "v1:ui:angular:angular-chessboard-click-highlight"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/chessboard-click-highlight.v1.json",
     "solutionAsset": "assets/sb/angular/solution/angular-chessboard-click-highlight-solution.v1.json",
     "companies": [
       "amazon",

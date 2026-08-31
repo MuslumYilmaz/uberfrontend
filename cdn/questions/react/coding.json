@@ -929,6 +929,7 @@
       "openFile": "/src/App.tsx",
       "storageKey": "v2:ui:react:react-accordion-faq"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/accordion-faq.v1.json",
     "solutionAsset": "assets/sb/react/solution/react-accordion-faq-solution.v1.json",
     "companies": [],
     "access": "premium",
@@ -2818,6 +2819,7 @@
       "openFile": "/src/App.tsx",
       "storageKey": "v2:ui:react:react-tictactoe"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/tic-tac-toe.v1.json",
     "solutionAsset": "assets/sb/react/solution/react-tictactoe-solution.v1.json",
     "companies": [
       "amazon"
@@ -3384,6 +3386,7 @@
       "openFile": "/src/App.tsx",
       "storageKey": "v1:ui:react:react-dynamic-counter-buttons"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/dynamic-counter-buttons.v1.json",
     "solutionAsset": "assets/sb/react/solution/react-dynamic-counter-buttons-solution.v1.json",
     "companies": [
       "amazon"
@@ -3758,6 +3761,7 @@
       "openFile": "/src/App.tsx",
       "storageKey": "v1:ui:react:react-chessboard-click-highlight"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/chessboard-click-highlight.v1.json",
     "solutionAsset": "assets/sb/react/solution/react-chessboard-click-highlight-solution.v1.json",
     "companies": [
       "amazon",
