@@ -18,6 +18,7 @@ const { MongoMemoryReplSet } = require('mongodb-memory-server');
 
 const DB_NAME = 'interview_fullstack_perf';
 const JWT_SECRET = 'interview_fullstack_perf_jwt_secret_48_chars_minimum';
+const REDIS_STUB_ORIGIN = 'https://redis.interview.invalid';
 const CONCURRENCY_LEVELS = [1, 10, 25];
 const MIN_SAMPLES = boundedInteger(
   process.env.INTERVIEW_PERF_MIN_SAMPLES,
@@ -207,7 +208,7 @@ function configureEnvironment(mongoUri) {
     SENTRY_ENVIRONMENT: 'interview-fullstack-performance',
     SENTRY_TRACES_SAMPLE_RATE: '0',
     UPSTASH_REDIS_REST_TOKEN: 'ephemeral-test-token',
-    UPSTASH_REDIS_REST_URL: 'https://redis.interview.invalid',
+    UPSTASH_REDIS_REST_URL: REDIS_STUB_ORIGIN,
     VERCEL: '',
     VERCEL_ENV: '',
   });
@@ -215,8 +216,13 @@ function configureEnvironment(mongoUri) {
 
 function installHealthyRedisStub() {
   global.fetch = async (url, options) => {
-    if (String(url).startsWith('https://sentry.interview.invalid')) {
+    const requestUrl = typeof url === 'string' || url instanceof URL ? url : url?.url;
+    const requestOrigin = new URL(requestUrl).origin;
+    if (requestOrigin === 'https://sentry.interview.invalid') {
       return new Response('', { status: 200 });
+    }
+    if (requestOrigin !== REDIS_STUB_ORIGIN) {
+      throw new Error('Unexpected request origin in the isolated performance harness');
     }
     const commands = parseJson(String(options?.body || '[]'));
     return {
@@ -888,8 +894,12 @@ async function main() {
   }
 }
 
-main().catch((error) => {
-  const details = error?.details ? `\n${JSON.stringify(error.details, null, 2)}` : '';
-  process.stderr.write(`Interview full-stack performance audit failed: ${error.stack || error}${details}\n`);
-  process.exitCode = 1;
-});
+if (require.main === module) {
+  main().catch((error) => {
+    const details = error?.details ? `\n${JSON.stringify(error.details, null, 2)}` : '';
+    process.stderr.write(`Interview full-stack performance audit failed: ${error.stack || error}${details}\n`);
+    process.exitCode = 1;
+  });
+}
+
+module.exports = { installHealthyRedisStub };
