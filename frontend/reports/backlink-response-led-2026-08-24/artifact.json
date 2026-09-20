@@ -1,0 +1,284 @@
+{
+  "surface": "report",
+  "manifest": {
+    "version": 1,
+    "surface": "report",
+    "title": "FrontendAtlas Yanıt-Odaklı Backlink Araştırması",
+    "description": "Gmail sonuç hunisini düzelten ve yeni adayları katı SEO/kanal kapılarından geçiren 24 Ağustos 2026 araştırması.",
+    "generatedAt": "2026-08-24T20:25:05Z",
+    "cards": [
+      {
+        "id": "response_rates",
+        "description": "Bounce, otomatik yanıt ve ilgisiz thread'ler çıkarıldıktan sonraki outreach performansı.",
+        "dataset": "response_summary",
+        "sourceId": "response_research",
+        "metrics": [
+          { "label": "İnsan-yanıt paydası", "field": "denominator", "format": "number" },
+          { "label": "İnsan yanıtı", "field": "human_response_rate", "format": "percent" },
+          { "label": "Olumlu yanıt", "field": "positive_rate", "format": "percent" },
+          { "label": "Doğrulanmış canlı", "field": "live_rate", "format": "percent" }
+        ]
+      },
+      {
+        "id": "queue_gate",
+        "description": "Yeni kuyruk kalite kapısı.",
+        "dataset": "queue_summary",
+        "sourceId": "response_research",
+        "metrics": [
+          { "label": "İlk havuz", "field": "initial_pool", "format": "number" },
+          { "label": "Koşullu kısa liste", "field": "conditional", "format": "number" },
+          { "label": "Tam doğrulanmış", "field": "qualified", "format": "number" },
+          { "label": "Gönderim", "field": "outreach_actions", "format": "number" }
+        ]
+      }
+    ],
+    "charts": [
+      {
+        "id": "response_classification",
+        "title": "166 outreach thread'inin düzeltilmiş sınıflandırması",
+        "subtitle": "Bounce, saf otomatik yanıt ve outreach dışı thread'ler insan-yanıt paydasına alınmadı.",
+        "type": "bar",
+        "dataset": "response_classification",
+        "sourceId": "response_research",
+        "valueFormat": "number",
+        "settings": { "orientation": "horizontal", "groupMode": "grouped" },
+        "encodings": {
+          "x": { "field": "classification", "type": "nominal", "label": "Sınıf" },
+          "y": { "field": "threads", "type": "quantitative", "label": "Thread" },
+          "tooltip": [
+            { "field": "denominator_status", "type": "nominal", "label": "İnsan-yanıt paydası" }
+          ]
+        },
+        "layout": "full"
+      }
+    ],
+    "tables": [
+      {
+        "id": "verified_outcomes",
+        "title": "Doğrulanmış sonuçlar canlı linkten ayrı tutuldu",
+        "subtitle": "Olumlu yanıt, exact public href doğrulanmadan backlink sayılmadı.",
+        "dataset": "verified_outcomes",
+        "sourceId": "response_research",
+        "defaultSort": { "field": "state", "direction": "asc" },
+        "density": "compact",
+        "layout": "full",
+        "columns": [
+          { "field": "domain", "label": "Domain", "type": "text" },
+          { "field": "state", "label": "Durum", "type": "text" },
+          { "field": "target", "label": "FrontendAtlas hedefi", "type": "text" },
+          { "field": "evidence", "label": "Hassas olmayan kanıt özeti", "type": "text" },
+          { "field": "seo_meaning", "label": "SEO anlamı", "type": "text" }
+        ]
+      },
+      {
+        "id": "candidate_queue",
+        "title": "Yeni adaylar: dört koşullu, altı veto",
+        "subtitle": "Skor aralığı authority/trafik puanı bilinmediği için gösterilir; exact Page AS tahmin edilmedi.",
+        "dataset": "candidate_queue",
+        "sourceId": "response_research",
+        "defaultSort": { "field": "rank", "direction": "asc" },
+        "density": "compact",
+        "layout": "full",
+        "columns": [
+          { "field": "rank", "label": "#", "format": "number" },
+          { "field": "domain", "label": "Domain", "type": "text" },
+          { "field": "donor_url", "label": "Donor", "type": "text" },
+          { "field": "target", "label": "Hedef", "type": "text" },
+          { "field": "gsc", "label": "GSC fırsatı", "type": "text" },
+          { "field": "score_range", "label": "Skor", "type": "text" },
+          { "field": "response_grade", "label": "Dönüş", "type": "text" },
+          { "field": "status", "label": "Karar", "type": "text" },
+          { "field": "gate_or_veto", "label": "Kapı / veto", "type": "text" }
+        ]
+      },
+      {
+        "id": "data_quality",
+        "title": "Hangi veri karar vermeye yeterliydi?",
+        "subtitle": "Eksik UI/API verisi olumlu varsayımla doldurulmadı.",
+        "dataset": "data_quality",
+        "sourceId": "response_research",
+        "defaultSort": { "field": "source", "direction": "asc" },
+        "density": "compact",
+        "layout": "full",
+        "columns": [
+          { "field": "source", "label": "Kaynak", "type": "text" },
+          { "field": "status", "label": "Durum", "type": "text" },
+          { "field": "usable_for", "label": "Kullanılabildiği karar", "type": "text" },
+          { "field": "limitation", "label": "Sınır", "type": "text" }
+        ]
+      }
+    ],
+    "sources": [
+      {
+        "id": "response_research",
+        "label": "FrontendAtlas yanıt hunisi ve aday doğrulama anlık görüntüsü — 24 Ağustos 2026",
+        "path": "frontend/reports/backlink-response-led-2026-08-24/research.json",
+        "query": {
+          "engine": "snapshot",
+          "sql": "SELECT * FROM response_led_backlink_research_snapshot",
+          "description": "Loads aggregate Gmail classifications, non-sensitive historical outcomes, candidate gates, scores, risks and source limitations from research.json.",
+          "id": "response-led-backlinks-2026-08-24",
+          "executed_at": "2026-08-24T20:25:05Z",
+          "tables_used": ["response_led_backlink_research_snapshot"]
+        }
+      },
+      {
+        "id": "registry_snapshot",
+        "label": "FrontendAtlas backlink outreach registry — 24 Ağustos 2026",
+        "path": "docs/references/backlink-outreach-registry.tsv"
+      },
+      {
+        "id": "gsc_snapshots",
+        "label": "Dated FrontendAtlas GSC page-opportunity snapshots",
+        "path": "frontend/reports/gsc-commit-impact-2026-08-19/artifact.json"
+      },
+      {
+        "id": "public_validation",
+        "label": "Canlı donor, hedef, robots, sitemap ve resmî kanal kontrolleri — 24 Ağustos 2026",
+        "url": "https://frontenddogma.com/"
+      }
+    ],
+    "blocks": [
+      {
+        "id": "title",
+        "type": "markdown",
+        "body": "# FrontendAtlas Yanıt-Odaklı Backlink Araştırması\n\n**Karar tarihi:** 24 Ağustos 2026 · **Kapsam:** Gmail sonucu düzeltme, canlı sayfa doğrulama ve yeni kuyruk kalite kapısı. Hiçbir e-posta, form, issue veya PR gönderilmedi."
+      },
+      {
+        "id": "executive_summary",
+        "type": "markdown",
+        "sourceId": "response_research",
+        "body": "## Yönetici özeti\n\n**Geçmişte işe yarayan model net:** güncel bir kürasyon/kaynak sayfasına ücretsiz ve birebir eşleşen bir FrontendAtlas derin sayfası önermek. FrontendDogma bu modelin kesin canlı örneği. Buna karşılık editörün inceleyeceğiz demesi backlink değildir.\n\n166 thread'in yalnız 153'ü insan-yanıt paydasına uygun. Gerçek insan yanıtı **%8,5**, olumlu insan yanıtı **%5,2**, doğrulanmış off-GitHub canlı sonuç **%2,0**. Yeni havuzda SysDesAI ile Accessibility.build dönüş modeli bakımından A; ESLint ile Career Karma otorite potansiyeli bakımından en güçlü. Ancak current exact Page AS, active/lost donor ve GSC Links kontrolleri erişilemediği için bugün **tam doğrulanmış yeni aday sayısı 0**. Kalite eşiği düşürülmedi ve registry'ye yeni candidate yazılmadı."
+      },
+      { "id": "response_metrics", "type": "metric-strip", "cardIds": ["response_rates"] },
+      { "id": "response_chart", "type": "chart", "chartId": "response_classification", "layout": "full" },
+      {
+        "id": "funnel_note",
+        "type": "markdown",
+        "sourceId": "response_research",
+        "body": "**Payda kuralı:** 7 outreach dışı thread, 2 bounce ve 4 saf otomatik yanıt çıkarıldı. İnsan yanıtı = 13/153; olumlu = 8/153; kesin canlı = 3/153. Loiscuby'nin exact donor URL'si ileride doğrulanırsa canlı oranı %2,6 olur; bugünkü raporda olmaz."
+      },
+      {
+        "id": "outcome_heading",
+        "type": "markdown",
+        "sourceId": "response_research",
+        "body": "## Canlı link ile olumlu niyet aynı şey değil\n\nFrontendDogma, Uneed ve University of Vienna exact canlı sonuç olarak korunuyor. Loiscuby, ekleme bildirimi ve referring-domain sinyali olmasına rağmen exact donor URL/href/rel/canonical bulunamadığı için existing_ref_domain kaldı. Stanford, Maryville, Console.dev, YorkU ve FMHY olumlu fakat canlı olmayan sonuçlardır. EbookFoundation merge'i kabul edilebilir katkı modelini kanıtlar; GitHub-only yüzey elit off-GitHub SEO kazanımı değildir."
+      },
+      { "id": "outcomes_table", "type": "table", "tableId": "verified_outcomes", "layout": "full" },
+      {
+        "id": "queue_heading",
+        "type": "markdown",
+        "sourceId": "response_research",
+        "body": "## En iyi dört domain hazır değil, koşullu\n\nSysDesAI ve Accessibility.build, FrontendDogma'ya en çok benzeyen iki yeni yüzey: güncel kürasyon, açık resource-suggestion rotası, hesapsız erişim ve contextual-followed emsal. ESLint ve Career Karma ise hedef uyumu ile donor kalitesi bakımından daha yüksek tavanlı. Dördünde de registry ve Gmail çakışması yok; fakat exact Semrush Page AS, current referring-domain ve GSC Links kapıları tamamlanmadan candidate yazmak veri sözleşmesini ihlal eder."
+      },
+      { "id": "queue_metrics", "type": "metric-strip", "cardIds": ["queue_gate"] },
+      { "id": "queue_table", "type": "table", "tableId": "candidate_queue", "layout": "full" },
+      {
+        "id": "reserve_note",
+        "type": "markdown",
+        "sourceId": "response_research",
+        "body": "### Yedekler de kaliteyi doldurmadı\n\nfrontendark.com güçlü kürasyon mekaniğine rağmen aynı gün Semrush'ta AS 2, organik görünürlük yok ve Dangerous ağ sinyaliyle elendi. pillarstack.com detail sayfaları homepage'e canonical veriyor ve affiliate riski taşıyor. getisotope.com canonical/robots, güncellik ve affiliate kapılarını geçmedi. js-seo.org açık formuna rağmen canonical olmadığı için veto edildi."
+      },
+      {
+        "id": "data_quality_heading",
+        "type": "markdown",
+        "sourceId": "response_research",
+        "body": "## Veri kalitesi kararı değiştirdi\n\nGmail ve public-page kontrolleri karar vermeye yeterliydi; current Semrush ve GSC Links değildi. Root AS, exact Page AS yerine kullanılmadı. Dated GSC performans snapshot'ları yalnız hedef fırsatını anlatmak için kullanıldı; link çakışması kanıtı gibi sunulmadı."
+      },
+      { "id": "data_quality_table", "type": "table", "tableId": "data_quality", "layout": "full" },
+      {
+        "id": "next_steps",
+        "type": "markdown",
+        "sourceId": "response_research",
+        "body": "## Önerilen sonraki adım\n\n1. Semrush erişimi geri geldiğinde yalnız dört koşullu domaini sırayla tekrar kontrol et: ESLint, Career Karma, SysDesAI, Accessibility.build.\n2. Her biri için exact Page AS, current active/lost referring domain ve GSC Links kapısını tamamla; root metriğini sayfaya aktarma.\n3. Eşiği geçenleri registry'ye candidate olarak ekle.\n4. Outreach için ayrıca tek toplu onay al; bugünkü araştırma hiçbir gönderim üretmedi.\n5. Üniversite kuyruğunu 15 Eylül 2026'ya kadar kapalı tut."
+      },
+      {
+        "id": "limitations",
+        "type": "markdown",
+        "sourceId": "response_research",
+        "body": "## Sınırlamalar\n\n- Semrush Authority Score ve Page AS Google metriği değildir; sıralama artışı garanti etmez.\n- Current exact Page AS ve active/lost donor verisi yokken dört kısa-listeli domain kesin finalist değildir.\n- Current GSC Links export'u bulunmadığından link çakışması kapısı açıktır.\n- Olumlu yanıt, exact public href + redirect + rel + context + canonical + indexability doğrulanmadan backlink sayılmaz.\n- Aynı hedefe paralel linkler alınırsa GSC etkisi donor bazında değil hedef kümesi bazında yorumlanmalıdır."
+      },
+      {
+        "id": "further_questions",
+        "type": "markdown",
+        "body": "## Sonraki araştırma soruları\n\n- FrontendDogma benzeri açık kürasyon sayfalarında minimum Page AS eşiği kaç olmalı?\n- İlk 14/28/35 günlük GSC hareketinde donor otoritesi mi, exact konu yakınlığı mı daha açıklayıcı olacak?\n- SysDesAI gibi doğrudan interview-prep komşularında yüksek dönüş olasılığı, rakiplik nedeniyle kalıcı link olasılığını düşürüyor mu?"
+      }
+    ]
+  },
+  "snapshot": {
+    "version": 1,
+    "generatedAt": "2026-08-24T20:25:05Z",
+    "status": "ready",
+    "datasets": {
+      "response_summary": [
+        { "denominator": 153, "human_response_rate": 0.0849673203, "positive_rate": 0.0522875817, "live_rate": 0.0196078431 }
+      ],
+      "queue_summary": [
+        { "initial_pool": 10, "conditional": 4, "qualified": 0, "outreach_actions": 0 }
+      ],
+      "response_classification": [
+        { "classification": "Gönderildi, yanıt yok", "threads": 140, "denominator_status": "Dahil" },
+        { "classification": "Olumlu + canlı", "threads": 3, "denominator_status": "Dahil" },
+        { "classification": "Olumlu, canlı değil", "threads": 5, "denominator_status": "Dahil" },
+        { "classification": "Olumsuz insan", "threads": 5, "denominator_status": "Dahil" },
+        { "classification": "Bounce", "threads": 2, "denominator_status": "Hariç" },
+        { "classification": "Saf otomatik yanıt", "threads": 4, "denominator_status": "Hariç" },
+        { "classification": "Outreach dışı", "threads": 7, "denominator_status": "Hariç" }
+      ],
+      "verified_outcomes": [
+        { "state_rank": 1, "domain": "frontenddogma.com", "state": "live_link", "target": "/css/trivia/css-position-sticky-not-working", "evidence": "Current curated homepage has the exact contextual direct href.", "seo_meaning": "Strongest response analogue and verified SEO link." },
+        { "state_rank": 1, "domain": "univie.ac.at", "state": "live_link", "target": "/tools/cv", "evidence": "Exact clean public link remains verified.", "seo_meaning": "Verified live link; university queue stays paused." },
+        { "state_rank": 1, "domain": "uneed.best", "state": "live_link", "target": "/", "evidence": "Public listing with direct followed href remains verified.", "seo_meaning": "Verified live directory result; not the elite model." },
+        { "state_rank": 2, "domain": "loiscuby.fr", "state": "existing_ref_domain", "target": "/", "evidence": "Addition reported and referring-domain signal observed; exact source/href/rel/canonical not reverified.", "seo_meaning": "Suppressed, but not counted as live." },
+        { "state_rank": 3, "domain": "stanford.edu", "state": "human_positive", "target": "/interview-questions", "evidence": "Internal sharing confirmed; no public href.", "seo_meaning": "Positive intent only." },
+        { "state_rank": 3, "domain": "maryvillecollege.edu", "state": "human_positive", "target": "/javascript/interview-questions", "evidence": "Positive editorial intent; current resources page has no FrontendAtlas href.", "seo_meaning": "Positive intent only." },
+        { "state_rank": 3, "domain": "console.dev", "state": "human_positive", "target": "/", "evidence": "Editorial review acknowledged; no exact archive URL.", "seo_meaning": "Positive intent only." },
+        { "state_rank": 3, "domain": "yorku.ca", "state": "human_positive", "target": "/coding", "evidence": "Review intent acknowledged; no public href.", "seo_meaning": "Positive intent only; distinct from york.ac.uk." },
+        { "state_rank": 3, "domain": "fmhy.net", "state": "human_positive", "target": "/guides/system-design-blueprint/checklist", "evidence": "Moved into community testing; no live link.", "seo_meaning": "GitHub-notification outcome, outside Gmail rate denominator." },
+        { "state_rank": 4, "domain": "github.com / EbookFoundation", "state": "merged", "target": "/coding", "evidence": "Contribution merged.", "seo_meaning": "Acceptance-model evidence, not elite off-GitHub SEO." }
+      ],
+      "candidate_queue": [
+        { "rank": 1, "domain": "eslint.org", "donor_url": "https://eslint.org/docs/latest/rules/eqeqeq", "target": "/javascript/trivia/js-equality-vs-strict-equality", "gsc": "Exact-page snapshot yok", "score_range": "8–10; 9 için AS puanı ≥1", "response_grade": "B", "status": "Koşullu", "gate_or_veto": "Exact Page AS + current referrer/GSC Links eksik; gerçek docs iyileştirmesi gerekir." },
+        { "rank": 2, "domain": "careerkarma.com", "donor_url": "https://careerkarma.com/blog/css-exercises/", "target": "/css/interview-questions", "gsc": "29 gösterim; konum 58,84", "score_range": "7,5–9,5; 9 için AS puanı ≥1,5", "response_grade": "B", "status": "Koşullu", "gate_or_veto": "Exact Page AS + current referrer/GSC Links eksik; içerik 2022'den beri esaslı güncellenmemiş." },
+        { "rank": 3, "domain": "sysdesai.com", "donor_url": "https://www.sysdesai.com/resources", "target": "/guides/system-design-blueprint", "gsc": "Exact-page snapshot yok", "score_range": "8–10", "response_grade": "A", "status": "Koşullu", "gate_or_veto": "Suggest route ve followed emsal geçti; exact Page AS + current referrer/GSC Links eksik." },
+        { "rank": 4, "domain": "accessibility.build", "donor_url": "https://accessibility.build/resources", "target": "/html/trivia/web-accessibility-make-page-accessible", "gsc": "Exact-page snapshot yok", "score_range": "8–10", "response_grade": "A", "status": "Koşullu", "gate_or_veto": "Suggest route ve followed emsal geçti; exact Page AS + current referrer/GSC Links eksik." },
+        { "rank": 5, "domain": "chaijs.com", "donor_url": "https://www.chaijs.com/api/bdd/", "target": "/javascript/trivia/js-compare-two-objects", "gsc": "70 gösterim; konum 25,45", "score_range": "7–9", "response_grade": "C", "status": "Veto", "gate_or_veto": "Issue creation restricted; Jest ve Cypress aynı hedefte 24 Eylül kuyruğunda." },
+        { "rank": 6, "domain": "skillcrush.com", "donor_url": "https://skillcrush.com/blog/portfolio-advice-2/", "target": "/guides/interview-blueprint/ui-interviews", "gsc": "Exact-page snapshot yok", "score_range": "7–9", "response_grade": "C", "status": "Veto", "gate_or_veto": "Uygun editorial/corrections rotası yok; support rotası kapsam dışı." },
+        { "rank": 7, "domain": "patterns.dev", "donor_url": "https://www.patterns.dev/vanilla/virtual-lists/", "target": "/research/infinite-scroll-performance-benchmark", "gsc": "Yeni sayfa; yararlanıcı 731 gösterim, konum 14,7", "score_range": "7–9", "response_grade": "C", "status": "Veto", "gate_or_veto": "patterns.dev'e yayın yapan doğrulanmış public katkı rotası yok." },
+        { "rank": 8, "domain": "techinterviewhandbook.org", "donor_url": "https://www.techinterviewhandbook.org/", "target": "/guides/interview-blueprint/javascript-interviews", "gsc": "775 gösterim; konum 11,6", "score_range": "7", "response_grade": "C", "status": "Veto", "gate_or_veto": "GreatFrontend/FEIH aynı sahiplik ve affiliate ekosistemi; bağımsız donor değil." },
+        { "rank": 9, "domain": "h5bp.org", "donor_url": "https://h5bp.org/Front-end-Developer-Interview-Questions/questions/javascript-questions/", "target": "/javascript/trivia/js-equality-vs-strict-equality", "gsc": "Exact-page snapshot yok", "score_range": "6–8", "response_grade": "C", "status": "Veto", "gate_or_veto": "Canonical yok; question-only sözleşme cevap/kaynak eklemeyi yasaklıyor." },
+        { "rank": 10, "domain": "js-seo.org", "donor_url": "https://js-seo.org/js-seo-resources", "target": "/html/coding/html-head-seo-basics", "gsc": "Exact-page snapshot yok", "score_range": "6,5–8,5", "response_grade": "A", "status": "Veto", "gate_or_veto": "Self-canonical yok; OG URL eski hosta gidiyor; target fit daha geniş." }
+      ],
+      "data_quality": [
+        { "source": "Gmail", "status": "Tam, salt okunur", "usable_for": "166-thread sonuç hunisi ve 13 aday domain için Sent/Drafts/Scheduled çakışması", "limitation": "Rapor yalnız agregalar ve hassas olmayan domain sonuçları tutar." },
+        { "source": "Registry", "status": "Tam", "usable_for": "Kök-domain ve opportunity suppression; tarihçe durumu", "limitation": "Exact live donor kanıtı olmayan satırlar backlink sayılmaz." },
+        { "source": "Canlı web", "status": "Tam", "usable_for": "Canonical/indexability, followed emsal, kanal, yayın sözleşmesi", "limitation": "Semrush Page AS veya GSC Links yerine geçmez." },
+        { "source": "Semrush", "status": "Engelli", "usable_for": "Yalnız aynı gün kaydedilmiş önceki bulgular", "limitation": "API birimi yetersiz; signed-in browser bağlantısı yok; exact Page AS tahmin edilmedi." },
+        { "source": "GSC", "status": "Kısmi snapshot", "usable_for": "Bazı hedeflerin dated impression/position fırsatı", "limitation": "Current GSC Links ve eksik exact-page metrikleri yok." }
+      ]
+    }
+  },
+  "sources": [
+    {
+      "id": "response_research",
+      "label": "FrontendAtlas yanıt hunisi ve aday doğrulama anlık görüntüsü — 24 Ağustos 2026",
+      "path": "frontend/reports/backlink-response-led-2026-08-24/research.json",
+      "query": {
+        "engine": "snapshot",
+        "sql": "SELECT * FROM response_led_backlink_research_snapshot",
+        "description": "Loads aggregate Gmail classifications, non-sensitive historical outcomes, candidate gates, scores, risks and source limitations from research.json.",
+        "id": "response-led-backlinks-2026-08-24",
+        "executed_at": "2026-08-24T20:25:05Z",
+        "tables_used": ["response_led_backlink_research_snapshot"]
+      }
+    },
+    { "id": "registry_snapshot", "label": "FrontendAtlas backlink outreach registry — 24 Ağustos 2026", "path": "docs/references/backlink-outreach-registry.tsv" },
+    { "id": "gsc_snapshots", "label": "Dated FrontendAtlas GSC page-opportunity snapshots", "path": "frontend/reports/gsc-commit-impact-2026-08-19/artifact.json" },
+    { "id": "public_validation", "label": "Canlı donor, hedef, robots, sitemap ve resmî kanal kontrolleri — 24 Ağustos 2026", "url": "https://frontenddogma.com/" }
+  ],
+  "package_info": {
+    "root": "frontend/reports/backlink-response-led-2026-08-24",
+    "manifestPath": "artifact.json",
+    "snapshotPath": "artifact.json"
+  }
+}

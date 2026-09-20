@@ -1,3 +1,4 @@
+import { randomBytes } from 'node:crypto';
 import AxeBuilder from '@axe-core/playwright';
 import type {
   APIResponse,
@@ -169,24 +170,27 @@ async function chooseRadioWithKeyboard(locator: Locator): Promise<void> {
 }
 
 async function appendToActiveCodeEditor(page: Page, marker: string): Promise<void> {
-  const fallback = page.locator('textarea.editor-fallback:visible').first();
-  const monacoEditor = page.locator('app-monaco-editor .monaco-editor').first();
-  const monacoInput = page.locator('app-monaco-editor textarea.inputarea').first();
-  await expect(fallback.or(monacoEditor).first()).toBeVisible({ timeout: 30_000 });
+  const fallback = page.locator('.editor-shell textarea.editor-fallback');
+  const monacoSurface = page
+    .locator('.editor-shell app-monaco-editor .monaco-editor')
+    .first();
+  const monacoContent = monacoSurface.locator('.view-lines .view-line > span').first();
+  await expect(fallback.or(monacoContent).first()).toBeVisible({ timeout: 30_000 });
 
   if (await fallback.isVisible()) {
     await fallback.focus();
     await expect(fallback).toBeFocused();
-    await fallback.press('ControlOrMeta+End');
-    await page.keyboard.insertText(`\n// ${marker}`);
-    return;
+  } else {
+    const monacoInput = page
+      .locator('.editor-shell app-monaco-editor textarea.inputarea')
+      .first();
+    // Monaco keeps its accessibility textarea visually hidden. Wait for and
+    // click rendered content, then focus the textarea without requiring a box.
+    await monacoContent.click();
+    await monacoInput.focus();
+    await expect(monacoInput).toBeFocused();
   }
 
-  // Monaco deliberately keeps its accessibility textarea visually hidden.
-  // Click the visible editor surface, then assert keyboard focus on that
-  // textarea without requiring it to have a rendered box (Firefox is strict).
-  await monacoEditor.locator('.view-lines').click();
-  await expect(monacoInput).toBeFocused();
   await page.keyboard.press('ControlOrMeta+End');
   await page.keyboard.insertText(`\n// ${marker}`);
 }
@@ -265,7 +269,7 @@ test.describe('Interview Mode real Angular → Express → Mongo lifecycle', () 
       }),
     }));
 
-    const stamp = `${Date.now()}-${Math.random().toString(16).slice(2, 8)}`;
+    const stamp = `${Date.now()}-${randomBytes(8).toString('hex')}`;
     const email = `interview-browser-${stamp}@example.com`;
     const username = `interview_browser_${stamp.replace(/-/g, '_')}`;
     const password = 'safePassword123';

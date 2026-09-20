@@ -1,0 +1,293 @@
+{
+  "surface": "report",
+  "manifest": {
+    "version": 1,
+    "surface": "report",
+    "title": "FrontendAtlas Global Faculty Backlink Pilotu",
+    "description": "GSC fırsatı, sayfa düzeyi link yüzeyi ve resmî course-owner rotalarıyla doğrulanan ABD dışı faculty pilotunun 25 Ağustos 2026 durumu.",
+    "generatedAt": "2026-08-25T08:27:59Z",
+    "cards": [
+      {
+        "id": "today_action",
+        "description": "25 Ağustos 2026'da bireysel preflight sonrası gerçekleşen gönderimler.",
+        "dataset": "pilot_summary",
+        "sourceId": "faculty_research",
+        "metrics": [
+          { "label": "Yeni gönderim", "field": "sent_today", "format": "number" },
+          { "label": "Gmail Sent doğrulandı", "field": "sent_verified", "format": "number" },
+          { "label": "Anlık bounce", "field": "bounces", "format": "number" },
+          { "label": "BCC kullanılan", "field": "bcc_used", "format": "number" }
+        ]
+      },
+      {
+        "id": "qualified_queue",
+        "description": "Gönderilmiş köklerin kapsamı ve değişmeyen toplam pilot limiti.",
+        "dataset": "pilot_summary",
+        "sourceId": "faculty_research",
+        "metrics": [
+          { "label": "Gönderilmiş kök", "field": "sent_roots", "format": "number" },
+          { "label": "Pilot limiti", "field": "pilot_capacity", "format": "number" },
+          { "label": "Gönderilmiş ülke", "field": "sent_countries", "format": "number" },
+          { "label": "Gönderilmiş bölge", "field": "sent_regions", "format": "number" }
+        ]
+      },
+      {
+        "id": "review_funnel",
+        "description": "13 fırsatın bugün doğrulanmış, birbirini dışlamayan karar bölümü.",
+        "dataset": "pilot_summary",
+        "sourceId": "faculty_research",
+        "metrics": [
+          { "label": "İncelenen", "field": "reviewed", "format": "number" },
+          { "label": "Yeni gönderim", "field": "sent_today", "format": "number" },
+          { "label": "Önceki temas baskısı", "field": "prior_collision", "format": "number" },
+          { "label": "Koşullu tekrar kontrol", "field": "conditional", "format": "number" },
+          { "label": "Kesin veto", "field": "vetoed", "format": "number" }
+        ]
+      }
+    ],
+    "charts": [
+      {
+        "id": "historical_academic_geography",
+        "title": "Pilot öncesi doğrulanabilir akademik outreach kökleri",
+        "subtitle": "Minimum 19 kökün 13'ü ABD'de; 25 Ağustos'taki dört yeni pilot teması bu baseline'a dahil değildir.",
+        "type": "bar",
+        "dataset": "historical_academic_geography",
+        "sourceId": "faculty_research",
+        "valueFormat": "number",
+        "settings": { "orientation": "horizontal", "groupMode": "grouped" },
+        "encodings": {
+          "x": { "field": "country", "type": "nominal", "label": "Ülke" },
+          "y": { "field": "roots", "type": "quantitative", "label": "Benzersiz kök domain" }
+        },
+        "layout": "full"
+      }
+    ],
+    "tables": [
+      {
+        "id": "pilot_decisions",
+        "title": "13 fırsatın sayfa düzeyi kararı",
+        "subtitle": "Dağılım: 4 yeni gönderim, 1 önceki temas baskısı, 2 koşullu tekrar kontrolü ve 6 kesin hard/policy veto.",
+        "dataset": "pilot_decisions",
+        "sourceId": "faculty_research",
+        "defaultSort": { "field": "rank", "direction": "asc" },
+        "density": "compact",
+        "layout": "full",
+        "columns": [
+          { "field": "rank", "label": "#", "format": "number" },
+          { "field": "domain", "label": "Domain", "type": "text" },
+          { "field": "country_region", "label": "Ülke / bölge", "type": "text" },
+          { "field": "donor", "label": "Donor", "type": "text" },
+          { "field": "target", "label": "FrontendAtlas hedefi", "type": "text" },
+          { "field": "gsc", "label": "GSC fırsatı", "type": "text" },
+          { "field": "score", "label": "Skor", "type": "text" },
+          { "field": "status", "label": "Karar", "type": "text" },
+          { "field": "reason", "label": "Kanıt / veto", "type": "text" }
+        ]
+      },
+      {
+        "id": "pilot_schedule",
+        "title": "Gönderim ve kontrol takvimi",
+        "subtitle": "Günlük/haftalık kota yok; her fırsatta bireysel preflight, BCC yasağı, kurum başına 90 gün ve hedef başına en fazla iki açık temas korunuyor.",
+        "dataset": "pilot_schedule",
+        "sourceId": "faculty_research",
+        "defaultSort": { "field": "date", "direction": "asc" },
+        "density": "compact",
+        "layout": "full",
+        "columns": [
+          { "field": "date", "label": "Tarih", "type": "text" },
+          { "field": "domain", "label": "Domain", "type": "text" },
+          { "field": "state", "label": "Durum", "type": "text" },
+          { "field": "action", "label": "Eylem", "type": "text" },
+          { "field": "next_check", "label": "Sonraki kontrol", "type": "text" }
+        ]
+      },
+      {
+        "id": "data_quality",
+        "title": "Kararı taşıyan veri kaynakları",
+        "subtitle": "Eksik canlı metrikler tahmin edilmedi; 24 Ağustos referring-domain snapshot'ı güncellik kapısını karşıladı.",
+        "dataset": "data_quality",
+        "sourceId": "faculty_research",
+        "defaultSort": { "field": "source", "direction": "asc" },
+        "density": "compact",
+        "layout": "full",
+        "columns": [
+          { "field": "source", "label": "Kaynak", "type": "text" },
+          { "field": "status", "label": "Durum", "type": "text" },
+          { "field": "used_for", "label": "Kararda kullanımı", "type": "text" },
+          { "field": "limitation", "label": "Sınır", "type": "text" }
+        ]
+      }
+    ],
+    "sources": [
+      {
+        "id": "faculty_research",
+        "label": "FrontendAtlas global faculty pilot doğrulama anlık görüntüsü — 25 Ağustos 2026",
+        "path": "frontend/reports/backlink-global-faculty-pilot-2026-08-25/research.json",
+        "query": {
+          "engine": "snapshot",
+          "sql": "SELECT * FROM global_faculty_pilot_snapshot",
+          "description": "Loads the reviewed scoring contract, non-sensitive Gmail status, registry collisions, referring-domain reconciliation, exact-page GSC evidence, page-level decisions and monitoring dates from research.json.",
+          "id": "global-faculty-pilot-2026-08-25",
+          "executed_at": "2026-08-25T08:27:59Z",
+          "tables_used": ["global_faculty_pilot_snapshot"]
+        }
+      },
+      { "id": "registry_snapshot", "label": "FrontendAtlas backlink outreach registry — 25 Ağustos 2026", "path": "docs/references/backlink-outreach-registry.tsv" },
+      { "id": "gsc_snapshot", "label": "FrontendAtlas exact-page GSC fırsat snapshot'ı", "path": "frontend/reports/gsc-commit-impact-2026-08-19/artifact.json" },
+      { "id": "semrush_snapshot", "label": "FrontendAtlas 24 Ağustos 2026 referring-domain reconciliation", "path": "frontend/reports/elite-backlink-benchmark-2026-08-24/research.json" },
+      { "id": "ubb_public", "label": "Babeș-Bolyai current Web Programming course page", "url": "https://www.cs.ubbcluj.ro/~forest/wp/" },
+      { "id": "fullstack_public", "label": "Full Stack Open — Getting data from server", "url": "https://fullstackopen.com/en/part2/getting_data_from_server" },
+      { "id": "tartu_public", "label": "University of Tartu WAD 2026 lectures", "url": "https://courses.cs.ut.ee/2026/WAD/fall/Main/Lectures" },
+      { "id": "iitm_public", "label": "IIT Madras Modern Application Development II", "url": "https://study.iitm.ac.in/ds/course_pages/BSCS2006.html" },
+      { "id": "manchester_public", "label": "Manchester Accessibility Quick Checks", "url": "https://elearning.bmh.manchester.ac.uk/accessibility/quick-checks-accessibility/" },
+      { "id": "lund_public", "label": "Lund Digital Accessibility 2026/27", "url": "https://kurser.lth.se/kursplaner/26_27-en/TNSN05.html" },
+      { "id": "google_ranking", "label": "Google Search ranking systems guide", "url": "https://developers.google.com/search/docs/appearance/ranking-systems-guide" },
+      { "id": "google_spam", "label": "Google Search spam policies", "url": "https://developers.google.com/search/docs/essentials/spam-policies" }
+    ],
+    "blocks": [
+      {
+        "id": "title",
+        "type": "markdown",
+        "body": "# FrontendAtlas Global Faculty Backlink Pilotu\n\n**Karar tarihi:** 25 Ağustos 2026 · **Kapsam:** ABD dışı, İngilizce faculty/course-owner sayfaları · **Politika:** toplam en fazla 12; her fırsatta bireysel preflight; BCC yok; kurum başına 90 günde bir temas; hedef başına en fazla iki açık temas."
+      },
+      {
+        "id": "executive_summary",
+        "type": "markdown",
+        "sourceId": "faculty_research",
+        "body": "## Yönetici özeti\n\n25 Ağustos'ta **UBB, Full Stack Open, University of Tartu ve IIT Madras** için dört yeni course-owner mesajı bireysel preflight sonrasında gönderildi. Dördü de Gmail Sent'te doğrulandı ve hiçbirinde anlık bounce görülmedi. **Stellenbosch'a yeniden gönderim yapılmadı**: Gmail preflight'ı exact course kanalına 18 Ağustos 2026 tarihli doğrulanmış önceki outreach'i buldu ve kurum 90 günlük baskıya alındı.\n\n13 fırsatın bugünkü kesin dağılımı **4 yeni gönderim + 1 önceki temas baskısı + 2 koşullu tekrar kontrolü + 6 kesin veto**. Günlük/haftalık gönderim kotası kaldırıldı; toplam 12 sınırı, bireysel preflight, BCC yasağı, kurum başına 90 gün ve hedef başına en fazla iki açık temas korunuyor."
+      },
+      { "id": "today_metrics", "type": "metric-strip", "cardIds": ["today_action", "qualified_queue", "review_funnel"] },
+      {
+        "id": "historical_heading",
+        "type": "markdown",
+        "sourceId": "faculty_research",
+        "body": "## Global testin gerekçesi coğrafi yoğunlaşma\n\nPilot öncesinde doğrulanabilen minimum 19 akademik kökün 13'ü ABD'de. Tek kesin akademik canlı sonuç Avusturya'dan geldi. Bu dağılım global genişlemeyi test etmeyi mantıklı kılar; fakat tek canlı sonuç, akademik TLD'nin üstünlüğünü veya linkin sıralama değişimine neden olduğunu kanıtlamaz. 25 Ağustos'taki dört yeni temas pilot eylemi olarak ayrıca izleniyor."
+      },
+      { "id": "historical_chart", "type": "chart", "chartId": "historical_academic_geography", "layout": "full" },
+      {
+        "id": "decision_heading",
+        "type": "markdown",
+        "sourceId": "faculty_research",
+        "body": "## Sayfa düzeyi kalite ve çakışma kapıları kararları belirledi\n\nDört yeni gönderim canlı donor, GSC, resmi rota, registry/Gmail geçmişi ve referring-domain kontrollerinin tamamını geçti. Stellenbosch fırsatı içerik uyumu taşısa da exact course kanalındaki 18 Ağustos tarihli önceki temas nedeniyle tekrar gönderilmedi. Manchester yalnız canlı erişim ve exact-page GSC kanıtı birlikte sağlanırsa; Lund ise fresh exact-page GSC kanıtı oluşursa yeniden değerlendirilecek. Macquarie ve ICET nofollow-only; Bologna contextual harici `href` emsali ve exact GSC kanıtı yok; Mount Royal eski/arşiv ve kurumsal crawl bağı kopuk; Otago eski arşiv; Canterbury PDF-only olduğu için veto edildi."
+      },
+      { "id": "decisions_table", "type": "table", "tableId": "pilot_decisions", "layout": "full" },
+      {
+        "id": "schedule_heading",
+        "type": "markdown",
+        "sourceId": "faculty_research",
+        "body": "## Sıradaki adım gönderim değil, doğrulanmış sonuç kontrolü\n\nDört yeni gönderim 1, 8 ve 22 Eylül'de salt-okunur olarak kontrol edilecek; otomatik follow-up yapılmayacak. Yeni bir fırsat ancak kendi bireysel registry → Gmail → referring-domain → exact-page GSC → canlı donor/hedef/kanal preflight'ını geçerse açılabilir. BCC kullanılmayacak, aynı kuruma 90 gün içinde yeniden temas edilmeyecek ve JavaScript async hedefindeki iki açık temas nedeniyle bu hedefe yeni aday eklenmeyecek."
+      },
+      { "id": "schedule_table", "type": "table", "tableId": "pilot_schedule", "layout": "full" },
+      {
+        "id": "data_quality_heading",
+        "type": "markdown",
+        "sourceId": "faculty_research",
+        "body": "## Veri kapıları dört gönderimi ve bir baskıyı doğruladı\n\nGmail dört yeni gönderimin Sent kanıtını ve anlık bounce yokluğunu doğruladı; aynı preflight Stellenbosch için 18 Ağustos tarihli önceki teması buldu. Registry bugün 347 veri satırı ve 346 benzersiz kök içeriyor. 24 Ağustos Semrush reconciliation snapshot'ındaki 91 aktif referring domainin tamamı registry ile eşleştirilmişti. GSC tarafında yalnız tarihli exact-page satırları kullanıldı; kanıt materyalize olmadığında kullanılan ifade **no materialized exact-page GSC evidence; score 0 by contract** olup bu, sıfır gösterim kanıtı değildir."
+      },
+      { "id": "data_quality_table", "type": "table", "tableId": "data_quality", "layout": "full" },
+      {
+        "id": "recommendations",
+        "type": "markdown",
+        "sourceId": "faculty_research",
+        "body": "## Önerilen sonraki adımlar\n\n1. Dört yeni gönderimi 1, 8 ve 22 Eylül'de salt-okunur kontrol et; otomatik follow-up gönderme.\n2. Stellenbosch'a 90 günlük kurum penceresi dolmadan yeniden gönderim yapma.\n3. Manchester'ı yalnız canlı erişim ve exact-page GSC kanıtı birlikte sağlanırsa; Lund'u yalnız fresh exact-page GSC kanıtı oluşursa yeniden değerlendir.\n4. Toplam 12 sınırına ve 6 ülke / 4 bölge hedefine doğru yeni İngilizce programlar araştır; her adayı tekil preflight'tan geçir, BCC kullanma ve hedef başına iki açık temas sınırını koru.\n5. İlk 5 faculty gönderiminden sonra bounce oranı %20'yi aşarsa dalgayı durdur."
+      },
+      {
+        "id": "measurement",
+        "type": "markdown",
+        "sourceId": "faculty_research",
+        "body": "## Bir link çıkarsa nasıl ölçülecek?\n\nCanlı link ancak gerçek `href`, redirect, `rel`, bağlam, canonical ve indexability doğrulamasından sonra sayılacak. Ardından T0 exact-page/query baseline alınacak; title, H1, canonical ve ana internal-link yapısı 56 gün dondurulacak. T+14 crawl/index, T+35 yönsel okuma, T+56 ana GSC kararı ve T+84 kalıcılık kontrolü yapılacak. Aynı hedefe birden fazla link gelirse etki donor bazında değil hedef paketi olarak yorumlanacak."
+      },
+      {
+        "id": "limitations",
+        "type": "markdown",
+        "sourceId": "faculty_research",
+        "body": "## Sınırlamalar\n\n- Backlink sıralama artışını garanti etmez; akademik TLD için açıklanmış özel Google bonusu yoktur.\n- GSC snapshot'ı 16 Ağustos'ta biten son tamamlanmış 28 günlük pencereye aittir; bugünkü arayüz verisi değildir.\n- Semrush canlı API'si ek birim istedi; 24 Ağustos'taki tam reconciled referring-domain snapshot'ı kullanıldı ve eksik Page AS tahmin edilmedi.\n- Manchester için canlı erişim ve GSC; Lund için fresh GSC kapısı kapanmadan mesaj gönderilmez. GSC satırı materyalize olmadığında **no materialized exact-page GSC evidence; score 0 by contract** denir; bu, sıfır gösterim iddiası değildir.\n- Dört aynı-gün gönderiminden ikisi aynı JavaScript hedefini kullandığı için gelecekteki etki o hedef paketi düzeyinde yorumlanır.\n- Bir olumlu yanıt backlink değildir; public contextual link ayrıca doğrulanmalıdır."
+      },
+      {
+        "id": "further_questions",
+        "type": "markdown",
+        "body": "## Sonraki araştırma soruları\n\n- İngilizce ders kaynaklarında en yüksek dönüş, doğrudan course-owner rotasından mı yoksa açık course-material contribution kanalından mı geliyor?\n- 7–7,5 deney bandında topic fit ve GSC fırsatı yüksek kalırken hangi donor-sayfa sinyali en çok canlı linki öngörüyor?\n- İlk 12 kişilik pilotta ülke/bölge çeşitliliği korunurken aynı FrontendAtlas hedefinde iki açık temas sınırı hangi kümeleri daraltıyor?"
+      }
+    ]
+  },
+  "snapshot": {
+    "version": 1,
+    "generatedAt": "2026-08-25T08:27:59Z",
+    "status": "ready",
+    "datasets": {
+      "pilot_summary": [
+        { "sent_today": 4, "sent_verified": 4, "bounces": 0, "bcc_used": 0, "sent_roots": 4, "pilot_capacity": 12, "sent_countries": 4, "sent_regions": 2, "reviewed": 13, "prior_collision": 1, "conditional": 2, "vetoed": 6, "threshold_lowered": 0 }
+      ],
+      "historical_academic_geography": [
+        { "country": "United States", "roots": 13 },
+        { "country": "Spain", "roots": 2 },
+        { "country": "Canada", "roots": 2 },
+        { "country": "Austria", "roots": 1 },
+        { "country": "United Kingdom", "roots": 1 }
+      ],
+      "pilot_decisions": [
+        { "rank": 1, "domain": "ubbcluj.ro", "country_region": "Romania / Europe", "donor": "https://www.cs.ubbcluj.ro/~forest/wp/", "target": "/angular/interview-questions", "gsc": "866 impressions; position 18.6", "score": "8.5", "status": "Contacted 25 Aug", "reason": "All hard gates passed; Gmail Sent verified; no immediate bounce." },
+        { "rank": 2, "domain": "fullstackopen.com", "country_region": "Finland / Europe", "donor": "https://fullstackopen.com/en/part2/getting_data_from_server", "target": "/javascript/trivia/js-async-race-conditions", "gsc": "2,025 impressions; position 8.7", "score": "8.5", "status": "Contacted 25 Aug", "reason": "All hard gates passed; Gmail Sent verified; no immediate bounce." },
+        { "rank": 3, "domain": "ut.ee", "country_region": "Estonia / Europe", "donor": "https://courses.cs.ut.ee/2026/WAD/fall/Main/Lectures", "target": "/javascript/trivia/js-async-race-conditions", "gsc": "2,025 impressions; position 8.7", "score": "9.0", "status": "Contacted 25 Aug", "reason": "All hard gates passed; Gmail Sent verified; no immediate bounce." },
+        { "rank": 4, "domain": "iitm.ac.in", "country_region": "India / Asia", "donor": "https://study.iitm.ac.in/ds/course_pages/BSCS2006.html", "target": "/vue/interview-questions", "gsc": "2,080 impressions; position 18.4", "score": "8.0", "status": "Contacted 25 Aug", "reason": "All hard gates passed; Gmail Sent verified; no immediate bounce." },
+        { "rank": 5, "domain": "sun.ac.za", "country_region": "South Africa / Africa", "donor": "https://cs.sun.ac.za/courses/cs334/", "target": "Historical /machine-coding; proposed /react/interview-questions", "gsc": "Proposed target: 1,309 impressions; position 20.4", "score": "8.5 before collision", "status": "Historical contacted — suppressed", "reason": "No resend: verified prior outreach to the exact course channel on 18 Aug; 90-day institution rule." },
+        { "rank": 6, "domain": "manchester.ac.uk", "country_region": "United Kingdom / Europe", "donor": "https://elearning.bmh.manchester.ac.uk/accessibility/quick-checks-accessibility/", "target": "/html/trivia/web-accessibility-make-page-accessible", "gsc": "No materialized exact-page GSC evidence; score 0 by contract", "score": "Conditional", "status": "Future recheck", "reason": "Live donor access and exact-page GSC evidence must both clear." },
+        { "rank": 7, "domain": "lth.se", "country_region": "Sweden / Europe", "donor": "https://kurser.lth.se/kursplaner/26_27-en/TNSN05.html", "target": "/html/trivia/web-accessibility-make-page-accessible", "gsc": "No materialized exact-page GSC evidence; score 0 by contract", "score": "Conditional", "status": "Future recheck", "reason": "Current 2026/27 donor is viable; fresh exact-page GSC evidence is required and it remains non-parallel with Manchester." },
+        { "rank": 8, "domain": "mq.edu.au", "country_region": "Australia / Oceania", "donor": "https://unitguides.mq.edu.au/unit_offerings/174467/unit_guide", "target": "/react/interview-questions", "gsc": "1,309 impressions; position 20.4", "score": "Veto", "status": "No outreach", "reason": "Comparable external learning links are nofollow-only." },
+        { "rank": 9, "domain": "icet-lab.eu", "country_region": "Sweden / Europe", "donor": "https://www.icet-lab.eu/teaching/", "target": "/vue/interview-questions", "gsc": "2,080 impressions; position 18.4", "score": "Veto", "status": "No outreach", "reason": "External teaching links are nofollow-only." },
+        { "rank": 10, "domain": "unibo.it", "country_region": "Italy / Europe", "donor": "Bologna Web Technologies", "target": "/javascript/trivia/sse-vs-websocket-real-time", "gsc": "No materialized exact-page GSC evidence; score 0 by contract", "score": "Veto", "status": "No outreach", "reason": "No contextual external href precedent and no exact-page GSC evidence." },
+        { "rank": 11, "domain": "masoudkf.com", "country_region": "Canada / North America", "donor": "https://comp3512.masoudkf.com/week-06", "target": "/html/coding/html-forms-validation-required", "gsc": "No materialized exact-page GSC evidence; score 0 by contract", "score": "Veto", "status": "No outreach", "reason": "Old archive, no verified institutional crawl path and no exact-page GSC evidence." },
+        { "rank": 12, "domain": "otago.ac.nz", "country_region": "New Zealand / Oceania", "donor": "Reviewed course archive", "target": "—", "gsc": "—", "score": "Veto", "status": "No outreach", "reason": "Old term archive." },
+        { "rank": 13, "domain": "canterbury.ac.nz", "country_region": "New Zealand / Oceania", "donor": "Reviewed course material", "target": "—", "gsc": "—", "score": "Veto", "status": "No outreach", "reason": "PDF-only surface." }
+      ],
+      "pilot_schedule": [
+        { "date": "2026-08-25", "domain": "ubbcluj.ro", "state": "Contacted", "action": "Individual preflight passed; Gmail Sent verified; no immediate bounce.", "next_check": "2026-09-01 (+7)" },
+        { "date": "2026-08-25", "domain": "fullstackopen.com", "state": "Contacted", "action": "Individual preflight passed; Gmail Sent verified; no immediate bounce.", "next_check": "2026-09-01 (+7)" },
+        { "date": "2026-08-25", "domain": "ut.ee", "state": "Contacted", "action": "Individual preflight passed; Gmail Sent verified; no immediate bounce.", "next_check": "2026-09-01 (+7)" },
+        { "date": "2026-08-25", "domain": "iitm.ac.in", "state": "Contacted", "action": "Individual preflight passed; Gmail Sent verified; no immediate bounce.", "next_check": "2026-09-01 (+7)" },
+        { "date": "2026-08-25", "domain": "sun.ac.za", "state": "Suppressed", "action": "No resend after Gmail found verified prior exact-course-channel outreach from 2026-08-18.", "next_check": "No new institutional contact within 90 days" },
+        { "date": "2026-09-01", "domain": "4 newly contacted roots", "state": "Scheduled check", "action": "Read-only reply and bounce checks; no follow-up.", "next_check": "2026-09-08 (+14)" },
+        { "date": "2026-09-08", "domain": "4 newly contacted roots", "state": "Scheduled check", "action": "Read-only reply, donor and referring-domain checks; no follow-up.", "next_check": "2026-09-22 (+28)" },
+        { "date": "2026-09-22", "domain": "4 newly contacted roots", "state": "Scheduled check", "action": "Final response-state review for the four sends.", "next_check": "Only if human-positive or live-link monitoring is required" }
+      ],
+      "data_quality": [
+        { "source": "Gmail", "status": "Complete for four new sends and one collision", "used_for": "Sent/Drafts/Scheduled collision checks, four Sent proofs, immediate bounce checks, 18 Aug historical contact proof", "limitation": "Only non-sensitive counts, dates and states retained." },
+        { "source": "Registry", "status": "347 rows / 346 unique roots", "used_for": "Root suppression history, target gates, 90-day institution rule, max-two-open-target rule", "limitation": "Registry state is not proof of a live backlink without page verification." },
+        { "source": "Semrush", "status": "24 Aug snapshot usable", "used_for": "91 active referring-domain collision gate; all reconciled to registry", "limitation": "Live API units unavailable; missing metrics were not estimated." },
+        { "source": "GSC", "status": "Dated exact-page snapshot", "used_for": "Angular, React, Vue and JS async opportunity bands", "limitation": "Window ends 16 Aug. No materialized exact-page GSC evidence; score 0 by contract. This is not evidence of zero impressions." },
+        { "source": "Live web", "status": "Complete for four actioned roots", "used_for": "HTTP, canonical/indexability, language, contextual rel precedent, ownership and route", "limitation": "Manchester still needs live access plus GSC; Lund needs fresh GSC." }
+      ]
+    }
+  },
+  "sources": [
+    {
+      "id": "faculty_research",
+      "label": "FrontendAtlas global faculty pilot doğrulama anlık görüntüsü — 25 Ağustos 2026",
+      "path": "frontend/reports/backlink-global-faculty-pilot-2026-08-25/research.json",
+      "query": {
+        "engine": "snapshot",
+        "sql": "SELECT * FROM global_faculty_pilot_snapshot",
+        "description": "Loads the reviewed scoring contract, non-sensitive Gmail status, registry collisions, referring-domain reconciliation, exact-page GSC evidence, page-level decisions and monitoring dates from research.json.",
+        "id": "global-faculty-pilot-2026-08-25",
+        "executed_at": "2026-08-25T08:27:59Z",
+        "tables_used": ["global_faculty_pilot_snapshot"]
+      }
+    },
+    { "id": "registry_snapshot", "label": "FrontendAtlas backlink outreach registry — 25 Ağustos 2026", "path": "docs/references/backlink-outreach-registry.tsv" },
+    { "id": "gsc_snapshot", "label": "FrontendAtlas exact-page GSC fırsat snapshot'ı", "path": "frontend/reports/gsc-commit-impact-2026-08-19/artifact.json" },
+    { "id": "semrush_snapshot", "label": "FrontendAtlas 24 Ağustos 2026 referring-domain reconciliation", "path": "frontend/reports/elite-backlink-benchmark-2026-08-24/research.json" },
+    { "id": "ubb_public", "label": "Babeș-Bolyai current Web Programming course page", "url": "https://www.cs.ubbcluj.ro/~forest/wp/" },
+    { "id": "fullstack_public", "label": "Full Stack Open — Getting data from server", "url": "https://fullstackopen.com/en/part2/getting_data_from_server" },
+    { "id": "tartu_public", "label": "University of Tartu WAD 2026 lectures", "url": "https://courses.cs.ut.ee/2026/WAD/fall/Main/Lectures" },
+    { "id": "iitm_public", "label": "IIT Madras Modern Application Development II", "url": "https://study.iitm.ac.in/ds/course_pages/BSCS2006.html" },
+    { "id": "manchester_public", "label": "Manchester Accessibility Quick Checks", "url": "https://elearning.bmh.manchester.ac.uk/accessibility/quick-checks-accessibility/" },
+    { "id": "lund_public", "label": "Lund Digital Accessibility 2026/27", "url": "https://kurser.lth.se/kursplaner/26_27-en/TNSN05.html" },
+    { "id": "google_ranking", "label": "Google Search ranking systems guide", "url": "https://developers.google.com/search/docs/appearance/ranking-systems-guide" },
+    { "id": "google_spam", "label": "Google Search spam policies", "url": "https://developers.google.com/search/docs/essentials/spam-policies" }
+  ],
+  "package_info": {
+    "root": "frontend/reports/backlink-global-faculty-pilot-2026-08-25",
+    "manifestPath": "artifact.json",
+    "snapshotPath": "artifact.json"
+  }
+}

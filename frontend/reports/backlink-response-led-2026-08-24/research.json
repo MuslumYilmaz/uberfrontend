@@ -1,0 +1,573 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-08-24T20:25:05Z",
+  "decision_date": "2026-08-24",
+  "objective": "Classify historical FrontendAtlas outreach outcomes correctly and validate a response-led backlink queue without sending outreach.",
+  "scope": {
+    "outreach_actions": 0,
+    "email_mutations": 0,
+    "form_submissions": 0,
+    "issues_or_pull_requests": 0,
+    "universities_in_new_queue": 0,
+    "product_code_changes": 0
+  },
+  "decision": {
+    "fully_qualified_new_domains": 0,
+    "conditional_shortlist_domains": 4,
+    "initial_pool_domains": 10,
+    "reserve_domains_reviewed": 3,
+    "threshold_lowered": false,
+    "registry_candidate_rows_added": 0,
+    "reason": "Public page and Gmail gates identified four strong conditional prospects, but current exact Semrush Page AS, active/lost referring-domain, and GSC Links checks could not be completed. The plan forbids estimating those values or lowering the hard gate."
+  },
+  "data_quality": {
+    "gmail": {
+      "status": "complete_read_only",
+      "coverage": "Sent outreach-like threads from 2026-01-01 plus candidate-domain Sent, Drafts, and Scheduled collision checks",
+      "limitations": "Only aggregate classifications and non-sensitive domain-level outcomes are retained."
+    },
+    "registry": {
+      "status": "complete",
+      "path": "docs/references/backlink-outreach-registry.tsv",
+      "prewrite_data_rows": 339,
+      "prewrite_root_domains": 338
+    },
+    "semrush": {
+      "status": "blocked",
+      "reason": "Connected Semrush reports returned insufficient API units and the signed-in browser surface could not be connected.",
+      "policy": "Exact Page AS and current active/lost donor status were not inferred from root metrics or older snapshots.",
+      "same_day_reusable_evidence": "The 2026-08-24 elite benchmark report was reused only where it recorded exact same-day public or Semrush facts."
+    },
+    "gsc": {
+      "status": "partial_snapshot_only",
+      "reason": "No current Search Console connector or signed-in browser surface was available.",
+      "policy": "Only exact-page values already materialized in dated local GSC artifacts are reported; missing values remain unavailable."
+    },
+    "public_web": {
+      "status": "complete_for_page_level_gates",
+      "coverage": "HTTP accessibility, canonical/indexability signals, contextual external-link precedent, publication ownership, and official route checks for the proposed donors and reserves."
+    }
+  },
+  "historical_response_funnel": {
+    "raw_sent_messages": 179,
+    "unique_outreach_like_threads": 166,
+    "threads_with_any_inbound_message": 26,
+    "excluded_from_human_response_denominator": {
+      "bounce": 2,
+      "pure_autoresponder": 4,
+      "unrelated_or_non_outreach": 7
+    },
+    "human_response_denominator": 153,
+    "classifications": [
+      {
+        "classification": "sent_delivered_no_reply",
+        "threads": 140,
+        "included_in_human_response_denominator": true
+      },
+      {
+        "classification": "human_positive_live",
+        "threads": 3,
+        "included_in_human_response_denominator": true
+      },
+      {
+        "classification": "human_positive_no_live",
+        "threads": 5,
+        "included_in_human_response_denominator": true
+      },
+      {
+        "classification": "human_negative",
+        "threads": 5,
+        "included_in_human_response_denominator": true
+      },
+      {
+        "classification": "bounce",
+        "threads": 2,
+        "included_in_human_response_denominator": false
+      },
+      {
+        "classification": "pure_autoresponder",
+        "threads": 4,
+        "included_in_human_response_denominator": false
+      },
+      {
+        "classification": "unrelated_or_non_outreach",
+        "threads": 7,
+        "included_in_human_response_denominator": false
+      }
+    ],
+    "rates": {
+      "human_response_rate": 0.0849673203,
+      "positive_human_response_rate": 0.0522875817,
+      "verified_off_github_live_rate": 0.0196078431,
+      "verified_off_github_live_rate_if_loiscuby_is_later_proven": 0.0261437908
+    }
+  },
+  "historical_outcomes": [
+    {
+      "root_domain": "frontenddogma.com",
+      "state": "live_link",
+      "source_url": "https://frontenddogma.com/",
+      "frontendatlas_url": "https://frontendatlas.com/css/trivia/css-position-sticky-not-working",
+      "evidence": "The current curated homepage contains a contextual direct link to the exact public CSS sticky diagnostic page after a positive human response.",
+      "seo_interpretation": "Best-fit response analogue: current curation page, exact free deep page, and direct contextual placement."
+    },
+    {
+      "root_domain": "univie.ac.at",
+      "state": "live_link",
+      "source_url": "https://muwiserver.univie.ac.at/ai.htm",
+      "frontendatlas_url": "https://frontendatlas.com/tools/cv",
+      "evidence": "Exact public link remains recorded as verified.",
+      "seo_interpretation": "Existing live result; university outreach remains outside the new queue."
+    },
+    {
+      "root_domain": "uneed.best",
+      "state": "live_link",
+      "source_url": "https://www.uneed.best/tool/frontendatlas",
+      "frontendatlas_url": "https://frontendatlas.com",
+      "evidence": "Public listing and followed direct href remain recorded as verified.",
+      "seo_interpretation": "Existing live result; directory placement is not used as the elite model."
+    },
+    {
+      "root_domain": "loiscuby.fr",
+      "state": "existing_ref_domain",
+      "source_url": "https://loiscuby.fr/",
+      "frontendatlas_url": "https://frontendatlas.com",
+      "evidence": "A human response reported an addition and a referring-domain snapshot existed, but the exact current donor URL, href, rel, canonical, and context could not be reverified.",
+      "seo_interpretation": "Not promoted to live_link."
+    },
+    {
+      "root_domain": "stanford.edu",
+      "state": "human_positive",
+      "source_url": "https://careered.stanford.edu/",
+      "frontendatlas_url": "https://frontendatlas.com/interview-questions",
+      "evidence": "Internal sharing was confirmed; no public link was verified.",
+      "seo_interpretation": "Positive response, not an SEO win."
+    },
+    {
+      "root_domain": "maryvillecollege.edu",
+      "state": "human_positive",
+      "source_url": "https://csclub.maryvillecollege.edu/resources",
+      "frontendatlas_url": "https://frontendatlas.com/javascript/interview-questions",
+      "evidence": "Positive editorial intent was recorded; the current resources page has no verified FrontendAtlas link.",
+      "seo_interpretation": "Positive response, not an SEO win; university follow-up paused."
+    },
+    {
+      "root_domain": "console.dev",
+      "state": "human_positive",
+      "source_url": "https://console.dev/",
+      "frontendatlas_url": "https://frontendatlas.com",
+      "evidence": "Editorial review was acknowledged; no exact archive page or public link was verified.",
+      "seo_interpretation": "Positive response, not an SEO win."
+    },
+    {
+      "root_domain": "yorku.ca",
+      "state": "human_positive",
+      "source_url": "https://lassonde.yorku.ca/co-op/forms-resources/",
+      "frontendatlas_url": "https://frontendatlas.com/coding",
+      "evidence": "Review intent was acknowledged; no public link was verified.",
+      "seo_interpretation": "Positive response, not an SEO win; distinct from york.ac.uk."
+    },
+    {
+      "root_domain": "fmhy.net",
+      "state": "human_positive",
+      "source_url": "https://fmhy.net/misc",
+      "frontendatlas_url": "https://frontendatlas.com/guides/system-design-blueprint/checklist",
+      "evidence": "GitHub notification history indicates the suggestion moved into community testing; no live link is verified.",
+      "seo_interpretation": "Excluded from the Gmail response denominator because the interaction was notification-only."
+    },
+    {
+      "root_domain": "github.com",
+      "state": "merged_github_only_model_evidence",
+      "source_url": "https://github.com/EbookFoundation/free-programming-books/pull/13406",
+      "frontendatlas_url": "https://frontendatlas.com/coding",
+      "evidence": "The FrontendAtlas coding-challenges contribution was merged.",
+      "seo_interpretation": "Proof that a useful contribution can be accepted, but GitHub-only or nofollow exposure is not counted as an elite off-GitHub SEO gain."
+    }
+  ],
+  "response_model": {
+    "strongest_pattern": "Suggest one free, public, exact-fit FrontendAtlas deep page to an actively maintained curation or resources page through an explicit suggestion or correction route.",
+    "supporting_evidence": [
+      "FrontendDogma converted from a human response to an exact contextual live link.",
+      "Uneed converted after human review to a public listing.",
+      "EbookFoundation accepted a scoped useful contribution, although the SEO surface is GitHub-only.",
+      "Review promises without a live href are common and must not be counted as backlinks."
+    ],
+    "application_to_new_queue": "SysDesAI and Accessibility.build match the response pattern most closely, but they remain conditional until current Semrush and GSC Links hard gates can be run."
+  },
+  "score_contract": {
+    "elite_threshold": 9,
+    "analogue_threshold": 8,
+    "analogue_requires_response_likelihood": "A",
+    "components": {
+      "topic_target_fit": 3,
+      "semrush_authority_and_traffic": 2,
+      "contextual_followed_precedent": 2,
+      "permanence_and_editorial_control": 2,
+      "official_route_clarity": 1
+    },
+    "hard_gates": [
+      "Registry root and opportunity collision clear",
+      "Gmail Sent, Drafts, and Scheduled clear",
+      "Current Semrush active/lost referring-domain clear",
+      "Current GSC Links clear",
+      "Exact donor Page AS verified",
+      "Self-canonical and indexable donor",
+      "Contextual followed external-link precedent",
+      "Public sitemap FrontendAtlas target",
+      "Eligible no-account, non-paid, non-sales route"
+    ]
+  },
+  "candidate_evaluations": [
+    {
+      "rank": 1,
+      "root_domain": "eslint.org",
+      "group": "elite",
+      "donor_url": "https://eslint.org/docs/latest/rules/eqeqeq",
+      "frontendatlas_url": "https://frontendatlas.com/javascript/trivia/js-equality-vs-strict-equality",
+      "gsc_opportunity": "No exact-page value in the available local GSC snapshots.",
+      "page_as": null,
+      "root_signal": "Current Semrush value unavailable.",
+      "public_score_before_authority": 8,
+      "score_min": 8,
+      "score_max": 10,
+      "authority_points_needed": 1,
+      "response_likelihood": "B",
+      "canonical_indexability": "Pass",
+      "followed_precedent": "Pass: contextual ECMA reference has no nofollow.",
+      "official_channel": "https://github.com/eslint/eslint/edit/main/docs/src/rules/eqeqeq.md",
+      "gmail_collision": "Clear: Sent 0, Drafts 0, Scheduled 0.",
+      "registry_collision": "Clear at preflight.",
+      "current_referrer_and_gsc_links": "Unverified due tool-access block.",
+      "pitch_angle": "A substantive eqeqeq explanation improvement distinguishing lint policy from JavaScript coercive and strict equality; the FrontendAtlas exercise would be optional, never the sole change.",
+      "status": "conditional_metric_gate",
+      "veto_or_gate": "Exact Page AS and current referring-domain/GSC Links checks are missing; issue-first acceptance and possible CLA are additional risks."
+    },
+    {
+      "rank": 2,
+      "root_domain": "careerkarma.com",
+      "group": "elite",
+      "donor_url": "https://careerkarma.com/blog/css-exercises/",
+      "frontendatlas_url": "https://frontendatlas.com/css/interview-questions",
+      "gsc_opportunity": "29 impressions, 0 clicks, average position 58.84 in the 2026-08-20 local snapshot.",
+      "page_as": null,
+      "root_signal": "Current Semrush value unavailable.",
+      "public_score_before_authority": 7.5,
+      "score_min": 7.5,
+      "score_max": 9.5,
+      "authority_points_needed": 1.5,
+      "response_likelihood": "B",
+      "canonical_indexability": "Pass",
+      "followed_precedent": "Pass: contextual Frontend Mentor, MDN, CodePen, and CSSBattle links are not nofollow.",
+      "official_channel": "https://careerkarma.com/blog/about/#jumped_5",
+      "gmail_collision": "Clear: Sent 0, Drafts 0, Scheduled 0.",
+      "registry_collision": "Clear at preflight.",
+      "current_referrer_and_gsc_links": "Unverified due tool-access block.",
+      "pitch_angle": "A correction/update suggestion adding the free CSS interview-question hub beside existing exercise resources.",
+      "status": "conditional_metric_gate",
+      "veto_or_gate": "Needs at least 1.5 authority points and exact Page AS; page was last materially updated in 2022."
+    },
+    {
+      "rank": 3,
+      "root_domain": "sysdesai.com",
+      "group": "response_analogue",
+      "donor_url": "https://www.sysdesai.com/resources",
+      "frontendatlas_url": "https://frontendatlas.com/guides/system-design-blueprint",
+      "gsc_opportunity": "No exact-page value in the available local GSC snapshots.",
+      "page_as": null,
+      "root_signal": "Current Semrush value unavailable.",
+      "public_score_before_authority": 8,
+      "score_min": 8,
+      "score_max": 10,
+      "authority_points_needed": 0,
+      "response_likelihood": "A",
+      "canonical_indexability": "Pass: self-canonical, indexable, sitemap-listed, last updated March 2026.",
+      "followed_precedent": "Pass: contextual resource cards use direct links without nofollow or sponsored.",
+      "official_channel": "https://www.sysdesai.com/contact",
+      "gmail_collision": "Clear: Sent 0, Drafts 0, Scheduled 0.",
+      "registry_collision": "Clear at preflight.",
+      "current_referrer_and_gsc_links": "Unverified due tool-access block.",
+      "pitch_angle": "Suggest the free system-design blueprint as a frontend-specific practice resource for an actively curated, non-paid resources page.",
+      "status": "conditional_metric_gate",
+      "veto_or_gate": "Exact Page AS and current referring-domain/GSC Links checks are mandatory before registry candidate status."
+    },
+    {
+      "rank": 4,
+      "root_domain": "accessibility.build",
+      "group": "response_analogue_promoted_reserve",
+      "donor_url": "https://accessibility.build/resources",
+      "frontendatlas_url": "https://frontendatlas.com/html/trivia/web-accessibility-make-page-accessible",
+      "gsc_opportunity": "No exact-page value in the available local GSC snapshots.",
+      "page_as": null,
+      "root_signal": "Current Semrush value unavailable; likely authority risk must not be guessed.",
+      "public_score_before_authority": 8,
+      "score_min": 8,
+      "score_max": 10,
+      "authority_points_needed": 0,
+      "response_likelihood": "A",
+      "canonical_indexability": "Pass: self-canonical, index,follow and sitemap-listed.",
+      "followed_precedent": "Pass: categorized W3C, Deque, and WebAIM resource links are direct and not nofollow.",
+      "official_channel": "https://accessibility.build/contact",
+      "gmail_collision": "Clear: Sent 0, Drafts 0, Scheduled 0.",
+      "registry_collision": "Clear at preflight; no active same-target modal cluster used.",
+      "current_referrer_and_gsc_links": "Unverified due tool-access block.",
+      "pitch_angle": "Suggest the free page-accessibility exercise through the resource page's explicit suggestion route.",
+      "status": "conditional_metric_gate",
+      "veto_or_gate": "Exact Page AS and current referring-domain/GSC Links checks are mandatory."
+    },
+    {
+      "rank": 5,
+      "root_domain": "chaijs.com",
+      "group": "elite",
+      "donor_url": "https://www.chaijs.com/api/bdd/",
+      "frontendatlas_url": "https://frontendatlas.com/javascript/trivia/js-compare-two-objects",
+      "gsc_opportunity": "70 impressions, 0 clicks, average position 25.45 in the 2026-08-20 local snapshot.",
+      "page_as": null,
+      "root_signal": "Current Semrush value unavailable.",
+      "public_score_before_authority": 7,
+      "score_min": 7,
+      "score_max": 9,
+      "authority_points_needed": 2,
+      "response_likelihood": "C",
+      "canonical_indexability": "Pass",
+      "followed_precedent": "Pass, although the most relevant deep-eql references are plain text.",
+      "official_channel": "https://github.com/chaijs/chai/issues",
+      "gmail_collision": "Clear: Sent 0, Drafts 0, Scheduled 0.",
+      "registry_collision": "Clear by root; same FrontendAtlas target already has Jest and Cypress deferred to 2026-09-24.",
+      "current_referrer_and_gsc_links": "Unverified due tool-access block.",
+      "pitch_angle": "Clarify language-level object identity versus assertion-library deep equality.",
+      "status": "veto",
+      "veto_or_gate": "Public issue creation is restricted and the target already has two stronger queued docs donors."
+    },
+    {
+      "rank": 6,
+      "root_domain": "skillcrush.com",
+      "group": "elite",
+      "donor_url": "https://skillcrush.com/blog/portfolio-advice-2/",
+      "frontendatlas_url": "https://frontendatlas.com/guides/interview-blueprint/ui-interviews",
+      "gsc_opportunity": "No exact-page value in the available local GSC snapshots.",
+      "page_as": null,
+      "root_signal": "Current Semrush value unavailable.",
+      "public_score_before_authority": 7,
+      "score_min": 7,
+      "score_max": 9,
+      "authority_points_needed": 2,
+      "response_likelihood": "C",
+      "canonical_indexability": "Pass; updated May 2026.",
+      "followed_precedent": "Pass: Frontend Mentor, devChallenges, and JavaScript30 are contextual followed links.",
+      "official_channel": "None eligible; available help route is course/account support.",
+      "gmail_collision": "Clear: Sent 0, Drafts 0, Scheduled 0.",
+      "registry_collision": "Clear at preflight.",
+      "current_referrer_and_gsc_links": "Unverified due tool-access block.",
+      "pitch_angle": "UI interview blueprint as a portfolio-to-interview bridge.",
+      "status": "veto",
+      "veto_or_gate": "No verified editorial or corrections route; support and sales routes are out of scope."
+    },
+    {
+      "rank": 7,
+      "root_domain": "patterns.dev",
+      "group": "elite",
+      "donor_url": "https://www.patterns.dev/vanilla/virtual-lists/",
+      "frontendatlas_url": "https://frontendatlas.com/research/infinite-scroll-performance-benchmark",
+      "gsc_opportunity": "New benchmark page has no GSC baseline; the related system-design beneficiary had 731 impressions and average position 14.7 in the 2026-08-19 local artifact.",
+      "page_as": null,
+      "root_signal": "Current Semrush value unavailable.",
+      "public_score_before_authority": 7,
+      "score_min": 7,
+      "score_max": 9,
+      "authority_points_needed": 2,
+      "response_likelihood": "C",
+      "canonical_indexability": "Pass",
+      "followed_precedent": "Pass",
+      "official_channel": "No verified public repository that publishes to patterns.dev.",
+      "gmail_collision": "Clear: Sent 0, Drafts 0, Scheduled 0.",
+      "registry_collision": "Clear at preflight; target is date-gated.",
+      "current_referrer_and_gsc_links": "Unverified due tool-access block.",
+      "pitch_angle": "Independent DOM-versus-virtualization benchmark evidence.",
+      "status": "veto",
+      "veto_or_gate": "No verified GitHub-to-patterns.dev publication route; repeated same-day prior veto."
+    },
+    {
+      "rank": 8,
+      "root_domain": "techinterviewhandbook.org",
+      "group": "elite_moonshot",
+      "donor_url": "https://www.techinterviewhandbook.org/",
+      "frontendatlas_url": "https://frontendatlas.com/guides/interview-blueprint/javascript-interviews",
+      "gsc_opportunity": "775 impressions, 0 clicks, average position 11.6 in the 2026-08-19 local artifact.",
+      "page_as": null,
+      "root_signal": "Prior same-day review scored authority and traffic at 0 for this independent-donor model.",
+      "public_score_before_authority": 7,
+      "score_min": 7,
+      "score_max": 7,
+      "authority_points_needed": null,
+      "response_likelihood": "C",
+      "canonical_indexability": "Pass",
+      "followed_precedent": "Pass",
+      "official_channel": "https://github.com/yangshun/tech-interview-handbook/blob/main/CONTRIBUTING.md",
+      "gmail_collision": "Clear: Sent 0, Drafts 0, Scheduled 0.",
+      "registry_collision": "Clear by root.",
+      "current_referrer_and_gsc_links": "Unverified due tool-access block.",
+      "pitch_angle": "JavaScript interview blueprint.",
+      "status": "veto",
+      "veto_or_gate": "Frontend content is routed to the same GreatFrontend/Front End Interview Handbook ownership and affiliate ecosystem; not an independent donor opportunity."
+    },
+    {
+      "rank": 9,
+      "root_domain": "h5bp.org",
+      "group": "elite_moonshot",
+      "donor_url": "https://h5bp.org/Front-end-Developer-Interview-Questions/questions/javascript-questions/",
+      "frontendatlas_url": "https://frontendatlas.com/javascript/trivia/js-equality-vs-strict-equality",
+      "gsc_opportunity": "No exact-page value in the available local GSC snapshots.",
+      "page_as": null,
+      "root_signal": "Same-day prior snapshot: root AS 18, organic traffic 13, 737 referring domains; exact Page AS not observed.",
+      "public_score_before_authority": 6,
+      "score_min": 6,
+      "score_max": 8,
+      "authority_points_needed": null,
+      "response_likelihood": "C",
+      "canonical_indexability": "Fail: exact page has no canonical.",
+      "followed_precedent": "Fail: no contextual resource-link precedent in the question body.",
+      "official_channel": "https://github.com/h5bp/Front-end-Developer-Interview-Questions/blob/main/.github/CONTRIBUTING.md",
+      "gmail_collision": "Clear: Sent 0, Drafts 0, Scheduled 0.",
+      "registry_collision": "Clear at preflight.",
+      "current_referrer_and_gsc_links": "Unverified due tool-access block.",
+      "pitch_angle": "Exact equality exercise.",
+      "status": "veto",
+      "veto_or_gate": "Contribution contract permits questions but explicitly forbids answers; a resource link conflicts with the publication format and self-canonical gate."
+    },
+    {
+      "rank": 10,
+      "root_domain": "js-seo.org",
+      "group": "response_analogue",
+      "donor_url": "https://js-seo.org/js-seo-resources",
+      "frontendatlas_url": "https://frontendatlas.com/html/coding/html-head-seo-basics",
+      "gsc_opportunity": "No exact-page value in the available local GSC snapshots.",
+      "page_as": null,
+      "root_signal": "Current Semrush value unavailable.",
+      "public_score_before_authority": 6.5,
+      "score_min": 6.5,
+      "score_max": 8.5,
+      "authority_points_needed": null,
+      "response_likelihood": "A",
+      "canonical_indexability": "Fail: canonical absent; Open Graph URL points at an old host; robots endpoint is not a valid robots file.",
+      "followed_precedent": "Pass",
+      "official_channel": "Inline no-account resource suggestion form.",
+      "gmail_collision": "Clear: Sent 0, Drafts 0, Scheduled 0.",
+      "registry_collision": "Clear at preflight.",
+      "current_referrer_and_gsc_links": "Unverified due tool-access block.",
+      "pitch_angle": "HTML head SEO exercise as an applied companion.",
+      "status": "veto",
+      "veto_or_gate": "Fails the self-canonical hard gate and target fit is broader than the donor's JavaScript-rendering focus."
+    }
+  ],
+  "reserve_evaluations": [
+    {
+      "root_domain": "frontendark.com",
+      "status": "veto",
+      "donor_url": "https://frontendark.com/resource",
+      "frontendatlas_url": "https://frontendatlas.com/guides/interview-blueprint/javascript-interviews",
+      "reason": "Public curation mechanics are strong, but the same-day Semrush snapshot recorded AS 2, no measurable organic traffic, 39 referring domains, and a Dangerous network signal. It is not A-level and should not be re-queued."
+    },
+    {
+      "root_domain": "pillarstack.com",
+      "status": "veto",
+      "donor_url": "https://www.pillarstack.com/",
+      "frontendatlas_url": "https://frontendatlas.com/guides/system-design-blueprint/performance",
+      "reason": "Resource detail pages canonicalize to the homepage, are absent from the sitemap, and the legal page discloses affiliate links."
+    },
+    {
+      "root_domain": "getisotope.com",
+      "status": "veto",
+      "donor_url": "https://getisotope.com/post/web-dev-resources",
+      "frontendatlas_url": "https://frontendatlas.com/guides/system-design-blueprint/performance",
+      "reason": "The donor has no canonical, an invalid robots endpoint, stale 2023 content, affiliate disclosures, and only broad target fit."
+    }
+  ],
+  "candidate_domain_gmail_collision_results": {
+    "domains_checked": [
+      "eslint.org",
+      "chaijs.com",
+      "patterns.dev",
+      "careerkarma.com",
+      "techinterviewhandbook.org",
+      "h5bp.org",
+      "skillcrush.com",
+      "sysdesai.com",
+      "js-seo.org",
+      "pillarstack.com",
+      "frontendark.com",
+      "accessibility.build",
+      "getisotope.com"
+    ],
+    "sent_collisions": 0,
+    "draft_collisions": 0,
+    "scheduled_collisions": 0
+  },
+  "recommended_next_action": {
+    "action": "Do not send outreach yet.",
+    "when_access_returns": [
+      "Re-read the registry.",
+      "Run current Semrush active and lost referring-domain checks for the four conditional domains.",
+      "Verify exact donor Page AS and root authority/traffic without substituting root metrics for Page AS.",
+      "Run current GSC Links checks.",
+      "Promote only domains that retain their threshold score and all hard gates.",
+      "Request one separate batch send approval before any outreach."
+    ],
+    "conditional_priority_order": [
+      "eslint.org",
+      "careerkarma.com",
+      "sysdesai.com",
+      "accessibility.build"
+    ]
+  },
+  "source_inventory": [
+    {
+      "id": "registry",
+      "type": "repository_file",
+      "path": "docs/references/backlink-outreach-registry.tsv",
+      "checked_at": "2026-08-24"
+    },
+    {
+      "id": "gmail_audit",
+      "type": "connected_account_read_only",
+      "description": "Aggregate Sent-thread classification and domain collision checks; no message bodies, addresses, names, IDs, or Gmail URLs retained.",
+      "checked_at": "2026-08-24"
+    },
+    {
+      "id": "prior_elite_research",
+      "type": "repository_file",
+      "path": "frontend/reports/elite-backlink-benchmark-2026-08-24/research.json",
+      "checked_at": "2026-08-24"
+    },
+    {
+      "id": "gsc_commit_impact",
+      "type": "repository_file",
+      "path": "frontend/reports/gsc-commit-impact-2026-08-19/artifact.json",
+      "checked_at": "2026-08-24"
+    },
+    {
+      "id": "gsc_page_opportunity",
+      "type": "repository_file",
+      "path": "frontend/reports/seo-baseline/gsc-page-opportunity-wave-2026-08-20.md",
+      "checked_at": "2026-08-24"
+    },
+    {
+      "id": "seo_live_audit",
+      "type": "repository_file",
+      "path": "frontend/reports/seo-incident-audit.json",
+      "checked_at": "2026-08-24"
+    },
+    {
+      "id": "public_pages",
+      "type": "live_web_read_only",
+      "description": "Exact donor, target, robots, sitemap, contribution and contact pages listed in candidate_evaluations and reserve_evaluations.",
+      "checked_at": "2026-08-24"
+    }
+  ],
+  "limitations": [
+    "Semrush Authority Score and Page AS are third-party signals, not Google ranking metrics.",
+    "No current exact Page AS or current active/lost donor verification was available for the four conditional prospects.",
+    "No current GSC Links export was available; dated local page-performance snapshots do not replace that collision check.",
+    "A positive human response is not a backlink until an exact public href, redirect, rel, context, canonical, and indexability are verified.",
+    "Parallel links to one target would make causal attribution donor-ambiguous; measure exact target clusters rather than claiming single-donor causality."
+  ]
+}

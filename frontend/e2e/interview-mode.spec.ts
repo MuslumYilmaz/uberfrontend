@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import AxeBuilder from '@axe-core/playwright';
-import type { Page, Request, Route } from '@playwright/test';
+import type { Locator, Page, Request, Route } from '@playwright/test';
 import { buildMockUser, installAuthMock } from './auth-mocks';
 import { expect, test } from './fixtures';
 
@@ -1004,6 +1004,23 @@ async function selectSetupChoice(
   await expect(combobox).toHaveText(optionLabel);
 }
 
+async function selectDropdownWithKeyboard(
+  combobox: Locator,
+  optionLabel: string,
+  arrowDownCount: number,
+): Promise<void> {
+  await combobox.focus();
+  await expect(combobox).toBeFocused();
+  await combobox.press('Home');
+  await expect(combobox).toHaveAttribute('aria-expanded', 'true');
+  for (let index = 0; index < arrowDownCount; index += 1) {
+    await combobox.press('ArrowDown');
+  }
+  await combobox.press('Enter');
+  await expect(combobox).toHaveAttribute('aria-expanded', 'false');
+  await expect(combobox).toHaveText(optionLabel);
+}
+
 async function expectNoHorizontalOverflow(page: Page): Promise<void> {
   await expect.poll(() => page.evaluate(() => {
     const root = document.documentElement;
@@ -1331,27 +1348,23 @@ test('completes guided system design setup → autosave → refresh → twist �
 
   const inputCard = page.locator('.palette-card').filter({ hasText: 'Search input' });
   const inputLaneSelect = inputCard.getByRole('combobox');
-  await inputLaneSelect.click();
-  const inputLaneListboxId = await inputLaneSelect.getAttribute('aria-controls');
-  expect(inputLaneListboxId).toBeTruthy();
-  await page.locator(`#${inputLaneListboxId!}`)
-    .getByRole('option', { name: 'UI', exact: true })
-    .click();
+  await selectDropdownWithKeyboard(inputLaneSelect, 'UI', 1);
   const controllerCard = page.locator('.palette-card').filter({ hasText: 'Request controller' });
   const controllerLaneSelect = controllerCard.getByRole('combobox');
-  await controllerLaneSelect.click();
-  const controllerLaneListboxId = await controllerLaneSelect.getAttribute('aria-controls');
-  expect(controllerLaneListboxId).toBeTruthy();
-  await page.locator(`#${controllerLaneListboxId!}`)
-    .getByRole('option', { name: 'Data', exact: true })
-    .click();
+  await selectDropdownWithKeyboard(controllerLaneSelect, 'Data', 2);
   await page.getByRole('button', { name: 'Next stage' }).click();
 
   const connectionBuilder = page.locator('.connection-builder');
-  await connectionBuilder.getByRole('combobox').nth(0).click();
-  await page.getByRole('option', { name: 'Search input', exact: true }).last().click();
-  await connectionBuilder.getByRole('combobox').nth(2).click();
-  await page.getByRole('option', { name: 'Request controller', exact: true }).last().click();
+  await selectDropdownWithKeyboard(
+    connectionBuilder.getByRole('combobox').nth(0),
+    'Search input',
+    1,
+  );
+  await selectDropdownWithKeyboard(
+    connectionBuilder.getByRole('combobox').nth(2),
+    'Request controller',
+    2,
+  );
   await page.getByRole('button', { name: 'Add connection' }).click();
   await page.getByLabel('Abort obsolete requests').check();
   await page.getByLabel('Prevent stale results').check();
