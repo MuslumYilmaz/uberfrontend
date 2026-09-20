@@ -129,6 +129,52 @@ describe('MonacoEditorComponent loader failure handling', () => {
     );
   });
 
+  it('applies comments with AA contrast before rendering the default dark editor', async () => {
+    const fakeMonaco = makeFakeMonaco();
+    (window as any).monaco = fakeMonaco.api;
+    (window as any).__faMonacoReady = true;
+
+    const fixture = createComponent({ width: 320, height: 180 });
+    fixture.detectChanges();
+    await Promise.resolve();
+
+    const [themeName, theme] = fakeMonaco.api.editor.defineTheme.calls.mostRecent().args;
+    const commentColor = theme.rules.find((rule: { token: string }) => rule.token === 'comment').foreground;
+    const sharedMutedColor = getComputedStyle(document.documentElement)
+      .getPropertyValue('--uf-text-tertiary').trim().replace(/^#/, '');
+    expect(commentColor).toBe(sharedMutedColor);
+    expect(contrastRatio(commentColor, '1e1e1e')).toBeGreaterThanOrEqual(4.5);
+    expect(theme.base).toBe('vs-dark');
+    expect(theme.inherit).toBeTrue();
+    expect(fakeMonaco.api.editor.setTheme).toHaveBeenCalledWith(themeName);
+    expect(fakeMonaco.api.editor.create.calls.mostRecent().args[1].theme).toBe(themeName);
+    expect(fakeMonaco.api.editor.defineTheme.calls.first().invocationOrder)
+      .toBeLessThan(fakeMonaco.api.editor.create.calls.first().invocationOrder);
+  });
+
+  for (const customTheme of ['vs', 'hc-black']) {
+    it(`preserves an explicit ${customTheme} theme and can switch back to the accessible default`, async () => {
+      const fakeMonaco = makeFakeMonaco();
+      (window as any).monaco = fakeMonaco.api;
+      (window as any).__faMonacoReady = true;
+
+      const fixture = createComponent({ width: 320, height: 180 });
+      const defaultTheme = fixture.componentInstance.theme;
+      fixture.componentRef.setInput('theme', customTheme);
+      fixture.detectChanges();
+      await Promise.resolve();
+
+      expect(fakeMonaco.api.editor.create.calls.mostRecent().args[1].theme).toBe(customTheme);
+      expect(fakeMonaco.api.editor.setTheme).toHaveBeenCalledWith(customTheme);
+
+      fixture.componentRef.setInput('theme', defaultTheme);
+      fixture.detectChanges();
+
+      expect(fakeMonaco.api.editor.setTheme.calls.mostRecent().args).toEqual([defaultTheme]);
+      expect(fakeMonaco.api.editor.defineTheme.calls.mostRecent().args[0]).toBe(defaultTheme);
+    });
+  }
+
   it('disposes the editor and model once when the fixture is destroyed', async () => {
     const fakeMonaco = makeFakeMonaco();
     (window as any).monaco = fakeMonaco.api;
@@ -276,6 +322,7 @@ describe('MonacoEditorComponent loader failure handling', () => {
         getModel: jasmine.createSpy('getModel').and.returnValue(null),
         setModelLanguage: jasmine.createSpy('setModelLanguage'),
         setTheme: jasmine.createSpy('setTheme'),
+        defineTheme: jasmine.createSpy('defineTheme'),
       },
       languages: {
         registerCompletionItemProvider: jasmine.createSpy('registerCompletionItemProvider'),
@@ -314,6 +361,20 @@ describe('MonacoEditorComponent loader failure handling', () => {
     };
 
     return { api, editor, model };
+  }
+
+  function contrastRatio(foreground: string, background: string): number {
+    const luminance = (hex: string) => {
+      const channels = [0, 2, 4].map((offset) => {
+        const channel = parseInt(hex.slice(offset, offset + 2), 16) / 255;
+        return channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4;
+      });
+      return channels[0] * 0.2126 + channels[1] * 0.7152 + channels[2] * 0.0722;
+    };
+    const foregroundLuminance = luminance(foreground);
+    const backgroundLuminance = luminance(background);
+    return (Math.max(foregroundLuminance, backgroundLuminance) + 0.05)
+      / (Math.min(foregroundLuminance, backgroundLuminance) + 0.05);
   }
 
   function makeTypescriptDefaults(): any {

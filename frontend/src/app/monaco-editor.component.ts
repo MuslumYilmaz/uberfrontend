@@ -6,6 +6,8 @@ import {
 } from '@angular/core';
 import { createTrackedMonacoWorker } from './core/utils/monaco-worker-tracker';
 
+const DEFAULT_EDITOR_THEME = 'fa-dark';
+
 declare global {
   interface Window { require: any; monaco: any; }
 }
@@ -39,7 +41,7 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
 
   @Input() code = '';
   @Input() language: string = 'javascript';
-  @Input() theme = 'vs-dark';
+  @Input() theme = DEFAULT_EDITOR_THEME;
   @Input() options: any = {};
   @Input() readOnly = false;
 
@@ -112,6 +114,7 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
         throw this.toMonacoLoadError(null, 'Monaco editor API was not available after loading assets.');
       }
 
+      this.registerDefaultTheme();
       window.monaco?.editor?.setTheme?.(this.theme);
 
       const langNorm = this.normalizeLanguage(this.language);
@@ -323,6 +326,19 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
   }
 
   // ---------- helpers ----------
+
+  private registerDefaultTheme(): void {
+    // Monaco requires hex colors rather than CSS variables. Its built-in dark
+    // comment color falls below 4.5:1, so use the shared muted text token.
+    const commentColor = getComputedStyle(document.documentElement)
+      .getPropertyValue('--uf-text-tertiary').trim() || '#9aa1ae';
+    window.monaco.editor.defineTheme(DEFAULT_EDITOR_THEME, {
+      base: 'vs-dark',
+      inherit: true,
+      rules: [{ token: 'comment', foreground: commentColor.replace(/^#/, '') }],
+      colors: {},
+    });
+  }
 
   private normalizeLanguage(lang: string): string {
     const l = (lang || '').toLowerCase();
