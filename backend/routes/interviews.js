@@ -6,6 +6,7 @@ const router = express.Router();
 const { requireAuth } = require('../middleware/Auth');
 const { requireAdmin } = require('../middleware/RequireAdmin');
 const { rateLimit } = require('../middleware/rateLimit');
+const { captureInterviewIssueSignal } = require('../config/sentry');
 const {
   interviewConfig,
   interviewModeAccess,
@@ -37,6 +38,16 @@ const {
   submitSystemDesign,
   voidSessionTechnicalByAdmin,
 } = require('../services/interview/session-service');
+
+const EXPECTED_INTERVIEW_DEGRADATION_CODES = new Set([
+  'INTERVIEW_ARTIFACTS_BLOCKED',
+  'INTERVIEW_CONTENT_UNAVAILABLE',
+  'INTERVIEW_DEPENDENCIES_BLOCKED',
+  'INTERVIEW_RELEASE_NOT_READY',
+  'INTERVIEW_RUNNER_UNAVAILABLE',
+  'INTERVIEW_SELECTION_UNAVAILABLE',
+  'RATE_LIMIT_UNAVAILABLE',
+]);
 
 function sessionTelemetryFields(session, extra = {}) {
   return {
@@ -122,6 +133,31 @@ const internalCreateIpLimiter = rateLimit({
   redisFailureMode: 'open',
 });
 
+// Local preflight deliberately uses the public limits and idempotency keys but
+// permits the explicitly configured in-memory store. Vercel Preview still
+// selects the public fail-closed limiter below and therefore requires Redis.
+const localPreflightCreateUserLimiter = rateLimit({
+  name: 'interview-create-user',
+  windowMs: limiterConfig.createRateLimitWindowMs,
+  max: limiterConfig.createUserRateLimitMax,
+  keyGenerator: (req) => req?.auth?.userId || req.ip || 'unknown',
+  dedupeKeyGenerator: (req) => createRequestDedupeKey(req),
+  code: 'INTERVIEW_CREATE_USER_RATE_LIMITED',
+  message: 'Too many interview creation attempts for this account',
+  redisFailureMode: 'open',
+});
+
+const localPreflightCreateIpLimiter = rateLimit({
+  name: 'interview-create-ip',
+  windowMs: limiterConfig.createRateLimitWindowMs,
+  max: limiterConfig.createIpRateLimitMax,
+  keyGenerator: (req) => req.ip || req.socket?.remoteAddress || 'unknown',
+  dedupeKeyGenerator: (req) => createRequestDedupeKey(req, { includeUser: true }),
+  code: 'INTERVIEW_CREATE_IP_RATE_LIMITED',
+  message: 'Too many interview creation attempts from this network',
+  redisFailureMode: 'open',
+});
+
 const mutationLimiter = rateLimit({
   name: 'interview-mutations',
   windowMs: limiterConfig.mutationRateLimitWindowMs,
@@ -170,6 +206,11 @@ router.use((req, res, next) => {
         code: rateLimit.code,
         storeFallback: true,
       });
+      captureInterviewIssueSignal('redis_degraded', {
+        operation: req.interviewTelemetryOperation,
+        code: rateLimit.code,
+        status: res.statusCode,
+      });
     }
     if (res.statusCode === 429 && rateLimit?.outcome === 'denied') {
       emitInterviewEvent('rate_denied', {
@@ -184,6 +225,11 @@ router.use((req, res, next) => {
         httpStatus: res.statusCode,
         limiter: rateLimit.limiter,
         code: rateLimit.code,
+      });
+      captureInterviewIssueSignal('redis_degraded', {
+        operation: req.interviewTelemetryOperation,
+        code: rateLimit.code,
+        status: res.statusCode,
       });
     } else if (res.statusCode === 503) {
       emitInterviewEvent('request_failed', {
@@ -313,10 +359,11 @@ function requireCreateAllowed(req, res, next) {
   });
 }
 
-function releaseGateApplies(access, policy) {
+function readinessGateApplies(access, policy) {
   return policy.state === 'normal'
     && access.enabled
-    && ['cohort', 'public'].includes(access.mode);
+    && !access.internalPreview
+    && ['preflight', 'cohort', 'public'].includes(access.mode);
 }
 
 function sendLaunchReadinessError(res, readiness = null) {
@@ -340,9 +387,9 @@ async function requireLaunchReady(req, res, next) {
   try {
     const access = accessForRequest(req);
     const policy = operationalPolicyForRequest();
-    if (!releaseGateApplies(access, policy)) return next();
+    if (!readinessGateApplies(access, policy)) return next();
     const readiness = await interviewReleaseReadiness();
-    if (readiness.launchReady) return next();
+    if (readiness.gateReady ?? readiness.launchReady) return next();
     return sendLaunchReadinessError(res, readiness);
   } catch (error) {
     return next(error);
@@ -364,16 +411,22 @@ function limitSystemDesignTwistReveal(req, res, next) {
 }
 
 function limitCreateUser(req, res, next) {
-  const limiter = accessForRequest(req).internalPreview
+  const access = accessForRequest(req);
+  const localPreflight = access.mode === 'preflight'
+    && String(process.env.VERCEL_ENV || '').trim().toLowerCase() !== 'preview';
+  const limiter = access.internalPreview
     ? internalCreateUserLimiter
-    : publicCreateUserLimiter;
+    : (localPreflight ? localPreflightCreateUserLimiter : publicCreateUserLimiter);
   return limiter(req, res, next);
 }
 
 function limitCreateIp(req, res, next) {
-  const limiter = accessForRequest(req).internalPreview
+  const access = accessForRequest(req);
+  const localPreflight = access.mode === 'preflight'
+    && String(process.env.VERCEL_ENV || '').trim().toLowerCase() !== 'preview';
+  const limiter = access.internalPreview
     ? internalCreateIpLimiter
-    : publicCreateIpLimiter;
+    : (localPreflight ? localPreflightCreateIpLimiter : publicCreateIpLimiter);
   return limiter(req, res, next);
 }
 
@@ -412,9 +465,11 @@ async function availabilityForRequest(req, res) {
         resumeSummary,
       }));
     }
-    if (releaseGateApplies(access, operationalPolicy)) {
+    if (readinessGateApplies(access, operationalPolicy)) {
       const readiness = await interviewReleaseReadiness();
-      if (!readiness.launchReady) return sendLaunchReadinessError(res, readiness);
+      if (!(readiness.gateReady ?? readiness.launchReady)) {
+        return sendLaunchReadinessError(res, readiness);
+      }
     }
     const systemDesignAccess = systemDesignAccessForRequest(req);
     const config = await getConfigForUser(req.auth.userId, {
@@ -506,6 +561,18 @@ router.post(
         operation: 'create',
         ...result.selectionTelemetry,
       }));
+      if (
+        result.selectionTelemetry.protectedWindow === true
+        && (
+          Number(result.selectionTelemetry.literalOverlap) > 0
+          || Number(result.selectionTelemetry.semanticOverlap) > 0
+        )
+      ) {
+        captureInterviewIssueSignal('protected_overlap', {
+          operation: 'create',
+          status: 201,
+        });
+      }
     }
     return res.status(result.created ? 201 : 200).json({
       session: serializeSession(result.session),
@@ -837,6 +904,17 @@ router.use((error, req, res, _next) => {
       operation,
       code: errorCode,
       httpStatus: safeStatus,
+    });
+  }
+  if (
+    safeStatus >= 500
+    && !EXPECTED_INTERVIEW_DEGRADATION_CODES.has(errorCode.toUpperCase())
+  ) {
+    captureInterviewIssueSignal('unexpected_5xx', {
+      error,
+      operation,
+      code: errorCode,
+      status: safeStatus,
     });
   }
   if (safeStatus >= 500 && error?.code !== 'INTERVIEW_CONTENT_UNAVAILABLE') {

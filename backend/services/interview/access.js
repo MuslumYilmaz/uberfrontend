@@ -2,10 +2,17 @@
 
 const crypto = require('crypto');
 
-const INTERVIEW_ACCESS_MODES = Object.freeze(['off', 'internal', 'cohort', 'public']);
+const INTERVIEW_ACCESS_MODES = Object.freeze([
+  'off',
+  'internal',
+  'preflight',
+  'cohort',
+  'public',
+]);
 const INTERVIEW_AUDIENCES = Object.freeze([
   'disabled',
   'internal-preview',
+  'preflight',
   'cohort',
   'public',
 ]);
@@ -66,6 +73,18 @@ function resolveInterviewAudience({
       cohortBucket: null,
       cohortBasisPoints: basisPoints,
       reason: admin ? 'admin_preview' : 'internal_only',
+    };
+  }
+
+  if (normalizedMode === 'preflight') {
+    return {
+      mode: normalizedMode,
+      audience: 'preflight',
+      enabled: true,
+      internalPreview: false,
+      cohortBucket: null,
+      cohortBasisPoints: basisPoints,
+      reason: 'technical_preflight',
     };
   }
 

@@ -455,6 +455,7 @@ export class InterviewService {
     if (
       normalized === 'off'
       || normalized === 'internal'
+      || normalized === 'preflight'
       || normalized === 'cohort'
       || normalized === 'public'
     ) {

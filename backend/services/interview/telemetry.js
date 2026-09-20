@@ -40,9 +40,12 @@ const STRING_FIELDS = new Set([
   'artifactKind',
   'artifactStatus',
   'code',
+  'exposureCode',
   'format',
+  'gateProfile',
   'level',
   'limiter',
+  'monitoringCode',
   'operation',
   'operationalState',
   'outcome',
@@ -55,7 +58,7 @@ const STRING_FIELDS = new Set([
 ]);
 
 const STRING_VALUE_ALLOWLISTS = Object.freeze({
-  accessMode: new Set(['off', 'internal', 'cohort', 'public']),
+  accessMode: new Set(['off', 'internal', 'preflight', 'cohort', 'public']),
   artifactKind: new Set(['mcq', 'coding', 'system-design']),
   artifactStatus: new Set(['candidate', 'editorial-gold', 'calibrated-gold']),
   code: new Set([
@@ -63,6 +66,7 @@ const STRING_VALUE_ALLOWLISTS = Object.freeze({
     'command_error', 'ready', 'probe_not_run', 'rate_limit_allowed',
     'rate_limit_unavailable', 'test_rate_limited',
     'interview_artifacts_blocked', 'interview_dependencies_blocked',
+    'interview_preflight_ready', 'interview_release_disabled',
     'interview_release_ready', 'interview_content_unavailable',
     'interview_create_ip_rate_limited', 'interview_create_user_rate_limited',
     'interview_desktop_required', 'interview_idempotency_conflict',
@@ -75,11 +79,19 @@ const STRING_VALUE_ALLOWLISTS = Object.freeze({
     'interview_twist_reveal_rate_limited', 'interview_version_conflict',
   ]),
   format: new Set(['coding', 'system-design']),
+  exposureCode: new Set([
+    'ready', 'indexes_missing', 'indexes_mismatched', 'retention_mismatch',
+    'invalid_contract', 'index_read_failed', 'connection_error', 'probe_not_run',
+  ]),
+  gateProfile: new Set(['disabled', 'preflight', 'release']),
   level: new Set(['junior', 'mid', 'senior']),
   limiter: new Set([
     'interview-create-ip', 'interview-create-user', 'interview-launch-readiness',
     'interview-mutations', 'interview-outer-ip',
     'interview-system-design-twist-reveal',
+  ]),
+  monitoringCode: new Set([
+    'ready', 'not_attested', 'sentry_not_configured', 'telemetry_disabled',
   ]),
   operation: new Set([
     'abandon', 'active-resume', 'availability', 'bulk-technical-void',
@@ -99,7 +111,7 @@ const STRING_VALUE_ALLOWLISTS = Object.freeze({
   ]),
   readinessCode: new Set([
     'interview_artifacts_blocked', 'interview_dependencies_blocked',
-    'interview_release_disabled', 'interview_release_ready',
+    'interview_preflight_ready', 'interview_release_disabled', 'interview_release_ready',
   ]),
   redisCode: new Set([
     'not_configured', 'timeout', 'network_error', 'http_error', 'invalid_response',

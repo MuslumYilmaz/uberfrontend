@@ -119,9 +119,14 @@ Then edit `.env` with your values. Do not commit `.env` (it is gitignored).
 
 ## Local development notes
 
-- Local backend runs default to `MONGO_TARGET=test`. With the repo's local env, both `npm start` and `npm run dev` connect to `mongodb://127.0.0.1:27017/test`.
+- Local backend runs default to `MONGO_TARGET=test`. With the repo's local env, both `npm start` and `npm run dev` connect to the isolated `mongodb://127.0.0.1:27017/fa_interview_local` database and require the matching `EXPECTED_MONGO_DB_NAME_TEST` value.
 - `mongodb://127.0.0.1:27017/frontendatlas` is production-only on this machine and must not be used for routine local development or testing.
 - Set `MONGO_TARGET=production` only when you explicitly intend to work against the production-local database.
+- `.env.example` configures the safe local Interview preflight: `INTERVIEW_MODE_ACCESS=preflight`, `INTERVIEW_SYSTEM_DESIGN_ACCESS=off`, `MONGO_TARGET=test`, `RATE_LIMIT_STORE=memory`, and `SENTRY_ENABLED=false`. The backend rejects preflight against Production, the `frontendatlas` database, or a non-loopback local Mongo host.
+- Start the backend with `npm start`, then run `npm run start:e2e` from `frontend/`. Register at `http://127.0.0.1:4200/auth/signup?redirectTo=%2Finterview`; local signup may offer **Continue for now** when SMTP is absent.
+- Preflight does not require an admin role: every authenticated local test user can discover Interview Mode while the gate is ready. The legacy role helper remains available for compatibility testing but is not part of the normal local flow.
+- Prepare the isolated test database with `npm run migrate:interview-exposure-indexes -- --database=fa_interview_local`. It is dry-run by default; execution requires `--execute --confirm=CREATE_INTERVIEW_EXPOSURE_INDEXES:<database>:<plannedCount>:<expiredCount>` using the exact values printed by dry-run. Then use `npm run verify:interview-exposure-store -- --database=fa_interview_local` to verify the unique/history/365-day TTL contract read-only.
+- Sign in and open `http://127.0.0.1:4200/interview` in a viewport at least 768px wide. Free users retain the Mongo-backed monthly Coding Interview quota; Premium users retain unlimited access. System Design remains unavailable.
 - The frontend uses `environment.apiBase` for API calls (default: `/api` with `frontend/proxy.conf.json`).
 - If you prefer a full URL, set `apiBase` to `http://localhost:3001`.
 - When using a full `apiBase` URL from the browser, set `FRONTEND_ORIGINS` to include your frontend origin and keep `credentials: true` requests enabled on the frontend.
@@ -143,6 +148,20 @@ This backend is compatible with Vercel serverless functions:
 
 Routes are handled via `backend/api/[...all].js`, so your API is available at:
 - `https://<your-backend-domain>/api/*`
+
+### Interview preflight and direct-public release
+
+- Every Vercel Preview backend must set `MONGO_TARGET=test`, a Preview-only `MONGO_URL_TEST`, and exact `EXPECTED_MONGO_DB_NAME_TEST`; remove `MONGO_URL` from the Preview scope. Startup fails closed if the target/name contract is missing, mismatched, or points to the `frontendatlas` database.
+- Set `VERCEL_ENV=preview`, `INTERVIEW_MODE_ACCESS=preflight`, `INTERVIEW_SYSTEM_DESIGN_ACCESS=off`, and `INTERVIEW_OPERATIONAL_STATE=normal`. Preflight is available to ordinary authenticated test users, uses only public/gold Interview artifacts, and is rejected in Production.
+- Set the Preview frontend's `NG_APP_PREVIEW_API_BASE` to the exact matching backend Preview origin. The generated browser config rejects the Production API and foreign Vercel projects.
+- Set backend `FRONTEND_ORIGINS` and `FRONTEND_BASE` to the exact frontend Preview origin, `SERVER_BASE` to the backend Preview origin, and use `COOKIE_SAMESITE=none`, `COOKIE_SECURE=true` for the cross-site Preview cookies.
+- Set `RATE_LIMIT_STORE=redis` with the Preview-only `frontendatlas:preview:interview:v1` namespace. New preflight sessions fail closed when the shared limiter is unavailable; active save/submit keeps the bounded fallback behavior.
+- Scope `SENTRY_ENVIRONMENT=preview` and set `SENTRY_RELEASE` exactly to `VERCEL_GIT_COMMIT_SHA`. `npm run verify:interview-sentry -- --execute --confirm=VERIFY_INTERVIEW_SENTRY` requires that exact Preview runtime, release, and preflight scope.
+- Monitoring and native Safari flags may remain `false` during technical preflight; their status is reported but does not make `INTERVIEW_PREFLIGHT_READY` fail. They must both be evidence-backed before Production public readiness can pass.
+- Keep Production at `INTERVIEW_MODE_ACCESS=off`, `INTERVIEW_OPERATIONAL_STATE=drain`, and System Design `off` during preparation. Use the separate `frontendatlas:production:interview:v1` Redis namespace, keep rollout BPS at `0`, and leave rollout salt unset.
+- Vercel Production refuses `public` startup unless `MONGO_TARGET=production`, `MONGO_URL` exactly matches `EXPECTED_MONGO_DB_NAME`, `MONGO_URL_TEST` is absent, System Design is `off`, the Redis store/Production namespace are exact, and cohort BPS/salt remain unused.
+- There are no admin/internal or percentage rollout stages and no completion-count threshold. After the complete release record passes, change Production to `public` while still drained and re-check the environment/data evidence. Then change the operational state to `normal` and immediately require `INTERVIEW_RELEASE_READY`; on failure return to `drain`, then `off + drain`. Production database writes, secrets, and both environment changes require separate action-time approval.
+- The full checklist and evidence fields live in `docs/references/interview-mode-release-record.md`.
 
 ### Required environment variables (production)
 

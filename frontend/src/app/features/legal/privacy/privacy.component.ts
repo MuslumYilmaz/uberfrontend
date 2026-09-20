@@ -163,6 +163,15 @@ import { RouterModule } from '@angular/router';
           We retain personal information only as long as necessary to provide the Service, comply with legal obligations,
           resolve disputes, and enforce agreements. When no longer needed, we delete or de-identify the data.
         </p>
+        <p>
+          Interview Mode sessions that may contain answers, drafts, or submitted code are scheduled for deletion after
+          90 days. To reduce repeated interview content, we retain account-linked exposure metadata for up to 365 days.
+          These records include user and session identifiers; interview format, track, level, and selection-policy
+          version; exposure, expiry, creation, and update timestamps; and question, task, and artifact identifiers,
+          versions or revisions, concept or source identifiers, and content hashes. They do not contain prompts,
+          answers, drafts, or submitted code. Account deletion may remove these records earlier. Backup copies follow
+          the separate backup retention and deletion schedule applicable to the Service.
+        </p>
       </section>
 
       <!-- Transfers -->
@@ -365,6 +374,6 @@ import { RouterModule } from '@angular/router';
 export class PrivacyComponent {
   readonly companyName = 'FrontendAtlas';
   /** Prefer a fixed, explicit date for compliance/versioning. */
-  readonly effectiveDate = 'October 6, 2025';
+  readonly effectiveDate = 'August 29, 2026';
   readonly contactEmail = 'support@frontendatlas.com';
 }

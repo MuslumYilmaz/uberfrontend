@@ -26,6 +26,17 @@ function getOverrideApiBase(): string {
   return typeof override === 'string' ? normalizeBase(override) : '';
 }
 
+export function getDeploymentEnvironment(): 'development' | 'preview' | 'production' {
+  if (typeof window !== 'undefined') {
+    const runtime = String(
+      (window as any).__FA_DEPLOYMENT_CONFIG__?.environment || ''
+    ).trim().toLowerCase();
+    if (runtime === 'preview') return 'preview';
+    if (runtime === 'production') return 'production';
+  }
+  return environment.production ? 'production' : 'development';
+}
+
 function deriveApiBaseFromOrigin(origin: string): string {
   if (!origin) return '';
   try {

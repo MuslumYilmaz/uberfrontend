@@ -22,6 +22,9 @@ const {
     isInterviewHttpPath,
 } = require('./services/interview/telemetry-path');
 const { connectToMongo, resolveMongoConnectionConfig } = require('./config/mongo');
+const {
+    assertInterviewRuntimeSafety,
+} = require('./services/interview/runtime-safety');
 const { normalizeOrigin, resolveAllowedFrontendOrigins, resolveServerBase } = require('./config/urls');
 const { validateAuthRuntimeConfig } = require('./config/auth-runtime');
 
@@ -30,6 +33,7 @@ const app = express();
 // ---- Config ----
 const PORT = process.env.PORT || 3001;
 const { uri: MONGO_URL } = resolveMongoConnectionConfig();
+assertInterviewRuntimeSafety(process.env);
 const SERVER_BASE = resolveServerBase();
 const ALLOWED_FRONTEND_ORIGINS = resolveAllowedFrontendOrigins();
 const API_RATE_LIMIT_WINDOW_MS = Math.max(1000, Number(process.env.API_RATE_LIMIT_WINDOW_MS) || 60_000);

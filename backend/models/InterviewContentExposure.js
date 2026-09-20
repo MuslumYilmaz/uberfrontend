@@ -1,6 +1,9 @@
 'use strict';
 
 const mongoose = require('mongoose');
+const {
+  applyInterviewExposureIndexContract,
+} = require('../services/interview/exposure-index-contract');
 
 const { Schema, model } = mongoose;
 
@@ -35,7 +38,7 @@ const TaskExposureSchema = new Schema(
 
 const InterviewContentExposureSchema = new Schema(
   {
-    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true, index: true },
+    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     sessionId: {
       type: Schema.Types.ObjectId,
       ref: 'InterviewSession',
@@ -68,24 +71,13 @@ const InterviewContentExposureSchema = new Schema(
     exposedAt: { type: Date, required: true },
     expiresAt: { type: Date, required: true },
   },
-  { timestamps: true }
+  {
+    autoCreate: false,
+    autoIndex: false,
+    timestamps: true,
+  }
 );
 
-InterviewContentExposureSchema.index(
-  { sessionId: 1 },
-  { unique: true, name: 'uniq_interview_content_exposure_session' }
-);
-InterviewContentExposureSchema.index(
-  { userId: 1, format: 1, track: 1, level: 1, exposedAt: -1 },
-  { name: 'idx_interview_exposure_target_history' }
-);
-InterviewContentExposureSchema.index(
-  { userId: 1, exposedAt: -1 },
-  { name: 'idx_interview_exposure_user_history' }
-);
-InterviewContentExposureSchema.index(
-  { expiresAt: 1 },
-  { expireAfterSeconds: 0, name: 'ttl_interview_exposure_retention' }
-);
+applyInterviewExposureIndexContract(InterviewContentExposureSchema);
 
 module.exports = model('InterviewContentExposure', InterviewContentExposureSchema);

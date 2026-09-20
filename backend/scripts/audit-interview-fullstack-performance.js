@@ -190,22 +190,33 @@ function configureEnvironment(mongoUri) {
     INTERVIEW_NATIVE_SAFARI_READY: 'true',
     INTERVIEW_OPERATIONAL_STATE: 'normal',
     INTERVIEW_SYSTEM_DESIGN_ACCESS: 'off',
-    INTERVIEW_TELEMETRY_ENABLED: 'false',
+    INTERVIEW_TELEMETRY_ENABLED: 'true',
     JWT_SECRET,
     MONGO_TARGET: 'test',
+    MONGO_URL: '',
     MONGO_URL_TEST: mongoUri,
     NODE_ENV: 'production',
     RATE_LIMIT_NAMESPACE: `interview-fullstack-perf-${process.pid}`,
+    RATE_LIMIT_REDIS_TIMEOUT_MS: '1500',
     RATE_LIMIT_STORE: 'redis',
-    REQUEST_METRICS_ENABLED: 'false',
-    SENTRY_ENABLED: 'false',
+    REQUEST_METRICS_ENABLED: 'true',
+    REQUEST_METRICS_SAMPLE_RATE: '0',
+    SENTRY_DSN: 'https://public@sentry.interview.invalid/1',
+    SENTRY_ENABLED: 'true',
+    SENTRY_ENVIRONMENT: 'interview-fullstack-performance',
+    SENTRY_TRACES_SAMPLE_RATE: '0',
     UPSTASH_REDIS_REST_TOKEN: 'ephemeral-test-token',
     UPSTASH_REDIS_REST_URL: 'https://redis.interview.invalid',
+    VERCEL: '',
+    VERCEL_ENV: '',
   });
 }
 
 function installHealthyRedisStub() {
-  global.fetch = async (_url, options) => {
+  global.fetch = async (url, options) => {
+    if (String(url).startsWith('https://sentry.interview.invalid')) {
+      return new Response('', { status: 200 });
+    }
     const commands = parseJson(String(options?.body || '[]'));
     return {
       ok: true,
@@ -782,10 +793,41 @@ async function main() {
     installHealthyRedisStub();
 
     const app = require('../index');
-    ({ disconnectMongo } = require('../config/mongo'));
+    const mongo = require('../config/mongo');
+    ({ disconnectMongo } = mongo);
     const User = require('../models/User');
     const InterviewSession = require('../models/InterviewSession');
     const InterviewMonthlyQuota = require('../models/InterviewMonthlyQuota');
+    const {
+      EXPOSURE_COLLECTION_NAME,
+    } = require('../services/interview/exposure-index-contract');
+    const {
+      inspectInterviewExposureIndexMigration,
+      migrateInterviewExposureIndexes,
+    } = require('../services/interview/exposure-index-migrator');
+
+    const connection = await mongo.connectToMongo(mongoUri);
+    const exposureCollection = connection.collection(EXPOSURE_COLLECTION_NAME);
+    const exposureInspection = await inspectInterviewExposureIndexMigration({
+      collection: exposureCollection,
+      database: DB_NAME,
+    });
+    assert(
+      exposureInspection.canExecute,
+      'Ephemeral exposure index preparation is blocked',
+      exposureInspection
+    );
+    const exposureMigration = await migrateInterviewExposureIndexes({
+      collection: exposureCollection,
+      confirmation: exposureInspection.confirmation,
+      database: DB_NAME,
+      execute: true,
+    });
+    assert(
+      exposureMigration.ok && exposureMigration.finalIndexSummary?.validCount === 5,
+      'Ephemeral exposure index preparation did not satisfy the 5/5 contract',
+      exposureMigration
+    );
 
     httpAgent = new http.Agent({ keepAlive: true, maxSockets: 64 });
     await new Promise((resolve, reject) => {

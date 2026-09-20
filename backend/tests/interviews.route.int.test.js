@@ -585,8 +585,12 @@ describe('Interview Mode API', () => {
     }
   });
 
-  test('requires Redis for public creates while internal preview can use local limits', async () => {
+  test('requires Redis for public creates while local preflight and internal preview can use local limits', async () => {
     const publicUser = await createUser('public_missing_redis', { premium: true });
+    const preflightUser = await createUser('preflight_memory_limit', { premium: true });
+    const previewPreflightUser = await createUser('preflight_preview_missing_redis', {
+      premium: true,
+    });
     const admin = await createUser('internal_missing_redis', {
       premium: true,
       role: 'admin',
@@ -605,12 +609,50 @@ describe('Interview Mode API', () => {
     });
     expect(await InterviewSession.countDocuments({ userId: publicUser._id })).toBe(0);
 
+    const originalVercelEnv = process.env.VERCEL_ENV;
+    let previewDenied;
+    try {
+      process.env.INTERVIEW_MODE_ACCESS = 'preflight';
+      process.env.VERCEL_ENV = 'preview';
+      previewDenied = await createInterview(previewPreflightUser, {
+        requestId: 'preflight-preview-missing-redis-0001',
+      });
+    } finally {
+      if (originalVercelEnv === undefined) delete process.env.VERCEL_ENV;
+      else process.env.VERCEL_ENV = originalVercelEnv;
+    }
+    expect(previewDenied.status).toBe(503);
+    expect(previewDenied.body.code).toBe('RATE_LIMIT_UNAVAILABLE');
+
+    process.env.INTERVIEW_MODE_ACCESS = 'preflight';
+    const preflight = await createInterview(preflightUser, {
+      requestId: 'preflight-local-limit-0001',
+    });
+    expect(preflight.status).toBe(201);
+    expect(preflight.body.session.status).toBe('mcq_active');
+
     process.env.INTERVIEW_MODE_ACCESS = 'internal';
     const preview = await createInterview(admin, {
       requestId: 'internal-local-limit-0001',
     });
     expect(preview.status).toBe(201);
     expect(preview.body.session.status).toBe('mcq_active');
+  });
+
+  test('rejects guests from preflight availability and create', async () => {
+    const originalAccess = process.env.INTERVIEW_MODE_ACCESS;
+    try {
+      process.env.INTERVIEW_MODE_ACCESS = 'preflight';
+      const availability = await request(app).get('/api/interviews/availability');
+      const create = await request(app)
+        .post('/api/interviews')
+        .send({ viewportWidth: 1366, format: 'coding', level: 'mid', track: 'react' });
+
+      expect(availability.status).toBe(401);
+      expect(create.status).toBe(401);
+    } finally {
+      process.env.INTERVIEW_MODE_ACCESS = originalAccess;
+    }
   });
 
   test('creates one pinned five-question form, replays create, and never leaks answers', async () => {
@@ -2755,7 +2797,7 @@ describe('Interview Mode API', () => {
   });
 
   test('enforces the complete audience and operational create matrix', async () => {
-    const accessModes = ['off', 'internal', 'cohort', 'public'];
+    const accessModes = ['off', 'internal', 'preflight', 'cohort', 'public'];
     const operationalStates = ['normal', 'drain', 'halt'];
 
     for (const accessMode of accessModes) {

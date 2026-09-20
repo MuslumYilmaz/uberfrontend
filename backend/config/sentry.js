@@ -6,6 +6,25 @@ const {
 
 let initialized = false;
 
+const INTERVIEW_CAPTURE_MARKER = 'interview_capture_kind';
+const INTERVIEW_ISSUE_SIGNAL_THROTTLE_MS = 5 * 60 * 1000;
+const INTERVIEW_ISSUE_SIGNALS = new Set([
+    'protected_overlap',
+    'readiness_blocked',
+    'redis_degraded',
+    'unexpected_5xx',
+]);
+const INTERVIEW_EXCEPTION_TYPES = new Set([
+    'CastError',
+    'Error',
+    'InterviewSelectionError',
+    'InterviewServiceError',
+    'MongoServerError',
+    'SyntaxError',
+    'ValidationError',
+]);
+const interviewIssueSignalLastCapturedAt = new Map();
+
 const SENSITIVE_REQUEST_HEADERS = new Set([
     'authorization',
     'cookie',
@@ -22,15 +41,17 @@ const SENSITIVE_REQUEST_HEADERS = new Set([
 ]);
 const METRIC_ATTRIBUTE_KEYS = new Set([
     'accessMode', 'access_mode', 'artifactKind', 'artifactStatus', 'code', 'event',
+    'exposureCode', 'exposure_code', 'gateProfile', 'gate_profile',
     'format', 'httpStatus', 'level', 'limiter', 'method', 'operation', 'operationalState',
     'operational_state', 'outcome', 'path', 'protectedWindow', 'quotaRestored',
-    'rate_limit_outcome', 'readinessCode', 'readiness_code', 'redisCode', 'redis_code',
-    'replayed', 'selectionPolicyVersion', 'status', 'statusFrom', 'statusTo',
+    'monitoringCode', 'monitoring_code', 'rate_limit_outcome', 'readinessCode',
+    'readiness_code', 'redisCode', 'redis_code',
+    'replayed', 'selectionPolicyVersion', 'signal', 'status', 'statusFrom', 'statusTo',
     'status_class', 'storeFallback', 'store_fallback', 'track',
 ]);
 const METRIC_ENUM_VALUES = Object.freeze({
-    accessMode: new Set(['off', 'internal', 'cohort', 'public']),
-    access_mode: new Set(['off', 'internal', 'cohort', 'public']),
+    accessMode: new Set(['off', 'internal', 'preflight', 'cohort', 'public']),
+    access_mode: new Set(['off', 'internal', 'preflight', 'cohort', 'public']),
     artifactKind: new Set(['mcq', 'coding', 'system-design']),
     artifactStatus: new Set(['candidate', 'editorial-gold', 'calibrated-gold']),
     code: new Set([
@@ -38,13 +59,15 @@ const METRIC_ENUM_VALUES = Object.freeze({
         'command_error', 'ready', 'probe_not_run', 'rate_limit_allowed',
         'rate_limit_unavailable', 'test_rate_limited',
         'interview_artifacts_blocked', 'interview_dependencies_blocked',
-        'interview_release_disabled', 'interview_release_ready',
+        'interview_preflight_ready', 'interview_release_disabled', 'interview_release_ready',
         'interview_content_unavailable', 'interview_create_ip_rate_limited',
         'interview_create_user_rate_limited', 'interview_idempotency_conflict',
         'interview_monthly_quota_exhausted', 'interview_mutation_rate_limited',
         'interview_outer_rate_limited', 'interview_request_failed',
         'interview_request_too_large', 'interview_selection_unavailable',
         'interview_twist_reveal_rate_limited', 'interview_version_conflict',
+        'interview_exposure_recovery_required', 'interview_quota_recovery_required',
+        'interview_results_unavailable', 'interview_runner_unavailable',
     ]),
     event: new Set([
         'availability_checked', 'create_started', 'create_succeeded', 'create_failed',
@@ -53,7 +76,17 @@ const METRIC_ENUM_VALUES = Object.freeze({
         'rate_limit_unavailable', 'rate_limit_fallback', 'artifact_unavailable',
         'inventory_exhausted', 'selection_overlap', 'readiness_checked', 'request_failed',
     ]),
+    exposureCode: new Set([
+        'ready', 'indexes_missing', 'indexes_mismatched', 'retention_mismatch',
+        'invalid_contract', 'index_read_failed', 'connection_error', 'probe_not_run',
+    ]),
+    exposure_code: new Set([
+        'ready', 'indexes_missing', 'indexes_mismatched', 'retention_mismatch',
+        'invalid_contract', 'index_read_failed', 'connection_error', 'probe_not_run',
+    ]),
     format: new Set(['coding', 'system-design']),
+    gateProfile: new Set(['disabled', 'preflight', 'release']),
+    gate_profile: new Set(['disabled', 'preflight', 'release']),
     level: new Set(['junior', 'mid', 'senior']),
     limiter: new Set([
         'interview-create-ip', 'interview-create-user', 'interview-launch-readiness',
@@ -61,6 +94,12 @@ const METRIC_ENUM_VALUES = Object.freeze({
         'interview-system-design-twist-reveal',
     ]),
     method: new Set(['delete', 'get', 'head', 'options', 'patch', 'post', 'put']),
+    monitoringCode: new Set([
+        'ready', 'not_attested', 'sentry_not_configured', 'telemetry_disabled',
+    ]),
+    monitoring_code: new Set([
+        'ready', 'not_attested', 'sentry_not_configured', 'telemetry_disabled',
+    ]),
     operation: new Set([
         'abandon', 'active-resume', 'availability', 'bulk-technical-void',
         'coding-check', 'coding-draft', 'coding-start', 'coding-submit', 'control',
@@ -77,11 +116,11 @@ const METRIC_ENUM_VALUES = Object.freeze({
     rate_limit_outcome: new Set(['allowed', 'denied', 'unavailable']),
     readinessCode: new Set([
         'interview_artifacts_blocked', 'interview_dependencies_blocked',
-        'interview_release_disabled', 'interview_release_ready',
+        'interview_preflight_ready', 'interview_release_disabled', 'interview_release_ready',
     ]),
     readiness_code: new Set([
         'interview_artifacts_blocked', 'interview_dependencies_blocked',
-        'interview_release_disabled', 'interview_release_ready',
+        'interview_preflight_ready', 'interview_release_disabled', 'interview_release_ready',
     ]),
     redisCode: new Set([
         'not_configured', 'timeout', 'network_error', 'http_error', 'invalid_response',
@@ -91,6 +130,7 @@ const METRIC_ENUM_VALUES = Object.freeze({
         'not_configured', 'timeout', 'network_error', 'http_error', 'invalid_response',
         'command_error', 'ready', 'probe_not_run',
     ]),
+    signal: INTERVIEW_ISSUE_SIGNALS,
     statusFrom: new Set([
         'mcq_active', 'coding_ready', 'coding_active', 'system_design_active',
         'completed', 'abandoned', 'voided_technical',
@@ -171,9 +211,7 @@ function scrubExceptionData(event) {
     event.exception.values = values.map((exception) => {
         const frames = exception?.stacktrace?.frames;
         const rawType = String(exception?.type || 'Error');
-        const safeType = new Set([
-            'CastError', 'Error', 'MongoServerError', 'SyntaxError', 'ValidationError',
-        ]).has(rawType) ? rawType : 'Error';
+        const safeType = INTERVIEW_EXCEPTION_TYPES.has(rawType) ? rawType : 'Error';
         return {
             type: safeType,
             value: 'Interview request failed',
@@ -199,7 +237,9 @@ function scrubInterviewRequest(event) {
     const request = event?.request;
     const requestUrl = request?.url || request?.path || '';
     const transaction = String(event?.transaction || '');
-    const interviewEvent = isInterviewPath(requestUrl) || isInterviewPath(transaction);
+    const interviewEvent = isInterviewPath(requestUrl)
+        || isInterviewPath(transaction)
+        || event?.tags?.[INTERVIEW_CAPTURE_MARKER] === 'handled_exception';
     if (!interviewEvent) return event;
 
     if (request && typeof request === 'object') {
@@ -257,12 +297,48 @@ function scrubInterviewRequest(event) {
     return event;
 }
 
-function initSentry(env = process.env) {
+function isSentryConfigured(env = process.env) {
     const explicitEnabled = parseBooleanFlag(env.SENTRY_ENABLED);
     const dsn = String(env.SENTRY_DSN || '').trim();
     const enabled = explicitEnabled === undefined ? Boolean(dsn) : explicitEnabled;
+    return enabled && Boolean(dsn);
+}
 
-    if (!enabled || !dsn) {
+function sanitizeInterviewException(error) {
+    const rawType = String(error?.name || 'Error');
+    const safeType = INTERVIEW_EXCEPTION_TYPES.has(rawType) ? rawType : 'Error';
+    const safeError = new Error('Interview request failed');
+    safeError.name = safeType;
+
+    const safeFrames = String(error?.stack || '')
+        .split('\n')
+        .slice(1)
+        .map((line) => String(line).match(
+            /\bat\s+(?:.*?\s+\()?((?:file:\/\/)?[^()\s]+):(\d+):(\d+)\)?\s*$/
+        ))
+        .filter(Boolean)
+        .slice(0, 80)
+        .map((match) => {
+            const rawFilename = match[1]
+                .replace(/^file:\/\//, '')
+                .split(/[\\/]/)
+                .pop();
+            const filename = /^[a-z0-9._-]{1,160}$/i.test(rawFilename)
+                ? rawFilename
+                : '[redacted]';
+            return `    at ${filename}:${match[2]}:${match[3]}`;
+        });
+    safeError.stack = [
+        `${safeType}: Interview request failed`,
+        ...safeFrames,
+    ].join('\n');
+    return safeError;
+}
+
+function initSentry(env = process.env) {
+    const dsn = String(env.SENTRY_DSN || '').trim();
+
+    if (!isSentryConfigured(env)) {
         initialized = false;
         return false;
     }
@@ -310,8 +386,94 @@ function captureException(error, context) {
     return Sentry.captureException(error, context);
 }
 
+function captureInterviewException(error, { operation, code, status } = {}) {
+    if (!initialized || typeof Sentry.captureException !== 'function') {
+        return undefined;
+    }
+
+    const safeStatus = Number.isInteger(Number(status))
+        && Number(status) >= 500
+        && Number(status) <= 599
+        ? Number(status)
+        : 500;
+    const tags = sanitizeMetricAttributes({ operation, code, status: safeStatus });
+    if (!tags.operation) tags.operation = 'unknown';
+    if (!tags.code) tags.code = 'interview_request_failed';
+
+    return Sentry.captureException(sanitizeInterviewException(error), {
+        tags: {
+            [INTERVIEW_CAPTURE_MARKER]: 'handled_exception',
+            ...tags,
+        },
+    });
+}
+
+function captureInterviewIssueSignal(signalRaw, {
+    error,
+    operation,
+    code,
+    status,
+    now = Date.now(),
+} = {}) {
+    if (!initialized || typeof Sentry.captureException !== 'function') return false;
+    const signal = String(signalRaw || '').trim().toLowerCase();
+    if (!INTERVIEW_ISSUE_SIGNALS.has(signal)) return false;
+    const capturedAt = Number(now);
+    if (!Number.isFinite(capturedAt)) return false;
+    const lastCapturedAt = interviewIssueSignalLastCapturedAt.get(signal);
+    if (
+        Number.isFinite(lastCapturedAt)
+        && capturedAt - lastCapturedAt < INTERVIEW_ISSUE_SIGNAL_THROTTLE_MS
+    ) {
+        return false;
+    }
+
+    const numericStatus = Number(status);
+    const tags = sanitizeMetricAttributes({
+        operation,
+        code,
+        signal,
+        ...(Number.isInteger(numericStatus) && numericStatus >= 100 && numericStatus <= 599
+            ? { status: numericStatus }
+            : {}),
+    });
+    if (!tags.operation) tags.operation = 'unknown';
+    const sourceError = signal === 'unexpected_5xx' && error
+        ? error
+        : new Error('Interview operational signal');
+
+    try {
+        Sentry.captureException(sanitizeInterviewException(sourceError), {
+            fingerprint: ['interview-operational-signal', signal],
+            level: signal === 'protected_overlap' ? 'fatal' : 'error',
+            tags: {
+                [INTERVIEW_CAPTURE_MARKER]: 'handled_exception',
+                ...tags,
+            },
+        });
+        interviewIssueSignalLastCapturedAt.set(signal, capturedAt);
+        return true;
+    } catch {
+        return false;
+    }
+}
+
+function resetInterviewIssueSignalThrottle() {
+    interviewIssueSignalLastCapturedAt.clear();
+}
+
 function isSentryInitialized() {
     return initialized;
+}
+
+async function flushSentry(timeoutMs = 2_000) {
+    if (!initialized || typeof Sentry.flush !== 'function') return false;
+    const timeout = Math.max(100, Math.min(10_000, Number(timeoutMs) || 2_000));
+    try {
+        return Boolean(await Sentry.flush(timeout));
+    } catch {
+        return false;
+    }
 }
 
 function captureMetric(type, name, value, { attributes, unit } = {}) {
@@ -336,13 +498,18 @@ function captureMetric(type, name, value, { attributes, unit } = {}) {
 }
 
 module.exports = {
+    captureInterviewException,
+    captureInterviewIssueSignal,
     captureMetric,
     captureException,
+    flushSentry,
     initSentry,
+    isSentryConfigured,
     isSentryInitialized,
     parseBooleanFlag,
     parseTracesSampleRate,
     redactRequestHeaders,
+    resetInterviewIssueSignalThrottle,
     sanitizeMetricAttributes,
     scrubInterviewRequest,
     setupSentryErrorHandler,

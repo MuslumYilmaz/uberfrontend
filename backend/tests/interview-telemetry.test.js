@@ -23,6 +23,7 @@ describe('Interview telemetry', () => {
       level: 'mid',
       targetExposureCount: 2,
       protectedWindow: true,
+      monitoringCode: 'ready',
       userId: '507f1f77bcf86cd799439011',
       sessionId: 'session-secret',
       prompt: 'Private question text',
@@ -35,6 +36,7 @@ describe('Interview telemetry', () => {
       level: 'mid',
       targetExposureCount: 2,
       protectedWindow: true,
+      monitoringCode: 'ready',
     });
   });
 
@@ -44,6 +46,7 @@ describe('Interview telemetry', () => {
       track: 'react-private-cohort-42',
       level: 'mid-user-123',
       operation: 'create-user-secret',
+      monitoringCode: 'user-controlled-status',
       formatFallback: 'coding',
     })).toEqual({});
   });

@@ -39,6 +39,58 @@ function isProductionRuntime() {
   return String(process.env.NODE_ENV || '').trim().toLowerCase() === 'production';
 }
 
+function isVercelPreviewRuntime() {
+  return String(process.env.VERCEL_ENV || '').trim().toLowerCase() === 'preview';
+}
+
+function mongoDatabaseNameFromUri(uri) {
+  try {
+    const parsed = new URL(String(uri || '').trim());
+    return decodeURIComponent(parsed.pathname.replace(/^\/+/, '').split('/')[0] || '').trim();
+  } catch {
+    return '';
+  }
+}
+
+function previewMongoIsolationError(message) {
+  const error = new Error(`Vercel Preview MongoDB isolation failed: ${message}`);
+  error.code = 'PREVIEW_MONGO_ISOLATION_REQUIRED';
+  return error;
+}
+
+function assertVercelPreviewMongoIsolation({ target, uri }) {
+  if (!isVercelPreviewRuntime()) return;
+
+  const rawTarget = String(process.env.MONGO_TARGET || '').trim().toLowerCase();
+  if (rawTarget !== 'test' || target !== 'test') {
+    throw previewMongoIsolationError('set the Preview-scoped MONGO_TARGET exactly to "test".');
+  }
+  if (String(process.env.MONGO_URL || '').trim()) {
+    throw previewMongoIsolationError('MONGO_URL must not exist in the Preview environment scope.');
+  }
+
+  const expectedName = String(process.env.EXPECTED_MONGO_DB_NAME_TEST || '').trim();
+  if (!expectedName) {
+    throw previewMongoIsolationError('EXPECTED_MONGO_DB_NAME_TEST is required.');
+  }
+  if (expectedName.toLowerCase() === 'frontendatlas') {
+    throw previewMongoIsolationError('the production "frontendatlas" database is forbidden.');
+  }
+
+  const uriName = mongoDatabaseNameFromUri(uri);
+  if (!uriName) {
+    throw previewMongoIsolationError('MONGO_URL_TEST must include an explicit database name.');
+  }
+  if (uriName.toLowerCase() === 'frontendatlas') {
+    throw previewMongoIsolationError('MONGO_URL_TEST points at the forbidden production database.');
+  }
+  if (uriName !== expectedName) {
+    throw previewMongoIsolationError(
+      `MONGO_URL_TEST database must match EXPECTED_MONGO_DB_NAME_TEST (expected "${expectedName}", received "${uriName}").`
+    );
+  }
+}
+
 function normalizeMongoTarget(value) {
   const raw = String(value || '').trim().toLowerCase();
   if (!raw) return null;
@@ -66,8 +118,11 @@ function resolveMongoConnectionConfig() {
         'MONGO_URL_TEST is required when MongoDB target is "test". Set MONGO_URL_TEST or explicitly use MONGO_TARGET=production.'
       );
     }
+    assertVercelPreviewMongoIsolation({ target, uri });
     return { target, uri };
   }
+
+  assertVercelPreviewMongoIsolation({ target, uri: '' });
 
   const uri = String(process.env.MONGO_URL || '').trim() || 'mongodb://127.0.0.1:27017/myapp';
   return { target, uri };
@@ -212,10 +267,13 @@ async function disconnectMongo() {
 }
 
 module.exports = {
+  assertVercelPreviewMongoIsolation,
   connectToMongo,
   disconnectMongo,
   getMongoDiagnostics,
   getExpectedMongoDbName,
+  isVercelPreviewRuntime,
+  mongoDatabaseNameFromUri,
   resolveMongoClientOptions,
   resolveMongoConnectionConfig,
   resolveMongoTarget,

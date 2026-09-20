@@ -15,6 +15,9 @@ const DEFAULT_BANK_PREFIX = 'frontend-interview-bank-v1';
 const DEFAULT_CODING_PREFIX = 'interview-coding-registry-v1';
 const DEFAULT_SYSTEM_DESIGN_PREFIX = 'interview-system-design-registry-v1';
 const CANDIDATE_ARTIFACT_ENVIRONMENTS = new Set(['development', 'test']);
+const INTERVIEW_SYSTEM_DESIGN_ACCESS_MODES = Object.freeze(
+  INTERVIEW_ACCESS_MODES.filter((mode) => mode !== 'preflight')
+);
 const SYSTEM_DESIGN_SECONDS = Object.freeze({
   junior: 10 * 60,
   mid: 15 * 60,
@@ -101,12 +104,19 @@ function interviewSystemDesignAccessMode() {
   const configured = String(process.env.INTERVIEW_SYSTEM_DESIGN_ACCESS || 'off')
     .trim()
     .toLowerCase();
-  return INTERVIEW_ACCESS_MODES.includes(configured) ? configured : 'off';
+  return INTERVIEW_SYSTEM_DESIGN_ACCESS_MODES.includes(configured) ? configured : 'off';
 }
 
 function interviewSystemDesignAccess(role, { userId } = {}) {
   const interviewAccess = interviewModeAudience(role, { userId });
   const mode = interviewSystemDesignAccessMode();
+  if (interviewAccess.mode === 'preflight') {
+    return {
+      mode,
+      enabled: false,
+      internalPreview: false,
+    };
+  }
   const systemDesignAudience = resolveInterviewAudience({
     mode,
     role,
@@ -203,7 +213,8 @@ function interviewConfig() {
       ),
     },
     allowCandidate: (
-      CANDIDATE_ARTIFACT_ENVIRONMENTS.has(nodeEnv)
+      accessMode !== 'preflight'
+      && CANDIDATE_ARTIFACT_ENVIRONMENTS.has(nodeEnv)
       && String(process.env.INTERVIEW_ALLOW_CANDIDATE_BANK || '').trim().toLowerCase() === 'true'
     ),
     freeMonthlyLimit: envPositiveInt('INTERVIEW_FREE_MONTHLY_LIMIT', 1, { max: 20 }),
@@ -276,6 +287,7 @@ function interviewConfig() {
 
 module.exports = {
   INTERVIEW_ACCESS_MODES,
+  INTERVIEW_SYSTEM_DESIGN_ACCESS_MODES,
   interviewConfig,
   interviewCohortBasisPoints,
   interviewModeAudience,

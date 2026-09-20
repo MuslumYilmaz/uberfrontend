@@ -3,6 +3,7 @@
 const {
   interviewReadinessSnapshot,
   interviewReleaseReadiness,
+  monitoringReadinessStatus,
   probeRedisRateLimit,
   resetInterviewReadinessCache,
 } = require('../services/interview/readiness');
@@ -11,9 +12,19 @@ const rolloutConfig = {
   cohortBasisPoints: 100,
   cohortSaltConfigured: true,
 };
+const monitoringEnv = {
+  INTERVIEW_MONITORING_READY: 'true',
+  INTERVIEW_TELEMETRY_ENABLED: 'true',
+  REQUEST_METRICS_ENABLED: 'true',
+  SENTRY_DSN: 'https://public@example.ingest.sentry.io/1',
+  SENTRY_ENABLED: 'true',
+};
 const operatorGates = {
   monitoringStatus: { configured: true, ready: true },
   nativeSafariStatus: { configured: true, ready: true },
+  exposureReady: true,
+  env: monitoringEnv,
+  sentryInitialized: true,
 };
 
 describe('Interview artifact readiness', () => {
@@ -129,6 +140,100 @@ describe('Interview artifact readiness', () => {
     }).ok).toBe(true);
   });
 
+  test('allows local preflight with memory limiting while keeping release attestations non-blocking', () => {
+    const snapshot = interviewReadinessSnapshot({
+      accessMode: 'preflight',
+      systemDesignAccessMode: 'off',
+      operationalState: 'normal',
+      loadCoding: () => ({ status: 'editorial-gold' }),
+      config: rolloutConfig,
+      exposureReady: true,
+      env: { RATE_LIMIT_STORE: 'memory' },
+    });
+
+    expect(snapshot).toEqual(expect.objectContaining({
+      ok: true,
+      gateProfile: 'preflight',
+      gateRequired: true,
+      gateReady: true,
+      launchReady: false,
+      releaseRequired: false,
+      code: 'INTERVIEW_PREFLIGHT_READY',
+    }));
+    expect(snapshot.dependencies.redisRateLimit.required).toBe(false);
+    expect(snapshot.dependencies.exposureStore).toEqual(expect.objectContaining({
+      required: true,
+      ready: true,
+    }));
+    expect(snapshot.dependencies.monitoring.required).toBe(false);
+    expect(snapshot.dependencies.nativeSafari.required).toBe(false);
+  });
+
+  test('requires real Redis in Vercel Preview preflight but not monitoring or Safari attestations', () => {
+    const base = {
+      accessMode: 'preflight',
+      systemDesignAccessMode: 'off',
+      operationalState: 'normal',
+      loadCoding: () => ({ status: 'editorial-gold' }),
+      config: rolloutConfig,
+      exposureReady: true,
+      env: { VERCEL_ENV: 'preview' },
+    };
+
+    const blocked = interviewReadinessSnapshot({ ...base, redisReady: false });
+    expect(blocked.ok).toBe(false);
+    expect(blocked.dependencies.redisRateLimit.required).toBe(true);
+
+    const ready = interviewReadinessSnapshot({ ...base, redisReady: true });
+    expect(ready.ok).toBe(true);
+    expect(ready.gateReady).toBe(true);
+    expect(ready.launchReady).toBe(false);
+    expect(ready.dependencies.monitoring.ready).toBe(false);
+    expect(ready.dependencies.nativeSafari.ready).toBe(false);
+  });
+
+  test('blocks public readiness when the exposure index contract is not ready', () => {
+    const snapshot = interviewReadinessSnapshot({
+      accessMode: 'public',
+      systemDesignAccessMode: 'off',
+      operationalState: 'normal',
+      loadCoding: () => ({ status: 'editorial-gold' }),
+      config: rolloutConfig,
+      redisReady: true,
+      ...operatorGates,
+      exposureReady: false,
+    });
+
+    expect(snapshot.ok).toBe(false);
+    expect(snapshot.gateReady).toBe(false);
+    expect(snapshot.dependencies.exposureStore).toEqual(expect.objectContaining({
+      required: true,
+      ready: false,
+      code: 'indexes_missing',
+    }));
+  });
+
+  test('allows direct public readiness with zero BPS and no rollout salt', () => {
+    const snapshot = interviewReadinessSnapshot({
+      accessMode: 'public',
+      systemDesignAccessMode: 'off',
+      operationalState: 'normal',
+      loadCoding: () => ({ status: 'editorial-gold' }),
+      config: { cohortBasisPoints: 0, cohortSaltConfigured: false },
+      redisReady: true,
+      ...operatorGates,
+    });
+
+    expect(snapshot).toEqual(expect.objectContaining({
+      ok: true,
+      gateProfile: 'release',
+      gateReady: true,
+      launchReady: true,
+      code: 'INTERVIEW_RELEASE_READY',
+    }));
+    expect(snapshot.dependencies.cohort).toEqual({ required: false, ready: true });
+  });
+
   test.each([
     ['off', 'normal'],
     ['public', 'drain'],
@@ -153,6 +258,7 @@ describe('Interview artifact readiness', () => {
       loadCoding: () => ({ status: 'editorial-gold' }),
       config: rolloutConfig,
       redisReady: true,
+      exposureReady: true,
     };
 
     const blocked = interviewReadinessSnapshot({ ...base, env: {} });
@@ -162,6 +268,8 @@ describe('Interview artifact readiness', () => {
       required: true,
       configured: false,
       ready: false,
+      attested: false,
+      code: 'not_attested',
     });
     expect(blocked.dependencies.nativeSafari.ready).toBe(false);
 
@@ -169,6 +277,44 @@ describe('Interview artifact readiness', () => {
     expect(ready.ok).toBe(true);
     expect(ready.launchReady).toBe(true);
     expect(ready.code).toBe('INTERVIEW_RELEASE_READY');
+    expect(ready.dependencies.monitoring).toEqual({
+      required: true,
+      configured: true,
+      ready: true,
+      attested: true,
+      code: 'ready',
+    });
+  });
+
+  test.each([
+    [
+      'not_attested',
+      { ...monitoringEnv, INTERVIEW_MONITORING_READY: 'false' },
+      true,
+    ],
+    [
+      'sentry_not_configured',
+      { ...monitoringEnv, SENTRY_DSN: '' },
+      true,
+    ],
+    [
+      'sentry_not_configured',
+      monitoringEnv,
+      false,
+    ],
+    [
+      'telemetry_disabled',
+      { ...monitoringEnv, REQUEST_METRICS_ENABLED: 'false' },
+      true,
+    ],
+    ['ready', monitoringEnv, true],
+  ])('reports bounded monitoring code %s', (code, env, sentryInitialized) => {
+    expect(monitoringReadinessStatus({ env, sentryInitialized })).toEqual({
+      configured: true,
+      attested: code !== 'not_attested',
+      ready: code === 'ready',
+      code,
+    });
   });
 });
 
@@ -243,9 +389,10 @@ describe('Interview Redis release probe', () => {
     const snapshot = await interviewReleaseReadiness({
       env: {
         ...redisEnv,
-        INTERVIEW_MONITORING_READY: 'true',
+        ...monitoringEnv,
         INTERVIEW_NATIVE_SAFARI_READY: 'true',
       },
+      sentryInitialized: true,
       accessMode: 'public',
       systemDesignAccessMode: 'off',
       operationalState: 'normal',
@@ -255,6 +402,7 @@ describe('Interview Redis release probe', () => {
         ok: true,
         json: async () => [{ result: [1, 30] }],
       }),
+      exposureReady: true,
     });
 
     expect(snapshot).toEqual(expect.objectContaining({

@@ -26,7 +26,12 @@ describe('InterviewContentExposure schema', () => {
     ]));
 
     const indexes = InterviewContentExposure.schema.indexes();
+    expect(InterviewContentExposure.schema.options).toEqual(expect.objectContaining({
+      autoCreate: false,
+      autoIndex: false,
+    }));
     expect(indexes).toEqual(expect.arrayContaining([
+      [{ userId: 1 }, expect.objectContaining({ name: 'userId_1' })],
       [{ sessionId: 1 }, expect.objectContaining({ unique: true })],
       [
         { userId: 1, format: 1, track: 1, level: 1, exposedAt: -1 },

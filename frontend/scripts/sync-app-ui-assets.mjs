@@ -28,6 +28,26 @@ await copyFile(
   path.join(nodeModulesRoot, 'primeng', 'resources', 'themes', 'lara-dark-amber', 'theme.css'),
   path.join(outputRoot, 'primeng', 'resources', 'themes', 'lara-dark-amber', 'theme.css'),
 );
+const primeNgThemePath = path.join(
+  outputRoot,
+  'primeng',
+  'resources',
+  'themes',
+  'lara-dark-amber',
+  'theme.css',
+);
+const primeNgTheme = await fs.readFile(primeNgThemePath, 'utf8');
+const interVariableFontFace = /@font-face\s*\{\s*font-family:\s*"Inter var";[\s\S]*?\}\s*/g;
+const interVariableFontFaces = primeNgTheme.match(interVariableFontFace) || [];
+if (interVariableFontFaces.length !== 2) {
+  throw new Error(
+    `[sync-app-ui-assets] expected two PrimeNG Inter variable font faces, found ${interVariableFontFaces.length}`
+  );
+}
+// PrimeNG 17's bundled variable WOFF2 files are rejected by Firefox's font
+// sanitizer. The app's token stylesheet already provides local Inter aliases
+// with a system sans-serif fallback, so remove only the broken network faces.
+await fs.writeFile(primeNgThemePath, primeNgTheme.replace(interVariableFontFace, ''));
 await copyDir(
   path.join(nodeModulesRoot, 'primeng', 'resources', 'themes', 'lara-dark-amber', 'fonts'),
   path.join(outputRoot, 'primeng', 'resources', 'themes', 'lara-dark-amber', 'fonts'),

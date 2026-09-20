@@ -106,6 +106,16 @@ describe('InterviewService', () => {
     expect(result.accessMode).toBe('off');
   });
 
+  it('normalizes technical preflight as an enabled public-like access mode', () => {
+    const result = service.normalizeAvailability({
+      enabled: true,
+      accessMode: 'preflight',
+    });
+
+    expect(result.enabled).toBeTrue();
+    expect(result.accessMode).toBe('preflight');
+  });
+
   it('retains a known rollout label without granting access when the backend marks access disabled', () => {
     const result = service.normalizeAvailability({
       enabled: false,

@@ -16,6 +16,7 @@ describe('interview access configuration', () => {
   const originalCandidate = process.env.INTERVIEW_ALLOW_CANDIDATE_BANK;
   const originalDraftTotal = process.env.INTERVIEW_MAX_DRAFT_TOTAL_BYTES;
   const originalSystemDesignAccess = process.env.INTERVIEW_SYSTEM_DESIGN_ACCESS;
+  const originalRetentionDays = process.env.INTERVIEW_RETENTION_DAYS;
 
   afterEach(() => {
     if (originalAccess == null) delete process.env.INTERVIEW_MODE_ACCESS;
@@ -29,6 +30,8 @@ describe('interview access configuration', () => {
     else process.env.INTERVIEW_MAX_DRAFT_TOTAL_BYTES = originalDraftTotal;
     if (originalSystemDesignAccess == null) delete process.env.INTERVIEW_SYSTEM_DESIGN_ACCESS;
     else process.env.INTERVIEW_SYSTEM_DESIGN_ACCESS = originalSystemDesignAccess;
+    if (originalRetentionDays == null) delete process.env.INTERVIEW_RETENTION_DAYS;
+    else process.env.INTERVIEW_RETENTION_DAYS = originalRetentionDays;
   });
 
   test('defaults to off and fails closed for an invalid explicit mode', () => {
@@ -76,10 +79,22 @@ describe('interview access configuration', () => {
     });
   });
 
-  test('internal is admin-only while public enables authenticated users', () => {
+  test('internal is admin-only while preflight and public enable authenticated users', () => {
     process.env.INTERVIEW_MODE_ACCESS = 'internal';
     expect(interviewModeAccess('user').enabled).toBe(false);
     expect(interviewModeAccess('admin').internalPreview).toBe(true);
+
+    process.env.INTERVIEW_MODE_ACCESS = 'preflight';
+    expect(interviewModeAccess('user')).toEqual({
+      mode: 'preflight',
+      enabled: true,
+      internalPreview: false,
+    });
+    expect(interviewModeAccess('admin')).toEqual({
+      mode: 'preflight',
+      enabled: true,
+      internalPreview: false,
+    });
 
     process.env.INTERVIEW_MODE_ACCESS = 'public';
     expect(interviewModeAccess('user')).toEqual({
@@ -104,6 +119,9 @@ describe('interview access configuration', () => {
     expect(interviewConfig().allowCandidate).toBe(true);
     process.env.NODE_ENV = 'test';
     expect(interviewConfig().allowCandidate).toBe(true);
+
+    process.env.INTERVIEW_MODE_ACCESS = 'preflight';
+    expect(interviewConfig().allowCandidate).toBe(false);
   });
 
   test('bounds the draft contract inside a worst-case JSON request envelope', () => {
@@ -114,6 +132,14 @@ describe('interview access configuration', () => {
       (config.maxDraftTotalBytes * 6) + (64 * 1024)
     );
     expect(config.httpBodyLimitBytes).toBeLessThan(4 * 1024 * 1024);
+  });
+
+  test('keeps response-bearing Interview sessions for 90 days by default', () => {
+    delete process.env.INTERVIEW_RETENTION_DAYS;
+    expect(interviewConfig().retentionDays).toBe(90);
+
+    process.env.INTERVIEW_RETENTION_DAYS = '999';
+    expect(interviewConfig().retentionDays).toBe(365);
   });
 
   test('System Design access fails closed and intersects the main feature gate', () => {
@@ -133,6 +159,21 @@ describe('interview access configuration', () => {
     process.env.INTERVIEW_MODE_ACCESS = 'off';
     process.env.INTERVIEW_SYSTEM_DESIGN_ACCESS = 'public';
     expect(interviewSystemDesignAccess('admin').enabled).toBe(false);
+
+    process.env.INTERVIEW_MODE_ACCESS = 'preflight';
+    expect(interviewSystemDesignAccess('user')).toEqual({
+      mode: 'public',
+      enabled: false,
+      internalPreview: false,
+    });
+
+    process.env.INTERVIEW_SYSTEM_DESIGN_ACCESS = 'preflight';
+    expect(interviewSystemDesignAccessMode()).toBe('off');
+    expect(interviewSystemDesignAccess('admin')).toEqual({
+      mode: 'off',
+      enabled: false,
+      internalPreview: false,
+    });
   });
 
   test('System Design durations stay pinned to the authored 10/15/20 minute policy', () => {

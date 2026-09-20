@@ -19,6 +19,7 @@ function loadApp(overrides = {}) {
     COOKIE_SECURE: 'false',
     SENTRY_ENABLED: 'false',
     BILLING_WEBHOOK_DEBUG: 'false',
+    INTERVIEW_MODE_ACCESS: 'off',
     RATE_LIMIT_STORE: 'memory',
     API_RATE_LIMIT_WINDOW_MS: '60000',
     API_RATE_LIMIT_MAX: '2',
@@ -110,6 +111,9 @@ describe('global API security middleware', () => {
     expect(response.status).toBe(200);
     expect(response.body).toEqual(expect.objectContaining({
       ok: true,
+      gateProfile: 'disabled',
+      gateRequired: false,
+      gateReady: false,
       launchReady: false,
       releaseRequired: false,
       dependencies: expect.objectContaining({
@@ -119,10 +123,40 @@ describe('global API security middleware', () => {
           ready: false,
           code: 'not_configured',
         }),
+        exposureStore: expect.objectContaining({ required: false, ready: false }),
         monitoring: expect.objectContaining({ required: false, ready: false }),
         nativeSafari: expect.objectContaining({ required: false, ready: false }),
       }),
     }));
+  });
+
+  test('fails backend startup closed when preflight is scoped to Production', () => {
+    expect(() => loadApp({
+      NODE_ENV: 'production',
+      VERCEL: '1',
+      VERCEL_ENV: 'production',
+      INTERVIEW_MODE_ACCESS: 'preflight',
+      MONGO_TARGET: 'production',
+      MONGO_URL: 'mongodb://127.0.0.1:27017/frontendatlas',
+      EXPECTED_MONGO_DB_NAME: 'frontendatlas',
+    })).toThrow('Vercel preflight requires exact VERCEL_ENV=preview');
+  });
+
+  test('fails backend startup closed when Vercel Production public points at a test database', () => {
+    expect(() => loadApp({
+      NODE_ENV: 'production',
+      VERCEL: '1',
+      VERCEL_ENV: 'production',
+      INTERVIEW_MODE_ACCESS: 'public',
+      INTERVIEW_SYSTEM_DESIGN_ACCESS: 'off',
+      MONGO_TARGET: 'test',
+      MONGO_URL: '',
+      MONGO_URL_TEST: 'mongodb+srv://preview.invalid/fa_interview_preview',
+      EXPECTED_MONGO_DB_NAME: 'frontendatlas',
+      EXPECTED_MONGO_DB_NAME_TEST: 'fa_interview_preview',
+      RATE_LIMIT_STORE: 'redis',
+      RATE_LIMIT_NAMESPACE: 'frontendatlas:production:interview:v1',
+    })).toThrow('MONGO_TARGET must exactly equal production');
   });
 
   test('exposes Retry-After to allowed browser origins without changing credentialed CORS', async () => {

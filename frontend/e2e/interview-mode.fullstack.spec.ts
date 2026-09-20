@@ -169,13 +169,25 @@ async function chooseRadioWithKeyboard(locator: Locator): Promise<void> {
 }
 
 async function appendToActiveCodeEditor(page: Page, marker: string): Promise<void> {
-  const fallback = page.locator('textarea.editor-fallback');
+  const fallback = page.locator('textarea.editor-fallback:visible').first();
+  const monacoEditor = page.locator('app-monaco-editor .monaco-editor').first();
   const monacoInput = page.locator('app-monaco-editor textarea.inputarea').first();
-  const editor = fallback.or(monacoInput).first();
-  await expect(editor).toBeVisible({ timeout: 30_000 });
-  await editor.focus();
-  await expect(editor).toBeFocused();
-  await editor.press('ControlOrMeta+End');
+  await expect(fallback.or(monacoEditor).first()).toBeVisible({ timeout: 30_000 });
+
+  if (await fallback.isVisible()) {
+    await fallback.focus();
+    await expect(fallback).toBeFocused();
+    await fallback.press('ControlOrMeta+End');
+    await page.keyboard.insertText(`\n// ${marker}`);
+    return;
+  }
+
+  // Monaco deliberately keeps its accessibility textarea visually hidden.
+  // Click the visible editor surface, then assert keyboard focus on that
+  // textarea without requiring it to have a rendered box (Firefox is strict).
+  await monacoEditor.locator('.view-lines').click();
+  await expect(monacoInput).toBeFocused();
+  await page.keyboard.press('ControlOrMeta+End');
   await page.keyboard.insertText(`\n// ${marker}`);
 }
 
@@ -285,7 +297,13 @@ test.describe('Interview Mode real Angular → Express → Mongo lifecycle', () 
         track: 'core-web',
         viewportWidth: 1366,
       },
-      headers: { 'content-type': 'application/json' },
+      headers: {
+        'content-type': 'application/json',
+        'idempotency-key': `csrf-negative-${stamp}`,
+      },
+      // Signup can outlive Node's pooled keep-alive socket. Playwright retries
+      // only ECONNRESET here; the missing-CSRF request must remain side-effect free.
+      maxRetries: 1,
     });
     expect(rejectedCsrf.status()).toBe(403);
     expect(await responseJson(rejectedCsrf)).toEqual(expect.objectContaining({
