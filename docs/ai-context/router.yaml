@@ -25,6 +25,56 @@ selection:
   reference: load only when the task explicitly needs audit/history detail
 
 topic_rules:
+  - id: backlink_outreach
+    priority: 120
+    role: primary
+    keywords:
+      - backlink
+      - backlinks
+      - outreach
+      - link building
+      - link outreach
+      - link suggestion
+      - referring domain
+      - referring domains
+      - referring-domain
+      - semrush
+      - editorial pitch
+    paths:
+      - docs/references/backlink-outreach-registry.tsv
+      - docs/ai-context/backlink-outreach.md
+    load:
+      - docs/ai-context/backlink-outreach.md
+    avoid:
+      - docs/ai-context/frontend-ui.md
+      - docs/ai-context/content-authoring.md
+    max_docs: 1
+
+  - id: interview_release
+    priority: 115
+    role: primary
+    keywords:
+      - interview mode
+      - interview live
+      - interview rollout
+      - interview readiness
+      - interview release
+      - interview monitoring
+      - interview redis
+      - safari voiceover
+      - release gate
+    paths:
+      - backend/services/interview/readiness.js
+      - backend/scripts/verify-interview-*.js
+      - docs/references/interview-mock-incident-runbook.md
+      - docs/references/interview-mode-release-record.md
+    load:
+      - docs/ai-context/interview-release.md
+    avoid:
+      - docs/ai-context/frontend-ui.md
+      - docs/ai-context/content-authoring.md
+    max_docs: 1
+
   - id: frontend_ui
     priority: 100
     role: primary

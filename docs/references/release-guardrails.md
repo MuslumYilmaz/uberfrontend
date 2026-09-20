@@ -10,6 +10,7 @@ This project uses repo-tracked checks first, then external enforcement after the
    - `Backend Verify`
    - `Frontend Unit Verify`
    - `Playwright Critical`
+   - `Interview Cross-browser Gate`
    - `Full-stack Smoke`
    - `SEO Prerender Guard`
    - `Action Pinning`

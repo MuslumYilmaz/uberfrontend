@@ -130,6 +130,9 @@ jobs:
       - name: Install frontend dependencies
         run: npm ci
 
+      - name: Verify Preview API isolation config
+        run: node --test scripts/gen-deployment-env.test.mjs
+
       - name: Cache Playwright browsers
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
         with:
@@ -223,6 +226,23 @@ jobs:
             frontend/playwright-report
             frontend/test-results
           retention-days: 7
+
+  interview-cross-browser-gate:
+    name: Interview Cross-browser Gate
+    if: ${{ always() && github.event_name != 'schedule' }}
+    needs:
+      - interview-mocked-cross-browser
+      - interview-production-fullstack-cross-browser
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Require every Interview browser matrix to pass
+        env:
+          MOCKED_RESULT: ${{ needs.interview-mocked-cross-browser.result }}
+          FULLSTACK_RESULT: ${{ needs.interview-production-fullstack-cross-browser.result }}
+        run: |
+          test "$MOCKED_RESULT" = "success"
+          test "$FULLSTACK_RESULT" = "success"
 
   e2e-perf:
     name: Playwright Perf Smoke
