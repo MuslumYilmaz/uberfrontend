@@ -78,6 +78,135 @@ async function waitForTwoAnimationFrames(page: Page) {
   }));
 }
 
+async function checkSignatureHelpRecovery(page: Page, modelKey: string) {
+  return page.evaluate(async (needle: string) => {
+    const monaco = (window as any).monaco;
+    const model = monaco.editor.getModels()
+      .find((candidate: any) => candidate.uri.toString().includes(needle));
+    if (!model) throw new Error(`Monaco code model not found: ${needle}`);
+
+    const editor = monaco.editor.getEditors()
+      .find((candidate: any) => candidate.getModel() === model);
+    const getWorker = await (model.getLanguageId() === 'typescript'
+      ? monaco.languages.typescript.getTypeScriptWorker()
+      : monaco.languages.typescript.getJavaScriptWorker());
+    const originalValue = model.getValue();
+    const fileName = model.uri.toString();
+
+    try {
+      // TypeScript 5.4.5 throws "Expected 1 < 1" immediately before this spread.
+      const failingCode = 'const layers = Object.assign({}, ...[]);';
+      model.setValue(failingCode);
+      const worker = await getWorker(model.uri);
+      const failedHint = await worker.getSignatureHelpItems(fileName, failingCode.indexOf('...'), {
+        triggerReason: { kind: 'invoked' },
+      });
+
+      const recoveryCode = 'function add(left, right) { return left + right; }\nadd(1, );\nMath.';
+      model.setValue(recoveryCode);
+      const syncedWorker = await getWorker(model.uri);
+      const validHint = await syncedWorker.getSignatureHelpItems(
+        fileName,
+        recoveryCode.indexOf('add(1, ') + 'add(1, '.length,
+        { triggerReason: { kind: 'invoked' } },
+      );
+      const completions = await syncedWorker.getCompletionsAtPosition(fileName, recoveryCode.length, {});
+
+      return {
+        suppressed: failedHint === undefined,
+        hintsEnabled: editor?.getOption(monaco.editor.EditorOption.parameterHints).enabled,
+        argumentIndex: validHint?.argumentIndex,
+        parameterNames: validHint?.items[0]?.parameters.map((parameter: any) => parameter.name),
+        hasMathCompletion: completions?.entries.some((entry: any) => entry.name === 'max') === true,
+      };
+    } finally {
+      if (!model.isDisposed()) model.setValue(originalValue);
+    }
+  }, modelKey);
+}
+
+test('JS/TS signature-help failure recovers without losing hints, editing or navigation', async ({ page }) => {
+  const requestFailures = trackRequestFailures(page);
+  const fallbackWarnings: string[] = [];
+  page.on('console', (message) => {
+    if (message.type() === 'warning' && /Could not create web worker\(s\)|Falling back to loading web worker code in main thread/i.test(message.text())) {
+      fallbackWarnings.push(message.text());
+    }
+  });
+  const customWorkerResponsePromise = page.waitForResponse((response) =>
+    /\/assets\/monaco\/signature-help-worker\.js(?:\?.*)?$/.test(response.url()),
+  );
+
+  await page.goto(`/${JS_QUESTION.tech}/coding/${JS_QUESTION.id}`);
+  await expect(page.getByTestId('js-panel')).toBeVisible();
+  const codeModelKey = `q-${JS_QUESTION.id}-code`;
+  await waitForMonacoModel(page, codeModelKey);
+
+  const expectedRecovery = {
+    suppressed: true,
+    hintsEnabled: true,
+    argumentIndex: 1,
+    parameterNames: ['left', 'right'],
+    hasMathCompletion: true,
+  };
+  for (const language of ['js', 'ts'] as const) {
+    await page.getByTestId('js-language-select').selectOption(language);
+    await page.waitForFunction(({ needle, language }) => (window as any).monaco.editor.getModels()
+      .some((model: any) => model.uri.toString().includes(needle)
+        && model.getLanguageId() === (language === 'ts' ? 'typescript' : 'javascript')),
+    { needle: codeModelKey, language });
+    expect(await checkSignatureHelpRecovery(page, codeModelKey), language).toEqual(expectedRecovery);
+  }
+
+  const customWorkerResponse = await customWorkerResponsePromise;
+  expect(customWorkerResponse.status()).toBe(200);
+  expect(customWorkerResponse.headers()['content-type'] ?? '').toMatch(/^(?:application|text)\/javascript\b/i);
+
+  await setMonacoModelValue(page, codeModelKey, [
+    'export default function clamp(value: number, lower: number, upper: number): number {',
+    '  return Math.min(Math.max(value, lower), upper);',
+    '}',
+  ].join('\n'));
+  await page.evaluate((needle: string) => {
+    const monaco = (window as any).monaco;
+    const editor = monaco.editor.getEditors().find((candidate: any) =>
+      candidate.getModel()?.uri.toString().includes(needle));
+    if (!editor) throw new Error(`Monaco code editor not found: ${needle}`);
+    const model = editor.getModel();
+    editor.setPosition(model.getPositionAt(model.getValueLength()));
+    editor.focus();
+  }, codeModelKey);
+  await page.keyboard.type('\n// editing after signature-help failure');
+  await expect.poll(() => getMonacoModelValue(page, codeModelKey)).toContain('// editing after signature-help failure');
+
+  await page.getByTestId('js-run-tests').click();
+  const statuses = page.getByTestId('js-results-panel').getByTestId('test-status');
+  await expect(statuses).not.toHaveCount(0);
+  await expect.poll(async () => {
+    const results = await statuses.allTextContents();
+    return results.length > 0 && results.every((status) => status.includes('PASS'));
+  }).toBe(true);
+
+  const previousCode = await getMonacoModelValue(page, codeModelKey);
+  await page.getByTestId('footer-next').click();
+  await expect(page).toHaveURL((url) =>
+    url.pathname.startsWith('/javascript/coding/') && !url.pathname.endsWith(`/${JS_QUESTION.id}`));
+  const nextQuestionId = new URL(page.url()).pathname.split('/').pop();
+  const nextModelKey = `q-${nextQuestionId}-code`;
+  // Navigation briefly creates a model in the previous question's language
+  // before the new question's saved language and starter finish loading.
+  await expect(page.getByTestId('js-language-select')).toHaveValue('js');
+  await page.waitForFunction(({ needle, previousCode }) => (window as any).monaco.editor.getModels()
+    .some((model: any) => model.uri.toString().includes(needle)
+      && model.getLanguageId() === 'javascript'
+      && model.getValue().length > 0 && model.getValue() !== previousCode),
+  { needle: nextModelKey, previousCode });
+  await expect(page.getByTestId('js-results-panel').getByTestId('test-result')).toHaveCount(0);
+  expect(await checkSignatureHelpRecovery(page, nextModelKey)).toEqual(expectedRecovery);
+  expect(fallbackWarnings, fallbackWarnings.join('\n')).toEqual([]);
+  assertNoRequestFailures(requestFailures);
+});
+
 test('CSS coding route completes a real Monaco language-worker round trip', async ({ page }) => {
   const requestFailures = trackRequestFailures(page);
   const pageErrors: string[] = [];

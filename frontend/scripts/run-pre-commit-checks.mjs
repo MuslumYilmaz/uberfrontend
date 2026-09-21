@@ -194,7 +194,7 @@ function main() {
   }
 
   if (frontendSubsetEligible) {
-    const args = ['ng', 'test', '--watch=false', '--browsers=ChromeHeadless'];
+    const args = ['ng', 'test', '--watch=false', '--browsers=ChromeHeadlessUnit'];
     for (const spec of frontendSpecs) {
       args.push('--include', spec);
     }

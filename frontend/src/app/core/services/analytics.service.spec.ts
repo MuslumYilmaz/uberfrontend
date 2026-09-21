@@ -188,6 +188,7 @@ describe('AnalyticsService', () => {
 
   it('marks an opted-in internal session without leaking the query string into page views', () => {
     window.history.replaceState({}, '', '/pricing?fa_traffic=internal');
+    expect(window.location.search).toBe('?fa_traffic=internal');
     const service = TestBed.inject(AnalyticsService);
 
     service.trackPageView('/pricing?fa_traffic=internal');
@@ -213,6 +214,7 @@ describe('AnalyticsService', () => {
   it('clears a tab traffic marker when fa_traffic=external is requested', () => {
     sessionStorage.setItem('fa:analytics:traffic_class:v1', 'test');
     window.history.replaceState({}, '', '/pricing?fa_traffic=external');
+    expect(window.location.search).toBe('?fa_traffic=external');
     const service = TestBed.inject(AnalyticsService);
 
     service.track('pricing_viewed');

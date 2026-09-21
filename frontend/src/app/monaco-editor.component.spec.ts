@@ -129,6 +129,38 @@ describe('MonacoEditorComponent loader failure handling', () => {
     );
   });
 
+  it('configures both signature-help workers before the first model and reuses them on remount', async () => {
+    const fakeMonaco = makeFakeMonaco();
+    (window as any).monaco = fakeMonaco.api;
+    (window as any).require = jasmine.createSpy('require').and.callFake((_deps: string[], ok: () => void) => {
+      ok();
+    });
+    (window as any).require.config = jasmine.createSpy('config');
+
+    const firstFixture = createComponent();
+    firstFixture.detectChanges();
+    await Promise.resolve();
+
+    const customWorkerPath = new URL('assets/monaco/signature-help-worker.js', document.baseURI).toString();
+    const { typescriptDefaults, javascriptDefaults } = fakeMonaco.api.languages.typescript;
+    for (const defaults of [typescriptDefaults, javascriptDefaults]) {
+      expect(defaults.setWorkerOptions).toHaveBeenCalledOnceWith({ customWorkerPath });
+      expect(defaults.setWorkerOptions.calls.first().invocationOrder)
+        .toBeLessThan(fakeMonaco.api.editor.createModel.calls.first().invocationOrder);
+    }
+
+    firstFixture.destroy();
+    const secondFixture = createComponent();
+    secondFixture.detectChanges();
+    await Promise.resolve();
+
+    expect(fakeMonaco.api.editor.create).toHaveBeenCalledTimes(2);
+    for (const defaults of [typescriptDefaults, javascriptDefaults]) {
+      expect(defaults.setWorkerOptions).toHaveBeenCalledTimes(1);
+    }
+    secondFixture.destroy();
+  });
+
   it('applies comments with AA contrast before rendering the default dark editor', async () => {
     const fakeMonaco = makeFakeMonaco();
     (window as any).monaco = fakeMonaco.api;
@@ -379,6 +411,7 @@ describe('MonacoEditorComponent loader failure handling', () => {
 
   function makeTypescriptDefaults(): any {
     return {
+      setWorkerOptions: jasmine.createSpy('setWorkerOptions'),
       setEagerModelSync: jasmine.createSpy('setEagerModelSync'),
       addExtraLib: jasmine.createSpy('addExtraLib'),
       setCompilerOptions: jasmine.createSpy('setCompilerOptions'),
