@@ -568,6 +568,13 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
 
               MonacoEditorComponent.installWebCompletions(monaco);
 
+              const customWorkerPath = new URL(
+                'assets/monaco/signature-help-worker.js', document.baseURI,
+              ).toString();
+              for (const defaults of [ts.typescriptDefaults, ts.javascriptDefaults]) {
+                defaults.setWorkerOptions({ ...defaults.workerOptions, customWorkerPath });
+              }
+
           // NEW: ensure models sync early and soften diagnostics for “module not found” cases
           ts.typescriptDefaults.setEagerModelSync?.(true);   // push models to the worker ASAP
           ts.typescriptDefaults.addExtraLib?.(
