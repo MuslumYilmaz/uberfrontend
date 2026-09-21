@@ -1,3 +1,4 @@
+import { PLATFORM_ID } from '@angular/core';
 import { convertToParamMap, ActivatedRoute, Router } from '@angular/router';
 import { By } from '@angular/platform-browser';
 import {
@@ -14,6 +15,7 @@ import { InterviewSession } from '../../core/models/interview.model';
 import { InterviewService } from '../../core/services/interview.service';
 import { InterviewRecoveryStore } from '../../core/services/interview-recovery.store';
 import { UserCodeSandboxService } from '../../core/services/user-code-sandbox.service';
+import { MonacoEditorComponent } from '../../monaco-editor.component';
 import { InterviewSessionComponent } from './interview-session.component';
 import { InterviewSystemDesignRoundComponent } from './interview-system-design-round.component';
 
@@ -243,7 +245,12 @@ describe('InterviewSessionComponent', () => {
           useValue: { snapshot: { paramMap: convertToParamMap({ id: 'session-1' }) } },
         },
       ],
-    }).compileComponents();
+    })
+      // Keep the parent in browser mode without loading Monaco's shared AMD globals.
+      .overrideComponent(MonacoEditorComponent, {
+        add: { providers: [{ provide: PLATFORM_ID, useValue: 'server' }] },
+      })
+      .compileComponents();
     recovery = TestBed.inject(InterviewRecoveryStore);
     recovery.setUserScope('user-1');
   });

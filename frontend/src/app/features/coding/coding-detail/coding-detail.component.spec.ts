@@ -1,6 +1,6 @@
 import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { signal } from '@angular/core';
+import { PLATFORM_ID, signal } from '@angular/core';
 import { RouterTestingModule } from '@angular/router/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { of } from 'rxjs';
@@ -16,6 +16,7 @@ import { AnalyticsService } from '../../../core/services/analytics.service';
 import { PressureModeProgressService } from '../../../core/services/pressure-mode-progress.service';
 import { PressureModeService } from '../../../core/services/pressure-mode.service';
 import { UserProgressService } from '../../../core/services/user-progress.service';
+import { MonacoEditorComponent } from '../../../monaco-editor.component';
 import { CodingDetailComponent } from './coding-detail.component';
 
 describe('CodingDetailComponent', () => {
@@ -171,7 +172,12 @@ describe('CodingDetailComponent', () => {
         { provide: PressureModeService, useValue: pressureModes },
         { provide: PressureModeProgressService, useValue: pressureProgress },
       ],
-    }).compileComponents();
+    })
+      // Keep the parent in browser mode without loading Monaco's shared AMD globals.
+      .overrideComponent(MonacoEditorComponent, {
+        add: { providers: [{ provide: PLATFORM_ID, useValue: 'server' }] },
+      })
+      .compileComponents();
 
   });
 

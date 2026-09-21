@@ -1,5 +1,7 @@
+import { PLATFORM_ID } from '@angular/core';
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { AnalyticsService } from '../../../../core/services/analytics.service';
+import { MonacoEditorComponent } from '../../../../monaco-editor.component';
 import { CssStickyDebuggingLabComponent } from './css-sticky-debugging-lab.component';
 import { CssStickyInspection } from './css-sticky-debugging-lab.model';
 import {
@@ -59,6 +61,10 @@ describe('CssStickyDebuggingLabComponent', () => {
     })
       .overrideComponent(CssStickyDebuggingLabComponent, {
         set: { providers: [{ provide: CSS_STICKY_PREVIEW_PORT, useValue: preview }] },
+      })
+      // Keep the parent in browser mode without loading Monaco's shared AMD globals.
+      .overrideComponent(MonacoEditorComponent, {
+        add: { providers: [{ provide: PLATFORM_ID, useValue: 'server' }] },
       })
       .compileComponents();
 
