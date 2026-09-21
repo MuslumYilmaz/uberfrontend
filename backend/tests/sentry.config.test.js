@@ -10,6 +10,7 @@ function loadSentryConfig() {
             gauge: jest.fn(),
         },
         mongooseIntegration: jest.fn(() => ({ name: 'mongoose' })),
+        flush: jest.fn(async () => true),
         setupExpressErrorHandler: jest.fn(),
     };
 
@@ -45,6 +46,10 @@ describe('backend Sentry config', () => {
             })
         ).toBe(false);
         expect(sentryMock.init).not.toHaveBeenCalled();
+        expect(sentryConfig.isSentryConfigured({
+            SENTRY_ENABLED: 'false',
+            SENTRY_DSN: 'https://public@example.ingest.sentry.io/1',
+        })).toBe(false);
     });
 
     test('initializes with Express integration and redacts sensitive request headers', () => {
@@ -174,13 +179,14 @@ describe('backend Sentry config', () => {
                 sessionId: 'session secret is rejected',
                 session_id: '507f1f77bcf86cd799439011',
                 prompt: 'private-code',
+                monitoring_code: 'ready',
                 track: 123456,
             },
         })).toBe(true);
         expect(sentryMock.metrics.count).toHaveBeenCalledWith(
             'interview.http.requests',
             1,
-            { attributes: { operation: 'mcq-answer' } }
+            { attributes: { operation: 'mcq-answer', monitoring_code: 'ready' } }
         );
         expect(sentryConfig.captureMetric('count', 'other.metric', 1)).toBe(false);
     });
@@ -199,5 +205,153 @@ describe('backend Sentry config', () => {
         expect(sentryMock.setupExpressErrorHandler).toHaveBeenCalledWith(app);
         expect(sentryConfig.captureException(error, { tags: { route: 'test' } })).toBe('event-id');
         expect(sentryMock.captureException).toHaveBeenCalledWith(error, { tags: { route: 'test' } });
+    });
+
+    test('captures a handled Interview exception with only a sanitized error and bounded tags', () => {
+        const { sentryConfig, sentryMock } = loadSentryConfig();
+        const rawError = new Error('private-answer from session-secret');
+        rawError.name = 'InterviewServiceError';
+        rawError.stack = [
+            'InterviewServiceError: private-answer from session-secret',
+            '    at saveAnswer (/srv/app/private-handler.js:42:7)',
+        ].join('\n');
+
+        expect(sentryConfig.captureInterviewException(rawError, {
+            operation: 'results',
+            code: 'INTERVIEW_RESULTS_UNAVAILABLE',
+            status: 500,
+            userId: 'user-secret',
+        })).toBeUndefined();
+        sentryConfig.initSentry({ SENTRY_DSN: 'https://public@example.ingest.sentry.io/1' });
+        expect(sentryConfig.captureInterviewException(rawError, {
+            operation: 'results',
+            code: 'INTERVIEW_RESULTS_UNAVAILABLE',
+            status: 500,
+            userId: 'user-secret',
+        })).toBe('event-id');
+
+        const [capturedError, context] = sentryMock.captureException.mock.calls[0];
+        expect(capturedError).not.toBe(rawError);
+        expect(capturedError.name).toBe('InterviewServiceError');
+        expect(capturedError.message).toBe('Interview request failed');
+        expect(capturedError.stack).toContain('private-handler.js:42:7');
+        expect(context.tags).toMatchObject({
+            operation: 'results',
+            code: 'interview_results_unavailable',
+            status: 500,
+        });
+        const capturedText = JSON.stringify({
+            name: capturedError.name,
+            message: capturedError.message,
+            stack: capturedError.stack,
+            context,
+        });
+        expect(capturedText).not.toMatch(/private-answer|session-secret|user-secret/);
+    });
+
+    test('throttles each operational issue signal for five minutes', () => {
+        const { sentryConfig, sentryMock } = loadSentryConfig();
+        sentryConfig.initSentry({ SENTRY_DSN: 'https://public@example.ingest.sentry.io/1' });
+        sentryConfig.resetInterviewIssueSignalThrottle();
+
+        expect(sentryConfig.captureInterviewIssueSignal('redis_degraded', {
+            operation: 'coding-draft',
+            code: 'timeout',
+            status: 503,
+            now: 1_000,
+            sessionId: 'session-secret',
+        })).toBe(true);
+        expect(sentryConfig.captureInterviewIssueSignal('redis_degraded', {
+            operation: 'coding-draft',
+            code: 'network_error',
+            status: 503,
+            now: 300_999,
+        })).toBe(false);
+        expect(sentryConfig.captureInterviewIssueSignal('redis_degraded', {
+            operation: 'coding-draft',
+            code: 'network_error',
+            status: 503,
+            now: 301_000,
+        })).toBe(true);
+        expect(sentryConfig.captureInterviewIssueSignal('user-controlled-signal', {
+            now: 1_000_000,
+        })).toBe(false);
+
+        expect(sentryMock.captureException).toHaveBeenCalledTimes(2);
+        for (const [capturedError, context] of sentryMock.captureException.mock.calls) {
+            expect(capturedError.message).toBe('Interview request failed');
+            expect(context).toMatchObject({
+                fingerprint: ['interview-operational-signal', 'redis_degraded'],
+                tags: {
+                    signal: 'redis_degraded',
+                    operation: 'coding-draft',
+                    status: 503,
+                },
+            });
+            expect(JSON.stringify({ capturedError: capturedError.stack, context }))
+                .not.toContain('session-secret');
+        }
+    });
+
+    test('accepts exactly four fixed issue signals and scrubs marked events without request context', () => {
+        const { sentryConfig, sentryMock } = loadSentryConfig();
+        sentryConfig.initSentry({ SENTRY_DSN: 'https://public@example.ingest.sentry.io/1' });
+        sentryConfig.resetInterviewIssueSignalThrottle();
+        const signals = [
+            'readiness_blocked',
+            'redis_degraded',
+            'protected_overlap',
+            'unexpected_5xx',
+        ];
+
+        for (const signal of signals) {
+            expect(sentryConfig.captureInterviewIssueSignal(signal, {
+                error: new Error('private-answer session-secret'),
+                operation: 'release-gate',
+                status: 503,
+                now: 10_000,
+            })).toBe(true);
+        }
+        expect(sentryConfig.captureInterviewIssueSignal('private-user-signal', {
+            now: 10_000,
+        })).toBe(false);
+        expect(sentryMock.captureException).toHaveBeenCalledTimes(4);
+        sentryMock.captureException.mock.calls.forEach(([, context], index) => {
+            expect(context.fingerprint).toEqual([
+                'interview-operational-signal',
+                signals[index],
+            ]);
+        });
+
+        const [, context] = sentryMock.captureException.mock.calls[3];
+        const event = {
+            tags: context.tags,
+            message: 'private-answer',
+            user: { id: 'user-secret' },
+            extra: { draft: 'private-code' },
+            contexts: { request: { body: 'private-answer' } },
+            exception: {
+                values: [{ type: 'InterviewServiceError', value: 'session-secret' }],
+            },
+            breadcrumbs: [{ message: 'private-answer' }],
+        };
+        const beforeSend = sentryMock.init.mock.calls[0][0].beforeSend;
+        expect(beforeSend(event)).toBe(event);
+        expect(event.tags).toEqual({
+            operation: 'release-gate',
+            signal: 'unexpected_5xx',
+            status: 503,
+        });
+        expect(JSON.stringify(event)).not.toMatch(
+            /private-answer|session-secret|user-secret|private-code|interview_capture_kind/
+        );
+    });
+
+    test('flushes only after Sentry has initialized', async () => {
+        const { sentryConfig, sentryMock } = loadSentryConfig();
+        await expect(sentryConfig.flushSentry()).resolves.toBe(false);
+        sentryConfig.initSentry({ SENTRY_DSN: 'https://public@example.ingest.sentry.io/1' });
+        await expect(sentryConfig.flushSentry(20_000)).resolves.toBe(true);
+        expect(sentryMock.flush).toHaveBeenCalledWith(10_000);
     });
 });

@@ -8,11 +8,13 @@
 
   <header class="interview-hero">
     <p class="eyebrow" data-testid="interview-access-label">
-      {{ availability()?.accessMode === 'internal'
-        ? 'Internal preview'
-        : availability()?.accessMode === 'cohort'
-          ? 'Controlled preview'
-          : 'Timed simulation' }}
+      {{ availability()?.accessMode === 'preflight'
+        ? 'Technical preflight'
+        : availability()?.accessMode === 'internal'
+          ? 'Internal preview'
+          : availability()?.accessMode === 'cohort'
+            ? 'Controlled preview'
+            : 'Timed simulation' }}
     </p>
     <h1>Frontend mock interview</h1>
     <p>

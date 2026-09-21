@@ -120,6 +120,27 @@ describe('interview cohort access and operational policy', () => {
     );
   });
 
+  test('treats preflight as public-like access without internal privileges', () => {
+    expect(resolveInterviewAudience({
+      mode: 'preflight',
+      role: 'user',
+      userId: 'user-1',
+    })).toEqual(expect.objectContaining({
+      mode: 'preflight',
+      audience: 'preflight',
+      enabled: true,
+      internalPreview: false,
+      reason: 'technical_preflight',
+    }));
+
+    process.env.INTERVIEW_MODE_ACCESS = 'preflight';
+    expect(interviewModeAccess('admin', { userId: 'admin-1' })).toEqual({
+      mode: 'preflight',
+      enabled: true,
+      internalPreview: false,
+    });
+  });
+
   test('integrates valid cohort configuration without exposing the salt', () => {
     process.env.INTERVIEW_MODE_ACCESS = 'cohort';
     process.env.INTERVIEW_ROLLOUT_BPS = '5030';

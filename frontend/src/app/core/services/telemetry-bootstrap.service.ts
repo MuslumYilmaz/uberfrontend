@@ -8,11 +8,17 @@ import {
   effect,
   inject,
 } from '@angular/core';
-import type { ErrorEvent as SentryErrorEvent, EventHint as SentryEventHint } from '@sentry/browser';
+import type {
+  ErrorEvent as SentryErrorEvent,
+  Event as SentryEvent,
+  EventHint as SentryEventHint,
+  Stacktrace as SentryStacktrace,
+} from '@sentry/browser';
 import { environment } from '../../../environments/environment';
 import { AnalyticsService } from './analytics.service';
 import type { DecisionSessionQualificationMethod } from './analytics.service';
 import { AuthService } from './auth.service';
+import { getApiBase, getDeploymentEnvironment } from '../utils/api-base';
 import { isMarketingPath } from '../utils/marketing-route.util';
 import { isTrackedMonacoWorker } from '../utils/monaco-worker-tracker';
 
@@ -29,6 +35,14 @@ export const SENTRY_BROWSER_LOADER = new InjectionToken<() => Promise<SentryBrow
 
 const SENTRY_ANONYMOUS_ID_KEY = 'fa:sentry:anonymous-id';
 const BROWSER_API_ERRORS_MECHANISM_PREFIX = 'auto.browser.browserapierrors';
+const INTERVIEW_ERROR_MESSAGE = 'Interview operation failed';
+const INTERVIEW_SENTRY_SCOPE_TAG = 'interview';
+const INTERVIEW_PAGE_ROUTE_PATTERN = /^\/interview(?:\/|[?#]|$)/i;
+const INTERVIEW_REFERENCE_PATTERN = /\/(?:api\/interviews|interview)(?=\/|[?#\s"'`)]|$)/i;
+const INTERVIEW_API_SESSION_PATTERN = /(\/api\/interviews\/)(?!(?:config|availability|active)(?=\/|[?#\s"'`)]|$))([^/?#\s"'`]+)/gi;
+const INTERVIEW_MCQ_QUESTION_PATTERN = /(\/api\/interviews\/:sessionId\/mcq\/)([^/?#\s"'`]+)/gi;
+const INTERVIEW_PAGE_SESSION_PATTERN = /(\/interview\/)([^/?#\s"'`]+)/gi;
+const INTERVIEW_URL_QUERY_PATTERN = /((?:\/api\/interviews|\/interview)(?:\/[^?#\s"'`]*)?)[?#][^\s"'`]*/gi;
 const DECISION_SESSION_FOREGROUND_MS = 15_000;
 const DECISION_SESSION_INTERACTION_EVENTS: Array<keyof DocumentEventMap> = [
   'pointerdown',
@@ -72,6 +86,222 @@ export function filterExpectedMonacoWorkerError(
   return isBrowserApiError ? null : event;
 }
 
+/**
+ * Applies the existing Monaco suppression first, then removes Interview data
+ * which must never leave the browser. Non-Interview events are returned by
+ * reference so their established Sentry behaviour remains unchanged.
+ */
+export function filterAndSanitizeSentryEvent(
+  event: SentryErrorEvent,
+  hint: SentryEventHint,
+  interviewRouteActive = false,
+): SentryErrorEvent | null {
+  const filteredEvent = filterExpectedMonacoWorkerError(event, hint);
+  return filteredEvent
+    ? sanitizeInterviewSentryEvent(filteredEvent, interviewRouteActive)
+    : null;
+}
+
+export function sanitizeInterviewSentryEvent(
+  event: SentryErrorEvent,
+  interviewRouteActive = false,
+): SentryErrorEvent {
+  return sanitizeInterviewEvent(event, interviewRouteActive);
+}
+
+type SentryTransactionEvent = SentryEvent & { type: 'transaction' };
+
+export function sanitizeInterviewSentryTransaction(
+  event: SentryTransactionEvent,
+  interviewRouteActive = false,
+): SentryTransactionEvent {
+  return sanitizeInterviewEvent(event, interviewRouteActive);
+}
+
+function sanitizeInterviewEvent<T extends SentryEvent>(
+  event: T,
+  interviewRouteActive: boolean,
+): T {
+  if (!interviewRouteActive && !isInterviewEvent(event)) return event;
+
+  return {
+    event_id: event.event_id,
+    type: event.type,
+    timestamp: event.timestamp,
+    start_timestamp: event.start_timestamp,
+    level: event.level,
+    platform: event.platform,
+    release: event.release,
+    dist: event.dist,
+    environment: event.environment,
+    message: event.message ? INTERVIEW_ERROR_MESSAGE : undefined,
+    logentry: event.logentry ? { message: INTERVIEW_ERROR_MESSAGE } : undefined,
+    request: sanitizeInterviewRequest(event.request),
+    transaction: normalizeInterviewReferences(event.transaction),
+    exception: sanitizeInterviewExceptions(event.exception),
+    threads: sanitizeInterviewThreads(event.threads),
+    spans: sanitizeInterviewSpans(event.spans),
+    contexts: sanitizeInterviewTraceContext(event.contexts),
+    tags: { feature: INTERVIEW_SENTRY_SCOPE_TAG },
+    transaction_info: event.transaction_info
+      ? { source: event.transaction_info.source }
+      : undefined,
+  } as unknown as T;
+}
+
+function isInterviewEvent(event: SentryEvent): boolean {
+  const candidates: unknown[] = [
+    event.message,
+    event.logentry?.message,
+    event.request?.url,
+    event.transaction,
+    ...((event.spans ?? []).flatMap((span) => [
+      span.description,
+      ...Object.values(span.data ?? {}),
+    ])),
+    ...((event.breadcrumbs ?? []).flatMap((breadcrumb) => [
+      breadcrumb.message,
+      ...Object.values(breadcrumb.data ?? {}),
+    ])),
+  ];
+
+  event.exception?.values?.forEach((exception) => {
+    candidates.push(exception.value);
+    exception.stacktrace?.frames?.forEach((frame) => {
+      candidates.push(
+        frame.filename,
+        frame.abs_path,
+        frame.context_line,
+        ...(frame.pre_context ?? []),
+        ...(frame.post_context ?? []),
+      );
+    });
+  });
+
+  return candidates.some((candidate) =>
+    typeof candidate === 'string' && INTERVIEW_REFERENCE_PATTERN.test(candidate),
+  );
+}
+
+function sanitizeInterviewRequest(request: SentryEvent['request']): SentryEvent['request'] {
+  if (!request) return undefined;
+
+  return {
+    url: normalizeInterviewReferences(request.url),
+    method: request.method,
+  };
+}
+
+function sanitizeInterviewExceptions(
+  exception: SentryEvent['exception'],
+): SentryEvent['exception'] {
+  if (!exception) return undefined;
+
+  return {
+    values: exception.values?.map((value) => ({
+      type: value.type ? 'InterviewError' : undefined,
+      value: value.value ? INTERVIEW_ERROR_MESSAGE : undefined,
+      thread_id: value.thread_id,
+      mechanism: value.mechanism ? {
+        type: value.mechanism.type,
+        handled: value.mechanism.handled,
+        synthetic: value.mechanism.synthetic,
+        is_exception_group: value.mechanism.is_exception_group,
+        exception_id: value.mechanism.exception_id,
+        parent_id: value.mechanism.parent_id,
+      } : undefined,
+      stacktrace: sanitizeInterviewStacktrace(value.stacktrace),
+    })),
+  };
+}
+
+function sanitizeInterviewThreads(threads: SentryEvent['threads']): SentryEvent['threads'] {
+  if (!threads) return undefined;
+
+  return {
+    values: threads.values?.map((thread) => ({
+      id: thread.id,
+      main: thread.main,
+      crashed: thread.crashed,
+      current: thread.current,
+      stacktrace: sanitizeInterviewStacktrace(thread.stacktrace),
+    })),
+  };
+}
+
+function sanitizeInterviewStacktrace(
+  stacktrace: SentryStacktrace | undefined,
+): SentryStacktrace | undefined {
+  if (!stacktrace) return undefined;
+
+  return {
+    frames_omitted: stacktrace.frames_omitted,
+    frames: stacktrace.frames?.map((frame) => ({
+      filename: sanitizeStackFrameUrl(frame.filename),
+      abs_path: sanitizeStackFrameUrl(frame.abs_path),
+      platform: frame.platform,
+      lineno: frame.lineno,
+      colno: frame.colno,
+      in_app: frame.in_app,
+      instruction_addr: frame.instruction_addr,
+      addr_mode: frame.addr_mode,
+      debug_id: frame.debug_id,
+    })),
+  };
+}
+
+function sanitizeInterviewSpans(spans: SentryEvent['spans']): SentryEvent['spans'] {
+  return spans?.map((span) => ({
+    data: {},
+    description: hasInterviewReference(span.description)
+      ? normalizeInterviewReferences(span.description)
+      : undefined,
+    op: span.op,
+    parent_span_id: span.parent_span_id,
+    span_id: span.span_id,
+    start_timestamp: span.start_timestamp,
+    status: span.status,
+    timestamp: span.timestamp,
+    trace_id: span.trace_id,
+  }));
+}
+
+function sanitizeInterviewTraceContext(
+  contexts: SentryEvent['contexts'],
+): SentryEvent['contexts'] {
+  const trace = contexts?.trace;
+  if (!trace) return undefined;
+
+  return {
+    trace: {
+      trace_id: trace.trace_id,
+      span_id: trace.span_id,
+      parent_span_id: trace.parent_span_id,
+      status: trace.status,
+      origin: trace.origin,
+    },
+  };
+}
+
+function hasInterviewReference(value: unknown): value is string {
+  return typeof value === 'string' && INTERVIEW_REFERENCE_PATTERN.test(value);
+}
+
+function normalizeInterviewReferences(value: string | undefined): string | undefined {
+  if (!value) return value;
+
+  return value
+    .replace(INTERVIEW_API_SESSION_PATTERN, '$1:sessionId')
+    .replace(INTERVIEW_MCQ_QUESTION_PATTERN, '$1:questionId')
+    .replace(INTERVIEW_PAGE_SESSION_PATTERN, '$1:sessionId')
+    .replace(INTERVIEW_URL_QUERY_PATTERN, '$1');
+}
+
+function sanitizeStackFrameUrl(value: string | undefined): string | undefined {
+  if (!value) return value;
+  return normalizeInterviewReferences(value)?.replace(/[?#].*$/, '');
+}
+
 function isNonEmptyString(value: unknown): boolean {
   return typeof value === 'string' && value.trim().length > 0;
 }
@@ -89,6 +319,7 @@ export class TelemetryBootstrapService implements OnDestroy {
   private sentry: SentryBrowserClient | null = null;
   private sentryInitPromise: Promise<void> | null = null;
   private analyticsInitScheduled = false;
+  private interviewRouteActive = false;
   private qualificationCleanup: (() => void) | null = null;
   private qualificationTimer: number | null = null;
   private qualificationVisibleStartedAt: number | null = null;
@@ -104,6 +335,7 @@ export class TelemetryBootstrapService implements OnDestroy {
   armForUrl(url: string): void {
     if (!this.isBrowser) return;
 
+    this.interviewRouteActive = INTERVIEW_PAGE_ROUTE_PATTERN.test(url);
     this.armDecisionSessionQualification();
 
     if (isMarketingPath(url)) {
@@ -321,11 +553,20 @@ export class TelemetryBootstrapService implements OnDestroy {
             sentry.init({
               dsn: environment.sentryDsn,
               release: environment.sentryRelease || undefined,
-              environment: environment.production ? 'production' : 'development',
+              environment: getDeploymentEnvironment(),
+              sendDefaultPii: false,
               integrations: [sentry.browserTracingIntegration()],
-              tracePropagationTargets: [environment.apiBase, /^\//],
+              tracePropagationTargets: [getApiBase(), /^\//],
               tracesSampleRate: environment.sentryTracesSampleRate,
-              beforeSend: filterExpectedMonacoWorkerError,
+              beforeSend: (event, hint) => filterAndSanitizeSentryEvent(
+                event,
+                hint,
+                this.interviewRouteActive,
+              ),
+              beforeSendTransaction: (event) => sanitizeInterviewSentryTransaction(
+                event,
+                this.interviewRouteActive,
+              ),
             });
             this.sentry = sentry;
             this.applySentryUser(this.auth.user()?._id ?? null);

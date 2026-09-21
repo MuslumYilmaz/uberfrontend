@@ -184,6 +184,8 @@ async function appendToActiveCodeEditor(page: Page, marker: string): Promise<voi
     const monacoInput = page
       .locator('.editor-shell app-monaco-editor textarea.inputarea')
       .first();
+    // Monaco keeps its accessibility textarea visually hidden. Wait for and
+    // click rendered content, then focus the textarea without requiring a box.
     await monacoContent.click();
     await monacoInput.focus();
     await expect(monacoInput).toBeFocused();
@@ -208,10 +210,7 @@ test.describe('Interview Mode real Angular → Express → Mongo lifecycle', () 
     // The owned runner deliberately has no SMTP credentials. Signup degrades
     // to the explicit verification fallback while Interview/auth cookies stay
     // real; keep every other browser error fatal.
-    consoleErrorAllowlist: [
-      '\/api\/auth\/email-verification\/request',
-      'downloadable font: rejected by sanitizer .*Inter-roman\\.var\\.woff2',
-    ],
+    consoleErrorAllowlist: ['\/api\/auth\/email-verification\/request'],
   });
   test.skip(
     !runFullStack,

@@ -9,9 +9,12 @@ import { createTrackedMonacoWorker } from '../utils/monaco-worker-tracker';
 import {
   SENTRY_BROWSER_LOADER,
   TelemetryBootstrapService,
+  filterAndSanitizeSentryEvent,
   filterExpectedMonacoWorkerError,
+  sanitizeInterviewSentryEvent,
+  sanitizeInterviewSentryTransaction,
 } from './telemetry-bootstrap.service';
-import type { ErrorEvent as SentryErrorEvent } from '@sentry/browser';
+import type { ErrorEvent as SentryErrorEvent, Event as SentryEvent } from '@sentry/browser';
 
 const ANONYMOUS_ID_KEY = 'fa:sentry:anonymous-id';
 
@@ -52,6 +55,8 @@ describe('TelemetryBootstrapService', () => {
   let originalVisibilityStateDescriptor: PropertyDescriptor | undefined;
   let originalHiddenDescriptor: PropertyDescriptor | undefined;
   let originalUserActivationDescriptor: PropertyDescriptor | undefined;
+  let originalApiBaseOverride: unknown;
+  let originalDeploymentConfig: unknown;
 
   beforeEach(() => {
     environment.production = true;
@@ -59,6 +64,10 @@ describe('TelemetryBootstrapService', () => {
     environment.sentryRelease = 'test-release';
     environment.sentryTracesSampleRate = 1;
     localStorage.clear();
+    originalApiBaseOverride = (window as any).__FA_API_BASE__;
+    originalDeploymentConfig = (window as any).__FA_DEPLOYMENT_CONFIG__;
+    delete (window as any).__FA_API_BASE__;
+    delete (window as any).__FA_DEPLOYMENT_CONFIG__;
 
     authUser = signal<User | null>(null);
     sentry = {
@@ -119,6 +128,16 @@ describe('TelemetryBootstrapService', () => {
     restoreOwnProperty(doc, 'visibilityState', originalVisibilityStateDescriptor);
     restoreOwnProperty(doc, 'hidden', originalHiddenDescriptor);
     restoreOwnProperty(window.navigator, 'userActivation', originalUserActivationDescriptor);
+    if (originalApiBaseOverride === undefined) {
+      delete (window as any).__FA_API_BASE__;
+    } else {
+      (window as any).__FA_API_BASE__ = originalApiBaseOverride;
+    }
+    if (originalDeploymentConfig === undefined) {
+      delete (window as any).__FA_DEPLOYMENT_CONFIG__;
+    } else {
+      (window as any).__FA_DEPLOYMENT_CONFIG__ = originalDeploymentConfig;
+    }
     localStorage.clear();
     TestBed.resetTestingModule();
   });
@@ -171,11 +190,266 @@ describe('TelemetryBootstrapService', () => {
     expect(payload.id).toMatch(/^anon:/);
   });
 
-  it('wires the targeted Monaco worker filter into Sentry initialization', async () => {
+  it('wires privacy-safe Interview filters without enabling replay or default PII', async () => {
+    (window as any).__FA_API_BASE__ = 'https://preview-api.example.test';
+    (window as any).__FA_DEPLOYMENT_CONFIG__ = { environment: 'preview' };
     await initializeSentry();
 
     const options = sentry.init.calls.mostRecent().args[0];
-    expect(options.beforeSend).toBe(filterExpectedMonacoWorkerError);
+    expect(options.beforeSend).toEqual(jasmine.any(Function));
+    expect(options.beforeSendTransaction).toEqual(jasmine.any(Function));
+    expect(options.sendDefaultPii).toBeFalse();
+    expect(options.integrations).toEqual([{ name: 'browserTracing' }]);
+    expect(options.tracePropagationTargets[0]).toBe('https://preview-api.example.test');
+    expect(options.environment).toBe('preview');
+  });
+
+  it('sanitizes generic errors in the active Interview route and drops unknown root fields', async () => {
+    const service = await initializeSentry('/interview/session-secret');
+    const options = sentry.init.calls.mostRecent().args[0];
+    const event = {
+      type: undefined,
+      event_id: 'safe-event-id',
+      message: 'private-answer without a route reference',
+      user: { id: 'user-secret' },
+      extra: { code: 'const privateCode = true;' },
+      contexts: { custom: { questionId: 'question-secret' } },
+      breadcrumbs: [{ message: 'secret-token' }],
+      private_root_field: {
+        sessionId: 'session-secret',
+        answer: 'private-answer',
+      },
+    } as SentryErrorEvent & { private_root_field: unknown };
+
+    const sanitized = options.beforeSend(event, {}) as SentryErrorEvent;
+
+    expect(sanitized.event_id).toBe('safe-event-id');
+    expect(sanitized.message).toBe('Interview operation failed');
+    expect(sanitized.tags).toEqual({ feature: 'interview' });
+    expect((sanitized as unknown as Record<string, unknown>)['private_root_field'])
+      .toBeUndefined();
+    expectNoPrivateInterviewData(sanitized);
+
+    service.armForUrl('/dashboard');
+    const ordinaryEvent: SentryErrorEvent = {
+      type: undefined,
+      message: 'Ordinary browser failure',
+    };
+    expect(options.beforeSend(ordinaryEvent, {})).toBe(ordinaryEvent);
+    service.ngOnDestroy();
+  });
+
+  it('redacts Interview page identifiers, payloads, user data, and error source context', () => {
+    const event: SentryErrorEvent = {
+      type: undefined,
+      message: 'Failed to save secret-answer at /interview/session-secret/results?token=secret-token',
+      logentry: {
+        message: 'Question question-secret contained private-answer',
+        params: ['private-answer'],
+      },
+      request: {
+        url: 'https://frontendatlas.com/interview/session-secret/results?token=secret-token',
+        method: 'PUT',
+        data: { code: 'const privateCode = "private-answer";' },
+        query_string: 'token=secret-token',
+        cookies: { auth: 'private-cookie' },
+        headers: { authorization: 'Bearer private-token' },
+        env: { REMOTE_USER: 'user-secret' },
+      },
+      transaction: '/interview/session-secret/results?token=secret-token',
+      user: { id: 'user-secret', email: 'private@example.com' },
+      extra: { answer: 'private-answer', code: 'const privateCode = true;' },
+      tags: { sessionId: 'session-secret' },
+      fingerprint: ['question-secret'],
+      breadcrumbs: [{
+        message: 'Selected answer private-answer',
+        data: { questionId: 'question-secret' },
+      }],
+      contexts: { interview: { draft: 'const privateCode = true;' } },
+      exception: {
+        values: [{
+          type: 'PrivateAnswerError',
+          value: 'private-answer from question-secret',
+          mechanism: {
+            type: 'onerror',
+            handled: false,
+            data: { target: 'session-secret' },
+          },
+          stacktrace: {
+            frames: [{
+              filename: 'https://frontendatlas.com/interview/session-secret/main.js?token=secret-token',
+              abs_path: '/interview/session-secret/main.js?token=secret-token',
+              function: 'privateSolution',
+              context_line: 'const privateCode = "private-answer";',
+              pre_context: ['// question-secret'],
+              post_context: ['return privateCode;'],
+              vars: { answer: 'private-answer' },
+              lineno: 42,
+              colno: 7,
+              in_app: true,
+            }],
+          },
+        }],
+      },
+    };
+
+    const sanitized = sanitizeInterviewSentryEvent(event);
+
+    expect(sanitized).not.toBe(event);
+    expect(sanitized.request).toEqual({
+      url: 'https://frontendatlas.com/interview/:sessionId/results',
+      method: 'PUT',
+    });
+    expect(sanitized.transaction).toBe('/interview/:sessionId/results');
+    expect(sanitized.message).toBe('Interview operation failed');
+    expect(sanitized.logentry).toEqual({ message: 'Interview operation failed' });
+    expect(sanitized.exception?.values?.[0].type).toBe('InterviewError');
+    expect(sanitized.exception?.values?.[0].value).toBe('Interview operation failed');
+    expect(sanitized.exception?.values?.[0].mechanism?.data).toBeUndefined();
+
+    const frame = sanitized.exception?.values?.[0].stacktrace?.frames?.[0];
+    expect(frame?.filename).toBe('https://frontendatlas.com/interview/:sessionId/main.js');
+    expect(frame?.abs_path).toBe('/interview/:sessionId/main.js');
+    expect(frame?.lineno).toBe(42);
+    expect(frame?.function).toBeUndefined();
+    expect(frame?.context_line).toBeUndefined();
+    expect(frame?.pre_context).toBeUndefined();
+    expect(frame?.post_context).toBeUndefined();
+    expect(frame?.vars).toBeUndefined();
+    expectNoPrivateInterviewData(sanitized);
+  });
+
+  it('normalizes API session and question identifiers and removes request secrets', () => {
+    const event: SentryErrorEvent = {
+      type: undefined,
+      request: {
+        url: 'https://api.frontendatlas.com/api/interviews/session-secret/mcq/question-secret?answer=private-answer#draft',
+        method: 'PUT',
+        data: { answer: 'private-answer' },
+        query_string: { answer: 'private-answer' },
+        headers: { authorization: 'Bearer private-token' },
+      },
+      exception: {
+        values: [{
+          type: 'Error',
+          value: 'PUT /api/interviews/session-secret/mcq/question-secret failed',
+        }],
+      },
+    };
+
+    const sanitized = sanitizeInterviewSentryEvent(event);
+
+    expect(sanitized.request).toEqual({
+      url: 'https://api.frontendatlas.com/api/interviews/:sessionId/mcq/:questionId',
+      method: 'PUT',
+    });
+    expectNoPrivateInterviewData(sanitized);
+  });
+
+  it('redacts Interview transactions, spans, and custom contexts while retaining trace linkage', () => {
+    const transaction = {
+      type: 'transaction' as const,
+      transaction: 'PUT /api/interviews/session-secret/coding/draft?token=secret-token',
+      request: {
+        url: 'https://api.frontendatlas.com/api/interviews/session-secret/coding/draft?token=secret-token',
+        method: 'PUT',
+        data: { code: 'const privateCode = true;' },
+      },
+      user: { id: 'user-secret' },
+      extra: { draft: 'const privateCode = true;' },
+      breadcrumbs: [{ message: 'Saved question-secret with private-answer' }],
+      contexts: {
+        trace: {
+          trace_id: 'trace-id',
+          span_id: 'span-id',
+          parent_span_id: 'parent-span-id',
+          status: 'ok',
+          op: 'navigation',
+          data: { sessionId: 'session-secret' },
+          tags: { questionId: 'question-secret' },
+        },
+        interview: { answer: 'private-answer' },
+      },
+      spans: [{
+        data: {
+          url: '/api/interviews/session-secret/coding/draft?token=secret-token',
+          request_body: 'const privateCode = true;',
+        },
+        description: 'PUT /api/interviews/session-secret/coding/draft?token=secret-token',
+        op: 'http.client',
+        tags: { sessionId: 'session-secret' },
+        private_custom_field: { questionId: 'question-secret' },
+        profile_id: 'private-profile-id',
+        links: [{
+          trace_id: 'linked-trace-id',
+          span_id: 'linked-span-id',
+          attributes: { answer: 'private-answer' },
+        }],
+        measurements: { privateCode: { value: 1 } },
+        span_id: 'child-span-id',
+        start_timestamp: 1,
+        trace_id: 'trace-id',
+      }, {
+        data: { questionId: 'question-secret' },
+        description: 'compile const privateCode = true;',
+        op: 'task',
+        span_id: 'code-span-id',
+        start_timestamp: 2,
+        trace_id: 'trace-id',
+      }],
+    } as SentryEvent & { type: 'transaction' };
+
+    const sanitized = sanitizeInterviewSentryTransaction(transaction);
+
+    expect(sanitized.transaction)
+      .toBe('PUT /api/interviews/:sessionId/coding/draft');
+    expect(sanitized.request).toEqual({
+      url: 'https://api.frontendatlas.com/api/interviews/:sessionId/coding/draft',
+      method: 'PUT',
+    });
+    expect(sanitized.spans?.[0].description)
+      .toBe('PUT /api/interviews/:sessionId/coding/draft');
+    expect(sanitized.spans?.[0].data).toEqual({});
+    const sanitizedSpanFields = sanitized.spans?.[0] as unknown as Record<string, unknown>;
+    expect(sanitizedSpanFields['tags']).toBeUndefined();
+    expect(sanitizedSpanFields['private_custom_field']).toBeUndefined();
+    expect(sanitized.spans?.[0].profile_id).toBeUndefined();
+    expect(sanitized.spans?.[0].links).toBeUndefined();
+    expect(sanitized.spans?.[0].measurements).toBeUndefined();
+    expect(sanitized.spans?.[1].description).toBeUndefined();
+    expect(sanitized.spans?.[1].data).toEqual({});
+    expect(sanitized.contexts?.trace).toEqual(jasmine.objectContaining({
+      trace_id: 'trace-id',
+      span_id: 'span-id',
+      parent_span_id: 'parent-span-id',
+      status: 'ok',
+    }));
+    expect(sanitized.contexts?.trace?.data).toBeUndefined();
+    expect(sanitized.contexts?.trace?.tags).toBeUndefined();
+    expect(sanitized.contexts?.['interview']).toBeUndefined();
+    expectNoPrivateInterviewData(sanitized);
+  });
+
+  it('leaves non-Interview events unchanged', () => {
+    const event: SentryErrorEvent = {
+      type: undefined,
+      message: 'Incident failed',
+      request: {
+        url: 'https://frontendatlas.com/incidents/render-loop?tab=timeline',
+        method: 'GET',
+      },
+      user: { id: 'user-1' },
+      extra: { incidentId: 'render-loop' },
+    };
+
+    expect(sanitizeInterviewSentryEvent(event)).toBe(event);
+  });
+
+  it('still drops an opaque tracked Monaco worker error through the composed filter', () => {
+    const sentryEvent = browserApiErrorEvent();
+    const originalException = workerErrorEvent(trackedMonacoWorker());
+
+    expect(filterAndSanitizeSentryEvent(sentryEvent, { originalException })).toBeNull();
   });
 
   it('drops only opaque errors from a tracked Monaco worker captured by BrowserApiErrors', () => {
@@ -396,11 +670,12 @@ describe('TelemetryBootstrapService', () => {
     service.ngOnDestroy();
   }));
 
-  function initializeSentry(): Promise<void> {
+  function initializeSentry(url = '/dashboard'): Promise<TelemetryBootstrapService> {
     const service = TestBed.inject(TelemetryBootstrapService);
-    service.armForUrl('/dashboard');
+    service.armForUrl(url);
     return Promise.resolve().then(() => Promise.resolve()).then(() => {
       TestBed.flushEffects();
+      return service;
     });
   }
 
@@ -416,6 +691,23 @@ describe('TelemetryBootstrapService', () => {
     }
     expect((payload as any).email).toBeUndefined();
     expect((payload as any).username).toBeUndefined();
+  }
+
+  function expectNoPrivateInterviewData(event: SentryEvent): void {
+    const serialized = JSON.stringify(event);
+    [
+      'session-secret',
+      'question-secret',
+      'private-answer',
+      'privateCode',
+      'secret-token',
+      'private@example.com',
+      'private-token',
+      'private-cookie',
+      'user-secret',
+    ].forEach((privateValue) => {
+      expect(serialized).withContext(privateValue).not.toContain(privateValue);
+    });
   }
 
   function invokeDecisionSessionInteraction(

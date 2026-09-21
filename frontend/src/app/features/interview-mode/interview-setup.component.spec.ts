@@ -325,6 +325,18 @@ describe('InterviewSetupComponent', () => {
     expect(component.canStart()).toBeTrue();
   });
 
+  it('labels technical preflight while keeping the normal user flow enabled', () => {
+    service.getAvailability.and.returnValue(of(availability({
+      accessMode: 'preflight',
+    })));
+    fixture.detectChanges();
+
+    expect(
+      fixture.nativeElement.querySelector('[data-testid="interview-access-label"]')?.textContent,
+    ).toContain('Technical preflight');
+    expect(component.canStart()).toBeTrue();
+  });
+
   it('shows the backend-provided MCQ duration', () => {
     service.getAvailability.and.returnValue(of(availability({
       timing: {

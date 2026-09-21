@@ -4,6 +4,8 @@ const express = require('express');
 const request = require('supertest');
 
 const mockInterviewReleaseReadiness = jest.fn();
+let mockAccessMode = 'public';
+let mockInternalPreview = false;
 const mockSession = {
   _id: '507f1f77bcf86cd799439012',
   active: true,
@@ -69,8 +71,8 @@ jest.mock('../services/interview/config', () => ({
   }),
   interviewModeAccess: () => ({
     enabled: true,
-    internalPreview: false,
-    mode: 'public',
+    internalPreview: mockInternalPreview,
+    mode: mockAccessMode,
   }),
   interviewOperationalPolicy: () => ({
     state: 'normal',
@@ -93,6 +95,8 @@ describe('Interview launch readiness route boundary', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    mockAccessMode = 'public';
+    mockInternalPreview = false;
     mockInterviewReleaseReadiness.mockResolvedValue({
       ok: false,
       launchReady: false,
@@ -134,6 +138,74 @@ describe('Interview launch readiness route boundary', () => {
     expect(response.status).toBe(503);
     expect(response.body.code).toBe('INTERVIEW_RELEASE_NOT_READY');
     expect(mockSessionService.createSession).not.toHaveBeenCalled();
+  });
+
+  test('uses gateReady for a non-admin preflight without claiming public launch readiness', async () => {
+    mockAccessMode = 'preflight';
+    mockInterviewReleaseReadiness.mockResolvedValue({
+      ok: true,
+      gateReady: true,
+      launchReady: false,
+      releaseRequired: false,
+      code: 'INTERVIEW_PREFLIGHT_READY',
+    });
+    mockSessionService.getConfigForUser.mockResolvedValue({
+      enabled: true,
+      levels: [],
+      tracks: [],
+    });
+
+    const response = await request(app).get('/api/interviews/availability');
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual(expect.objectContaining({
+      accessMode: 'preflight',
+      canCreate: true,
+    }));
+    expect(mockSessionService.getConfigForUser).toHaveBeenCalledTimes(1);
+  });
+
+  test.each(['/availability', ''])(
+    'fails closed with the release error when preflight is not ready on %s',
+    async (path) => {
+      mockAccessMode = 'preflight';
+      mockInterviewReleaseReadiness.mockResolvedValue({
+        ok: false,
+        gateReady: false,
+        launchReady: false,
+        code: 'INTERVIEW_DEPENDENCIES_BLOCKED',
+      });
+
+      const response = path
+        ? await request(app).get(`/api/interviews${path}`)
+        : await request(app)
+          .post('/api/interviews')
+          .send({ viewportWidth: 1366, format: 'coding', level: 'mid', track: 'react' });
+
+      expect(response.status).toBe(503);
+      expect(response.body.code).toBe('INTERVIEW_RELEASE_NOT_READY');
+      expect(mockSessionService.getConfigForUser).not.toHaveBeenCalled();
+      expect(mockSessionService.createSession).not.toHaveBeenCalled();
+    },
+  );
+
+  test('preserves legacy cohort admin preview without requiring rollout salt or BPS', async () => {
+    mockAccessMode = 'cohort';
+    mockInternalPreview = true;
+    mockSessionService.getConfigForUser.mockResolvedValue({
+      enabled: true,
+      levels: [],
+      tracks: [],
+    });
+
+    const response = await request(app).get('/api/interviews/availability');
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual(expect.objectContaining({
+      accessMode: 'cohort',
+      canCreate: true,
+    }));
+    expect(mockInterviewReleaseReadiness).not.toHaveBeenCalled();
   });
 
   test('does not apply the launch gate to active resume, save, submit, or results', async () => {

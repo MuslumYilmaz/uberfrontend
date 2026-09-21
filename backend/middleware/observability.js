@@ -13,10 +13,10 @@ function readNumberEnv(name, fallback, { min = 0, max = Number.MAX_SAFE_INTEGER 
   return Math.min(max, Math.max(min, parsed));
 }
 
-function metricsEnabled() {
-  const raw = String(process.env.REQUEST_METRICS_ENABLED || '').trim().toLowerCase();
+function metricsEnabled(env = process.env) {
+  const raw = String(env.REQUEST_METRICS_ENABLED || '').trim().toLowerCase();
   if (raw) return ['1', 'true', 'yes', 'on'].includes(raw);
-  return process.env.NODE_ENV === 'production';
+  return env.NODE_ENV === 'production';
 }
 
 function sanitizePath(req) {

@@ -326,6 +326,23 @@ describe('AppSidebarComponent', () => {
     expect(practiceCatalog.classList.contains('open')).toBeTrue();
   });
 
+  it('exposes technical preflight navigation to a normal authenticated user', async () => {
+    await configureTestingModule({
+      isLoggedIn: true,
+      role: 'user',
+      interviewAccessMode: 'preflight',
+      interviewEnabled: true,
+    });
+    const fixture = TestBed.createComponent(AppSidebarComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(
+      fixture.nativeElement.querySelector('a[aria-label="Timed Mock Interview"]'),
+    ).not.toBeNull();
+  });
+
   it('does not expose the interview link while the feature is off', async () => {
     await configureTestingModule({
       isLoggedIn: true,

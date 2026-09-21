@@ -79,7 +79,7 @@ function configureEnvironment(mongoUri) {
     INTERVIEW_NATIVE_SAFARI_READY: 'true',
     INTERVIEW_OPERATIONAL_STATE: 'normal',
     INTERVIEW_SYSTEM_DESIGN_ACCESS: 'off',
-    INTERVIEW_TELEMETRY_ENABLED: 'false',
+    INTERVIEW_TELEMETRY_ENABLED: 'true',
     JWT_SECRET,
     MONGO_TARGET: 'test',
     // Keep dotenv from hydrating any machine-local production connection or
@@ -91,12 +91,19 @@ function configureEnvironment(mongoUri) {
     RATE_LIMIT_NAMESPACE: `interview-browser-e2e-${process.pid}`,
     RATE_LIMIT_REDIS_TIMEOUT_MS: '1500',
     RATE_LIMIT_STORE: 'redis',
-    SENTRY_ENABLED: 'false',
+    REQUEST_METRICS_ENABLED: 'true',
+    REQUEST_METRICS_SAMPLE_RATE: '0',
+    SENTRY_DSN: 'https://public@sentry.interview.invalid/1',
+    SENTRY_ENABLED: 'true',
+    SENTRY_ENVIRONMENT: 'interview-browser-e2e',
+    SENTRY_TRACES_SAMPLE_RATE: '0',
     SERVER_BASE: API_ORIGIN,
     SMTP_PASS: '',
     SMTP_USER: '',
     UPSTASH_REDIS_REST_TOKEN: 'ephemeral-test-token',
     UPSTASH_REDIS_REST_URL: REDIS_STUB_ORIGIN,
+    VERCEL: '',
+    VERCEL_ENV: '',
   });
 }
 
@@ -113,6 +120,9 @@ function installHealthyRedisStub() {
       requestOrigin = new URL(requestUrl).origin;
     } catch {
       requestOrigin = '';
+    }
+    if (requestOrigin === 'https://sentry.interview.invalid') {
+      return new Response('', { status: 200 });
     }
     if (requestOrigin !== REDIS_STUB_ORIGIN) {
       return originalFetch(url, options);
@@ -277,7 +287,33 @@ async function main() {
       `Canonical coding artifact is not editorial-gold v1.1.0: ${artifacts.coding.status} ${artifacts.coding.version}`
     );
     disconnectMongo = mongo.disconnectMongo;
-    await mongo.connectToMongo(mongoUri);
+    const connection = await mongo.connectToMongo(mongoUri);
+    const {
+      EXPOSURE_COLLECTION_NAME,
+    } = require('../services/interview/exposure-index-contract');
+    const {
+      inspectInterviewExposureIndexMigration,
+      migrateInterviewExposureIndexes,
+    } = require('../services/interview/exposure-index-migrator');
+    const exposureCollection = connection.collection(EXPOSURE_COLLECTION_NAME);
+    const exposureInspection = await inspectInterviewExposureIndexMigration({
+      collection: exposureCollection,
+      database: DB_NAME,
+    });
+    assert(
+      exposureInspection.canExecute,
+      `Ephemeral exposure index preparation is blocked: ${exposureInspection.blockers.join(', ')}`
+    );
+    const exposureMigration = await migrateInterviewExposureIndexes({
+      collection: exposureCollection,
+      confirmation: exposureInspection.confirmation,
+      database: DB_NAME,
+      execute: true,
+    });
+    assert(
+      exposureMigration.ok && exposureMigration.finalIndexSummary?.validCount === 5,
+      'Ephemeral exposure index preparation did not satisfy the 5/5 contract'
+    );
 
     await new Promise((resolve, reject) => {
       expressServer = app.listen(API_PORT, '127.0.0.1', resolve);

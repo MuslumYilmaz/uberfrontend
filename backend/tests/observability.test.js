@@ -22,6 +22,19 @@ describe('request observability privacy', () => {
     jest.resetModules();
   });
 
+  test('evaluates the effective request-metrics flag from an injected environment', () => {
+    const { observability } = loadObservability();
+    expect(observability.metricsEnabled({ NODE_ENV: 'production' })).toBe(true);
+    expect(observability.metricsEnabled({
+      NODE_ENV: 'production',
+      REQUEST_METRICS_ENABLED: 'false',
+    })).toBe(false);
+    expect(observability.metricsEnabled({
+      NODE_ENV: 'test',
+      REQUEST_METRICS_ENABLED: 'true',
+    })).toBe(true);
+  });
+
   test('logs and measures an Interview request using only its route contract', () => {
     process.env.REQUEST_METRICS_ENABLED = 'true';
     const { captureMetric, observability } = loadObservability();

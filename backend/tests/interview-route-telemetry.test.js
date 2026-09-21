@@ -3,6 +3,7 @@
 const express = require('express');
 const request = require('supertest');
 const mockInterviewReleaseReadiness = jest.fn();
+const mockCaptureInterviewIssueSignal = jest.fn();
 
 const mockSession = (overrides = {}) => ({
   _id: '507f1f77bcf86cd799439012',
@@ -46,6 +47,10 @@ const mockSessionService = {
 };
 
 jest.mock('../services/interview/session-service', () => mockSessionService);
+jest.mock('../config/sentry', () => ({
+  captureInterviewIssueSignal: mockCaptureInterviewIssueSignal,
+  captureMetric: jest.fn(),
+}));
 jest.mock('../middleware/Auth', () => ({
   requireAuth(req, _res, next) {
     req.auth = { userId: '507f1f77bcf86cd799439011', role: 'user' };
@@ -205,6 +210,32 @@ describe('Interview route telemetry integration', () => {
     expect(emittedText).not.toContain('must not be logged');
     expect(emittedText).not.toContain('privateCode');
     expect(emittedText).not.toContain('507f1f77bcf86cd7994390');
+    expect(mockCaptureInterviewIssueSignal).not.toHaveBeenCalled();
+  });
+
+  test('raises a fixed issue signal only for overlap inside the protected window', async () => {
+    mockSessionService.createSession.mockResolvedValue({
+      session: mockSession(),
+      created: true,
+      selectionTelemetry: {
+        count: 6,
+        literalOverlap: 1,
+        semanticOverlap: 0,
+        selectionPolicyVersion: 2,
+        targetExposureCount: 2,
+        protectedWindow: true,
+      },
+    });
+
+    const response = await request(app)
+      .post('/api/interviews')
+      .send({ format: 'coding', level: 'mid', track: 'react', viewportWidth: 1366 });
+
+    expect(response.status).toBe(201);
+    expect(mockCaptureInterviewIssueSignal).toHaveBeenCalledWith('protected_overlap', {
+      operation: 'create',
+      status: 201,
+    });
   });
 
   test('maps optimistic and idempotency errors to save-conflict telemetry', async () => {
@@ -335,6 +366,13 @@ describe('Interview route telemetry integration', () => {
       limiter: 'interview-create-user',
       httpStatus: status,
     }));
+    if (outcome === 'unavailable') {
+      expect(mockCaptureInterviewIssueSignal).toHaveBeenCalledWith('redis_degraded', {
+        operation: 'create',
+        code: 'RATE_LIMIT_UNAVAILABLE',
+        status: 503,
+      });
+    }
   });
 
   test('emits fallback metadata when a mutation continues on the bounded local store', async () => {
@@ -356,6 +394,11 @@ describe('Interview route telemetry integration', () => {
       storeFallback: true,
       httpStatus: 200,
     }));
+    expect(mockCaptureInterviewIssueSignal).toHaveBeenCalledWith('redis_degraded', {
+      operation: 'mcq-answer',
+      code: 'TEST_RATE_LIMITED',
+      status: 200,
+    });
   });
 
   test('classifies Redis-blocked launch readiness as rate-limit unavailability', async () => {
@@ -380,5 +423,38 @@ describe('Interview route telemetry integration', () => {
     expect(telemetryEntries(logSpy)).not.toContainEqual(expect.objectContaining({
       name: 'request_failed',
     }));
+  });
+
+  test('captures unexpected handled 5xx without signaling expected content degradation', async () => {
+    const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
+    const unexpected = new Error('private answer and session-secret');
+    unexpected.statusCode = 500;
+    unexpected.code = 'INTERVIEW_RESULTS_UNAVAILABLE';
+    mockSessionService.getResults.mockRejectedValueOnce(unexpected);
+
+    const failed = await request(app).get('/api/interviews/session-secret/results');
+
+    expect(failed.status).toBe(500);
+    expect(failed.body).toEqual({
+      code: 'INTERVIEW_RESULTS_UNAVAILABLE',
+      error: 'Interview request failed',
+    });
+    expect(mockCaptureInterviewIssueSignal).toHaveBeenCalledWith('unexpected_5xx', {
+      error: unexpected,
+      operation: 'results',
+      code: 'INTERVIEW_RESULTS_UNAVAILABLE',
+      status: 500,
+    });
+
+    mockCaptureInterviewIssueSignal.mockClear();
+    const expected = new Error('private content detail');
+    expected.statusCode = 503;
+    expected.code = 'INTERVIEW_CONTENT_UNAVAILABLE';
+    mockSessionService.getResults.mockRejectedValueOnce(expected);
+    const degraded = await request(app).get('/api/interviews/session-secret/results');
+
+    expect(degraded.status).toBe(503);
+    expect(mockCaptureInterviewIssueSignal).not.toHaveBeenCalled();
+    consoleError.mockRestore();
   });
 });

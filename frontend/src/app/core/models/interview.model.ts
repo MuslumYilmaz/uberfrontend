@@ -1,7 +1,7 @@
 export type InterviewLevel = 'junior' | 'mid' | 'senior';
 export type InterviewTrack = 'core-web' | 'react' | 'angular' | 'vue';
 export type InterviewFormat = 'coding' | 'system-design';
-export type InterviewAccessMode = 'off' | 'internal' | 'cohort' | 'public';
+export type InterviewAccessMode = 'off' | 'internal' | 'preflight' | 'cohort' | 'public';
 export type InterviewOperationalState = 'normal' | 'drain' | 'halt';
 export type InterviewActiveSessionPolicy = 'continue' | 'halted';
 export type InterviewSessionStatus =
@@ -99,7 +99,9 @@ export function interviewAvailabilityAllowsRole(
 ): boolean {
   if (!availability?.enabled || availability.accessMode === 'off') return false;
   if (availability.accessMode === 'internal') return role === 'admin';
-  return availability.accessMode === 'cohort' || availability.accessMode === 'public';
+  return availability.accessMode === 'preflight'
+    || availability.accessMode === 'cohort'
+    || availability.accessMode === 'public';
 }
 
 export interface InterviewControl {
