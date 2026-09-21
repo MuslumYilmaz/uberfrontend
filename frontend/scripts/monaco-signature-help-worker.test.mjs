@@ -60,7 +60,7 @@ function createWorker(language, custom = false) {
     setSource(markedSource) {
       const position = markedSource.indexOf('|');
       assert.notEqual(position, -1, 'The fixture must identify the cursor with |');
-      source = markedSource.replace('|', '');
+      source = markedSource.slice(0, position) + markedSource.slice(position + 1);
       model.version += 1;
       return position;
     },
