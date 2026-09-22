@@ -230,6 +230,43 @@ describe('TradeoffDetailComponent', () => {
     expect(fixture.nativeElement.textContent || '').toContain('Mark as completed');
   });
 
+  it('links to the hub and adjacent battles using the resolved order, including premium previews', async () => {
+    const previous = { ...resolvedDetail.list[0], id: 'previous-battle', title: 'Previous battle' };
+    const next = { ...resolvedDetail.list[0], id: 'premium-next-battle', title: 'Premium next battle', access: 'premium' };
+    routeData$.next({ tradeoffBattleDetail: { ...resolvedDetail, prev: previous, next } });
+
+    const fixture = TestBed.createComponent(TradeoffDetailComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('.tradeoff-detail__back a')?.getAttribute('href')).toBe('/tradeoffs');
+    const links = [...fixture.nativeElement.querySelectorAll('.tradeoff-detail__footer a')] as HTMLAnchorElement[];
+    expect(links.map((link) => link.getAttribute('href'))).toEqual([
+      '/tradeoffs/previous-battle',
+      '/tradeoffs/premium-next-battle',
+    ]);
+    expect(links.map((link) => link.getAttribute('aria-label'))).toEqual([
+      'Previous: Previous battle',
+      'Next: Premium next battle',
+    ]);
+    expect(fixture.componentInstance.locked()).toBeFalse();
+  });
+
+  it('keeps unavailable adjacent destinations disabled and without links', async () => {
+    routeData$.next({ tradeoffBattleDetail: resolvedDetail });
+
+    const fixture = TestBed.createComponent(TradeoffDetailComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelectorAll('.tradeoff-detail__footer a').length).toBe(0);
+    const buttons = [...fixture.nativeElement.querySelectorAll('.tradeoff-detail__footer button')] as HTMLButtonElement[];
+    expect(buttons.length).toBe(2);
+    expect(buttons.every((button) => button.disabled)).toBeTrue();
+  });
+
   it('marks the battle completed only after the explicit completion action', async () => {
     authUser.set({
       _id: 'user-1',
@@ -289,6 +326,8 @@ describe('TradeoffDetailComponent', () => {
     expect(fixture.nativeElement.querySelector('[data-testid="premium-preview-rich"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('[data-testid="premium-preview"]')).toBeNull();
     expect(fixture.nativeElement.textContent || '').not.toContain('Reveal analysis');
+    expect(fixture.nativeElement.querySelector('.tradeoff-detail__back a')?.getAttribute('href')).toBe('/tradeoffs');
+    expect(fixture.nativeElement.querySelector('.tradeoff-detail__footer')).toBeNull();
 
     const payload = seo.updateTags.calls.mostRecent().args[0] as any;
     const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];

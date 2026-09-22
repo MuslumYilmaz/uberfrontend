@@ -2288,6 +2288,28 @@
     </div>
   </section>
 
+  <section
+    *ngIf="publicQuestionGroups.length"
+    class="iq-section iq-section--surface iq-public-directory"
+    data-testid="public-question-directory"
+    aria-labelledby="iq-public-directory-title">
+    <h2 class="fa-section-title iq-section__title" id="iq-public-directory-title">All free {{ techLabel(config.techs[0]) }} practice questions</h2>
+    <p class="fa-meta-text">Browse by practice type to find your next question.</p>
+    <details class="iq-public-directory__disclosure">
+      <summary>Browse the complete question list</summary>
+      <div class="iq-public-directory__groups">
+        <section *ngFor="let group of publicQuestionGroups" [attr.aria-labelledby]="'iq-directory-' + group.kind">
+          <h3 [id]="'iq-directory-' + group.kind">{{ group.label }}</h3>
+          <ul>
+            <li *ngFor="let question of group.questions">
+              <a [routerLink]="question.route">{{ question.title }}</a>
+            </li>
+          </ul>
+        </section>
+      </div>
+    </details>
+  </section>
+
   <section class="iq-next">
     <h2 class="fa-section-title">Keep the scope tight</h2>
     <p>

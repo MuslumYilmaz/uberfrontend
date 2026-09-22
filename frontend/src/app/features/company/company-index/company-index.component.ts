@@ -1,32 +1,15 @@
 // src/app/features/company/company-index/company-index.component.ts
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
-import { RouterModule } from '@angular/router';
-import { ProgressSpinnerModule } from 'primeng/progressspinner';
-import { forkJoin } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { QuestionService } from '../../../core/services/question.service';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ActivatedRoute, RouterModule } from '@angular/router';
+import { CompanyCard, CompanyIndexResolved } from '../../../core/models/company-public.model';
 import { SeoService } from '../../../core/services/seo.service';
 import { COMPANY_PRACTICE_DISCLAIMER } from '../../../core/content/public-editorial-facts';
-import { companyBrandFor } from '../../../shared/company-branding';
-import { collectCompanyCounts } from '../../../shared/company-counts.util';
 import { CompanyLogoMarkComponent } from '../../../shared/components/company-logo-mark/company-logo-mark.component';
 import { PrepSignalGridComponent, PrepSignalItem } from '../../../shared/components/prep-signal-grid/prep-signal-grid.component';
 
-type CompanyCard = { slug: string; label: string; count: number };
 type CompanyHubLink = { label: string; route: string[]; path: string };
-
-// Always show these, even if data lacks explicit "companies" tags.
-const SEED_SLUGS: ReadonlyArray<string> = [
-  'google',
-  'amazon',
-  'apple',
-  'meta',
-  'microsoft',
-  'uber',
-  'airbnb',
-  'netflix',
-];
 
 const COMPANY_INDEX_TITLE = 'Company Frontend Interview Questions';
 const COMPANY_INDEX_DESCRIPTION =
@@ -35,15 +18,15 @@ const COMPANY_INDEX_DESCRIPTION =
 @Component({
   standalone: true,
   selector: 'app-company-index',
-  imports: [CommonModule, RouterModule, ProgressSpinnerModule, PrepSignalGridComponent, CompanyLogoMarkComponent],
+  imports: [CommonModule, RouterModule, PrepSignalGridComponent, CompanyLogoMarkComponent],
   templateUrl: './company-index.component.html',
   styleUrls: ['./company-index.component.css']
 })
 export class CompanyIndexComponent implements OnInit {
   readonly companyPracticeDisclaimer = COMPANY_PRACTICE_DISCLAIMER;
   companies: CompanyCard[] = [];
-  loading = true;
-  private qs = inject(QuestionService);
+  private route = inject(ActivatedRoute);
+  private destroyRef = inject(DestroyRef);
   private seo = inject(SeoService);
 
   companyPrepOutcomes: PrepSignalItem[] = [
@@ -80,48 +63,11 @@ export class CompanyIndexComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.loading = true;
-    forkJoin([
-      this.qs.loadAllQuestionSummaries('coding', { transferState: false }),
-      this.qs.loadAllQuestionSummaries('trivia', { transferState: false }),
-      this.qs.loadSystemDesign({ transferState: false })
-    ])
-      .pipe(
-        map(([coding, trivia, system]) => {
-          const counts = collectCompanyCounts({ coding, trivia, system });
-
-          // Start with the seed list so the page isn’t empty
-          const list: CompanyCard[] = SEED_SLUGS.map(slug => ({
-            slug,
-            label: this.companyLabel(slug),
-            count: counts[slug]?.all ?? 0
-          })).filter(c => c.count > 0);
-
-          // Add any extra slugs found in data that aren’t in the seed
-          Object.entries(counts).forEach(([slug, bucket]) => {
-            if (bucket.all <= 0) return;
-            if (!SEED_SLUGS.includes(slug)) {
-              list.push({
-                slug,
-                label: this.companyLabel(slug),
-                count: bucket.all
-              });
-            }
-          });
-
-          // Sort nicely
-          return list.sort((a, b) => a.label.localeCompare(b.label));
-        })
-      )
-      .subscribe(list => {
-        this.companies = list;
-        this.loading = false;
-        this.publishSeo(list);
-      });
-  }
-
-  private companyLabel(slug: string): string {
-    return companyBrandFor(slug)?.label ?? slug;
+    this.route.data.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((data) => {
+      const resolved = data['companyIndex'] as CompanyIndexResolved | undefined;
+      this.companies = resolved?.companies ?? [];
+      this.publishSeo(this.companies);
+    });
   }
 
   private publishSeo(companies: CompanyCard[]): void {

@@ -6,6 +6,25 @@
   padding: 1.5rem 1.5rem 7rem;
 }
 
+.tradeoff-detail__back {
+  max-width: 78rem;
+  margin: 0 auto;
+  padding: 1.5rem 1.5rem 0;
+  color: var(--uf-text-secondary);
+  line-height: 1.5;
+}
+
+.tradeoff-detail__back a {
+  color: inherit;
+  text-underline-offset: 0.2em;
+}
+
+.tradeoff-detail__back a:focus-visible,
+.tradeoff-detail__footer a:focus-visible {
+  outline: none;
+  box-shadow: var(--uf-focus-ring);
+}
+
 .locked-shell{
   height: calc(100vh - var(--app-safe-top, 64px) - 56px);
   display: flex;
@@ -311,7 +330,7 @@
 }
 
 .tradeoff-detail__cta,
-.tradeoff-detail__footer button {
+.tradeoff-detail__footer :is(a, button) {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -321,6 +340,7 @@
   border-radius: 999px;
   padding: 0.8rem 1.1rem;
   font: inherit;
+  text-decoration: none;
 }
 
 .tradeoff-detail__cta--secondary {
@@ -647,6 +667,10 @@
 }
 
 @media (max-width: 720px) {
+  .tradeoff-detail__back {
+    padding: 1rem 0.8rem 0;
+  }
+
   .tradeoff-detail {
     padding: 1rem 0.8rem 6rem;
     gap: 1rem;
@@ -720,7 +744,7 @@
   }
 
   .tradeoff-detail__cta,
-  .tradeoff-detail__footer button {
+  .tradeoff-detail__footer :is(a, button) {
     width: 100%;
   }
 

@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router';
-import { of } from 'rxjs';
+import { ActivatedRoute, Data, convertToParamMap, provideRouter } from '@angular/router';
+import { BehaviorSubject, of } from 'rxjs';
+import { CompanyPreviewResolved } from '../../../core/models/company-public.model';
 import { QuestionService } from '../../../core/services/question.service';
 import { SeoService } from '../../../core/services/seo.service';
 import { CompanyPreviewComponent } from './company-preview.component';
@@ -9,8 +10,9 @@ describe('CompanyPreviewComponent', () => {
   let fixture: ComponentFixture<CompanyPreviewComponent>;
   let questionService: jasmine.SpyObj<QuestionService>;
   let seo: jasmine.SpyObj<SeoService>;
+  let routeData: BehaviorSubject<Data>;
 
-  async function createComponent(slug: string): Promise<ComponentFixture<CompanyPreviewComponent>> {
+  async function createComponent(slug: string, resolved?: CompanyPreviewResolved): Promise<ComponentFixture<CompanyPreviewComponent>> {
     TestBed.resetTestingModule();
 
     questionService = jasmine.createSpyObj<QuestionService>('QuestionService', [
@@ -19,6 +21,12 @@ describe('CompanyPreviewComponent', () => {
     ]);
     questionService.loadAllQuestionSummaries.and.returnValue(of([] as any));
     questionService.loadSystemDesign.and.returnValue(of([] as any));
+    routeData = new BehaviorSubject<Data>({ companyPreview: resolved ?? {
+      slug,
+      mode: ['google', 'netflix', 'openai'].includes(slug) ? 'editorial' : 'catalog',
+      counts: { all: 0, coding: 0, trivia: 0, system: 0 },
+      samples: [],
+    } });
 
     seo = jasmine.createSpyObj<SeoService>('SeoService', ['updateTags', 'buildCanonicalUrl']);
     seo.buildCanonicalUrl.and.callFake((value: string) => {
@@ -37,6 +45,7 @@ describe('CompanyPreviewComponent', () => {
         {
           provide: ActivatedRoute,
           useValue: {
+            data: routeData,
             snapshot: {
               paramMap: convertToParamMap({ slug }),
             },
@@ -441,5 +450,43 @@ describe('CompanyPreviewComponent', () => {
     expect(text).not.toContain('known questions');
     expect(payload.description).toContain('FrontendAtlas editorial Amazon practice grouping');
     expect(payload.description).toContain('does not claim official question provenance or endorsement');
+  });
+
+  it('renders resolved samples immediately and replaces metadata and samples when the company slug changes', async () => {
+    await createComponent('amazon', {
+      slug: 'amazon', mode: 'catalog',
+      counts: { all: 2, coding: 1, trivia: 1, system: 0 },
+      samples: [
+        { id: 'free-prompt', title: 'Free prompt', kind: 'coding', tech: 'react', difficulty: 'easy', access: 'free' },
+        { id: 'premium-prompt', title: 'Premium prompt', kind: 'trivia', tech: 'javascript', difficulty: 'hard', access: 'premium' },
+      ],
+    });
+    const host: HTMLElement = fixture.nativeElement;
+    expect(host.querySelector('[data-testid="company-preview-counts"]')?.textContent).toContain('Coding 1 · Concepts 1 · System 0');
+    expect(host.querySelector('[data-testid="company-preview-question-free-prompt"]')).not.toBeNull();
+    expect(host.querySelector('[data-testid="company-preview-question-premium-prompt"]')).not.toBeNull();
+    expect(host.querySelector('.sample-list a')).toBeNull();
+    expect(questionService.loadAllQuestionSummaries).not.toHaveBeenCalled();
+
+    routeData.next({ companyPreview: {
+      slug: 'bytedance', mode: 'catalog',
+      counts: { all: 1, coding: 1, trivia: 0, system: 0 },
+      samples: [{ id: 'feed', title: 'Feed', kind: 'coding', tech: 'react', difficulty: 'easy', access: 'free' }],
+    } });
+    fixture.detectChanges();
+
+    expect(host.querySelector('h1')?.textContent).toContain('ByteDance');
+    expect(host.querySelector('[data-testid="company-preview-question-free-prompt"]')).toBeNull();
+    expect(host.querySelector('[data-testid="company-preview-question-feed"]')).not.toBeNull();
+    expect(seo.updateTags.calls.mostRecent().args[0]?.canonical).toBe('/companies/bytedance/preview');
+
+    routeData.next({ companyPreview: {
+      slug: 'netflix', mode: 'editorial',
+      counts: { all: 0, coding: 0, trivia: 0, system: 0 }, samples: [],
+    } });
+    fixture.detectChanges();
+    expect(host.querySelector('h1')?.textContent).toBe('Netflix Frontend Interview Questions');
+    expect(host.querySelector('fa-question-row')).toBeNull();
+    expect(seo.updateTags.calls.mostRecent().args[0]?.canonical).toBe('/companies/netflix/preview');
   });
 });

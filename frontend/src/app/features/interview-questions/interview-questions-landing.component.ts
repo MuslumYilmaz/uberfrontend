@@ -13,6 +13,7 @@ import { AnalyticsService } from '../../core/services/analytics.service';
 import { QuestionListItem, QuestionService } from '../../core/services/question.service';
 import { SeoService, type SeoMeta } from '../../core/services/seo.service';
 import { Tech } from '../../core/models/user.model';
+import { PUBLIC_QUESTION_NAVIGATION, PublicQuestionNavigationItem } from '../../generated/public-question-navigation';
 import { PrepRoadmapComponent, type PrepRoadmapItem } from '../../shared/components/prep-roadmap/prep-roadmap.component';
 
 type InterviewQuestionsLandingConfig = {
@@ -801,7 +802,10 @@ const MASTER_FORMAT_PATH_ITEMS: MasterFormatPathItem[] = [
   {
     title: 'System design rounds',
     detail: 'Frontend architecture prompts for requirements, data, interfaces, optimizations, accessibility, and failure modes.',
-    links: [{ label: 'Open system design', route: ['/system-design'] }],
+    links: [
+      { label: 'Open system design', route: ['/system-design'] },
+      { label: 'Frontend architecture tradeoffs', route: ['/tradeoffs'] },
+    ],
   },
   {
     title: 'Concept quiz rounds',
@@ -5435,6 +5439,7 @@ export class InterviewQuestionsLandingComponent implements OnInit {
   relatedHubLinks: HubLink[] = [];
   featuredLinks: HubLink[] = [];
   readonly previewLimit = 6;
+  publicQuestionGroups: { kind: PublicQuestionNavigationItem['kind']; label: string; questions: readonly PublicQuestionNavigationItem[] }[] = [];
 
   ngOnInit(): void {
     const incoming = this.route.snapshot.data['interviewQuestions'] as Partial<InterviewQuestionsLandingConfig> | undefined;
@@ -5455,6 +5460,7 @@ export class InterviewQuestionsLandingComponent implements OnInit {
 
     this.featuredLinks = featuredLinks;
     this.relatedHubLinks = this.buildRelatedHubLinks();
+    this.publicQuestionGroups = this.buildPublicQuestionGroups();
     const resolved = this.route.snapshot.data['interviewQuestionsList'] as InterviewQuestionsHubResolved | undefined;
     if (resolved && this.hasResolvedRows(resolved)) {
       this.applyResolvedRows(resolved);
@@ -6238,6 +6244,20 @@ export class InterviewQuestionsLandingComponent implements OnInit {
   previewRows(kind: Kind): QuestionSummaryRow[] {
     const rows = kind === 'coding' ? this.codingQuestions : this.triviaQuestions;
     return rows.slice(0, this.previewLimit);
+  }
+
+  private buildPublicQuestionGroups() {
+    if (this.isMasterHub() || this.config.techs.length !== 1) return [];
+    const tech = this.config.techs[0];
+    const groups: { kind: PublicQuestionNavigationItem['kind']; label: string }[] = [
+      { kind: 'trivia', label: 'Concepts' },
+      { kind: 'coding', label: 'Coding challenges' },
+      { kind: 'debug', label: 'Debugging' },
+    ];
+    return groups.map((group) => ({
+      ...group,
+      questions: PUBLIC_QUESTION_NAVIGATION.filter((question) => question.tech === tech && question.kind === group.kind),
+    })).filter((group) => group.questions.length > 0);
   }
 
   topConceptRows(): QuestionSummaryRow[] {

@@ -1,15 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { Observable, combineLatest, of } from 'rxjs';
-import { map, shareReplay } from 'rxjs/operators';
-import { AccessLevel, Difficulty } from '../../../core/models/question.model';
+import { CompanyPreviewQuestion, CompanyPreviewResolved } from '../../../core/models/company-public.model';
+import { Difficulty } from '../../../core/models/question.model';
 import { COMPANY_PRACTICE_DISCLAIMER } from '../../../core/content/public-editorial-facts';
 import { Tech } from '../../../core/models/user.model';
-import { QuestionService } from '../../../core/services/question.service';
 import { SeoService } from '../../../core/services/seo.service';
 import { companyBrandFor } from '../../../shared/company-branding';
-import { CompanyCountBucket, collectCompanyCounts } from '../../../shared/company-counts.util';
 import {
   FaQuestionRowComponent,
   FaQuestionRowMetaChip,
@@ -42,20 +40,6 @@ import {
   NETFLIX_ROLE_LENSES,
   NETFLIX_WALKTHROUGH_STEPS,
 } from './netflix-preview-content';
-
-type CompanyPreviewQuestion = {
-  id: string;
-  title: string;
-  kind: 'coding' | 'trivia' | 'system-design';
-  tech?: Tech;
-  difficulty: Difficulty;
-  access: AccessLevel;
-};
-
-type CompanyPreviewData = {
-  counts: CompanyCountBucket;
-  samples: CompanyPreviewQuestion[];
-};
 
 type OpenAiPracticePrompt = {
   id: string;
@@ -249,20 +233,29 @@ export class CompanyPreviewComponent implements OnInit {
   readonly netflixFaqs = NETFLIX_PREVIEW_FAQS;
   readonly netflixResourceLinks = NETFLIX_RESOURCE_LINKS;
   readonly netflixOfficialSources = NETFLIX_OFFICIAL_SOURCES;
-  data$: Observable<CompanyPreviewData> = of({
+  data: CompanyPreviewResolved = {
+    slug: '',
+    mode: 'catalog',
     counts: { all: 0, coding: 0, trivia: 0, system: 0 },
     samples: [],
-  });
+  };
+  private readonly destroyRef = inject(DestroyRef);
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private questionService: QuestionService,
     private seo: SeoService,
   ) { }
 
   ngOnInit(): void {
-    this.slug = (this.route.snapshot.paramMap.get('slug') || '').trim().toLowerCase();
+    this.route.data.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((data) => {
+      const resolved = data['companyPreview'] as CompanyPreviewResolved | undefined;
+      this.applyResolvedPreview(resolved);
+    });
+  }
+
+  private applyResolvedPreview(resolved: CompanyPreviewResolved | undefined): void {
+    this.slug = (resolved?.slug ?? this.route.snapshot.paramMap.get('slug') ?? '').trim().toLowerCase();
     if (!this.slug) {
       this.router.navigateByUrl('/404').catch(() => void 0);
       return;
@@ -272,6 +265,12 @@ export class CompanyPreviewComponent implements OnInit {
     this.isOpenAiPreview = this.slug === 'openai';
     this.isGooglePreview = this.slug === 'google';
     this.isNetflixPreview = this.slug === 'netflix';
+    this.data = resolved ?? {
+      slug: this.slug,
+      mode: 'catalog',
+      counts: { all: 0, coding: 0, trivia: 0, system: 0 },
+      samples: [],
+    };
 
     if (this.isOpenAiPreview) {
       this.publishOpenAiSeo();
@@ -291,22 +290,8 @@ export class CompanyPreviewComponent implements OnInit {
     this.seo.updateTags({
       title: `${this.label} Frontend Interview Questions Preview`,
       description: `Preview the FrontendAtlas editorial ${this.label} practice grouping across coding, concept prompts, and system design. It does not claim official question provenance or endorsement.`,
-      canonical: undefined,
+      canonical: `/companies/${this.slug}/preview`,
     });
-
-    this.data$ = combineLatest([
-      this.questionService.loadAllQuestionSummaries('coding', { transferState: false }),
-      this.questionService.loadAllQuestionSummaries('trivia', { transferState: false }),
-      this.questionService.loadSystemDesign({ transferState: false }),
-    ]).pipe(
-      map(([coding, trivia, system]) => {
-        const counts = collectCompanyCounts({ coding, trivia, system })[this.slug]
-          ?? { all: 0, coding: 0, trivia: 0, system: 0 };
-        const samples = this.buildSamples(this.slug, coding, trivia, system);
-        return { counts, samples };
-      }),
-      shareReplay(1),
-    );
   }
 
   freeCount(items: CompanyPreviewQuestion[]): number {
@@ -605,80 +590,6 @@ export class CompanyPreviewComponent implements OnInit {
       canonical: NETFLIX_PREVIEW_CANONICAL_PATH,
       jsonLd: [collectionPage, itemList, breadcrumb],
     });
-  }
-
-  private buildSamples(
-    slug: string,
-    coding: Array<any>,
-    trivia: Array<any>,
-    system: Array<any>,
-  ): CompanyPreviewQuestion[] {
-    const codingHits = coding
-      .filter((q) => this.hasCompany(q, slug))
-      .slice(0, 3)
-      .map((q) => this.toPreviewQuestion(q, 'coding'));
-
-    const triviaHits = trivia
-      .filter((q) => this.hasCompany(q, slug))
-      .slice(0, 3)
-      .map((q) => this.toPreviewQuestion(q, 'trivia'));
-
-    const systemHits = system
-      .filter((q) => this.hasCompany(q, slug))
-      .slice(0, 2)
-      .map((q) => this.toPreviewQuestion(q, 'system-design'));
-
-    const merged = [...codingHits, ...triviaHits, ...systemHits];
-
-    if (merged.length >= 8) return merged.slice(0, 8);
-
-    const extras = [...coding, ...trivia, ...system]
-      .filter((q) => this.hasCompany(q, slug))
-      .map((q) => this.toPreviewQuestion(q, this.detectKind(q)))
-      .slice(0, 8);
-
-    const out: CompanyPreviewQuestion[] = [];
-    const seen = new Set<string>();
-    for (const item of [...merged, ...extras]) {
-      const key = `${item.kind}:${item.tech || 'none'}:${item.id}`;
-      if (seen.has(key)) continue;
-      seen.add(key);
-      out.push(item);
-      if (out.length >= 8) break;
-    }
-    return out;
-  }
-
-  private detectKind(q: any): CompanyPreviewQuestion['kind'] {
-    if (String(q?.type || '').toLowerCase() === 'system-design') return 'system-design';
-    if (String(q?.type || '').toLowerCase() === 'trivia') return 'trivia';
-    return 'coding';
-  }
-
-  private toPreviewQuestion(q: any, kind: CompanyPreviewQuestion['kind']): CompanyPreviewQuestion {
-    return {
-      id: String(q?.id || ''),
-      title: String(q?.title || this.prettyCompany(String(q?.id || 'question'))),
-      kind,
-      tech: q?.tech,
-      difficulty: this.normalizeDifficulty(q?.difficulty),
-      access: this.normalizeAccess(q?.access),
-    };
-  }
-
-  private normalizeDifficulty(value: unknown): Difficulty {
-    const raw = String(value || '').toLowerCase();
-    if (raw === 'easy' || raw === 'hard' || raw === 'intermediate') return raw;
-    return 'intermediate';
-  }
-
-  private normalizeAccess(value: unknown): AccessLevel {
-    return String(value || '').toLowerCase() === 'free' ? 'free' : 'premium';
-  }
-
-  private hasCompany(q: any, slug: string): boolean {
-    if (!Array.isArray(q?.companies)) return false;
-    return q.companies.some((company: unknown) => String(company || '').trim().toLowerCase() === slug);
   }
 
   private prettyCompany(slug: string): string {

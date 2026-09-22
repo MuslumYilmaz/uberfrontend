@@ -1,0 +1,6893 @@
+{
+  "date": "2026-09-22",
+  "method": "Prerendered HTML; indexable, self-canonical, robots-allowed sources; deduplicated source-target pairs; clean URLs; homepage BFS. Null depth means unreachable.",
+  "before": {
+    "htmlPages": 615,
+    "canonicalIndexablePages": 437,
+    "sitemapPages": 437,
+    "orphanPages": 22,
+    "unreachablePages": 35,
+    "maxReachableDepth": 6,
+    "uniqueEdges": 8125,
+    "publicQuestions": 336
+  },
+  "after": {
+    "htmlPages": 615,
+    "canonicalIndexablePages": 437,
+    "sitemapPages": 437,
+    "orphanPages": 0,
+    "unreachablePages": 0,
+    "maxReachableDepth": 3,
+    "uniqueEdges": 20861,
+    "publicQuestions": 336
+  },
+  "beforeOrphans": [
+    "/angular/trivia/angular-event-binding-dom-vs-output-change-detection",
+    "/companies/airbnb/preview",
+    "/companies/bytedance/preview",
+    "/companies/meta/preview",
+    "/companies/microsoft/preview",
+    "/companies/stripe/preview",
+    "/companies/uber/preview",
+    "/css/trivia/css-float-clear",
+    "/css/trivia/css-inline-internal-external",
+    "/html/trivia/html-br-tag",
+    "/javascript/trivia/js-deferred-scripts",
+    "/javascript/trivia/js-design-patterns",
+    "/javascript/trivia/js-escape-vs-sanitize",
+    "/javascript/trivia/js-memoization",
+    "/javascript/trivia/js-nan-property",
+    "/javascript/trivia/js-use-strict-describe",
+    "/legal",
+    "/react/trivia/react-core-problem-and-non-goals",
+    "/react/trivia/react-default-vs-named-exports-runtime-break",
+    "/react/trivia/react-render-nothing-return-value",
+    "/react/trivia/react-why-event-delegation",
+    "/tradeoffs"
+  ],
+  "beforeUnreachable": [
+    "/angular/trivia/angular-event-binding-dom-vs-output-change-detection",
+    "/companies/airbnb/preview",
+    "/companies/bytedance/preview",
+    "/companies/meta/preview",
+    "/companies/microsoft/preview",
+    "/companies/stripe/preview",
+    "/companies/uber/preview",
+    "/css/trivia/css-color-property",
+    "/css/trivia/css-float-clear",
+    "/css/trivia/css-inline-internal-external",
+    "/css/trivia/css-make-text-bold",
+    "/html/trivia/html-br-tag",
+    "/javascript/trivia/js-bigint-data-type",
+    "/javascript/trivia/js-deferred-scripts",
+    "/javascript/trivia/js-design-patterns",
+    "/javascript/trivia/js-escape-vs-sanitize",
+    "/javascript/trivia/js-memoization",
+    "/javascript/trivia/js-nan-property",
+    "/javascript/trivia/js-use-strict-describe",
+    "/javascript/trivia/prompt-engineering-frontend",
+    "/legal",
+    "/react/trivia/react-core-problem-and-non-goals",
+    "/react/trivia/react-default-vs-named-exports-runtime-break",
+    "/react/trivia/react-render-nothing-return-value",
+    "/react/trivia/react-why-event-delegation",
+    "/tradeoffs",
+    "/tradeoffs/async-pipe-vs-manual-subscribe-angular",
+    "/tradeoffs/object-vs-map-keyed-collections",
+    "/tradeoffs/promise-all-vs-sequential-awaits",
+    "/tradeoffs/props-drilling-vs-context-shared-ui",
+    "/tradeoffs/props-emits-vs-provide-inject-vue-context",
+    "/tradeoffs/reactive-forms-vs-template-driven-angular",
+    "/tradeoffs/sse-vs-websocket-live-dashboard",
+    "/tradeoffs/usestate-vs-usereducer-growing-state",
+    "/tradeoffs/watch-vs-watcheffect-vue-reactive-effects"
+  ],
+  "afterFailures": [],
+  "afterWarnings": [
+    "236 public query links are informational; they do not count as clean canonical graph edges"
+  ],
+  "directoryCoverage": [
+    {
+      "hub": "/javascript/interview-questions",
+      "expected": 132,
+      "linked": 132,
+      "missing": [],
+      "unexpected": []
+    },
+    {
+      "hub": "/angular/interview-questions",
+      "expected": 47,
+      "linked": 47,
+      "missing": [],
+      "unexpected": []
+    },
+    {
+      "hub": "/react/interview-questions",
+      "expected": 44,
+      "linked": 44,
+      "missing": [],
+      "unexpected": []
+    },
+    {
+      "hub": "/vue/interview-questions",
+      "expected": 36,
+      "linked": 36,
+      "missing": [],
+      "unexpected": []
+    },
+    {
+      "hub": "/html/interview-questions",
+      "expected": 36,
+      "linked": 36,
+      "missing": [],
+      "unexpected": []
+    },
+    {
+      "hub": "/css/interview-questions",
+      "expected": 41,
+      "linked": 41,
+      "missing": [],
+      "unexpected": []
+    }
+  ],
+  "companyIndexCoverage": [
+    {
+      "route": "/companies/airbnb/preview",
+      "expectedTotal": 1,
+      "actualTotal": 1
+    },
+    {
+      "route": "/companies/amazon/preview",
+      "expectedTotal": 39,
+      "actualTotal": 39
+    },
+    {
+      "route": "/companies/apple/preview",
+      "expectedTotal": 34,
+      "actualTotal": 34
+    },
+    {
+      "route": "/companies/bytedance/preview",
+      "expectedTotal": 18,
+      "actualTotal": 18
+    },
+    {
+      "route": "/companies/google/preview",
+      "expectedTotal": 44,
+      "actualTotal": 44
+    },
+    {
+      "route": "/companies/meta/preview",
+      "expectedTotal": 50,
+      "actualTotal": 50
+    },
+    {
+      "route": "/companies/microsoft/preview",
+      "expectedTotal": 16,
+      "actualTotal": 16
+    },
+    {
+      "route": "/companies/netflix/preview",
+      "expectedTotal": 12,
+      "actualTotal": 12
+    },
+    {
+      "route": "/companies/openai/preview",
+      "expectedTotal": 8,
+      "actualTotal": 8
+    },
+    {
+      "route": "/companies/stripe/preview",
+      "expectedTotal": 1,
+      "actualTotal": 1
+    },
+    {
+      "route": "/companies/uber/preview",
+      "expectedTotal": 2,
+      "actualTotal": 2
+    }
+  ],
+  "companyPreviewCoverage": [
+    {
+      "route": "/companies/airbnb/preview",
+      "expectedSamples": 3,
+      "actualSamples": 3,
+      "missing": [],
+      "expectedCounts": {
+        "all": 1,
+        "coding": 1,
+        "trivia": 0,
+        "system": 0
+      },
+      "actualCounts": {
+        "coding": 1,
+        "trivia": 0,
+        "system": 0,
+        "all": 1
+      }
+    },
+    {
+      "route": "/companies/amazon/preview",
+      "expectedSamples": 8,
+      "actualSamples": 8,
+      "missing": [],
+      "expectedCounts": {
+        "all": 39,
+        "coding": 15,
+        "trivia": 24,
+        "system": 0
+      },
+      "actualCounts": {
+        "coding": 15,
+        "trivia": 24,
+        "system": 0,
+        "all": 39
+      }
+    },
+    {
+      "route": "/companies/apple/preview",
+      "expectedSamples": 8,
+      "actualSamples": 8,
+      "missing": [],
+      "expectedCounts": {
+        "all": 34,
+        "coding": 20,
+        "trivia": 14,
+        "system": 0
+      },
+      "actualCounts": {
+        "coding": 20,
+        "trivia": 14,
+        "system": 0,
+        "all": 34
+      }
+    },
+    {
+      "route": "/companies/bytedance/preview",
+      "expectedSamples": 8,
+      "actualSamples": 8,
+      "missing": [],
+      "expectedCounts": {
+        "all": 18,
+        "coding": 7,
+        "trivia": 11,
+        "system": 0
+      },
+      "actualCounts": {
+        "coding": 7,
+        "trivia": 11,
+        "system": 0,
+        "all": 18
+      }
+    },
+    {
+      "route": "/companies/meta/preview",
+      "expectedSamples": 8,
+      "actualSamples": 8,
+      "missing": [],
+      "expectedCounts": {
+        "all": 50,
+        "coding": 16,
+        "trivia": 34,
+        "system": 0
+      },
+      "actualCounts": {
+        "coding": 16,
+        "trivia": 34,
+        "system": 0,
+        "all": 50
+      }
+    },
+    {
+      "route": "/companies/microsoft/preview",
+      "expectedSamples": 8,
+      "actualSamples": 8,
+      "missing": [],
+      "expectedCounts": {
+        "all": 16,
+        "coding": 4,
+        "trivia": 12,
+        "system": 0
+      },
+      "actualCounts": {
+        "coding": 4,
+        "trivia": 12,
+        "system": 0,
+        "all": 16
+      }
+    },
+    {
+      "route": "/companies/stripe/preview",
+      "expectedSamples": 1,
+      "actualSamples": 1,
+      "missing": [],
+      "expectedCounts": {
+        "all": 1,
+        "coding": 0,
+        "trivia": 1,
+        "system": 0
+      },
+      "actualCounts": {
+        "coding": 0,
+        "trivia": 1,
+        "system": 0,
+        "all": 1
+      }
+    },
+    {
+      "route": "/companies/uber/preview",
+      "expectedSamples": 2,
+      "actualSamples": 2,
+      "missing": [],
+      "expectedCounts": {
+        "all": 2,
+        "coding": 0,
+        "trivia": 2,
+        "system": 0
+      },
+      "actualCounts": {
+        "coding": 0,
+        "trivia": 2,
+        "system": 0,
+        "all": 2
+      }
+    }
+  ],
+  "routes": [
+    {
+      "route": "/",
+      "before": {
+        "depth": 0,
+        "incomingSources": 436,
+        "contentSources": 0,
+        "navigationSources": 436
+      },
+      "after": {
+        "depth": 0,
+        "incomingSources": 436,
+        "contentSources": 0,
+        "navigationSources": 436
+      }
+    },
+    {
+      "route": "/angular/coding/angular-counter-starter",
+      "before": {
+        "depth": 2,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 3,
+        "contentSources": 3,
+        "navigationSources": 0
+      }
+    },
+    {
+      "route": "/angular/coding/angular-snake-game",
+      "before": {
+        "depth": 2,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 3,
+        "contentSources": 3,
+        "navigationSources": 0
+      }
+    },
+    {
+      "route": "/angular/coding/angular-todo-list-starter",
+      "before": {
+        "depth": 2,
+        "incomingSources": 3,
+        "contentSources": 2,
+        "navigationSources": 1
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 4,
+        "contentSources": 3,
+        "navigationSources": 1
+      }
+    },
+    {
+      "route": "/angular/debug/ng-debug-counter-change-detection",
+      "before": {
+        "depth": 2,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      }
+    },
+    {
+      "route": "/angular/interview-questions",
+      "before": {
+        "depth": 1,
+        "incomingSources": 55,
+        "contentSources": 51,
+        "navigationSources": 4
+      },
+      "after": {
+        "depth": 1,
+        "incomingSources": 55,
+        "contentSources": 51,
+        "navigationSources": 4
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-appmodule-standalone-changes",
+      "before": {
+        "depth": 2,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 43,
+        "contentSources": 2,
+        "navigationSources": 42
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-change-detection-strategies",
+      "before": {
+        "depth": 2,
+        "incomingSources": 8,
+        "contentSources": 8,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 45,
+        "contentSources": 8,
+        "navigationSources": 42
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-component-metadata",
+      "before": {
+        "depth": 2,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 43,
+        "contentSources": 1,
+        "navigationSources": 42
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-component-vs-service-responsibilities",
+      "before": {
+        "depth": 2,
+        "incomingSources": 4,
+        "contentSources": 4,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 44,
+        "contentSources": 4,
+        "navigationSources": 42
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-controlvalueaccessor-vs-custom-two-way-binding",
+      "before": {
+        "depth": 3,
+        "incomingSources": 3,
+        "contentSources": 3,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 44,
+        "contentSources": 4,
+        "navigationSources": 42
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-custom-two-way-binding",
+      "before": {
+        "depth": 4,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 43,
+        "contentSources": 2,
+        "navigationSources": 42
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-data-binding",
+      "before": {
+        "depth": 2,
+        "incomingSources": 17,
+        "contentSources": 17,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 43,
+        "contentSources": 17,
+        "navigationSources": 42
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-dependency-injection",
+      "before": {
+        "depth": 2,
+        "incomingSources": 7,
+        "contentSources": 7,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 44,
+        "contentSources": 7,
+        "navigationSources": 42
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-directives",
+      "before": {
+        "depth": 2,
+        "incomingSources": 14,
+        "contentSources": 14,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 43,
+        "contentSources": 14,
+        "navigationSources": 42
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-event-binding-dom-vs-output-change-detection",
+      "before": {
+        "depth": null,
+        "incomingSources": 0,
+        "contentSources": 0,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 43,
+        "contentSources": 1,
+        "navigationSources": 42
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-forroot-forchild",
+      "before": {
+        "depth": 3,
+        "incomingSources": 3,
+        "contentSources": 3,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 44,
+        "contentSources": 4,
+        "navigationSources": 42
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-hierarchical-dependency-injection-real-bug",
+      "before": {
+        "depth": 2,
+        "incomingSources": 5,
+        "contentSources": 5,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 44,
+        "contentSources": 5,
+        "navigationSources": 42
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-http-what-actually-cancels-request",
+      "before": {
+        "depth": 2,
+        "incomingSources": 8,
+        "contentSources": 8,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 44,
+        "contentSources": 8,
+        "navigationSources": 42
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-input-output",
+      "before": {
+        "depth": 2,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 43,
+        "contentSources": 2,
+        "navigationSources": 42
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-interpolation-vs-property-binding",
+      "before": {
+        "depth": 2,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 43,
+        "contentSources": 2,
+        "navigationSources": 42
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-lazy-loading",
+      "before": {
+        "depth": 2,
+        "incomingSources": 3,
+        "contentSources": 3,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 44,
+        "contentSources": 3,
+        "navigationSources": 42
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-lifecycle-constructor-oninit-afterviewinit-dom",
+      "before": {
+        "depth": 3,
+        "incomingSources": 3,
+        "contentSources": 3,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 43,
+        "contentSources": 4,
+        "navigationSources": 42
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-lifecycle-hooks",
+      "before": {
+        "depth": 2,
+        "incomingSources": 10,
+        "contentSources": 10,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 43,
+        "contentSources": 10,
+        "navigationSources": 42
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-ngfor-trackby",
+      "before": {
+        "depth": 2,
+        "incomingSources": 3,
+        "contentSources": 3,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 44,
+        "contentSources": 3,
+        "navigationSources": 42
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-ngif-dom-lifecycle",
+      "before": {
+        "depth": 3,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 43,
+        "contentSources": 2,
+        "navigationSources": 42
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-ngmodules-vs-standalone",
+      "before": {
+        "depth": 2,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 43,
+        "contentSources": 2,
+        "navigationSources": 42
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-ngonchanges-vs-ngdocheck",
+      "before": {
+        "depth": 3,
+        "incomingSources": 3,
+        "contentSources": 3,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 43,
+        "contentSources": 4,
+        "navigationSources": 42
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-ngoninit-vs-constructor",
+      "before": {
+        "depth": 2,
+        "incomingSources": 6,
+        "contentSources": 6,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 43,
+        "contentSources": 6,
+        "navigationSources": 42
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-observables-rxjs",
+      "before": {
+        "depth": 2,
+        "incomingSources": 6,
+        "contentSources": 6,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 44,
+        "contentSources": 6,
+        "navigationSources": 42
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-onpush-change-detection-debugging-real-bug",
+      "before": {
+        "depth": 2,
+        "incomingSources": 5,
+        "contentSources": 5,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 44,
+        "contentSources": 5,
+        "navigationSources": 42
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-performance-optimization",
+      "before": {
+        "depth": 2,
+        "incomingSources": 5,
+        "contentSources": 5,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 44,
+        "contentSources": 5,
+        "navigationSources": 42
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-pipes",
+      "before": {
+        "depth": 2,
+        "incomingSources": 3,
+        "contentSources": 3,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 43,
+        "contentSources": 3,
+        "navigationSources": 42
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-prevent-memory-leaks-unsubscribe-patterns",
+      "before": {
+        "depth": 2,
+        "incomingSources": 9,
+        "contentSources": 9,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 44,
+        "contentSources": 9,
+        "navigationSources": 42
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-routing",
+      "before": {
+        "depth": 2,
+        "incomingSources": 3,
+        "contentSources": 3,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 44,
+        "contentSources": 3,
+        "navigationSources": 42
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-services",
+      "before": {
+        "depth": 2,
+        "incomingSources": 7,
+        "contentSources": 7,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 43,
+        "contentSources": 7,
+        "navigationSources": 42
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-structural-vs-attribute-directives",
+      "before": {
+        "depth": 2,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 43,
+        "contentSources": 1,
+        "navigationSources": 42
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-template-compilation-and-binding",
+      "before": {
+        "depth": 2,
+        "incomingSources": 3,
+        "contentSources": 3,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 43,
+        "contentSources": 3,
+        "navigationSources": 42
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-template-driven-vs-reactive-forms-which-scales",
+      "before": {
+        "depth": 2,
+        "incomingSources": 3,
+        "contentSources": 3,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 44,
+        "contentSources": 3,
+        "navigationSources": 42
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-vs-angularjs",
+      "before": {
+        "depth": 2,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 43,
+        "contentSources": 1,
+        "navigationSources": 42
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-zonejs-change-detection",
+      "before": {
+        "depth": 2,
+        "incomingSources": 5,
+        "contentSources": 5,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 44,
+        "contentSources": 5,
+        "navigationSources": 42
+      }
+    },
+    {
+      "route": "/angular/trivia/ngrx-data-flow-end-to-end-angular",
+      "before": {
+        "depth": 3,
+        "incomingSources": 3,
+        "contentSources": 3,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 43,
+        "contentSources": 4,
+        "navigationSources": 42
+      }
+    },
+    {
+      "route": "/angular/trivia/ngrx-reducer-pure-function-immutability-side-effects",
+      "before": {
+        "depth": 3,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 43,
+        "contentSources": 3,
+        "navigationSources": 42
+      }
+    },
+    {
+      "route": "/angular/trivia/ngrx-selectors-memoization-derived-state-performance",
+      "before": {
+        "depth": 4,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 43,
+        "contentSources": 2,
+        "navigationSources": 42
+      }
+    },
+    {
+      "route": "/angular/trivia/ngrx-store-vs-component-state-angular-when-to-use",
+      "before": {
+        "depth": 2,
+        "incomingSources": 3,
+        "contentSources": 3,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 43,
+        "contentSources": 3,
+        "navigationSources": 42
+      }
+    },
+    {
+      "route": "/angular/trivia/rxjs-sharereplay-angular-how-it-breaks-your-app",
+      "before": {
+        "depth": 3,
+        "incomingSources": 3,
+        "contentSources": 3,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 44,
+        "contentSources": 4,
+        "navigationSources": 42
+      }
+    },
+    {
+      "route": "/angular/trivia/rxjs-subject-vs-behaviorsubject-vs-replaysubject-vs-asyncsubject",
+      "before": {
+        "depth": 3,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 43,
+        "contentSources": 2,
+        "navigationSources": 42
+      }
+    },
+    {
+      "route": "/angular/trivia/rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use",
+      "before": {
+        "depth": 2,
+        "incomingSources": 5,
+        "contentSources": 5,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 44,
+        "contentSources": 5,
+        "navigationSources": 42
+      }
+    },
+    {
+      "route": "/angular/trivia/rxjs-tap-vs-map-angular-when-to-use",
+      "before": {
+        "depth": 3,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 43,
+        "contentSources": 2,
+        "navigationSources": 42
+      }
+    },
+    {
+      "route": "/changelog",
+      "before": {
+        "depth": 2,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      }
+    },
+    {
+      "route": "/coding",
+      "before": {
+        "depth": 1,
+        "incomingSources": 367,
+        "contentSources": 292,
+        "navigationSources": 338
+      },
+      "after": {
+        "depth": 1,
+        "incomingSources": 367,
+        "contentSources": 292,
+        "navigationSources": 338
+      }
+    },
+    {
+      "route": "/companies",
+      "before": {
+        "depth": 1,
+        "incomingSources": 372,
+        "contentSources": 287,
+        "navigationSources": 85
+      },
+      "after": {
+        "depth": 1,
+        "incomingSources": 372,
+        "contentSources": 287,
+        "navigationSources": 85
+      }
+    },
+    {
+      "route": "/companies/airbnb/preview",
+      "before": {
+        "depth": null,
+        "incomingSources": 0,
+        "contentSources": 0,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      }
+    },
+    {
+      "route": "/companies/amazon/preview",
+      "before": {
+        "depth": 1,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 1,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      }
+    },
+    {
+      "route": "/companies/apple/preview",
+      "before": {
+        "depth": 1,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 1,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      }
+    },
+    {
+      "route": "/companies/bytedance/preview",
+      "before": {
+        "depth": null,
+        "incomingSources": 0,
+        "contentSources": 0,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      }
+    },
+    {
+      "route": "/companies/google/preview",
+      "before": {
+        "depth": 1,
+        "incomingSources": 5,
+        "contentSources": 5,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 1,
+        "incomingSources": 5,
+        "contentSources": 5,
+        "navigationSources": 0
+      }
+    },
+    {
+      "route": "/companies/meta/preview",
+      "before": {
+        "depth": null,
+        "incomingSources": 0,
+        "contentSources": 0,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      }
+    },
+    {
+      "route": "/companies/microsoft/preview",
+      "before": {
+        "depth": null,
+        "incomingSources": 0,
+        "contentSources": 0,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      }
+    },
+    {
+      "route": "/companies/netflix/preview",
+      "before": {
+        "depth": 1,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 1,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      }
+    },
+    {
+      "route": "/companies/openai/preview",
+      "before": {
+        "depth": 2,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      }
+    },
+    {
+      "route": "/companies/stripe/preview",
+      "before": {
+        "depth": null,
+        "incomingSources": 0,
+        "contentSources": 0,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      }
+    },
+    {
+      "route": "/companies/uber/preview",
+      "before": {
+        "depth": null,
+        "incomingSources": 0,
+        "contentSources": 0,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      }
+    },
+    {
+      "route": "/css/coding/css-box-model-margin-padding-border",
+      "before": {
+        "depth": 2,
+        "incomingSources": 6,
+        "contentSources": 3,
+        "navigationSources": 3
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 6,
+        "contentSources": 3,
+        "navigationSources": 3
+      }
+    },
+    {
+      "route": "/css/coding/css-flexbox-navbar",
+      "before": {
+        "depth": 2,
+        "incomingSources": 15,
+        "contentSources": 8,
+        "navigationSources": 7
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 15,
+        "contentSources": 8,
+        "navigationSources": 7
+      }
+    },
+    {
+      "route": "/css/coding/css-fluid-clamp",
+      "before": {
+        "depth": 2,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      }
+    },
+    {
+      "route": "/css/coding/css-forms-pseudoclasses",
+      "before": {
+        "depth": 2,
+        "incomingSources": 5,
+        "contentSources": 3,
+        "navigationSources": 2
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 5,
+        "contentSources": 3,
+        "navigationSources": 2
+      }
+    },
+    {
+      "route": "/css/coding/css-grid-card-gallery",
+      "before": {
+        "depth": 2,
+        "incomingSources": 13,
+        "contentSources": 9,
+        "navigationSources": 4
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 13,
+        "contentSources": 9,
+        "navigationSources": 4
+      }
+    },
+    {
+      "route": "/css/coding/css-inline-centering",
+      "before": {
+        "depth": 2,
+        "incomingSources": 4,
+        "contentSources": 1,
+        "navigationSources": 3
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 5,
+        "contentSources": 2,
+        "navigationSources": 3
+      }
+    },
+    {
+      "route": "/css/coding/css-positioning-badge",
+      "before": {
+        "depth": 2,
+        "incomingSources": 5,
+        "contentSources": 2,
+        "navigationSources": 3
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 5,
+        "contentSources": 2,
+        "navigationSources": 3
+      }
+    },
+    {
+      "route": "/css/coding/css-selectors-text-basics",
+      "before": {
+        "depth": 2,
+        "incomingSources": 2,
+        "contentSources": 1,
+        "navigationSources": 1
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 3,
+        "contentSources": 2,
+        "navigationSources": 1
+      }
+    },
+    {
+      "route": "/css/coding/css-theme-variables-dark-mode",
+      "before": {
+        "depth": 2,
+        "incomingSources": 4,
+        "contentSources": 4,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 4,
+        "contentSources": 4,
+        "navigationSources": 0
+      }
+    },
+    {
+      "route": "/css/coding/css-transitions-transforms-lift",
+      "before": {
+        "depth": 2,
+        "incomingSources": 2,
+        "contentSources": 1,
+        "navigationSources": 1
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 3,
+        "contentSources": 2,
+        "navigationSources": 1
+      }
+    },
+    {
+      "route": "/css/interview-questions",
+      "before": {
+        "depth": 2,
+        "incomingSources": 46,
+        "contentSources": 36,
+        "navigationSources": 10
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 46,
+        "contentSources": 36,
+        "navigationSources": 10
+      }
+    },
+    {
+      "route": "/css/trivia/css-background-color",
+      "before": {
+        "depth": 4,
+        "incomingSources": 3,
+        "contentSources": 3,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 31,
+        "contentSources": 4,
+        "navigationSources": 30
+      }
+    },
+    {
+      "route": "/css/trivia/css-border-property",
+      "before": {
+        "depth": 4,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 31,
+        "contentSources": 2,
+        "navigationSources": 30
+      }
+    },
+    {
+      "route": "/css/trivia/css-box-model",
+      "before": {
+        "depth": 2,
+        "incomingSources": 8,
+        "contentSources": 8,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 33,
+        "contentSources": 8,
+        "navigationSources": 30
+      }
+    },
+    {
+      "route": "/css/trivia/css-cascade-order",
+      "before": {
+        "depth": 2,
+        "incomingSources": 7,
+        "contentSources": 7,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 32,
+        "contentSources": 7,
+        "navigationSources": 30
+      }
+    },
+    {
+      "route": "/css/trivia/css-center-text",
+      "before": {
+        "depth": 5,
+        "incomingSources": 3,
+        "contentSources": 3,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 31,
+        "contentSources": 4,
+        "navigationSources": 30
+      }
+    },
+    {
+      "route": "/css/trivia/css-change-text-size",
+      "before": {
+        "depth": 4,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 31,
+        "contentSources": 3,
+        "navigationSources": 30
+      }
+    },
+    {
+      "route": "/css/trivia/css-color-property",
+      "before": {
+        "depth": null,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 31,
+        "contentSources": 2,
+        "navigationSources": 30
+      }
+    },
+    {
+      "route": "/css/trivia/css-custom-properties",
+      "before": {
+        "depth": 3,
+        "incomingSources": 2,
+        "contentSources": 1,
+        "navigationSources": 1
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 32,
+        "contentSources": 1,
+        "navigationSources": 31
+      }
+    },
+    {
+      "route": "/css/trivia/css-definition",
+      "before": {
+        "depth": 3,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 31,
+        "contentSources": 2,
+        "navigationSources": 30
+      }
+    },
+    {
+      "route": "/css/trivia/css-display-flex",
+      "before": {
+        "depth": 2,
+        "incomingSources": 10,
+        "contentSources": 9,
+        "navigationSources": 1
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 33,
+        "contentSources": 9,
+        "navigationSources": 31
+      }
+    },
+    {
+      "route": "/css/trivia/css-float-clear",
+      "before": {
+        "depth": null,
+        "incomingSources": 0,
+        "contentSources": 0,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 31,
+        "contentSources": 1,
+        "navigationSources": 30
+      }
+    },
+    {
+      "route": "/css/trivia/css-font-family",
+      "before": {
+        "depth": 3,
+        "incomingSources": 6,
+        "contentSources": 6,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 31,
+        "contentSources": 7,
+        "navigationSources": 30
+      }
+    },
+    {
+      "route": "/css/trivia/css-grid-vs-flexbox",
+      "before": {
+        "depth": 2,
+        "incomingSources": 8,
+        "contentSources": 7,
+        "navigationSources": 1
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 36,
+        "contentSources": 7,
+        "navigationSources": 31
+      }
+    },
+    {
+      "route": "/css/trivia/css-hardware-acceleration",
+      "before": {
+        "depth": 3,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 31,
+        "contentSources": 1,
+        "navigationSources": 30
+      }
+    },
+    {
+      "route": "/css/trivia/css-id-vs-class",
+      "before": {
+        "depth": 3,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 31,
+        "contentSources": 3,
+        "navigationSources": 30
+      }
+    },
+    {
+      "route": "/css/trivia/css-inline-internal-external",
+      "before": {
+        "depth": null,
+        "incomingSources": 0,
+        "contentSources": 0,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 31,
+        "contentSources": 1,
+        "navigationSources": 30
+      }
+    },
+    {
+      "route": "/css/trivia/css-link-html",
+      "before": {
+        "depth": 4,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 31,
+        "contentSources": 2,
+        "navigationSources": 30
+      }
+    },
+    {
+      "route": "/css/trivia/css-make-element-responsive",
+      "before": {
+        "depth": 2,
+        "incomingSources": 7,
+        "contentSources": 5,
+        "navigationSources": 2
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 34,
+        "contentSources": 5,
+        "navigationSources": 32
+      }
+    },
+    {
+      "route": "/css/trivia/css-make-text-bold",
+      "before": {
+        "depth": null,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 31,
+        "contentSources": 2,
+        "navigationSources": 30
+      }
+    },
+    {
+      "route": "/css/trivia/css-margin-property",
+      "before": {
+        "depth": 3,
+        "incomingSources": 5,
+        "contentSources": 5,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 31,
+        "contentSources": 6,
+        "navigationSources": 30
+      }
+    },
+    {
+      "route": "/css/trivia/css-margin-vs-padding",
+      "before": {
+        "depth": 2,
+        "incomingSources": 7,
+        "contentSources": 7,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 32,
+        "contentSources": 7,
+        "navigationSources": 30
+      }
+    },
+    {
+      "route": "/css/trivia/css-media-queries",
+      "before": {
+        "depth": 2,
+        "incomingSources": 16,
+        "contentSources": 13,
+        "navigationSources": 3
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 35,
+        "contentSources": 13,
+        "navigationSources": 33
+      }
+    },
+    {
+      "route": "/css/trivia/css-padding-property",
+      "before": {
+        "depth": 3,
+        "incomingSources": 4,
+        "contentSources": 4,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 31,
+        "contentSources": 5,
+        "navigationSources": 30
+      }
+    },
+    {
+      "route": "/css/trivia/css-position-relative-absolute-fixed",
+      "before": {
+        "depth": 2,
+        "incomingSources": 4,
+        "contentSources": 4,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 32,
+        "contentSources": 4,
+        "navigationSources": 30
+      }
+    },
+    {
+      "route": "/css/trivia/css-position-sticky-not-working",
+      "before": {
+        "depth": 2,
+        "incomingSources": 5,
+        "contentSources": 5,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 32,
+        "contentSources": 5,
+        "navigationSources": 30
+      }
+    },
+    {
+      "route": "/css/trivia/css-pseudo-classes-elements",
+      "before": {
+        "depth": 3,
+        "incomingSources": 4,
+        "contentSources": 4,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 31,
+        "contentSources": 4,
+        "navigationSources": 30
+      }
+    },
+    {
+      "route": "/css/trivia/css-specificity-hierarchy",
+      "before": {
+        "depth": 2,
+        "incomingSources": 10,
+        "contentSources": 10,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 34,
+        "contentSources": 10,
+        "navigationSources": 30
+      }
+    },
+    {
+      "route": "/css/trivia/css-text-color",
+      "before": {
+        "depth": 4,
+        "incomingSources": 4,
+        "contentSources": 4,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 31,
+        "contentSources": 5,
+        "navigationSources": 30
+      }
+    },
+    {
+      "route": "/css/trivia/css-units-em-rem-percent-px",
+      "before": {
+        "depth": 2,
+        "incomingSources": 8,
+        "contentSources": 8,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 32,
+        "contentSources": 8,
+        "navigationSources": 30
+      }
+    },
+    {
+      "route": "/css/trivia/css-visibility-vs-display",
+      "before": {
+        "depth": 3,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 31,
+        "contentSources": 2,
+        "navigationSources": 30
+      }
+    },
+    {
+      "route": "/css/trivia/css-z-index",
+      "before": {
+        "depth": 2,
+        "incomingSources": 4,
+        "contentSources": 4,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 32,
+        "contentSources": 4,
+        "navigationSources": 30
+      }
+    },
+    {
+      "route": "/focus-areas",
+      "before": {
+        "depth": 2,
+        "incomingSources": 4,
+        "contentSources": 4,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 4,
+        "contentSources": 4,
+        "navigationSources": 0
+      }
+    },
+    {
+      "route": "/guides/behavioral",
+      "before": {
+        "depth": 3,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      }
+    },
+    {
+      "route": "/guides/behavioral/big-picture",
+      "before": {
+        "depth": 3,
+        "incomingSources": 9,
+        "contentSources": 9,
+        "navigationSources": 8
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 9,
+        "contentSources": 9,
+        "navigationSources": 8
+      }
+    },
+    {
+      "route": "/guides/behavioral/checklist",
+      "before": {
+        "depth": 3,
+        "incomingSources": 9,
+        "contentSources": 9,
+        "navigationSources": 8
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 9,
+        "contentSources": 9,
+        "navigationSources": 8
+      }
+    },
+    {
+      "route": "/guides/behavioral/common-questions",
+      "before": {
+        "depth": 3,
+        "incomingSources": 9,
+        "contentSources": 9,
+        "navigationSources": 8
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 9,
+        "contentSources": 9,
+        "navigationSources": 8
+      }
+    },
+    {
+      "route": "/guides/behavioral/evaluation-areas",
+      "before": {
+        "depth": 3,
+        "incomingSources": 9,
+        "contentSources": 9,
+        "navigationSources": 8
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 9,
+        "contentSources": 9,
+        "navigationSources": 8
+      }
+    },
+    {
+      "route": "/guides/behavioral/fe-advanced",
+      "before": {
+        "depth": 3,
+        "incomingSources": 9,
+        "contentSources": 9,
+        "navigationSources": 8
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 9,
+        "contentSources": 9,
+        "navigationSources": 8
+      }
+    },
+    {
+      "route": "/guides/behavioral/intro",
+      "before": {
+        "depth": 2,
+        "incomingSources": 11,
+        "contentSources": 11,
+        "navigationSources": 8
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 11,
+        "contentSources": 11,
+        "navigationSources": 8
+      }
+    },
+    {
+      "route": "/guides/behavioral/practical-tips",
+      "before": {
+        "depth": 3,
+        "incomingSources": 9,
+        "contentSources": 9,
+        "navigationSources": 8
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 9,
+        "contentSources": 9,
+        "navigationSources": 8
+      }
+    },
+    {
+      "route": "/guides/behavioral/prep",
+      "before": {
+        "depth": 3,
+        "incomingSources": 9,
+        "contentSources": 9,
+        "navigationSources": 8
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 9,
+        "contentSources": 9,
+        "navigationSources": 8
+      }
+    },
+    {
+      "route": "/guides/behavioral/stories",
+      "before": {
+        "depth": 2,
+        "incomingSources": 10,
+        "contentSources": 10,
+        "navigationSources": 8
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 10,
+        "contentSources": 10,
+        "navigationSources": 8
+      }
+    },
+    {
+      "route": "/guides/framework-prep",
+      "before": {
+        "depth": 2,
+        "incomingSources": 350,
+        "contentSources": 276,
+        "navigationSources": 74
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 350,
+        "contentSources": 276,
+        "navigationSources": 74
+      }
+    },
+    {
+      "route": "/guides/framework-prep/angular-prep-path",
+      "before": {
+        "depth": 2,
+        "incomingSources": 61,
+        "contentSources": 57,
+        "navigationSources": 16
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 61,
+        "contentSources": 57,
+        "navigationSources": 16
+      }
+    },
+    {
+      "route": "/guides/framework-prep/javascript-prep-path",
+      "before": {
+        "depth": 2,
+        "incomingSources": 147,
+        "contentSources": 100,
+        "navigationSources": 59
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 147,
+        "contentSources": 100,
+        "navigationSources": 59
+      }
+    },
+    {
+      "route": "/guides/framework-prep/javascript-prep-path/mastery",
+      "before": {
+        "depth": 2,
+        "incomingSources": 136,
+        "contentSources": 89,
+        "navigationSources": 47
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 136,
+        "contentSources": 89,
+        "navigationSources": 47
+      }
+    },
+    {
+      "route": "/guides/framework-prep/react-prep-path",
+      "before": {
+        "depth": 2,
+        "incomingSources": 60,
+        "contentSources": 57,
+        "navigationSources": 15
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 60,
+        "contentSources": 57,
+        "navigationSources": 15
+      }
+    },
+    {
+      "route": "/guides/framework-prep/vue-prep-path",
+      "before": {
+        "depth": 2,
+        "incomingSources": 51,
+        "contentSources": 49,
+        "navigationSources": 14
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 51,
+        "contentSources": 49,
+        "navigationSources": 14
+      }
+    },
+    {
+      "route": "/guides/interview-blueprint",
+      "before": {
+        "depth": 3,
+        "incomingSources": 7,
+        "contentSources": 7,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 1,
+        "incomingSources": 8,
+        "contentSources": 8,
+        "navigationSources": 0
+      }
+    },
+    {
+      "route": "/guides/interview-blueprint/api-design",
+      "before": {
+        "depth": 2,
+        "incomingSources": 9,
+        "contentSources": 9,
+        "navigationSources": 8
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 9,
+        "contentSources": 9,
+        "navigationSources": 8
+      }
+    },
+    {
+      "route": "/guides/interview-blueprint/coding-interviews",
+      "before": {
+        "depth": 2,
+        "incomingSources": 86,
+        "contentSources": 12,
+        "navigationSources": 82
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 86,
+        "contentSources": 12,
+        "navigationSources": 82
+      }
+    },
+    {
+      "route": "/guides/interview-blueprint/dsa-for-fe",
+      "before": {
+        "depth": 2,
+        "incomingSources": 9,
+        "contentSources": 9,
+        "navigationSources": 8
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 9,
+        "contentSources": 9,
+        "navigationSources": 8
+      }
+    },
+    {
+      "route": "/guides/interview-blueprint/intro",
+      "before": {
+        "depth": 1,
+        "incomingSources": 358,
+        "contentSources": 284,
+        "navigationSources": 83
+      },
+      "after": {
+        "depth": 1,
+        "incomingSources": 358,
+        "contentSources": 284,
+        "navigationSources": 83
+      }
+    },
+    {
+      "route": "/guides/interview-blueprint/javascript-interviews",
+      "before": {
+        "depth": 2,
+        "incomingSources": 344,
+        "contentSources": 270,
+        "navigationSources": 82
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 344,
+        "contentSources": 270,
+        "navigationSources": 82
+      }
+    },
+    {
+      "route": "/guides/interview-blueprint/quiz",
+      "before": {
+        "depth": 2,
+        "incomingSources": 271,
+        "contentSources": 271,
+        "navigationSources": 8
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 271,
+        "contentSources": 271,
+        "navigationSources": 8
+      }
+    },
+    {
+      "route": "/guides/interview-blueprint/resume",
+      "before": {
+        "depth": 2,
+        "incomingSources": 9,
+        "contentSources": 9,
+        "navigationSources": 8
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 9,
+        "contentSources": 9,
+        "navigationSources": 8
+      }
+    },
+    {
+      "route": "/guides/interview-blueprint/system-design",
+      "before": {
+        "depth": 2,
+        "incomingSources": 11,
+        "contentSources": 10,
+        "navigationSources": 9
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 11,
+        "contentSources": 10,
+        "navigationSources": 9
+      }
+    },
+    {
+      "route": "/guides/interview-blueprint/ui-interviews",
+      "before": {
+        "depth": 2,
+        "incomingSources": 347,
+        "contentSources": 273,
+        "navigationSources": 82
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 347,
+        "contentSources": 273,
+        "navigationSources": 82
+      }
+    },
+    {
+      "route": "/guides/system-design-blueprint",
+      "before": {
+        "depth": 2,
+        "incomingSources": 341,
+        "contentSources": 267,
+        "navigationSources": 74
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 341,
+        "contentSources": 267,
+        "navigationSources": 74
+      }
+    },
+    {
+      "route": "/guides/system-design-blueprint/architecture",
+      "before": {
+        "depth": 2,
+        "incomingSources": 16,
+        "contentSources": 16,
+        "navigationSources": 14
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 16,
+        "contentSources": 16,
+        "navigationSources": 14
+      }
+    },
+    {
+      "route": "/guides/system-design-blueprint/checklist",
+      "before": {
+        "depth": 3,
+        "incomingSources": 12,
+        "contentSources": 12,
+        "navigationSources": 11
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 12,
+        "contentSources": 12,
+        "navigationSources": 11
+      }
+    },
+    {
+      "route": "/guides/system-design-blueprint/evaluation",
+      "before": {
+        "depth": 2,
+        "incomingSources": 19,
+        "contentSources": 19,
+        "navigationSources": 18
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 19,
+        "contentSources": 19,
+        "navigationSources": 18
+      }
+    },
+    {
+      "route": "/guides/system-design-blueprint/foundations",
+      "before": {
+        "depth": 3,
+        "incomingSources": 12,
+        "contentSources": 12,
+        "navigationSources": 11
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 12,
+        "contentSources": 12,
+        "navigationSources": 11
+      }
+    },
+    {
+      "route": "/guides/system-design-blueprint/framework",
+      "before": {
+        "depth": 2,
+        "incomingSources": 19,
+        "contentSources": 19,
+        "navigationSources": 18
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 19,
+        "contentSources": 19,
+        "navigationSources": 18
+      }
+    },
+    {
+      "route": "/guides/system-design-blueprint/intro",
+      "before": {
+        "depth": 2,
+        "incomingSources": 19,
+        "contentSources": 19,
+        "navigationSources": 18
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 19,
+        "contentSources": 19,
+        "navigationSources": 18
+      }
+    },
+    {
+      "route": "/guides/system-design-blueprint/performance",
+      "before": {
+        "depth": 2,
+        "incomingSources": 21,
+        "contentSources": 21,
+        "navigationSources": 18
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 21,
+        "contentSources": 21,
+        "navigationSources": 18
+      }
+    },
+    {
+      "route": "/guides/system-design-blueprint/pitfalls",
+      "before": {
+        "depth": 2,
+        "incomingSources": 19,
+        "contentSources": 19,
+        "navigationSources": 18
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 19,
+        "contentSources": 19,
+        "navigationSources": 18
+      }
+    },
+    {
+      "route": "/guides/system-design-blueprint/radio-framework",
+      "before": {
+        "depth": 2,
+        "incomingSources": 21,
+        "contentSources": 21,
+        "navigationSources": 20
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 21,
+        "contentSources": 21,
+        "navigationSources": 20
+      }
+    },
+    {
+      "route": "/guides/system-design-blueprint/radio-requirements",
+      "before": {
+        "depth": 2,
+        "incomingSources": 13,
+        "contentSources": 13,
+        "navigationSources": 11
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 13,
+        "contentSources": 13,
+        "navigationSources": 11
+      }
+    },
+    {
+      "route": "/guides/system-design-blueprint/state-data",
+      "before": {
+        "depth": 2,
+        "incomingSources": 20,
+        "contentSources": 20,
+        "navigationSources": 18
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 20,
+        "contentSources": 20,
+        "navigationSources": 18
+      }
+    },
+    {
+      "route": "/guides/system-design-blueprint/ux",
+      "before": {
+        "depth": 2,
+        "incomingSources": 13,
+        "contentSources": 13,
+        "navigationSources": 11
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 13,
+        "contentSources": 13,
+        "navigationSources": 11
+      }
+    },
+    {
+      "route": "/html-css/interview-questions",
+      "before": {
+        "depth": 1,
+        "incomingSources": 82,
+        "contentSources": 63,
+        "navigationSources": 19
+      },
+      "after": {
+        "depth": 1,
+        "incomingSources": 82,
+        "contentSources": 63,
+        "navigationSources": 19
+      }
+    },
+    {
+      "route": "/html/coding/html-basic-structure",
+      "before": {
+        "depth": 2,
+        "incomingSources": 3,
+        "contentSources": 2,
+        "navigationSources": 1
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 3,
+        "contentSources": 2,
+        "navigationSources": 1
+      }
+    },
+    {
+      "route": "/html/coding/html-contact-form-labeled",
+      "before": {
+        "depth": 2,
+        "incomingSources": 10,
+        "contentSources": 3,
+        "navigationSources": 7
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 10,
+        "contentSources": 3,
+        "navigationSources": 7
+      }
+    },
+    {
+      "route": "/html/coding/html-forms-validation-required",
+      "before": {
+        "depth": 2,
+        "incomingSources": 5,
+        "contentSources": 3,
+        "navigationSources": 2
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 5,
+        "contentSources": 3,
+        "navigationSources": 2
+      }
+    },
+    {
+      "route": "/html/coding/html-head-seo-basics",
+      "before": {
+        "depth": 2,
+        "incomingSources": 3,
+        "contentSources": 3,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 3,
+        "contentSources": 3,
+        "navigationSources": 0
+      }
+    },
+    {
+      "route": "/html/coding/html-inline-vs-block",
+      "before": {
+        "depth": 2,
+        "incomingSources": 3,
+        "contentSources": 1,
+        "navigationSources": 2
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 4,
+        "contentSources": 2,
+        "navigationSources": 2
+      }
+    },
+    {
+      "route": "/html/coding/html-links-and-images",
+      "before": {
+        "depth": 1,
+        "incomingSources": 6,
+        "contentSources": 4,
+        "navigationSources": 2
+      },
+      "after": {
+        "depth": 1,
+        "incomingSources": 6,
+        "contentSources": 4,
+        "navigationSources": 2
+      }
+    },
+    {
+      "route": "/html/coding/html-lists-and-navigation",
+      "before": {
+        "depth": 2,
+        "incomingSources": 4,
+        "contentSources": 2,
+        "navigationSources": 2
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 4,
+        "contentSources": 2,
+        "navigationSources": 2
+      }
+    },
+    {
+      "route": "/html/coding/html-semantic-layout",
+      "before": {
+        "depth": 2,
+        "incomingSources": 9,
+        "contentSources": 3,
+        "navigationSources": 6
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 9,
+        "contentSources": 3,
+        "navigationSources": 6
+      }
+    },
+    {
+      "route": "/html/coding/html-tables-accessibility",
+      "before": {
+        "depth": 2,
+        "incomingSources": 6,
+        "contentSources": 3,
+        "navigationSources": 3
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 6,
+        "contentSources": 3,
+        "navigationSources": 3
+      }
+    },
+    {
+      "route": "/html/interview-questions",
+      "before": {
+        "depth": 2,
+        "incomingSources": 40,
+        "contentSources": 31,
+        "navigationSources": 9
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 40,
+        "contentSources": 31,
+        "navigationSources": 9
+      }
+    },
+    {
+      "route": "/html/trivia/html-a-tag",
+      "before": {
+        "depth": 3,
+        "incomingSources": 5,
+        "contentSources": 5,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 27,
+        "contentSources": 5,
+        "navigationSources": 26
+      }
+    },
+    {
+      "route": "/html/trivia/html-anchor-target",
+      "before": {
+        "depth": 4,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 27,
+        "contentSources": 2,
+        "navigationSources": 26
+      }
+    },
+    {
+      "route": "/html/trivia/html-aria-roles",
+      "before": {
+        "depth": 3,
+        "incomingSources": 3,
+        "contentSources": 3,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 27,
+        "contentSources": 3,
+        "navigationSources": 26
+      }
+    },
+    {
+      "route": "/html/trivia/html-block-inline-elements",
+      "before": {
+        "depth": 3,
+        "incomingSources": 3,
+        "contentSources": 3,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 27,
+        "contentSources": 3,
+        "navigationSources": 26
+      }
+    },
+    {
+      "route": "/html/trivia/html-br-tag",
+      "before": {
+        "depth": null,
+        "incomingSources": 0,
+        "contentSources": 0,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 27,
+        "contentSources": 1,
+        "navigationSources": 26
+      }
+    },
+    {
+      "route": "/html/trivia/html-clickable-image",
+      "before": {
+        "depth": 3,
+        "incomingSources": 6,
+        "contentSources": 6,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 27,
+        "contentSources": 7,
+        "navigationSources": 26
+      }
+    },
+    {
+      "route": "/html/trivia/html-data-attribute",
+      "before": {
+        "depth": 3,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 27,
+        "contentSources": 2,
+        "navigationSources": 26
+      }
+    },
+    {
+      "route": "/html/trivia/html-div-vs-span",
+      "before": {
+        "depth": 3,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 27,
+        "contentSources": 2,
+        "navigationSources": 26
+      }
+    },
+    {
+      "route": "/html/trivia/html-dom",
+      "before": {
+        "depth": 2,
+        "incomingSources": 7,
+        "contentSources": 7,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 29,
+        "contentSources": 7,
+        "navigationSources": 26
+      }
+    },
+    {
+      "route": "/html/trivia/html-dom-tree-structure",
+      "before": {
+        "depth": 3,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 27,
+        "contentSources": 2,
+        "navigationSources": 26
+      }
+    },
+    {
+      "route": "/html/trivia/html-form-default-method",
+      "before": {
+        "depth": 3,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 27,
+        "contentSources": 1,
+        "navigationSources": 26
+      }
+    },
+    {
+      "route": "/html/trivia/html-head-tag",
+      "before": {
+        "depth": 3,
+        "incomingSources": 5,
+        "contentSources": 5,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 27,
+        "contentSources": 5,
+        "navigationSources": 26
+      }
+    },
+    {
+      "route": "/html/trivia/html-href-attribute",
+      "before": {
+        "depth": 3,
+        "incomingSources": 6,
+        "contentSources": 6,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 27,
+        "contentSources": 6,
+        "navigationSources": 26
+      }
+    },
+    {
+      "route": "/html/trivia/html-id-vs-class",
+      "before": {
+        "depth": 4,
+        "incomingSources": 3,
+        "contentSources": 3,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 27,
+        "contentSources": 4,
+        "navigationSources": 26
+      }
+    },
+    {
+      "route": "/html/trivia/html-iframe-tag",
+      "before": {
+        "depth": 3,
+        "incomingSources": 3,
+        "contentSources": 3,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 27,
+        "contentSources": 3,
+        "navigationSources": 26
+      }
+    },
+    {
+      "route": "/html/trivia/html-img-alt-attribute",
+      "before": {
+        "depth": 2,
+        "incomingSources": 9,
+        "contentSources": 9,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 28,
+        "contentSources": 9,
+        "navigationSources": 26
+      }
+    },
+    {
+      "route": "/html/trivia/html-img-srcset",
+      "before": {
+        "depth": 3,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 27,
+        "contentSources": 2,
+        "navigationSources": 26
+      }
+    },
+    {
+      "route": "/html/trivia/html-input-placeholder",
+      "before": {
+        "depth": 3,
+        "incomingSources": 4,
+        "contentSources": 4,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 27,
+        "contentSources": 4,
+        "navigationSources": 26
+      }
+    },
+    {
+      "route": "/html/trivia/html-meta-tag",
+      "before": {
+        "depth": 2,
+        "incomingSources": 9,
+        "contentSources": 9,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 28,
+        "contentSources": 9,
+        "navigationSources": 26
+      }
+    },
+    {
+      "route": "/html/trivia/html-ol-ul-dl-difference",
+      "before": {
+        "depth": 3,
+        "incomingSources": 5,
+        "contentSources": 5,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 27,
+        "contentSources": 5,
+        "navigationSources": 26
+      }
+    },
+    {
+      "route": "/html/trivia/html-parsing-rendering",
+      "before": {
+        "depth": 3,
+        "incomingSources": 5,
+        "contentSources": 5,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 28,
+        "contentSources": 5,
+        "navigationSources": 26
+      }
+    },
+    {
+      "route": "/html/trivia/html-semantic-elements",
+      "before": {
+        "depth": 2,
+        "incomingSources": 14,
+        "contentSources": 14,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 28,
+        "contentSources": 14,
+        "navigationSources": 26
+      }
+    },
+    {
+      "route": "/html/trivia/html-shadow-dom",
+      "before": {
+        "depth": 3,
+        "incomingSources": 3,
+        "contentSources": 3,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 27,
+        "contentSources": 3,
+        "navigationSources": 26
+      }
+    },
+    {
+      "route": "/html/trivia/html-tags",
+      "before": {
+        "depth": 3,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 27,
+        "contentSources": 2,
+        "navigationSources": 26
+      }
+    },
+    {
+      "route": "/html/trivia/html-title-tag",
+      "before": {
+        "depth": 3,
+        "incomingSources": 3,
+        "contentSources": 3,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 27,
+        "contentSources": 3,
+        "navigationSources": 26
+      }
+    },
+    {
+      "route": "/html/trivia/html-vs-xhtml",
+      "before": {
+        "depth": 3,
+        "incomingSources": 3,
+        "contentSources": 3,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 27,
+        "contentSources": 3,
+        "navigationSources": 26
+      }
+    },
+    {
+      "route": "/html/trivia/web-accessibility-make-page-accessible",
+      "before": {
+        "depth": 2,
+        "incomingSources": 4,
+        "contentSources": 4,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 29,
+        "contentSources": 4,
+        "navigationSources": 26
+      }
+    },
+    {
+      "route": "/incidents",
+      "before": {
+        "depth": 2,
+        "incomingSources": 88,
+        "contentSources": 1,
+        "navigationSources": 87
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 88,
+        "contentSources": 1,
+        "navigationSources": 87
+      }
+    },
+    {
+      "route": "/incidents/angular-duplicate-cart-service",
+      "before": {
+        "depth": 3,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      }
+    },
+    {
+      "route": "/incidents/modal-screen-reader-failure",
+      "before": {
+        "depth": 3,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      }
+    },
+    {
+      "route": "/incidents/search-typing-lag",
+      "before": {
+        "depth": 3,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      }
+    },
+    {
+      "route": "/incidents/stale-search-race",
+      "before": {
+        "depth": 1,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 1,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      }
+    },
+    {
+      "route": "/incidents/vue-index-key-wrong-row-state",
+      "before": {
+        "depth": 3,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      }
+    },
+    {
+      "route": "/interview-questions",
+      "before": {
+        "depth": 2,
+        "incomingSources": 336,
+        "contentSources": 262,
+        "navigationSources": 74
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 336,
+        "contentSources": 262,
+        "navigationSources": 74
+      }
+    },
+    {
+      "route": "/interview-questions/essential",
+      "before": {
+        "depth": 1,
+        "incomingSources": 346,
+        "contentSources": 271,
+        "navigationSources": 76
+      },
+      "after": {
+        "depth": 1,
+        "incomingSources": 346,
+        "contentSources": 271,
+        "navigationSources": 76
+      }
+    },
+    {
+      "route": "/javascript/coding/js-array-foreach",
+      "before": {
+        "depth": 2,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 3,
+        "contentSources": 3,
+        "navigationSources": 0
+      }
+    },
+    {
+      "route": "/javascript/coding/js-arrays-equal",
+      "before": {
+        "depth": 2,
+        "incomingSources": 4,
+        "contentSources": 2,
+        "navigationSources": 2
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 5,
+        "contentSources": 3,
+        "navigationSources": 2
+      }
+    },
+    {
+      "route": "/javascript/coding/js-capitalize-words",
+      "before": {
+        "depth": 2,
+        "incomingSources": 3,
+        "contentSources": 2,
+        "navigationSources": 1
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 4,
+        "contentSources": 3,
+        "navigationSources": 1
+      }
+    },
+    {
+      "route": "/javascript/coding/js-compact",
+      "before": {
+        "depth": 2,
+        "incomingSources": 3,
+        "contentSources": 2,
+        "navigationSources": 1
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 4,
+        "contentSources": 3,
+        "navigationSources": 1
+      }
+    },
+    {
+      "route": "/javascript/coding/js-count-vowels",
+      "before": {
+        "depth": 2,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 3,
+        "contentSources": 3,
+        "navigationSources": 0
+      }
+    },
+    {
+      "route": "/javascript/coding/js-create-cleanup-bag",
+      "before": {
+        "depth": 2,
+        "incomingSources": 5,
+        "contentSources": 1,
+        "navigationSources": 4
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 6,
+        "contentSources": 2,
+        "navigationSources": 4
+      }
+    },
+    {
+      "route": "/javascript/coding/js-create-counter",
+      "before": {
+        "depth": 2,
+        "incomingSources": 3,
+        "contentSources": 2,
+        "navigationSources": 1
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 4,
+        "contentSources": 3,
+        "navigationSources": 1
+      }
+    },
+    {
+      "route": "/javascript/coding/js-create-deferred-promise",
+      "before": {
+        "depth": 2,
+        "incomingSources": 6,
+        "contentSources": 3,
+        "navigationSources": 3
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 6,
+        "contentSources": 3,
+        "navigationSources": 3
+      }
+    },
+    {
+      "route": "/javascript/coding/js-create-lru-cache",
+      "before": {
+        "depth": 2,
+        "incomingSources": 4,
+        "contentSources": 3,
+        "navigationSources": 1
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 5,
+        "contentSources": 4,
+        "navigationSources": 1
+      }
+    },
+    {
+      "route": "/javascript/coding/js-create-spy-function",
+      "before": {
+        "depth": 2,
+        "incomingSources": 7,
+        "contentSources": 1,
+        "navigationSources": 6
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 8,
+        "contentSources": 2,
+        "navigationSources": 6
+      }
+    },
+    {
+      "route": "/javascript/coding/js-debounce",
+      "before": {
+        "depth": 2,
+        "incomingSources": 10,
+        "contentSources": 9,
+        "navigationSources": 2
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 10,
+        "contentSources": 9,
+        "navigationSources": 2
+      }
+    },
+    {
+      "route": "/javascript/coding/js-escape-html",
+      "before": {
+        "depth": 2,
+        "incomingSources": 2,
+        "contentSources": 1,
+        "navigationSources": 1
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 3,
+        "contentSources": 2,
+        "navigationSources": 1
+      }
+    },
+    {
+      "route": "/javascript/coding/js-fetch-json-timeout",
+      "before": {
+        "depth": 2,
+        "incomingSources": 6,
+        "contentSources": 2,
+        "navigationSources": 4
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 7,
+        "contentSources": 3,
+        "navigationSources": 4
+      }
+    },
+    {
+      "route": "/javascript/coding/js-flatten-once",
+      "before": {
+        "depth": 2,
+        "incomingSources": 6,
+        "contentSources": 2,
+        "navigationSources": 4
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 7,
+        "contentSources": 3,
+        "navigationSources": 4
+      }
+    },
+    {
+      "route": "/javascript/coding/js-format-date-timezone",
+      "before": {
+        "depth": 2,
+        "incomingSources": 5,
+        "contentSources": 1,
+        "navigationSources": 4
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 6,
+        "contentSources": 2,
+        "navigationSources": 4
+      }
+    },
+    {
+      "route": "/javascript/coding/js-get-by-path-1",
+      "before": {
+        "depth": 2,
+        "incomingSources": 3,
+        "contentSources": 3,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 4,
+        "contentSources": 4,
+        "navigationSources": 0
+      }
+    },
+    {
+      "route": "/javascript/coding/js-implement-bind",
+      "before": {
+        "depth": 2,
+        "incomingSources": 6,
+        "contentSources": 5,
+        "navigationSources": 1
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 7,
+        "contentSources": 6,
+        "navigationSources": 1
+      }
+    },
+    {
+      "route": "/javascript/coding/js-implement-instanceof",
+      "before": {
+        "depth": 2,
+        "incomingSources": 5,
+        "contentSources": 3,
+        "navigationSources": 2
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 6,
+        "contentSources": 4,
+        "navigationSources": 2
+      }
+    },
+    {
+      "route": "/javascript/coding/js-implement-new",
+      "before": {
+        "depth": 2,
+        "incomingSources": 6,
+        "contentSources": 3,
+        "navigationSources": 3
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 7,
+        "contentSources": 4,
+        "navigationSources": 3
+      }
+    },
+    {
+      "route": "/javascript/coding/js-is-object-empty",
+      "before": {
+        "depth": 2,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      }
+    },
+    {
+      "route": "/javascript/coding/js-measure-duration",
+      "before": {
+        "depth": 2,
+        "incomingSources": 4,
+        "contentSources": 1,
+        "navigationSources": 3
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 5,
+        "contentSources": 2,
+        "navigationSources": 3
+      }
+    },
+    {
+      "route": "/javascript/coding/js-number-clamp",
+      "before": {
+        "depth": 2,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 1
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 3,
+        "contentSources": 3,
+        "navigationSources": 1
+      }
+    },
+    {
+      "route": "/javascript/coding/js-object-create",
+      "before": {
+        "depth": 2,
+        "incomingSources": 4,
+        "contentSources": 1,
+        "navigationSources": 3
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 5,
+        "contentSources": 2,
+        "navigationSources": 3
+      }
+    },
+    {
+      "route": "/javascript/coding/js-once",
+      "before": {
+        "depth": 2,
+        "incomingSources": 2,
+        "contentSources": 1,
+        "navigationSources": 1
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 3,
+        "contentSources": 2,
+        "navigationSources": 1
+      }
+    },
+    {
+      "route": "/javascript/coding/js-poll-until",
+      "before": {
+        "depth": 2,
+        "incomingSources": 5,
+        "contentSources": 1,
+        "navigationSources": 4
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 6,
+        "contentSources": 2,
+        "navigationSources": 4
+      }
+    },
+    {
+      "route": "/javascript/coding/js-promise-any",
+      "before": {
+        "depth": 2,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 3,
+        "contentSources": 3,
+        "navigationSources": 0
+      }
+    },
+    {
+      "route": "/javascript/coding/js-querystring-parse-1",
+      "before": {
+        "depth": 2,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      }
+    },
+    {
+      "route": "/javascript/coding/js-resolve-package-exports",
+      "before": {
+        "depth": 2,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      }
+    },
+    {
+      "route": "/javascript/coding/js-run-with-perf-budget",
+      "before": {
+        "depth": 2,
+        "incomingSources": 7,
+        "contentSources": 1,
+        "navigationSources": 6
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 8,
+        "contentSources": 2,
+        "navigationSources": 6
+      }
+    },
+    {
+      "route": "/javascript/coding/js-safe-json-parse",
+      "before": {
+        "depth": 2,
+        "incomingSources": 5,
+        "contentSources": 2,
+        "navigationSources": 3
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 6,
+        "contentSources": 3,
+        "navigationSources": 3
+      }
+    },
+    {
+      "route": "/javascript/coding/js-sanitize-href-url",
+      "before": {
+        "depth": 2,
+        "incomingSources": 6,
+        "contentSources": 2,
+        "navigationSources": 4
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 7,
+        "contentSources": 3,
+        "navigationSources": 4
+      }
+    },
+    {
+      "route": "/javascript/coding/js-shallow-clone",
+      "before": {
+        "depth": 2,
+        "incomingSources": 9,
+        "contentSources": 4,
+        "navigationSources": 5
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 9,
+        "contentSources": 4,
+        "navigationSources": 5
+      }
+    },
+    {
+      "route": "/javascript/coding/js-sleep",
+      "before": {
+        "depth": 2,
+        "incomingSources": 6,
+        "contentSources": 4,
+        "navigationSources": 2
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 6,
+        "contentSources": 4,
+        "navigationSources": 2
+      }
+    },
+    {
+      "route": "/javascript/coding/js-storage-ttl-cache",
+      "before": {
+        "depth": 2,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      }
+    },
+    {
+      "route": "/javascript/coding/js-stream-to-text",
+      "before": {
+        "depth": 2,
+        "incomingSources": 3,
+        "contentSources": 2,
+        "navigationSources": 1
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 4,
+        "contentSources": 3,
+        "navigationSources": 1
+      }
+    },
+    {
+      "route": "/javascript/coding/js-sum-numbers",
+      "before": {
+        "depth": 2,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 3,
+        "contentSources": 3,
+        "navigationSources": 0
+      }
+    },
+    {
+      "route": "/javascript/coding/js-take-latest",
+      "before": {
+        "depth": 2,
+        "incomingSources": 14,
+        "contentSources": 10,
+        "navigationSources": 4
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 15,
+        "contentSources": 11,
+        "navigationSources": 4
+      }
+    },
+    {
+      "route": "/javascript/coding/js-update-at-index",
+      "before": {
+        "depth": 2,
+        "incomingSources": 9,
+        "contentSources": 3,
+        "navigationSources": 6
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 9,
+        "contentSources": 3,
+        "navigationSources": 6
+      }
+    },
+    {
+      "route": "/javascript/coding/js-validate-username",
+      "before": {
+        "depth": 2,
+        "incomingSources": 5,
+        "contentSources": 1,
+        "navigationSources": 4
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 6,
+        "contentSources": 2,
+        "navigationSources": 4
+      }
+    },
+    {
+      "route": "/javascript/debug/js-debug-async-race",
+      "before": {
+        "depth": 2,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      }
+    },
+    {
+      "route": "/javascript/debug/js-debug-lost-this-binding",
+      "before": {
+        "depth": 2,
+        "incomingSources": 5,
+        "contentSources": 2,
+        "navigationSources": 3
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 5,
+        "contentSources": 2,
+        "navigationSources": 3
+      }
+    },
+    {
+      "route": "/javascript/debug/js-debug-missing-return-map-filter",
+      "before": {
+        "depth": 3,
+        "incomingSources": 7,
+        "contentSources": 0,
+        "navigationSources": 7
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 8,
+        "contentSources": 1,
+        "navigationSources": 7
+      }
+    },
+    {
+      "route": "/javascript/debug/js-debug-mutating-input",
+      "before": {
+        "depth": 4,
+        "incomingSources": 3,
+        "contentSources": 0,
+        "navigationSources": 3
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 4,
+        "contentSources": 1,
+        "navigationSources": 3
+      }
+    },
+    {
+      "route": "/javascript/debug/js-debug-nullish-defaults",
+      "before": {
+        "depth": 4,
+        "incomingSources": 1,
+        "contentSources": 0,
+        "navigationSources": 1
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 2,
+        "contentSources": 1,
+        "navigationSources": 1
+      }
+    },
+    {
+      "route": "/javascript/debug/js-debug-numeric-sort",
+      "before": {
+        "depth": 3,
+        "incomingSources": 7,
+        "contentSources": 0,
+        "navigationSources": 7
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 8,
+        "contentSources": 1,
+        "navigationSources": 7
+      }
+    },
+    {
+      "route": "/javascript/debug/js-debug-off-by-one",
+      "before": {
+        "depth": 4,
+        "incomingSources": 2,
+        "contentSources": 0,
+        "navigationSources": 2
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 3,
+        "contentSources": 1,
+        "navigationSources": 2
+      }
+    },
+    {
+      "route": "/javascript/debug/js-debug-stale-closure-autosave",
+      "before": {
+        "depth": 3,
+        "incomingSources": 1,
+        "contentSources": 0,
+        "navigationSources": 1
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 2,
+        "contentSources": 1,
+        "navigationSources": 1
+      }
+    },
+    {
+      "route": "/javascript/interview-questions",
+      "before": {
+        "depth": 1,
+        "incomingSources": 141,
+        "contentSources": 94,
+        "navigationSources": 47
+      },
+      "after": {
+        "depth": 1,
+        "incomingSources": 141,
+        "contentSources": 94,
+        "navigationSources": 47
+      }
+    },
+    {
+      "route": "/javascript/trivia/ai-streaming-data-handling",
+      "before": {
+        "depth": 3,
+        "incomingSources": 3,
+        "contentSources": 3,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 86,
+        "contentSources": 4,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/ai-ux-integration-challenges",
+      "before": {
+        "depth": 3,
+        "incomingSources": 5,
+        "contentSources": 5,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 86,
+        "contentSources": 6,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/chat-conversation-state-management",
+      "before": {
+        "depth": 3,
+        "incomingSources": 4,
+        "contentSources": 4,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 86,
+        "contentSources": 5,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/content-delivery-caching-strategies-streaming",
+      "before": {
+        "depth": 2,
+        "incomingSources": 4,
+        "contentSources": 4,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 86,
+        "contentSources": 5,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/debounce-vs-throttle-search-input",
+      "before": {
+        "depth": 3,
+        "incomingSources": 5,
+        "contentSources": 5,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 86,
+        "contentSources": 6,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/http-caching-basics",
+      "before": {
+        "depth": 3,
+        "incomingSources": 6,
+        "contentSources": 6,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 86,
+        "contentSources": 7,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-argument-passing-object-mutation-output",
+      "before": {
+        "depth": 5,
+        "incomingSources": 3,
+        "contentSources": 3,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 85,
+        "contentSources": 4,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-array-sort-pitfalls",
+      "before": {
+        "depth": 3,
+        "incomingSources": 4,
+        "contentSources": 4,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 85,
+        "contentSources": 5,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-arrow-functions",
+      "before": {
+        "depth": 3,
+        "incomingSources": 4,
+        "contentSources": 4,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 85,
+        "contentSources": 5,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-arrow-vs-regular-functions",
+      "before": {
+        "depth": 2,
+        "incomingSources": 3,
+        "contentSources": 3,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 86,
+        "contentSources": 3,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-async-await-example-when-promise-is-preferred",
+      "before": {
+        "depth": 3,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 85,
+        "contentSources": 3,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-async-race-conditions",
+      "before": {
+        "depth": 2,
+        "incomingSources": 7,
+        "contentSources": 6,
+        "navigationSources": 1
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 89,
+        "contentSources": 6,
+        "navigationSources": 85
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-big-o-notation",
+      "before": {
+        "depth": 4,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 85,
+        "contentSources": 2,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-bigint-data-type",
+      "before": {
+        "depth": null,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 85,
+        "contentSources": 2,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-block-scoped-or-function-scoped",
+      "before": {
+        "depth": 3,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 85,
+        "contentSources": 2,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-calback-hell-resolved-with-promise",
+      "before": {
+        "depth": 3,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 85,
+        "contentSources": 3,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-call-apply-bind",
+      "before": {
+        "depth": 2,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 86,
+        "contentSources": 3,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-callbacks",
+      "before": {
+        "depth": 2,
+        "incomingSources": 3,
+        "contentSources": 3,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 86,
+        "contentSources": 3,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-check-data-type-with-typeof",
+      "before": {
+        "depth": 3,
+        "incomingSources": 5,
+        "contentSources": 5,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 85,
+        "contentSources": 6,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-classes",
+      "before": {
+        "depth": 4,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 85,
+        "contentSources": 3,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-closures",
+      "before": {
+        "depth": 2,
+        "incomingSources": 13,
+        "contentSources": 13,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 92,
+        "contentSources": 13,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-compare-two-objects",
+      "before": {
+        "depth": 2,
+        "incomingSources": 7,
+        "contentSources": 7,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 86,
+        "contentSources": 8,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-cookie-options",
+      "before": {
+        "depth": 3,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 85,
+        "contentSources": 3,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-cookie-sessionstorage-localstorage",
+      "before": {
+        "depth": 2,
+        "incomingSources": 3,
+        "contentSources": 3,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 86,
+        "contentSources": 3,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-current-trends",
+      "before": {
+        "depth": 4,
+        "incomingSources": 6,
+        "contentSources": 6,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 85,
+        "contentSources": 7,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-currying",
+      "before": {
+        "depth": 3,
+        "incomingSources": 3,
+        "contentSources": 3,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 86,
+        "contentSources": 4,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-data-types",
+      "before": {
+        "depth": 4,
+        "incomingSources": 3,
+        "contentSources": 3,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 85,
+        "contentSources": 4,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-deferred-scripts",
+      "before": {
+        "depth": null,
+        "incomingSources": 0,
+        "contentSources": 0,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 85,
+        "contentSources": 1,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-design-patterns",
+      "before": {
+        "depth": null,
+        "incomingSources": 0,
+        "contentSources": 0,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 85,
+        "contentSources": 1,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-equality-vs-strict-equality",
+      "before": {
+        "depth": 2,
+        "incomingSources": 3,
+        "contentSources": 3,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 86,
+        "contentSources": 3,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-escape-vs-sanitize",
+      "before": {
+        "depth": null,
+        "incomingSources": 0,
+        "contentSources": 0,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 85,
+        "contentSources": 1,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-esm-vs-cjs",
+      "before": {
+        "depth": 5,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 85,
+        "contentSources": 3,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-event-bubbling-capturing",
+      "before": {
+        "depth": 2,
+        "incomingSources": 3,
+        "contentSources": 3,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 86,
+        "contentSources": 3,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-event-delegation",
+      "before": {
+        "depth": 2,
+        "incomingSources": 6,
+        "contentSources": 6,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 89,
+        "contentSources": 6,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-event-loop",
+      "before": {
+        "depth": 1,
+        "incomingSources": 11,
+        "contentSources": 11,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 1,
+        "incomingSources": 92,
+        "contentSources": 11,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-event-loop-nested-microtask-output",
+      "before": {
+        "depth": 2,
+        "incomingSources": 4,
+        "contentSources": 4,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 85,
+        "contentSources": 5,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-foreach-vs-map",
+      "before": {
+        "depth": 3,
+        "incomingSources": 4,
+        "contentSources": 4,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 85,
+        "contentSources": 5,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-garbage-collection-and-gc-pauses",
+      "before": {
+        "depth": 4,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 85,
+        "contentSources": 3,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-higher-order-function",
+      "before": {
+        "depth": 3,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 85,
+        "contentSources": 3,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-hoisting",
+      "before": {
+        "depth": 2,
+        "incomingSources": 11,
+        "contentSources": 11,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 86,
+        "contentSources": 11,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-hoisting-tdz",
+      "before": {
+        "depth": 2,
+        "incomingSources": 5,
+        "contentSources": 5,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 86,
+        "contentSources": 6,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-intl-datetime-timezone",
+      "before": {
+        "depth": 3,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 85,
+        "contentSources": 2,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-map-filter-reduce",
+      "before": {
+        "depth": 2,
+        "incomingSources": 7,
+        "contentSources": 7,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 87,
+        "contentSources": 7,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-map-parseint-callback-arity-output",
+      "before": {
+        "depth": 3,
+        "incomingSources": 6,
+        "contentSources": 6,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 85,
+        "contentSources": 7,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-map-set-get",
+      "before": {
+        "depth": 3,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 85,
+        "contentSources": 3,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-map-vs-object",
+      "before": {
+        "depth": 3,
+        "incomingSources": 5,
+        "contentSources": 5,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 85,
+        "contentSources": 6,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-memoization",
+      "before": {
+        "depth": null,
+        "incomingSources": 0,
+        "contentSources": 0,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 85,
+        "contentSources": 1,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-memory-leaks-common-sources",
+      "before": {
+        "depth": 3,
+        "incomingSources": 11,
+        "contentSources": 11,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 85,
+        "contentSources": 12,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-microtasks-vs-macrotasks",
+      "before": {
+        "depth": 2,
+        "incomingSources": 9,
+        "contentSources": 9,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 88,
+        "contentSources": 9,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-mock-vs-stub-vs-spy",
+      "before": {
+        "depth": 5,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 85,
+        "contentSources": 3,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-mutability-vs-immutability",
+      "before": {
+        "depth": 2,
+        "incomingSources": 6,
+        "contentSources": 5,
+        "navigationSources": 1
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 88,
+        "contentSources": 5,
+        "navigationSources": 85
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-nan-property",
+      "before": {
+        "depth": null,
+        "incomingSources": 0,
+        "contentSources": 0,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 85,
+        "contentSources": 1,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-null-coalescing-operator",
+      "before": {
+        "depth": 3,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 85,
+        "contentSources": 2,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-null-undefined-undeclared",
+      "before": {
+        "depth": 2,
+        "incomingSources": 4,
+        "contentSources": 4,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 86,
+        "contentSources": 4,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-object-create-vs-new",
+      "before": {
+        "depth": 3,
+        "incomingSources": 4,
+        "contentSources": 4,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 85,
+        "contentSources": 5,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-object-creation-methods",
+      "before": {
+        "depth": 3,
+        "incomingSources": 4,
+        "contentSources": 4,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 85,
+        "contentSources": 5,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-object-destructuring",
+      "before": {
+        "depth": 3,
+        "incomingSources": 4,
+        "contentSources": 4,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 85,
+        "contentSources": 5,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-passing-by-value-and-by-reference",
+      "before": {
+        "depth": 5,
+        "incomingSources": 3,
+        "contentSources": 3,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 85,
+        "contentSources": 4,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-performance-profiling-workflow",
+      "before": {
+        "depth": 4,
+        "incomingSources": 3,
+        "contentSources": 3,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 85,
+        "contentSources": 4,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-promise-combinators-all-allsettled-race-any",
+      "before": {
+        "depth": 2,
+        "incomingSources": 7,
+        "contentSources": 7,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 87,
+        "contentSources": 7,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-promise-fundamental-understanding",
+      "before": {
+        "depth": 2,
+        "incomingSources": 7,
+        "contentSources": 7,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 85,
+        "contentSources": 7,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-promises-async-await",
+      "before": {
+        "depth": 2,
+        "incomingSources": 9,
+        "contentSources": 9,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 88,
+        "contentSources": 9,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-prototypal-inheritance",
+      "before": {
+        "depth": 2,
+        "incomingSources": 5,
+        "contentSources": 5,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 86,
+        "contentSources": 5,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-prototype-vs-proto",
+      "before": {
+        "depth": 2,
+        "incomingSources": 5,
+        "contentSources": 5,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 87,
+        "contentSources": 6,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-queue-vs-stack",
+      "before": {
+        "depth": 3,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 86,
+        "contentSources": 3,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-repaint-reflow",
+      "before": {
+        "depth": 3,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 85,
+        "contentSources": 2,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-secure-cors-handling",
+      "before": {
+        "depth": 3,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 85,
+        "contentSources": 3,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-shallow-vs-deep-copy",
+      "before": {
+        "depth": 2,
+        "incomingSources": 6,
+        "contentSources": 5,
+        "navigationSources": 1
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 86,
+        "contentSources": 5,
+        "navigationSources": 85
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-spread-vs-rest-parameters",
+      "before": {
+        "depth": 3,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 85,
+        "contentSources": 2,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-static-vs-dynamic-typing",
+      "before": {
+        "depth": 3,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 85,
+        "contentSources": 3,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-testing-edge-cases-strategy",
+      "before": {
+        "depth": 4,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 85,
+        "contentSources": 3,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-this-keyword",
+      "before": {
+        "depth": 2,
+        "incomingSources": 5,
+        "contentSources": 5,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 88,
+        "contentSources": 5,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-tree-shaking",
+      "before": {
+        "depth": 6,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 85,
+        "contentSources": 2,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-truthy-falsy-pass-by-value-reference-strict-equality-use-case",
+      "before": {
+        "depth": 6,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 85,
+        "contentSources": 3,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-type-coercion",
+      "before": {
+        "depth": 2,
+        "incomingSources": 5,
+        "contentSources": 5,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 85,
+        "contentSources": 5,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-undefined-vs-not-defined",
+      "before": {
+        "depth": 3,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 85,
+        "contentSources": 3,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-use-strict-describe",
+      "before": {
+        "depth": null,
+        "incomingSources": 0,
+        "contentSources": 0,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 85,
+        "contentSources": 1,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-var-hoisting-shadowing-output",
+      "before": {
+        "depth": 3,
+        "incomingSources": 3,
+        "contentSources": 3,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 85,
+        "contentSources": 4,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-var-let-const-hoisting",
+      "before": {
+        "depth": 2,
+        "incomingSources": 7,
+        "contentSources": 7,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 86,
+        "contentSources": 7,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-web-workers-basics",
+      "before": {
+        "depth": 3,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 85,
+        "contentSources": 2,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-why-eval-function-considered-dangerous",
+      "before": {
+        "depth": 3,
+        "incomingSources": 6,
+        "contentSources": 6,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 85,
+        "contentSources": 7,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-xss-dom-sinks",
+      "before": {
+        "depth": 2,
+        "incomingSources": 22,
+        "contentSources": 22,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 87,
+        "contentSources": 22,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/prompt-engineering-frontend",
+      "before": {
+        "depth": null,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 85,
+        "contentSources": 2,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/sse-vs-websocket-real-time",
+      "before": {
+        "depth": 3,
+        "incomingSources": 4,
+        "contentSources": 4,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 86,
+        "contentSources": 5,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/javascript/trivia/web-performance-optimize-load-time",
+      "before": {
+        "depth": 2,
+        "incomingSources": 10,
+        "contentSources": 10,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 87,
+        "contentSources": 11,
+        "navigationSources": 84
+      }
+    },
+    {
+      "route": "/legal",
+      "before": {
+        "depth": null,
+        "incomingSources": 0,
+        "contentSources": 0,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 1,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      }
+    },
+    {
+      "route": "/legal/cookies",
+      "before": {
+        "depth": 4,
+        "incomingSources": 3,
+        "contentSources": 2,
+        "navigationSources": 2
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 3,
+        "contentSources": 2,
+        "navigationSources": 2
+      }
+    },
+    {
+      "route": "/legal/editorial-policy",
+      "before": {
+        "depth": 2,
+        "incomingSources": 10,
+        "contentSources": 10,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 10,
+        "contentSources": 10,
+        "navigationSources": 0
+      }
+    },
+    {
+      "route": "/legal/privacy",
+      "before": {
+        "depth": 3,
+        "incomingSources": 4,
+        "contentSources": 3,
+        "navigationSources": 2
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 4,
+        "contentSources": 3,
+        "navigationSources": 2
+      }
+    },
+    {
+      "route": "/legal/refund",
+      "before": {
+        "depth": 2,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      }
+    },
+    {
+      "route": "/legal/terms",
+      "before": {
+        "depth": 3,
+        "incomingSources": 4,
+        "contentSources": 2,
+        "navigationSources": 2
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 4,
+        "contentSources": 2,
+        "navigationSources": 2
+      }
+    },
+    {
+      "route": "/machine-coding",
+      "before": {
+        "depth": 1,
+        "incomingSources": 343,
+        "contentSources": 268,
+        "navigationSources": 75
+      },
+      "after": {
+        "depth": 1,
+        "incomingSources": 343,
+        "contentSources": 268,
+        "navigationSources": 75
+      }
+    },
+    {
+      "route": "/pricing",
+      "before": {
+        "depth": 1,
+        "incomingSources": 2,
+        "contentSources": 1,
+        "navigationSources": 1
+      },
+      "after": {
+        "depth": 1,
+        "incomingSources": 2,
+        "contentSources": 1,
+        "navigationSources": 1
+      }
+    },
+    {
+      "route": "/react/coding/react-autocomplete-search-starter",
+      "before": {
+        "depth": 2,
+        "incomingSources": 10,
+        "contentSources": 10,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 10,
+        "contentSources": 10,
+        "navigationSources": 0
+      }
+    },
+    {
+      "route": "/react/coding/react-counter",
+      "before": {
+        "depth": 1,
+        "incomingSources": 3,
+        "contentSources": 3,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 1,
+        "incomingSources": 4,
+        "contentSources": 4,
+        "navigationSources": 0
+      }
+    },
+    {
+      "route": "/react/coding/react-todo-list",
+      "before": {
+        "depth": 2,
+        "incomingSources": 4,
+        "contentSources": 4,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 5,
+        "contentSources": 5,
+        "navigationSources": 0
+      }
+    },
+    {
+      "route": "/react/interview-questions",
+      "before": {
+        "depth": 1,
+        "incomingSources": 53,
+        "contentSources": 50,
+        "navigationSources": 3
+      },
+      "after": {
+        "depth": 1,
+        "incomingSources": 53,
+        "contentSources": 50,
+        "navigationSources": 3
+      }
+    },
+    {
+      "route": "/react/trivia/react-18-whats-new",
+      "before": {
+        "depth": 3,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 41,
+        "contentSources": 2,
+        "navigationSources": 40
+      }
+    },
+    {
+      "route": "/react/trivia/react-component-rerendering",
+      "before": {
+        "depth": 2,
+        "incomingSources": 14,
+        "contentSources": 14,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 42,
+        "contentSources": 14,
+        "navigationSources": 40
+      }
+    },
+    {
+      "route": "/react/trivia/react-concurrent-rendering",
+      "before": {
+        "depth": 3,
+        "incomingSources": 6,
+        "contentSources": 6,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 41,
+        "contentSources": 7,
+        "navigationSources": 40
+      }
+    },
+    {
+      "route": "/react/trivia/react-conditional-rendering",
+      "before": {
+        "depth": 3,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 41,
+        "contentSources": 2,
+        "navigationSources": 40
+      }
+    },
+    {
+      "route": "/react/trivia/react-context-performance-issues",
+      "before": {
+        "depth": 2,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 42,
+        "contentSources": 2,
+        "navigationSources": 40
+      }
+    },
+    {
+      "route": "/react/trivia/react-controlled-vs-uncontrolled",
+      "before": {
+        "depth": 2,
+        "incomingSources": 8,
+        "contentSources": 8,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 43,
+        "contentSources": 8,
+        "navigationSources": 40
+      }
+    },
+    {
+      "route": "/react/trivia/react-core-problem-and-non-goals",
+      "before": {
+        "depth": null,
+        "incomingSources": 0,
+        "contentSources": 0,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 41,
+        "contentSources": 1,
+        "navigationSources": 40
+      }
+    },
+    {
+      "route": "/react/trivia/react-default-vs-named-exports-runtime-break",
+      "before": {
+        "depth": null,
+        "incomingSources": 0,
+        "contentSources": 0,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 41,
+        "contentSources": 1,
+        "navigationSources": 40
+      }
+    },
+    {
+      "route": "/react/trivia/react-derived-state-anti-pattern",
+      "before": {
+        "depth": 2,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 41,
+        "contentSources": 2,
+        "navigationSources": 40
+      }
+    },
+    {
+      "route": "/react/trivia/react-diffing-algorithm",
+      "before": {
+        "depth": 2,
+        "incomingSources": 9,
+        "contentSources": 9,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 41,
+        "contentSources": 9,
+        "navigationSources": 40
+      }
+    },
+    {
+      "route": "/react/trivia/react-error-boundaries-what-they-solve",
+      "before": {
+        "depth": 2,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 41,
+        "contentSources": 2,
+        "navigationSources": 40
+      }
+    },
+    {
+      "route": "/react/trivia/react-fragments-dom-and-reconciliation",
+      "before": {
+        "depth": 2,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 41,
+        "contentSources": 2,
+        "navigationSources": 40
+      }
+    },
+    {
+      "route": "/react/trivia/react-function-treated-as-component-rules",
+      "before": {
+        "depth": 3,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 41,
+        "contentSources": 2,
+        "navigationSources": 40
+      }
+    },
+    {
+      "route": "/react/trivia/react-functional-vs-class-components",
+      "before": {
+        "depth": 2,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 41,
+        "contentSources": 1,
+        "navigationSources": 40
+      }
+    },
+    {
+      "route": "/react/trivia/react-higher-order-components",
+      "before": {
+        "depth": 3,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 41,
+        "contentSources": 2,
+        "navigationSources": 40
+      }
+    },
+    {
+      "route": "/react/trivia/react-hooks-youve-used",
+      "before": {
+        "depth": 2,
+        "incomingSources": 4,
+        "contentSources": 4,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 41,
+        "contentSources": 4,
+        "navigationSources": 40
+      }
+    },
+    {
+      "route": "/react/trivia/react-jsx-transform-and-why-not-required",
+      "before": {
+        "depth": 2,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 41,
+        "contentSources": 2,
+        "navigationSources": 40
+      }
+    },
+    {
+      "route": "/react/trivia/react-keys-in-lists",
+      "before": {
+        "depth": 2,
+        "incomingSources": 8,
+        "contentSources": 8,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 44,
+        "contentSources": 8,
+        "navigationSources": 40
+      }
+    },
+    {
+      "route": "/react/trivia/react-lifting-state-up",
+      "before": {
+        "depth": 2,
+        "incomingSources": 5,
+        "contentSources": 5,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 41,
+        "contentSources": 5,
+        "navigationSources": 40
+      }
+    },
+    {
+      "route": "/react/trivia/react-mixing-state-and-props-responsibilities",
+      "before": {
+        "depth": 3,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 41,
+        "contentSources": 3,
+        "navigationSources": 40
+      }
+    },
+    {
+      "route": "/react/trivia/react-one-way-data-flow",
+      "before": {
+        "depth": 3,
+        "incomingSources": 5,
+        "contentSources": 5,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 41,
+        "contentSources": 6,
+        "navigationSources": 40
+      }
+    },
+    {
+      "route": "/react/trivia/react-portals",
+      "before": {
+        "depth": 2,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 41,
+        "contentSources": 1,
+        "navigationSources": 40
+      }
+    },
+    {
+      "route": "/react/trivia/react-prevent-unnecessary-rerenders",
+      "before": {
+        "depth": 2,
+        "incomingSources": 5,
+        "contentSources": 5,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 42,
+        "contentSources": 5,
+        "navigationSources": 40
+      }
+    },
+    {
+      "route": "/react/trivia/react-pure-function-of-props-and-state",
+      "before": {
+        "depth": 2,
+        "incomingSources": 5,
+        "contentSources": 5,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 41,
+        "contentSources": 5,
+        "navigationSources": 40
+      }
+    },
+    {
+      "route": "/react/trivia/react-reconciliation",
+      "before": {
+        "depth": 2,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 41,
+        "contentSources": 2,
+        "navigationSources": 40
+      }
+    },
+    {
+      "route": "/react/trivia/react-render-nothing-return-value",
+      "before": {
+        "depth": null,
+        "incomingSources": 0,
+        "contentSources": 0,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 41,
+        "contentSources": 1,
+        "navigationSources": 40
+      }
+    },
+    {
+      "route": "/react/trivia/react-render-props-vs-hocs",
+      "before": {
+        "depth": 2,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 41,
+        "contentSources": 2,
+        "navigationSources": 40
+      }
+    },
+    {
+      "route": "/react/trivia/react-rerender-decision-and-render",
+      "before": {
+        "depth": 2,
+        "incomingSources": 9,
+        "contentSources": 9,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 41,
+        "contentSources": 9,
+        "navigationSources": 40
+      }
+    },
+    {
+      "route": "/react/trivia/react-stale-state-closures",
+      "before": {
+        "depth": 2,
+        "incomingSources": 10,
+        "contentSources": 10,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 43,
+        "contentSources": 10,
+        "navigationSources": 40
+      }
+    },
+    {
+      "route": "/react/trivia/react-strictmode-double-invoke-effects",
+      "before": {
+        "depth": 2,
+        "incomingSources": 8,
+        "contentSources": 8,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 42,
+        "contentSources": 8,
+        "navigationSources": 40
+      }
+    },
+    {
+      "route": "/react/trivia/react-strictmode-purpose",
+      "before": {
+        "depth": 2,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 41,
+        "contentSources": 1,
+        "navigationSources": 40
+      }
+    },
+    {
+      "route": "/react/trivia/react-useeffect-purpose",
+      "before": {
+        "depth": 2,
+        "incomingSources": 14,
+        "contentSources": 14,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 43,
+        "contentSources": 14,
+        "navigationSources": 40
+      }
+    },
+    {
+      "route": "/react/trivia/react-useeffect-vs-uselayouteffect",
+      "before": {
+        "depth": 2,
+        "incomingSources": 7,
+        "contentSources": 7,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 42,
+        "contentSources": 7,
+        "navigationSources": 40
+      }
+    },
+    {
+      "route": "/react/trivia/react-usememo-vs-usecallback",
+      "before": {
+        "depth": 2,
+        "incomingSources": 4,
+        "contentSources": 4,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 42,
+        "contentSources": 4,
+        "navigationSources": 40
+      }
+    },
+    {
+      "route": "/react/trivia/react-useref-vs-usestate",
+      "before": {
+        "depth": 2,
+        "incomingSources": 4,
+        "contentSources": 4,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 41,
+        "contentSources": 4,
+        "navigationSources": 40
+      }
+    },
+    {
+      "route": "/react/trivia/react-usestate-purpose",
+      "before": {
+        "depth": 2,
+        "incomingSources": 4,
+        "contentSources": 4,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 41,
+        "contentSources": 4,
+        "navigationSources": 40
+      }
+    },
+    {
+      "route": "/react/trivia/react-virtual-dom",
+      "before": {
+        "depth": 2,
+        "incomingSources": 5,
+        "contentSources": 5,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 41,
+        "contentSources": 5,
+        "navigationSources": 40
+      }
+    },
+    {
+      "route": "/react/trivia/react-why-batching-state-updates",
+      "before": {
+        "depth": 2,
+        "incomingSources": 3,
+        "contentSources": 3,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 41,
+        "contentSources": 3,
+        "navigationSources": 40
+      }
+    },
+    {
+      "route": "/react/trivia/react-why-event-delegation",
+      "before": {
+        "depth": null,
+        "incomingSources": 0,
+        "contentSources": 0,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 41,
+        "contentSources": 1,
+        "navigationSources": 40
+      }
+    },
+    {
+      "route": "/react/trivia/react-why-hooks-have-rules",
+      "before": {
+        "depth": 2,
+        "incomingSources": 9,
+        "contentSources": 9,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 41,
+        "contentSources": 9,
+        "navigationSources": 40
+      }
+    },
+    {
+      "route": "/react/trivia/react-why-props-immutable",
+      "before": {
+        "depth": 2,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 41,
+        "contentSources": 2,
+        "navigationSources": 40
+      }
+    },
+    {
+      "route": "/system-design",
+      "before": {
+        "depth": 1,
+        "incomingSources": 355,
+        "contentSources": 281,
+        "navigationSources": 74
+      },
+      "after": {
+        "depth": 1,
+        "incomingSources": 355,
+        "contentSources": 281,
+        "navigationSources": 74
+      }
+    },
+    {
+      "route": "/system-design/ai-agent-run-inspector",
+      "before": {
+        "depth": 2,
+        "incomingSources": 7,
+        "contentSources": 7,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 7,
+        "contentSources": 7,
+        "navigationSources": 0
+      }
+    },
+    {
+      "route": "/system-design/ai-chat-textarea-design",
+      "before": {
+        "depth": 2,
+        "incomingSources": 11,
+        "contentSources": 11,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 11,
+        "contentSources": 11,
+        "navigationSources": 0
+      }
+    },
+    {
+      "route": "/system-design/dashboard-widgets-draggable-resizable",
+      "before": {
+        "depth": 2,
+        "incomingSources": 12,
+        "contentSources": 12,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 12,
+        "contentSources": 12,
+        "navigationSources": 0
+      }
+    },
+    {
+      "route": "/system-design/infinite-scroll-list",
+      "before": {
+        "depth": 1,
+        "incomingSources": 18,
+        "contentSources": 18,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 1,
+        "incomingSources": 18,
+        "contentSources": 18,
+        "navigationSources": 0
+      }
+    },
+    {
+      "route": "/system-design/notification-toast-system",
+      "before": {
+        "depth": 2,
+        "incomingSources": 14,
+        "contentSources": 14,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 14,
+        "contentSources": 14,
+        "navigationSources": 0
+      }
+    },
+    {
+      "route": "/system-design/offline-email-client",
+      "before": {
+        "depth": 2,
+        "incomingSources": 5,
+        "contentSources": 5,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 5,
+        "contentSources": 5,
+        "navigationSources": 0
+      }
+    },
+    {
+      "route": "/system-design/resilient-checkout-payment-flow",
+      "before": {
+        "depth": 2,
+        "incomingSources": 4,
+        "contentSources": 4,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 4,
+        "contentSources": 4,
+        "navigationSources": 0
+      }
+    },
+    {
+      "route": "/tools/cv",
+      "before": {
+        "depth": 1,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 1,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      }
+    },
+    {
+      "route": "/tracks",
+      "before": {
+        "depth": 1,
+        "incomingSources": 350,
+        "contentSources": 274,
+        "navigationSources": 77
+      },
+      "after": {
+        "depth": 1,
+        "incomingSources": 350,
+        "contentSources": 274,
+        "navigationSources": 77
+      }
+    },
+    {
+      "route": "/tracks/crash-7d/preview",
+      "before": {
+        "depth": 1,
+        "incomingSources": 80,
+        "contentSources": 61,
+        "navigationSources": 19
+      },
+      "after": {
+        "depth": 1,
+        "incomingSources": 80,
+        "contentSources": 61,
+        "navigationSources": 19
+      }
+    },
+    {
+      "route": "/tracks/foundations-30d/preview",
+      "before": {
+        "depth": 1,
+        "incomingSources": 140,
+        "contentSources": 132,
+        "navigationSources": 9
+      },
+      "after": {
+        "depth": 1,
+        "incomingSources": 141,
+        "contentSources": 133,
+        "navigationSources": 9
+      }
+    },
+    {
+      "route": "/tradeoffs",
+      "before": {
+        "depth": null,
+        "incomingSources": 0,
+        "contentSources": 0,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 11,
+        "contentSources": 1,
+        "navigationSources": 10
+      }
+    },
+    {
+      "route": "/tradeoffs/async-pipe-vs-manual-subscribe-angular",
+      "before": {
+        "depth": null,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      }
+    },
+    {
+      "route": "/tradeoffs/context-vs-zustand-vs-redux",
+      "before": {
+        "depth": 1,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 1,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      }
+    },
+    {
+      "route": "/tradeoffs/object-vs-map-keyed-collections",
+      "before": {
+        "depth": null,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 2,
+        "contentSources": 1,
+        "navigationSources": 1
+      }
+    },
+    {
+      "route": "/tradeoffs/promise-all-vs-sequential-awaits",
+      "before": {
+        "depth": null,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 2,
+        "contentSources": 1,
+        "navigationSources": 1
+      }
+    },
+    {
+      "route": "/tradeoffs/props-drilling-vs-context-shared-ui",
+      "before": {
+        "depth": null,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 2,
+        "contentSources": 1,
+        "navigationSources": 1
+      }
+    },
+    {
+      "route": "/tradeoffs/props-emits-vs-provide-inject-vue-context",
+      "before": {
+        "depth": null,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      }
+    },
+    {
+      "route": "/tradeoffs/reactive-forms-vs-template-driven-angular",
+      "before": {
+        "depth": null,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      }
+    },
+    {
+      "route": "/tradeoffs/sse-vs-websocket-live-dashboard",
+      "before": {
+        "depth": null,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      }
+    },
+    {
+      "route": "/tradeoffs/usestate-vs-usereducer-growing-state",
+      "before": {
+        "depth": null,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 2,
+        "contentSources": 1,
+        "navigationSources": 1
+      }
+    },
+    {
+      "route": "/tradeoffs/watch-vs-watcheffect-vue-reactive-effects",
+      "before": {
+        "depth": null,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 3,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      }
+    },
+    {
+      "route": "/vue/coding/vue-counter",
+      "before": {
+        "depth": 2,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      }
+    },
+    {
+      "route": "/vue/coding/vue-todo-list",
+      "before": {
+        "depth": 2,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 3,
+        "contentSources": 3,
+        "navigationSources": 0
+      }
+    },
+    {
+      "route": "/vue/interview-questions",
+      "before": {
+        "depth": 1,
+        "incomingSources": 44,
+        "contentSources": 42,
+        "navigationSources": 2
+      },
+      "after": {
+        "depth": 1,
+        "incomingSources": 44,
+        "contentSources": 42,
+        "navigationSources": 2
+      }
+    },
+    {
+      "route": "/vue/trivia/vue-architecture-decisions-scalability",
+      "before": {
+        "depth": 2,
+        "incomingSources": 4,
+        "contentSources": 4,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 35,
+        "contentSources": 4,
+        "navigationSources": 33
+      }
+    },
+    {
+      "route": "/vue/trivia/vue-child-mutates-prop-directly",
+      "before": {
+        "depth": 2,
+        "incomingSources": 6,
+        "contentSources": 6,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 35,
+        "contentSources": 6,
+        "navigationSources": 33
+      }
+    },
+    {
+      "route": "/vue/trivia/vue-composition-api",
+      "before": {
+        "depth": 2,
+        "incomingSources": 11,
+        "contentSources": 11,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 35,
+        "contentSources": 11,
+        "navigationSources": 33
+      }
+    },
+    {
+      "route": "/vue/trivia/vue-composition-api-vs-mixins",
+      "before": {
+        "depth": 2,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 34,
+        "contentSources": 1,
+        "navigationSources": 33
+      }
+    },
+    {
+      "route": "/vue/trivia/vue-computed-properties",
+      "before": {
+        "depth": 2,
+        "incomingSources": 4,
+        "contentSources": 4,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 34,
+        "contentSources": 4,
+        "navigationSources": 33
+      }
+    },
+    {
+      "route": "/vue/trivia/vue-computed-vs-watchers",
+      "before": {
+        "depth": 2,
+        "incomingSources": 13,
+        "contentSources": 13,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 35,
+        "contentSources": 13,
+        "navigationSources": 33
+      }
+    },
+    {
+      "route": "/vue/trivia/vue-conditional-list-rendering",
+      "before": {
+        "depth": 3,
+        "incomingSources": 3,
+        "contentSources": 3,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 34,
+        "contentSources": 4,
+        "navigationSources": 33
+      }
+    },
+    {
+      "route": "/vue/trivia/vue-data-must-be-function",
+      "before": {
+        "depth": 3,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 34,
+        "contentSources": 2,
+        "navigationSources": 33
+      }
+    },
+    {
+      "route": "/vue/trivia/vue-destructuring-breaks-reactivity-torefs-toref",
+      "before": {
+        "depth": 2,
+        "incomingSources": 5,
+        "contentSources": 5,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 34,
+        "contentSources": 5,
+        "navigationSources": 33
+      }
+    },
+    {
+      "route": "/vue/trivia/vue-directives",
+      "before": {
+        "depth": 2,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 34,
+        "contentSources": 2,
+        "navigationSources": 33
+      }
+    },
+    {
+      "route": "/vue/trivia/vue-internal-rendering-pipeline",
+      "before": {
+        "depth": 2,
+        "incomingSources": 5,
+        "contentSources": 5,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 34,
+        "contentSources": 5,
+        "navigationSources": 33
+      }
+    },
+    {
+      "route": "/vue/trivia/vue-lifecycle-hooks",
+      "before": {
+        "depth": 2,
+        "incomingSources": 9,
+        "contentSources": 9,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 35,
+        "contentSources": 9,
+        "navigationSources": 33
+      }
+    },
+    {
+      "route": "/vue/trivia/vue-methods-in-templates",
+      "before": {
+        "depth": 2,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 34,
+        "contentSources": 1,
+        "navigationSources": 33
+      }
+    },
+    {
+      "route": "/vue/trivia/vue-native-vs-component-events",
+      "before": {
+        "depth": 2,
+        "incomingSources": 4,
+        "contentSources": 4,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 34,
+        "contentSources": 4,
+        "navigationSources": 33
+      }
+    },
+    {
+      "route": "/vue/trivia/vue-nexttick-dom-update-queue",
+      "before": {
+        "depth": 2,
+        "incomingSources": 4,
+        "contentSources": 4,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 35,
+        "contentSources": 4,
+        "navigationSources": 33
+      }
+    },
+    {
+      "route": "/vue/trivia/vue-provide-inject-vs-prop-drilling-tradeoffs",
+      "before": {
+        "depth": 2,
+        "incomingSources": 4,
+        "contentSources": 4,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 35,
+        "contentSources": 4,
+        "navigationSources": 33
+      }
+    },
+    {
+      "route": "/vue/trivia/vue-reactive-interpolation-into-dom",
+      "before": {
+        "depth": 2,
+        "incomingSources": 4,
+        "contentSources": 4,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 34,
+        "contentSources": 4,
+        "navigationSources": 33
+      }
+    },
+    {
+      "route": "/vue/trivia/vue-reactivity-system",
+      "before": {
+        "depth": 2,
+        "incomingSources": 4,
+        "contentSources": 4,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 35,
+        "contentSources": 4,
+        "navigationSources": 33
+      }
+    },
+    {
+      "route": "/vue/trivia/vue-reactivity-vs-react-concepts",
+      "before": {
+        "depth": 2,
+        "incomingSources": 3,
+        "contentSources": 3,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 34,
+        "contentSources": 3,
+        "navigationSources": 33
+      }
+    },
+    {
+      "route": "/vue/trivia/vue-ref-vs-reactive-difference-traps",
+      "before": {
+        "depth": 2,
+        "incomingSources": 8,
+        "contentSources": 8,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 36,
+        "contentSources": 8,
+        "navigationSources": 33
+      }
+    },
+    {
+      "route": "/vue/trivia/vue-router-navigation",
+      "before": {
+        "depth": 2,
+        "incomingSources": 2,
+        "contentSources": 2,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 35,
+        "contentSources": 2,
+        "navigationSources": 33
+      }
+    },
+    {
+      "route": "/vue/trivia/vue-sfc-vs-global-components",
+      "before": {
+        "depth": 2,
+        "incomingSources": 4,
+        "contentSources": 4,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 35,
+        "contentSources": 4,
+        "navigationSources": 33
+      }
+    },
+    {
+      "route": "/vue/trivia/vue-slots-default-named-scoped-slot-props",
+      "before": {
+        "depth": 2,
+        "incomingSources": 6,
+        "contentSources": 6,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 35,
+        "contentSources": 6,
+        "navigationSources": 33
+      }
+    },
+    {
+      "route": "/vue/trivia/vue-v-bind-reactive-attributes",
+      "before": {
+        "depth": 3,
+        "incomingSources": 3,
+        "contentSources": 3,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 34,
+        "contentSources": 4,
+        "navigationSources": 33
+      }
+    },
+    {
+      "route": "/vue/trivia/vue-v-bind-v-on-fundamental-template-syntax",
+      "before": {
+        "depth": 3,
+        "incomingSources": 3,
+        "contentSources": 3,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 34,
+        "contentSources": 4,
+        "navigationSources": 33
+      }
+    },
+    {
+      "route": "/vue/trivia/vue-v-for-keys",
+      "before": {
+        "depth": 3,
+        "incomingSources": 1,
+        "contentSources": 1,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 34,
+        "contentSources": 2,
+        "navigationSources": 33
+      }
+    },
+    {
+      "route": "/vue/trivia/vue-v-for-keys-why-not-index",
+      "before": {
+        "depth": 2,
+        "incomingSources": 3,
+        "contentSources": 3,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 35,
+        "contentSources": 3,
+        "navigationSources": 33
+      }
+    },
+    {
+      "route": "/vue/trivia/vue-v-if-component-creation-destruction",
+      "before": {
+        "depth": 2,
+        "incomingSources": 7,
+        "contentSources": 7,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 34,
+        "contentSources": 7,
+        "navigationSources": 33
+      }
+    },
+    {
+      "route": "/vue/trivia/vue-v-model-syntax-sugar-expansion",
+      "before": {
+        "depth": 2,
+        "incomingSources": 3,
+        "contentSources": 3,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 35,
+        "contentSources": 3,
+        "navigationSources": 33
+      }
+    },
+    {
+      "route": "/vue/trivia/vue-v-show-vs-v-if-dom-lifecycle",
+      "before": {
+        "depth": 2,
+        "incomingSources": 6,
+        "contentSources": 6,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 34,
+        "contentSources": 6,
+        "navigationSources": 33
+      }
+    },
+    {
+      "route": "/vue/trivia/vue-virtual-dom-diffing",
+      "before": {
+        "depth": 2,
+        "incomingSources": 3,
+        "contentSources": 3,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 35,
+        "contentSources": 3,
+        "navigationSources": 33
+      }
+    },
+    {
+      "route": "/vue/trivia/vue-watch-vs-watcheffect-differences-infinite-loops",
+      "before": {
+        "depth": 2,
+        "incomingSources": 7,
+        "contentSources": 7,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 35,
+        "contentSources": 7,
+        "navigationSources": 33
+      }
+    },
+    {
+      "route": "/vue/trivia/vue-why-declare-emits-type-safety-maintenance",
+      "before": {
+        "depth": 2,
+        "incomingSources": 3,
+        "contentSources": 3,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 35,
+        "contentSources": 3,
+        "navigationSources": 33
+      }
+    },
+    {
+      "route": "/vue/trivia/vuex-state-management",
+      "before": {
+        "depth": 2,
+        "incomingSources": 4,
+        "contentSources": 4,
+        "navigationSources": 0
+      },
+      "after": {
+        "depth": 2,
+        "incomingSources": 35,
+        "contentSources": 4,
+        "navigationSources": 33
+      }
+    }
+  ]
+}
