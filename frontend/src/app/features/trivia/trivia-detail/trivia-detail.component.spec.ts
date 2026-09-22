@@ -2107,22 +2107,53 @@ describe('TriviaDetailComponent', () => {
     );
   });
 
-  it('renders non-crawlable sidebar buttons and crawlable practice entry links', async () => {
+  it('renders crawlable sidebar links and preserves the practice session when navigating', async () => {
+    const session = {
+      items: [
+        { tech: 'javascript', kind: 'trivia', id: 'q2' },
+        { tech: 'javascript', kind: 'trivia', id: 'q1' },
+      ],
+      index: 1,
+    };
+    const returnTo = ['/guides', 'framework-prep', 'javascript-prep-path', 'mastery'];
+    window.history.replaceState({
+      session,
+      sessionSource: 'mastery',
+      returnTo,
+      returnToUrl: '/coding?tech=javascript&kind=trivia',
+      returnLabel: 'JavaScript practice',
+    }, '');
     const fixture = await createLoadedFixture();
     const router = TestBed.inject(Router);
-    const navigateSpy = spyOn(router, 'navigate').and.resolveTo(true);
+    const navigateSpy = spyOn(router, 'navigateByUrl').and.resolveTo(true);
+    const saveScrollSpy = spyOn<any>(fixture.componentInstance, 'saveSidebarScrollPosition').and.callThrough();
+    analytics.track.calls.reset();
 
-    const sideButton = fixture.nativeElement.querySelector('.side-list button.side-item') as HTMLButtonElement | null;
-    expect(sideButton).toBeTruthy();
-    expect(fixture.nativeElement.querySelector('.side-list a.side-item')).toBeNull();
+    const sideLink = fixture.nativeElement.querySelector('.side .side-list a.side-item') as HTMLAnchorElement;
+    expect(sideLink.getAttribute('href')).toBe('/javascript/trivia/q2');
+    expect(fixture.nativeElement.querySelector('.side-list button.side-item')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.side .side-item[aria-current="page"]')?.getAttribute('href'))
+      .toBe('/javascript/trivia/q1');
 
-    sideButton?.click();
-    expect(navigateSpy).toHaveBeenCalledWith(['/', 'javascript', 'trivia', 'q1'], jasmine.objectContaining({
+    sideLink.click();
+    expect(navigateSpy).toHaveBeenCalledTimes(1);
+    const [target, extras] = navigateSpy.calls.mostRecent().args;
+    expect(String(target)).toBe('/javascript/trivia/q2');
+    expect(extras).toEqual(jasmine.objectContaining({
       state: jasmine.objectContaining({
-        session: jasmine.objectContaining({
-          index: 0,
-        }),
+        session: { items: session.items, index: 0 },
+        sessionSource: 'mastery',
+        returnTo,
+        returnToUrl: '/coding?tech=javascript&kind=trivia',
+        returnLabel: 'JavaScript practice',
       }),
+    }));
+    expect(saveScrollSpy).toHaveBeenCalledTimes(1);
+    const linkEvents = trackCalls('trivia_internal_link_clicked');
+    expect(linkEvents.length).toBe(1);
+    expect(linkEvents[0][1]).toEqual(jasmine.objectContaining({
+      location: 'sidebar',
+      target_path: '/javascript/trivia/q2',
     }));
 
     const framePrimary = fixture.nativeElement.querySelector('[data-testid="trivia-practice-frame-primary"]') as HTMLAnchorElement | null;
@@ -2132,6 +2163,50 @@ describe('TriviaDetailComponent', () => {
     expect(framePrimary?.getAttribute('href') || '').toContain('/javascript/interview-questions');
     expect(framePlan?.getAttribute('href') || '').toContain('/guides/framework-prep/javascript-prep-path/mastery');
     expect(frameHub?.getAttribute('href') || '').toContain('/interview-questions/essential');
+  });
+
+  it('closes the mobile question chooser and tracks its real navigation once', async () => {
+    const fixture = await createLoadedFixture();
+    const navigateSpy = spyOn(TestBed.inject(Router), 'navigateByUrl').and.resolveTo(true);
+    fixture.componentInstance.openQnav();
+    fixture.detectChanges();
+    analytics.track.calls.reset();
+
+    const link = fixture.nativeElement.querySelector('.mobile-qnav__body a[href="/javascript/trivia/q2"]') as HTMLAnchorElement;
+    link.click();
+
+    expect(fixture.componentInstance.qnavOpen()).toBeFalse();
+    expect(navigateSpy).toHaveBeenCalledTimes(1);
+    const linkEvents = trackCalls('trivia_internal_link_clicked');
+    expect(linkEvents.length).toBe(1);
+    expect(linkEvents[0][1]).toEqual(jasmine.objectContaining({
+      location: 'mobile_nav',
+      target_path: '/javascript/trivia/q2',
+    }));
+  });
+
+  it('leaves modified and middle clicks to the browser without closing the question chooser', async () => {
+    const fixture = await createLoadedFixture();
+    const navigateSpy = spyOn(TestBed.inject(Router), 'navigateByUrl').and.resolveTo(true);
+    const saveScrollSpy = spyOn<any>(fixture.componentInstance, 'saveSidebarScrollPosition');
+    fixture.componentInstance.openQnav();
+    fixture.detectChanges();
+    const link = fixture.nativeElement.querySelector('.mobile-qnav__body a[href="/javascript/trivia/q2"]') as HTMLAnchorElement;
+
+    for (const init of [{ ctrlKey: true }, { metaKey: true }, { shiftKey: true }, { altKey: true }, { button: 1 }]) {
+      const eventType = init.button === 1 ? 'auxclick' : 'click';
+      let preventedByApp = false;
+      link.addEventListener(eventType, (event) => {
+        preventedByApp = event.defaultPrevented;
+        event.preventDefault(); // Keep native tab creation out of the test runner.
+      }, { once: true });
+      link.dispatchEvent(new MouseEvent(eventType, { bubbles: true, cancelable: true, ...init }));
+      expect(preventedByApp).toBeFalse();
+      expect(fixture.componentInstance.qnavOpen()).toBeTrue();
+    }
+
+    expect(navigateSpy).not.toHaveBeenCalled();
+    expect(saveScrollSpy).not.toHaveBeenCalled();
   });
 
   it('hydrates the current question from a lightweight resolver payload while keeping list entries as summaries', async () => {
@@ -2153,8 +2228,8 @@ describe('TriviaDetailComponent', () => {
 
     expect(fixture.nativeElement.querySelector('h1.title')?.textContent || '').toContain('What is closure?');
     expect(fixture.nativeElement.textContent || '').toContain('Closure captures lexical scope');
-    expect(fixture.nativeElement.querySelectorAll('.side-list button.side-item').length).toBe(2);
-    expect(fixture.nativeElement.querySelectorAll('.side-list a.side-item').length).toBe(0);
+    expect(fixture.nativeElement.querySelectorAll('.side-list a.side-item').length).toBe(2);
+    expect(fixture.nativeElement.querySelectorAll('.side-list button.side-item').length).toBe(0);
     expect(fixture.nativeElement.querySelector('.similar-list')).toBeTruthy();
     expect((fixture.componentInstance.question() as any)?.answer).toBe(fullQuestion.answer);
     expect((fixture.componentInstance.questionsList[0] as any).answer).toBeUndefined();

@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import fs from 'fs';
 import path from 'path';
+import { buildPublicQuestionNavigation, publicQuestionNavigationText } from './public-question-navigation.mjs';
 import {
   cdnIncidentsDir as INCIDENTS_DIR,
   cdnPracticeDir as OUT_DIR,
@@ -14,6 +15,7 @@ import {
 
 const CHECK = process.argv.includes('--check');
 const CODING_HUB_DISCOVERY_PATH = path.join(generatedAppDir, 'coding-hub-discovery.ts');
+const PUBLIC_QUESTION_NAVIGATION_PATH = path.join(generatedAppDir, 'public-question-navigation.ts');
 const PREMIUM_PREVIEW_CATALOG_PATH = path.join(
   srcDir,
   'app',
@@ -316,30 +318,40 @@ const registry = sortEntries([
 const nextText = `${JSON.stringify(registry, null, 2)}\n`;
 const codingHubDebugDiscovery = buildCodingHubDebugDiscovery(registry);
 const nextCodingHubDiscoveryText = toCodingHubDiscoveryText(codingHubDebugDiscovery);
+const publicQuestionNavigation = buildPublicQuestionNavigation(registry);
+const nextPublicQuestionNavigationText = publicQuestionNavigationText(publicQuestionNavigation);
 
 if (CHECK) {
   const prevText = fs.existsSync(OUT_PATH) ? fs.readFileSync(OUT_PATH, 'utf8') : '';
   const prevCodingHubDiscoveryText = fs.existsSync(CODING_HUB_DISCOVERY_PATH)
     ? fs.readFileSync(CODING_HUB_DISCOVERY_PATH, 'utf8')
     : '';
-  if (prevText !== nextText || prevCodingHubDiscoveryText !== nextCodingHubDiscoveryText) {
+  const prevPublicQuestionNavigationText = fs.existsSync(PUBLIC_QUESTION_NAVIGATION_PATH)
+    ? fs.readFileSync(PUBLIC_QUESTION_NAVIGATION_PATH, 'utf8')
+    : '';
+  if (prevText !== nextText || prevCodingHubDiscoveryText !== nextCodingHubDiscoveryText
+    || prevPublicQuestionNavigationText !== nextPublicQuestionNavigationText) {
     console.error('[gen:practice-registry] ERROR: practice registry is stale.');
     console.error('[gen:practice-registry] Run: node scripts/generate-practice-registry.mjs');
     if (prevText !== nextText) console.error(`  - ${relFromFrontend(OUT_PATH)}`);
     if (prevCodingHubDiscoveryText !== nextCodingHubDiscoveryText) {
       console.error(`  - ${relFromFrontend(CODING_HUB_DISCOVERY_PATH)}`);
     }
+    if (prevPublicQuestionNavigationText !== nextPublicQuestionNavigationText) {
+      console.error(`  - ${relFromFrontend(PUBLIC_QUESTION_NAVIGATION_PATH)}`);
+    }
     process.exit(1);
   }
   console.log(
-    `[gen:practice-registry] check passed: ${relFromFrontend(OUT_PATH)} (${registry.length} entries), ${relFromFrontend(CODING_HUB_DISCOVERY_PATH)} (${codingHubDebugDiscovery.length} entries)`,
+    `[gen:practice-registry] check passed: ${relFromFrontend(OUT_PATH)} (${registry.length} entries), ${relFromFrontend(CODING_HUB_DISCOVERY_PATH)} (${codingHubDebugDiscovery.length} entries), public question navigation (${publicQuestionNavigation.length} entries)`,
   );
 } else {
   ensureDir(OUT_DIR);
   ensureDir(generatedAppDir);
   fs.writeFileSync(OUT_PATH, nextText);
   fs.writeFileSync(CODING_HUB_DISCOVERY_PATH, nextCodingHubDiscoveryText);
+  fs.writeFileSync(PUBLIC_QUESTION_NAVIGATION_PATH, nextPublicQuestionNavigationText);
   console.log(
-    `[gen:practice-registry] wrote ${relFromFrontend(OUT_PATH)} (${registry.length} entries), ${relFromFrontend(CODING_HUB_DISCOVERY_PATH)} (${codingHubDebugDiscovery.length} entries)`,
+    `[gen:practice-registry] wrote ${relFromFrontend(OUT_PATH)} (${registry.length} entries), ${relFromFrontend(CODING_HUB_DISCOVERY_PATH)} (${codingHubDebugDiscovery.length} entries), public question navigation (${publicQuestionNavigation.length} entries)`,
   );
 }

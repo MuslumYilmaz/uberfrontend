@@ -22,6 +22,7 @@ import {
 import { incidentExistsGuard } from './core/guards/incident-exists.guard';
 import { tradeoffBattleExistsGuard } from './core/guards/tradeoff-battle-exists.guard';
 import { essentialQuestionsResolver } from './core/resolvers/essential-questions.resolver';
+import { companyIndexResolver, companyPreviewResolver } from './core/resolvers/company-public.resolver';
 import { interviewQuestionsHubResolver } from './core/resolvers/interview-questions.resolver';
 import {
   globalCodingListResolver,
@@ -324,6 +325,7 @@ export const routes: Routes = [
           import('./features/company/company-index/company-index.component').then(
             (m) => m.CompanyIndexComponent,
           ),
+        resolve: { companyIndex: companyIndexResolver },
         data: {
           seo: {
             title: 'Company Frontend Interview Questions',
@@ -340,6 +342,7 @@ export const routes: Routes = [
           import('./features/company/company-preview/company-preview.component').then(
             (m) => m.CompanyPreviewComponent,
           ),
+        resolve: { companyPreview: companyPreviewResolver },
         data: {
           seo: {
             title: 'Company Frontend Interview Questions Preview',

@@ -10,14 +10,7 @@
 </header>
 
 <section class="company-directory" aria-label="Company practice groupings" data-testid="company-index-directory">
-    <ng-container *ngIf="loading; else loaded">
-        <div class="company-loading" role="status" aria-live="polite" data-testid="company-index-loading">
-            <p-progressSpinner></p-progressSpinner>
-            <div class="company-loading__text">Loading company practice groups…</div>
-        </div>
-    </ng-container>
-
-    <ng-template #loaded>
+    <ng-container *ngIf="companies.length; else emptyDirectory">
         <div class="company-list" data-testid="company-index-list">
             <a *ngFor="let c of companies" class="company-card fa-card" [routerLink]="['/companies', c.slug, 'preview']">
                 <div class="company-card__content">
@@ -32,6 +25,11 @@
                 </div>
             </a>
         </div>
+    </ng-container>
+    <ng-template #emptyDirectory>
+        <p class="company-loading__text" role="status" data-testid="company-index-empty">
+            No company practice groups are available right now. Explore the Question Library or a study plan below.
+        </p>
     </ng-template>
 </section>
 
@@ -42,7 +40,7 @@
         Use the Question Library and Study Plans for baseline coverage, then use Company Prep to rehearse coding, concept, and system design differences for the teams you are targeting.
     </p>
     <div class="company-intro__actions company-intro__actions--role">
-        <a class="company-intro__cta" [routerLink]="['/tracks', 'foundations-30d', 'preview']" [queryParams]="{ entry: 'companies_role_contract' }">
+        <a class="company-intro__cta" [routerLink]="['/tracks', 'foundations-30d', 'preview']">
             Start with a study plan
         </a>
         <a class="company-intro__cta company-intro__cta--secondary" [routerLink]="['/companies', 'google', 'preview']">

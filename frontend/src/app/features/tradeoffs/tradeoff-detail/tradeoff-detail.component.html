@@ -1,4 +1,7 @@
 <ng-container *ngIf="battle() as current">
+  <nav class="tradeoff-detail__back" aria-label="Tradeoff navigation">
+    <a [routerLink]="['/tradeoffs']">← Back to tradeoff questions</a>
+  </nav>
   <ng-container *ngIf="!locked(); else lockedView">
   <section class="tradeoff-detail">
     <header class="tradeoff-detail__hero">
@@ -251,8 +254,12 @@
     </ng-container>
 
     <footer class="tradeoff-detail__footer">
-      <button type="button" (click)="goToAdjacentBattle(prevBattle())" [disabled]="!prevBattle()">Previous</button>
-      <button type="button" (click)="goToAdjacentBattle(nextBattle())" [disabled]="!nextBattle()">Next</button>
+      <a *ngIf="prevBattle() as previous; else noPreviousBattle" [routerLink]="['/tradeoffs', previous.id]"
+        [attr.aria-label]="'Previous: ' + previous.title">Previous</a>
+      <ng-template #noPreviousBattle><button type="button" disabled>Previous</button></ng-template>
+      <a *ngIf="nextBattle() as next; else noNextBattle" [routerLink]="['/tradeoffs', next.id]"
+        [attr.aria-label]="'Next: ' + next.title">Next</a>
+      <ng-template #noNextBattle><button type="button" disabled>Next</button></ng-template>
     </footer>
   </section>
   </ng-container>

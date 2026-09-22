@@ -3,12 +3,13 @@
     <ng-template #questionListTpl>
         <ul class="side-list">
             <li *ngFor="let q of sidebarQuestions; trackBy: trackByQuestionId">
-                <button
-                    type="button"
+                <a
                     class="side-item"
+                    [routerLink]="['/', tech, 'trivia', q.id]"
+                    [state]="sidebarNavState(q)"
                     [class.is-active]="isActive(q)"
                     [attr.aria-current]="isActive(q) ? 'page' : null"
-                    (click)="navigateSidebarQuestion(q)">
+                    (click)="onSidebarQuestionClick($event)">
                     <div class="side-item-main">
                         <div class="side-item-title">{{ q.title }}</div>
                         <span class="chip chip-premium" *ngIf="q.access === 'premium'">Premium</span>
@@ -16,7 +17,7 @@
                     <div class="side-item-tail">
                         <app-fa-glyph class="side-item-tail__icon" icon="fa-solid fa-chevron-right" *ngIf="!isActive(q)"></app-fa-glyph>
                     </div>
-                </button>
+                </a>
             </li>
         </ul>
     </ng-template>

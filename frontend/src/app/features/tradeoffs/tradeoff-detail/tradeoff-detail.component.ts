@@ -156,11 +156,6 @@ export class TradeoffDetailComponent {
     return this.completed() ? 'Completed' : 'Mark as completed';
   }
 
-  goToAdjacentBattle(target: TradeoffBattleListItem | null): void {
-    if (!target) return;
-    void this.router.navigate(['/tradeoffs', target.id]);
-  }
-
   trackByString(_: number, value: string): string {
     return value;
   }

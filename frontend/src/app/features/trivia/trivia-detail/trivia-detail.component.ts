@@ -1439,22 +1439,14 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  navigateSidebarQuestion(q: QuestionListEntry) {
-    this.closeQnav();
+  sidebarNavState(q: QuestionListEntry) {
+    return this.buildNavState(q.id);
+  }
+
+  onSidebarQuestionClick(event: MouseEvent) {
+    if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
     this.saveSidebarScrollPosition();
-    this.ensurePracticeBuilt(q.id);
-    const targetPath = `/${this.tech}/trivia/${q.id}`;
-    const context = this.triviaAnalyticsContext();
-    if (context) {
-      this.analytics.track('trivia_internal_link_clicked', {
-        ...context,
-        location: 'sidebar',
-        target_path: targetPath,
-      });
-    }
-    this.router.navigate(['/', this.tech, 'trivia', q.id], {
-      state: this.buildNavState(q.id),
-    });
+    this.closeQnav();
   }
 
   toggleQnav() {

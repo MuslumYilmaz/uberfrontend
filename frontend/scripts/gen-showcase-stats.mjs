@@ -2,6 +2,7 @@
 
 import fs from 'fs/promises';
 import path from 'path';
+import { pathToFileURL } from 'node:url';
 import {
   cdnIncidentsDir as INCIDENT_ASSETS_DIR,
   cdnQuestionsDir as QUESTION_ASSETS_DIR,
@@ -39,9 +40,9 @@ async function readJsonArray(filePath) {
   }
 }
 
-function buildFrameworkFamilyByIdMap(source) {
+export function buildFrameworkFamilyByIdMap(source) {
   const byId = new Map();
-  const familyRegex = /{\s*key:\s*'([^']+)'\s*,[\s\S]*?members:\s*\[([\s\S]*?)\]\s*}/g;
+  const familyRegex = /{\s*key:\s*'([^']+)'\s*,[\s\S]*?members:\s*\[([\s\S]*?)\]\s*,?\s*}/g;
 
   let familyMatch = familyRegex.exec(source);
   while (familyMatch) {
@@ -70,7 +71,7 @@ function canonicalCompanyQuestionKey(question, kind, frameworkFamilyById) {
   return `${kind}:${base}`;
 }
 
-function collectCompanyCounts(lists, frameworkFamilyById) {
+export function collectCompanyCounts(lists, frameworkFamilyById) {
   const buckets = new Map();
 
   const getBucket = (slug) => {
@@ -201,7 +202,9 @@ async function main() {
   );
 }
 
-main().catch((err) => {
-  console.error('[gen-showcase-stats] fatal:', err);
-  process.exit(1);
-});
+if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
+  main().catch((err) => {
+    console.error('[gen-showcase-stats] fatal:', err);
+    process.exit(1);
+  });
+}

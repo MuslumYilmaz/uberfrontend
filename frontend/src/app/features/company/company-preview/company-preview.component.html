@@ -572,16 +572,16 @@
       Review a FrontendAtlas editorial practice grouping across coding, concept questions, and system design before choosing the full practice set.
     </p>
 
-    <ng-container *ngIf="data$ | async as data">
+    <ng-container>
       <div class="preview-meta">
         <span class="preview-chip">{{ promptCountLabel(data.counts.all) }}</span>
-        <span class="preview-chip">Coding {{ data.counts.coding }} · Concepts {{ data.counts.trivia }} · System {{ data.counts.system }}</span>
+        <span class="preview-chip" data-testid="company-preview-counts">Coding {{ data.counts.coding }} · Concepts {{ data.counts.trivia }} · System {{ data.counts.system }}</span>
         <span class="preview-chip preview-chip--lock">Full practice set requires Premium</span>
       </div>
     </ng-container>
   </header>
 
-  <ng-container *ngIf="data$ | async as data">
+  <ng-container>
     <section class="proof-grid">
       <article class="proof-card">
         <h2>What you can do now for free</h2>

@@ -1536,20 +1536,20 @@ export const SHOWCASE_STATS = {
   "totalQuestions": 514,
   "companyCounts": {
     "airbnb": {
-      "all": 3,
-      "coding": 3,
+      "all": 1,
+      "coding": 1,
       "trivia": 0,
       "system": 0
     },
     "amazon": {
-      "all": 53,
-      "coding": 29,
+      "all": 39,
+      "coding": 15,
       "trivia": 24,
       "system": 0
     },
     "apple": {
-      "all": 35,
-      "coding": 21,
+      "all": 34,
+      "coding": 20,
       "trivia": 14,
       "system": 0
     },
@@ -1560,20 +1560,20 @@ export const SHOWCASE_STATS = {
       "system": 0
     },
     "google": {
-      "all": 46,
-      "coding": 13,
+      "all": 44,
+      "coding": 11,
       "trivia": 33,
       "system": 0
     },
     "meta": {
-      "all": 51,
-      "coding": 17,
+      "all": 50,
+      "coding": 16,
       "trivia": 34,
       "system": 0
     },
     "microsoft": {
-      "all": 18,
-      "coding": 6,
+      "all": 16,
+      "coding": 4,
       "trivia": 12,
       "system": 0
     },

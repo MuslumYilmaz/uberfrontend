@@ -6,6 +6,7 @@ import { routes } from '../../app.routes';
 import { AnalyticsService } from '../../core/services/analytics.service';
 import { QuestionService } from '../../core/services/question.service';
 import { SeoService } from '../../core/services/seo.service';
+import { PUBLIC_QUESTION_NAVIGATION } from '../../generated/public-question-navigation';
 import { InterviewQuestionsLandingComponent } from './interview-questions-landing.component';
 
 const REACT_SEO_KEYWORDS = [
@@ -817,6 +818,37 @@ describe('InterviewQuestionsLandingComponent', () => {
       ],
     }).compileComponents();
   });
+
+  for (const tech of ['javascript', 'react', 'angular', 'vue', 'html', 'css']) {
+    it(`renders every public ${tech} question inside a closed native directory before interaction`, () => {
+      routeStub.snapshot.data.interviewQuestions.techs = [tech];
+      const fixture = TestBed.createComponent(InterviewQuestionsLandingComponent);
+      fixture.detectChanges();
+      const directory: HTMLElement = fixture.nativeElement.querySelector('[data-testid="public-question-directory"]');
+      const disclosure = directory.querySelector('details') as HTMLDetailsElement;
+      expect(disclosure.open).toBeFalse();
+      const links = Array.from(directory.querySelectorAll<HTMLAnchorElement>('a[href]'));
+      const expected = PUBLIC_QUESTION_NAVIGATION.filter((entry) => entry.tech === tech);
+      expect(links.map((link) => link.getAttribute('href')).sort()).toEqual(expected.map((entry) => entry.route).sort());
+      expect(new Set(links.map((link) => link.getAttribute('href'))).size).toBe(expected.length);
+      expect(directory.querySelectorAll('section').length).toBe(new Set(expected.map((entry) => entry.kind)).size);
+    });
+  }
+
+  for (const config of [
+    { techs: ['javascript'], isMasterHub: true },
+    { techs: ['html', 'css'], isMasterHub: false },
+  ]) {
+    it(`keeps the full question directory out of ${config.isMasterHub ? 'the master hub' : 'the combined HTML/CSS hub'}`, () => {
+      Object.assign(routeStub.snapshot.data.interviewQuestions, config);
+      const fixture = TestBed.createComponent(InterviewQuestionsLandingComponent);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.querySelector('[data-testid="public-question-directory"]')).toBeNull();
+      if (config.isMasterHub) {
+        expect(fixture.nativeElement.querySelector('.iq-section--master-formats a[href="/tradeoffs"]')).toBeTruthy();
+      }
+    });
+  }
 
   it('renders the prep roadmap instead of route cards and limits each preview list to six items', async () => {
     const fixture = TestBed.createComponent(InterviewQuestionsLandingComponent);

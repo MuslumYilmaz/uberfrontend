@@ -1,36 +1,21 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
-import { of } from 'rxjs';
-import { QuestionService } from '../../../core/services/question.service';
+import { ActivatedRoute, Data, provideRouter } from '@angular/router';
+import { BehaviorSubject } from 'rxjs';
 import { SeoService } from '../../../core/services/seo.service';
 import { CompanyIndexComponent } from './company-index.component';
 
 describe('CompanyIndexComponent', () => {
   let fixture: ComponentFixture<CompanyIndexComponent>;
-  let questionService: jasmine.SpyObj<QuestionService>;
+  let routeData: BehaviorSubject<Data>;
   let seo: jasmine.SpyObj<SeoService>;
 
   beforeEach(async () => {
-    questionService = jasmine.createSpyObj<QuestionService>('QuestionService', [
-      'loadAllQuestionSummaries',
-      'loadSystemDesign',
-    ]);
-    questionService.loadAllQuestionSummaries.and.callFake((kind: string) => {
-      if (kind === 'coding') {
-        return of([
-          { id: 'google-coding', title: 'Google UI prompt', companies: ['google'] },
-          { id: 'amazon-coding', title: 'Amazon list prompt', companies: ['amazon'] },
-          { id: 'openai-coding', title: 'OpenAI stream prompt', companies: ['openai'] },
-          { id: 'bytedance-coding', title: 'ByteDance feed prompt', companies: ['bytedance'] },
-        ] as any);
-      }
-      return of([
-        { id: 'google-concept', title: 'Google concept prompt', companies: ['google'] },
-      ] as any);
-    });
-    questionService.loadSystemDesign.and.returnValue(of([
-      { id: 'google-system', title: 'Google system prompt', companies: ['google'] },
-    ] as any));
+    routeData = new BehaviorSubject<Data>({ companyIndex: { companies: [
+      { slug: 'amazon', label: 'Amazon', count: 1 },
+      { slug: 'bytedance', label: 'ByteDance', count: 1 },
+      { slug: 'google', label: 'Google', count: 3 },
+      { slug: 'openai', label: 'OpenAI', count: 1 },
+    ] } });
 
     seo = jasmine.createSpyObj<SeoService>('SeoService', ['updateTags', 'buildCanonicalUrl']);
     seo.buildCanonicalUrl.and.callFake((path: string) => `https://frontendatlas.com${path}`);
@@ -39,7 +24,7 @@ describe('CompanyIndexComponent', () => {
       imports: [CompanyIndexComponent],
       providers: [
         provideRouter([]),
-        { provide: QuestionService, useValue: questionService },
+        { provide: ActivatedRoute, useValue: { data: routeData } },
         { provide: SeoService, useValue: seo },
       ],
     }).compileComponents();
@@ -75,6 +60,22 @@ describe('CompanyIndexComponent', () => {
     expect(host.querySelector('a[href="/react/interview-questions"]')).toBeTruthy();
     expect(host.querySelector('a[href="/machine-coding"]')).toBeTruthy();
     expect(host.querySelector('a[href="/system-design"]')).toBeTruthy();
+    expect(host.querySelector('a[href="/tracks/foundations-30d/preview"]')).toBeTruthy();
+    expect(host.querySelector('a[href*="companies_role_contract"]')).toBeNull();
+  });
+
+  it('finishes with an empty state and public alternatives when resolved catalog data is unavailable', () => {
+    routeData.next({ companyIndex: { companies: [] } });
+    fixture.detectChanges();
+    const host: HTMLElement = fixture.nativeElement;
+
+    expect(host.querySelector('[data-testid="company-index-empty"]')).not.toBeNull();
+    expect(host.querySelector('[data-testid="company-index-loading"]')).toBeNull();
+    expect(host.querySelector('a.company-card')).toBeNull();
+    expect(host.querySelector('a[href="/coding"]')).not.toBeNull();
+    const payload = seo.updateTags.calls.mostRecent().args[0] as any;
+    const collection = payload.jsonLd.find((entry: any) => entry['@type'] === 'CollectionPage');
+    expect(collection.mainEntity).toBeUndefined();
   });
 
   it('places the company directory immediately after the page header and guidance after the list', () => {
