@@ -385,7 +385,7 @@ describe('guided system-design interview content', () => {
 
     expect(result.sourceContentId).toBe('dashboard-widgets-draggable-resizable');
     expect(result.sourceBundleHash).toBe(
-      '88be64af7409aa5b4f35d9de8109cbd30554d1396de31a0a59216e13cd2d57ee'
+      '02ba4b4bc75c8ba0b2e98639ed289815c3fd9c31942ad5945a7313fe11610d09'
     );
     expect(result.fixtures).toHaveLength(2);
     expect(new Set(result.fixtures.map((entry) => entry.ownershipOptionId)).size).toBe(2);
