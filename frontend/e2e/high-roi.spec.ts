@@ -207,6 +207,58 @@ test('JS/TS signature-help failure recovers without losing hints, editing or nav
   assertNoRequestFailures(requestFailures);
 });
 
+test('switching language cancels a pending completion without a browser error', async ({ page }) => {
+  await page.goto(`/${JS_QUESTION.tech}/coding/${JS_QUESTION.id}`);
+  const modelKey = `q-${JS_QUESTION.id}-code`;
+  await waitForMonacoModel(page, modelKey);
+
+  await page.evaluate((needle: string) => {
+    const win = window as any;
+    const monaco = win.monaco;
+    const editor = monaco.editor.getEditors().find((candidate: any) =>
+      candidate.getModel()?.uri.toString().includes(needle));
+    const model = editor.getModel();
+    const probe = win.__completionCancellationProbe = {
+      started: false, cancelled: false, released: false, release: () => {}, provider: null,
+    };
+    probe.provider = monaco.languages.registerCompletionItemProvider('javascript', {
+      provideCompletionItems: (_model: any, _position: any, _context: any, token: any) => {
+        probe.started = true;
+        token.onCancellationRequested(() => { probe.cancelled = true; });
+        return new Promise((resolve) => {
+          probe.release = () => {
+            probe.released = true;
+            resolve({ suggestions: [] });
+          };
+        });
+      },
+    });
+    model.setValue('const probeValue = 1;\nprobe');
+    editor.setPosition(model.getPositionAt(model.getValueLength()));
+    editor.focus();
+    editor.trigger('test', 'editor.action.triggerSuggest', {});
+  }, modelKey);
+
+  await page.waitForFunction(() => (window as any).__completionCancellationProbe.started);
+  await page.getByTestId('js-language-select').selectOption('ts');
+  await page.waitForFunction(() => (window as any).__completionCancellationProbe.cancelled);
+  await page.evaluate(() => {
+    const probe = (window as any).__completionCancellationProbe;
+    probe.release();
+    probe.provider.dispose();
+  });
+  // Let the cancelled provider's result reach Monaco and its error handler.
+  await waitForTwoAnimationFrames(page);
+  await page.waitForFunction((needle: string) => (window as any).monaco.editor.getModels()
+    .some((model: any) => model.uri.toString().includes(needle)
+      && model.getLanguageId() === 'typescript'), modelKey);
+  expect(await checkSignatureHelpRecovery(page, modelKey)).toMatchObject({
+    suppressed: true,
+    hintsEnabled: true,
+    hasMathCompletion: true,
+  });
+});
+
 test('CSS coding route completes a real Monaco language-worker round trip', async ({ page }) => {
   const requestFailures = trackRequestFailures(page);
   const pageErrors: string[] = [];

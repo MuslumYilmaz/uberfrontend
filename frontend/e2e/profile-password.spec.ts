@@ -21,9 +21,9 @@ async function loginAndOpenChangePassword(page: any, opts: Parameters<typeof ins
   await page.getByTestId('profile-change-password-open').click();
   await expect(page.getByTestId('profile-change-password-form')).toBeVisible();
   await expect(page.getByTestId('profile-change-password-new')).toBeEditable();
-  await page.evaluate(() => new Promise<void>((resolve) => {
-    requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
-  }));
+  // PrimeNG focuses the first field after the opening transition. Wait for that
+  // handoff so its delayed focus cannot redirect a subsequent fill to this field.
+  await expect(page.getByTestId('profile-change-password-current')).toBeFocused();
 }
 
 async function fillChangePasswordForm(
