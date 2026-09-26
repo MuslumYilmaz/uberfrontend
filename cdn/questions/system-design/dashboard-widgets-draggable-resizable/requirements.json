@@ -7,6 +7,12 @@
       "text": "Frame this as a frontend layout editor, not as a generic drag-and-drop feature."
     },
     {
+      "type": "callout",
+      "variant": "info",
+      "title": "Interview opening",
+      "text": "A strong opening is: model every widget as a rectangle on a logical grid, use a layout engine for snapping and collision resolution, keep pointermove work outside expensive framework rerenders, and persist one snapshot against its authoritative revision after the interaction commits."
+    },
+    {
       "type": "links",
       "title": "Contextual practice links",
       "items": [
@@ -82,12 +88,6 @@
           "Adds keyboard move/resize controls, focus management, and an alternate layout editor."
         ]
       ]
-    },
-    {
-      "type": "callout",
-      "variant": "info",
-      "title": "Interview opening",
-      "text": "A strong opening is: model every widget as a rectangle on a logical grid, use a layout engine for snapping and collision resolution, keep pointermove work outside expensive framework rerenders, and persist one snapshot against its authoritative revision after the interaction commits."
     },
     {
       "type": "divider"

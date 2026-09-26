@@ -155,6 +155,10 @@ describe('CompanyIndexComponent', () => {
     const payload = seo.updateTags.calls.mostRecent().args[0] as any;
     const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
     const collection = graph.find((entry: any) => entry?.['@type'] === 'CollectionPage');
+    expect(payload.description).toBe(
+      'Practice company-style frontend coding, concept, and system design questions. Explore editorial prep sets, not verified employer question banks.',
+    );
+    expect(collection?.description).toBe(payload.description);
     expect(collection?.disambiguatingDescription).toBe(
       'Editorial practice groupings, not verified official interview questions or endorsements.',
     );

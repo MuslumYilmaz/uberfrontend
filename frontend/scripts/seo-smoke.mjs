@@ -110,9 +110,9 @@ const ANGULAR_HTTP_CANCELLATION_LAB_ROUTE =
 const ANGULAR_HTTP_CANCELLATION_LAB_CANONICAL =
   `https://frontendatlas.com${ANGULAR_HTTP_CANCELLATION_LAB_ROUTE}`;
 const ANGULAR_HTTP_CANCELLATION_LAB_TITLE =
-  'Angular HttpClient Unsubscribe: 6 Tests & DevTools';
+  'Does Angular HttpClient Unsubscribe Cancel Requests?';
 const ANGULAR_HTTP_CANCELLATION_LAB_DESCRIPTION =
-  'Run six tests for unsubscribe, switchMap, AsyncPipe, mergeMap, and shareReplay. Prove RxJS teardown, browser abort, and stale-UI protection.';
+  'Test when unsubscribe cancels Angular HTTP requests, why server work may continue, and how six runnable tests expose stale UI bugs.';
 const ANGULAR_HTTP_CANCELLATION_LAB_H1 =
   'Angular HttpClient Cancellation: Debug, Test, and Prevent Stale UI';
 const ANGULAR_HTTP_CANCELLATION_LAB_CONTENT = [

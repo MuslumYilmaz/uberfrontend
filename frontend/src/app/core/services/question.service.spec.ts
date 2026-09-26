@@ -415,6 +415,42 @@ describe('QuestionService', () => {
     expect((list[0] as any).solution).toBeUndefined();
   });
 
+  it('uses nonblank summary then legacy text for list descriptions without exposing solutions', async () => {
+    const cases: Array<{ description: Question['description']; expected?: string }> = [
+      { description: '  String prompt.  ', expected: 'String prompt.' },
+      { description: { summary: '  Summary prompt.  ' }, expected: 'Summary prompt.' },
+      { description: { text: '  Legacy debug\n prompt.  ' }, expected: 'Legacy debug prompt.' },
+      { description: { summary: 'Summary wins.', text: 'Legacy text.' }, expected: 'Summary wins.' },
+      { description: { summary: ' \n ', text: 'Legacy fallback.' }, expected: 'Legacy fallback.' },
+      { description: { summary: '', text: '' } },
+      { description: { summary: ' \n ', text: ' \t ' } },
+      { description: ' \n ' },
+      { description: undefined },
+    ];
+    const resultPromise = firstValueFrom(service.loadQuestionSummaries('javascript', 'debug'));
+    flushDataVersion('bank-v1');
+    const req = await waitForRequest(
+      (r) => r.url.includes('questions/javascript/debug.json'),
+      'debug summaries fetch',
+    );
+    req.flush(cases.map((testCase, index) => ({
+      ...makeCodingQuestion(`debug-description-${index}`),
+      access: 'premium',
+      description: testCase.description,
+      solution: 'Private solution must never become a list description.',
+      solutionBlock: { explanation: 'Private structured solution.' },
+    })));
+
+    const list = await resultPromise;
+    cases.forEach((testCase, index) => {
+      expect(list[index].description).withContext(`description ${index}`).toBe(testCase.expected);
+      expect(list[index].shortDescription).withContext(`shortDescription ${index}`).toBe(testCase.expected);
+      expect(list[index].access).toBe('premium');
+      expect((list[index] as any).solution).toBeUndefined();
+      expect((list[index] as any).solutionBlock).toBeUndefined();
+    });
+  });
+
   it('dual-writes overrides to IndexedDB and localStorage', async () => {
     service.setLocalOverride('javascript', 'coding', [makeCodingQuestion('dual-write')]);
 

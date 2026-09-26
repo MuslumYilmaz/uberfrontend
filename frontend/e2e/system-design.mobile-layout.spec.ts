@@ -236,6 +236,70 @@ test.describe('system design mobile layout guardrail', () => {
     await assertSystemDesignNoOverflow(page);
   });
 
+  for (const width of [320, 390, 1440]) {
+    test(`dashboard widgets - complete answer tables and code stay contained at ${width}px`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 });
+      const response = await page.goto('/system-design/dashboard-widgets-draggable-resizable');
+
+      expect(response?.status()).toBe(200);
+      await assertSingleVisibleH1(page, 'Drag-and-Drop Dashboard Frontend System Design', width);
+      await expect(page.locator('.locked-card')).toHaveCount(0);
+
+      const sections = page.locator('details.sd-section');
+      await expect(sections).toHaveCount(5);
+      for (const section of await sections.all()) {
+        if (await section.getAttribute('open') === null) {
+          await section.locator('summary').click();
+        }
+        await expect(section).toHaveAttribute('open', '');
+      }
+
+      const answer = page.locator('.sdl-center');
+      await expect(answer.locator('.sd-callout').filter({ hasText: 'Interview opening' })).toBeVisible();
+      await expect(answer.locator('pre.sd-code > code').filter({
+        hasText: 'Deterministic grid/snap/collision example',
+      })).toBeVisible();
+      await expect(answer.locator('.sd-table-scroll')).not.toHaveCount(0);
+
+      await stabilize(page);
+      const wideContent = await answer.locator('.sd-section .sd-table-scroll, .sd-section pre.sd-code')
+        .evaluateAll((elements) => elements.map((element, index) => {
+          const node = element as HTMLElement;
+          const bounds = node.getBoundingClientRect();
+          const sectionBounds = node.closest('.sd-blocks')!.getBoundingClientRect();
+          const previousScrollLeft = node.scrollLeft;
+          node.scrollLeft = node.scrollWidth;
+          const scrollsHorizontally = node.scrollLeft > 0;
+          node.scrollLeft = previousScrollLeft;
+          return {
+            label: `${node.tagName.toLowerCase()}.${node.className}[${index}]`,
+            clientWidth: node.clientWidth,
+            scrollWidth: node.scrollWidth,
+            overflowX: getComputedStyle(node).overflowX,
+            scrollsHorizontally,
+            left: bounds.left,
+            right: bounds.right,
+            sectionLeft: sectionBounds.left,
+            sectionRight: sectionBounds.right,
+          };
+        }));
+
+      for (const item of wideContent) {
+        const label = `${item.label} at ${width}px`;
+        expect(item.clientWidth, `${label} has a usable viewport`).toBeGreaterThan(0);
+        expect(item.left, `${label} stays inside its answer section`).toBeGreaterThanOrEqual(item.sectionLeft - 1);
+        expect(item.right, `${label} stays inside its answer section`).toBeLessThanOrEqual(item.sectionRight + 1);
+        if (item.scrollWidth > item.clientWidth + 1) {
+          expect(['auto', 'scroll'], `${label} keeps wide content reachable`).toContain(item.overflowX);
+          expect(item.scrollsHorizontally, `${label} scrolls within its own container`).toBe(true);
+        }
+      }
+
+      await assertDocumentNoOverflow(page);
+      await assertElementFitsWidth(answer, `dashboard answer at ${width}px`);
+    });
+  }
+
   test('AI agent run inspector - worked example table and trace code stay contained on mobile', async ({ page }) => {
     await page.setViewportSize(MOBILE_VIEWPORT);
     const response = await page.goto('/system-design/ai-agent-run-inspector');

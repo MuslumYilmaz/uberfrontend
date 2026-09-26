@@ -306,6 +306,24 @@ const dashboard = bundleText('dashboard-widgets-draggable-resizable');
 assert.match(dashboard, /schemaVersion/);
 assert.match(dashboard, /revision/);
 assert.doesNotMatch(dashboard, /type LayoutVersion = 1 \| 2/);
+const dashboardRequirements = read('dashboard-widgets-draggable-resizable', 'requirements').blocks;
+const dashboardOpenings = dashboardRequirements.filter(
+  (block) => block.type === 'callout' && block.title === 'Interview opening',
+);
+assert.equal(dashboardOpenings.length, 1, 'dashboard: present one concise opening answer');
+assert.equal(dashboardRequirements[0].type, 'text', 'dashboard: retain the initial interview framing');
+assert.equal(
+  dashboardRequirements[1],
+  dashboardOpenings[0],
+  'dashboard: surface the opening answer immediately after framing, before practice links and scoping tables',
+);
+assert.match(dashboardOpenings[0].text, /logical grid/);
+assert.match(dashboardOpenings[0].text, /collision resolution/);
+assert.match(dashboardOpenings[0].text, /authoritative revision/);
+assert.ok(
+  dashboardRequirements.some((block) => block.type === 'code' && block.code.includes('Deterministic grid/snap/collision example')),
+  'dashboard: retain the worked collision example below the opening answer',
+);
 
 const aiChat = bundleText('ai-chat-textarea-design');
 assert.equal(

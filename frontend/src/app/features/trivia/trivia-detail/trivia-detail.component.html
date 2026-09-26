@@ -644,8 +644,9 @@
                 *ngIf="showAsyncRaceSimulator(q)"
                 aria-labelledby="async-race-simulator-title"
                 data-testid="async-race-simulator">
-                <h2 class="card-head" id="async-race-simulator-title">Async race simulator</h2>
+                <h2 class="card-head" id="async-race-simulator-title">Async race scenarios</h2>
                 <div class="card-body return-simulator__body">
+                    <p>Compare predefined timelines for the same out-of-order responses. Each strategy shows an illustrative outcome and an example assertion to adapt to your tests.</p>
                     <div class="return-simulator__tabs" role="group" aria-label="Choose an async race handling strategy">
                         <button
                             type="button"
@@ -692,15 +693,15 @@
                                 <p>{{ selectedAsyncRaceSimulatorOption().whyItHappens }}</p>
                             </div>
                             <div class="return-simulator__metric">
-                                <span class="return-simulator__label">Test assertion</span>
+                                <span class="return-simulator__label">Example assertion</span>
                                 <p>{{ selectedAsyncRaceSimulatorOption().testAssertion }}</p>
                             </div>
                         </div>
 
-                        <div class="async-race-proof-strip" aria-label="Async race proof signals">
-                            <span>Maintained by {{ authorLabel(q) }}</span>
-                            <span>Cross-checked with MDN/React/RxJS pages</span>
-                            <span>Race verified by deterministic test</span>
+                        <div class="async-race-proof-strip" aria-label="Async race scenario format">
+                            <span>Predefined request timelines</span>
+                            <span>Illustrative state outcomes</span>
+                            <span>Example assertions to adapt</span>
                         </div>
                     </div>
                 </div>
