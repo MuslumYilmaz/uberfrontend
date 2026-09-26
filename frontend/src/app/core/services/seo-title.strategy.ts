@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { RouterStateSnapshot, TitleStrategy } from '@angular/router';
+import { robotsForContentAccess } from '../utils/content-access-policy.util';
 import { SeoMeta, SeoService } from './seo.service';
 
 @Injectable()
@@ -9,6 +10,15 @@ export class SeoTitleStrategy extends TitleStrategy {
   }
 
   updateTitle(snapshot: RouterStateSnapshot): void {
+    let current = snapshot.root;
+    while (current.firstChild) current = current.firstChild;
+    const question = current.data?.['questionDetail']?.question;
+    // Resolved question components own the title and complete article metadata.
+    // Only robots needs a router refresh when a query-only navigation reuses data.
+    if (question) {
+      this.seo.updateRobots(robotsForContentAccess(question.access), snapshot.root.queryParamMap.keys.length > 0);
+      return;
+    }
     const meta = this.extractSeo(snapshot);
     this.seo.updateTags(meta);
   }

@@ -104,4 +104,28 @@ describe('SeoService', () => {
     const robots = meta.getTag('name="robots"');
     expect(robots?.content).toBe('index,follow');
   });
+
+  it('refreshes robots alone with supplied query context while preserving the page metadata', () => {
+    const win = doc.defaultView as (Window & { __FA_SEO_HOST__?: string }) | null;
+    if (win) win.__FA_SEO_HOST__ = 'frontendatlas.com';
+    service.updateTags({
+      title: 'Question detail',
+      description: 'The complete question explanation.',
+      canonical: '/javascript/trivia/example',
+      jsonLd: { '@type': 'Article', headline: 'Question detail' },
+    });
+    const originalSchema = doc.head.querySelector('#seo-jsonld')?.textContent;
+    const originalCanonical = doc.head.querySelector('link[rel="canonical"]')?.getAttribute('href');
+
+    service.updateRobots(undefined, true);
+    expect(meta.getTag('name="robots"')?.content).toBe('noindex,follow');
+    service.updateRobots(undefined, false);
+    expect(meta.getTag('name="robots"')?.content).toBe('index,follow');
+    service.updateRobots('noindex,follow', false);
+    expect(meta.getTag('name="robots"')?.content).toBe('noindex,follow');
+    expect(title.getTitle()).toBe('Question detail');
+    expect(meta.getTag('name="description"')?.content).toBe('The complete question explanation.');
+    expect(doc.head.querySelector('#seo-jsonld')?.textContent).toBe(originalSchema);
+    expect(doc.head.querySelector('link[rel="canonical"]')?.getAttribute('href')).toBe(originalCanonical);
+  });
 });

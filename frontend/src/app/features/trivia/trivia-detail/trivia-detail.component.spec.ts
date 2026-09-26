@@ -397,9 +397,9 @@ describe('TriviaDetailComponent', () => {
   it('keeps the interview-practice label alongside a question-level SEO H1 override', async () => {
     const fixture = await createLoadedFixture('free', {
       seo: {
-        title: 'Can React Return undefined? React 18 vs null',
+        title: 'React Return null vs undefined: React 18+ Explained',
         description:
-          'React 18+ permits undefined component returns. Practice when it renders nothing, why null is clearer, how React 17 differed, and lint catches return bugs.',
+          'Compare null and undefined returns in React 18+, see what changed since React 17, and catch accidental missing returns with TypeScript and lint rules.',
         h1: 'Can React Components Return undefined? React 18 vs null',
       },
     });
@@ -613,10 +613,10 @@ describe('TriviaDetailComponent', () => {
   });
 
   it('renders Angular HttpClient interview practice before the lab with the common schema', async () => {
-    const expectedTitle = 'Angular HttpClient Unsubscribe: 6 Tests & DevTools';
+    const expectedTitle = 'Does Angular HttpClient Unsubscribe Cancel Requests?';
     const expectedH1 = 'Angular HttpClient Cancellation: Debug, Test, and Prevent Stale UI';
     const expectedDescription =
-      'Run six tests for unsubscribe, switchMap, AsyncPipe, mergeMap, and shareReplay. Prove RxJS teardown, browser abort, and stale-UI protection.';
+      'Test when unsubscribe cancels Angular HTTP requests, why server work may continue, and how six runnable tests expose stale UI bugs.';
     const question: any = {
       id: 'angular-http-what-actually-cancels-request',
       title: 'Does Angular HttpClient unsubscribe cancel requests?',
@@ -928,8 +928,8 @@ describe('TriviaDetailComponent', () => {
           { type: 'text', text: '## Shared-controller follow-up\n\nRoute cleanup can share one controller.' },
           { type: 'text', text: '## Pitfalls\n\nDebounce is not cancellation.' },
           { type: 'text', text: '## Source check\n\nCompare this answer with MDN AbortController, the React useEffect page, and the RxJS switchMap operator page.' },
-          { type: 'text', text: '## Testable proof\n\nAssert stale results cannot overwrite newer UI.' },
-          { type: 'text', text: '## FrontendAtlas review note\n\nReviewed as a frontend debugging rule.' },
+          { type: 'text', text: '## Test sketch\n\nAdapt the helper and assert stale results cannot overwrite newer UI.' },
+          { type: 'text', text: '## Guard every UI state change\n\nGuard stale errors and loading updates as well as results.' },
           { type: 'text', text: '## Production debugging standard\n\nOlder completions cannot update state.' },
         ],
       },
@@ -962,8 +962,8 @@ describe('TriviaDetailComponent', () => {
     expect(h3Text).toContain('Shared-controller follow-up');
     expect(h3Text).toContain('Pitfalls');
     expect(h3Text).not.toContain('Source check');
-    expect(h3Text).toContain('Testable proof');
-    expect(h3Text).toContain('FrontendAtlas review note');
+    expect(h3Text).toContain('Test sketch');
+    expect(h3Text).toContain('Guard every UI state change');
     expect(h3Text).toContain('Production debugging standard');
 
     expect(fixture.nativeElement.querySelector('.source-check')).toBeNull();
@@ -1001,7 +1001,7 @@ describe('TriviaDetailComponent', () => {
     );
   });
 
-  it('renders the async race simulator only for the async race question', async () => {
+  it('renders illustrative async race scenarios only for the async race question', async () => {
     const targetFixture = await createLoadedFixture('free', {
       id: 'js-async-race-conditions',
       title: 'Async Race Conditions and Stale UI Updates',
@@ -1011,15 +1011,15 @@ describe('TriviaDetailComponent', () => {
 
     const simulator = targetFixture.nativeElement.querySelector('[data-testid="async-race-simulator"]') as HTMLElement | null;
     expect(simulator).toBeTruthy();
-    expect(simulator?.querySelector('h2')?.textContent?.trim()).toBe('Async race simulator');
+    expect(simulator?.querySelector('h2')?.textContent?.trim()).toBe('Async race scenarios');
     expect(simulator?.querySelector('.async-race-timeline')).toBeTruthy();
     expect(simulator?.textContent || '').toContain('rea request starts');
     expect(simulator?.textContent || '').toContain('UI write allowed');
     expect(simulator?.textContent || '').toContain('stale write');
     expect(simulator?.textContent || '').toContain("Stale UI: results for 'rea' overwrite the newer 'react' results.");
-    expect(simulator?.textContent || '').toContain('Maintained by FrontendAtlas Editorial');
-    expect(simulator?.textContent || '').toContain('Cross-checked with MDN/React/RxJS pages');
-    expect(simulator?.textContent || '').toContain('Race verified by deterministic test');
+    expect(simulator?.textContent || '').toContain('Compare predefined timelines');
+    expect(simulator?.textContent || '').toContain('Example assertions to adapt');
+    expect(simulator?.textContent || '').not.toContain('Race verified by deterministic test');
 
     targetFixture.destroy();
 
@@ -1034,7 +1034,7 @@ describe('TriviaDetailComponent', () => {
     expect(nonTargetFixture.nativeElement.querySelector('.async-race-proof-strip')).toBeNull();
   });
 
-  it('updates async race simulator output when a strategy is selected', async () => {
+  it('switches the illustrated async race outcome when a strategy is selected', async () => {
     const fixture = await createLoadedFixture('free', {
       id: 'js-async-race-conditions',
       title: 'Async Race Conditions and Stale UI Updates',
@@ -2077,9 +2077,9 @@ describe('TriviaDetailComponent', () => {
       tags: ['react', 'rendering', 'null', 'conditional', 'components'],
       updatedAt: '2026-06-29',
       seo: {
-        title: 'Can React Return undefined? React 18 vs null',
+        title: 'React Return null vs undefined: React 18+ Explained',
         description:
-          'React 18+ permits undefined component returns. Practice when it renders nothing, why null is clearer, how React 17 differed, and lint catches return bugs.',
+          'Compare null and undefined returns in React 18+, see what changed since React 17, and catch accidental missing returns with TypeScript and lint rules.',
         h1: 'Can React Components Return undefined? React 18 vs null',
       },
     };

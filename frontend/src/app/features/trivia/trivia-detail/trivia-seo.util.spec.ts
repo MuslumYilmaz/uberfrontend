@@ -12,15 +12,9 @@ describe('trivia-seo.util', () => {
     expect(title.length).toBeLessThanOrEqual(54);
   });
 
-  it('sanitizes html and clamps long strings without ellipsis padding', () => {
-    const sanitized = sanitizeSerpText(
-      '<strong>Hello</strong> world '.repeat(20),
-      40
-    );
-
-    expect(sanitized).not.toContain('<strong>');
-    expect(sanitized.length).toBeLessThanOrEqual(40);
-    expect(sanitized.endsWith('…')).toBeFalse();
+  it('normalizes editorial wrappers without truncating the sentence', () => {
+    const text = 'Keep the complete concept and its final technical term. '.repeat(4).trim();
+    expect(sanitizeSerpText(`<strong>${text}</strong>`)).toBe(text);
   });
 
   it('generates deterministic description from framework + content', () => {
@@ -88,10 +82,102 @@ describe('trivia-seo.util', () => {
     expect(first).not.toEqual(second);
     expect(first).toContain('Vue');
     expect(second).toContain('Vue');
-    expect(first).toContain('Interview Answer');
-    expect(second).toContain('Interview Answer');
-    expect(first.length).toBeLessThanOrEqual(54);
-    expect(second.length).toBeLessThanOrEqual(54);
+    expect(first).toBe('Vue V If Component Creation Destruction');
+    expect(second).toBe('V Show Vs V If DOM Lifecycle in Vue: Interview Answer');
+  });
+
+  it('keeps complete authored metadata beyond the soft snippet lengths', () => {
+    const title = 'Angular directives in production: structural vs attribute, * syntax, and when TemplateRef matters';
+    const description = 'Explain Angular directives through the real follow-ups: structural vs attribute behavior, * microsyntax desugaring, preserved state, and when TemplateRef/ViewContainerRef belongs in the answer.';
+    const question = {
+      id: 'angular-directives',
+      technology: 'angular',
+      title: 'What are Angular directives?',
+      seo: { title, description },
+    } as any;
+
+    expect(title.length).toBeGreaterThan(54);
+    expect(description.length).toBeGreaterThan(155);
+    expect(seoTitleForQuestion(question)).toBe(title);
+    expect(seoDescriptionForQuestion(question, '', 'angular')).toBe(description);
+  });
+
+  it('preserves the final word of an authored comparison title', () => {
+    const question = {
+      id: 'css-margin-vs-padding',
+      technology: 'css',
+      title: 'What is the difference between margin and padding in CSS?',
+      seo: {
+        title: 'Margin vs Padding in CSS: Key Differences with Examples',
+        description: 'Compare outside and inside spacing with real examples.',
+      },
+    } as any;
+
+    expect(seoTitleForQuestion(question)).toBe(question.seo.title);
+  });
+
+  it('retargets long comparisons without dropping the last option or cutting the framework', () => {
+    const question = {
+      id: 'rxjs-subject-vs-behaviorsubject-vs-replaysubject-vs-asyncsubject',
+      technology: 'angular',
+      title: 'Subject vs BehaviorSubject vs ReplaySubject vs AsyncSubject in Angular: when do you use which?',
+      seo: {
+        title: 'Subject vs BehaviorSubject vs ReplaySubject vs AsyncSubject: late subscribers and state rules',
+        description: 'Choose the right RxJS Subject variant by asking what late subscribers should receive.',
+      },
+    } as any;
+
+    expect(seoTitleForQuestion(question)).toBe(
+      'Subject vs BehaviorSubject vs ReplaySubject vs AsyncSubject in Angular',
+    );
+    expect(seoDescriptionForQuestion(question, '', 'angular')).toBe(
+      'Subject vs BehaviorSubject vs ReplaySubject vs AsyncSubject in Angular: quick interview answer, examples, common mistakes, and production pitfalls.',
+    );
+  });
+
+  it('preserves complete behavior questions and the concept used in their descriptions', () => {
+    const question = {
+      id: 'react-fragments-dom-and-reconciliation',
+      technology: 'react',
+      title: 'How do fragments affect the rendered DOM and reconciliation?',
+      seo: {
+        title: 'What do React fragments do and when should you use them?',
+        description: 'React fragments group children without adding extra DOM nodes.',
+      },
+    } as any;
+
+    expect(seoTitleForQuestion(question)).toBe(question.title);
+    expect(seoDescriptionForQuestion(question, '', 'react')).toBe(
+      'Understand fragments affect the rendered DOM and reconciliation: quick answer, real example, common mistake, and senior interview follow-up.',
+    );
+  });
+
+  it('keeps literal HTML tag names in authored titles and descriptions', () => {
+    const question = {
+      id: 'html-a-tag',
+      technology: 'html',
+      title: 'What is the HTML a tag?',
+      seo: {
+        title: 'HTML <a> tag: navigation semantics, accessibility, and common pitfalls',
+        description: 'Learn when to use <a> for real navigation, how href/rel affect accessibility and SEO, and which common pitfalls break browser behavior.',
+      },
+    } as any;
+
+    expect(seoTitleForQuestion(question)).toBe(question.seo.title);
+    expect(seoDescriptionForQuestion(question, '', 'html')).toBe(question.seo.description);
+  });
+
+  it('does not truncate a long fallback concept to make room for the optional suffix', () => {
+    const question = {
+      id: 'long-comparison',
+      technology: 'javascript',
+      title: 'Immutable data structures across deeply nested application state and concurrent asynchronous workflows',
+    } as any;
+
+    expect(seoTitleForQuestion(question)).toBe(`JavaScript ${question.title}`);
+    expect(seoDescriptionForQuestion(question, '', 'javascript')).toBe(
+      `Practice ${question.title} with a quick interview answer, examples, common mistakes, and production-focused follow-ups.`,
+    );
   });
 
   it('preserves the React stale closures search landing metadata', () => {
@@ -183,19 +269,19 @@ describe('trivia-seo.util', () => {
       title: 'Can a React component return undefined?',
       technology: 'react',
       seo: {
-        title: 'Can React Return undefined? React 18 vs null',
+        title: 'React Return null vs undefined: React 18+ Explained',
         description:
-          'React 18+ permits undefined component returns. Practice when it renders nothing, why null is clearer, how React 17 differed, and lint catches return bugs.',
+          'Compare null and undefined returns in React 18+, see what changed since React 17, and catch accidental missing returns with TypeScript and lint rules.',
       },
     } as any;
 
     const title = seoTitleForQuestion(question);
     const description = seoDescriptionForQuestion(question, 'fallback description', 'react');
 
-    expect(title).toBe('Can React Return undefined? React 18 vs null');
+    expect(title).toBe('React Return null vs undefined: React 18+ Explained');
     expect(title.length).toBeLessThanOrEqual(54);
     expect(description).toBe(
-      'React 18+ permits undefined component returns. Practice when it renders nothing, why null is clearer, how React 17 differed, and lint catches return bugs.',
+      'Compare null and undefined returns in React 18+, see what changed since React 17, and catch accidental missing returns with TypeScript and lint rules.',
     );
     expect(description.length).toBeLessThanOrEqual(155);
   });
@@ -229,19 +315,19 @@ describe('trivia-seo.util', () => {
       title: 'Does Angular HttpClient unsubscribe cancel requests?',
       technology: 'angular',
       seo: {
-        title: 'Angular HttpClient Unsubscribe: 6 Tests & DevTools',
+        title: 'Does Angular HttpClient Unsubscribe Cancel Requests?',
         description:
-          'Run six tests for unsubscribe, switchMap, AsyncPipe, mergeMap, and shareReplay. Prove RxJS teardown, browser abort, and stale-UI protection.',
+          'Test when unsubscribe cancels Angular HTTP requests, why server work may continue, and how six runnable tests expose stale UI bugs.',
       },
     } as any;
 
     const title = seoTitleForQuestion(question);
     const description = seoDescriptionForQuestion(question, 'fallback description', 'angular');
 
-    expect(title).toBe('Angular HttpClient Unsubscribe: 6 Tests & DevTools');
+    expect(title).toBe('Does Angular HttpClient Unsubscribe Cancel Requests?');
     expect(title.length).toBeLessThanOrEqual(54);
     expect(description).toBe(
-      'Run six tests for unsubscribe, switchMap, AsyncPipe, mergeMap, and shareReplay. Prove RxJS teardown, browser abort, and stale-UI protection.'
+      'Test when unsubscribe cancels Angular HTTP requests, why server work may continue, and how six runnable tests expose stale UI bugs.'
     );
     expect(description.length).toBeLessThanOrEqual(155);
   });

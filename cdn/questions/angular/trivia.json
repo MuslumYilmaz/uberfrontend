@@ -6650,9 +6650,9 @@
       ]
     },
     "seo": {
-      "title": "Angular HttpClient Unsubscribe: 6 Tests & DevTools",
+      "title": "Does Angular HttpClient Unsubscribe Cancel Requests?",
       "h1": "Angular HttpClient Cancellation: Debug, Test, and Prevent Stale UI",
-      "description": "Run six tests for unsubscribe, switchMap, AsyncPipe, mergeMap, and shareReplay. Prove RxJS teardown, browser abort, and stale-UI protection."
+      "description": "Test when unsubscribe cancels Angular HTTP requests, why server work may continue, and how six runnable tests expose stale UI bugs."
     },
     "incidentCard": {
       "title": "Request Cancellation Check",

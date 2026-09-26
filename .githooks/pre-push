@@ -49,6 +49,9 @@ BACKEND_NODECHECK_FILES="$(mktemp)"
 trap 'rm -f "$CHANGED_FILES" "$PUSH_COMMITS" "$BACKEND_SOURCE_FILES" "$BACKEND_TEST_FILES" "$BACKEND_NODECHECK_FILES"' EXIT
 FRONTEND_CHANGE_RE='^(frontend/|content-drafts/interview-mcq/|cdn/(questions/|incidents/|tradeoff-battles/|practice/)|cdn/data-version\.json$)'
 BACKEND_CHANGE_RE='^backend/'
+# Interview artifacts pin source catalogs, system-design bundles, sandbox assets,
+# and the generated MCQ bank even when no backend file changes.
+INTERVIEW_CONTENT_CHANGE_RE='^(backend/content/interview/|content-drafts/interview-mcq/generated/|cdn/questions/(system-design/|[^/]+/coding\.json$|pressure-modes/)|cdn/sb/)'
 
 # Collect file paths included in refs being pushed.
 while read -r local_ref local_sha remote_ref remote_sha; do
@@ -103,11 +106,11 @@ if grep -Eq "$BACKEND_CHANGE_RE" "$CHANGED_FILES"; then
   HAS_BACKEND_CHANGES=1
 fi
 
-if grep -Eq '^backend/content/interview/' "$CHANGED_FILES"; then
+if grep -Eq "$INTERVIEW_CONTENT_CHANGE_RE" "$CHANGED_FILES"; then
   HAS_INTERVIEW_CONTENT_CHANGES=1
 fi
 
-if [ "$HAVE_REFS" -eq 1 ] && [ "$HAS_FRONTEND_CHANGES" -eq 0 ] && [ "$HAS_BACKEND_CHANGES" -eq 0 ]; then
+if [ "$HAVE_REFS" -eq 1 ] && [ "$HAS_FRONTEND_CHANGES" -eq 0 ] && [ "$HAS_BACKEND_CHANGES" -eq 0 ] && [ "$HAS_INTERVIEW_CONTENT_CHANGES" -eq 0 ]; then
   echo "[pre-push] No backend/frontend repo changes in push refs. Skipping checks."
   exit 0
 fi
@@ -174,19 +177,19 @@ if [ "$HAS_BACKEND_CHANGES" -eq 1 ]; then
     fi
     echo "[pre-push] OK: Changed backend test files passed."
   fi
+fi
 
-  if [ "$HAS_INTERVIEW_CONTENT_CHANGES" -eq 1 ]; then
-    echo "[pre-push] Validating generated interview content..."
-    if ! npm -C backend run generate:interview-content:check; then
-      echo "[pre-push] ERROR: Generated interview content is stale. Push aborted." >&2
-      exit 1
-    fi
-    if ! npm -C backend run validate:interview-content; then
-      echo "[pre-push] ERROR: Interview content validation failed. Push aborted." >&2
-      exit 1
-    fi
-    echo "[pre-push] OK: Interview content validation passed."
+if [ "$HAS_INTERVIEW_CONTENT_CHANGES" -eq 1 ]; then
+  echo "[pre-push] Validating generated interview content..."
+  if ! npm -C backend run generate:interview-content:check; then
+    echo "[pre-push] ERROR: Generated interview content is stale. Push aborted." >&2
+    exit 1
   fi
+  if ! npm -C backend run validate:interview-content; then
+    echo "[pre-push] ERROR: Interview content validation failed. Push aborted." >&2
+    exit 1
+  fi
+  echo "[pre-push] OK: Interview content validation passed."
 fi
 
 if [ "$HAS_FRONTEND_CHANGES" -eq 0 ]; then

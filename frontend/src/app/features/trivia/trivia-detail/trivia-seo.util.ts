@@ -1,12 +1,12 @@
 import { Question } from '../../../core/models/question.model';
+import { normalizeSeoPlainText } from '../../../core/utils/seo-text.util';
 
-const TITLE_MAX_LEN = 54;
-const DESCRIPTION_MAX_LEN = 155;
+const TITLE_SOFT_LEN = 54;
 const INTERVIEW_TITLE_SUFFIX = ': Interview Answer';
 const INTERVIEW_INTENT_RE = /\b(interview(?:s)?|interviewer(?:s)?|prep(?:aration)?|practice|candidate(?:s)?|round(?:s)?|follow[\s-]?ups?|drill(?:s)?|question(?:s)?|answer(?:s)?)\b/i;
 const DOCS_INTENT_RE = /\b(?:official\s+docs?|docs\s+wording|memorized\s+docs\s+wording|official\s+documentation|documentation|official\s+guide|official\s+api|api\s+docs?|api\s+reference)\b/i;
 const ANSWER_FIRST_RE = /^(yes|no|it depends)\s*[:.—]/i;
-const PROBLEM_FIRST_RE = /\b(?:running|runs|called|firing)\s+twice\b|\bduplicate\s+(?:fetches|listeners|requests|api\s+calls)\b|\b(?:bugs?|fix(?:es|ing)?|gotchas?|leaks?|pitfalls?)\b/i;
+const PROBLEM_FIRST_RE = /\b(?:running|runs|called|firing)\s+twice\b|\bduplicate\s+(?:fetches|listeners|requests|api\s+calls)\b|\bmissing\s+returns?\b|\b(?:bugs?|fix(?:es|ing)?|gotchas?|leaks?|pitfalls?)\b/i;
 const APPLIED_REVIEW_INTENT_RE = /\b(?:code[\s-]?review|pull requests?|case files?|review clinic|predict (?:the )?(?:failure|result|output|behavior))\b/i;
 const BEHAVIOR_QUESTION_RE = /^(?:does|do|why|how)\b|\b(?:what\s+actually\s+happens|what\s+happens|how\s+(?:does|do).+\bwork|why\s+.+\bhappen|cancel(?:s|led|lation)?|unsubscribe|rerun|re-run|recompute|render(?:s|ing)?|execute(?:s|d)?|fire(?:s|d)?|update(?:s|d)?|mutate(?:s|d)?|leak(?:s|ed)?)\b/i;
 
@@ -23,34 +23,8 @@ function normalizeWhitespace(value: string): string {
   return value.replace(/\s+/g, ' ').trim();
 }
 
-function decodeHtmlEntities(value: string): string {
-  return value
-    .replace(/&amp;(?=lt;|gt;|amp;|quot;|#39;)/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&amp;/g, '&');
-}
-
-function trimWordBoundary(value: string, maxLen: number): string {
-  if (value.length <= maxLen) return value;
-
-  const sliced = value.slice(0, Math.max(0, maxLen)).trimEnd();
-  const minSoftBreak = Math.floor(maxLen * 0.65);
-  const breakAt = sliced.lastIndexOf(' ');
-  const clipped = breakAt >= minSoftBreak ? sliced.slice(0, breakAt) : sliced;
-  return clipped.replace(/[\s,;:/-]+$/g, '').trim();
-}
-
-export function sanitizeSerpText(input: string, maxLen: number): string {
-  const normalized = normalizeWhitespace(
-    decodeHtmlEntities(String(input || ''))
-      .replace(/<[^>]+>/g, ' ')
-  );
-
-  if (!normalized) return '';
-  return trimWordBoundary(normalized, maxLen);
+export function sanitizeSerpText(input: string): string {
+  return normalizeSeoPlainText(input);
 }
 
 function frameworkLabel(tech?: string): string {
@@ -87,38 +61,32 @@ function slugToConcept(id?: string, tech?: string): string {
       .replace(/\btorefs\b/gi, 'toRefs')
       .replace(/\btoref\b/gi, 'toRef')
       .replace(/\bvs\b/gi, 'vs')
-      .replace(/\b\w/g, (ch) => ch.toUpperCase()),
-    46
+      .replace(/\b\w/g, (ch) => ch.toUpperCase())
   );
 }
 
 function cleanQuestionConcept(rawTitle: string): string {
-  const title = sanitizeSerpText(rawTitle, 90).replace(/\?+$/, '').trim();
+  const title = sanitizeSerpText(rawTitle).replace(/\?+$/, '').trim();
   if (!title) return '';
 
   const difference = title.match(/^what\s+is\s+the\s+difference\s+between\s+(.+?)\s+and\s+(.+)$/i);
   if (difference) {
-    return sanitizeSerpText(`${difference[1]} vs ${difference[2]}`, 46);
+    return sanitizeSerpText(`${difference[1]} vs ${difference[2]}`);
   }
 
   const broadDifference = title.match(/^what\s+is\s+the\s+difference\s+between\s+(.+)$/i);
   if (broadDifference) {
-    return sanitizeSerpText(broadDifference[1], 46);
+    return sanitizeSerpText(broadDifference[1]);
   }
 
   const doesDo = title.match(/^what\s+does\s+(.+?)\s+do$/i);
   if (doesDo) {
-    return sanitizeSerpText(doesDo[1], 46);
+    return sanitizeSerpText(doesDo[1]);
   }
 
   const howWorks = title.match(/^how\s+(?:does|do)\s+(.+?)\s+work$/i);
   if (howWorks) {
-    return sanitizeSerpText(howWorks[1], 46);
-  }
-
-  const beforeColon = title.split(':')[0]?.trim();
-  if (title.includes(':') && beforeColon && title.length > 46 && beforeColon.length >= 10) {
-    return sanitizeSerpText(beforeColon, 46);
+    return sanitizeSerpText(howWorks[1]);
   }
 
   return sanitizeSerpText(
@@ -127,22 +95,21 @@ function cleanQuestionConcept(rawTitle: string): string {
       .replace(/^(what|why|how|when|where)\s+/i, '')
       .replace(/^(does|do|can|should|will|is|are)\s+/i, '')
       .replace(/\s+do$/i, '')
-      .trim(),
-    46
+      .trim()
   );
 }
 
 function titleConcept(q: Pick<Question, 'title' | 'id' | 'technology'>): string {
-  const title = sanitizeSerpText(String(q.title || '').trim(), 70);
+  const title = sanitizeSerpText(String(q.title || '').trim());
   if (title) {
     const trimmed = cleanQuestionConcept(title);
-    if (trimmed.length >= 10) return sanitizeSerpText(trimmed, 46);
+    if (trimmed.length >= 10) return sanitizeSerpText(trimmed);
   }
   return slugToConcept((q as any).id, (q as any).technology);
 }
 
 function normalizedQuestionTitle(q: Pick<Question, 'title'>): string {
-  const title = sanitizeSerpText(String(q.title || '').trim(), 96);
+  const title = sanitizeSerpText(String(q.title || '').trim());
   if (!title) return '';
 
   const cleaned = title
@@ -152,7 +119,7 @@ function normalizedQuestionTitle(q: Pick<Question, 'title'>): string {
     .replace(/\?+$/, '')
     .trim();
 
-  return cleaned.length >= 8 ? sanitizeSerpText(cleaned, 88) : title;
+  return cleaned.length >= 8 ? sanitizeSerpText(cleaned) : title;
 }
 
 function hasInterviewIntent(value: string): boolean {
@@ -202,33 +169,31 @@ function comparisonConcept(
   q: Pick<Question, 'id' | 'title' | 'technology'>,
   framework: string
 ): string {
-  const title = sanitizeSerpText(String(q.title || '').trim(), 110).replace(/\?+$/, '').trim();
+  const title = sanitizeSerpText(String(q.title || '').trim()).replace(/\?+$/, '').trim();
   const difference = title.match(/^what\s+is\s+the\s+difference\s+between\s+(.+?)\s+and\s+(.+)$/i);
   if (difference) {
     return sanitizeSerpText(
-      `${stripFrameworkPrefix(difference[1], framework)} vs ${stripFrameworkSuffix(difference[2], framework)}`,
-      58
+      `${stripFrameworkPrefix(difference[1], framework)} vs ${stripFrameworkSuffix(difference[2], framework)}`
     );
   }
 
   const vs = title.match(/^(.+?)\s+vs\.?\s+(.+?)(?::|$)/i);
   if (vs) {
     return sanitizeSerpText(
-      `${stripFrameworkPrefix(vs[1], framework)} vs ${stripFrameworkSuffix(vs[2], framework)}`,
-      58
+      `${stripFrameworkPrefix(vs[1], framework)} vs ${stripFrameworkSuffix(vs[2], framework)}`
     );
   }
 
   const concept = titleConcept(q);
   if (/\bvs\.?\b/i.test(concept)) {
-    return sanitizeSerpText(stripFrameworkSuffix(concept, framework), 58);
+    return sanitizeSerpText(stripFrameworkSuffix(concept, framework));
   }
 
   return '';
 }
 
 function ensureFrameworkInConcept(concept: string, framework: string): string {
-  const normalizedConcept = sanitizeSerpText(concept, 70);
+  const normalizedConcept = sanitizeSerpText(concept);
   if (!normalizedConcept) return framework;
   if (new RegExp(`\\b${framework}\\b`, 'i').test(normalizedConcept)) return normalizedConcept;
   return `${framework} ${normalizedConcept}`;
@@ -241,9 +206,14 @@ function interviewAnswerTitle(
   const rawConcept = titleConcept(q)
     || slugToConcept((q as any).id, (q as any).technology)
     || 'Interview Concept';
-  const conceptMaxLen = TITLE_MAX_LEN - INTERVIEW_TITLE_SUFFIX.length;
-  const concept = sanitizeSerpText(ensureFrameworkInConcept(rawConcept, framework), conceptMaxLen);
-  return sanitizeSerpText(`${concept || framework}${INTERVIEW_TITLE_SUFFIX}`, TITLE_MAX_LEN);
+  const concept = ensureFrameworkInConcept(rawConcept, framework);
+  return withOptionalInterviewSuffix(concept);
+}
+
+function withOptionalInterviewSuffix(concept: string): string {
+  const title = sanitizeSerpText(concept);
+  const withSuffix = `${title}${INTERVIEW_TITLE_SUFFIX}`;
+  return withSuffix.length <= TITLE_SOFT_LEN ? withSuffix : title;
 }
 
 function retargetedTitle(
@@ -252,10 +222,10 @@ function retargetedTitle(
 ): string {
   const comparison = comparisonConcept(q, framework);
   if (comparison) {
-    return sanitizeSerpText(`${comparison} in ${framework}: Interview Answer`, TITLE_MAX_LEN);
+    return withOptionalInterviewSuffix(`${comparison} in ${framework}`);
   }
 
-  const behaviorQuestion = sanitizeSerpText(String(q.title || '').trim(), TITLE_MAX_LEN);
+  const behaviorQuestion = sanitizeSerpText(String(q.title || '').trim());
   if (behaviorQuestion && hasBehaviorQuestionIntent(behaviorQuestion)) {
     return behaviorQuestion;
   }
@@ -269,9 +239,7 @@ export function seoTitleForQuestion(q: Pick<Question, 'id' | 'title' | 'technolo
   const rawExplicitAllowed = rawExplicit && !hasDocsIntent(rawExplicit);
   const rawMetadata = `${rawExplicit} ${rawExplicitDescription}`;
   const rawMetadataHasRetargetedIntent = hasRetargetedIntent(rawMetadata);
-  const explicit = rawExplicitAllowed && hasInterviewIntent(rawExplicit)
-    ? sanitizeSerpText(rawExplicit, Math.max(TITLE_MAX_LEN, rawExplicit.length))
-    : sanitizeSerpText(rawExplicitAllowed ? rawExplicit : '', TITLE_MAX_LEN);
+  const explicit = sanitizeSerpText(rawExplicitAllowed ? rawExplicit : '');
   const framework = frameworkLabel(q.technology);
   if (explicit) {
     return rawMetadataHasRetargetedIntent && !hasDocsIntent(rawMetadata)
@@ -285,13 +253,13 @@ export function seoTitleForQuestion(q: Pick<Question, 'id' | 'title' | 'technolo
     && new RegExp(`^${framework}\\b`, 'i').test(questionTitle)
     ? questionTitle
     : `${framework} ${questionTitle || concept}`;
-  const candidate = sanitizeSerpText(prefixedQuestionTitle, TITLE_MAX_LEN);
+  const candidate = sanitizeSerpText(prefixedQuestionTitle);
   const normalized = hasInterviewIntent(candidate)
-    ? sanitizeSerpText(candidate, TITLE_MAX_LEN)
+    ? candidate
     : retargetedTitle(q, framework);
   if (normalized) return normalized;
 
-  return sanitizeSerpText(`${framework} interview answer`, TITLE_MAX_LEN);
+  return sanitizeSerpText(`${framework} interview answer`);
 }
 
 function interviewAnswerDescription(
@@ -304,21 +272,18 @@ function interviewAnswerDescription(
   const comparison = comparisonConcept(q, framework);
   if (comparison) {
     return sanitizeSerpText(
-      `${comparison} in ${framework}: quick interview answer, examples, common mistakes, and production pitfalls.`,
-      DESCRIPTION_MAX_LEN
+      `${comparison} in ${framework}: quick interview answer, examples, common mistakes, and production pitfalls.`
     );
   }
 
   if (hasBehaviorQuestionIntent(`${q.title || ''} ${(q as any).id || ''}`)) {
     return sanitizeSerpText(
-      `Understand ${concept}: quick answer, real example, common mistake, and senior interview follow-up.`,
-      DESCRIPTION_MAX_LEN
+      `Understand ${concept}: quick answer, real example, common mistake, and senior interview follow-up.`
     );
   }
 
   return sanitizeSerpText(
-    `Practice ${concept} with a quick interview answer, examples, common mistakes, and production-focused follow-ups.`,
-    DESCRIPTION_MAX_LEN
+    `Practice ${concept} with a quick interview answer, examples, common mistakes, and production-focused follow-ups.`
   );
 }
 
@@ -330,9 +295,7 @@ export function seoDescriptionForQuestion(
   const rawExplicit = rawQuestionSeoDescription(q);
   const rawExplicitAllowed = rawExplicit && !hasDocsIntent(rawExplicit);
   const rawExplicitHasRetargetedIntent = hasRetargetedIntent(rawExplicit);
-  const explicit = rawExplicitAllowed && hasInterviewIntent(rawExplicit)
-    ? sanitizeSerpText(rawExplicit, Math.max(DESCRIPTION_MAX_LEN, rawExplicit.length))
-    : sanitizeSerpText(rawExplicitAllowed ? rawExplicit : '', DESCRIPTION_MAX_LEN);
+  const explicit = sanitizeSerpText(rawExplicitAllowed ? rawExplicit : '');
   const framework = frameworkLabel(q.technology || tech);
   if (explicit) {
     return rawExplicitHasRetargetedIntent

@@ -10512,11 +10512,11 @@
         },
         {
           "type": "text",
-          "text": "## Source check\n\nCompare this answer with MDN's <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/AbortController\" target=\"_blank\" rel=\"noopener noreferrer\">AbortController</a>, <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal\" target=\"_blank\" rel=\"noopener noreferrer\">AbortSignal</a>, and <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch\" target=\"_blank\" rel=\"noopener noreferrer\">Fetch API</a> pages for cancellation behavior: fetch can receive a signal and aborted requests reject as <code>AbortError</code>. Compare the cleanup-flag part with React's <a href=\"https://react.dev/reference/react/useEffect\" target=\"_blank\" rel=\"noopener noreferrer\">useEffect page</a>, and stream ownership with the RxJS <a href=\"https://rxjs.dev/api/operators/switchMap\" target=\"_blank\" rel=\"noopener noreferrer\">switchMap operator page</a>. The local test below proves the UI rule this page relies on: even if older async work completes later, it cannot write stale state after newer work owns the screen."
+          "text": "## Source check\n\nCompare this answer with MDN's <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/AbortController\" target=\"_blank\" rel=\"noopener noreferrer\">AbortController</a>, <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal\" target=\"_blank\" rel=\"noopener noreferrer\">AbortSignal</a>, and <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch\" target=\"_blank\" rel=\"noopener noreferrer\">Fetch API</a> pages for cancellation behavior: fetch can receive a signal and aborted requests reject as <code>AbortError</code>. Compare the cleanup-flag part with React's <a href=\"https://react.dev/reference/react/useEffect\" target=\"_blank\" rel=\"noopener noreferrer\">useEffect page</a>, and stream ownership with the RxJS <a href=\"https://rxjs.dev/api/operators/switchMap\" target=\"_blank\" rel=\"noopener noreferrer\">switchMap operator page</a>. The test sketch below describes the UI rule to verify in an application: even if older async work completes later, it cannot write stale state after newer work owns the screen."
         },
         {
           "type": "text",
-          "text": "## Testable proof\n\nUse the same <code>rea</code>/<code>react</code> race from the before/after example: resolve the newer request first, then resolve the older request, and assert that the UI still shows the newer result. The simulator below turns the same race into a visual timeline so you can see exactly where the stale write is blocked."
+          "text": "## Test sketch\n\nUse the same <code>rea</code>/<code>react</code> race from the before/after example: resolve the newer request first, then resolve the older request, and assert that the UI still shows the newer result. This sketch assumes a test helper named <code>createSearchView()</code> with controllable requests and <code>resolveWith()</code> methods. Those helpers are not included; implement them around your application's search flow before running the test. The predefined timelines below illustrate the expected outcomes for each strategy."
         },
         {
           "type": "code",
@@ -10525,7 +10525,7 @@
         },
         {
           "type": "text",
-          "text": "## FrontendAtlas review note\n\nWe review this answer as a frontend debugging rule, not just an async API definition. In frontend reviews, debounce-only fixes often look correct in a quick manual demo but still fail when the older completion resolves last. For this page, the accepted fix is the one the test proves: stale completions cannot write state after a newer request, route load, or autosave version has ownership."
+          "text": "## Guard every UI state change\n\nCheck ownership before updating results, errors, loading state, or save indicators. An older request's <code>catch</code> or <code>finally</code> handler can still clear a newer request's loading state or replace its error message even when the success handler guards its result. Invalidate the previous owner when a new intent or route change makes its work obsolete, and include late failures as well as late successes in your application's tests."
         },
         {
           "type": "text",
@@ -10563,7 +10563,7 @@
     },
     "access": "free",
     "publishedAt": "2026-04-10",
-    "updatedAt": "2026-07-03",
+    "updatedAt": "2026-09-23",
     "seo": {
       "title": "JavaScript Async Race Conditions: Fix Stale UI",
       "description": "Fix the stale UI bug where older async work overwrites newer results; compare AbortController, request-id guards, and takeLatest ownership.",

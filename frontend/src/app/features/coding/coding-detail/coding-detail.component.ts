@@ -1178,7 +1178,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   private questionDescription(q: Question): string {
     const raw = typeof q.description === 'string'
       ? q.description
-      : (q.description as StructuredDescription)?.summary ?? '';
+      : q.description?.summary?.trim() || q.description?.text?.trim() || '';
 
     const plain = normalizeEditorialPlainText(raw);
     if (plain) return plain;
@@ -1221,7 +1221,11 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   }
 
   private seoDescription(q: Question): string {
-    const explicit = this.sanitizeSeoText(String(q?.seo?.description || ''), SEO_DESCRIPTION_MAX_LEN);
+    // Debug prompts carry the repair constraints; keep the whole description.
+    const normalizeDescription = (input: string): string => this.kind === 'debug'
+      ? normalizeEditorialPlainText(input)
+      : this.sanitizeSeoText(input, SEO_DESCRIPTION_MAX_LEN);
+    const explicit = normalizeDescription(String(q?.seo?.description || ''));
     if (explicit) return explicit;
 
     let description = this.questionDescription(q);
@@ -1231,10 +1235,9 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     }
 
     return (
-      this.sanitizeSeoText(description, SEO_DESCRIPTION_MAX_LEN)
-      || this.sanitizeSeoText(
-        `Front-end ${this.kind} interview challenge with solution strategy and edge cases.`,
-        SEO_DESCRIPTION_MAX_LEN
+      normalizeDescription(description)
+      || normalizeDescription(
+        `Front-end ${this.kind} interview challenge with solution strategy and edge cases.`
       )
     );
   }

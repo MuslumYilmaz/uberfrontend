@@ -1176,8 +1176,8 @@
     ],
     "updatedAt": "2026-07-09",
     "seo": {
-      "title": "Can React Return undefined? React 18 vs null",
-      "description": "React 18+ permits undefined component returns. Practice when it renders nothing, why null is clearer, how React 17 differed, and lint catches return bugs.",
+      "title": "React Return null vs undefined: React 18+ Explained",
+      "description": "Compare null and undefined returns in React 18+, see what changed since React 17, and catch accidental missing returns with TypeScript and lint rules.",
       "h1": "Can React Components Return undefined? React 18 vs null"
     },
     "incidentCard": {

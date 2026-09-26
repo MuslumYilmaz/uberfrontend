@@ -1,0 +1,2514 @@
+{
+  "preparedOn": "2026-09-23",
+  "deploymentStatus": "not-deployed",
+  "scope": "Local source and prerendered HTML; no claim about indexed Google snippets or CTR effect.",
+  "summary": {
+    "pages": 615,
+    "canonicalOrRobotsOrH1Changes": 0,
+    "metadataChanged": 208,
+    "repairPages": 206,
+    "treatmentPages": 2,
+    "danglingTitlesBefore": 32,
+    "danglingTitlesAfter": 0,
+    "genericDebugDescriptionsAfter": 0,
+    "unchangedObservationReference": "/javascript/trivia/js-async-race-conditions"
+  },
+  "changes": [
+    {
+      "route": "/angular/debug/ng-debug-counter-change-detection",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Counter not updating",
+        "description": "Front-end debug question for angular. Angular-focused: standalone components, template bindings, and @Input/@Output patterns."
+      },
+      "after": {
+        "title": "Counter not updating",
+        "description": "The counter button renders but the value never increases due to a logic bug. Fix the increment logic so the value updates correctly. Angular-focused: standalone components, template bindings, and @Input/@Output patterns."
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-appmodule-standalone-changes",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Standalone Angular migration: replacing AppModule",
+        "description": "Explain standalone migration through real AppModule replacement work: bootstrapApplication, ApplicationConfig, component imports, route providers, and"
+      },
+      "after": {
+        "title": "Standalone Angular migration: replacing AppModule without provider-scope bugs",
+        "description": "Explain standalone migration through real AppModule replacement work: bootstrapApplication, ApplicationConfig, component imports, route providers, and the DI-scope pitfalls that break features."
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-change-detection-strategies",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Angular change detection strategies in production",
+        "description": "Compare Default vs OnPush through real Angular bugs: immutable updates, trigger rules, markForCheck vs detectChanges, and why stale views happen in"
+      },
+      "after": {
+        "title": "Angular change detection strategies in production: Default vs OnPush, triggers, and stale-UI bugs",
+        "description": "Compare Default vs OnPush through real Angular bugs: immutable updates, trigger rules, markForCheck vs detectChanges, and why stale views happen in production."
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-component-metadata",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Angular @Component metadata under the hood",
+        "description": "Learn how @Component metadata drives Angular compilation, template scope, DI boundaries, and runtime behavior when components render or update incorrectly."
+      },
+      "after": {
+        "title": "Angular @Component metadata under the hood: selector, scope, and runtime",
+        "description": "Learn how @Component metadata drives Angular compilation, template scope, DI boundaries, and runtime behavior when components render or update incorrectly."
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-component-vs-service-responsibilities",
+      "package": "metadata-repair",
+      "before": {
+        "title": "What responsibilities belong inside an Angular",
+        "description": "What responsibilities belong inside an Angular component in Angular: quick interview answer, examples, common mistakes, and production pitfalls."
+      },
+      "after": {
+        "title": "What responsibilities belong inside an Angular component vs a service in Angular",
+        "description": "What responsibilities belong inside an Angular component vs a service in Angular: quick interview answer, examples, common mistakes, and production pitfalls."
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-controlvalueaccessor-vs-custom-two-way-binding",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Angular ControlValueAccessor vs custom two-way",
+        "description": "Practice ControlValueAccessor in Angular and Why Is with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      },
+      "after": {
+        "title": "Angular ControlValueAccessor vs custom two-way binding: real forms integration and pitfalls",
+        "description": "Practice ControlValueAccessor in Angular and Why Is It Better Than Custom Two-Way Binding with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-custom-two-way-binding",
+      "package": "metadata-repair",
+      "before": {
+        "title": "How do you create two-way binding in a custom",
+        "description": "Understand would you implement two-way binding for a: quick answer, real example, common mistake, and senior interview follow-up."
+      },
+      "after": {
+        "title": "How do you create two-way binding in a custom Angular component?",
+        "description": "Understand would you implement two-way binding for a custom component (Input/Output naming convention), and what can go wrong: quick answer, real example, common mistake, and senior interview follow-up."
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-data-binding",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Angular data binding in production: one-way flow",
+        "description": "Explain Angular data binding through real debugging pitfalls: one-way flow, property vs attribute mistakes, OnPush and signal follow-ups, and when two-way binding hides state bugs."
+      },
+      "after": {
+        "title": "Angular data binding in production: one-way flow, property vs attribute, and two-way pitfalls",
+        "description": "Explain Angular data binding through real debugging pitfalls: one-way flow, property vs attribute mistakes, OnPush and signal follow-ups, and when two-way binding hides state bugs."
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-dependency-injection",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Angular dependency injection in production",
+        "description": "Explain Angular DI through real provider-scope bugs, injector hierarchy, provider shapes, and resolution modifiers like Optional, Self, and SkipSelf."
+      },
+      "after": {
+        "title": "Angular dependency injection in production: providers, injector hierarchy, and scope bugs",
+        "description": "Explain Angular DI through real provider-scope bugs, injector hierarchy, provider shapes, and resolution modifiers like Optional, Self, and SkipSelf."
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-directives",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Angular directives in production: structural vs",
+        "description": "Explain Angular directives through the real follow-ups: structural vs attribute behavior, * microsyntax desugaring, preserved state, and when TemplateRef/ViewContainerRef belongs in the answer."
+      },
+      "after": {
+        "title": "Angular directives in production: structural vs attribute, * syntax, and when TemplateRef matters",
+        "description": "Explain Angular directives through the real follow-ups: structural vs attribute behavior, * microsyntax desugaring, preserved state, and when TemplateRef/ViewContainerRef belongs in the answer."
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-event-binding-dom-vs-output-change-detection",
+      "package": "metadata-repair",
+      "before": {
+        "title": "How does Angular event binding work (DOM events vs",
+        "description": "How does Angular event binding work (DOM events vs in Angular: quick interview answer, examples, common mistakes, and production pitfalls."
+      },
+      "after": {
+        "title": "How does Angular event binding work (DOM events vs @Output events), and what are the common pitfalls in Angular",
+        "description": "How does Angular event binding work (DOM events vs @Output events), and what are the common pitfalls in Angular: quick interview answer, examples, common mistakes, and production pitfalls."
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-forroot-forchild",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Angular forRoot vs forChild: singleton duplication",
+        "description": "Use forRoot() for root-only providers and routing, and forChild() for feature routes. The high-value angle is avoiding singleton duplication bugs in"
+      },
+      "after": {
+        "title": "Angular forRoot vs forChild: singleton duplication bugs, legacy modules, and migration context",
+        "description": "Use forRoot() for root-only providers and routing, and forChild() for feature routes. The high-value angle is avoiding singleton duplication bugs in legacy NgModule apps and knowing how standalone Angular changes the pattern."
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-hierarchical-dependency-injection-real-bug",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Angular hierarchical DI in production: duplicate",
+        "description": "Explain Angular hierarchical DI through the real bug: a nearer provider shadows the root injector, creates a second instance, and breaks shared state or"
+      },
+      "after": {
+        "title": "Angular hierarchical DI in production: duplicate providers, shadowed singletons, and cache bugs",
+        "description": "Explain Angular hierarchical DI through the real bug: a nearer provider shadows the root injector, creates a second instance, and breaks shared state or cache assumptions."
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-http-what-actually-cancels-request",
+      "package": "paired-ctr-treatment",
+      "before": {
+        "title": "Angular HttpClient Unsubscribe: 6 Tests & DevTools",
+        "description": "Run six tests for unsubscribe, switchMap, AsyncPipe, mergeMap, and shareReplay. Prove RxJS teardown, browser abort, and stale-UI protection."
+      },
+      "after": {
+        "title": "Does Angular HttpClient Unsubscribe Cancel Requests?",
+        "description": "Test when unsubscribe cancels Angular HTTP requests, why server work may continue, and how six runnable tests expose stale UI bugs."
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-input-output",
+      "package": "metadata-repair",
+      "before": {
+        "title": "How do @Input and @Output work in Angular?",
+        "description": "Understand @Input() and @Output() work in Angular, and: quick answer, real example, common mistake, and senior interview follow-up."
+      },
+      "after": {
+        "title": "How do @Input and @Output work in Angular?",
+        "description": "Understand @Input() and @Output() work in Angular, and what pitfalls do seniors mention in interviews: quick answer, real example, common mistake, and senior interview follow-up."
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-lazy-loading",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Angular lazy loading in production: route",
+        "description": "Explain Angular lazy loading through real routing decisions: route boundaries, initial-bundle savings, preloading strategy, and the performance pitfalls"
+      },
+      "after": {
+        "title": "Angular lazy loading in production: route boundaries, preloading, and bundle trade-offs",
+        "description": "Explain Angular lazy loading through real routing decisions: route boundaries, initial-bundle savings, preloading strategy, and the performance pitfalls of over-fragmented features."
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-lifecycle-constructor-oninit-afterviewinit-dom",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Angular constructor vs ngOnInit vs ngAfterViewInit",
+        "description": "Use constructor for DI, ngOnInit for input-dependent init, and ngAfterViewInit for DOM or ViewChild work. Includes static ViewChild pitfalls, *ngIf edge cases, and render-hook follow-ups."
+      },
+      "after": {
+        "title": "Angular constructor vs ngOnInit vs ngAfterViewInit: when to use",
+        "description": "Use constructor for DI, ngOnInit for input-dependent init, and ngAfterViewInit for DOM or ViewChild work. Includes static ViewChild pitfalls, *ngIf edge cases, and render-hook follow-ups."
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-lifecycle-hooks",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Angular lifecycle hooks: Interview Answer",
+        "description": "Practice Angular lifecycle hooks with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      },
+      "after": {
+        "title": "Angular lifecycle hooks: when do they run, and what should you put in each",
+        "description": "Practice Angular lifecycle hooks: when do they run, and what should you put in each with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-ngfor-trackby",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Angular trackBy for real list bugs: identity, DOM",
+        "description": "Explain trackBy through production list behavior: stable identity, DOM reuse, focus or input preservation, index-based reorder bugs, and why API"
+      },
+      "after": {
+        "title": "Angular trackBy for real list bugs: identity, DOM reuse, and preserved input state",
+        "description": "Explain trackBy through production list behavior: stable identity, DOM reuse, focus or input preservation, index-based reorder bugs, and why API refreshes break reference-based thinking."
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-ngmodules-vs-standalone",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Do you still need NgModules with standalone Angular",
+        "description": "Practice problems do NgModules solve that standalone with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      },
+      "after": {
+        "title": "Do you still need NgModules with standalone Angular components?",
+        "description": "Practice problems do NgModules solve that standalone components don’t with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-ngonchanges-vs-ngdocheck",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Angular the purpose of ngOnChanges(): Interview Answer",
+        "description": "Practice the purpose of ngOnChanges() and how does it with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      },
+      "after": {
+        "title": "Angular the purpose of ngOnChanges() and how does it differ from ngDoCheck()",
+        "description": "Practice the purpose of ngOnChanges() and how does it differ from ngDoCheck() with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-ngoninit-vs-constructor",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Constructor vs ngOnInit in Angular: what is the",
+        "description": "Constructor is for DI and trivial setup; ngOnInit is for input-dependent initialization. Includes test timing, ngOnChanges follow-ups, and constructor side-effect pitfalls."
+      },
+      "after": {
+        "title": "Constructor vs ngOnInit in Angular: what is the difference?",
+        "description": "Constructor is for DI and trivial setup; ngOnInit is for input-dependent initialization. Includes test timing, ngOnChanges follow-ups, and constructor side-effect pitfalls."
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-observables-rxjs",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Observables in Angular in production: RxJS, signals",
+        "description": "Explain Angular Observables through real app concerns: when RxJS still beats signals, how async pipe and cancellation work, and how shared streams behave"
+      },
+      "after": {
+        "title": "Observables in Angular in production: RxJS, signals trade-offs, cancellation, and shared streams",
+        "description": "Explain Angular Observables through real app concerns: when RxJS still beats signals, how async pipe and cancellation work, and how shared streams behave with shareReplay."
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-onpush-change-detection-debugging-real-bug",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Angular OnPush in production: triggers, stale-UI",
+        "description": "Explain OnPush like a real Angular bug: input mutation, manual subscriptions, parent-child boundaries, async pipe, and when markForCheck fixes stale UI."
+      },
+      "after": {
+        "title": "Angular OnPush in production: triggers, stale-UI bugs, and markForCheck debugging",
+        "description": "Explain OnPush like a real Angular bug: input mutation, manual subscriptions, parent-child boundaries, async pipe, and when markForCheck fixes stale UI."
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-performance-optimization",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Angular performance optimization in production",
+        "description": "Explain Angular performance through real bottlenecks: profiling first, change-detection hotspots, large-list rendering costs, bundle trade-offs, and"
+      },
+      "after": {
+        "title": "Angular performance optimization in production: profiling, change detection, and render hotspots",
+        "description": "Explain Angular performance through real bottlenecks: profiling first, change-detection hotspots, large-list rendering costs, bundle trade-offs, and fixes like OnPush or trackBy."
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-pipes",
+      "package": "metadata-repair",
+      "before": {
+        "title": "pipes: built-in, async pipe, and pure vs impure in",
+        "description": "pipes: built-in, async pipe, and pure vs impure in Angular: quick interview answer, examples, common mistakes, and production pitfalls."
+      },
+      "after": {
+        "title": "pipes: built-in, async pipe, and pure vs impure (performance + pitfalls) in Angular",
+        "description": "pipes: built-in, async pipe, and pure vs impure (performance + pitfalls) in Angular: quick interview answer, examples, common mistakes, and production pitfalls."
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-prevent-memory-leaks-unsubscribe-patterns",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Angular memory leaks in production: long-lived",
+        "description": "Explain Angular memory leaks through real teardown bugs: long-lived subscriptions, global listeners, timers, AsyncPipe, takeUntilDestroyed, and when"
+      },
+      "after": {
+        "title": "Angular memory leaks in production: long-lived streams, AsyncPipe, and teardown patterns",
+        "description": "Explain Angular memory leaks through real teardown bugs: long-lived subscriptions, global listeners, timers, AsyncPipe, takeUntilDestroyed, and when manual unsubscribe still matters."
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-routing",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Angular routing in production: route trees",
+        "description": "Explain Angular routing through the real production concerns: route trees, RouterOutlet placement, guards, lazy loading, and the navigation bugs caused"
+      },
+      "after": {
+        "title": "Angular routing in production: route trees, RouterOutlet, guards, and lazy loading",
+        "description": "Explain Angular routing through the real production concerns: route trees, RouterOutlet placement, guards, lazy loading, and the navigation bugs caused by misconfigured routes."
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-services",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Angular services in production: DI scope",
+        "description": "Practice an Angular service, how does DI provide it with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      },
+      "after": {
+        "title": "Angular services in production: DI scope, boundaries, and when to use one",
+        "description": "Practice an Angular service, how does DI provide it (providedIn/providers), and why do teams use services with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      }
+    },
+    {
+      "route": "/angular/trivia/angular-template-compilation-and-binding",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Angular template compilation under the hood: Ivy",
+        "description": "Explain Angular template compilation through the debug lens: Ivy create or update instructions, AOT template checking, and how change detection replays"
+      },
+      "after": {
+        "title": "Angular template compilation under the hood: Ivy instructions, AOT checks, and binding debug",
+        "description": "Explain Angular template compilation through the debug lens: Ivy create or update instructions, AOT template checking, and how change detection replays bindings against component state."
+      }
+    },
+    {
+      "route": "/angular/trivia/ngrx-reducer-pure-function-immutability-side-effects",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Angular NgRx reducer pure function: Interview Answer",
+        "description": "Practice NgRx reducer pure function in practice with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      },
+      "after": {
+        "title": "Angular NgRx reducer pure function in practice: immutability, side effects, and common mistakes",
+        "description": "Practice NgRx reducer pure function in practice: immutability, side effects, and common mistakes with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      }
+    },
+    {
+      "route": "/angular/trivia/rxjs-sharereplay-angular-how-it-breaks-your-app",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Angular shareReplay in RxJS and: Interview Answer",
+        "description": "Practice shareReplay in RxJS and How Can It Silently with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      },
+      "after": {
+        "title": "shareReplay in RxJS and How Can It Silently Break Your Angular App",
+        "description": "Practice shareReplay in RxJS and How Can It Silently Break Your Angular App with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      }
+    },
+    {
+      "route": "/angular/trivia/rxjs-subject-vs-behaviorsubject-vs-replaysubject-vs-asyncsubject",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Subject vs BehaviorSubject vs ReplaySubject vs in",
+        "description": "Subject vs BehaviorSubject vs ReplaySubject vs in Angular: quick interview answer, examples, common mistakes, and production pitfalls."
+      },
+      "after": {
+        "title": "Subject vs BehaviorSubject vs ReplaySubject vs AsyncSubject in Angular",
+        "description": "Subject vs BehaviorSubject vs ReplaySubject vs AsyncSubject in Angular: quick interview answer, examples, common mistakes, and production pitfalls."
+      }
+    },
+    {
+      "route": "/angular/trivia/rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use",
+      "package": "metadata-repair",
+      "before": {
+        "title": "switchMap vs mergeMap vs concatMap vs exhaustMap",
+        "description": "Use switchMap to cancel stale streams, mergeMap for parallel streams, concatMap for ordered queues, and exhaustMap to ignore triggers during active work."
+      },
+      "after": {
+        "title": "switchMap vs mergeMap vs concatMap vs exhaustMap: when to use?",
+        "description": "Use switchMap to cancel stale streams, mergeMap for parallel streams, concatMap for ordered queues, and exhaustMap to ignore triggers during active work."
+      }
+    },
+    {
+      "route": "/angular/trivia/rxjs-tap-vs-map-angular-when-to-use",
+      "package": "metadata-repair",
+      "before": {
+        "title": "RxJS tap vs map in Angular: side effects",
+        "description": "RxJS tap vs map in Angular: quick interview answer, examples, common mistakes, and production pitfalls."
+      },
+      "after": {
+        "title": "RxJS tap vs map in Angular: side effects, transformations, and common bugs",
+        "description": "RxJS tap vs map in Angular: quick interview answer, examples, common mistakes, and production pitfalls."
+      }
+    },
+    {
+      "route": "/companies",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Company Frontend Interview Questions",
+        "description": "Explore FrontendAtlas editorial practice groupings by company label. These groupings support targeted rehearsal and do not claim official question provenance or endorsement."
+      },
+      "after": {
+        "title": "Company Frontend Interview Questions",
+        "description": "Practice company-style frontend coding, concept, and system design questions. Explore editorial prep sets, not verified employer question banks."
+      }
+    },
+    {
+      "route": "/css/trivia/css-border-property",
+      "package": "metadata-repair",
+      "before": {
+        "title": "CSS borders in production: shorthand, focus-state",
+        "description": "Adding a border is easy; the real pitfalls are focus states, contrast, per-side overrides, and layout shifts when borders appear late."
+      },
+      "after": {
+        "title": "CSS borders in production: shorthand, focus-state pitfalls, and layout-shift debugging",
+        "description": "Adding a border is easy; the real pitfalls are focus states, contrast, per-side overrides, and layout shifts when borders appear late."
+      }
+    },
+    {
+      "route": "/css/trivia/css-box-model",
+      "package": "metadata-repair",
+      "before": {
+        "title": "CSS box model in production: box-sizing, width bugs",
+        "description": "The box model matters because sizing bugs usually come from forgetting what width includes and how padding, border, and margin interact."
+      },
+      "after": {
+        "title": "CSS box model in production: box-sizing, width bugs, and spacing-debug mental models",
+        "description": "The box model matters because sizing bugs usually come from forgetting what width includes and how padding, border, and margin interact."
+      }
+    },
+    {
+      "route": "/css/trivia/css-cascade-order",
+      "package": "metadata-repair",
+      "before": {
+        "title": "How does the CSS cascade decide which style wins?",
+        "description": "Understand the CSS cascade determine which styles are: quick answer, real example, common mistake, and senior interview follow-up."
+      },
+      "after": {
+        "title": "How does the CSS cascade decide which style wins?",
+        "description": "Understand the CSS cascade determine which styles are applied: quick answer, real example, common mistake, and senior interview follow-up."
+      }
+    },
+    {
+      "route": "/css/trivia/css-center-text",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Centering text in CSS: text-align, layout mistakes",
+        "description": "text-align centers inline content, not whole layout boxes. The common mistake is reaching for it when flexbox or grid should handle alignment."
+      },
+      "after": {
+        "title": "Centering text in CSS: text-align, layout mistakes, and when not to use it",
+        "description": "text-align centers inline content, not whole layout boxes. The common mistake is reaching for it when flexbox or grid should handle alignment."
+      }
+    },
+    {
+      "route": "/css/trivia/css-change-text-size",
+      "package": "metadata-repair",
+      "before": {
+        "title": "CSS text sizing in production: rem vs em vs px, zoom",
+        "description": "Understand you change the size of text in CSS: quick answer, real example, common mistake, and senior interview follow-up."
+      },
+      "after": {
+        "title": "CSS text sizing in production: rem vs em vs px, zoom behavior, and accessibility pitfalls",
+        "description": "Understand you change the size of text in CSS: quick answer, real example, common mistake, and senior interview follow-up."
+      }
+    },
+    {
+      "route": "/css/trivia/css-color-property",
+      "package": "metadata-repair",
+      "before": {
+        "title": "CSS the purpose of the color: Interview Answer",
+        "description": "Practice the purpose of the color property with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      },
+      "after": {
+        "title": "CSS the purpose of the color property",
+        "description": "Practice the purpose of the color property with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      }
+    },
+    {
+      "route": "/css/trivia/css-custom-properties",
+      "package": "metadata-repair",
+      "before": {
+        "title": "CSS custom properties (variables): Interview Answer",
+        "description": "Practice CSS custom properties (variables) and how with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      },
+      "after": {
+        "title": "CSS custom properties (variables) and how are they used",
+        "description": "Practice CSS custom properties (variables) and how are they used with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      }
+    },
+    {
+      "route": "/css/trivia/css-definition",
+      "package": "metadata-repair",
+      "before": {
+        "title": "CSS meaning in production: the cascade, specificity",
+        "description": "CSS means Cascading Style Sheets, but the real beyond-basics topic is how the cascade, specificity, and source order create or prevent styling bugs."
+      },
+      "after": {
+        "title": "CSS meaning in production: the cascade, specificity, and style-debugging basics",
+        "description": "CSS means Cascading Style Sheets, but the real beyond-basics topic is how the cascade, specificity, and source order create or prevent styling bugs."
+      }
+    },
+    {
+      "route": "/css/trivia/css-display-flex",
+      "package": "metadata-repair",
+      "before": {
+        "title": "display:flex in production: axis mental model, child",
+        "description": "Flexbox is powerful, but the common mistakes are misunderstanding axes, direct-child behavior, shrinking, and overflow under real content."
+      },
+      "after": {
+        "title": "display:flex in production: axis mental model, child constraints, and layout pitfalls",
+        "description": "Flexbox is powerful, but the common mistakes are misunderstanding axes, direct-child behavior, shrinking, and overflow under real content."
+      }
+    },
+    {
+      "route": "/css/trivia/css-float-clear",
+      "package": "metadata-repair",
+      "before": {
+        "title": "CSS float and clear in legacy layouts: wrap",
+        "description": "Practice the purpose of the float and clear properties with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      },
+      "after": {
+        "title": "CSS float and clear in legacy layouts: wrap behavior, clearfix pitfalls, and when not to use them",
+        "description": "Practice the purpose of the float and clear properties with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      }
+    },
+    {
+      "route": "/css/trivia/css-font-family",
+      "package": "metadata-repair",
+      "before": {
+        "title": "CSS font-family in production: font stacks, fallback",
+        "description": "font-family is really about fallback strategy, glyph coverage, and avoiding production typography bugs when preferred fonts fail."
+      },
+      "after": {
+        "title": "CSS font-family in production: font stacks, fallback pitfalls, and cross-device readability",
+        "description": "font-family is really about fallback strategy, glyph coverage, and avoiding production typography bugs when preferred fonts fail."
+      }
+    },
+    {
+      "route": "/css/trivia/css-grid-vs-flexbox",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Grid vs Flexbox, and when should each be used in",
+        "description": "Grid vs Flexbox, and when should each be used in CSS: quick interview answer, examples, common mistakes, and production pitfalls."
+      },
+      "after": {
+        "title": "Grid vs Flexbox, and when should each be used in CSS",
+        "description": "Grid vs Flexbox, and when should each be used in CSS: quick interview answer, examples, common mistakes, and production pitfalls."
+      }
+    },
+    {
+      "route": "/css/trivia/css-id-vs-class",
+      "package": "metadata-repair",
+      "before": {
+        "title": "id vs class Selectors in CSS: Differences and",
+        "description": "Understand when to use #id versus .class selectors, how specificity differs, and why class-based styling scales better in reusable component systems."
+      },
+      "after": {
+        "title": "id vs class Selectors in CSS: Differences and Specificity",
+        "description": "Understand when to use #id versus .class selectors, how specificity differs, and why class-based styling scales better in reusable component systems."
+      }
+    },
+    {
+      "route": "/css/trivia/css-inline-internal-external",
+      "package": "metadata-repair",
+      "before": {
+        "title": "inline, internal, vs external CSS in CSS: Interview",
+        "description": "inline, internal, vs external CSS in CSS: quick interview answer, examples, common mistakes, and production pitfalls."
+      },
+      "after": {
+        "title": "inline, internal, vs external CSS in CSS",
+        "description": "inline, internal, vs external CSS in CSS: quick interview answer, examples, common mistakes, and production pitfalls."
+      }
+    },
+    {
+      "route": "/css/trivia/css-make-text-bold",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Making text bold in CSS: font-weight support",
+        "description": "Understand you make text bold in CSS: quick answer, real example, common mistake, and senior interview follow-up."
+      },
+      "after": {
+        "title": "Making text bold in CSS: font-weight support, fallback pitfalls, and readability choices",
+        "description": "Understand you make text bold in CSS: quick answer, real example, common mistake, and senior interview follow-up."
+      }
+    },
+    {
+      "route": "/css/trivia/css-margin-vs-padding",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Margin vs Padding in CSS: Key Differences with",
+        "description": "margin vs padding in CSS: quick interview answer, examples, common mistakes, and production pitfalls."
+      },
+      "after": {
+        "title": "Margin vs Padding in CSS: Key Differences with Examples",
+        "description": "margin vs padding in CSS: quick interview answer, examples, common mistakes, and production pitfalls."
+      }
+    },
+    {
+      "route": "/css/trivia/css-media-queries",
+      "package": "metadata-repair",
+      "before": {
+        "title": "CSS media queries: breakpoint strategy, user",
+        "description": "Use CSS media queries for breakpoint strategy, prefers-reduced-motion and color-scheme support, and avoid common mobile-first or viewport-only pitfalls."
+      },
+      "after": {
+        "title": "CSS media queries: breakpoint strategy, user preferences, and pitfalls",
+        "description": "Use CSS media queries for breakpoint strategy, prefers-reduced-motion and color-scheme support, and avoid common mobile-first or viewport-only pitfalls."
+      }
+    },
+    {
+      "route": "/css/trivia/css-pseudo-classes-elements",
+      "package": "metadata-repair",
+      "before": {
+        "title": "CSS pseudo-classes and pseudo-elemen: Interview Answer",
+        "description": "Practice pseudo-classes and pseudo-elements? Give with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      },
+      "after": {
+        "title": "CSS pseudo-classes and pseudo-elements? Give examples.",
+        "description": "Practice pseudo-classes and pseudo-elements? Give examples. with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      }
+    },
+    {
+      "route": "/css/trivia/css-specificity-hierarchy",
+      "package": "metadata-repair",
+      "before": {
+        "title": "CSS specificity under the hood: debug override bugs",
+        "description": "Learn selector scoring, tie-breakers, and the common pitfalls that create specificity wars in production CSS."
+      },
+      "after": {
+        "title": "CSS specificity under the hood: debug override bugs without !important",
+        "description": "Learn selector scoring, tie-breakers, and the common pitfalls that create specificity wars in production CSS."
+      }
+    },
+    {
+      "route": "/css/trivia/css-text-color",
+      "package": "metadata-repair",
+      "before": {
+        "title": "CSS property is used to change the: Interview Answer",
+        "description": "Practice property is used to change the text color in with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      },
+      "after": {
+        "title": "property is used to change the text color in CSS",
+        "description": "Practice property is used to change the text color in CSS with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      }
+    },
+    {
+      "route": "/css/trivia/css-units-em-rem-percent-px",
+      "package": "metadata-repair",
+      "before": {
+        "title": "em vs rem vs percent vs px: what is the difference?",
+        "description": "Compare rem, em, percent, and px with concrete layout examples, the nested em compounding pitfall, and the key difference between parent-relative percent"
+      },
+      "after": {
+        "title": "em vs rem vs percent vs px: what is the difference?",
+        "description": "Compare rem, em, percent, and px with concrete layout examples, the nested em compounding pitfall, and the key difference between parent-relative percent sizing and root-relative rem sizing."
+      }
+    },
+    {
+      "route": "/css/trivia/css-visibility-vs-display",
+      "package": "metadata-repair",
+      "before": {
+        "title": "visibility hidden vs display none: what is the",
+        "description": "visibility:hidden hides an element but keeps its layout space, while display:none removes it from layout and rendering flow."
+      },
+      "after": {
+        "title": "visibility hidden vs display none: what is the difference?",
+        "description": "visibility:hidden hides an element but keeps its layout space, while display:none removes it from layout and rendering flow."
+      }
+    },
+    {
+      "route": "/css/trivia/css-z-index",
+      "package": "metadata-repair",
+      "before": {
+        "title": "CSS z-index debugging: stacking contexts, layering",
+        "description": "Understand z-index work in CSS: quick answer, real example, common mistake, and senior interview follow-up."
+      },
+      "after": {
+        "title": "CSS z-index debugging: stacking contexts, layering bugs, and why bigger numbers fail",
+        "description": "Understand z-index work in CSS: quick answer, real example, common mistake, and senior interview follow-up."
+      }
+    },
+    {
+      "route": "/html/trivia/html-a-tag",
+      "package": "metadata-repair",
+      "before": {
+        "title": "HTML tag: navigation semantics, accessibility, and",
+        "description": "Learn when to use for real navigation, how href/rel affect accessibility and SEO, and which common pitfalls break browser behavior."
+      },
+      "after": {
+        "title": "HTML <a> tag: navigation semantics, accessibility, and common pitfalls",
+        "description": "Learn when to use <a> for real navigation, how href/rel affect accessibility and SEO, and which common pitfalls break browser behavior."
+      }
+    },
+    {
+      "route": "/html/trivia/html-anchor-target",
+      "package": "metadata-repair",
+      "before": {
+        "title": "HTML the purpose of the target: Interview Answer",
+        "description": "Practice the purpose of the target attribute in an tag with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      },
+      "after": {
+        "title": "HTML the purpose of the target attribute in an <a> tag",
+        "description": "Practice the purpose of the target attribute in an <a> tag with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      }
+    },
+    {
+      "route": "/html/trivia/html-aria-roles",
+      "package": "metadata-repair",
+      "before": {
+        "title": "ARIA roles in HTML: when they help, when they hurt",
+        "description": "Practice ARIA roles and why are they important in with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      },
+      "after": {
+        "title": "ARIA roles in HTML: when they help, when they hurt, and common mistakes",
+        "description": "Practice ARIA roles and why are they important in modern HTML with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      }
+    },
+    {
+      "route": "/html/trivia/html-block-inline-elements",
+      "package": "metadata-repair",
+      "before": {
+        "title": "block-level vs inline elements in HTML: Interview",
+        "description": "block-level vs inline elements in HTML: quick interview answer, examples, common mistakes, and production pitfalls."
+      },
+      "after": {
+        "title": "block-level vs inline elements in HTML",
+        "description": "block-level vs inline elements in HTML: quick interview answer, examples, common mistakes, and production pitfalls."
+      }
+    },
+    {
+      "route": "/html/trivia/html-br-tag",
+      "package": "metadata-repair",
+      "before": {
+        "title": "HTML br tag: semantic line breaks, accessibility",
+        "description": "Use br for meaningful line breaks like addresses or poetry, and avoid the common layout pitfall of stacking br tags for spacing."
+      },
+      "after": {
+        "title": "HTML br tag: semantic line breaks, accessibility, and layout pitfalls",
+        "description": "Use br for meaningful line breaks like addresses or poetry, and avoid the common layout pitfall of stacking br tags for spacing."
+      }
+    },
+    {
+      "route": "/html/trivia/html-clickable-image",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Clickable images in HTML: anchor pattern, alt text",
+        "description": "Wrap an image in an anchor with href, write alt text that communicates the destination, and avoid common accessibility or target=\"_blank\" pitfalls."
+      },
+      "after": {
+        "title": "Clickable images in HTML: anchor pattern, alt text, and new-tab pitfalls",
+        "description": "Wrap an image in an anchor with href, write alt text that communicates the destination, and avoid common accessibility or target=\"_blank\" pitfalls."
+      }
+    },
+    {
+      "route": "/html/trivia/html-data-attribute",
+      "package": "metadata-repair",
+      "before": {
+        "title": "HTML data-* attributes: dataset hooks, testing, and",
+        "description": "Use data attributes for lightweight DOM hooks, know that dataset values are strings, and avoid the common mistake of storing secrets or app state in"
+      },
+      "after": {
+        "title": "HTML data-* attributes: dataset hooks, testing, and when not to use them",
+        "description": "Use data attributes for lightweight DOM hooks, know that dataset values are strings, and avoid the common mistake of storing secrets or app state in markup."
+      }
+    },
+    {
+      "route": "/html/trivia/html-div-vs-span",
+      "package": "metadata-repair",
+      "before": {
+        "title": "div vs span: layout behavior, semantics, and common",
+        "description": "Div Vs Span in HTML: quick interview answer, examples, common mistakes, and production pitfalls."
+      },
+      "after": {
+        "title": "div vs span: layout behavior, semantics, and common mistakes",
+        "description": "<div> vs <span> in HTML: quick interview answer, examples, common mistakes, and production pitfalls."
+      }
+    },
+    {
+      "route": "/html/trivia/html-dom",
+      "package": "metadata-repair",
+      "before": {
+        "title": "DOM explained: browser tree, mutations, and",
+        "description": "Learn the DOM as the browser's in-memory node tree, how JavaScript mutations affect rendering, and which DOM timing or performance bugs show up in"
+      },
+      "after": {
+        "title": "DOM explained: browser tree, mutations, and debugging real updates",
+        "description": "Learn the DOM as the browser's in-memory node tree, how JavaScript mutations affect rendering, and which DOM timing or performance bugs show up in production."
+      }
+    },
+    {
+      "route": "/html/trivia/html-dom-tree-structure",
+      "package": "metadata-repair",
+      "before": {
+        "title": "DOM tree structure under the hood: depth, traversal",
+        "description": "Learn how DOM depth affects traversal, style/layout work, and why deeply nested trees become a real performance debugging problem."
+      },
+      "after": {
+        "title": "DOM tree structure under the hood: depth, traversal, and performance pitfalls",
+        "description": "Learn how DOM depth affects traversal, style/layout work, and why deeply nested trees become a real performance debugging problem."
+      }
+    },
+    {
+      "route": "/html/trivia/html-href-attribute",
+      "package": "metadata-repair",
+      "before": {
+        "title": "HTML href attribute: link destinations, navigation",
+        "description": "Understand how href powers navigation and linked resources, and avoid common mistakes like fake links, bad fragments, or unsafe external targets."
+      },
+      "after": {
+        "title": "HTML href attribute: link destinations, navigation semantics, and pitfalls",
+        "description": "Understand how href powers navigation and linked resources, and avoid common mistakes like fake links, bad fragments, or unsafe external targets."
+      }
+    },
+    {
+      "route": "/html/trivia/html-id-vs-class",
+      "package": "metadata-repair",
+      "before": {
+        "title": "HTML id vs class: specificity, DOM hooks, and common",
+        "description": "Learn when ids are the right unique hook, when classes should stay reusable, and which common mistakes create selector and testing bugs."
+      },
+      "after": {
+        "title": "HTML id vs class: specificity, DOM hooks, and common mistakes",
+        "description": "Learn when ids are the right unique hook, when classes should stay reusable, and which common mistakes create selector and testing bugs."
+      }
+    },
+    {
+      "route": "/html/trivia/html-iframe-tag",
+      "package": "metadata-repair",
+      "before": {
+        "title": "HTML iframe: sandbox, performance, and third-party",
+        "description": "Learn how iframes work under the hood, when to sandbox them, and which security/performance pitfalls show up with real embeds."
+      },
+      "after": {
+        "title": "HTML iframe: sandbox, performance, and third-party embed pitfalls",
+        "description": "Learn how iframes work under the hood, when to sandbox them, and which security/performance pitfalls show up with real embeds."
+      }
+    },
+    {
+      "route": "/html/trivia/html-img-alt-attribute",
+      "package": "metadata-repair",
+      "before": {
+        "title": "HTML img alt attribute: accessibility, SEO, and",
+        "description": "Practice the purpose of the alt attribute in the tag with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      },
+      "after": {
+        "title": "HTML img alt attribute: accessibility, SEO, and common mistakes",
+        "description": "Practice the purpose of the alt attribute in the <img> tag with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      }
+    },
+    {
+      "route": "/html/trivia/html-img-srcset",
+      "package": "metadata-repair",
+      "before": {
+        "title": "HTML img srcset: responsive images, sizes, and",
+        "description": "Learn how srcset and sizes let the browser pick the right image, and avoid performance pitfalls like oversized files or wrong width hints."
+      },
+      "after": {
+        "title": "HTML img srcset: responsive images, sizes, and performance debugging",
+        "description": "Learn how srcset and sizes let the browser pick the right image, and avoid performance pitfalls like oversized files or wrong width hints."
+      }
+    },
+    {
+      "route": "/html/trivia/html-input-placeholder",
+      "package": "metadata-repair",
+      "before": {
+        "title": "HTML placeholder attribute: accessibility pitfalls",
+        "description": "Practice the placeholder attribute used for in input with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      },
+      "after": {
+        "title": "HTML placeholder attribute: accessibility pitfalls and form UX guidance",
+        "description": "Practice the placeholder attribute used for in input fields with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      }
+    },
+    {
+      "route": "/html/trivia/html-meta-tag",
+      "package": "metadata-repair",
+      "before": {
+        "title": "HTML meta tag: SEO, viewport, and social preview",
+        "description": "Learn the essential head meta tags for viewport, indexing, and social previews, plus the common debugging pitfalls around stale OG data and legacy"
+      },
+      "after": {
+        "title": "HTML meta tag: SEO, viewport, and social preview debugging",
+        "description": "Learn the essential head meta tags for viewport, indexing, and social previews, plus the common debugging pitfalls around stale OG data and legacy metadata."
+      }
+    },
+    {
+      "route": "/html/trivia/html-ol-ul-dl-difference",
+      "package": "metadata-repair",
+      "before": {
+        "title": "ol vs ul vs dl: list semantics, accessibility, and",
+        "description": "Practice Ol Ul Dl Difference with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      },
+      "after": {
+        "title": "ol vs ul vs dl: list semantics, accessibility, and common pitfalls",
+        "description": "<ol>, <ul>, vs <dl> in HTML: quick interview answer, examples, common mistakes, and production pitfalls."
+      }
+    },
+    {
+      "route": "/html/trivia/html-parsing-rendering",
+      "package": "metadata-repair",
+      "before": {
+        "title": "HTML parsing and rendering: DOM, CSSOM, and",
+        "description": "Understand the browser's parse-to-paint pipeline and how scripts, CSS, and render blockers affect first paint and debugging."
+      },
+      "after": {
+        "title": "HTML parsing and rendering: DOM, CSSOM, and render-blocking debugging",
+        "description": "Understand the browser's parse-to-paint pipeline and how scripts, CSS, and render blockers affect first paint and debugging."
+      }
+    },
+    {
+      "route": "/html/trivia/html-semantic-elements",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Semantic HTML elements: accessibility landmarks, SEO",
+        "description": "Practice semantic HTML elements with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      },
+      "after": {
+        "title": "Semantic HTML elements: accessibility landmarks, SEO structure, and common mistakes",
+        "description": "Practice semantic HTML elements with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      }
+    },
+    {
+      "route": "/html/trivia/html-shadow-dom",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Shadow DOM explained: encapsulation, theming, and",
+        "description": "Practice the Shadow DOM and how does it relate to web with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      },
+      "after": {
+        "title": "Shadow DOM explained: encapsulation, theming, and web-component pitfalls",
+        "description": "Practice the Shadow DOM and how does it relate to web components with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      }
+    },
+    {
+      "route": "/html/trivia/html-tags",
+      "package": "metadata-repair",
+      "before": {
+        "title": "HTML tags explained: semantics, DOM structure, and",
+        "description": "Learn how HTML tags shape DOM structure, accessibility, SEO, and the common mistake of using generic markup where semantic elements belong."
+      },
+      "after": {
+        "title": "HTML tags explained: semantics, DOM structure, and common markup mistakes",
+        "description": "Learn how HTML tags shape DOM structure, accessibility, SEO, and the common mistake of using generic markup where semantic elements belong."
+      }
+    },
+    {
+      "route": "/html/trivia/html-title-tag",
+      "package": "metadata-repair",
+      "before": {
+        "title": "HTML title tag: SEO headlines, tab clarity, and",
+        "description": "Learn how the title tag affects browser tabs, search result headlines, and the common pitfall of shipping duplicate or vague page titles."
+      },
+      "after": {
+        "title": "HTML title tag: SEO headlines, tab clarity, and duplicate-title pitfalls",
+        "description": "Learn how the title tag affects browser tabs, search result headlines, and the common pitfall of shipping duplicate or vague page titles."
+      }
+    },
+    {
+      "route": "/html/trivia/web-accessibility-make-page-accessible",
+      "package": "metadata-repair",
+      "before": {
+        "title": "How to make a page accessible: production workflow",
+        "description": "Understand would you make a page accessible: quick answer, real example, common mistake, and senior interview follow-up."
+      },
+      "after": {
+        "title": "How to make a page accessible: production workflow and common mistakes",
+        "description": "Understand would you make a page accessible: quick answer, real example, common mistake, and senior interview follow-up."
+      }
+    },
+    {
+      "route": "/javascript/debug/js-debug-async-race",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Fix async race in fetchWithCache",
+        "description": "Front-end debug question for javascript."
+      },
+      "after": {
+        "title": "Fix async race in fetchWithCache",
+        "description": "A teammate built a shared fetch helper to avoid duplicate network work, but real traffic exposed two nasty bugs. Concurrent callers with the same key still fan out into multiple requests, and a failed request can leave the helper stuck in a bad in-flight state. Fix it so callers share one active request per key, successful responses cache correctly, and failures can retry cleanly."
+      }
+    },
+    {
+      "route": "/javascript/debug/js-debug-lost-this-binding",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Fix lost this binding in callback registration",
+        "description": "Front-end debug question for javascript."
+      },
+      "after": {
+        "title": "Fix lost this binding in callback registration",
+        "description": "A teammate passes an object method straight into a callback API, assuming it will still remember its owner later. Direct calls like tracker.recordClick() work, but the same method breaks once another function invokes it without the original receiver. Fix the bug so registered callbacks keep the right this."
+      }
+    },
+    {
+      "route": "/javascript/debug/js-debug-missing-return-map-filter",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Fix missing return in map / filter",
+        "description": "Front-end debug question for javascript."
+      },
+      "after": {
+        "title": "Fix missing return in map / filter",
+        "description": "A teammate refactored a simple array pipeline to use block-bodied arrow functions because it looked more readable. The shape still looks right, but now the result comes back empty or full of undefined. Fix the missing returns without changing the overall intent of the pipeline."
+      }
+    },
+    {
+      "route": "/javascript/debug/js-debug-mutating-input",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Stop mutating caller data in unique",
+        "description": "Front-end debug question for javascript."
+      },
+      "after": {
+        "title": "Stop mutating caller data in unique",
+        "description": "A teammate tried to make unique(arr) look clever with a one-liner. The returned values seem close, but two subtle bugs slipped in: it reorders the data and it mutates the caller's array in place. Fix it so the helper keeps the first-seen order and does not change any shared input state."
+      }
+    },
+    {
+      "route": "/javascript/debug/js-debug-nullish-defaults",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Fix wrong defaults in normalizeSettings",
+        "description": "Front-end debug question for javascript."
+      },
+      "after": {
+        "title": "Fix wrong defaults in normalizeSettings",
+        "description": "A teammate used || while hydrating UI settings, and the bug stayed invisible until real saved values showed up. Now 0, an intentionally blank subtitle, and false keep getting overwritten by defaults. Fix the helper so only truly missing values fall back."
+      }
+    },
+    {
+      "route": "/javascript/debug/js-debug-numeric-sort",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Fix numeric sort in sortScores",
+        "description": "Front-end debug question for javascript."
+      },
+      "after": {
+        "title": "Fix numeric sort in sortScores",
+        "description": "A teammate wrote a tiny leaderboard helper with plain sort(). It looked fine in a quick demo with single-digit values, then broke the moment scores like 10 and 100 showed up. Fix the bug so numbers sort numerically in ascending order while keeping the original input unchanged."
+      }
+    },
+    {
+      "route": "/javascript/debug/js-debug-off-by-one",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Fix off-by-one in chunk",
+        "description": "Front-end debug question for javascript."
+      },
+      "after": {
+        "title": "Fix off-by-one in chunk",
+        "description": "A teammate wrote chunk(arr, size) to split rows into smaller batches. It looks fine at first glance, but the loop boundary is slightly off: exact divisions can produce an extra empty chunk, and an empty input can come back as [[]]. Fix the bug without changing the function's contract."
+      }
+    },
+    {
+      "route": "/javascript/debug/js-debug-stale-closure-autosave",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Fix stale closure in delayed autosave callback",
+        "description": "Front-end debug question for javascript."
+      },
+      "after": {
+        "title": "Fix stale closure in delayed autosave callback",
+        "description": "A teammate tried to make autosave \"predictable\" by capturing the current draft when wiring a delayed callback. That feels reasonable until the user keeps typing: the callback keeps saving the old draft it closed over instead of the latest one. Fix the bug so delayed saves read fresh state at execution time."
+      }
+    },
+    {
+      "route": "/javascript/trivia/ai-streaming-data-handling",
+      "package": "metadata-repair",
+      "before": {
+        "title": "AI streaming in frontend: partial output",
+        "description": "Handle AI streaming as a production state machine: render chunks incrementally, preserve partial and final output correctness, support cancellation, and"
+      },
+      "after": {
+        "title": "AI streaming in frontend: partial output, cancellation, and failure handling",
+        "description": "Handle AI streaming as a production state machine: render chunks incrementally, preserve partial and final output correctness, support cancellation, and recover from mid-stream failures."
+      }
+    },
+    {
+      "route": "/javascript/trivia/ai-ux-integration-challenges",
+      "package": "metadata-repair",
+      "before": {
+        "title": "JavaScript AI UX in Frontend Apps: Interview Answer",
+        "description": "Practice AI UX in Frontend Apps with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      },
+      "after": {
+        "title": "JavaScript AI UX in Frontend Apps: handling latency, streaming, trust, and failures",
+        "description": "Practice AI UX in Frontend Apps: handling latency, streaming, trust, and failures with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      }
+    },
+    {
+      "route": "/javascript/trivia/chat-conversation-state-management",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Chat conversation state in production: streaming",
+        "description": "Explain chat state through the real pitfalls: append-only timelines, stable IDs, streaming drafts, retry or reconnect handling, and message-order bugs."
+      },
+      "after": {
+        "title": "Chat conversation state in production: streaming buffers, retries, and ordering bugs",
+        "description": "Explain chat state through the real pitfalls: append-only timelines, stable IDs, streaming drafts, retry or reconnect handling, and message-order bugs."
+      }
+    },
+    {
+      "route": "/javascript/trivia/content-delivery-caching-strategies-streaming",
+      "package": "metadata-repair",
+      "before": {
+        "title": "How does caching work in frontend content delivery?",
+        "description": "Practice Streaming Platform Caching Architecture with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      },
+      "after": {
+        "title": "How does caching work in frontend content delivery?",
+        "description": "Practice Streaming Platform Caching Architecture: CDN, HTTP Cache, and Frontend Delivery with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      }
+    },
+    {
+      "route": "/javascript/trivia/http-caching-basics",
+      "package": "metadata-repair",
+      "before": {
+        "title": "JavaScript HTTP Caching in Frontend: Interview Answer",
+        "description": "Practice HTTP Caching in Frontend with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      },
+      "after": {
+        "title": "JavaScript HTTP Caching in Frontend: Cache-Control, ETag, Last-Modified, and 304",
+        "description": "Practice HTTP Caching in Frontend: Cache-Control, ETag, Last-Modified, and 304 with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-argument-passing-object-mutation-output",
+      "package": "metadata-repair",
+      "before": {
+        "title": "JavaScript Predict Object Mutation: Interview Answer",
+        "description": "Practice Predict Object Mutation Across Function with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      },
+      "after": {
+        "title": "JavaScript Predict Object Mutation Across Function Arguments",
+        "description": "Practice Predict Object Mutation Across Function Arguments with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-array-sort-pitfalls",
+      "package": "metadata-repair",
+      "before": {
+        "title": "JavaScript Array.sort pitfalls: mutation",
+        "description": "Explain Array.sort through the debug lens: in-place mutation, string-first ordering, and comparator mistakes that create subtle production bugs."
+      },
+      "after": {
+        "title": "JavaScript Array.sort pitfalls: mutation, lexicographic order, and comparator bugs",
+        "description": "Explain Array.sort through the debug lens: in-place mutation, string-first ordering, and comparator mistakes that create subtle production bugs."
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-arrow-functions",
+      "package": "metadata-repair",
+      "before": {
+        "title": "JavaScript Arrow Functions: lexical this, callbacks",
+        "description": "Understand where arrow functions shine, where dynamic this is required, and which common mistakes appear in methods, constructors, and prototypes."
+      },
+      "after": {
+        "title": "JavaScript Arrow Functions: lexical this, callbacks, and when not to use them",
+        "description": "Understand where arrow functions shine, where dynamic this is required, and which common mistakes appear in methods, constructors, and prototypes."
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-async-await-example-when-promise-is-preferred",
+      "package": "metadata-repair",
+      "before": {
+        "title": "When to prefer Promise over async/await: concurrency",
+        "description": "Learn when Promise APIs beat async/await for composition: fan-out concurrency, in-flight request sharing, and accidental sequential-await bugs."
+      },
+      "after": {
+        "title": "When to prefer Promise over async/await: concurrency and dedupe",
+        "description": "Learn when Promise APIs beat async/await for composition: fan-out concurrency, in-flight request sharing, and accidental sequential-await bugs."
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-bigint-data-type",
+      "package": "metadata-repair",
+      "before": {
+        "title": "BigInt Data Type in JavaScript: Precision, Rules",
+        "description": "Learn BigInt in JavaScript, when to use it beyond MAX_SAFE_INTEGER, and key rules for arithmetic, comparisons, and JSON APIs."
+      },
+      "after": {
+        "title": "BigInt Data Type in JavaScript: Precision, Rules, and Pitfalls",
+        "description": "Learn BigInt in JavaScript, when to use it beyond MAX_SAFE_INTEGER, and key rules for arithmetic, comparisons, and JSON APIs."
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-block-scoped-or-function-scoped",
+      "package": "metadata-repair",
+      "before": {
+        "title": "JavaScript scope: var vs let vs const, TDZ, and loop",
+        "description": "Learn whether JavaScript is block-scoped or function-scoped with var, let, const, TDZ follow-ups, switch-case pitfalls, and loop callback bugs."
+      },
+      "after": {
+        "title": "JavaScript scope: var vs let vs const, TDZ, and loop bug pitfalls",
+        "description": "Learn whether JavaScript is block-scoped or function-scoped with var, let, const, TDZ follow-ups, switch-case pitfalls, and loop callback bugs."
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-calback-hell-resolved-with-promise",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Promises vs callback hell: async sequencing, return",
+        "description": "Explain why Promise chains beat callback hell in production: flatter sequencing, one error boundary, reusable wrappers, and the common missing-return"
+      },
+      "after": {
+        "title": "Promises vs callback hell: async sequencing, return propagation, and cancellation limits",
+        "description": "Explain why Promise chains beat callback hell in production: flatter sequencing, one error boundary, reusable wrappers, and the common missing-return pitfall."
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-call-apply-bind",
+      "package": "metadata-repair",
+      "before": {
+        "title": "call(), apply(), vs bind() in JavaScript: Interview",
+        "description": "call(), apply(), vs bind() in JavaScript: quick interview answer, examples, common mistakes, and production pitfalls."
+      },
+      "after": {
+        "title": "call(), apply(), vs bind() in JavaScript",
+        "description": "call(), apply(), vs bind() in JavaScript: quick interview answer, examples, common mistakes, and production pitfalls."
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-check-data-type-with-typeof",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Check Data Type in JavaScript with typeof (and",
+        "description": "Understand check data type in JavaScript using typeof: quick answer, real example, common mistake, and senior interview follow-up."
+      },
+      "after": {
+        "title": "Check Data Type in JavaScript with typeof (and Pitfalls)",
+        "description": "Understand check data type in JavaScript using typeof: quick answer, real example, common mistake, and senior interview follow-up."
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-classes",
+      "package": "metadata-repair",
+      "before": {
+        "title": "JavaScript Classes: prototype internals, shared",
+        "description": "Learn what class syntax changes, what stays prototype-based under the hood, and which common mistakes appear around new, fields, and inheritance."
+      },
+      "after": {
+        "title": "JavaScript Classes: prototype internals, shared methods, and when not to overuse them",
+        "description": "Learn what class syntax changes, what stays prototype-based under the hood, and which common mistakes appear around new, fields, and inheritance."
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-closures",
+      "package": "metadata-repair",
+      "before": {
+        "title": "JavaScript closures: stale callback bugs, loop",
+        "description": "Practice Explain Closures in JavaScript with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      },
+      "after": {
+        "title": "JavaScript closures: stale callback bugs, loop capture, and memory retention",
+        "description": "Practice Explain Closures in JavaScript with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-compare-two-objects",
+      "package": "metadata-repair",
+      "before": {
+        "title": "How to compare two objects in JavaScript: shallow vs",
+        "description": "Understand would you compare two objects in JavaScript: quick answer, real example, common mistake, and senior interview follow-up."
+      },
+      "after": {
+        "title": "How to compare two objects in JavaScript: shallow vs deep vs JSON pitfalls",
+        "description": "Understand would you compare two objects in JavaScript: quick answer, real example, common mistake, and senior interview follow-up."
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-cookie-options",
+      "package": "metadata-repair",
+      "before": {
+        "title": "JavaScript the options (attributes): Interview Answer",
+        "description": "Practice the options (attributes) in a cookie with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      },
+      "after": {
+        "title": "JavaScript the options (attributes) in a cookie",
+        "description": "Practice the options (attributes) in a cookie with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-cookie-sessionstorage-localstorage",
+      "package": "metadata-repair",
+      "before": {
+        "title": "JavaScript Describe the difference: Interview Answer",
+        "description": "Practice Describe the difference between a cookie with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      },
+      "after": {
+        "title": "JavaScript Describe the difference between a cookie, sessionStorage and localStorage in browsers",
+        "description": "Practice Describe the difference between a cookie, sessionStorage and localStorage in browsers with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-currying",
+      "package": "metadata-repair",
+      "before": {
+        "title": "JavaScript currying vs partial application: reusable",
+        "description": "Explain currying through the real interview trade-off: reusable partially configured helpers, clearer composition, and the point where extra indirection becomes harder to justify."
+      },
+      "after": {
+        "title": "JavaScript currying vs partial application: reusable helpers and when not to use it",
+        "description": "Explain currying through the real interview trade-off: reusable partially configured helpers, clearer composition, and the point where extra indirection becomes harder to justify."
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-deferred-scripts",
+      "package": "metadata-repair",
+      "before": {
+        "title": "JavaScript defer in production: render-blocking",
+        "description": "Understand defer through the loading pitfall lens: stop parser blocking, preserve execution order, and avoid DOM-ready bugs caused by async assumptions."
+      },
+      "after": {
+        "title": "JavaScript defer in production: render-blocking, execution order, and async vs defer pitfalls",
+        "description": "Understand defer through the loading pitfall lens: stop parser blocking, preserve execution order, and avoid DOM-ready bugs caused by async assumptions."
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-design-patterns",
+      "package": "metadata-repair",
+      "before": {
+        "title": "JavaScript design patterns in production: module",
+        "description": "Learn design patterns through the real trade-off: when module, factory, or observer clarifies architecture and when pattern-heavy code becomes a pitfall."
+      },
+      "after": {
+        "title": "JavaScript design patterns in production: module, factory, observer, and overengineering pitfalls",
+        "description": "Learn design patterns through the real trade-off: when module, factory, or observer clarifies architecture and when pattern-heavy code becomes a pitfall."
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-event-bubbling-capturing",
+      "package": "metadata-repair",
+      "before": {
+        "title": "JavaScript event bubbling vs capturing: delegated",
+        "description": "Debug nested click handlers with confidence: bubbling, capture, target vs currentTarget, delegated menus, stopPropagation, and composedPath follow-ups."
+      },
+      "after": {
+        "title": "JavaScript event bubbling vs capturing: delegated menus and debug flow",
+        "description": "Debug nested click handlers with confidence: bubbling, capture, target vs currentTarget, delegated menus, stopPropagation, and composedPath follow-ups."
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-event-delegation",
+      "package": "metadata-repair",
+      "before": {
+        "title": "JavaScript Event Delegation: dynamic DOM, closest()",
+        "description": "Learn delegation beyond bubbling basics: fewer listeners, better list performance, and the common pitfall of reading event.target too literally."
+      },
+      "after": {
+        "title": "JavaScript Event Delegation: dynamic DOM, closest(), and debug traps",
+        "description": "Learn delegation beyond bubbling basics: fewer listeners, better list performance, and the common pitfall of reading event.target too literally."
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-event-loop-nested-microtask-output",
+      "package": "metadata-repair",
+      "before": {
+        "title": "JavaScript Predict the Output of a: Interview Answer",
+        "description": "Practice Predict the Output of a Nested Microtask with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      },
+      "after": {
+        "title": "JavaScript Predict the Output of a Nested Microtask",
+        "description": "Practice Predict the Output of a Nested Microtask with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-foreach-vs-map",
+      "package": "metadata-repair",
+      "before": {
+        "title": "JavaScript you describe the main: Interview Answer",
+        "description": "Practice you describe the main difference between with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      },
+      "after": {
+        "title": "JavaScript you describe the main difference between Array.forEach() and Array.map() methods and why you would pick one versus the other",
+        "description": "Practice you describe the main difference between Array.forEach() and Array.map() methods and why you would pick one versus the other with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-garbage-collection-and-gc-pauses",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Garbage Collection (GC) in: Interview Answer",
+        "description": "Practice Garbage Collection (GC) in JavaScript with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      },
+      "after": {
+        "title": "Garbage Collection (GC) in JavaScript: Memory Pressure and Jank",
+        "description": "Practice Garbage Collection (GC) in JavaScript: Memory Pressure and Jank with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-higher-order-function",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Higher-order functions in JavaScript: callbacks",
+        "description": "Learn what higher-order functions are, why callbacks and composition depend on them, and which abstraction pitfalls to avoid."
+      },
+      "after": {
+        "title": "Higher-order functions in JavaScript: callbacks, composition, and abstraction pitfalls",
+        "description": "Learn what higher-order functions are, why callbacks and composition depend on them, and which abstraction pitfalls to avoid."
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-hoisting-tdz",
+      "package": "metadata-repair",
+      "before": {
+        "title": "JavaScript TDZ and hoisting: Cannot access before",
+        "description": "Learn how TDZ differs from undeclared variables, why typeof can still throw inside TDZ, and how to debug startup ordering bugs."
+      },
+      "after": {
+        "title": "JavaScript TDZ and hoisting: Cannot access before initialization explained",
+        "description": "Learn how TDZ differs from undeclared variables, why typeof can still throw inside TDZ, and how to debug startup ordering bugs."
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-intl-datetime-timezone",
+      "package": "metadata-repair",
+      "before": {
+        "title": "JavaScript time-zone formatting: DST bugs, IANA",
+        "description": "Explain Intl.DateTimeFormat through the production pitfall: DST shifts, fixed-offset bugs, IANA time zones, and reliable cross-region date rendering."
+      },
+      "after": {
+        "title": "JavaScript time-zone formatting: DST bugs, IANA zones, and Intl.DateTimeFormat",
+        "description": "Explain Intl.DateTimeFormat through the production pitfall: DST shifts, fixed-offset bugs, IANA time zones, and reliable cross-region date rendering."
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-map-filter-reduce",
+      "package": "metadata-repair",
+      "before": {
+        "title": "map vs filter vs reduce in JavaScript: when to use",
+        "description": "map vs filter vs reduce in JavaScript: quick interview answer, examples, common mistakes, and production pitfalls."
+      },
+      "after": {
+        "title": "map vs filter vs reduce in JavaScript: when to use each?",
+        "description": "map vs filter vs reduce in JavaScript: quick interview answer, examples, common mistakes, and production pitfalls."
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-map-parseint-callback-arity-output",
+      "package": "metadata-repair",
+      "before": {
+        "title": "JavaScript Predict map(parseInt): Interview Answer",
+        "description": "Practice Predict map(parseInt) Callback Arguments with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      },
+      "after": {
+        "title": "JavaScript Predict map(parseInt) Callback Arguments",
+        "description": "Practice Predict map(parseInt) Callback Arguments with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-map-set-get",
+      "package": "metadata-repair",
+      "before": {
+        "title": "JavaScript Map and Set: set(), get(), has(), and",
+        "description": "Understand Map and Set in JavaScript with practical examples of set/get/has, deduplication, key equality rules, and common interview pitfalls."
+      },
+      "after": {
+        "title": "JavaScript Map and Set: set(), get(), has(), and Real Use Cases",
+        "description": "Understand Map and Set in JavaScript with practical examples of set/get/has, deduplication, key equality rules, and common interview pitfalls."
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-map-vs-object",
+      "package": "metadata-repair",
+      "before": {
+        "title": "JavaScript What’s the difference: Interview Answer",
+        "description": "Practice What’s the difference between a Map and a with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      },
+      "after": {
+        "title": "What’s the difference between a Map and a plain Object in JavaScript",
+        "description": "Practice What’s the difference between a Map and a plain Object in JavaScript with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-memoization",
+      "package": "metadata-repair",
+      "before": {
+        "title": "JavaScript memoization: when it helps, when it",
+        "description": "Practice memoization in JavaScript with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      },
+      "after": {
+        "title": "JavaScript memoization: when it helps, when it backfires, and cache pitfalls",
+        "description": "Practice memoization in JavaScript with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-microtasks-vs-macrotasks",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Microtasks vs Macrotasks in JavaScript: Interview",
+        "description": "Microtasks vs Macrotasks in JavaScript: quick interview answer, examples, common mistakes, and production pitfalls."
+      },
+      "after": {
+        "title": "Microtasks vs Macrotasks in JavaScript",
+        "description": "Microtasks vs Macrotasks in JavaScript: quick interview answer, examples, common mistakes, and production pitfalls."
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-mock-vs-stub-vs-spy",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Mocks vs Stubs vs Spies (Test Doubles) in",
+        "description": "Mocks vs Stubs vs Spies (Test Doubles) in JavaScript: quick interview answer, examples, common mistakes, and production pitfalls."
+      },
+      "after": {
+        "title": "Mocks vs Stubs vs Spies (Test Doubles) in JavaScript",
+        "description": "Mocks vs Stubs vs Spies (Test Doubles) in JavaScript: quick interview answer, examples, common mistakes, and production pitfalls."
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-mutability-vs-immutability",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Mutability vs Immutability in JavaScript: Interview",
+        "description": "Mutability vs Immutability in JavaScript: quick interview answer, examples, common mistakes, and production pitfalls."
+      },
+      "after": {
+        "title": "Mutability vs Immutability in JavaScript",
+        "description": "Mutability vs Immutability in JavaScript: quick interview answer, examples, common mistakes, and production pitfalls."
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-nan-property",
+      "package": "metadata-repair",
+      "before": {
+        "title": "JavaScript NaN common mistakes: Number.isNaN",
+        "description": "Learn the NaN production pitfall: coercion hides invalid input, global isNaN misleads checks, and Number.isNaN is the safer debugging rule."
+      },
+      "after": {
+        "title": "JavaScript NaN common mistakes: Number.isNaN, coercion traps, and validation bugs",
+        "description": "Learn the NaN production pitfall: coercion hides invalid input, global isNaN misleads checks, and Number.isNaN is the safer debugging rule."
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-null-undefined-undeclared",
+      "package": "metadata-repair",
+      "before": {
+        "title": "JavaScript a variable that is: Interview Answer",
+        "description": "Practice a variable that is: null, undefined with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      },
+      "after": {
+        "title": "JavaScript a variable that is: null, undefined or undeclared",
+        "description": "Practice a variable that is: null, undefined or undeclared with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-object-creation-methods",
+      "package": "metadata-repair",
+      "before": {
+        "title": "JavaScript object creation methods: prototypes",
+        "description": "Compare literals, factories, constructors, classes, and Object.create through prototype behavior, memory use, and common design pitfalls."
+      },
+      "after": {
+        "title": "JavaScript object creation methods: prototypes, trade-offs, and pitfalls",
+        "description": "Compare literals, factories, constructors, classes, and Object.create through prototype behavior, memory use, and common design pitfalls."
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-object-destructuring",
+      "package": "metadata-repair",
+      "before": {
+        "title": "JavaScript object destructuring: defaults, renaming",
+        "description": "Learn how destructuring works, where nested access and defaults break down, and which common mistakes cause production bugs."
+      },
+      "after": {
+        "title": "JavaScript object destructuring: defaults, renaming, and common mistakes",
+        "description": "Learn how destructuring works, where nested access and defaults break down, and which common mistakes cause production bugs."
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-passing-by-value-and-by-reference",
+      "package": "metadata-repair",
+      "before": {
+        "title": "JavaScript pass by value vs reference",
+        "description": "Understand JavaScript argument passing precisely: copied reference values, call-by-sharing, mutation vs reassignment, and common state-management bugs."
+      },
+      "after": {
+        "title": "JavaScript pass by value vs reference: call-by-sharing and mutation bugs",
+        "description": "Understand JavaScript argument passing precisely: copied reference values, call-by-sharing, mutation vs reassignment, and common state-management bugs."
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-performance-profiling-workflow",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Profile JavaScript performance: DevTools workflow",
+        "description": "Profile JavaScript performance with a production workflow: record the same scenario, find the slowest bottleneck, debug it with traces, and verify the"
+      },
+      "after": {
+        "title": "Profile JavaScript performance: DevTools workflow, bottlenecks, and debug steps",
+        "description": "Profile JavaScript performance with a production workflow: record the same scenario, find the slowest bottleneck, debug it with traces, and verify the exact fix."
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-promise-combinators-all-allsettled-race-any",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Promise.all vs allSettled vs race vs any (JavaScript",
+        "description": "Promise.all vs allSettled vs race vs any (JavaScript in JavaScript: quick interview answer, examples, common mistakes, and production pitfalls."
+      },
+      "after": {
+        "title": "Promise.all vs allSettled vs race vs any (JavaScript Promise Combinators) in JavaScript",
+        "description": "Promise.all vs allSettled vs race vs any (JavaScript Promise Combinators) in JavaScript: quick interview answer, examples, common mistakes, and production pitfalls."
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-promise-fundamental-understanding",
+      "package": "metadata-repair",
+      "before": {
+        "title": "JavaScript Promises under the hood: timing, missing",
+        "description": "Understand Promise internals: executor timing, microtask order, missing-return bugs, chain propagation, and what finally really does."
+      },
+      "after": {
+        "title": "JavaScript Promises under the hood: timing, missing returns, and finally",
+        "description": "Understand Promise internals: executor timing, microtask order, missing-return bugs, chain propagation, and what finally really does."
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-promises-async-await",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Promises vs async await: concurrency, stale-request",
+        "description": "Learn when async and await improves readability, when Promise.all is clearer, and how cancellation plus request identity avoids stale UI bugs."
+      },
+      "after": {
+        "title": "Promises vs async await: concurrency, stale-request control, and production pitfalls",
+        "description": "Learn when async and await improves readability, when Promise.all is clearer, and how cancellation plus request identity avoids stale UI bugs."
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-prototypal-inheritance",
+      "package": "metadata-repair",
+      "before": {
+        "title": "JavaScript Explain how prototypal: Interview Answer",
+        "description": "Practice Explain how prototypal inheritance works in with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      },
+      "after": {
+        "title": "Explain how prototypal inheritance works in JavaScript",
+        "description": "Practice Explain how prototypal inheritance works in JavaScript with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-secure-cors-handling",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Secure CORS handling in production: server policy",
+        "description": "Explain CORS through the real security model: the browser enforces it, the server sets policy, and production fixes come from allowlists, preflight"
+      },
+      "after": {
+        "title": "Secure CORS handling in production: server policy, preflight debug, and BFF patterns",
+        "description": "Explain CORS through the real security model: the browser enforces it, the server sets policy, and production fixes come from allowlists, preflight handling, or a trusted proxy."
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-shallow-vs-deep-copy",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Shallow Copy vs Deep Copy in JavaScript: Interview",
+        "description": "Shallow Copy vs Deep Copy in JavaScript: quick interview answer, examples, common mistakes, and production pitfalls."
+      },
+      "after": {
+        "title": "Shallow Copy vs Deep Copy in JavaScript",
+        "description": "Shallow Copy vs Deep Copy in JavaScript: quick interview answer, examples, common mistakes, and production pitfalls."
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-testing-edge-cases-strategy",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Testing edge cases in JavaScript: boundaries",
+        "description": "Explain edge-case testing through the real bug-prevention lens: boundaries, invalid inputs, invariants, and the common mistake of shipping"
+      },
+      "after": {
+        "title": "Testing edge cases in JavaScript: boundaries, failure modes, and high-signal test strategy",
+        "description": "Explain edge-case testing through the real bug-prevention lens: boundaries, invalid inputs, invariants, and the common mistake of shipping happy-path-only coverage."
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-tree-shaking",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Tree shaking in bundlers: ESM requirements",
+        "description": "Explain tree shaking through the real bundler pitfall: ESM helps, side effects block elimination, and verification matters when bundles stay large after"
+      },
+      "after": {
+        "title": "Tree shaking in bundlers: ESM requirements, side-effect pitfalls, and bundle debug",
+        "description": "Explain tree shaking through the real bundler pitfall: ESM helps, side effects block elimination, and verification matters when bundles stay large after optimizing."
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-truthy-falsy-pass-by-value-reference-strict-equality-use-case",
+      "package": "metadata-repair",
+      "before": {
+        "title": "JavaScript bug combo: falsy defaults, == coercion",
+        "description": "Learn one real JavaScript helper bug that mixes truthy/falsy defaults, loose equality, and shared object mutation, plus how to debug each failure"
+      },
+      "after": {
+        "title": "JavaScript bug combo: falsy defaults, == coercion, and shared mutation",
+        "description": "Learn one real JavaScript helper bug that mixes truthy/falsy defaults, loose equality, and shared object mutation, plus how to debug each failure separately."
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-type-coercion",
+      "package": "metadata-repair",
+      "before": {
+        "title": "JavaScript type coercion: real-world examples, == vs",
+        "description": "Go beyond the definition of coercion with concrete examples, mixed-type edge cases, Number.isNaN vs isNaN, and safer input-handling rules."
+      },
+      "after": {
+        "title": "JavaScript type coercion: real-world examples, == vs ===, and boundary bugs",
+        "description": "Go beyond the definition of coercion with concrete examples, mixed-type edge cases, Number.isNaN vs isNaN, and safer input-handling rules."
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-undefined-vs-not-defined",
+      "package": "metadata-repair",
+      "before": {
+        "title": "undefined vs not defined in JavaScript: Interview",
+        "description": "undefined vs not defined in JavaScript: quick interview answer, examples, common mistakes, and production pitfalls."
+      },
+      "after": {
+        "title": "undefined vs not defined in JavaScript",
+        "description": "undefined vs not defined in JavaScript: quick interview answer, examples, common mistakes, and production pitfalls."
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-use-strict-describe",
+      "package": "metadata-repair",
+      "before": {
+        "title": "JavaScript 'use strict': migration bugs, module",
+        "description": "Learn what 'use strict' changes in practice: accidental globals, sloppy this, silent failures, module defaults, eval limits, and migration trade-offs."
+      },
+      "after": {
+        "title": "JavaScript 'use strict': migration bugs, module defaults, and eval restrictions",
+        "description": "Learn what 'use strict' changes in practice: accidental globals, sloppy this, silent failures, module defaults, eval limits, and migration trade-offs."
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-var-hoisting-shadowing-output",
+      "package": "metadata-repair",
+      "before": {
+        "title": "JavaScript var hoisting output: local shadowing and",
+        "description": "Predict JavaScript output when a hoisted function-scoped var shadows a global binding before its assignment executes."
+      },
+      "after": {
+        "title": "JavaScript var hoisting output: local shadowing and undefined",
+        "description": "Predict JavaScript output when a hoisted function-scoped var shadows a global binding before its assignment executes."
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-var-let-const-hoisting",
+      "package": "metadata-repair",
+      "before": {
+        "title": "var vs let vs const hoisting: TDZ, scope, and real",
+        "description": "Compare var, let, and const the way interviewers expect: hoisting, TDZ, scope, reassignment, and the classic loop-closure trap."
+      },
+      "after": {
+        "title": "var vs let vs const hoisting: TDZ, scope, and real bug patterns",
+        "description": "Compare var, let, and const the way interviewers expect: hoisting, TDZ, scope, reassignment, and the classic loop-closure trap."
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-web-workers-basics",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Web Workers: Off-Main-Thread: Interview Answer",
+        "description": "Practice Web Workers: Off-Main-Thread JavaScript with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      },
+      "after": {
+        "title": "Web Workers: Off-Main-Thread JavaScript",
+        "description": "Practice Web Workers: Off-Main-Thread JavaScript with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-why-eval-function-considered-dangerous",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Why eval() is dangerous: same-origin code execution",
+        "description": "Understand the real eval pitfall: untrusted data becomes code, CSP weakens, same-origin attack paths open up, and safer replacements are usually simpler."
+      },
+      "after": {
+        "title": "Why eval() is dangerous: same-origin code execution, CSP, and safer replacements",
+        "description": "Understand the real eval pitfall: untrusted data becomes code, CSP weakens, same-origin attack paths open up, and safer replacements are usually simpler."
+      }
+    },
+    {
+      "route": "/javascript/trivia/js-xss-dom-sinks",
+      "package": "metadata-repair",
+      "before": {
+        "title": "How do you prevent DOM XSS: sources, sinks",
+        "description": "Practice DOM XSS Prevention in JavaScript with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      },
+      "after": {
+        "title": "How do you prevent DOM XSS: sources, sinks, sanitization, and Trusted Types",
+        "description": "Practice DOM XSS Prevention in JavaScript: Dangerous Sinks, Safe APIs, and Trusted Types with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      }
+    },
+    {
+      "route": "/javascript/trivia/prompt-engineering-frontend",
+      "package": "metadata-repair",
+      "before": {
+        "title": "JavaScript prompt engineering, and: Interview Answer",
+        "description": "Practice prompt engineering, and how does it relate with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      },
+      "after": {
+        "title": "JavaScript prompt engineering, and how does it relate to frontend features",
+        "description": "Practice prompt engineering, and how does it relate to frontend features with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      }
+    },
+    {
+      "route": "/javascript/trivia/web-performance-optimize-load-time",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Web load-time optimization: critical path, Core Web",
+        "description": "Explain load-time optimization through critical-path debugging, render-blocking work, caching, LCP-vs-INP trade-offs, and field validation with Core Web"
+      },
+      "after": {
+        "title": "Web load-time optimization: critical path, Core Web Vitals trade-offs, and RUM",
+        "description": "Explain load-time optimization through critical-path debugging, render-blocking work, caching, LCP-vs-INP trade-offs, and field validation with Core Web Vitals."
+      }
+    },
+    {
+      "route": "/react/trivia/react-18-whats-new",
+      "package": "metadata-repair",
+      "before": {
+        "title": "React 18: createRoot, transitions, batching, and",
+        "description": "Learn what changed in React 18, why transitions and automatic batching matter, and which StrictMode or migration pitfalls show up after moving to"
+      },
+      "after": {
+        "title": "React 18: createRoot, transitions, batching, and migration pitfalls",
+        "description": "Learn what changed in React 18, why transitions and automatic batching matter, and which StrictMode or migration pitfalls show up after moving to createRoot."
+      }
+    },
+    {
+      "route": "/react/trivia/react-component-rerendering",
+      "package": "metadata-repair",
+      "before": {
+        "title": "React rerenders vs DOM updates: bailouts, identity",
+        "description": "React can re-render without mutating the DOM. The production bugs usually come from identity changes, context fanout, and confusing render work with"
+      },
+      "after": {
+        "title": "React rerenders vs DOM updates: bailouts, identity pitfalls, and debug mental models",
+        "description": "React can re-render without mutating the DOM. The production bugs usually come from identity changes, context fanout, and confusing render work with commit work."
+      }
+    },
+    {
+      "route": "/react/trivia/react-concurrent-rendering",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Concurrent rendering in React: scheduling",
+        "description": "Concurrent rendering is about scheduling and interruptible work, not true parallelism. The key production question is when to split urgent and non-urgent updates."
+      },
+      "after": {
+        "title": "Concurrent rendering in React: scheduling, interruptible work, and responsiveness pitfalls",
+        "description": "Concurrent rendering is about scheduling and interruptible work, not true parallelism. The key production question is when to split urgent and non-urgent updates."
+      }
+    },
+    {
+      "route": "/react/trivia/react-core-problem-and-non-goals",
+      "package": "metadata-repair",
+      "before": {
+        "title": "What problem does React solve and what does it not",
+        "description": "React solves state-driven UI rendering and reconciliation, but it does not include built-in routing, data fetching, or global state by default."
+      },
+      "after": {
+        "title": "What problem does React solve and what does it not solve?",
+        "description": "React solves state-driven UI rendering and reconciliation, but it does not include built-in routing, data fetching, or global state by default."
+      }
+    },
+    {
+      "route": "/react/trivia/react-default-vs-named-exports-runtime-break",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Default vs named exports in React: why do import",
+        "description": "How can incorrect default vs named exports break a React in React: quick interview answer, examples, common mistakes, and production pitfalls."
+      },
+      "after": {
+        "title": "Default vs named exports in React: why do import errors happen?",
+        "description": "How can incorrect default vs named exports break a React application at runtime in React: quick interview answer, examples, common mistakes, and production pitfalls."
+      }
+    },
+    {
+      "route": "/react/trivia/react-derived-state-anti-pattern",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Derived state in React: single-source-of-truth bugs",
+        "description": "Derived state becomes a production pitfall when copied props or computed values drift out of sync. Use it only for narrow, justified cases."
+      },
+      "after": {
+        "title": "Derived state in React: single-source-of-truth bugs, drift, and when it is actually OK",
+        "description": "Derived state becomes a production pitfall when copied props or computed values drift out of sync. Use it only for narrow, justified cases."
+      }
+    },
+    {
+      "route": "/react/trivia/react-diffing-algorithm",
+      "package": "metadata-repair",
+      "before": {
+        "title": "React diffing algorithm: O(n) heuristics, keys, and",
+        "description": "Learn the under-the-hood heuristics React uses for diffing, how element type and keys drive updates, and which list-update pitfalls lead to confusing"
+      },
+      "after": {
+        "title": "React diffing algorithm: O(n) heuristics, keys, and list-update pitfalls",
+        "description": "Learn the under-the-hood heuristics React uses for diffing, how element type and keys drive updates, and which list-update pitfalls lead to confusing state bugs."
+      }
+    },
+    {
+      "route": "/react/trivia/react-error-boundaries-what-they-solve",
+      "package": "metadata-repair",
+      "before": {
+        "title": "React Error Boundaries in production: render-crash",
+        "description": "Error Boundaries isolate render-time crashes, but a common production mistake is expecting them to catch event-handler, async, or SSR errors."
+      },
+      "after": {
+        "title": "React Error Boundaries in production: render-crash isolation, fallback UI, and what they do not catch",
+        "description": "Error Boundaries isolate render-time crashes, but a common production mistake is expecting them to catch event-handler, async, or SSR errors."
+      }
+    },
+    {
+      "route": "/react/trivia/react-fragments-dom-and-reconciliation",
+      "package": "metadata-repair",
+      "before": {
+        "title": "How do fragments affect the rendered DOM and",
+        "description": "Understand fragments affect the rendered DOM and: quick answer, real example, common mistake, and senior interview follow-up."
+      },
+      "after": {
+        "title": "How do fragments affect the rendered DOM and reconciliation?",
+        "description": "Understand fragments affect the rendered DOM and reconciliation: quick answer, real example, common mistake, and senior interview follow-up."
+      }
+    },
+    {
+      "route": "/react/trivia/react-function-treated-as-component-rules",
+      "package": "metadata-repair",
+      "before": {
+        "title": "React rules must a function follow: Interview Answer",
+        "description": "Practice rules must a function follow to be treated with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      },
+      "after": {
+        "title": "rules must a function follow to be treated as a React component",
+        "description": "Practice rules must a function follow to be treated as a React component with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      }
+    },
+    {
+      "route": "/react/trivia/react-functional-vs-class-components",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Functional vs class components in React: Interview",
+        "description": "Functional vs class components in React: quick interview answer, examples, common mistakes, and production pitfalls."
+      },
+      "after": {
+        "title": "Functional vs class components in React",
+        "description": "Functional vs class components in React: quick interview answer, examples, common mistakes, and production pitfalls."
+      }
+    },
+    {
+      "route": "/react/trivia/react-higher-order-components",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Higher-order components in React: legacy reuse",
+        "description": "Practice Higher-order components (HOCs) in React with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      },
+      "after": {
+        "title": "Higher-order components in React: legacy reuse, prop-collision pitfalls, and when not to use them",
+        "description": "Practice Higher-order components (HOCs) in React: what are they and when should you use them with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      }
+    },
+    {
+      "route": "/react/trivia/react-hooks-youve-used",
+      "package": "metadata-repair",
+      "before": {
+        "title": "How to choose React Hooks: useState vs useReducer",
+        "description": "A strong React Hooks answer is a decision matrix, not a hook list. Learn when to use useState, useReducer, useEffect, useRef, memoization hooks, and transitions."
+      },
+      "after": {
+        "title": "How to choose React Hooks: useState vs useReducer, useRef vs state, and effect trade-offs",
+        "description": "A strong React Hooks answer is a decision matrix, not a hook list. Learn when to use useState, useReducer, useEffect, useRef, memoization hooks, and transitions."
+      }
+    },
+    {
+      "route": "/react/trivia/react-jsx-transform-and-why-not-required",
+      "package": "metadata-repair",
+      "before": {
+        "title": "How is JSX transformed in React and do you need it?",
+        "description": "Understand JSX get transformed, and why doesn’t React: quick answer, real example, common mistake, and senior interview follow-up."
+      },
+      "after": {
+        "title": "How is JSX transformed in React and do you need it?",
+        "description": "Understand JSX get transformed, and why doesn’t React require it: quick answer, real example, common mistake, and senior interview follow-up."
+      }
+    },
+    {
+      "route": "/react/trivia/react-keys-in-lists",
+      "package": "metadata-repair",
+      "before": {
+        "title": "React keys in lists: identity bugs, reordered rows",
+        "description": "Learn why React keys are about stable identity, how bad keys cause reordered-row bugs and state leakage, and which key choices are safe in production."
+      },
+      "after": {
+        "title": "React keys in lists: identity bugs, reordered rows, and stable state",
+        "description": "Learn why React keys are about stable identity, how bad keys cause reordered-row bugs and state leakage, and which key choices are safe in production."
+      }
+    },
+    {
+      "route": "/react/trivia/react-lifting-state-up",
+      "package": "metadata-repair",
+      "before": {
+        "title": "React lifting state up: sibling sync bugs, single",
+        "description": "Learn when to lift React state to a common parent, how it fixes sibling drift bugs, and when lifting too far creates prop drilling or rerender costs."
+      },
+      "after": {
+        "title": "React lifting state up: sibling sync bugs, single source of truth, and trade-offs",
+        "description": "Learn when to lift React state to a common parent, how it fixes sibling drift bugs, and when lifting too far creates prop drilling or rerender costs."
+      }
+    },
+    {
+      "route": "/react/trivia/react-mixing-state-and-props-responsibilities",
+      "package": "metadata-repair",
+      "before": {
+        "title": "What happens when state and props responsibilities",
+        "description": "Mixing state and props ownership creates multiple sources of truth, which leads to stale UI, reset bugs, and harder debugging."
+      },
+      "after": {
+        "title": "What happens when state and props responsibilities are mixed?",
+        "description": "Mixing state and props ownership creates multiple sources of truth, which leads to stale UI, reset bugs, and harder debugging."
+      }
+    },
+    {
+      "route": "/react/trivia/react-one-way-data-flow",
+      "package": "metadata-repair",
+      "before": {
+        "title": "React one-way data flow in production: state",
+        "description": "React one-way data flow keeps state ownership clear, prevents multi-writer bugs, and makes production debugging and concurrent rendering safer."
+      },
+      "after": {
+        "title": "React one-way data flow in production: state ownership, multi-writer bugs, and debug clarity",
+        "description": "React one-way data flow keeps state ownership clear, prevents multi-writer bugs, and makes production debugging and concurrent rendering safer."
+      }
+    },
+    {
+      "route": "/react/trivia/react-prevent-unnecessary-rerenders",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Prevent React rerenders: profiling-first fixes and",
+        "description": "Understand you prevent unnecessary re-renders in React: quick answer, real example, common mistake, and senior interview follow-up."
+      },
+      "after": {
+        "title": "Prevent React rerenders: profiling-first fixes and memoization pitfalls",
+        "description": "Understand you prevent unnecessary re-renders in React: quick answer, real example, common mistake, and senior interview follow-up."
+      }
+    },
+    {
+      "route": "/react/trivia/react-pure-function-of-props-and-state",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Why should React components be pure functions of",
+        "description": "React components should be pure because the same props and state must produce the same UI output without side effects during render."
+      },
+      "after": {
+        "title": "Why should React components be pure functions of props and state?",
+        "description": "React components should be pure because the same props and state must produce the same UI output without side effects during render."
+      }
+    },
+    {
+      "route": "/react/trivia/react-reconciliation",
+      "package": "metadata-repair",
+      "before": {
+        "title": "React reconciliation: state preservation, remounts",
+        "description": "Understand how React decides to preserve or remount a subtree when element types or keys change, and why that shows up as form-reset and state-loss bugs"
+      },
+      "after": {
+        "title": "React reconciliation: state preservation, remounts, and key-driven identity",
+        "description": "Understand how React decides to preserve or remount a subtree when element types or keys change, and why that shows up as form-reset and state-loss bugs in production."
+      }
+    },
+    {
+      "route": "/react/trivia/react-render-nothing-return-value",
+      "package": "paired-ctr-treatment",
+      "before": {
+        "title": "Can React Return undefined? React 18 vs null",
+        "description": "React 18+ permits undefined component returns. Practice when it renders nothing, why null is clearer, how React 17 differed, and lint catches return bugs."
+      },
+      "after": {
+        "title": "React Return null vs undefined: React 18+ Explained",
+        "description": "Compare null and undefined returns in React 18+, see what changed since React 17, and catch accidental missing returns with TypeScript and lint rules."
+      }
+    },
+    {
+      "route": "/react/trivia/react-rerender-decision-and-render",
+      "package": "metadata-repair",
+      "before": {
+        "title": "React rerender vs DOM update: render, commit",
+        "description": "Learn what actually triggers React rerenders, why render work is not the same as DOM mutation, and how bailouts, context churn, and remounts change the"
+      },
+      "after": {
+        "title": "React rerender vs DOM update: render, commit, bailouts, and remounts",
+        "description": "Learn what actually triggers React rerenders, why render work is not the same as DOM mutation, and how bailouts, context churn, and remounts change the result."
+      }
+    },
+    {
+      "route": "/react/trivia/react-strictmode-purpose",
+      "package": "metadata-repair",
+      "before": {
+        "title": "the purpose of the React.StrictMode: Interview Answer",
+        "description": "Practice the purpose of the React.StrictMode component with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      },
+      "after": {
+        "title": "the purpose of the React.StrictMode component",
+        "description": "Practice the purpose of the React.StrictMode component with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      }
+    },
+    {
+      "route": "/react/trivia/react-useeffect-purpose",
+      "package": "metadata-repair",
+      "before": {
+        "title": "useEffect in React: external sync, cleanup pitfalls",
+        "description": "useEffect is for syncing with external systems. The real pitfalls are stale closures, missing cleanup, and accidentally using effects for pure render"
+      },
+      "after": {
+        "title": "useEffect in React: external sync, cleanup pitfalls, and stale-closure debugging",
+        "description": "useEffect is for syncing with external systems. The real pitfalls are stale closures, missing cleanup, and accidentally using effects for pure render logic."
+      }
+    },
+    {
+      "route": "/react/trivia/react-useeffect-vs-uselayouteffect",
+      "package": "metadata-repair",
+      "before": {
+        "title": "useEffect vs useLayoutEffect: what is the difference?",
+        "description": "useLayoutEffect guarantees layout work before repaint; useEffect generally follows paint for non-interaction updates but may run before paint for"
+      },
+      "after": {
+        "title": "useEffect vs useLayoutEffect: what is the difference?",
+        "description": "useLayoutEffect guarantees layout work before repaint; useEffect generally follows paint for non-interaction updates but may run before paint for interactions."
+      }
+    },
+    {
+      "route": "/react/trivia/react-usememo-vs-usecallback",
+      "package": "metadata-repair",
+      "before": {
+        "title": "useMemo vs useCallback in React: what is the",
+        "description": "useMemo memoizes a computed value, while useCallback memoizes a function reference between renders."
+      },
+      "after": {
+        "title": "useMemo vs useCallback in React: what is the difference?",
+        "description": "useMemo memoizes a computed value, while useCallback memoizes a function reference between renders."
+      }
+    },
+    {
+      "route": "/react/trivia/react-usestate-purpose",
+      "package": "metadata-repair",
+      "before": {
+        "title": "useState in React: render snapshots, rerender",
+        "description": "useState stores local state, but the real production pitfalls are stale snapshots, mutated objects, and misunderstanding when setters take effect."
+      },
+      "after": {
+        "title": "useState in React: render snapshots, rerender triggers, and common update mistakes",
+        "description": "useState stores local state, but the real production pitfalls are stale snapshots, mutated objects, and misunderstanding when setters take effect."
+      }
+    },
+    {
+      "route": "/react/trivia/react-virtual-dom",
+      "package": "metadata-repair",
+      "before": {
+        "title": "React Virtual DOM under the hood: reconciliation",
+        "description": "The Virtual DOM is an in-memory React tree, but the useful production angle is debugging re-renders, commit work, and reconciliation misconceptions."
+      },
+      "after": {
+        "title": "React Virtual DOM under the hood: reconciliation, commit work, and performance misconceptions",
+        "description": "The Virtual DOM is an in-memory React tree, but the useful production angle is debugging re-renders, commit work, and reconciliation misconceptions."
+      }
+    },
+    {
+      "route": "/react/trivia/react-why-batching-state-updates",
+      "package": "metadata-repair",
+      "before": {
+        "title": "React state batching: render performance, async",
+        "description": "React batches updates to reduce extra renders, but the practical angle is understanding async boundaries, queued snapshots, and why setters do not update"
+      },
+      "after": {
+        "title": "React state batching: render performance, async boundaries, and common mental-model mistakes",
+        "description": "React batches updates to reduce extra renders, but the practical angle is understanding async boundaries, queued snapshots, and why setters do not update immediately."
+      }
+    },
+    {
+      "route": "/react/trivia/react-why-event-delegation",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Why does React use event delegation?",
+        "description": "Understand React use event delegation instead of native: quick answer, real example, common mistake, and senior interview follow-up."
+      },
+      "after": {
+        "title": "Why does React use event delegation?",
+        "description": "Understand React use event delegation instead of native listeners: quick answer, real example, common mistake, and senior interview follow-up."
+      }
+    },
+    {
+      "route": "/react/trivia/react-why-hooks-have-rules",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Why do React Hooks have rules?",
+        "description": "Understand Hooks have rules? What breaks if you call: quick answer, real example, common mistake, and senior interview follow-up."
+      },
+      "after": {
+        "title": "Why do React Hooks have rules?",
+        "description": "Understand Hooks have rules? What breaks if you call Hooks conditionally: quick answer, real example, common mistake, and senior interview follow-up."
+      }
+    },
+    {
+      "route": "/react/trivia/react-why-props-immutable",
+      "package": "metadata-repair",
+      "before": {
+        "title": "React props immutability: parent ownership",
+        "description": "Learn why React props are immutable, how mutation breaks parent ownership and memoization, and which production bugs appear when children mutate shared"
+      },
+      "after": {
+        "title": "React props immutability: parent ownership, memoization, and mutation bugs",
+        "description": "Learn why React props are immutable, how mutation breaks parent ownership and memoization, and which production bugs appear when children mutate shared inputs."
+      }
+    },
+    {
+      "route": "/vue/trivia/vue-architecture-decisions-scalability",
+      "package": "metadata-repair",
+      "before": {
+        "title": "How Should You Structure a Vue Project for",
+        "description": "Practice architectural decisions are made when with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      },
+      "after": {
+        "title": "How Should You Structure a Vue Project for Scalability?",
+        "description": "Practice architectural decisions are made when creating a Vue project, and how do they affect scalability with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      }
+    },
+    {
+      "route": "/vue/trivia/vue-child-mutates-prop-directly",
+      "package": "metadata-repair",
+      "before": {
+        "title": "What Happens If a Child Mutates a Prop Directly in",
+        "description": "If a child mutates a prop directly, parent renders can overwrite it and break one-way flow, while Vue tracks prop ownership to warn and enforce emits."
+      },
+      "after": {
+        "title": "What Happens If a Child Mutates a Prop Directly in Vue?",
+        "description": "If a child mutates a prop directly, parent renders can overwrite it and break one-way flow, while Vue tracks prop ownership to warn and enforce emits."
+      }
+    },
+    {
+      "route": "/vue/trivia/vue-composition-api",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Vue Composition APIs (setup(), ref: Interview Answer",
+        "description": "Practice Vue Composition APIs (setup(), ref with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      },
+      "after": {
+        "title": "Vue Composition APIs (setup(), ref, reactive) and why were they introduced",
+        "description": "Practice Vue Composition APIs (setup(), ref, reactive) and why were they introduced with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      }
+    },
+    {
+      "route": "/vue/trivia/vue-composition-api-vs-mixins",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Why Does Vue Recommend the Composition API Over",
+        "description": "Understand Vue recommend the Composition API over: quick answer, real example, common mistake, and senior interview follow-up."
+      },
+      "after": {
+        "title": "Why Does Vue Recommend the Composition API Over Mixins?",
+        "description": "Understand Vue recommend the Composition API over mixins today: quick answer, real example, common mistake, and senior interview follow-up."
+      }
+    },
+    {
+      "route": "/vue/trivia/vue-computed-properties",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Vue computed properties: cached derived state",
+        "description": "Practice computed properties in Vue with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      },
+      "after": {
+        "title": "Vue computed properties: cached derived state, method pitfalls, and purity rules",
+        "description": "Practice computed properties in Vue with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      }
+    },
+    {
+      "route": "/vue/trivia/vue-conditional-list-rendering",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Vue v-if vs v-show vs v-for: patching behavior and",
+        "description": "Learn when Vue destroys DOM, when it only toggles visibility, and which keyed-list pitfalls cause incorrect patching."
+      },
+      "after": {
+        "title": "Vue v-if vs v-show vs v-for: patching behavior and rendering pitfalls",
+        "description": "Learn when Vue destroys DOM, when it only toggles visibility, and which keyed-list pitfalls cause incorrect patching."
+      }
+    },
+    {
+      "route": "/vue/trivia/vue-data-must-be-function",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Why Vue Component data Must Be a Function",
+        "description": "Understand must data be a function in Vue components: quick answer, real example, common mistake, and senior interview follow-up."
+      },
+      "after": {
+        "title": "Why Vue Component data Must Be a Function",
+        "description": "Understand must data be a function in Vue components, and what breaks if it isn’t: quick answer, real example, common mistake, and senior interview follow-up."
+      }
+    },
+    {
+      "route": "/vue/trivia/vue-directives",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Vue directives under the hood: rendering behavior",
+        "description": "Learn how built-in directives affect patching and reactivity, when custom directives are appropriate, and which template pitfalls to avoid."
+      },
+      "after": {
+        "title": "Vue directives under the hood: rendering behavior and when not to use them",
+        "description": "Learn how built-in directives affect patching and reactivity, when custom directives are appropriate, and which template pitfalls to avoid."
+      }
+    },
+    {
+      "route": "/vue/trivia/vue-lifecycle-hooks",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Vue lifecycle hooks: DOM timing, cleanup, and",
+        "description": "Learn when to use created, mounted, updated, and unmounted in Vue, how DOM timing changes hook choice, and where cleanup belongs."
+      },
+      "after": {
+        "title": "Vue lifecycle hooks: DOM timing, cleanup, and hook-choice debugging",
+        "description": "Learn when to use created, mounted, updated, and unmounted in Vue, how DOM timing changes hook choice, and where cleanup belongs."
+      }
+    },
+    {
+      "route": "/vue/trivia/vue-provide-inject-vs-prop-drilling-tradeoffs",
+      "package": "metadata-repair",
+      "before": {
+        "title": "When to Use provide/inject vs Prop Drilling in Vue?",
+        "description": "Practice Provide / Inject in Vue with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      },
+      "after": {
+        "title": "When to Use provide/inject vs Prop Drilling in Vue?",
+        "description": "Practice Provide / Inject in Vue: when should you use it instead of prop drilling, and what are the hidden trade-offs with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      }
+    },
+    {
+      "route": "/vue/trivia/vue-reactivity-vs-react-concepts",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Vue Reactivity vs React: Conceptual Differences That",
+        "description": "Vue's reactivity auto-tracks dependencies and updates affected views, while React uses explicit state updates and re-render flow."
+      },
+      "after": {
+        "title": "Vue Reactivity vs React: Conceptual Differences That Matter",
+        "description": "Vue's reactivity auto-tracks dependencies and updates affected views, while React uses explicit state updates and re-render flow."
+      }
+    },
+    {
+      "route": "/vue/trivia/vue-ref-vs-reactive-difference-traps",
+      "package": "metadata-repair",
+      "before": {
+        "title": "What Is the Difference Between ref and reactive in",
+        "description": "ref wraps single values while reactive wraps object-like state, and Vue tracks their access patterns differently for updates and destructuring behavior."
+      },
+      "after": {
+        "title": "What Is the Difference Between ref and reactive in Vue?",
+        "description": "ref wraps single values while reactive wraps object-like state, and Vue tracks their access patterns differently for updates and destructuring behavior."
+      }
+    },
+    {
+      "route": "/vue/trivia/vue-router-navigation",
+      "package": "metadata-repair",
+      "before": {
+        "title": "the Vue Router and how is it used: Interview Answer",
+        "description": "Practice the Vue Router and how is it used for with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      },
+      "after": {
+        "title": "the Vue Router and how is it used for navigation",
+        "description": "Practice the Vue Router and how is it used for navigation with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      }
+    },
+    {
+      "route": "/vue/trivia/vue-sfc-vs-global-components",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Vue SFC vs global components: ownership, bundle",
+        "description": "Compare local SFC imports with global registration through maintainability, tree-shaking, and the pitfalls of app-wide component sprawl."
+      },
+      "after": {
+        "title": "Vue SFC vs global components: ownership, bundle clarity, and trade-offs",
+        "description": "Compare local SFC imports with global registration through maintainability, tree-shaking, and the pitfalls of app-wide component sprawl."
+      }
+    },
+    {
+      "route": "/vue/trivia/vue-v-for-keys-why-not-index",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Why should you not use array index as key in Vue",
+        "description": "Understand keys critical in v-for? What exactly breaks: quick answer, real example, common mistake, and senior interview follow-up."
+      },
+      "after": {
+        "title": "Why should you not use array index as key in Vue v-for?",
+        "description": "Understand keys critical in v-for? What exactly breaks when you use array index as a key: quick answer, real example, common mistake, and senior interview follow-up."
+      }
+    },
+    {
+      "route": "/vue/trivia/vue-v-if-component-creation-destruction",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Vue v-if in production: mount/unmount resets",
+        "description": "v-if destroys and recreates component instances. The real production question is when that reset behavior is useful and when it becomes a pitfall."
+      },
+      "after": {
+        "title": "Vue v-if in production: mount/unmount resets, lifecycle cleanup, and toggle pitfalls",
+        "description": "v-if destroys and recreates component instances. The real production question is when that reset behavior is useful and when it becomes a pitfall."
+      }
+    },
+    {
+      "route": "/vue/trivia/vue-v-model-syntax-sugar-expansion",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Vue v-model under the hood: expansion, modifiers",
+        "description": "See how v-model compiles to prop binding plus update events for native inputs and custom components, and where modifiers or emits contracts create common"
+      },
+      "after": {
+        "title": "Vue v-model under the hood: expansion, modifiers, and component pitfalls",
+        "description": "See how v-model compiles to prop binding plus update events for native inputs and custom components, and where modifiers or emits contracts create common pitfalls."
+      }
+    },
+    {
+      "route": "/vue/trivia/vue-v-show-vs-v-if-dom-lifecycle",
+      "package": "metadata-repair",
+      "before": {
+        "title": "How do v-show and v-if differ in DOM behavior and",
+        "description": "Understand v-show and v-if differ in DOM behavior and: quick answer, real example, common mistake, and senior interview follow-up."
+      },
+      "after": {
+        "title": "How do v-show and v-if differ in DOM behavior and lifecycle impact?",
+        "description": "Understand v-show and v-if differ in DOM behavior and lifecycle impact: quick answer, real example, common mistake, and senior interview follow-up."
+      }
+    },
+    {
+      "route": "/vue/trivia/vue-virtual-dom-diffing",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Vue virtual DOM under the hood: diffing, keyed",
+        "description": "Vue diffing is fast when identity is stable. The practical debugging angle is keyed reuse, compiler patch flags, and why efficient updates can still go"
+      },
+      "after": {
+        "title": "Vue virtual DOM under the hood: diffing, keyed identity, and patch-debugging pitfalls",
+        "description": "Vue diffing is fast when identity is stable. The practical debugging angle is keyed reuse, compiler patch flags, and why efficient updates can still go wrong."
+      }
+    },
+    {
+      "route": "/vue/trivia/vue-why-declare-emits-type-safety-maintenance",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Why Should You Declare emits in Vue Components?",
+        "description": "Understand you declare emits in Vue? What breaks if you: quick answer, real example, common mistake, and senior interview follow-up."
+      },
+      "after": {
+        "title": "Why Should You Declare emits in Vue Components?",
+        "description": "Understand you declare emits in Vue? What breaks if you don’t, and how does it affect type safety and maintenance: quick answer, real example, common mistake, and senior interview follow-up."
+      }
+    },
+    {
+      "route": "/vue/trivia/vuex-state-management",
+      "package": "metadata-repair",
+      "before": {
+        "title": "Vue the purpose of Vuex, and how: Interview Answer",
+        "description": "Practice the purpose of Vuex, and how does it help with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      },
+      "after": {
+        "title": "Vue the purpose of Vuex, and how does it help manage state in large applications",
+        "description": "Practice the purpose of Vuex, and how does it help manage state in large applications with a quick interview answer, examples, common mistakes, and production-focused follow-ups."
+      }
+    }
+  ]
+}

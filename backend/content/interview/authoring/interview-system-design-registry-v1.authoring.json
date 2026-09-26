@@ -4,9 +4,9 @@
   "registryVersion": "1.2.0",
   "status": "candidate",
   "finalApproval": null,
-  "definitionHash": "ef64659ae27f1b7292a2d1897021676ee19bba2ae470f62232955c30ba318ca0",
+  "definitionHash": "01a85477486ceca26ce2b4c235b44f93d49b7619f86f6eb578b59848e762cfc1",
   "reviewBatch": {
-    "reviewedDefinitionHash": "ef64659ae27f1b7292a2d1897021676ee19bba2ae470f62232955c30ba318ca0",
+    "reviewedDefinitionHash": "01a85477486ceca26ce2b4c235b44f93d49b7619f86f6eb578b59848e762cfc1",
     "reviewedAt": "2026-08-12",
     "technical": {
       "reviewer": "codex-system-design-technical-v8",
@@ -16,7 +16,8 @@
         "Checkout adds a pinned Mid-level source bundle covering versioned quotes, stable payment identity, merchant-status recovery, server-confirmed cancellation, transient action tokens, and provider-owned card collection.",
         "Hosted redirect and embedded provider-field fixtures exercise distinct accepted architectures; redirect-as-success, feature-owned card data, replacement attempts, and browser-lock authority are critical conflicts.",
         "Toast, Autocomplete, and Ranked Feed adaptation now grades accepted post-state instead of requiring a performative change from baseline.",
-        "Autocomplete requires input and results UI boundaries; Ranked Feed requires view, normalized entities, and page membership plus explicit removed-anchor recovery."
+        "Autocomplete requires input and results UI boundaries; Ranked Feed requires view, normalized entities, and page membership plus explicit removed-anchor recovery.",
+        "2026-09-26 source-pin maintenance review: the dashboard requirements source only moves the existing Interview opening callout; all block values and the other five source files are unchanged. Guided prompts, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval."
       ]
     },
     "blind": {
@@ -6068,7 +6069,7 @@
       },
       "private": {
         "sourceContentId": "dashboard-widgets-draggable-resizable",
-        "expectedSourceBundleHash": "88be64af7409aa5b4f35d9de8109cbd30554d1396de31a0a59216e13cd2d57ee",
+        "expectedSourceBundleHash": "02ba4b4bc75c8ba0b2e98639ed289815c3fd9c31942ad5945a7313fe11610d09",
         "clarificationAnswers": [
           {
             "clarificationId": "dash-widget-scale",

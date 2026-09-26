@@ -28,6 +28,7 @@ export interface OutputChallenge {
 
 export type StructuredDescription = {
   summary?: string;           // replaces plain text
+  text?: string;              // legacy/debug prompt text when summary is absent
   specs?: StructuredDescriptionSpecs;
   arguments?: StructuredArgument[];
   returns?: StructuredReturn;

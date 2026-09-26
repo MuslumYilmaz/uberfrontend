@@ -48,7 +48,6 @@ export class SeoService {
     const keywords = keywordsArr.join(', ');
     const hasQueryParams =
       this.hasCurrentQueryParams() || this.hasQueryInValue(payload.canonical);
-    const robots = this.resolveRobots(payload.robots, hasQueryParams);
     const image = this.toAbsoluteUrl(payload.image || this.defaults.image);
     const canonical = this.normalizeCanonical(payload.canonical || this.currentUrl());
     const title = payload.title || `${this.defaults.siteName} | ${this.defaults.title}`;
@@ -58,7 +57,7 @@ export class SeoService {
 
     this.meta.updateTag({ name: 'description', content: description });
     this.meta.updateTag({ name: 'keywords', content: keywords });
-    this.meta.updateTag({ name: 'robots', content: robots });
+    this.updateRobots(payload.robots, hasQueryParams);
 
     this.meta.updateTag({ property: 'og:title', content: title });
     this.meta.updateTag({ property: 'og:description', content: description });
@@ -77,6 +76,10 @@ export class SeoService {
     this.meta.updateTag({ name: 'twitter:image', content: image });
 
     this.setJsonLd(payload.jsonLd);
+  }
+
+  updateRobots(requested?: string, hasQueryParams = this.hasCurrentQueryParams()): void {
+    this.meta.updateTag({ name: 'robots', content: this.resolveRobots(requested, hasQueryParams) });
   }
 
   buildCanonicalUrl(pathOrUrl: string): string {

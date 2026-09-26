@@ -5,6 +5,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { of } from 'rxjs';
 import { Router } from '@angular/router';
+import { Question } from '../../../core/models/question.model';
 import { ActivityService } from '../../../core/services/activity.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { BugReportService } from '../../../core/services/bug-report.service';
@@ -1832,6 +1833,85 @@ describe('CodingDetailComponent', () => {
     component.ngOnDestroy();
     expect(document.body.style.overflow).toBe('');
   });
+
+  const debugDescriptionCases: Array<{ label: string; description: Question['description']; expected?: string }> = [
+    { label: 'string', description: '  String prompt.  ', expected: 'String prompt.' },
+    { label: 'summary', description: { summary: '  Summary prompt.  ' }, expected: 'Summary prompt.' },
+    { label: 'legacy text', description: { text: '  Legacy debug\n prompt.  ' }, expected: 'Legacy debug prompt.' },
+    { label: 'summary before text', description: { summary: 'Summary wins.', text: 'Legacy text.' }, expected: 'Summary wins.' },
+    { label: 'text after blank summary', description: { summary: ' \n ', text: 'Legacy fallback.' }, expected: 'Legacy fallback.' },
+    { label: 'empty fields', description: { summary: '', text: '' } },
+    { label: 'blank fields', description: { summary: ' \n ', text: ' \t ' } },
+    { label: 'blank string', description: ' \n ' },
+    { label: 'missing description', description: undefined },
+  ];
+
+  for (const testCase of debugDescriptionCases) {
+    it(`uses ${testCase.label} for debug metadata while preserving access and excluding solutions`, () => {
+      const fixture = TestBed.createComponent(CodingDetailComponent);
+      const component = fixture.componentInstance;
+      component.tech = 'javascript';
+      component.kind = 'debug';
+
+      for (const access of ['free', 'premium'] as const) {
+        const question = {
+          id: 'js-debug-description',
+          title: 'Debug the numeric sort',
+          technology: 'javascript',
+          access,
+          description: testCase.description,
+          get solution() { throw new Error('SEO must not read solution'); },
+          get solutionBlock() { throw new Error('SEO must not read solutionBlock'); },
+        } as any;
+        component.question.set(question);
+        (component as any).updateSeoForQuestion(question);
+
+        const payload = seo.updateTags.calls.mostRecent().args[0] as any;
+        const article = payload.jsonLd.find((entry: any) => entry['@type'] === 'TechArticle');
+        expect(payload.description).toBe(testCase.expected ?? 'Front-end debug question for javascript.');
+        expect(article.description).toBe(payload.description);
+        expect(article.isAccessibleForFree).toBe(access === 'free');
+        expect(payload.robots).toBe(access === 'premium' ? 'noindex,follow' : undefined);
+        expect(payload.canonical).toBe('https://frontendatlas.com/javascript/debug/js-debug-description');
+        expect(component.locked()).toBe(access === 'premium');
+      }
+    });
+  }
+
+  for (const source of ['prompt', 'explicit SEO'] as const) {
+    it(`retains the final debug repair constraint from ${source} without changing coding limits or titles`, () => {
+      const fixture = TestBed.createComponent(CodingDetailComponent);
+      const component = fixture.componentInstance;
+      component.tech = 'javascript';
+      component.kind = 'debug';
+      const description =
+        'A teammate wrote a tiny leaderboard helper with plain sort(). It looked fine in a quick demo with single-digit values, '
+        + 'then broke the moment scores like 10 and 100 showed up. Fix the bug so numbers sort numerically in ascending order '
+        + 'while keeping the original input unchanged.';
+      const question = {
+        id: 'js-debug-numeric-sort',
+        title: 'Fix numeric sort in sortScores',
+        technology: 'javascript',
+        access: 'free',
+        description: { text: source === 'prompt' ? description : 'Unused prompt fallback.' },
+        seo: source === 'explicit SEO' ? { description: `<p>${description}</p>` } : undefined,
+      } as any;
+
+      (component as any).updateSeoForQuestion(question);
+      const debugPayload = seo.updateTags.calls.mostRecent().args[0] as any;
+      expect(debugPayload.description).toBe(description);
+      expect(debugPayload.description).toContain('while keeping the original input unchanged.');
+      expect(debugPayload.description.length).toBeGreaterThan(240);
+      expect(debugPayload.title).toBe(question.title);
+      expect(debugPayload.jsonLd.find((entry: any) => entry['@type'] === 'TechArticle').description).toBe(description);
+
+      component.kind = 'coding';
+      (component as any).updateSeoForQuestion(question);
+      const codingPayload = seo.updateTags.calls.mostRecent().args[0] as any;
+      expect(codingPayload.description.length).toBeLessThanOrEqual(240);
+      expect(codingPayload.title).toBe(debugPayload.title);
+    });
+  }
 
   it('prefers question seo title/description and sanitizes/clamps values', () => {
     const fixture = TestBed.createComponent(CodingDetailComponent);

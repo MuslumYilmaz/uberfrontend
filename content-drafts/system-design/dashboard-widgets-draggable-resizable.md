@@ -38,6 +38,10 @@ drag-and-drop dashboard frontend system design. Design a customizable dashboard 
 
 Frame this as a frontend layout editor, not as a generic drag-and-drop feature.
 
+### Interview opening
+
+A strong opening is: Model every widget as a rectangle on a logical grid, use a layout engine for snapping and collision resolution, keep pointermove work outside expensive framework rerenders, and persist a versioned layout snapshot after the interaction commits.
+
 ### Contextual practice links
 - [Frontend system design question bank](/system-design) — Use this prompt alongside other frontend architecture scenarios.
 - [Frontend system design answer blueprint](/guides/system-design-blueprint/radio-framework) — Structure the design before diving into layout math.
@@ -55,10 +59,6 @@ Frame this as a frontend layout editor, not as a generic drag-and-drop feature.
 | Performance | How many widgets and how heavy are they during drag? | Separates the hot pointermove/rAF loop from slower framework state commits. |
 | Persistence | Save automatically on drop, on explicit Save, or sync to a server per user? | Clarifies optimistic local layout, conflict handling, and versioned migrations. |
 | Accessibility | Can users move and resize widgets without a pointer device? | Adds keyboard move/resize controls, focus management, and an alternate layout editor. |
-
-### Interview opening
-
-A strong opening is: Model every widget as a rectangle on a logical grid, use a layout engine for snapping and collision resolution, keep pointermove work outside expensive framework rerenders, and persist a versioned layout snapshot after the interaction commits.
 
 ---
 

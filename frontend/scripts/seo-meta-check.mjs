@@ -2,9 +2,11 @@
 
 import fs from 'fs';
 import path from 'path';
+import { auditSeoPages, normalizeText, parseSeoPage } from './seo-meta-audit.mjs';
 
 const BUILD_DIR = path.resolve(process.env.SEO_BUILD_DIR || 'dist/frontendatlas/browser');
 const STRICT_H1 = process.env.STRICT_H1 === '1';
+const CANONICAL_BASE = process.env.SEO_CANONICAL_BASE || 'https://frontendatlas.com';
 
 function toRoute(filePath) {
   const dir = path.dirname(filePath);
@@ -26,32 +28,6 @@ function collectHtmlFiles(dir, out = []) {
   }
   return out;
 }
-
-function check(html, rule) {
-  return rule.test(html);
-}
-
-function hasNonEmptyH1(html) {
-  const match = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i);
-  if (!match) return false;
-  const text = match[1]
-    .replace(/<[^>]+>/g, ' ')
-    .replace(/&nbsp;/gi, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
-  return text.length > 0;
-}
-
-const rules = {
-  title: /<title>[^<]+<\/title>/i,
-  description: /<meta\s+name="description"\s+content="[^"]*"/i,
-  robots: /<meta\s+name="robots"\s+content="[^"]*"/i,
-  canonical: /<link\s+rel="canonical"\s+href="[^"]+"/i,
-  ogTitle: /<meta\s+property="og:title"\s+content="[^"]*"/i,
-  ogUrl: /<meta\s+property="og:url"\s+content="[^"]*"/i,
-  twitterTitle: /<meta\s+name="twitter:title"\s+content="[^"]*"/i,
-  jsonLd: /<script[^>]+id="seo-jsonld"[^>]*>/i,
-};
 
 const criticalRouteContracts = [
   {
@@ -437,57 +413,8 @@ const criticalRouteContracts = [
   },
 ];
 
-function normalizeText(input) {
-  return String(input || '')
-    .replace(/<[^>]+>/g, ' ')
-    .replace(/&nbsp;/gi, ' ')
-    .replace(/&amp;/gi, '&')
-    .replace(/&quot;/gi, '"')
-    .replace(/&#x27;|&#39;/gi, "'")
-    .replace(/\s+/g, ' ')
-    .trim();
-}
-
 function includesPhrase(value, phrase) {
-  return normalizeText(value).toLowerCase().includes(String(phrase || '').toLowerCase());
-}
-
-function escapeRegExp(value) {
-  return String(value || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
-
-function extractAttr(tag, attr) {
-  const match = String(tag || '').match(new RegExp(`\\b${escapeRegExp(attr)}=["']([^"']*)["']`, 'i'));
-  return normalizeText(match?.[1] || '');
-}
-
-function extractTitle(html) {
-  const match = html.match(/<title>([\s\S]*?)<\/title>/i);
-  return normalizeText(match?.[1] || '');
-}
-
-function extractMetaDescription(html) {
-  const match = html.match(/<meta\s+name="description"\s+content="([^"]*)"/i);
-  return normalizeText(match?.[1] || '');
-}
-
-function extractMetaContentByName(html, name) {
-  const match = html.match(new RegExp(`<meta\\b(?=[^>]*\\bname=["']${escapeRegExp(name)}["'])[^>]*>`, 'i'));
-  return extractAttr(match?.[0] || '', 'content');
-}
-
-function extractCanonical(html) {
-  const match = html.match(/<link\b(?=[^>]*\brel=["']canonical["'])[^>]*>/i);
-  return extractAttr(match?.[0] || '', 'href');
-}
-
-function extractH1(html) {
-  const match = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i);
-  return normalizeText(match?.[1] || '');
-}
-
-function hasJsonLdType(html, type) {
-  return new RegExp(`"@type"\\s*:\\s*"${escapeRegExp(type)}"`, 'i').test(html);
+  return normalizeText(value).toLowerCase().includes(normalizeText(phrase).toLowerCase());
 }
 
 const files = collectHtmlFiles(BUILD_DIR);
@@ -496,94 +423,55 @@ if (!files.length) {
   process.exit(1);
 }
 
-const failures = {
-  title: [],
-  description: [],
-  robots: [],
-  canonical: [],
-  ogTitle: [],
-  ogUrl: [],
-  twitterTitle: [],
-  jsonLd: [],
-  h1: [],
-  keywordContract: [],
-};
-const htmlByRoute = new Map();
-
-for (const file of files) {
-  const html = fs.readFileSync(file, 'utf8');
-  const route = toRoute(file);
-  htmlByRoute.set(route, html);
-  for (const [key, rule] of Object.entries(rules)) {
-    if (!check(html, rule)) failures[key].push(route);
-  }
-  if (!hasNonEmptyH1(html)) failures.h1.push(route);
-}
+const pages = files.map((file) => parseSeoPage(fs.readFileSync(file, 'utf8'), toRoute(file)));
+const { failures, warnings } = auditSeoPages(pages, { siteOrigin: CANONICAL_BASE, strictH1: STRICT_H1 });
+const pagesByRoute = new Map(pages.map((page) => [page.route, page]));
 
 for (const contract of criticalRouteContracts) {
-  const html = htmlByRoute.get(contract.route);
-  if (!html) {
-    failures.keywordContract.push(`${contract.route}: missing prerendered HTML`);
+  const page = pagesByRoute.get(contract.route);
+  if (!page) {
+    failures.push({ route: contract.route, code: 'keywordContract', message: 'missing prerendered HTML' });
     continue;
   }
 
-  const title = extractTitle(html);
-  const h1 = extractH1(html);
-  const description = extractMetaDescription(html);
-  const canonical = extractCanonical(html);
-  const robots = extractMetaContentByName(html, 'robots');
-  const googlebot = extractMetaContentByName(html, 'googlebot');
   const missing = [];
-
-  if (!includesPhrase(title, contract.title)) missing.push(`title lacks "${contract.title}"`);
-  if (!includesPhrase(h1, contract.h1)) missing.push(`h1 lacks "${contract.h1}"`);
-  if (description.length < 70) missing.push('description is too short');
-  if (contract.canonical && canonical !== contract.canonical) {
-    missing.push(`canonical is "${canonical || '(missing)'}", expected "${contract.canonical}"`);
+  if (!includesPhrase(page.title, contract.title)) missing.push(`title lacks "${contract.title}"`);
+  if (!includesPhrase(page.h1, contract.h1)) missing.push(`h1 lacks "${contract.h1}"`);
+  if (contract.canonical && page.canonical !== contract.canonical) {
+    missing.push(`canonical is "${page.canonical || '(missing)'}", expected "${contract.canonical}"`);
   }
   for (const term of contract.robotsMustNotInclude || []) {
-    if (includesPhrase(robots, term)) missing.push(`robots includes "${term}"`);
+    if (includesPhrase(page.robots, term)) missing.push(`robots includes "${term}"`);
   }
   for (const term of contract.googlebotMustNotInclude || []) {
-    if (includesPhrase(googlebot, term)) missing.push(`googlebot includes "${term}"`);
+    if (includesPhrase(page.googlebot, term)) missing.push(`googlebot includes "${term}"`);
   }
   for (const type of contract.schemaTypes || []) {
-    if (!hasJsonLdType(html, type)) missing.push(`jsonLd lacks "${type}"`);
+    if (!page.schemaTypes.has(type)) missing.push(`jsonLd lacks "${type}"`);
   }
   for (const term of contract.descriptionTerms || []) {
-    if (!includesPhrase(description, term)) missing.push(`description lacks "${term}"`);
+    if (!includesPhrase(page.description, term)) missing.push(`description lacks "${term}"`);
   }
   for (const term of contract.bodyTerms || []) {
-    if (!includesPhrase(html, term)) missing.push(`body lacks "${term}"`);
+    if (!includesPhrase(page.documentText, term)) missing.push(`body lacks "${term}"`);
   }
-
-  if (missing.length) failures.keywordContract.push(`${contract.route}: ${missing.join('; ')}`);
+  if (missing.length) failures.push({ route: contract.route, code: 'keywordContract', message: missing.join('; ') });
 }
-
-const requiredKeys = ['title', 'description', 'robots', 'canonical', 'ogTitle', 'ogUrl', 'twitterTitle', 'jsonLd'];
-const requiredMissing = requiredKeys.reduce((count, key) => count + failures[key].length, 0);
-const h1Missing = failures.h1.length;
-const keywordContractMissing = failures.keywordContract.length;
 
 console.log(`[seo:meta-check] pages scanned: ${files.length}`);
-for (const key of requiredKeys) {
-  console.log(`[seo:meta-check] missing ${key}: ${failures[key].length}`);
-}
-console.log(`[seo:meta-check] missing h1: ${h1Missing}`);
-console.log(`[seo:meta-check] keyword contract failures: ${keywordContractMissing}`);
-
-if (h1Missing) {
-  console.log(`[seo:meta-check] sample routes without h1: ${failures.h1.slice(0, 10).join(', ')}`);
-}
-
-if (keywordContractMissing) {
-  console.log(`[seo:meta-check] sample keyword contract failures: ${failures.keywordContract.slice(0, 10).join(' | ')}`);
-}
-
-if (requiredMissing > 0 || keywordContractMissing > 0 || (STRICT_H1 && h1Missing > 0)) {
-  for (const key of requiredKeys) {
-    if (!failures[key].length) continue;
-    console.log(`[seo:meta-check] sample missing ${key}: ${failures[key].slice(0, 10).join(', ')}`);
+console.log(`[seo:meta-check] failures: ${failures.length}; warnings: ${warnings.length}`);
+for (const [label, issues] of [['failure', failures], ['warning', warnings]]) {
+  const grouped = new Map();
+  for (const issue of issues) {
+    const entries = grouped.get(issue.code) || [];
+    entries.push(issue);
+    grouped.set(issue.code, entries);
   }
-  process.exit(1);
+  for (const [code, entries] of grouped) {
+    console.log(`[seo:meta-check] ${label} ${code}: ${entries.length}`);
+    for (const issue of entries.slice(0, 10)) {
+      console.log(`[seo:meta-check] ${issue.route}: ${issue.message}`);
+    }
+  }
 }
+if (failures.length) process.exit(1);

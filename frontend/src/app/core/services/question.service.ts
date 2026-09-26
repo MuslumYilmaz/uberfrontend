@@ -423,14 +423,10 @@ export class QuestionService {
   }
 
   private extractShortDescription(description: Question['description']): string {
-    const summary =
-      description && typeof description === 'object'
-        ? (description.summary || '')
-        : '';
     const text =
       typeof description === 'string'
         ? description
-        : summary;
+        : description?.summary?.trim() || description?.text?.trim() || '';
     const normalized = String(text || '')
       .replace(/\s+/g, ' ')
       .trim();

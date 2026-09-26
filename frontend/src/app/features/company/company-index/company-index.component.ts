@@ -13,7 +13,7 @@ type CompanyHubLink = { label: string; route: string[]; path: string };
 
 const COMPANY_INDEX_TITLE = 'Company Frontend Interview Questions';
 const COMPANY_INDEX_DESCRIPTION =
-  'Explore FrontendAtlas editorial practice groupings by company label. These groupings support targeted rehearsal and do not claim official question provenance or endorsement.';
+  'Practice company-style frontend coding, concept, and system design questions. Explore editorial prep sets, not verified employer question banks.';
 
 @Component({
   standalone: true,

@@ -1,4 +1,5 @@
 import { test, expect, Page } from '@playwright/test';
+import { parse, serialize, DefaultTreeAdapterMap } from 'parse5';
 
 const WEB_HOST = process.env.PLAYWRIGHT_HOST || '127.0.0.1';
 const WEB_PORT = process.env.PLAYWRIGHT_PORT || '4200';
@@ -67,11 +68,11 @@ const CSS_STICKY_LAB_DESCRIPTION =
 const ANGULAR_HTTP_CANCELLATION_LAB_PATH =
   '/angular/trivia/angular-http-what-actually-cancels-request';
 const ANGULAR_HTTP_CANCELLATION_LAB_TITLE =
-  'Angular HttpClient Unsubscribe: 6 Tests & DevTools';
+  'Does Angular HttpClient Unsubscribe Cancel Requests?';
 const ANGULAR_HTTP_CANCELLATION_LAB_H1 =
   'Angular HttpClient Cancellation: Debug, Test, and Prevent Stale UI';
 const ANGULAR_HTTP_CANCELLATION_LAB_DESCRIPTION =
-  'Run six tests for unsubscribe, switchMap, AsyncPipe, mergeMap, and shareReplay. Prove RxJS teardown, browser abort, and stale-UI protection.';
+  'Test when unsubscribe cancels Angular HTTP requests, why server work may continue, and how six runnable tests expose stale UI bugs.';
 const ANGULAR_HTTP_CANCELLATION_LAB_SCENARIOS = [
   'Manual unsubscribe',
   'switchMap',
@@ -114,7 +115,7 @@ const CASES = [
     titleIncludes: 'Angular Autocomplete Search',
     h1: 'Autocomplete Search Bar (Standalone Component)',
     detail: true,
-    premiumPreviewText: 'autocomplete search bar',
+    premiumPreviewText: 'As the user types, show a dropdown of suggestions',
   },
   {
     path: '/react/coding/react-autocomplete-search-starter',
@@ -137,7 +138,7 @@ const CASES = [
     indexable: true,
     bodyTextIncludes: [
       'Build a React counter component with the useState hook',
-      'React useState and functional updates',
+      'React useState',
       'How do you build a counter component in React with useState?',
     ],
   },
@@ -204,10 +205,18 @@ const CASES = [
       'Flex or grid stretch',
       'Hidden behind another layer',
     ],
+    hydratedBodyTextIncludes: [
+      'Interactive CSS debugging lab',
+      'Missing inset',
+      'Wrong scroll owner',
+      'No travel room',
+      'Grid stretch',
+      'Sticks but is covered',
+    ],
   },
   {
     path: '/react/trivia/react-render-nothing-return-value',
-    titleIncludes: 'Can React Return undefined\\? React 18 vs null',
+    titleIncludes: 'React Return null vs undefined: React 18\\+ Explained',
     h1: 'Can React Components Return undefined? React 18 vs null',
     detail: true,
     indexable: true,
@@ -690,6 +699,19 @@ function rawBodyMarkup(html: string): string {
   return stripScriptAndStyleBlocks(html.match(/<body[^>]*>([\s\S]*?)<\/body>/i)?.[1] || html);
 }
 
+function rawTestIdMarkup(html: string, testId: string): string {
+  const matches: DefaultTreeAdapterMap['element'][] = [];
+  const visit = (node: DefaultTreeAdapterMap['node']) => {
+    if ('attrs' in node && node.attrs.some((attr) => attr.name === 'data-testid' && attr.value === testId)) {
+      matches.push(node);
+    }
+    if ('childNodes' in node) node.childNodes.forEach(visit);
+  };
+  visit(parse(html));
+  expect(matches, `one raw ${testId} element`).toHaveLength(1);
+  return serialize(matches[0]);
+}
+
 function hasLockedShellMarkup(html: string): boolean {
   return /\bclass=(["'])[^"']*\blocked-shell\b[^"']*\1/i.test(rawBodyMarkup(html));
 }
@@ -816,7 +838,7 @@ async function assertSsrBasics(
   }
 
   if (entry.premiumPreviewText) {
-    await expect(page.getByTestId('premium-preview')).toContainText(
+    await expect(page.getByTestId('premium-preview-summary')).toContainText(
       new RegExp(entry.premiumPreviewText, 'i'),
     );
   }
@@ -843,6 +865,7 @@ async function assertHydratedBasics(
     indexable?: boolean;
     singleHydratedH1?: boolean;
     bodyTextIncludes?: string[];
+    hydratedBodyTextIncludes?: string[];
   },
 ) {
   await expect(page).toHaveTitle(new RegExp(entry.titleIncludes, 'i'));
@@ -880,12 +903,12 @@ async function assertHydratedBasics(
   }
 
   if (entry.premiumPreviewText) {
-    await expect(page.getByTestId('premium-preview')).toContainText(
+    await expect(page.getByTestId('premium-preview-summary')).toContainText(
       new RegExp(entry.premiumPreviewText, 'i'),
     );
   }
 
-  for (const expectedText of entry.bodyTextIncludes || []) {
+  for (const expectedText of entry.hydratedBodyTextIncludes || entry.bodyTextIncludes || []) {
     await expect(page.getByText(new RegExp(expectedText, 'i')).first()).toHaveCount(1);
   }
 }
@@ -895,6 +918,75 @@ test.describe('seo-ssr', () => {
     !SSR_ENABLED,
     'SSR tests require prerender/SSR output (set PLAYWRIGHT_SSR=1 to force).',
   );
+
+  test('metadata repairs preserve literal HTML terms in SSR and client navigation', async ({ browser, page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    const anchorPath = '/html/trivia/html-a-tag';
+    const hrefPath = '/html/trivia/html-href-attribute';
+    const anchorTitle = 'HTML <a> tag: navigation semantics, accessibility, and common pitfalls';
+    const anchorDescription =
+      'Learn when to use <a> for real navigation, how href/rel affect accessibility and SEO, and which common pitfalls break browser behavior.';
+    const hrefTitle = 'HTML href attribute: link destinations, navigation semantics, and pitfalls';
+    const hrefDescription =
+      'Understand how href powers navigation and linked resources, and avoid common mistakes like fake links, bad fragments, or unsafe external targets.';
+
+    const assertHead = async (target: Page, route: string, title: string, description: string) => {
+      await expect(target).toHaveTitle(title);
+      for (const [selector, content] of [
+        ['meta[name="description"]', description],
+        ['meta[property="og:title"]', title],
+        ['meta[property="og:description"]', description],
+        ['meta[name="twitter:title"]', title],
+        ['meta[name="twitter:description"]', description],
+      ]) {
+        await expect(target.locator(selector)).toHaveCount(1);
+        await expect(target.locator(selector)).toHaveAttribute('content', content);
+      }
+      await expect(target.locator('link[rel="canonical"]')).toHaveAttribute('href', expectedCanonical(route));
+      await expect(target.locator('meta[name="robots"]')).toHaveAttribute('content', 'index,follow');
+    };
+
+    const rawContext = await browser.newContext({ javaScriptEnabled: false });
+    try {
+      const rawPage = await rawContext.newPage();
+      for (const [route, title, description] of [
+        [anchorPath, anchorTitle, anchorDescription],
+        [hrefPath, hrefTitle, hrefDescription],
+      ]) {
+        const response = await rawPage.goto(fullUrl(route), { waitUntil: 'domcontentloaded' });
+        expect(response?.status()).toBe(200);
+        await assertHead(rawPage, route, title, description);
+      }
+    } finally {
+      await rawContext.close();
+    }
+
+    await page.addInitScript(() => {
+      (window as Window & { __FA_SEO_HOST__?: string }).__FA_SEO_HOST__ = 'frontendatlas.com';
+      localStorage.setItem('fa:cdn:enabled', '0');
+    });
+    // Keep this frontend-only check independent of production API availability.
+    await page.route('https://api.frontendatlas.com/**', (route) => route.fulfill({
+      status: 200, contentType: 'application/json', body: '{}',
+    }));
+    const documentRequests: string[] = [];
+    page.on('request', (request) => {
+      if (request.isNavigationRequest() && request.frame() === page.mainFrame()) {
+        documentRequests.push(request.url());
+      }
+    });
+    await page.goto(anchorPath, { waitUntil: 'domcontentloaded' });
+    await assertHead(page, anchorPath, anchorTitle, anchorDescription);
+    await expect(page.locator('h1').first()).toHaveText('What is the use of the <a> tag?');
+    const initialDocuments = documentRequests.length;
+    await page.locator(`a.side-item[href="${hrefPath}"]:visible`).click();
+    await expect(page).toHaveURL(fullUrl(hrefPath));
+    await assertHead(page, hrefPath, hrefTitle, hrefDescription);
+    expect(documentRequests).toHaveLength(initialDocuments);
+    await page.goBack();
+    await assertHead(page, anchorPath, anchorTitle, anchorDescription);
+    expect(documentRequests).toHaveLength(initialDocuments);
+  });
 
   test('GSC opportunity pages keep their SSR and hydrated ownership contracts', async ({ browser, page }) => {
     expect(GSC_OPPORTUNITY_CASES).toHaveLength(GSC_OPPORTUNITY_PATHS.size);
@@ -1162,6 +1254,7 @@ test.describe('seo-ssr', () => {
   test('raw Angular HttpClient cancellation lab exposes the complete public debugging answer and schema', async ({ request }) => {
     const html = await readRawHtml(request, ANGULAR_HTTP_CANCELLATION_LAB_PATH);
     const bodyMarkup = rawBodyMarkup(html);
+    const answerMarkup = rawTestIdMarkup(html, 'trivia-full-answer');
     const text = rawVisibleText(html);
     const robots = normalizeText(extractRawMeta(html, 'robots')).replace(/\s+/g, '');
     const schemaNodes = extractRawJsonLdNodes(html);
@@ -1223,7 +1316,7 @@ test.describe('seo-ssr', () => {
     for (const route of ANGULAR_HTTP_CANCELLATION_LAB_RESOURCES) {
       expectCleanRawLink(html, route, ANGULAR_HTTP_CANCELLATION_LAB_PATH);
       expect(
-        (bodyMarkup.match(new RegExp(`<a\\b[^>]*href=["']${escapeRegExp(route)}["']`, 'gi')) || [])
+        (answerMarkup.match(new RegExp(`<a\\b[^>]*href=["']${escapeRegExp(route)}["']`, 'gi')) || [])
           .length,
         `${route} appears once in the visible raw answer`,
       ).toBe(1);
@@ -1334,7 +1427,7 @@ test.describe('seo-ssr', () => {
     await expect(liveResult).not.toHaveText(/^\s*$/);
 
     for (const route of ANGULAR_HTTP_CANCELLATION_LAB_RESOURCES) {
-      await expect(page.locator(`a[href="${route}"]`)).toHaveCount(1);
+      await expect(page.getByTestId('trivia-full-answer').locator(`a[href="${route}"]`)).toHaveCount(1);
     }
     await expect(
       page.locator('a[href^="/javascript/trivia/js-async-race-conditions"]'),
