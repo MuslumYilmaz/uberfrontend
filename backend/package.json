@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "engines": {
+    "node": "22.x"
+  },
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
@@ -45,7 +48,7 @@
     "mammoth": "^1.9.1",
     "mongoose": "^8.17.1",
     "multer": "^2.0.2",
-    "nodemailer": "^9.0.3",
+    "nodemailer": "^10.0.13",
     "pdf-parse": "^1.1.1"
   },
   "devDependencies": {
