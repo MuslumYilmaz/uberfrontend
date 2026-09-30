@@ -12,7 +12,8 @@ export class SeoTitleStrategy extends TitleStrategy {
   updateTitle(snapshot: RouterStateSnapshot): void {
     let current = snapshot.root;
     while (current.firstChild) current = current.firstChild;
-    const question = current.data?.['questionDetail']?.question;
+    const question = current.data?.['questionDetail']?.question
+      ?? current.data?.['systemDesignDetail']?.question;
     // Resolved question components own the title and complete article metadata.
     // Only robots needs a router refresh when a query-only navigation reuses data.
     if (question) {

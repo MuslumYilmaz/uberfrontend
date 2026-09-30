@@ -33,6 +33,8 @@ export class FooterComponent {
   @Input() progressText?: string | null;
   @Input() prevDisabled = false;
   @Input() nextDisabled = false;
+  @Input() prevHref: string | null = null;
+  @Input() nextHref: string | null = null;
   @Input() nextDisabledTooltip: string | null = null;
   @Input() practiceLeftLabel?: string | null;
   @Input() practiceLeftRoute?: string | any[] | null;
@@ -71,6 +73,17 @@ export class FooterComponent {
   get isCourse(): boolean { return this.mode === 'course'; }
   get isPractice(): boolean { return this.mode === 'practice'; }
   get hasOutline(): boolean { return (this.outline?.length ?? 0) > 0; }
+
+  activatePracticeLink(event: MouseEvent, direction: 'prev' | 'next'): void {
+    if (direction === 'prev' ? this.prevDisabled : this.nextDisabled) {
+      event.preventDefault();
+      return;
+    }
+    // Preserve native new-tab/window actions; ordinary clicks retain parent session state.
+    if (event.defaultPrevented || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    (direction === 'prev' ? this.prev : this.next).emit();
+  }
 
   openMenu() {
     if (!this.isCourse || !this.hasOutline || !this.leftCourseLabel) return;

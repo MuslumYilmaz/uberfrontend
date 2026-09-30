@@ -65,6 +65,8 @@
   font-size: 0.875rem;
 }
 .pbtn-sm:disabled { opacity: .5; cursor: not-allowed; }
+.pbtn-sm--nav { color: inherit; text-decoration: none; }
+.pbtn-sm--nav:focus-visible { outline: 2px solid var(--uf-accent); outline-offset: 3px; }
 .pbtn-sm.primary {
   background: var(--uf-accent);
   border-color: var(--uf-accent);

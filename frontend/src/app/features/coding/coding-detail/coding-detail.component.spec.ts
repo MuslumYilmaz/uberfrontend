@@ -19,6 +19,7 @@ import { PressureModeService } from '../../../core/services/pressure-mode.servic
 import { UserProgressService } from '../../../core/services/user-progress.service';
 import { MonacoEditorComponent } from '../../../monaco-editor.component';
 import { CodingDetailComponent } from './coding-detail.component';
+import { PUBLIC_QUESTION_NAVIGATION } from '../../../generated/public-question-navigation';
 
 describe('CodingDetailComponent', () => {
   let questionService: jasmine.SpyObj<QuestionService>;
@@ -184,6 +185,54 @@ describe('CodingDetailComponent', () => {
 
   afterEach(() => {
     document.body.style.overflow = '';
+  });
+
+  for (const kind of ['coding', 'debug'] as const) {
+    it(`matches ${kind} footer hrefs to practice navigation and retains return state`, () => {
+      const component = TestBed.createComponent(CodingDetailComponent).componentInstance;
+      const target = PUBLIC_QUESTION_NAVIGATION.find((item) => item.kind === kind)!;
+      const targetItem = { tech: target.tech, kind, id: target.route.split('/').pop()! };
+      const items = [{ ...targetItem, id: 'current-question' }, targetItem];
+      (component as any).practice = { items, index: 0 };
+      (component as any).returnTo = ['/coding'];
+      (component as any).returnToUrl = '/coding?tech=javascript';
+      component.returnLabel.set('Practice');
+      const navigate = spyOn(TestBed.inject(Router), 'navigate').and.resolveTo(true);
+      expect(component.prevHref()).toBeNull();
+      expect(component.nextHref()).toBe(target.route);
+      component.next();
+      expect(navigate).toHaveBeenCalledOnceWith(['/', target.tech, kind, targetItem.id], {
+        state: { session: { items, index: 1 }, returnTo: ['/coding'], returnToUrl: '/coding?tech=javascript', returnLabel: 'Practice' },
+      });
+      expect(component.nextHref()).toBeNull();
+      expect(component.prevHref()).toBeNull(); // Unlisted targets retain button navigation.
+    });
+  }
+
+  it('uses list neighbors for direct entry and suppresses links for course, pressure and unavailable targets', () => {
+    const component = TestBed.createComponent(CodingDetailComponent).componentInstance;
+    const target = PUBLIC_QUESTION_NAVIGATION.find((item) => item.kind === 'coding')!;
+    component.tech = target.tech as any;
+    component.kind = 'coding';
+    component.currentIndex = 0;
+    component.allQuestions = [{ id: 'current' }, { id: target.route.split('/').pop()! }] as Question[];
+    const navigate = spyOn(TestBed.inject(Router), 'navigate').and.resolveTo(true);
+    expect(component.nextHref()).toBe(target.route);
+    component.next();
+    expect(navigate).toHaveBeenCalledOnceWith(['/', target.tech, 'coding', component.allQuestions[1].id]);
+    component.isCourseContext.set(true);
+    expect(component.nextHref()).toBeNull();
+    component.isCourseContext.set(false);
+    component.pressureRequested.set(true);
+    component.pressureScenario.set(pressureScenario);
+    expect(component.nextHref()).toBeNull();
+    component.pressureRequested.set(false);
+    component.allQuestions = [{ id: 'current' }, { id: 'unlisted-premium' }] as Question[];
+    expect(component.hasNext()).toBeTrue();
+    expect(component.nextHref()).toBeNull();
+    component.allQuestions = [];
+    expect(component.prevHref()).toBeNull();
+    expect(component.nextHref()).toBeNull();
   });
 
   it('labels unverified HTML/CSS and framework questions as manual completion', () => {

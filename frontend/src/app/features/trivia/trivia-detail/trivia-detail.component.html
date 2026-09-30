@@ -987,6 +987,7 @@
 
 <!-- Footer -->
 <app-footer [mode]="'practice'" [progressText]="progressText()" [prevDisabled]="!hasPrev()" [nextDisabled]="!hasNext()"
+    [prevHref]="prevHref()" [nextHref]="nextHref()"
     [practiceLeftLabel]="'Question Library'" [practiceLeftRoute]="['/coding']"
     [showSubmit]="true" [submitLabel]="submitLabel()" [submitDisabled]="isCompletionDisabled()"
     (submit)="markComplete()" (prev)="prev()" (next)="next()" (back)="backToReturn()">

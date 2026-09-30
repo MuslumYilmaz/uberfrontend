@@ -27,19 +27,35 @@
         <div class="center">
             <!-- Practice cluster -->
             <div class="cluster" *ngIf="isPractice">
-                <button class="pbtn-sm pbtn-sm--nav" type="button" (click)="prev.emit()" [disabled]="prevDisabled"
+                <a *ngIf="prevHref && !prevDisabled; else previousButton"
+                    class="pbtn-sm pbtn-sm--nav" [href]="prevHref" (click)="activatePracticeLink($event, 'prev')"
                     aria-label="Previous practice item" data-testid="footer-prev">
                     <span class="pbtn-sm__full">← Prev</span>
                     <span class="pbtn-sm__compact" aria-hidden="true">←</span>
-                </button>
+                </a>
+                <ng-template #previousButton>
+                    <button class="pbtn-sm pbtn-sm--nav" type="button" (click)="prev.emit()" [disabled]="prevDisabled"
+                        aria-label="Previous practice item" data-testid="footer-prev">
+                        <span class="pbtn-sm__full">← Prev</span>
+                        <span class="pbtn-sm__compact" aria-hidden="true">←</span>
+                    </button>
+                </ng-template>
                 <span class="progress" *ngIf="progressText" data-testid="footer-progress">{{ progressText }}</span>
-                <button class="pbtn-sm pbtn-sm--nav" type="button" (click)="next.emit()" [disabled]="nextDisabled"
-                    aria-label="Next practice item" data-testid="footer-next"
-                    [pTooltip]="nextDisabled ? (nextDisabledTooltip || '') : ''"
-                    [tooltipDisabled]="!(nextDisabled && nextDisabledTooltip)" tooltipPosition="top">
+                <a *ngIf="nextHref && !nextDisabled; else nextButton"
+                    class="pbtn-sm pbtn-sm--nav" [href]="nextHref" (click)="activatePracticeLink($event, 'next')"
+                    aria-label="Next practice item" data-testid="footer-next">
                     <span class="pbtn-sm__full">Next →</span>
                     <span class="pbtn-sm__compact" aria-hidden="true">→</span>
-                </button>
+                </a>
+                <ng-template #nextButton>
+                    <button class="pbtn-sm pbtn-sm--nav" type="button" (click)="next.emit()" [disabled]="nextDisabled"
+                        aria-label="Next practice item" data-testid="footer-next"
+                        [pTooltip]="nextDisabled ? (nextDisabledTooltip || '') : ''"
+                        [tooltipDisabled]="!(nextDisabled && nextDisabledTooltip)" tooltipPosition="top">
+                        <span class="pbtn-sm__full">Next →</span>
+                        <span class="pbtn-sm__compact" aria-hidden="true">→</span>
+                    </button>
+                </ng-template>
             </div>
 
             <!-- Course cluster -->

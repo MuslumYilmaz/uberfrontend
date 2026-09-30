@@ -45,6 +45,7 @@ import { CodeStorageService } from '../../../core/services/code-storage.service'
 import { QuestionService } from '../../../core/services/question.service';
 import { MonacoEditorComponent } from '../../../monaco-editor.component';
 import { FooterComponent } from '../../../shared/components/footer/footer.component';
+import { publicQuestionHref } from '../../../core/utils/public-question-link.util';
 import { LockedPreviewComponent } from '../../../shared/components/locked-preview/locked-preview.component';
 import { ConsoleEntry, ConsoleLoggerComponent, TestResult } from '../console-logger/console-logger.component';
 
@@ -725,6 +726,20 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     if (this.pressureActive()) return false;
     return this.practice ? (this.practice.index + 1 < this.practice.items.length)
       : (this.currentIndex + 1 < this.allQuestions.length);
+  }
+
+  prevHref(): string | null {
+    return !this.isCourseContext() && this.hasPrev() ? publicQuestionHref(this.adjacentPracticeItem(-1)) : null;
+  }
+
+  nextHref(): string | null {
+    return !this.isCourseContext() && this.hasNext() ? publicQuestionHref(this.adjacentPracticeItem(1)) : null;
+  }
+
+  private adjacentPracticeItem(offset: number) {
+    if (this.practice) return this.practice.items[this.practice.index + offset];
+    const question = this.allQuestions[this.currentIndex + offset];
+    return question ? { tech: this.tech, kind: this.kind, id: question.id } : undefined;
   }
 
   frameworkStorageKey(): string | null {
@@ -1809,7 +1824,8 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       index: clamped,
     };
 
-    const it = this.practice.items[clamped];
+    const it = this.adjacentPracticeItem(0);
+    if (!it) return;
 
     this.router.navigate(['/', it.tech, it.kind, it.id], {
       state: {
@@ -1827,8 +1843,8 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       return;
     }
     if (this.currentIndex > 0) {
-      const prevId = this.allQuestions[this.currentIndex - 1].id;
-      this.router.navigate(['/', this.tech, this.kind, prevId]);
+      const item = this.adjacentPracticeItem(-1);
+      if (item) this.router.navigate(['/', item.tech, item.kind, item.id]);
     }
   }
   next() {
@@ -1837,8 +1853,8 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       return;
     }
     if (this.currentIndex + 1 < this.allQuestions.length) {
-      const nextId = this.allQuestions[this.currentIndex + 1].id;
-      this.router.navigate(['/', this.tech, this.kind, nextId]);
+      const item = this.adjacentPracticeItem(1);
+      if (item) this.router.navigate(['/', item.tech, item.kind, item.id]);
     }
   }
 

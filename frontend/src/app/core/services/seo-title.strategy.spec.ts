@@ -9,6 +9,10 @@ import { robotsForContentAccess } from '../utils/content-access-policy.util';
 import { SeoService } from './seo.service';
 import { SeoTitleStrategy } from './seo-title.strategy';
 
+function questionPath(kind: string, id: string): string {
+  return kind === 'system-design' ? `/system-design/${id}` : `/questions/${kind}/${id}`;
+}
+
 @Component({ standalone: true, template: '' })
 class ResolvedQuestionSeoTestComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
@@ -18,10 +22,10 @@ class ResolvedQuestionSeoTestComponent implements OnInit {
   ngOnInit(): void {
     // Match the synchronous route-data publication used by question components.
     this.route.data.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((data) => {
-      const detail = data['questionDetail'];
+      const detail = data['questionDetail'] ?? data['systemDesignDetail'];
       const question = detail?.question;
       if (!question) return;
-      const canonical = this.seo.buildCanonicalUrl(`/questions/${detail.kind}/${question.id}`);
+      const canonical = this.seo.buildCanonicalUrl(questionPath(detail.kind, question.id));
       this.seo.updateTags({
         title: question.title,
         description: question.description,
@@ -69,6 +73,25 @@ describe('SeoTitleStrategy question detail ownership', () => {
             data: { seo: { title: 'Generic question fallback', description: 'Fallback explanation.' } },
           },
           {
+            path: 'system-design/:id',
+            component: ResolvedQuestionSeoTestComponent,
+            resolve: {
+              systemDesignDetail: (route: ActivatedRouteSnapshot) => {
+                const id = route.paramMap.get('id');
+                return {
+                  kind: 'system-design',
+                  question: id === 'missing' ? null : {
+                    id,
+                    title: `Question ${id}: complete title`,
+                    description: `Specific explanation for question ${id}.`,
+                    access: id === 'premium' ? 'premium' : 'free',
+                  },
+                };
+              },
+            },
+            data: { seo: { title: 'System design scenario', description: 'Generic system design description.' } },
+          },
+          {
             path: 'library',
             component: StaticSeoTestComponent,
             data: { seo: { title: 'Question library', description: 'Browse the question library.' } },
@@ -103,7 +126,7 @@ describe('SeoTitleStrategy question detail ownership', () => {
   function expectQuestionHead(kind: string, id: string, robots = id === 'premium' ? 'noindex,follow' : 'index,follow'): void {
     const expectedTitle = `Question ${id}: complete title`;
     const description = `Specific explanation for question ${id}.`;
-    const canonical = seo.buildCanonicalUrl(`/questions/${kind}/${id}`);
+    const canonical = seo.buildCanonicalUrl(questionPath(kind, id));
     expect(title.getTitle()).toBe(expectedTitle);
     expect(meta.getTag('name="description"')?.content).toBe(description);
     expect(meta.getTag('property="og:title"')?.content).toBe(expectedTitle);
@@ -118,17 +141,17 @@ describe('SeoTitleStrategy question detail ownership', () => {
     });
   }
 
-  for (const kind of ['trivia', 'coding', 'debug']) {
+  for (const kind of ['trivia', 'coding', 'debug', 'system-design']) {
     it(`preserves ${kind} metadata on initial and reused navigation, then hands ownership back to static routes`, async () => {
       const harness = await RouterTestingHarness.create();
-      const first = await harness.navigateByUrl(`/questions/${kind}/free`, ResolvedQuestionSeoTestComponent);
+      const first = await harness.navigateByUrl(questionPath(kind, 'free'), ResolvedQuestionSeoTestComponent);
       expectQuestionHead(kind, 'free');
 
-      const second = await harness.navigateByUrl(`/questions/${kind}/premium`, ResolvedQuestionSeoTestComponent);
+      const second = await harness.navigateByUrl(questionPath(kind, 'premium'), ResolvedQuestionSeoTestComponent);
       expect(second).toBe(first);
       expectQuestionHead(kind, 'premium');
 
-      await harness.navigateByUrl(`/questions/${kind}/free`, ResolvedQuestionSeoTestComponent);
+      await harness.navigateByUrl(questionPath(kind, 'free'), ResolvedQuestionSeoTestComponent);
       expectQuestionHead(kind, 'free');
 
       await harness.navigateByUrl('/library', StaticSeoTestComponent);
@@ -140,6 +163,26 @@ describe('SeoTitleStrategy question detail ownership', () => {
       expect(articleGraph().some((entry) => entry['@type'] === 'Article')).toBeFalse();
     });
   }
+
+  it('preserves system design metadata through query and fragment changes, then falls back for a missing question', async () => {
+    const harness = await RouterTestingHarness.create();
+    for (const id of ['free', 'premium']) {
+      const first = await harness.navigateByUrl(questionPath('system-design', id), ResolvedQuestionSeoTestComponent);
+      expectQuestionHead('system-design', id);
+      const queried = await harness.navigateByUrl(`${questionPath('system-design', id)}?source=sidebar#answer`, ResolvedQuestionSeoTestComponent);
+      expect(queried).toBe(first);
+      expectQuestionHead('system-design', id, 'noindex,follow');
+      await harness.navigateByUrl(`${questionPath('system-design', id)}#sec-R`, ResolvedQuestionSeoTestComponent);
+      expectQuestionHead('system-design', id);
+    }
+    await harness.navigateByUrl('/system-design/missing', ResolvedQuestionSeoTestComponent);
+    expect(title.getTitle()).toBe('System design scenario');
+    expect(meta.getTag('name="description"')?.content).toBe('Generic system design description.');
+    expect(meta.getTag('name="robots"')?.content).toBe('index,follow');
+    expect(document.head.querySelector('link[rel="canonical"]')?.getAttribute('href'))
+      .toBe(seo.buildCanonicalUrl('/system-design/missing'));
+    expect(articleGraph().some((entry) => entry['@type'] === 'Article')).toBeFalse();
+  });
 
   it('refreshes free question robots when queries are added or removed without replacing detail metadata', async () => {
     const harness = await RouterTestingHarness.create();
