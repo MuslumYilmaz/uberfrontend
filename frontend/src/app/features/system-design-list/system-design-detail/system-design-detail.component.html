@@ -163,6 +163,21 @@
               </section>
             </fa-dialog>
 
+            <section *ngIf="dashboardOpening() as opening" class="sd-short-answer"
+                aria-labelledby="dashboard-short-answer-title" data-testid="dashboard-short-answer">
+                <h2 id="dashboard-short-answer-title">Dashboard system design: short answer</h2>
+                <p>{{ opening.text }}</p>
+                <figure aria-labelledby="dashboard-flow-caption">
+                    <figcaption id="dashboard-flow-caption">From input to a saved layout</figcaption>
+                    <ol class="sd-short-answer__flow">
+                        <li><strong>1. Pointer or keyboard</strong><span>Start an interaction from the current layout revision.</span></li>
+                        <li><strong>2. Grid and collisions</strong><span>Snap logical rectangles and resolve overlap in a transient layout.</span></li>
+                        <li><strong>3. Frame preview</strong><span>Use requestAnimationFrame to paint the preview without saving each move.</span></li>
+                        <li><strong>4. Commit and reconcile</strong><span>On drop or keyboard confirm, save against the authoritative revision and handle conflicts.</span></li>
+                    </ol>
+                </figure>
+            </section>
+
             <section class="sd-try-first" aria-labelledby="sd-try-first-title" data-testid="sd-try-first">
                 <div class="sd-try-first__header">
                     <div>
@@ -551,6 +566,7 @@
     </div>
 
     <app-footer mode="practice" [progressText]="progressText" [prevDisabled]="!hasPrev" [nextDisabled]="!hasNext"
+        [prevHref]="prevHref" [nextHref]="nextHref"
         [practiceLeftLabel]="'Incidents hub'" [practiceLeftRoute]="['/incidents']"
         (prev)="onPrev()" (next)="onNext()">
     </app-footer>

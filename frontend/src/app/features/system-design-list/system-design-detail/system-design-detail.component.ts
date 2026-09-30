@@ -257,12 +257,24 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
     this.guideLinks().filter((link) => link.slug !== RADIO_GUIDE_SLUG)
   );
 
+  dashboardOpening = computed(() => {
+    const item = this.q();
+    if (item?.id !== 'dashboard-widgets-draggable-resizable'
+      || item.contentLoadState === 'error' || !isContentAccessibleForFree(item.access)) return null;
+    return item.radio?.find((section) => section.key === 'R')?.blocks?.find(
+      (block): block is Extract<Block, { type: 'callout' }> =>
+        block.type === 'callout' && block.title === 'Interview opening' && !!block.text.trim(),
+    ) ?? null;
+  });
+
   sections = computed<Required<RadioSection>[]>(() => {
     const item = this.q(); if (!item) return [];
+    const opening = this.dashboardOpening();
     const normalize = (s: RadioSection): Required<RadioSection> => ({
       key: s.key, title: s.title, content: s.content ?? '',
       blocks: this.normalizeDisplayBlocks(
-        s.blocks?.length ? s.blocks : s.content ? [{ type: 'text', text: s.content }] : [],
+        s.blocks?.length ? s.blocks.filter((block) => block !== opening)
+          : s.content ? [{ type: 'text', text: s.content }] : [],
       ),
     });
 
@@ -1087,6 +1099,16 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
 
   get progressText(): string {
     return this.all.length ? ` ${this.idx + 1} / ${this.all.length}` : '';
+  }
+
+  get prevHref(): string | null { return this.publicNeighborHref(-1); }
+  get nextHref(): string | null { return this.publicNeighborHref(1); }
+
+  private publicNeighborHref(offset: number): string | null {
+    if (!this.q() || this.all[this.idx]?.id !== this.q()?.id) return null;
+    const target = this.all[this.idx + offset];
+    return target && isContentAccessibleForFree(target.access)
+      ? this.router.serializeUrl(this.router.createUrlTree(['/system-design', target.id])) : null;
   }
 
   private navToIndex(index: number) {

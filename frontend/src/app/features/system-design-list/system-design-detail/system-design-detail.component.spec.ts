@@ -74,6 +74,68 @@ describe('SystemDesignDetailComponent', () => {
     }).compileComponents();
   });
 
+  it('promotes the dashboard opening once, clears it on errors and route changes, and keeps the source intact', () => {
+    const fixture = TestBed.createComponent(SystemDesignDetailComponent);
+    const component = fixture.componentInstance;
+    const opening = { type: 'callout' as const, title: 'Interview opening', text: 'Keep pointer previews local and persist a revision on commit.' };
+    const question = {
+      id: 'dashboard-widgets-draggable-resizable', title: 'Dashboard', access: 'free' as const,
+      radio: [{ key: 'R', title: 'Requirements', blocks: [opening, { type: 'text' as const, text: 'Detailed requirements.' }] }],
+    };
+    component.q.set(question);
+    fixture.detectChanges();
+    const host = fixture.nativeElement as HTMLElement;
+    const overview = host.querySelector('[data-testid="dashboard-short-answer"]')!;
+    expect(overview.textContent).toContain(opening.text);
+    expect(overview.closest('details')).toBeNull();
+    expect(overview.compareDocumentPosition(host.querySelector('[data-testid="sd-try-first"]')!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(host.querySelector('.sd-blocks')?.textContent).not.toContain(opening.text);
+    expect(question.radio[0].blocks[0]).toBe(opening);
+    expect(component.sections()[0].blocks.length).toBe(1);
+
+    for (const override of [{ contentLoadState: 'error' as const }, { id: 'infinite-scroll-list' }, { access: 'premium' as const }]) {
+      component.q.set({ ...question, ...override });
+      fixture.detectChanges();
+      expect(host.querySelector('[data-testid="dashboard-short-answer"]')).toBeNull();
+    }
+    component.q.set({ ...question, radio: [] });
+    fixture.detectChanges();
+    expect(host.querySelector('[data-testid="dashboard-short-answer"]')).toBeNull();
+    component.q.set(question);
+    fixture.detectChanges();
+    expect(host.querySelectorAll('[data-testid="dashboard-short-answer"]').length).toBe(1);
+  });
+
+  it('links free neighboring system design questions without changing order or exposing premium targets', () => {
+    const fixture = TestBed.createComponent(SystemDesignDetailComponent);
+    const component = fixture.componentInstance;
+    const router = TestBed.inject(Router);
+    const navigate = spyOn(router, 'navigate').and.resolveTo(true);
+    component.all = [
+      { id: 'free-a', title: 'Free A', access: 'free' },
+      { id: 'free-b', title: 'Free B', access: 'free' },
+      { id: 'premium-c', title: 'Premium C', access: 'premium' },
+    ];
+    component.q.set(component.all[0]);
+    fixture.detectChanges();
+    expect(component.prevHref).toBeNull();
+    expect(component.nextHref).toBe('/system-design/free-b');
+    component.onNext();
+    expect(navigate).toHaveBeenCalledOnceWith(['/system-design', 'free-b']);
+    component.idx = 1;
+    component.q.set(component.all[1]);
+    fixture.detectChanges();
+    expect(component.prevHref).toBe('/system-design/free-a');
+    expect(component.nextHref).toBeNull();
+    expect(component.hasNext).toBeTrue();
+    expect(fixture.nativeElement.querySelector('[data-testid="footer-next"]').tagName).toBe('BUTTON');
+    component.idx = 2;
+    component.q.set(component.all[2]);
+    expect(component.nextHref).toBeNull();
+    component.all = [];
+    expect(component.prevHref).toBeNull();
+  });
+
   it('opens bug report flow from system design detail action', () => {
     const fixture = TestBed.createComponent(SystemDesignDetailComponent);
     const component = fixture.componentInstance;

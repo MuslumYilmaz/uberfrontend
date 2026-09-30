@@ -25,6 +25,7 @@ import {
 } from '../../../core/utils/content-access-policy.util';
 import { buildLockedPreviewForTrivia, LockedPreviewData } from '../../../core/utils/locked-preview.util';
 import { isTriviaReferenceOnlyBlock } from '../../../core/utils/trivia-search-intent.util';
+import { publicQuestionHref } from '../../../core/utils/public-question-link.util';
 import { FooterComponent } from '../../../shared/components/footer/footer.component';
 import { SeoService } from '../../../core/services/seo.service';
 import { UserProgressService } from '../../../core/services/user-progress.service';
@@ -747,6 +748,11 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
   }
   hasPrev() { return !!this.practice && this.practice.index > 0; }
   hasNext() { return !!this.practice && this.practice.index + 1 < this.practice.items.length; }
+  prevHref(): string | null { return publicQuestionHref(this.practiceItemAt(-1)); }
+  nextHref(): string | null { return publicQuestionHref(this.practiceItemAt(1)); }
+  private practiceItemAt(offset: number): PracticeItem | undefined {
+    return this.practice?.items[this.practice.index + offset];
+  }
   trackByQuestionId = (_: number, q: QuestionListEntry): string => q.id;
   trackByAnswerBlock = (index: number, block: AnswerBlock): string => `${block.type}:${index}`;
   trackByStringValue = (index: number, value: string): string => value || String(index);
@@ -1181,7 +1187,8 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private navToPracticeIndex(newIndex: number) {
     if (!this.practice) return;
-    const it = this.practice.items[newIndex];
+    const it = this.practiceItemAt(newIndex - this.practice.index);
+    if (!it) return;
     this.router.navigate(['/', it.tech, it.kind, it.id], {
       state: {
         session: { items: this.practice.items, index: newIndex },

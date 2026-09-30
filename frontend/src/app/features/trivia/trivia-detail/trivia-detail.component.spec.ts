@@ -15,6 +15,7 @@ import { SeoService } from '../../../core/services/seo.service';
 import { TriviaIncidentService } from '../../../core/services/trivia-incident.service';
 import { UserProgressService } from '../../../core/services/user-progress.service';
 import { TriviaDetailComponent } from './trivia-detail.component';
+import { PUBLIC_QUESTION_NAVIGATION } from '../../../generated/public-question-navigation';
 
 describe('TriviaDetailComponent', () => {
   let routeData$: ReplaySubject<any>;
@@ -2105,6 +2106,40 @@ describe('TriviaDetailComponent', () => {
     expect(article?.headline).toBe(
       'Can React Components Return undefined? React 18 vs null - Frontend interview practice question',
     );
+  });
+
+  it('uses the same public footer destination and preserves practice and return state once', async () => {
+    const target = PUBLIC_QUESTION_NAVIGATION.find((item) => item.kind === 'trivia')!;
+    const session = {
+      items: [
+        { tech: 'javascript', kind: 'trivia', id: 'q1' },
+        { tech: target.tech, kind: target.kind, id: target.route.split('/').pop()! },
+      ],
+      index: 0,
+    };
+    const returnTo = ['/guides', 'framework-prep', 'javascript-prep-path', 'mastery'];
+    window.history.replaceState({
+      session, sessionSource: 'mastery', returnTo,
+      returnToUrl: '/coding?tech=javascript&kind=trivia', returnLabel: 'JavaScript practice',
+    }, '');
+    const fixture = await createLoadedFixture();
+    const component = fixture.componentInstance;
+    const navigate = spyOn(TestBed.inject(Router), 'navigate').and.resolveTo(true);
+    const next = fixture.nativeElement.querySelector('a[data-testid="footer-next"]') as HTMLAnchorElement;
+    expect(next.getAttribute('href')).toBe(target.route);
+    expect(component.prevHref()).toBeNull();
+    next.click();
+    expect(navigate).toHaveBeenCalledOnceWith(['/', target.tech, target.kind, session.items[1].id], {
+      state: {
+        session: { items: session.items, index: 1 }, sessionSource: 'mastery', returnTo,
+        returnToUrl: '/coding?tech=javascript&kind=trivia', returnLabel: 'JavaScript practice',
+      },
+    });
+    (component as any).practice = { items: session.items, index: 1 };
+    expect(component.nextHref()).toBeNull();
+    (component as any).practice = null;
+    expect(component.prevHref()).toBeNull();
+    expect(component.nextHref()).toBeNull();
   });
 
   it('renders crawlable sidebar links and preserves the practice session when navigating', async () => {

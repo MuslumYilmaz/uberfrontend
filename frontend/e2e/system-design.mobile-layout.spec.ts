@@ -161,6 +161,12 @@ test.describe('system design mobile layout guardrail', () => {
     await page.setViewportSize(MOBILE_VIEWPORT);
     await page.goto('/system-design/infinite-scroll-list');
 
+    // The local-host robots override proves client routing has activated; SSR
+    // already displays the trigger before Angular can handle its click.
+    if (['localhost', '127.0.0.1'].includes(new URL(page.url()).hostname)) {
+      await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex,nofollow');
+    }
+
     const trigger = page.getByTestId('sd-mobile-overview-trigger');
     await trigger.click();
     const dialog = page.getByRole('dialog', { name: 'Question overview' });
@@ -236,14 +242,39 @@ test.describe('system design mobile layout guardrail', () => {
     await assertSystemDesignNoOverflow(page);
   });
 
-  for (const width of [320, 390, 1440]) {
-    test(`dashboard widgets - complete answer tables and code stay contained at ${width}px`, async ({ page }) => {
+  for (const width of [320, 360, 390, 834, 1440]) {
+    test(`dashboard widgets - complete answer tables and code stay contained at ${width}px`, async ({ page }, testInfo) => {
       await page.setViewportSize({ width, height: 900 });
       const response = await page.goto('/system-design/dashboard-widgets-draggable-resizable');
 
       expect(response?.status()).toBe(200);
       await assertSingleVisibleH1(page, 'Drag-and-Drop Dashboard Frontend System Design', width);
       await expect(page.locator('.locked-card')).toHaveCount(0);
+
+      const opening = page.getByTestId('dashboard-short-answer');
+      await expect(opening).toBeVisible();
+      await expect(opening).toHaveCount(1);
+      await expect(opening.locator('h2')).toHaveText('Dashboard system design: short answer');
+      await expect(opening.locator('li')).toHaveCount(4);
+      expect(await opening.evaluate((node) => node.closest('details'))).toBeNull();
+      await assertElementFitsWidth(opening, `dashboard short answer at ${width}px`);
+      const steps = await opening.locator('li').evaluateAll((nodes) => nodes.map((node) => {
+        const rect = node.getBoundingClientRect();
+        return { left: rect.left, top: rect.top, overflow: node.scrollWidth - node.clientWidth };
+      }));
+      for (const step of steps) expect(step.overflow).toBeLessThanOrEqual(1);
+      if (width <= 390) {
+        expect(steps.every((step) => step.left === steps[0].left)).toBe(true);
+        expect(steps[3].top).toBeGreaterThan(steps[0].top);
+      }
+      await opening.scrollIntoViewIfNeeded();
+      await page.screenshot({ path: testInfo.outputPath(`dashboard-opening-${width}.png`) });
+      const lastStep = opening.locator('li').last();
+      await lastStep.evaluate((node) => node.scrollIntoView({ block: 'center' }));
+      const stepBottom = (await lastStep.boundingBox())!;
+      const footerBounds = (await page.getByTestId('practice-footer').boundingBox())!;
+      expect(stepBottom.y + stepBottom.height, 'last step can be read above the fixed footer')
+        .toBeLessThanOrEqual(footerBounds.y);
 
       const sections = page.locator('details.sd-section');
       await expect(sections).toHaveCount(5);
@@ -255,7 +286,7 @@ test.describe('system design mobile layout guardrail', () => {
       }
 
       const answer = page.locator('.sdl-center');
-      await expect(answer.locator('.sd-callout').filter({ hasText: 'Interview opening' })).toBeVisible();
+      await expect(answer.locator('.sd-callout').filter({ hasText: 'Interview opening' })).toHaveCount(0);
       await expect(answer.locator('pre.sd-code > code').filter({
         hasText: 'Deterministic grid/snap/collision example',
       })).toBeVisible();

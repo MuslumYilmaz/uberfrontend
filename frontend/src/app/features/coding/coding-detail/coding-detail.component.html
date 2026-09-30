@@ -861,6 +861,7 @@
 <ng-container *ngIf="!hideFooterBar; else demoFooter">
   <app-footer data-nosnippet [mode]="isCourseContext() ? 'course' : 'practice'" [progressText]="!isCourseContext() ? progressText : null"
     [prevDisabled]="!hasPrev()" [nextDisabled]="!hasNext()" [nextDisabledTooltip]="null"
+    [prevHref]="prevHref()" [nextHref]="nextHref()"
     [practiceLeftLabel]="!isCourseContext() ? (pressureActive() ? 'Exit pressure mode' : 'Incidents hub') : null"
     [practiceLeftRoute]="!isCourseContext() ? (pressureActive() ? ['/', tech, kind, question()?.id] : ['/incidents']) : null"
     [practiceLeftQueryParams]="pressureActive() ? pressureExitQueryParams() : null"
