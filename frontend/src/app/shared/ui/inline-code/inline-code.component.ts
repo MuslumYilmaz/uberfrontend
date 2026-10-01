@@ -6,21 +6,7 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
   standalone: true,
   imports: [CommonModule],
   template: `<ng-container *ngFor="let part of parts"><code *ngIf="part.code; else prose">{{ part.text }}</code><ng-template #prose>{{ part.text }}</ng-template></ng-container>`,
-  styles: [`
-    :host { display: inline; }
-    code {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
-      font-size: inherit;
-      background: var(--uf-surface-alt);
-      border-radius: var(--uf-space-1);
-      padding-inline: var(--uf-space-1);
-      white-space: pre-wrap;
-      overflow-wrap: break-word;
-      word-break: normal;
-      box-decoration-break: clone;
-      -webkit-box-decoration-break: clone;
-    }
-  `],
+  styleUrls: ['./inline-code.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InlineCodeComponent {
