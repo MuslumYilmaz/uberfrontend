@@ -24,8 +24,9 @@ Do not update candidate snapshots to hide migration differences.
 - Production build and 615 prerender routes: passed.
 - Visual comparisons without updating snapshots: 90 passed.
 - Initial bytes: 1,170,168; modulepreload bytes: 771,680 (45 modules).
-- Coding HTML bytes: 575,674; total prerender HTML bytes: 103,412,579.
-- These four performance metrics already exceed warning thresholds. Thresholds
+- Coding HTML bytes: 575,757; total prerender HTML bytes: 103,410,753 (fresh build with stats).
+- Sentry lazy chunk: 413,529 bytes; showcase lazy-heavy chunks: 956,372 bytes.
+- These six performance metrics already exceed warning thresholds. Thresholds
   must remain unchanged and migration deltas must be reported.
 
 ## Commands
@@ -40,8 +41,8 @@ Do not update candidate snapshots to hide migration differences.
 The production interview harness must use its isolated database and non-conflicting
 ports. The machine's `frontendatlas` database is not test data.
 
-Final migration results and remaining limitations will be recorded below after
-the corresponding checks finish.
+CI status is authoritative in the draft PR checks. Local results and limitations
+are recorded below; unavailable or failing checks are not counted as passes.
 
 ## Angular 18 checkpoint
 
@@ -75,3 +76,73 @@ the corresponding checks finish.
 - Before final clean-install verification: 1,444 unit tests, 1,069 backend tests (82 suites), 100 Chromium critical/accessibility E2E, 96 mocked interview tests (Chromium/Firefox), and isolated real-backend interview flows in both engines passed. Shared-control keyboard/focus tests passed in Chromium and Firefox. All 90 Chromium visual comparisons passed at six widths.
 - The interview visual fixture freezes its server/client clock only when explicitly requested by the screenshot suite. Three affected review references were recaptured from the immutable Angular 17 application; no candidate image became a reference.
 - Local WebKit cannot launch on macOS 14.2.1 with the installed Playwright build (requires macOS 14.5+). Linux CI runs the WebKit interaction and interview suites. Local unavailability is not a passing result.
+
+## Final local verification
+
+- Clean `npm ci` passed on Node 22.23.0; Monaco and xhr2 patches applied successfully. `npm ls --depth=0` passed without peer overrides. The CDN staging regression also runs in the frontend CI job.
+- `npm audit --omit=dev --json` reports zero vulnerabilities for frontend and backend. The frontend audit allowlist has no entries. The full frontend audit, including development tools, still reports 15 findings (8 moderate, 2 high, 5 critical), including build/deployment-tool dependency chains; that broader audit is not clean and is not the production audit gate.
+- Final pre-push unit/content and SEO prerender guards passed, followed by **91/91 critical E2E**. Frontend unit total is **1,456/1,456**. Strict design-system and design-budget checks passed. Backend verification remains **82 suites / 1,069 tests passed**.
+- Visual parity: **90/90** Chromium scenarios / **138 image pairs** at six widths. Gallery adds four actual-JavaScript-worker failure captures (0/2 and 1/2 at desktop/mobile) and two splitter captures. No candidate screenshots were accepted as references.
+- Shared controls: **8/8** across Chromium and Firefox, in both development and production builds. Covers selection retention, empty search, disabled reset, filter autofocus, close/Escape focus, dark OS-independent overlays, tooltip bounds, modal focus trap and scroll unlock. The tests wait for hydration and completed overlay removal before reopening. The legacy PrimeNG slider component remains compiled but is not mounted by the current public routes.
+- Mock interviews: **48/48 per available engine**, plus isolated real-backend flows in Chromium and Firefox. The existing late-check response, draft/hash recovery, splitter, runner and report contracts are retained.
+- Production runner/public/auth suite initially passed 110 cases and caught three SSR regressions. All three passed after fixes; the additional `/guides` alias regression also passed, including query/fragment preservation. The React/framework runner cases passed in the initial production run.
+- SEO metadata: **0 failures** across the 615 retained prerender routes. Existing content-length warnings remain. Production bundle error budgets were not changed; existing size warnings and new compiler/Sass deprecation diagnostics remain visible.
+
+## Performance comparison and remaining risk
+
+The same macOS machine, Playwright version and original Angular 17 application were
+used for comparisons. Values below are bytes from build output, not elapsed-time
+claims. The final Angular 21 figures use the build with stats after the alias fix;
+generated timestamp lengths can change HTML totals by a few bytes.
+
+| Metric | Angular 17 | Angular 21 |
+| --- | ---: | ---: |
+| Full initial static import graph (JS + CSS) | 1,115,193 | 1,213,026 |
+| HTML-linked resources counted by `perf:contract` | 1,170,168 | 407,536 |
+| Modulepreload resources | 771,680 (45 files) | 27,948 (10 files) |
+| `/coding` raw HTML | 575,757 | 598,031 |
+| Total prerender HTML | 103,410,753 | 121,587,526 |
+| Sentry lazy chunk | 413,529 | 413,923 |
+| Showcase lazy-heavy chunks | 956,372 | 956,847 |
+
+**Medium — payload growth remains:** the full initial import graph increases 8.8%
+and total prerender HTML increases 17.6%. PrimeNG's runtime theme and inline SSR
+styles account for the main tradeoff. The smaller HTML-linked-resource metric
+reflects different preload emission and does **not** mean the whole initial bundle
+became smaller. Representative compressed HTML comparisons add approximately
+3.4–6.7 KB per page. All existing build error budgets still pass. `perf:contract
+--no-write` completes with four warnings (six on the fully measured baseline);
+strict warning-free performance acceptance has not been achieved.
+
+An optional postbuild transformation to externalize PrimeNG SSR styles was
+rejected by automatic approval review because it rewrites all prerendered routes
+and introduces hydration, cascade, CSP, first-paint and cache risks. It was not
+applied. Standard PrimeNG SSR remains in use; this optimization needs separate
+explicit approval and validation.
+
+The performance smoke package had stale navigation text and pricing assumptions.
+Its selectors now follow the existing preparation-guide CTA, and it asserts one
+deferred pricing-config request when pricing is revealed (none on landing).
+Routing and CPU budgets were not increased. With other builds/tests idle, the
+two production timing cases were run sequentially on the original and upgraded
+apps using the canonical homepage:
+
+| 4× CPU measurement | Angular 17 | Angular 21 | Existing limit |
+| --- | ---: | ---: | ---: |
+| Warm route p75 | 451.9 ms | 390.4 ms | <350 ms |
+| Maximum long task | 369 ms | 370 ms | ≤190 ms |
+| Total long tasks | 1,231 ms | 1,195 ms | ≤1,000 ms |
+| Total blocking time | 681 ms | 695 ms | ≤500 ms |
+
+Both timing tests fail on both versions locally; they are **not** reported as
+passes. The standard development-mode performance run passed five cases and
+failed those two. An exploratory production run also exposed the existing mobile
+demo prerender behavior; that failure reproduced on Angular 17. These findings
+do not establish a new visual regression, but the full performance package is
+not green and needs follow-up before claiming every acceptance criterion is met.
+
+Evidence is stored outside Git at `/private/tmp/angular21-evidence/`, including
+the before/after gallery, standalone screenshot archive, build statistics,
+audit JSON and individual test logs. The user's original worktree and uncommitted
+documentation changes were left untouched. No production database, payment,
+email, merge, deployment or feature-access flag was used or changed.
