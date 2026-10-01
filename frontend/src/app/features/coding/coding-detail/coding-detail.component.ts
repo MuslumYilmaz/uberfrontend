@@ -1,6 +1,6 @@
 // coding-detail.component.ts
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import {
   AfterViewInit,
   Component,
@@ -156,7 +156,7 @@ const SEO_DESCRIPTION_MAX_LEN = 240;
   selector: 'app-coding-detail',
   standalone: true,
   imports: [
-    CommonModule, RouterModule, HttpClientModule,
+    CommonModule, RouterModule,
     MonacoEditorComponent, ConsoleLoggerComponent, FooterComponent,
     CodingJsPanelComponent, CodingWebPanelComponent, CodingFrameworkPanelComponent,
     LockedPreviewComponent,

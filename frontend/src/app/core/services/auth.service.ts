@@ -1,5 +1,5 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { afterNextRender, AfterRenderPhase, computed, effect, inject, Injectable, signal } from '@angular/core';
+import { afterNextRender, computed, effect, inject, Injectable, signal } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, finalize, map, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { Entitlements, Tech } from '../models/user.model';
@@ -175,8 +175,7 @@ export class AuthService {
     this.authAuthority.events$.subscribe((event) => this.handleAuthorityEvent(event));
 
     afterNextRender(
-      () => this.hasCompletedInitialRender.set(true),
-      { phase: AfterRenderPhase.Read },
+      { read: () => this.hasCompletedInitialRender.set(true) },
     );
 
     // Avoid an eager /me call for logged-out visitors (prevents noisy 401s in the console).

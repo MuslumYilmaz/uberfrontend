@@ -42,3 +42,10 @@ ports. The machine's `frontendatlas` database is not test data.
 
 Final migration results and remaining limitations will be recorded below after
 the corresponding checks finish.
+
+## Angular 18 checkpoint
+
+- Angular 18.2.14 / CLI 18.2.21 / PrimeNG 18.0.2 installed with compatible peers. npm 11 could not reconcile the Angular 17 lock tree; npm regenerated it with unrelated direct dependencies temporarily pinned to their existing resolved versions, then restored their original ranges. No peer override flags were used.
+- Official core and CLI migrations ran. The optional application-builder migration was unnecessary because the app already uses that builder. TransferState imports moved to core; server bootstrap now accepts BootstrapContext. Component-local HttpClientModule imports were removed in favor of the existing central HTTP provider/interceptors.
+- Production build: passed, all 615 prerender routes retained. Closest unit suite: 116/116 passed. Strict design-system check passed.
+- Visual comparison identified CSS reset precedence, input padding, and changed PrimeNG overlay geometry/focus defaults. Heading/reset precedence and list padding were restored against the unchanged Angular 17 references. Dialog and multiselect parity remains part of the final theme adaptation, not an accepted baseline change.

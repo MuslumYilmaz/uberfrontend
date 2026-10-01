@@ -1,13 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, booleanAttribute } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { DropdownModule } from 'primeng/dropdown';
+import { SelectModule } from 'primeng/select';
 import { MultiSelectModule } from 'primeng/multiselect';
 
 @Component({
   selector: 'fa-select',
   standalone: true,
-  imports: [CommonModule, FormsModule, DropdownModule, MultiSelectModule],
+  imports: [CommonModule, FormsModule, SelectModule, MultiSelectModule],
   template: `
     <ng-container *ngIf="multiple; else singleSelect">
       <p-multiSelect
@@ -31,7 +31,7 @@ import { MultiSelectModule } from 'primeng/multiselect';
     </ng-container>
 
     <ng-template #singleSelect>
-      <p-dropdown
+      <p-select
         [options]="options"
         [ngModel]="value"
         (ngModelChange)="valueChange.emit($event)"
@@ -47,7 +47,7 @@ import { MultiSelectModule } from 'primeng/multiselect';
         [ariaFilterLabel]="ariaFilterLabel"
         [styleClass]="resolvedStyleClass"
         [panelStyleClass]="resolvedPanelClass">
-      </p-dropdown>
+      </p-select>
     </ng-template>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

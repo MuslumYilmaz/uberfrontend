@@ -1,7 +1,7 @@
 import { DebugElement } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { Dropdown } from 'primeng/dropdown';
+import { Select } from 'primeng/select';
 import { MultiSelect } from 'primeng/multiselect';
 import { FaSelectComponent } from './fa-select.component';
 
@@ -24,7 +24,7 @@ describe('FaSelectComponent', () => {
     });
     fixture.detectChanges();
 
-    const dropdown = childInstance<Dropdown>(fixture.debugElement, Dropdown);
+    const dropdown = childInstance<Select>(fixture.debugElement, Select);
     expect(dropdown.inputId).toBe('level-filter');
     expect(dropdown.ariaLabel).toBe('Level');
     expect(dropdown.ariaLabelledBy).toBe('level-label');

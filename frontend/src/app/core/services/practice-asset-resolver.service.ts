@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { TransferState, makeStateKey } from '@angular/platform-browser';
+import { TransferState, makeStateKey } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { firstValueFrom, Observable, of } from 'rxjs';
 import { catchError, map, shareReplay } from 'rxjs/operators';

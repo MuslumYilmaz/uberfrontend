@@ -8,6 +8,8 @@ import { apiCredentialsInterceptor } from './core/interceptors/api-credentials.i
 import { authRefreshInterceptor } from './core/interceptors/auth-refresh.interceptor';
 import { SeoTitleStrategy } from './core/services/seo-title.strategy';
 import { StorageVersionService } from './core/services/storage-version.service';
+import { providePrimeNG } from 'primeng/config';
+import { frontendAtlasPrimeTheme } from './core/config/primeng-theme';
 
 function initStorage(versioner: StorageVersionService) {
   return () => versioner.ensureFreshStorage().catch(() => void 0);
@@ -26,6 +28,7 @@ function shouldTransferCacheRequest(req: HttpRequest<unknown>): boolean {
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    providePrimeNG({ theme: frontendAtlasPrimeTheme }),
     provideRouter(
       routes,
       // Avoid global same-URL reload churn; opt in per-flow when required.

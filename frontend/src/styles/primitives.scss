@@ -496,13 +496,13 @@
   display: grid;
 }
 
-.fa-field__control > :is(input, select, textarea, .p-dropdown, .p-multiselect, .fa-input) {
+.fa-field__control > :is(input, select, textarea, .p-select, .p-multiselect, .fa-input) {
   width: 100%;
 }
 
 .fa-field--error .fa-input,
 .fa-field--error .p-inputtext,
-.fa-field--error .p-dropdown,
+.fa-field--error .p-select,
 .fa-field--error .p-multiselect {
   border-color: color-mix(in srgb, #ef4444 62%, var(--uf-border-subtle));
 }

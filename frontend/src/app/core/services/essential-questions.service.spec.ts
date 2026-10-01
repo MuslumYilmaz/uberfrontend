@@ -1,4 +1,4 @@
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { PLATFORM_ID } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { firstValueFrom, of } from 'rxjs';
@@ -6,6 +6,7 @@ import { EssentialQuestionsService } from './essential-questions.service';
 import { QuestionService } from './question.service';
 import { PracticeAssetResolverService } from './practice-asset-resolver.service';
 import { ASSET_READER } from './asset-reader';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('EssentialQuestionsService', () => {
   let service: EssentialQuestionsService;
@@ -13,119 +14,119 @@ describe('EssentialQuestionsService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [
+    imports: [],
+    providers: [
         EssentialQuestionsService,
         { provide: PLATFORM_ID, useValue: 'browser' },
         {
-          provide: PracticeAssetResolverService,
-          useValue: {
-            getVersion: () => of('bank-v1'),
-            getAssetUrls: () => ({
-              primary: 'assets/questions/collections/frontend-essential-60.json',
-              fallback: 'assets/questions/collections/frontend-essential-60.json',
-            }),
-          },
-        },
-        {
-          provide: QuestionService,
-          useValue: {
-            loadAllQuestionSummaries: (kind: 'coding' | 'trivia') => {
-              if (kind === 'coding') {
-                return of([
-                  {
-                    id: 'js-debounce',
-                    title: 'Debounce Function',
-                    type: 'coding',
-                    technology: 'javascript',
-                    access: 'free',
-                    difficulty: 'intermediate',
-                    tags: ['async'],
-                    importance: 4,
-                    companies: ['google'],
-                    description: 'Debounce a function.',
-                    tech: 'javascript',
-                  },
-                  {
-                    id: 'react-debounced-search',
-                    title: 'React Debounced Search with Fake API',
-                    type: 'coding',
-                    technology: 'react',
-                    access: 'premium',
-                    difficulty: 'intermediate',
-                    tags: ['react', 'debounce'],
-                    importance: 5,
-                    companies: [],
-                    description: 'Build debounced search.',
-                    tech: 'react',
-                  },
-                  {
-                    id: 'angular-debounced-search',
-                    title: 'Angular Debounced Search with Fake API (RxJS)',
-                    type: 'coding',
-                    technology: 'angular',
-                    access: 'premium',
-                    difficulty: 'intermediate',
-                    tags: ['angular', 'debounce'],
-                    importance: 5,
-                    companies: [],
-                    description: 'Build debounced search.',
-                    tech: 'angular',
-                  },
-                  {
-                    id: 'vue-debounced-search',
-                    title: 'Vue Debounced Search with Fake API',
-                    type: 'coding',
-                    technology: 'vue',
-                    access: 'premium',
-                    difficulty: 'intermediate',
-                    tags: ['vue', 'debounce'],
-                    importance: 5,
-                    companies: [],
-                    description: 'Build debounced search.',
-                    tech: 'vue',
-                  },
-                ]);
-              }
-
-              return of([
-                {
-                  id: 'js-event-loop',
-                  title: 'Explain the JavaScript Event Loop',
-                  type: 'trivia',
-                  technology: 'javascript',
-                  access: 'free',
-                  difficulty: 'hard',
-                  tags: ['event-loop'],
-                  importance: 5,
-                  companies: [],
-                  description: 'Explain event loop ordering.',
-                  tech: 'javascript',
-                },
-              ]);
+            provide: PracticeAssetResolverService,
+            useValue: {
+                getVersion: () => of('bank-v1'),
+                getAssetUrls: () => ({
+                    primary: 'assets/questions/collections/frontend-essential-60.json',
+                    fallback: 'assets/questions/collections/frontend-essential-60.json',
+                }),
             },
-            loadSystemDesign: () =>
-              of([
-                {
-                  id: 'notification-toast-system',
-                  title: 'Design a Toast Notification System',
-                  description: 'Design a toast API.',
-                  access: 'free',
-                  difficulty: 'intermediate',
-                  tags: ['toast'],
-                  companies: ['google'],
-                },
-              ]),
-          },
         },
         {
-          provide: ASSET_READER,
-          useValue: {
-            readJson: () => of(null),
-          },
+            provide: QuestionService,
+            useValue: {
+                loadAllQuestionSummaries: (kind: 'coding' | 'trivia') => {
+                    if (kind === 'coding') {
+                        return of([
+                            {
+                                id: 'js-debounce',
+                                title: 'Debounce Function',
+                                type: 'coding',
+                                technology: 'javascript',
+                                access: 'free',
+                                difficulty: 'intermediate',
+                                tags: ['async'],
+                                importance: 4,
+                                companies: ['google'],
+                                description: 'Debounce a function.',
+                                tech: 'javascript',
+                            },
+                            {
+                                id: 'react-debounced-search',
+                                title: 'React Debounced Search with Fake API',
+                                type: 'coding',
+                                technology: 'react',
+                                access: 'premium',
+                                difficulty: 'intermediate',
+                                tags: ['react', 'debounce'],
+                                importance: 5,
+                                companies: [],
+                                description: 'Build debounced search.',
+                                tech: 'react',
+                            },
+                            {
+                                id: 'angular-debounced-search',
+                                title: 'Angular Debounced Search with Fake API (RxJS)',
+                                type: 'coding',
+                                technology: 'angular',
+                                access: 'premium',
+                                difficulty: 'intermediate',
+                                tags: ['angular', 'debounce'],
+                                importance: 5,
+                                companies: [],
+                                description: 'Build debounced search.',
+                                tech: 'angular',
+                            },
+                            {
+                                id: 'vue-debounced-search',
+                                title: 'Vue Debounced Search with Fake API',
+                                type: 'coding',
+                                technology: 'vue',
+                                access: 'premium',
+                                difficulty: 'intermediate',
+                                tags: ['vue', 'debounce'],
+                                importance: 5,
+                                companies: [],
+                                description: 'Build debounced search.',
+                                tech: 'vue',
+                            },
+                        ]);
+                    }
+                    return of([
+                        {
+                            id: 'js-event-loop',
+                            title: 'Explain the JavaScript Event Loop',
+                            type: 'trivia',
+                            technology: 'javascript',
+                            access: 'free',
+                            difficulty: 'hard',
+                            tags: ['event-loop'],
+                            importance: 5,
+                            companies: [],
+                            description: 'Explain event loop ordering.',
+                            tech: 'javascript',
+                        },
+                    ]);
+                },
+                loadSystemDesign: () => of([
+                    {
+                        id: 'notification-toast-system',
+                        title: 'Design a Toast Notification System',
+                        description: 'Design a toast API.',
+                        access: 'free',
+                        difficulty: 'intermediate',
+                        tags: ['toast'],
+                        companies: ['google'],
+                    },
+                ]),
+            },
         },
-      ],
-    });
+        {
+            provide: ASSET_READER,
+            useValue: {
+                readJson: () => of(null),
+            },
+        },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
+    ]
+});
 
     service = TestBed.inject(EssentialQuestionsService);
     httpMock = TestBed.inject(HttpTestingController);

@@ -6,8 +6,6 @@ export class AppUiStylesService {
   private readonly document = inject(DOCUMENT);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly coreStylesheets = [
-    '/assets/vendor/primeng/resources/themes/lara-dark-amber/theme.css',
-    '/assets/vendor/primeng/resources/primeng.min.css',
     '/assets/vendor/primeicons/primeicons.css',
   ];
   private readonly iconFontStylesheets = [

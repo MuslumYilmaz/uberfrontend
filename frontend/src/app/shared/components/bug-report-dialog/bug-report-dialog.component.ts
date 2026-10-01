@@ -3,7 +3,7 @@ import { Component, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
-import { InputTextareaModule } from 'primeng/inputtextarea';
+import { TextareaModule } from 'primeng/textarea';
 import { BugReportService } from '../../../core/services/bug-report.service';
 import {
   TurnstileChallengeComponent,
@@ -17,7 +17,7 @@ import {
     CommonModule,
     DialogModule,
     FormsModule,
-    InputTextareaModule,
+    TextareaModule,
     ButtonModule,
     TurnstileChallengeComponent,
   ],

@@ -1,10 +1,11 @@
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ApplicationRef } from '@angular/core';
 import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { firstValueFrom } from 'rxjs';
 import { AuthService, User } from './auth.service';
 import { AuthSessionAuthorityService } from './auth-session-authority.service';
 import { InterviewRecoveryStore } from './interview-recovery.store';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -34,9 +35,9 @@ describe('AuthService', () => {
     sessionStorage.clear();
 
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [AuthService, AuthSessionAuthorityService],
-    });
+    imports: [],
+    providers: [AuthService, AuthSessionAuthorityService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+});
 
     service = TestBed.inject(AuthService);
     httpMock = TestBed.inject(HttpTestingController);

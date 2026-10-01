@@ -94,7 +94,7 @@ test.describe('homepage network guardrails', () => {
     await page.goto('/pricing', { waitUntil: 'domcontentloaded' });
     await page.waitForTimeout(1500);
 
-    expect(requests.some((url) => url.includes('/assets/vendor/primeng/resources/themes/lara-dark-amber/theme.css'))).toBeTruthy();
+    expect(requests.some((url) => url.includes('/assets/vendor/primeng/'))).toBeFalsy();
     expect(requests.some((url) => url.includes('/assets/vendor/primeicons/primeicons.css'))).toBeTruthy();
   });
 

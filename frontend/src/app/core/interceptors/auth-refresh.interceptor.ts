@@ -1,10 +1,4 @@
-import {
-  HttpBackend,
-  HttpClient,
-  HttpErrorResponse,
-  HttpHeaders,
-  HttpInterceptorFn,
-} from '@angular/common/http';
+import { HttpBackend, HttpClient, HttpErrorResponse, HttpHeaders, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError, finalize, map, shareReplay, switchMap, tap } from 'rxjs/operators';

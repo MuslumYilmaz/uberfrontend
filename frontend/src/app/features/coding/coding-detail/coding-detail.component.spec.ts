@@ -1,5 +1,5 @@
 import { TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { PLATFORM_ID, signal } from '@angular/core';
 import { RouterTestingModule } from '@angular/router/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
@@ -20,6 +20,7 @@ import { UserProgressService } from '../../../core/services/user-progress.servic
 import { MonacoEditorComponent } from '../../../monaco-editor.component';
 import { CodingDetailComponent } from './coding-detail.component';
 import { PUBLIC_QUESTION_NAVIGATION } from '../../../generated/public-question-navigation';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('CodingDetailComponent', () => {
   let questionService: jasmine.SpyObj<QuestionService>;
@@ -140,41 +141,42 @@ describe('CodingDetailComponent', () => {
     pressureProgress.hasPendingCompletion.and.returnValue(false);
 
     await TestBed.configureTestingModule({
-      imports: [
-        CodingDetailComponent,
+    imports: [CodingDetailComponent,
         RouterTestingModule,
-        HttpClientTestingModule,
-        NoopAnimationsModule,
-      ],
-      providers: [
+        NoopAnimationsModule],
+    providers: [
         { provide: QuestionService, useValue: questionService },
         { provide: DailyService, useValue: dailyService },
         { provide: ActivityService, useValue: activity },
         { provide: SeoService, useValue: seo },
         { provide: AnalyticsService, useValue: analytics },
         {
-          provide: CodeStorageService,
-          useValue: {
-            migrateAllJsToIndexedDbOnce: () => Promise.resolve(),
-            getJsAsync: () => Promise.resolve(null),
-            clearJsAsync: () => Promise.resolve(),
-            clearFrameworkAsync: () => Promise.resolve(),
-            clearWebAsync: () => Promise.resolve(),
-            getWebDraftSnapshotAsync: () => Promise.resolve(null),
-            cloneWebBundleAsync: () => Promise.resolve(false),
-            initWebAsync: (_key: string, starters: { html: string; css: string }) =>
-              Promise.resolve({ html: starters.html, css: starters.css, restored: false }),
-            saveWebAsync: () => Promise.resolve(),
-            resetWebBothAsync: () => Promise.resolve(),
-          },
+            provide: CodeStorageService,
+            useValue: {
+                migrateAllJsToIndexedDbOnce: () => Promise.resolve(),
+                getJsAsync: () => Promise.resolve(null),
+                clearJsAsync: () => Promise.resolve(),
+                clearFrameworkAsync: () => Promise.resolve(),
+                clearWebAsync: () => Promise.resolve(),
+                getWebDraftSnapshotAsync: () => Promise.resolve(null),
+                cloneWebBundleAsync: () => Promise.resolve(false),
+                initWebAsync: (_key: string, starters: {
+                    html: string;
+                    css: string;
+                }) => Promise.resolve({ html: starters.html, css: starters.css, restored: false }),
+                saveWebAsync: () => Promise.resolve(),
+                resetWebBothAsync: () => Promise.resolve(),
+            },
         },
         { provide: UserProgressService, useValue: progress },
         { provide: AuthService, useValue: auth },
         { provide: BugReportService, useValue: bugReport },
         { provide: PressureModeService, useValue: pressureModes },
         { provide: PressureModeProgressService, useValue: pressureProgress },
-      ],
-    })
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
+    ]
+})
       // Keep the parent in browser mode without loading Monaco's shared AMD globals.
       .overrideComponent(MonacoEditorComponent, {
         add: { providers: [{ provide: PLATFORM_ID, useValue: 'server' }] },
