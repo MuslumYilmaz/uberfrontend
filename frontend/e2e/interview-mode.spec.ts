@@ -1316,8 +1316,24 @@ test('clears passing evidence after an edited draft is saved and reloaded, then 
   await page.goto(`/interview/${session.id}`);
   await expect(page.getByText('1/1 checks passed')).toBeVisible();
   const editor = page.getByRole('textbox', { name: 'Editor content' });
-  await editor.fill('export default function validateUsername() { return false; }');
+  const editedCode = 'export default function validateUsername() { return false; }';
+  await expect(page.locator('.editor-shell .monaco-editor .view-lines')).toBeVisible();
+  // Monaco's input textarea is intentionally hidden in Firefox. Send the
+  // replacement through its keyboard input so the model receives the edit.
+  await page.locator('.editor-shell .monaco-editor .view-line').first().click();
+  await editor.focus();
+  await expect(editor).toBeFocused();
+  // Monaco uses the emulated user agent for keybindings, while Playwright's
+  // ControlOrMeta uses the host OS (e.g. Windows Firefox emulated on macOS).
+  const selectAll = await page.evaluate(() => (
+    /Macintosh|iPad|iPhone/.test(navigator.userAgent) ? 'Meta+A' : 'Control+A'
+  ));
+  await editor.press(selectAll);
+  await page.keyboard.insertText(editedCode);
   await expect.poll(() => api.draftRequests.length).toBe(1);
+  expect(api.draftRequests[0].body['files']).toEqual([
+    expect.objectContaining({ content: editedCode }),
+  ]);
   await expect(page.getByText('Draft saved', { exact: true })).toBeVisible();
   await page.reload();
   await expect(page.getByText(/Run checks for the current draft\./)).toBeVisible();
@@ -1738,9 +1754,10 @@ for (const runner of ['javascript', 'framework'] as const) {
       await page.keyboard.press('ArrowUp');
       await expect.poll(async () => (await top.boundingBox())!.height).toBeLessThan(before - 20);
       await page.keyboard.press('Home');
-      await expect.poll(async () => (await top.boundingBox())!.height).toBe(runner === 'javascript' ? 240 : 320);
+      // Browser layout engines can return fractional values for integer CSS pixels.
+      await expect.poll(async () => (await top.boundingBox())!.height).toBeCloseTo(runner === 'javascript' ? 240 : 320, 1);
       await page.keyboard.press('End');
-      await expect.poll(async () => (await page.locator('.split-pane__bottom').boundingBox())!.height).toBe(160);
+      await expect.poll(async () => (await page.locator('.split-pane__bottom').boundingBox())!.height).toBeCloseTo(160, 1);
       const handle = (await separator.boundingBox())!;
       const maxHeight = (await top.boundingBox())!.height;
       if (runner === 'javascript' && width === 1440) {

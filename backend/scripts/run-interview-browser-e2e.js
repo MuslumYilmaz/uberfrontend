@@ -18,8 +18,8 @@ const { MongoMemoryReplSet } = require('mongodb-memory-server');
 const REPO_ROOT = path.resolve(__dirname, '../..');
 const FRONTEND_ROOT = path.join(REPO_ROOT, 'frontend');
 const DB_NAME = 'interview_browser_e2e';
-const API_PORT = 3001;
-const WEB_PORT = 4237;
+const API_PORT = Number(process.env.E2E_INTERVIEW_API_PORT || 3001);
+const WEB_PORT = Number(process.env.E2E_INTERVIEW_WEB_PORT || 4237);
 const WEB_ORIGIN = `http://127.0.0.1:${WEB_PORT}`;
 const API_ORIGIN = `http://127.0.0.1:${API_PORT}`;
 const JWT_SECRET = 'interview_browser_e2e_jwt_secret_48_chars_minimum';
@@ -250,6 +250,10 @@ async function cleanup() {
 
 async function main() {
   try {
+    for (const [name, port] of [['API', API_PORT], ['web', WEB_PORT]]) {
+      assert(Number.isInteger(port) && port > 0 && port <= 65535, `Invalid ${name} port: ${port}`);
+    }
+    assert(API_PORT !== WEB_PORT, 'Interview API and web ports must differ');
     mongoServer = await MongoMemoryReplSet.create({
       replSet: { count: 1, storageEngine: 'wiredTiger' },
     });
