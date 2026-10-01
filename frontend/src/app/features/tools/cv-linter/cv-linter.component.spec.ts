@@ -1,4 +1,4 @@
-import { DOCUMENT } from '@angular/common';
+import { DOCUMENT } from '@angular/core';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { fakeAsync, flush, TestBed, tick } from '@angular/core/testing';
 import { CvAnalyzeResponse, CvIssue } from '../../../core/models/cv-linter.model';

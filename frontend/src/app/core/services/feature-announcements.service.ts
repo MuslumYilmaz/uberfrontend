@@ -1,5 +1,5 @@
-import { DOCUMENT } from '@angular/common';
-import { DestroyRef, Injectable, InjectionToken, NgZone, afterNextRender, inject, signal } from '@angular/core';
+
+import { DestroyRef, Injectable, InjectionToken, NgZone, afterNextRender, inject, signal, DOCUMENT } from '@angular/core';
 import {
   ANNOUNCEMENT_DURATION_MS,
   FEATURE_ANNOUNCEMENTS,

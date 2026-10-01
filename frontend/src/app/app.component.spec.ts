@@ -1,10 +1,10 @@
 import { DeferBlockBehavior, DeferBlockState, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Router } from '@angular/router';
-import { Component } from '@angular/core';
+import { Component, DOCUMENT } from '@angular/core';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { DOCUMENT } from '@angular/common';
+
 import { AppComponent } from './app.component';
 import { BugReportService } from './core/services/bug-report.service';
 import { AuthService, User } from './core/services/auth.service';

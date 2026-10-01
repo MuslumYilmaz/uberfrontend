@@ -1,5 +1,5 @@
-import { DOCUMENT } from '@angular/common';
-import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+
+import { Component, DestroyRef, OnInit, inject, DOCUMENT } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TestBed } from '@angular/core/testing';
 import { Meta, Title } from '@angular/platform-browser';

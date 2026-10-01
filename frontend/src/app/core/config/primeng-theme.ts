@@ -1,18 +1,18 @@
-import { definePreset } from '@primeng/themes';
-import LaraBase from '@primeng/themes/lara/base';
-import button from '@primeng/themes/lara/button';
-import card from '@primeng/themes/lara/card';
-import checkbox from '@primeng/themes/lara/checkbox';
-import chip from '@primeng/themes/lara/chip';
-import dialog from '@primeng/themes/lara/dialog';
-import iconfield from '@primeng/themes/lara/iconfield';
-import inputtext from '@primeng/themes/lara/inputtext';
-import multiselect from '@primeng/themes/lara/multiselect';
-import progressspinner from '@primeng/themes/lara/progressspinner';
-import select from '@primeng/themes/lara/select';
-import slider from '@primeng/themes/lara/slider';
-import textarea from '@primeng/themes/lara/textarea';
-import tooltip from '@primeng/themes/lara/tooltip';
+import { definePreset } from '@primeuix/themes';
+import LaraBase from '@primeuix/themes/lara/base';
+import button from '@primeuix/themes/lara/button';
+import card from '@primeuix/themes/lara/card';
+import checkbox from '@primeuix/themes/lara/checkbox';
+import chip from '@primeuix/themes/lara/chip';
+import dialog from '@primeuix/themes/lara/dialog';
+import iconfield from '@primeuix/themes/lara/iconfield';
+import inputtext from '@primeuix/themes/lara/inputtext';
+import multiselect from '@primeuix/themes/lara/multiselect';
+import progressspinner from '@primeuix/themes/lara/progressspinner';
+import select from '@primeuix/themes/lara/select';
+import slider from '@primeuix/themes/lara/slider';
+import textarea from '@primeuix/themes/lara/textarea';
+import tooltip from '@primeuix/themes/lara/tooltip';
 
 // Import only the Lara components used by the app, including nested controls.
 const Lara = { ...LaraBase, components: { button, card, checkbox, chip, dialog, iconfield, inputtext, multiselect, progressspinner, select, slider, textarea, tooltip } };

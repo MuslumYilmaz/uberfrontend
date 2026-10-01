@@ -424,12 +424,14 @@ type ProfileShelfBadge = DashboardAchievement & {
       [resizable]="false"
       header="Change password"
       styleClass="profile-password-dialog"
+      (onShow)="currentPasswordInput.focus()"
       (onHide)="resetChangePassword()"
     >
       <div class="password-form" data-testid="profile-change-password-form">
         <label>
           Current password
           <input
+            #currentPasswordInput
             type="password"
             autocomplete="current-password"
             data-testid="profile-change-password-current"

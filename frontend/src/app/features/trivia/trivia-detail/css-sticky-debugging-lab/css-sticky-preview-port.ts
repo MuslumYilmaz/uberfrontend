@@ -1,5 +1,5 @@
-import { DOCUMENT } from '@angular/common';
-import { InjectionToken, Provider, inject } from '@angular/core';
+
+import { InjectionToken, Provider, inject, DOCUMENT } from '@angular/core';
 import { getCssStickyCase } from './css-sticky-debugging-lab.content';
 import type {
   CssStickyCaseId,

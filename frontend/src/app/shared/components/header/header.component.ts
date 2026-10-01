@@ -1,5 +1,5 @@
-import { CommonModule, DOCUMENT } from '@angular/common';
-import { Component, computed, ElementRef, HostListener, inject, OnInit, signal, ViewChild } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, computed, ElementRef, HostListener, inject, OnInit, signal, ViewChild, DOCUMENT } from '@angular/core';
 import { NavigationEnd, Params, Router, RouterModule } from '@angular/router';
 import { filter, startWith } from 'rxjs';
 import { defaultPrefs, Tech } from '../../../core/models/user.model';

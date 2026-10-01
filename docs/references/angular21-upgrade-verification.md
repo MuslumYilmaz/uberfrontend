@@ -56,3 +56,10 @@ the corresponding checks finish.
 - Official standalone-default migration applied; no signals or template control-flow conversion. Optional migrations were not applied.
 - Production build passed with 615 prerender routes. The same 116 affected unit tests passed. Angular's revised budget units also expose an existing trivia CSS warning; budget values remain unchanged.
 - Added `.nvmrc` (22.23.0), matching frontend engine requirement and CI setup. Only the immutable Angular 17 visual-reference job intentionally runs Node 20.19.6.
+
+## Angular 20 checkpoint
+
+- Angular 20.3.33 / CLI and SSR 20.3.37 / CDK 20.2.14 / PrimeNG 20.4.0; theme imports moved to `@primeuix/themes` 2.0.3.
+- Official DOCUMENT, server-rendering, TypeScript module-resolution, and CLI configuration migrations applied. Three test-only DOCUMENT imports omitted by the migration were repaired explicitly.
+- Production build passed and retained all 615 prerender routes. Closest unit suite including HTML sanitization: 117/117 passed.
+- Profile password dialog explicitly restores initial focus to the current-password input, preserving the existing keyboard contract despite PrimeNG's changed focus order.

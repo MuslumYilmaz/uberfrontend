@@ -1,4 +1,4 @@
-import { CommonModule, DOCUMENT, isPlatformBrowser } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
@@ -12,6 +12,7 @@ import {
   computed,
   inject,
   signal,
+  DOCUMENT
 } from '@angular/core';
 import { AnalyticsService } from '../../../../core/services/analytics.service';
 import { FaButtonComponent } from '../../../../shared/ui/button/fa-button.component';

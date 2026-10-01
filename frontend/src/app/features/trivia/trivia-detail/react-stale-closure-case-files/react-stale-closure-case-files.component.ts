@@ -1,10 +1,11 @@
-import { CommonModule, DOCUMENT, isPlatformBrowser } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
   PLATFORM_ID,
   inject,
   signal,
+  DOCUMENT
 } from '@angular/core';
 import { PrismHighlightDirective } from '../../../../core/directives/prism-highlight.directive';
 import { AnalyticsService } from '../../../../core/services/analytics.service';
