@@ -12,9 +12,8 @@ import { PUBLIC_EDITORIAL_FACTS } from '../../../core/content/public-editorial-f
 import { GuideShellComponent } from '../../../shared/components/guide/guide-shell.component';
 
 @Component({
-  standalone: true,
-  imports: [GuideShellComponent, RouterModule],
-  styles: [`
+    imports: [GuideShellComponent, RouterModule],
+    styles: [`
     a {
       color: #7cc2ff;
       font-weight: 600;
@@ -221,7 +220,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       }
     }
   `],
-  template: `
+    template: `
   <fa-guide-shell
     title="Frontend System Design Interview Preparation Guide"
     subtitle="Build a focused preparation plan for frontend architecture interviews, from question formats and core signals to timed mocks and readiness checks."
@@ -613,7 +612,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       the highest-risk trade-offs without relying on a memorized solution.
     </p>
   </fa-guide-shell>
-  `,
+  `
 })
 export class FeSystemDesignFastFrameworkArticle {
   readonly editorialAuthor = PUBLIC_EDITORIAL_FACTS.author.name;

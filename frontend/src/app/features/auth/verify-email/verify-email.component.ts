@@ -8,11 +8,10 @@ import { FaButtonComponent } from '../../../shared/ui/button/fa-button.component
 const TOKEN_STORAGE_KEY = 'fa:email-verification-token';
 
 @Component({
-  selector: 'app-verify-email',
-  standalone: true,
-  imports: [CommonModule, RouterModule, FaButtonComponent],
-  styleUrls: ['./verify-email.component.css'],
-  template: `
+    selector: 'app-verify-email',
+    imports: [CommonModule, RouterModule, FaButtonComponent],
+    styleUrls: ['./verify-email.component.css'],
+    template: `
     <main class="verify-shell" data-testid="verify-email-page">
       <section class="verify-card" aria-live="polite">
         <h1>{{ success() ? 'Email verified' : 'Verify your email' }}</h1>
@@ -30,7 +29,7 @@ const TOKEN_STORAGE_KEY = 'fa:email-verification-token';
         </div>
       </section>
     </main>
-  `,
+  `
 })
 export class VerifyEmailComponent implements OnInit {
   loading = signal(true);

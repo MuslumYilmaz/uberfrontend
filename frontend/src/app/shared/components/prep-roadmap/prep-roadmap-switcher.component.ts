@@ -11,11 +11,10 @@ import {
 import { FaGlyphComponent } from '../../ui/icon/fa-glyph.component';
 
 @Component({
-  selector: 'app-prep-roadmap-switcher',
-  standalone: true,
-  imports: [CommonModule, RouterModule, FaGlyphComponent],
-  templateUrl: './prep-roadmap-switcher.component.html',
-  styleUrls: ['./prep-roadmap-switcher.component.css'],
+    selector: 'app-prep-roadmap-switcher',
+    imports: [CommonModule, RouterModule, FaGlyphComponent],
+    templateUrl: './prep-roadmap-switcher.component.html',
+    styleUrls: ['./prep-roadmap-switcher.component.css']
 })
 export class PrepRoadmapSwitcherComponent {
   private readonly compactInput = signal(false);

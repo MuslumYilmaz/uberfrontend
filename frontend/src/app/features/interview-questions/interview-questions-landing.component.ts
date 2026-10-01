@@ -5419,11 +5419,10 @@ const DIFFICULTY_RANK: Record<string, number> = {
 };
 
 @Component({
-  standalone: true,
-  selector: 'app-interview-questions-landing',
-  imports: [CommonModule, RouterModule, PrepRoadmapComponent],
-  templateUrl: './interview-questions-landing.component.html',
-  styleUrls: ['./interview-questions-landing.component.css'],
+    selector: 'app-interview-questions-landing',
+    imports: [CommonModule, RouterModule, PrepRoadmapComponent],
+    templateUrl: './interview-questions-landing.component.html',
+    styleUrls: ['./interview-questions-landing.component.css']
 })
 export class InterviewQuestionsLandingComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);

@@ -19,12 +19,11 @@ import { FaButtonComponent } from '../../ui/button/fa-button.component';
 type StickySurface = 'showcase' | 'pricing';
 
 @Component({
-  selector: 'app-conversion-sticky-cta',
-  standalone: true,
-  imports: [CommonModule, RouterModule, FaButtonComponent],
-  templateUrl: './conversion-sticky-cta.component.html',
-  styleUrls: ['./conversion-sticky-cta.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-conversion-sticky-cta',
+    imports: [CommonModule, RouterModule, FaButtonComponent],
+    templateUrl: './conversion-sticky-cta.component.html',
+    styleUrls: ['./conversion-sticky-cta.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ConversionStickyCtaComponent implements AfterViewInit, OnDestroy {
   private static readonly DISMISSED_KEY = 'fa:conversion-sticky:dismissed:v1';

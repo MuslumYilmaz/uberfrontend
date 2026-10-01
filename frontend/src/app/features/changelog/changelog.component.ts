@@ -5,10 +5,9 @@ import { PUBLIC_CHANGELOG_ENTRIES, PublicChangelogEntry } from '../../core/conte
 import { AnalyticsService } from '../../core/services/analytics.service';
 
 @Component({
-  standalone: true,
-  selector: 'app-changelog',
-  imports: [CommonModule, RouterModule],
-  template: `
+    selector: 'app-changelog',
+    imports: [CommonModule, RouterModule],
+    template: `
     <section class="changelog-page">
       <div class="changelog-wrap">
         <header class="changelog-hero">
@@ -96,7 +95,7 @@ import { AnalyticsService } from '../../core/services/analytics.service';
       </div>
     </section>
   `,
-  styles: [`
+    styles: [`
     .changelog-page{
       min-height:100vh;
       padding:44px 18px 68px;
@@ -351,7 +350,7 @@ import { AnalyticsService } from '../../core/services/analytics.service';
       .btn{width:100%}
       .entry-cta{width:100%;justify-content:center}
     }
-  `],
+  `]
 })
 export class ChangelogComponent implements OnInit {
   entries = PUBLIC_CHANGELOG_ENTRIES;

@@ -3,10 +3,9 @@ import { Component, EventEmitter, Input, Output, computed, signal } from '@angul
 import { PrismHighlightDirective } from '../../../core/directives/prism-highlight.directive';
 
 @Component({
-  selector: 'app-code-snapshot',
-  standalone: true,
-  imports: [CommonModule, PrismHighlightDirective],
-  template: `
+    selector: 'app-code-snapshot',
+    imports: [CommonModule, PrismHighlightDirective],
+    template: `
     <div
       class="code-snapshot"
       role="button"
@@ -32,7 +31,7 @@ import { PrismHighlightDirective } from '../../../core/directives/prism-highligh
       </div>
     </div>
   `,
-  styles: [`
+    styles: [`
     :host {
       display: block;
       height: 100%;
@@ -130,7 +129,7 @@ import { PrismHighlightDirective } from '../../../core/directives/prism-highligh
       font-size: inherit;
       line-height: inherit;
     }
-  `],
+  `]
 })
 export class CodeSnapshotComponent {
   @Input() code = '';

@@ -4,9 +4,8 @@ import { RouterModule } from '@angular/router';
 import { GuideShellComponent } from '../../../shared/components/guide/guide-shell.component';
 
 @Component({
-  standalone: true,
-  imports: [CommonModule, RouterModule, GuideShellComponent],
-  template: `
+    imports: [CommonModule, RouterModule, GuideShellComponent],
+    template: `
     <fa-guide-shell
       title="Frontend System Design Interview Checklist: Final Review"
       [minutes]="10"
@@ -193,7 +192,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         <li><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'radio-framework']">frontend system design answer template</a>: rebuild the full answer flow.</li>
       </ul>
     </fa-guide-shell>
-  `,
+  `
 })
 export class SystemDesignChecklistArticle {
   @Input() prev: any[] | null = null;

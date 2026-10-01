@@ -13,11 +13,10 @@ type ViewMode = 'tech' | 'formats';
 type ListSource = 'tech' | 'company' | 'global-coding';
 
 @Component({
-  selector: 'app-coding-tech-kind-tabs',
-  standalone: true,
-  imports: [CommonModule, RouterModule, FaChipComponent],
-  templateUrl: './coding-tech-kind-tabs.component.html',
-  styleUrls: ['./coding-tech-kind-tabs.component.css'],
+    selector: 'app-coding-tech-kind-tabs',
+    imports: [CommonModule, RouterModule, FaChipComponent],
+    templateUrl: './coding-tech-kind-tabs.component.html',
+    styleUrls: ['./coding-tech-kind-tabs.component.css']
 })
 export class CodingTechKindTabsComponent {
   @Input() source!: ListSource;

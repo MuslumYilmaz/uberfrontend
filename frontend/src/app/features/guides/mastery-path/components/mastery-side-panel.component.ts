@@ -3,10 +3,9 @@ import { Component, Input } from '@angular/core';
 import { MasteryModule } from '../../../../shared/mastery/mastery-path.model';
 
 @Component({
-  selector: 'app-mastery-side-panel',
-  standalone: true,
-  imports: [CommonModule],
-  styles: [`
+    selector: 'app-mastery-side-panel',
+    imports: [CommonModule],
+    styles: [`
     :host {
       display: grid;
       gap: 12px;
@@ -81,7 +80,7 @@ import { MasteryModule } from '../../../../shared/mastery/mastery-path.model';
       color: color-mix(in srgb, var(--uf-text-secondary) 86%, transparent);
     }
   `],
-  template: `
+    template: `
     <section class="panel" *ngIf="module as current; else emptyState">
       <h3>{{ current.title }}</h3>
       <div class="meta">{{ moduleCompletedCount }}/{{ moduleTotalCount }} complete ({{ moduleCompletionPercent }}%)</div>
@@ -124,7 +123,7 @@ import { MasteryModule } from '../../../../shared/mastery/mastery-path.model';
         <div class="meta">Pick a module in the list to see goals, mistakes, and unlock rules.</div>
       </section>
     </ng-template>
-  `,
+  `
 })
 export class MasterySidePanelComponent {
   @Input() module: MasteryModule | null = null;

@@ -77,23 +77,22 @@ type LocalMcqTiming = {
 };
 
 @Component({
-  selector: 'app-interview-session',
-  standalone: true,
-  imports: [
-    CommonModule,
-    RouterLink,
-    MonacoEditorComponent,
-    CodingFrameworkPanelComponent,
-    FaButtonComponent,
-    FaCardComponent,
-    InlineCodeComponent,
-    SplitPaneComponent,
-    InterviewDeadlineTimerComponent,
-    InterviewSystemDesignRoundComponent,
-  ],
-  templateUrl: './interview-session.component.html',
-  styleUrls: ['./interview-session.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-interview-session',
+    imports: [
+        CommonModule,
+        RouterLink,
+        MonacoEditorComponent,
+        CodingFrameworkPanelComponent,
+        FaButtonComponent,
+        FaCardComponent,
+        InlineCodeComponent,
+        SplitPaneComponent,
+        InterviewDeadlineTimerComponent,
+        InterviewSystemDesignRoundComponent,
+    ],
+    templateUrl: './interview-session.component.html',
+    styleUrls: ['./interview-session.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class InterviewSessionComponent implements OnInit, OnDestroy {
   private readonly interviews = inject(InterviewService);

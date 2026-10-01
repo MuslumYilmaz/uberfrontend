@@ -48,11 +48,10 @@ type StudyPrimaryAction = {
 };
 
 @Component({
-  selector: 'app-header',
-  standalone: true,
-  imports: [CommonModule, RouterModule],
-  styleUrls: ['./header.component.css'],
-  templateUrl: './header.component.html',
+    selector: 'app-header',
+    imports: [CommonModule, RouterModule],
+    styleUrls: ['./header.component.css'],
+    templateUrl: './header.component.html'
 })
 export class HeaderComponent implements OnInit {
   @ViewChild('desktopStudyTrigger') desktopStudyTrigger?: ElementRef<HTMLButtonElement>;

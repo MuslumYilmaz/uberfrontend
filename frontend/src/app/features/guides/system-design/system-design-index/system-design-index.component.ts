@@ -56,10 +56,9 @@ type FaqItem = {
 };
 
 @Component({
-  standalone: true,
-  selector: 'fa-system-design-index',
-  imports: [CommonModule, RouterModule, OfflineBannerComponent],
-  styles: [`
+    selector: 'fa-system-design-index',
+    imports: [CommonModule, RouterModule, OfflineBannerComponent],
+    styles: [`
     :host {
       display: block;
       color: var(--uf-text-primary);
@@ -478,7 +477,7 @@ type FaqItem = {
       }
     }
   `],
-  template: `
+    template: `
     <div class="wrap" data-testid="system-blueprint-hub">
       <h1 class="hero-title">Frontend System Design Interview Blueprint</h1>
       <p class="hero-sub">

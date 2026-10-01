@@ -31,11 +31,10 @@ export interface TestResult {
 }
 
 @Component({
-  selector: 'app-console-logger',
-  standalone: true,
-  imports: [CommonModule],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  styles: [`
+    selector: 'app-console-logger',
+    imports: [CommonModule],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    styles: [`
     :host { display:block; height:100%; min-height:200px; }
     .wrap { display:flex; flex-direction:column; height:100%; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
     .head { display:flex; align-items:center; gap:.5rem; padding:.5rem; border-bottom:1px solid rgba(255,255,255,.15); }
@@ -54,7 +53,7 @@ export interface TestResult {
     .l-error { color:#fca5a5; }
     .body { overflow-anchor: none; }
   `],
-  template: `
+    template: `
     <div class="wrap bg-black text-white">
       <div class="head">
         <div class="title">Console</div>
@@ -77,7 +76,7 @@ export interface TestResult {
         <div *ngIf="processed.length===0" class="opacity-60">No logs yet.</div>
       </div>
     </div>
-  `,
+  `
 })
 export class ConsoleLoggerComponent implements OnChanges {
   /** hard cap to prevent DOM blowups */

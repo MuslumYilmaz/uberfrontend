@@ -11,10 +11,9 @@ import {
 import { BugReportDialogComponent } from './bug-report-dialog.component';
 
 @Component({
-  selector: 'app-turnstile-challenge',
-  standalone: true,
-  imports: [CommonModule],
-  template: '',
+    selector: 'app-turnstile-challenge',
+    imports: [CommonModule],
+    template: ''
 })
 class TurnstileChallengeStubComponent {
   @Input({ required: true }) action!: 'contact' | 'bug_report';

@@ -11,18 +11,17 @@ import {
 } from '../turnstile-challenge/turnstile-challenge.component';
 
 @Component({
-  selector: 'app-bug-report-dialog',
-  standalone: true,
-  imports: [
-    CommonModule,
-    DialogModule,
-    FormsModule,
-    TextareaModule,
-    ButtonModule,
-    TurnstileChallengeComponent,
-  ],
-  templateUrl: './bug-report-dialog.component.html',
-  styleUrls: ['./bug-report-dialog.component.css'],
+    selector: 'app-bug-report-dialog',
+    imports: [
+        CommonModule,
+        DialogModule,
+        FormsModule,
+        TextareaModule,
+        ButtonModule,
+        TurnstileChallengeComponent,
+    ],
+    templateUrl: './bug-report-dialog.component.html',
+    styleUrls: ['./bug-report-dialog.component.css']
 })
 export class BugReportDialogComponent {
   @ViewChild('turnstileChallenge')

@@ -32,9 +32,8 @@ type IntentCard = {
 };
 
 @Component({
-  standalone: true,
-  imports: [CommonModule, RouterModule, OfflineBannerComponent, PrepSignalGridComponent],
-  styles: [`
+    imports: [CommonModule, RouterModule, OfflineBannerComponent, PrepSignalGridComponent],
+    styles: [`
     :host { display:block; color: var(--uf-text-primary); background: var(--uf-bg); }
     .wrap { max-width: 1120px; margin: 0 auto; padding: 24px clamp(18px, 4vw, 28px) 52px; }
     .hero { display:grid; gap: 14px; margin-bottom: 22px; }
@@ -340,7 +339,7 @@ type IntentCard = {
       .value-grid { grid-template-columns: 1fr; }
     }
   `],
-  template: `
+    template: `
     <div class="wrap fa-body">
       <header class="hero">
         <p class="eyebrow">Frontend framework interview preparation</p>
@@ -563,7 +562,7 @@ type IntentCard = {
 
       <app-offline-banner></app-offline-banner>
     </div>
-  `,
+  `
 })
 export class FrameworkPrepIndexComponent implements OnInit {
   private readonly canonicalPath = '/guides/framework-prep';

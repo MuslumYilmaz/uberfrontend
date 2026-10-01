@@ -8,11 +8,10 @@ type FaDialogStyle = {
 };
 
 @Component({
-  selector: 'fa-dialog',
-  standalone: true,
-  imports: [CommonModule, DialogModule],
-  host: { ngSkipHydration: 'true' },
-  template: `
+    selector: 'fa-dialog',
+    imports: [CommonModule, DialogModule],
+    host: { ngSkipHydration: 'true' },
+    template: `
     <p-dialog
       #dialog
       [header]="header"
@@ -54,7 +53,7 @@ type FaDialogStyle = {
       </ng-template>
     </p-dialog>
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FaDialogComponent {
   @Input({ transform: booleanAttribute }) visible = false;

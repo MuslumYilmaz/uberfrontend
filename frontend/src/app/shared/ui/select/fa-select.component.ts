@@ -5,10 +5,9 @@ import { SelectModule } from 'primeng/select';
 import { MultiSelectModule } from 'primeng/multiselect';
 
 @Component({
-  selector: 'fa-select',
-  standalone: true,
-  imports: [CommonModule, FormsModule, SelectModule, MultiSelectModule],
-  template: `
+    selector: 'fa-select',
+    imports: [CommonModule, FormsModule, SelectModule, MultiSelectModule],
+    template: `
     <ng-container *ngIf="multiple; else singleSelect">
       <p-multiSelect
         [options]="options"
@@ -50,7 +49,7 @@ import { MultiSelectModule } from 'primeng/multiselect';
       </p-select>
     </ng-template>
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FaSelectComponent {
   @Input() options: any[] = [];

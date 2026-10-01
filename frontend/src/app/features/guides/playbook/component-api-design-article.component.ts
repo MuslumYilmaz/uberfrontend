@@ -16,9 +16,8 @@ interface ApiSurfaceTradeoffExample {
 }
 
 @Component({
-  standalone: true,
-  imports: [GuideShellComponent, RouterModule],
-  styles: [`
+    imports: [GuideShellComponent, RouterModule],
+    styles: [`
     a {
       color: #7cc2ff;
       font-weight: 600;
@@ -342,7 +341,7 @@ interface ApiSurfaceTradeoffExample {
       }
     }
   `],
-  template: `
+    template: `
   <fa-guide-shell
     title="Component API Design for Frontend Interviews: Props, Events, and Trade-offs"
     subtitle="A practice-first map for designing component contracts under frontend interview time pressure."

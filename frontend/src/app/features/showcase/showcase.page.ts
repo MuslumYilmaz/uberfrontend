@@ -85,11 +85,10 @@ if (!FOUNDATIONS_TRACK) {
 const FOUNDATIONS_TRACK_METRICS = deriveTrackMetrics(FOUNDATIONS_TRACK);
 
 @Component({
-  standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, PricingPlansSectionComponent, FaqSectionComponent, ShowcaseIconComponent, CompanyLogoMarkComponent, PrepRoadmapComponent, TurnstileChallengeComponent, ConversionStickyCtaComponent],
-  selector: 'app-showcase-page',
-  templateUrl: './showcase.page.html',
-  styleUrls: ['./showcase.page.css'],
+    imports: [CommonModule, FormsModule, RouterModule, PricingPlansSectionComponent, FaqSectionComponent, ShowcaseIconComponent, CompanyLogoMarkComponent, PrepRoadmapComponent, TurnstileChallengeComponent, ConversionStickyCtaComponent],
+    selector: 'app-showcase-page',
+    templateUrl: './showcase.page.html',
+    styleUrls: ['./showcase.page.css']
 })
 
 export class ShowcasePageComponent implements OnInit, AfterViewInit, OnDestroy {

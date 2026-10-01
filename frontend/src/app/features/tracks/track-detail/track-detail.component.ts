@@ -90,20 +90,19 @@ const SECTIONED_TRACK_LAYOUTS: Readonly<Record<string, SectionedTrackLayout>> = 
 };
 
 @Component({
-  selector: 'app-track-detail',
-  standalone: true,
-  imports: [
-    CommonModule,
-    RouterModule,
-    FormsModule,
-    FaChipComponent,
-    CodingFilterPanelComponent,
-    FaCardComponent,
-    FaQuestionRowComponent,
-    FaSpinnerComponent,
-  ],
-  templateUrl: './track-detail.component.html',
-  styleUrls: ['./track-detail.component.css'],
+    selector: 'app-track-detail',
+    imports: [
+        CommonModule,
+        RouterModule,
+        FormsModule,
+        FaChipComponent,
+        CodingFilterPanelComponent,
+        FaCardComponent,
+        FaQuestionRowComponent,
+        FaSpinnerComponent,
+    ],
+    templateUrl: './track-detail.component.html',
+    styleUrls: ['./track-detail.component.css']
 })
 export class TrackDetailComponent implements OnInit, OnDestroy {
   track: TrackConfig | null = null;

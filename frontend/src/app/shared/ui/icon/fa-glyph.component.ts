@@ -31,10 +31,9 @@ type FaGlyphName =
   | 'xmark';
 
 @Component({
-  selector: 'app-fa-glyph',
-  standalone: true,
-  imports: [CommonModule],
-  template: `
+    selector: 'app-fa-glyph',
+    imports: [CommonModule],
+    template: `
     <svg
       class="fa-glyph__svg"
       [class.fa-glyph__svg--spin]="isSpinning()"
@@ -208,7 +207,7 @@ type FaGlyphName =
       </ng-container>
     </svg>
   `,
-  styles: [`
+    styles: [`
     :host {
       display: inline-flex;
       align-items: center;
@@ -230,7 +229,7 @@ type FaGlyphName =
       from { transform: rotate(0deg); }
       to { transform: rotate(360deg); }
     }
-  `],
+  `]
 })
 export class FaGlyphComponent {
   @Input() icon = '';

@@ -62,12 +62,11 @@ type DashboardLink = {
 };
 
 @Component({
-  selector: 'app-dashboard',
-  standalone: true,
-  imports: [CommonModule, RouterModule, OfflineBannerComponent, FaButtonComponent, FaCardComponent, FaDialogComponent, FaGlyphComponent],
-  templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-dashboard',
+    imports: [CommonModule, RouterModule, OfflineBannerComponent, FaButtonComponent, FaCardComponent, FaDialogComponent, FaGlyphComponent],
+    templateUrl: './dashboard.component.html',
+    styleUrls: ['./dashboard.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DashboardComponent {
   private readonly authService = inject(AuthService);

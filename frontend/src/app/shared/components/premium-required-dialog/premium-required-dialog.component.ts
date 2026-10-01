@@ -28,10 +28,9 @@ const COPY: Record<PremiumGateReason, { title: string; body: string }> = {
 };
 
 @Component({
-  selector: 'app-premium-required-dialog',
-  standalone: true,
-  imports: [CommonModule, DialogModule],
-  styles: [`
+    selector: 'app-premium-required-dialog',
+    imports: [CommonModule, DialogModule],
+    styles: [`
     :host { display: block; }
 
     :host ::ng-deep .p-dialog-mask.p-component-overlay {
@@ -176,7 +175,7 @@ const COPY: Record<PremiumGateReason, { title: string; body: string }> = {
       .premium-dialog__actions { flex-direction: column; }
     }
   `],
-  template: `
+    template: `
     <p-dialog
       [(visible)]="visible"
       [modal]="true"
@@ -220,7 +219,7 @@ const COPY: Record<PremiumGateReason, { title: string; body: string }> = {
         </div>
       </div>
     </p-dialog>
-  `,
+  `
 })
 export class PremiumRequiredDialogComponent {
   @Input() visible = false;

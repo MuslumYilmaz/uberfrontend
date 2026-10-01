@@ -44,18 +44,17 @@ export interface OutputQuestionShownEvent {
 }
 
 @Component({
-  selector: 'app-output-question-card',
-  standalone: true,
-  imports: [
-    CommonModule,
-    FaButtonComponent,
-    FaCardComponent,
-    PrismHighlightDirective,
-  ],
-  templateUrl: './output-question-card.component.html',
-  styleUrls: ['./output-question-card.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { ngSkipHydration: 'true' },
+    selector: 'app-output-question-card',
+    imports: [
+        CommonModule,
+        FaButtonComponent,
+        FaCardComponent,
+        PrismHighlightDirective,
+    ],
+    templateUrl: './output-question-card.component.html',
+    styleUrls: ['./output-question-card.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    host: { ngSkipHydration: 'true' }
 })
 export class OutputQuestionCardComponent {
   private readonly random = inject(OUTPUT_QUESTION_RANDOM);

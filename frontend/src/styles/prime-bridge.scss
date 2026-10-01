@@ -1,5 +1,22 @@
 /* PrimeNG bridge layer */
 
+/* Preserve Lara 17 overlay typography independently of the new styled-mode defaults. */
+.p-select, .p-multiselect, .p-dialog, .p-tooltip, .p-card, .p-chip {
+  font-family: var(--uf-font-control);
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+}
+
+.p-dialog .p-dialog-close-button,
+.p-dialog .p-dialog-maximize-button {
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+}
+
+.p-dialog .p-dialog-title {
+  font-weight: 700;
+}
+
 @layer components {
   /* the “filled” track */
   .p-slider .p-slider-range {

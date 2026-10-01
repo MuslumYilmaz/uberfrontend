@@ -16,10 +16,9 @@ export type AuthPromptContext =
   | 'unknown';
 
 @Component({
-  selector: 'app-login-required-dialog',
-  standalone: true,
-  imports: [CommonModule, RouterModule, FaButtonComponent, FaDialogComponent],
-  styles: [`
+    selector: 'app-login-required-dialog',
+    imports: [CommonModule, RouterModule, FaButtonComponent, FaDialogComponent],
+    styles: [`
     :host { display: block; }
 
     .auth-prompt__body {
@@ -77,7 +76,7 @@ export type AuthPromptContext =
       .auth-prompt__disclosure { grid-column: 1; }
     }
   `],
-  template: `
+    template: `
     <fa-dialog
       [visible]="visible"
       (visibleChange)="onVisibleChange($event)"
@@ -158,7 +157,7 @@ export type AuthPromptContext =
         </ng-template>
       </div>
     </fa-dialog>
-  `,
+  `
 })
 export class LoginRequiredDialogComponent implements OnChanges {
   @Input() visible = false;

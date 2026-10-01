@@ -40,11 +40,10 @@ function updatedLabel(value: string | null | undefined): string | null {
 }
 
 @Component({
-  standalone: true,
-  selector: 'app-tradeoff-detail',
-  imports: [CommonModule, RouterModule, LockedPreviewComponent, LoginRequiredDialogComponent],
-  templateUrl: './tradeoff-detail.component.html',
-  styleUrls: ['./tradeoff-detail.component.css'],
+    selector: 'app-tradeoff-detail',
+    imports: [CommonModule, RouterModule, LockedPreviewComponent, LoginRequiredDialogComponent],
+    templateUrl: './tradeoff-detail.component.html',
+    styleUrls: ['./tradeoff-detail.component.css']
 })
 export class TradeoffDetailComponent {
   private readonly route = inject(ActivatedRoute);

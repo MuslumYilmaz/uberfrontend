@@ -17,11 +17,10 @@ import { PlanId } from '../../core/utils/payments-provider.util';
 import { ConversionStickyCtaComponent } from '../../shared/components/conversion-sticky-cta/conversion-sticky-cta.component';
 
 @Component({
-  standalone: true,
-  selector: 'app-pricing',
-  imports: [CommonModule, RouterModule, PricingPlansSectionComponent, ConversionStickyCtaComponent],
-  styleUrls: ['./pricing.component.css'],
-  template: `
+    selector: 'app-pricing',
+    imports: [CommonModule, RouterModule, PricingPlansSectionComponent, ConversionStickyCtaComponent],
+    styleUrls: ['./pricing.component.css'],
+    template: `
     <section class="pricing-page">
       <app-pricing-plans-section
         variant="full"

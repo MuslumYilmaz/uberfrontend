@@ -39,18 +39,17 @@ type LabInteractionAction =
 type LabRunState = 'idle' | 'complete';
 
 @Component({
-  selector: 'app-angular-http-cancellation-lab',
-  standalone: true,
-  imports: [
-    CommonModule,
-    FaButtonComponent,
-    FaCardComponent,
-    FaChipComponent,
-    FaGlyphComponent,
-  ],
-  templateUrl: './angular-http-cancellation-lab.component.html',
-  styleUrls: ['./angular-http-cancellation-lab.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-angular-http-cancellation-lab',
+    imports: [
+        CommonModule,
+        FaButtonComponent,
+        FaCardComponent,
+        FaChipComponent,
+        FaGlyphComponent,
+    ],
+    templateUrl: './angular-http-cancellation-lab.component.html',
+    styleUrls: ['./angular-http-cancellation-lab.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AngularHttpCancellationLabComponent implements OnDestroy {
   private readonly analytics = inject(AnalyticsService);

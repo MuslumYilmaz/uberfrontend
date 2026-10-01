@@ -34,11 +34,10 @@ type ProfileShelfBadge = DashboardAchievement & {
 };
 
 @Component({
-  selector: 'app-profile',
-  standalone: true,
-  imports: [CommonModule, FormsModule, DialogModule, RouterModule, FaGlyphComponent, FaButtonComponent],
-  styleUrls: ['./profile.component.css'],
-  template: `
+    selector: 'app-profile',
+    imports: [CommonModule, FormsModule, DialogModule, RouterModule, FaGlyphComponent, FaButtonComponent],
+    styleUrls: ['./profile.component.css'],
+    template: `
     <div class="profile-layout" *ngIf="user(); else loadingTpl">
       <!-- Sidebar -->
       <aside class="profile-sidebar">

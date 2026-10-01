@@ -16,10 +16,9 @@ type PracticeItem = { tech: Tech; kind: QuestionKind; id: string };
 type PracticeSession = { items: PracticeItem[]; index: number };
 
 @Component({
-  selector: 'app-mastery-item-row',
-  standalone: true,
-  imports: [CommonModule],
-  styles: [`
+    selector: 'app-mastery-item-row',
+    imports: [CommonModule],
+    styles: [`
     :host { display:block; }
 
     .row {
@@ -156,7 +155,7 @@ type PracticeSession = { items: PracticeItem[]; index: number };
       }
     }
   `],
-  template: `
+    template: `
     <article
       class="row"
       [class.row--done]="completed"
@@ -195,7 +194,7 @@ type PracticeSession = { items: PracticeItem[]; index: number };
 
       <div class="time">{{ item.estimatedMinutes }} min</div>
     </article>
-  `,
+  `
 })
 export class MasteryItemRowComponent {
   private readonly router = inject(Router);

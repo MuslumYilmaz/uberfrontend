@@ -16,11 +16,10 @@ const COMPANY_INDEX_DESCRIPTION =
   'Practice company-style frontend coding, concept, and system design questions. Explore editorial prep sets, not verified employer question banks.';
 
 @Component({
-  standalone: true,
-  selector: 'app-company-index',
-  imports: [CommonModule, RouterModule, PrepSignalGridComponent, CompanyLogoMarkComponent],
-  templateUrl: './company-index.component.html',
-  styleUrls: ['./company-index.component.css']
+    selector: 'app-company-index',
+    imports: [CommonModule, RouterModule, PrepSignalGridComponent, CompanyLogoMarkComponent],
+    templateUrl: './company-index.component.html',
+    styleUrls: ['./company-index.component.css']
 })
 export class CompanyIndexComponent implements OnInit {
   readonly companyPracticeDisclaimer = COMPANY_PRACTICE_DISCLAIMER;

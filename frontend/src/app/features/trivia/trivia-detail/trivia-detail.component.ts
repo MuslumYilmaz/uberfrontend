@@ -596,28 +596,27 @@ function buildTagRegex(tag: string): RegExp {
 }
 
 @Component({
-  selector: 'app-trivia-detail',
-  standalone: true,
-  imports: [
-    CommonModule,
-    RouterModule,
-    CardModule,
-    ButtonModule,
-    DialogModule,
-    LoginRequiredDialogComponent,
-    FooterComponent,
-    LockedPreviewComponent,
-    PrismHighlightDirective,
-    SafeHtmlPipe,
-    FaGlyphComponent,
-    OutputQuestionCardComponent,
-    AngularHttpCancellationLabComponent,
-    JavaScriptEventLoopExperienceComponent,
-    ReactStaleClosureCaseFilesComponent,
-    CssStickyDebuggingLabComponent,
-  ],
-  templateUrl: './trivia-detail.component.html',
-  styleUrls: ['./trivia-detail.component.css'],
+    selector: 'app-trivia-detail',
+    imports: [
+        CommonModule,
+        RouterModule,
+        CardModule,
+        ButtonModule,
+        DialogModule,
+        LoginRequiredDialogComponent,
+        FooterComponent,
+        LockedPreviewComponent,
+        PrismHighlightDirective,
+        SafeHtmlPipe,
+        FaGlyphComponent,
+        OutputQuestionCardComponent,
+        AngularHttpCancellationLabComponent,
+        JavaScriptEventLoopExperienceComponent,
+        ReactStaleClosureCaseFilesComponent,
+        CssStickyDebuggingLabComponent,
+    ],
+    templateUrl: './trivia-detail.component.html',
+    styleUrls: ['./trivia-detail.component.css']
 })
 export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('sideScroll') sideScroll?: ElementRef<HTMLElement>;

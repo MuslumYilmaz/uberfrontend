@@ -3,11 +3,10 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
 @Component({
-  standalone: true,
-  selector: 'app-privacy',
-  imports: [CommonModule, RouterModule],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
+    selector: 'app-privacy',
+    imports: [CommonModule, RouterModule],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    template: `
     <article class="doc" aria-labelledby="doc-title">
       <header class="doc-header">
         <div class="doc-meta">
@@ -251,7 +250,7 @@ import { RouterModule } from '@angular/router';
       </footer>
     </article>
   `,
-  styles: [`
+    styles: [`
     :host { display: block; background: radial-gradient(circle at 16% 20%, color-mix(in srgb, var(--uf-accent) 10%, transparent), transparent 38%), var(--uf-bg); }
     /* Layout */
     .doc {

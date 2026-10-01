@@ -3,11 +3,10 @@ import { CommonModule } from '@angular/common';
 import { CompanySignal, companySignalFor } from '../../company-branding';
 
 @Component({
-  selector: 'app-company-signal',
-  standalone: true,
-  imports: [CommonModule],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
+    selector: 'app-company-signal',
+    imports: [CommonModule],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    template: `
     <span
       *ngIf="signal as item"
       class="fa-company-signal"
@@ -41,7 +40,7 @@ import { CompanySignal, companySignalFor } from '../../company-branding';
       </span>
     </span>
   `,
-  styleUrls: ['./company-signal.component.css'],
+    styleUrls: ['./company-signal.component.css']
 })
 export class CompanySignalComponent {
   @Input() companies: readonly unknown[] | null | undefined = [];

@@ -8,10 +8,9 @@ import { classifyAuthFailure } from '../../../core/utils/auth-analytics.util';
 import { sanitizeRedirectTarget } from '../../../core/utils/redirect.util';
 
 @Component({
-  standalone: true,
-  selector: 'app-oauth-callback',
-  imports: [CommonModule],
-  template: `
+    selector: 'app-oauth-callback',
+    imports: [CommonModule],
+    template: `
     <div class="min-h-screen flex items-center justify-center bg-neutral-900 text-gray-100 p-6" data-testid="oauth-callback-page">
       <div class="max-w-md w-full text-center">
         <h1 class="text-xl font-semibold mb-3">Signing you in…</h1>

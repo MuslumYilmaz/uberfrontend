@@ -8,7 +8,6 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
 import { PUBLIC_EDITORIAL_FACTS } from '../../../core/content/public-editorial-facts';
 
 @Component({
-    standalone: true,
     imports: [GuideShellComponent, RouterModule],
     styleUrls: ['./fundamentals-check-article.component.scss'],
     template: `

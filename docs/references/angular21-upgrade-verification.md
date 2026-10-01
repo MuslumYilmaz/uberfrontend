@@ -49,3 +49,10 @@ the corresponding checks finish.
 - Official core and CLI migrations ran. The optional application-builder migration was unnecessary because the app already uses that builder. TransferState imports moved to core; server bootstrap now accepts BootstrapContext. Component-local HttpClientModule imports were removed in favor of the existing central HTTP provider/interceptors.
 - Production build: passed, all 615 prerender routes retained. Closest unit suite: 116/116 passed. Strict design-system check passed.
 - Visual comparison identified CSS reset precedence, input padding, and changed PrimeNG overlay geometry/focus defaults. Heading/reset precedence and list padding were restored against the unchanged Angular 17 references. Dialog and multiselect parity remains part of the final theme adaptation, not an accepted baseline change.
+
+## Angular 19 checkpoint
+
+- Angular 19.2.25 / CLI 19.2.27 / CDK 19.2.19 / PrimeNG 19.1.4; TypeScript 5.8.3 and Zone.js 0.15.1.
+- Official standalone-default migration applied; no signals or template control-flow conversion. Optional migrations were not applied.
+- Production build passed with 615 prerender routes. The same 116 affected unit tests passed. Angular's revised budget units also expose an existing trivia CSS warning; budget values remain unchanged.
+- Added `.nvmrc` (22.23.0), matching frontend engine requirement and CI setup. Only the immutable Angular 17 visual-reference job intentionally runs Node 20.19.6.

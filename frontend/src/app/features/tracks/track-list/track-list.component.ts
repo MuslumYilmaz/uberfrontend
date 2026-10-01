@@ -81,11 +81,10 @@ type TrackFaqEntry = {
 };
 
 @Component({
-  selector: 'app-track-list',
-  standalone: true,
-  imports: [CommonModule, RouterModule, FaCardComponent],
-  templateUrl: './track-list.component.html',
-  styleUrls: ['./track-list.component.css'],
+    selector: 'app-track-list',
+    imports: [CommonModule, RouterModule, FaCardComponent],
+    templateUrl: './track-list.component.html',
+    styleUrls: ['./track-list.component.css']
 })
 export class TrackListComponent implements OnInit {
   private readonly seo = inject(SeoService);

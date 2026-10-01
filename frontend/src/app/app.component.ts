@@ -21,22 +21,21 @@ import { PrepRoadmapSwitcherComponent } from './shared/components/prep-roadmap/p
 import { AchievementToastComponent } from './shared/components/achievement-toast/achievement-toast.component';
 
 @Component({
-  selector: 'app-root',
-  standalone: true,
-  imports: [
-    CommonModule,
-    RouterOutlet,
-    RouterModule,
-    HeaderComponent,
-    MarketingHeaderComponent,
-    AppSidebarComponent,
-    BugReportDialogComponent,
-    PremiumRequiredDialogComponent,
-    PrepRoadmapSwitcherComponent,
-    AchievementToastComponent,
-  ],
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss'],
+    selector: 'app-root',
+    imports: [
+        CommonModule,
+        RouterOutlet,
+        RouterModule,
+        HeaderComponent,
+        MarketingHeaderComponent,
+        AppSidebarComponent,
+        BugReportDialogComponent,
+        PremiumRequiredDialogComponent,
+        PrepRoadmapSwitcherComponent,
+        AchievementToastComponent,
+    ],
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit, OnDestroy {
   private router = inject(Router);

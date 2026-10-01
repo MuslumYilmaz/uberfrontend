@@ -32,18 +32,17 @@ export type FaQuestionRowVariant = {
 };
 
 @Component({
-  selector: 'fa-question-row',
-  standalone: true,
-  imports: [
-    CommonModule,
-    RouterModule,
-    TooltipModule,
-    CompanySignalComponent,
-    FaCardComponent,
-    FaGlyphComponent,
-  ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
+    selector: 'fa-question-row',
+    imports: [
+        CommonModule,
+        RouterModule,
+        TooltipModule,
+        CompanySignalComponent,
+        FaCardComponent,
+        FaGlyphComponent,
+    ],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    template: `
     <ng-container *ngIf="hasLink(); else staticRow">
       <a
         faCard
@@ -164,7 +163,7 @@ export type FaQuestionRowVariant = {
       </div>
     </ng-template>
   `,
-  styleUrls: ['./fa-question-row.component.css'],
+    styleUrls: ['./fa-question-row.component.css']
 })
 export class FaQuestionRowComponent {
   @Input() testId?: string;

@@ -4,11 +4,10 @@ import { RouterModule } from '@angular/router';
 import { GuideShellComponent } from '../../../shared/components/guide/guide-shell.component';
 
 @Component({
-  standalone: true,
-  selector: 'app-behavioral-tips-article',
-  imports: [CommonModule, RouterModule, GuideShellComponent],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
+    selector: 'app-behavioral-tips-article',
+    imports: [CommonModule, RouterModule, GuideShellComponent],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    template: `
     <fa-guide-shell
       title="Behavioral Interview Tips: Common Mistakes and Better Answers"
       [minutes]="12"
@@ -56,7 +55,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         If they can capture your story in 2–3 lines, you nailed it.
       </blockquote>
     </fa-guide-shell>
-  `,
+  `
 })
 export class BehavioralTipsArticle {
   @Input() prev: any[] | null = null;

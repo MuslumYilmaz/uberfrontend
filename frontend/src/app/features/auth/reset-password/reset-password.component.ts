@@ -15,10 +15,9 @@ function passwordsMatch(control: AbstractControl): ValidationErrors | null {
 }
 
 @Component({
-  selector: 'app-reset-password',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, FaButtonComponent],
-  template: `
+    selector: 'app-reset-password',
+    imports: [CommonModule, ReactiveFormsModule, RouterLink, FaButtonComponent],
+    template: `
     <main class="verify-shell" data-testid="reset-password-page">
       <section class="verify-card" aria-labelledby="reset-password-title">
         <h1 id="reset-password-title">Choose a new password</h1>
@@ -75,10 +74,10 @@ function passwordsMatch(control: AbstractControl): ValidationErrors | null {
       </section>
     </main>
   `,
-  styleUrls: [
-    '../verify-email/verify-email.component.css',
-    '../forgot-password/password-recovery.component.css',
-  ],
+    styleUrls: [
+        '../verify-email/verify-email.component.css',
+        '../forgot-password/password-recovery.component.css',
+    ]
 })
 export class ResetPasswordComponent implements OnInit {
   loading = false;

@@ -34,19 +34,18 @@ type ContractSelections = Partial<
 >;
 
 @Component({
-  selector: 'app-react-stale-closure-case-files',
-  standalone: true,
-  imports: [
-    CommonModule,
-    PrismHighlightDirective,
-    FaButtonComponent,
-    FaCardComponent,
-    FaChipComponent,
-    FaGlyphComponent,
-  ],
-  templateUrl: './react-stale-closure-case-files.component.html',
-  styleUrls: ['./react-stale-closure-case-files.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-react-stale-closure-case-files',
+    imports: [
+        CommonModule,
+        PrismHighlightDirective,
+        FaButtonComponent,
+        FaCardComponent,
+        FaChipComponent,
+        FaGlyphComponent,
+    ],
+    templateUrl: './react-stale-closure-case-files.component.html',
+    styleUrls: ['./react-stale-closure-case-files.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ReactStaleClosureCaseFilesComponent {
   private readonly analytics = inject(AnalyticsService);

@@ -9,9 +9,8 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
 import { PUBLIC_EDITORIAL_FACTS } from '../../../core/content/public-editorial-facts';
 
 @Component({
-  standalone: true,
-  imports: [GuideShellComponent, RouterModule],
-  styles: [`
+    imports: [GuideShellComponent, RouterModule],
+    styles: [`
     a {
       color: #7cc2ff;
       text-decoration: none;
@@ -233,7 +232,7 @@ import { PUBLIC_EDITORIAL_FACTS } from '../../../core/content/public-editorial-f
       background: color-mix(in srgb, var(--uf-surface-alt) 86%, transparent);
     }
   `],
-  template: `
+    template: `
   <fa-guide-shell
     title="Frontend UI Interview Questions: Build Accessible Components Under Time"
     subtitle="A practice-first map for shipping complete, accessible UI components under interview time pressure."

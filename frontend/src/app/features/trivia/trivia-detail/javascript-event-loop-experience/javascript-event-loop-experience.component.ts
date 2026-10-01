@@ -51,12 +51,11 @@ const QUALIFIED_VIEW_MS = 1_000;
 const QUALIFIED_VIEW_RATIO = 0.5;
 
 @Component({
-  selector: 'app-javascript-event-loop-experience',
-  standalone: true,
-  imports: [CommonModule, FaButtonComponent, FaCardComponent, FaChipComponent],
-  templateUrl: './javascript-event-loop-experience.component.html',
-  styleUrls: ['./javascript-event-loop-experience.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-javascript-event-loop-experience',
+    imports: [CommonModule, FaButtonComponent, FaCardComponent, FaChipComponent],
+    templateUrl: './javascript-event-loop-experience.component.html',
+    styleUrls: ['./javascript-event-loop-experience.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class JavaScriptEventLoopExperienceComponent implements AfterViewInit, OnDestroy {
   private readonly analytics = inject(AnalyticsService);
