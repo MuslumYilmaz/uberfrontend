@@ -255,7 +255,7 @@ export class InterviewSetupComponent implements OnInit, OnDestroy {
 
   formatDescription(format: InterviewFormat): string {
     return format === 'coding'
-      ? 'Five MCQs followed by one coding task.'
+      ? 'Five multiple-choice questions followed by one coding task.'
       : 'A guided architecture case with a production twist.';
   }
 

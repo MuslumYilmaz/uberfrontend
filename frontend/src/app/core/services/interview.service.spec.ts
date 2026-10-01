@@ -334,6 +334,52 @@ describe('InterviewService', () => {
     expect(Object.keys(session.coding?.task || {})).not.toContain('runnerConfig');
   });
 
+  it('restores only the newest check run for the current draft, including its readable names', () => {
+    const coding = service.normalizeSession({
+      id: 'session-1',
+      coding: {
+        draft: { hash: 'current', files: [{ path: 'main.js', content: 'return 1;' }] },
+        checkRuns: [
+          { draftHash: 'current', checks: [{ id: 'opaque', name: 'Handles bounds', passed: false }] },
+          { draftHash: 'current', checks: [{ id: 'opaque', name: 'Handles bounds', passed: true }] },
+          { draftHash: 'other', checks: [{ id: 'opaque', name: 'Handles bounds', passed: false }] },
+        ],
+      },
+    }).coding!;
+
+    expect(coding.checkResults).toEqual([jasmine.objectContaining({ id: 'opaque', name: 'Handles bounds', passed: true })]);
+    expect(coding.checkResultsDraftHash).toBe('current');
+    expect(coding.runCount).toBe(3);
+  });
+
+  for (const draftHash of [null, '', 'changed']) {
+    it(`hides old checks when the draft hash is ${JSON.stringify(draftHash)}`, () => {
+      const coding = service.normalizeSession({
+        id: 'session-1',
+        coding: {
+          draft: { hash: draftHash, files: [{ path: 'main.js', content: 'return 1;' }] },
+          checkResults: [{ id: 'opaque', passed: true }],
+          checkRuns: [{ draftHash: 'old', checks: [{ id: 'opaque', passed: true }] }],
+        },
+      }).coding!;
+      expect(coding.checkResults).toEqual([]);
+      expect(coding.checkResultsDraftHash).toBeNull();
+    });
+  }
+
+  it('accepts alternate check shapes only with explicit draft binding and uses readable fallback names', () => {
+    const coding = service.normalizeSession({
+      id: 'session-1',
+      coding: {
+        draft: { hash: 'current', files: [{ path: 'main.js', content: 'return 1;' }] },
+        checkResultsDraftHash: 'current',
+        checkResults: [{ id: 'js-check-opaque', passed: false }],
+      },
+    }).coding!;
+    expect(coding.checkResults).toEqual([jasmine.objectContaining({ id: 'js-check-opaque', name: 'Check 1', passed: false })]);
+    expect(coding.checkResultsDraftHash).toBe('current');
+  });
+
   it('sends answer option ids and no position-based answer', () => {
     service.saveAnswer(
       'session /1',

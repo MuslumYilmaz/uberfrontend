@@ -42,7 +42,7 @@
       <div class="session-header__actions">
         <app-interview-deadline-timer
           *ngIf="active.status === 'mcq_active'"
-          label="MCQ time"
+          label="Question time"
           [serverNow]="active.serverNow"
           [deadlineAt]="active.mcqDeadlineAt"
           (expired)="handleMcqExpiry()">
@@ -80,10 +80,13 @@
       </div>
     </header>
 
-    <p class="recovery-disclosure" data-testid="interview-session-recovery-disclosure">
+    <details class="recovery-disclosure" data-testid="interview-session-recovery-disclosure">
+      <summary>Draft recovery details</summary>
+      <p>
       This browser keeps an unencrypted recovery copy scoped to your account and this interview.
-      MCQ state expires within 2 hours; coding and system design drafts expire within 24 hours.
-    </p>
+      Multiple-choice state expires within 2 hours; coding and system design drafts expire within 24 hours.
+      </p>
+    </details>
 
     <app-interview-system-design-round
       *ngIf="active.status === 'system_design_active' && active.systemDesign?.scenario"
@@ -107,45 +110,56 @@
         {{ statusMessage }}
       </p>
       <aside class="progress-card" faCard aria-label="Question progress">
-        <div class="progress-card__summary">
-          <strong>{{ answeredCount() }}/{{ active.questions.length }} answered</strong>
-          <span>No feedback until results</span>
-        </div>
-        <nav class="question-nav" aria-label="Interview questions">
-          <button
-            *ngFor="let question of active.questions; let index = index"
-            type="button"
-            [class.question-nav__item--active]="!reviewing() && currentIndex() === index"
-            [class.question-nav__item--answered]="!!question.selectedOptionId"
-            [attr.aria-current]="!reviewing() && currentIndex() === index ? 'step' : null"
-            [attr.aria-label]="'Question ' + (index + 1) + ', ' + (question.selectedOptionId ? 'answered' : 'unanswered')"
-            [disabled]="mcqControlsLocked()"
-            (click)="goToQuestion(index)">
-            <span aria-hidden="true">{{ index + 1 }}</span>
-          </button>
-        </nav>
-        <button
-          faButton
-          variant="ghost"
-          block
-          type="button"
-          [disabled]="mcqControlsLocked()"
-          (click)="showReview()">
-          Review answers
+        <button faButton variant="ghost" type="button" class="question-nav-toggle"
+          [attr.aria-expanded]="questionNavigationOpen()" aria-controls="interview-question-navigation"
+          (click)="questionNavigationOpen.set(!questionNavigationOpen())">
+          Questions · {{ answeredCount() }}/{{ active.questions.length }} answered
+          <span aria-hidden="true">{{ questionNavigationOpen() ? '▴' : '▾' }}</span>
         </button>
+        <div class="progress-card__content" id="interview-question-navigation"
+          [class.progress-card__content--open]="questionNavigationOpen()">
+          <div class="progress-card__summary">
+            <strong>{{ answeredCount() }}/{{ active.questions.length }} answered</strong>
+            <span>No feedback until results</span>
+          </div>
+          <nav class="question-nav" aria-label="Interview questions">
+            <button
+              *ngFor="let question of active.questions; let index = index"
+              type="button"
+              [class.question-nav__item--active]="!reviewing() && currentIndex() === index"
+              [class.question-nav__item--answered]="!!question.selectedOptionId"
+              [attr.aria-current]="!reviewing() && currentIndex() === index ? 'step' : null"
+              [attr.aria-label]="'Question ' + (index + 1) + ', ' + (question.selectedOptionId ? 'answered' : 'unanswered')"
+              [disabled]="mcqControlsLocked()"
+              (click)="goToQuestion(index)">
+              <span>Question {{ index + 1 }}</span>
+              <span class="question-nav__status">{{ question.selectedOptionId ? 'Answered' : 'Unanswered' }}</span>
+              <span *ngIf="!reviewing() && currentIndex() === index" class="question-nav__current">Current</span>
+            </button>
+          </nav>
+          <button
+            faButton
+            variant="ghost"
+            block
+            type="button"
+            [disabled]="mcqControlsLocked()"
+            (click)="showReview()">
+            Review answers
+          </button>
+        </div>
       </aside>
 
       <section *ngIf="!reviewing() && currentQuestion() as question" class="question-card" faCard elevated>
         <div class="question-meta">
           <span>Question {{ currentIndex() + 1 }} of {{ active.questions.length }}</span>
-          <span>{{ question.technology }} · {{ question.competency }}</span>
+          <span>{{ displayLabel(question.technology) }} · {{ displayLabel(question.competency) }}</span>
         </div>
 
         <fieldset [disabled]="mcqControlsLocked()">
           <legend>
             <span
               tabindex="-1"
-              data-testid="interview-question-prompt">{{ question.prompt }}</span>
+              data-testid="interview-question-prompt"><fa-inline-code [text]="question.prompt"></fa-inline-code></span>
           </legend>
           <pre *ngIf="question.code" class="question-code"><code>{{ question.code }}</code></pre>
           <label
@@ -158,7 +172,7 @@
               [value]="option.id"
               [checked]="question.selectedOptionId === option.id"
               (change)="selectAnswer(question, option.id)">
-            <span>{{ option.label }}</span>
+            <span><fa-inline-code [text]="option.label"></fa-inline-code></span>
           </label>
         </fieldset>
 
@@ -194,7 +208,7 @@
       </section>
 
       <section *ngIf="reviewing()" class="review-card" faCard elevated>
-        <p class="eyebrow">MCQ review</p>
+        <p class="eyebrow">multiple-choice review</p>
         <h2 tabindex="-1" data-testid="interview-review-heading">Check for unanswered questions</h2>
         <p>
           You can return to any question. Submitting locks this section and reveals no
@@ -230,7 +244,7 @@
             [disabled]="mcqControlsLocked()"
             (click)="submitMcq()"
             data-testid="submit-mcq">
-            Submit MCQ section
+            Submit multiple-choice section
           </button>
         </div>
       </section>
@@ -243,7 +257,7 @@
       elevated
       [attr.inert]="codingRoundFrozen() ? '' : null"
       [attr.aria-busy]="codingRoundFrozen()">
-      <p class="eyebrow">MCQ answers locked</p>
+      <p class="eyebrow">multiple-choice answers locked</p>
       <h2 tabindex="-1" data-testid="interview-coding-ready-heading">Your coding task is next</h2>
       <p>
         The coding timer starts when you continue. You will receive only the prompt,
@@ -310,15 +324,17 @@
         aria-label="Coding task brief">
         <p class="eyebrow">Final stage</p>
         <h2 tabindex="-1" data-testid="interview-coding-heading">{{ task.title }}</h2>
-        <p>{{ task.prompt }}</p>
-        <h3>Requirements</h3>
-        <div *ngFor="let requirement of task.requirements" class="requirement-group">
-          <strong>{{ requirement.title }}</strong>
-          <p *ngIf="requirement.prompt">{{ requirement.prompt }}</p>
-          <ul *ngIf="requirement.constraints.length">
-            <li *ngFor="let constraint of requirement.constraints">{{ constraint }}</li>
-          </ul>
-        </div>
+        <p><fa-inline-code [text]="task.prompt"></fa-inline-code></p>
+        <ng-container *ngIf="codingRequirements().length">
+          <h3>Requirements</h3>
+          <div *ngFor="let requirement of codingRequirements()" class="requirement-group">
+            <strong *ngIf="requirement.title"><fa-inline-code [text]="requirement.title"></fa-inline-code></strong>
+            <p *ngIf="requirement.prompt"><fa-inline-code [text]="requirement.prompt"></fa-inline-code></p>
+            <ul *ngIf="requirement.constraints.length">
+              <li *ngFor="let constraint of requirement.constraints"><fa-inline-code [text]="constraint"></fa-inline-code></li>
+            </ul>
+          </div>
+        </ng-container>
         <p class="zero-xp">Interview coding awards 0 XP.</p>
       </aside>
 
@@ -351,72 +367,76 @@
           </span>
         </div>
 
-        <div
-          class="editor-shell"
-          *ngIf="activeFile() as file"
-          role="tabpanel"
-          [id]="'interview-code-panel-' + activeFileIndex()"
-          [attr.aria-labelledby]="'interview-code-tab-' + activeFileIndex()">
-          <app-monaco-editor
-            *ngIf="!editorFallback(); else textareaEditor"
-            [modelKey]="'interview-' + active.id + '-' + file.path"
-            [code]="file.content"
-            [language]="file.language"
-            [readOnly]="file.readOnly"
-            [options]="{ minimap: { enabled: false }, fontSize: 13, wordWrap: 'on' }"
-            (codeChange)="onCodeChange($event)"
-            (loadFailed)="useTextareaFallback()">
-          </app-monaco-editor>
-          <ng-template #textareaEditor>
-            <textarea
-              class="editor-fallback"
-              [attr.aria-label]="'Code editor for ' + file.path"
+        <fa-split-pane paneId="interview-javascript-editor">
+          <div splitTop
+            class="editor-shell"
+            *ngIf="activeFile() as file"
+            role="tabpanel"
+            [id]="'interview-code-panel-' + activeFileIndex()"
+            [attr.aria-labelledby]="'interview-code-tab-' + activeFileIndex()">
+            <app-monaco-editor
+              *ngIf="!editorFallback(); else textareaEditor"
+              [modelKey]="'interview-' + active.id + '-' + file.path"
+              [code]="file.content"
+              [language]="file.language"
               [readOnly]="file.readOnly"
-              [value]="file.content"
-              spellcheck="false"
-              (input)="onCodeChange($any($event.target).value)">
-            </textarea>
-          </ng-template>
-        </div>
-
-        <div class="runner">
-          <div class="runner__actions">
-            <button
-              faButton
-              variant="ghost"
-              type="button"
-              [loading]="runningChecks()"
-              [disabled]="submittingCoding() || draftSync() !== 'saved' || !syncedDraftHash()"
-              (click)="runChecks()">
-              Run checks
-            </button>
-            <button
-              faButton
-              variant="primary"
-              type="button"
-              [loading]="submittingCoding()"
-              [disabled]="runningChecks() || draftSync() !== 'saved' || !syncedDraftHash()"
-              (click)="submitCoding()"
-              data-testid="submit-coding">
-              Submit interview
-            </button>
+              theme="fa-interview-dark"
+              [options]="{ minimap: { enabled: false }, fontSize: 13, wordWrap: 'on' }"
+              (codeChange)="onCodeChange($event)"
+              (loadFailed)="useTextareaFallback()">
+            </app-monaco-editor>
+            <ng-template #textareaEditor>
+              <textarea
+                class="editor-fallback"
+                [attr.aria-label]="'Code editor for ' + file.path"
+                [readOnly]="file.readOnly"
+                [value]="file.content"
+                spellcheck="false"
+                (input)="onCodeChange($any($event.target).value)">
+              </textarea>
+            </ng-template>
           </div>
 
-          <div *ngIf="checkResults().length; else noChecks" class="check-results" aria-live="polite">
-            <p>{{ checkSummary().passed }}/{{ checkSummary().total }} checks passed</p>
-            <ul>
-              <li *ngFor="let result of checkResults()" [class.check-failed]="!result.passed">
-                <strong>{{ result.passed ? 'Passed' : 'Needs work' }} · {{ result.name }}</strong>
-                <span *ngIf="result.message">{{ result.message }}</span>
-              </li>
-            </ul>
+          <div splitBottom class="runner">
+            <div class="runner__actions">
+              <button
+                faButton
+                variant="ghost"
+                type="button"
+                [loading]="runningChecks()"
+                [disabled]="submittingCoding() || draftSync() !== 'saved' || !syncedDraftHash()"
+                (click)="runChecks()">
+                Run checks
+              </button>
+              <button
+                faButton
+                variant="primary"
+                type="button"
+                [loading]="submittingCoding()"
+                [disabled]="runningChecks() || draftSync() !== 'saved' || !syncedDraftHash()"
+                (click)="submitCoding()"
+                data-testid="submit-coding">
+                Submit interview
+              </button>
+            </div>
+
+            <div *ngIf="checkResults().length; else noChecks" class="check-results" aria-live="polite">
+              <p>{{ checkSummary().passed }}/{{ checkSummary().total }} checks passed</p>
+              <ul>
+                <li *ngFor="let result of checkResults()" [class.check-failed]="!result.passed">
+                  <strong>{{ result.passed ? 'Passed' : 'Needs work' }} · {{ result.name }}</strong>
+                  <span *ngIf="result.message">{{ result.message }}</span>
+                  <span *ngIf="!result.passed && !result.message">Run checks again for failure details.</span>
+                </li>
+              </ul>
+            </div>
+            <ng-template #noChecks>
+              <p class="runner__empty">
+                Run checks for the current draft. Checks run in an isolated browser worker. Only bounded pass/fail results are recorded.
+              </p>
+            </ng-template>
           </div>
-          <ng-template #noChecks>
-            <p class="runner__empty">
-              Checks run in an isolated browser worker. Only bounded pass/fail results are recorded.
-            </p>
-          </ng-template>
-        </div>
+        </fa-split-pane>
       </section>
 
       <ng-template #frameworkWorkspace>
@@ -450,39 +470,42 @@
             </div>
           </div>
 
-          <app-coding-framework-panel
-            #frameworkPanel
-            *ngIf="frameworkQuestion() as question"
-            class="framework-panel"
-            [question]="question"
-            [tech]="$any(active.track)"
-            [starterFilesOverride]="frameworkStarterFiles()"
-            [frameworkTestsOverride]="frameworkTests()"
-            [storageKeyOverride]="'interview:' + active.id + ':' + task.id"
-            [interviewMode]="true"
-            [disablePersistence]="true"
-            [suppressAttemptRecording]="true"
-            [solutionFilesMap]="{}"
-            [editorOptions]="{ minimap: { enabled: false }, fontSize: 13, wordWrap: 'on' }"
-            (filesChanged)="onFrameworkFilesChanged($event)">
-          </app-coding-framework-panel>
+          <fa-split-pane [minimumTop]="320" paneId="interview-framework-editor">
+            <app-coding-framework-panel splitTop
+              #frameworkPanel
+              *ngIf="frameworkQuestion() as question"
+              class="framework-panel"
+              [question]="question"
+              [tech]="$any(active.track)"
+              [starterFilesOverride]="frameworkStarterFiles()"
+              [frameworkTestsOverride]="frameworkTests()"
+              [storageKeyOverride]="'interview:' + active.id + ':' + task.id"
+              [interviewMode]="true"
+              [disablePersistence]="true"
+              [suppressAttemptRecording]="true"
+              [solutionFilesMap]="{}"
+              [editorOptions]="{ theme: 'fa-interview-dark', minimap: { enabled: false }, fontSize: 13, wordWrap: 'on' }"
+              (filesChanged)="onFrameworkFilesChanged($event)">
+            </app-coding-framework-panel>
 
-          <div class="runner framework-run-summary">
-            <div *ngIf="checkResults().length; else frameworkNoChecks" class="check-results" aria-live="polite">
-              <p>{{ checkSummary().passed }}/{{ checkSummary().total }} checks passed</p>
-              <ul>
-                <li *ngFor="let result of checkResults()" [class.check-failed]="!result.passed">
-                  <strong>{{ result.passed ? 'Passed' : 'Needs work' }} · {{ result.name }}</strong>
-                  <span *ngIf="result.message">{{ result.message }}</span>
-                </li>
-              </ul>
+            <div splitBottom class="runner framework-run-summary">
+              <div *ngIf="checkResults().length; else frameworkNoChecks" class="check-results" aria-live="polite">
+                <p>{{ checkSummary().passed }}/{{ checkSummary().total }} checks passed</p>
+                <ul>
+                  <li *ngFor="let result of checkResults()" [class.check-failed]="!result.passed">
+                    <strong>{{ result.passed ? 'Passed' : 'Needs work' }} · {{ result.name }}</strong>
+                    <span *ngIf="result.message">{{ result.message }}</span>
+                    <span *ngIf="!result.passed && !result.message">Run checks again for failure details.</span>
+                  </li>
+                </ul>
+              </div>
+              <ng-template #frameworkNoChecks>
+                <p class="runner__empty">
+                  Run checks for the current draft. Preview and checks run in isolated browser frames. Only bounded pass/fail results are recorded.
+                </p>
+              </ng-template>
             </div>
-            <ng-template #frameworkNoChecks>
-              <p class="runner__empty">
-                Preview and checks run in isolated browser frames. Only bounded pass/fail results are recorded.
-              </p>
-            </ng-template>
-          </div>
+          </fa-split-pane>
         </section>
       </ng-template>
     </section>

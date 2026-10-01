@@ -1310,6 +1310,11 @@ describe('Interview Mode API', () => {
       .sort();
     expect(prepared.body.prepared.expectedCheckIds).toEqual(expectedCheckIds);
     const checks = expectedCheckIds.map((id) => ({ id, passed: true }));
+    const namedChecks = checks.map((check) => ({
+      ...check,
+      name: privateSession.codingPrivate.runnerConfig.groups
+        .flatMap((group) => group.checks).find((entry) => entry.id === check.id).name,
+    }));
     const completedChecks = await request(app)
       .post(`/api/interviews/${sessionId}/coding/check-runs`)
       .set('Authorization', authHeader(user._id))
@@ -1329,6 +1334,7 @@ describe('Interview Mode API', () => {
       })
     );
     expect(forbiddenPath(completedChecks.body)).toBeNull();
+    expect(completedChecks.body.session.coding.checkRuns[0].checks).toEqual(namedChecks);
     version = completedChecks.body.session.version;
     expect(await InterviewConsumedRunToken.countDocuments({
       sessionId,
@@ -1348,6 +1354,7 @@ describe('Interview Mode API', () => {
     const persistedCheckRun = (
       await InterviewSession.findById(sessionId).select('codingCheckRuns').lean()
     ).codingCheckRuns[0];
+    expect(persistedCheckRun.checks).toEqual(checks);
     await InterviewSession.updateOne(
       { _id: sessionId },
       { $set: { codingCheckRuns: [] } }
@@ -1412,6 +1419,15 @@ describe('Interview Mode API', () => {
       }),
     }));
     expect(results.body.results.reviewNext.length).toBeLessThanOrEqual(3);
+    expect(results.body.results.coding.checkRun.checks).toEqual(namedChecks);
+    expect(forbiddenPath(results.body.results.coding.checkRun)).toBeNull();
+    // Existing snapshots have no names; reads enrich them without a migration or rewrite.
+    const storedSnapshot = (await InterviewSession.findById(sessionId).select('+resultSnapshot').lean()).resultSnapshot;
+    expect(storedSnapshot.coding.checkRun.checks).toEqual(checks);
+    const reloadedResults = await request(app)
+      .get(`/api/interviews/${sessionId}/results`)
+      .set('Authorization', authHeader(user._id));
+    expect(reloadedResults.body.results.coding.checkRun.checks).toEqual(namedChecks);
     expect(results.body.results.coding.rubric.every(
       (group) => group.status === 'not_evaluated' && group.checkIds.length === 0
     ))

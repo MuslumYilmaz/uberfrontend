@@ -15,12 +15,13 @@ import {
 } from '../../core/models/interview.model';
 import { InterviewService } from '../../core/services/interview.service';
 import { InterviewRecoveryStore } from '../../core/services/interview-recovery.store';
-import { FaButtonComponent, FaCardComponent } from '../../shared/ui';
+import { interviewDisplayLabel } from './interview-display-label';
+import { FaButtonComponent, FaCardComponent, InlineCodeComponent } from '../../shared/ui';
 
 @Component({
   selector: 'app-interview-results',
   standalone: true,
-  imports: [CommonModule, RouterLink, FaButtonComponent, FaCardComponent],
+  imports: [CommonModule, RouterLink, FaButtonComponent, FaCardComponent, InlineCodeComponent],
   templateUrl: './interview-results.component.html',
   styleUrls: ['./interview-results.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -37,6 +38,7 @@ export class InterviewResultsComponent implements OnInit {
   readonly abandoned = signal(false);
   readonly interviewStillActive = signal(false);
   sessionId = '';
+  readonly displayLabel = interviewDisplayLabel;
 
   ngOnInit(): void {
     this.sessionId = this.route.snapshot.paramMap.get('id')?.trim() || '';
@@ -109,6 +111,23 @@ export class InterviewResultsComponent implements OnInit {
     return timing.allowedSeconds === null
       ? used
       : `${used} of ${this.formatDuration(timing.allowedSeconds)}`;
+  }
+
+  formatClock(seconds: number | null): string {
+    if (seconds === null) return 'Not available';
+    const total = Math.max(0, Math.floor(seconds));
+    return `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`;
+  }
+
+  timingAccessibleLabel(timing: { usedSeconds: number | null; allowedSeconds: number | null }): string {
+    const duration = (seconds: number | null) => {
+      if (seconds === null) return 'not available';
+      const total = Math.max(0, Math.floor(seconds));
+      const minutes = Math.floor(total / 60);
+      const remainder = total % 60;
+      return `${minutes} ${minutes === 1 ? 'minute' : 'minutes'} ${remainder} ${remainder === 1 ? 'second' : 'seconds'}`;
+    };
+    return `${duration(timing.usedSeconds)} used${timing.allowedSeconds === null ? '' : ` of ${duration(timing.allowedSeconds)} allowed`}`;
   }
 
   codingEvidenceText(coding: InterviewCodingResult): string {

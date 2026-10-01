@@ -58,7 +58,15 @@ type MockSession = {
     deadlineAt: string | null;
     task: null | Record<string, unknown>;
     draft: null | Record<string, unknown>;
-    checkResults: Array<Record<string, unknown>>;
+    checkRuns: Array<{
+      draftHash: string;
+      checks: Array<{ id: string; name: string; passed: boolean }>;
+      passedCount: number;
+      totalCount: number;
+      ranAt: string;
+      authoritative: false;
+      evidenceSource: 'client-self-report';
+    }>;
     runCount: number;
   };
   systemDesign: null | Record<string, any>;
@@ -375,6 +383,9 @@ function buildResult(
 ): Record<string, unknown> {
   const submitted = options.submitted ?? true;
   const attempted = options.attempted ?? submitted;
+  const checkRun = submitted && session.coding?.draft?.['hash']
+    ? [...session.coding.checkRuns].reverse().find((run) => run.draftHash === session.coding?.draft?.['hash'])
+    : null;
   const questionRows = session.questions.map((question, index) => {
     const selectedOptionId = question.selectedOptionId;
     const correctOptionId = `q${index + 1}-a`;
@@ -429,18 +440,14 @@ function buildResult(
       sourceQuestionId: session.track === 'core-web' ? 'js-validate-username' : 'react-counter',
       attempted,
       submitted,
-      locallyVerified: submitted,
-      passedChecks: submitted ? 1 : 0,
-      totalChecks: submitted ? 1 : 0,
-      checks: submitted
-        ? [{ id: 'valid-username', name: 'accepts a valid username', passed: true }]
-        : [],
+      locallyVerified: !!checkRun,
+      checkRun: checkRun ?? null,
       rubric: [
         {
           id: 'base-correctness',
           label: 'Base correctness',
           criteria: ['Handles the primary behavior.'],
-          status: submitted ? 'passed' : 'not_evaluated',
+          status: 'not_evaluated',
         },
       ],
       timing: { usedSeconds: attempted ? 93 : 0, allowedSeconds: 1500 },
@@ -516,6 +523,7 @@ class InterviewApiMock {
   systemDesignSubmitRequests: CapturedRequest[] = [];
   checkRequests: CapturedRequest[] = [];
   endRequests: CapturedRequest[] = [];
+  javascriptRunnerConfig: null | { kind: string; language: string; tests: string; checks: Array<{ id: string; name: string }> } = null;
   getSessionCount = 0;
   createCount = 0;
 
@@ -698,7 +706,7 @@ class InterviewApiMock {
           deadlineAt: null,
           task: null,
           draft: null,
-          checkResults: [],
+          checkRuns: [],
           runCount: 0,
         };
         await this.reply(route, { session: this.snapshotSession() });
@@ -717,7 +725,7 @@ class InterviewApiMock {
           ),
           task: session.track === 'core-web' ? buildJavascriptTask() : buildReactTask(),
           draft: null,
-          checkResults: [],
+          checkRuns: [],
           runCount: 0,
         };
         await this.reply(route, { session: this.snapshotSession() });
@@ -841,10 +849,10 @@ class InterviewApiMock {
               runToken: 'mock-check-run-token',
               expiresAt: futureIso(60),
               draftHash: body['draftHash'],
-              expectedCheckIds: ['valid-username'],
+              expectedCheckIds: this.javascriptRunnerConfig?.checks.map((check) => check.id) ?? ['valid-username'],
               evidenceMode: 'client-self-report',
               authoritative: false,
-              runnerConfig: {
+              runnerConfig: this.javascriptRunnerConfig ?? {
                 kind: 'javascript',
                 language: 'javascript',
                 tests: [
@@ -863,12 +871,20 @@ class InterviewApiMock {
         }
 
         session.version += 1;
-        const checks = [{ id: 'valid-username', name: 'accepts a valid username', passed: true }];
+        const submittedChecks = body['checks'] as Array<{ id: string; passed: boolean }>;
+        const checks = submittedChecks.map((check) => ({
+          id: check.id, name: this.javascriptRunnerConfig?.checks.find((entry) => entry.id === check.id)?.name ?? 'accepts a valid username', passed: check.passed,
+        }));
         if (session.coding) {
-          session.coding.checkResults = checks;
+          session.coding.checkRuns.push({
+            draftHash: String(body['draftHash']), checks,
+            passedCount: checks.filter((check) => check.passed).length,
+            totalCount: checks.length, ranAt: nowIso(),
+            authoritative: false, evidenceSource: 'client-self-report',
+          });
           session.coding.runCount += 1;
         }
-        await this.reply(route, { version: session.version, checkResults: checks });
+        await this.reply(route, { session: this.snapshotSession() });
         return;
       }
 
@@ -1135,10 +1151,11 @@ test('loads the approved canonical 185-question contract into the MCQ UI', async
   await expect(page.getByTestId('interview-session')).toBeVisible();
   for (let index = 0; index < selected.length; index += 1) {
     await page.locator('.question-nav button').nth(index).click();
-    await expect(page.getByText(selected[index].prompt, { exact: true })).toBeVisible();
+    const visibleText = (text: string) => text.replace(/(?<!`)`([^`\n]+)`(?!`)/g, '$1');
+    await expect(page.getByTestId('interview-question-prompt')).toContainText(visibleText(selected[index].prompt));
     await expect(page.locator('fieldset input[type="radio"]')).toHaveCount(3);
     for (const option of selected[index].options) {
-      await expect(page.getByText(option.label, { exact: true })).toBeVisible();
+      await expect(page.getByRole('radio', { name: visibleText(option.label), exact: true })).toBeVisible();
     }
   }
 });
@@ -1153,7 +1170,8 @@ test('mocked MCQ shell has named groups, deterministic focus, bounded timer sema
   const firstPrompt = page.getByTestId('interview-question-prompt');
   await expect(firstPrompt).toBeFocused();
   await expect(page.getByRole('group', { name: session.questions[0].prompt })).toBeVisible();
-  await expect(page.getByRole('timer', { name: /MCQ time:/ })).toHaveAttribute('aria-live', 'off');
+  await expect(page.getByRole('timer', { name: /Question time:/ })).toHaveAttribute('aria-live', 'off');
+  await page.getByRole('button', { name: 'Questions · 0/5 answered', exact: true }).click();
   await expect(page.locator('.question-nav button').first()).toHaveAccessibleName(
     'Question 1, unanswered',
   );
@@ -1163,6 +1181,8 @@ test('mocked MCQ shell has named groups, deterministic focus, bounded timer sema
   await expect(page.getByTestId('interview-question-prompt')).toContainText(
     session.questions[1].prompt,
   );
+  await expect(page.locator('.question-nav')).toBeHidden();
+  await page.getByRole('button', { name: 'Questions · 0/5 answered', exact: true }).click();
   await page.getByRole('button', { name: 'Review answers', exact: true }).first().click();
   await expect(page.getByTestId('interview-review-heading')).toBeFocused();
   await expectNoHorizontalOverflow(page);
@@ -1186,7 +1206,7 @@ test('mocked coding file tabs expose labelled panels and support arrow-key rovin
     deadlineAt: futureIso(1500),
     task,
     draft: null,
-    checkResults: [],
+    checkRuns: [],
     runCount: 0,
   };
   const api = new InterviewApiMock({ initialSession: session });
@@ -1232,7 +1252,7 @@ test('completes MCQ → local JS checks → coding submit → raw results withou
   await page.goto('/interview');
   await selectSetupChoice(page, 'Level', 'Junior');
   await page.getByTestId('interview-start').click();
-  await expect(page.getByTestId('interview-timer')).toContainText('MCQ time');
+  await expect(page.getByTestId('interview-timer')).toContainText('Question time');
   await expect(page.getByText(/Correct|Incorrect/, { exact: true })).toHaveCount(0);
 
   for (let index = 0; index < 5; index += 1) {
@@ -1245,7 +1265,7 @@ test('completes MCQ → local JS checks → coding submit → raw results withou
     }
   }
 
-  await expect(page.getByText('5/5 answered')).toBeVisible();
+  await expect(page.getByText('5/5 answered', { exact: true })).toBeVisible();
   await page.getByTestId('submit-mcq').click();
   await expect(page.getByRole('heading', { name: 'Your coding task is next' })).toBeVisible();
   await page.getByTestId('start-coding').click();
@@ -1263,6 +1283,10 @@ test('completes MCQ → local JS checks → coding submit → raw results withou
     { id: 'valid-username', passed: true },
   ]);
 
+  await page.reload();
+  await expect(page.getByText('1/1 checks passed')).toBeVisible();
+  await expect(page.getByText('Passed · accepts a valid username', { exact: true })).toBeVisible();
+
   await page.getByTestId('submit-coding').click();
   await expect(page).toHaveURL(/\/interview\/[^/]+\/results$/);
   await expect(page.getByTestId('interview-results')).toBeVisible();
@@ -1273,6 +1297,82 @@ test('completes MCQ → local JS checks → coding submit → raw results withou
   await expect(page.getByText(/Hire|Strong Hire|readiness/i)).toHaveCount(0);
   expect(progressWrites).toEqual([]);
 });
+
+test('clears passing evidence after an edited draft is saved and reloaded, then restores failed names without details', async ({ page }) => {
+  const session = buildSession('junior', 'core-web', 'draft-bound-checks');
+  const task = buildJavascriptTask();
+  session.status = 'coding_active';
+  session.coding = {
+    readyDeadlineAt: null, deadlineAt: futureIso(1500), task,
+    draft: { hash: 'checked-draft', files: task.files, updatedAt: nowIso() },
+    checkRuns: [{
+      draftHash: 'checked-draft', checks: [{ id: 'valid-username', name: 'accepts a valid username', passed: true }],
+      passedCount: 1, totalCount: 1, ranAt: nowIso(), authoritative: false, evidenceSource: 'client-self-report',
+    }],
+    runCount: 1,
+  };
+  const api = new InterviewApiMock({ initialSession: session });
+  await seedAuthenticatedInterview(page, api);
+  await page.goto(`/interview/${session.id}`);
+  await expect(page.getByText('1/1 checks passed')).toBeVisible();
+  const editor = page.getByRole('textbox', { name: 'Editor content' });
+  await editor.fill('export default function validateUsername() { return false; }');
+  await expect.poll(() => api.draftRequests.length).toBe(1);
+  await expect(page.getByText('Draft saved', { exact: true })).toBeVisible();
+  await page.reload();
+  await expect(page.getByText(/Run checks for the current draft\./)).toBeVisible();
+  await expect(page.getByText('1/1 checks passed')).toHaveCount(0);
+  await page.getByRole('button', { name: 'Run checks', exact: true }).click();
+  await expect(page.getByText('0/1 checks passed')).toBeVisible();
+  await page.reload();
+  await expect(page.getByText('0/1 checks passed')).toBeVisible();
+  await expect(page.locator('.check-results strong')).toContainText('accepts a valid username');
+  await expect(page.getByText('Run checks again for failure details.')).toBeVisible();
+  await page.getByTestId('submit-coding').click();
+  await expect(page.getByTestId('interview-results')).toBeVisible();
+  await expect(page.locator('.check-list strong')).toContainText('accepts a valid username');
+});
+
+for (const width of [360, 390, 768, 834, 1366, 1440]) {
+  test(`formats inline code safely and keeps accessible labels and task prose readable at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    const session = buildSession('junior', 'core-web', `inline-code-${width}`);
+    session.questions[0].prompt = 'Choose `<button>` with `/[a-z]+/g`; preserve `unmatched.';
+    session.questions[0].options[0].label = 'Use `<img src=x onerror=alert(1)>` safely.';
+    session.questions[0].options[1].label = `Use \`${'longIdentifier'.repeat(15)}\` safely.`;
+    const api = new InterviewApiMock({ initialSession: session });
+    await seedAuthenticatedInterview(page, api);
+    await page.goto(`/interview/${session.id}`);
+    const prompt = page.getByTestId('interview-question-prompt');
+    await expect(prompt).toBeFocused();
+    await expect(prompt.locator('code')).toHaveText(['<button>', '/[a-z]+/g']);
+    await expect(prompt).toContainText('preserve `unmatched.');
+    const option = page.getByRole('radio', { name: 'Use <img src=x onerror=alert(1)> safely.', exact: true });
+    await option.focus();
+    await page.keyboard.press('Space');
+    await expect(option).toBeChecked();
+    await expect(page.locator('fieldset img')).toHaveCount(0);
+    await expectNoHorizontalOverflow(page);
+
+    // Move the same mock session to coding with duplicated prose and a distinct constraint.
+    const task = buildJavascriptTask();
+    task.prompt = `Implement \`${'longIdentifier'.repeat(15)}\` and \`<button>\`.`;
+    task.publicRequirements = [{
+      id: 'duplicate', title: ` ${task.title} `,
+      prompt: task.prompt.replace(/ /g, '  '), constraints: ['Keep `value` unchanged.'],
+    }];
+    api.currentSession!.status = 'coding_active';
+    api.currentSession!.coding = {
+      readyDeadlineAt: null, deadlineAt: futureIso(1500), task,
+      draft: null, checkRuns: [], runCount: 0,
+    };
+    await page.reload();
+    await expect(page.getByRole('heading', { name: task.title })).toHaveCount(1);
+    await expect(page.locator('.requirement-group strong, .requirement-group p')).toHaveCount(0);
+    await expect(page.locator('.requirement-group code')).toHaveText('value');
+    await expectNoHorizontalOverflow(page);
+  });
+}
 
 test('completes guided system design setup → autosave → refresh → twist → evidence report', async ({ page }) => {
   await page.setViewportSize({ width: 1366, height: 900 });
@@ -1398,7 +1498,7 @@ test('renders the bounded framework interview shell without normal solution/prog
     deadlineAt: futureIso(1500),
     task: buildReactTask(),
     draft: null,
-    checkResults: [],
+    checkRuns: [],
     runCount: 0,
   };
   const api = new InterviewApiMock({ initialSession: session });
@@ -1452,7 +1552,7 @@ test('leaving, resuming, and refreshing preserve question position, review state
   await expect(page).toHaveURL(`/interview/${session.id}`);
   await expect(page.getByText(session.questions[0].prompt)).toBeVisible();
   await expect(page.locator('input[type="radio"][value="q1-b"]')).toBeChecked();
-  const orderBefore = await page.locator('.question-nav button').allTextContents();
+  const orderBefore = await page.locator('.question-nav button').evaluateAll((buttons) => buttons.map((button) => button.getAttribute('aria-label')));
 
   await page.locator('.question-nav button').nth(3).click();
   await expect(page.getByText(session.questions[3].prompt)).toBeVisible();
@@ -1464,10 +1564,10 @@ test('leaving, resuming, and refreshing preserve question position, review state
   await expect(page.getByRole('heading', { name: 'Check for unanswered questions' })).toBeVisible();
   await page.reload();
   await expect(page.getByRole('heading', { name: 'Check for unanswered questions' })).toBeVisible();
-  expect(await page.locator('.question-nav button').allTextContents()).toEqual(orderBefore);
+  expect(await page.locator('.question-nav button').evaluateAll((buttons) => buttons.map((button) => button.getAttribute('aria-label')))).toEqual(orderBefore);
   await page.locator('.question-nav button').first().click();
   await expect(page.locator('input[type="radio"][value="q1-b"]')).toBeChecked();
-  await expect(page.getByTestId('interview-timer')).toContainText('MCQ time');
+  await expect(page.getByTestId('interview-timer')).toContainText('Question time');
   expect(api.getSessionCount).toBeGreaterThanOrEqual(2);
 });
 
@@ -1531,7 +1631,7 @@ test('premium users can abandon and immediately start a second unlimited session
   expect(api.quota.remaining).toBeNull();
 });
 
-for (const width of [360, 390, 834, 1366, 1440]) {
+for (const width of [360, 390, 768, 834, 1366, 1440]) {
   test(`active MCQ snippets stay inside the session layout at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
     const active = buildSession('mid', 'react', `snippet-session-${width}`);
@@ -1541,11 +1641,28 @@ for (const width of [360, 390, 834, 1366, 1440]) {
     await page.goto(`/interview/${active.id}`);
     await expect(page.getByTestId('interview-session')).toBeVisible();
     await expect(page.locator('.question-code')).toContainText('longRuntimeIdentifier');
+    await expect(page.locator('legend')).toHaveCSS('font-size', '16px');
+    await expect(page.locator('.option').first()).toHaveCSS('font-size', '14px');
+    const navigation = page.getByRole('navigation', { name: 'Interview questions' });
+    if (width <= 900) {
+      await expect(navigation).toBeHidden();
+      await page.getByRole('button', { name: 'Questions · 0/5 answered', exact: true }).click();
+    }
+    const rows = await navigation.locator('button').evaluateAll((buttons) =>
+      buttons.map((button) => ({ x: button.getBoundingClientRect().x, y: button.getBoundingClientRect().y, width: button.getBoundingClientRect().width })),
+    );
+    expect(rows).toHaveLength(5);
+    rows.forEach((row, index) => {
+      expect(row.width).toBeGreaterThan(190);
+      expect(row.x).toBe(rows[0].x);
+      if (index) expect(row.y).toBeGreaterThan(rows[index - 1].y);
+    });
+    await expect(navigation.getByRole('button').first()).toHaveAttribute('aria-current', 'step');
     await expectNoHorizontalOverflow(page);
   });
 }
 
-for (const width of [360, 390, 834, 1366, 1440]) {
+for (const width of [360, 390, 768, 834, 1366, 1440]) {
   test(`setup and results reflow at ${width}px without horizontal overflow`, async ({ page }) => {
     await page.setViewportSize({ width, height: width < 700 ? 844 : 900 });
     const completed = buildSession('mid', 'react', `responsive-${width}`);
@@ -1570,8 +1687,137 @@ for (const width of [360, 390, 834, 1366, 1440]) {
     await page.goto(`/interview/${completed.id}/results`);
     await expect(page.getByTestId('interview-results')).toBeVisible();
     await expect(page.getByText('Preparation feedback only')).toBeVisible();
+    const badge = await page.locator('.requirement-status').first().boundingBox();
+    const prose = await page.locator('.rubric article > div').first().boundingBox();
+    expect(badge!.height).toBeLessThan(45);
+    if (width < 700) {
+      expect(prose!.width).toBeGreaterThan(width - 120);
+      expect(badge!.y + badge!.height).toBeLessThanOrEqual(prose!.y);
+    }
+    await expect(page.locator('.timing-grid strong').first()).toHaveText('02:04');
     await page.locator('.answer-list details summary').first().click();
     await expect(page.locator('.question-code').first()).toContainText('longRuntimeIdentifier');
     await expectNoHorizontalOverflow(page);
+  });
+}
+
+
+for (const runner of ['javascript', 'framework'] as const) {
+  for (const width of [768, 1440]) {
+    test(`${runner} editor and results resize without changing draft evidence at ${width}px`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 1000 });
+      const session = buildSession('junior', runner === 'javascript' ? 'core-web' : 'react', `resize-${runner}-${width}`);
+      const task = runner === 'javascript' ? buildJavascriptTask() : buildReactTask();
+      if (runner === 'framework') {
+        const starter = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'src/assets/sb/react/question/react-counter.v1.json'), 'utf8'));
+        task.files = Object.entries(starter.files as Record<string, string>).map(([filePath, content]) => ({
+          path: filePath, content, readOnly: false,
+          language: filePath.endsWith('.tsx') ? 'typescript' : filePath.endsWith('.css') ? 'css' : filePath.endsWith('.html') ? 'html' : 'json',
+        }));
+      }
+      session.status = 'coding_active';
+      session.mcqDeadlineAt = null;
+      session.coding = {
+        readyDeadlineAt: null, deadlineAt: futureIso(1500), task,
+        draft: { hash: 'checked-draft', files: task.files, updatedAt: nowIso() },
+        checkRuns: [{
+          draftHash: 'checked-draft', checks: [{ id: 'saved-check', name: 'Preserves saved evidence', passed: true }],
+          passedCount: 1, totalCount: 1, ranAt: nowIso(), authoritative: false, evidenceSource: 'client-self-report',
+        }], runCount: 1,
+      };
+      const api = new InterviewApiMock({ initialSession: session });
+      await seedAuthenticatedInterview(page, api);
+      await page.goto(`/interview/${session.id}`);
+      await expect(page.getByText('Passed · Preserves saved evidence', { exact: true })).toBeVisible();
+      const separator = page.getByRole('separator', { name: 'Resize code editor and check results' });
+      await expect(separator).toBeVisible();
+      const top = page.locator('fa-split-pane .split-pane__top');
+      const before = (await top.boundingBox())!.height;
+      const requests = api.draftRequests.length;
+      await separator.focus();
+      await page.keyboard.press('ArrowUp');
+      await expect.poll(async () => (await top.boundingBox())!.height).toBeLessThan(before - 20);
+      await page.keyboard.press('Home');
+      await expect.poll(async () => (await top.boundingBox())!.height).toBe(runner === 'javascript' ? 240 : 320);
+      await page.keyboard.press('End');
+      await expect.poll(async () => (await page.locator('.split-pane__bottom').boundingBox())!.height).toBe(160);
+      const handle = (await separator.boundingBox())!;
+      const maxHeight = (await top.boundingBox())!.height;
+      if (runner === 'javascript' && width === 1440) {
+        await page.screenshot({ path: test.info().outputPath('split-before-drag.png') });
+      }
+      await page.mouse.move(handle.x + handle.width / 2, handle.y + handle.height / 2);
+      await page.mouse.down();
+      await page.mouse.move(handle.x + handle.width / 2, handle.y + handle.height / 2 - 160, { steps: 5 });
+      await page.mouse.up();
+      await expect.poll(async () => (await top.boundingBox())!.height).toBeLessThan(maxHeight - 140);
+      if (runner === 'javascript' && width === 1440) {
+        await page.screenshot({ path: test.info().outputPath('split-after-drag.png') });
+      }
+      if (width > 900) {
+        await page.mouse.wheel(0, 500);
+        await expect.poll(async () => {
+          const banner = (await page.getByRole('banner').boundingBox())!;
+          const header = (await page.locator('.session-header').boundingBox())!;
+          return header.y - (banner.y + banner.height);
+        }).toBeGreaterThanOrEqual(0);
+        const header = (await page.locator('.session-header').boundingBox())!;
+        const brief = (await page.locator('.coding-brief').boundingBox())!;
+        expect(brief.y).toBeGreaterThanOrEqual(header.y + header.height);
+      }
+      await expect(page.getByRole('button', { name: 'Run checks', exact: true }).first()).toBeVisible();
+      await expect(page.getByRole('button', { name: 'Submit interview', exact: true })).toBeEnabled();
+      expect(api.draftRequests.length).toBe(requests);
+      expect(api.currentSession!.coding!.draft!['hash']).toBe('checked-draft');
+      await expect(page.getByText('Passed · Preserves saved evidence', { exact: true })).toBeVisible();
+      await expectNoHorizontalOverflow(page);
+      await expectNoSeriousInterviewViolations(page, `${runner} resizable workspace`);
+      await page.setViewportSize({ width: 390, height: 844 });
+      await expect(separator).toBeHidden();
+      await expect(page.getByText('Passed · Preserves saved evidence', { exact: true })).toBeVisible();
+      await expectNoHorizontalOverflow(page);
+    });
+  }
+}
+
+for (const failureMode of ['all', 'one'] as const) {
+  test(`real JS worker shows ${failureMode} failed checks and permits submitting the saved draft`, async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    const session = buildSession('junior', 'core-web', `failure-${failureMode}`);
+    const task = buildJavascriptTask();
+    task.files[0].content = failureMode === 'all'
+      ? 'export default function validateUsername() { return null; }'
+      : 'export default function validateUsername() { return true; }';
+    session.status = 'coding_active';
+    session.mcqDeadlineAt = null;
+    session.coding = { readyDeadlineAt: null, deadlineAt: futureIso(1500), task, draft: null, checkRuns: [], runCount: 0 };
+    const api = new InterviewApiMock({ initialSession: session });
+    api.javascriptRunnerConfig = {
+      kind: 'javascript', language: 'javascript',
+      tests: [
+        "import validateUsername from './validateUsername';",
+        "test('accepts a valid username', () => expect(validateUsername('alice_1')).toBe(true));",
+        "test('rejects an invalid username', () => expect(validateUsername('!')).toBe(false));",
+      ].join('\n'),
+      checks: [
+        { id: 'valid-username', name: 'accepts a valid username' },
+        { id: 'invalid-username', name: 'rejects an invalid username' },
+      ],
+    };
+    await seedAuthenticatedInterview(page, api);
+    await page.goto(`/interview/${session.id}`);
+    await expect(page.getByText('Draft saved', { exact: true })).toBeVisible();
+    await page.getByRole('button', { name: 'Run checks', exact: true }).click();
+    await expect(page.getByText(`${failureMode === 'all' ? 0 : 1}/2 checks passed`, { exact: true })).toBeVisible();
+    await expect(page.locator('.check-results .check-failed')).toHaveCount(failureMode === 'all' ? 2 : 1);
+    await expect(page.locator('.check-failed span').first()).not.toBeEmpty();
+    const completed = api.checkRequests.find((request) => request.body['action'] === 'complete');
+    expect(completed?.body['checks']).toEqual([
+      { id: 'valid-username', passed: failureMode === 'one' },
+      { id: 'invalid-username', passed: false },
+    ]);
+    await page.getByTestId('submit-coding').click();
+    await expect(page.getByTestId('interview-results')).toBeVisible();
+    await expect(page.locator('.check-list__failed')).toHaveCount(failureMode === 'all' ? 2 : 1);
   });
 }

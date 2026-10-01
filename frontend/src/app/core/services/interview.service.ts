@@ -1097,18 +1097,28 @@ export class InterviewService {
   ): InterviewCodingState | null {
     const source = this.record(value);
     if (!source) return null;
+    const draft = this.normalizeOptionalDraft(source['draft']);
     const checkRuns = this.array(source['checkRuns']);
-    const latestRun = this.record(checkRuns[checkRuns.length - 1]);
+    const matchingRun = draft?.hash
+      ? checkRuns.map((run) => this.record(run)).reverse()
+        .find((run) => run?.['draftHash'] === draft.hash)
+      : null;
+    // Alternate response shapes must also prove which draft was checked.
+    const directChecksMatch = !!draft?.hash
+      && source['checkResultsDraftHash'] === draft.hash;
+    const checkResults = this.normalizeCheckArray(
+      matchingRun?.['checks']
+        ?? (directChecksMatch ? source['checkResults'] ?? source['checks'] : []),
+    );
     return {
       readyDeadlineAt: this.isoText(source['readyDeadlineAt'] ?? deadlines?.['codingReady']),
       deadlineAt: this.isoText(source['deadlineAt'] ?? deadlines?.['coding']),
       task: this.normalizeCodingTask(
         source['task'] ?? source['question'] ?? source['variant'],
       ),
-      draft: this.normalizeOptionalDraft(source['draft']),
-      checkResults: this.normalizeCheckArray(
-        source['checkResults'] ?? source['checks'] ?? latestRun?.['checks'],
-      ),
+      draft,
+      checkResults,
+      checkResultsDraftHash: checkResults.length ? draft!.hash : null,
       runCount: this.nonNegativeInteger(source['runCount'] ?? source['runs'])
         ?? checkRuns.length,
     };
@@ -1357,7 +1367,7 @@ export class InterviewService {
         const source = this.record(entry);
         if (!source) return;
         const id = this.text(source['id']) || `check-${index + 1}`;
-        const name = this.text(source['name'] ?? source['label']) || id;
+        const name = this.text(source['name'] ?? source['label']) || `Check ${index + 1}`;
         results.push({
           id,
           name,

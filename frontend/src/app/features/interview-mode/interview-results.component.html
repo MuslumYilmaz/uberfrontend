@@ -44,28 +44,34 @@
 
     <section
       *ngIf="report.interviewFormat === 'coding'"
-      class="score-grid"
+      class="interview-summary"
       aria-label="Interview summary">
-      <article faCard elevated>
-        <span>Correct</span>
-        <strong>{{ report.score.correct }}</strong>
-      </article>
-      <article faCard elevated>
-        <span>Incorrect</span>
-        <strong>{{ report.score.incorrect }}</strong>
-      </article>
-      <article faCard elevated>
-        <span>Unanswered</span>
-        <strong>{{ report.score.unanswered }}</strong>
-      </article>
-      <article faCard elevated>
-        <span>MCQ time used</span>
-        <strong>{{ formatTiming(report.mcqTiming) }}</strong>
-      </article>
-      <article *ngIf="report.codingTiming" faCard elevated>
-        <span>Coding time used</span>
-        <strong>{{ formatTiming(report.codingTiming) }}</strong>
-      </article>
+      <div class="score-grid">
+        <article faCard elevated>
+          <span>Correct</span>
+          <strong>{{ report.score.correct }}</strong>
+        </article>
+        <article faCard elevated>
+          <span>Incorrect</span>
+          <strong>{{ report.score.incorrect }}</strong>
+        </article>
+        <article faCard elevated>
+          <span>Unanswered</span>
+          <strong>{{ report.score.unanswered }}</strong>
+        </article>
+      </div>
+      <div class="timing-grid">
+        <article faCard elevated [attr.aria-label]="'Multiple-choice time: ' + timingAccessibleLabel(report.mcqTiming)">
+          <span>Multiple-choice time used</span>
+          <strong aria-hidden="true">{{ formatClock(report.mcqTiming.usedSeconds) }}</strong>
+          <span aria-hidden="true" *ngIf="report.mcqTiming.allowedSeconds !== null">of {{ formatClock(report.mcqTiming.allowedSeconds) }}</span>
+        </article>
+        <article *ngIf="report.codingTiming as timing" faCard elevated [attr.aria-label]="'Coding time: ' + timingAccessibleLabel(timing)">
+          <span>Coding time used</span>
+          <strong aria-hidden="true">{{ formatClock(timing.usedSeconds) }}</strong>
+          <span aria-hidden="true" *ngIf="timing.allowedSeconds !== null">of {{ formatClock(timing.allowedSeconds) }}</span>
+        </article>
+      </div>
     </section>
 
     <section
@@ -93,7 +99,7 @@
         <p>These suggestions come from missed or unanswered questions in this session.</p>
       </div>
       <ul>
-        <li *ngFor="let topic of report.remediationTopics">{{ topic }}</li>
+        <li *ngFor="let topic of report.remediationTopics">{{ displayLabel(topic) }}</li>
       </ul>
     </section>
 
@@ -124,9 +130,9 @@
       <div *ngIf="coding.rubric.length" class="rubric">
         <article *ngFor="let item of coding.rubric">
           <div>
-            <strong>{{ item.label }}</strong>
+            <strong><fa-inline-code [text]="item.label"></fa-inline-code></strong>
             <ul *ngIf="item.criteria.length">
-              <li *ngFor="let criterion of item.criteria">{{ criterion }}</li>
+              <li *ngFor="let criterion of item.criteria"><fa-inline-code [text]="criterion"></fa-inline-code></li>
             </ul>
           </div>
           <span
@@ -169,25 +175,25 @@
           [class.answer--correct]="question.correct"
           [class.answer--incorrect]="!question.correct">
           <summary>
-            <span>Question {{ index + 1 }} · {{ question.technology }} · {{ question.competency }}</span>
+            <span>Question {{ index + 1 }} · {{ displayLabel(question.technology) }} · {{ displayLabel(question.competency) }}</span>
             <strong>{{ question.correct ? 'Correct' : question.selectedOptionId ? 'Incorrect' : 'Unanswered' }}</strong>
           </summary>
           <div class="answer-body">
-            <h3>{{ question.prompt }}</h3>
+            <h3><fa-inline-code [text]="question.prompt"></fa-inline-code></h3>
             <pre *ngIf="question.code" class="question-code"><code>{{ question.code }}</code></pre>
             <dl>
               <div>
                 <dt>Your answer</dt>
-                <dd>{{ optionLabel(question, question.selectedOptionId) }}</dd>
+                <dd><fa-inline-code [text]="optionLabel(question, question.selectedOptionId)"></fa-inline-code></dd>
               </div>
               <div>
                 <dt>Correct answer</dt>
-                <dd>{{ optionLabel(question, question.correctOptionId) }}</dd>
+                <dd><fa-inline-code [text]="optionLabel(question, question.correctOptionId)"></fa-inline-code></dd>
               </div>
             </dl>
-            <p *ngIf="question.explanation">{{ question.explanation }}</p>
+            <p *ngIf="question.explanation"><fa-inline-code [text]="question.explanation"></fa-inline-code></p>
             <div *ngIf="question.remediationTopics.length" class="topic-list">
-              <span *ngFor="let topic of question.remediationTopics">{{ topic }}</span>
+              <span *ngFor="let topic of question.remediationTopics">{{ displayLabel(topic) }}</span>
             </div>
           </div>
         </details>
@@ -343,7 +349,7 @@
           <p>These topics come from missing or conflicting evidence in this design.</p>
         </div>
         <ul>
-          <li *ngFor="let topic of design.remediationTopics">{{ topic }}</li>
+          <li *ngFor="let topic of design.remediationTopics">{{ displayLabel(topic) }}</li>
         </ul>
       </section>
 

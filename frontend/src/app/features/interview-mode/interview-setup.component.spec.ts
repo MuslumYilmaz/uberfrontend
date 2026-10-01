@@ -347,7 +347,7 @@ describe('InterviewSetupComponent', () => {
     })));
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.textContent).toContain('9m 30s MCQ');
+    expect(fixture.nativeElement.textContent).toContain('9m 30s multiple-choice');
   });
 
   it('starts the separate system-design format with its own quota and level timer', () => {

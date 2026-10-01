@@ -10,6 +10,40 @@ const { selectQuestions } = require('../services/interview/selection');
 const { serializeSession } = require('../services/interview/session-service');
 
 describe('interview session serialization', () => {
+  test.each(['javascript', 'framework-preview'])('adds only pinned %s check names to bounded evidence', (kind) => {
+    const serialized = serializeSession({
+      _id: 'checked-session',
+      status: 'coding_active',
+      bank: {},
+      entitlementSnapshot: { tier: 'free', capturedAt: new Date() },
+      codingPrivate: {
+        runnerConfig: {
+          kind,
+          tests: 'PRIVATE TEST SOURCE',
+          ...(kind === 'framework-preview'
+            ? { groups: [{ checks: [{ id: 'known', name: '  Handles boundary values  ', steps: ['PRIVATE'] }] }] }
+            : { checks: [{ id: 'known', name: '  Handles boundary values  ', privateField: 'PRIVATE' }] }),
+        },
+        rubric: { privateField: 'PRIVATE' },
+      },
+      codingCheckRuns: [{
+        draftHash: 'hash',
+        ranAt: new Date(),
+        passedCount: 1,
+        totalCount: 2,
+        checks: [
+          { id: 'known', passed: true, name: 'Untrusted client name', message: 'PRIVATE' },
+          { id: 'unknown-opaque-id', passed: false },
+        ],
+      }],
+    });
+    expect(serialized.coding.checkRuns[0].checks).toEqual([
+      { id: 'known', name: 'Handles boundary values', passed: true },
+      { id: 'unknown-opaque-id', name: 'Check 2', passed: false },
+    ]);
+    expect(JSON.stringify(serialized)).not.toMatch(/PRIVATE|runnerConfig|rubric|Untrusted/);
+  });
+
   test('marks abandoned sessions as having no result and exposes no answer material', () => {
     const serialized = serializeSession({
       _id: 'abandoned-session',

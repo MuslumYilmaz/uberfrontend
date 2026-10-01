@@ -100,6 +100,7 @@ describe('InterviewSessionComponent', () => {
       task: null,
       draft: null,
       checkResults: [],
+      checkResultsDraftHash: null,
       runCount: 0,
     },
   });
@@ -136,6 +137,7 @@ describe('InterviewSessionComponent', () => {
       },
       draft: null,
       checkResults: [],
+      checkResultsDraftHash: null,
       runCount: 0,
     },
   });
@@ -381,7 +383,7 @@ describe('InterviewSessionComponent', () => {
 
     expect(component.currentIndex()).toBe(1);
     expect(component.reviewing()).toBeTrue();
-    expect(fixture.nativeElement.textContent).toContain('MCQ review');
+    expect(fixture.nativeElement.textContent).toContain('multiple-choice review');
     discardPeriodicTasks();
   }));
 
@@ -1203,73 +1205,144 @@ describe('InterviewSessionComponent', () => {
     expect(component.draftStatusLabel()).toBe('Offline · kept in this tab only');
   });
 
-  it('prepares checks, executes them in the browser sandbox, then records pass/fail ids', fakeAsync(() => {
-    const session = codingSession();
-    session.track = 'core-web';
-    session.coding!.task = {
-      ...session.coding!.task!,
-      id: 'escape-html',
-      sourceQuestionId: 'js-escape-html',
-      files: [{
-        path: 'escapeHtml.js',
-        language: 'javascript',
-        content: 'export default function escapeHtml(value) { return value; }',
-        readOnly: false,
-      }],
-    };
-    session.coding!.draft = {
-      files: session.coding!.task.files,
-      hash: 'draft-hash',
-      revision: null,
-      updatedAt: '2026-07-27T12:00:00.000Z',
-    };
-    service.getSession.and.returnValue(of(session));
-    service.prepareCodingCheckRun.and.returnValue(of({
-      runToken: 'run-token',
-      expiresAt: '2026-07-27T12:05:00.000Z',
-      draftHash: 'draft-hash',
-      expectedCheckIds: ['escape'],
-      evidenceMode: 'client-self-report',
-      authoritative: false,
-      runnerConfig: {
-        kind: 'javascript',
-        language: 'javascript',
-        tests: "import escapeHtml from './escapeHtml'; test('escapes', () => expect(escapeHtml('x')).toBe('x'));",
-        checks: [{ id: 'escape', name: 'escapes' }],
-      },
+  for (const editDuring of ['none', 'execution', 'recording'] as const) {
+    it(`binds browser check results to the executed draft when editing during ${editDuring}`, fakeAsync(() => {
+      const session = codingSession();
+      session.track = 'core-web';
+      session.coding!.task = {
+        ...session.coding!.task!,
+        id: 'escape-html',
+        sourceQuestionId: 'js-escape-html',
+        files: [{
+          path: 'escapeHtml.js',
+          language: 'javascript',
+          content: 'export default function escapeHtml(value) { return value; }',
+          readOnly: false,
+        }],
+      };
+      session.coding!.draft = {
+        files: session.coding!.task.files,
+        hash: 'draft-hash',
+        revision: null,
+        updatedAt: '2026-07-27T12:00:00.000Z',
+      };
+      service.getSession.and.returnValue(of(session));
+      service.prepareCodingCheckRun.and.returnValue(of({
+        runToken: 'run-token',
+        expiresAt: '2026-07-27T12:05:00.000Z',
+        draftHash: 'draft-hash',
+        expectedCheckIds: ['escape'],
+        evidenceMode: 'client-self-report',
+        authoritative: false,
+        runnerConfig: {
+          kind: 'javascript',
+          language: 'javascript',
+          tests: "import escapeHtml from './escapeHtml'; test('escapes', () => expect(escapeHtml('x')).toBe('x'));",
+          checks: [{ id: 'escape', name: 'escapes' }],
+        },
+      }));
+      sandbox.runWithTests.and.resolveTo({
+        entries: [],
+        results: [{ name: 'escapes', passed: true }],
+      });
+      const receipt = new Subject<{ version: number; results: Array<{ id: string; name: string; passed: boolean }> }>();
+      service.completeCodingCheckRun.and.returnValue(receipt);
+      fixture = TestBed.createComponent(InterviewSessionComponent);
+      component = fixture.componentInstance;
+      component.editorFallback.set(true);
+      fixture.detectChanges();
+
+      component.runChecks();
+      if (editDuring === 'execution') component.onCodeChange('export default function escapeHtml() { return null; }');
+      flushMicrotasks();
+
+      expect(sandbox.runWithTests).toHaveBeenCalledWith(jasmine.objectContaining({
+        userCode: jasmine.stringMatching('__FA_USER_DEFAULT__'),
+        testCode: jasmine.stringMatching('globalThis.__FA_USER_DEFAULT__'),
+      }));
+      if (editDuring === 'execution') {
+        expect(service.completeCodingCheckRun).not.toHaveBeenCalled();
+      } else {
+        expect(service.completeCodingCheckRun).toHaveBeenCalledWith(
+          session.id,
+          jasmine.objectContaining({ runToken: 'run-token', draftHash: 'draft-hash' }),
+          [{ id: 'escape', passed: true }],
+          5,
+        );
+      }
+      if (editDuring === 'recording') {
+        component.onCodeChange('export default function escapeHtml() { return null; }');
+        // A newer save may be acknowledged before the older check receipt arrives.
+        (component as any).patchSessionVersion(7);
+      }
+      receipt.next({ version: 6, results: [{ id: 'escape', name: 'escapes', passed: true }] });
+      receipt.complete();
+      if (editDuring === 'none') {
+        expect(component.checkResults()[0].passed).toBeTrue();
+        expect(component.session()?.version).toBe(6);
+      } else {
+        expect(component.checkResults()).toEqual([]);
+        expect(component.session()?.version).toBe(editDuring === 'recording' ? 7 : 5);
+      }
+      fixture.destroy();
+      flush();
+      discardPeriodicTasks();
     }));
-    sandbox.runWithTests.and.resolveTo({
-      entries: [],
-      results: [{ name: 'escapes', passed: true }],
+  }
+
+  for (const recoveryMode of ['none', 'dirty', 'conflict'] as const) {
+    it(`restores server check evidence safely with ${recoveryMode} local recovery`, () => {
+      const session = codingSession();
+      session.coding!.draft = {
+        files: session.coding!.task!.files, hash: 'checked-hash', revision: null,
+        updatedAt: '2026-07-29T12:00:00.000Z',
+      };
+      session.coding!.checkResults = [{ id: 'bounds', name: 'Handles bounds', passed: false }];
+      session.coding!.checkResultsDraftHash = 'checked-hash';
+      if (recoveryMode !== 'none') storeRecovery('coding', {
+        sessionId: session.id, taskId: session.coding!.task!.id,
+        files: [{ path: '/src/App.tsx', content: 'export default function App() { return null; }' }],
+        activeFilePath: '/src/App.tsx', dirty: true,
+        baseHash: recoveryMode === 'dirty' ? 'checked-hash' : 'older-hash',
+        updatedAt: '2026-07-29T12:01:00.000Z',
+      });
+      service.getSession.and.returnValue(of(session));
+      fixture = TestBed.createComponent(InterviewSessionComponent);
+      component = fixture.componentInstance;
+      component.editorFallback.set(true);
+      fixture.detectChanges();
+      expect(component.checkResults()).toEqual(recoveryMode === 'none' ? session.coding!.checkResults : []);
+      expect(component.codingDraftConflict()).toBe(recoveryMode === 'conflict');
+      if (recoveryMode === 'none') {
+        expect(fixture.nativeElement.textContent).toContain('Run checks again for failure details.');
+      }
     });
-    service.completeCodingCheckRun.and.returnValue(of({
-      version: 6,
-      results: [{ id: 'escape', name: 'escapes', passed: true }],
-    }));
+  }
+
+  it('deduplicates normalized task prose, preserves constraints and hides an empty requirements section', () => {
+    const session = codingSession();
+    session.coding!.task!.requirements = [{
+      id: 'duplicate', title: '  Counter  ', prompt: 'Build a guarded\n counter.', constraints: [],
+    }];
+    service.getSession.and.returnValue(of(session));
     fixture = TestBed.createComponent(InterviewSessionComponent);
     component = fixture.componentInstance;
     component.editorFallback.set(true);
     fixture.detectChanges();
-
-    component.runChecks();
-    flushMicrotasks();
-
-    expect(sandbox.runWithTests).toHaveBeenCalledWith(jasmine.objectContaining({
-      userCode: jasmine.stringMatching('__FA_USER_DEFAULT__'),
-      testCode: jasmine.stringMatching('globalThis.__FA_USER_DEFAULT__'),
-    }));
-    expect(service.completeCodingCheckRun).toHaveBeenCalledWith(
-      session.id,
-      jasmine.objectContaining({ runToken: 'run-token', draftHash: 'draft-hash' }),
-      [{ id: 'escape', passed: true }],
-      5,
-    );
-    expect(component.checkResults()[0].passed).toBeTrue();
-    expect(component.session()?.version).toBe(6);
-    fixture.destroy();
-    flush();
-    discardPeriodicTasks();
-  }));
+    expect(component.codingRequirements()).toEqual([]);
+    expect(fixture.nativeElement.textContent).not.toContain('Requirements');
+    const next = structuredClone(session);
+    next.coding!.task!.requirements[0].constraints = ['Keep `count` positive.'];
+    next.coding!.task!.requirements.push({ id: 'distinct', title: 'Edge cases', prompt: 'Handle zero.', constraints: [] });
+    component.session.set(next);
+    fixture.detectChanges();
+    expect(component.codingRequirements()).toEqual([
+      { id: 'duplicate', title: '', prompt: '', constraints: ['Keep `count` positive.'] },
+      { id: 'distinct', title: 'Edge cases', prompt: 'Handle zero.', constraints: [] },
+    ]);
+    expect(fixture.nativeElement.textContent).toContain('Handle zero.');
+    expect(fixture.nativeElement.querySelector('.requirement-group code')?.textContent).toBe('count');
+  });
 
   it('hydrates an asset-only framework task from the panel file emission and autosaves it', fakeAsync(() => {
     const session = codingSession();
