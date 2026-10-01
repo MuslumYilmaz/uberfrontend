@@ -2,7 +2,7 @@ import { inject, PLATFORM_ID } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivateFn, CanMatchFn, GuardResult, Route, Router, RouterStateSnapshot, UrlSegment } from '@angular/router';
 import { Observable, catchError, map, of } from 'rxjs';
 import { AuthService } from '../services/auth.service';
-import { privatePageRedirect } from './private-page-redirect';
+import { prerenderPageRedirect } from './prerender-page-redirect';
 
 /** Blocks route activation if not logged in */
 export const authGuard: CanActivateFn = (
@@ -13,7 +13,7 @@ export const authGuard: CanActivateFn = (
   const router = inject(Router);
 
   if (auth.isLoggedIn()) return true;
-  const redirect = privatePageRedirect(router.createUrlTree(['/auth/login'], { queryParams: { redirectTo: state.url } }), inject(PLATFORM_ID));
+  const redirect = prerenderPageRedirect(router.createUrlTree(['/auth/login'], { queryParams: { redirectTo: state.url } }), inject(PLATFORM_ID));
 
   return auth.ensureMe().pipe(
     map((u) => u ? true : redirect),
@@ -31,7 +31,7 @@ export const authMatchGuard: CanMatchFn = (
 
   const url = '/' + segments.map(s => s.path).join('/');
   if (auth.isLoggedIn()) return true;
-  const redirect = privatePageRedirect(router.createUrlTree(['/auth/login'], { queryParams: { redirectTo: url } }), inject(PLATFORM_ID));
+  const redirect = prerenderPageRedirect(router.createUrlTree(['/auth/login'], { queryParams: { redirectTo: url } }), inject(PLATFORM_ID));
 
   return auth.ensureMe().pipe(
     map((u) => u ? true : redirect),

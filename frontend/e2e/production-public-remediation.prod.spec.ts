@@ -606,6 +606,16 @@ test.describe('production/SSR public remediation smoke', () => {
     }
   });
 
+  test('guides alias retains prerendered content and redirects browser query and fragment', async ({ page, request }) => {
+    const html = await readRawHtml(request, '/guides');
+    expect(rawBodyMarkup(html)).toContain('Frontend Interview Playbook Hub');
+    expect(html).not.toMatch(/http-equiv=["']refresh["']/i);
+    expect(extractCanonical(html)).toBe(expectedCanonical('/guides/interview-blueprint'));
+    await page.goto('/guides?ref=upgrade#overview');
+    await expect(page).toHaveURL('/guides/interview-blueprint?ref=upgrade#overview');
+    await expect(page.getByRole('heading', { name: 'Frontend Interview Playbook Hub', exact: true })).toBeVisible();
+  });
+
   test('raw prerender HTML preserves access/indexing and excludes Premium solution payloads', async ({ request }) => {
     for (const previewCase of PREMIUM_PREVIEWS) {
       const html = await readRawHtml(request, previewCase.path);

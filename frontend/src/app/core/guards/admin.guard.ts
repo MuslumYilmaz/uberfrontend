@@ -2,14 +2,14 @@ import { inject, PLATFORM_ID } from '@angular/core';
 import { CanActivateFn, CanMatchFn, Router, UrlSegment, GuardResult, Route, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { Observable, catchError, map, of } from 'rxjs';
 import { AuthService } from '../services/auth.service';
-import { privatePageRedirect } from './private-page-redirect';
+import { prerenderPageRedirect } from './prerender-page-redirect';
 
 function adminCheck(targetUrl?: string): GuardResult | Observable<GuardResult> {
   const auth = inject(AuthService);
   const router = inject(Router);
   const platformId = inject(PLATFORM_ID);
 
-  const loginRedirect = privatePageRedirect(router.createUrlTree(['/auth/login'], {
+  const loginRedirect = prerenderPageRedirect(router.createUrlTree(['/auth/login'], {
     queryParams: targetUrl ? { redirectTo: targetUrl } : undefined
   }), platformId);
 
@@ -18,7 +18,7 @@ function adminCheck(targetUrl?: string): GuardResult | Observable<GuardResult> {
   return auth.ensureMe().pipe(
     map((u) => {
       if (!u) return loginRedirect;
-      if ((u.role ?? 'user') !== 'admin') return privatePageRedirect(router.createUrlTree(['/dashboard']), platformId);
+      if ((u.role ?? 'user') !== 'admin') return prerenderPageRedirect(router.createUrlTree(['/dashboard']), platformId);
       return true;
     }),
     catchError(() => of(loginRedirect))
