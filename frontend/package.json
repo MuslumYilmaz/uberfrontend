@@ -99,7 +99,8 @@
     "seo:tech-hub-links": "node scripts/audit-tech-hub-internal-links.mjs",
     "metrics:design-system": "node scripts/design-system-metrics.mjs",
     "perf:contract": "node scripts/perf-contract.mjs",
-    "perf:contract:strict": "node scripts/perf-contract.mjs --strict"
+    "perf:contract:strict": "node scripts/perf-contract.mjs --strict",
+    "test:e2e:upgrade-visual": "PLAYWRIGHT_WEB_SERVER=1 PLAYWRIGHT_REUSE_SERVER=0 PLAYWRIGHT_PORT=4242 playwright test e2e/upgrade-visual.spec.ts --project=chromium --workers=3 --retries=0"
   },
   "private": true,
   "dependencies": {
