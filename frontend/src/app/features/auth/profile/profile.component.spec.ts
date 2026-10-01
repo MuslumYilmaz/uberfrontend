@@ -1,6 +1,5 @@
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router';
 import { BehaviorSubject, of } from 'rxjs';
 import { DashboardGamificationResponse } from '../../../core/models/gamification.model';
@@ -180,7 +179,7 @@ describe('ProfileComponent', () => {
     solvedQuestions.resolved.and.returnValue(of([]));
 
     await TestBed.configureTestingModule({
-      imports: [ProfileComponent, NoopAnimationsModule],
+      imports: [ProfileComponent],
       providers: [
         provideRouter([]),
         { provide: AuthService, useValue: authStub },

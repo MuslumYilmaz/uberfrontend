@@ -1,4 +1,4 @@
-import { DOCUMENT } from '@angular/core';
+import { DOCUMENT, PLATFORM_ID, REQUEST } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Meta, Title } from '@angular/platform-browser';
 import { BrowserTestingModule } from '@angular/platform-browser/testing';
@@ -128,4 +128,29 @@ describe('SeoService', () => {
     expect(doc.head.querySelector('#seo-jsonld')?.textContent).toBe(originalSchema);
     expect(doc.head.querySelector('link[rel="canonical"]')?.getAttribute('href')).toBe(originalCanonical);
   });
+});
+
+describe('SeoService server indexing', () => {
+  for (const requested of ['index,follow', 'noindex,follow', 'noindex,nofollow']) {
+    it(`preserves ${requested} during static prerender without an incoming request`, () => {
+      TestBed.configureTestingModule({ providers: [
+        { provide: PLATFORM_ID, useValue: 'server' },
+        { provide: REQUEST, useValue: null },
+      ] });
+      TestBed.inject(SeoService).updateTags({ robots: requested });
+      expect(TestBed.inject(Meta).getTag('name="robots"')?.content).toBe(requested);
+    });
+  }
+
+  for (const hostname of ['frontendatlas.com', 'preview.frontendatlas.vercel.app', 'localhost']) {
+    it(`uses the real incoming host for SSR on ${hostname}`, () => {
+      TestBed.configureTestingModule({ providers: [
+        { provide: PLATFORM_ID, useValue: 'server' },
+        { provide: REQUEST, useValue: new Request(`https://${hostname}/coding`) },
+      ] });
+      TestBed.inject(SeoService).updateTags({ robots: 'index,follow' });
+      expect(TestBed.inject(Meta).getTag('name="robots"')?.content)
+        .toBe(hostname === 'frontendatlas.com' ? 'index,follow' : 'noindex,nofollow');
+    });
+  }
 });

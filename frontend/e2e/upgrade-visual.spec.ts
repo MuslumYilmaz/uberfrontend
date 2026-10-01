@@ -1,6 +1,7 @@
 import { test, expect } from './fixtures';
 import { buildMockUser, installAuthMock } from './auth-mocks';
 import type { Page } from '@playwright/test';
+import path from 'node:path';
 import { InterviewApiMock, seedAuthenticatedInterview, selectSetupChoice } from './interview-mocks';
 
 const widths = [360, 390, 768, 834, 1366, 1440];
@@ -53,6 +54,16 @@ async function capture(page: Page, name: string) {
     await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
   }
   await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+  if (process.env.UPGRADE_MEASUREMENTS === '1') {
+    await page.screenshot({ animations: 'disabled' });
+    const measurements = await page.locator('.p-dialog,.p-dialog-header,.p-dialog-footer,.p-multiselect-panel,.p-multiselect-overlay,.p-multiselect-header,.p-multiselect-filter-container,.p-multiselect-filter,.p-multiselect-item,.p-multiselect-option,.p-multiselect-header .p-checkbox').evaluateAll(elements => elements.map(element => {
+      const style = getComputedStyle(element);
+      const rect = element.getBoundingClientRect();
+      return { className: element.className, rect: rect.toJSON(), padding: style.padding, margin: style.margin, gap: style.gap, border: style.borderWidth, font: style.font, fontFamily: style.fontFamily, lineHeight: style.lineHeight };
+    }));
+    await test.info().attach(`${name}-geometry`, { body: JSON.stringify(measurements, null, 2), contentType: 'application/json' });
+    console.log(name, JSON.stringify(measurements));
+  }
   await expect(page).toHaveScreenshot(`${name}.png`, {
     animations: 'disabled', maxDiffPixelRatio: 0.001,
     mask: [
@@ -60,6 +71,9 @@ async function capture(page: Page, name: string) {
       page.locator('.results-hero > div > p:not(.eyebrow)'),
     ],
   });
+  if (process.env.UPGRADE_GALLERY_DIR) {
+    await page.screenshot({ path: path.join(process.env.UPGRADE_GALLERY_DIR, `${name}.png`), animations: 'disabled', caret: 'hide' });
+  }
 }
 
 test.describe('Angular upgrade visual contract', () => {
@@ -121,7 +135,10 @@ test.describe('Angular upgrade visual contract', () => {
     });
     test(`interview lifecycle at ${width}px`, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 });
-      const api = new InterviewApiMock();
+      // Freezing only the browser clock is insufficient: serverNow also moves
+      // after each answer. Keep both aligned so 10:00 -> 9:59 cannot resize the timer.
+      await page.clock.setFixedTime(new Date('2026-10-01T10:00:00Z'));
+      const api = new InterviewApiMock({ freezeTimers: true });
       await seedAuthenticatedInterview(page, api);
       await page.goto('/interview');
       await expect(page.getByTestId('interview-setup')).toBeVisible();

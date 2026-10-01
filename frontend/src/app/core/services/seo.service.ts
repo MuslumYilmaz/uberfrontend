@@ -1,5 +1,6 @@
 
-import { Injectable, inject, DOCUMENT } from '@angular/core';
+import { Injectable, inject, DOCUMENT, PLATFORM_ID, REQUEST } from '@angular/core';
+import { isPlatformServer } from '@angular/common';
 import { Meta, Title } from '@angular/platform-browser';
 import { environment } from '../../../environments/environment';
 
@@ -21,6 +22,8 @@ export class SeoService {
   private readonly titleSvc = inject(Title);
   private readonly meta = inject(Meta);
   private readonly doc = inject(DOCUMENT);
+  private readonly platformId = inject(PLATFORM_ID);
+  private readonly request = inject(REQUEST, { optional: true });
 
   private readonly defaults = {
     siteName: 'FrontendAtlas',
@@ -216,6 +219,11 @@ export class SeoService {
   }
 
   private getRuntimeHostname(): string {
+    // Prerender has no incoming request. Angular's build-time localhost is not
+    // the deployment host; retain each route's indexing policy in static HTML.
+    if (isPlatformServer(this.platformId)) {
+      return this.request ? new URL(this.request.url).hostname.toLowerCase() : '';
+    }
     const win = this.doc?.defaultView as (Window & { __FA_SEO_HOST__?: string }) | null;
     const override = win?.__FA_SEO_HOST__;
     if (typeof override === 'string' && override.trim()) {

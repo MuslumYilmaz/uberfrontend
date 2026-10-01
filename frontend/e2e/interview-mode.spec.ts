@@ -819,6 +819,20 @@ for (const failureMode of ['all', 'one'] as const) {
       { id: 'valid-username', passed: failureMode === 'one' },
       { id: 'invalid-username', passed: false },
     ]);
+    if (process.env.UPGRADE_GALLERY_DIR) {
+      for (const width of [1440, 390]) {
+        await page.setViewportSize({ width, height: 900 });
+        if (width >= 768) {
+          await page.getByRole('separator', { name: 'Resize code editor and check results' }).press('Home');
+        }
+        await page.evaluate(() => window.scrollTo(0, 0));
+        await page.screenshot({
+          path: path.join(process.env.UPGRADE_GALLERY_DIR, `interview-${failureMode}-failed-${width}.png`),
+          fullPage: true, animations: 'disabled',
+        });
+      }
+      await page.setViewportSize({ width: 1440, height: 900 });
+    }
     await page.getByTestId('submit-coding').click();
     await expect(page.getByTestId('interview-results')).toBeVisible();
     await expect(page.locator('.check-list__failed')).toHaveCount(failureMode === 'all' ? 2 : 1);

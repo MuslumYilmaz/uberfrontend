@@ -95,6 +95,8 @@ export type InterviewApiOptions = {
   };
   initialSession?: MockSession | null;
   initialResult?: Record<string, unknown> | null;
+  /** Visual fixtures pair this with page.clock.setFixedTime; behavioral tests use real deadlines. */
+  freezeTimers?: boolean;
 };
 
 export const LEVELS: Array<{ value: InterviewLevel; label: string }> = [
@@ -516,8 +518,10 @@ export class InterviewApiMock {
   javascriptRunnerConfig: null | { kind: string; language: string; tests: string; checks: Array<{ id: string; name: string }> } = null;
   getSessionCount = 0;
   createCount = 0;
+  private readonly freezeTimers: boolean;
 
   constructor(options: InterviewApiOptions = {}) {
+    this.freezeTimers = options.freezeTimers ?? false;
     this.enabled = options.enabled ?? true;
     this.accessMode = options.accessMode ?? (this.enabled ? 'public' : 'off');
     this.quota = options.quota ?? {
@@ -936,7 +940,18 @@ export class InterviewApiMock {
   private snapshotSession(): MockSession | null {
     if (!this.currentSession) return null;
     this.currentSession.serverNow = nowIso();
-    return clone(this.currentSession);
+    const snapshot = clone(this.currentSession);
+    if (this.freezeTimers) {
+      const deadline = snapshot.status === 'mcq_active' ? snapshot.mcqDeadlineAt
+        : snapshot.status === 'coding_ready' ? snapshot.codingReadyDeadlineAt
+        : snapshot.coding?.deadlineAt;
+      if (deadline) {
+        const end = Date.parse(deadline);
+        const wholeMinutes = Math.ceil((end - Date.now()) / 60_000);
+        snapshot.serverNow = new Date(end - wholeMinutes * 60_000).toISOString();
+      }
+    }
+    return snapshot;
   }
 
   private capture(
@@ -1035,4 +1050,3 @@ export async function expectNoHorizontalOverflow(page: Page): Promise<void> {
       && body.scrollWidth <= body.clientWidth + 1;
   })).toBe(true);
 }
-

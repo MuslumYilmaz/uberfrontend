@@ -1,7 +1,13 @@
 /* PrimeNG bridge layer */
 
+// PrimeUIX's positioning lookup misses tokens inside CSS layers and falls back
+// to a 2px inline gap. Restore Lara 17 anchoring for our select overlays only.
+.p-overlay:has(.fa-select-panel) { margin-top: 0 !important; }
+.p-overlay-content:has(.fa-select-panel) { will-change: auto; }
+
 /* Preserve Lara 17 overlay typography independently of the new styled-mode defaults. */
-.p-select, .p-multiselect, .p-dialog, .p-tooltip, .p-card, .p-chip {
+.p-select, .p-select-overlay, .p-multiselect, .p-multiselect-overlay,
+.p-dialog, .p-tooltip, .p-card, .p-chip {
   font-family: var(--uf-font-control);
   font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
 }
@@ -15,6 +21,56 @@
 
 .p-dialog .p-dialog-title {
   font-weight: 700;
+}
+
+.p-dialog {
+  border-width: 0;
+  // Lara 17 released the animation transform after opening. Retaining a
+  // compositor layer changes fractional-width text rasterization on mobile.
+  transform: none;
+  will-change: auto;
+}
+
+.fa-select-panel__close {
+  position: absolute;
+  top: .75rem;
+  right: 1.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  color: var(--uf-text-secondary);
+}
+
+.fa-select-panel__close:focus-visible { outline: 2px solid var(--uf-accent); }
+
+.fa-select-panel .p-multiselect-header {
+  padding: .75rem 3.25rem .75rem 1.25rem;
+  min-height: 3.5rem;
+  background: var(--uf-control-header);
+  gap: 0;
+}
+
+.fa-select-panel .p-multiselect-filter-container { min-width: 0; }
+.fa-select-panel .p-multiselect-filter {
+  border: 0;
+  padding: 0;
+  background: var(--uf-control-input);
+}
+.fa-select-panel.p-multiselect-overlay { position: relative; }
+
+.fa-select-panel .p-checkbox,
+.fa-select-panel .p-checkbox-box { width: 22px; height: 22px; }
+.fa-select-panel .p-checkbox-box {
+  border-width: 0;
+  border-radius: 6px;
+  background: var(--uf-control-input);
+}
+.fa-select-panel .p-checkbox-checked .p-checkbox-box { background: var(--uf-accent); }
+.fa-select-panel .p-multiselect-option:not(.p-multiselect-option-selected).p-focus {
+  background: color-mix(in srgb, white 3%, transparent);
 }
 
 @layer components {
@@ -129,7 +185,7 @@
   font-weight: 700;
 }
 
-.sdl-mobile-dialog.p-dialog .p-dialog-header-icon {
+.sdl-mobile-dialog.p-dialog .p-dialog-close-button {
   color: #e6eaee;
 }
 
@@ -137,7 +193,7 @@
   background: rgba(8, 10, 14, .68);
 }
 
-.fa-modal-mask.p-dialog-mask.p-component-overlay {
+.fa-modal-mask.p-dialog-mask.p-overlay-mask {
   background: color-mix(in srgb, var(--uf-bg) 62%, transparent);
   backdrop-filter: blur(4px) saturate(112%);
   animation: fa-modal-mask-enter var(--uf-motion-base) ease-out both;
@@ -271,7 +327,17 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .fa-modal-mask.p-dialog-mask.p-component-overlay,
+  .p-dialog-enter-active,
+  .p-dialog-leave-active,
+  .p-anchored-overlay-enter-active,
+  .p-anchored-overlay-leave-active,
+  .p-select-overlay,
+  .p-multiselect-overlay {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
+
+  .fa-modal-mask.p-dialog-mask.p-overlay-mask,
   .fa-modal.p-dialog {
     animation: none;
   }

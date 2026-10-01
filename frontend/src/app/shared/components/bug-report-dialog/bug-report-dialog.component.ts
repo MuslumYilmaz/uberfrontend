@@ -3,6 +3,7 @@ import { Component, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
+import { FaDialogFocusDirective } from '../../ui/dialog/fa-dialog-focus.directive';
 import { TextareaModule } from 'primeng/textarea';
 import { BugReportService } from '../../../core/services/bug-report.service';
 import {
@@ -15,6 +16,7 @@ import {
     imports: [
         CommonModule,
         DialogModule,
+        FaDialogFocusDirective,
         FormsModule,
         TextareaModule,
         ButtonModule,

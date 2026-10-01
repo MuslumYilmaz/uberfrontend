@@ -1,5 +1,4 @@
 import { TestBed } from '@angular/core/testing';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ReplaySubject } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -168,7 +167,7 @@ describe('TradeoffDetailComponent', () => {
     });
 
     await TestBed.configureTestingModule({
-      imports: [TradeoffDetailComponent, RouterTestingModule, NoopAnimationsModule],
+      imports: [TradeoffDetailComponent, RouterTestingModule],
       providers: [
         { provide: SeoService, useValue: seo },
         { provide: TradeoffBattleProgressService, useValue: progress },
@@ -307,7 +306,11 @@ describe('TradeoffDetailComponent', () => {
 
     expect(progress.markCompleted).not.toHaveBeenCalled();
     expect(component.loginPromptOpen).toBeTrue();
-    expect(fixture.nativeElement.textContent || '').toContain('Create a free account to keep completed battles');
+    await fixture.whenStable();
+    fixture.detectChanges();
+    // PrimeNG mounts body-appended overlays outside the component fixture.
+    const dialog = document.querySelector('[role="dialog"]');
+    expect(dialog?.textContent).toContain('Create a free account to keep completed battles');
   });
 
   it('renders the locked premium preview on premium tradeoff battles', async () => {

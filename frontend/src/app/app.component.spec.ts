@@ -2,7 +2,6 @@ import { DeferBlockBehavior, DeferBlockState, TestBed } from '@angular/core/test
 import { RouterTestingModule } from '@angular/router/testing';
 import { Router } from '@angular/router';
 import { Component, DOCUMENT } from '@angular/core';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 
 import { AppComponent } from './app.component';
@@ -67,7 +66,7 @@ describe('AppComponent', () => {
             { path: 'interview-questions/essential', component: DummyDashboardComponent },
             { path: 'admin/users', component: DummyDashboardComponent },
         ]),
-        NoopAnimationsModule],
+        ],
     providers: [
         { provide: DOCUMENT, useValue: createDocumentAt('/') },
         provideHttpClient(withInterceptorsFromDi()),

@@ -3,6 +3,7 @@ import { Component, OnInit, computed, signal, DestroyRef, Injector } from '@angu
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { DialogModule } from 'primeng/dialog';
+import { FaDialogFocusDirective } from '../../../shared/ui/dialog/fa-dialog-focus.directive';
 import {
   DashboardAchievement,
   DashboardAchievements,
@@ -35,7 +36,7 @@ type ProfileShelfBadge = DashboardAchievement & {
 
 @Component({
     selector: 'app-profile',
-    imports: [CommonModule, FormsModule, DialogModule, RouterModule, FaGlyphComponent, FaButtonComponent],
+    imports: [CommonModule, FormsModule, DialogModule, FaDialogFocusDirective, RouterModule, FaGlyphComponent, FaButtonComponent],
     styleUrls: ['./profile.component.css'],
     template: `
     <div class="profile-layout" *ngIf="user(); else loadingTpl">
@@ -417,6 +418,7 @@ type ProfileShelfBadge = DashboardAchievement & {
 
     <p-dialog
       [visible]="changePasswordOpen()"
+      [faDialogVisible]="changePasswordOpen()"
       (visibleChange)="changePasswordOpen.set($event)"
       [modal]="true"
       [dismissableMask]="true"

@@ -1,7 +1,6 @@
 import { HttpRequest, provideHttpClient, withInterceptors } from '@angular/common/http';
-import { APP_INITIALIZER, ApplicationConfig } from '@angular/core';
+import { APP_INITIALIZER, ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
 import { provideClientHydration, withHttpTransferCacheOptions } from '@angular/platform-browser';
-import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter, TitleStrategy, withInMemoryScrolling, withRouterConfig } from '@angular/router';
 import { routes } from './app.routes';
 import { apiCredentialsInterceptor } from './core/interceptors/api-credentials.interceptor';
@@ -28,6 +27,7 @@ function shouldTransferCacheRequest(req: HttpRequest<unknown>): boolean {
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    provideZoneChangeDetection(),
     providePrimeNG({ theme: frontendAtlasPrimeTheme }),
     provideRouter(
       routes,
@@ -48,7 +48,6 @@ export const appConfig: ApplicationConfig = {
         filter: shouldTransferCacheRequest,
       }),
     ),
-    provideAnimations(),
     { provide: TitleStrategy, useClass: SeoTitleStrategy },
     {
       provide: APP_INITIALIZER,

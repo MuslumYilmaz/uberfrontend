@@ -2,7 +2,6 @@ import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { PLATFORM_ID, signal } from '@angular/core';
 import { RouterTestingModule } from '@angular/router/testing';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { of } from 'rxjs';
 import { Router } from '@angular/router';
 import { Question } from '../../../core/models/question.model';
@@ -143,7 +142,7 @@ describe('CodingDetailComponent', () => {
     await TestBed.configureTestingModule({
     imports: [CodingDetailComponent,
         RouterTestingModule,
-        NoopAnimationsModule],
+        ],
     providers: [
         { provide: QuestionService, useValue: questionService },
         { provide: DailyService, useValue: dailyService },

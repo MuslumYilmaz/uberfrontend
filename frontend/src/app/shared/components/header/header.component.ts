@@ -421,7 +421,7 @@ export class HeaderComponent implements OnInit {
   }
 
   @HostListener('document:keydown.escape', ['$event'])
-  onDocumentEsc(event: KeyboardEvent) {
+  onDocumentEsc(event: Event) {
     if (!this.megaOpen()) {
       this.closeAll();
       return;

@@ -1,5 +1,6 @@
 
-import { DestroyRef, Injectable, InjectionToken, NgZone, afterNextRender, inject, signal, DOCUMENT } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { DestroyRef, Injectable, InjectionToken, NgZone, PLATFORM_ID, afterNextRender, inject, signal, DOCUMENT } from '@angular/core';
 import {
   ANNOUNCEMENT_DURATION_MS,
   FEATURE_ANNOUNCEMENTS,
@@ -22,6 +23,7 @@ export class FeatureAnnouncementsService {
 
   constructor() {
     // No transient badges in SSR/prerender or during hydration.
+    if (!isPlatformBrowser(inject(PLATFORM_ID))) return;
     const renderRef = afterNextRender(() => {
       this.refresh();
       this.document.addEventListener('visibilitychange', this.onVisibility);

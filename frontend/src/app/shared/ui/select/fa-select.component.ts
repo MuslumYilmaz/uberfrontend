@@ -10,6 +10,7 @@ import { MultiSelectModule } from 'primeng/multiselect';
     template: `
     <ng-container *ngIf="multiple; else singleSelect">
       <p-multiSelect
+        #multiSelect
         [options]="options"
         [ngModel]="value"
         (ngModelChange)="valueChange.emit($event)"
@@ -17,6 +18,7 @@ import { MultiSelectModule } from 'primeng/multiselect';
         [optionValue]="optionValue"
         [disabled]="disabled"
         [filter]="filter"
+        [autofocusFilter]="filter"
         [showToggleAll]="showToggleAll"
         [appendTo]="appendTo"
         [placeholder]="placeholder"
@@ -26,6 +28,11 @@ import { MultiSelectModule } from 'primeng/multiselect';
         [ariaFilterLabel]="ariaFilterLabel"
         [styleClass]="resolvedStyleClass"
         [panelStyleClass]="resolvedPanelClass">
+        <ng-template #header>
+          <button type="button" class="fa-select-panel__close" aria-label="Close options" (click)="$event.stopPropagation(); multiSelect.hide(true)">
+            <i class="pi pi-times" aria-hidden="true"></i>
+          </button>
+        </ng-template>
       </p-multiSelect>
     </ng-container>
 
