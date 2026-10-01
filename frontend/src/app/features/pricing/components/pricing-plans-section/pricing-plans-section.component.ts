@@ -34,6 +34,7 @@ import { LoginRequiredDialogComponent } from '../../../../shared/components/logi
 import { FaqSectionComponent } from '../../../../shared/faq-section/faq-section.component';
 import { FaButtonComponent } from '../../../../shared/ui/button/fa-button.component';
 import { PUBLIC_CHANGELOG_ENTRIES } from '../../../../core/content/public-changelog';
+import { premiumPracticeLabel, resolvePremiumPracticeCount } from '../../../../core/utils/premium-practice-count.util';
 import { SHOWCASE_STATS } from '../../../../generated/content-metadata';
 
 type PricingVariant = 'full' | 'compact';
@@ -73,7 +74,7 @@ export const RECOMMENDED_PRICING_PLAN: PlanId = 'quarterly';
         </p>
         <ng-template #offerV2HeroCopy>
           <p class="muted">
-            Practice across {{ totalQuestionCount }} questions and 141 Premium prompts with runnable workspaces,
+            Practice across {{ totalQuestionCount }} questions and {{ premiumPracticeSummary }} with runnable workspaces,
             behavioral checks, guided solutions, front-end system-design walkthroughs, and official-source checks.
           </p>
         </ng-template>
@@ -453,8 +454,8 @@ export const RECOMMENDED_PRICING_PLAN: PlanId = 'quarterly';
       <section class="weekly-changelog" *ngIf="variant === 'full'">
         <div class="weekly-changelog__head">
           <p class="eyebrow">Build in public</p>
-          <h3>Recent product updates</h3>
-          <p class="muted">Recent shipped updates so you can evaluate momentum before buying.</p>
+          <h3>Product updates</h3>
+          <p class="muted">Explore product improvements and their publication dates.</p>
         </div>
         <ul class="weekly-changelog__list">
           <li *ngFor="let entry of changelogPreview">
@@ -507,6 +508,11 @@ export class PricingPlansSectionComponent implements OnInit, OnChanges, AfterVie
   private static readonly SOURCE_PATTERN = /^[a-z0-9_-]{1,64}$/;
   private static readonly CAMPAIGN_ID_PATTERN = /^[a-z0-9][a-z0-9_-]{0,63}$/;
 
+  private catalogPremiumPracticeCount?: number | null;
+  @Input() set premiumPracticeCount(value: number | null | undefined) {
+    this.catalogPremiumPracticeCount = value;
+    this.comparisonRows[1].premiumValue = `${this.premiumPracticeSummary} with guided solutions and track/company depth`;
+  }
   @Input() variant: PricingVariant = 'full';
   @Input() paymentsEnabled = false;
   @Input() paymentsConfigReady = true;
@@ -561,7 +567,13 @@ export class PricingPlansSectionComponent implements OnInit, OnChanges, AfterVie
   recommendedPlan = RECOMMENDED_PRICING_PLAN;
   readonly totalQuestionCount = SHOWCASE_STATS.totalQuestions;
 
-  proofChips = ['140+ premium prompts', 'coding + system design', 'guided solution depth'];
+  get premiumPracticeSummary(): string {
+    return premiumPracticeLabel(resolvePremiumPracticeCount(this.catalogPremiumPracticeCount, SHOWCASE_STATS.premiumPracticeCount));
+  }
+
+  get proofChips(): string[] {
+    return [this.premiumPracticeSummary, 'coding + system design + reasoning practice', 'guided solution depth'];
+  }
 
   unlockPreviewCards: Array<{
     previewType: string;
@@ -624,12 +636,12 @@ export class PricingPlansSectionComponent implements OnInit, OnChanges, AfterVie
     {
       label: 'Practice depth',
       freeValue: 'Selected free coding, trivia, and system design prompts',
-      premiumValue: 'Full premium prompt sets across coding and system design',
+      premiumValue: 'Premium coding, system design, debug scenarios, and tradeoff battles',
     },
     {
       label: 'Interview sprint guidance',
       freeValue: 'Public previews and warm-up paths',
-      premiumValue: '141 Premium prompts with guided solutions and track/company depth',
+      premiumValue: `${this.premiumPracticeSummary} with guided solutions and track/company depth`,
     },
     {
       label: 'Continuity',
@@ -859,7 +871,7 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
     if (!this.isOfferV2()) return this.proofChips;
     return [
       `${this.totalQuestionCount} questions`,
-      '141 Premium prompts',
+      this.premiumPracticeSummary,
       'Runnable checks + guided solutions',
       'Front-end system design',
       'Official-source checks',

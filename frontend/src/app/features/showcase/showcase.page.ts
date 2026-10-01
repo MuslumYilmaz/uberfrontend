@@ -570,6 +570,7 @@ You can also reset any task back to the starter whenever you want to re-practice
   ];
 
   companyCounts: ShowcaseStatsPayload['companyCounts'] = SHOWCASE_STATIC_STATS.companyCounts || {};
+  premiumPracticeCount = SHOWCASE_STATIC_STATS.premiumPracticeCount;
   heroQuestionCount = SHOWCASE_STATIC_STATS.totalQuestions || 0;
   reasoningCounts = {
     incidents: 0,
@@ -1327,6 +1328,7 @@ You can also reset any task back to the starter whenever you want to re-practice
   private refreshShowcaseStats() {
     if (!this.isBrowser) return;
     this.qs.loadShowcaseStats({ transferState: false }).pipe(take(1)).subscribe((stats) => {
+      this.premiumPracticeCount = stats.premiumPracticeCount ?? SHOWCASE_STATIC_STATS.premiumPracticeCount;
       if (stats.totalQuestions > 0) {
         this.heroQuestionCount = stats.totalQuestions;
       }

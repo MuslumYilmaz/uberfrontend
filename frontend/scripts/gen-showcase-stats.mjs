@@ -7,6 +7,7 @@ import {
   cdnIncidentsDir as INCIDENT_ASSETS_DIR,
   cdnQuestionsDir as QUESTION_ASSETS_DIR,
   cdnQuestionShowcaseStatsPath,
+  cdnPracticeRegistryPath,
   cdnTradeoffBattlesDir as TRADEOFF_BATTLES_ASSETS_DIR,
   frontendRoot as projectRoot,
   repoRoot,
@@ -134,6 +135,18 @@ function computeTotalQuestions(lists) {
   return ids.size;
 }
 
+export function countPremiumPractices(registry) {
+  if (!Array.isArray(registry)) throw new Error('Practice registry must be an array');
+  const routes = new Set();
+  for (const item of registry) {
+    if (item.access !== 'premium') continue;
+    const route = toNonEmptyString(item.route);
+    if (!route || !route.startsWith('/')) throw new Error('Premium practice is missing a valid route');
+    routes.add(route);
+  }
+  return routes.size;
+}
+
 async function main() {
   const allLists = {
     coding: [],
@@ -165,6 +178,7 @@ async function main() {
 
   const payload = {
     totalQuestions: computeTotalQuestions(allLists),
+    premiumPracticeCount: countPremiumPractices(JSON.parse(await fs.readFile(cdnPracticeRegistryPath, 'utf8'))),
     companyCounts: collectCompanyCounts(allLists, frameworkFamilyById),
   };
 

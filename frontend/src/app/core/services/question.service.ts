@@ -18,6 +18,9 @@ import { ASSET_READER, AssetReader } from './asset-reader';
 import { QuestionPersistenceService } from './question-persistence.service';
 import { PracticeAssetResolverService } from './practice-asset-resolver.service';
 
+import { SHOWCASE_STATS } from '../../generated/content-metadata';
+import { resolvePremiumPracticeCount } from '../utils/premium-practice-count.util';
+
 type Kind = 'coding' | 'trivia' | 'debug';
 type LoadQuestionsOptions = {
   transferState?: boolean;
@@ -35,6 +38,7 @@ export type QuestionListItem = Pick<
 export type MixedQuestionListItem = QuestionListItem & { tech: Tech };
 export type ShowcaseStatsPayload = {
   totalQuestions: number;
+  premiumPracticeCount?: number | null;
   companyCounts: Record<string, { all: number; coding: number; trivia: number; system: number }>;
 };
 
@@ -166,7 +170,7 @@ export class QuestionService {
     if (useTransferState && this.transferState.hasKey(tsKey)) {
       const stats = this.transferState.get(tsKey, this.emptyShowcaseStats());
       this.transferState.remove(tsKey);
-      return of(stats);
+      return of(this.normalizeShowcaseStats(stats));
     }
 
     const { primary, fallback } = this.getAssetUrls('questions/showcase-stats.json');
@@ -668,7 +672,7 @@ export class QuestionService {
   }
 
   private emptyShowcaseStats(): ShowcaseStatsPayload {
-    return { totalQuestions: 0, companyCounts: {} };
+    return { totalQuestions: 0, companyCounts: {}, premiumPracticeCount: resolvePremiumPracticeCount(undefined, SHOWCASE_STATS.premiumPracticeCount) };
   }
 
   private normalizeShowcaseStats(raw: unknown): ShowcaseStatsPayload {
@@ -699,7 +703,8 @@ export class QuestionService {
       companyCounts[slug] = { all, coding, trivia, system };
     }
 
-    return { totalQuestions, companyCounts };
+    const premiumPracticeCount = resolvePremiumPracticeCount(source['premiumPracticeCount'], SHOWCASE_STATS.premiumPracticeCount);
+    return { totalQuestions, companyCounts, premiumPracticeCount };
   }
 
   private safePositiveInt(value: unknown): number {

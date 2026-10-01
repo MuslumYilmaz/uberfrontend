@@ -721,6 +721,21 @@ export const routes: Routes = [
         },
       },
       {
+        path: 'framework-prep/react-prep-path/mastery',
+        pathMatch: 'full',
+        redirectTo: '/guides/framework-prep/react-prep-path',
+      },
+      {
+        path: 'framework-prep/angular-prep-path/mastery',
+        pathMatch: 'full',
+        redirectTo: '/guides/framework-prep/angular-prep-path',
+      },
+      {
+        path: 'framework-prep/vue-prep-path/mastery',
+        pathMatch: 'full',
+        redirectTo: '/guides/framework-prep/vue-prep-path',
+      },
+      {
         path: 'framework-prep/:slug/mastery',
         loadComponent: () =>
           import('./features/guides/mastery-path/mastery-path-page.component').then(

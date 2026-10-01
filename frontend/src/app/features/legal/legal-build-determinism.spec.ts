@@ -1,3 +1,4 @@
+import { PrivacyComponent } from './privacy/privacy.component';
 import { Type } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -22,10 +23,11 @@ describe('legal page build determinism', () => {
     jasmine.clock().mockDate(new Date('2026-08-08T23:59:59.000Z'));
 
     await TestBed.configureTestingModule({
-      imports: [CookiesComponent, RefundComponent, TermsComponent, RouterTestingModule],
+      imports: [CookiesComponent, RefundComponent, TermsComponent, PrivacyComponent, RouterTestingModule],
     }).compileComponents();
 
     const firstBuild = {
+      privacy: renderText(PrivacyComponent),
       cookies: renderText(CookiesComponent),
       refund: renderText(RefundComponent),
       terms: renderText(TermsComponent),
@@ -33,6 +35,7 @@ describe('legal page build determinism', () => {
 
     jasmine.clock().mockDate(new Date('2027-01-01T00:00:01.000Z'));
     const laterBuild = {
+      privacy: renderText(PrivacyComponent),
       cookies: renderText(CookiesComponent),
       refund: renderText(RefundComponent),
       terms: renderText(TermsComponent),

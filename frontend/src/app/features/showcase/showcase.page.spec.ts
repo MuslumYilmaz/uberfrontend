@@ -519,9 +519,9 @@ describe('ShowcasePageComponent', () => {
     expect(trustText).toContain(
       'Hands-on coding, runnable examples, regression tests, and transparent editorial updates—inside one focused workflow.',
     );
-    expect(trustSection.querySelector('[data-testid="trust-milestone-value"]')?.textContent?.trim()).toBe('100');
-    expect(trustText).toContain('FrontendAtlas accounts created');
-    expect(trustText).toContain('Early milestone · July 2026');
+    expect(trustSection.querySelector('[data-testid="trust-milestone-value"]')).toBeNull();
+    expect(trustText).not.toContain('FrontendAtlas accounts created');
+    expect(trustText).not.toContain('Early milestone');
     expect(trustText).toContain('FrontendAtlas Editorial');
     expect(trustText).toContain('Built and maintained as an independent frontend interview-prep project');
     expect(workflowItems).toEqual([...PUBLIC_EDITORIAL_FACTS.workflow]);

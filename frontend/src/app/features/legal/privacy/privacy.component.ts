@@ -247,7 +247,7 @@ import { RouterModule } from '@angular/router';
           <a [routerLink]="['/legal/terms']">Terms of Service</a> and
           <a [routerLink]="['/legal/cookies']">Cookie Policy</a>.
         </p>
-        <p class="tiny">© 2025 {{ companyName }}. All rights reserved.</p>
+        <p class="tiny">© {{ companyName }}. All rights reserved.</p>
       </footer>
     </article>
   `,

@@ -281,12 +281,6 @@
       </p>
     </div>
 
-    <aside class="trust-milestone glass" aria-label="Early FrontendAtlas milestone">
-      <strong class="trust-milestone__value" data-testid="trust-milestone-value">100</strong>
-      <span class="trust-milestone__label">FrontendAtlas accounts created</span>
-      <span class="trust-milestone__meta">Early milestone <span aria-hidden="true">·</span> July 2026</span>
-    </aside>
-
     <div class="trust-proof-strip" aria-label="Editorial verification process">
       <span class="trust-proof-item" data-testid="trust-proof-item" *ngFor="let item of editorialWorkflow">
         {{ item }}
@@ -698,6 +692,7 @@
     </div>
 
     <app-pricing-plans-section
+      [premiumPracticeCount]="premiumPracticeCount"
       variant="compact"
       [paymentsEnabled]="pricingPaymentsEnabled"
       [paymentsConfigReady]="pricingPaymentsConfigReady"

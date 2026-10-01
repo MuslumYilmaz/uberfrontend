@@ -15,7 +15,7 @@ import { AnalyticsService } from '../../core/services/analytics.service';
           <p class="kicker">Build in public</p>
           <h1>Product changelog</h1>
           <p class="subtitle">
-            Recent FrontendAtlas improvements, organized so you can quickly see what shipped and why it matters.
+            FrontendAtlas improvements, organized so you can quickly see what shipped and why it matters.
           </p>
         </header>
 

@@ -13,6 +13,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { InterviewAvailabilityStore } from '../../core/services/interview-availability.store';
 import { interviewAvailabilityAllowsRole } from '../../core/models/interview.model';
 import { isProActive } from '../../core/utils/entitlements.util';
+import { FeatureAnnouncementsService } from '../../core/services/feature-announcements.service';
 
 interface LinkItem {
   key: string;
@@ -57,6 +58,7 @@ export class AppSidebarComponent implements OnInit, OnDestroy {
   private readonly drawerState = inject(AppSidebarDrawerService);
   private readonly interviewAvailability = inject(InterviewAvailabilityStore);
   readonly auth = inject(AuthService);
+  readonly announcements = inject(FeatureAnnouncementsService);
   readonly isPro = computed(() => isProActive(this.auth.user()));
   readonly drawerOpen = this.drawerState.isOpen;
   readonly interviewNavVisible = signal(false);
@@ -261,7 +263,6 @@ export class AppSidebarComponent implements OnInit, OnDestroy {
             label: 'Timed Mock Interview',
             to: '/interview',
             icon: 'pi pi-stopwatch',
-            badge: 'New',
           }] : []),
           ...practiceEntries.map((entry) => ({
             key: entry.key,

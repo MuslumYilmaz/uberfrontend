@@ -98,6 +98,21 @@
   ],
   "redirects": [
     {
+      "source": "/guides/framework-prep/react-prep-path/mastery",
+      "destination": "/guides/framework-prep/react-prep-path",
+      "permanent": false
+    },
+    {
+      "source": "/guides/framework-prep/angular-prep-path/mastery",
+      "destination": "/guides/framework-prep/angular-prep-path",
+      "permanent": false
+    },
+    {
+      "source": "/guides/framework-prep/vue-prep-path/mastery",
+      "destination": "/guides/framework-prep/vue-prep-path",
+      "permanent": false
+    },
+    {
       "source": "/tracks/:slug/mastery",
       "destination": "/guides/framework-prep/:slug/mastery",
       "permanent": true

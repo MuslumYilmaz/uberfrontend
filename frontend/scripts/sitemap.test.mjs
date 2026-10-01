@@ -1178,6 +1178,22 @@ function assertVercelPermissionsPolicyAllowsLemonSqueezyPayments() {
   }
 }
 
+function assertUnavailableMasteryRedirects(paths) {
+  const config = readVercelConfig();
+  const prerender = new Set(fs.readFileSync(PRERENDER_PATH, 'utf8').trim().split(/\r?\n/));
+  for (const framework of ['react', 'angular', 'vue']) {
+    const destination = `/guides/framework-prep/${framework}-prep-path`;
+    const source = `${destination}/mastery`;
+    const matches = config.redirects.filter((entry) => entry.source === source);
+    if (matches.length !== 1 || matches[0].destination !== destination || matches[0].permanent !== false) {
+      throw new Error(`${source} must temporarily redirect to its available guide.`);
+    }
+    if (paths.has(source) || prerender.has(source)) {
+      throw new Error(`Unpublished mastery route must not be indexed or prerendered: ${source}`);
+    }
+  }
+}
+
 const sitemapFiles = getSitemapFileNames();
 sitemapFiles.forEach((fileName) => assertSitemapWithinLimit(fileName));
 const locs = getAllSitemapLocs(sitemapFiles);
@@ -1209,6 +1225,7 @@ assertVercelCodingQueryNoindexHeaders();
 assertVercelLockedRouteNoindexHeaders();
 assertVercelInterviewRouteControls();
 assertVercelMasteryRedirects();
+assertUnavailableMasteryRedirects(paths);
 assertVercelCspAllowsCodingSandboxRunner();
 assertVercelCspAllowsGoogleAnalyticsCollection();
 assertVercelCspAllowsTurnstile();

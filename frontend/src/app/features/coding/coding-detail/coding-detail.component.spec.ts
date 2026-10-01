@@ -1271,7 +1271,7 @@ describe('CodingDetailComponent', () => {
     ).toBeNull();
   });
 
-  it('shows Pressure Mode coming soon for unsupported framework questions', async () => {
+  it('hides the Pressure Mode entry for unsupported framework questions', async () => {
     const question = {
       id: 'react-autocomplete-search-starter',
       title: 'React Autocomplete Search',
@@ -1306,16 +1306,7 @@ describe('CodingDetailComponent', () => {
     const entry = fixture.nativeElement.querySelector(
       '[data-testid="pressure-mode-entry"]'
     ) as HTMLElement;
-    expect(entry).not.toBeNull();
-    expect(entry.hasAttribute('data-nosnippet')).toBeTrue();
-    expect(entry.textContent).toContain(
-      'A tailored cumulative pressure mode for this challenge is coming soon.'
-    );
-    const comingSoonButton = fixture.nativeElement.querySelector(
-      '[data-testid="pressure-mode-coming-soon"]'
-    ) as HTMLButtonElement;
-    expect(comingSoonButton.disabled).toBeTrue();
-    expect(comingSoonButton.getAttribute('aria-label')).toBe('Interview Pressure Mode coming soon');
+    expect(entry).toBeNull();
     expect(
       fixture.nativeElement.querySelector('[data-testid="pressure-mode-start"]')
     ).toBeNull();
@@ -1355,7 +1346,7 @@ describe('CodingDetailComponent', () => {
     }));
   });
 
-  it('shows the unavailable Pressure Mode entry for React, Angular, and Vue coding questions', async () => {
+  it('hides unavailable Pressure Mode entries for React, Angular, and Vue coding questions', async () => {
     const fixture = TestBed.createComponent(CodingDetailComponent);
     const component = fixture.componentInstance;
     const question = {
@@ -1384,11 +1375,9 @@ describe('CodingDetailComponent', () => {
       component.question.set({ ...question, id: `${tech}-unsupported`, technology: tech } as any);
       fixture.detectChanges();
 
-      const comingSoonButton = fixture.nativeElement.querySelector(
-        '[data-testid="pressure-mode-coming-soon"]'
-      ) as HTMLButtonElement;
-      expect(comingSoonButton).withContext(tech).not.toBeNull();
-      expect(comingSoonButton.disabled).withContext(tech).toBeTrue();
+      expect(
+        fixture.nativeElement.querySelector('[data-testid="pressure-mode-entry"]')
+      ).withContext(tech).toBeNull();
       expect(
         fixture.nativeElement.querySelector('[data-testid="pressure-mode-start"]')
       ).withContext(tech).toBeNull();

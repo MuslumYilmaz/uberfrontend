@@ -1,3 +1,4 @@
+import { SHOWCASE_STATS } from '../../../../generated/content-metadata';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpErrorResponse } from '@angular/common/http';
 import { provideRouter, Router } from '@angular/router';
@@ -65,6 +66,22 @@ describe('PricingPlansSectionComponent', () => {
   });
 
   afterEach(() => sessionStorage.removeItem('fa:checkout:intent:v1'));
+
+  it('uses the same changing catalog count in both offers and falls back for old payloads', () => {
+    for (const offer of ['pricing_baseline_v1', 'interview_sprint_v2']) {
+      component.offerVersion = offer;
+      component.premiumPracticeCount = 171;
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toContain('171 Premium practice prompts');
+      component.premiumPracticeCount = 172;
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toContain('172 Premium practice prompts');
+      expect(fixture.nativeElement.textContent).not.toContain('171 Premium practice prompts');
+      component.premiumPracticeCount = undefined;
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toContain(`${SHOWCASE_STATS.premiumPracticeCount} Premium practice prompts`);
+    }
+  });
 
   it('disables plans that backend checkout config marks unavailable', () => {
     component.paymentsEnabled = true;
@@ -220,7 +237,7 @@ describe('PricingPlansSectionComponent', () => {
       '/javascript/coding/js-throttle?src=pricing_product_proof',
     ]);
     expect(page.textContent || '').toContain('514 questions');
-    expect(page.textContent || '').toContain('141 Premium prompts');
+    expect(page.textContent || '').toContain(`${SHOWCASE_STATS.premiumPracticeCount} Premium practice prompts`);
     expect(page.textContent || '').toContain('generally require limited Premium usage');
     expect(page.textContent || '').toContain('Renewal charges and unused subscription time are generally non-refundable');
     expect((page.textContent || '').toLowerCase()).not.toContain('money-back guarantee');
@@ -753,7 +770,7 @@ describe('PricingPlansSectionComponent', () => {
     );
   });
 
-  it('renders structured recent product updates with direct changelog anchors', () => {
+  it('renders structured product updates with direct changelog anchors', () => {
     fixture.detectChanges();
 
     const page: HTMLElement = fixture.nativeElement;
@@ -762,7 +779,7 @@ describe('PricingPlansSectionComponent', () => {
     const firstBullets = items[0]?.querySelectorAll('.weekly-changelog__bullets li') || [];
     const latest = PUBLIC_CHANGELOG_ENTRIES[0];
 
-    expect(text).toContain('Recent product updates');
+    expect(text).toContain('Product updates');
     expect(text).not.toContain('What changed this week');
     expect(items.length).toBe(3);
     expect(items[0].getAttribute('href') || '').toContain(`/changelog#${latest.id}`);

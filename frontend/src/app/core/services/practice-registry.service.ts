@@ -117,22 +117,7 @@ export class PracticeRegistryService {
         if (entry.key === 'question-library') return hasQuestionLibrary;
         if (entry.key === 'system-design') return hasSystemDesign;
         return entry.family ? families.has(entry.family) : true;
-      })
-      .map((entry) => ({
-        ...entry,
-        badge: this.resolveCatalogBadge(entry, items),
-      }));
-  }
-
-  private resolveCatalogBadge(entry: PracticeCatalogEntry, items: PracticeRegistryItem[]): string | null {
-    switch (entry.key) {
-      case 'incidents':
-        return items.some((item) => item.family === 'incident') ? 'New' : null;
-      case 'tradeoff-battles':
-        return items.some((item) => item.family === 'tradeoff-battle') ? 'New' : null;
-      default:
-        return null;
-    }
+      });
   }
 
   private normalizeRegistry(payload: unknown): PracticeRegistryItem[] {

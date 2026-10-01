@@ -11,6 +11,7 @@ import { AppSidebarDrawerService } from '../../core/services/app-sidebar-drawer.
 import { AuthService } from '../../core/services/auth.service';
 import { InterviewAccessMode } from '../../core/models/interview.model';
 import { InterviewService } from '../../core/services/interview.service';
+import { FeatureAnnouncementsService } from '../../core/services/feature-announcements.service';
 import { AppSidebarComponent } from './app-sidebar.component';
 
 @Component({
@@ -62,7 +63,7 @@ describe('AppSidebarComponent', () => {
     const practiceRegistry = {
       catalogEntries: signal([
         { key: 'question-library', label: 'Question Library', icon: 'pi pi-database', route: '/coding', family: 'question' },
-        { key: 'incidents', label: 'Debug scenarios', icon: 'pi pi-bolt', route: '/incidents', family: 'incident', badge: 'New' },
+        { key: 'incidents', label: 'Debug scenarios', icon: 'pi pi-bolt', route: '/incidents', family: 'incident' },
         {
           key: 'system-design',
           label: 'System Design',
@@ -70,7 +71,7 @@ describe('AppSidebarComponent', () => {
           route: '/system-design',
           family: 'question',
         },
-        { key: 'tradeoff-battles', label: 'Tradeoff battles', icon: 'pi pi-directions-alt', route: '/tradeoffs', family: 'tradeoff-battle', badge: 'New' },
+        { key: 'tradeoff-battles', label: 'Tradeoff battles', icon: 'pi pi-directions-alt', route: '/tradeoffs', family: 'tradeoff-battle' },
         { key: 'tracks', label: 'Interview prep tracks', icon: 'pi pi-directions', route: '/tracks', isSupplemental: true },
         {
           key: 'question-formats',
@@ -256,7 +257,7 @@ describe('AppSidebarComponent', () => {
     expect(practiceCatalog.classList.contains('open')).toBeTrue();
   });
 
-  it('renders updated badges for debug scenarios and tradeoff battles in the practice catalog', async () => {
+  it('keeps established practice links available without permanent novelty badges', async () => {
     await configureTestingModule();
     const fixture = TestBed.createComponent(AppSidebarComponent);
     fixture.detectChanges();
@@ -264,12 +265,12 @@ describe('AppSidebarComponent', () => {
     const badges = Array
       .from(fixture.nativeElement.querySelectorAll('.nav-badge') as NodeListOf<HTMLElement>)
       .map((node) => node.textContent?.trim());
-    expect(badges).toContain('New');
+    expect(badges).not.toContain('New');
 
     const incidentsLink = fixture.nativeElement.querySelector('a[aria-label="Debug scenarios"]') as HTMLAnchorElement;
     const tradeoffLink = fixture.nativeElement.querySelector('a[aria-label="Tradeoff battles"]') as HTMLAnchorElement;
-    expect(incidentsLink.textContent || '').toContain('New');
-    expect(tradeoffLink.textContent || '').toContain('New');
+    expect(incidentsLink.textContent || '').not.toContain('New');
+    expect(tradeoffLink.textContent || '').not.toContain('New');
   });
 
   it('marks system design active for coding format routes with the system category', async () => {
@@ -343,12 +344,13 @@ describe('AppSidebarComponent', () => {
     ).not.toBeNull();
   });
 
-  it('does not expose the interview link while the feature is off', async () => {
+  it('does not expose the interview link while the feature is off even with an active announcement', async () => {
     await configureTestingModule({
       isLoggedIn: true,
       interviewAccessMode: 'off',
       interviewEnabled: false,
     });
+    spyOn(TestBed.inject(FeatureAnnouncementsService), 'badgeFor').and.returnValue('New');
     const fixture = TestBed.createComponent(AppSidebarComponent);
     fixture.detectChanges();
 

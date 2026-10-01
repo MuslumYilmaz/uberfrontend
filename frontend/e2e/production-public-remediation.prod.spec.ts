@@ -1,3 +1,4 @@
+import { PUBLIC_CHANGELOG_ENTRIES } from '../src/app/core/content/public-changelog';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { APIRequestContext, Page } from '@playwright/test';
@@ -333,9 +334,9 @@ test.describe('production/SSR public remediation smoke', () => {
     await expect(trust).toContainText(
       'Hands-on coding, runnable examples, regression tests, and transparent editorial updates—inside one focused workflow.',
     );
-    await expect(trust.getByTestId('trust-milestone-value')).toHaveText('100');
-    await expect(trust).toContainText('FrontendAtlas accounts created');
-    await expect(trust).toContainText('Early milestone · July 2026');
+    await expect(trust.getByTestId('trust-milestone-value')).toHaveCount(0);
+    await expect(trust).not.toContainText('FrontendAtlas accounts created');
+    await expect(trust).not.toContainText('Early milestone');
     await expect(trust).toContainText('FrontendAtlas Editorial');
     await expect(trust).toContainText('Built and maintained as an independent frontend interview-prep project');
     const proofItems = trust.getByTestId('trust-proof-item');
@@ -484,19 +485,15 @@ test.describe('production/SSR public remediation smoke', () => {
     );
   });
 
-  test('changelog leads with a July 15 remediation entry only after the release gate', async ({ page }) => {
+  test('changelog leads with the newest dated entry and preserves the July history', async ({ page }) => {
     await openHydratedRoute(page, '/changelog', 'Product changelog');
-    const latest = page.getByTestId('changelog-latest');
-    await expect(latest.locator('time')).toHaveAttribute('datetime', '2026-07-15');
-    await expect(latest.locator('time')).toHaveText('Jul 15, 2026');
-
-    const firstTimelineEntry = page.getByTestId('changelog-entry').first();
-    await expect(firstTimelineEntry.locator('time')).toHaveAttribute('datetime', '2026-07-15');
-    await expect(firstTimelineEntry).toContainText(/React.{0,80}check/i);
-    await expect(firstTimelineEntry).toContainText(/Premium.{0,40}preview/i);
-    await expect(firstTimelineEntry).toContainText(/framework|Angular/i);
-    await expect(firstTimelineEntry).toContainText(/legal|refund/i);
-    await expect(firstTimelineEntry).toContainText(/trust|editorial/i);
+    const entry = PUBLIC_CHANGELOG_ENTRIES[0];
+    await expect(page.getByTestId('changelog-latest').locator('time')).toHaveAttribute('datetime', entry.weekOf);
+    await expect(page.getByTestId('changelog-entry').first()).toHaveAttribute('id', entry.id);
+    const july = page.locator('#react-check-reliability-and-content-accuracy');
+    await expect(july).toContainText('100 FrontendAtlas accounts had been created by July 2026.');
+    await expect(july).toContainText(/React.{0,80}check/i);
+    await expect(july).toContainText(/Premium.{0,40}preview/i);
   });
 
   for (const previewCase of PREMIUM_PREVIEWS) {

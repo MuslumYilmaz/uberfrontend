@@ -15,6 +15,24 @@ export type PublicChangelogEntry = {
 
 export const PUBLIC_CHANGELOG_ENTRIES: PublicChangelogEntry[] = [
   {
+    id: 'clearer-practice-navigation-and-premium-coverage',
+    weekOf: '2026-10-01',
+    title: 'Clearer practice navigation and Premium coverage',
+    summary: 'Find available practice more easily and see Premium coverage that stays in step with the practice library.',
+    category: 'Improved',
+    area: 'Practice and pricing',
+    changes: [
+      'Premium practice counts now reflect the library across coding, system design, debug scenarios, and tradeoff battles.',
+      'React, Angular, and Vue mastery links now open their existing preparation guides, and unavailable cheat sheets no longer appear in navigation or search.',
+      'Pressure Mode appears only on supported challenges, and new-feature labels now expire after 30 days instead of staying indefinitely.',
+    ],
+    cta: {
+      label: 'Explore practice plans',
+      route: '/pricing',
+      queryParams: { src: 'changelog' },
+    },
+  },
+  {
     id: 'react-check-reliability-and-content-accuracy',
     weekOf: '2026-07-15',
     title: 'React checks are reliable and Premium previews are clearer',
@@ -25,6 +43,7 @@ export const PUBLIC_CHANGELOG_ENTRIES: PublicChangelogEntry[] = [
       'React checks now use a commit-based preview handshake, report bounded failure categories, and reset cleanly across rebuilds and repeated runs.',
       'Premium previews now use complete summaries and concrete practice outcomes without rendering or automatically requesting solution content while locked.',
       'Angular exercises now use modern template control flow, and refund, editorial, authorship, traction, score, and company-attribution copy reflects verifiable evidence.',
+      '100 FrontendAtlas accounts had been created by July 2026.',
     ],
     cta: {
       label: 'Try React Counter',
