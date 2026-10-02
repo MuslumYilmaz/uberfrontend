@@ -8,14 +8,17 @@ import { getMonacoModelValue, setMonacoModelValue } from './helpers';
 type Framework = 'react' | 'angular' | 'vue';
 type CatalogQuestion = {
   id: string;
+  description?: { text?: string };
   solutionAsset?: string;
   sdk?: { asset?: string };
   frameworkTests?: Array<{ id: string; name: string; steps: unknown[] }>;
 };
 type CatalogCase = {
   framework: Framework;
+  kind: 'coding' | 'debug';
   id: string;
   checkCount: number;
+  prompt?: string;
   solutionFiles: Record<string, string>;
   needsSolutionMerge: boolean;
 };
@@ -33,8 +36,9 @@ const FRAMEWORK_DIST_ASSET_ROOT = join(
 );
 
 function readCatalogCases(): CatalogCase[] {
-  return FRAMEWORKS.flatMap((framework) => {
-    const catalogPath = join(process.cwd(), `../cdn/questions/${framework}/coding.json`);
+  const catalogs = FRAMEWORKS.map((framework) => ({ framework, kind: 'coding' as const }));
+  return [...catalogs, { framework: 'angular' as const, kind: 'debug' as const }].flatMap(({ framework, kind }) => {
+    const catalogPath = join(process.cwd(), `../cdn/questions/${framework}/${kind}.json`);
     const questions = JSON.parse(readFileSync(catalogPath, 'utf8')) as CatalogQuestion[];
     return questions.flatMap((question) => {
       const checks = Array.isArray(question.frameworkTests)
@@ -90,8 +94,10 @@ function readCatalogCases(): CatalogCase[] {
       );
       return [{
         framework,
+        kind,
         id: question.id,
         checkCount: checks.length,
+        prompt: question.description?.text,
         solutionFiles,
         needsSolutionMerge,
       }];
@@ -250,6 +256,11 @@ async function loadCanonicalSolution(
 }
 
 async function runChecks(page: Page, expectedCount: number): Promise<Locator> {
+  // The prerendered button is visible before its client click handler is ready.
+  await page.waitForFunction(() => {
+    const monaco = (window as any).monaco;
+    return (monaco?.editor?.getModels?.() || []).length > 0;
+  }, undefined, { timeout: 30_000 });
   const frameCountBefore = await page.locator('iframe').count();
   const runButton = page.getByTestId('framework-run-checks');
   await runButton.click();
@@ -274,8 +285,17 @@ test.describe('Every checked framework question passes its canonical solution', 
 
   for (const catalogCase of catalogCases) {
     test(`${catalogCase.framework}/${catalogCase.id} passes all ${catalogCase.checkCount} canonical checks`, async ({ page }) => {
-      await page.goto(`/${catalogCase.framework}/coding/${catalogCase.id}`);
+      await page.goto(`/${catalogCase.framework}/${catalogCase.kind}/${catalogCase.id}`);
       await expect(page.getByTestId('coding-detail-page')).toBeVisible();
+      if (catalogCase.kind === 'debug') {
+        expect(catalogCase.prompt).toBeTruthy();
+        await expect(page.getByTestId('coding-description-panel')).toContainText(catalogCase.prompt!);
+        const starterResults = await runChecks(page, catalogCase.checkCount);
+        await expect(starterResults.locator('.framework-check-results__summary')).toHaveText(
+          `0/${catalogCase.checkCount} passed`
+        );
+        await expect(starterResults.locator('[data-failure-kind="assertion"]')).toHaveCount(catalogCase.checkCount);
+      }
       await loadCanonicalSolution(
         page,
         catalogCase.solutionFiles,
@@ -293,6 +313,34 @@ test.describe('Every checked framework question passes its canonical solution', 
       await expect(
         results.locator('[data-testid="framework-check-result"][data-failure-kind]'),
       ).toHaveCount(0);
+    });
+  }
+
+  for (const [framework, id] of [
+    ['angular', 'ng-debug-counter-change-detection'],
+    ['javascript', 'js-debug-numeric-sort'],
+  ]) {
+    test(`${id} debug prompt layouts`, async ({ page }, testInfo) => {
+      await page.goto(`/${framework}/debug/${id}`);
+      await page.waitForFunction(() => {
+        const monaco = (window as any).monaco;
+        return (monaco?.editor?.getModels?.() || []).length > 0;
+      }, undefined, { timeout: 30_000 });
+
+      for (const width of [834, 1366, 1440, 360, 390]) {
+        await page.setViewportSize({ width, height: 900 });
+        const surface = width < 768
+          ? page.getByTestId('coding-mobile-guard')
+          : page.getByTestId('coding-description-panel');
+        await expect(surface).toBeVisible();
+        if (width >= 768) {
+          const prose = surface.locator('.whitespace-pre-wrap');
+          await expect(prose).not.toBeEmpty();
+          expect(await prose.evaluate((element) => element.scrollWidth <= element.clientWidth + 1)).toBe(true);
+        }
+        expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
+        await page.screenshot({ path: testInfo.outputPath(`${id}-${width}.png`), animations: 'disabled' });
+      }
     });
   }
 });

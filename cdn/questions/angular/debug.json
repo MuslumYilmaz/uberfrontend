@@ -4,18 +4,53 @@
         "title": "Counter not updating",
         "difficulty": "intermediate",
         "importance": 3,
-        "updatedAt": "2025-08-24",
+        "updatedAt": "2026-10-02",
         "tags": [
-            "signals",
-            "change-detection",
-            "components"
+            "components",
+            "event-binding",
+            "state"
         ],
         "description": {
-            "text": "The counter button renders but the value never increases due to a logic bug. Fix the increment logic so the value updates correctly."
+            "text": "The counter starts at 0, but clicking Increment leaves the displayed value unchanged. Fix the increment logic so every click increases the count by exactly 1. Keep the existing component state and template bindings."
         },
         "sdk": {
             "asset": "assets/sb/angular/debug/counter-fix.json",
             "openFile": "src/app/app.component.ts"
-        }
+        },
+        "solutionAsset": "assets/sb/angular/solution/ng-debug-counter-change-detection.solution.json",
+        "solutionBlock": {
+            "overview": "The postfix increment expression returns the previous count. Assigning that result back to count overwrites the increment, so the value stays unchanged. Increment the property without assigning the old value back; the existing Angular click binding will update the view."
+        },
+        "frameworkTests": [
+            {
+                "id": "counter-increments",
+                "name": "Counter starts at zero and increments on every click",
+                "steps": [
+                    {
+                        "type": "expectText",
+                        "selector": "p",
+                        "text": "0"
+                    },
+                    {
+                        "type": "click",
+                        "selector": "button"
+                    },
+                    {
+                        "type": "waitForText",
+                        "selector": "p",
+                        "text": "1"
+                    },
+                    {
+                        "type": "click",
+                        "selector": "button"
+                    },
+                    {
+                        "type": "waitForText",
+                        "selector": "p",
+                        "text": "2"
+                    }
+                ]
+            }
+        ]
     }
 ]

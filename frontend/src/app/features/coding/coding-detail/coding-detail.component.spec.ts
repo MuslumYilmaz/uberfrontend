@@ -1886,6 +1886,35 @@ describe('CodingDetailComponent', () => {
   ];
 
   for (const testCase of debugDescriptionCases) {
+    it(`renders ${testCase.label} in the visible question prompt`, async () => {
+      const question = { ...makeDeferredPromiseQuestion(), description: testCase.description };
+      const fixture = TestBed.createComponent(CodingDetailComponent);
+      const component = fixture.componentInstance;
+      component.questionId = question.id;
+      component.questionTech = 'javascript';
+      component.disablePersistence = true;
+      component.hideFooterBar = true;
+
+      questionService.loadQuestions.and.returnValue(of([question] as any));
+      spyOn(component as any, 'resolveSolutionAsset').and.resolveTo({ files: {}, initialPath: '' });
+      fixture.detectChanges();
+      await fixture.whenStable();
+      component.isPhoneViewport.set(false);
+      component.liteEditors.set(true);
+      fixture.detectChanges();
+
+      const panel = fixture.nativeElement.querySelector('[data-testid="coding-description-panel"]') as HTMLElement;
+      const prose = panel.querySelector('.whitespace-pre-wrap');
+      expect(panel.hidden).toBeFalse();
+      if (testCase.expected) {
+        expect(prose?.textContent?.replace(/\s+/g, ' ').trim()).toBe(testCase.expected);
+      } else {
+        expect(prose).toBeNull();
+      }
+      expect(component.descSummary()).toBe(component.descriptionText());
+      expect(panel.textContent).not.toContain('Interview answer:');
+    });
+
     it(`uses ${testCase.label} for debug metadata while preserving access and excluding solutions`, () => {
       const fixture = TestBed.createComponent(CodingDetailComponent);
       const component = fixture.componentInstance;

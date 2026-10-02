@@ -173,7 +173,7 @@ function assertFrameworkCssFormatting() {
       canonicalRoot: path.join(repoRoot, 'cdn', 'sb'),
       mirrorRoot: path.join(repoRoot, 'frontend', 'src', 'assets', 'sb'),
     }),
-    { assets: 193, cssSources: 258, changedAssets: 0, changedCssSources: 0 },
+    { assets: 194, cssSources: 259, changedAssets: 0, changedCssSources: 0 },
     'The full framework CSS corpus must stay canonical and exactly mirrored'
   );
 }
@@ -4470,6 +4470,52 @@ assert.match(strictEffectSolutionCode, /connection\.connect\(\)/);
 assert.match(strictEffectSolutionCode, /return \(\) => connection\.disconnect\(\)/);
 assert.match(strictEffectSolutionCode, /\[roomId, onActiveCount\]/);
 
+function assertAngularCounterDebug() {
+  const question = json('cdn/questions/angular/debug.json').find(
+    (entry) => entry.id === 'ng-debug-counter-change-detection'
+  );
+  assert.ok(question, 'The published Angular counter debug question must remain available');
+  for (const [reference, expectedCounts] of [
+    [question.sdk.asset, [0, 0, 0]],
+    [question.solutionAsset, [0, 1, 2]],
+  ]) {
+    const relative = reference.replace(/^assets\//, '');
+    assertMirror(relative);
+    const asset = json(`cdn/${relative}`);
+    const source = fileCode(asset, 'src/app/app.component.ts');
+    parseAngularTemplate(fileCode(asset, 'src/app/app.component.html'), relative);
+    const transpiled = ts.transpileModule(source, {
+      compilerOptions: {
+        target: ts.ScriptTarget.ES2022,
+        module: ts.ModuleKind.CommonJS,
+        experimentalDecorators: true,
+      },
+      reportDiagnostics: true,
+    });
+    assert.deepEqual(
+      (transpiled.diagnostics ?? []).filter((entry) => entry.category === ts.DiagnosticCategory.Error),
+      [],
+      `${relative}: component must compile before its behavior can be checked`
+    );
+    const exports = {};
+    vm.runInNewContext(transpiled.outputText, {
+      exports,
+      require(specifier) {
+        assert.equal(specifier, '@angular/core');
+        return { Component: () => (component) => component };
+      },
+    }, { filename: relative });
+    const component = new exports.AppComponent();
+    const counts = [component.count];
+    component.inc();
+    counts.push(component.count);
+    component.inc();
+    counts.push(component.count);
+    assert.deepEqual(counts, expectedCounts, `${relative}: starter must reproduce the bug and solution must repair it`);
+  }
+}
+
+assertAngularCounterDebug();
 assertFrameworkStarterCorpus();
 assertFrameworkCssFormatting();
 assertModernAngularCodingCorpus();

@@ -770,8 +770,10 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     const q = this.question();
     if (!q) return '';
     const d = q.description;
-    if (typeof d === 'string') return this.displayText(d);
-    if (d && typeof d === 'object') return this.displayText((d as StructuredDescription).summary || '');
+    if (typeof d === 'string') return this.displayText(d.trim());
+    if (d && typeof d === 'object') {
+      return this.displayText(d.summary?.trim() || d.text?.trim() || '');
+    }
     return '';
   });
 
@@ -3558,14 +3560,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   }
 
   // ---- Description normalizers ----
-  descSummary = computed(() => {
-    const q = this.question(); if (!q) return '';
-    if (q.description && typeof q.description === 'object') {
-      return this.displayText((q.description as StructuredDescription).summary || '');
-    }
-    // fallback to plain description (what you already had)
-    return this.descriptionText(); // uses your existing helper
-  });
+  descSummary = computed(() => this.descriptionText());
 
   interviewFocusSummary = computed(() => {
     const q = this.question();
