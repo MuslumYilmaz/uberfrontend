@@ -1,16 +1,16 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, booleanAttribute } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { DropdownModule } from 'primeng/dropdown';
+import { SelectModule } from 'primeng/select';
 import { MultiSelectModule } from 'primeng/multiselect';
 
 @Component({
-  selector: 'fa-select',
-  standalone: true,
-  imports: [CommonModule, FormsModule, DropdownModule, MultiSelectModule],
-  template: `
+    selector: 'fa-select',
+    imports: [CommonModule, FormsModule, SelectModule, MultiSelectModule],
+    template: `
     <ng-container *ngIf="multiple; else singleSelect">
       <p-multiSelect
+        #multiSelect
         [options]="options"
         [ngModel]="value"
         (ngModelChange)="valueChange.emit($event)"
@@ -18,6 +18,7 @@ import { MultiSelectModule } from 'primeng/multiselect';
         [optionValue]="optionValue"
         [disabled]="disabled"
         [filter]="filter"
+        [autofocusFilter]="filter"
         [showToggleAll]="showToggleAll"
         [appendTo]="appendTo"
         [placeholder]="placeholder"
@@ -27,11 +28,16 @@ import { MultiSelectModule } from 'primeng/multiselect';
         [ariaFilterLabel]="ariaFilterLabel"
         [styleClass]="resolvedStyleClass"
         [panelStyleClass]="resolvedPanelClass">
+        <ng-template #header>
+          <button type="button" class="fa-select-panel__close" aria-label="Close options" (click)="$event.stopPropagation(); multiSelect.hide(true)">
+            <i class="pi pi-times" aria-hidden="true"></i>
+          </button>
+        </ng-template>
       </p-multiSelect>
     </ng-container>
 
     <ng-template #singleSelect>
-      <p-dropdown
+      <p-select
         [options]="options"
         [ngModel]="value"
         (ngModelChange)="valueChange.emit($event)"
@@ -47,10 +53,10 @@ import { MultiSelectModule } from 'primeng/multiselect';
         [ariaFilterLabel]="ariaFilterLabel"
         [styleClass]="resolvedStyleClass"
         [panelStyleClass]="resolvedPanelClass">
-      </p-dropdown>
+      </p-select>
     </ng-template>
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FaSelectComponent {
   @Input() options: any[] = [];

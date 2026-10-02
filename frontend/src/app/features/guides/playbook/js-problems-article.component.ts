@@ -9,9 +9,8 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
 import { PUBLIC_EDITORIAL_FACTS } from '../../../core/content/public-editorial-facts';
 
 @Component({
-  standalone: true,
-  imports: [GuideShellComponent, RouterModule],
-  styles: `
+    imports: [GuideShellComponent, RouterModule],
+    styles: `
     a {
       color: #4ea1ff;
       text-decoration: none;
@@ -179,7 +178,7 @@ import { PUBLIC_EDITORIAL_FACTS } from '../../../core/content/public-editorial-f
       background: color-mix(in srgb, var(--uf-surface-alt) 86%, transparent);
     }
   `,
-  template: `
+    template: `
   <fa-guide-shell
     title="JavaScript Coding Interview Questions and Patterns for Frontend Engineers (2026)"
     subtitle="A practice-first map for frontend JavaScript coding interview questions: async, promises, closures, DOM utilities, output tracing, and direct drills."

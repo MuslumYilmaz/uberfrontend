@@ -7,11 +7,10 @@ import {
 } from '../../../core/content/public-editorial-facts';
 
 @Component({
-  standalone: true,
-  selector: 'app-editorial-policy',
-  imports: [CommonModule, RouterModule],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
+    selector: 'app-editorial-policy',
+    imports: [CommonModule, RouterModule],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    template: `
     <article class="doc" aria-labelledby="doc-title">
       <header class="doc-header">
         <div class="doc-meta">
@@ -122,7 +121,7 @@ import {
       </section>
     </article>
   `,
-  styles: [`
+    styles: [`
     :host { display: block; background: radial-gradient(circle at 12% 18%, color-mix(in srgb, var(--uf-accent) 10%, transparent), transparent 38%), var(--uf-bg); }
     .doc {
       max-width: 920px;

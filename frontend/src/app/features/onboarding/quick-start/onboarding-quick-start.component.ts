@@ -21,11 +21,10 @@ type NextAction = {
 };
 
 @Component({
-  standalone: true,
-  selector: 'app-onboarding-quick-start',
-  imports: [CommonModule, FormsModule, RouterModule],
-  templateUrl: './onboarding-quick-start.component.html',
-  styleUrls: ['./onboarding-quick-start.component.css'],
+    selector: 'app-onboarding-quick-start',
+    imports: [CommonModule, FormsModule, RouterModule],
+    templateUrl: './onboarding-quick-start.component.html',
+    styleUrls: ['./onboarding-quick-start.component.css']
 })
 export class OnboardingQuickStartComponent implements OnInit {
   private readonly SOURCE_PATTERN = /^[a-z0-9_-]{1,64}$/;

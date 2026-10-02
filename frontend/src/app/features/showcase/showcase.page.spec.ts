@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { NO_ERRORS_SCHEMA, PLATFORM_ID } from '@angular/core';
 import { ComponentFixture, TestBed, fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule, convertToParamMap, provideRouter } from '@angular/router';
 import { of, throwError } from 'rxjs';
@@ -29,7 +28,7 @@ describe('ShowcasePageComponent', () => {
     billingCheckout.getCheckoutConfig.and.resolveTo(null);
 
     await TestBed.configureTestingModule({
-      imports: [ShowcasePageComponent, NoopAnimationsModule],
+      imports: [ShowcasePageComponent],
       providers: [
         provideRouter([]),
         {

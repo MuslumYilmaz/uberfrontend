@@ -13,11 +13,10 @@ export type PrepSignalItem =
   };
 
 @Component({
-  selector: 'app-prep-signal-grid',
-  standalone: true,
-  imports: [CommonModule, RouterModule],
-  templateUrl: './prep-signal-grid.component.html',
-  styleUrls: ['./prep-signal-grid.component.css'],
+    selector: 'app-prep-signal-grid',
+    imports: [CommonModule, RouterModule],
+    templateUrl: './prep-signal-grid.component.html',
+    styleUrls: ['./prep-signal-grid.component.css']
 })
 export class PrepSignalGridComponent {
   @Input() outcomesTitle = 'Outcomes';

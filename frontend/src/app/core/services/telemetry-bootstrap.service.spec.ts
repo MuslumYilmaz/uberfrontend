@@ -1,5 +1,5 @@
-import { DOCUMENT } from '@angular/common';
-import { NgZone, signal } from '@angular/core';
+
+import { NgZone, signal, DOCUMENT } from '@angular/core';
 import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { BrowserTestingModule } from '@angular/platform-browser/testing';
 import { environment } from '../../../environments/environment';

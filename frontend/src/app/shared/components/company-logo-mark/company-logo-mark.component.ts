@@ -3,11 +3,10 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { CompanyBrand, companyBrandFor } from '../../company-branding';
 
 @Component({
-  selector: 'app-company-logo-mark',
-  standalone: true,
-  imports: [CommonModule],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
+    selector: 'app-company-logo-mark',
+    imports: [CommonModule],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    template: `
     <span
       *ngIf="brand as item"
       class="fa-company-logo-mark"
@@ -28,7 +27,7 @@ import { CompanyBrand, companyBrandFor } from '../../company-branding';
       </ng-template>
     </span>
   `,
-  styleUrls: ['./company-logo-mark.component.css'],
+    styleUrls: ['./company-logo-mark.component.css']
 })
 export class CompanyLogoMarkComponent {
   @Input() company: unknown;

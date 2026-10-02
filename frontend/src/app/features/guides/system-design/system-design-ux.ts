@@ -4,9 +4,8 @@ import { RouterModule } from '@angular/router';
 import { GuideShellComponent } from '../../../shared/components/guide/guide-shell.component';
 
 @Component({
-  standalone: true,
-  imports: [CommonModule, RouterModule, GuideShellComponent],
-  template: `
+    imports: [CommonModule, RouterModule, GuideShellComponent],
+    template: `
     <fa-guide-shell
       title="I - Interface Deep Dive for Frontend System Design Interviews"
       [minutes]="18"
@@ -654,7 +653,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         <li><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'architecture']">A - Architecture deep dive</a></li>
       </ul>
     </fa-guide-shell>
-  `,
+  `
 })
 export class SystemDesignCrossCuttingArticle {
   @Input() prev: any[] | null = null;

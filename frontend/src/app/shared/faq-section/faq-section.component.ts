@@ -6,12 +6,11 @@ type FaqItem = { q: string; a: string; id?: string };
 type FaqGroup = { title: string; items: FaqItem[]; id?: string };
 
 @Component({
-  standalone: true,
-  selector: 'app-faq-section',
-  imports: [CommonModule, SafeHtmlPipe],
-  templateUrl: './faq-section.component.html',
-  styleUrls: ['./faq-section.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-faq-section',
+    imports: [CommonModule, SafeHtmlPipe],
+    templateUrl: './faq-section.component.html',
+    styleUrls: ['./faq-section.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FaqSectionComponent {
   @Input() title?: string;

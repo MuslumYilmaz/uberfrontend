@@ -4,9 +4,8 @@ import { RouterModule } from '@angular/router';
 import { GuideShellComponent } from '../../../shared/components/guide/guide-shell.component';
 
 @Component({
-  standalone: true,
-  imports: [CommonModule, RouterModule, GuideShellComponent],
-  template: `
+    imports: [CommonModule, RouterModule, GuideShellComponent],
+    template: `
     <fa-guide-shell
       title="Scope, Constraints, and Trade-offs"
       [minutes]="14"
@@ -287,7 +286,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       every feature v1, naming tools without trade-offs, and ignoring interviewer priorities.
     </p>
     </fa-guide-shell>
-  `,
+  `
 })
 export class SystemDesignFoundationsArticle {
   @Input() prev: any[] | null = null;

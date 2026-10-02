@@ -1,5 +1,5 @@
-import { DOCUMENT, isPlatformBrowser } from '@angular/common';
-import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { Inject, Injectable, PLATFORM_ID, DOCUMENT } from '@angular/core';
 import { TurnstileApi, TurnstileWindow } from './turnstile-challenge.types';
 
 const TURNSTILE_SCRIPT_ID = 'cloudflare-turnstile-script';

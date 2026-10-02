@@ -249,11 +249,10 @@ const FAQ_ITEMS: FaqItem[] = [
 ];
 
 @Component({
-  selector: 'app-cv-linter',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './cv-linter.component.html',
-  styleUrls: ['./cv-linter.component.css'],
+    selector: 'app-cv-linter',
+    imports: [CommonModule, FormsModule],
+    templateUrl: './cv-linter.component.html',
+    styleUrls: ['./cv-linter.component.css']
 })
 export class CvLinterComponent implements OnInit, OnDestroy {
   private readonly MAX_FILE_BYTES = 5 * 1024 * 1024;

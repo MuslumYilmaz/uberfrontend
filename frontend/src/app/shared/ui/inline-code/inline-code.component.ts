@@ -2,12 +2,11 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 
 @Component({
-  selector: 'fa-inline-code',
-  standalone: true,
-  imports: [CommonModule],
-  template: `<ng-container *ngFor="let part of parts"><code *ngIf="part.code; else prose">{{ part.text }}</code><ng-template #prose>{{ part.text }}</ng-template></ng-container>`,
-  styleUrls: ['./inline-code.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'fa-inline-code',
+    imports: [CommonModule],
+    template: `<ng-container *ngFor="let part of parts"><code *ngIf="part.code; else prose">{{ part.text }}</code><ng-template #prose>{{ part.text }}</ng-template></ng-container>`,
+    styleUrls: ['./inline-code.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class InlineCodeComponent {
   parts: Array<{ text: string; code: boolean }> = [];

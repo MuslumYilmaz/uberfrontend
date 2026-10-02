@@ -4,11 +4,10 @@ import { RouterModule } from '@angular/router';
 import { GuideShellComponent } from '../../../shared/components/guide/guide-shell.component';
 
 @Component({
-  standalone: true,
-  selector: 'app-behavioral-prep-article',
-  imports: [CommonModule, RouterModule, GuideShellComponent],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
+    selector: 'app-behavioral-prep-article',
+    imports: [CommonModule, RouterModule, GuideShellComponent],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    template: `
     <fa-guide-shell
       title="Frontend Behavioral Interview Prep Plan: 7 Days, Stories, and STAR(R)"
       [minutes]="18"
@@ -328,7 +327,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         clear context, concrete action, measurable result, and a lesson you actually used.
       </blockquote>
     </fa-guide-shell>
-  `,
+  `
 })
 export class BehavioralPrepArticle {
   @Input() prev: any[] | null = null;

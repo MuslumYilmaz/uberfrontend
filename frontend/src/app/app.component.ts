@@ -1,6 +1,6 @@
 // app.component.ts
-import { CommonModule, DOCUMENT, isPlatformBrowser } from '@angular/common';
-import { Component, OnDestroy, OnInit, PLATFORM_ID, computed, inject, signal } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { Component, OnDestroy, OnInit, PLATFORM_ID, computed, inject, signal, DOCUMENT } from '@angular/core';
 import { NavigationEnd, Router, RouterModule, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs';
 import { BugReportService } from './core/services/bug-report.service';
@@ -21,22 +21,21 @@ import { PrepRoadmapSwitcherComponent } from './shared/components/prep-roadmap/p
 import { AchievementToastComponent } from './shared/components/achievement-toast/achievement-toast.component';
 
 @Component({
-  selector: 'app-root',
-  standalone: true,
-  imports: [
-    CommonModule,
-    RouterOutlet,
-    RouterModule,
-    HeaderComponent,
-    MarketingHeaderComponent,
-    AppSidebarComponent,
-    BugReportDialogComponent,
-    PremiumRequiredDialogComponent,
-    PrepRoadmapSwitcherComponent,
-    AchievementToastComponent,
-  ],
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss'],
+    selector: 'app-root',
+    imports: [
+        CommonModule,
+        RouterOutlet,
+        RouterModule,
+        HeaderComponent,
+        MarketingHeaderComponent,
+        AppSidebarComponent,
+        BugReportDialogComponent,
+        PremiumRequiredDialogComponent,
+        PrepRoadmapSwitcherComponent,
+        AchievementToastComponent,
+    ],
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit, OnDestroy {
   private router = inject(Router);

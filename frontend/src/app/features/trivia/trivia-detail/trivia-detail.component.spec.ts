@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of, ReplaySubject } from 'rxjs';
@@ -218,7 +217,7 @@ describe('TriviaDetailComponent', () => {
     window.history.pushState({}, '', '/javascript/trivia/q1');
 
     await TestBed.configureTestingModule({
-      imports: [TriviaDetailComponent, RouterTestingModule, NoopAnimationsModule],
+      imports: [TriviaDetailComponent, RouterTestingModule],
       providers: [
         {
           provide: ActivatedRoute,

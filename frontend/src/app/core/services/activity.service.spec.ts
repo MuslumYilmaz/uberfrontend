@@ -1,5 +1,5 @@
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { HttpHeaders } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { HttpHeaders, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { TestBed, fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
 import { computed, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
@@ -39,28 +39,30 @@ describe('ActivityService', () => {
     progress = jasmine.createSpyObj<UserProgressService>('UserProgressService', ['setSolvedIds', 'markSolvedLocal']);
 
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [
+    imports: [],
+    providers: [
         ActivityService,
         { provide: AnalyticsService, useValue: analytics },
         { provide: GamificationService, useValue: gamification },
         { provide: UserProgressService, useValue: progress },
         {
-          provide: AuthService,
-          useValue: {
-            user: authUser,
-            isLoggedIn: computed(() => !!authUser()),
-            headers: () => new HttpHeaders(),
-          } satisfies Partial<AuthService>,
+            provide: AuthService,
+            useValue: {
+                user: authUser,
+                isLoggedIn: computed(() => !!authUser()),
+                headers: () => new HttpHeaders(),
+            } satisfies Partial<AuthService>,
         },
         {
-          provide: OfflineService,
-          useValue: {
-            isOnline: offlineOnline,
-          } satisfies Partial<OfflineService>,
+            provide: OfflineService,
+            useValue: {
+                isOnline: offlineOnline,
+            } satisfies Partial<OfflineService>,
         },
-      ],
-    });
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
+    ]
+});
 
     service = TestBed.inject(ActivityService);
     httpMock = TestBed.inject(HttpTestingController);

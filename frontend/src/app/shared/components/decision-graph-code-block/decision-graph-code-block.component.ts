@@ -32,11 +32,10 @@ export type DecisionGraphBranchViewedEvent = {
 };
 
 @Component({
-  selector: 'app-decision-graph-code-block',
-  standalone: true,
-  imports: [CommonModule],
-  templateUrl: './decision-graph-code-block.component.html',
-  styleUrls: ['./decision-graph-code-block.component.css'],
+    selector: 'app-decision-graph-code-block',
+    imports: [CommonModule],
+    templateUrl: './decision-graph-code-block.component.html',
+    styleUrls: ['./decision-graph-code-block.component.css']
 })
 export class DecisionGraphCodeBlockComponent implements OnInit, OnDestroy {
   private readonly platformId = inject(PLATFORM_ID);

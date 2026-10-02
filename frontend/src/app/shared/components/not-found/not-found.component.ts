@@ -3,10 +3,9 @@ import { Component } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 
 @Component({
-  selector: 'app-not-found',
-  standalone: true,
-  imports: [CommonModule, RouterLink],
-  styles: [`
+    selector: 'app-not-found',
+    imports: [CommonModule, RouterLink],
+    styles: [`
     :host { display:block; color:var(--uf-text-primary); }
 
     /* Fill space between your fixed header & footer */
@@ -78,7 +77,7 @@ import { Router, RouterLink } from '@angular/router';
 
     .small { font-size:12px; color:color-mix(in srgb, var(--uf-text-tertiary) 80%, transparent); margin-top:8px; }
   `],
-  template: `
+    template: `
     <div class="wrap" data-testid="not-found-page">
       <div class="card">
         <span class="kicker">Not found</span>

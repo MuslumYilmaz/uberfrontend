@@ -5,11 +5,10 @@ import { AchievementNotificationService } from '../../../core/services/achieveme
 import { FaGlyphComponent } from '../../ui/icon/fa-glyph.component';
 
 @Component({
-  selector: 'app-achievement-toast',
-  standalone: true,
-  imports: [CommonModule, RouterLink, FaGlyphComponent],
-  templateUrl: './achievement-toast.component.html',
-  styleUrls: ['./achievement-toast.component.css'],
+    selector: 'app-achievement-toast',
+    imports: [CommonModule, RouterLink, FaGlyphComponent],
+    templateUrl: './achievement-toast.component.html',
+    styleUrls: ['./achievement-toast.component.css']
 })
 export class AchievementToastComponent {
   readonly notifications = inject(AchievementNotificationService);

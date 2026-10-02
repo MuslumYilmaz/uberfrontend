@@ -33,6 +33,9 @@
   --uf-text-primary: #f5f6fa;
   --uf-text-secondary: #c2c7d2;
   --uf-text-tertiary: #9aa1ae;
+  /* Existing Lara control surfaces, retained across the styled-mode migration. */
+  --uf-control-header: #1f2937;
+  --uf-control-input: #111827;
 
   /* Derived surfaces */
   --uf-surface-muted: color-mix(in srgb, var(--uf-surface) 86%, var(--uf-bg));
@@ -47,6 +50,7 @@
   /* Typography */
   --uf-font-body: 'Space Grotesk', 'Segoe UI', system-ui, -apple-system, sans-serif;
   --uf-font-heading: 'Space Grotesk', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --uf-font-control: 'Inter var', sans-serif;
   --uf-body-size: 14px;
   --uf-body-line: 1.58;
   --uf-reading-size: 16px;

@@ -26,16 +26,15 @@ type ItemTypeFilter = 'all' | MasteryItemType;
 type TargetQuery = { tech: Tech; kind: QuestionKind; query: string };
 
 @Component({
-  selector: 'app-mastery-path-page',
-  standalone: true,
-  imports: [
-    CommonModule,
-    RouterModule,
-    OfflineBannerComponent,
-    MasteryModuleListComponent,
-    MasterySidePanelComponent,
-  ],
-  styles: [`
+    selector: 'app-mastery-path-page',
+    imports: [
+        CommonModule,
+        RouterModule,
+        OfflineBannerComponent,
+        MasteryModuleListComponent,
+        MasterySidePanelComponent,
+    ],
+    styles: [`
     :host { display: block; color: var(--uf-text-primary); background: var(--uf-bg); }
 
     .wrap {
@@ -227,7 +226,7 @@ type TargetQuery = { tech: Tech; kind: QuestionKind; query: string };
       .hero { padding: 14px; }
     }
   `],
-  template: `
+    template: `
     <div
       class="wrap fa-body"
       *ngIf="path() as masteryPath"
@@ -317,7 +316,7 @@ type TargetQuery = { tech: Tech; kind: QuestionKind; query: string };
 
       <app-offline-banner></app-offline-banner>
     </div>
-  `,
+  `
 })
 export class MasteryPathPageComponent implements OnDestroy {
   private readonly route = inject(ActivatedRoute);

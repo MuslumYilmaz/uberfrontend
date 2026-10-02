@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, booleanAttribute } from '@angular/core';
 import { Dialog, DialogModule } from 'primeng/dialog';
+import { FaDialogFocusDirective } from './fa-dialog-focus.directive';
 
 type FaDialogStyle = {
   width?: string;
@@ -8,15 +9,15 @@ type FaDialogStyle = {
 };
 
 @Component({
-  selector: 'fa-dialog',
-  standalone: true,
-  imports: [CommonModule, DialogModule],
-  host: { ngSkipHydration: 'true' },
-  template: `
+    selector: 'fa-dialog',
+    imports: [CommonModule, DialogModule, FaDialogFocusDirective],
+    host: { ngSkipHydration: 'true' },
+    template: `
     <p-dialog
       #dialog
       [header]="header"
       [visible]="visible"
+      [faDialogVisible]="visible"
       (visibleChange)="visibleChange.emit($event)"
       [modal]="modal"
       [maskStyleClass]="maskStyleClass"
@@ -54,7 +55,7 @@ type FaDialogStyle = {
       </ng-template>
     </p-dialog>
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FaDialogComponent {
   @Input({ transform: booleanAttribute }) visible = false;
@@ -105,7 +106,7 @@ export class FaDialogComponent {
     if (!this.focusOnShow) return;
 
     requestAnimationFrame(() => {
-      const container = dialog.container;
+      const container = dialog.container();
       if (!container || container.contains(document.activeElement)) return;
 
       const firstFocusable = container.querySelector<HTMLElement>([

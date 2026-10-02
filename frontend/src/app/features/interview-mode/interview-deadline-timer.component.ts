@@ -14,10 +14,9 @@ import {
 } from '@angular/core';
 
 @Component({
-  selector: 'app-interview-deadline-timer',
-  standalone: true,
-  imports: [CommonModule],
-  template: `
+    selector: 'app-interview-deadline-timer',
+    imports: [CommonModule],
+    template: `
     <div
       class="timer"
       role="timer"
@@ -31,8 +30,8 @@ import {
     </div>
     <span class="sr-only" aria-live="polite" aria-atomic="true">{{ announcement() }}</span>
   `,
-  styleUrl: './interview-deadline-timer.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    styleUrl: './interview-deadline-timer.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class InterviewDeadlineTimerComponent implements OnChanges, OnDestroy {
   @Input() deadlineAt: string | null = null;

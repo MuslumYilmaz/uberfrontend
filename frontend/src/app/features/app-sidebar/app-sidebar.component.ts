@@ -34,16 +34,15 @@ interface GroupItem {
 type NavItem = LinkItem | GroupItem;
 
 @Component({
-  selector: 'app-sidebar',
-  standalone: true,
-  imports: [
-    CommonModule,
-    RouterModule,
-    ButtonModule,
-    TooltipModule
-  ],
-  templateUrl: './app-sidebar.component.html',
-  styleUrls: ['./app-sidebar.component.css'],
+    selector: 'app-sidebar',
+    imports: [
+        CommonModule,
+        RouterModule,
+        ButtonModule,
+        TooltipModule
+    ],
+    templateUrl: './app-sidebar.component.html',
+    styleUrls: ['./app-sidebar.component.css']
 })
 export class AppSidebarComponent implements OnInit, OnDestroy {
   @Input() collapsed = false;

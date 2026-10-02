@@ -4,7 +4,6 @@ import { RouterModule } from '@angular/router';
 import { GuideShellComponent } from '../../../shared/components/guide/guide-shell.component';
 
 @Component({
-    standalone: true,
     selector: 'app-behavioral-questions-article',
     imports: [CommonModule, RouterModule, GuideShellComponent],
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -87,7 +86,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         That’s what gets written in the hiring packet.
       </blockquote>
     </fa-guide-shell>
-  `,
+  `
 })
 export class BehavioralQuestionsArticle {
     @Input() prev: any[] | null = null;

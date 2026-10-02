@@ -33,20 +33,19 @@ import {
 } from '../../shared/ui';
 
 @Component({
-  selector: 'app-interview-setup',
-  standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    RouterLink,
-    FaButtonComponent,
-    FaCardComponent,
-    FaFieldComponent,
-    FaSelectComponent,
-  ],
-  templateUrl: './interview-setup.component.html',
-  styleUrls: ['./interview-setup.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-interview-setup',
+    imports: [
+        CommonModule,
+        FormsModule,
+        RouterLink,
+        FaButtonComponent,
+        FaCardComponent,
+        FaFieldComponent,
+        FaSelectComponent,
+    ],
+    templateUrl: './interview-setup.component.html',
+    styleUrls: ['./interview-setup.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class InterviewSetupComponent implements OnInit, OnDestroy {
   private readonly interviews = inject(InterviewService);

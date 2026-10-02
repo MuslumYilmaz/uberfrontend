@@ -1,6 +1,5 @@
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
 import { of, Subject } from 'rxjs';
 import { DashboardGamificationResponse } from '../../core/models/gamification.model';
@@ -484,7 +483,7 @@ describe('DashboardComponent', () => {
     analytics = jasmine.createSpyObj<AnalyticsService>('AnalyticsService', ['track']);
 
     await TestBed.configureTestingModule({
-      imports: [DashboardComponent, NoopAnimationsModule],
+      imports: [DashboardComponent],
       providers: [
         provideRouter([]),
         { provide: QuestionService, useValue: questionService },

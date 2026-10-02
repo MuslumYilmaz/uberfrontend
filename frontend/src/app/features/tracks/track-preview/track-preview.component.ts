@@ -909,11 +909,10 @@ const TRACK_PREVIEW_CONTENT: Record<string, PreviewNarrative> = {
 };
 
 @Component({
-  standalone: true,
-  selector: 'app-track-preview',
-  imports: [CommonModule, RouterModule, FaCardComponent],
-  templateUrl: './track-preview.component.html',
-  styleUrls: ['./track-preview.component.css'],
+    selector: 'app-track-preview',
+    imports: [CommonModule, RouterModule, FaCardComponent],
+    templateUrl: './track-preview.component.html',
+    styleUrls: ['./track-preview.component.css']
 })
 export class TrackPreviewComponent implements OnInit {
   track: TrackConfig | null = null;

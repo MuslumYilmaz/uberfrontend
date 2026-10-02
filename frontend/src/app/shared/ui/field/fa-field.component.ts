@@ -2,10 +2,9 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input, booleanAttribute } from '@angular/core';
 
 @Component({
-  selector: 'fa-field',
-  standalone: true,
-  imports: [CommonModule],
-  template: `
+    selector: 'fa-field',
+    imports: [CommonModule],
+    template: `
     <label class="fa-field" [class.fa-field--error]="!!error" [class.fa-field--disabled]="disabled">
       <span class="fa-field__head" *ngIf="label || hint || error">
         <span class="fa-field__label" *ngIf="label">
@@ -20,7 +19,7 @@ import { ChangeDetectionStrategy, Component, Input, booleanAttribute } from '@an
       </span>
     </label>
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FaFieldComponent {
   @Input() label?: string;

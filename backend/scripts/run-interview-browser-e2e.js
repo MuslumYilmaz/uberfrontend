@@ -345,6 +345,14 @@ async function main() {
       ],
       { cwd: FRONTEND_ROOT, env: process.env, prefix: 'angular-production-build' }
     );
+    await runOwnedCommand(
+      process.execPath,
+      [
+        path.join(FRONTEND_ROOT, 'scripts/extract-prime-ssr-styles.mjs'),
+        path.join(productionBuildRoot, 'browser'),
+      ],
+      { cwd: FRONTEND_ROOT, env: process.env, prefix: 'prime-ssr-styles' }
+    );
     const staticServerModule = pathToFileURL(
       path.join(FRONTEND_ROOT, 'scripts/seo-static-server.mjs')
     ).href;

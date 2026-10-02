@@ -252,26 +252,25 @@ function inferCategory(q: any): CategoryKey {
 }
 
 @Component({
-  selector: 'app-coding-list',
-  standalone: true,
-  imports: [
-    CommonModule,
-    RouterModule,
-    MultiSelectModule,
-    SliderModule,
-    InputTextModule,
-    FormsModule,
-    CodingTechKindTabsComponent,
-    CodingFilterPanelComponent,
-    OfflineBannerComponent,
-    FaChipComponent,
-    FaButtonComponent,
-    FaCardComponent,
-    FaSpinnerComponent,
-    FaQuestionRowComponent,
-  ],
-  templateUrl: './coding-list.component.html',
-  styleUrls: ['./coding-list.component.scss']
+    selector: 'app-coding-list',
+    imports: [
+        CommonModule,
+        RouterModule,
+        MultiSelectModule,
+        SliderModule,
+        InputTextModule,
+        FormsModule,
+        CodingTechKindTabsComponent,
+        CodingFilterPanelComponent,
+        OfflineBannerComponent,
+        FaChipComponent,
+        FaButtonComponent,
+        FaCardComponent,
+        FaSpinnerComponent,
+        FaQuestionRowComponent,
+    ],
+    templateUrl: './coding-list.component.html',
+    styleUrls: ['./coding-list.component.scss']
 })
 export class CodingListComponent implements OnInit, OnDestroy {
   readonly companyPracticeDisclaimer = COMPANY_PRACTICE_DISCLAIMER;

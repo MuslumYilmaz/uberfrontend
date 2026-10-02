@@ -4,17 +4,16 @@ import { RouterModule } from '@angular/router';
 import { OfflineBannerComponent } from "../../shared/components/offline-banner/offline-banner";
 
 @Component({
-  standalone: true,
-  imports: [CommonModule, RouterModule, OfflineBannerComponent],
-  selector: 'app-tech-layout',
-  template: `
+    imports: [CommonModule, RouterModule, OfflineBannerComponent],
+    selector: 'app-tech-layout',
+    template: `
     <!-- Stretchy container; children (coding/trivia detail/list) handle their own padding -->
     <div class="fa-tech-layout">
       <router-outlet></router-outlet>
       <app-offline-banner></app-offline-banner>
     </div>
   `,
-  styles: [`
+    styles: [`
     :host {
       display: flex;
       flex: 1;

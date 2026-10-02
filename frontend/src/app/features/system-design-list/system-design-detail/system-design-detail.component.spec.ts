@@ -1,7 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { of } from 'rxjs';
 import { AnalyticsService } from '../../../core/services/analytics.service';
 import { InterviewAvailabilityStore } from '../../../core/services/interview-availability.store';
@@ -61,7 +60,7 @@ describe('SystemDesignDetailComponent', () => {
     }));
 
     await TestBed.configureTestingModule({
-      imports: [SystemDesignDetailComponent, RouterTestingModule, NoopAnimationsModule],
+      imports: [SystemDesignDetailComponent, RouterTestingModule],
       providers: [
         { provide: QuestionService, useValue: questionService },
         { provide: SeoService, useValue: seo },

@@ -59,11 +59,10 @@ export const PRICING_V2_OFFER_VERSION = 'interview_sprint_v2';
 export const RECOMMENDED_PRICING_PLAN: PlanId = 'quarterly';
 
 @Component({
-  standalone: true,
-  selector: 'app-pricing-plans-section',
-  imports: [CommonModule, RouterModule, FaqSectionComponent, LoginRequiredDialogComponent, FaButtonComponent],
-  styleUrls: ['./pricing-plans-section.component.css'],
-  template: `
+    selector: 'app-pricing-plans-section',
+    imports: [CommonModule, RouterModule, FaqSectionComponent, LoginRequiredDialogComponent, FaButtonComponent],
+    styleUrls: ['./pricing-plans-section.component.css'],
+    template: `
     <section class="pr-wrap" [class.pr-wrap--compact]="variant === 'compact'">
       <header class="pr-hero" *ngIf="variant === 'full'">
         <p class="pr-kicker">Premium for interview sprints</p>
@@ -502,7 +501,7 @@ export const RECOMMENDED_PRICING_PLAN: PlanId = 'quarterly';
         [loginLabel]="loginRequiredLoginLabel"
         [redirectTo]="loginRedirectTo">
       </app-login-required-dialog>
-  `,
+  `
 })
 export class PricingPlansSectionComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
   private static readonly SOURCE_PATTERN = /^[a-z0-9_-]{1,64}$/;

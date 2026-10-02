@@ -21,7 +21,6 @@ type GuideArticleInputs = {
 };
 
 @Component({
-    standalone: true,
     imports: [CommonModule, RouterModule, OfflineBannerComponent],
     styles: [`
       .guide-ssr-shell {

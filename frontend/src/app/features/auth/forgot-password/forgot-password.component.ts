@@ -7,10 +7,9 @@ import { getAuthDisplayError } from '../../../core/utils/auth-error.util';
 import { FaButtonComponent } from '../../../shared/ui/button/fa-button.component';
 
 @Component({
-  selector: 'app-forgot-password',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, FaButtonComponent],
-  template: `
+    selector: 'app-forgot-password',
+    imports: [CommonModule, ReactiveFormsModule, RouterLink, FaButtonComponent],
+    template: `
     <main class="verify-shell" data-testid="forgot-password-page">
       <section class="verify-card" aria-labelledby="forgot-password-title">
         <h1 id="forgot-password-title">Reset your password</h1>
@@ -48,10 +47,10 @@ import { FaButtonComponent } from '../../../shared/ui/button/fa-button.component
       </section>
     </main>
   `,
-  styleUrls: [
-    '../verify-email/verify-email.component.css',
-    './password-recovery.component.css',
-  ],
+    styleUrls: [
+        '../verify-email/verify-email.component.css',
+        './password-recovery.component.css',
+    ]
 })
 export class ForgotPasswordComponent {
   loading = false;

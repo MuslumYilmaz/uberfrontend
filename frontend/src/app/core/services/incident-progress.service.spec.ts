@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { HttpHeaders } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { HttpHeaders, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { computed, signal } from '@angular/core';
 import { AuthService } from './auth.service';
 import { IncidentProgressService } from './incident-progress.service';
@@ -19,19 +19,21 @@ describe('IncidentProgressService', () => {
     localStorage.removeItem(SESSION_KEY);
 
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [
+    imports: [],
+    providers: [
         IncidentProgressService,
         {
-          provide: AuthService,
-          useValue: {
-            user: authUser,
-            isLoggedIn: computed(() => !!authUser()),
-            headers: () => new HttpHeaders(),
-          } satisfies Partial<AuthService>,
+            provide: AuthService,
+            useValue: {
+                user: authUser,
+                isLoggedIn: computed(() => !!authUser()),
+                headers: () => new HttpHeaders(),
+            } satisfies Partial<AuthService>,
         },
-      ],
-    });
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
+    ]
+});
 
     service = TestBed.inject(IncidentProgressService);
     httpMock = TestBed.inject(HttpTestingController);

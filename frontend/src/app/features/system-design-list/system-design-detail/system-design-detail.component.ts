@@ -78,19 +78,18 @@ const DEFAULT_DETAIL_GUIDE_SLUGS: readonly SystemDesignGuideSlug[] = [
 ];
 
 @Component({
-  selector: 'app-system-design-detail',
-  standalone: true,
-  imports: [
-    CommonModule,
-    RouterModule,
-    ChipModule,
-    FooterComponent,
-    LockedPreviewComponent,
-    FaButtonComponent,
-    FaDialogComponent,
-  ],
-  templateUrl: './system-design-detail.component.html',
-  styleUrls: ['./system-design-detail.component.css']
+    selector: 'app-system-design-detail',
+    imports: [
+        CommonModule,
+        RouterModule,
+        ChipModule,
+        FooterComponent,
+        LockedPreviewComponent,
+        FaButtonComponent,
+        FaDialogComponent,
+    ],
+    templateUrl: './system-design-detail.component.html',
+    styleUrls: ['./system-design-detail.component.css']
 })
 export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   private route = inject(ActivatedRoute);

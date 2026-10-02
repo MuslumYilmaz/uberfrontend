@@ -4,9 +4,8 @@ import { RouterModule } from '@angular/router';
 import { GuideShellComponent } from '../../../shared/components/guide/guide-shell.component';
 
 @Component({
-  standalone: true,
-  imports: [CommonModule, RouterModule, GuideShellComponent],
-  styles: [`
+    imports: [CommonModule, RouterModule, GuideShellComponent],
+    styles: [`
     .radio-steps {
       display: grid;
       gap: 14px;
@@ -384,7 +383,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       }
     }
   `],
-  template: `
+    template: `
       <fa-guide-shell
       title="RADIO Framework: Frontend System Design Interview Template"
       subtitle="A 45-minute RADIO template for frontend system design interviews"
@@ -1274,7 +1273,7 @@ I would ship the simple path first, instrument the risky flow, and use metrics t
         </tbody>
       </table>
     </fa-guide-shell>
-  `,
+  `
 })
 export class SystemDesignRadioFrameworkArticle {
   @Input() prev: any[] | null = null;

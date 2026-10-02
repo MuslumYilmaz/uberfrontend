@@ -18,11 +18,10 @@ type SortKey =
   | 'diff-asc' | 'diff-desc';
 
 @Component({
-  selector: 'app-coding-filter-panel',
-  standalone: true,
-  imports: [CommonModule, FormsModule, InputTextModule, FaChipComponent],
-  templateUrl: './coding-filter-panel.component.html',
-  styleUrls: ['./coding-filter-panel.css'],
+    selector: 'app-coding-filter-panel',
+    imports: [CommonModule, FormsModule, InputTextModule, FaChipComponent],
+    templateUrl: './coding-filter-panel.component.html',
+    styleUrls: ['./coding-filter-panel.css']
 })
 export class CodingFilterPanelComponent {
   @Input() searchTerm = '';

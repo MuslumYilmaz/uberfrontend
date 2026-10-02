@@ -4,7 +4,6 @@ import { RouterModule } from '@angular/router';
 import { GuideShellComponent } from '../../../shared/components/guide/guide-shell.component';
 
 @Component({
-    standalone: true,
     selector: 'app-behavioral-big-picture-article',
     imports: [CommonModule, RouterModule, GuideShellComponent],
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -292,7 +291,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         or practice <a routerLink="/guides/behavioral/fe-advanced">frontend behavioral interview scenarios</a>.
       </p>
     </fa-guide-shell>
-  `,
+  `
 })
 export class BehavioralBigPictureArticle {
     @Input() prev: any[] | null = null;

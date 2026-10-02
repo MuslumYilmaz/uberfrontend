@@ -16,12 +16,11 @@ type MarketingLink = {
 };
 
 @Component({
-  selector: 'app-marketing-header',
-  standalone: true,
-  imports: [CommonModule, RouterModule],
-  styleUrls: ['./marketing-header.component.css'],
-  templateUrl: './marketing-header.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-marketing-header',
+    imports: [CommonModule, RouterModule],
+    styleUrls: ['./marketing-header.component.css'],
+    templateUrl: './marketing-header.component.html',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MarketingHeaderComponent {
   private readonly hostEl = inject(ElementRef<HTMLElement>);

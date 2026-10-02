@@ -1,8 +1,8 @@
 import { SHOWCASE_STATS } from '../../generated/content-metadata';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { HttpRequest } from '@angular/common/http';
-import { TransferState, makeStateKey } from '@angular/platform-browser';
+import { HttpRequest, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { TransferState, makeStateKey } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { Question } from '../models/question.model';
 import { QuestionPersistenceService } from './question-persistence.service';
@@ -118,15 +118,17 @@ describe('QuestionService', () => {
     localStorage.setItem(cdnFlagKey, '0');
 
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [
+    imports: [],
+    providers: [
         QuestionService,
         {
-          provide: QuestionPersistenceService,
-          useClass: MemoryQuestionPersistenceService,
+            provide: QuestionPersistenceService,
+            useClass: MemoryQuestionPersistenceService,
         },
-      ],
-    });
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
+    ]
+});
 
     service = TestBed.inject(QuestionService);
     persistence = TestBed.inject(QuestionPersistenceService);

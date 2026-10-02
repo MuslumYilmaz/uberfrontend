@@ -19,9 +19,8 @@ const PLAYBOOK_GLOBAL_INDEX = (() => {
 })();
 
 @Component({
-  standalone: true,
-  imports: [CommonModule, RouterModule, OfflineBannerComponent, PrepSignalGridComponent],
-  styles: [`
+    imports: [CommonModule, RouterModule, OfflineBannerComponent, PrepSignalGridComponent],
+    styles: [`
     :host { display:block; color: var(--uf-text-primary); background: var(--uf-bg); }
     .wrap { max-width: 980px; margin: 0 auto; padding: 24px clamp(18px, 4vw, 28px) 48px; }
     .hero-title { margin: 6px 0 6px; }
@@ -114,7 +113,7 @@ const PLAYBOOK_GLOBAL_INDEX = (() => {
       .framework-links a { transition: border-color 0.01ms linear, color 0.01ms linear; }
     }
   `],
-  template: `
+    template: `
     <div class="wrap fa-body">
       <h1 class="hero-title fa-page-title">Frontend Interview Playbook Hub</h1>
       <div class="hero-sub fa-meta-text">A practical hub for frontend interview preparation guides covering coding, UI, JavaScript, system design, framework paths, fundamentals, and resume prep.</div>

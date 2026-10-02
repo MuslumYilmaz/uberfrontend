@@ -1,10 +1,10 @@
-import { CommonModule, DOCUMENT } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import {
   PUBLIC_EDITORIAL_FACTS,
   PUBLIC_EDITORIAL_WORKFLOW_DESCRIPTION,
   publicEditorialAuthorSchema,
 } from '../../core/content/public-editorial-facts';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, DOCUMENT } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { forkJoin, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
@@ -5419,11 +5419,10 @@ const DIFFICULTY_RANK: Record<string, number> = {
 };
 
 @Component({
-  standalone: true,
-  selector: 'app-interview-questions-landing',
-  imports: [CommonModule, RouterModule, PrepRoadmapComponent],
-  templateUrl: './interview-questions-landing.component.html',
-  styleUrls: ['./interview-questions-landing.component.css'],
+    selector: 'app-interview-questions-landing',
+    imports: [CommonModule, RouterModule, PrepRoadmapComponent],
+    templateUrl: './interview-questions-landing.component.html',
+    styleUrls: ['./interview-questions-landing.component.css']
 })
 export class InterviewQuestionsLandingComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);

@@ -4,7 +4,6 @@ import { RouterModule } from '@angular/router';
 import { GuideShellComponent } from '../../../shared/components/guide/guide-shell.component';
 
 @Component({
-    standalone: true,
     selector: 'app-behavioral-stories-article',
     imports: [CommonModule, RouterModule, GuideShellComponent],
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -104,7 +103,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
             <li><strong>Mentorship win:</strong> “Junior struggled with async JS. I paired, explained promises vs callbacks, and helped them land the PR. Later, I ran a team session so everyone leveled up.”</li>
         </ul>
     </fa-guide-shell>
-  `,
+  `
 })
 export class BehavioralStoriesArticle {
     @Input() prev: any[] | null = null;

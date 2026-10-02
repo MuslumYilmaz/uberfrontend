@@ -50,12 +50,11 @@ const STEPS: Array<{ id: InterviewSystemDesignStep; label: string }> = [
 ];
 
 @Component({
-  selector: 'app-interview-system-design-round',
-  standalone: true,
-  imports: [CommonModule, FormsModule, FaButtonComponent, FaCardComponent, FaSelectComponent],
-  templateUrl: './interview-system-design-round.component.html',
-  styleUrls: ['./interview-system-design-round.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-interview-system-design-round',
+    imports: [CommonModule, FormsModule, FaButtonComponent, FaCardComponent, FaSelectComponent],
+    templateUrl: './interview-system-design-round.component.html',
+    styleUrls: ['./interview-system-design-round.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class InterviewSystemDesignRoundComponent implements OnChanges, OnDestroy {
   private readonly interviews = inject(InterviewService);

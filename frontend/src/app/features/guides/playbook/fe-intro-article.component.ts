@@ -16,9 +16,8 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
 import { PUBLIC_EDITORIAL_FACTS } from '../../../core/content/public-editorial-facts';
 
 @Component({
-  standalone: true,
-  imports: [GuideShellComponent, RouterModule],
-  styles: [`
+    imports: [GuideShellComponent, RouterModule],
+    styles: [`
     /* Inline links */
     a {
       color: #4ea1ff;
@@ -177,7 +176,7 @@ import { PUBLIC_EDITORIAL_FACTS } from '../../../core/content/public-editorial-f
       color:#cfe1ff;
     }
   `],
-  template: `
+    template: `
   <fa-guide-shell
     title="Frontend Interview Preparation Guide (2026): Rounds, Roadmap, Questions"
     subtitle="A clear map of frontend interview rounds, question categories, evaluation criteria, and a practical 30-day prep roadmap."

@@ -2,7 +2,7 @@
   display: block;
 }
 
-::ng-deep .bug-dialog-mask.p-component-overlay {
+::ng-deep .bug-dialog-mask.p-overlay-mask {
   z-index: 10000 !important;
   background: color-mix(in srgb, var(--uf-bg) 72%, transparent) !important;
   backdrop-filter: blur(3px);

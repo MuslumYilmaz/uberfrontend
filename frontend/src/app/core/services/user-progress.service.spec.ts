@@ -1,5 +1,5 @@
-import { HttpHeaders } from '@angular/common/http';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpHeaders, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { computed, signal } from '@angular/core';
 import { AuthService } from './auth.service';
@@ -15,20 +15,22 @@ describe('UserProgressService', () => {
 
     TestBed.resetTestingModule();
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [
+    imports: [],
+    providers: [
         UserProgressService,
         {
-          provide: AuthService,
-          useValue: {
-            user: authUser,
-            isLoggedIn: computed(() => !!authUser()),
-            ensureMe: () => { throw new Error('ensureMe should not run for guests in this spec'); },
-            headers: () => new HttpHeaders(),
-          } satisfies Partial<AuthService>,
+            provide: AuthService,
+            useValue: {
+                user: authUser,
+                isLoggedIn: computed(() => !!authUser()),
+                ensureMe: () => { throw new Error('ensureMe should not run for guests in this spec'); },
+                headers: () => new HttpHeaders(),
+            } satisfies Partial<AuthService>,
         },
-      ],
-    });
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
+    ]
+});
 
     return {
       service: TestBed.inject(UserProgressService),

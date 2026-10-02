@@ -1,5 +1,5 @@
-import { HttpHeaders } from '@angular/common/http';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpHeaders, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { computed, signal } from '@angular/core';
 import { TestBed, fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
 import { AuthService } from './auth.service';
@@ -26,19 +26,21 @@ describe('AchievementNotificationService', () => {
   beforeEach(() => {
     authUser = signal<any>({ _id: 'user-1' });
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [
+    imports: [],
+    providers: [
         AchievementNotificationService,
         {
-          provide: AuthService,
-          useValue: {
-            user: authUser,
-            isLoggedIn: computed(() => !!authUser()),
-            headers: () => new HttpHeaders(),
-          } satisfies Partial<AuthService>,
+            provide: AuthService,
+            useValue: {
+                user: authUser,
+                isLoggedIn: computed(() => !!authUser()),
+                headers: () => new HttpHeaders(),
+            } satisfies Partial<AuthService>,
         },
-      ],
-    });
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
+    ]
+});
 
     service = TestBed.inject(AchievementNotificationService);
     httpMock = TestBed.inject(HttpTestingController);

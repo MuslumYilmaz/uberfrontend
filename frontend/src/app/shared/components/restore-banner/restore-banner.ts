@@ -2,10 +2,9 @@ import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
-  selector: 'app-restore-banner',
-  standalone: true,
-  imports: [CommonModule],
-  template: `
+    selector: 'app-restore-banner',
+    imports: [CommonModule],
+    template: `
 	    <div *ngIf="isVisible" class="restore-banner" data-testid="restore-banner">
 	      <span class="msg" data-testid="restore-banner-message">
 	      {{ isSolution ? "You’re viewing the solution code." : "Your code was restored from saved draft." }}
@@ -19,7 +18,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 	    </div>
 	  </div>
 	  `,
-  styles: [`
+    styles: [`
     :host {
       display: block;
       position: relative;

@@ -1,14 +1,14 @@
 import { DeferBlockBehavior, DeferBlockState, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Router } from '@angular/router';
-import { Component } from '@angular/core';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { DOCUMENT } from '@angular/common';
+import { Component, DOCUMENT } from '@angular/core';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+
 import { AppComponent } from './app.component';
 import { BugReportService } from './core/services/bug-report.service';
 import { AuthService, User } from './core/services/auth.service';
 import { AppSidebarDrawerService } from './core/services/app-sidebar-drawer.service';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 @Component({
   standalone: true,
@@ -55,25 +55,24 @@ describe('AppComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        AppComponent,
+    deferBlockBehavior: DeferBlockBehavior.Playthrough,
+    imports: [AppComponent,
         RouterTestingModule.withRoutes([
-          { path: 'dashboard', component: DummyDashboardComponent },
-          { path: 'interview/:id', component: DummyDashboardComponent },
-          { path: 'coding', component: DummyDashboardComponent },
-          { path: 'tracks', component: DummyDashboardComponent },
-          { path: 'interview-questions', component: DummyDashboardComponent },
-          { path: 'interview-questions/essential', component: DummyDashboardComponent },
-          { path: 'admin/users', component: DummyDashboardComponent },
+            { path: 'dashboard', component: DummyDashboardComponent },
+            { path: 'interview/:id', component: DummyDashboardComponent },
+            { path: 'coding', component: DummyDashboardComponent },
+            { path: 'tracks', component: DummyDashboardComponent },
+            { path: 'interview-questions', component: DummyDashboardComponent },
+            { path: 'interview-questions/essential', component: DummyDashboardComponent },
+            { path: 'admin/users', component: DummyDashboardComponent },
         ]),
-        NoopAnimationsModule,
-        HttpClientTestingModule,
-      ],
-      providers: [
+        ],
+    providers: [
         { provide: DOCUMENT, useValue: createDocumentAt('/') },
-      ],
-      deferBlockBehavior: DeferBlockBehavior.Playthrough,
-    }).compileComponents();
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
+    ]
+}).compileComponents();
     mockDesktopViewport();
   });
 

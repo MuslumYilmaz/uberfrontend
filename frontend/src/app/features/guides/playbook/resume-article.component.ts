@@ -4,9 +4,8 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
 import { PUBLIC_EDITORIAL_FACTS } from '../../../core/content/public-editorial-facts';
 
 @Component({
-  standalone: true,
-  imports: [GuideShellComponent, RouterModule],
-  styles: [`
+    imports: [GuideShellComponent, RouterModule],
+    styles: [`
     :host {
       display: block;
     }
@@ -224,7 +223,7 @@ import { PUBLIC_EDITORIAL_FACTS } from '../../../core/content/public-editorial-f
       background: rgba(255, 255, 255, .05);
     }
   `],
-  template: `
+    template: `
   <fa-guide-shell
     title="Frontend Resume for Interviews: What Gets Calls and What Gets Rejected"
     subtitle="Build a frontend resume that gets interviews, survives the 30-second skim, maps to ATS keywords, and gives interviewers better stories to ask about."

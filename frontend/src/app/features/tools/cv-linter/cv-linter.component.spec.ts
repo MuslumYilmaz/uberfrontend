@@ -1,8 +1,9 @@
-import { DOCUMENT } from '@angular/common';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { DOCUMENT } from '@angular/core';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { fakeAsync, flush, TestBed, tick } from '@angular/core/testing';
 import { CvAnalyzeResponse, CvIssue } from '../../../core/models/cv-linter.model';
 import { CvLinterComponent } from './cv-linter.component';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 function makeIssue(overrides: Partial<CvIssue> = {}): CvIssue {
   return {
@@ -72,8 +73,9 @@ describe('CvLinterComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CvLinterComponent, HttpClientTestingModule],
-    }).compileComponents();
+    imports: [CvLinterComponent],
+    providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+}).compileComponents();
 
     httpMock = TestBed.inject(HttpTestingController);
   });

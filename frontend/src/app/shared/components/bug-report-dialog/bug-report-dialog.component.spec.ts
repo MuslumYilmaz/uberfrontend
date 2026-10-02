@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output, computed, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { BugReportService } from '../../../core/services/bug-report.service';
 import {
   TurnstileChallengeComponent,
@@ -11,10 +10,9 @@ import {
 import { BugReportDialogComponent } from './bug-report-dialog.component';
 
 @Component({
-  selector: 'app-turnstile-challenge',
-  standalone: true,
-  imports: [CommonModule],
-  template: '',
+    selector: 'app-turnstile-challenge',
+    imports: [CommonModule],
+    template: ''
 })
 class TurnstileChallengeStubComponent {
   @Input({ required: true }) action!: 'contact' | 'bug_report';
@@ -78,7 +76,7 @@ describe('BugReportDialogComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [BugReportDialogComponent, NoopAnimationsModule],
+      imports: [BugReportDialogComponent],
       providers: [{ provide: BugReportService, useValue: bugReport }],
     })
       .overrideComponent(BugReportDialogComponent, {

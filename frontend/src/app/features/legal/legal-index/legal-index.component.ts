@@ -3,10 +3,9 @@ import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
 @Component({
-  standalone: true,
-  selector: 'app-legal-index',
-  imports: [CommonModule, RouterModule],
-  template: `
+    selector: 'app-legal-index',
+    imports: [CommonModule, RouterModule],
+    template: `
     <section class="legal-shell">
       <header class="hero">
         <p class="eyebrow">Compliance hub</p>
@@ -65,7 +64,7 @@ import { RouterModule } from '@angular/router';
       </div>
     </section>
   `,
-  styles: [`
+    styles: [`
     :host { display: block; }
     .legal-shell {
       max-width: 1024px;

@@ -27,12 +27,11 @@ type FocusAreaStats = {
 };
 
 @Component({
-  selector: 'app-focus-areas',
-  standalone: true,
-  imports: [CommonModule, RouterModule],
-  templateUrl: './focus-areas.component.html',
-  styleUrls: ['./focus-areas.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-focus-areas',
+    imports: [CommonModule, RouterModule],
+    templateUrl: './focus-areas.component.html',
+    styleUrls: ['./focus-areas.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FocusAreasComponent {
   constructor(

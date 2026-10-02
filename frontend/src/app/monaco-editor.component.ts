@@ -26,15 +26,14 @@ export type MonacoLoadError = {
 };
 
 @Component({
-  selector: 'app-monaco-editor',
-  standalone: true,
-  imports: [CommonModule],
-  template: `<div #editorContainer class="w-full"></div>`,
-  styles: [`
+    selector: 'app-monaco-editor',
+    imports: [CommonModule],
+    template: `<div #editorContainer class="w-full"></div>`,
+    styles: [`
     :host { display:block; width:100%; }
     /* When autoHeight=false, give container a default height so it doesn't collapse */
     :host(.fixed-height) > div { height: 100%; }
-  `],
+  `]
 })
 export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestroy {
   @ViewChild('editorContainer', { static: true }) container!: ElementRef<HTMLDivElement>;

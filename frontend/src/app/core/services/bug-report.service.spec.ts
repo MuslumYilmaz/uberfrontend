@@ -1,5 +1,5 @@
-import { HttpHeaders } from '@angular/common/http';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpHeaders, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { discardPeriodicTasks, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { apiUrl } from '../utils/api-base';
 import { BugReportService } from './bug-report.service';
@@ -10,9 +10,9 @@ describe('BugReportService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [BugReportService],
-    });
+    imports: [],
+    providers: [BugReportService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+});
 
     service = TestBed.inject(BugReportService);
     httpMock = TestBed.inject(HttpTestingController);

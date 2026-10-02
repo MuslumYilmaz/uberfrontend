@@ -5,10 +5,9 @@ import type { DraftIndexEntry } from '../../../core/utils/versioned-drafts.util'
 type Mode = 'updated' | 'older';
 
 @Component({
-  selector: 'app-draft-update-banner',
-  standalone: true,
-  imports: [CommonModule],
-  template: `
+    selector: 'app-draft-update-banner',
+    imports: [CommonModule],
+    template: `
     <div *ngIf="isVisible" class="draft-update-banner" data-testid="draft-update-banner">
       <span class="msg" data-testid="draft-update-banner-message">
         <ng-container *ngIf="mode === 'older'; else updatedTpl">
@@ -64,7 +63,7 @@ type Mode = 'updated' | 'older';
       </div>
     </div>
   `,
-  styles: [`
+    styles: [`
     :host {
       display: block;
       position: relative;

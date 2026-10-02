@@ -15,11 +15,10 @@ const PAGE_DESCRIPTION =
   'Practice frontend tradeoff interview questions like Context vs Zustand vs Redux, SSE vs WebSocket, and CSR vs SSR vs RSC. Learn how to defend decisions clearly instead of sounding dogmatic.';
 
 @Component({
-  standalone: true,
-  selector: 'app-tradeoff-list',
-  imports: [CommonModule, FormsModule, RouterModule, FaChipComponent],
-  templateUrl: './tradeoff-list.component.html',
-  styleUrls: ['./tradeoff-list.component.css'],
+    selector: 'app-tradeoff-list',
+    imports: [CommonModule, FormsModule, RouterModule, FaChipComponent],
+    templateUrl: './tradeoff-list.component.html',
+    styleUrls: ['./tradeoff-list.component.css']
 })
 export class TradeoffListComponent {
   private readonly techOrder: readonly PracticeTechnology[] = [

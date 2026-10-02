@@ -4,11 +4,10 @@ import { RouterModule } from '@angular/router';
 import { LEGAL_POLICY_LAST_UPDATED } from '../legal-policy-dates';
 
 @Component({
-  standalone: true,
-  selector: 'app-terms',
-  imports: [CommonModule, RouterModule],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
+    selector: 'app-terms',
+    imports: [CommonModule, RouterModule],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    template: `
     <article class="doc" aria-labelledby="doc-title">
       <header class="doc-header">
         <div class="doc-meta">
@@ -160,7 +159,7 @@ import { LEGAL_POLICY_LAST_UPDATED } from '../legal-policy-dates';
       </footer>
     </article>
   `,
-  styles: [`
+    styles: [`
     :host { display: block; background: radial-gradient(circle at 12% 18%, color-mix(in srgb, var(--uf-accent) 10%, transparent), transparent 38%), var(--uf-bg); }
     .doc {
       max-width: 920px;

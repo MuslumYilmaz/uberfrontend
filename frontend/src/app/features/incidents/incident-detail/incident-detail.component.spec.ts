@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { HttpHeaders } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { HttpHeaders, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { computed, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -157,23 +157,25 @@ describe('IncidentDetailComponent', () => {
     localStorage.removeItem('fa:practice:session:v2:incident:incident-1');
 
     await TestBed.configureTestingModule({
-      imports: [IncidentDetailComponent, RouterTestingModule, HttpClientTestingModule],
-      providers: [
+    imports: [IncidentDetailComponent, RouterTestingModule],
+    providers: [
         IncidentProgressService,
         { provide: ActivityService, useValue: activity },
         {
-          provide: AuthService,
-          useValue: {
-            user: authUser,
-            isLoggedIn: computed(() => !!authUser()),
-            headers: () => new HttpHeaders(),
-          } satisfies Partial<AuthService>,
+            provide: AuthService,
+            useValue: {
+                user: authUser,
+                isLoggedIn: computed(() => !!authUser()),
+                headers: () => new HttpHeaders(),
+            } satisfies Partial<AuthService>,
         },
         { provide: BugReportService, useValue: jasmine.createSpyObj<BugReportService>('BugReportService', ['open']) },
         { provide: SeoService, useValue: seo },
         { provide: ActivatedRoute, useValue: { data: routeData$.asObservable() } },
-      ],
-    }).compileComponents();
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
+    ]
+}).compileComponents();
     httpMock = TestBed.inject(HttpTestingController);
   });
 

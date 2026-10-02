@@ -1,4 +1,3 @@
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { AnalyticsService } from '../../../core/services/analytics.service';
@@ -16,7 +15,7 @@ describe('LoginRequiredDialogComponent', () => {
     analytics = jasmine.createSpyObj<AnalyticsService>('AnalyticsService', ['track']);
     auth = jasmine.createSpyObj<AuthService>('AuthService', ['oauthStart']);
     await TestBed.configureTestingModule({
-      imports: [LoginRequiredDialogComponent, NoopAnimationsModule],
+      imports: [LoginRequiredDialogComponent],
       providers: [
         provideRouter([]),
         { provide: AnalyticsService, useValue: analytics },

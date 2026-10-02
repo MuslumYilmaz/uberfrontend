@@ -3,10 +3,9 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 @Component({
-  selector: 'fa-spinner',
-  standalone: true,
-  imports: [CommonModule, ProgressSpinnerModule],
-  template: `
+    selector: 'fa-spinner',
+    imports: [CommonModule, ProgressSpinnerModule],
+    template: `
     <span class="fa-spinner" role="status" [attr.aria-label]="label || 'Loading'">
       <p-progressSpinner
         [style]="{ width: size, height: size }"
@@ -16,7 +15,7 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
       </p-progressSpinner>
     </span>
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FaSpinnerComponent {
   @Input() size = '2rem';

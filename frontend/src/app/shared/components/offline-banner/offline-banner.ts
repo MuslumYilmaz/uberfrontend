@@ -3,10 +3,9 @@ import { Component, computed } from '@angular/core';
 import { OfflineService } from '../../../core/services/offline';
 
 @Component({
-  selector: 'app-offline-banner',
-  standalone: true,
-  imports: [CommonModule],
-  template: `
+    selector: 'app-offline-banner',
+    imports: [CommonModule],
+    template: `
     <div *ngIf="offline()" class="offline-banner" data-testid="offline-banner">
       <div class="offline-banner__inner">
         <i class="pi pi-wifi offline-banner__icon"></i>
@@ -17,7 +16,7 @@ import { OfflineService } from '../../../core/services/offline';
       </div>
     </div>
   `,
-  styles: [`
+    styles: [`
     :host {
       display: block;
     }

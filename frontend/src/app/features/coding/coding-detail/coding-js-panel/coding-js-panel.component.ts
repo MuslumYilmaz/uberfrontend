@@ -73,11 +73,10 @@ const DEFAULT_ASSIST_FLAGS: AssistFlags = {
 };
 
 @Component({
-  selector: 'app-coding-js-panel',
-  standalone: true,
-  imports: [CommonModule, MonacoEditorComponent, ConsoleLoggerComponent, RestoreBannerComponent, DraftUpdateBannerComponent, CodeSnapshotComponent, FaGlyphComponent],
-  templateUrl: './coding-js-panel.component.html',
-  styleUrls: ['./coding-js-panel.component.css']
+    selector: 'app-coding-js-panel',
+    imports: [CommonModule, MonacoEditorComponent, ConsoleLoggerComponent, RestoreBannerComponent, DraftUpdateBannerComponent, CodeSnapshotComponent, FaGlyphComponent],
+    templateUrl: './coding-js-panel.component.html',
+    styleUrls: ['./coding-js-panel.component.css']
 })
 export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   @ViewChild('codeEditor') codeEditor?: MonacoEditorComponent;

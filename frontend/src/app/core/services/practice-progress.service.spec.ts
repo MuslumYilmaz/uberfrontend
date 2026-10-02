@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { HttpHeaders } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { HttpHeaders, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { computed, signal } from '@angular/core';
 import { AuthService } from './auth.service';
 import { PracticeProgressService } from './practice-progress.service';
@@ -55,19 +55,21 @@ describe('PracticeProgressService', () => {
     }));
 
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [
+    imports: [],
+    providers: [
         PracticeProgressService,
         {
-          provide: AuthService,
-          useValue: {
-            user: authUser,
-            isLoggedIn: computed(() => !!authUser()),
-            headers: () => new HttpHeaders(),
-          } satisfies Partial<AuthService>,
+            provide: AuthService,
+            useValue: {
+                user: authUser,
+                isLoggedIn: computed(() => !!authUser()),
+                headers: () => new HttpHeaders(),
+            } satisfies Partial<AuthService>,
         },
-      ],
-    });
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
+    ]
+});
     httpMock = TestBed.inject(HttpTestingController);
 
     const service = TestBed.inject(PracticeProgressService);
@@ -87,19 +89,21 @@ describe('PracticeProgressService', () => {
 
   it('persists extension blobs for non-incident families', () => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [
+    imports: [],
+    providers: [
         PracticeProgressService,
         {
-          provide: AuthService,
-          useValue: {
-            user: authUser,
-            isLoggedIn: computed(() => !!authUser()),
-            headers: () => new HttpHeaders(),
-          } satisfies Partial<AuthService>,
+            provide: AuthService,
+            useValue: {
+                user: authUser,
+                isLoggedIn: computed(() => !!authUser()),
+                headers: () => new HttpHeaders(),
+            } satisfies Partial<AuthService>,
         },
-      ],
-    });
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
+    ]
+});
     httpMock = TestBed.inject(HttpTestingController);
 
     const service = TestBed.inject(PracticeProgressService);
@@ -138,19 +142,21 @@ describe('PracticeProgressService', () => {
     const existingUserScopedProgress = localStorage.getItem('fa:practice:progress:v3:user:user-1');
 
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [
+    imports: [],
+    providers: [
         PracticeProgressService,
         {
-          provide: AuthService,
-          useValue: {
-            user: authUser,
-            isLoggedIn: computed(() => !!authUser()),
-            headers: () => new HttpHeaders(),
-          } satisfies Partial<AuthService>,
+            provide: AuthService,
+            useValue: {
+                user: authUser,
+                isLoggedIn: computed(() => !!authUser()),
+                headers: () => new HttpHeaders(),
+            } satisfies Partial<AuthService>,
         },
-      ],
-    });
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
+    ]
+});
     httpMock = TestBed.inject(HttpTestingController);
 
     const service = TestBed.inject(PracticeProgressService);
@@ -173,19 +179,21 @@ describe('PracticeProgressService', () => {
     });
 
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [
+    imports: [],
+    providers: [
         PracticeProgressService,
         {
-          provide: AuthService,
-          useValue: {
-            user: authUser,
-            isLoggedIn: computed(() => !!authUser()),
-            headers: () => new HttpHeaders(),
-          } satisfies Partial<AuthService>,
+            provide: AuthService,
+            useValue: {
+                user: authUser,
+                isLoggedIn: computed(() => !!authUser()),
+                headers: () => new HttpHeaders(),
+            } satisfies Partial<AuthService>,
         },
-      ],
-    });
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
+    ]
+});
     httpMock = TestBed.inject(HttpTestingController);
 
     const service = TestBed.inject(PracticeProgressService);

@@ -19,12 +19,11 @@ import { interviewDisplayLabel } from './interview-display-label';
 import { FaButtonComponent, FaCardComponent, InlineCodeComponent } from '../../shared/ui';
 
 @Component({
-  selector: 'app-interview-results',
-  standalone: true,
-  imports: [CommonModule, RouterLink, FaButtonComponent, FaCardComponent, InlineCodeComponent],
-  templateUrl: './interview-results.component.html',
-  styleUrls: ['./interview-results.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-interview-results',
+    imports: [CommonModule, RouterLink, FaButtonComponent, FaCardComponent, InlineCodeComponent],
+    templateUrl: './interview-results.component.html',
+    styleUrls: ['./interview-results.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class InterviewResultsComponent implements OnInit {
   private readonly interviews = inject(InterviewService);
