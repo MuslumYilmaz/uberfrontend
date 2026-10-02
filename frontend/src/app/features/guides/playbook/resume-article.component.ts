@@ -566,6 +566,11 @@ import { PUBLIC_EDITORIAL_FACTS } from '../../../core/content/public-editorial-f
       </table>
     </div>
 
+    <p>
+      After tailoring your draft, use the <a routerLink="/tools/cv">CV Linter</a>
+      to review keyword coverage, readability, and impact signals.
+    </p>
+
     <h2 id="before-after-frontend-resume-bullet-rewrites">Before/after frontend resume bullet rewrites</h2>
     <p>
       Use these bullet rewrites as patterns. The stronger version names the UI
@@ -847,6 +852,11 @@ import { PUBLIC_EDITORIAL_FACTS } from '../../../core/content/public-editorial-f
         <a [routerLink]="['/system-design','realtime-search-debounce-cache']">Review realtime search design</a>
       </div>
     </div>
+
+    <p>
+      Turn the achievements on your resume into a story bank with the
+      <a routerLink="/guides/behavioral">behavioral interview preparation guide</a>.
+    </p>
 
     <h2 id="what-to-practice-after-your-resume-gets-callbacks">What to practice after your resume gets callbacks</h2>
     <div class="next-grid" data-testid="resume-next-links">

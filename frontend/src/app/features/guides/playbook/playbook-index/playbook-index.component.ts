@@ -157,6 +157,10 @@ const PLAYBOOK_GLOBAL_INDEX = (() => {
           <div class="mins" *ngIf="entries.get(it.slug)?.minutes as m">{{ m }} min</div>
           <div class="arrow" aria-hidden="true">→</div>
         </a>
+        <p *ngIf="g.key === 'resume'" class="mt-3 text-[var(--uf-text-secondary)]">
+          Already have a draft?
+          <a routerLink="/tools/cv" class="text-[var(--uf-accent)] underline underline-offset-2">Review it with the CV Linter</a>.
+        </p>
       </div>
 
        <app-offline-banner></app-offline-banner>
@@ -186,6 +190,7 @@ export class PlaybookIndexComponent implements OnInit {
     { text: 'Frontend coding interview questions and prep guide', route: ['/guides/interview-blueprint/coding-interviews'] },
     { text: 'UI rounds', route: ['/guides/interview-blueprint/ui-interviews'] },
     { text: 'System design rounds', route: ['/guides/interview-blueprint/system-design'] },
+    { text: 'Behavioral interview blueprint', route: ['/guides/behavioral'] },
   ];
 
   readonly faqItems = [

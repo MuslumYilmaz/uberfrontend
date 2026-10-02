@@ -199,6 +199,11 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       </table>
     </div>
     <p>
+      Practice the transport decision with
+      <a routerLink="/tradeoffs/sse-vs-websocket-live-dashboard">SSE vs WebSocket for a live dashboard</a>,
+      where updates mostly flow from server to browser.
+    </p>
+    <p>
       The key is to <em>say the trade-off out loud</em> and tie it to context.
       For example: “For v1, I’d start with CSR to move quickly.
       If SEO or first paint becomes a priority, we can layer SSR later.”

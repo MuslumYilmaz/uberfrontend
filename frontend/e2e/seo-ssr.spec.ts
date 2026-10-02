@@ -17,6 +17,57 @@ const SSR_ENABLED = (() => {
 
 const TRIVIA_SCHEMA_HEADLINE_SUFFIX = 'Frontend interview practice question';
 
+const GUIDE_CONTEXTUAL_LINK_CASES = [
+  {
+    path: '/guides/interview-blueprint/resume',
+    content: 'fa-guide-shell .content',
+    links: [
+      { target: '/tools/cv', name: 'CV Linter' },
+      { target: '/guides/behavioral', name: 'behavioral interview preparation guide' },
+    ],
+  },
+  {
+    path: '/guides/interview-blueprint/intro',
+    content: 'fa-guide-shell .content',
+    links: [
+      { target: '/tools/cv', name: 'check your frontend resume' },
+      { target: '/guides/behavioral', name: 'behavioral interview blueprint' },
+    ],
+  },
+  {
+    path: '/guides/interview-blueprint',
+    content: '.wrap.fa-body',
+    links: [
+      { target: '/tools/cv', name: 'Review it with the CV Linter' },
+      { target: '/guides/behavioral', name: 'Behavioral interview blueprint' },
+    ],
+  },
+  {
+    path: '/guides/system-design-blueprint/foundations',
+    content: 'fa-guide-shell .content',
+    links: [{
+      target: '/tradeoffs/sse-vs-websocket-live-dashboard',
+      name: 'SSE vs WebSocket for a live dashboard',
+    }],
+  },
+  {
+    path: '/guides/system-design-blueprint/state-data',
+    content: 'fa-guide-shell .content',
+    links: [{
+      target: '/tradeoffs/sse-vs-websocket-live-dashboard',
+      name: 'SSE vs WebSocket dashboard scenario',
+    }],
+  },
+  {
+    path: '/guides/system-design-blueprint',
+    content: '[data-testid="system-blueprint-hub"]',
+    links: [{
+      target: '/tradeoffs/sse-vs-websocket-live-dashboard',
+      name: 'SSE vs WebSocket for a live operations dashboard',
+    }],
+  },
+] as const;
+
 const STALE_CLOSURES_PATH = '/react/trivia/react-stale-state-closures';
 const STALE_CLOSURES_TITLE = 'React Stale Closures: 6 PRs, Which Fix Is Right?';
 const STALE_CLOSURES_H1 = 'React Stale Closure Case Files: Diagnose Six Pull Requests';
@@ -919,6 +970,94 @@ test.describe('seo-ssr', () => {
     'SSR tests require prerender/SSR output (set PLAYWRIGHT_SSR=1 to force).',
   );
 
+  for (const entry of GUIDE_CONTEXTUAL_LINK_CASES) {
+    test(`guide contextual links remain crawlable and navigable: ${entry.path}`, async ({ browser, page }) => {
+      const rawContext = await browser.newContext({ javaScriptEnabled: false });
+      try {
+        const rawPage = await rawContext.newPage();
+        const response = await rawPage.goto(fullUrl(entry.path), { waitUntil: 'domcontentloaded' });
+        expect(response?.status()).toBe(200);
+        expect(response?.headers()['x-robots-tag'] || '').not.toMatch(/noindex|nofollow|none/i);
+        await expect(rawPage.locator('link[rel="canonical"]')).toHaveAttribute('href', expectedCanonical(entry.path));
+        await expect(rawPage.locator('meta[name="robots"]')).not.toHaveAttribute('content', /noindex|nofollow|none/i);
+        for (const { target, name } of entry.links) {
+          const link = rawPage.locator(entry.content).locator(
+            `a[href="${target}"], a[href^="${target}?"], a[href^="${target}#"]`,
+          );
+          await expect(link).toHaveCount(1);
+          await expect(link).toHaveAttribute('href', target);
+          await expect(link).toHaveAccessibleName(name);
+          await expect(link).toBeVisible();
+          await expect(link).not.toHaveAttribute('rel', /nofollow|sponsored|ugc/i);
+        }
+      } finally {
+        await rawContext.close();
+      }
+
+      await page.addInitScript(() => {
+        (window as Window & { __FA_SEO_HOST__?: string }).__FA_SEO_HOST__ = 'frontendatlas.com';
+        localStorage.setItem('fa:cdn:enabled', '0');
+      });
+      // Exercise anonymous frontend navigation without production API requests or CV submissions.
+      await page.route('https://api.frontendatlas.com/**', (route) => route.fulfill({
+        status: route.request().url().includes('/auth/me') ? 401 : 200,
+        contentType: 'application/json', body: '{}',
+      }));
+      const issues = collectClientRuntimeIssues(page);
+      const documentRequests: string[] = [];
+      page.on('request', (request) => {
+        if (request.isNavigationRequest() && request.frame() === page.mainFrame()) {
+          documentRequests.push(request.url());
+        }
+      });
+      await page.goto(fullUrl(entry.path), { waitUntil: 'load' });
+      if (entry.content === 'fa-guide-shell .content') {
+        // The guide's active ToC entry is set only after its browser view initializes.
+        // Static anchors are intentionally usable before Angular attaches routerLink.
+        await expect(page.locator('fa-guide-shell .toc a.active')).toHaveCount(1);
+      }
+
+      for (const width of [390, 834, 1440]) {
+        await page.setViewportSize({ width, height: 900 });
+        for (const { target, name } of entry.links) {
+          const link = page.locator(entry.content).getByRole('link', { name, exact: true });
+          await expect(link).toHaveCount(1);
+          await expect(link).toHaveAttribute('href', target);
+          await link.scrollIntoViewIfNeeded();
+          await expect(link).toBeVisible();
+          const layout = await link.evaluate((element) => ({
+            viewport: document.documentElement.clientWidth,
+            documentWidth: document.documentElement.scrollWidth,
+            // Inline anchors may wrap; each fragment must remain within the viewport.
+            fragments: Array.from(element.getClientRects(), (rect) => ({ left: rect.left, right: rect.right })),
+          }));
+          expect(layout.documentWidth, `${entry.path} document at ${width}px`).toBeLessThanOrEqual(layout.viewport + 1);
+          for (const fragment of layout.fragments) {
+            expect(fragment.left, `${name} left edge at ${width}px`).toBeGreaterThanOrEqual(-1);
+            expect(fragment.right, `${name} right edge at ${width}px`).toBeLessThanOrEqual(layout.viewport + 1);
+          }
+
+          const initialDocuments = documentRequests.length;
+          await link.focus();
+          await page.keyboard.press('Shift+Tab');
+          await page.keyboard.press('Tab');
+          await expect(link).toBeFocused();
+          await page.keyboard.press('Enter');
+          await expect(page).toHaveURL(fullUrl(target));
+          await expect(page.locator('h1').first()).toBeVisible();
+          await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', expectedCanonical(target));
+          await expect(page.locator('meta[name="robots"]')).not.toHaveAttribute('content', /noindex/i);
+          expect(documentRequests, 'Angular navigation does not reload the document').toHaveLength(initialDocuments);
+          await page.goBack();
+          await expect(page).toHaveURL(fullUrl(entry.path));
+          await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', expectedCanonical(entry.path));
+          expect(documentRequests, 'back navigation does not reload the document').toHaveLength(initialDocuments);
+        }
+      }
+      expectNoHydrationOrChunkIssues(issues, entry.path);
+    });
+  }
+
   test('metadata repairs preserve literal HTML terms in SSR and client navigation', async ({ browser, page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     const anchorPath = '/html/trivia/html-a-tag';
@@ -1036,6 +1175,35 @@ test.describe('seo-ssr', () => {
     await assertSsrBasics(page, entry!);
 
     await context.close();
+  });
+
+  test('raw coding hub schema keeps the total count only on ItemList', async ({ request }) => {
+    const html = await readRawHtml(request, '/coding');
+    const nodes = extractRawJsonLdNodes(html);
+    const collectionPages = nodes.filter((node) => node['@type'] === 'CollectionPage');
+    const itemLists = nodes.filter((node) => node['@type'] === 'ItemList');
+
+    expect(extractRawCanonical(html)).toBe(expectedCanonical('/coding'));
+    expect(normalizeText(extractRawMeta(html, 'robots')).replace(/\s+/g, '')).toBe('index,follow');
+    expect(collectionPages).toHaveLength(1);
+    expect(collectionPages[0]).not.toHaveProperty('numberOfItems');
+    expect(itemLists).toHaveLength(1);
+
+    const matchCount = rawVisibleText(html).match(/\b(\d+)\s+matches\b/);
+    expect(matchCount, 'the rendered catalog exposes its total result count').not.toBeNull();
+    const total = Number(matchCount![1]);
+    expect(total).toBeGreaterThan(0);
+    expect(itemLists[0].numberOfItems).toBe(total);
+    expect(itemLists[0].itemListElement).toHaveLength(Math.min(total, 50));
+    itemLists[0].itemListElement.forEach((item: Record<string, any>, index: number) => {
+      expect(item['@type']).toBe('ListItem');
+      expect(item.position).toBe(index + 1);
+      expect(item.name).toBeTruthy();
+      const url = new URL(item.url);
+      expect(url.origin).toBe(CANONICAL_BASE);
+      expect(url.search).toBe('');
+      expect(url.hash).toBe('');
+    });
   });
 
   test('raw prerendered HTML carries premium index intent without paid-content exposure', async ({ request }) => {

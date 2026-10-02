@@ -5,6 +5,9 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
 
 @Component({
     imports: [CommonModule, RouterModule, GuideShellComponent],
+    // GuideShell wraps projected tables/code during SSR. Recreate this subtree
+    // so Angular attaches router links to the authored DOM instead of those wrappers.
+    host: { ngSkipHydration: 'true' },
     template: `
     <fa-guide-shell
       title="D - Data Model Deep Dive for Frontend System Design Interviews"
@@ -175,6 +178,12 @@ SearchResponse &#123;
           </tr>
         </tbody>
       </table>
+
+      <p>
+        Apply these streaming contract questions to the
+        <a routerLink="/tradeoffs/sse-vs-websocket-live-dashboard">SSE vs WebSocket dashboard scenario</a>
+        and explain when bidirectional traffic changes your choice.
+      </p>
 
       <h2>State Ownership Model</h2>
       <table>

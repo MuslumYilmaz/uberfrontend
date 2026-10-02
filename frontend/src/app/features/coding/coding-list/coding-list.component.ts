@@ -1503,7 +1503,6 @@ export class CodingListComponent implements OnInit, OnDestroy {
         description:
           'Focused frontend coding challenges with real prompts, starter code, tests, solutions, and follow-up practice across JavaScript, React, Angular, Vue, HTML, and CSS.',
         inLanguage: 'en',
-        numberOfItems: list.length,
         about: [
           { '@type': 'Thing', name: 'frontend coding challenges' },
           { '@type': 'Thing', name: 'JavaScript coding challenges' },

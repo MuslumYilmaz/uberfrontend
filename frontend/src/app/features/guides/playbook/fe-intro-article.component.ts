@@ -17,6 +17,9 @@ import { PUBLIC_EDITORIAL_FACTS } from '../../../core/content/public-editorial-f
 
 @Component({
     imports: [GuideShellComponent, RouterModule],
+    // GuideShell wraps projected tables during SSR. Recreate this subtree so
+    // Angular attaches router links to the authored DOM instead of those wrappers.
+    host: { ngSkipHydration: 'true' },
     styles: [`
     /* Inline links */
     a {
@@ -291,6 +294,10 @@ import { PUBLIC_EDITORIAL_FACTS } from '../../../core/content/public-editorial-f
       <li>Be concrete — instead of “we improved performance,” say “we reduced LCP from 6s → 3s with lazy loading.”</li>
       <li>Keep each story short: 2–3 minutes with a clear takeaway.</li>
     </ol>
+    <p>
+      Use the <a routerLink="/guides/behavioral">behavioral interview blueprint</a>
+      to build your story bank and plan your practice.
+    </p>
 
     <!-- Section 3 -->
     <h2 id="scoring">What interviewers actually score</h2>
@@ -529,6 +536,10 @@ import { PUBLIC_EDITORIAL_FACTS } from '../../../core/content/public-editorial-f
     <p>
       👉 For concrete examples and templates, see the
       <a [routerLink]="['/guides','interview-blueprint','resume']">resume guide</a>.
+    </p>
+    <p>
+      Then <a routerLink="/tools/cv">check your frontend resume</a>
+      for keyword gaps and readability before applying.
     </p>
 
     <!-- Section 7 -->
