@@ -8,7 +8,7 @@
 
 ## Repository Shape
 - `backend/`: Express API, MongoDB models, services, middleware, Jest tests.
-- `frontend/`: Angular 17 app, shared UI, scripts, Karma/Jasmine, Playwright, Tailwind/PostCSS.
+- `frontend/`: Angular 21 app, shared UI, scripts, Karma/Jasmine, Playwright, Tailwind/PostCSS.
 - `cdn/`: question banks and sandbox assets consumed by backend and frontend flows.
 
 ## Commands

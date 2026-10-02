@@ -1002,13 +1002,18 @@ export async function seedAuthenticatedInterview(
     value: encodeURIComponent(token),
     url: baseUrl(),
   }]);
-  await page.addInitScript(() => {
+  await page.addInitScript((productionBuild) => {
+    // Seeded cookies belong to the local app origin. Production builds otherwise
+    // use the public API origin, where this synthetic session has no cookie.
+    if (productionBuild) {
+      (window as Window & { __FA_API_BASE__?: string }).__FA_API_BASE__ = window.location.origin;
+    }
     try {
       localStorage.setItem('fa:auth:session', '1');
     } catch {
       // Sandboxed preview frames intentionally have no storage origin.
     }
-  });
+  }, process.env.PLAYWRIGHT_SSR === '1');
 }
 
 export async function selectSetupChoice(

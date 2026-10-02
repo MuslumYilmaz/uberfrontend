@@ -105,20 +105,91 @@ generated timestamp lengths can change HTML totals by a few bytes.
 | Sentry lazy chunk | 413,529 | 413,923 |
 | Showcase lazy-heavy chunks | 956,372 | 956,847 |
 
-**Medium — payload growth remains:** the full initial import graph increases 8.8%
-and total prerender HTML increases 17.6%. PrimeNG's runtime theme and inline SSR
-styles account for the main tradeoff. The smaller HTML-linked-resource metric
-reflects different preload emission and does **not** mean the whole initial bundle
-became smaller. Representative compressed HTML comparisons add approximately
-3.4–6.7 KB per page. All existing build error budgets still pass. `perf:contract
---no-write` completes with four warnings (six on the fully measured baseline);
-strict warning-free performance acceptance has not been achieved.
+**Medium — initial JavaScript/theme runtime growth remains:** the initial static
+import graph increases 8.8%. The smaller HTML-linked-resource metric reflects
+different preload emission and does **not** mean the whole initial bundle became
+smaller. The separately approved CSS extraction below resolves the prerender HTML
+increase; it does not reduce the JavaScript import graph or remove the four
+existing `perf:contract` warnings. No budget was increased.
 
-An optional postbuild transformation to externalize PrimeNG SSR styles was
-rejected by automatic approval review because it rewrites all prerendered routes
-and introduces hydration, cascade, CSP, first-paint and cache risks. It was not
-applied. Standard PrimeNG SSR remains in use; this optimization needs separate
-explicit approval and validation.
+## Approved SSR CSS extraction
+
+The user explicitly approved this follow-up after automatic approval review
+initially stopped it. It is now implemented for static production build output.
+`build`, `build:prod` and `build:analyze` all run the optimizer; the normal build
+runs it before the existing Sentry postbuild step. Live server-rendering and the
+application's JavaScript remain unchanged.
+
+- Each eligible self-contained PrimeNG layer moves to a SHA-256-named stylesheet
+  at the original cascade position. Original empty `data-primeng-style-id` style
+  elements remain immediately after their links, so PrimeNG's existing hydration
+  loader can refill them in place. Layer-order declarations, small styles,
+  unlayered rules, conditional/nonce styles and URL-dependent CSS remain inline.
+- Source-offset edits preserve all other HTML bytes, including Angular hydration
+  comments, transfer state, body content and metadata. Every page and existing
+  hash reference is validated before writes; CSS files are written before HTML.
+  Repeated execution is idempotent and rejects missing/corrupt generated assets.
+- Only `/assets/prime-ssr/` receives an immutable one-year cache header. Names
+  change with content; no HTML or unrelated asset cache policy changes. Existing
+  CSP `style-src 'self'` permits these files without loosening policy.
+- The build externalizes **20,820,099 bytes** from **615 pages** into **17 unique
+  CSS assets / 85,957 bytes**. Fresh-build prerender HTML is **100,757,582 bytes**
+  versus **121,577,681** immediately before extraction (**−17.1%**), and **−2.6%**
+  versus the original Angular 17 total. `/coding` HTML is **575,357 bytes**.
+- First visits add 3–11 CSS requests on sampled pages. Their combined gzip HTML
+  plus CSS is approximately **0.04–2.31 KB larger** than the inline Angular 21
+  response before HTTP headers; repeat visits can reuse the shared CSS. This is
+  an HTML/cache optimization, not a claim that cold first paint became faster.
+  Slow CSS deliberately blocks first paint rather than exposing unstyled UI.
+- **4/4 optimizer regressions** passed (cascade and byte preservation, unsafe
+  relocation exclusions, deduplication/hash changes/idempotency, fail-before-write).
+  **117 local browser cases** passed: 54 cold SSR screenshot/cascade comparisons
+  per Chromium and Firefox at six widths, 8 hydrated control interactions, and
+  one Chromium delayed-CSS/CSP first-paint test. The Paint Timing-specific case
+  is intentionally skipped in Firefox. All cold screenshots match exactly.
+- The isolated real-backend production lifecycle passed in Chromium with the
+  optimizer applied to its temporary build. The harness uses only its
+  `interview_browser_e2e` MongoMemoryReplSet and separate local ports.
+- CI runs the same production SSR comparisons and hydrated controls in Chromium,
+  Firefox and WebKit. It copies the untouched `ng build` artifact before running
+  extraction; it never reconstructs or accepts an optimized reference. Original
+  Angular 17 visual regression references remain unchanged.
+- Production build, 615-route SEO metadata, sitemap/CSP checks and strict design
+  system checks passed. `perf:contract --no-write` passed its unchanged error
+  thresholds with four existing warnings; HTML-linked resources now count
+  **427,636 bytes**, including the newly externalized home-page CSS. Counting
+  these extra 20,100 CSS bytes alongside the full static import graph gives
+  **1,233,126 bytes** of initial external JS/CSS; the extraction relocates CSS
+  instead of eliminating it.
+
+Repeat locally after `npm run gen:data`:
+
+```sh
+npx ng build --configuration production
+cp -R dist/frontendatlas/browser dist/prime-ssr-inline
+npm run optimize:ssr-styles
+PLAYWRIGHT_ENABLE_FIREFOX=1 npx playwright test --config=playwright.ssr-styles.config.ts --project=chromium --project=firefox --workers=2
+```
+
+Use a fresh `dist/prime-ssr-inline` destination for each build. Local screenshots
+are in `/private/tmp/angular21-evidence/ssr-gallery/index.html`; the broader
+Angular 17 → 21 gallery remains in `gallery/index.html` next to it.
+
+**Medium — existing interview direct-load hydration issue:** supplementary
+production-mode mocked resize tests find both the marketing and app header when
+opening an already-active coding interview directly. Waiting for a single header
+still fails. Both JavaScript and framework cases reproduce on untouched Angular
+21 inline SSR **and on the immutable Angular 17 production build**. This is not
+introduced by CSS extraction. The original development-mode interview suite and
+the production real-backend start-to-report flow have separate passing results;
+they do not prove this direct-load edge case is fixed. The regression retains the
+single-header assertion instead of choosing one header and hiding the problem.
+The complete additional production mocked run passed **92/96**; the two resize
+cases fail in both Chromium and Firefox. This is an explicitly failing check.
+The remaining draft/hash, delayed check response, failure runner and report
+cases passed in that production run.
+Evidence: `ssr-interview-angular17.log`, `ssr-interview-inline-settled.log`, and
+`ssr-residual/angular17-direct-interview-two-headers.png` in the evidence directory.
 
 The performance smoke package had stale navigation text and pricing assumptions.
 Its selectors now follow the existing preparation-guide CTA, and it asserts one
@@ -145,4 +216,7 @@ Evidence is stored outside Git at `/private/tmp/angular21-evidence/`, including
 the before/after gallery, standalone screenshot archive, build statistics,
 audit JSON and individual test logs. The user's original worktree and uncommitted
 documentation changes were left untouched. No production database, payment,
-email, merge, deployment or feature-access flag was used or changed.
+email, merge, production deployment or feature-access flag was used or changed.
+The frontend Preview CI repair added only the upgrade branch’s missing
+`NG_APP_PREVIEW_API_BASE`, pointing to its matching backend Preview alias, and
+rebuilt that Preview. Production settings and database settings were unchanged.

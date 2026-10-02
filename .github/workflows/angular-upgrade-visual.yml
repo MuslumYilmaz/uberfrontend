@@ -11,7 +11,7 @@ jobs:
   interactions:
     name: Angular Upgrade Controls (${{ matrix.browser }})
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     strategy:
       fail-fast: false
       matrix:
@@ -25,7 +25,15 @@ jobs:
         working-directory: frontend
       - run: npx playwright install --with-deps ${{ matrix.browser }}
         working-directory: frontend
-      - run: npx playwright test e2e/upgrade-controls.spec.ts --project=${{ matrix.browser }} --workers=2
+      - name: Build untouched inline SSR reference and optimize candidate
+        working-directory: frontend
+        run: |
+          npm run test:ssr-styles
+          npm run gen:data
+          npx ng build --configuration production
+          cp -R dist/frontendatlas/browser dist/prime-ssr-inline
+          npm run optimize:ssr-styles
+      - run: npx playwright test --config=playwright.ssr-styles.config.ts --project=${{ matrix.browser }} --workers=2
         working-directory: frontend
         env:
           CI: '1'
@@ -35,7 +43,7 @@ jobs:
           PLAYWRIGHT_ENABLE_FIREFOX: '1'
           PLAYWRIGHT_ENABLE_WEBKIT: '1'
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
-        if: failure()
+        if: always()
         with:
           name: angular-upgrade-controls-${{ matrix.browser }}
           path: |

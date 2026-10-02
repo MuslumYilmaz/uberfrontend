@@ -759,6 +759,9 @@ for (const runner of ['javascript', 'framework'] as const) {
       }
       if (width > 900) {
         await page.mouse.wheel(0, 500);
+        // Direct production loads first hydrate the static signed-out shell.
+        // Require its header to be removed before measuring the active shell.
+        await expect(page.getByRole('banner')).toHaveCount(1);
         await expect.poll(async () => {
           const banner = (await page.getByRole('banner').boundingBox())!;
           const header = (await page.locator('.session-header').boundingBox())!;
