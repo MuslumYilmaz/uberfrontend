@@ -76,7 +76,33 @@ test('seo: HTML form default method page preserves intent-specific metadata and 
 test('seo: coding query variants keep clean canonical, noindex, and filter state', async ({ page }) => {
   await setSeoHost(page, 'frontendatlas.com');
   await page.goto('/coding?q=debounce');
-  const base = new URL(page.url()).origin;
+  const base = process.env.PLAYWRIGHT_SSR === '1'
+    ? (process.env.PLAYWRIGHT_CANONICAL_BASE || 'https://frontendatlas.com').replace(/\/$/, '')
+    : new URL(page.url()).origin;
+  const jsonLd = page.locator('script#seo-jsonld');
+  const countBadge = page.getByTestId('coding-list-results').locator('.fa-count-badge');
+  const expectCodingSchema = async (empty = false) => {
+    await expect(async () => {
+      const nodes: Array<Record<string, any>> = JSON.parse((await jsonLd.textContent()) || '{}')['@graph'] || [];
+      const collectionPages = nodes.filter((node) => node['@type'] === 'CollectionPage');
+      expect(collectionPages).toHaveLength(1);
+      expect(collectionPages[0]).not.toHaveProperty('numberOfItems');
+      expect(nodes.some((node) => node['@type'] === 'BreadcrumbList')).toBe(true);
+
+      const itemLists = nodes.filter((node) => node['@type'] === 'ItemList');
+      expect(itemLists).toHaveLength(empty ? 0 : 1);
+      const countText = (await countBadge.textContent()) || '';
+      expect(countText).toMatch(/\d+\s+matches/);
+      const total = Number(countText.match(/\d+/)![0]);
+      if (empty) {
+        expect(total).toBe(0);
+      } else {
+        expect(total).toBeGreaterThan(0);
+        expect(itemLists[0].numberOfItems).toBe(total);
+        expect(itemLists[0].itemListElement).toHaveLength(Math.min(total, 50));
+      }
+    }).toPass({ timeout: 15_000 });
+  };
 
   await expect(page).toHaveTitle(/Frontend Coding Challenges/i);
   await expect(page.locator('h1').first()).toContainText('Frontend Coding Challenges');
@@ -85,9 +111,7 @@ test('seo: coding query variants keep clean canonical, noindex, and filter state
   await expect(page.getByTestId('coding-list-search')).toHaveValue('debounce');
   await expect(page.getByTestId('coding-discovery-sections')).toContainText('JavaScript coding challenges');
 
-  const jsonLd = page.locator('script#seo-jsonld');
-  await expect.poll(async () => (await jsonLd.textContent()) || '').toContain('CollectionPage');
-  await expect.poll(async () => (await jsonLd.textContent()) || '').toContain('BreadcrumbList');
+  await expectCodingSchema();
 
   await page.goto('/coding?tech=javascript');
   await expect(page).toHaveTitle(/Frontend Coding Challenges/i);
@@ -96,6 +120,23 @@ test('seo: coding query variants keep clean canonical, noindex, and filter state
   await expect.poll(async () => ((await getMeta(page, 'robots')) || '').toLowerCase()).toContain('noindex,follow');
   await expect(page.getByTestId('coding-list-results')).toContainText('JavaScript');
   await expect(page.getByTestId('coding-discovery-sections')).toContainText('Debugging challenges');
+  // Search state persists across catalog visits; establish an unsearched baseline.
+  await page.getByTestId('coding-list-search').fill('');
+  await expectCodingSchema();
+  const unsearchedCount = await countBadge.textContent();
+
+  await page.getByTestId('coding-list-search').fill('zzzz-no-coding-schema-results-zzzz');
+  await expect(page.getByTestId('coding-empty-state')).toBeVisible();
+  await expectCodingSchema(true);
+  await expect.poll(() => getCanonical(page)).toBe(`${base}/coding`);
+  await expect.poll(() => getMeta(page, 'robots')).toBe('noindex,follow');
+
+  await page.getByTestId('coding-list-search').fill('');
+  await expect(page.getByTestId('coding-empty-state')).toHaveCount(0);
+  await expect(countBadge).toHaveText(unsearchedCount!);
+  await expectCodingSchema();
+  await expect.poll(() => getCanonical(page)).toBe(`${base}/coding`);
+  await expect.poll(() => getMeta(page, 'robots')).toBe('noindex,follow');
 });
 
 test('seo: css theme variables challenge is indexable with self canonical and crawlable content', async ({ page }) => {

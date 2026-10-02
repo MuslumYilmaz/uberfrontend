@@ -597,6 +597,10 @@ type FaqItem = {
             </div>
           </a>
         </div>
+        <p>
+          Practice one focused transport decision:
+          <a routerLink="/tradeoffs/sse-vs-websocket-live-dashboard" class="text-[var(--uf-accent)] underline underline-offset-2">SSE vs WebSocket for a live operations dashboard</a>.
+        </p>
       </section>
 
       <section class="chapter-section" data-testid="system-blueprint-chapters">
