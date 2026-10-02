@@ -1,13 +1,11 @@
-import { DOCUMENT, isPlatformBrowser } from '@angular/common';
-import { Injectable, PLATFORM_ID, inject } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { Injectable, PLATFORM_ID, inject, DOCUMENT } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
 export class AppUiStylesService {
   private readonly document = inject(DOCUMENT);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly coreStylesheets = [
-    '/assets/vendor/primeng/resources/themes/lara-dark-amber/theme.css',
-    '/assets/vendor/primeng/resources/primeng.min.css',
     '/assets/vendor/primeicons/primeicons.css',
   ];
   private readonly iconFontStylesheets = [

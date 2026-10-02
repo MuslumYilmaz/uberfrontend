@@ -365,7 +365,7 @@ test.describe('Interview Mode real Angular → Express → Mongo lifecycle', () 
     expectNoEarlyAnswerFeedback(create, 'created session');
     expect(String(create.session.id)).toBe(sessionId);
     await expect(page).toHaveURL(new RegExp(`/interview/${sessionId}$`));
-    await expect(page.getByTestId('interview-timer')).toContainText('MCQ time');
+    await expect(page.getByRole('timer', { name: /^Question time:/ })).toBeVisible();
     await expect(page.getByTestId('interview-question-prompt')).toBeFocused();
     await expectNoSeriousViolations(page, '[data-testid="interview-session"]', 'MCQ');
 
@@ -428,7 +428,7 @@ test.describe('Interview Mode real Angular → Express → Mongo lifecycle', () 
       }
     }
 
-    await expect(page.getByText('5/5 answered')).toBeVisible();
+    await expect(page.getByText('5/5 answered', { exact: true })).toBeVisible();
     await expect(page.getByTestId('interview-review-heading')).toBeFocused();
     await expectNoSeriousViolations(page, '[data-testid="interview-session"]', 'MCQ review');
     const mcqSubmitPromise = page.waitForResponse((response) => (

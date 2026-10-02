@@ -9,9 +9,8 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
 import { PUBLIC_EDITORIAL_FACTS } from '../../../core/content/public-editorial-facts';
 
 @Component({
-  standalone: true,
-  imports: [GuideShellComponent, RouterModule],
-  styles: [`
+    imports: [GuideShellComponent, RouterModule],
+    styles: [`
     a {
       color: #7cc2ff;
       text-decoration: none;
@@ -186,7 +185,7 @@ import { PUBLIC_EDITORIAL_FACTS } from '../../../core/content/public-editorial-f
       background: color-mix(in srgb, var(--uf-surface-alt) 86%, transparent);
     }
   `],
-  template: `
+    template: `
   <fa-guide-shell
     title="DSA for Frontend Interviews: Data Structures, Algorithms, and Practice Map (2026)"
     subtitle="A practice-first map for the arrays, hash maps, stacks, queues, trees, recursion, cache, and Big-O patterns frontend coding rounds actually test."

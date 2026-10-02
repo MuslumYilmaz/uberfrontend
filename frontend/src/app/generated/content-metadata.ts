@@ -1534,6 +1534,7 @@ export const TAG_REGISTRY = {
 
 export const SHOWCASE_STATS = {
   "totalQuestions": 514,
+  "premiumPracticeCount": 165,
   "companyCounts": {
     "airbnb": {
       "all": 1,

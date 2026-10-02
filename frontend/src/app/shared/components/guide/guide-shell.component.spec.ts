@@ -6,9 +6,8 @@ import { AnalyticsService } from '../../../core/services/analytics.service';
 import { GuideShellComponent } from './guide-shell.component';
 
 @Component({
-  standalone: true,
-  imports: [GuideShellComponent, RouterModule],
-  template: `
+    imports: [GuideShellComponent, RouterModule],
+    template: `
     <fa-guide-shell
       title="Guide Title"
       [minutes]="10"
@@ -25,7 +24,7 @@ import { GuideShellComponent } from './guide-shell.component';
       <h2>Another Section</h2>
       <p>More guide body text to keep the shell realistic.</p>
     </fa-guide-shell>
-  `,
+  `
 })
 class TestGuideShellHostComponent {
   readerPromise: string | undefined = 'Custom guide promise for readers.';

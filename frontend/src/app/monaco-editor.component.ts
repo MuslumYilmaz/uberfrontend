@@ -26,15 +26,14 @@ export type MonacoLoadError = {
 };
 
 @Component({
-  selector: 'app-monaco-editor',
-  standalone: true,
-  imports: [CommonModule],
-  template: `<div #editorContainer class="w-full"></div>`,
-  styles: [`
+    selector: 'app-monaco-editor',
+    imports: [CommonModule],
+    template: `<div #editorContainer class="w-full"></div>`,
+    styles: [`
     :host { display:block; width:100%; }
     /* When autoHeight=false, give container a default height so it doesn't collapse */
     :host(.fixed-height) > div { height: 100%; }
-  `],
+  `]
 })
 export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestroy {
   @ViewChild('editorContainer', { static: true }) container!: ElementRef<HTMLDivElement>;
@@ -338,6 +337,21 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
       rules: [{ token: 'comment', foreground: commentColor.replace(/^#/, '') }],
       colors: {},
     });
+    if (this.theme === 'fa-interview-dark' || this.options?.theme === 'fa-interview-dark') {
+      // Interview code often contains regex examples. The default dark regexp
+      // token is below AA contrast at 13px; opt this screen into the accent token.
+      const regexpColor = getComputedStyle(document.documentElement)
+        .getPropertyValue('--uf-accent').trim() || commentColor;
+      window.monaco.editor.defineTheme('fa-interview-dark', {
+        base: 'vs-dark',
+        inherit: true,
+        rules: [
+          { token: 'comment', foreground: commentColor.replace(/^#/, '') },
+          { token: 'regexp', foreground: regexpColor.replace(/^#/, '') },
+        ],
+        colors: {},
+      });
+    }
   }
 
   private normalizeLanguage(lang: string): string {

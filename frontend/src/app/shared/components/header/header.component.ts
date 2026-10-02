@@ -1,5 +1,5 @@
-import { CommonModule, DOCUMENT } from '@angular/common';
-import { Component, computed, ElementRef, HostListener, inject, OnInit, signal, ViewChild } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, computed, ElementRef, HostListener, inject, OnInit, signal, ViewChild, DOCUMENT } from '@angular/core';
 import { NavigationEnd, Params, Router, RouterModule } from '@angular/router';
 import { filter, startWith } from 'rxjs';
 import { defaultPrefs, Tech } from '../../../core/models/user.model';
@@ -48,11 +48,10 @@ type StudyPrimaryAction = {
 };
 
 @Component({
-  selector: 'app-header',
-  standalone: true,
-  imports: [CommonModule, RouterModule],
-  styleUrls: ['./header.component.css'],
-  templateUrl: './header.component.html',
+    selector: 'app-header',
+    imports: [CommonModule, RouterModule],
+    styleUrls: ['./header.component.css'],
+    templateUrl: './header.component.html'
 })
 export class HeaderComponent implements OnInit {
   @ViewChild('desktopStudyTrigger') desktopStudyTrigger?: ElementRef<HTMLButtonElement>;
@@ -422,7 +421,7 @@ export class HeaderComponent implements OnInit {
   }
 
   @HostListener('document:keydown.escape', ['$event'])
-  onDocumentEsc(event: KeyboardEvent) {
+  onDocumentEsc(event: Event) {
     if (!this.megaOpen()) {
       this.closeAll();
       return;

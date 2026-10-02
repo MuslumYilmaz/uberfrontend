@@ -9,11 +9,10 @@ import { getAuthDisplayError } from '../../../core/utils/auth-error.util';
 import { sanitizeRedirectTarget } from '../../../core/utils/redirect.util';
 
 @Component({
-  selector: 'app-signup',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
-  templateUrl: './signup.component.html',
-  styleUrls: ['./signup.component.css'],
+    selector: 'app-signup',
+    imports: [CommonModule, ReactiveFormsModule, RouterLink],
+    templateUrl: './signup.component.html',
+    styleUrls: ['./signup.component.css']
 })
 export class SignupComponent implements OnInit {
   loading = false;

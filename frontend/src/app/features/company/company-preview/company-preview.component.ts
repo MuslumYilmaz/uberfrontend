@@ -198,11 +198,10 @@ const OPENAI_PREP_SEQUENCE: OpenAiPrepDay[] = [
 ];
 
 @Component({
-  standalone: true,
-  selector: 'app-company-preview',
-  imports: [CommonModule, RouterModule, FaQuestionRowComponent],
-  templateUrl: './company-preview.component.html',
-  styleUrls: ['./company-preview.component.css'],
+    selector: 'app-company-preview',
+    imports: [CommonModule, RouterModule, FaQuestionRowComponent],
+    templateUrl: './company-preview.component.html',
+    styleUrls: ['./company-preview.component.css']
 })
 export class CompanyPreviewComponent implements OnInit {
   readonly companyPracticeDisclaimer = COMPANY_PRACTICE_DISCLAIMER;

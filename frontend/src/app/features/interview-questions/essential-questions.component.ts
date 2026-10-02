@@ -134,11 +134,10 @@ const ESSENTIAL_SCHEMA_ENTITIES = [
 ];
 
 @Component({
-  standalone: true,
-  selector: 'app-essential-questions',
-  imports: [CommonModule, RouterModule, FaQuestionRowComponent],
-  templateUrl: './essential-questions.component.html',
-  styleUrls: ['./essential-questions.component.scss'],
+    selector: 'app-essential-questions',
+    imports: [CommonModule, RouterModule, FaQuestionRowComponent],
+    templateUrl: './essential-questions.component.html',
+    styleUrls: ['./essential-questions.component.scss']
 })
 export class EssentialQuestionsComponent implements OnInit {
   readonly section = signal<EssentialSection | 'all'>('all');

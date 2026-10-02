@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { NO_ERRORS_SCHEMA, PLATFORM_ID } from '@angular/core';
 import { ComponentFixture, TestBed, fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule, convertToParamMap, provideRouter } from '@angular/router';
 import { of, throwError } from 'rxjs';
@@ -29,7 +28,7 @@ describe('ShowcasePageComponent', () => {
     billingCheckout.getCheckoutConfig.and.resolveTo(null);
 
     await TestBed.configureTestingModule({
-      imports: [ShowcasePageComponent, NoopAnimationsModule],
+      imports: [ShowcasePageComponent],
       providers: [
         provideRouter([]),
         {
@@ -519,9 +518,9 @@ describe('ShowcasePageComponent', () => {
     expect(trustText).toContain(
       'Hands-on coding, runnable examples, regression tests, and transparent editorial updates—inside one focused workflow.',
     );
-    expect(trustSection.querySelector('[data-testid="trust-milestone-value"]')?.textContent?.trim()).toBe('100');
-    expect(trustText).toContain('FrontendAtlas accounts created');
-    expect(trustText).toContain('Early milestone · July 2026');
+    expect(trustSection.querySelector('[data-testid="trust-milestone-value"]')).toBeNull();
+    expect(trustText).not.toContain('FrontendAtlas accounts created');
+    expect(trustText).not.toContain('Early milestone');
     expect(trustText).toContain('FrontendAtlas Editorial');
     expect(trustText).toContain('Built and maintained as an independent frontend interview-prep project');
     expect(workflowItems).toEqual([...PUBLIC_EDITORIAL_FACTS.workflow]);

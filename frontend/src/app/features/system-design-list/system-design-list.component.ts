@@ -72,18 +72,17 @@ type PriorityQuestion = PriorityQuestionSeed & {
 };
 
 @Component({
-  standalone: true,
-  selector: 'app-system-design-list',
-  imports: [
-    CommonModule,
-    RouterModule,
-    FormsModule,
-    InputTextModule,
-    FaButtonComponent,
-    FaSelectComponent,
-  ],
-  templateUrl: './system-design-list.component.html',
-  styleUrls: ['./system-design-list.component.css']
+    selector: 'app-system-design-list',
+    imports: [
+        CommonModule,
+        RouterModule,
+        FormsModule,
+        InputTextModule,
+        FaButtonComponent,
+        FaSelectComponent,
+    ],
+    templateUrl: './system-design-list.component.html',
+    styleUrls: ['./system-design-list.component.css']
 })
 export class SystemDesignListComponent implements OnInit, OnDestroy {
   searchTerm = '';

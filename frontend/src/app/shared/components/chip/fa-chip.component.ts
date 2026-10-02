@@ -3,10 +3,9 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Params, RouterLinkActive, RouterModule } from '@angular/router';
 
 @Component({
-  selector: 'fa-chip',
-  standalone: true,
-  imports: [CommonModule, RouterModule],
-  template: `
+    selector: 'fa-chip',
+    imports: [CommonModule, RouterModule],
+    template: `
     <ng-container [ngSwitch]="!!routerLink">
       <a *ngSwitchCase="true"
          class="fa-chip"
@@ -52,7 +51,7 @@ import { Params, RouterLinkActive, RouterModule } from '@angular/router';
       </button>
     </ng-container>
   `,
-  styleUrls: ['./fa-chip.component.css']
+    styleUrls: ['./fa-chip.component.css']
 })
 export class FaChipComponent {
   @Input() label?: string;

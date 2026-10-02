@@ -171,19 +171,4 @@ export const PREPARE_GROUPS: PrepareGroup[] = [
             },
         ],
     },
-    {
-        key: 'resources',
-        title: 'Resources',
-        items: [
-            {
-                key: 'cheatsheets',
-                title: 'Cheat sheets',
-                subtitle: 'Quick reference for interviews',
-                pi: 'pi-bolt',
-                intent: 'placeholder',
-                disabled: true,
-                badge: 'Soon',
-            },
-        ],
-    },
 ];

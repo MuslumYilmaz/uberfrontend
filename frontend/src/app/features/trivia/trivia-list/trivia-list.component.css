@@ -177,7 +177,7 @@
   color: color-mix(in srgb, var(--uf-text-secondary) 85%, transparent);
 }
 
-::ng-deep .difficulty-filter .p-multiselect .p-multiselect-trigger {
+::ng-deep .difficulty-filter .p-multiselect .p-multiselect-dropdown {
   color: color-mix(in srgb, var(--uf-text-secondary) 88%, transparent);
 }
 
@@ -202,17 +202,17 @@
   color: var(--uf-text-primary);
 }
 
-::ng-deep .dark-multiselect-panel .p-multiselect-item {
+::ng-deep .dark-multiselect-panel .p-multiselect-option {
   background: transparent;
   padding: 0.5rem 1rem;
   color: var(--uf-text-primary);
 }
 
-::ng-deep .dark-multiselect-panel .p-multiselect-item:hover {
+::ng-deep .dark-multiselect-panel .p-multiselect-option:hover {
   background: color-mix(in srgb, var(--uf-text-primary) 6%, transparent);
 }
 
-::ng-deep .dark-multiselect-panel .p-multiselect-item.p-highlight {
+::ng-deep .dark-multiselect-panel .p-multiselect-option.p-multiselect-option-selected {
   background: color-mix(in srgb, var(--uf-accent) 18%, var(--uf-surface));
 }
 
@@ -220,12 +220,12 @@
   color: var(--uf-text-primary);
 }
 
-::ng-deep .dark-multiselect-panel .p-multiselect-item .p-checkbox-box {
+::ng-deep .dark-multiselect-panel .p-multiselect-option .p-checkbox-box {
   background: transparent;
   border: 1px solid var(--uf-border-subtle);
 }
 
-::ng-deep .dark-multiselect-panel .p-multiselect-item.p-highlight .p-checkbox-box {
+::ng-deep .dark-multiselect-panel .p-multiselect-option.p-multiselect-option-selected .p-checkbox-box {
   background: color-mix(in srgb, var(--uf-accent) 22%, var(--uf-surface));
   border-color: var(--uf-accent);
 }

@@ -13,10 +13,9 @@ export type ShowcaseIconName =
   | 'depth';
 
 @Component({
-  selector: 'app-showcase-icon',
-  standalone: true,
-  imports: [CommonModule],
-  template: `
+    selector: 'app-showcase-icon',
+    imports: [CommonModule],
+    template: `
     <svg
       class="showcase-icon"
       viewBox="0 0 24 24"
@@ -96,7 +95,7 @@ export type ShowcaseIconName =
       </ng-container>
     </svg>
   `,
-  styles: [`
+    styles: [`
     :host {
       display: inline-flex;
       align-items: center;
@@ -108,7 +107,7 @@ export type ShowcaseIconName =
     .showcase-icon {
       display: block;
     }
-  `],
+  `]
 })
 export class ShowcaseIconComponent {
   @Input() name: ShowcaseIconName = 'editor';

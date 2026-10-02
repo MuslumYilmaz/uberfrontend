@@ -12,6 +12,8 @@ html, body {
   -webkit-font-smoothing: antialiased;
 }
 
+// Keep low-specificity defaults in the reset layer; page typography stays authoritative.
+@layer tailwind-base {
 :where(h1, h2, h3, h4, h5, h6) {
   font-family: var(--uf-font-heading);
   font-weight: var(--uf-heading-weight);
@@ -32,6 +34,8 @@ html, body {
 
 :where(small, .meta, .subtitle) {
   font-size: var(--uf-meta-size);
+}
+
 }
 
 app-root {

@@ -30,6 +30,7 @@ yarn-error.log
 
 # Miscellaneous
 /.angular/cache
+/.angular/cdn-assets/
 .sass-cache/
 /connect.lock
 /coverage
@@ -41,6 +42,7 @@ testem.log
 /playwright-report/
 /test-results/
 /e2e/*-snapshots/
+!/e2e/upgrade-visual.spec.ts-snapshots/
 
 # System files
 .DS_Store

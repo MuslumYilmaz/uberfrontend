@@ -49,27 +49,27 @@
               },
               {
                 "glob": "**/*",
-                "input": "../cdn/questions",
+                "input": ".angular/cdn-assets/questions",
                 "output": "assets/questions"
               },
               {
                 "glob": "**/*",
-                "input": "../cdn/incidents",
+                "input": ".angular/cdn-assets/incidents",
                 "output": "assets/incidents"
               },
               {
                 "glob": "**/*",
-                "input": "../cdn/tradeoff-battles",
+                "input": ".angular/cdn-assets/tradeoff-battles",
                 "output": "assets/tradeoff-battles"
               },
               {
                 "glob": "**/*",
-                "input": "../cdn/practice",
+                "input": ".angular/cdn-assets/practice",
                 "output": "assets/practice"
               },
               {
                 "glob": "data-version.json",
-                "input": "../cdn",
+                "input": ".angular/cdn-assets",
                 "output": "assets"
               }
             ],
@@ -234,27 +234,27 @@
               },
               {
                 "glob": "**/*",
-                "input": "../cdn/questions",
+                "input": ".angular/cdn-assets/questions",
                 "output": "assets/questions"
               },
               {
                 "glob": "**/*",
-                "input": "../cdn/incidents",
+                "input": ".angular/cdn-assets/incidents",
                 "output": "assets/incidents"
               },
               {
                 "glob": "**/*",
-                "input": "../cdn/tradeoff-battles",
+                "input": ".angular/cdn-assets/tradeoff-battles",
                 "output": "assets/tradeoff-battles"
               },
               {
                 "glob": "**/*",
-                "input": "../cdn/practice",
+                "input": ".angular/cdn-assets/practice",
                 "output": "assets/practice"
               },
               {
                 "glob": "data-version.json",
-                "input": "../cdn",
+                "input": ".angular/cdn-assets",
                 "output": "assets"
               }
             ],
@@ -354,27 +354,27 @@
               },
               {
                 "glob": "**/*",
-                "input": "../cdn/questions",
+                "input": ".angular/cdn-assets/questions",
                 "output": "assets/questions"
               },
               {
                 "glob": "**/*",
-                "input": "../cdn/incidents",
+                "input": ".angular/cdn-assets/incidents",
                 "output": "assets/incidents"
               },
               {
                 "glob": "**/*",
-                "input": "../cdn/tradeoff-battles",
+                "input": ".angular/cdn-assets/tradeoff-battles",
                 "output": "assets/tradeoff-battles"
               },
               {
                 "glob": "**/*",
-                "input": "../cdn/practice",
+                "input": ".angular/cdn-assets/practice",
                 "output": "assets/practice"
               },
               {
                 "glob": "data-version.json",
-                "input": "../cdn",
+                "input": ".angular/cdn-assets",
                 "output": "assets"
               }
             ],
@@ -396,6 +396,32 @@
       "enabled": true,
       "environment": "all",
       "path": ".angular/cache"
+    }
+  },
+  "schematics": {
+    "@schematics/angular:component": {
+      "type": "component"
+    },
+    "@schematics/angular:directive": {
+      "type": "directive"
+    },
+    "@schematics/angular:service": {
+      "type": "service"
+    },
+    "@schematics/angular:guard": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:interceptor": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:module": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:pipe": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:resolver": {
+      "typeSeparator": "."
     }
   }
 }

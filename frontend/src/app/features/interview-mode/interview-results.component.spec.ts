@@ -112,6 +112,39 @@ describe('InterviewResultsComponent', () => {
     expect(localStorage.getItem(recoveryKey)).toBeNull();
   });
 
+  it('separates elapsed time from its limit and exposes readable time labels', () => {
+    service.getResult.and.returnValue(of({
+      ...result, mcqTiming: { usedSeconds: 58, allowedSeconds: 600 },
+      codingTiming: { usedSeconds: null, allowedSeconds: null },
+    }));
+    fixture.detectChanges();
+    const cards: NodeListOf<HTMLElement> = fixture.nativeElement.querySelectorAll('.timing-grid article');
+    expect(cards[0].querySelector('strong')?.textContent).toBe('00:58');
+    expect(cards[0].textContent).toContain('of 10:00');
+    expect(cards[0].getAttribute('aria-label')).toContain('0 minutes 58 seconds used of 10 minutes 0 seconds allowed');
+    expect(cards[1].textContent).toContain('Not available');
+    expect(cards[1].textContent).not.toContain('of');
+    expect(fixture.componentInstance.formatClock(3601)).toBe('60:01');
+  });
+
+  it('formats answer review code without interpreting HTML in prompts, options or explanations', () => {
+    const reviewed = structuredClone(result);
+    const question = reviewed.questions[0];
+    question.prompt = 'Choose `<button>` or `/[a-z]+/g`; keep `unmatched.';
+    question.options[0].label = 'Use `<img src=x onerror=alert(1)>`.';
+    question.options[1].label = 'Use `textContent`.';
+    question.explanation = 'Assign `<script>alert(1)</script>` as text.';
+    service.getResult.and.returnValue(of(reviewed));
+    fixture.detectChanges();
+
+    const review: HTMLElement = fixture.nativeElement.querySelector('.answer-body');
+    expect(review.querySelector('h3')?.textContent).toContain('Choose <button> or /[a-z]+/g; keep `unmatched.');
+    expect(Array.from(review.querySelectorAll('dd code')).map((code) => code.textContent))
+      .toEqual(['<img src=x onerror=alert(1)>', 'textContent']);
+    expect(review.querySelector('p code')?.textContent).toBe('<script>alert(1)</script>');
+    expect(review.querySelector('img, script')).toBeNull();
+  });
+
   it('does not describe an abandoned checked draft as submitted', () => {
     service.getResult.and.returnValue(of({
       ...result,
@@ -252,7 +285,7 @@ describe('InterviewResultsComponent', () => {
     expect(text).toContain('React request ownership');
     expect(text).toContain('Open the full system design walkthrough');
     expect(text).not.toContain('Answer review');
-    expect(text).not.toContain('MCQ time used');
+    expect(text).not.toContain('Multiple-choice time used');
     expect(
       (fixture.nativeElement.querySelector(
         'a.walkthrough-link'

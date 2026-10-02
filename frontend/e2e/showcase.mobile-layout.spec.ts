@@ -144,11 +144,11 @@ async function assertTrustAndCompanyLayout(
   await trust.scrollIntoViewIfNeeded();
   await expect(trust).toBeVisible();
   await assertLocatorFitsWidth(
-    trust.locator('.trust-shell, .trust-copy, .trust-milestone, .trust-proof-strip, .trust-proof-item'),
+    trust.locator('.trust-shell, .trust-copy, .trust-proof-strip, .trust-proof-item'),
     `${label} trust content`,
   );
   await assertElementsStayInside(
-    trust.locator('.trust-copy, .trust-milestone, .trust-proof-strip, .trust-proof-item'),
+    trust.locator('.trust-copy, .trust-proof-strip, .trust-proof-item'),
     '.trust-shell',
     `${label} trust content`,
   );

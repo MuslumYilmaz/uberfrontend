@@ -66,7 +66,7 @@ test.describe('showcase perf smoke', () => {
     let reportWritten = false;
 
     try {
-      await page.goto('/showcase', { waitUntil: 'domcontentloaded', timeout: 60_000 });
+      await page.goto('/', { waitUntil: 'domcontentloaded', timeout: 60_000 });
       await expect(page.getByTestId('showcase-hero-title')).toBeVisible({ timeout: 60_000 });
 
       await page.waitForFunction(

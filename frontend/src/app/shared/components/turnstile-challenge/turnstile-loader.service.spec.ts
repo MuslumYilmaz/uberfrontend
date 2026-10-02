@@ -1,5 +1,5 @@
-import { DOCUMENT } from '@angular/common';
-import { PLATFORM_ID } from '@angular/core';
+
+import { PLATFORM_ID, DOCUMENT } from '@angular/core';
 import { fakeAsync, flushMicrotasks, TestBed, tick } from '@angular/core/testing';
 import { TurnstileLoaderService } from './turnstile-loader.service';
 import { TurnstileApi, TurnstileWindow } from './turnstile-challenge.types';

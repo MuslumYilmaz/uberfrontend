@@ -1,4 +1,3 @@
-import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import {
   ComponentFixture,
   TestBed,
@@ -172,7 +171,6 @@ describe('InterviewSystemDesignRoundComponent', () => {
       imports: [InterviewSystemDesignRoundComponent],
       providers: [
         { provide: InterviewService, useValue: service },
-        provideNoopAnimations(),
       ],
     }).compileComponents();
 

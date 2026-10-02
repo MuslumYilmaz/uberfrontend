@@ -3,13 +3,12 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FaCardComponent } from './fa-card.component';
 
 @Component({
-  standalone: true,
-  imports: [FaCardComponent],
-  template: `
+    imports: [FaCardComponent],
+    template: `
     <section faCard [tabindex]="0" data-testid="focusable-card">Content</section>
     <section faCard data-testid="plain-card">Content</section>
     <a faCard disabled [tabindex]="0" href="/" data-testid="disabled-card">Content</a>
-  `,
+  `
 })
 class TestHostComponent {}
 

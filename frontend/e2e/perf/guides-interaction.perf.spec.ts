@@ -168,18 +168,18 @@ test.describe('guides interaction perf smoke', () => {
 
     try {
       for (let run = 0; run < ROUTING_WARMUP_RUNS + ROUTING_MEASURE_RUNS; run += 1) {
-        await page.goto('/showcase', { waitUntil: 'domcontentloaded', timeout: 60_000 });
+        await page.goto('/', { waitUntil: 'domcontentloaded', timeout: 60_000 });
         await expect(page.getByTestId('showcase-hero-title')).toBeVisible({ timeout: 60_000 });
 
-        const target = page.getByRole('link', { name: 'View interview blueprint' }).first();
+        const target = page.getByRole('link', { name: 'View the frontend interview preparation guide', exact: true }).first();
         await target.scrollIntoViewIfNeeded();
 
         const startedAt = await page.evaluate(() => performance.now());
         await Promise.all([
-          page.waitForURL(/\/guides\/interview-blueprint\/?$/, { timeout: 60_000 }),
+          page.waitForURL(/\/guides\/interview-blueprint\/intro\/?$/, { timeout: 60_000 }),
           target.click(),
         ]);
-        await expect(page.getByRole('heading', { name: 'Frontend Interview Playbook Hub' })).toBeVisible({
+        await expect(page.getByRole('heading', { name: 'Frontend Interview Preparation Guide (2026): Rounds, Roadmap, Questions', exact: true })).toBeVisible({
           timeout: 60_000,
         });
         const endedAt = await page.evaluate(() => performance.now());

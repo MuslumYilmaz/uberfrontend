@@ -184,6 +184,23 @@ describe('MonacoEditorComponent loader failure handling', () => {
       .toBeLessThan(fakeMonaco.api.editor.create.calls.first().invocationOrder);
   });
 
+  for (const source of ['theme', 'options'] as const) {
+    it(`uses accessible regexp colors only when the interview theme is selected through ${source}`, async () => {
+      const fakeMonaco = makeFakeMonaco();
+      (window as any).monaco = fakeMonaco.api;
+      (window as any).__faMonacoReady = true;
+      const fixture = createComponent({ width: 320, height: 180 });
+      fixture.componentRef.setInput(source, source === 'theme' ? 'fa-interview-dark' : { theme: 'fa-interview-dark' });
+      fixture.detectChanges();
+      await Promise.resolve();
+      const [name, theme] = fakeMonaco.api.editor.defineTheme.calls.mostRecent().args;
+      expect(name).toBe('fa-interview-dark');
+      expect(fakeMonaco.api.editor.create.calls.mostRecent().args[1].theme).toBe(name);
+      const regexpColor = theme.rules.find((rule: { token: string }) => rule.token === 'regexp').foreground;
+      expect(contrastRatio(regexpColor, '1e1e1e')).toBeGreaterThanOrEqual(4.5);
+    });
+  }
+
   for (const customTheme of ['vs', 'hc-black']) {
     it(`preserves an explicit ${customTheme} theme and can switch back to the accessible default`, async () => {
       const fakeMonaco = makeFakeMonaco();

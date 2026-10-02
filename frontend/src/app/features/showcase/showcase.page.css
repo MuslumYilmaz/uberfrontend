@@ -913,7 +913,7 @@
 
 .trust-shell {
   display: grid;
-  grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.65fr);
+  grid-template-columns: minmax(0, 1fr);
   column-gap: clamp(28px, 5vw, 72px);
   row-gap: 24px;
   align-items: stretch;
@@ -957,40 +957,8 @@
   color: color-mix(in srgb, var(--uf-text-primary) 90%, transparent);
 }
 
-.trust-milestone {
-  min-width: 0;
-  display: grid;
-  align-content: center;
-  gap: 6px;
-  min-height: 220px;
-  padding: clamp(22px, 4vw, 32px);
-  border-color: color-mix(in srgb, var(--uf-border-subtle) 60%, var(--uf-accent) 40%);
-  background:
-    radial-gradient(circle at 88% 14%, color-mix(in srgb, var(--uf-accent) 18%, transparent), transparent 44%),
-    linear-gradient(145deg, color-mix(in srgb, var(--uf-surface-alt) 94%, var(--uf-surface)), color-mix(in srgb, var(--uf-surface) 88%, var(--uf-bg)));
-}
 
-.trust-milestone__value {
-  color: var(--uf-text-primary);
-  font-family: var(--uf-font-heading);
-  font-size: clamp(58px, 7vw, 78px);
-  font-weight: 600;
-  letter-spacing: -0.055em;
-  line-height: 0.96;
-}
 
-.trust-milestone__label {
-  color: var(--uf-text-primary);
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 1.35;
-}
-
-.trust-milestone__meta {
-  color: color-mix(in srgb, var(--uf-text-secondary) 80%, transparent);
-  font-size: 12.5px;
-  line-height: 1.45;
-}
 
 .trust-proof-strip {
   grid-column: 1 / -1;
@@ -1329,29 +1297,8 @@
     max-width: none;
   }
 
-  .trust-milestone {
-    grid-template-columns: auto minmax(0, 1fr);
-    grid-template-areas:
-      "value label"
-      "value meta";
-    column-gap: 20px;
-    row-gap: 4px;
-    min-height: 0;
-  }
 
-  .trust-milestone__value {
-    grid-area: value;
-  }
 
-  .trust-milestone__label {
-    grid-area: label;
-    align-self: end;
-  }
-
-  .trust-milestone__meta {
-    grid-area: meta;
-    align-self: start;
-  }
 }
 
 @media (max-width: 720px) {
@@ -1365,13 +1312,6 @@
     font-size: clamp(30px, 9vw, 38px);
   }
 
-  .trust-milestone {
-    padding: 20px;
-  }
-
-  .trust-milestone__value {
-    font-size: 56px;
-  }
 }
 
 .editor-card::after {

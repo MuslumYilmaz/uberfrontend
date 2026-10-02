@@ -26,16 +26,15 @@ type ItemTypeFilter = 'all' | MasteryItemType;
 type TargetQuery = { tech: Tech; kind: QuestionKind; query: string };
 
 @Component({
-  selector: 'app-mastery-path-page',
-  standalone: true,
-  imports: [
-    CommonModule,
-    RouterModule,
-    OfflineBannerComponent,
-    MasteryModuleListComponent,
-    MasterySidePanelComponent,
-  ],
-  styles: [`
+    selector: 'app-mastery-path-page',
+    imports: [
+        CommonModule,
+        RouterModule,
+        OfflineBannerComponent,
+        MasteryModuleListComponent,
+        MasterySidePanelComponent,
+    ],
+    styles: [`
     :host { display: block; color: var(--uf-text-primary); background: var(--uf-bg); }
 
     .wrap {
@@ -217,34 +216,6 @@ type TargetQuery = { tech: Tech; kind: QuestionKind; query: string };
       align-items: start;
     }
 
-    .coming {
-      border-radius: var(--uf-card-radius);
-      border: 1px solid var(--uf-border-subtle);
-      background: color-mix(in srgb, var(--uf-surface) 94%, var(--uf-surface-alt));
-      box-shadow: var(--uf-card-shadow);
-      padding: 16px;
-      display: grid;
-      gap: 8px;
-    }
-
-    .coming h2,
-    .coming p {
-      margin: 0;
-    }
-
-    .coming p {
-      color: color-mix(in srgb, var(--uf-text-secondary) 84%, transparent);
-      max-width: 820px;
-    }
-
-    .coming a {
-      text-decoration: none;
-      color: var(--uf-text-primary);
-      font-weight: 700;
-      border-bottom: 1px dotted color-mix(in srgb, var(--uf-text-tertiary) 70%, transparent);
-      width: fit-content;
-    }
-
     @media (max-width: 1080px) {
       .layout { grid-template-columns: 1fr; }
       .rail { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -255,7 +226,7 @@ type TargetQuery = { tech: Tech; kind: QuestionKind; query: string };
       .hero { padding: 14px; }
     }
   `],
-  template: `
+    template: `
     <div
       class="wrap fa-body"
       *ngIf="path() as masteryPath"
@@ -288,16 +259,7 @@ type TargetQuery = { tech: Tech; kind: QuestionKind; query: string };
         </div>
       </section>
 
-      <section class="coming" *ngIf="masteryPath.availability === 'coming-soon'; else activeTrack">
-        <h2>{{ masteryPath.title }} is coming soon</h2>
-        <p>
-          The modular mastery engine is ready. This framework pack has not been published yet.
-          JavaScript path is live today.
-        </p>
-        <a [routerLink]="['/guides', 'framework-prep', 'javascript-prep-path', 'mastery']">Open JavaScript mastery track</a>
-      </section>
-
-      <ng-template #activeTrack>
+      <ng-container>
         <nav class="rail" aria-label="Mastery modules">
           <button
             *ngFor="let view of unfilteredModuleViews()"
@@ -350,11 +312,11 @@ type TargetQuery = { tech: Tech; kind: QuestionKind; query: string };
             [codingWeight]="masteryPath.scoring.codingWeight">
           </app-mastery-side-panel>
         </section>
-      </ng-template>
+      </ng-container>
 
       <app-offline-banner></app-offline-banner>
     </div>
-  `,
+  `
 })
 export class MasteryPathPageComponent implements OnDestroy {
   private readonly route = inject(ActivatedRoute);

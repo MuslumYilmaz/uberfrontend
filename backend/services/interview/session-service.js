@@ -255,6 +255,21 @@ function assertCreateRequestMatches(session, requestHash) {
   }
 }
 
+function serializeCodingChecks(checks, runnerConfig) {
+  const declaredChecks = runnerConfig?.kind === 'framework-preview'
+    ? (runnerConfig.groups || []).flatMap((group) => group.checks || [])
+    : runnerConfig?.checks || [];
+  const names = new Map(declaredChecks.map((check) => [
+    check.id,
+    typeof check.name === 'string' ? check.name.trim() : '',
+  ]));
+  return (checks || []).map((check, index) => ({
+    id: check.id,
+    name: names.get(check.id) || `Check ${index + 1}`,
+    passed: check.passed === true,
+  }));
+}
+
 function serializeCodingVariant(variant) {
   if (!variant) return null;
   return {
@@ -496,7 +511,7 @@ function serializeSession(session, { now = new Date() } = {}) {
           authoritative: false,
           passedCount: run.passedCount,
           totalCount: run.totalCount,
-          checks: run.checks.map((check) => ({ id: check.id, passed: check.passed })),
+          checks: serializeCodingChecks(run.checks, session.codingPrivate?.runnerConfig),
           ranAt: new Date(run.ranAt).toISOString(),
         }))
         : [],
@@ -2514,7 +2529,23 @@ async function getResults(userId, sessionId, { now = new Date() } = {}) {
   if (!session.resultSnapshot) {
     serviceError(500, 'INTERVIEW_RESULTS_UNAVAILABLE', 'Interview results are unavailable');
   }
-  return session.resultSnapshot;
+  const result = session.resultSnapshot;
+  if (!result.coding?.checkRun) return result;
+  // Enrich presentation at read time, including historical snapshots. Stored
+  // evidence remains bounded to id/pass and tied to the submitted draft hash.
+  return {
+    ...result,
+    coding: {
+      ...result.coding,
+      checkRun: {
+        ...result.coding.checkRun,
+        checks: serializeCodingChecks(
+          result.coding.checkRun.checks,
+          session.codingPrivate?.runnerConfig
+        ),
+      },
+    },
+  };
 }
 
 module.exports = {

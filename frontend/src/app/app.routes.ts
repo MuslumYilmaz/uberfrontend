@@ -1,11 +1,14 @@
 import {
   Routes,
+  Router,
   UrlMatchResult,
   UrlSegment,
   provideRouter,
   withInMemoryScrolling,
   withRouterConfig,
 } from '@angular/router';
+import { inject, PLATFORM_ID } from '@angular/core';
+import { prerenderPageRedirect } from './core/guards/prerender-page-redirect';
 
 import { authGuard, authMatchGuard } from './core/guards/auth.guard';
 import { adminGuard, adminMatchGuard } from './core/guards/admin.guard';
@@ -687,7 +690,14 @@ export const routes: Routes = [
       },
     },
     children: [
-      { path: '', pathMatch: 'full', redirectTo: 'interview-blueprint' },
+      {
+        path: '', pathMatch: 'full', children: [],
+        canActivate: [(route) => prerenderPageRedirect(
+          inject(Router).createUrlTree(['/guides/interview-blueprint'], {
+            queryParams: route.queryParams, fragment: route.fragment ?? undefined,
+          }), inject(PLATFORM_ID),
+        )],
+      },
 
       {
         path: 'framework-prep',
@@ -719,6 +729,21 @@ export const routes: Routes = [
             ],
           },
         },
+      },
+      {
+        path: 'framework-prep/react-prep-path/mastery',
+        pathMatch: 'full',
+        redirectTo: '/guides/framework-prep/react-prep-path',
+      },
+      {
+        path: 'framework-prep/angular-prep-path/mastery',
+        pathMatch: 'full',
+        redirectTo: '/guides/framework-prep/angular-prep-path',
+      },
+      {
+        path: 'framework-prep/vue-prep-path/mastery',
+        pathMatch: 'full',
+        redirectTo: '/guides/framework-prep/vue-prep-path',
       },
       {
         path: 'framework-prep/:slug/mastery',

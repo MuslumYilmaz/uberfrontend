@@ -178,6 +178,7 @@ export interface InterviewCodingState {
   task: InterviewCodingTask | null;
   draft: InterviewCodingDraft | null;
   checkResults: InterviewCheckResult[];
+  checkResultsDraftHash: string | null;
   runCount: number;
 }
 

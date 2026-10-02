@@ -208,7 +208,7 @@
         <div class="duration-summary">
           <strong>Fixed interview timing</strong>
           <span *ngIf="selectedFormat() === 'coding'; else designTiming">
-            {{ mcqDurationLabel() }} MCQ · {{ codingMinutes() }} minutes coding
+            {{ mcqDurationLabel() }} multiple-choice · {{ codingMinutes() }} minutes coding
           </span>
           <ng-template #designTiming>
             <span>{{ systemDesignMinutes() }} minutes guided system design</span>
@@ -234,7 +234,7 @@
         <div class="rules" aria-label="Interview rules">
           <h3>Before you begin</h3>
           <ul *ngIf="selectedFormat() === 'coding'; else designRules">
-            <li>The MCQ section comes first; coding is always the final stage.</li>
+            <li>The multiple-choice section comes first; coding is always the final stage.</li>
             <li>Leaving or refreshing does not pause the server-controlled timer.</li>
             <li>No answer feedback or solutions appear before submission.</li>
             <li>Interview Mode awards 0 XP and does not update solved progress.</li>
@@ -248,7 +248,7 @@
             </ul>
           </ng-template>
           <p class="recovery-disclosure" data-testid="interview-recovery-disclosure">
-            Crash-recovery copies use unencrypted storage in this browser: MCQ state for up to
+            Crash-recovery copies use unencrypted storage in this browser: multiple-choice state for up to
             2 hours, and coding or system design drafts for up to 24 hours. Signing out clears them.
           </p>
         </div>
@@ -279,7 +279,7 @@
             · {{ result.level || 'Interview' | titlecase }}
           </strong>
           <span *ngIf="result.format === 'coding' && result.total !== undefined">
-            {{ result.correct || 0 }}/{{ result.total }} MCQ correct
+            {{ result.correct || 0 }}/{{ result.total }} multiple-choice correct
           </span>
           <span *ngIf="result.format === 'system-design' && result.practiceSignal">
             {{ practiceSignalLabel(result.practiceSignal) }}

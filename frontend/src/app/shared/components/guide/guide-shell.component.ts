@@ -30,11 +30,10 @@ const FALLBACK_READER_PROMISE = 'This guide is part of the FrontendAtlas fronten
 const GUIDE_SCROLL_THRESHOLDS = [25, 50, 75, 100];
 
 @Component({
-  selector: 'fa-guide-shell',
-  standalone: true,
-  imports: [CommonModule, RouterModule],
-  encapsulation: ViewEncapsulation.None,
-  styles: [`
+    selector: 'fa-guide-shell',
+    imports: [CommonModule, RouterModule],
+    encapsulation: ViewEncapsulation.None,
+    styles: [`
 :host { display:block; color: var(--uf-text-primary); background: var(--uf-bg); }
 
 /* layout */
@@ -675,7 +674,7 @@ const GUIDE_SCROLL_THRESHOLDS = [25, 50, 75, 100];
 .nav-btn:hover{ background:color-mix(in srgb, var(--uf-text-primary) 6%, var(--uf-surface)); }
 
 `],
-  template: `
+    template: `
   <div #shellRoot class="wrap" [class.has-left]="leftNav">
     <aside class="left" *ngIf="leftNav">
       <div #leftAnchor></div>

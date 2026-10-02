@@ -13,11 +13,10 @@ import {
 } from '../../core/utils/onboarding-personalization.util';
 
 @Component({
-  standalone: true,
-  selector: 'app-billing-cancel',
-  imports: [CommonModule, RouterModule],
-  templateUrl: './billing-cancel.component.html',
-  styleUrls: ['./billing-cancel.component.css'],
+    selector: 'app-billing-cancel',
+    imports: [CommonModule, RouterModule],
+    templateUrl: './billing-cancel.component.html',
+    styleUrls: ['./billing-cancel.component.css']
 })
 export class BillingCancelComponent implements OnInit {
   private static readonly CHECKOUT_PLAN_KEY = 'fa:checkout:last_plan_id';

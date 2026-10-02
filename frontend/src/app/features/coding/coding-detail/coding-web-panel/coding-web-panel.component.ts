@@ -43,10 +43,9 @@ import { OpaqueCheckCancelledError, OpaqueDomCheckRunner } from '../opaque-dom-c
 type WebEditorLang = 'html' | 'css';
 
 @Component({
-  selector: 'app-coding-web-panel',
-  standalone: true,
-  imports: [CommonModule, MonacoEditorComponent, ConsoleLoggerComponent, ButtonModule, RestoreBannerComponent, DraftUpdateBannerComponent, CodeSnapshotComponent],
-  styles: [`
+    selector: 'app-coding-web-panel',
+    imports: [CommonModule, MonacoEditorComponent, ConsoleLoggerComponent, ButtonModule, RestoreBannerComponent, DraftUpdateBannerComponent, CodeSnapshotComponent],
+    styles: [`
   :host {
     color: var(--uf-text-primary);
     display: flex;
@@ -197,7 +196,7 @@ type WebEditorLang = 'html' | 'css';
 
   /* Runner styles come from global .fa-runner-* and .fa-results classes */
 `],
-  template: `
+    template: `
 	<div class="web-panel w-full min-h-0 flex flex-col flex-1" data-testid="web-panel">
 	  <!-- Draft update banner (versioned drafts) -->
 	  <app-draft-update-banner *ngIf="showUpdateBanner() && !isViewingOlderVersion()"
@@ -353,7 +352,7 @@ type WebEditorLang = 'html' | 'css';
 	        </div>
 	      </div>
     </div>
-  </div>`,
+  </div>`
 })
 export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDestroy {
   @Input() question!: Question;

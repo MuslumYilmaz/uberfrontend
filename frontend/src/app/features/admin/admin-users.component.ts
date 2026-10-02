@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../core/services/auth.service';
 import { apiUrl } from '../../core/utils/api-base';
 
@@ -27,10 +27,9 @@ type AdminRow = {
 };
 
 @Component({
-  selector: 'app-admin-users',
-  standalone: true,
-  imports: [CommonModule, FormsModule, HttpClientModule],
-  template: `
+    selector: 'app-admin-users',
+    imports: [CommonModule, FormsModule],
+    template: `
     <div class="admin-shell">
       <header class="admin-head">
         <div>
@@ -128,7 +127,7 @@ type AdminRow = {
       </div>
     </div>
   `,
-  styles: [`
+    styles: [`
     .admin-shell{max-width:1200px;margin:20px auto;padding:0 16px 32px;}
     .admin-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:16px;}
     .admin-head h1{margin:4px 0 2px;}

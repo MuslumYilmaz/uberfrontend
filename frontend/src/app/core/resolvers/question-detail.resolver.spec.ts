@@ -1,6 +1,6 @@
 import { PLATFORM_ID } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { TransferState, makeStateKey } from '@angular/platform-browser';
+import { TransferState, makeStateKey } from '@angular/core';
 import { convertToParamMap } from '@angular/router';
 import { firstValueFrom, Observable, of } from 'rxjs';
 import { Question } from '../models/question.model';

@@ -3,7 +3,8 @@ import { Component, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
-import { InputTextareaModule } from 'primeng/inputtextarea';
+import { FaDialogFocusDirective } from '../../ui/dialog/fa-dialog-focus.directive';
+import { TextareaModule } from 'primeng/textarea';
 import { BugReportService } from '../../../core/services/bug-report.service';
 import {
   TurnstileChallengeComponent,
@@ -11,18 +12,18 @@ import {
 } from '../turnstile-challenge/turnstile-challenge.component';
 
 @Component({
-  selector: 'app-bug-report-dialog',
-  standalone: true,
-  imports: [
-    CommonModule,
-    DialogModule,
-    FormsModule,
-    InputTextareaModule,
-    ButtonModule,
-    TurnstileChallengeComponent,
-  ],
-  templateUrl: './bug-report-dialog.component.html',
-  styleUrls: ['./bug-report-dialog.component.css'],
+    selector: 'app-bug-report-dialog',
+    imports: [
+        CommonModule,
+        DialogModule,
+        FaDialogFocusDirective,
+        FormsModule,
+        TextareaModule,
+        ButtonModule,
+        TurnstileChallengeComponent,
+    ],
+    templateUrl: './bug-report-dialog.component.html',
+    styleUrls: ['./bug-report-dialog.component.css']
 })
 export class BugReportDialogComponent {
   @ViewChild('turnstileChallenge')

@@ -60,11 +60,10 @@ type FaqItem = {
 };
 
 @Component({
-  standalone: true,
-  selector: 'app-machine-coding-hub',
-  imports: [CommonModule, RouterModule],
-  templateUrl: './machine-coding-hub.component.html',
-  styleUrls: ['./machine-coding-hub.component.css'],
+    selector: 'app-machine-coding-hub',
+    imports: [CommonModule, RouterModule],
+    templateUrl: './machine-coding-hub.component.html',
+    styleUrls: ['./machine-coding-hub.component.css']
 })
 export class MachineCodingHubComponent implements OnInit {
   private readonly seo = inject(SeoService);

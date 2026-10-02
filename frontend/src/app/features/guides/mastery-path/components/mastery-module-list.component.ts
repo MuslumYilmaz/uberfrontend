@@ -4,10 +4,9 @@ import { MasteryModuleView } from '../../../../shared/mastery/mastery-path.model
 import { MasteryItemRowComponent } from './mastery-item-row.component';
 
 @Component({
-  selector: 'app-mastery-module-list',
-  standalone: true,
-  imports: [CommonModule, MasteryItemRowComponent],
-  styles: [`
+    selector: 'app-mastery-module-list',
+    imports: [CommonModule, MasteryItemRowComponent],
+    styles: [`
     :host {
       display: grid;
       gap: 14px;
@@ -117,7 +116,7 @@ import { MasteryItemRowComponent } from './mastery-item-row.component';
       background: color-mix(in srgb, var(--uf-surface) 94%, var(--uf-surface-alt));
     }
   `],
-  template: `
+    template: `
     <section
       *ngFor="let view of moduleViews"
       class="module"
@@ -158,7 +157,7 @@ import { MasteryItemRowComponent } from './mastery-item-row.component';
         <div class="module__empty">No drills match the active filters in this module.</div>
       </ng-template>
     </section>
-  `,
+  `
 })
 export class MasteryModuleListComponent {
   @Input() moduleViews: MasteryModuleView[] = [];

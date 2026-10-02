@@ -194,6 +194,20 @@ describe('Interview result remediation', () => {
     expect(JSON.stringify(results)).not.toContain('React async ownership');
   });
 
+  test('does not carry a passing check run over to a different submitted draft', () => {
+    const results = buildResultSnapshot(scoringFixture({
+      codingOutcome: 'submitted',
+      submittedDraftHash: 'edited-draft',
+      codingCheckRuns: [{
+        draftHash: 'old-draft', passedCount: 1, totalCount: 1,
+        ranAt: new Date('2026-07-27T12:04:00.000Z'),
+        checks: [{ id: 'latest-request-wins', passed: true }],
+      }],
+    }));
+    expect(results.coding.checkRun).toBeNull();
+    expect(results.coding.locallyVerified).toBe(false);
+  });
+
   test('uses the actual end time when coding is abandoned before its deadline', () => {
     const results = buildResultSnapshot(scoringFixture({
       codingStartedAt: new Date('2026-07-27T12:01:00.000Z'),

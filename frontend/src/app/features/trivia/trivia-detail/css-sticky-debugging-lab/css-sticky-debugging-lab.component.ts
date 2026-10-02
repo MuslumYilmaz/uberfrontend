@@ -1,4 +1,4 @@
-import { CommonModule, DOCUMENT, isPlatformBrowser } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
@@ -12,6 +12,7 @@ import {
   computed,
   inject,
   signal,
+  DOCUMENT
 } from '@angular/core';
 import { AnalyticsService } from '../../../../core/services/analytics.service';
 import { MonacoEditorComponent } from '../../../../monaco-editor.component';
@@ -52,19 +53,18 @@ const QUALIFIED_VIEW_MS = 1_000;
 const QUALIFIED_VIEW_RATIO = 0.5;
 
 @Component({
-  selector: 'app-css-sticky-debugging-lab',
-  standalone: true,
-  imports: [
-    CommonModule,
-    MonacoEditorComponent,
-    FaButtonComponent,
-    FaCardComponent,
-    FaChipComponent,
-  ],
-  providers: [CSS_STICKY_PREVIEW_PORT_PROVIDER],
-  templateUrl: './css-sticky-debugging-lab.component.html',
-  styleUrls: ['./css-sticky-debugging-lab.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-css-sticky-debugging-lab',
+    imports: [
+        CommonModule,
+        MonacoEditorComponent,
+        FaButtonComponent,
+        FaCardComponent,
+        FaChipComponent,
+    ],
+    providers: [CSS_STICKY_PREVIEW_PORT_PROVIDER],
+    templateUrl: './css-sticky-debugging-lab.component.html',
+    styleUrls: ['./css-sticky-debugging-lab.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CssStickyDebuggingLabComponent implements AfterViewInit, OnDestroy {
   private readonly analytics = inject(AnalyticsService);

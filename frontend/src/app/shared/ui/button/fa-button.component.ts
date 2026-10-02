@@ -14,16 +14,15 @@ export type FaButtonSize = 'sm' | 'md' | 'lg';
 export type FaButtonIconPosition = 'start' | 'end';
 
 @Component({
-  selector: 'button[faButton],a[faButton]',
-  standalone: true,
-  imports: [CommonModule],
-  template: `
+    selector: 'button[faButton],a[faButton]',
+    imports: [CommonModule],
+    template: `
     <i *ngIf="icon && iconPosition === 'start'" class="fa-btn__icon" [ngClass]="icon" aria-hidden="true"></i>
     <span class="fa-btn__label"><ng-content></ng-content></span>
     <i *ngIf="icon && iconPosition === 'end'" class="fa-btn__icon" [ngClass]="icon" aria-hidden="true"></i>
     <i *ngIf="loading" class="fa-btn__spinner pi pi-spinner pi-spin" aria-hidden="true"></i>
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FaButtonComponent {
   @Input() variant: FaButtonVariant = 'neutral';

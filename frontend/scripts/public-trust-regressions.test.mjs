@@ -84,20 +84,16 @@ for (const authorizedLine of [
   'Built for credible practice',
   'Frontend interview practice that shows its work.',
   'Hands-on coding, runnable examples, regression tests, and transparent editorial updates—inside one focused workflow.',
-  'FrontendAtlas accounts created',
-  'Early milestone <span aria-hidden="true">·</span> July 2026',
 ]) {
   assert.equal(
     showcaseHtml.split(authorizedLine).length - 1,
     1,
-    `homepage must render the authorized milestone line exactly once: ${authorizedLine}`,
+    `homepage must render the editorial trust line exactly once: ${authorizedLine}`,
   );
 }
-assert.match(
-  showcaseHtml,
-  /data-testid="trust-milestone-value">100<\/strong>/,
-  'homepage must render the authorized account milestone as a secondary metric',
-);
+assert.doesNotMatch(showcaseHtml, /trust-milestone|Early milestone/, 'historical milestones belong in the changelog');
+const changelogSource = await fs.readFile(path.join(appRoot, 'core/content/public-changelog.ts'), 'utf8');
+assert.match(changelogSource, /100 FrontendAtlas accounts had been created by July 2026\./);
 assert.doesNotMatch(
   showcaseHtml,
   /100 FrontendAtlas accounts have been created\./,

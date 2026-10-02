@@ -1,7 +1,8 @@
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { SHOWCASE_STATS } from '../../generated/content-metadata';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { HttpRequest } from '@angular/common/http';
-import { TransferState, makeStateKey } from '@angular/platform-browser';
+import { HttpRequest, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { TransferState, makeStateKey } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { Question } from '../models/question.model';
 import { QuestionPersistenceService } from './question-persistence.service';
@@ -117,15 +118,17 @@ describe('QuestionService', () => {
     localStorage.setItem(cdnFlagKey, '0');
 
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [
+    imports: [],
+    providers: [
         QuestionService,
         {
-          provide: QuestionPersistenceService,
-          useClass: MemoryQuestionPersistenceService,
+            provide: QuestionPersistenceService,
+            useClass: MemoryQuestionPersistenceService,
         },
-      ],
-    });
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
+    ]
+});
 
     service = TestBed.inject(QuestionService);
     persistence = TestBed.inject(QuestionPersistenceService);
@@ -144,6 +147,21 @@ describe('QuestionService', () => {
       clearTransferState();
       await clearQuestionStorage();
     }
+  });
+
+  it('normalizes old showcase payloads from both HTTP and transferred SSR state', async () => {
+    const key = makeStateKey<any>('showcase:stats');
+    transferState.set(key, { totalQuestions: 514, companyCounts: {} });
+    const transferred = await firstValueFrom(service.loadShowcaseStats());
+    expect(transferred.premiumPracticeCount).toBe(SHOWCASE_STATS.premiumPracticeCount);
+    expect(transferState.hasKey(key)).toBeFalse();
+
+    const pending = firstValueFrom(service.loadShowcaseStats({ transferState: false }));
+    httpMock.expectOne((req) => req.url.includes('questions/showcase-stats.json'))
+      .flush({ totalQuestions: 514, companyCounts: {}, premiumPracticeCount: 171 });
+    const current = await pending;
+    expect(current.totalQuestions).toBe(514);
+    expect(current.premiumPracticeCount).toBe(171);
   });
 
   it('uses override before cache and network', async () => {

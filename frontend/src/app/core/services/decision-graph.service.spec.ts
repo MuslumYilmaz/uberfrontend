@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { DecisionGraphService } from './decision-graph.service';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('DecisionGraphService', () => {
   let service: DecisionGraphService;
@@ -8,9 +9,9 @@ describe('DecisionGraphService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [DecisionGraphService],
-    });
+    imports: [],
+    providers: [DecisionGraphService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+});
 
     service = TestBed.inject(DecisionGraphService);
     httpMock = TestBed.inject(HttpTestingController);

@@ -28,8 +28,9 @@ import { InterviewService } from '../../core/services/interview.service';
 import { InterviewRecoveryStore } from '../../core/services/interview-recovery.store';
 import { UserCodeSandboxService } from '../../core/services/user-code-sandbox.service';
 import { MonacoEditorComponent } from '../../monaco-editor.component';
-import { FaButtonComponent, FaCardComponent } from '../../shared/ui';
+import { FaButtonComponent, FaCardComponent, InlineCodeComponent, SplitPaneComponent } from '../../shared/ui';
 import { CodingFrameworkPanelComponent } from '../coding/coding-detail/coding-framework-panel/coding-framework-panel';
+import { interviewDisplayLabel } from './interview-display-label';
 import { InterviewDeadlineTimerComponent } from './interview-deadline-timer.component';
 import { InterviewSystemDesignRoundComponent } from './interview-system-design-round.component';
 
@@ -76,21 +77,22 @@ type LocalMcqTiming = {
 };
 
 @Component({
-  selector: 'app-interview-session',
-  standalone: true,
-  imports: [
-    CommonModule,
-    RouterLink,
-    MonacoEditorComponent,
-    CodingFrameworkPanelComponent,
-    FaButtonComponent,
-    FaCardComponent,
-    InterviewDeadlineTimerComponent,
-    InterviewSystemDesignRoundComponent,
-  ],
-  templateUrl: './interview-session.component.html',
-  styleUrls: ['./interview-session.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-interview-session',
+    imports: [
+        CommonModule,
+        RouterLink,
+        MonacoEditorComponent,
+        CodingFrameworkPanelComponent,
+        FaButtonComponent,
+        FaCardComponent,
+        InlineCodeComponent,
+        SplitPaneComponent,
+        InterviewDeadlineTimerComponent,
+        InterviewSystemDesignRoundComponent,
+    ],
+    templateUrl: './interview-session.component.html',
+    styleUrls: ['./interview-session.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class InterviewSessionComponent implements OnInit, OnDestroy {
   private readonly interviews = inject(InterviewService);
@@ -111,6 +113,8 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
   readonly error = signal<string | null>(null);
   readonly currentIndex = signal(0);
   readonly reviewing = signal(false);
+  readonly questionNavigationOpen = signal(false);
+  readonly displayLabel = interviewDisplayLabel;
   readonly savingAnswerFor = signal<string | null>(null);
   readonly mcqMutationState = signal<McqMutationState>('idle');
   readonly mcqAlert = signal<string | null>(null);
@@ -146,10 +150,10 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
       case 'saving-answer': return 'Saving answer before you continue…';
       case 'expiry-wait': return 'Time is up. Waiting for your final answer save…';
       case 'submitting': return this.mcqDeadlineExpired
-        ? 'Time is up. Submitting the MCQ section…'
-        : 'Submitting the MCQ section…';
-      case 'reconciling': return 'Checking the latest MCQ state with the server…';
-      case 'locked': return 'MCQ controls are locked while the server state is confirmed.';
+        ? 'Time is up. Submitting the multiple-choice section…'
+        : 'Submitting the multiple-choice section…';
+      case 'reconciling': return 'Checking the latest multiple-choice state with the server…';
+      case 'locked': return 'multiple-choice controls are locked while the server state is confirmed.';
       default: return null;
     }
   });
@@ -164,6 +168,16 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
     passed: this.checkResults().filter((result) => result.passed).length,
     total: this.checkResults().length,
   }));
+  readonly codingRequirements = computed(() => {
+    const task = this.session()?.coding?.task;
+    if (!task) return [];
+    const normalize = (text: string) => text.trim().replace(/\s+/g, ' ');
+    return task.requirements.map((requirement) => ({
+      ...requirement,
+      title: normalize(requirement.title) === normalize(task.title) ? '' : requirement.title,
+      prompt: normalize(requirement.prompt) === normalize(task.prompt) ? '' : requirement.prompt,
+    })).filter((requirement) => requirement.title || requirement.prompt || requirement.constraints.length);
+  });
 
   private sessionId = '';
   private draftTimer: ReturnType<typeof setTimeout> | null = null;
@@ -320,6 +334,7 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
     const total = questions.length;
     if (index < 0 || index >= total) return;
     this.activateQuestionTiming(questions[index].id);
+    this.questionNavigationOpen.set(false);
     this.currentIndex.set(index);
     this.reviewing.set(false);
     this.persistMcqTiming();
@@ -330,6 +345,7 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
   showReview(): void {
     if (this.mcqControlsLocked()) return;
     this.pauseQuestionTiming();
+    this.questionNavigationOpen.set(false);
     this.reviewing.set(true);
     this.persistMcqTiming();
     this.focusStage('[data-testid="interview-review-heading"]');
@@ -719,8 +735,11 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
         next: (completed) => {
           if (this.ignoreCodingAsyncResult(requestEpoch)) return;
           this.runningChecks.set(false);
-          this.checkResults.set(runnerResults);
           if (completed.version !== null) this.patchSessionVersion(completed.version);
+          // The user may edit while the result-recording request is in flight.
+          // A successful receipt for the old draft must not repopulate its UI.
+          if (this.syncedDraftHash() !== prepared.draftHash || this.codingDraftConflict()) return;
+          this.checkResults.set(runnerResults);
         },
         error: (error) => {
           if (this.ignoreCodingAsyncResult(requestEpoch)) return;
@@ -1011,7 +1030,10 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
         ? matchingLocal.activeFilePath
         : files.find((file) => !file.readOnly)?.path ?? files[0]?.path ?? '',
     );
-    this.checkResults.set(session.coding?.checkResults ?? []);
+    const checksMatch = !!serverHash
+      && !useLocal && !mismatchedDirtyLocal
+      && session.coding?.checkResultsDraftHash === serverHash;
+    this.checkResults.set(checksMatch ? session.coding!.checkResults : []);
     this.syncedDraftHash.set(
       useLocal || mismatchedDirtyLocal ? null : serverHash,
     );
@@ -1048,7 +1070,9 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
   }
 
   private patchSessionVersion(version: number): void {
-    this.session.update((session) => session ? { ...session, version } : session);
+    this.session.update((session) => session
+      ? { ...session, version: Math.max(session.version, version) }
+      : session);
   }
 
   private scheduleDraftSave(delayMs = 800): void {
@@ -1512,7 +1536,7 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
             this.mcqMutationState.set('locked');
             if (!counted) {
               this.mcqAlert.set(
-                'Your last selection was not received before the MCQ section locked and was not counted.',
+                'Your last selection was not received before the multiple-choice section locked and was not counted.',
               );
             }
             return;
@@ -1570,7 +1594,7 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
           this.mcqMutationState.set('locked');
           if (!counted) {
             this.mcqAlert.set(
-              'Your last selection was not received before the MCQ section locked and was not counted.',
+              'Your last selection was not received before the multiple-choice section locked and was not counted.',
             );
           }
           return;
@@ -1695,7 +1719,7 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
         if (this.mcqDeadlineExpired || pending.fromTimer) {
           this.mcqMutationState.set('locked');
           this.mcqAlert.set(
-            'The server did not confirm the timed MCQ submission. Reload the session to reconcile its authoritative state.',
+            'The server did not confirm the timed multiple-choice submission. Reload the session to reconcile its authoritative state.',
           );
           return;
         }
@@ -1703,8 +1727,8 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
         this.activateQuestionTiming(this.currentQuestion()?.id || null);
         this.mcqAlert.set(
           retryIsSafe
-            ? 'The MCQ submission was not confirmed. Review the answers and submit again to retry safely.'
-            : 'The MCQ submission was not confirmed because the server answers changed. Review them before submitting again.',
+            ? 'The multiple-choice submission was not confirmed. Review the answers and submit again to retry safely.'
+            : 'The multiple-choice submission was not confirmed because the server answers changed. Review them before submitting again.',
         );
       },
       error: () => {
@@ -1713,7 +1737,7 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
           this.mcqDeadlineExpired || pending.fromTimer ? 'locked' : 'idle',
         );
         this.mcqAlert.set(
-          'The server could not confirm the MCQ submission. It has not been shown as completed; reload or retry to reconcile it.',
+          'The server could not confirm the multiple-choice submission. It has not been shown as completed; reload or retry to reconcile it.',
         );
       },
     });
@@ -1732,7 +1756,7 @@ export class InterviewSessionComponent implements OnInit, OnDestroy {
     ) {
       this.clearPendingMcqSubmission();
       this.mcqAlert.set(
-        'A previous MCQ submission was not confirmed and the server answers have changed. Review them before submitting again.',
+        'A previous multiple-choice submission was not confirmed and the server answers have changed. Review them before submitting again.',
       );
       return;
     }

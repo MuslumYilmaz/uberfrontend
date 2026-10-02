@@ -4,9 +4,8 @@ import { RouterModule } from '@angular/router';
 import { GuideShellComponent } from '../../../shared/components/guide/guide-shell.component';
 
 @Component({
-  standalone: true,
-  imports: [CommonModule, RouterModule, GuideShellComponent],
-  template: `
+    imports: [CommonModule, RouterModule, GuideShellComponent],
+    template: `
     <fa-guide-shell
       title="Frontend System Design Requirements Checklist"
       [minutes]="16"
@@ -491,7 +490,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         <li><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'performance']">Performance optimization guide</a></li>
       </ul>
     </fa-guide-shell>
-  `,
+  `
 })
 export class SystemDesignRadioRequirementsArticle {
   @Input() prev: any[] | null = null;

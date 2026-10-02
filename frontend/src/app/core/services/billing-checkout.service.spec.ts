@@ -1,9 +1,10 @@
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { fakeAsync, flushMicrotasks, TestBed, tick } from '@angular/core/testing';
 import { apiUrl } from '../utils/api-base';
 import { BillingCheckoutService } from './billing-checkout.service';
 import { GumroadOverlayService } from './gumroad-overlay.service';
 import { LemonSqueezyCheckoutService } from './lemonsqueezy-checkout.service';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('BillingCheckoutService', () => {
   let service: BillingCheckoutService;
@@ -19,13 +20,15 @@ describe('BillingCheckoutService', () => {
     lemonSqueezyCheckout.prefetch.and.resolveTo();
 
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [
+    imports: [],
+    providers: [
         BillingCheckoutService,
         { provide: GumroadOverlayService, useValue: jasmine.createSpyObj('GumroadOverlayService', ['open', 'prefetch']) },
         { provide: LemonSqueezyCheckoutService, useValue: lemonSqueezyCheckout },
-      ],
-    });
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
+    ]
+});
 
     service = TestBed.inject(BillingCheckoutService);
     httpMock = TestBed.inject(HttpTestingController);

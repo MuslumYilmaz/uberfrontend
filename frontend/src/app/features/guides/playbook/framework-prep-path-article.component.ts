@@ -6396,9 +6396,8 @@ function onInput(value) {
 };
 
 @Component({
-  standalone: true,
-  imports: [CommonModule, RouterModule, GuideShellComponent, FaqSectionComponent],
-  template: `
+    imports: [CommonModule, RouterModule, GuideShellComponent, FaqSectionComponent],
+    template: `
     <fa-guide-shell
       [title]="config.title"
       [subtitle]="config.subtitle"
@@ -8426,7 +8425,7 @@ function onInput(value) {
       </section>
     </fa-guide-shell>
   `,
-  styles: [`
+    styles: [`
     :host ::ng-deep fa-guide-shell .main {
       max-width: 840px;
       min-width: 0;
@@ -9076,7 +9075,7 @@ function onInput(value) {
         left: 10px;
       }
     }
-  `],
+  `]
 })
 export class FrameworkPrepPathArticle {
   @Input() prev?: any[] | null;

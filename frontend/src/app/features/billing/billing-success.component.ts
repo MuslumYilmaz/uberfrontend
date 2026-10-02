@@ -15,11 +15,10 @@ import { sanitizeRedirectTarget } from '../../core/utils/redirect.util';
 import { CheckoutIntentService } from '../../core/services/checkout-intent.service';
 
 @Component({
-  standalone: true,
-  selector: 'app-billing-success',
-  imports: [CommonModule, RouterModule],
-  templateUrl: './billing-success.component.html',
-  styleUrls: ['./billing-success.component.css'],
+    selector: 'app-billing-success',
+    imports: [CommonModule, RouterModule],
+    templateUrl: './billing-success.component.html',
+    styleUrls: ['./billing-success.component.css']
 })
 export class BillingSuccessComponent implements OnInit, OnDestroy {
   private static readonly CHECKOUT_PLAN_KEY = 'fa:checkout:last_plan_id';

@@ -85,11 +85,10 @@ if (!FOUNDATIONS_TRACK) {
 const FOUNDATIONS_TRACK_METRICS = deriveTrackMetrics(FOUNDATIONS_TRACK);
 
 @Component({
-  standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, PricingPlansSectionComponent, FaqSectionComponent, ShowcaseIconComponent, CompanyLogoMarkComponent, PrepRoadmapComponent, TurnstileChallengeComponent, ConversionStickyCtaComponent],
-  selector: 'app-showcase-page',
-  templateUrl: './showcase.page.html',
-  styleUrls: ['./showcase.page.css'],
+    imports: [CommonModule, FormsModule, RouterModule, PricingPlansSectionComponent, FaqSectionComponent, ShowcaseIconComponent, CompanyLogoMarkComponent, PrepRoadmapComponent, TurnstileChallengeComponent, ConversionStickyCtaComponent],
+    selector: 'app-showcase-page',
+    templateUrl: './showcase.page.html',
+    styleUrls: ['./showcase.page.css']
 })
 
 export class ShowcasePageComponent implements OnInit, AfterViewInit, OnDestroy {
@@ -570,6 +569,7 @@ You can also reset any task back to the starter whenever you want to re-practice
   ];
 
   companyCounts: ShowcaseStatsPayload['companyCounts'] = SHOWCASE_STATIC_STATS.companyCounts || {};
+  premiumPracticeCount = SHOWCASE_STATIC_STATS.premiumPracticeCount;
   heroQuestionCount = SHOWCASE_STATIC_STATS.totalQuestions || 0;
   reasoningCounts = {
     incidents: 0,
@@ -1327,6 +1327,7 @@ You can also reset any task back to the starter whenever you want to re-practice
   private refreshShowcaseStats() {
     if (!this.isBrowser) return;
     this.qs.loadShowcaseStats({ transferState: false }).pipe(take(1)).subscribe((stats) => {
+      this.premiumPracticeCount = stats.premiumPracticeCount ?? SHOWCASE_STATIC_STATS.premiumPracticeCount;
       if (stats.totalQuestions > 0) {
         this.heroQuestionCount = stats.totalQuestions;
       }

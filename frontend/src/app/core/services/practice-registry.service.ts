@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { isPlatformServer } from '@angular/common';
 import { Injectable, PLATFORM_ID, computed, inject, signal } from '@angular/core';
-import { TransferState, makeStateKey } from '@angular/platform-browser';
+import { TransferState, makeStateKey } from '@angular/core';
 import { take } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
 import { catchError, map, shareReplay, switchMap, tap } from 'rxjs/operators';
@@ -117,22 +117,7 @@ export class PracticeRegistryService {
         if (entry.key === 'question-library') return hasQuestionLibrary;
         if (entry.key === 'system-design') return hasSystemDesign;
         return entry.family ? families.has(entry.family) : true;
-      })
-      .map((entry) => ({
-        ...entry,
-        badge: this.resolveCatalogBadge(entry, items),
-      }));
-  }
-
-  private resolveCatalogBadge(entry: PracticeCatalogEntry, items: PracticeRegistryItem[]): string | null {
-    switch (entry.key) {
-      case 'incidents':
-        return items.some((item) => item.family === 'incident') ? 'New' : null;
-      case 'tradeoff-battles':
-        return items.some((item) => item.family === 'tradeoff-battle') ? 'New' : null;
-      default:
-        return null;
-    }
+      });
   }
 
   private normalizeRegistry(payload: unknown): PracticeRegistryItem[] {

@@ -1,4 +1,4 @@
-import { DOCUMENT, isPlatformBrowser } from '@angular/common';
+import { isPlatformBrowser } from '@angular/common';
 import {
   Injectable,
   InjectionToken,
@@ -7,6 +7,7 @@ import {
   PLATFORM_ID,
   effect,
   inject,
+  DOCUMENT
 } from '@angular/core';
 import type {
   ErrorEvent as SentryErrorEvent,

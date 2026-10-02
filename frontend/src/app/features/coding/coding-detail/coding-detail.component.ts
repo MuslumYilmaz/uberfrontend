@@ -1,6 +1,6 @@
 // coding-detail.component.ts
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import {
   AfterViewInit,
   Component,
@@ -153,21 +153,20 @@ const SEO_TITLE_MAX_LEN = 80;
 const SEO_DESCRIPTION_MAX_LEN = 240;
 
 @Component({
-  selector: 'app-coding-detail',
-  standalone: true,
-  imports: [
-    CommonModule, RouterModule, HttpClientModule,
-    MonacoEditorComponent, ConsoleLoggerComponent, FooterComponent,
-    CodingJsPanelComponent, CodingWebPanelComponent, CodingFrameworkPanelComponent,
-    LockedPreviewComponent,
-    LoginRequiredDialogComponent,
-    FaButtonComponent,
-    FaDialogComponent,
-    FaGlyphComponent,
-    SafeHtmlPipe,
-  ],
-  templateUrl: './coding-detail.component.html',
-  styleUrls: ['./coding-detail.component.css'],
+    selector: 'app-coding-detail',
+    imports: [
+        CommonModule, RouterModule,
+        MonacoEditorComponent, ConsoleLoggerComponent, FooterComponent,
+        CodingJsPanelComponent, CodingWebPanelComponent, CodingFrameworkPanelComponent,
+        LockedPreviewComponent,
+        LoginRequiredDialogComponent,
+        FaButtonComponent,
+        FaDialogComponent,
+        FaGlyphComponent,
+        SafeHtmlPipe,
+    ],
+    templateUrl: './coding-detail.component.html',
+    styleUrls: ['./coding-detail.component.css']
 })
 export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
   @Input() questionId: string | null = null;

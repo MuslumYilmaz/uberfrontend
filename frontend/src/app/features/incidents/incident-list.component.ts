@@ -27,11 +27,10 @@ const INCIDENTS_SEO_DESCRIPTION =
   'Practice frontend debugging interview questions with guided debug scenarios for React and JavaScript. Work through root cause analysis, debug steps, fixes, and regression guards.';
 
 @Component({
-  standalone: true,
-  selector: 'app-incident-list',
-  imports: [CommonModule, FormsModule, RouterModule],
-  templateUrl: './incident-list.component.html',
-  styleUrls: ['./incident-list.component.css'],
+    selector: 'app-incident-list',
+    imports: [CommonModule, FormsModule, RouterModule],
+    templateUrl: './incident-list.component.html',
+    styleUrls: ['./incident-list.component.css']
 })
 export class IncidentListComponent {
   private readonly route = inject(ActivatedRoute);

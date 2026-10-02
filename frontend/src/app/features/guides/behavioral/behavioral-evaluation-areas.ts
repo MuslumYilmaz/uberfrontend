@@ -4,11 +4,10 @@ import { RouterModule } from '@angular/router';
 import { GuideShellComponent } from '../../../shared/components/guide/guide-shell.component';
 
 @Component({
-  standalone: true,
-  selector: 'app-behavioral-evaluation-areas-article',
-  imports: [CommonModule, RouterModule, GuideShellComponent],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
+    selector: 'app-behavioral-evaluation-areas-article',
+    imports: [CommonModule, RouterModule, GuideShellComponent],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    template: `
     <fa-guide-shell
       title="Frontend Behavioral Interview Scorecard: 6 Signals"
       [minutes]="14"
@@ -207,7 +206,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         clear signal, concrete action, measurable result, and changed behavior.
       </blockquote>
     </fa-guide-shell>
-  `,
+  `
 })
 export class BehavioralEvaluationAreasArticle {
   @Input() prev: any[] | null = null;

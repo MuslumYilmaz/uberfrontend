@@ -47,8 +47,12 @@ test.describe('homepage network guardrails', () => {
       .toBeTruthy();
 
     await page.getByTestId('showcase-landmark-pricing').scrollIntoViewIfNeeded();
+    // Pricing now resolves the active offer when revealed, but never on landing.
+    await expect.poll(() => requests.filter((url) => url.includes('/api/billing/checkout/config')).length).toBe(1);
+    await page.getByTestId('showcase-hero-title').scrollIntoViewIfNeeded();
+    await page.getByTestId('showcase-landmark-pricing').scrollIntoViewIfNeeded();
     await page.waitForTimeout(300);
-    expect(requests.some((url) => url.includes('/api/billing/checkout/config'))).toBeFalsy();
+    expect(requests.filter((url) => url.includes('/api/billing/checkout/config'))).toHaveLength(1);
   });
 
   test('mobile defers the coding demo payload until the revealed section grows past 767px', async ({ page, browserName }) => {
@@ -94,7 +98,7 @@ test.describe('homepage network guardrails', () => {
     await page.goto('/pricing', { waitUntil: 'domcontentloaded' });
     await page.waitForTimeout(1500);
 
-    expect(requests.some((url) => url.includes('/assets/vendor/primeng/resources/themes/lara-dark-amber/theme.css'))).toBeTruthy();
+    expect(requests.some((url) => url.includes('/assets/vendor/primeng/'))).toBeFalsy();
     expect(requests.some((url) => url.includes('/assets/vendor/primeicons/primeicons.css'))).toBeTruthy();
   });
 

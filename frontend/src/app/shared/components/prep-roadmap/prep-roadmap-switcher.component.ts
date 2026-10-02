@@ -1,5 +1,5 @@
-import { CommonModule, DOCUMENT, isPlatformBrowser } from '@angular/common';
-import { Component, DestroyRef, ElementRef, HostListener, Input, PLATFORM_ID, computed, effect, inject, signal } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { Component, DestroyRef, ElementRef, HostListener, Input, PLATFORM_ID, computed, effect, inject, signal, DOCUMENT } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { filter } from 'rxjs';
@@ -11,11 +11,10 @@ import {
 import { FaGlyphComponent } from '../../ui/icon/fa-glyph.component';
 
 @Component({
-  selector: 'app-prep-roadmap-switcher',
-  standalone: true,
-  imports: [CommonModule, RouterModule, FaGlyphComponent],
-  templateUrl: './prep-roadmap-switcher.component.html',
-  styleUrls: ['./prep-roadmap-switcher.component.css'],
+    selector: 'app-prep-roadmap-switcher',
+    imports: [CommonModule, RouterModule, FaGlyphComponent],
+    templateUrl: './prep-roadmap-switcher.component.html',
+    styleUrls: ['./prep-roadmap-switcher.component.css']
 })
 export class PrepRoadmapSwitcherComponent {
   private readonly compactInput = signal(false);

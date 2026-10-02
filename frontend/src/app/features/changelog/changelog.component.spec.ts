@@ -28,7 +28,7 @@ describe('ChangelogComponent', () => {
     const text = page.textContent || '';
 
     expect(text).toContain('Product changelog');
-    expect(text).toContain('Recent FrontendAtlas improvements');
+    expect(text).toContain('FrontendAtlas improvements');
     expect(text).not.toContain('What changed this week');
     expect(text).not.toContain('Weekly product updates');
     expect(analytics.track).toHaveBeenCalledWith('changelog_viewed', {
@@ -51,8 +51,8 @@ describe('ChangelogComponent', () => {
     expect(latest?.textContent || '').toContain(latestEntry.category);
     expect(latest?.textContent || '').toContain(latestEntry.area);
     expect(time?.getAttribute('datetime')).toBe(latestEntry.weekOf);
-    expect(time?.textContent?.trim()).toBe('Jul 15, 2026');
-    expect(cta?.getAttribute('href') || '').toContain('/react/coding/react-counter');
+    expect(time?.textContent?.trim()).toBe(fixture.componentInstance.formatWeek(latestEntry.weekOf));
+    expect(cta?.getAttribute('href') || '').toContain(latestEntry.cta!.route);
     expect(cta?.getAttribute('href') || '').toContain('src=changelog');
   });
 
@@ -78,8 +78,8 @@ describe('ChangelogComponent', () => {
     expect(cta?.textContent?.trim()).toBe(firstEntry.cta?.label);
   });
 
-  it('keeps the validated remediation entry first and the public timeline newest-first', () => {
-    const latest = PUBLIC_CHANGELOG_ENTRIES[0];
+  it('preserves remediation history and keeps the public timeline newest-first', () => {
+    const latest = PUBLIC_CHANGELOG_ENTRIES.find(entry => entry.id === 'react-check-reliability-and-content-accuracy')!;
     const dates = PUBLIC_CHANGELOG_ENTRIES.map((entry) => entry.weekOf);
     const sortedDates = [...dates].sort((left, right) => right.localeCompare(left));
     const remediationText = [latest.title, latest.summary, ...latest.changes].join(' ');

@@ -4,10 +4,9 @@ import { RouterModule } from '@angular/router';
 import { LockedPreviewData, LockedPreviewLink } from '../../../core/utils/locked-preview.util';
 
 @Component({
-  selector: 'app-locked-preview',
-  standalone: true,
-  imports: [CommonModule, RouterModule],
-  template: `
+    selector: 'app-locked-preview',
+    imports: [CommonModule, RouterModule],
+    template: `
     <div class="locked-preview-rich" data-testid="premium-preview-rich">
       <section class="locked-preview-rich__section">
         <h2 class="locked-preview-rich__title">Challenge summary</h2>
@@ -39,7 +38,7 @@ import { LockedPreviewData, LockedPreviewLink } from '../../../core/utils/locked
       </section>
     </div>
   `,
-  styleUrls: ['./locked-preview.component.css'],
+    styleUrls: ['./locked-preview.component.css']
 })
 export class LockedPreviewComponent {
   @Input({ required: true }) data!: LockedPreviewData;

@@ -60,11 +60,10 @@ export type FrameworkCheckRunEvent = {
 };
 
 @Component({
-  selector: 'app-coding-framework-panel',
-  standalone: true,
-  imports: [CommonModule, MonacoEditorComponent, RestoreBannerComponent, DraftUpdateBannerComponent, CodeSnapshotComponent, FaGlyphComponent],
-  templateUrl: './coding-framework-panel.component.html',
-  styleUrls: ['./coding-framework-panel.component.css'],
+    selector: 'app-coding-framework-panel',
+    imports: [CommonModule, MonacoEditorComponent, RestoreBannerComponent, DraftUpdateBannerComponent, CodeSnapshotComponent, FaGlyphComponent],
+    templateUrl: './coding-framework-panel.component.html',
+    styleUrls: ['./coding-framework-panel.component.css']
 })
 export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
   @Input({ required: true }) question!: Question;

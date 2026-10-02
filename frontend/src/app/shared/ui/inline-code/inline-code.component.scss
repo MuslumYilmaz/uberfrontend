@@ -1,0 +1,14 @@
+:host { display: inline; }
+
+code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  font-size: inherit;
+  background: var(--uf-surface-alt);
+  border-radius: var(--uf-space-1);
+  padding-inline: var(--uf-space-1);
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  word-break: normal;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}

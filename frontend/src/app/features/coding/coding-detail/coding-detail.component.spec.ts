@@ -1,8 +1,7 @@
 import { TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { PLATFORM_ID, signal } from '@angular/core';
 import { RouterTestingModule } from '@angular/router/testing';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { of } from 'rxjs';
 import { Router } from '@angular/router';
 import { Question } from '../../../core/models/question.model';
@@ -20,6 +19,7 @@ import { UserProgressService } from '../../../core/services/user-progress.servic
 import { MonacoEditorComponent } from '../../../monaco-editor.component';
 import { CodingDetailComponent } from './coding-detail.component';
 import { PUBLIC_QUESTION_NAVIGATION } from '../../../generated/public-question-navigation';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('CodingDetailComponent', () => {
   let questionService: jasmine.SpyObj<QuestionService>;
@@ -140,41 +140,42 @@ describe('CodingDetailComponent', () => {
     pressureProgress.hasPendingCompletion.and.returnValue(false);
 
     await TestBed.configureTestingModule({
-      imports: [
-        CodingDetailComponent,
+    imports: [CodingDetailComponent,
         RouterTestingModule,
-        HttpClientTestingModule,
-        NoopAnimationsModule,
-      ],
-      providers: [
+        ],
+    providers: [
         { provide: QuestionService, useValue: questionService },
         { provide: DailyService, useValue: dailyService },
         { provide: ActivityService, useValue: activity },
         { provide: SeoService, useValue: seo },
         { provide: AnalyticsService, useValue: analytics },
         {
-          provide: CodeStorageService,
-          useValue: {
-            migrateAllJsToIndexedDbOnce: () => Promise.resolve(),
-            getJsAsync: () => Promise.resolve(null),
-            clearJsAsync: () => Promise.resolve(),
-            clearFrameworkAsync: () => Promise.resolve(),
-            clearWebAsync: () => Promise.resolve(),
-            getWebDraftSnapshotAsync: () => Promise.resolve(null),
-            cloneWebBundleAsync: () => Promise.resolve(false),
-            initWebAsync: (_key: string, starters: { html: string; css: string }) =>
-              Promise.resolve({ html: starters.html, css: starters.css, restored: false }),
-            saveWebAsync: () => Promise.resolve(),
-            resetWebBothAsync: () => Promise.resolve(),
-          },
+            provide: CodeStorageService,
+            useValue: {
+                migrateAllJsToIndexedDbOnce: () => Promise.resolve(),
+                getJsAsync: () => Promise.resolve(null),
+                clearJsAsync: () => Promise.resolve(),
+                clearFrameworkAsync: () => Promise.resolve(),
+                clearWebAsync: () => Promise.resolve(),
+                getWebDraftSnapshotAsync: () => Promise.resolve(null),
+                cloneWebBundleAsync: () => Promise.resolve(false),
+                initWebAsync: (_key: string, starters: {
+                    html: string;
+                    css: string;
+                }) => Promise.resolve({ html: starters.html, css: starters.css, restored: false }),
+                saveWebAsync: () => Promise.resolve(),
+                resetWebBothAsync: () => Promise.resolve(),
+            },
         },
         { provide: UserProgressService, useValue: progress },
         { provide: AuthService, useValue: auth },
         { provide: BugReportService, useValue: bugReport },
         { provide: PressureModeService, useValue: pressureModes },
         { provide: PressureModeProgressService, useValue: pressureProgress },
-      ],
-    })
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
+    ]
+})
       // Keep the parent in browser mode without loading Monaco's shared AMD globals.
       .overrideComponent(MonacoEditorComponent, {
         add: { providers: [{ provide: PLATFORM_ID, useValue: 'server' }] },
@@ -1271,7 +1272,7 @@ describe('CodingDetailComponent', () => {
     ).toBeNull();
   });
 
-  it('shows Pressure Mode coming soon for unsupported framework questions', async () => {
+  it('hides the Pressure Mode entry for unsupported framework questions', async () => {
     const question = {
       id: 'react-autocomplete-search-starter',
       title: 'React Autocomplete Search',
@@ -1306,16 +1307,7 @@ describe('CodingDetailComponent', () => {
     const entry = fixture.nativeElement.querySelector(
       '[data-testid="pressure-mode-entry"]'
     ) as HTMLElement;
-    expect(entry).not.toBeNull();
-    expect(entry.hasAttribute('data-nosnippet')).toBeTrue();
-    expect(entry.textContent).toContain(
-      'A tailored cumulative pressure mode for this challenge is coming soon.'
-    );
-    const comingSoonButton = fixture.nativeElement.querySelector(
-      '[data-testid="pressure-mode-coming-soon"]'
-    ) as HTMLButtonElement;
-    expect(comingSoonButton.disabled).toBeTrue();
-    expect(comingSoonButton.getAttribute('aria-label')).toBe('Interview Pressure Mode coming soon');
+    expect(entry).toBeNull();
     expect(
       fixture.nativeElement.querySelector('[data-testid="pressure-mode-start"]')
     ).toBeNull();
@@ -1355,7 +1347,7 @@ describe('CodingDetailComponent', () => {
     }));
   });
 
-  it('shows the unavailable Pressure Mode entry for React, Angular, and Vue coding questions', async () => {
+  it('hides unavailable Pressure Mode entries for React, Angular, and Vue coding questions', async () => {
     const fixture = TestBed.createComponent(CodingDetailComponent);
     const component = fixture.componentInstance;
     const question = {
@@ -1384,11 +1376,9 @@ describe('CodingDetailComponent', () => {
       component.question.set({ ...question, id: `${tech}-unsupported`, technology: tech } as any);
       fixture.detectChanges();
 
-      const comingSoonButton = fixture.nativeElement.querySelector(
-        '[data-testid="pressure-mode-coming-soon"]'
-      ) as HTMLButtonElement;
-      expect(comingSoonButton).withContext(tech).not.toBeNull();
-      expect(comingSoonButton.disabled).withContext(tech).toBeTrue();
+      expect(
+        fixture.nativeElement.querySelector('[data-testid="pressure-mode-entry"]')
+      ).withContext(tech).toBeNull();
       expect(
         fixture.nativeElement.querySelector('[data-testid="pressure-mode-start"]')
       ).withContext(tech).toBeNull();

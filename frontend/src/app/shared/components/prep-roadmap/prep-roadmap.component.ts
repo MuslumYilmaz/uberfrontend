@@ -14,11 +14,10 @@ export type PrepRoadmapItem = {
 };
 
 @Component({
-  selector: 'app-prep-roadmap',
-  standalone: true,
-  imports: [CommonModule, RouterModule],
-  templateUrl: './prep-roadmap.component.html',
-  styleUrls: ['./prep-roadmap.component.css'],
+    selector: 'app-prep-roadmap',
+    imports: [CommonModule, RouterModule],
+    templateUrl: './prep-roadmap.component.html',
+    styleUrls: ['./prep-roadmap.component.css']
 })
 export class PrepRoadmapComponent {
   @Input() title = 'Recommended preparation';

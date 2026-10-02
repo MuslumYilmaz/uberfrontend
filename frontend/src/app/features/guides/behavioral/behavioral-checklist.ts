@@ -4,11 +4,10 @@ import { RouterModule } from '@angular/router';
 import { GuideShellComponent } from '../../../shared/components/guide/guide-shell.component';
 
 @Component({
-  standalone: true,
-  selector: 'app-behavioral-checklist-article',
-  imports: [CommonModule, RouterModule, GuideShellComponent],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
+    selector: 'app-behavioral-checklist-article',
+    imports: [CommonModule, RouterModule, GuideShellComponent],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    template: `
     <fa-guide-shell
       title="Behavioral Interview Checklist: Last-Minute Prep Before the Call"
       [minutes]="8"
@@ -58,7 +57,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         and walk in with 2–3 strong stories top of mind. Everything else flows.
       </blockquote>
     </fa-guide-shell>
-  `,
+  `
 })
 export class BehavioralChecklistArticle {
   @Input() prev: any[] | null = null;

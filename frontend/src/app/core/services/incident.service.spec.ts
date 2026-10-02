@@ -1,6 +1,6 @@
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { HttpRequest } from '@angular/common/http';
+import { HttpRequest, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { IncidentService } from './incident.service';
 import { PracticeAssetResolverService } from './practice-asset-resolver.service';
@@ -58,16 +58,18 @@ describe('IncidentService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [
+    imports: [],
+    providers: [
         IncidentService,
         PracticeAssetResolverService,
         {
-          provide: QuestionPersistenceService,
-          useClass: MemoryQuestionPersistenceService,
+            provide: QuestionPersistenceService,
+            useClass: MemoryQuestionPersistenceService,
         },
-      ],
-    });
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
+    ]
+});
 
     service = TestBed.inject(IncidentService);
     httpMock = TestBed.inject(HttpTestingController);

@@ -49,11 +49,10 @@ function updatedLabel(value: string | null | undefined): string | null {
 }
 
 @Component({
-  standalone: true,
-  selector: 'app-incident-detail',
-  imports: [CommonModule, FormsModule, RouterModule, LockedPreviewComponent],
-  templateUrl: './incident-detail.component.html',
-  styleUrls: ['./incident-detail.component.css'],
+    selector: 'app-incident-detail',
+    imports: [CommonModule, FormsModule, RouterModule, LockedPreviewComponent],
+    templateUrl: './incident-detail.component.html',
+    styleUrls: ['./incident-detail.component.css']
 })
 export class IncidentDetailComponent {
   private readonly route = inject(ActivatedRoute);

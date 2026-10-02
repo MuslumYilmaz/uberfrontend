@@ -1635,13 +1635,7 @@ test.describe('Framework checks against the production SSR build', () => {
     await expect(page).toHaveURL(/\/react\/coding\/react-autocomplete-search-starter$/);
     await expect(page.getByTestId('pressure-mode-panel')).toHaveCount(0);
     const entry = page.getByTestId('pressure-mode-entry');
-    await expect(entry).toBeVisible();
-    await expect(entry).toHaveAttribute('data-nosnippet', '');
-    await expect(entry).toContainText(
-      'A tailored cumulative pressure mode for this challenge is coming soon.',
-    );
-    await expect(page.getByTestId('pressure-mode-coming-soon')).toBeVisible();
-    await expect(page.getByTestId('pressure-mode-coming-soon')).toBeDisabled();
+    await expect(entry).toHaveCount(0);
     await expect(page.getByTestId('pressure-mode-start')).toHaveCount(0);
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
       'href',
@@ -1650,7 +1644,7 @@ test.describe('Framework checks against the production SSR build', () => {
 
     for (const width of [834, 1366, 1440]) {
       await page.setViewportSize({ width, height: 900 });
-      await expect(entry).toBeVisible();
+      await expect(entry).toHaveCount(0);
       await expectNoHorizontalOverflow(page);
     }
   });

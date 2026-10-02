@@ -4,11 +4,10 @@ import { RouterModule } from '@angular/router';
 import { GuideShellComponent } from '../../../shared/components/guide/guide-shell.component';
 
 @Component({
-  standalone: true,
-  selector: 'app-behavioral-fe-advanced-article',
-  imports: [CommonModule, RouterModule, GuideShellComponent],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
+    selector: 'app-behavioral-fe-advanced-article',
+    imports: [CommonModule, RouterModule, GuideShellComponent],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    template: `
     <fa-guide-shell
       title="Frontend Behavioral Interview Scenarios: How to Answer Technical Prompts"
       [minutes]="15"
@@ -59,7 +58,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         Interviewers love when you <em>speak like a peer</em>. Show that you’ve navigated real product decisions—not just taken tickets.
       </blockquote>
     </fa-guide-shell>
-  `,
+  `
 })
 export class BehavioralFeAdvancedArticle {
   @Input() prev: any[] | null = null;

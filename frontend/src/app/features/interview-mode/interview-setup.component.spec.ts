@@ -1,4 +1,3 @@
-import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { ActivatedRoute, Router, convertToParamMap, provideRouter } from '@angular/router';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
@@ -114,7 +113,6 @@ describe('InterviewSetupComponent', () => {
         },
         { provide: QuestionService, useValue: questionService },
         provideRouter([]),
-        provideNoopAnimations(),
       ],
     }).compileComponents();
 
@@ -347,7 +345,7 @@ describe('InterviewSetupComponent', () => {
     })));
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.textContent).toContain('9m 30s MCQ');
+    expect(fixture.nativeElement.textContent).toContain('9m 30s multiple-choice');
   });
 
   it('starts the separate system-design format with its own quota and level timer', () => {
