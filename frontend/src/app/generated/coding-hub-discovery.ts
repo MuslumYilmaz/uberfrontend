@@ -16,7 +16,7 @@ export const CODING_HUB_DEBUG_DISCOVERY = [
     "route": "/angular/debug/ng-debug-counter-change-detection",
     "tech": "angular",
     "difficulty": "intermediate",
-    "summary": "The counter button renders but the value never increases due to a logic bug. Fix the increment logic so the value updates correctly.",
+    "summary": "The counter starts at 0, but clicking Increment leaves the displayed value unchanged. Fix the increment logic so every click increases the count by exactly 1. Keep the existing component state and template bindings.",
     "access": "free"
   },
   {
