@@ -146,10 +146,20 @@ application's JavaScript remain unchanged.
   **117 local browser cases** passed: 54 cold SSR screenshot/cascade comparisons
   per Chromium and Firefox at six widths, 8 hydrated control interactions, and
   one Chromium delayed-CSS/CSP first-paint test. The Paint Timing-specific case
-  is intentionally skipped in Firefox. All cold screenshots match exactly.
+  is intentionally skipped in Firefox. The initial local run also matched at
+  PNG-byte level; compositor variation on repeats is handled below.
 - The isolated real-backend production lifecycle passed in Chromium with the
   optimizer applied to its temporary build. The harness uses only its
   `interview_browser_e2e` MongoMemoryReplSet and separate local ports.
+- Linux CI exposed compositor rounding in blurred home-page pixels: 1/255 in
+  Chromium and up to 3/255 in WebKit. A local repeat found one edge pixel at
+  6/255. The same Chromium image pair appears in reverse order on retry.
+  The new SSR test uses Playwright's pixel matcher with `maxDiffPixels: 0` and
+  `threshold: 0.05`, instead of comparing PNG bytes. Every expected image still
+  comes from the untouched build. Exact stylesheet-rule order and application
+  HTML comparisons remain enforced, and the original Angular 17 visual budget
+  is unchanged. Production control mocks use the local API origin to avoid a
+  WebKit-only cross-origin CORS assumption in background assist requests.
 - CI runs the same production SSR comparisons and hydrated controls in Chromium,
   Firefox and WebKit. It copies the untouched `ng build` artifact before running
   extraction; it never reconstructs or accepts an optimized reference. Original

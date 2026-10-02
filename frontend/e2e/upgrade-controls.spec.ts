@@ -4,6 +4,16 @@ import { buildMockUser, installAuthMock } from './auth-mocks';
 test.describe('PrimeNG upgrade interaction contracts', () => {
   test.use({ colorScheme: 'light', reducedMotion: 'reduce' });
 
+  test.beforeEach(async ({ page }, info) => {
+    if (info.config.metadata.primeSsrComparison) {
+      // Keep the production build's synthetic API on the test origin, including
+      // background assist requests. No cross-origin cookie/CORS assumptions.
+      await page.addInitScript(() => {
+        (window as Window & { __FA_API_BASE__?: string }).__FA_API_BASE__ = window.location.origin;
+      });
+    }
+  });
+
   test('single and multiple selections preserve keyboard focus, filtering and selected values', async ({ page }) => {
     await page.goto('/system-design');
     await page.waitForLoadState('networkidle');
