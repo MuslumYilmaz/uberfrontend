@@ -13,7 +13,7 @@ test.beforeEach(({}, info) => {
 });
 
 test.describe('PrimeNG prerender CSS before JavaScript', () => {
-  test.use({ javaScriptEnabled: false, reducedMotion: 'reduce', colorScheme: 'light', video: 'off' });
+  test.use({ javaScriptEnabled: false, reducedMotion: 'reduce', colorScheme: 'light' });
   for (const width of widths) {
     for (const route of routes) {
       test(`${route} at ${width}px matches untouched inline SSR`, async ({ page, context }, info) => {
