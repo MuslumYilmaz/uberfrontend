@@ -22,8 +22,8 @@ export interface NgSave {
 
 /** New consolidated per-question blob */
 export interface JsBundleV2 {
-  js?: { code?: string; baseline?: string; updatedAt?: string };   // CHANGED
-  ts?: { code?: string; baseline?: string; updatedAt?: string };   // CHANGED
+  js?: { code?: string; baseline?: string; updatedAt?: string; userCleared?: boolean };
+  ts?: { code?: string; baseline?: string; updatedAt?: string; userCleared?: boolean };
   lastLang?: JsLang;
   version: 'v2';
   updatedAt: string; // ISO
@@ -33,8 +33,8 @@ type WebLang = 'html' | 'css';
 type LocalForageInstance = ReturnType<typeof localForage.createInstance>;
 
 export interface WebBundleV2 {
-  html?: { code?: string; baseline?: string; updatedAt?: string };
-  css?: { code?: string; baseline?: string; updatedAt?: string };
+  html?: { code?: string; baseline?: string; updatedAt?: string; userCleared?: boolean };
+  css?: { code?: string; baseline?: string; updatedAt?: string; userCleared?: boolean };
   version: 'v2';
   updatedAt: string;
 }
@@ -45,6 +45,13 @@ interface FrameworkFileState {
   code?: string;
   baseline?: string;
   updatedAt?: string;
+  userCleared?: boolean;
+}
+
+// Legacy baseline-only records also use code: ''. Only an explicit edit can
+// distinguish a deliberately blank draft from a workspace that was never edited.
+function hasSavedCode(state?: { code?: string; userCleared?: boolean }): boolean {
+  return state?.userCleared === true || !!state?.code?.trim();
 }
 
 interface FrameworkBundleV2 {
@@ -352,7 +359,7 @@ export class CodeStorageService {
 
     // Decide what to show
     const saved = cur[lang]?.code ?? '';
-    const hasUser = saved.trim().length > 0;
+    const hasUser = hasSavedCode(cur[lang]);
     const initial = hasUser ? saved : starter;
     const restored = hasUser && saved.trim() !== (cur[lang]?.baseline ?? starter).trim();
 
@@ -466,7 +473,10 @@ export class CodeStorageService {
 
       const next: JsBundleV2 = {
         ...cur,
-        [lang]: { ...(cur[lang] || {}), code, updatedAt: now },
+        [lang]: {
+          ...(cur[lang] || {}), code, updatedAt: now,
+          userCleared: !code.trim() && !!(opts?.allowEmpty || opts?.force || cur[lang]?.userCleared),
+        },
         lastLang: lang,
         version: 'v2',
         updatedAt: now,
@@ -488,7 +498,7 @@ export class CodeStorageService {
       const prev = cur[lang] || {};
       const prevCode = typeof prev.code === 'string' ? prev.code : '';
       const prevBaseline = typeof prev.baseline === 'string' ? prev.baseline : '';
-      const hasPrevCode = prevCode.trim().length > 0;
+      const hasPrevCode = hasSavedCode(prev);
       const codeWasPreviousBaseline =
         hasPrevCode &&
         prevBaseline.trim().length > 0 &&
@@ -501,6 +511,7 @@ export class CodeStorageService {
           code: nextCode,
           baseline,
           updatedAt: prev.updatedAt ?? now,
+          userCleared: prev.userCleared === true && !codeWasPreviousBaseline,
         },
         version: 'v2',
         updatedAt: now,
@@ -621,7 +632,7 @@ export class CodeStorageService {
 
       const saved = cur[lang]?.code ?? '';
       const base = cur[lang]?.baseline ?? starter;
-      const hasUser = saved.trim().length > 0;
+      const hasUser = hasSavedCode(cur[lang]);
 
       const initial = hasUser ? saved : starter;
       const restored = hasUser && saved.trim() !== base.trim();
@@ -663,8 +674,8 @@ export class CodeStorageService {
     const b = await this.getBundleAsync(qidRaw);
     const toMs = (s?: string) => s ? Date.parse(s) : undefined;
     return {
-      js: b?.js ? { updatedAt: toMs(b.js.updatedAt), hasCode: !!(b.js.code && b.js.code.trim()) } : undefined,
-      ts: b?.ts ? { updatedAt: toMs(b.ts.updatedAt), hasCode: !!(b.ts.code && b.ts.code.trim()) } : undefined,
+      js: b?.js ? { updatedAt: toMs(b.js.updatedAt), hasCode: hasSavedCode(b.js) } : undefined,
+      ts: b?.ts ? { updatedAt: toMs(b.ts.updatedAt), hasCode: hasSavedCode(b.ts) } : undefined,
     };
   }
 
@@ -678,8 +689,9 @@ export class CodeStorageService {
     const baseline = (b?.[lang]?.baseline ?? '') as string;
     const codeTrim = code.trim();
     const baseTrim = baseline.trim();
-    const dirty = !!codeTrim && codeTrim !== baseTrim;
-    return { code, baseline, dirty, hasUserCode: !!codeTrim };
+    const hasUserCode = hasSavedCode(b?.[lang]);
+    const dirty = hasUserCode && codeTrim !== baseTrim;
+    return { code, baseline, dirty, hasUserCode };
   }
 
   async setLastLangAsync(qidRaw: string | number, lang: JsLang): Promise<void> {
@@ -842,8 +854,8 @@ export class CodeStorageService {
       const htmlBase = bundle.html.baseline || starters.html;
       const cssBase = bundle.css.baseline || starters.css;
 
-      const htmlHasUser = rawHtml.trim().length > 0;
-      const cssHasUser = rawCss.trim().length > 0;
+      const htmlHasUser = hasSavedCode(bundle.html);
+      const cssHasUser = hasSavedCode(bundle.css);
 
       const htmlInitial = htmlHasUser ? rawHtml : htmlBase;
       const cssInitial = cssHasUser ? rawCss : cssBase;
@@ -891,7 +903,10 @@ export class CodeStorageService {
         return;
       }
 
-      cur[which] = { ...part, code, updatedAt: now };
+      cur[which] = {
+        ...part, code, updatedAt: now,
+        userCleared: !code.trim() && !!(opts?.allowEmpty || opts?.force || part.userCleared),
+      };
       cur.updatedAt = now;
 
       await this.saveWebBundlePrimary(qid, cur);
@@ -1067,12 +1082,14 @@ export class CodeStorageService {
           cur.baseline = baseline;
         }
 
-        // Compute visible content: user code if any, else baseline
-        const visible = code || baseline || '';
+        // Preserve legacy whitespace-only framework files as well as explicitly
+        // cleared drafts. Untouched baseline-only records still use the starter.
+        const hasUser = cur.userCleared === true || code.length > 0;
+        const visible = hasUser ? code : baseline;
         out[path] = visible;
 
         // Mark restored if user code diverged from baseline
-        if (code && baseline && code.trim() !== baseline.trim()) {
+        if (hasUser && code.trim() !== baseline.trim()) {
           restored = true;
         }
 
@@ -1082,9 +1099,9 @@ export class CodeStorageService {
       }
 
       // Ensure entry file
-      if (!bundle.entryFile || !out[bundle.entryFile]) {
+      if (!bundle.entryFile || !Object.prototype.hasOwnProperty.call(out, bundle.entryFile)) {
         const guess =
-          (entryHint && out[entryHint.replace(/^\/+/, '')])
+          (entryHint && Object.prototype.hasOwnProperty.call(out, entryHint.replace(/^\/+/, '')))
             ? entryHint.replace(/^\/+/, '')
             : Object.keys(out)[0] || '';
         bundle.entryFile = guess;
@@ -1143,6 +1160,7 @@ export class CodeStorageService {
         ...prev,
         code,
         updatedAt: now,
+        userCleared: !code.trim() && !!(opts?.allowEmpty || opts?.force || prev.userCleared),
       };
       cur.updatedAt = now;
 
@@ -1217,6 +1235,7 @@ export class CodeStorageService {
         code,
         baseline: nextFiles[p]?.baseline, // keep existing if any in future extensions
         updatedAt: now,
+        userCleared: !code.trim(),
       };
     }
 

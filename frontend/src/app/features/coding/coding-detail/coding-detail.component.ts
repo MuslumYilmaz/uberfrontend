@@ -14,6 +14,7 @@ import {
   PLATFORM_ID,
   SimpleChanges,
   ViewChild,
+  afterNextRender,
   computed,
   effect,
   inject,
@@ -208,6 +209,10 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   showMobileDesktopGuard = computed(
     () => this.isPhoneViewport() && !this.demoMode && !this.liteMode
   );
+  readonly browserViewReady = signal(false);
+  readonly workspaceAvailable = computed(
+    () => (this.browserViewReady() || this.demoMode || this.liteMode) && !this.showMobileDesktopGuard()
+  );
 
   // JS/TS editor + tests
   editorContent = signal<string>('');
@@ -230,9 +235,11 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   // Collapsible left column
   private readonly COLLAPSED_PX = 48;
   descCollapsed = signal(false);
+  descriptionCollapsed = computed(() => this.descCollapsed() && !this.showMobileDesktopGuard());
   private lastAsideRatio = 0.3;
   asideFlex = computed(() => {
-    if (this.descCollapsed()) return `0 0 ${this.COLLAPSED_PX}px`;
+    if (this.showMobileDesktopGuard()) return '1 1 auto';
+    if (this.descriptionCollapsed()) return `0 0 ${this.COLLAPSED_PX}px`;
     const ratio = this.isCompactWorkspace()
       ? this.compactAsideRatio(this.horizontalRatio())
       : this.horizontalRatio();
@@ -507,7 +514,8 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   solutionCurrentFileLabel = computed(() => this.solutionShortName(this.solutionCurrentPath()));
 
   copiedSolutionFile = signal(false);
-  private overflowPatched = false;
+  private previousBodyOverflow: string | null = null;
+  private workspaceEpoch = 0;
 
   @ViewChild('splitContainer', { read: ElementRef }) splitContainer?: ElementRef<HTMLDivElement>;
   @ViewChild('codingLayout', { read: ElementRef }) codingLayout?: ElementRef<HTMLDivElement>;
@@ -531,6 +539,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   previewVisible = false;
   previewOnlyUrl: SafeResourceUrl | null = null;
   previewOnlyLoading = signal(false);
+  private previewCloseTimer?: ReturnType<typeof setTimeout>;
   loginPromptOpen = false;
   onboardingPromptOpen = false;
   lifecyclePromptOpen = false;
@@ -799,7 +808,8 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       .join('\n\n');
   });
 
-  examplesRenderStatic = computed(() => !this.isBrowser || this.liteEditors());
+  examplesRenderStatic = computed(() => !this.browserViewReady() || this.liteEditors() || this.showMobileDesktopGuard());
+  solutionRenderStatic = computed(() => !this.browserViewReady() || this.liteEditors() || this.showMobileDesktopGuard());
 
   constructor(
     private route: ActivatedRoute,
@@ -822,6 +832,15 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     private pressureProgress: PressureModeProgressService,
   ) {
     this.codeStore.migrateAllJsToIndexedDbOnce().catch(() => { });
+
+    afterNextRender(() => {
+      // Match the prerendered reading tree before applying browser-only layout and preferences.
+      this.syncViewportState();
+      this.browserViewReady.set(true);
+      const q = this.question();
+      if (q) this.loadCollapsePref(q);
+      window.addEventListener('resize', this.onViewportResize, { passive: true });
+    });
 
     effect(() => {
       const q = this.question();
@@ -858,7 +877,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
   private collapseKey(q: Question) { return `fa:coding:descCollapsed:${this.tech}:${q.id}`; }
   private loadCollapsePref(q: Question) {
-    if (!this.isBrowser) {
+    if (!this.browserViewReady()) {
       this.descCollapsed.set(false);
       return;
     }
@@ -870,6 +889,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     try { localStorage.setItem(this.collapseKey(q), JSON.stringify(v)); } catch { }
   }
   toggleDescription() {
+    if (this.showMobileDesktopGuard()) return;
     const q = this.question(); if (!q) return;
     if (this.descCollapsed()) {
       this.descCollapsed.set(false);
@@ -942,11 +962,6 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     this.premiumGateVariant = this.experiments.variant('premium_gate_copy_v1', 'coding_detail');
     this.applyPremiumGateCopy();
 
-    if (this.isBrowser) {
-      this.syncViewportState();
-      window.addEventListener('resize', this.onViewportResize, { passive: true });
-    }
-
     if (this.questionId) {
       this.initDirectQuestion();
     } else {
@@ -991,10 +1006,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       });
     }
 
-    if (!this.demoMode && this.isBrowser) {
-      document.body.style.overflow = 'hidden';
-      this.overflowPatched = true;
-    }
+    this.syncBodyOverflow();
 
     this.configureLiteEditors();
   }
@@ -1003,6 +1015,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     if (changes['liteMode']) {
       this.configureLiteEditors();
     }
+    if (changes['liteMode'] || changes['demoMode']) this.syncBodyOverflow();
   }
 
   private computeIsCourseContext(): boolean {
@@ -1056,6 +1069,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   }
 
   ngOnDestroy() {
+    this.workspaceEpoch += 1;
     this.loadQuestionSeq += 1;
     this.pressureModeLoadSeq += 1;
     if (this.pressureActive()) this.trackPressureExit('navigation');
@@ -1069,12 +1083,13 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     clearTimeout(this.copyTimer);
     if (this.liteUpgradeTimer) clearTimeout(this.liteUpgradeTimer);
     if (this.liteReadyPollTimer) clearInterval(this.liteReadyPollTimer);
+    this.closePreview(true);
 
     this.destroy$.next();
     this.destroy$.complete();
 
-    if (this.isBrowser && this.overflowPatched) {
-      document.body.style.overflow = '';
+    if (this.isBrowser && this.previousBodyOverflow !== null) {
+      document.body.style.overflow = this.previousBodyOverflow;
     }
 
     if (this.demoMode || this.disablePersistence) {
@@ -1124,6 +1139,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
   private syncViewportState() {
     if (!this.isBrowser) return;
+    const wasMobileReading = this.showMobileDesktopGuard();
     const viewportWidth = window.innerWidth;
     const compactWorkspace = viewportWidth <= this.COMPACT_WORKSPACE_BREAKPOINT;
     if (compactWorkspace !== this.isCompactWorkspace() && this.isDraggingAside()) {
@@ -1131,6 +1147,29 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     }
     this.isPhoneViewport.set(viewportWidth < this.MOBILE_WORKSPACE_BREAKPOINT);
     this.isCompactWorkspace.set(compactWorkspace);
+    if (!wasMobileReading && this.showMobileDesktopGuard()) {
+      this.workspaceEpoch += 1;
+      this.onPointerUp();
+      this.closePreview(true);
+    }
+    this.syncBodyOverflow();
+  }
+
+  private syncBodyOverflow(): void {
+    if (!this.isBrowser) return;
+    if (this.demoMode) {
+      if (this.previousBodyOverflow !== null) {
+        document.body.style.overflow = this.previousBodyOverflow;
+        this.previousBodyOverflow = null;
+      }
+      return;
+    }
+    this.previousBodyOverflow ??= document.body.style.overflow;
+    document.body.style.overflow = this.showMobileDesktopGuard() ? this.previousBodyOverflow : 'hidden';
+  }
+
+  private isCurrentWorkspaceRun(epoch: number, q: Question): boolean {
+    return epoch === this.workspaceEpoch && !this.showMobileDesktopGuard() && this.question()?.id === q.id;
   }
 
   private scheduleLiteUpgrade() {
@@ -1893,7 +1932,8 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   // ---------- run tests (JS/TS) ----------
   async runTests(): Promise<boolean> {
     const q = this.question();
-    if (!q) return false;
+    if (!q || this.showMobileDesktopGuard()) return false;
+    const epoch = this.workspaceEpoch;
 
     if (this.isFrameworkTech() || this.isWebTech()) return false;
     this.markQuickWinEngaged('run_tests');
@@ -1905,6 +1945,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     this.testResults.set([]);
     this.consoleEntries.set([]);
     await this.jsPanel?.runTests();
+    if (!this.isCurrentWorkspaceRun(epoch, q)) return false;
     this.hasRunTests = true;
 
     const passing = this.allPassing();
@@ -1927,14 +1968,16 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
   // ---------- submit ----------
   async submitCode(): Promise<void> {
-    if (this.isCompletionPending()) {
+    if (this.showMobileDesktopGuard() || this.isCompletionPending()) {
       return;
     }
 
     const q = this.question();
     if (!q) return;
+    const epoch = this.workspaceEpoch;
     if (this.pressureActive()) {
       const results = await this.frameworkPanel?.runFrameworkChecks({ emitCompletion: false }) || [];
+      if (!this.isCurrentWorkspaceRun(epoch, q)) return;
       const event: FrameworkCheckRunEvent = {
         questionId: q.id,
         passed: results.length > 0 && results.every((result) => result.passed),
@@ -1947,6 +1990,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
     if (this.hasFrameworkStructuredChecks(q)) {
       const results = await this.frameworkPanel?.runFrameworkChecks({ emitCompletion: false }) || [];
+      if (!this.isCurrentWorkspaceRun(epoch, q)) return;
       const event = {
         questionId: q.id,
         passed: results.length > 0 && results.every((result) => result.passed),
@@ -1990,6 +2034,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
     // JS/TS: always run tests (delegates to the panel).
     const passing = await this.runTests();
+    if (!this.isCurrentWorkspaceRun(epoch, q)) return;
     this.solved.set(passing);
 
     if (!passing) {
@@ -2020,6 +2065,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   }
 
   async onFrameworkCheckRun(event: FrameworkCheckRunEvent): Promise<void> {
+    if (this.showMobileDesktopGuard()) return;
     if (this.pressureActive()) {
       await this.handlePressureFrameworkCheckRun(event);
       return;
@@ -2310,7 +2356,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   }
 
   startPressureMode(): void {
-    if (!this.pressureSupported()) return;
+    if (this.showMobileDesktopGuard() || !this.pressureSupported()) return;
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: { mode: 'pressure' },
@@ -2330,6 +2376,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   }
 
   revealNextPressureRound(): void {
+    if (this.showMobileDesktopGuard()) return;
     const scenario = this.pressureScenario();
     const q = this.question();
     if (!scenario || !q || !this.pressureReadyForNextRound()) return;
@@ -3000,6 +3047,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   };
 
   startHorizontalDrag = (ev: PointerEvent) => {
+    if (this.showMobileDesktopGuard()) return;
     ev.preventDefault();
     this.asideDragAxis = this.isCompactWorkspace() ? 'y' : 'x';
     this.asideDragStart = this.asideDragAxis === 'y' ? ev.clientY : ev.clientX;
@@ -3042,18 +3090,23 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     return Math.max(0.22, Math.min(0.45, ratio));
   }
 
-  closePreview() {
+  closePreview(immediate = false) {
+    if (this.previewCloseTimer) clearTimeout(this.previewCloseTimer);
     this.previewVisible = false;
     this.previewOnlyLoading.set(false);
-    setTimeout(() => {
+    const release = () => {
       try { if (this.previewObjectUrl) URL.revokeObjectURL(this.previewObjectUrl); } catch { }
       this.previewObjectUrl = null;
       this.previewOnlyUrl = null;
-    }, 200);
+      this.previewCloseTimer = undefined;
+    };
+    if (immediate) release();
+    else this.previewCloseTimer = setTimeout(release, 200);
   }
 
   openPreview() {
-    if (!this.lastPreviewHtml) return;
+    if (this.showMobileDesktopGuard() || !this.lastPreviewHtml) return;
+    if (this.previewCloseTimer) clearTimeout(this.previewCloseTimer);
     this.previewOnlyLoading.set(true);
     try { if (this.previewObjectUrl) URL.revokeObjectURL(this.previewObjectUrl); } catch { }
     const blob = new Blob([this.lastPreviewHtml], { type: 'text/html' });
@@ -3073,6 +3126,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
   // Replace the right preview with the official solution (no modal)
   openSolutionPreview() {
+    if (this.showMobileDesktopGuard()) return;
     this.webPanel?.openSolutionPreview();
   }
 
@@ -3085,6 +3139,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   }
 
   openFrameworkSolutionPreview() {
+    if (this.showMobileDesktopGuard()) return;
     void this.frameworkPanel?.openSolutionPreview();
   }
 
@@ -3094,6 +3149,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
   // ---------- reset ----------
   async resetQuestion() {
+    if (this.showMobileDesktopGuard()) return;
     const q = this.question();
     if (!q || this.resetting()) return;
 
@@ -3166,6 +3222,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   goToCustomTests(e?: Event) { if (e) e.preventDefault(); this.topTab.set('tests'); this.subTab.set('tests'); }
 
   loadSolutionCode() {
+    if (this.showMobileDesktopGuard()) return;
     const q = this.question();
     if (!q) return;
 
@@ -3723,6 +3780,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
   // Load one approach directly into the appropriate editor
   loadApproach(ap: FAApproach, approachIndex: number) {
+    if (this.showMobileDesktopGuard()) return;
     // 1) HTML/CSS questions → delegate to web panel
     if (this.isWebTech()) {
       const html = this.prettifyHtml(this.unescapeJsLiterals(ap.codeHtml ?? ''));
@@ -3831,12 +3889,12 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   onSolutionTabClick() {
     if (this.pressureActive()) {
       if (!this.pressureCompleted()) return;
-      if (this.descCollapsed()) this.toggleDescription();
+      if (this.descriptionCollapsed()) this.toggleDescription();
       this.showSolutionWarning.set(false);
       this.activePanel.set(1);
       return;
     }
-    if (this.descCollapsed()) this.toggleDescription();
+    if (this.descriptionCollapsed()) this.toggleDescription();
     this.activePanel.set(1);
     // Only warn when it makes sense (course context, etc.)
     if (this.shouldWarnForSolution()) {
@@ -3870,6 +3928,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
   // Keep a dedicated overwrite action
   loadSolutionIntoEditor() {
+    if (this.showMobileDesktopGuard()) return;
     // For frameworks: delegate to panel; for JS/TS keep existing behavior.
     if (this.isFrameworkTech()) {
       this.frameworkPanel?.applySolutionFiles(this.solutionCurrentPath());

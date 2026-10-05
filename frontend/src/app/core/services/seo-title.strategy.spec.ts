@@ -41,7 +41,28 @@ class ResolvedQuestionSeoTestComponent implements OnInit {
 @Component({ standalone: true, template: '' })
 class StaticSeoTestComponent {}
 
-describe('SeoTitleStrategy question detail ownership', () => {
+@Component({ selector: 'app-resolved-tradeoff-seo-test', standalone: true, template: '' })
+class ResolvedTradeoffSeoTestComponent {
+  constructor() {
+    const route = inject(ActivatedRoute);
+    const seo = inject(SeoService);
+    route.data.pipe(takeUntilDestroyed()).subscribe((data) => {
+      const meta = data['tradeoffBattleDetail']?.battle?.meta;
+      if (!meta) return;
+      const canonical = seo.buildCanonicalUrl(`/tradeoffs/${meta.id}`);
+      seo.updateTags({
+        title: meta.title,
+        description: meta.summary,
+        canonical,
+        robots: robotsForContentAccess(meta.access),
+        ogType: 'article',
+        jsonLd: { '@type': 'LearningResource', '@id': canonical, name: meta.title },
+      });
+    });
+  }
+}
+
+describe('SeoTitleStrategy resolved detail ownership', () => {
   let document: Document;
   let meta: Meta;
   let title: Title;
@@ -92,6 +113,26 @@ describe('SeoTitleStrategy question detail ownership', () => {
             data: { seo: { title: 'System design scenario', description: 'Generic system design description.' } },
           },
           {
+            path: 'tradeoffs/:id',
+            component: ResolvedTradeoffSeoTestComponent,
+            resolve: {
+              tradeoffBattleDetail: (route: ActivatedRouteSnapshot) => {
+                const id = route.paramMap.get('id');
+                return {
+                  battle: id === 'missing' ? null : {
+                    meta: {
+                      id,
+                      title: `Tradeoff ${id}: specific decision`,
+                      summary: `Specific explanation for tradeoff ${id}.`,
+                      access: id === 'premium' ? 'premium' : 'free',
+                    },
+                  },
+                };
+              },
+            },
+            data: { seo: { title: 'Generic tradeoff fallback', description: 'Fallback tradeoff explanation.' } },
+          },
+          {
             path: 'library',
             component: StaticSeoTestComponent,
             data: { seo: { title: 'Question library', description: 'Browse the question library.' } },
@@ -140,6 +181,56 @@ describe('SeoTitleStrategy question detail ownership', () => {
       '@type': 'Article', '@id': canonical, headline: expectedTitle,
     });
   }
+
+  function expectTradeoffHead(id: string, robots = id === 'premium' ? 'noindex,follow' : 'index,follow'): void {
+    const expectedTitle = `Tradeoff ${id}: specific decision`;
+    const canonical = seo.buildCanonicalUrl(`/tradeoffs/${id}`);
+    expect(title.getTitle()).toBe(expectedTitle);
+    expect(meta.getTag('name="description"')?.content).toBe(`Specific explanation for tradeoff ${id}.`);
+    expect(meta.getTag('property="og:title"')?.content).toBe(expectedTitle);
+    expect(meta.getTag('name="twitter:title"')?.content).toBe(expectedTitle);
+    expect(meta.getTag('property="og:type"')?.content).toBe('article');
+    expect(meta.getTag('name="robots"')?.content).toBe(robots);
+    expect(document.head.querySelector('link[rel="canonical"]')?.getAttribute('href')).toBe(canonical);
+    expect(articleGraph().find((entry) => entry['@type'] === 'LearningResource')).toEqual({
+      '@type': 'LearningResource', '@id': canonical, name: expectedTitle,
+    });
+  }
+
+  it('preserves tradeoff metadata on initial and reused routes, including premium access', async () => {
+    const harness = await RouterTestingHarness.create();
+    const first = await harness.navigateByUrl('/tradeoffs/free', ResolvedTradeoffSeoTestComponent);
+    expectTradeoffHead('free');
+    const second = await harness.navigateByUrl('/tradeoffs/premium', ResolvedTradeoffSeoTestComponent);
+    expect(second).toBe(first);
+    expectTradeoffHead('premium');
+    await harness.navigateByUrl('/tradeoffs/free', ResolvedTradeoffSeoTestComponent);
+    expectTradeoffHead('free');
+    await harness.navigateByUrl('/library', StaticSeoTestComponent);
+    expect(title.getTitle()).toBe('Question library');
+    expect(meta.getTag('name="robots"')?.content).toBe('index,follow');
+    expect(articleGraph().some((entry) => entry['@type'] === 'LearningResource')).toBeFalse();
+  });
+
+  it('updates tradeoff query robots without replacing detail metadata, then falls back for missing data', async () => {
+    const harness = await RouterTestingHarness.create();
+    for (const id of ['free', 'premium']) {
+      const first = await harness.navigateByUrl(`/tradeoffs/${id}`, ResolvedTradeoffSeoTestComponent);
+      expectTradeoffHead(id);
+      const queried = await harness.navigateByUrl(`/tradeoffs/${id}?source=sidebar#analysis`, ResolvedTradeoffSeoTestComponent);
+      expect(queried).toBe(first);
+      expectTradeoffHead(id, 'noindex,follow');
+      await harness.navigateByUrl(`/tradeoffs/${id}#analysis`, ResolvedTradeoffSeoTestComponent);
+      expectTradeoffHead(id);
+    }
+    await harness.navigateByUrl('/tradeoffs/missing', ResolvedTradeoffSeoTestComponent);
+    expect(title.getTitle()).toBe('Generic tradeoff fallback');
+    expect(meta.getTag('name="description"')?.content).toBe('Fallback tradeoff explanation.');
+    expect(meta.getTag('name="robots"')?.content).toBe('index,follow');
+    expect(document.head.querySelector('link[rel="canonical"]')?.getAttribute('href'))
+      .toBe(seo.buildCanonicalUrl('/tradeoffs/missing'));
+    expect(articleGraph().some((entry) => entry['@type'] === 'LearningResource')).toBeFalse();
+  });
 
   for (const kind of ['trivia', 'coding', 'debug', 'system-design']) {
     it(`preserves ${kind} metadata on initial and reused navigation, then hands ownership back to static routes`, async () => {

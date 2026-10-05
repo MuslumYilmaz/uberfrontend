@@ -154,6 +154,47 @@ describe('CodingJsPanelComponent', () => {
     expect(runner.lastArgs?.testCode).toContain('fallback');
   });
 
+  for (const phase of ['editor flush', 'runner load', 'runner result'] as const) {
+    it(`discards a test run destroyed during ${phase} without publishing results or attempt insights`, async () => {
+      const flush = deferred<void>();
+      const loaded = deferred<any>();
+      const result = deferred<{ entries: ConsoleEntry[]; results: TestResult[] }>();
+      const runner = { runWithTests: jasmine.createSpy('runWithTests').and.returnValue(result.promise) };
+      const component = TestBed.runInInjectionContext(() => new CodingJsPanelComponent({} as any));
+      component.question = { id: 'resize-during-run' } as any;
+      component.disablePersistence = true;
+      component.editorContent.set('export default function value() { return 1; }');
+      component.testCode.set("test('value', () => expect(value()).toBe(1));");
+      spyOn(component as any, 'flushEditorBuffer').and.returnValue(
+        phase === 'editor flush' ? flush.promise : Promise.resolve(),
+      );
+      spyOn(component as any, 'loadRunner').and.returnValue(
+        phase === 'runner load' ? loaded.promise : Promise.resolve(runner),
+      );
+      const assist = spyOn(component as any, 'processAssistAfterRun');
+      const solved = spyOn(component.solvedChange, 'emit');
+      const results = spyOn(component.testResultsChange, 'emit');
+
+      const pendingRun = component.runTests();
+      await flushMicrotasks();
+      expect(runner.runWithTests).toHaveBeenCalledTimes(phase === 'runner result' ? 1 : 0);
+      component.ngOnDestroy();
+      flush.resolve(undefined);
+      loaded.resolve(runner);
+      result.resolve({ entries: [], results: [{ name: 'value', passed: true }] });
+      await pendingRun;
+
+      expect(component.isRunningTests()).toBeFalse();
+      expect(component.hasRunTests()).toBeFalse();
+      expect(component.testResults()).toEqual([]);
+      expect(assist).not.toHaveBeenCalled();
+      expect(solved).not.toHaveBeenCalled();
+      expect(results).not.toHaveBeenCalled();
+      await component.runTests();
+      expect(runner.runWithTests).toHaveBeenCalledTimes(phase === 'runner result' ? 1 : 0);
+    });
+  }
+
   it('clears stale test results when loading a different question', async () => {
     const codeStoreStub = {
       getJsAsync: jasmine.createSpy('getJsAsync').and.resolveTo(null),

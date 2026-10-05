@@ -229,6 +229,8 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   ngOnDestroy() {
     this.destroyed = true;
     this.initSeq += 1;
+    this._runSeq += 1;
+    this.isRunningTests.set(false);
     this.flushPendingPersist();
     this.stopInterviewTicker();
     if (this.isBrowser) {
@@ -1686,7 +1688,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
 
   // Run tests
   async runTests() {
-    const q = this.question; if (!q) return;
+    const q = this.question; if (!q || this.destroyed) return;
     let rawUserSnapshot = this.editorContent();
 
     const runId = ++this._runSeq;
@@ -1698,6 +1700,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
 
     try {
       await this.flushEditorBuffer();
+      if (runId !== this._runSeq) return;
       const rawUser = this.codeEditor?.getValue?.() ?? this.editorContent();
       rawUserSnapshot = rawUser;
       const rawTests = this.testsEditor?.getValue?.() ?? this.testCode();
@@ -1713,6 +1716,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
 
       try {
         const runner = await this.loadRunner();
+        if (runId !== this._runSeq) return;
         const out = await runner.runWithTests({ userCode: wrapped, testCode: prepared, timeoutMs: 1500 });
         if (runId !== this._runSeq) return;
         this.consoleEntries.set(this.sanitizeLogs(out?.entries));

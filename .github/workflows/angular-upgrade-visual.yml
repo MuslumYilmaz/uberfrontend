@@ -68,10 +68,12 @@ jobs:
         with:
           ref: 68d4939b049e266c1f68efc6b0cf0b94a8854274
           path: angular17-reference
-      - name: Apply the intentional interview hub navigation to the reference
+      - name: Apply intentional navigation and mobile reading changes to the reference
         run: |
           git -C angular17-reference apply --check ../frontend/e2e/reference-patches/interview-hub-navigation.patch
           git -C angular17-reference apply ../frontend/e2e/reference-patches/interview-hub-navigation.patch
+          git -C angular17-reference apply --check ../frontend/e2e/reference-patches/coding-mobile-reading.patch
+          git -C angular17-reference apply ../frontend/e2e/reference-patches/coding-mobile-reading.patch
       - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
         with:
           node-version: 20.19.6
@@ -81,7 +83,7 @@ jobs:
           cp frontend/e2e/upgrade-visual.spec.ts frontend/e2e/interview-mocks.ts angular17-reference/frontend/e2e/
           cd angular17-reference/frontend
           npx playwright install --with-deps chromium
-      - name: Capture Angular 17 reference with the same intended navigation
+      - name: Capture Angular 17 reference with the same intended UI
         working-directory: angular17-reference/frontend
         env:
           PLAYWRIGHT_PORT: '4251'

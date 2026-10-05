@@ -14,10 +14,11 @@ export class SeoTitleStrategy extends TitleStrategy {
     while (current.firstChild) current = current.firstChild;
     const question = current.data?.['questionDetail']?.question
       ?? current.data?.['systemDesignDetail']?.question;
-    // Resolved question components own the title and complete article metadata.
+    const resolvedMeta = question ?? current.data?.['tradeoffBattleDetail']?.battle?.meta;
+    // Resolved detail components own their title and complete structured metadata.
     // Only robots needs a router refresh when a query-only navigation reuses data.
-    if (question) {
-      this.seo.updateRobots(robotsForContentAccess(question.access), snapshot.root.queryParamMap.keys.length > 0);
+    if (resolvedMeta) {
+      this.seo.updateRobots(robotsForContentAccess(resolvedMeta.access), snapshot.root.queryParamMap.keys.length > 0);
       return;
     }
     const meta = this.extractSeo(snapshot);

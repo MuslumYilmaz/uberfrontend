@@ -329,14 +329,15 @@ test.describe('Every checked framework question passes its canonical solution', 
 
       for (const width of [834, 1366, 1440, 360, 390]) {
         await page.setViewportSize({ width, height: 900 });
-        const surface = width < 768
-          ? page.getByTestId('coding-mobile-guard')
-          : page.getByTestId('coding-description-panel');
+        const surface = page.getByTestId('coding-description-panel');
         await expect(surface).toBeVisible();
-        if (width >= 768) {
-          const prose = surface.locator('.whitespace-pre-wrap');
-          await expect(prose).not.toBeEmpty();
-          expect(await prose.evaluate((element) => element.scrollWidth <= element.clientWidth + 1)).toBe(true);
+        const prose = surface.locator('.whitespace-pre-wrap');
+        await expect(prose).not.toBeEmpty();
+        expect(await prose.evaluate((element) => element.scrollWidth <= element.clientWidth + 1)).toBe(true);
+        if (width < 768) {
+          await expect(page.getByTestId('coding-mobile-notice')).toBeVisible();
+          await expect(page.getByTestId('coding-workspace-panel')).toHaveCount(0);
+          await expect(page.locator('app-monaco-editor')).toHaveCount(0);
         }
         expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
         await page.screenshot({ path: testInfo.outputPath(`${id}-${width}.png`), animations: 'disabled' });

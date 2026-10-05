@@ -457,7 +457,25 @@ const RAW_HTML_CASES: Array<{
     path: '/tradeoffs/object-vs-map-keyed-collections',
     access: 'free',
     titleText: 'Object vs Map for keyed JavaScript collections',
-    includeText: ['Reveal analysis', 'A dashboard keeps adding'],
+    includeText: [
+      'Reveal analysis',
+      'A dashboard keeps adding',
+      'Decision matrix',
+      'Side-by-side comparison',
+      'Interviewer pushback you should be ready for',
+      'One clean answer framework',
+    ],
+  },
+  {
+    path: '/tradeoffs/context-vs-zustand-vs-redux',
+    access: 'free',
+    titleText: 'Context vs Zustand vs Redux for a growing React dashboard',
+    includeText: [
+      'A strong answer here would lean Redux Toolkit',
+      'Decision matrix',
+      'Side-by-side comparison',
+      'Answers that sound weak',
+    ],
   },
   {
     path: '/tradeoffs/localstorage-vs-sessionstorage-browser-persistence',
@@ -712,6 +730,8 @@ function stripScriptAndStyleBlocks(html: string): string {
 }
 
 function rawVisibleText(html: string): string {
+  // Checks HTML presence, including collapsed/hidden content; browser tests
+  // separately assert visibility before and after the relevant interaction.
   return normalizeText(
     stripScriptAndStyleBlocks(html).replace(/<[^>]+>/g, ' '),
   );
