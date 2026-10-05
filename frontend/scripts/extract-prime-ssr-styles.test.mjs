@@ -32,6 +32,18 @@ test('keeps layer ordering, unlayered, small, URL-dependent, conditional and bod
   assert.equal(planPrimeStyles(inBody).html, inBody);
 });
 
+test('leaves pages without PrimeNG style markers byte-for-byte unchanged', async (t) => {
+  const directory = await fs.mkdtemp(path.join(os.tmpdir(), 'prime-ssr-test-'));
+  t.after(() => fs.rm(directory, { recursive: true, force: true }));
+  const input = page(`<style>${css}</style>`);
+  const filename = path.join(directory, 'index.html');
+  await fs.writeFile(filename, input);
+  assert.equal(planPrimeStyles(input).html, input);
+  assert.equal(planPrimeStyles(input).assets.size, 0);
+  assert.deepEqual(await extractPrimeStyles(directory), { pages: 0, assets: 0, assetBytes: 0, savedHtmlBytes: 0 });
+  assert.equal(await fs.readFile(filename, 'utf8'), input);
+});
+
 test('reuses exact CSS across routes and changes its hash when CSS changes', async (t) => {
   const directory = await fs.mkdtemp(path.join(os.tmpdir(), 'prime-ssr-test-'));
   t.after(() => fs.rm(directory, { recursive: true, force: true }));
