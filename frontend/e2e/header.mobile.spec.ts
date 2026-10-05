@@ -29,14 +29,17 @@ async function assertNoHorizontalOverflow(page: import('@playwright/test').Page,
   expect(metrics.scrollWidth, `${label} overflows horizontally`).toBeLessThanOrEqual(metrics.clientWidth + 1);
 }
 
-async function assertHeaderLinksFit(page: import('@playwright/test').Page, selector: string) {
+async function assertHeaderLinksFit(page: import('@playwright/test').Page, selector: string, minimumGap = 0) {
   const bounds = await page.locator(selector).evaluateAll((elements) => elements.map((element) => {
     const rect = element.getBoundingClientRect();
-    return { left: rect.left, right: rect.right, width: rect.width, scrollWidth: element.scrollWidth };
+    return { label: element.textContent?.trim(), left: rect.left, right: rect.right, width: rect.width, scrollWidth: element.scrollWidth };
   }));
   for (let index = 0; index < bounds.length; index += 1) {
-    expect(bounds[index].scrollWidth).toBeLessThanOrEqual(bounds[index].width + 1);
-    if (index > 0) expect(bounds[index - 1].right).toBeLessThanOrEqual(bounds[index].left + 1);
+    expect(bounds[index].scrollWidth, `${bounds[index].label} stays within its own layout group`).toBeLessThanOrEqual(bounds[index].width + 1);
+    if (index > 0) {
+      expect(bounds[index - 1].right + minimumGap, `${bounds[index - 1].label} stays separated from ${bounds[index].label}`)
+        .toBeLessThanOrEqual(bounds[index].left + 1);
+    }
   }
 }
 
@@ -185,29 +188,38 @@ test.describe('header mobile layout', () => {
   });
 
   for (const state of ['guest', 'free', 'premium'] as const) {
-    test(`marketing header fits at the 1180px breakpoint and desktop for ${state}`, async ({ page, baseURL }) => {
-      await mockHeaderAuth(page, baseURL, state);
-      await page.goto('/');
-
-      for (const width of [1180, 1181, 1366, 1440]) {
-        await page.setViewportSize({ width, height: 900 });
-        const toggle = page.getByTestId('marketing-header-mobile-menu-button');
-        const desktopLink = page.locator('.famh-nav').getByRole('link', { name: 'Interview Questions', exact: true });
-        if (width <= 1180) {
-          await expect(toggle).toBeVisible();
-          await expect(desktopLink).toBeHidden();
-          await openMarketingMobileMenuStable(page);
-          await expect(page.getByTestId('marketing-header-mobile-menu').getByRole('link', { name: 'Interview Questions', exact: true })).toBeVisible();
-          await closeMarketingMobileMenuIfOpen(page);
-        } else {
-          await expect(toggle).toBeHidden();
-          await expect(desktopLink).toBeVisible();
-          await expect(page.getByTestId('marketing-header-cta')).toBeVisible();
-          await assertHeaderLinksFit(page, '.famh-brand, .famh-nav a, .famh-actions');
+    for (const font of ['platform', 'wide fallback'] as const) {
+      test(`marketing header fits at the 1180px breakpoint and desktop for ${state} with ${font} font`, async ({ page, baseURL }) => {
+        await mockHeaderAuth(page, baseURL, state);
+        await page.goto('/');
+        await expect(page.getByTestId('marketing-header-brand')).toBeVisible();
+        await page.evaluate(() => document.fonts.ready);
+        if (font === 'wide fallback') {
+          // System-font metrics vary across CI Linux and local macOS browsers.
+          await page.addStyleTag({ content: '.famh-topbar { font-family: Verdana, sans-serif; }' });
         }
-        await assertNoHorizontalOverflow(page, `${width}px marketing ${state}`);
-      }
-    });
+
+        for (const width of [1180, 1181, 1366, 1440]) {
+          await page.setViewportSize({ width, height: 900 });
+          const toggle = page.getByTestId('marketing-header-mobile-menu-button');
+          const desktopLink = page.locator('.famh-nav').getByRole('link', { name: 'Interview Questions', exact: true });
+          if (width <= 1180) {
+            await expect(toggle).toBeVisible();
+            await expect(desktopLink).toBeHidden();
+            await openMarketingMobileMenuStable(page);
+            await expect(page.getByTestId('marketing-header-mobile-menu').getByRole('link', { name: 'Interview Questions', exact: true })).toBeVisible();
+            await closeMarketingMobileMenuIfOpen(page);
+          } else {
+            await expect(toggle).toBeHidden();
+            await expect(desktopLink).toBeVisible();
+            await expect(page.getByTestId('marketing-header-cta')).toBeVisible();
+            await assertHeaderLinksFit(page, '.famh-brand, .famh-nav, .famh-actions', 8);
+            await assertHeaderLinksFit(page, '.famh-brand, .famh-nav a, .famh-actions a');
+          }
+          await assertNoHorizontalOverflow(page, `${width}px marketing ${state}`);
+        }
+      });
+    }
 
     test(`question hub navigation and browser back work on mobile and desktop for ${state}`, async ({ page, baseURL }) => {
       await mockHeaderAuth(page, baseURL, state);

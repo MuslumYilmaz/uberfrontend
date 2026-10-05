@@ -175,6 +175,35 @@ test('external template content is tracked and code blocks retain significant sp
   assert.deepEqual(changed(files, { ...files, [template]: files[template].replace('<pre>', '<pre class="code">') }), []);
 });
 
+test('repeated comment/style removal cannot leave newly formed ignored markup in fingerprints', () => {
+  const files = staticFiles();
+  files[`${APP}features/pricing/page.ts`] = `@Component({templateUrl:'./page.html'}) export class Page {}`;
+  const template = `${APP}features/pricing/page.html`;
+  files[template] = '<h1>Plans</h1>';
+  const ignored = [
+    '<!-- first --><!-- second --><style>h1 { color: red; }</style>',
+    '<!<!-- inner -->-- outer -->',
+    '<sty<style>inner</style>le>outer</style>',
+    '<!<style>inner</style>-- outer -->',
+    '<sty<!<style>inner</style>-- middle -->le>outer</style>',
+  ];
+  for (const markup of ignored) {
+    assert.deepEqual(changed(files, { ...files, [template]: `${markup}${files[template]}${markup}` }), [], markup);
+  }
+  assert.deepEqual(changed(files, { ...files, [template]: `${ignored[4]}<h1>Updated plans</h1>` }), ['/pricing']);
+});
+
+test('comment/style examples inside code blocks remain semantic content', () => {
+  const files = staticFiles();
+  files[`${APP}features/pricing/page.ts`] = `@Component({templateUrl:'./page.html'}) export class Page {}`;
+  const template = `${APP}features/pricing/page.html`;
+  for (const tag of ['pre', 'code']) {
+    files[template] = `<${tag}><!<style>one  two</style>-- example --></${tag}>`;
+    assert.deepEqual(changed(files, { ...files, [template]: files[template].replace('one  two', 'one two') }), ['/pricing']);
+    assert.deepEqual(changed(files, { ...files, [template]: files[template].replace('example', 'updated example') }), ['/pricing']);
+  }
+});
+
 test('moving unchanged article content behind a re-export keeps its fingerprint', () => {
   const article = `${APP}features/guides/a.ts`;
   const files = {

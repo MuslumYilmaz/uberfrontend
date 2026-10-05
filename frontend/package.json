@@ -108,7 +108,7 @@
     "postbuild:prod": "npm run optimize:ssr-styles",
     "gen:seo": "node scripts/ensure-seo-history.mjs && node scripts/generate-sitemap.mjs",
     "check:seo-dates": "node scripts/generate-sitemap.mjs --check",
-    "test:seo-dates": "node --test scripts/seo-content-*.test.mjs scripts/generate-sitemap.test.mjs scripts/seo-date-parity.test.mjs scripts/seo-sitemap-date-contract.test.mjs scripts/gen-data-version.test.mjs"
+    "test:seo-dates": "node --test scripts/ensure-seo-history.test.mjs scripts/seo-content-*.test.mjs scripts/generate-sitemap.test.mjs scripts/seo-date-parity.test.mjs scripts/seo-sitemap-date-contract.test.mjs scripts/gen-data-version.test.mjs"
   },
   "private": true,
   "dependencies": {

@@ -269,7 +269,12 @@ before the commit exists.
 
 A Git checkout is required. CI checks out full history; `ensure-seo-history.mjs`
 completes a shallow checkout from its existing `origin` using existing credentials.
-This covers [Vercel's shallow checkout](https://vercel.com/kb/guide/how-do-i-use-the-ignored-build-step-field-on-vercel).
+For [Vercel's shallow checkout](https://vercel.com/kb/guide/how-do-i-use-the-ignored-build-step-field-on-vercel)
+without `origin`, it fetches the checked-out commit directly from GitHub using the
+validated `VERCEL_GIT_PROVIDER`, `VERCEL_GIT_REPO_OWNER` and `VERCEL_GIT_REPO_SLUG`
+[system metadata](https://vercel.com/docs/environment-variables/system-environment-variables).
+It does not add remotes or change credentials. Private repositories need an
+authenticated `origin` or a full Git checkout; inaccessible history still fails.
 `node scripts/ensure-seo-history.mjs --check` checks without fetching. Missing Git,
 unavailable history, invalid dates or missing content mappings fail explicitly;
 there is no build-time date fallback. Verify this prerequisite in a Vercel preview

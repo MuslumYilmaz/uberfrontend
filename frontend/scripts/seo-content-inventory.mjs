@@ -79,10 +79,17 @@ function html(source, scope = {}) {
   }
   const code = [];
   const visualAttributes = (text) => text.replace(/\s+(?:class|style|\[class(?:\.[\w-]+)?\]|\[style(?:\.[\w-]+)?\]|\[ngClass\]|\[ngStyle\])\s*=\s*(?:"[^"]*"|'[^']*')/g, '');
+  source = source.replace(/<(pre|code)\b[^>]*>[\s\S]*?<\/\1>/gi, (block) => `SEOCODE${code.push(block.replace(/<[^>]+>/g, visualAttributes)) - 1}END`);
+  // Removing markup can join fragments into another comment or style block.
+  // Reach a fixed point while keeping authored code examples protected above.
+  let previous;
+  do {
+    previous = source;
+    source = source
+      .replace(/<!--[\s\S]*?-->/g, '')
+      .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, '');
+  } while (source !== previous);
   const result = source
-    .replace(/<(pre|code)\b[^>]*>[\s\S]*?<\/\1>/gi, (block) => `SEOCODE${code.push(block.replace(/<[^>]+>/g, visualAttributes)) - 1}END`)
-    .replace(/<!--[\s\S]*?-->/g, '')
-    .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, '')
     .replace(/\s+(?:class|style|\[class(?:\.[\w-]+)?\]|\[style(?:\.[\w-]+)?\]|\[ngClass\]|\[ngStyle\])\s*=\s*(?:"[^"]*"|'[^']*')/g, '')
     .replace(/\s+/g, ' ').trim()
     .replace(/SEOCODE(\d+)END/g, (_, index) => code[Number(index)]);

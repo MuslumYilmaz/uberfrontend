@@ -47,6 +47,12 @@
 .famh-nav {
   justify-content: center;
   min-width: 0;
+  gap: 8px;
+}
+
+.famh-nav .famh-link {
+  padding-inline: 4px;
+  flex-shrink: 0;
 }
 
 .famh-actions {

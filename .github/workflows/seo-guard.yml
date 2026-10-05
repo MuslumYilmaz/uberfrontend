@@ -7,7 +7,8 @@ jobs:
   prerender-sitemap-guard:
     name: SEO Prerender Guard
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    # PR merge commits can require a full semantic-history backfill before prerendering.
+    timeout-minutes: 20
     defaults:
       run:
         working-directory: frontend
