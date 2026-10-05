@@ -1,3 +1,4 @@
+import { seoContentDateModified } from '../../../core/utils/seo-content-date.util';
 import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { PLATFORM_ID, signal } from '@angular/core';
@@ -1980,6 +1981,27 @@ describe('CodingDetailComponent', () => {
       expect(codingPayload.title).toBe(debugPayload.title);
     });
   }
+
+  it('uses the sitemap modification date without changing the editorial publication fallback', () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    component.tech = 'javascript';
+    component.kind = 'coding';
+    const question = { ...makeDeferredPromiseQuestion(), updatedAt: '2025-03-15' };
+
+    (component as any).updateSeoForQuestion(question);
+    const payload = seo.updateTags.calls.mostRecent().args[0] as any;
+    const article = payload.jsonLd.find((entry: any) => entry['@type'] === 'TechArticle');
+    expect(article.dateModified).toBe(seoContentDateModified(article.url));
+    expect(article.datePublished).toBe('2025-03-15T00:00:00.000Z');
+
+    (component as any).updateSeoForQuestion({ ...question, id: 'unresolved-content-date' });
+    const unresolved = (seo.updateTags.calls.mostRecent().args[0] as any).jsonLd
+      .find((entry: any) => entry['@type'] === 'TechArticle');
+    expect(Object.prototype.hasOwnProperty.call(unresolved, 'dateModified')).toBeFalse();
+    expect(unresolved.datePublished).toBe('2025-03-15T00:00:00.000Z');
+    expect(component.updatedLabel(question as any)).toBe('Mar 15, 2025');
+  });
 
   it('prefers question seo title/description and sanitizes/clamps values', () => {
     const fixture = TestBed.createComponent(CodingDetailComponent);

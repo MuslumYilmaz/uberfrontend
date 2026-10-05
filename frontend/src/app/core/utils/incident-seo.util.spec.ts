@@ -1,3 +1,4 @@
+import { seoContentDateModified } from './seo-content-date.util';
 import { buildIncidentSeoMeta, incidentTechLabel, INCIDENT_DETAIL_FALLBACK_SEO } from './incident-seo.util';
 
 describe('incident-seo.util', () => {
@@ -48,6 +49,7 @@ describe('incident-seo.util', () => {
     const breadcrumb = graph.find((entry: any) => entry?.['@type'] === 'BreadcrumbList');
     const resource = graph.find((entry: any) => entry?.['@type'] === 'LearningResource');
     expect(resource?.author).toEqual({ '@type': 'Organization', name: 'FrontendAtlas Editorial' });
+    expect(resource?.dateModified).toBe(seoContentDateModified(resource.url));
 
     expect(breadcrumb).toBeTruthy();
     expect(resource?.url).toBe('https://frontendatlas.com/incidents/search-typing-lag');

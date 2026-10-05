@@ -1,3 +1,4 @@
+import { seoContentDateModified } from '../../../core/utils/seo-content-date.util';
 /* ========================= trivia-detail.component.ts ========================= */
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { AfterViewInit, Component, ElementRef, NgZone, OnDestroy, OnInit, PLATFORM_ID, ViewChild, computed, effect, inject, signal } from '@angular/core';
@@ -1379,8 +1380,8 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     const seoTitle = this.seoTitle(q);
     const description = this.seoDescription(q);
     const keywords = this.questionKeywords(q);
-    const dateModified = this.resolveUpdatedIso(q);
-    const datePublished = this.resolvePublishedIso(q, dateModified);
+    const dateModified = seoContentDateModified(canonical);
+    const datePublished = this.resolvePublishedIso(q, this.resolveUpdatedIso(q));
     const imageUrl = this.structuredDataImageUrl();
     const interviewHubUrl = this.interviewQuestionsHubUrl();
     const interviewHubLabel = this.interviewQuestionsHubLabel();
@@ -1431,7 +1432,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
         },
       },
       isAccessibleForFree: accessibleForFree,
-      dateModified: dateModified || datePublished,
+      ...(dateModified ? { dateModified } : {}),
     };
 
     this.seo.updateTags({

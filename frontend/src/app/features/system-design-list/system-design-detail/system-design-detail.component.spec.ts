@@ -1,3 +1,4 @@
+import { seoContentDateModified } from '../../../core/utils/seo-content-date.util';
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -71,6 +72,21 @@ describe('SystemDesignDetailComponent', () => {
         { provide: BugReportService, useValue: bugReport },
       ],
     }).compileComponents();
+  });
+
+  it('omits unresolved modification dates and preserves the editorial publication fallback and visible date', () => {
+    const fixture = TestBed.createComponent(SystemDesignDetailComponent);
+    const component = fixture.componentInstance;
+    const question = {
+      id: 'unresolved-content-date', title: 'System design', access: 'free',
+      updatedAt: '2025-03-15', radio: [],
+    } as any;
+    (component as any).updateSeo(question);
+    const payload = seo.updateTags.calls.mostRecent().args[0] as any;
+    const article = payload.jsonLd.find((entry: any) => entry['@type'] === 'Article');
+    expect(Object.prototype.hasOwnProperty.call(article, 'dateModified')).toBeFalse();
+    expect(article.datePublished).toBe('2025-03-15T00:00:00.000Z');
+    expect(component.updatedLabel(question)).toBe('Mar 15, 2025');
   });
 
   it('promotes the dashboard opening once, clears it on errors and route changes, and keeps the source intact', () => {
@@ -283,7 +299,7 @@ describe('SystemDesignDetailComponent', () => {
       robots: undefined,
     }));
     expect(article?.datePublished).toBe('2025-11-22T00:00:00.000Z');
-    expect(article?.dateModified).toBe('2026-08-13T00:00:00.000Z');
+    expect(article?.dateModified).toBe(seoContentDateModified(article.url));
     expect(article?.isAccessibleForFree).toBeTrue();
     expect(learningResource?.isAccessibleForFree).toBeTrue();
     expect(learningResource?.educationalLevel).toBe('mid');

@@ -1,3 +1,4 @@
+import { seoContentDateModified } from '../../core/utils/seo-content-date.util';
 import { buildGuideDetailSeo } from './guide-seo.util';
 import { BEHAVIORAL, PLAYBOOK, SYSTEM } from '../../shared/guides/guide.registry';
 
@@ -94,7 +95,18 @@ describe('guide-seo.util', () => {
       name: 'FrontendAtlas Editorial',
     });
     expect(article.datePublished).toBe('2025-02-10T00:00:00.000Z');
-    expect(article.dateModified).toBe('2025-03-15T00:00:00.000Z');
+    expect(article.dateModified).toBe(seoContentDateModified(article.url));
+  });
+
+  it('omits unresolved modification dates while retaining publication metadata', () => {
+    const meta = buildGuideDetailSeo(seoMock, 'Interview Blueprint', 'interview-blueprint', {
+      slug: 'unresolved-content-date',
+      title: 'Unresolved guide',
+      seo: { publishedAt: '2025-02-10', updatedAt: '2025-03-15' },
+    } as any);
+    const article = (meta.jsonLd as any[]).find((node) => node['@type'] === 'TechArticle');
+    expect(Object.prototype.hasOwnProperty.call(article, 'dateModified')).toBeFalse();
+    expect(article.datePublished).toBe('2025-02-10T00:00:00.000Z');
   });
 
   it('targets frontend interview preparation guide intent on the playbook intro page', () => {
@@ -126,7 +138,7 @@ describe('guide-seo.util', () => {
 
     expect(breadcrumb).toBeTruthy();
     expect(article?.headline).toBe('Frontend Interview Preparation Guide (2026): Rounds, Roadmap, Questions');
-    expect(article?.dateModified).toBe('2026-06-18T00:00:00.000Z');
+    expect(article?.dateModified).toBe(seoContentDateModified(article.url));
     expect(article?.author).toEqual({
       '@type': 'Organization',
       name: 'FrontendAtlas Editorial',
@@ -188,7 +200,7 @@ describe('guide-seo.util', () => {
     expect(article?.description).toBe(
       'Practice 12 frontend behavioral interview questions with STAR(R) answer outlines, weak-vs-strong examples, scoring signals, and frontend scenarios.'
     );
-    expect(article?.dateModified).toBe('2026-06-18T00:00:00.000Z');
+    expect(article?.dateModified).toBe(seoContentDateModified(article.url));
     expect(article?.author).toEqual({
       '@type': 'Organization',
       name: 'FrontendAtlas Editorial',
@@ -268,7 +280,7 @@ describe('guide-seo.util', () => {
     expect(article?.description).toBe(
       'See where behavioral rounds fit in frontend interviews, what hiring managers score onsite, and which stories reduce debrief risk.'
     );
-    expect(article?.dateModified).toBe('2026-06-18T00:00:00.000Z');
+    expect(article?.dateModified).toBe(seoContentDateModified(article.url));
     expect(article?.author).toEqual({
       '@type': 'Organization',
       name: 'FrontendAtlas Editorial',
@@ -347,7 +359,7 @@ describe('guide-seo.util', () => {
     expect(article?.description).toBe(
       'See the 6 signals frontend interviewers score, weak-vs-strong evidence, seniority expectations, and stories that reduce debrief risk.'
     );
-    expect(article?.dateModified).toBe('2026-06-18T00:00:00.000Z');
+    expect(article?.dateModified).toBe(seoContentDateModified(article.url));
     expect(article?.author).toEqual({
       '@type': 'Organization',
       name: 'FrontendAtlas Editorial',
@@ -422,7 +434,7 @@ describe('guide-seo.util', () => {
     expect(article?.description).toBe(
       'Build a frontend behavioral interview prep plan with STAR(R) stories, a 7-day routine, weak-vs-strong notes, seniority signals, and final questions.'
     );
-    expect(article?.dateModified).toBe('2026-06-19T00:00:00.000Z');
+    expect(article?.dateModified).toBe(seoContentDateModified(article.url));
     expect(article?.author).toEqual({
       '@type': 'Organization',
       name: 'FrontendAtlas Editorial',
@@ -504,7 +516,7 @@ describe('guide-seo.util', () => {
     expect(article?.description).toBe(
       'Take a 15-minute frontend interview fundamentals quiz covering browser rendering, CSS layout, JavaScript async, HTTP caching, score bands, and practice links.',
     );
-    expect(article?.dateModified).toBe('2026-06-24T00:00:00.000Z');
+    expect(article?.dateModified).toBe(seoContentDateModified(article.url));
     expect(article?.author).toEqual({
       '@type': 'Organization',
       name: 'FrontendAtlas Editorial',
@@ -579,7 +591,7 @@ describe('guide-seo.util', () => {
     expect(article?.description).toBe(
       'Build a frontend resume for interviews with a complete example, ATS keyword matching, bullet rewrites, summary examples, and rejection triggers.',
     );
-    expect(article?.dateModified).toBe('2026-06-25T00:00:00.000Z');
+    expect(article?.dateModified).toBe(seoContentDateModified(article.url));
     expect(article?.author).toEqual({
       '@type': 'Organization',
       name: 'FrontendAtlas Editorial',
@@ -639,7 +651,7 @@ describe('guide-seo.util', () => {
 
     expect(breadcrumb).toBeTruthy();
     expect(article?.headline).toBe('Frontend Coding Interview Questions and Prep Guide (2026)');
-    expect(article?.dateModified).toBe('2026-06-06T00:00:00.000Z');
+    expect(article?.dateModified).toBe(seoContentDateModified(article.url));
     expect(article?.author).toEqual({
       '@type': 'Organization',
       name: 'FrontendAtlas Editorial',
@@ -698,7 +710,7 @@ describe('guide-seo.util', () => {
 
     expect(breadcrumb).toBeTruthy();
     expect(article?.headline).toBe('Frontend System Design Interview Preparation Guide');
-    expect(article?.dateModified).toBe('2026-08-12T00:00:00.000Z');
+    expect(article?.dateModified).toBe(seoContentDateModified(article.url));
     expect(article?.author).toEqual({
       '@type': 'Organization',
       name: 'FrontendAtlas Editorial',
@@ -774,7 +786,7 @@ describe('guide-seo.util', () => {
 
     expect(breadcrumb).toBeTruthy();
     expect(article?.headline).toBe('JavaScript Coding Interview Practice: 25 Questions (2026)');
-    expect(article?.dateModified).toBe('2026-06-05T00:00:00.000Z');
+    expect(article?.dateModified).toBe(seoContentDateModified(article.url));
     expect(article?.author).toEqual({
       '@type': 'Organization',
       name: 'FrontendAtlas Editorial',
@@ -833,7 +845,7 @@ describe('guide-seo.util', () => {
 
     expect(breadcrumb).toBeTruthy();
     expect(article?.headline).toBe('DSA for Frontend Interviews: Questions & JS Drills');
-    expect(article?.dateModified).toBe('2026-06-06T00:00:00.000Z');
+    expect(article?.dateModified).toBe(seoContentDateModified(article.url));
     expect(article?.author).toEqual({
       '@type': 'Organization',
       name: 'FrontendAtlas Editorial',
@@ -894,7 +906,7 @@ describe('guide-seo.util', () => {
 
     expect(breadcrumb).toBeTruthy();
     expect(article?.headline).toBe('Frontend UI Interview Questions: Component Coding Practice');
-    expect(article?.dateModified).toBe('2026-06-21T00:00:00.000Z');
+    expect(article?.dateModified).toBe(seoContentDateModified(article.url));
     expect(article?.author).toEqual({
       '@type': 'Organization',
       name: 'FrontendAtlas Editorial',
@@ -967,7 +979,7 @@ describe('guide-seo.util', () => {
 
     expect(breadcrumb).toBeTruthy();
     expect(article?.headline).toBe('Component API Design for Frontend Interviews');
-    expect(article?.dateModified).toBe('2026-06-24T00:00:00.000Z');
+    expect(article?.dateModified).toBe(seoContentDateModified(article.url));
     expect(article?.author).toEqual({
       '@type': 'Organization',
       name: 'FrontendAtlas Editorial',
@@ -1039,7 +1051,7 @@ describe('guide-seo.util', () => {
     expect(article?.description).toBe(
       'Use the RADIO framework for frontend system design with a 45-minute interview script, diagram checklist, and worked autocomplete example.'
     );
-    expect(article?.dateModified).toBe('2026-08-12T00:00:00.000Z');
+    expect(article?.dateModified).toBe(seoContentDateModified(article.url));
     expect(article?.keywords).toContain('frontend system design interview answer template');
     expect(article?.keywords).toContain('radio framework');
     expect(article?.keywords).toContain('RADIO framework frontend system design');
@@ -1118,7 +1130,7 @@ describe('guide-seo.util', () => {
     const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
 
     expect(breadcrumb).toBeTruthy();
-    expect(article?.dateModified).toBe('2026-06-19T00:00:00.000Z');
+    expect(article?.dateModified).toBe(seoContentDateModified(article.url));
     expect(article?.keywords).toContain('frontend system design requirements checklist');
     expect(article?.keywords).toContain('functional and non-functional requirements frontend system design');
     expect(article?.keywords).toContain('frontend system design architecture handoff');
@@ -1183,7 +1195,7 @@ describe('guide-seo.util', () => {
     const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
 
     expect(breadcrumb).toBeTruthy();
-    expect(article?.dateModified).toBe('2026-06-02T00:00:00.000Z');
+    expect(article?.dateModified).toBe(seoContentDateModified(article.url));
     expect(article?.keywords).toContain('frontend system design architecture guide');
     expect(article?.keywords).toContain('frontend architecture diagram interview');
     expect(article?.keywords).toContain('frontend system design BFF');
@@ -1248,7 +1260,7 @@ describe('guide-seo.util', () => {
     const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
 
     expect(breadcrumb).toBeTruthy();
-    expect(article?.dateModified).toBe('2026-06-02T00:00:00.000Z');
+    expect(article?.dateModified).toBe(seoContentDateModified(article.url));
     expect(article?.keywords).toContain('frontend state and data model system design');
     expect(article?.keywords).toContain('frontend API contracts interview');
     expect(article?.keywords).toContain('frontend system design cache keys');
@@ -1312,7 +1324,7 @@ describe('guide-seo.util', () => {
     const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
 
     expect(breadcrumb).toBeTruthy();
-    expect(article?.dateModified).toBe('2026-06-02T00:00:00.000Z');
+    expect(article?.dateModified).toBe(seoContentDateModified(article.url));
     expect(article?.keywords).toContain('frontend interface design system design');
     expect(article?.keywords).toContain('frontend component API design interview');
     expect(article?.keywords).toContain('keyboard navigation frontend interview');
@@ -1366,7 +1378,7 @@ describe('guide-seo.util', () => {
     const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
     const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
 
-    expect(article?.dateModified).toBe('2026-07-15T00:00:00.000Z');
+    expect(article?.dateModified).toBe(seoContentDateModified(article.url));
     expect(article?.keywords).toContain('frontend system design performance optimization');
     expect(article?.keywords).toContain('frontend performance budget interview');
     expect(article?.keywords).toContain('Core Web Vitals interview');
@@ -1421,7 +1433,7 @@ describe('guide-seo.util', () => {
     const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
     const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
 
-    expect(article?.dateModified).toBe('2026-07-15T00:00:00.000Z');
+    expect(article?.dateModified).toBe(seoContentDateModified(article.url));
     expect(article?.keywords).toContain('frontend system design interview rubric');
     expect(article?.keywords).toContain('frontend system design interview scorecard');
     expect(faqPage?.name).toBe('Frontend system design interview rubric FAQ');
@@ -1469,7 +1481,7 @@ describe('guide-seo.util', () => {
     const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
     const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
 
-    expect(article?.dateModified).toBe('2026-07-15T00:00:00.000Z');
+    expect(article?.dateModified).toBe(seoContentDateModified(article.url));
     expect(article?.keywords).toContain('frontend system design interview pitfalls');
     expect(article?.keywords).toContain('frontend system design red flags');
     expect(faqPage?.name).toBe('Frontend system design interview pitfalls FAQ');
@@ -1522,7 +1534,7 @@ describe('guide-seo.util', () => {
     const article = graph.find((node: any) => node?.['@type'] === 'TechArticle');
     const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
 
-    expect(article?.dateModified).toBe('2026-06-19T00:00:00.000Z');
+    expect(article?.dateModified).toBe(seoContentDateModified(article.url));
     expect(article?.keywords).toContain('frontend system design interview checklist');
     expect(article?.keywords).toContain('frontend system design final review');
     expect(faqPage?.name).toBe('Frontend system design interview checklist FAQ');
@@ -1567,7 +1579,7 @@ describe('guide-seo.util', () => {
     const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
 
     expect(breadcrumb).toBeTruthy();
-    expect(article?.dateModified).toBe('2026-06-19T00:00:00.000Z');
+    expect(article?.dateModified).toBe(seoContentDateModified(article.url));
     expect(article?.keywords).toContain('frontend system design 5 step method');
     expect(faqPage?.name).toBe('Frontend system design 5-step answer method FAQ');
     expect(faqPage?.mainEntity?.length).toBe(5);
@@ -1609,7 +1621,7 @@ describe('guide-seo.util', () => {
     const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
 
     expect(breadcrumb).toBeTruthy();
-    expect(article?.dateModified).toBe('2026-06-19T00:00:00.000Z');
+    expect(article?.dateModified).toBe(seoContentDateModified(article.url));
     expect(article?.keywords).toContain('what frontend system design interviews test');
     expect(faqPage?.name).toBe('Frontend system design interview overview FAQ');
     expect(faqPage?.mainEntity?.length).toBe(5);
@@ -1653,7 +1665,7 @@ describe('guide-seo.util', () => {
     const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
 
     expect(breadcrumb).toBeTruthy();
-    expect(article?.dateModified).toBe('2026-05-28T00:00:00.000Z');
+    expect(article?.dateModified).toBe(seoContentDateModified(article.url));
     expect(article?.keywords).toContain('frontend system design requirements and tradeoffs');
     expect(faqPage?.name).toBe('Frontend system design requirements and tradeoffs FAQ');
     expect(faqPage?.mainEntity?.length).toBe(5);
@@ -1716,7 +1728,7 @@ describe('guide-seo.util', () => {
     const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
 
     expect(article?.headline).toBe('JavaScript Interview Preparation Path: 7/14/30-Day Study Plan');
-    expect(article?.dateModified).toBe('2026-06-13T00:00:00.000Z');
+    expect(article?.dateModified).toBe(seoContentDateModified(article.url));
     expect(article?.author).toEqual({
       '@type': 'Organization',
       name: 'FrontendAtlas Editorial',
@@ -1808,7 +1820,7 @@ describe('guide-seo.util', () => {
     const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
 
     expect(article?.headline).toBe('How to Prepare for a React Interview: 7/14/30-Day Plan');
-    expect(article?.dateModified).toBe('2026-06-13T00:00:00.000Z');
+    expect(article?.dateModified).toBe(seoContentDateModified(article.url));
     expect(article?.author).toEqual({
       '@type': 'Organization',
       name: 'FrontendAtlas Editorial',
@@ -1909,7 +1921,7 @@ describe('guide-seo.util', () => {
     const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
 
     expect(article?.headline).toBe('Angular Interview Preparation Path: 7/14/30-Day Plan');
-    expect(article?.dateModified).toBe('2026-06-13T00:00:00.000Z');
+    expect(article?.dateModified).toBe(seoContentDateModified(article.url));
     expect(article?.author).toEqual({
       '@type': 'Organization',
       name: 'FrontendAtlas Editorial',
@@ -2015,7 +2027,7 @@ describe('guide-seo.util', () => {
     const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
 
     expect(article?.headline).toBe('Vue Interview Preparation Path: 7/14/30-Day Study Plan');
-    expect(article?.dateModified).toBe('2026-06-13T00:00:00.000Z');
+    expect(article?.dateModified).toBe(seoContentDateModified(article.url));
     expect(article?.author).toEqual({
       '@type': 'Organization',
       name: 'FrontendAtlas Editorial',

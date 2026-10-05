@@ -1,3 +1,4 @@
+import { seoContentDateModified } from '../../../core/utils/seo-content-date.util';
 // coding-detail.component.ts
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
@@ -1355,8 +1356,8 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     const seoTitle = this.seoTitle(q);
     const description = this.seoDescription(q);
     const keywords = this.questionKeywords(q);
-    const dateModified = this.resolveUpdatedIso(q);
-    const datePublished = this.resolvePublishedIso(dateModified);
+    const dateModified = seoContentDateModified(canonical);
+    const datePublished = this.resolvePublishedIso(this.resolveUpdatedIso(q));
     const imageUrl = this.structuredDataImageUrl();
     const interviewHubUrl = this.seo.buildCanonicalUrl(this.interviewQuestionsHubPath());
     const interviewHubLabel = this.interviewQuestionsHubLabel();
@@ -1440,7 +1441,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       ],
       isAccessibleForFree: accessibleForFree,
       keywords: keywords.join(', '),
-      dateModified: dateModified || datePublished,
+      ...(dateModified ? { dateModified } : {}),
     };
 
     const howTo = accessibleForFree ? this.buildHowToSchema(q, canonical) : null;

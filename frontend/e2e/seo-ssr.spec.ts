@@ -1,4 +1,5 @@
-import { test, expect, Page } from '@playwright/test';
+import { test, expect, Page, APIRequestContext } from '@playwright/test';
+import { loadSitemapDateMap, schemaDateMatchesSitemap } from '../scripts/seo-sitemap-date-contract.mjs';
 import { parse, serialize, DefaultTreeAdapterMap } from 'parse5';
 
 const WEB_HOST = process.env.PLAYWRIGHT_HOST || '127.0.0.1';
@@ -848,6 +849,26 @@ function extractRawLinkText(html: string, target: string): string {
   return rawVisibleText(anchorHtml);
 }
 
+let sitemapDateMap: Promise<Map<string, string>> | undefined;
+
+async function expectSitemapModificationDate(
+  request: APIRequestContext,
+  route: string,
+  schema: Record<string, unknown> | undefined,
+): Promise<void> {
+  sitemapDateMap ??= loadSitemapDateMap(BASE_URL, async (url) => {
+    const response = await request.get(url);
+    expect(response.status(), `sitemap status for ${url}`).toBe(200);
+    return response.text();
+  }, CANONICAL_BASE);
+  const dates = await sitemapDateMap;
+  expect(dates.has(route), `${route} is listed in the tested deployment's sitemap`).toBe(true);
+  expect(
+    schemaDateMatchesSitemap(schema, route, dates),
+    `${route}: dateModified=${String(schema?.['dateModified'])}, sitemap lastmod=${dates.get(route) || '(omitted)'}`,
+  ).toBe(true);
+}
+
 async function readRawHtml(request: any, path: string): Promise<string> {
   const response = await request.get(fullUrl(path));
   expect(response.status(), `status for ${path}`).toBe(200);
@@ -1003,6 +1024,30 @@ test.describe('seo-ssr', () => {
     !SSR_ENABLED,
     'SSR tests require prerender/SSR output (set PLAYWRIGHT_SSR=1 to force).',
   );
+
+  test('public main schema modification dates match the served sitemap', async ({ request }) => {
+    const cases = [
+      { path: '/react/coding/react-counter', type: 'TechArticle' },
+      { path: EVENT_LOOP_PATH, type: 'Article' },
+      { path: AI_AGENT_RUN_INSPECTOR_PATH, type: 'Article' },
+      { path: '/guides/interview-blueprint/intro', type: 'TechArticle' },
+      { path: '/incidents/stale-search-race', type: 'LearningResource' },
+      { path: '/tradeoffs/context-vs-zustand-vs-redux', type: 'LearningResource' },
+      { path: '/react/interview-questions', type: 'CollectionPage' },
+      { path: GOOGLE_PREVIEW_PATH, type: 'CollectionPage' },
+    ];
+
+    for (const entry of cases) {
+      await test.step(entry.path, async () => {
+        const html = await readRawHtml(request, entry.path);
+        const schemas = extractRawJsonLdNodes(html).filter((node) =>
+          node['@type'] === entry.type && node['url'] === expectedCanonical(entry.path),
+        );
+        expect(schemas, `${entry.path} has one canonical main schema`).toHaveLength(1);
+        await expectSitemapModificationDate(request, entry.path, schemas[0]);
+      });
+    }
+  });
 
   for (const entry of CONTEXTUAL_LINK_CASES) {
     test(`contextual links remain crawlable and navigable: ${entry.path}`, async ({ browser, page }) => {
@@ -1515,8 +1560,8 @@ test.describe('seo-ssr', () => {
       mainEntityOfPage: expectedCanonical(CSS_STICKY_LAB_PATH),
       isAccessibleForFree: true,
       datePublished: '2026-08-12T00:00:00.000Z',
-      dateModified: '2026-08-12T00:00:00.000Z',
     });
+    await expectSitemapModificationDate(request, CSS_STICKY_LAB_PATH, article);
   });
 
   test('raw Angular HttpClient cancellation lab exposes the complete public debugging answer and schema', async ({ request }) => {
@@ -1608,9 +1653,9 @@ test.describe('seo-ssr', () => {
       url: expectedCanonical(ANGULAR_HTTP_CANCELLATION_LAB_PATH),
       mainEntityOfPage: expectedCanonical(ANGULAR_HTTP_CANCELLATION_LAB_PATH),
       datePublished: '2026-01-25T00:00:00.000Z',
-      dateModified: '2026-08-03T00:00:00.000Z',
       isAccessibleForFree: true,
     });
+    await expectSitemapModificationDate(request, ANGULAR_HTTP_CANCELLATION_LAB_PATH, article);
     expect(article).not.toHaveProperty('citation');
     expect(article).not.toHaveProperty('hasPart');
   });
@@ -1899,9 +1944,9 @@ test.describe('seo-ssr', () => {
       url: expectedCanonical(STALE_CLOSURES_PATH),
       mainEntityOfPage: expectedCanonical(STALE_CLOSURES_PATH),
       datePublished: '2026-01-25T00:00:00.000Z',
-      dateModified: '2026-08-03T00:00:00.000Z',
       isAccessibleForFree: true,
     });
+    await expectSitemapModificationDate(request, STALE_CLOSURES_PATH, article);
     expect(article).not.toHaveProperty('citation');
     expect(article).not.toHaveProperty('hasPart');
   });
@@ -2129,9 +2174,9 @@ test.describe('seo-ssr', () => {
       url: expectedCanonical(INFINITE_SCROLL_PATH),
       mainEntityOfPage: expectedCanonical(INFINITE_SCROLL_PATH),
       datePublished: '2025-11-22T00:00:00.000Z',
-      dateModified: '2026-08-13T00:00:00.000Z',
       isAccessibleForFree: true,
     });
+    await expectSitemapModificationDate(request, INFINITE_SCROLL_PATH, article);
 
     const learningResource = schemaNodes.find((node) => node['@type'] === 'LearningResource');
     expect(learningResource).toMatchObject({
@@ -2202,9 +2247,9 @@ test.describe('seo-ssr', () => {
       url: expectedCanonical(AI_AGENT_RUN_INSPECTOR_PATH),
       mainEntityOfPage: expectedCanonical(AI_AGENT_RUN_INSPECTOR_PATH),
       datePublished: '2026-07-28T00:00:00.000Z',
-      dateModified: '2026-07-28T00:00:00.000Z',
       isAccessibleForFree: true,
     });
+    await expectSitemapModificationDate(request, AI_AGENT_RUN_INSPECTOR_PATH, article);
   });
 
   test('raw offline email client exposes exact indexable SEO and the complete free answer', async ({ request }) => {
@@ -2252,9 +2297,9 @@ test.describe('seo-ssr', () => {
       url: expectedCanonical(OFFLINE_EMAIL_CLIENT_PATH),
       mainEntityOfPage: expectedCanonical(OFFLINE_EMAIL_CLIENT_PATH),
       datePublished: '2026-07-29T00:00:00.000Z',
-      dateModified: '2026-07-29T00:00:00.000Z',
       isAccessibleForFree: true,
     });
+    await expectSitemapModificationDate(request, OFFLINE_EMAIL_CLIENT_PATH, article);
     const learningResource = schemaNodes.find((node) => node['@type'] === 'LearningResource');
     expect(learningResource).toMatchObject({
       '@id': `${expectedCanonical(OFFLINE_EMAIL_CLIENT_PATH)}#learning-resource`,
@@ -2478,10 +2523,10 @@ test.describe('seo-ssr', () => {
       headline: GOOGLE_PREVIEW_H1,
       description: GOOGLE_PREVIEW_DESCRIPTION,
       inLanguage: 'en',
-      dateModified: '2026-07-13T00:00:00.000Z',
       isAccessibleForFree: true,
       mainEntity: { '@id': `${expectedCanonical(GOOGLE_PREVIEW_PATH)}#practice-prompts` },
     });
+    await expectSitemapModificationDate(request, GOOGLE_PREVIEW_PATH, collectionPage);
 
     const breadcrumb = schemaNodes.find((node) => node['@type'] === 'BreadcrumbList');
     expect(breadcrumb).toBeTruthy();
@@ -2604,10 +2649,10 @@ test.describe('seo-ssr', () => {
       headline: NETFLIX_PREVIEW_H1,
       description: NETFLIX_PREVIEW_DESCRIPTION,
       inLanguage: 'en',
-      dateModified: '2026-07-27T00:00:00.000Z',
       isAccessibleForFree: true,
       mainEntity: { '@id': `${expectedCanonical(NETFLIX_PREVIEW_PATH)}#practice-prompts` },
     });
+    await expectSitemapModificationDate(request, NETFLIX_PREVIEW_PATH, collectionPage);
     expect(collectionPage?.mentions).toHaveLength(8);
 
     const breadcrumb = schemaNodes.find((node) => node['@type'] === 'BreadcrumbList');

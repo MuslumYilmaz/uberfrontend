@@ -138,6 +138,9 @@ function main() {
       || /^cdn\/questions\/[^/]+\/decision-graphs\/.+\.json$/.test(file)
       || EXPLAIN_ARTIFACT_FILES.has(file);
   });
+  const seoTouched = stagedFiles.some((file) =>
+    /^frontend\/src\/app\//.test(file) || /^cdn\/(questions|incidents|tradeoff-battles|practice|sb)\//.test(file)
+    || /^frontend\/scripts\/(seo-content-|generate-seo-|generate-sitemap|content-(?:paths|typescript)|gen-showcase-stats|ensure-seo-history)/.test(file));
   const designTouched = stagedFiles.some((file) => {
     return /^frontend\/src\/app\/.+\.(html|scss|css)$/.test(file)
       || file.startsWith('frontend/src/styles/')
@@ -150,6 +153,7 @@ function main() {
     || nodeSyntaxFiles.length > 0
     || contentTouched
     || assistTouched
+    || seoTouched
     || designTouched
     || backendJsFiles.length > 0
     || frontendSpecs.length > 0;
@@ -175,6 +179,11 @@ function main() {
       'npm',
       ['-C', 'frontend', 'run', 'lint:questions:hook'],
     );
+  }
+
+  if (seoTouched) {
+    runCommand('Validating staged public content mappings (dates are assigned after commit)', process.execPath,
+      ['frontend/scripts/generate-seo-content-dates.mjs', '--staged']);
   }
 
   if (assistTouched) {

@@ -3,6 +3,7 @@
 import fs from 'fs';
 import path from 'path';
 import { auditSeoPages, normalizeText, parseSeoPage } from './seo-meta-audit.mjs';
+import { auditContentDateParity, sitemapDatesFromXml } from './seo-date-parity.mjs';
 
 const BUILD_DIR = path.resolve(process.env.SEO_BUILD_DIR || 'dist/frontendatlas/browser');
 const STRICT_H1 = process.env.STRICT_H1 === '1';
@@ -425,6 +426,10 @@ if (!files.length) {
 
 const pages = files.map((file) => parseSeoPage(fs.readFileSync(file, 'utf8'), toRoute(file)));
 const { failures, warnings } = auditSeoPages(pages, { siteOrigin: CANONICAL_BASE, strictH1: STRICT_H1 });
+const sitemapFiles = fs.readdirSync(BUILD_DIR).filter((name) => /^sitemap-\d+\.xml$/.test(name));
+if (!sitemapFiles.length) throw new Error('Build has no sitemap shards. Run npm run build.');
+const sitemapDates = new Map(sitemapFiles.flatMap((name) => [...sitemapDatesFromXml(fs.readFileSync(path.join(BUILD_DIR, name), 'utf8'))]));
+failures.push(...auditContentDateParity(pages, sitemapDates));
 const pagesByRoute = new Map(pages.map((page) => [page.route, page]));
 
 for (const contract of criticalRouteContracts) {

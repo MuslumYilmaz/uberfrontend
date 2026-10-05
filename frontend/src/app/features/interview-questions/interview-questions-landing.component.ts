@@ -1,3 +1,4 @@
+import { seoContentDateModified } from '../../core/utils/seo-content-date.util';
 import { CommonModule } from '@angular/common';
 import {
   PUBLIC_EDITORIAL_FACTS,
@@ -79,7 +80,6 @@ type JavaScriptEditorialSignal = {
   updatedLabel: string;
   author: string;
   coverage: string;
-  dateModified: string;
 };
 type ReactCoverageLink = { label: string; route: any[] };
 type ReactTopicCard = { title: string; answer: string; link: ReactCoverageLink };
@@ -126,7 +126,6 @@ type ReactEditorialSignal = {
   updatedLabel: string;
   author: string;
   coverage: string;
-  dateModified: string;
 };
 type VueShortAnswerCategory = 'fundamentals' | 'reactivity-rendering' | 'components' | 'routing-state' | 'modern';
 type VueShortAnswerItem = {
@@ -170,7 +169,6 @@ type VueEditorialSignal = {
   updatedLabel: string;
   author: string;
   coverage: string;
-  dateModified: string;
 };
 type AngularCoverageLink = { label: string; route: any[] };
 type AngularTopicCard = { title: string; answer: string; link: AngularCoverageLink };
@@ -212,7 +210,6 @@ type AngularEditorialSignal = {
   updatedLabel: string;
   author: string;
   coverage: string;
-  dateModified: string;
 };
 type AngularKeywordClusterItem = {
   label: string;
@@ -252,7 +249,6 @@ type HtmlEditorialSignal = {
   updatedLabel: string;
   author: string;
   coverage: string;
-  dateModified: string;
 };
 type HtmlCssShortAnswerCategory = 'html' | 'css' | 'accessibility' | 'responsive-debugging';
 type HtmlCssShortAnswerItem = {
@@ -289,7 +285,6 @@ type HtmlCssEditorialSignal = {
   updatedLabel: string;
   author: string;
   coverage: string;
-  dateModified: string;
 };
 type CssShortAnswerCategory = 'fundamentals' | 'cascade-selectors' | 'layout' | 'responsive' | 'debugging-performance';
 type CssShortAnswerItem = {
@@ -319,13 +314,11 @@ type CssEditorialSignal = {
   updatedLabel: string;
   author: string;
   coverage: string;
-  dateModified: string;
 };
 type MasterEditorialSignal = {
   updatedLabel: string;
   author: string;
   coverage: string;
-  dateModified: string;
 };
 type MasterAnchorItem = { label: string; targetId: string };
 type MasterKeywordClusterItem = {
@@ -450,7 +443,6 @@ const MASTER_EDITORIAL_SIGNAL: MasterEditorialSignal = {
   updatedLabel: 'Updated May 21, 2026',
   author: PUBLIC_EDITORIAL_FACTS.author.name,
   coverage: '30 essential frontend answers plus Essential 60, coding, concepts, frameworks, debugging, and system design paths',
-  dateModified: '2026-05-21T00:00:00.000Z',
 };
 
 const MASTER_ANCHOR_ITEMS: MasterAnchorItem[] = [
@@ -1394,7 +1386,6 @@ const JAVASCRIPT_EDITORIAL_SIGNAL: JavaScriptEditorialSignal = {
   updatedLabel: 'Updated August 14, 2026',
   author: PUBLIC_EDITORIAL_FACTS.author.name,
   coverage: '25 answers, 8 output questions, and 8 browser/DOM/security questions',
-  dateModified: '2026-08-14T00:00:00.000Z',
 };
 
 const JAVASCRIPT_OUTPUT_QUESTIONS: JavaScriptOutputQuestionItem[] = [
@@ -1772,7 +1763,6 @@ const ANGULAR_EDITORIAL_SIGNAL: AngularEditorialSignal = {
   updatedLabel: 'Updated August 14, 2026',
   author: PUBLIC_EDITORIAL_FACTS.author.name,
   coverage: '65 visible Angular questions across answers, scenarios, modern Angular, testing, security, routing, and performance',
-  dateModified: '2026-08-14T00:00:00.000Z',
 };
 
 const ANGULAR_KEYWORD_CLUSTERS: AngularKeywordClusterItem[] = [
@@ -2280,7 +2270,6 @@ const REACT_EDITORIAL_SIGNAL: ReactEditorialSignal = {
   updatedLabel: 'Updated August 13, 2026',
   author: PUBLIC_EDITORIAL_FACTS.author.name,
   coverage: '66 visible React questions across answers, scenarios, modern React, rendering internals, React 19, server-first React, testing, state, and performance',
-  dateModified: '2026-08-13T00:00:00.000Z',
 };
 
 const REACT_ANCHOR_ITEMS: ReactAnchorItem[] = [
@@ -2859,7 +2848,6 @@ const VUE_EDITORIAL_SIGNAL: VueEditorialSignal = {
   updatedLabel: 'Updated August 13, 2026',
   author: PUBLIC_EDITORIAL_FACTS.author.name,
   coverage: '65 visible Vue.js questions across reactivity, Composition API, component contracts, Router, Pinia/Vuex, scenarios, modern Vue, testing, security, and performance',
-  dateModified: '2026-08-13T00:00:00.000Z',
 };
 
 const VUE_ANCHOR_ITEMS: VueAnchorItem[] = [
@@ -3656,7 +3644,6 @@ const HTML_CSS_EDITORIAL_SIGNAL: HtmlCssEditorialSignal = {
   updatedLabel: 'Updated August 20, 2026',
   author: PUBLIC_EDITORIAL_FACTS.author.name,
   coverage: '65 visible joint HTML and CSS questions across semantic structure, forms, accessibility, layout implementation, browser behavior, responsive UI, and code scenarios',
-  dateModified: '2026-08-20T00:00:00.000Z',
 };
 
 const HTML_CSS_ANCHOR_ITEMS: HtmlCssAnchorItem[] = [
@@ -4182,7 +4169,6 @@ const CSS_EDITORIAL_SIGNAL: CssEditorialSignal = {
   updatedLabel: 'Updated August 20, 2026',
   author: PUBLIC_EDITORIAL_FACTS.author.name,
   coverage: '65 visible CSS questions across cascade, specificity, box model, layout, responsive design, debugging, performance, and maintainable CSS',
-  dateModified: '2026-08-20T00:00:00.000Z',
 };
 
 const CSS_ANCHOR_ITEMS: CssAnchorItem[] = [
@@ -4725,7 +4711,6 @@ const HTML_EDITORIAL_SIGNAL: HtmlEditorialSignal = {
   updatedLabel: 'Updated May 21, 2026',
   author: PUBLIC_EDITORIAL_FACTS.author.name,
   coverage: '65 visible HTML questions across semantics, forms, accessibility, metadata, DOM, native browser behavior, modern HTML, and markup scenarios',
-  dateModified: '2026-05-21T00:00:00.000Z',
 };
 
 const HTML_ANCHOR_ITEMS: HtmlAnchorItem[] = [
@@ -6551,6 +6536,7 @@ export class InterviewQuestionsLandingComponent implements OnInit {
     const routeSeo = (this.route.snapshot.data['seo'] as SeoMeta | undefined) || {};
     const currentPath = this.currentRoutePath();
     const canonicalUrl = this.seo.buildCanonicalUrl(currentPath);
+    const dateModified = seoContentDateModified(canonicalUrl);
     const masterHubUrl = this.seo.buildCanonicalUrl('/interview-questions');
     const tracksUrl = this.seo.buildCanonicalUrl('/tracks');
     const companiesUrl = this.seo.buildCanonicalUrl('/companies');
@@ -6569,6 +6555,7 @@ export class InterviewQuestionsLandingComponent implements OnInit {
 
     const collectionPage: Record<string, any> = {
       '@type': 'CollectionPage',
+      ...(dateModified ? { dateModified } : {}),
       '@id': canonicalUrl,
       url: canonicalUrl,
       name: this.config.title,
@@ -6606,7 +6593,6 @@ export class InterviewQuestionsLandingComponent implements OnInit {
         { '@type': 'WebPage', name: 'Company frontend interview questions', url: companiesUrl },
       ];
     } else {
-      collectionPage['dateModified'] = MASTER_EDITORIAL_SIGNAL.dateModified;
       collectionPage['author'] = publicEditorialAuthorSchema();
       collectionPage['hasPart'] = this.masterTechHubLinks().map((hub) => ({
         '@type': 'WebPage',
@@ -6661,7 +6647,6 @@ export class InterviewQuestionsLandingComponent implements OnInit {
     }
 
     if (this.isReactHub()) {
-      collectionPage['dateModified'] = REACT_EDITORIAL_SIGNAL.dateModified;
       collectionPage['author'] = publicEditorialAuthorSchema();
       collectionPage['about'] = [
         ...(collectionPage['about'] || []),
@@ -6728,7 +6713,6 @@ export class InterviewQuestionsLandingComponent implements OnInit {
     }
 
     if (this.isVueHub()) {
-      collectionPage['dateModified'] = VUE_EDITORIAL_SIGNAL.dateModified;
       collectionPage['author'] = publicEditorialAuthorSchema();
       collectionPage['about'] = [
         ...(collectionPage['about'] || []),
@@ -6768,7 +6752,6 @@ export class InterviewQuestionsLandingComponent implements OnInit {
     }
 
     if (this.isJavaScriptHub()) {
-      collectionPage['dateModified'] = JAVASCRIPT_EDITORIAL_SIGNAL.dateModified;
       collectionPage['author'] = publicEditorialAuthorSchema();
       collectionPage['about'] = [
         ...(collectionPage['about'] || []),
@@ -6799,7 +6782,6 @@ export class InterviewQuestionsLandingComponent implements OnInit {
     }
 
     if (this.isAngularHub()) {
-      collectionPage['dateModified'] = ANGULAR_EDITORIAL_SIGNAL.dateModified;
       collectionPage['author'] = publicEditorialAuthorSchema();
       collectionPage['about'] = [
         ...(collectionPage['about'] || []),
@@ -6854,7 +6836,6 @@ export class InterviewQuestionsLandingComponent implements OnInit {
     }
 
     if (this.isHtmlCssHub()) {
-      collectionPage['dateModified'] = HTML_CSS_EDITORIAL_SIGNAL.dateModified;
       collectionPage['author'] = publicEditorialAuthorSchema();
       collectionPage['about'] = [
         ...(collectionPage['about'] || []),
@@ -6886,7 +6867,6 @@ export class InterviewQuestionsLandingComponent implements OnInit {
     }
 
     if (this.isCssHub()) {
-      collectionPage['dateModified'] = CSS_EDITORIAL_SIGNAL.dateModified;
       collectionPage['author'] = publicEditorialAuthorSchema();
       collectionPage['about'] = [
         ...(collectionPage['about'] || []),
@@ -6927,7 +6907,6 @@ export class InterviewQuestionsLandingComponent implements OnInit {
     }
 
     if (this.isHtmlHub()) {
-      collectionPage['dateModified'] = HTML_EDITORIAL_SIGNAL.dateModified;
       collectionPage['author'] = publicEditorialAuthorSchema();
       collectionPage['about'] = [
         ...(collectionPage['about'] || []),

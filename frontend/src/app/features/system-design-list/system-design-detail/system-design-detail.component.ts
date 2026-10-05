@@ -1,3 +1,4 @@
+import { seoContentDateModified } from '../../../core/utils/seo-content-date.util';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { PUBLIC_EDITORIAL_FACTS, publicEditorialAuthorSchema } from '../../../core/content/public-editorial-facts';
 import {
@@ -889,8 +890,8 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
     const seoTitle = this.seoTitle(question);
     const description = this.seoDescription(question);
     const keywords = this.sdKeywords(question);
-    const dateModified = this.resolveUpdatedIso(question);
-    const datePublished = this.resolvePublishedIso(question, dateModified);
+    const dateModified = seoContentDateModified(canonical);
+    const datePublished = this.resolvePublishedIso(question, this.resolveUpdatedIso(question));
     const imageUrl = this.structuredDataImageUrl();
     const accessibleForFree = isContentAccessibleForFree(question.access);
     const robots = robotsForContentAccess(question.access);
@@ -940,7 +941,7 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
       },
       isAccessibleForFree: accessibleForFree,
       keywords: keywords.join(', '),
-      dateModified: dateModified || datePublished,
+      ...(dateModified ? { dateModified } : {}),
     };
 
     const learningResource = this.buildLearningResourceSchema(question, canonical);

@@ -1,3 +1,4 @@
+import { srcSitemapPath } from './content-paths.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import test from 'node:test';
@@ -7,7 +8,7 @@ import { cdnPracticeRegistryPath, generatedAppDir } from './content-paths.mjs';
 test('public navigation includes each free technology question and preserves debug routes', () => {
   const registry = JSON.parse(fs.readFileSync(cdnPracticeRegistryPath, 'utf8'));
   const entries = buildPublicQuestionNavigation(registry);
-  const sitemap = fs.readFileSync('src/sitemap.xml', 'utf8');
+  const sitemap = fs.readFileSync(srcSitemapPath, 'utf8');
   const publicQuestions = [...sitemap.matchAll(/<loc>https:\/\/frontendatlas\.com(\/(?:javascript|react|angular|vue|html|css)\/(?:coding|trivia|debug)\/[^<]+)<\/loc>/g)]
     .map((match) => match[1]).sort();
   assert.deepEqual(entries.map((entry) => entry.route).sort(), publicQuestions);

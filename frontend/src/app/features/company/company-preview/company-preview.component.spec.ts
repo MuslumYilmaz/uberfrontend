@@ -1,3 +1,4 @@
+import { seoContentDateModified } from '../../../core/utils/seo-content-date.util';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Data, convertToParamMap, provideRouter } from '@angular/router';
 import { BehaviorSubject, of } from 'rxjs';
@@ -78,7 +79,7 @@ describe('CompanyPreviewComponent', () => {
     );
     expect(payload.canonical).toBe('/companies/openai/preview');
     expect(payload.robots).toBe('index,follow');
-    expect(collection?.dateModified).toBe('2026-07-11T00:00:00.000Z');
+    expect(collection?.dateModified).toBe(seoContentDateModified(collection.url));
     expect(collection?.disambiguatingDescription).toBe(
       'Editorial practice groupings, not verified official interview questions or endorsements.',
     );
@@ -172,7 +173,7 @@ describe('CompanyPreviewComponent', () => {
     expect(collection?.name).toBe('Google Frontend Interview Questions: 7 Prompts + Prep Guide');
     expect(collection?.headline).toBe('Google Frontend Interview Questions');
     expect(collection?.inLanguage).toBe('en');
-    expect(collection?.dateModified).toBe('2026-07-13T00:00:00.000Z');
+    expect(collection?.dateModified).toBe(seoContentDateModified(collection.url));
     expect(collection?.isAccessibleForFree).toBeTrue();
     expect(collection?.mainEntity?.['@id']).toBe(
       'https://frontendatlas.com/companies/google/preview#practice-prompts',
@@ -313,7 +314,7 @@ describe('CompanyPreviewComponent', () => {
 
     expect(collection?.url).toBe('https://frontendatlas.com/companies/netflix/preview');
     expect(collection?.headline).toBe('Netflix Frontend Interview Questions');
-    expect(collection?.dateModified).toBe('2026-07-27T00:00:00.000Z');
+    expect(collection?.dateModified).toBe(seoContentDateModified(collection.url));
     expect(collection?.isAccessibleForFree).toBeTrue();
     expect(collection?.mainEntity?.['@id']).toBe(
       'https://frontendatlas.com/companies/netflix/preview#practice-prompts',

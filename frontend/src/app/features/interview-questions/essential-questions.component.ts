@@ -1,3 +1,4 @@
+import { seoContentDateModified } from '../../core/utils/seo-content-date.util';
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, computed, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -350,6 +351,7 @@ export class EssentialQuestionsComponent implements OnInit {
   private updateSeo(): void {
     const seoData = (this.route.snapshot.data['seo'] as SeoMeta | undefined) || {};
     const canonical = this.seo.buildCanonicalUrl('/interview-questions/essential');
+    const dateModified = seoContentDateModified(canonical);
     const itemList = {
       '@type': 'ItemList',
       itemListElement: this.data.items.slice(0, 60).map((item, index) => ({
@@ -385,7 +387,7 @@ export class EssentialQuestionsComponent implements OnInit {
           url: canonical,
           name: this.data.collection.title,
           description: this.data.collection.description,
-          dateModified: this.collectionDateModified(),
+          ...(dateModified ? { dateModified } : {}),
           author: publicEditorialAuthorSchema(),
           about: schemaEntities,
           mentions: [
@@ -401,11 +403,4 @@ export class EssentialQuestionsComponent implements OnInit {
     });
   }
 
-  private collectionDateModified(): string | undefined {
-    const updatedAt = this.data.collection.updatedAt;
-    if (/^\d{4}-\d{2}-\d{2}$/.test(updatedAt)) {
-      return `${updatedAt}T00:00:00.000Z`;
-    }
-    return undefined;
-  }
 }

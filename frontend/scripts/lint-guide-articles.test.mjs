@@ -411,6 +411,54 @@ function testShallowHistorySkipsGitDateFloorChecks() {
   assert.match(output, /guide articles look valid/);
 }
 
+function testEditorialDatesRemainValidatedWithoutWholeFileFreshnessWarnings() {
+  const tempRoot = makeTempRoot();
+  const tempDrafts = path.join(tempRoot, 'content-drafts');
+  writeShell(tempRoot);
+  writeFile(tempRoot, 'src/app/features/guides/playbook/guide-one.ts', guideComponent());
+  const writeEntry = (overrides = {}) => writeFile(
+    tempRoot,
+    'src/app/shared/guides/guide.registry.ts',
+    guideRegistry(guideEntry({
+      slug: 'guide-one',
+      title: 'Guide One',
+      primaryKeyword: 'guide one keyword',
+      keywords: ['guide one keyword'],
+      importPath: '../../features/guides/playbook/guide-one',
+      ...overrides,
+    })),
+  );
+  // A later file commit may change formatting or infrastructure without changing the article.
+  writeFile(tempRoot, 'bin/git', `#!/usr/bin/env node
+const args = process.argv.slice(2);
+if (args[0] === 'rev-parse') console.log('false');
+else if (args.includes('--diff-filter=A')) console.log('2020-01-01T00:00:00Z');
+else if (args.includes('-1')) console.log('2030-01-01T00:00:00Z');
+else process.exit(1);
+`);
+  fs.chmodSync(path.join(tempRoot, 'bin/git'), 0o755);
+  const env = {
+    PATH: `${path.join(tempRoot, 'bin')}${path.delimiter}${process.env.PATH || ''}`,
+    GUIDE_ARTICLES_SKIP_GIT_HISTORY_CHECKS: '0',
+  };
+
+  writeEntry();
+  const output = runLinter(tempRoot, tempDrafts, env);
+  assert.match(output, /guide articles look valid/);
+  assert.doesNotMatch(output, /warnings:/);
+
+  for (const [overrides, expectedError] of [
+    [{ publishedAt: 'invalid' }, /missing or invalid seo.publishedAt/],
+    [{ updatedAt: 'invalid' }, /missing or invalid seo.updatedAt/],
+    [{ updatedAt: '2024-12-31' }, /seo.updatedAt cannot be earlier than seo.publishedAt/],
+    [{ publishedAt: '2019-12-31' }, /earlier than the first git commit/],
+  ]) {
+    writeEntry(overrides);
+    const failure = expectFailure(tempRoot, tempDrafts, env);
+    assert.match(String(failure.stderr || ''), expectedError);
+  }
+}
+
 function testReExportWrapperResolvesUnderlyingGuideTemplate() {
   const tempRoot = makeTempRoot();
   const tempDrafts = path.join(tempRoot, 'content-drafts');
@@ -447,6 +495,7 @@ testDraftBackedGuideFailsOnMismatchedUniqueAngle();
 testDraftBackedGuideFailsWhenFactCheckedAtIsOlderThanDraft();
 testDraftBackedGuideRequiresReaderPromiseBinding();
 testShallowHistorySkipsGitDateFloorChecks();
+testEditorialDatesRemainValidatedWithoutWholeFileFreshnessWarnings();
 testReExportWrapperResolvesUnderlyingGuideTemplate();
 
 console.log('[lint-guide-articles.test] ok');

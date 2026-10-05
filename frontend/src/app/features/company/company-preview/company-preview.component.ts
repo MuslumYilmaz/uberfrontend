@@ -1,3 +1,4 @@
+import { seoContentDateModified } from '../../../core/utils/seo-content-date.util';
 import { CommonModule } from '@angular/common';
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -16,7 +17,6 @@ import {
   GOOGLE_PRACTICE_PROMPTS,
   GOOGLE_PREP_SEQUENCE,
   GOOGLE_PREVIEW_CANONICAL_PATH,
-  GOOGLE_PREVIEW_DATE_MODIFIED,
   GOOGLE_PREVIEW_DESCRIPTION,
   GOOGLE_PREVIEW_FAQS,
   GOOGLE_PREVIEW_H1,
@@ -30,7 +30,6 @@ import {
   NETFLIX_PRACTICE_PROMPTS,
   NETFLIX_PREP_SEQUENCE,
   NETFLIX_PREVIEW_CANONICAL_PATH,
-  NETFLIX_PREVIEW_DATE_MODIFIED,
   NETFLIX_PREVIEW_DESCRIPTION,
   NETFLIX_PREVIEW_FAQS,
   NETFLIX_PREVIEW_H1,
@@ -64,7 +63,6 @@ const OPENAI_PREVIEW_H1 = 'OpenAI Frontend Interview Questions';
 const OPENAI_PREVIEW_DESCRIPTION =
   'Practice for OpenAI frontend interviews with representative prompts on streaming chat UI, stale stream handling, optimistic React state, accessibility, and history design.';
 const OPENAI_PREVIEW_CANONICAL_PATH = '/companies/openai/preview';
-const OPENAI_PREVIEW_DATE_MODIFIED = '2026-07-11T00:00:00.000Z';
 const OPENAI_TRUST_NOTE =
   'These are not leaked or confirmed OpenAI interview questions; they are representative, role-relevant practice prompts.';
 
@@ -374,6 +372,7 @@ export class CompanyPreviewComponent implements OnInit {
 
   private publishOpenAiSeo(): void {
     const canonicalUrl = this.seo.buildCanonicalUrl(OPENAI_PREVIEW_CANONICAL_PATH);
+    const dateModified = seoContentDateModified(canonicalUrl);
     const collectionPage = {
       '@type': 'CollectionPage',
       '@id': `${canonicalUrl}#collection`,
@@ -383,7 +382,7 @@ export class CompanyPreviewComponent implements OnInit {
       description: OPENAI_PREVIEW_DESCRIPTION,
       disambiguatingDescription: COMPANY_PRACTICE_DISCLAIMER,
       inLanguage: 'en',
-      dateModified: OPENAI_PREVIEW_DATE_MODIFIED,
+      ...(dateModified ? { dateModified } : {}),
       about: [
         { '@type': 'Thing', name: 'OpenAI frontend interview practice' },
         { '@type': 'Thing', name: 'Streaming chat frontend practice' },
@@ -441,6 +440,7 @@ export class CompanyPreviewComponent implements OnInit {
 
   private publishGoogleSeo(): void {
     const canonicalUrl = this.seo.buildCanonicalUrl(GOOGLE_PREVIEW_CANONICAL_PATH);
+    const dateModified = seoContentDateModified(canonicalUrl);
     const itemListId = `${canonicalUrl}#practice-prompts`;
     const itemList = {
       '@type': 'ItemList',
@@ -465,7 +465,7 @@ export class CompanyPreviewComponent implements OnInit {
       description: GOOGLE_PREVIEW_DESCRIPTION,
       disambiguatingDescription: COMPANY_PRACTICE_DISCLAIMER,
       inLanguage: 'en',
-      dateModified: GOOGLE_PREVIEW_DATE_MODIFIED,
+      ...(dateModified ? { dateModified } : {}),
       isAccessibleForFree: true,
       about: [
         { '@type': 'Thing', name: 'Google frontend interview preparation' },
@@ -517,6 +517,7 @@ export class CompanyPreviewComponent implements OnInit {
 
   private publishNetflixSeo(): void {
     const canonicalUrl = this.seo.buildCanonicalUrl(NETFLIX_PREVIEW_CANONICAL_PATH);
+    const dateModified = seoContentDateModified(canonicalUrl);
     const itemListId = `${canonicalUrl}#practice-prompts`;
     const itemList = {
       '@type': 'ItemList',
@@ -541,7 +542,7 @@ export class CompanyPreviewComponent implements OnInit {
       description: NETFLIX_PREVIEW_DESCRIPTION,
       disambiguatingDescription: NETFLIX_PREVIEW_TRUST_NOTE,
       inLanguage: 'en',
-      dateModified: NETFLIX_PREVIEW_DATE_MODIFIED,
+      ...(dateModified ? { dateModified } : {}),
       isAccessibleForFree: true,
       about: [
         { '@type': 'Thing', name: 'Netflix frontend interview preparation' },

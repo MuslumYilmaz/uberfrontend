@@ -33,7 +33,6 @@ export const GOOGLE_PREVIEW_H1 = 'Google Frontend Interview Questions';
 export const GOOGLE_PREVIEW_DESCRIPTION =
   'Prepare for a Google frontend interview with 7 representative questions covering DSA, JavaScript, browser APIs, UI coding, accessibility, and system design.';
 export const GOOGLE_PREVIEW_CANONICAL_PATH = '/companies/google/preview';
-export const GOOGLE_PREVIEW_DATE_MODIFIED = '2026-07-13T00:00:00.000Z';
 export const GOOGLE_PREVIEW_TRUST_NOTE =
   'These are representative FrontendAtlas practice prompts, not leaked or confirmed Google interview questions. Interview formats vary by role, level, team, location, and time.';
 

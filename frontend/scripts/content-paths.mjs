@@ -29,8 +29,13 @@ export const cdnIncidentsIndexPath = path.join(cdnIncidentsDir, 'index.json');
 export const cdnTradeoffBattlesIndexPath = path.join(cdnTradeoffBattlesDir, 'index.json');
 export const cdnPracticeRegistryPath = path.join(cdnPracticeDir, 'registry.json');
 
-export const srcSitemapPath = path.join(srcDir, 'sitemap.xml');
-export const srcSitemapIndexPath = path.join(srcDir, 'sitemap-index.xml');
+// Only sitemap XML is copied to the public build; provenance stays build-local.
+export const seoOutputDir = path.join(frontendRoot, '.angular', 'seo');
+export const sitemapDir = path.join(seoOutputDir, 'sitemaps');
+export const seoDatesReportPath = path.join(seoOutputDir, 'content-dates.json');
+export const seoDatesModulePath = path.join(generatedAppDir, 'seo-content-dates.ts');
+export const srcSitemapPath = path.join(sitemapDir, 'sitemap.xml');
+export const srcSitemapIndexPath = path.join(sitemapDir, 'sitemap-index.xml');
 export const srcPrerenderRoutesPath = path.join(srcDir, 'prerender.routes.txt');
 export const guideRegistryPath = path.join(srcDir, 'app', 'shared', 'guides', 'guide.registry.ts');
 export const masteryPathsDir = path.join(srcDir, 'app', 'shared', 'mastery', 'paths');

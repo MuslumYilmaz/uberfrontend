@@ -1,3 +1,4 @@
+import { seoContentDateModified } from '../../core/utils/seo-content-date.util';
 import { SeoMeta, SeoService } from '../../core/services/seo.service';
 import { PUBLIC_EDITORIAL_FACTS } from '../../core/content/public-editorial-facts';
 import { GuideAuthor, GuideEntry, GuideSeo } from '../../shared/guides/guide.registry';
@@ -184,8 +185,7 @@ export function buildGuideDetailSeo(
   const keywords = buildKeywordList(entry.seo?.primaryKeyword, entry.seo?.keywords);
   const imageUrl = seo.buildCanonicalUrl('/assets/images/frontend-atlas-logo.png');
   const datePublished = normalizeIsoDate(entry.seo?.publishedAt) || DEFAULT_GUIDE_PUBLISHED_AT;
-  const requestedDateModified = normalizeIsoDate(entry.seo?.updatedAt) || datePublished;
-  const dateModified = requestedDateModified < datePublished ? datePublished : requestedDateModified;
+  const dateModified = seoContentDateModified(canonical);
   const author = buildAuthorSchema();
 
   const breadcrumb = {
@@ -227,7 +227,7 @@ export function buildGuideDetailSeo(
     image: [imageUrl],
     keywords: keywords?.join(', '),
     datePublished,
-    dateModified,
+    ...(dateModified ? { dateModified } : {}),
     mainEntityOfPage: canonical,
     inLanguage: 'en',
     isAccessibleForFree: true,
