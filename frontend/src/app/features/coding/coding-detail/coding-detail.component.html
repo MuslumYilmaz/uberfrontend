@@ -517,14 +517,14 @@
               </section>
 
               <!-- Overview -->
-              <section class="space-y-2 mb-5" *ngIf="!pressureActive() && structuredSolution().overview">
+              <section class="space-y-2 mb-5" *ngIf="!pressureRequested() && structuredSolution().overview">
                 <h3 class="text-sm font-semibold opacity-90">Overview</h3>
                 <div class="solution-prose prose prose-invert max-w-none"
                   [innerHTML]="md(structuredSolution().overview) | safeHtml"></div>
               </section>
 
               <!-- Approaches -->
-              <ng-container *ngIf="!pressureActive()">
+              <ng-container *ngIf="!pressureRequested()">
               <div class="p-3" *ngFor="let ap of approaches(); let i = index">
                 <div class="ap-row">
                   <span class="ap-num">{{ i + 1 }}</span>
@@ -544,36 +544,32 @@
 
                 <!-- WEB: show HTML and CSS as separate, nicely labeled blocks -->
                 <ng-container *ngIf="isWebTech(); else nonWebApproach">
-                  <div class="code-wrap mb-2" *ngIf="activePanel()===1 && ap.codeHtml">
+                  <div class="code-wrap mb-2" *ngIf="ap.codeHtml">
                     <div class="px-2 py-1 text-xs opacity-80">&lt;html&gt;</div>
-                    <ng-container *ngIf="!solutionRenderStatic(); else liteHtmlBlock">
+                    <ng-container *ngIf="!solutionRenderStatic()">
                       <app-monaco-editor
                         class="rounded border border-white/10 pointer-events-none select-none w-full block"
                         [code]="prettifyHtml(unescapeJsLiterals(ap.codeHtml || ''))" [language]="'html'" [readOnly]="true"
                         [autoHeight]="true" [options]="examplesMonacoOptions">
                       </app-monaco-editor>
                     </ng-container>
-                    <ng-template #liteHtmlBlock>
-                      <pre class="lite-code"><code>{{ prettifyHtml(unescapeJsLiterals(ap.codeHtml || '')) }}</code></pre>
-                    </ng-template>
+                    <pre class="lite-code" data-solution-language="html" [hidden]="!solutionRenderStatic()"><code>{{ prettifyHtml(unescapeJsLiterals(ap.codeHtml || '')) }}</code></pre>
                     <button class="copy-fab" [class.copied]="copiedIdx===i" aria-label="Copy HTML" title="Copy HTML"
                       (click)="onCopyApproach(i, prettifyHtml(unescapeJsLiterals(ap.codeHtml || '')))">
                       <app-fa-glyph class="copy-fab__icon" [icon]="copiedIdx===i ? 'pi pi-check' : 'pi pi-copy'"></app-fa-glyph>
                     </button>
                   </div>
 
-                  <div class="code-wrap" *ngIf="activePanel()===1 && ap.codeCss">
+                  <div class="code-wrap" *ngIf="ap.codeCss">
                     <div class="px-2 py-1 text-xs opacity-80"># CSS</div>
-                    <ng-container *ngIf="!solutionRenderStatic(); else liteCssBlock">
+                    <ng-container *ngIf="!solutionRenderStatic()">
                       <app-monaco-editor
                         class="rounded border border-white/10 pointer-events-none select-none w-full block"
                         [code]="prettifyCss(unescapeJsLiterals(ap.codeCss || ''))" [language]="'css'" [readOnly]="true"
                         [autoHeight]="true" [options]="examplesMonacoOptions">
                       </app-monaco-editor>
                     </ng-container>
-                    <ng-template #liteCssBlock>
-                      <pre class="lite-code"><code>{{ prettifyCss(unescapeJsLiterals(ap.codeCss || '')) }}</code></pre>
-                    </ng-template>
+                    <pre class="lite-code" data-solution-language="css" [hidden]="!solutionRenderStatic()"><code>{{ prettifyCss(unescapeJsLiterals(ap.codeCss || '')) }}</code></pre>
                     <button class="copy-fab" [class.copied]="copiedIdx===i" aria-label="Copy CSS" title="Copy CSS"
                       (click)="onCopyApproach(i, prettifyCss(unescapeJsLiterals(ap.codeCss || '')))">
                       <app-fa-glyph class="copy-fab__icon" [icon]="copiedIdx===i ? 'pi pi-check' : 'pi pi-copy'"></app-fa-glyph>
@@ -581,20 +577,19 @@
                   </div>
                 </ng-container>
 
-                <!-- JS/TS path (unchanged) -->
+                <!-- Both language variants stay readable in the initial HTML. -->
                 <ng-template #nonWebApproach>
                   <!-- Only show inline code for plain JS/TS. Frameworks use the Files section instead. -->
-                  <div class="code-wrap" *ngIf="activePanel()===1 && !isFrameworkTech() && !isWebTech()">
-                    <ng-container *ngIf="!solutionRenderStatic(); else liteApproachBlock">
+                  <div class="code-wrap" *ngIf="!isFrameworkTech() && !isWebTech()">
+                    <ng-container *ngIf="!solutionRenderStatic()">
                       <app-monaco-editor
                         class="rounded border border-white/10 pointer-events-none select-none w-full block"
                         [code]="codeFor(ap)" [language]="currentJsLang()==='ts' ? 'typescript' : 'javascript'"
                         [readOnly]="true" [autoHeight]="true" [options]="examplesMonacoOptions">
                       </app-monaco-editor>
                     </ng-container>
-                    <ng-template #liteApproachBlock>
-                      <pre class="lite-code"><code>{{ codeFor(ap) }}</code></pre>
-                    </ng-template>
+                    <pre *ngIf="ap.codeJs" class="lite-code" data-solution-language="js" [hidden]="!solutionRenderStatic() || currentJsLang() !== 'js'"><code>{{ ap.codeJs }}</code></pre>
+                    <pre *ngIf="ap.codeTs" class="lite-code" data-solution-language="ts" [hidden]="!solutionRenderStatic() || currentJsLang() !== 'ts'"><code>{{ ap.codeTs }}</code></pre>
                     <button class="copy-fab" [class.copied]="copiedIdx===i" aria-label="Copy code" title="Copy"
                       (click)="onCopyApproach(i, codeFor(ap))">
                       <app-fa-glyph class="copy-fab__icon" [icon]="copiedIdx===i ? 'pi pi-check' : 'pi pi-copy'"></app-fa-glyph>
@@ -602,8 +597,16 @@
                   </div>
                 </ng-template>
 
-                <!-- Solution Files (read-only) -->
-                <section *ngIf="activePanel()===1 && isFrameworkTech() && solutionFileList().length" class="mt-4 space-y-2">
+                <ng-container *ngTemplateOutlet="frameworkSolutionFiles"></ng-container>
+              </div>
+
+              <div *ngIf="isFrameworkTech() && !approaches().length" class="p-3">
+                <ng-container *ngTemplateOutlet="frameworkSolutionFiles"></ng-container>
+              </div>
+
+              <!-- Keep the existing approach layout, including legacy file-only solutions. -->
+              <ng-template #frameworkSolutionFiles>
+                <section *ngIf="isFrameworkTech() && solutionFileList().length" class="mt-4 space-y-2">
                   <div class="flex items-center justify-between">
                     <h3 class="text-sm font-semibold">Files</h3>
                     <button *ngIf="workspaceAvailable()" type="button" faButton class="text-[10px]" (click)="loadSolutionIntoEditor()"
@@ -622,7 +625,7 @@
 
                   <!-- Active file viewer -->
                   <div class="code-wrap mt-2">
-                    <ng-container *ngIf="!solutionRenderStatic(); else liteSolutionBlock">
+                    <ng-container *ngIf="!solutionRenderStatic()">
                       <app-monaco-editor
                         class="rounded border border-white/10 pointer-events-none select-none w-full block"
                         [code]="activeSolutionFilesMap()[solutionCurrentPath()] || ''"
@@ -630,9 +633,8 @@
                         [options]="examplesMonacoOptions" [autoHeight]="true">
                       </app-monaco-editor>
                     </ng-container>
-                    <ng-template #liteSolutionBlock>
-                      <pre class="lite-code"><code>{{ activeSolutionFilesMap()[solutionCurrentPath()] || '' }}</code></pre>
-                    </ng-template>
+                    <pre *ngFor="let p of solutionFileList()" class="lite-code" [attr.data-solution-file]="p"
+                      [hidden]="!solutionRenderStatic() || solutionCurrentPath() !== p"><code>{{ activeSolutionFilesMap()[p] }}</code></pre>
 
                     <button class="copy-fab" [class.copied]="copiedSolutionFile()" aria-label="Copy file" title="Copy"
                       (click)="copyText(activeSolutionFilesMap()[solutionCurrentPath()] || '')">
@@ -640,11 +642,11 @@
                     </button>
                   </div>
                 </section>
-              </div>
+              </ng-template>
               </ng-container>
 
               <!-- Notes / Pitfalls / Edge cases / Techniques -->
-              <section class="space-y-3 mb-6" *ngIf="!pressureActive() && hasAnyNotes()">
+              <section class="space-y-3 mb-6" *ngIf="!pressureRequested() && hasAnyNotes()">
                 <h3 class="text-sm font-semibold opacity-90">Notes &amp; Pitfalls</h3>
 
                 <div class="grid md:grid-cols-3 gap-3">
@@ -674,7 +676,7 @@
               </section>
 
               <!-- Short solution follow-ups -->
-              <section class="space-y-2 mb-6" *ngIf="!pressureActive() && structuredSolution()?.followUp?.length">
+              <section class="space-y-2 mb-6" *ngIf="!pressureRequested() && structuredSolution()?.followUp?.length">
                 <h3 class="text-sm font-semibold opacity-90">Common interview follow-ups:</h3>
                 <ul class="list-disc list-inside text-sm space-y-1">
                   <li class="font-sm" *ngFor="let f of structuredSolution()?.followUp">{{ f }}</li>
@@ -682,7 +684,7 @@
               </section>
 
               <!-- Resources -->
-              <section class="space-y-2" *ngIf="!pressureActive() && structuredSolution()?.resources?.length">
+              <section class="space-y-2" *ngIf="!pressureRequested() && structuredSolution()?.resources?.length">
                 <h3 class="text-sm font-semibold opacity-90">Resources</h3>
                 <ul class="text-sm space-y-1">
                   <li class="font-sm" *ngFor="let r of structuredSolution()?.resources">

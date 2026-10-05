@@ -3,8 +3,7 @@ import { PLATFORM_ID, inject } from '@angular/core';
 import { TransferState, makeStateKey } from '@angular/core';
 import { ResolveFn } from '@angular/router';
 import { forkJoin, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
-import { map } from 'rxjs/operators';
+import { catchError, map, switchMap } from 'rxjs/operators';
 import { Question } from '../models/question.model';
 import {
   normalizeSystemDesignQuestion,
@@ -12,10 +11,17 @@ import {
   SystemDesignQuestion,
 } from '../models/system-design.model';
 import { Tech } from '../models/user.model';
+import { ASSET_READER } from '../services/asset-reader';
 import { QuestionListItem, QuestionService } from '../services/question.service';
+import { resolveSolutionFiles } from '../utils/solution-asset.util';
 import { stripTriviaReferenceOnlyBlocks } from '../utils/trivia-search-intent.util';
 
 type QuestionKind = 'coding' | 'trivia' | 'debug';
+
+export type SolutionSnapshot = {
+  files: Record<string, string>;
+  initialPath: string;
+};
 
 export type QuestionDetailResolved = {
   tech: Tech;
@@ -24,6 +30,7 @@ export type QuestionDetailResolved = {
   list: Question[];
   listSummaries?: QuestionListItem[];
   question: Question | null;
+  solutionSnapshot?: SolutionSnapshot;
 };
 
 export interface SystemDesignQuestionResolved extends SystemDesignQuestion {
@@ -82,8 +89,41 @@ function questionDetailStateKey(tech: Tech, kind: QuestionKind, id: string) {
   return makeStateKey<QuestionDetailResolved>(`question-detail:${tech}:${kind}:${id}`);
 }
 
-function resolveDetail(tech: Tech, kind: QuestionKind, id: string) {
+function solutionAssetPath(resolved: QuestionDetailResolved, pressureRequested: boolean): string | null {
+  const { question, tech, kind } = resolved;
+  // Check access before touching protected/lazy solution properties. Public
+  // prerender snapshots never depend on a visitor's browser entitlement.
+  if (pressureRequested || !question || question.access !== 'free'
+    || (kind !== 'coding' && kind !== 'debug')
+    || !['react', 'angular', 'vue'].includes(tech)) return null;
+
+  const asset = (question as Question & { solutionAsset?: unknown }).solutionAsset;
+  if (typeof asset !== 'string') return null;
+  // ServerAssetReader accepts filesystem paths; only allow catalog solution
+  // assets, without absolute URLs, traversal, query strings, or other folders.
+  const allowedPath = new RegExp(`^assets/sb/${tech}/solution/[a-zA-Z0-9][a-zA-Z0-9._-]*\\.json$`);
+  return allowedPath.test(asset) ? asset : null;
+}
+
+function normalizeSolutionSnapshot(raw: unknown): SolutionSnapshot | undefined {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return undefined;
+  const asset = raw as { files?: unknown; openFile?: unknown };
+  const files = asset.files;
+  if (!files || typeof files !== 'object' || Array.isArray(files)
+    || (asset.openFile !== undefined && typeof asset.openFile !== 'string')) return undefined;
+
+  const entries = Object.entries(files);
+  if (!entries.length || entries.some(([path, value]) => !path.replace(/^\/+/, '')
+    || (typeof value !== 'string'
+      && (!value || typeof value !== 'object' || typeof value.code !== 'string')))) return undefined;
+
+  const snapshot = resolveSolutionFiles(raw);
+  return Object.values(snapshot.files).some((code) => code.trim()) ? snapshot : undefined;
+}
+
+function resolveDetail(tech: Tech, kind: QuestionKind, id: string, pressureRequested = false) {
   const qs = inject(QuestionService);
+  const assetReader = inject(ASSET_READER);
   const transferState = inject(TransferState);
   const platformId = inject(PLATFORM_ID);
   const stateKey = questionDetailStateKey(tech, kind, id);
@@ -106,12 +146,38 @@ function resolveDetail(tech: Tech, kind: QuestionKind, id: string) {
   }
 
   return qs.loadQuestions(tech, kind, { transferState: false }).pipe(
-    map((list) => {
+    switchMap((list) => {
       const resolved = buildQuestionDetailResolved(tech, kind, id, list);
       if (useLightweightTransferState && isPlatformServer(platformId)) {
         transferState.set(stateKey, resolved);
       }
-      return resolved;
+      const assetPath = solutionAssetPath(resolved, pressureRequested);
+      if (!assetPath) return of(resolved);
+
+      const solutionKey = makeStateKey<SolutionSnapshot>(`question-solution:${tech}:${kind}:${id}:${assetPath}`);
+      if (isPlatformBrowser(platformId)) {
+        if (!transferState.hasKey(solutionKey)) return of(resolved);
+        const cached = transferState.get(solutionKey, null as SolutionSnapshot | null);
+        transferState.remove(solutionKey);
+        const solutionSnapshot = cached && normalizeSolutionSnapshot({
+          files: cached.files,
+          openFile: cached.initialPath,
+        });
+        return of(solutionSnapshot ? { ...resolved, solutionSnapshot } : resolved);
+      }
+      if (!isPlatformServer(platformId)) return of(resolved);
+
+      // Returning the asset read from the resolver keeps route activation (and
+      // prerender completion) waiting for every solution file, without HTTP.
+      return assetReader.readJson(assetPath).pipe(
+        map((raw) => {
+          const solutionSnapshot = normalizeSolutionSnapshot(raw);
+          if (!solutionSnapshot) return resolved;
+          transferState.set(solutionKey, solutionSnapshot);
+          return { ...resolved, solutionSnapshot };
+        }),
+        catchError(() => of(resolved)),
+      );
     }),
   );
 }
@@ -128,7 +194,8 @@ export const codingDetailResolver: ResolveFn<QuestionDetailResolved> = (route) =
   const kind =
     (route.data?.['kind'] as QuestionKind | undefined)
     || (route.routeConfig?.path?.startsWith('debug') ? 'debug' : 'coding');
-  return resolveDetail(tech, kind, id);
+  const pressureRequested = String(route.queryParamMap?.get('mode') || '').trim().toLowerCase() === 'pressure';
+  return resolveDetail(tech, kind, id, pressureRequested);
 };
 
 export function normalizeSystemDesignDetail(

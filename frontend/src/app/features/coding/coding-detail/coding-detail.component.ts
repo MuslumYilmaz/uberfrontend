@@ -56,7 +56,7 @@ import { ActivityService } from '../../../core/services/activity.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { BugReportService } from '../../../core/services/bug-report.service';
 import { DailyService } from '../../../core/services/daily.service';
-import { QuestionDetailResolved } from '../../../core/resolvers/question-detail.resolver';
+import { QuestionDetailResolved, SolutionSnapshot } from '../../../core/resolvers/question-detail.resolver';
 import { AnalyticsService } from '../../../core/services/analytics.service';
 import { ExperimentService } from '../../../core/services/experiment.service';
 import { OnboardingService } from '../../../core/services/onboarding.service';
@@ -487,7 +487,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   activeSolutionFilesMap = computed(() =>
     this.pressureActive() && this.pressureCompleted()
       ? this.pressureSolutionFilesMap()
-      : this.pressureActive()
+      : this.pressureRequested()
         ? {}
         : this.solutionFilesMap()
   );
@@ -809,7 +809,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   });
 
   examplesRenderStatic = computed(() => !this.browserViewReady() || this.liteEditors() || this.showMobileDesktopGuard());
-  solutionRenderStatic = computed(() => !this.browserViewReady() || this.liteEditors() || this.showMobileDesktopGuard());
+  solutionRenderStatic = computed(() => this.activePanel() !== 1 || !this.browserViewReady() || this.liteEditors() || this.showMobileDesktopGuard());
 
   constructor(
     private route: ActivatedRoute,
@@ -1056,7 +1056,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     this.allQuestions = [...(resolved.list || [])].sort(CodingDetailComponent.sortForPractice);
     this.dataLoaded = true;
     if (resolved.id) {
-      this.loadQuestion(resolved.id);
+      this.loadQuestion(resolved.id, resolved.solutionSnapshot);
     }
   }
 
@@ -1609,7 +1609,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   }
 
   // ---------- Load question ----------
-  private async loadQuestion(id: string) {
+  private async loadQuestion(id: string, solutionSnapshot?: SolutionSnapshot) {
     const loadSeq = ++this.loadQuestionSeq;
     this.loadState.set('loading');
     const idx = this.allQuestions.findIndex(q => q.id === id);
@@ -1666,6 +1666,15 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     this.solutionFilesMap.set({});
     this.solutionOpenPath.set('');
     this.loadedSolutionAssetKey = null;
+
+    // Seed the same public solution tree for prerender and initial hydration.
+    // Premium and pressure solutions continue through their existing access gates.
+    if (q.access === 'free' && this.isFrameworkTech() && !routeRequestsPressure
+      && solutionSnapshot && Object.keys(solutionSnapshot.files).length) {
+      this.solutionFilesMap.set(solutionSnapshot.files);
+      this.solutionOpenPath.set(solutionSnapshot.initialPath);
+      this.loadedSolutionAssetKey = `${loadSeq}:${q.id}`;
+    }
 
     if (!this.isBrowser) return;
 
