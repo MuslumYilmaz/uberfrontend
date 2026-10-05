@@ -6,6 +6,7 @@ import { execFile } from 'child_process';
 import { promisify } from 'util';
 import { cdnSystemDesignIndexPath } from './content-paths.mjs';
 import { startSeoStaticServer } from './seo-static-server.mjs';
+import { loadSitemapDateMap, schemaDateMatchesSitemap } from './seo-sitemap-date-contract.mjs';
 
 const BUILD_DIR = path.resolve(process.env.SEO_BUILD_DIR || 'dist/frontendatlas/browser');
 const HOST = process.env.SEO_SERVER_HOST || '127.0.0.1';
@@ -401,6 +402,9 @@ try {
   });
 
   const base = server.baseUrl.replace(/\/+$/, '');
+  const sitemapDates = await loadSitemapDateMap(base, (url) => curlBody(url, {
+    followRedirects: true, userAgent: GOOGLEBOT_USER_AGENT,
+  }));
   const checks = [];
 
   const triviaPages = collectBuiltTriviaPages(BUILD_DIR);
@@ -674,7 +678,7 @@ try {
         `${ANGULAR_HTTP_CANCELLATION_LAB_H1} - ${TRIVIA_SCHEMA_HEADLINE_SUFFIX}` &&
       angularCancellationArticle?.description === ANGULAR_HTTP_CANCELLATION_LAB_DESCRIPTION &&
       angularCancellationArticle?.datePublished === '2026-01-25T00:00:00.000Z' &&
-      angularCancellationArticle?.dateModified === '2026-08-03T00:00:00.000Z' &&
+      schemaDateMatchesSitemap(angularCancellationArticle, ANGULAR_HTTP_CANCELLATION_LAB_ROUTE, sitemapDates) &&
       angularCancellationArticle?.isAccessibleForFree === true &&
       !Object.prototype.hasOwnProperty.call(angularCancellationArticle || {}, 'hasPart') &&
       !Object.prototype.hasOwnProperty.call(angularCancellationArticle || {}, 'citation'),
@@ -926,7 +930,7 @@ try {
         `${REACT_STALE_CLOSURES_H1} - ${TRIVIA_SCHEMA_HEADLINE_SUFFIX}` &&
       reactStaleClosuresArticle?.description === REACT_STALE_CLOSURES_DESCRIPTION &&
       reactStaleClosuresArticle?.datePublished === '2026-01-25T00:00:00.000Z' &&
-      reactStaleClosuresArticle?.dateModified === '2026-08-03T00:00:00.000Z' &&
+      schemaDateMatchesSitemap(reactStaleClosuresArticle, REACT_STALE_CLOSURES_ROUTE, sitemapDates) &&
       reactStaleClosuresArticle?.isAccessibleForFree === true &&
       !Object.prototype.hasOwnProperty.call(reactStaleClosuresArticle || {}, 'hasPart') &&
       !Object.prototype.hasOwnProperty.call(reactStaleClosuresArticle || {}, 'citation'),
@@ -1075,10 +1079,10 @@ try {
     detail: `mainEntity=${googleCollectionPage?.mainEntity?.['@id'] || '(missing)'}`,
   });
   checks.push({
-    name: 'Google company preview CollectionPage declares free access and current modification date',
+    name: 'Google company preview CollectionPage declares free access and the sitemap modification date',
     ok:
       googleCollectionPage?.isAccessibleForFree === true &&
-      googleCollectionPage?.dateModified === '2026-07-13T00:00:00.000Z',
+      schemaDateMatchesSitemap(googleCollectionPage, GOOGLE_PREVIEW_ROUTE, sitemapDates),
     detail: `dateModified=${googleCollectionPage?.dateModified || '(missing)'}`,
   });
   const googleBreadcrumbItems = Array.isArray(googleBreadcrumbs?.itemListElement)
@@ -1254,10 +1258,10 @@ try {
     detail: `mainEntity=${netflixCollectionPage?.mainEntity?.['@id'] || '(missing)'}`,
   });
   checks.push({
-    name: 'Netflix company preview CollectionPage declares free access and current modification date',
+    name: 'Netflix company preview CollectionPage declares free access and the sitemap modification date',
     ok:
       netflixCollectionPage?.isAccessibleForFree === true &&
-      netflixCollectionPage?.dateModified === '2026-07-27T00:00:00.000Z',
+      schemaDateMatchesSitemap(netflixCollectionPage, NETFLIX_PREVIEW_ROUTE, sitemapDates),
     detail: `dateModified=${netflixCollectionPage?.dateModified || '(missing)'}`,
   });
   const netflixBreadcrumbItems = Array.isArray(netflixBreadcrumbs?.itemListElement)

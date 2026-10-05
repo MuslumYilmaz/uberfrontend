@@ -2,6 +2,8 @@ import fs from 'fs';
 import path from 'path';
 import ts from 'typescript';
 import {
+  sitemapDir as SITEMAP_DIR,
+  seoDatesReportPath,
   cdnPracticeRegistryPath as PRACTICE_REGISTRY_PATH,
   cdnQuestionTrackRegistryPath as TRACK_REGISTRY_PATH,
 } from './content-paths.mjs';
@@ -12,8 +14,8 @@ import {
 } from './registry-detail-access-policy.mjs';
 
 const SRC_DIR = path.resolve('src');
-const INDEX_PATH = path.join(SRC_DIR, 'sitemap-index.xml');
-const FALLBACK_PATH = path.join(SRC_DIR, 'sitemap.xml');
+const INDEX_PATH = path.join(SITEMAP_DIR, 'sitemap-index.xml');
+const FALLBACK_PATH = path.join(SITEMAP_DIR, 'sitemap.xml');
 const PRERENDER_PATH = path.join(SRC_DIR, 'prerender.routes.txt');
 const MAX_URLS = 50000;
 const GUIDE_REGISTRY_PATH = path.join(SRC_DIR, 'app', 'shared', 'guides', 'guide.registry.ts');
@@ -104,7 +106,7 @@ function normalizePath(rawPath) {
 }
 
 function assertSitemapWithinLimit(fileName) {
-  const filePath = path.join(SRC_DIR, fileName);
+  const filePath = path.join(SITEMAP_DIR, fileName);
   const xml = readXml(filePath);
   const count = countUrlEntries(xml);
   if (count > MAX_URLS) {
@@ -141,14 +143,16 @@ function getSitemapFileNames() {
 
 function getAllSitemapLocs(fileNames) {
   return fileNames.flatMap((fileName) => {
-    const xml = readXml(path.join(SRC_DIR, fileName));
+    const xml = readXml(path.join(SITEMAP_DIR, fileName));
+    if (/<sitemapindex\b/.test(xml)) return getAllSitemapLocs(extractLocs(xml).map(toLocalFile));
     return extractLocs(xml);
   });
 }
 
 function getAllSitemapEntries(fileNames) {
   return fileNames.flatMap((fileName) => {
-    const xml = readXml(path.join(SRC_DIR, fileName));
+    const xml = readXml(path.join(SITEMAP_DIR, fileName));
+    if (/<sitemapindex\b/.test(xml)) return getAllSitemapEntries(extractLocs(xml).map(toLocalFile));
     return Array.from(xml.matchAll(/<url>([\s\S]*?)<\/url>/g), (match) => {
       const block = match[1] || '';
       const loc = (block.match(/<loc>([^<]+)<\/loc>/) || [])[1] || '';
@@ -233,11 +237,6 @@ function assertCssGridCardGallerySitemapCoverage(paths, entries, locs) {
   const exactEntries = entries.filter((entry) => String(entry.loc || '').trim() === canonical);
   if (exactEntries.length !== 1) {
     throw new Error(`Sitemap must include exactly one CSS Grid card gallery canonical loc: ${canonical}`);
-  }
-  if (exactEntries[0].lastmod !== '2026-07-09') {
-    throw new Error(
-      `CSS Grid card gallery sitemap lastmod must be 2026-07-09, got ${exactEntries[0].lastmod || '(missing)'}`
-    );
   }
 
   const variants = locs.filter((loc) => {
@@ -503,9 +502,6 @@ function assertCssThemeVariablesSitemapEntry(entries) {
   if (!entry) {
     throw new Error(`Sitemap missing CSS theme variables challenge: ${loc}`);
   }
-  if (entry.lastmod !== '2026-07-14') {
-    throw new Error(`CSS theme variables sitemap lastmod must be 2026-07-14, got ${entry.lastmod || '(missing)'}`);
-  }
 }
 
 function assertOpenAiCompanyPreviewSitemapEntry(entries) {
@@ -513,9 +509,6 @@ function assertOpenAiCompanyPreviewSitemapEntry(entries) {
   const matches = entries.filter((item) => item.loc === loc);
   if (matches.length !== 1) {
     throw new Error(`Sitemap must include exactly one OpenAI company preview loc: ${loc}`);
-  }
-  if (matches[0].lastmod !== '2026-07-11') {
-    throw new Error(`OpenAI company preview sitemap lastmod must be 2026-07-11, got ${matches[0].lastmod || '(missing)'}`);
   }
 }
 
@@ -525,9 +518,6 @@ function assertGoogleCompanyPreviewSitemapEntry(entries) {
   if (matches.length !== 1) {
     throw new Error(`Sitemap must include exactly one Google company preview loc: ${loc}`);
   }
-  if (matches[0].lastmod !== '2026-07-13') {
-    throw new Error(`Google company preview sitemap lastmod must be 2026-07-13, got ${matches[0].lastmod || '(missing)'}`);
-  }
 }
 
 function assertNetflixCompanyPreviewSitemapEntry(entries) {
@@ -536,9 +526,6 @@ function assertNetflixCompanyPreviewSitemapEntry(entries) {
   if (matches.length !== 1) {
     throw new Error(`Sitemap must include exactly one Netflix company preview loc: ${loc}`);
   }
-  if (matches[0].lastmod !== '2026-07-27') {
-    throw new Error(`Netflix company preview sitemap lastmod must be 2026-07-27, got ${matches[0].lastmod || '(missing)'}`);
-  }
 }
 
 function assertInfiniteScrollSystemDesignSitemapEntry(entries) {
@@ -546,11 +533,6 @@ function assertInfiniteScrollSystemDesignSitemapEntry(entries) {
   const matches = entries.filter((item) => item.loc === loc);
   if (matches.length !== 1) {
     throw new Error(`Sitemap must include exactly one Infinite Scroll system design loc: ${loc}`);
-  }
-  if (matches[0].lastmod !== '2026-08-13') {
-    throw new Error(
-      `Infinite Scroll system design sitemap lastmod must be 2026-08-13, got ${matches[0].lastmod || '(missing)'}`,
-    );
   }
 }
 
@@ -595,11 +577,6 @@ function assertAngularHttpCancellationLabSitemapEntry(entries) {
     if (matches.length !== 1) {
       throw new Error(`${label} must include exactly one Angular HttpClient cancellation lab loc: ${loc}`);
     }
-    if (matches[0].lastmod !== '2026-08-03') {
-      throw new Error(
-        `${label} Angular HttpClient cancellation lab lastmod must be 2026-08-03, got ${matches[0].lastmod || '(missing)'}`,
-      );
-    }
   });
 }
 
@@ -614,11 +591,6 @@ function assertReactStaleClosuresSitemapEntry(entries) {
     const matches = collectionEntries.filter((item) => item.loc === loc);
     if (matches.length !== 1) {
       throw new Error(`${label} must include exactly one React stale closures case-file loc: ${loc}`);
-    }
-    if (matches[0].lastmod !== '2026-08-03') {
-      throw new Error(
-        `${label} React stale closures case-file lastmod must be 2026-08-03, got ${matches[0].lastmod || '(missing)'}`,
-      );
     }
   });
 }
@@ -1194,11 +1166,24 @@ function assertUnavailableMasteryRedirects(paths) {
   }
 }
 
+function assertContentDates(entries) {
+  const report = JSON.parse(fs.readFileSync(seoDatesReportPath, 'utf8'));
+  const actual = new Map(entries.map((entry) => [new URL(entry.loc).pathname, entry.lastmod]));
+  const expected = Object.entries(report.routes);
+  if (actual.size !== entries.length || actual.size !== expected.length) throw new Error('Sitemap inventory differs from content-date inventory or contains duplicates.');
+  for (const [route, entry] of expected) {
+    if (!actual.has(route) || actual.get(route) !== (entry.lastmod || '')) throw new Error(`Sitemap lastmod differs from resolved content provenance: ${route}`);
+    if (entry.lastmod && (!entry.sourceCommit || entry.lastmod > new Date().toISOString().slice(0, 10))) throw new Error(`Invalid content provenance: ${route}`);
+  }
+}
+
 const sitemapFiles = getSitemapFileNames();
 sitemapFiles.forEach((fileName) => assertSitemapWithinLimit(fileName));
 const locs = getAllSitemapLocs(sitemapFiles);
 const entries = getAllSitemapEntries(sitemapFiles);
 const paths = getAllSitemapPaths(sitemapFiles);
+assertContentDates(entries);
+assertContentDates(getAllSitemapEntries(['sitemap.xml']));
 assertNoQueryOrHashInSitemapLocs(locs);
 assertPracticeCanonicalCoverage(paths, locs);
 assertFlexboxNavbarSitemapCoverage(paths, locs);

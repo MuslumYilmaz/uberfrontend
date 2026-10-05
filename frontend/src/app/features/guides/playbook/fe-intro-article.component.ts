@@ -444,6 +444,8 @@ import { PUBLIC_EDITORIAL_FACTS } from '../../../core/content/public-editorial-f
       When candidates search for frontend interview questions, they usually need more
       than a random list. They need to know which category the question belongs to,
       what signal it tests, and how to practice it without wasting time.
+      Browse the <a routerLink="/interview-questions">frontend interview questions</a>
+      by topic, then use the categories below to choose your next practice session.
     </p>
     <table>
       <thead>
@@ -455,7 +457,7 @@ import { PUBLIC_EDITORIAL_FACTS } from '../../../core/content/public-editorial-f
       </thead>
       <tbody>
         <tr>
-          <td><strong>JavaScript utilities</strong></td>
+          <td><strong><a routerLink="/javascript/interview-questions">JavaScript utilities</a></strong></td>
           <td><code>debounce</code>, <code>throttle</code>, <code>memoize</code>, event emitters</td>
           <td>Write from memory, explain edge cases, then test async behavior.</td>
         </tr>
@@ -465,7 +467,7 @@ import { PUBLIC_EDITORIAL_FACTS } from '../../../core/content/public-editorial-f
           <td>Ship an MVP first, then add keyboard navigation, empty state, and loading state.</td>
         </tr>
         <tr>
-          <td><strong>Browser and CSS</strong></td>
+          <td><strong><a routerLink="/html-css/interview-questions">Browser and CSS</a></strong></td>
           <td>Rendering pipeline, stacking context, event loop, responsive layout</td>
           <td>Explain the mental model, then connect it to a real debugging scenario.</td>
         </tr>

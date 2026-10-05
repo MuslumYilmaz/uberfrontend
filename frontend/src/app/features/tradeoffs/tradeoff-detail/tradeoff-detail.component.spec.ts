@@ -1,3 +1,4 @@
+import { seoContentDateModified } from '../../../core/utils/seo-content-date.util';
 import { TestBed } from '@angular/core/testing';
 import { ReplaySubject } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
@@ -198,6 +199,7 @@ describe('TradeoffDetailComponent', () => {
     const breadcrumb = graph.find((entry: any) => entry?.['@type'] === 'BreadcrumbList');
     const resource = graph.find((entry: any) => entry?.['@type'] === 'LearningResource');
     expect(resource?.author).toEqual({ '@type': 'Organization', name: 'FrontendAtlas Editorial' });
+    expect(resource?.dateModified).toBe(seoContentDateModified(resource.url));
 
     expect(payload.robots).toBeUndefined();
     expect(breadcrumb).toBeTruthy();
@@ -336,6 +338,7 @@ describe('TradeoffDetailComponent', () => {
     const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
     const resource = graph.find((entry: any) => entry?.['@type'] === 'LearningResource');
     expect(resource?.author).toEqual({ '@type': 'Organization', name: 'FrontendAtlas Editorial' });
+    expect(resource?.dateModified).toBe(seoContentDateModified(resource.url));
     expect(payload.robots).toBe('noindex,follow');
     expect(payload.canonical).toBe('/tradeoffs/context-vs-zustand-vs-redux');
     expect(resource?.isAccessibleForFree).toBeFalse();

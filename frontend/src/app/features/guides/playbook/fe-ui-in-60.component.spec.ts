@@ -41,6 +41,42 @@ describe('FeUiIn60Article', () => {
       .map((anchor) => anchor.getAttribute('href') || '');
   }
 
+  it('connects UI fundamentals to subject hubs and offers machine coding alongside editor practice', () => {
+    const host = fixture.nativeElement as HTMLElement;
+    const concepts = host.querySelector('[data-testid="ui-core-concepts"]');
+    const formats = host.querySelector('[data-testid="ui-format-links"]');
+    const formatTargets = Array.from(formats?.querySelectorAll('a') || [])
+      .map((link) => link.getAttribute('href'));
+
+    expect(concepts?.querySelector('a[href="/css/interview-questions"]')).toBeTruthy();
+    expect(hrefs()).toContain('/html-css/interview-questions');
+    expect(formatTargets).toContain('/machine-coding');
+    expect(formatTargets).toContain('/coding?view=formats&category=ui');
+  });
+
+  it('keeps scrollable tables stable and code enhancement singular across change detection', () => {
+    const host = fixture.nativeElement as HTMLElement;
+    const tables = Array.from(host.querySelectorAll<HTMLTableElement>('table'));
+
+    expect(tables.length).toBe(3);
+    for (const table of tables) {
+      const region = table.parentElement!;
+      expect(region.classList.contains('table-scroll')).toBeTrue();
+      expect(region.classList.contains('table-wrap')).toBeTrue();
+      expect(region.getAttribute('role')).toBe('region');
+      expect(region.getAttribute('tabindex')).toBe('0');
+      expect(host.querySelector(`#${region.getAttribute('aria-labelledby')}`)).toBeTruthy();
+    }
+    expect(host.querySelectorAll('.table-scroll .table-scroll').length).toBe(0);
+    const code = host.querySelector('pre > code');
+    expect(code?.textContent).toContain("if (isOpen && event.key === 'Escape') closeDialog();");
+    expect(host.querySelectorAll('.code-copy').length).toBe(1);
+
+    fixture.detectChanges();
+    expect(host.querySelector('pre > code')).toBe(code);
+    expect(host.querySelectorAll('.code-copy').length).toBe(1);
+  });
+
   it('renders the UI practice map shell, freshness, and proof CTA band', () => {
     const host = fixture.nativeElement as HTMLElement;
     const hostText = text();

@@ -140,6 +140,14 @@ async function assertTrustAndCompanyLayout(
   expectedCompanyColumns: number,
   label: string,
 ) {
+  const focus = page.getByTestId('showcase-focus-section');
+  await focus.scrollIntoViewIfNeeded();
+  await expect(focus.locator('a[href="/interview-questions"]')).toBeVisible();
+  await expect(focus.locator('a[href="/html/interview-questions"]')).toBeVisible();
+  await expect(focus.locator('a[href="/css/interview-questions"]')).toBeVisible();
+  await assertLocatorFitsWidth(focus.locator('.section-head, .showcase-focus-grid, a, strong, span'), `${label} focus links`);
+  await assertElementsStayInside(focus.locator('.showcase-focus-link'), '.showcase-focus-grid', `${label} focus links`);
+
   const trust = page.getByTestId('showcase-trust-section');
   await trust.scrollIntoViewIfNeeded();
   await expect(trust).toBeVisible();
@@ -179,9 +187,12 @@ async function assertTrustAndCompanyLayout(
 
 async function assertContactChallengeLayout(page: import('@playwright/test').Page, label: string) {
   const contact = page.locator('[data-load="contact"]');
-  await contact.scrollIntoViewIfNeeded();
   const verification = page.getByTestId('showcase-contact-verification');
-  await expect(verification).toBeVisible();
+  // Earlier deferred sections can expand while scrolling to the contact form.
+  await expect(async () => {
+    await contact.scrollIntoViewIfNeeded();
+    await expect(verification).toBeVisible({ timeout: 1000 });
+  }).toPass({ timeout: 15_000 });
   await expect(verification.locator('[data-turnstile-stub="ready"]')).toHaveAttribute(
     'data-turnstile-size',
     'flexible',

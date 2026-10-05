@@ -1,3 +1,4 @@
+import { seoContentDateModified } from '../../core/utils/seo-content-date.util';
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, provideRouter } from '@angular/router';
@@ -279,7 +280,7 @@ describe('EssentialQuestionsComponent', () => {
       jsonLd: Array<Record<string, unknown>>;
     };
     const collectionPage = payload.jsonLd.find((entry) => entry['@type'] === 'CollectionPage') as {
-      dateModified: string;
+      dateModified?: string;
       author: { '@type': string; name: string };
       about: Array<{ name: string }>;
       mentions: Array<{ name: string }>;
@@ -294,7 +295,9 @@ describe('EssentialQuestionsComponent', () => {
 
     expect(payload.description).toContain('curated, grouped shortlist');
     expect(payload.description).toContain('frontend interview questions');
-    expect(collectionPage.dateModified).toBe('2026-04-23T00:00:00.000Z');
+    expect(collectionPage.dateModified).toBe(seoContentDateModified('/interview-questions/essential'));
+    expect(Object.prototype.hasOwnProperty.call(collectionPage, 'dateModified'))
+      .toBe(Boolean(seoContentDateModified('/interview-questions/essential')));
     expect(collectionPage.author).toEqual({
       '@type': 'Organization',
       name: 'FrontendAtlas Editorial',

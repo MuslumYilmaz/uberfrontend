@@ -47,6 +47,12 @@
 .famh-nav {
   justify-content: center;
   min-width: 0;
+  gap: 8px;
+}
+
+.famh-nav .famh-link {
+  padding-inline: 4px;
+  flex-shrink: 0;
 }
 
 .famh-actions {
@@ -87,6 +93,7 @@
   color: var(--uf-text-secondary);
   font-size: 14px;
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .famh-link:hover {
@@ -111,6 +118,7 @@
   color: #0d0f12;
   font-size: 14px;
   font-weight: 800;
+  white-space: nowrap;
   box-shadow: 0 8px 20px color-mix(in srgb, var(--uf-accent) 28%, transparent);
 }
 
@@ -228,7 +236,7 @@
   background: color-mix(in srgb, var(--uf-accent) 12%, var(--uf-surface));
 }
 
-@media (max-width: 980px) {
+@media (max-width: 1180px) {
   .famh-shell {
     padding: 0 12px;
     grid-template-columns: auto 1fr auto;

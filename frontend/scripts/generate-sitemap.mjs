@@ -1,343 +1,62 @@
-import fs from 'fs';
-import path from 'path';
-import {
-  cdnPracticeRegistryPath as PRACTICE_REGISTRY,
-  cdnQuestionTrackRegistryPath as TRACK_REGISTRY,
-  cdnQuestionsDir as QUESTIONS_DIR,
-  cdnSystemDesignIndexPath as SYSTEM_DESIGN_INDEX,
-  guideRegistryPath as GUIDE_REGISTRY,
-  masteryPathsDir as MASTERY_PATHS_DIR,
-  srcDir,
-  srcSitemapIndexPath as INDEX_PATH,
-  srcSitemapPath as OUT_PATH,
-} from './content-paths.mjs';
-import { shouldIncludeRegistryDetailInSitemap } from './registry-detail-access-policy.mjs';
+#!/usr/bin/env node
+import fs from 'node:fs';
+import path from 'node:path';
+import { pathToFileURL } from 'node:url';
+import { sitemapDir } from './content-paths.mjs';
+import { generateContentDates, strictSeoEnvironment, verifyOrWriteFiles } from './generate-seo-content-dates.mjs';
 
-const BASE_URL = (process.env.SITEMAP_BASE_URL || 'https://frontendatlas.com').replace(/\/+$/, '');
-const MAX_URLS = 50000;
-const COMPANY_PREVIEW_LASTMOD_OVERRIDES = new Map([
-  ['google', '2026-07-13'],
-  ['netflix', '2026-07-27'],
-  ['openai', '2026-07-11'],
-]);
+const escapeXml = (value) => String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+  .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
 
-function normalizePath(p) {
-  const raw = String(p || '').trim();
-  if (!raw) return '/';
-  let pathname = raw;
-  if (/^https?:\/\//i.test(raw)) {
-    try {
-      pathname = new URL(raw).pathname || '/';
-    } catch {
-      pathname = raw;
-    }
+export function buildSitemapFiles(routes, { baseUrl = 'https://frontendatlas.com', maxUrls = 50000 } = {}) {
+  const base = new URL(baseUrl);
+  if (!['http:', 'https:'].includes(base.protocol) || base.pathname !== '/' || base.search || base.hash) {
+    throw new Error('SITEMAP_BASE_URL must be an HTTP(S) origin.');
   }
-  const withSlash = pathname.startsWith('/') ? pathname : `/${pathname}`;
-  const stripped = withSlash.split('?')[0].split('#')[0];
-  const clean = stripped.replace(/\/+$/, '');
-  return clean === '' ? '/' : clean;
-}
-
-function toUrl(p) {
-  const clean = normalizePath(p);
-  return clean === '/' ? `${BASE_URL}/` : `${BASE_URL}${clean}`;
-}
-
-function normalizeDateOnly(value) {
-  const raw = String(value || '').trim();
-  const match = raw.match(/^(\d{4}-\d{2}-\d{2})/);
-  if (!match) return '';
-  const date = new Date(`${match[1]}T00:00:00.000Z`);
-  if (Number.isNaN(date.getTime())) return '';
-  return match[1];
-}
-
-function addUrl(entries, p, lastmod = '') {
-  const loc = toUrl(p);
-  const normalizedLastmod = normalizeDateOnly(lastmod);
-  const existing = entries.get(loc);
-
-  if (!existing) {
-    entries.set(loc, { loc, lastmod: normalizedLastmod });
-    return;
+  if (!Number.isInteger(maxUrls) || maxUrls < 1 || maxUrls > 50000) throw new Error('Invalid sitemap shard size.');
+  const entries = Object.entries(routes).sort(([a], [b]) => a.localeCompare(b));
+  if (!entries.length) throw new Error('Refusing to generate an empty public sitemap.');
+  const files = new Map();
+  const shards = [];
+  for (let offset = 0; offset < entries.length; offset += maxUrls) {
+    const name = `sitemap-${shards.length + 1}.xml`;
+    const lines = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'];
+    for (const [route, entry] of entries.slice(offset, offset + maxUrls)) {
+      if (!route.startsWith('/') || route.includes('?') || route.includes('#') || route.includes('//')
+        || (route.length > 1 && route.endsWith('/'))) throw new Error(`Non-canonical sitemap route: ${route}`);
+      lines.push('  <url>', `    <loc>${escapeXml(base.origin + route)}</loc>`);
+      if (entry.lastmod) {
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(entry.lastmod)
+          || Number.isNaN(Date.parse(entry.lastmod))
+          || new Date(entry.lastmod).toISOString().slice(0, 10) !== entry.lastmod) throw new Error(`Invalid lastmod for ${route}`);
+        lines.push(`    <lastmod>${entry.lastmod}</lastmod>`);
+      }
+      lines.push('  </url>');
+    }
+    lines.push('</urlset>');
+    files.set(name, `${lines.join('\n')}\n`);
+    shards.push(name);
   }
-
-  if (normalizedLastmod && (!existing.lastmod || normalizedLastmod > existing.lastmod)) {
-    existing.lastmod = normalizedLastmod;
-  }
+  const index = ['<?xml version="1.0" encoding="UTF-8"?>', '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+    ...shards.flatMap((name) => ['  <sitemap>', `    <loc>${escapeXml(`${base.origin}/${name}`)}</loc>`, '  </sitemap>']), '</sitemapindex>'].join('\n') + '\n';
+  files.set('sitemap-index.xml', index);
+  // Keep the public entrypoint complete when the catalog eventually needs shards.
+  files.set('sitemap.xml', shards.length === 1 ? files.get(shards[0]) : index);
+  return files;
 }
 
-function questionLastmod(q) {
-  return normalizeDateOnly(q?.updatedAt) || normalizeDateOnly(q?.createdAt);
+export async function generateSitemap({ check = false, strict = strictSeoEnvironment() } = {}) {
+  const report = await generateContentDates({ check, strict });
+  const files = buildSitemapFiles(report.routes, { baseUrl: process.env.SITEMAP_BASE_URL || 'https://frontendatlas.com' });
+  const obsolete = fs.existsSync(sitemapDir) ? fs.readdirSync(sitemapDir)
+    .filter((name) => /^sitemap(?:-\d+|-index)?\.xml$/.test(name) && !files.has(name)) : [];
+  if (check && obsolete.length) throw new Error(`Obsolete sitemap shards: ${obsolete.join(', ')}`);
+  verifyOrWriteFiles(new Map([...files].map(([name, xml]) => [path.join(sitemapDir, name), xml])), { check });
+  if (!check) for (const name of obsolete) fs.unlinkSync(path.join(sitemapDir, name));
+  console.log(`[sitemap] ${check ? 'check passed' : 'generated'}: ${Object.keys(report.routes).length} URLs`);
 }
 
-function readJson(filePath) {
-  return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
+  generateSitemap({ check: process.argv.includes('--check'), strict: process.argv.includes('--strict') || strictSeoEnvironment() })
+    .catch((error) => { console.error(`[sitemap] ${error.message}`); process.exitCode = 1; });
 }
-
-function listTechDirs() {
-  return fs
-    .readdirSync(QUESTIONS_DIR)
-    .filter((name) => {
-      const full = path.join(QUESTIONS_DIR, name);
-      return fs.statSync(full).isDirectory() && name !== 'system-design' && name !== 'collections';
-    });
-}
-
-function addQuestionUrls(urls, tech, kind, list) {
-  if (!Array.isArray(list)) return;
-  list.forEach((q) => {
-    if (!q?.id) return;
-    const route = `/${tech}/${kind}/${q.id}`;
-    if (!shouldIncludeRegistryDetailInSitemap(route, q.access)) return;
-    addUrl(urls, route, questionLastmod(q));
-  });
-}
-
-function addCompanySlugs(slugs, list) {
-  if (!Array.isArray(list)) return;
-  list.forEach((q) => {
-    const companies = Array.isArray(q?.companies)
-      ? q.companies
-      : Array.isArray(q?.companyTags)
-        ? q.companyTags
-        : [];
-    companies.forEach((company) => {
-      const slug = String(company || '').trim().toLowerCase();
-      if (slug) slugs.add(slug);
-    });
-  });
-}
-
-function extractGuideSlugs(content, exportName) {
-  const marker = `export const ${exportName}`;
-  const start = content.indexOf(marker);
-  if (start === -1) return [];
-  const rest = content.slice(start);
-  const end = rest.indexOf('];');
-  if (end === -1) return [];
-  const block = rest.slice(0, end);
-  const slugs = [];
-  const re = /slug:\s*['"]([^'"]+)['"]/g;
-  let match;
-  while ((match = re.exec(block))) {
-    slugs.push(match[1]);
-  }
-  return slugs;
-}
-
-function readActiveMasterySlugs() {
-  if (!fs.existsSync(MASTERY_PATHS_DIR)) return [];
-  const slugs = new Set();
-
-  fs.readdirSync(MASTERY_PATHS_DIR).forEach((fileName) => {
-    if (!fileName.endsWith('.ts')) return;
-    const source = fs.readFileSync(path.join(MASTERY_PATHS_DIR, fileName), 'utf8');
-    const re = /frameworkSlug:\s*['"]([^'"]+)['"]/g;
-    let match;
-    while ((match = re.exec(source))) {
-      slugs.add(match[1]);
-    }
-  });
-
-  return Array.from(slugs).sort((a, b) => a.localeCompare(b));
-}
-
-function readPublicTrackSlugs() {
-  if (!fs.existsSync(TRACK_REGISTRY)) return [];
-  const registry = readJson(TRACK_REGISTRY);
-  const tracks = Array.isArray(registry?.tracks) ? registry.tracks : [];
-  return tracks
-    .filter((track) => track?.slug && !track?.hidden)
-    .map((track) => track.slug)
-    .sort((a, b) => a.localeCompare(b));
-}
-
-function buildUrls() {
-  const urls = new Map();
-  const companySlugs = new Set();
-
-  const staticPaths = [
-    '/',
-    '/changelog',
-    '/pricing',
-    '/machine-coding',
-    '/coding',
-    '/incidents',
-    '/tradeoffs',
-    '/interview-questions',
-    '/interview-questions/essential',
-    '/javascript/interview-questions',
-    '/react/interview-questions',
-    '/angular/interview-questions',
-    '/vue/interview-questions',
-    '/html/interview-questions',
-    '/css/interview-questions',
-    '/html-css/interview-questions',
-    '/tracks',
-    '/focus-areas',
-    '/companies',
-    '/system-design',
-    '/tools/cv',
-    '/guides/framework-prep',
-    '/guides/interview-blueprint',
-    '/guides/system-design-blueprint',
-    '/guides/behavioral',
-    '/legal',
-    '/legal/editorial-policy',
-    '/legal/terms',
-    '/legal/privacy',
-    '/legal/refund',
-    '/legal/cookies',
-  ];
-
-  staticPaths.forEach((p) => addUrl(urls, p));
-
-  if (fs.existsSync(PRACTICE_REGISTRY)) {
-    const items = readJson(PRACTICE_REGISTRY);
-    if (Array.isArray(items)) {
-      items.forEach((item) => {
-        if (!item?.route) return;
-        if (!shouldIncludeRegistryDetailInSitemap(item.route, item.access)) return;
-        addUrl(urls, item.route, item.updatedAt);
-      });
-    }
-  }
-
-  listTechDirs().forEach((tech) => {
-    const codingPath = path.join(QUESTIONS_DIR, tech, 'coding.json');
-    const triviaPath = path.join(QUESTIONS_DIR, tech, 'trivia.json');
-    const debugPath = path.join(QUESTIONS_DIR, tech, 'debug.json');
-
-    if (fs.existsSync(codingPath)) {
-      const coding = readJson(codingPath);
-      addQuestionUrls(urls, tech, 'coding', coding);
-      addCompanySlugs(companySlugs, coding);
-    }
-    if (fs.existsSync(triviaPath)) {
-      const trivia = readJson(triviaPath);
-      addQuestionUrls(urls, tech, 'trivia', trivia);
-      addCompanySlugs(companySlugs, trivia);
-    }
-    if (fs.existsSync(debugPath)) {
-      const debug = readJson(debugPath);
-      addQuestionUrls(urls, tech, 'debug', debug);
-      addCompanySlugs(companySlugs, debug);
-    }
-  });
-
-  if (fs.existsSync(SYSTEM_DESIGN_INDEX)) {
-    const items = readJson(SYSTEM_DESIGN_INDEX);
-    if (Array.isArray(items)) {
-      items.forEach((q) => {
-        if (!q?.id) return;
-        const route = `/system-design/${q.id}`;
-        if (!shouldIncludeRegistryDetailInSitemap(route, q.access)) return;
-        addUrl(urls, route, questionLastmod(q));
-      });
-      addCompanySlugs(companySlugs, items);
-    }
-  }
-
-  if (fs.existsSync(GUIDE_REGISTRY)) {
-    const registrySource = fs.readFileSync(GUIDE_REGISTRY, 'utf8');
-    const playbook = extractGuideSlugs(registrySource, 'PLAYBOOK');
-    const system = extractGuideSlugs(registrySource, 'SYSTEM');
-    const behavioral = extractGuideSlugs(registrySource, 'BEHAVIORAL');
-    const frameworkPrep = playbook.filter((slug) => slug.endsWith('-prep-path'));
-    const interviewBlueprintOnly = playbook.filter((slug) => !slug.endsWith('-prep-path'));
-
-    interviewBlueprintOnly.forEach((slug) => addUrl(urls, `/guides/interview-blueprint/${slug}`));
-    frameworkPrep.forEach((slug) => addUrl(urls, `/guides/framework-prep/${slug}`));
-    system.forEach((slug) => addUrl(urls, `/guides/system-design-blueprint/${slug}`));
-    behavioral.forEach((slug) => addUrl(urls, `/guides/behavioral/${slug}`));
-  }
-
-  readActiveMasterySlugs().forEach((slug) => {
-    addUrl(urls, `/guides/framework-prep/${slug}/mastery`);
-  });
-
-  readPublicTrackSlugs().forEach((slug) => {
-    addUrl(urls, `/tracks/${slug}/preview`);
-  });
-
-  Array.from(companySlugs)
-    .sort((a, b) => a.localeCompare(b))
-    .forEach((slug) => {
-      addUrl(urls, `/companies/${slug}/preview`, COMPANY_PREVIEW_LASTMOD_OVERRIDES.get(slug) || '');
-    });
-
-  return Array.from(urls.values()).sort((a, b) => a.loc.localeCompare(b.loc));
-}
-
-function buildXml(entries) {
-  const lines = [
-    '<?xml version="1.0" encoding="UTF-8"?>',
-    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
-  ];
-
-  entries.forEach((entry) => {
-    lines.push('  <url>');
-    lines.push(`    <loc>${entry.loc}</loc>`);
-    if (entry.lastmod) {
-      lines.push(`    <lastmod>${entry.lastmod}</lastmod>`);
-    }
-    lines.push('  </url>');
-  });
-
-  lines.push('</urlset>');
-  return `${lines.join('\n')}\n`;
-}
-
-function buildIndexXml(files) {
-  const lines = [
-    '<?xml version="1.0" encoding="UTF-8"?>',
-    '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
-  ];
-
-  files.forEach((file) => {
-    lines.push('  <sitemap>');
-    lines.push(`    <loc>${BASE_URL}/${file}</loc>`);
-    lines.push('  </sitemap>');
-  });
-
-  lines.push('</sitemapindex>');
-  return `${lines.join('\n')}\n`;
-}
-
-function chunkUrls(urls, size) {
-  if (!urls.length) return [[]];
-  const chunks = [];
-  for (let i = 0; i < urls.length; i += size) {
-    chunks.push(urls.slice(i, i + size));
-  }
-  return chunks;
-}
-
-function clearOldSitemaps() {
-  const files = fs.readdirSync(srcDir);
-  files.forEach((file) => {
-    if (/^sitemap-\d+\.xml$/.test(file) || file === 'sitemap-index.xml') {
-      fs.unlinkSync(path.join(srcDir, file));
-    }
-  });
-}
-
-const urls = buildUrls();
-const chunks = chunkUrls(urls, MAX_URLS);
-clearOldSitemaps();
-
-const sitemapFiles = [];
-chunks.forEach((chunk, index) => {
-  const fileName = `sitemap-${index + 1}.xml`;
-  const outFile = path.join(srcDir, fileName);
-  fs.writeFileSync(outFile, buildXml(chunk), 'utf8');
-  sitemapFiles.push(fileName);
-});
-
-if (chunks.length) {
-  fs.writeFileSync(OUT_PATH, buildXml(chunks[0]), 'utf8');
-}
-
-fs.writeFileSync(INDEX_PATH, buildIndexXml(sitemapFiles), 'utf8');
-console.log(`Sitemap generated: ${OUT_PATH} (${urls.length} URLs, ${sitemapFiles.length} files)`);

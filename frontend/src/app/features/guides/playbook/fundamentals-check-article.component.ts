@@ -168,6 +168,11 @@ import { PUBLIC_EDITORIAL_FACTS } from '../../../core/content/public-editorial-f
       </div>
     </div>
 
+    <p>
+      Review <a routerLink="/html/interview-questions">HTML interview questions</a>
+      for more practice with document structure, parsing, and browser behavior.
+    </p>
+
     <h2 id="css-layout-interview-questions">CSS layout interview questions</h2>
     <div class="question-grid">
       <div class="question-card">
@@ -187,6 +192,11 @@ import { PUBLIC_EDITORIAL_FACTS } from '../../../core/content/public-editorial-f
       </div>
     </div>
 
+    <p>
+      Continue with <a routerLink="/css/interview-questions">CSS interview questions</a>
+      to work through sizing, cascade, and responsive layout gaps.
+    </p>
+
     <h2 id="javascript-async-interview-quiz">JavaScript async interview quiz</h2>
     <div class="question-grid">
       <div class="question-card">
@@ -205,6 +215,11 @@ import { PUBLIC_EDITORIAL_FACTS } from '../../../core/content/public-editorial-f
         <p>Strong answer: async/await changes readability, not the underlying promise scheduling or failure semantics.</p>
       </div>
     </div>
+
+    <p>
+      Use the <a routerLink="/javascript/interview-questions">JavaScript interview questions</a>
+      to revisit closures, async ordering, and the concepts behind missed answers.
+    </p>
 
     <h2 id="http-caching-frontend-interview-questions">HTTP caching frontend interview questions</h2>
     <div class="question-grid">

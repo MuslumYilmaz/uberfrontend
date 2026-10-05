@@ -33,7 +33,7 @@ fi
 STAGED_FILES="$(mktemp)"
 trap 'rm -f "$STAGED_FILES"' EXIT
 
-git diff --cached --name-only --diff-filter=ACMR > "$STAGED_FILES"
+git diff --cached --name-only --diff-filter=ACMRD > "$STAGED_FILES"
 
 if [ ! -s "$STAGED_FILES" ]; then
   echo "[pre-commit] No staged files. Skipping checks."

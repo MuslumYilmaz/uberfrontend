@@ -30,6 +30,7 @@ type VisibleEntry = {
 type StudyPrimaryActionKey =
   | 'continue'
   | 'interview_blueprint'
+  | 'interview_questions'
   | 'framework_prep'
   | 'essential_60'
   | 'question_library'
@@ -117,6 +118,7 @@ export class HeaderComponent implements OnInit {
     if (this.isPro()) return '/profile';
     return this.auth.isLoggedIn() ? '/pricing' : '/guides/interview-blueprint/intro';
   });
+  isInterviewQuestionsActive = computed(() => this.currentPath() === '/interview-questions');
   isStudyActive = computed(() => {
     const path = this.currentPath();
     if (
@@ -151,7 +153,7 @@ export class HeaderComponent implements OnInit {
     return /^\/(javascript|angular|react|vue|html|css)(\/|$)/.test(path);
   });
 
-  studyPrimaryActions(): StudyPrimaryAction[] {
+  readonly studyPrimaryActions = computed<StudyPrimaryAction[]>(() => {
     const recent = this.recentItems()[0] ?? null;
     const recentLink = recent ? this.intentToLink(recent) : null;
     const continueFallbackIsDashboard = this.auth.isLoggedIn();
@@ -178,6 +180,13 @@ export class HeaderComponent implements OnInit {
         icon: 'pi-map',
         route: ['/guides', 'interview-blueprint', 'intro'],
         emphasis: 'promoted',
+      },
+      {
+        key: 'interview_questions',
+        title: 'Interview Questions',
+        subtitle: 'Browse frontend interview questions by technology and interview format.',
+        icon: 'pi-question-circle',
+        route: ['/interview-questions'],
       },
       {
         key: 'framework_prep',
@@ -208,7 +217,7 @@ export class HeaderComponent implements OnInit {
         route: ['/tracks'],
       },
     ];
-  }
+  });
 
   constructor() {
     this.router.events.pipe(filter(e => e instanceof NavigationEnd), startWith(null))
@@ -321,6 +330,7 @@ export class HeaderComponent implements OnInit {
 
   trackByGroupKey(_: number, g: PrepareGroup) { return g.key; }
   trackByItemKey(_: number, it: PrepareItem) { return it.key; }
+  trackByStudyActionKey(_: number, action: StudyPrimaryAction) { return action.key; }
 
   toggleBrowseAll() {
     this.browseAllOpen.update(v => !v);
@@ -572,6 +582,11 @@ export class HeaderComponent implements OnInit {
 
   trackUtilityClick(destination: string) {
     this.trackTopNavClick('utility', destination);
+  }
+
+  onInterviewQuestionsClick() {
+    this.trackTopNavClick('primary', '/interview-questions');
+    this.closeAll();
   }
 
   onItemNavigate(it: PrepareItem) {

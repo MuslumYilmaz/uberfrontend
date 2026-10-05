@@ -494,30 +494,11 @@ import { PUBLIC_EDITORIAL_FACTS } from '../../../core/content/public-editorial-f
         </ul>
       </div>
     </div>
-    <div class="code-wrap">
-      <pre><code>let isOpen = false;
-let lastFocus = null;
-
-function openDialog() &#123;
-  lastFocus = document.activeElement;
-  isOpen = true;
-  dialog.hidden = false;
-  confirmButton.focus();
-&#125;
-
-function closeDialog() &#123;
-  isOpen = false;
-  dialog.hidden = true;
-  lastFocus?.focus();
-&#125;
-
-document.addEventListener('keydown', (event) =&gt; &#123;
-  if (isOpen &amp;&amp; event.key === 'Escape') closeDialog();
-&#125;);</code></pre>
-    </div>
+    <div class="code-wrap" [innerHTML]="confirmDialogExample"></div>
 
     <h2 id="junior-vs-senior-ui-interview-expectations">Junior vs senior UI interview expectations</h2>
-    <div class="table-wrap" data-testid="ui-seniority-expectations">
+    <div class="table-wrap table-scroll" tabindex="0" role="region"
+      aria-labelledby="junior-vs-senior-ui-interview-expectations" data-testid="ui-seniority-expectations">
       <table>
         <thead>
           <tr><th>Prompt</th><th>Junior answer</th><th>Senior answer</th></tr>
@@ -533,7 +514,7 @@ document.addEventListener('keydown', (event) =&gt; &#123;
     </div>
 
     <h2 id="ui-round-flow">45/60-minute UI round flow</h2>
-    <div class="table-wrap">
+    <div class="table-wrap table-scroll" tabindex="0" role="region" aria-labelledby="ui-round-flow">
       <table>
         <thead>
           <tr><th>Time</th><th>Move</th><th>Signal</th></tr>
@@ -587,7 +568,11 @@ document.addEventListener('keydown', (event) =&gt; &#123;
       </article>
       <article class="concept-card">
         <h3>Layout</h3>
-        <p>Use Flexbox, Grid, intrinsic sizing, overflow handling, and responsive constraints deliberately.</p>
+        <p>
+          Use Flexbox, Grid, intrinsic sizing, overflow handling, and responsive constraints deliberately.
+          Review <a routerLink="/css/interview-questions">CSS interview questions</a>
+          to practice explaining those layout choices.
+        </p>
       </article>
       <article class="concept-card">
         <h3>Async UI state</h3>
@@ -595,8 +580,14 @@ document.addEventListener('keydown', (event) =&gt; &#123;
       </article>
     </div>
 
+    <p>
+      Strengthen the markup and layout behind these components with
+      <a routerLink="/html-css/interview-questions">HTML and CSS interview questions</a>,
+      then apply them in a timed UI build.
+    </p>
+
     <h2 id="skip-vs-prioritize">What to skip vs prioritize</h2>
-    <div class="table-wrap">
+    <div class="table-wrap table-scroll" tabindex="0" role="region" aria-labelledby="skip-vs-prioritize">
       <table>
         <thead>
           <tr><th>Priority</th><th>Do this</th><th>Avoid spending time on</th></tr>
@@ -622,6 +613,10 @@ document.addEventListener('keydown', (event) =&gt; &#123;
       <a class="format-link" [routerLink]="['/guides','interview-blueprint','api-design']">
         <strong>Component API design</strong>
         <span>Practice props, events, controlled state, and reusable component trade-offs.</span>
+      </a>
+      <a class="format-link" routerLink="/machine-coding">
+        <strong>Machine coding interviews</strong>
+        <span>Choose a timed UI task and practice the full build, from scope to edge cases.</span>
       </a>
     </div>
 
@@ -667,6 +662,26 @@ document.addEventListener('keydown', (event) =&gt; &#123;
 })
 export class FeUiIn60Article {
   readonly editorialAuthor = PUBLIC_EDITORIAL_FACTS.author.name;
+  // Keep enhancer-owned code markup outside Angular's hydrated child-node tree.
+  readonly confirmDialogExample = `<pre><code>let isOpen = false;
+let lastFocus = null;
+
+function openDialog() {
+  lastFocus = document.activeElement;
+  isOpen = true;
+  dialog.hidden = false;
+  confirmButton.focus();
+}
+
+function closeDialog() {
+  isOpen = false;
+  dialog.hidden = true;
+  lastFocus?.focus();
+}
+
+document.addEventListener('keydown', (event) =&gt; {
+  if (isOpen &amp;&amp; event.key === 'Escape') closeDialog();
+});</code></pre>`;
   @Input() prev: any[] | null = null;
   @Input() next: any[] | null = null;
   @Input() leftNav: any;

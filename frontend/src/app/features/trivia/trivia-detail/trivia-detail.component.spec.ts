@@ -1,3 +1,4 @@
+import { seoContentDateModified } from '../../../core/utils/seo-content-date.util';
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -609,7 +610,7 @@ describe('TriviaDetailComponent', () => {
     expect(breadcrumb?.itemListElement?.[2]?.item).toBe(payload.canonical);
     expect(article?.headline).toBe(`${expectedH1} - Frontend interview practice question`);
     expect(article?.datePublished).toBe('2026-01-25T00:00:00.000Z');
-    expect(article?.dateModified).toBe('2026-08-03T00:00:00.000Z');
+    expect(article?.dateModified).toBe(seoContentDateModified(article.url));
   });
 
   it('renders Angular HttpClient interview practice before the lab with the common schema', async () => {
@@ -735,7 +736,7 @@ describe('TriviaDetailComponent', () => {
     expect(payload.robots).toBeUndefined();
     expect(article?.headline).toBe(`${expectedH1} - Frontend interview practice question`);
     expect(article?.datePublished).toBe('2026-01-25T00:00:00.000Z');
-    expect(article?.dateModified).toBe('2026-08-03T00:00:00.000Z');
+    expect(article?.dateModified).toBe(seoContentDateModified(article.url));
   });
 
   it('does not render the Angular HttpClient cancellation lab for generic trivia', async () => {
@@ -1188,6 +1189,20 @@ describe('TriviaDetailComponent', () => {
     expect(simulator.textContent || '').toContain('Mounted and visible as text unless your condition prevents it.');
   });
 
+  it('omits unresolved modification dates and preserves the editorial publication fallback and visible date', async () => {
+    const fixture = await createLoadedFixture('free', {
+      id: 'unresolved-content-date',
+      publishedAt: undefined,
+      updatedAt: '2025-03-15',
+    });
+    const payload = seo.updateTags.calls.mostRecent().args[0] as any;
+    const { article } = expectCommonTriviaSchema(payload);
+    expect(Object.prototype.hasOwnProperty.call(article, 'dateModified')).toBeFalse();
+    expect(article.datePublished).toBe('2025-03-15T00:00:00.000Z');
+    expect(fixture.componentInstance.updatedLabel({ updatedAt: '2025-03-15' } as any)).toBe('Mar 15, 2025');
+    fixture.destroy();
+  });
+
   it('uses the common trivia schema for async race and generic questions', async () => {
     const targetFixture = await createLoadedFixture('free', {
       id: 'js-async-race-conditions',
@@ -1208,7 +1223,7 @@ describe('TriviaDetailComponent', () => {
       'Async Race Conditions and Stale UI Updates - Frontend interview practice question',
     );
     expect(article?.datePublished).toBe('2026-04-10T00:00:00.000Z');
-    expect(article?.dateModified).toBe('2026-07-03T00:00:00.000Z');
+    expect(article?.dateModified).toBe(seoContentDateModified(article.url));
 
     targetFixture.destroy();
 
@@ -2051,7 +2066,7 @@ describe('TriviaDetailComponent', () => {
       'What is the difference between == and === in JavaScript? - Frontend interview practice question',
     );
     expect(article?.datePublished).toBe('2025-11-08T00:00:00.000Z');
-    expect(article?.dateModified).toBe('2026-07-03T00:00:00.000Z');
+    expect(article?.dateModified).toBe(seoContentDateModified(article.url));
 
     fixture.destroy();
   });

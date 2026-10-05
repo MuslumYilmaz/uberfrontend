@@ -31,6 +31,21 @@ describe('FeIntroArticle', () => {
     window.history.pushState({}, '', originalPath || '/');
   });
 
+  it('links question categories to the public question directory and matching subject hubs', () => {
+    const host = fixture.nativeElement as HTMLElement;
+    const links: string[] = [];
+    let section = host.querySelector('#question-categories')?.nextElementSibling;
+
+    while (section && section.tagName !== 'H2') {
+      links.push(...Array.from(section.querySelectorAll('a')).map((link) => link.getAttribute('href') || ''));
+      section = section.nextElementSibling;
+    }
+
+    expect(links).toContain('/interview-questions');
+    expect(links).toContain('/javascript/interview-questions');
+    expect(links).toContain('/html-css/interview-questions');
+  });
+
   it('renders the hiring process as semantic HTML without visible Markdown syntax', () => {
     const host = fixture.nativeElement as HTMLElement;
     const process = host.querySelector('[data-testid="frontend-interview-hiring-process"]') as HTMLOListElement | null;

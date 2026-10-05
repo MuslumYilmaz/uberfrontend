@@ -1,3 +1,4 @@
+import { seoContentDateModified } from '../../../core/utils/seo-content-date.util';
 import { CommonModule } from '@angular/common';
 import { publicEditorialAuthorSchema } from '../../../core/content/public-editorial-facts';
 import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
@@ -246,6 +247,7 @@ export class TradeoffDetailComponent {
                   : 'Frontend';
     const canonicalPath = `/tradeoffs/${meta.id}`;
     const canonicalUrl = this.seo.buildCanonicalUrl(canonicalPath);
+    const dateModified = seoContentDateModified(canonicalUrl);
     const tradeoffHubUrl = this.seo.buildCanonicalUrl('/tradeoffs');
     const imageUrl = this.seo.buildCanonicalUrl('/assets/images/frontend-atlas-logo.png');
     const accessibleForFree = isContentAccessibleForFree(meta.access);
@@ -288,7 +290,7 @@ export class TradeoffDetailComponent {
       timeRequired: `PT${meta.estimatedMinutes}M`,
       isAccessibleForFree: accessibleForFree,
       keywords: meta.tags.join(', '),
-      dateModified: `${meta.updatedAt}T00:00:00Z`,
+      ...(dateModified ? { dateModified } : {}),
       author: publicEditorialAuthorSchema(),
       publisher: {
         '@type': 'Organization',

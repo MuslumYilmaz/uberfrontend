@@ -255,6 +255,19 @@
     </section>
   </ng-container>
 
+  <ng-container *ngIf="technologyQuestionHubs() as questionHubs">
+    <section class="fa-question-hubs" *ngIf="questionHubs.length"
+      aria-labelledby="coding-question-hubs-title" data-testid="coding-tech-question-hubs">
+      <h2 class="fa-section-title" id="coding-question-hubs-title">Interview questions by technology</h2>
+      <p class="fa-meta-text">Review concepts and answers alongside your coding practice.</p>
+      <div class="fa-question-hubs__links">
+        <a class="fa-context-link" *ngFor="let hub of questionHubs" [routerLink]="hub.route">
+          <span class="fa-context-link__title">{{ hub.label }}</span>
+        </a>
+      </div>
+    </section>
+  </ng-container>
+
   <ng-container *ngIf="codingHubDiscovery$ | async as discoverySections">
     <section
       class="fa-discovery"

@@ -1,6 +1,6 @@
 import { signal, WritableSignal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
 import { of } from 'rxjs';
 import { AnalyticsService } from '../../../core/services/analytics.service';
 import { AuthService } from '../../../core/services/auth.service';
@@ -10,6 +10,7 @@ import { HeaderComponent } from './header.component';
 describe('HeaderComponent', () => {
   let analytics: jasmine.SpyObj<AnalyticsService>;
   let authUiState: WritableSignal<'pending' | 'authenticated' | 'signed_out'>;
+  let loggedIn: WritableSignal<boolean>;
 
   async function createComponent(options?: {
     isLoggedIn?: boolean;
@@ -20,6 +21,7 @@ describe('HeaderComponent', () => {
     const isLoggedIn = options?.isLoggedIn ?? true;
     const isPro = options?.isPro ?? false;
     const role = options?.role ?? 'user';
+    loggedIn = signal(isLoggedIn);
     authUiState = signal(options?.authUiState ?? (isLoggedIn ? 'authenticated' : 'signed_out'));
     const user = signal(
       isLoggedIn
@@ -37,13 +39,13 @@ describe('HeaderComponent', () => {
     await TestBed.configureTestingModule({
       imports: [HeaderComponent],
       providers: [
-        provideRouter([]),
+        provideRouter([{ path: '**', children: [] }]),
         { provide: AnalyticsService, useValue: analytics },
         {
           provide: AuthService,
           useValue: {
             user,
-            isLoggedIn: signal(isLoggedIn),
+            isLoggedIn: loggedIn,
             authUiState,
             logout: jasmine.createSpy('logout').and.returnValue(of(void 0)),
           },
@@ -85,11 +87,86 @@ describe('HeaderComponent', () => {
     expect(drawer.isOpen()).toBeFalse();
   });
 
-  it('removes the top-level interview hub link and mobile pricing quicklink', async () => {
-    const fixture = await createComponent({ isLoggedIn: false });
+  it('keeps a crawlable public question hub through pending, guest, and authenticated states', async () => {
+    const fixture = await createComponent({ isLoggedIn: false, authUiState: 'pending' });
 
-    expect(fixture.nativeElement.querySelector('[data-testid="header-interview-hub"]')).toBeFalsy();
+    for (const state of ['pending', 'signed_out', 'authenticated'] as const) {
+      authUiState.set(state);
+      fixture.detectChanges();
+      const link = fixture.nativeElement.querySelector('[data-testid="header-interview-hub"]') as HTMLAnchorElement;
+      expect(link).withContext(state).toBeTruthy();
+      expect(link.getAttribute('href')).toBe('/interview-questions');
+      expect(link.textContent).toContain('Interview Questions');
+    }
     expect(fixture.nativeElement.querySelector('[data-testid="header-mobile-pricing-button"]')).toBeFalsy();
+  });
+
+  it('marks the direct question hub link current only on the hub and preserves primary click analytics', async () => {
+    const fixture = await createComponent({ isLoggedIn: false });
+    const router = TestBed.inject(Router);
+    const link = fixture.nativeElement.querySelector('[data-testid="header-interview-hub"]') as HTMLAnchorElement;
+
+    link.click();
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(router.url).toBe('/interview-questions');
+    expect(link.getAttribute('aria-current')).toBe('page');
+    expect(link.classList.contains('fah-navlink--active')).toBeTrue();
+    expect(analytics.track).toHaveBeenCalledWith(
+      'header_top_nav_clicked',
+      jasmine.objectContaining({ surface: 'app', area: 'primary', destination: '/interview-questions', auth_state: 'guest' }),
+    );
+
+    for (const path of ['/interview-questions/essential', '/coding?tech=react', '/react/interview-questions']) {
+      await router.navigateByUrl(path);
+      fixture.detectChanges();
+      expect(link.hasAttribute('aria-current')).withContext(path).toBeFalse();
+      expect(link.classList.contains('fah-navlink--active')).withContext(path).toBeFalse();
+    }
+    await router.navigateByUrl('/interview-questions?src=nav#topics');
+    fixture.detectChanges();
+    expect(link.getAttribute('aria-current')).toBe('page');
+  });
+
+  it('navigates from the mobile prep menu to the question hub, tracks the action, and closes the menu', async () => {
+    const fixture = await createComponent({ isLoggedIn: false });
+    const router = TestBed.inject(Router);
+    const trigger = fixture.nativeElement.querySelector('[data-testid="header-mobile-study-button"]') as HTMLButtonElement;
+
+    trigger.click();
+    fixture.detectChanges();
+    const link = fixture.nativeElement.querySelector('[data-testid="header-study-interview_questions"]') as HTMLAnchorElement;
+    expect(link.getAttribute('href')).toBe('/interview-questions');
+    link.click();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(router.url).toBe('/interview-questions');
+    expect(fixture.componentInstance.megaOpen()).toBeFalse();
+    expect(fixture.nativeElement.querySelector('[role="dialog"]')).toBeNull();
+    expect(analytics.track).toHaveBeenCalledWith(
+      'header_study_primary_cta_clicked',
+      jasmine.objectContaining({ action: 'interview_questions', route: '/interview-questions' }),
+    );
+  });
+
+  it('preserves keyboard focus in the open prep menu when authentication resolves', async () => {
+    const fixture = await createComponent({ isLoggedIn: false, authUiState: 'pending' });
+    (fixture.nativeElement.querySelector('[data-testid="header-mobile-study-button"]') as HTMLButtonElement).click();
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const link = fixture.nativeElement.querySelector('[data-testid="header-study-interview_questions"]') as HTMLAnchorElement;
+    link.focus();
+    loggedIn.set(true);
+    authUiState.set('authenticated');
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.megaOpen()).toBeTrue();
+    expect(document.activeElement).toBe(link);
+    expect(link.getAttribute('href')).toBe('/interview-questions');
+    expect((fixture.nativeElement.querySelector('[data-testid="header-study-continue"]') as HTMLAnchorElement).getAttribute('href'))
+      .toBe('/dashboard');
   });
 
   it('uses the brand as the dashboard home link and removes the duplicate dashboard button', async () => {
@@ -210,6 +287,7 @@ describe('HeaderComponent', () => {
 
     expect(fixture.nativeElement.querySelector('[data-testid="header-study-continue"]')).toBeTruthy();
     const guide = fixture.nativeElement.querySelector('[data-testid="header-study-interview_blueprint"]') as HTMLAnchorElement;
+    const interviewQuestions = fixture.nativeElement.querySelector('[data-testid="header-study-interview_questions"]') as HTMLAnchorElement;
     const frameworkPrep = fixture.nativeElement.querySelector('[data-testid="header-study-framework_prep"]') as HTMLAnchorElement;
     const essential = fixture.nativeElement.querySelector('[data-testid="header-study-essential_60"]') as HTMLAnchorElement;
     const questionLibrary = fixture.nativeElement.querySelector('[data-testid="header-study-question_library"]') as HTMLAnchorElement;
@@ -217,12 +295,13 @@ describe('HeaderComponent', () => {
     const rows = Array.from(fixture.nativeElement.querySelectorAll('.study-row--primary')) as HTMLElement[];
     const titles = rows.map((row) => row.querySelector('.row-title')?.textContent?.replace(/\s+/g, ' ').trim());
 
-    expect(rows.length).toBe(6);
+    expect(rows.length).toBe(7);
     expect(titles[0]).toContain('Continue where I left off');
     expect(titles[1]).toContain('Frontend interview preparation guide');
-    expect(titles[2]).toContain('Framework prep paths');
-    expect(titles[3]).toContain('FrontendAtlas Essential 60');
-    expect(titles[4]).toContain('Question Library');
+    expect(titles[2]).toContain('Interview Questions');
+    expect(titles[3]).toContain('Framework prep paths');
+    expect(titles[4]).toContain('FrontendAtlas Essential 60');
+    expect(titles[5]).toContain('Question Library');
     expect(rows.filter((row) => (row.textContent || '').includes('Question Library')).length).toBe(1);
     expect(guide).toBeTruthy();
     expect(guide.classList.contains('study-row--featured')).toBeTrue();
@@ -238,6 +317,7 @@ describe('HeaderComponent', () => {
     expect(studyPlans.textContent || '').toContain('Study Plans');
     expect(fixture.nativeElement.querySelector('[data-testid="header-study-practice_types"]')).toBeFalsy();
     expect(guide.getAttribute('href') || '').toContain('/guides/interview-blueprint/intro');
+    expect(interviewQuestions.getAttribute('href')).toBe('/interview-questions');
     expect(frameworkPrep.getAttribute('href') || '').toContain('/guides/framework-prep');
     expect(essential.getAttribute('href') || '').toContain('/interview-questions/essential');
     expect(questionLibrary.getAttribute('href') || '').toContain('/coding');

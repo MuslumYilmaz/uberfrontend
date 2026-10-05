@@ -50,7 +50,6 @@ export const NETFLIX_PREVIEW_H1 = 'Netflix Frontend Interview Questions';
 export const NETFLIX_PREVIEW_DESCRIPTION =
   'Prepare for a Netflix frontend interview with 6 representative prompts on JavaScript, React, streaming UI, performance, accessibility, and system design.';
 export const NETFLIX_PREVIEW_CANONICAL_PATH = '/companies/netflix/preview';
-export const NETFLIX_PREVIEW_DATE_MODIFIED = '2026-07-27T00:00:00.000Z';
 export const NETFLIX_PREVIEW_TRUST_NOTE =
   'These are representative FrontendAtlas practice prompts, not leaked or confirmed Netflix interview questions. Interview formats vary by role and team, so use recruiter-provided material as the source of truth.';
 

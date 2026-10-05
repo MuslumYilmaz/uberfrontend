@@ -295,6 +295,16 @@ export class ShowcasePageComponent implements OnInit, AfterViewInit, OnDestroy {
       route: ['/html-css/interview-questions'],
     },
     {
+      label: 'HTML',
+      detail: 'Semantic markup, forms, browser parsing, and accessible document structure.',
+      route: ['/html/interview-questions'],
+    },
+    {
+      label: 'CSS',
+      detail: 'Flexbox, Grid, specificity, positioning, and responsive layout decisions.',
+      route: ['/css/interview-questions'],
+    },
+    {
       label: 'React machine coding practice',
       detail: 'Timed UI coding rounds for widgets, async state, and framework implementation.',
       route: ['/machine-coding'],

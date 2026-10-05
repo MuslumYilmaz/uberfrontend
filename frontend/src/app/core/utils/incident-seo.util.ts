@@ -1,3 +1,4 @@
+import { seoContentDateModified } from './seo-content-date.util';
 import { SeoMeta } from '../services/seo.service';
 import { IncidentScenario } from '../models/incident.model';
 import { publicEditorialAuthorSchema } from '../content/public-editorial-facts';
@@ -39,6 +40,7 @@ export function buildIncidentSeoMeta(
   const techLabel = incidentTechLabel(meta.tech);
   const canonicalPath = `/incidents/${meta.id}`;
   const canonicalUrl = buildCanonicalUrl(canonicalPath);
+  const dateModified = seoContentDateModified(canonicalUrl);
   const incidentsHubUrl = buildCanonicalUrl('/incidents');
   const imageUrl = buildCanonicalUrl('/assets/images/frontend-atlas-logo.png');
   const detailDescription = `Practice this ${techLabel.toLowerCase()} debugging interview question. ${meta.summary} Work through the root cause, the first debug steps, the best fix, and the regression guard.`;
@@ -80,7 +82,7 @@ export function buildIncidentSeoMeta(
     timeRequired: `PT${meta.estimatedMinutes}M`,
     isAccessibleForFree: accessibleForFree,
     keywords: meta.tags.join(', '),
-    dateModified: `${meta.updatedAt}T00:00:00Z`,
+    ...(dateModified ? { dateModified } : {}),
     author: publicEditorialAuthorSchema(),
     publisher: {
       '@type': 'Organization',

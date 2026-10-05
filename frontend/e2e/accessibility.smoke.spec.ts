@@ -109,6 +109,13 @@ test.describe('accessibility smoke', () => {
       name: 'Modal opens visually but fails screen-reader users',
     })).toBeVisible();
 
+    // The prerendered heading is visible before the simulator is interactive.
+    // Browser progress is written when the incident component has mounted.
+    await expect.poll(() => page.evaluate(() => {
+      const progress = JSON.parse(localStorage.getItem('fa:practice:progress:v3:guest') || '{}');
+      return progress['incident:modal-screen-reader-failure']?.started === true;
+    })).toBe(true);
+
     await page.getByRole('button', { name: 'Begin simulator' }).click();
 
     const group = page.getByRole('radiogroup', { name: 'What is actually broken here?' });

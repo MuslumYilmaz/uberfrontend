@@ -1,3 +1,7 @@
+:host [hidden] {
+  display: none !important;
+}
+
 .incident-detail-shell {
   max-width: 78rem;
   margin: 0 auto;

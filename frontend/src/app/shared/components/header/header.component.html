@@ -41,6 +41,16 @@
       >
         Interview Prep <span class="caret" aria-hidden="true">▾</span>
       </button>
+      <a
+        class="fah-navlink"
+        data-testid="header-interview-hub"
+        routerLink="/interview-questions"
+        [class.fah-navlink--active]="isInterviewQuestionsActive()"
+        [attr.aria-current]="isInterviewQuestionsActive() ? 'page' : null"
+        (click)="onInterviewQuestionsClick()"
+      >
+        Interview Questions
+      </a>
     </div>
 
     <div class="fah-right" (click)="$event.stopPropagation()">
@@ -173,12 +183,13 @@
             <div class="study-section__title">Start here</div>
             <div class="study-list study-list--primary">
               <a
-                *ngFor="let action of studyPrimaryActions()"
+                *ngFor="let action of studyPrimaryActions(); trackBy: trackByStudyActionKey"
                 class="study-row study-row--primary"
                 [class.study-row--featured]="action.emphasis === 'promoted'"
                 [routerLink]="action.route"
                 [queryParams]="action.queryParams || null"
                 [attr.data-testid]="'header-study-' + action.key"
+                [attr.aria-current]="action.key === 'interview_questions' && isInterviewQuestionsActive() ? 'page' : null"
                 (click)="onStudyPrimaryAction(action)"
               >
                 <div class="row-icon"><i class="pi" [ngClass]="action.icon"></i></div>
@@ -203,7 +214,7 @@
           <div class="study-section">
             <div class="study-section__title">Results</div>
             <div class="study-list">
-              <ng-container *ngFor="let item of searchResults(); let idx = index">
+              <ng-container *ngFor="let item of searchResults(); trackBy: trackByItemKey; let idx = index">
                 <div *ngIf="item.disabled || !intentToLink(item); else searchRow" class="study-row disabled" role="button" aria-disabled="true">
                   <div class="row-icon"><i class="pi" [ngClass]="item.pi"></i></div>
                   <div class="row-body">

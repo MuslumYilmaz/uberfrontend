@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
+import { Component, DestroyRef, afterNextRender, computed, effect, inject, signal, untracked } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -63,6 +63,9 @@ export class IncidentDetailComponent {
   readonly auth = inject(AuthService);
   private readonly bugReport = inject(BugReportService);
   readonly progress = inject(IncidentProgressService);
+  private readonly viewReady = signal(false);
+  readonly renderedUser = computed(() => this.viewReady() ? this.auth.user() : null);
+  private readonly sessionScope = computed(() => this.renderedUser()?._id ?? null);
 
   readonly incident = signal<IncidentScenario | null>(null);
   readonly incidentList = signal<IncidentListItem[]>([]);
@@ -87,14 +90,9 @@ export class IncidentDetailComponent {
   readonly attemptEvaluation = computed<IncidentAttemptEvaluation>(() =>
     evaluateIncidentAttempt(this.stages(), this.answers()),
   );
-  readonly currentFeedback = computed(() => {
-    const stage = this.currentStage();
-    if (!stage) return null;
-    return this.stageResults()[stage.id] ?? null;
-  });
   readonly progressRecord = computed<IncidentProgressRecord>(() => {
     const meta = this.incident()?.meta;
-    return meta ? this.progress.getRecord(meta.id) : createEmptyIncidentProgressRecord();
+    return this.viewReady() && meta ? this.progress.getRecord(meta.id) : createEmptyIncidentProgressRecord();
   });
   readonly scoreBand = computed(() => {
     const incident = this.incident();
@@ -103,7 +101,7 @@ export class IncidentDetailComponent {
   });
   readonly locked = computed(() => {
     const scenario = this.incident();
-    return scenario ? scenario.meta.access === 'premium' && !isProActive(this.auth.user()) : false;
+    return scenario ? scenario.meta.access === 'premium' && !isProActive(this.renderedUser()) : false;
   });
   readonly lockedTitle = computed(() => this.incident()?.meta.title || 'Premium debug scenario');
   readonly lockedMemberCopy = computed(() => "You're on the free tier. Upgrade to access this premium debug scenario.");
@@ -142,6 +140,20 @@ export class IncidentDetailComponent {
     this.route.data
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((data) => this.hydrateFromResolved(data['incidentDetail'] as IncidentDetailResolved | undefined));
+
+    // Match the prerendered Overview before restoring browser-only progress.
+    afterNextRender(() => this.viewReady.set(true));
+    effect(() => {
+      if (!this.viewReady()) return;
+      const scenario = this.incident();
+      const locked = this.locked();
+      this.sessionScope();
+      // Progress writes and answer changes must not restart the active attempt.
+      untracked(() => {
+        this.resetAttemptState();
+        if (scenario && !locked) this.restoreSession(scenario);
+      });
+    });
   }
 
   startIncident(): void {
@@ -472,31 +484,26 @@ export class IncidentDetailComponent {
     this.incidentList.set(resolved?.list ?? []);
     this.prevIncident.set(resolved?.prev ?? null);
     this.nextIncident.set(resolved?.next ?? null);
+    this.resetAttemptState();
+    if (scenario) this.updateSeo(scenario);
+  }
+
+  private resetAttemptState(): void {
+    this.answers.set({});
+    this.submittedStageIds.set([]);
+    this.stageResults.set({});
+    this.activeStepIndex.set(0);
+    this.reflectionNote.set('');
     this.feedbackAnnouncement.set('');
+  }
 
-    if (!scenario) return;
-
-    this.updateSeo(scenario);
-    if (scenario.meta.access === 'premium' && !isProActive(this.auth.user())) {
-      this.answers.set({});
-      this.submittedStageIds.set([]);
-      this.stageResults.set({});
-      this.activeStepIndex.set(0);
-      this.reflectionNote.set('');
-      return;
-    }
+  private restoreSession(scenario: IncidentScenario): void {
     this.progress.markStarted(scenario.meta.id);
     const record = this.progress.getRecord(scenario.meta.id);
     this.reflectionNote.set(record.reflectionNote);
 
     const session = this.progress.loadSession(scenario.meta.id);
-    if (!session) {
-      this.answers.set({});
-      this.submittedStageIds.set([]);
-      this.stageResults.set({});
-      this.activeStepIndex.set(0);
-      return;
-    }
+    if (!session) return;
 
     this.answers.set(session.answers);
     this.submittedStageIds.set(session.submittedStageIds.filter((id) => scenario.stages.some((stage) => stage.id === id)));
@@ -555,7 +562,7 @@ export class IncidentDetailComponent {
 
   private persistSession(): void {
     const incident = this.incident();
-    if (!incident) return;
+    if (!incident || !this.viewReady() || this.locked()) return;
     this.progress.saveSession(incident.meta.id, {
       activeStepIndex: this.activeStepIndex(),
       answers: this.answers(),

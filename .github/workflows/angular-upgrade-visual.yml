@@ -18,6 +18,8 @@ jobs:
         browser: [chromium, firefox, webkit]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
         with:
           node-version-file: .nvmrc
@@ -59,11 +61,17 @@ jobs:
       PLAYWRIGHT_WEB_SERVER: '1'
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        with:
+          fetch-depth: 0
       - name: Checkout immutable Angular 17 reference
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
         with:
           ref: 68d4939b049e266c1f68efc6b0cf0b94a8854274
           path: angular17-reference
+      - name: Apply the intentional interview hub navigation to the reference
+        run: |
+          git -C angular17-reference apply --check ../frontend/e2e/reference-patches/interview-hub-navigation.patch
+          git -C angular17-reference apply ../frontend/e2e/reference-patches/interview-hub-navigation.patch
       - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
         with:
           node-version: 20.19.6
@@ -73,7 +81,7 @@ jobs:
           cp frontend/e2e/upgrade-visual.spec.ts frontend/e2e/interview-mocks.ts angular17-reference/frontend/e2e/
           cd angular17-reference/frontend
           npx playwright install --with-deps chromium
-      - name: Capture reference using the original application
+      - name: Capture Angular 17 reference with the same intended navigation
         working-directory: angular17-reference/frontend
         env:
           PLAYWRIGHT_PORT: '4251'

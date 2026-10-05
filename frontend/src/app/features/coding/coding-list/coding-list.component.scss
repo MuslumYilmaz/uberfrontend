@@ -166,6 +166,30 @@ app-coding-tech-kind-tabs {
   padding-top: 4px;
 }
 
+.fa-question-hubs {
+  margin-top: 18px;
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.fa-question-hubs .fa-section-title,
+.fa-question-hubs .fa-meta-text {
+  margin: 0;
+}
+
+.fa-question-hubs__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+}
+
+.fa-question-hubs__links a {
+  max-width: 100%;
+  min-width: 0;
+}
+
 .fa-discovery__head {
   display: grid;
   gap: 5px;

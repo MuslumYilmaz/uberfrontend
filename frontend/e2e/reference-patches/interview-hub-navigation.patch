@@ -1,0 +1,227 @@
+# Intentional navigation changes from 6becd398115e8f25e674e06e87527f371ad457f9.
+# Includes the follow-up spacing fix for desktop system-font variations.
+# Apply to the immutable Angular 17 reference 68d4939b049e266c1f68efc6b0cf0b94a8854274.
+# Retain its framework-specific metadata, imports and all unrelated application source.
+diff --git a/frontend/src/app/shared/components/header/header.component.css b/frontend/src/app/shared/components/header/header.component.css
+index 1e2010cf..21edda00 100644
+--- a/frontend/src/app/shared/components/header/header.component.css
++++ b/frontend/src/app/shared/components/header/header.component.css
+@@ -34,7 +34,7 @@
+
+ /* ---- Left / center ---- */
+ .fah-left{ display:flex; align-items:center; gap:8px; min-width:0; }
+-.fah-center{ display:flex; justify-content:center; align-items:center; }
++.fah-center{ display:flex; justify-content:center; align-items:center; gap:8px; min-width:0; }
+
+ .fah-logo{
+   width: 32px;
+@@ -54,7 +54,7 @@
+   border-radius:10px; border:1px solid var(--fah-border);
+   background: color-mix(in srgb, var(--uf-text-primary) 4%, var(--uf-surface));
+   color:var(--fah-fg);
+-  font-size:14px; cursor:pointer; text-decoration:none;
++  font-size:14px; cursor:pointer; text-decoration:none; white-space:nowrap;
+ }
+ .fah-navlink:hover{ background: color-mix(in srgb, var(--uf-text-primary) 8%, var(--uf-surface)); }
+ .fah-navlink--active{
+diff --git a/frontend/src/app/shared/components/header/header.component.html b/frontend/src/app/shared/components/header/header.component.html
+index 16d93aff..46b2bd9e 100644
+--- a/frontend/src/app/shared/components/header/header.component.html
++++ b/frontend/src/app/shared/components/header/header.component.html
+@@ -41,6 +41,16 @@
+       >
+         Interview Prep <span class="caret" aria-hidden="true">▾</span>
+       </button>
++      <a
++        class="fah-navlink"
++        data-testid="header-interview-hub"
++        routerLink="/interview-questions"
++        [class.fah-navlink--active]="isInterviewQuestionsActive()"
++        [attr.aria-current]="isInterviewQuestionsActive() ? 'page' : null"
++        (click)="onInterviewQuestionsClick()"
++      >
++        Interview Questions
++      </a>
+     </div>
+
+     <div class="fah-right" (click)="$event.stopPropagation()">
+@@ -173,12 +183,13 @@
+             <div class="study-section__title">Start here</div>
+             <div class="study-list study-list--primary">
+               <a
+-                *ngFor="let action of studyPrimaryActions()"
++                *ngFor="let action of studyPrimaryActions(); trackBy: trackByStudyActionKey"
+                 class="study-row study-row--primary"
+                 [class.study-row--featured]="action.emphasis === 'promoted'"
+                 [routerLink]="action.route"
+                 [queryParams]="action.queryParams || null"
+                 [attr.data-testid]="'header-study-' + action.key"
++                [attr.aria-current]="action.key === 'interview_questions' && isInterviewQuestionsActive() ? 'page' : null"
+                 (click)="onStudyPrimaryAction(action)"
+               >
+                 <div class="row-icon"><i class="pi" [ngClass]="action.icon"></i></div>
+@@ -203,7 +214,7 @@
+           <div class="study-section">
+             <div class="study-section__title">Results</div>
+             <div class="study-list">
+-              <ng-container *ngFor="let item of searchResults(); let idx = index">
++              <ng-container *ngFor="let item of searchResults(); trackBy: trackByItemKey; let idx = index">
+                 <div *ngIf="item.disabled || !intentToLink(item); else searchRow" class="study-row disabled" role="button" aria-disabled="true">
+                   <div class="row-icon"><i class="pi" [ngClass]="item.pi"></i></div>
+                   <div class="row-body">
+diff --git a/frontend/src/app/shared/components/header/header.component.ts b/frontend/src/app/shared/components/header/header.component.ts
+index cf710857..d95f95e4 100644
+--- a/frontend/src/app/shared/components/header/header.component.ts
++++ b/frontend/src/app/shared/components/header/header.component.ts
+@@ -30,6 +30,7 @@ type VisibleEntry = {
+ type StudyPrimaryActionKey =
+   | 'continue'
+   | 'interview_blueprint'
++  | 'interview_questions'
+   | 'framework_prep'
+   | 'essential_60'
+   | 'question_library'
+@@ -117,6 +118,7 @@ export class HeaderComponent implements OnInit {
+     if (this.isPro()) return '/profile';
+     return this.auth.isLoggedIn() ? '/pricing' : '/guides/interview-blueprint/intro';
+   });
++  isInterviewQuestionsActive = computed(() => this.currentPath() === '/interview-questions');
+   isStudyActive = computed(() => {
+     const path = this.currentPath();
+     if (
+@@ -151,7 +153,7 @@ export class HeaderComponent implements OnInit {
+     return /^\/(javascript|angular|react|vue|html|css)(\/|$)/.test(path);
+   });
+
+-  studyPrimaryActions(): StudyPrimaryAction[] {
++  readonly studyPrimaryActions = computed<StudyPrimaryAction[]>(() => {
+     const recent = this.recentItems()[0] ?? null;
+     const recentLink = recent ? this.intentToLink(recent) : null;
+     const continueFallbackIsDashboard = this.auth.isLoggedIn();
+@@ -179,6 +181,13 @@ export class HeaderComponent implements OnInit {
+         route: ['/guides', 'interview-blueprint', 'intro'],
+         emphasis: 'promoted',
+       },
++      {
++        key: 'interview_questions',
++        title: 'Interview Questions',
++        subtitle: 'Browse frontend interview questions by technology and interview format.',
++        icon: 'pi-question-circle',
++        route: ['/interview-questions'],
++      },
+       {
+         key: 'framework_prep',
+         title: 'Framework prep paths',
+@@ -208,7 +217,7 @@ export class HeaderComponent implements OnInit {
+         route: ['/tracks'],
+       },
+     ];
+-  }
++  });
+
+   constructor() {
+     this.router.events.pipe(filter(e => e instanceof NavigationEnd), startWith(null))
+@@ -321,6 +330,7 @@ export class HeaderComponent implements OnInit {
+
+   trackByGroupKey(_: number, g: PrepareGroup) { return g.key; }
+   trackByItemKey(_: number, it: PrepareItem) { return it.key; }
++  trackByStudyActionKey(_: number, action: StudyPrimaryAction) { return action.key; }
+
+   toggleBrowseAll() {
+     this.browseAllOpen.update(v => !v);
+@@ -574,6 +584,11 @@ export class HeaderComponent implements OnInit {
+     this.trackTopNavClick('utility', destination);
+   }
+
++  onInterviewQuestionsClick() {
++    this.trackTopNavClick('primary', '/interview-questions');
++    this.closeAll();
++  }
++
+   onItemNavigate(it: PrepareItem) {
+     this.pushRecent(it);
+     this.closeAll();
+diff --git a/frontend/src/app/shared/components/marketing-header/marketing-header.component.css b/frontend/src/app/shared/components/marketing-header/marketing-header.component.css
+--- a/frontend/src/app/shared/components/marketing-header/marketing-header.component.css
++++ b/frontend/src/app/shared/components/marketing-header/marketing-header.component.css
+@@ -47,6 +47,12 @@
+ .famh-nav {
+   justify-content: center;
+   min-width: 0;
++  gap: 8px;
++}
++
++.famh-nav .famh-link {
++  padding-inline: 4px;
++  flex-shrink: 0;
+ }
+
+ .famh-actions {
+@@ -87,6 +93,7 @@
+   color: var(--uf-text-secondary);
+   font-size: 14px;
+   font-weight: 600;
++  white-space: nowrap;
+ }
+
+ .famh-link:hover {
+@@ -111,6 +118,7 @@
+   color: #0d0f12;
+   font-size: 14px;
+   font-weight: 800;
++  white-space: nowrap;
+   box-shadow: 0 8px 20px color-mix(in srgb, var(--uf-accent) 28%, transparent);
+ }
+
+@@ -228,7 +236,7 @@
+   background: color-mix(in srgb, var(--uf-accent) 12%, var(--uf-surface));
+ }
+
+-@media (max-width: 980px) {
++@media (max-width: 1180px) {
+   .famh-shell {
+     padding: 0 12px;
+     grid-template-columns: auto 1fr auto;
+diff --git a/frontend/src/app/shared/components/marketing-header/marketing-header.component.ts b/frontend/src/app/shared/components/marketing-header/marketing-header.component.ts
+index 8759c8ad..d293f990 100644
+--- a/frontend/src/app/shared/components/marketing-header/marketing-header.component.ts
++++ b/frontend/src/app/shared/components/marketing-header/marketing-header.component.ts
+@@ -12,7 +12,7 @@ type MarketingLink = {
+   route: any[];
+   destination: string;
+   queryParams?: Record<string, string>;
+-  activeMatch?: 'question-library' | 'essential-60' | 'path';
++  activeMatch?: 'question-library' | 'interview-questions' | 'essential-60' | 'path';
+ };
+
+ @Component({
+@@ -44,6 +44,12 @@ export class MarketingHeaderComponent {
+       destination: '/guides/interview-blueprint/intro',
+       activeMatch: 'path',
+     },
++    {
++      label: 'Interview Questions',
++      route: ['/interview-questions'],
++      destination: '/interview-questions',
++      activeMatch: 'interview-questions',
++    },
+     {
+       label: 'Essential 60',
+       route: ['/interview-questions', 'essential'],
+@@ -154,6 +160,7 @@ export class MarketingHeaderComponent {
+
+   trackPrimaryClick(link: MarketingLink, area: 'primary' | 'mobile_menu' = 'primary') {
+     this.trackTopNavClick(area, link.destination);
++    if (area === 'mobile_menu') this.mobileMenuOpen.set(false);
+   }
+
+   trackUtilityClick(link: MarketingLink, area: 'utility' | 'mobile_menu' = 'utility') {
+@@ -183,6 +190,8 @@ export class MarketingHeaderComponent {
+     const path = primary ? `/${primary.segments.map((segment) => segment.path).join('/')}` : '/';
+
+     switch (link.activeMatch) {
++      case 'interview-questions':
++        return path === '/interview-questions';
+       case 'question-library':
+         return path === '/coding';
+       case 'essential-60':

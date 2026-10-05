@@ -21,10 +21,19 @@ test.describe('PrimeNG prerender CSS before JavaScript', () => {
         await page.setViewportSize({ width, height: 900 });
         const reference = await context.newPage();
         await reference.setViewportSize({ width, height: 900 });
-        await reference.goto(`http://127.0.0.1:4257${route}`);
-        await page.goto(route);
+        const referenceResponse = await reference.goto(`http://127.0.0.1:4257${route}`);
+        const candidateResponse = await page.goto(route);
+        expect(referenceResponse?.status()).toBe(200);
+        expect(candidateResponse?.status()).toBe(200);
         const links = page.locator('link[data-fa-prime-ssr]');
-        expect(await links.count()).toBeGreaterThan(0);
+        if (await reference.locator('style[data-primeng-style-id]').count() === 0) {
+          // Native-control pages can prerender without PrimeNG styles. With
+          // nothing to extract, the complete document must remain untouched.
+          await expect(links).toHaveCount(0);
+          expect(await candidateResponse!.text()).toBe(await referenceResponse!.text());
+        } else {
+          expect(await links.count()).toBeGreaterThan(0);
+        }
         const rules = (page: Page) => page.evaluate(() => Array.from(document.styleSheets)
           .flatMap(sheet => Array.from(sheet.cssRules).map(rule => rule.cssText)));
         // Proves exact cascade ordering as well as successful CSS loading, before

@@ -1,3 +1,4 @@
+import { seoContentDateModified } from '../../core/utils/seo-content-date.util';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -1304,7 +1305,7 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect((collection?.mentions || []).some((entry: any) =>
       String(entry?.name || '').includes('Common React libraries')
     )).toBeTrue();
-    expect(collection?.dateModified).toBe('2026-08-13T00:00:00.000Z');
+    expect(collection?.dateModified).toBe(seoContentDateModified(collection.url));
     expect(collection?.author?.name).toBe('FrontendAtlas Editorial');
     expect(faqPage).toBeTruthy();
     expect(faqPage?.name).toBe('Top React interview questions and short answers, beginner to advanced');
@@ -1593,7 +1594,7 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect((collection?.mentions || []).some((entry: any) =>
       String(entry?.name || '').includes('JavaScript event bubbling and capturing')
     )).toBeTrue();
-    expect(collection?.dateModified).toBe('2026-08-14T00:00:00.000Z');
+    expect(collection?.dateModified).toBe(seoContentDateModified(collection.url));
     expect(collection?.author?.name).toBe('FrontendAtlas Editorial');
     expect(faqPage).toBeTruthy();
     expect(faqPage?.name).toBe('JavaScript interview questions and answers: beginner to advanced');
@@ -1914,7 +1915,7 @@ describe('InterviewQuestionsLandingComponent', () => {
     const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
     const collection = graph.find((entry: any) => entry?.['@type'] === 'CollectionPage');
     const faqPage = graph.find((entry: any) => entry?.['@type'] === 'FAQPage');
-    expect(collection?.dateModified).toBe('2026-05-21T00:00:00.000Z');
+    expect(collection?.dateModified).toBe(seoContentDateModified(collection.url));
     expect(collection?.author?.name).toBe('FrontendAtlas Editorial');
     const schemaNames = [
       ...(collection?.about || []),
@@ -2170,7 +2171,7 @@ describe('InterviewQuestionsLandingComponent', () => {
     const faqPage = graph.find((entry: any) => entry?.['@type'] === 'FAQPage');
 
     expect(payload.canonical).toBe('/html-css/interview-questions');
-    expect(collection?.dateModified).toBe('2026-08-20T00:00:00.000Z');
+    expect(collection?.dateModified).toBe(seoContentDateModified(collection.url));
     expect(collection?.author?.name).toBe('FrontendAtlas Editorial');
     expect((collection?.about || []).some((entry: any) =>
       String(entry?.name || '').includes('HTML CSS interview questions')
@@ -2488,7 +2489,7 @@ describe('InterviewQuestionsLandingComponent', () => {
       Array.from({ length: 20 }, (_, index) => index + 1)
     );
 
-    expect(collection?.dateModified).toBe('2026-08-13T00:00:00.000Z');
+    expect(collection?.dateModified).toBe(seoContentDateModified(collection.url));
     expect(collection?.author?.name).toBe('FrontendAtlas Editorial');
     expect((collection?.about || []).some((entry: any) =>
       String(entry?.name || '').includes('Vue.js interview questions')
@@ -2777,7 +2778,7 @@ describe('InterviewQuestionsLandingComponent', () => {
     const collection = graph.find((entry: any) => entry?.['@type'] === 'CollectionPage');
     const faqPage = graph.find((entry: any) => entry?.['@type'] === 'FAQPage');
 
-    expect(collection?.dateModified).toBe('2026-05-21T00:00:00.000Z');
+    expect(collection?.dateModified).toBe(seoContentDateModified(collection.url));
     expect(collection?.author?.name).toBe('FrontendAtlas Editorial');
     expect((collection?.about || []).some((entry: any) =>
       String(entry?.name || '').includes('HTML interview questions and answers')
@@ -3074,7 +3075,7 @@ describe('InterviewQuestionsLandingComponent', () => {
     const faqPage = graph.find((entry: any) => entry?.['@type'] === 'FAQPage');
 
     expect(payload.canonical).toBe('/css/interview-questions');
-    expect(collection?.dateModified).toBe('2026-08-20T00:00:00.000Z');
+    expect(collection?.dateModified).toBe(seoContentDateModified(collection.url));
     expect(collection?.author?.name).toBe('FrontendAtlas Editorial');
     expect((collection?.about || []).some((entry: any) =>
       String(entry?.name || '').includes('CSS interview questions and answers')
@@ -3558,7 +3559,7 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect((collection?.mentions || []).some((entry: any) =>
       String(entry?.name || '').includes('Modern Angular interview topics')
     )).toBeTrue();
-    expect(collection?.dateModified).toBe('2026-08-14T00:00:00.000Z');
+    expect(collection?.dateModified).toBe(seoContentDateModified(collection.url));
     expect(collection?.author?.name).toBe('FrontendAtlas Editorial');
     expect(faqPage).toBeTruthy();
     expect(faqPage?.name).toBe('Angular interview questions and answers: beginner to advanced');

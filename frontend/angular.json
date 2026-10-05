@@ -32,7 +32,7 @@
               "src/llms.txt",
               {
                 "glob": "sitemap*.xml",
-                "input": "src",
+                "input": ".angular/seo/sitemaps",
                 "output": "/"
               },
               {
@@ -217,7 +217,7 @@
               "src/llms.txt",
               {
                 "glob": "sitemap*.xml",
-                "input": "src",
+                "input": ".angular/seo/sitemaps",
                 "output": "/"
               },
               {
@@ -337,7 +337,7 @@
               "src/robots.txt",
               {
                 "glob": "sitemap*.xml",
-                "input": "src",
+                "input": ".angular/seo/sitemaps",
                 "output": "/"
               },
               {

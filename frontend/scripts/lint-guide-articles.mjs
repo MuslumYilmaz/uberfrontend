@@ -3,6 +3,15 @@
 import fs from 'fs';
 import path from 'path';
 import ts from 'typescript';
+import {
+  parseTypeScript,
+  getObjectProperty,
+  readStringProperty,
+  readObjectProperty,
+  readStringArrayProperty,
+  readImportPath,
+  extractInlineComponentTemplate,
+} from './content-typescript.mjs';
 import { execFileSync } from 'child_process';
 import { frontendRoot, guideRegistryPath, repoRoot } from './content-paths.mjs';
 
@@ -50,69 +59,6 @@ function wordCount(value) {
   return text.split(/\s+/).filter(Boolean).length;
 }
 
-function propertyNameToString(name) {
-  if (!name) return '';
-  if (ts.isIdentifier(name) || ts.isStringLiteral(name) || ts.isNumericLiteral(name)) {
-    return String(name.text || '');
-  }
-  return '';
-}
-
-function getObjectProperty(objectLiteral, propName) {
-  return objectLiteral.properties.find((prop) => {
-    if (!ts.isPropertyAssignment(prop)) return false;
-    return propertyNameToString(prop.name) === propName;
-  }) || null;
-}
-
-function readStringProperty(objectLiteral, propName) {
-  const prop = getObjectProperty(objectLiteral, propName);
-  if (!prop) return '';
-  const init = prop.initializer;
-  if (ts.isStringLiteral(init) || ts.isNoSubstitutionTemplateLiteral(init)) {
-    return init.text;
-  }
-  return '';
-}
-
-function readObjectProperty(objectLiteral, propName) {
-  const prop = getObjectProperty(objectLiteral, propName);
-  if (!prop || !ts.isObjectLiteralExpression(prop.initializer)) return null;
-  return prop.initializer;
-}
-
-function readStringArrayProperty(objectLiteral, propName) {
-  const prop = getObjectProperty(objectLiteral, propName);
-  if (!prop || !ts.isArrayLiteralExpression(prop.initializer)) return [];
-  return prop.initializer.elements
-    .map((element) => {
-      if (ts.isStringLiteral(element) || ts.isNoSubstitutionTemplateLiteral(element)) {
-        return element.text;
-      }
-      return '';
-    })
-    .filter(Boolean);
-}
-
-function readImportPath(entryObject) {
-  const loadProp = getObjectProperty(entryObject, 'load');
-  if (!loadProp) return '';
-  let importPath = '';
-  function visit(node) {
-    if (
-      ts.isCallExpression(node)
-      && node.expression.kind === ts.SyntaxKind.ImportKeyword
-      && node.arguments.length > 0
-      && ts.isStringLiteral(node.arguments[0])
-    ) {
-      importPath = node.arguments[0].text;
-    }
-    node.forEachChild(visit);
-  }
-  loadProp.initializer.forEachChild(visit);
-  return importPath;
-}
-
 function readGuideArrays() {
   if (!fs.existsSync(REGISTRY_PATH)) {
     addError(`guide registry not found: ${relFromRepo(REGISTRY_PATH)}`);
@@ -120,13 +66,7 @@ function readGuideArrays() {
   }
 
   const source = fs.readFileSync(REGISTRY_PATH, 'utf8');
-  const sourceFile = ts.createSourceFile(
-    REGISTRY_PATH,
-    source,
-    ts.ScriptTarget.Latest,
-    true,
-    ts.ScriptKind.TS,
-  );
+  const sourceFile = parseTypeScript(source, REGISTRY_PATH);
 
   const arrays = new Map();
   sourceFile.forEachChild((node) => {
@@ -182,38 +122,7 @@ function readGuideArrays() {
 
 function extractComponentTemplate(filePath) {
   if (!fs.existsSync(filePath)) return '';
-  const source = fs.readFileSync(filePath, 'utf8');
-  const sourceFile = ts.createSourceFile(
-    filePath,
-    source,
-    ts.ScriptTarget.Latest,
-    true,
-    ts.ScriptKind.TS,
-  );
-
-  let template = '';
-  sourceFile.forEachChild(function visit(node) {
-    if (
-      ts.isDecorator(node)
-      && ts.isCallExpression(node.expression)
-      && ts.isIdentifier(node.expression.expression)
-      && node.expression.expression.text === 'Component'
-    ) {
-      const [arg] = node.expression.arguments;
-      if (!arg || !ts.isObjectLiteralExpression(arg)) return;
-      const templateProp = getObjectProperty(arg, 'template');
-      if (!templateProp) return;
-      const init = templateProp.initializer;
-      if (ts.isStringLiteral(init) || ts.isNoSubstitutionTemplateLiteral(init)) {
-        template = init.text;
-      } else {
-        template = init.getText(sourceFile);
-      }
-    }
-    node.forEachChild(visit);
-  });
-
-  return template;
+  return extractInlineComponentTemplate(parseTypeScript(fs.readFileSync(filePath, 'utf8'), filePath));
 }
 
 function resolveGuideImplementationPath(filePath, seen = new Set()) {
@@ -225,13 +134,7 @@ function resolveGuideImplementationPath(filePath, seen = new Set()) {
   const source = fs.readFileSync(absolutePath, 'utf8');
   if (source.includes('@Component(')) return absolutePath;
 
-  const sourceFile = ts.createSourceFile(
-    absolutePath,
-    source,
-    ts.ScriptTarget.Latest,
-    true,
-    ts.ScriptKind.TS,
-  );
+  const sourceFile = parseTypeScript(source, absolutePath);
 
   const reExport = sourceFile.statements.find(
     (statement) =>
@@ -322,7 +225,7 @@ function validateDate(label, value) {
   return date.toISOString().slice(0, 10);
 }
 
-function readGitDateRange(filePath) {
+function readFirstGitDate(filePath) {
   try {
     const first = execFileSync('git', ['log', '--follow', '--diff-filter=A', '--format=%aI', '--', filePath], {
       cwd: frontendRoot,
@@ -333,17 +236,9 @@ function readGitDateRange(filePath) {
       .split('\n')
       .filter(Boolean)
       .pop() || '';
-    const last = execFileSync('git', ['log', '-1', '--format=%aI', '--', filePath], {
-      cwd: frontendRoot,
-      encoding: 'utf8',
-      stdio: ['ignore', 'pipe', 'ignore'],
-    }).trim();
-    return {
-      first: first ? first.slice(0, 10) : '',
-      last: last ? last.slice(0, 10) : '',
-    };
+    return first ? first.slice(0, 10) : '';
   } catch {
-    return { first: '', last: '' };
+    return '';
   }
 }
 
@@ -485,12 +380,9 @@ function main() {
     const inspectionPath = resolveGuideImplementationPath(entry.componentPath);
 
     if (hasFullGitHistory) {
-      const gitDates = readGitDateRange(inspectionPath);
-      if (publishedAt && gitDates.first && publishedAt < gitDates.first) {
-        addError(`${id} seo.publishedAt (${publishedAt}) is earlier than the first git commit for ${relFromRepo(inspectionPath)} (${gitDates.first})`);
-      }
-      if (updatedAt && gitDates.last && updatedAt < gitDates.last) {
-        addWarning(`${id} seo.updatedAt (${updatedAt}) is older than the latest git commit for ${relFromRepo(inspectionPath)} (${gitDates.last})`);
+      const firstGitDate = readFirstGitDate(inspectionPath);
+      if (publishedAt && firstGitDate && publishedAt < firstGitDate) {
+        addError(`${id} seo.publishedAt (${publishedAt}) is earlier than the first git commit for ${relFromRepo(inspectionPath)} (${firstGitDate})`);
       }
     }
 

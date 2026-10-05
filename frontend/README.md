@@ -190,6 +190,24 @@ Or run locally with a prerendered build:
 2) Serve `dist/frontendatlas/browser` with a static server (any tool you prefer).
 3) `PLAYWRIGHT_BASE_URL=http://localhost:4200 PLAYWRIGHT_SSR=1 npx playwright test e2e/seo-ssr.spec.ts`
 
+### Incident content and UI contracts
+
+Build first with `npm run build:prod`, then run `npm run test:e2e:incidents:prod`.
+The suite checks every public incident's real prerendered educational markup,
+Premium solution exclusion, saved-session hydration, scoring, navigation, and
+keyboard accessibility. Backend requests are mocked. This suite also runs in
+the Playwright CI job against the production output.
+
+On macOS, `npm run test:e2e:incidents:visual` compares the same production output
+with 93 Chromium reference images captured before the renderer change
+(application revision `28a133614deb`). It covers every free incident at 390/1440px
+and the full Stale Search Race flow at 360/390/834/1366/1440px, with zero differing
+pixels allowed. The visual suite is opt-in (`INCIDENT_VISUAL=1`) and skips other
+operating systems because the committed references use macOS font rendering.
+Do not use `--update-snapshots` to verify a rendering change: investigate the
+diff first. New platform references must come from a known-good application
+using the same Chromium and font environment as the candidate.
+
 ## Draft versioning
 
 To safely handle “CDN updates a question (same id) while users have local drafts”, drafts are versioned by content. See `frontend/docs/draft-versioning.md`.
@@ -207,6 +225,63 @@ Notes:
 - Use filesystem-first routing so prerendered routes are served as static HTML.
 - Apply targeted rewrites only for private CSR paths (for this repo: `/dashboard`, `/profile`, `/admin/*`, `/billing/*`, `/onboarding/*`, premium `/tracks/:slug`, premium `/companies/:slug/*`).
 - Keep unknown URLs as real `404` responses.
+
+## Sitemap content dates
+
+`npm run gen:seo` generates sitemap XML under `.angular/seo/sitemaps/` and the
+ignored Angular module `src/app/generated/seo-content-dates.ts`. These artifacts
+are generated before builds and tests, and are not committed. Angular copies only
+the XML files to the public build; Git provenance remains in
+`.angular/seo/content-dates.json` on the build machine.
+The generated date module is excluded from `data-version` hashing, so assigning
+commit dates does not invalidate user drafts or require another content commit.
+
+Dates come from the last meaningful content transition in the target commit's
+first-parent Git history, using the committer's UTC day. A merge counts when its
+content enters that branch; a revert is also a content update. Build time, file
+mtime and editorial `updatedAt` fields do not determine SEO dates. Existing
+publication and editorial dates remain separate from `dateModified`.
+
+The inventory selects individual catalog objects, article content and explicitly
+mapped page dependencies. It ignores date fields, generated files, tests,
+comments and visual styles. Adding a public route requires a content mapping.
+When changing the meaning of a projection, increment `PROJECTION_VERSION` and
+rebuild the historical baseline from Git; do not stamp the current date. A build
+with an older projection checkpoint recomputes dates from full Git history
+without rewriting the checkpoint.
+
+- Generate: `npm run gen:seo` (also part of `gen:data`, install and test commands).
+- Verify existing output without writes: `npm run check:seo-dates`.
+- Validate staged sources without writes or staging: `node scripts/generate-seo-content-dates.mjs --staged`.
+- Rebuild the historical checkpoint: `node scripts/seo-content-history.mjs --baseline --target <existing-commit>`.
+- Regression tests: `npm run test:seo-dates`.
+
+The tracked `scripts/seo-content-baseline.json` is a historical checkpoint, not an
+always-current generated manifest. Review its source commits and date changes
+when deliberately refreshing it. The normal build resolves later transitions
+without changing this file. Unknown historical dates are omitted with a reason.
+
+Local uncommitted content is reported as pending and has no published lastmod.
+CI and Vercel builds reject pending semantic content. `--strict` enables that
+check explicitly for local generation. The pre-commit check validates the staged
+snapshot; it never treats unstaged files as staged or assigns a publication date
+before the commit exists.
+
+A Git checkout is required. CI checks out full history; `ensure-seo-history.mjs`
+completes a shallow checkout from its existing `origin` using existing credentials.
+For [Vercel's shallow checkout](https://vercel.com/kb/guide/how-do-i-use-the-ignored-build-step-field-on-vercel)
+without `origin`, it fetches the checked-out commit directly from GitHub using the
+validated `VERCEL_GIT_PROVIDER`, `VERCEL_GIT_REPO_OWNER` and `VERCEL_GIT_REPO_SLUG`
+[system metadata](https://vercel.com/docs/environment-variables/system-environment-variables).
+It does not add remotes or change credentials. Private repositories need an
+authenticated `origin` or a full Git checkout; inaccessible history still fails.
+`node scripts/ensure-seo-history.mjs --check` checks without fetching. Missing Git,
+unavailable history, invalid dates or missing content mappings fail explicitly;
+there is no build-time date fallback. Verify this prerequisite in a Vercel preview
+before releasing a change to the deployment pipeline.
+
+After building, `npm run seo:meta-check` verifies sitemap/JSON-LD date agreement,
+and `npm run seo:link-equity` verifies public URL reachability and inclusion.
 
 ## Further help
 

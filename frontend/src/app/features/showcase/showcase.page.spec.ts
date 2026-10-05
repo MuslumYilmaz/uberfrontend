@@ -557,6 +557,17 @@ describe('ShowcasePageComponent', () => {
     expect(text).not.toContain('113-question progression');
   });
 
+  it('exposes the main question hub and every technology hub in the initial focus section', () => {
+    const section = fixture.nativeElement.querySelector('[data-testid="showcase-focus-section"]') as HTMLElement;
+    const hrefs = Array.from(section.querySelectorAll('a'), (link) => link.getAttribute('href'));
+    const targets = ['/interview-questions', ...['javascript', 'react', 'angular', 'vue', 'html', 'css', 'html-css']
+      .map((tech) => `/${tech}/interview-questions`)];
+
+    for (const target of targets) {
+      expect(hrefs.filter((href) => href === target)).withContext(target).toEqual([target]);
+    }
+  });
+
   it('renders the recommended preparation roadmap with the intended first route and links', () => {
     const page: HTMLElement = fixture.nativeElement;
     const roadmap = page.querySelector('[data-testid="prep-roadmap"]') as HTMLElement;

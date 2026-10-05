@@ -3,11 +3,10 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-const SRC_DIR = path.resolve('src');
-const INDEX_PATH = path.join(SRC_DIR, 'sitemap-index.xml');
-const FALLBACK_SITEMAP = path.join(SRC_DIR, 'sitemap-1.xml');
-const ALT_SITEMAP = path.join(SRC_DIR, 'sitemap.xml');
-const PRERENDER_PATH = path.join(SRC_DIR, 'prerender.routes.txt');
+import { sitemapDir as SITEMAP_DIR, srcPrerenderRoutesPath as PRERENDER_PATH } from './content-paths.mjs';
+const INDEX_PATH = path.join(SITEMAP_DIR, 'sitemap-index.xml');
+const FALLBACK_SITEMAP = path.join(SITEMAP_DIR, 'sitemap-1.xml');
+const ALT_SITEMAP = path.join(SITEMAP_DIR, 'sitemap.xml');
 const __filename = fileURLToPath(import.meta.url);
 
 function extractLocs(xml) {
@@ -41,9 +40,9 @@ function readSitemapFiles() {
       .map((loc) => {
         try {
           const url = new URL(loc);
-          return path.join(SRC_DIR, path.basename(url.pathname));
+          return path.join(SITEMAP_DIR, path.basename(url.pathname));
         } catch {
-          return path.join(SRC_DIR, path.basename(loc));
+          return path.join(SITEMAP_DIR, path.basename(loc));
         }
       })
       .filter((file) => fs.existsSync(file));
@@ -57,7 +56,7 @@ function readSitemapFiles() {
 
 function readSitemapPaths() {
   const files = readSitemapFiles();
-  if (!files.length) return [];
+  if (!files.length) throw new Error('Missing sitemap artifacts. Run npm run gen:seo.');
   const paths = new Set();
   files.forEach((file) => {
     const xml = fs.readFileSync(file, 'utf8');

@@ -19,6 +19,15 @@ scenarios and Playwright version as the candidate, then compares the candidate
 without `--update-snapshots`. The two runs share the same runner and font setup.
 Do not update candidate snapshots to hide migration differences.
 
+The interview-hub navigation introduced by `6becd398115e8f25e674e06e87527f371ad457f9`
+is an intentional product change after the migration. CI applies the reviewed
+`frontend/e2e/reference-patches/interview-hub-navigation.patch` to the pinned
+Angular 17 source before capturing its reference. The patch contains only the
+header navigation changes and their responsive spacing; it preserves the
+reference's Angular 17 component metadata, imports, dependencies and remaining
+application. Screenshot thresholds and candidate-update restrictions remain
+unchanged. Future product changes require separate review of any reference patch.
+
 ## Angular 17 baseline
 
 - Production build and 615 prerender routes: passed.
