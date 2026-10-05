@@ -6,6 +6,16 @@
   padding: 1.5rem 1.5rem 7rem;
 }
 
+.tradeoff-detail__analysis {
+  display: grid;
+  gap: inherit;
+  min-width: 0;
+}
+
+.tradeoff-detail__analysis[hidden] {
+  display: none;
+}
+
 .tradeoff-detail__back {
   max-width: 78rem;
   margin: 0 auto;

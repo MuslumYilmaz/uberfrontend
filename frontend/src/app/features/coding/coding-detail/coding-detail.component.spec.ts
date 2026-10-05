@@ -19,6 +19,7 @@ import { PressureModeService } from '../../../core/services/pressure-mode.servic
 import { UserProgressService } from '../../../core/services/user-progress.service';
 import { MonacoEditorComponent } from '../../../monaco-editor.component';
 import { CodingDetailComponent } from './coding-detail.component';
+import { CodingJsPanelComponent } from './coding-js-panel/coding-js-panel.component';
 import { PUBLIC_QUESTION_NAVIGATION } from '../../../generated/public-question-navigation';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
@@ -266,7 +267,7 @@ describe('CodingDetailComponent', () => {
     expect(component.submitLabel()).toBe('Mark as incomplete');
   });
 
-  it('keeps the phone guard below 768px and uses compact workspace layout through 980px', () => {
+  it('uses mobile reading below 768px and compact workspace layout through 980px', () => {
     const fixture = TestBed.createComponent(CodingDetailComponent);
     const component = fixture.componentInstance;
     const viewportWidth = spyOnProperty(window, 'innerWidth', 'get');
@@ -294,6 +295,189 @@ describe('CodingDetailComponent', () => {
     expect(component.isPhoneViewport()).toBeFalse();
     expect(component.isCompactWorkspace()).toBeFalse();
     expect(component.asideFlex()).toBe('0 0 80%');
+  });
+
+  it('keeps mobile prompt and permitted solution readable without mounting any editors or losing the desktop collapse preference', async () => {
+    spyOnProperty(window, 'innerWidth', 'get').and.returnValue(390);
+    const initializeEditor = spyOn(CodingJsPanelComponent.prototype, 'initFromQuestion').and.callThrough();
+    const base = makeDeferredPromiseQuestion();
+    const question = {
+      ...base,
+      solutionBlock: {
+        ...base.solutionBlock,
+        approaches: [{
+          title: 'Capture the promise controls',
+          codeJs: 'function createDeferred() { let resolve, reject; const promise = new Promise((ok, fail) => { resolve = ok; reject = fail; }); return { promise, resolve, reject }; }',
+        }],
+      },
+    };
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    component.questionId = question.id;
+    component.questionTech = 'javascript';
+    questionService.loadQuestions.and.returnValue(of([question] as any));
+    spyOn(component as any, 'resolveSolutionAsset').and.resolveTo({ files: {}, initialPath: '' });
+    expect(component.browserViewReady()).toBeFalse();
+    expect(component.workspaceAvailable()).toBeFalse();
+
+    fixture.detectChanges();
+    await fixture.whenStable();
+    component.descCollapsed.set(true);
+    component.litePreloadActive.set(true);
+    fixture.detectChanges();
+
+    const host = fixture.nativeElement as HTMLElement;
+    const description = host.querySelector('[data-testid="coding-description-panel"]') as HTMLElement;
+    const solution = host.querySelector('[data-testid="coding-solution-panel"]') as HTMLElement;
+    expect(description.hidden).toBeFalse();
+    expect(description.textContent).toContain('Adopt another Promise when resolve(Promise.resolve(value)) is used');
+    expect(description.querySelector('pre > code')?.textContent).toContain("await adopted.promise; // 'ok'");
+    expect(solution.hidden).toBeTrue();
+    expect(solution.textContent).toContain('Mental model:');
+    expect(host.querySelector('[data-testid="coding-mobile-notice"]')).not.toBeNull();
+    expect(host.querySelector('[data-testid="coding-workspace-panel"]')).toBeNull();
+    expect(host.querySelector('[data-testid="coding-description-splitter"]')).toBeNull();
+    expect(host.querySelector('[data-testid="footer-submit"]')).toBeNull();
+    expect(host.querySelector('[data-testid="footer-next"]')).not.toBeNull();
+    expect(host.querySelector('button[aria-label="Hide description"]')).toBeNull();
+
+    component.toggleDescription();
+    component.onSolutionTabClick();
+    fixture.detectChanges();
+
+    expect(solution.hidden).toBeFalse();
+    expect(solution.querySelector('pre > code')?.textContent).toContain('function createDeferred');
+    expect(host.querySelector('app-monaco-editor')).toBeNull();
+    expect(initializeEditor).not.toHaveBeenCalled();
+    expect(host.querySelector('[data-testid="solution-load-approach-0"]')).toBeNull();
+    expect(component.descCollapsed()).toBeTrue();
+    expect(component.descriptionCollapsed()).toBeFalse();
+    component.isPhoneViewport.set(false);
+    expect(component.descriptionCollapsed()).toBeTrue();
+  });
+
+  it('renders both HTML and CSS solution blocks as mobile read-only code', async () => {
+    spyOnProperty(window, 'innerWidth', 'get').and.returnValue(360);
+    const base = makeCssFlexboxNavbarQuestion();
+    const question = {
+      ...base,
+      solutionBlock: {
+        ...base.solutionBlock,
+        approaches: base.solutionBlock.approaches.map((approach) => ({
+          ...approach,
+          codeHtml: base.web.starterHtml,
+        })),
+      },
+    };
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    component.questionId = question.id;
+    component.questionTech = 'css';
+    questionService.loadQuestions.and.returnValue(of([question] as any));
+    spyOn(component as any, 'resolveSolutionAsset').and.resolveTo({ files: {}, initialPath: '' });
+    fixture.detectChanges();
+    await fixture.whenStable();
+    component.onSolutionTabClick();
+    fixture.detectChanges();
+
+    const host = fixture.nativeElement as HTMLElement;
+    const codeBlocks = Array.from(host.querySelectorAll('[data-testid="coding-solution-panel"] pre > code'));
+    expect(codeBlocks.some((block) => block.textContent?.includes('<nav'))).toBeTrue();
+    expect(codeBlocks.some((block) => block.textContent?.includes('flex-wrap'))).toBeTrue();
+    expect(host.querySelector('app-coding-web-panel, app-monaco-editor')).toBeNull();
+    expect(host.textContent).not.toContain('Load into editor');
+    expect(host.textContent).not.toContain('Preview solution');
+  });
+
+  it('restores body scrolling and dismisses previews when entering mobile reading, then restores desktop state', () => {
+    const viewportWidth = spyOnProperty(window, 'innerWidth', 'get').and.returnValue(1366);
+    document.body.style.overflow = 'auto';
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    (component as any).syncViewportState();
+    expect(document.body.style.overflow).toBe('hidden');
+    component.previewVisible = true;
+    component.previewOnlyLoading.set(true);
+    (component as any).lastPreviewHtml = '<p>Preview</p>';
+    component.descCollapsed.set(true);
+    component.isDraggingAside.set(true);
+
+    viewportWidth.and.returnValue(390);
+    (component as any).syncViewportState();
+    component.openPreview();
+    expect(document.body.style.overflow).toBe('auto');
+    expect(component.previewVisible).toBeFalse();
+    expect(component.previewOnlyLoading()).toBeFalse();
+    expect(component.isDraggingAside()).toBeFalse();
+    expect(component.descriptionCollapsed()).toBeFalse();
+
+    viewportWidth.and.returnValue(834);
+    (component as any).syncViewportState();
+    expect(document.body.style.overflow).toBe('hidden');
+    expect(component.descriptionCollapsed()).toBeTrue();
+    fixture.destroy();
+    expect(document.body.style.overflow).toBe('auto');
+  });
+
+  it('discards framework results from a workspace removed by a rapid desktop-phone-desktop resize', async () => {
+    const viewportWidth = spyOnProperty(window, 'innerWidth', 'get').and.returnValue(1366);
+    const component = TestBed.createComponent(CodingDetailComponent).componentInstance;
+    component.tech = 'react';
+    component.question.set({ id: 'react-counter', frameworkTests: [{ id: 'counter' }] } as any);
+    let finishChecks!: (value: any[]) => void;
+    const run = new Promise<any[]>((resolve) => { finishChecks = resolve; });
+    component.frameworkPanel = { runFrameworkChecks: () => run } as any;
+    const complete = spyOn(component as any, 'completeFrameworkCheckRun').and.resolveTo();
+    (component as any).syncViewportState();
+    const submission = component.submitCode();
+
+    viewportWidth.and.returnValue(390);
+    (component as any).syncViewportState();
+    viewportWidth.and.returnValue(1366);
+    (component as any).syncViewportState();
+    finishChecks([{ id: 'counter', passed: true }]);
+    await submission;
+    expect(complete).not.toHaveBeenCalled();
+    expect(activity.complete).not.toHaveBeenCalled();
+  });
+
+  it('prevents mobile editing and pressure progression while keeping the debrief locked', async () => {
+    const component = TestBed.createComponent(CodingDetailComponent).componentInstance;
+    component.isPhoneViewport.set(true);
+    component.tech = 'react';
+    component.question.set({ id: 'react-counter' } as any);
+    component.pressureRequested.set(true);
+    component.pressureScenario.set(pressureScenario);
+    component.pressureClearedRounds.set(1);
+    const navigate = spyOn(TestBed.inject(Router), 'navigate').and.resolveTo(true);
+    const panel = jasmine.createSpyObj('frameworkPanel', ['runFrameworkChecks', 'applySolutionFiles', 'openSolutionPreview']);
+    component.frameworkPanel = panel;
+
+    component.startPressureMode();
+    component.revealNextPressureRound();
+    component.openFrameworkSolutionPreview();
+    component.loadSolutionIntoEditor();
+    component.loadApproach({ title: 'Solution', codeJs: 'solution' } as any, 0);
+    component.onSolutionTabClick();
+    await component.submitCode();
+    expect(navigate).not.toHaveBeenCalled();
+    expect(pressureProgress.revealRound).not.toHaveBeenCalled();
+    expect(component.pressureRoundIndex()).toBe(0);
+    expect(component.activePanel()).toBe(0);
+    expect(panel.runFrameworkChecks).not.toHaveBeenCalled();
+    expect(panel.applySolutionFiles).not.toHaveBeenCalled();
+    expect(panel.openSolutionPreview).not.toHaveBeenCalled();
+    expect(activity.complete).not.toHaveBeenCalled();
+  });
+
+  it('retains the existing demo and lite workspace exemptions on phones', () => {
+    for (const input of ['demoMode', 'liteMode'] as const) {
+      const component = TestBed.createComponent(CodingDetailComponent).componentInstance;
+      component[input] = true;
+      component.isPhoneViewport.set(true);
+      expect(component.showMobileDesktopGuard()).toBeFalse();
+      expect(component.workspaceAvailable()).toBeTrue();
+    }
   });
 
   it('resizes the description by the coding root height on compact screens and width on desktop', () => {
@@ -1493,6 +1677,7 @@ describe('CodingDetailComponent', () => {
   });
 
   it('initializes direct question flow and loads questions', () => {
+    spyOnProperty(window, 'innerWidth', 'get').and.returnValue(1366);
     const fixture = TestBed.createComponent(CodingDetailComponent);
     const component = fixture.componentInstance;
     component.questionId = 'q1';
@@ -1729,7 +1914,8 @@ describe('CodingDetailComponent', () => {
     expect(component.solutionOpenPath()).toBe('src/App.tsx');
   });
 
-  it('loads a Premium solution only after entitlement arrives and clears it on revocation', async () => {
+  it('loads a mobile Premium solution only after entitlement arrives and clears it on revocation', async () => {
+    spyOnProperty(window, 'innerWidth', 'get').and.returnValue(390);
     const fixture = TestBed.createComponent(CodingDetailComponent);
     const component = fixture.componentInstance;
     const question = {
@@ -1778,6 +1964,7 @@ describe('CodingDetailComponent', () => {
     expect(component.locked()).toBeTrue();
     expect(component.solutionFilesMap()).toEqual({});
     expect(component.solutionOpenPath()).toBe('');
+    expect(fixture.nativeElement.querySelector('[data-testid="coding-description-panel"]')).toBeNull();
   });
 
   it('maps coding detail tech to interview hub routes', () => {
@@ -1859,6 +2046,7 @@ describe('CodingDetailComponent', () => {
   });
 
   it('restores document overflow on destroy', () => {
+    spyOnProperty(window, 'innerWidth', 'get').and.returnValue(1366);
     const fixture = TestBed.createComponent(CodingDetailComponent);
     const component = fixture.componentInstance;
     component.questionId = 'q1';

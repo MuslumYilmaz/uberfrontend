@@ -218,10 +218,24 @@ describe('TradeoffDetailComponent', () => {
     fixture.detectChanges();
 
     const component = fixture.componentInstance;
+    const analysis = fixture.nativeElement.querySelector('#tradeoff-analysis') as HTMLElement;
+    expect(analysis.hidden).toBeTrue();
+    expect(analysis.textContent).toContain(resolvedDetail.battle.strongAnswer.summary);
+    expect(analysis.textContent).toContain(resolvedDetail.battle.interviewerPushback[0].answer);
+    expect(fixture.nativeElement.querySelectorAll('#tradeoff-analysis').length).toBe(1);
+    expect(progress.saveDraft).not.toHaveBeenCalled();
+    expect(progress.revealAnalysis).not.toHaveBeenCalled();
+    expect(progress.markCompleted).not.toHaveBeenCalled();
+    const reveal = fixture.nativeElement.querySelector('[aria-controls="tradeoff-analysis"]') as HTMLButtonElement;
+    expect(reveal.disabled).toBeTrue();
+    expect(reveal.getAttribute('aria-expanded')).toBe('false');
     component.selectOption('zustand');
     component.revealAnalysis();
     fixture.detectChanges();
 
+    expect(fixture.nativeElement.querySelector('#tradeoff-analysis')).toBe(analysis);
+    expect(analysis.hidden).toBeFalse();
+    expect(reveal.getAttribute('aria-expanded')).toBe('true');
     expect(progress.saveDraft).toHaveBeenCalled();
     expect(progress.revealAnalysis).toHaveBeenCalled();
     expect(progress.markCompleted).not.toHaveBeenCalled();
@@ -229,6 +243,85 @@ describe('TradeoffDetailComponent', () => {
     expect(fixture.nativeElement.textContent || '').toContain('Decision matrix');
     expect(fixture.nativeElement.textContent || '').toContain('Interviewer pushback');
     expect(fixture.nativeElement.textContent || '').toContain('Mark as completed');
+  });
+
+  it('restores a saved reveal only after the first render and resets on new or missing routes', async () => {
+    const saved = { ...progress.getRecord(''), selectedOptionId: 'zustand', analysisRevealed: true, completed: true };
+    progress.getRecord.calls.reset();
+    progress.getRecord.and.callFake((id) => id === resolvedDetail.id ? saved : {
+      started: false, completed: false, analysisRevealed: false, lastPlayedAt: null, selectedOptionId: '',
+    });
+    routeData$.next({ tradeoffBattleDetail: resolvedDetail });
+    const fixture = TestBed.createComponent(TradeoffDetailComponent);
+    const component = fixture.componentInstance;
+    expect(progress.getRecord).not.toHaveBeenCalled();
+    expect(component.selectedOptionId()).toBe('');
+    expect(component.analysisRevealed()).toBeFalse();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(component.analysisRevealed()).toBeTrue();
+    expect(component.completed()).toBeTrue();
+    expect(component.selectedOptionId()).toBe('zustand');
+
+    routeData$.next({ tradeoffBattleDetail: { ...resolvedDetail,
+      battle: { ...resolvedDetail.battle, meta: { ...resolvedDetail.battle.meta, id: 'other-battle' } },
+    } });
+    fixture.detectChanges();
+    expect(component.selectedOptionId()).toBe('');
+    expect(component.analysisRevealed()).toBeFalse();
+    expect(component.completed()).toBeFalse();
+    component.selectOption('context');
+    component.loginPromptOpen = true;
+    routeData$.next({ tradeoffBattleDetail: { ...resolvedDetail, battle: null } });
+    fixture.detectChanges();
+    expect(component.selectedOptionId()).toBe('');
+    expect(component.loginPromptOpen).toBeFalse();
+    expect(fixture.nativeElement.querySelector('#tradeoff-analysis')).toBeNull();
+  });
+
+  it('does not reveal or complete before a valid choice and reveal action', async () => {
+    authUser.set({ _id: 'user-1' });
+    routeData$.next({ tradeoffBattleDetail: resolvedDetail });
+    const fixture = TestBed.createComponent(TradeoffDetailComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+    const component = fixture.componentInstance;
+    component.selectOption('missing-option');
+    component.revealAnalysis();
+    component.markComplete();
+    expect(progress.saveDraft).not.toHaveBeenCalled();
+    expect(progress.revealAnalysis).not.toHaveBeenCalled();
+    expect(progress.markCompleted).not.toHaveBeenCalled();
+    component.selectOption('context');
+    component.markComplete();
+    expect(progress.markCompleted).not.toHaveBeenCalled();
+  });
+
+  it('restores each account scope without background records or profile updates replacing a live choice', async () => {
+    const initial = progress.getRecord('');
+    const record = signal({ ...initial, selectedOptionId: 'zustand', analysisRevealed: true });
+    progress.getRecord.and.callFake(() => authUser()?._id === 'user-2' ? initial : record());
+    authUser.set({ _id: 'user-1' });
+    routeData$.next({ tradeoffBattleDetail: resolvedDetail });
+    const fixture = TestBed.createComponent(TradeoffDetailComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+    const component = fixture.componentInstance;
+    expect(component.selectedOptionId()).toBe('zustand');
+    component.selectOption('context');
+    record.set({ ...initial, selectedOptionId: 'zustand', analysisRevealed: true });
+    authUser.set({ _id: 'user-1', username: 'updated-name' });
+    fixture.detectChanges();
+    expect(component.selectedOptionId()).toBe('context');
+    authUser.set({ _id: 'user-2' });
+    fixture.detectChanges();
+    expect(component.selectedOptionId()).toBe('');
+    expect(component.analysisRevealed()).toBeFalse();
+    expect(progress.revealAnalysis).not.toHaveBeenCalled();
+    expect(progress.markCompleted).not.toHaveBeenCalled();
   });
 
   it('links to the hub and adjacent battles using the resolved order, including premium previews', async () => {
@@ -331,6 +424,14 @@ describe('TradeoffDetailComponent', () => {
     expect(fixture.nativeElement.querySelector('[data-testid="premium-preview-rich"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('[data-testid="premium-preview"]')).toBeNull();
     expect(fixture.nativeElement.textContent || '').not.toContain('Reveal analysis');
+    expect(fixture.nativeElement.querySelector('#tradeoff-analysis')).toBeNull();
+    expect(fixture.nativeElement.textContent || '').not.toContain(resolvedDetail.battle.strongAnswer.summary);
+    fixture.componentInstance.selectOption('zustand');
+    fixture.componentInstance.revealAnalysis();
+    fixture.componentInstance.markComplete();
+    expect(progress.saveDraft).not.toHaveBeenCalled();
+    expect(progress.revealAnalysis).not.toHaveBeenCalled();
+    expect(progress.markCompleted).not.toHaveBeenCalled();
     expect(fixture.nativeElement.querySelector('.tradeoff-detail__back a')?.getAttribute('href')).toBe('/tradeoffs');
     expect(fixture.nativeElement.querySelector('.tradeoff-detail__footer')).toBeNull();
 
@@ -360,5 +461,27 @@ describe('TradeoffDetailComponent', () => {
     const payload = seo.updateTags.calls.mostRecent().args[0] as any;
     expect(payload.robots).toBe('noindex,follow');
     expect(fixture.nativeElement.textContent || '').toContain('Reveal analysis');
+  });
+
+  it('removes premium analysis and local state immediately when access is lost', async () => {
+    const premiumDetail = structuredClone(resolvedDetail);
+    premiumDetail.battle.meta.access = 'premium';
+    authUser.set({ _id: 'user-1', accessTier: 'premium' });
+    routeData$.next({ tradeoffBattleDetail: premiumDetail });
+    const fixture = TestBed.createComponent(TradeoffDetailComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+    const component = fixture.componentInstance;
+    component.selectOption('zustand');
+    component.revealAnalysis();
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('#tradeoff-analysis')?.hidden).toBeFalse();
+    authUser.set({ _id: 'user-1', accessTier: 'free' });
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('#tradeoff-analysis')).toBeNull();
+    expect(component.selectedOptionId()).toBe('');
+    expect(component.analysisRevealed()).toBeFalse();
+    expect(component.completed()).toBeFalse();
   });
 });

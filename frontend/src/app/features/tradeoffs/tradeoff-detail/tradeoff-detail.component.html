@@ -69,6 +69,8 @@
             type="button"
             class="tradeoff-detail__cta"
             [disabled]="!selectedOptionId()"
+            aria-controls="tradeoff-analysis"
+            [attr.aria-expanded]="analysisRevealed()"
             (click)="revealAnalysis()"
           >
             {{ analysisRevealed() ? 'Analysis revealed' : 'Reveal analysis' }}
@@ -91,7 +93,7 @@
       </div>
     </section>
 
-    <ng-container *ngIf="analysisRevealed()">
+    <div id="tradeoff-analysis" class="tradeoff-detail__analysis" [hidden]="!analysisRevealed()">
       <section class="tradeoff-detail__section tradeoff-detail__callout">
         <p class="tradeoff-detail__eyebrow">STRONG ANSWER</p>
         <h2>{{ current.strongAnswer.title }}</h2>
@@ -251,7 +253,7 @@
           <li *ngFor="let item of current.antiPatterns; trackBy: trackByString">{{ item }}</li>
         </ul>
       </section>
-    </ng-container>
+    </div>
 
     <footer class="tradeoff-detail__footer">
       <a *ngIf="prevBattle() as previous; else noPreviousBattle" [routerLink]="['/tradeoffs', previous.id]"
@@ -295,7 +297,7 @@
           </a>
         </div>
         <p class="locked-copy">
-          <ng-container *ngIf="auth.isLoggedIn(); else lockedGuest">
+          <ng-container *ngIf="renderedUser(); else lockedGuest">
             {{ lockedMemberCopy() }}
           </ng-container>
           <ng-template #lockedGuest>
@@ -305,7 +307,7 @@
         <div class="locked-actions">
           <button class="fa-btn fa-btn--primary" type="button" (click)="goToPricingFromLocked()">View pricing</button>
           <button class="fa-btn fa-btn--ghost" type="button" data-testid="tradeoff-report-access-issue-btn" (click)="reportAccessIssue()">Report access issue</button>
-          <button *ngIf="!auth.isLoggedIn()" class="fa-btn fa-btn--ghost" type="button" (click)="goToLoginFromLocked()">Sign in</button>
+          <button *ngIf="!renderedUser()" class="fa-btn fa-btn--ghost" type="button" (click)="goToLoginFromLocked()">Sign in</button>
         </div>
       </div>
     </div>

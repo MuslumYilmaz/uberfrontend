@@ -1,7 +1,7 @@
 import { seoContentDateModified } from '../../../core/utils/seo-content-date.util';
 import { CommonModule } from '@angular/common';
 import { publicEditorialAuthorSchema } from '../../../core/content/public-editorial-facts';
-import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
+import { Component, DestroyRef, afterNextRender, computed, effect, inject, signal, untracked } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SeoService } from '../../../core/services/seo.service';
@@ -54,6 +54,10 @@ export class TradeoffDetailComponent {
   readonly auth = inject(AuthService);
   private readonly bugReport = inject(BugReportService);
   readonly progress = inject(TradeoffBattleProgressService);
+  private readonly viewReady = signal(false);
+  readonly renderedUser = computed(() => this.viewReady() ? this.auth.user() : null);
+  private readonly sessionScope = computed(() => this.renderedUser()?._id ?? 'guest');
+  private restoredScope: string | null = null;
 
   readonly battle = signal<TradeoffBattleScenario | null>(null);
   readonly battleList = signal<TradeoffBattleListItem[]>([]);
@@ -76,7 +80,7 @@ export class TradeoffDetailComponent {
   });
   readonly locked = computed(() => {
     const scenario = this.battle();
-    return scenario ? scenario.meta.access === 'premium' && !isProActive(this.auth.user()) : false;
+    return scenario ? scenario.meta.access === 'premium' && !isProActive(this.renderedUser()) : false;
   });
   readonly lockedTitle = computed(() => this.battle()?.meta.title || 'Premium tradeoff battle');
   readonly lockedMemberCopy = computed(() => "You're on the free tier. Upgrade to access this premium tradeoff battle.");
@@ -115,12 +119,34 @@ export class TradeoffDetailComponent {
     this.route.data
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((data) => this.hydrateFromResolved(data['tradeoffBattleDetail'] as TradeoffBattleDetailResolved | undefined));
+
+    // Hydrate the same closed analysis as the prerender before reading browser progress.
+    afterNextRender(() => this.viewReady.set(true));
+    effect(() => {
+      if (!this.viewReady()) return;
+      const scope = this.sessionScope();
+      if (scope !== this.restoredScope) {
+        this.restoredScope = scope;
+        this.loginPromptOpen = false;
+      }
+      const scenario = this.battle();
+      if (!scenario || this.locked()) {
+        this.resetProgressState();
+        return;
+      }
+      // Restore on route/account/access changes; background sync must not replace a live choice.
+      const record = untracked(() => this.progress.getRecord(scenario.meta.id));
+      this.selectedOptionId.set(scenario.options.some((option) => option.id === record.selectedOptionId)
+        ? record.selectedOptionId : '');
+      this.analysisRevealed.set(record.analysisRevealed);
+      this.completed.set(record.completed);
+    });
   }
 
   selectOption(optionId: string): void {
-    this.selectedOptionId.set(optionId);
     const battle = this.battle();
-    if (!battle) return;
+    if (!this.viewReady() || !battle || this.locked() || !battle.options.some((option) => option.id === optionId)) return;
+    this.selectedOptionId.set(optionId);
     this.progress.saveDraft(battle.meta.id, {
       selectedOptionId: optionId,
     });
@@ -128,7 +154,7 @@ export class TradeoffDetailComponent {
 
   revealAnalysis(): void {
     const battle = this.battle();
-    if (!battle) return;
+    if (!this.viewReady() || !battle || this.locked() || !this.selectedOption()) return;
     const record = this.progress.revealAnalysis(battle.meta.id, {
       selectedOptionId: this.selectedOptionId(),
     });
@@ -138,7 +164,7 @@ export class TradeoffDetailComponent {
 
   markComplete(): void {
     const battle = this.battle();
-    if (!battle || this.completed()) return;
+    if (!this.viewReady() || !battle || this.locked() || !this.analysisRevealed() || this.completed()) return;
     if (!this.auth.isLoggedIn()) {
       this.loginPromptOpen = true;
       return;
@@ -212,20 +238,16 @@ export class TradeoffDetailComponent {
     this.battleList.set(resolved?.list ?? []);
     this.prevBattle.set(resolved?.prev ?? null);
     this.nextBattle.set(resolved?.next ?? null);
+    this.resetProgressState();
+    this.loginPromptOpen = false;
 
-    if (!scenario) return;
+    if (scenario) this.updateSeo(scenario);
+  }
 
-    const record = this.progress.getRecord(scenario.meta.id);
-    this.updateSeo(scenario);
-    if (scenario.meta.access === 'premium' && !isProActive(this.auth.user())) {
-      this.selectedOptionId.set('');
-      this.analysisRevealed.set(false);
-      this.completed.set(false);
-      return;
-    }
-    this.selectedOptionId.set(record.selectedOptionId);
-    this.analysisRevealed.set(record.analysisRevealed);
-    this.completed.set(record.completed);
+  private resetProgressState(): void {
+    this.selectedOptionId.set('');
+    this.analysisRevealed.set(false);
+    this.completed.set(false);
   }
 
   private updateSeo(scenario: TradeoffBattleScenario): void {

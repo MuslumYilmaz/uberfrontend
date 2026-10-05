@@ -1649,12 +1649,23 @@ test.describe('Framework checks against the production SSR build', () => {
     }
   });
 
-  test('pressure routes keep the existing mobile workspace guard at 360 and 390px', async ({ page }) => {
-    for (const width of [360, 390]) {
+  test('mobile pressure routes preserve the current round for reading and allow exiting', async ({ page }) => {
+    for (const width of [360, 390, 767]) {
       await page.setViewportSize({ width, height: 800 });
       await page.goto('/react/coding/react-counter?mode=pressure');
-      await expect(page.getByTestId('coding-mobile-guard')).toBeVisible();
+      await expect(page.getByTestId('coding-mobile-notice')).toBeVisible();
+      await expect(page.getByTestId('pressure-mode-panel')).toBeVisible();
+      await expect(page.getByTestId('pressure-active-round')).toBeVisible();
+      await expect(page.getByTestId('coding-solution-tab')).toBeDisabled();
+      await expect(page.getByTestId('coding-workspace-panel')).toHaveCount(0);
+      await expect(page.locator('app-monaco-editor')).toHaveCount(0);
+      await expect(page.getByTestId('pressure-next-round')).toHaveCount(0);
+      await expect(page.getByRole('button', { name: /run (checks|tests)/i })).toHaveCount(0);
       await expectNoHorizontalOverflow(page);
+      await page.getByTestId('pressure-mode-exit').click();
+      await expect(page).toHaveURL(/\/react\/coding\/react-counter$/);
+      await expect(page.getByTestId('coding-description-panel')).toBeVisible();
+      await expect(page.getByTestId('coding-solution-tab')).toBeEnabled();
     }
   });
 
