@@ -1,0 +1,574 @@
+# Intentional mobile question and solution reading from 595e08326c16d7c4bc75f0947f2e4a7435d74ea2.
+# Apply to the immutable Angular 17 reference 68d4939b049e266c1f68efc6b0cf0b94a8854274.
+# Port only the presentation, mobile computed state, and document scrolling behavior.
+# Retain Angular 17 metadata, imports, hydration, persistence, and async workspace behavior.
+diff --git a/frontend/src/app/features/coding/coding-detail/coding-detail.component.css b/frontend/src/app/features/coding/coding-detail/coding-detail.component.css
+--- a/frontend/src/app/features/coding/coding-detail/coding-detail.component.css
++++ b/frontend/src/app/features/coding/coding-detail/coding-detail.component.css
+@@ -640,6 +640,12 @@
+   white-space: pre-wrap;
+   word-break: break-word;
+   margin: 0;
++}
++
++.lite-code > code {
++  padding: 0;
++  background: transparent;
++  font: inherit;
+ }
+ 
+ /* ---------- Rich text / prose base ---------- */
+@@ -814,81 +820,16 @@
+   opacity: 0;
+ }
+ 
+-/* Mobile coding workspace guard */
+-.mobile-workspace-shell {
+-  min-height: calc(100vh - var(--app-safe-top, 64px) - 24px);
+-  min-height: calc(100dvh - var(--app-safe-top, 64px) - 24px);
+-  display: flex;
+-  justify-content: center;
+-  align-items: flex-start;
+-  padding: 24px 14px 28px;
+-  overflow: auto;
+-}
+-
+-.mobile-workspace-card {
+-  width: min(560px, 100%);
+-  border-radius: 16px;
+-  border: 1px solid var(--uf-border-subtle);
+-  background: color-mix(in srgb, var(--uf-surface) 90%, var(--uf-text-primary) 10%);
+-  box-shadow: var(--uf-card-shadow-strong);
+-  padding: 20px 18px;
+-  display: grid;
+-  gap: 12px;
+-}
+-
+-.mobile-workspace-pill {
+-  display: inline-flex;
+-  align-items: center;
+-  justify-content: center;
+-  width: fit-content;
+-  padding: 6px 10px;
+-  border-radius: 999px;
+-  border: 1px solid color-mix(in srgb, var(--uf-accent) 55%, var(--uf-border-subtle));
+-  background: color-mix(in srgb, var(--uf-accent) 18%, transparent);
+-  color: var(--uf-text-primary);
+-  font-size: 11px;
+-  font-weight: 800;
+-  letter-spacing: .05em;
+-  text-transform: uppercase;
+-}
+-
+-.mobile-workspace-title {
+-  margin: 0;
+-  font-size: 20px;
+-  font-weight: 800;
+-  line-height: 1.3;
+-  color: var(--uf-text-primary);
+-}
+-
+-.mobile-workspace-copy {
+-  margin: 0;
+-  font-size: 14px;
+-  line-height: 1.55;
+-  color: color-mix(in srgb, var(--uf-text-secondary) 90%, transparent);
+-}
+-
+-.mobile-workspace-list {
+-  margin: 0;
+-  padding-left: 18px;
+-  display: grid;
+-  gap: 6px;
+-  font-size: 13px;
+-  line-height: 1.5;
+-  color: color-mix(in srgb, var(--uf-text-secondary) 86%, transparent);
+-}
+-
+-.mobile-workspace-actions {
+-  display: flex;
+-  flex-wrap: wrap;
+-  gap: 10px;
+-}
+-
+-@media (max-width: 520px) {
+-  .mobile-workspace-title { font-size: 18px; }
+-  .mobile-workspace-actions .fa-btn {
+-    flex: 1 1 100%;
+-    justify-content: center;
+-  }
++/* Reading remains available while the editing workspace requires a wider screen. */
++.mobile-workspace-notice {
++  margin: 0 0 var(--uf-space-5);
++  padding: var(--uf-space-3) var(--uf-space-4);
++  border: 1px solid var(--uf-border-subtle);
++  border-radius: var(--uf-radius-8);
++  background: var(--uf-surface-alt);
++  color: var(--uf-text-secondary);
++  font-size: var(--uf-body-size);
++  line-height: var(--uf-body-line);
+ }
+ 
+ .demo-cta-btn{
+@@ -956,6 +897,47 @@
+ 
+   .coding-description-rail__actions {
+     flex-direction: row;
++  }
++}
++
++@media (max-width: 767px) {
++  .coding-detail--reading-eligible {
++    position: relative;
++    inset: auto;
++    height: auto;
++    overflow: visible;
++    padding: var(--uf-space-3) var(--uf-space-2) calc(56px + var(--uf-space-5));
++  }
++
++  .coding-detail--reading-eligible > .coding-description-pane {
++    flex: 1 1 auto !important;
++    height: auto;
++    min-width: 0;
++    overflow: visible;
++  }
++
++  .coding-detail--reading-eligible .coding-description-content {
++    min-width: 0;
++    overflow: visible;
++    padding: var(--uf-space-4);
++  }
++
++  /* Also keep the prerendered prompt readable before JavaScript runs. */
++  .coding-detail--reading-eligible > main,
++  .coding-detail--reading-eligible > .splitter {
++    display: none;
++  }
++
++  .coding-detail--reading-eligible .lite-code {
++    max-width: 100%;
++    overflow-x: auto;
++    white-space: pre;
++    word-break: normal;
++  }
++
++  .coding-detail--reading-eligible .ap-title,
++  .coding-detail--reading-eligible .code-wrap {
++    min-width: 0;
+   }
+ }
+ 
+diff --git a/frontend/src/app/features/coding/coding-detail/coding-detail.component.html b/frontend/src/app/features/coding/coding-detail/coding-detail.component.html
+--- a/frontend/src/app/features/coding/coding-detail/coding-detail.component.html
++++ b/frontend/src/app/features/coding/coding-detail/coding-detail.component.html
+@@ -1,16 +1,17 @@
+ <ng-container *ngIf="loadState() === 'loaded'; else loadingOrMissing">
+ <ng-container *ngIf="!locked(); else lockedView">
+-<ng-container *ngIf="!showMobileDesktopGuard(); else mobileWorkspaceGuard">
+ <div #codingLayout class="coding-detail flex gap-[5px]" data-testid="coding-detail-page"
+   [class.coding-detail--compact]="isCompactWorkspace()"
++  [class.coding-detail--reading-eligible]="!demoMode && !liteMode"
++  [class.coding-detail--mobile-reading]="showMobileDesktopGuard()"
+   [class.fixed-under-header]="!demoMode" [class.demo-embed]="demoMode">
+   <!-- LEFT COLUMN -->
+   <aside class="coding-description-pane flex flex-col min-h-0 bg-neutral-900/95 rounded-lg shadow-sm border border-white/10 overflow-hidden coding-detail__scroll"
+     data-testid="coding-description-pane" aria-label="Challenge description and solution"
+-    [class.coding-description-pane--collapsed]="descCollapsed()"
++    [class.coding-description-pane--collapsed]="descriptionCollapsed()"
+     [style.flex]="asideFlex()" style="min-width:0;">
+     <!-- Collapsed rail -->
+-    <div *ngIf="descCollapsed()" class="coding-description-rail h-full w-full flex flex-col items-center justify-between py-2"
++    <div *ngIf="descriptionCollapsed()" class="coding-description-rail h-full w-full flex flex-col items-center justify-between py-2"
+       data-testid="coding-description-rail">
+       <div class="coding-description-rail__actions flex flex-col items-center gap-2">
+         <button faButton type="button" variant="ghost" [iconOnly]="true" class="p-button-rounded p-button-text"
+@@ -36,7 +37,7 @@
+     </div>
+ 
+     <!-- Expanded content -->
+-    <ng-container *ngIf="!descCollapsed()">
++    <ng-container *ngIf="!descriptionCollapsed()">
+       <div class="flex items-center border-b border-white/10 text-white">
+         <div class="flex-1 flex">
+           <button class="px-4 py-2 flex-1 text-left font-medium" [class.border-b-2]="activePanel()===0"
+@@ -51,14 +52,17 @@
+           </button>
+         </div>
+ 
+-        <button class="px-3 py-2 text-gray-300 hover:text-white p-button-text" faButton variant="ghost" [iconOnly]="true"
++        <button *ngIf="workspaceAvailable()" class="px-3 py-2 text-gray-300 hover:text-white p-button-text" faButton variant="ghost" [iconOnly]="true"
+           type="button" (click)="toggleDescription()" aria-label="Hide description">
+           <app-fa-glyph class="fa-btn__icon"
+             [icon]="isCompactWorkspace() ? 'pi pi-chevron-up' : 'pi pi-chevron-left'"></app-fa-glyph>
+         </button>
+       </div>
+ 
+-      <div class="flex-1 overflow-auto p-6 font-sm">
++      <div class="coding-description-content flex-1 overflow-auto p-6 font-sm">
++        <p *ngIf="showMobileDesktopGuard()" class="mobile-workspace-notice" data-testid="coding-mobile-notice">
++          Read the question and solution on your phone. Use a desktop or tablet to write code and run checks.
++        </p>
+         <!-- Description Panel -->
+         <section class="space-y-4" data-testid="coding-description-panel" [hidden]="activePanel()!==0">
+           <ng-container *ngIf="pressureActive(); else normalDescriptionContent">
+@@ -114,7 +118,7 @@
+                 </p>
+               </article>
+ 
+-              <div *ngIf="pressureReadyForNextRound()" class="pressure-mode__success" role="status"
++              <div *ngIf="pressureReadyForNextRound() && workspaceAvailable()" class="pressure-mode__success" role="status"
+                 data-testid="pressure-round-cleared">
+                 <div>
+                   <strong>Constraint cleared.</strong>
+@@ -175,7 +179,7 @@
+ 
+             <ng-container *ngIf="!demoMode && kind === 'coding' && isFrameworkTech()">
+               <section
+-                *ngIf="pressureSupported()"
++                *ngIf="pressureSupported() && workspaceAvailable()"
+                 class="pressure-entry"
+                 data-testid="pressure-mode-entry"
+               >
+@@ -265,7 +269,7 @@
+               </div>
+ 
+               <!-- Framework preview button styled like the yellow banner -->
+-              <div *ngIf="isFrameworkTech()" class="mt-6">
++              <div *ngIf="isFrameworkTech() && workspaceAvailable()" class="mt-6">
+                 <button
+                   class="bg-yellow-300 text-black text-xs px-3 py-1.5 rounded shadow-sm flex items-center gap-2 hover:bg-yellow-400 transition"
+                   (click)="openFrameworkSolutionPreview()">
+@@ -390,7 +394,7 @@
+                     </app-monaco-editor>
+                   </ng-container>
+                   <ng-template #liteExamples>
+-                    <pre class="lite-code">{{ combinedExamples() }}</pre>
++                    <pre class="lite-code"><code>{{ combinedExamples() }}</code></pre>
+                   </ng-template>
+ 
+                   <button class="copy-fab" [class.copied]="copiedExamples()" aria-label="Copy examples" title="Copy" (click)="copyExamples()">
+@@ -402,7 +406,7 @@
+ 
+             <!-- Frameworks + Web: show Solution CTA instead of Examples -->
+             <ng-container *ngIf="isFrameworkTech() || isWebTech()">
+-              <div class="mt-6 flex items-center gap-3">
++              <div class="mt-6 flex flex-wrap items-center gap-3">
+                 <button class="text-xs px-3 py-2 rounded border border-white/20 hover:bg-white/5"
+                   (click)="onSolutionTabClick()">
+                   View solution (read-only)
+@@ -416,7 +420,7 @@
+                 </button>
+ 
+                 <!-- Web (HTML/CSS): allow previewing the official solution -->
+-                <button *ngIf="isWebTech()" class="text-xs px-3 py-2 rounded border border-white/20 hover:bg-white/5"
++                <button *ngIf="isWebTech() && workspaceAvailable()" class="text-xs px-3 py-2 rounded border border-white/20 hover:bg-white/5"
+                   (click)="openSolutionPreview()">
+                   Preview solution
+                 </button>
+@@ -473,7 +477,7 @@
+               <section *ngIf="pressureActive() && pressureCompleted()" class="pressure-solution-files">
+                 <div class="flex items-center justify-between gap-3">
+                   <h3 class="text-sm font-semibold">Final pressure solution</h3>
+-                  <button *ngIf="solutionFileList().length" type="button" faButton class="text-[10px]"
++                  <button *ngIf="solutionFileList().length && workspaceAvailable()" type="button" faButton class="text-[10px]"
+                     (click)="loadSolutionIntoEditor()" title="Replace the pressure draft with the final solution">
+                     Load into editor
+                   </button>
+@@ -492,7 +496,7 @@
+                   </div>
+ 
+                   <div class="code-wrap mt-2">
+-                    <ng-container *ngIf="!liteEditors(); else pressureLiteSolutionBlock">
++                    <ng-container *ngIf="!solutionRenderStatic(); else pressureLiteSolutionBlock">
+                       <app-monaco-editor
+                         class="rounded border border-white/10 pointer-events-none select-none w-full block"
+                         [code]="activeSolutionFilesMap()[solutionCurrentPath()] || ''"
+@@ -501,7 +505,7 @@
+                       </app-monaco-editor>
+                     </ng-container>
+                     <ng-template #pressureLiteSolutionBlock>
+-                      <pre class="lite-code">{{ activeSolutionFilesMap()[solutionCurrentPath()] || '' }}</pre>
++                      <pre class="lite-code"><code>{{ activeSolutionFilesMap()[solutionCurrentPath()] || '' }}</code></pre>
+                     </ng-template>
+ 
+                     <button class="copy-fab" [class.copied]="copiedSolutionFile()" aria-label="Copy file" title="Copy"
+@@ -527,7 +531,7 @@
+                   <h3 class="ap-title">{{ ap.title }}</h3>
+                   <div class="ap-actions">
+                     <button faButton [attr.data-testid]="'solution-load-approach-' + i"
+-                      *ngIf="activePanel()===1 && ((isWebTech() && (ap.codeHtml || ap.codeCss)) || (!isWebTech() && !isFrameworkTech() && codeFor(ap)?.trim()) || (!isFrameworkTech() && (ap.codeJs || ap.codeTs)))"
++                      *ngIf="workspaceAvailable() && activePanel()===1 && ((isWebTech() && (ap.codeHtml || ap.codeCss)) || (!isWebTech() && !isFrameworkTech() && codeFor(ap)?.trim()) || (!isFrameworkTech() && (ap.codeJs || ap.codeTs)))"
+                       (click)="loadApproach(ap, i)" title="Load into editor">
+                       Load into editor
+                     </button>
+@@ -542,7 +546,7 @@
+                 <ng-container *ngIf="isWebTech(); else nonWebApproach">
+                   <div class="code-wrap mb-2" *ngIf="activePanel()===1 && ap.codeHtml">
+                     <div class="px-2 py-1 text-xs opacity-80">&lt;html&gt;</div>
+-                    <ng-container *ngIf="!liteEditors(); else liteHtmlBlock">
++                    <ng-container *ngIf="!solutionRenderStatic(); else liteHtmlBlock">
+                       <app-monaco-editor
+                         class="rounded border border-white/10 pointer-events-none select-none w-full block"
+                         [code]="prettifyHtml(unescapeJsLiterals(ap.codeHtml || ''))" [language]="'html'" [readOnly]="true"
+@@ -550,7 +554,7 @@
+                       </app-monaco-editor>
+                     </ng-container>
+                     <ng-template #liteHtmlBlock>
+-                      <pre class="lite-code">{{ prettifyHtml(unescapeJsLiterals(ap.codeHtml || '')) }}</pre>
++                      <pre class="lite-code"><code>{{ prettifyHtml(unescapeJsLiterals(ap.codeHtml || '')) }}</code></pre>
+                     </ng-template>
+                     <button class="copy-fab" [class.copied]="copiedIdx===i" aria-label="Copy HTML" title="Copy HTML"
+                       (click)="onCopyApproach(i, prettifyHtml(unescapeJsLiterals(ap.codeHtml || '')))">
+@@ -560,7 +564,7 @@
+ 
+                   <div class="code-wrap" *ngIf="activePanel()===1 && ap.codeCss">
+                     <div class="px-2 py-1 text-xs opacity-80"># CSS</div>
+-                    <ng-container *ngIf="!liteEditors(); else liteCssBlock">
++                    <ng-container *ngIf="!solutionRenderStatic(); else liteCssBlock">
+                       <app-monaco-editor
+                         class="rounded border border-white/10 pointer-events-none select-none w-full block"
+                         [code]="prettifyCss(unescapeJsLiterals(ap.codeCss || ''))" [language]="'css'" [readOnly]="true"
+@@ -568,7 +572,7 @@
+                       </app-monaco-editor>
+                     </ng-container>
+                     <ng-template #liteCssBlock>
+-                      <pre class="lite-code">{{ prettifyCss(unescapeJsLiterals(ap.codeCss || '')) }}</pre>
++                      <pre class="lite-code"><code>{{ prettifyCss(unescapeJsLiterals(ap.codeCss || '')) }}</code></pre>
+                     </ng-template>
+                     <button class="copy-fab" [class.copied]="copiedIdx===i" aria-label="Copy CSS" title="Copy CSS"
+                       (click)="onCopyApproach(i, prettifyCss(unescapeJsLiterals(ap.codeCss || '')))">
+@@ -581,7 +585,7 @@
+                 <ng-template #nonWebApproach>
+                   <!-- Only show inline code for plain JS/TS. Frameworks use the Files section instead. -->
+                   <div class="code-wrap" *ngIf="activePanel()===1 && !isFrameworkTech() && !isWebTech()">
+-                    <ng-container *ngIf="!liteEditors(); else liteApproachBlock">
++                    <ng-container *ngIf="!solutionRenderStatic(); else liteApproachBlock">
+                       <app-monaco-editor
+                         class="rounded border border-white/10 pointer-events-none select-none w-full block"
+                         [code]="codeFor(ap)" [language]="currentJsLang()==='ts' ? 'typescript' : 'javascript'"
+@@ -589,7 +593,7 @@
+                       </app-monaco-editor>
+                     </ng-container>
+                     <ng-template #liteApproachBlock>
+-                      <pre class="lite-code">{{ codeFor(ap) }}</pre>
++                      <pre class="lite-code"><code>{{ codeFor(ap) }}</code></pre>
+                     </ng-template>
+                     <button class="copy-fab" [class.copied]="copiedIdx===i" aria-label="Copy code" title="Copy"
+                       (click)="onCopyApproach(i, codeFor(ap))">
+@@ -602,7 +606,7 @@
+                 <section *ngIf="activePanel()===1 && isFrameworkTech() && solutionFileList().length" class="mt-4 space-y-2">
+                   <div class="flex items-center justify-between">
+                     <h3 class="text-sm font-semibold">Files</h3>
+-                    <button type="button" faButton class="text-[10px]" (click)="loadSolutionIntoEditor()"
++                    <button *ngIf="workspaceAvailable()" type="button" faButton class="text-[10px]" (click)="loadSolutionIntoEditor()"
+                       title="Replace all files with the official solution">
+                       Load into editor
+                     </button>
+@@ -618,7 +622,7 @@
+ 
+                   <!-- Active file viewer -->
+                   <div class="code-wrap mt-2">
+-                    <ng-container *ngIf="!liteEditors(); else liteSolutionBlock">
++                    <ng-container *ngIf="!solutionRenderStatic(); else liteSolutionBlock">
+                       <app-monaco-editor
+                         class="rounded border border-white/10 pointer-events-none select-none w-full block"
+                         [code]="activeSolutionFilesMap()[solutionCurrentPath()] || ''"
+@@ -627,7 +631,7 @@
+                       </app-monaco-editor>
+                     </ng-container>
+                     <ng-template #liteSolutionBlock>
+-                      <pre class="lite-code">{{ activeSolutionFilesMap()[solutionCurrentPath()] || '' }}</pre>
++                      <pre class="lite-code"><code>{{ activeSolutionFilesMap()[solutionCurrentPath()] || '' }}</code></pre>
+                     </ng-template>
+ 
+                     <button class="copy-fab" [class.copied]="copiedSolutionFile()" aria-label="Copy file" title="Copy"
+@@ -778,13 +782,13 @@
+   </aside>
+ 
+   <!-- DESCRIPTION / WORKSPACE SPLITTER -->
+-  <div *ngIf="!descCollapsed()" class="splitter" data-testid="coding-description-splitter"
++  <div *ngIf="workspaceAvailable() && !descriptionCollapsed()" class="splitter" data-testid="coding-description-splitter"
+     [attr.data-orientation]="isCompactWorkspace() ? 'horizontal' : 'vertical'"
+     [class.dragging]="isDraggingAside()"
+     (pointerdown)="startHorizontalDrag($event)"></div>
+ 
+   <!-- RIGHT COLUMN -->
+-<main class="flex-1 min-h-0 flex flex-col overflow-hidden coding-detail__scroll" data-testid="coding-workspace-panel">
++<main *ngIf="workspaceAvailable()" class="flex-1 min-h-0 flex flex-col overflow-hidden coding-detail__scroll" data-testid="coding-workspace-panel">
+ 
+     <!-- FRAMEWORK PANEL -->
+     <ng-container *ngIf="frameworkWorkspaceReady(); else pressureWorkspaceLoading">
+@@ -833,7 +837,7 @@
+ </main>
+ 
+ <app-monaco-editor
+-  *ngIf="litePreloadActive()"
++  *ngIf="litePreloadActive() && workspaceAvailable()"
+   class="monaco-preload"
+   [code]="''"
+   [language]="'plaintext'"
+@@ -853,7 +857,7 @@
+     [practiceLeftRoute]="!isCourseContext() ? (pressureActive() ? ['/', tech, kind, question()?.id] : ['/incidents']) : null"
+     [practiceLeftQueryParams]="pressureActive() ? pressureExitQueryParams() : null"
+     [middleSuffixLabel]="pressureActive() ? 'Interview round' : (kind === 'debug' ? 'Debugging challenge' : 'Coding task')" [leftCourseLabel]="leftDrawerLabel"
+-    [outline]="courseOutline || []" [currentLessonId]="currentCourseLessonId" [showSubmit]="!isCourseContext()"
++    [outline]="courseOutline || []" [currentLessonId]="currentCourseLessonId" [showSubmit]="!isCourseContext() && workspaceAvailable()"
+     [submitLabel]="submitLabel()" [submitDisabled]="!isCourseContext() && isCompletionPending()"
+     (prev)="prev()" (next)="next()" (back)="backToReturn()" (coursePrev)="goCoursePrev()"
+     (courseNext)="goCourseNext()" (selectLesson)="onSelectFromFooter($event)" (submit)="submitCode()">
+@@ -867,36 +871,8 @@
+       >{{ footerLinkLabel || 'Open in full workspace' }}</a>
+   </div>
+ </ng-template>
+-</ng-container>
+-
+-<ng-template #mobileWorkspaceGuard>
+-  <section class="mobile-workspace-shell" data-testid="coding-mobile-guard">
+-    <article class="mobile-workspace-card">
+-      <div class="mobile-workspace-pill">Desktop or Tablet</div>
+-      <h1 class="mobile-workspace-title">{{ questionHeading() }}</h1>
+-      <p class="mobile-workspace-copy">
+-        This coding workspace is disabled on small mobile screens.
+-        For the best experience, solve coding questions on desktop or tablet.
+-      </p>
+-      <ul class="mobile-workspace-list">
+-        <li>See the full problem statement and solution side by side.</li>
+-        <li>Run tests and inspect output without layout issues.</li>
+-        <li>Write and debug code with a comfortable editor width.</li>
+-      </ul>
+-      <div class="mobile-workspace-actions">
+-        <button faButton variant="primary" type="button" (click)="backToReturn()">
+-          Go back
+-        </button>
+-        <a faButton variant="ghost" [routerLink]="['/coding']">
+-          Frontend Coding Challenges
+-        </a>
+-      </div>
+-    </article>
+-  </section>
+-</ng-template>
+-
+ <!-- Preview dialog (Angular only) -->
+-<fa-dialog [(visible)]="previewVisible" [modal]="true" [dismissableMask]="true" [closable]="false" [draggable]="false"
++<fa-dialog *ngIf="workspaceAvailable()" [(visible)]="previewVisible" [modal]="true" [dismissableMask]="true" [closable]="false" [draggable]="false"
+   [resizable]="false" width="90vw" maxWidth="1400px" [contentStyle]="{ padding: '0', height: '80vh' }">
+   <div faDialogHeader class="flex items-center justify-between w-full">
+     <div class="font-semibold">Preview</div>
+diff --git a/frontend/src/app/features/coding/coding-detail/coding-detail.component.ts b/frontend/src/app/features/coding/coding-detail/coding-detail.component.ts
+--- a/frontend/src/app/features/coding/coding-detail/coding-detail.component.ts
++++ b/frontend/src/app/features/coding/coding-detail/coding-detail.component.ts
+@@ -208,6 +208,7 @@
+   showMobileDesktopGuard = computed(
+     () => this.isPhoneViewport() && !this.demoMode && !this.liteMode
+   );
++  readonly workspaceAvailable = computed(() => !this.showMobileDesktopGuard());
+ 
+   // JS/TS editor + tests
+   editorContent = signal<string>('');
+@@ -230,9 +231,11 @@
+   // Collapsible left column
+   private readonly COLLAPSED_PX = 48;
+   descCollapsed = signal(false);
++  descriptionCollapsed = computed(() => this.descCollapsed() && !this.showMobileDesktopGuard());
+   private lastAsideRatio = 0.3;
+   asideFlex = computed(() => {
+-    if (this.descCollapsed()) return `0 0 ${this.COLLAPSED_PX}px`;
++    if (this.showMobileDesktopGuard()) return '1 1 auto';
++    if (this.descriptionCollapsed()) return `0 0 ${this.COLLAPSED_PX}px`;
+     const ratio = this.isCompactWorkspace()
+       ? this.compactAsideRatio(this.horizontalRatio())
+       : this.horizontalRatio();
+@@ -507,7 +510,7 @@
+   solutionCurrentFileLabel = computed(() => this.solutionShortName(this.solutionCurrentPath()));
+ 
+   copiedSolutionFile = signal(false);
+-  private overflowPatched = false;
++  private previousBodyOverflow: string | null = null;
+ 
+   @ViewChild('splitContainer', { read: ElementRef }) splitContainer?: ElementRef<HTMLDivElement>;
+   @ViewChild('codingLayout', { read: ElementRef }) codingLayout?: ElementRef<HTMLDivElement>;
+@@ -797,7 +800,8 @@
+       .join('\n\n');
+   });
+ 
+-  examplesRenderStatic = computed(() => !this.isBrowser || this.liteEditors());
++  examplesRenderStatic = computed(() => !this.isBrowser || this.liteEditors() || this.showMobileDesktopGuard());
++  solutionRenderStatic = computed(() => !this.isBrowser || this.liteEditors() || this.showMobileDesktopGuard());
+ 
+   constructor(
+     private route: ActivatedRoute,
+@@ -868,6 +872,7 @@
+     try { localStorage.setItem(this.collapseKey(q), JSON.stringify(v)); } catch { }
+   }
+   toggleDescription() {
++    if (this.showMobileDesktopGuard()) return;
+     const q = this.question(); if (!q) return;
+     if (this.descCollapsed()) {
+       this.descCollapsed.set(false);
+@@ -989,10 +994,7 @@
+       });
+     }
+ 
+-    if (!this.demoMode && this.isBrowser) {
+-      document.body.style.overflow = 'hidden';
+-      this.overflowPatched = true;
+-    }
++    this.syncBodyOverflow();
+ 
+     this.configureLiteEditors();
+   }
+@@ -1001,6 +1003,7 @@
+     if (changes['liteMode']) {
+       this.configureLiteEditors();
+     }
++    if (changes['liteMode'] || changes['demoMode']) this.syncBodyOverflow();
+   }
+ 
+   private computeIsCourseContext(): boolean {
+@@ -1071,8 +1074,8 @@
+     this.destroy$.next();
+     this.destroy$.complete();
+ 
+-    if (this.isBrowser && this.overflowPatched) {
+-      document.body.style.overflow = '';
++    if (this.isBrowser && this.previousBodyOverflow !== null) {
++      document.body.style.overflow = this.previousBodyOverflow;
+     }
+ 
+     if (this.demoMode || this.disablePersistence) {
+@@ -1129,6 +1132,20 @@
+     }
+     this.isPhoneViewport.set(viewportWidth < this.MOBILE_WORKSPACE_BREAKPOINT);
+     this.isCompactWorkspace.set(compactWorkspace);
++    this.syncBodyOverflow();
++  }
++
++  private syncBodyOverflow(): void {
++    if (!this.isBrowser) return;
++    if (this.demoMode) {
++      if (this.previousBodyOverflow !== null) {
++        document.body.style.overflow = this.previousBodyOverflow;
++        this.previousBodyOverflow = null;
++      }
++      return;
++    }
++    this.previousBodyOverflow ??= document.body.style.overflow;
++    document.body.style.overflow = this.showMobileDesktopGuard() ? this.previousBodyOverflow : 'hidden';
+   }
+ 
+   private scheduleLiteUpgrade() {
+@@ -3836,12 +3853,12 @@
+   onSolutionTabClick() {
+     if (this.pressureActive()) {
+       if (!this.pressureCompleted()) return;
+-      if (this.descCollapsed()) this.toggleDescription();
++      if (this.descriptionCollapsed()) this.toggleDescription();
+       this.showSolutionWarning.set(false);
+       this.activePanel.set(1);
+       return;
+     }
+-    if (this.descCollapsed()) this.toggleDescription();
++    if (this.descriptionCollapsed()) this.toggleDescription();
+     this.activePanel.set(1);
+     // Only warn when it makes sense (course context, etc.)
+     if (this.shouldWarnForSolution()) {
