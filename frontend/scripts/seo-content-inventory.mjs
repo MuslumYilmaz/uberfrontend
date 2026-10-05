@@ -85,9 +85,7 @@ function html(source, scope = {}) {
   let previous;
   do {
     previous = source;
-    source = source
-      .replace(/<!--[\s\S]*?-->/g, '')
-      .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, '');
+    source = source.replace(/<!--[\s\S]*?-->|<style\b[^>]*>[\s\S]*?<\/style>/gi, '');
   } while (source !== previous);
   const result = source
     .replace(/\s+(?:class|style|\[class(?:\.[\w-]+)?\]|\[style(?:\.[\w-]+)?\]|\[ngClass\]|\[ngStyle\])\s*=\s*(?:"[^"]*"|'[^']*')/g, '')
