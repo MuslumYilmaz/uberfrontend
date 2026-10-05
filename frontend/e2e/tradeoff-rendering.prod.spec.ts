@@ -49,11 +49,31 @@ function educationalText(scenario: TradeoffBattleScenario): string[] {
     ...scenario.answerFramework, ...scenario.antiPatterns,
   ];
 }
+function expectDetailSchema(graph: Array<Record<string, unknown>>, scenario: TradeoffBattleScenario) {
+  expect(graph.find((entry) => entry['@type'] === 'LearningResource')).toMatchObject({
+    '@id': `https://frontendatlas.com/tradeoffs/${scenario.meta.id}`,
+    name: scenario.meta.title,
+    isAccessibleForFree: scenario.meta.access === 'free',
+  });
+  expect(graph.some((entry) => entry['@type'] === 'BreadcrumbList')).toBe(true);
+}
+function expectInitialHead(html: string, nodes: HtmlElement[], scenario: TradeoffBattleScenario) {
+  const title = nodes.find((node) => node.tagName === 'title');
+  expect(title && htmlText(title)).toContain(scenario.meta.title);
+  const canonical = nodes.find((node) => node.tagName === 'link' && attr(node, 'rel') === 'canonical');
+  expect(canonical && attr(canonical, 'href')).toBe(`https://frontendatlas.com/tradeoffs/${scenario.meta.id}`);
+  const schema = html.match(/<script\b[^>]*id="seo-jsonld"[^>]*>([\s\S]*?)<\/script>/)?.[1];
+  expectDetailSchema(JSON.parse(schema || '{}')['@graph'] || [], scenario);
+}
 async function openBattle(page: Page, scenario: TradeoffBattleScenario) {
   await page.goto(`/tradeoffs/${scenario.meta.id}`);
   await expect(page.getByRole('heading', { name: scenario.meta.title, exact: true })).toBeVisible();
   // Angular removes its hydration marker after claiming this server-rendered view.
   await page.waitForFunction(() => document.querySelector('app-tradeoff-detail')?.hasAttribute('ngh') === false);
+  expect(await page.title()).toContain(scenario.meta.title);
+  expectDetailSchema(JSON.parse(await page.locator('#seo-jsonld').textContent() || '{}')['@graph'] || [], scenario);
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content',
+    scenario.meta.access === 'premium' ? 'noindex,follow' : 'index,follow');
 }
 async function expectClosedAnalysis(page: Page, scenario: TradeoffBattleScenario) {
   const analysis = page.locator('#tradeoff-analysis');
@@ -80,7 +100,9 @@ test.describe('tradeoff production initial HTML', () => {
     test(`${scenario.meta.id}: complete analysis exists once in real HTML before any interaction`, async ({ request }) => {
       const response = await request.get(`/tradeoffs/${scenario.meta.id}`);
       expect(response.status()).toBe(200);
-      const nodes = elements(parse(await response.text()));
+      const html = await response.text();
+      const nodes = elements(parse(html));
+      expectInitialHead(html, nodes, scenario);
       const analysis = nodes.filter((node) => attr(node, 'id') === 'tradeoff-analysis');
       expect(analysis).toHaveLength(1);
       expect(attr(analysis[0], 'hidden')).toBeDefined();
@@ -97,8 +119,10 @@ test.describe('tradeoff production initial HTML', () => {
     test(`${scenario.meta.id}: anonymous initial HTML excludes premium analysis`, async ({ request }) => {
       const response = await request.get(`/tradeoffs/${scenario.meta.id}`);
       expect(response.status()).toBe(200);
-      const document = parse(await response.text());
+      const html = await response.text();
+      const document = parse(html);
       const nodes = elements(document);
+      expectInitialHead(html, nodes, scenario);
       expect(nodes.filter((node) => attr(node, 'id') === 'tradeoff-analysis')).toHaveLength(0);
       const text = normalize(htmlText(document));
       expect(text).not.toContain(normalize(scenario.strongAnswer.summary));
@@ -115,6 +139,7 @@ test.describe('tradeoff hydrated analysis', () => {
   test.beforeEach(async ({ page }) => {
     await page.addInitScript(() => {
       (window as Window & { __FA_API_BASE__?: string }).__FA_API_BASE__ = window.location.origin;
+      (window as Window & { __FA_SEO_HOST__?: string }).__FA_SEO_HOST__ = 'frontendatlas.com';
     });
     // All auth and progress stays in mocks, never in a real backend.
     await page.route('**/api/**', (route) => route.fulfill({ status: 200, json: {} }));
