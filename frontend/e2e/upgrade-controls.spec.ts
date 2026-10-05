@@ -106,6 +106,10 @@ test.describe('PrimeNG upgrade interaction contracts', () => {
     await page.getByTestId('login-password').fill('test-password-123');
     await page.getByTestId('login-submit').click();
     await expect(page).toHaveURL('/dashboard');
+    await expect(page.getByTestId('dashboard-page')).toBeVisible();
+    // A hard navigation while login's background requests are settling can
+    // surface an aborted XMLHttpRequest as a WebKit page error.
+    await page.waitForLoadState('networkidle');
     await page.goto('/profile');
     await page.waitForLoadState('networkidle');
     await page.getByRole('button', { name: 'Security', exact: true }).click();

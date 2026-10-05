@@ -16,7 +16,46 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name == 'pull_request' && 'pr' || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
+  changes:
+    name: Interview change scope
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      interview: ${{ steps.scope.outputs.interview }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup Node
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
+        with:
+          node-version-file: .nvmrc
+
+      - name: Test change scope safety
+        run: node --test scripts/ci-change-scope.test.mjs
+
+      - name: Classify changes
+        id: scope
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.sha }}
+        run: |
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            node scripts/ci-change-scope.mjs --base "$BASE_SHA" --head "$HEAD_SHA"
+          else
+            node scripts/ci-change-scope.mjs --all
+          fi
+
   e2e:
     name: Playwright Critical
     if: github.event_name != 'schedule'
@@ -112,7 +151,8 @@ jobs:
 
   interview-mocked-cross-browser:
     name: Interview mocked (${{ matrix.browser }})
-    if: github.event_name != 'schedule'
+    needs: changes
+    if: needs.changes.outputs.interview == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     strategy:
@@ -177,7 +217,8 @@ jobs:
 
   interview-production-fullstack-cross-browser:
     name: Interview production full-stack (${{ matrix.browser }})
-    if: github.event_name != 'schedule'
+    needs: changes
+    if: needs.changes.outputs.interview == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 45
     strategy:
@@ -242,18 +283,35 @@ jobs:
     name: Interview Cross-browser Gate
     if: ${{ always() && github.event_name != 'schedule' }}
     needs:
+      - changes
       - interview-mocked-cross-browser
       - interview-production-fullstack-cross-browser
     runs-on: ubuntu-latest
     timeout-minutes: 2
     steps:
-      - name: Require every Interview browser matrix to pass
+      - name: Require passing matrices or an intentional scope skip
         env:
+          CHANGES_RESULT: ${{ needs.changes.result }}
+          INTERVIEW_CHANGED: ${{ needs.changes.outputs.interview }}
           MOCKED_RESULT: ${{ needs.interview-mocked-cross-browser.result }}
           FULLSTACK_RESULT: ${{ needs.interview-production-fullstack-cross-browser.result }}
         run: |
-          test "$MOCKED_RESULT" = "success"
-          test "$FULLSTACK_RESULT" = "success"
+          test "$CHANGES_RESULT" = "success"
+          case "$INTERVIEW_CHANGED" in
+            true)
+              test "$MOCKED_RESULT" = "success"
+              test "$FULLSTACK_RESULT" = "success"
+              ;;
+            false)
+              test "$MOCKED_RESULT" = "skipped"
+              test "$FULLSTACK_RESULT" = "skipped"
+              echo "Interview dependencies unchanged; both matrices intentionally skipped."
+              ;;
+            *)
+              echo "Missing or invalid Interview change scope." >&2
+              exit 1
+              ;;
+          esac
 
   e2e-perf:
     name: Playwright Perf Smoke
