@@ -1,5 +1,5 @@
 import { CommonModule, Location, isPlatformBrowser } from '@angular/common';
-import { Component, PLATFORM_ID, computed, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, PLATFORM_ID, afterNextRender, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, NavigationStart, Router, RouterModule } from '@angular/router';
@@ -163,6 +163,15 @@ const SYSTEM_TITLE_HINTS = [
 
 const ALLOWED_CATEGORIES: CategoryKey[] = ['ui', 'js-fn', 'html-css', 'algo', 'system'];
 const DISCOVERY_CODING_TECHS: Tech[] = ['javascript', 'react', 'angular', 'vue', 'html', 'css'];
+const TECHNOLOGY_QUESTION_HUBS = [
+  { tech: 'javascript', label: 'JavaScript interview questions', route: '/javascript/interview-questions' },
+  { tech: 'react', label: 'React interview questions', route: '/react/interview-questions' },
+  { tech: 'angular', label: 'Angular interview questions', route: '/angular/interview-questions' },
+  { tech: 'vue', label: 'Vue interview questions', route: '/vue/interview-questions' },
+  { tech: 'html', label: 'HTML interview questions', route: '/html/interview-questions' },
+  { tech: 'css', label: 'CSS interview questions', route: '/css/interview-questions' },
+  { tech: 'html-css', label: 'HTML/CSS interview questions', route: '/html-css/interview-questions' },
+] as const;
 const CODING_CHALLENGE_FIT_PILLS = ['Real prompts', 'Starter code', 'Tests', 'Solutions + follow-ups', 'Free to start'] as const;
 const PRACTICE_TYPES_FIT_PILLS = ['Format-first', 'Good after basics'] as const;
 const SYSTEM_DESIGN_FIT_PILLS = ['Senior signal', 'Architecture + tradeoffs'] as const;
@@ -275,6 +284,7 @@ function inferCategory(q: any): CategoryKey {
 export class CodingListComponent implements OnInit, OnDestroy {
   readonly companyPracticeDisclaimer = COMPANY_PRACTICE_DISCLAIMER;
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  private readonly questionHubViewReady = signal(!this.isBrowser);
   private static _instanceCounter = 0;
   readonly instanceId = ++CodingListComponent._instanceCounter;
   mobileFiltersOpen = false;
@@ -863,6 +873,15 @@ export class CodingListComponent implements OnInit, OnDestroy {
     return FRAMEWORK_PREP_LINKS.find((entry) => entry.tech === selectedTech) ?? null;
   }
 
+  technologyQuestionHubs(): ReadonlyArray<(typeof TECHNOLOGY_QUESTION_HUBS)[number]> {
+    if (this.source !== 'global-coding') return [];
+    // /coding is prerendered without query filters. Claim its links before applying client-only filters.
+    if (!this.questionHubViewReady()) return TECHNOLOGY_QUESTION_HUBS;
+    if (this.isFormatsMode()) return [];
+    const tech = this.selectedTech$.value;
+    return tech ? TECHNOLOGY_QUESTION_HUBS.filter((hub) => hub.tech === tech) : TECHNOLOGY_QUESTION_HUBS;
+  }
+
   contextualSupportLinks(): ContextualSupportLink[] {
     if (this.source !== 'global-coding') return [];
 
@@ -1062,6 +1081,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
     public auth: AuthService,
     private seo: SeoService
   ) {
+    afterNextRender(() => this.questionHubViewReady.set(true));
     this.debug('ctor', {
       instance: this.instanceId,
       source: this.source,

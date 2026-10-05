@@ -884,6 +884,7 @@
 
 .showcase-focus-link {
   display: grid;
+  min-width: 0;
   gap: 8px;
   min-height: 126px;
   padding: 14px;
@@ -897,6 +898,19 @@
 .showcase-focus-link:hover {
   border-color: color-mix(in srgb, var(--uf-accent) 52%, var(--uf-border-subtle));
   background: color-mix(in srgb, var(--uf-surface-alt) 86%, var(--uf-surface));
+}
+
+.showcase-focus-overview {
+  display: inline-block;
+  margin-top: 8px;
+  color: var(--uf-accent);
+  text-underline-offset: 3px;
+}
+
+.showcase-focus-overview:focus-visible,
+.showcase-focus-link:focus-visible {
+  outline: 2px solid var(--uf-accent);
+  outline-offset: 3px;
 }
 
 .showcase-focus-link strong {

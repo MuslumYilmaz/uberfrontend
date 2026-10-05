@@ -1,6 +1,6 @@
 import { signal, WritableSignal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
 import { of } from 'rxjs';
 import { AnalyticsService } from '../../../core/services/analytics.service';
 import { AuthService } from '../../../core/services/auth.service';
@@ -23,7 +23,7 @@ describe('MarketingHeaderComponent', () => {
     await TestBed.configureTestingModule({
       imports: [MarketingHeaderComponent],
       providers: [
-        provideRouter([]),
+        provideRouter([{ path: '**', children: [] }]),
         { provide: AnalyticsService, useValue: analytics },
         {
           provide: AuthService,
@@ -65,18 +65,19 @@ describe('MarketingHeaderComponent', () => {
 
     expect(labels).toEqual([
       'Prep Guide',
+      'Interview Questions',
       'Essential 60',
       'Question Library',
       'Study Plans',
     ]);
     expect(labels).not.toContain('Guides');
     expect(labels).not.toContain('Framework Prep');
-    expect(labels).not.toContain('Interview Questions');
     expect(labels).not.toContain('Companies');
     expect(labels).not.toContain('Behavioral');
     expect(labels).not.toContain('System Design');
     expect(primaryLinks.map((link) => link.getAttribute('href'))).toEqual([
       '/guides/interview-blueprint/intro',
+      '/interview-questions',
       '/interview-questions/essential',
       '/coding',
       '/tracks',
@@ -168,6 +169,7 @@ describe('MarketingHeaderComponent', () => {
     expect(fixture.nativeElement.querySelector('[data-testid="marketing-header-mobile-menu"]')).toBeTruthy();
     expect(mobilePrimaryLabels).toEqual([
       'Prep Guide',
+      'Interview Questions',
       'Essential 60',
       'Question Library',
       'Study Plans',
@@ -204,22 +206,64 @@ describe('MarketingHeaderComponent', () => {
     expect(mobileAuth.hasAttribute('aria-busy')).toBeFalse();
   });
 
-  it('treats all coding views as Question Library while keeping Essential 60 isolated', async () => {
+  it('keeps the question hub, Essential 60, and coding active states separate', async () => {
     const fixture = await createComponent({ isLoggedIn: false });
     const component = fixture.componentInstance;
-    const [, essential60, questionLibrary] = component.primaryLinks;
+    const [, interviewQuestions, essential60, questionLibrary] = component.primaryLinks;
+
+    component.currentUrl.set('/interview-questions?src=nav#topics');
+    expect(component.isPrimaryLinkActive(interviewQuestions)).toBeTrue();
+    expect(component.isPrimaryLinkActive(essential60)).toBeFalse();
+    expect(component.isPrimaryLinkActive(questionLibrary)).toBeFalse();
 
     component.currentUrl.set('/interview-questions/essential');
     expect(component.isPrimaryLinkActive(essential60)).toBeTrue();
     expect(component.isPrimaryLinkActive(questionLibrary)).toBeFalse();
+    expect(component.isPrimaryLinkActive(interviewQuestions)).toBeFalse();
 
     component.currentUrl.set('/coding?view=formats&category=system');
     expect(component.isPrimaryLinkActive(questionLibrary)).toBeTrue();
     expect(component.isPrimaryLinkActive(essential60)).toBeFalse();
+    expect(component.isPrimaryLinkActive(interviewQuestions)).toBeFalse();
 
     component.currentUrl.set('/coding?tech=react');
     expect(component.isPrimaryLinkActive(questionLibrary)).toBeTrue();
     expect(component.isPrimaryLinkActive(essential60)).toBeFalse();
+    expect(component.isPrimaryLinkActive(interviewQuestions)).toBeFalse();
+  });
+
+  it('keeps the public question hub available before auth resolves and after both auth outcomes', async () => {
+    const fixture = await createComponent({ authUiState: 'pending' });
+    for (const state of ['pending', 'signed_out', 'authenticated'] as const) {
+      authUiState.set(state);
+      fixture.detectChanges();
+      const link = fixture.nativeElement.querySelector('.famh-nav a[href="/interview-questions"]') as HTMLAnchorElement;
+      expect(link).withContext(state).toBeTruthy();
+      expect(link.textContent).toContain('Interview Questions');
+    }
+  });
+
+  it('navigates from the mobile question hub, tracks it, and closes even on the current page', async () => {
+    const fixture = await createComponent({ isLoggedIn: false });
+    const router = TestBed.inject(Router);
+    const component = fixture.componentInstance;
+
+    for (let visit = 0; visit < 2; visit += 1) {
+      component.toggleMobileMenu();
+      fixture.detectChanges();
+      const link = fixture.nativeElement.querySelector('.famh-mobile-panel a[href="/interview-questions"]') as HTMLAnchorElement;
+      link.click();
+      await fixture.whenStable();
+      fixture.detectChanges();
+
+      expect(router.url).toBe('/interview-questions');
+      expect(component.mobileMenuOpen()).toBeFalse();
+      expect(fixture.nativeElement.querySelector('[data-testid="marketing-header-mobile-menu"]')).toBeNull();
+    }
+    expect(analytics.track).toHaveBeenCalledWith(
+      'header_top_nav_clicked',
+      jasmine.objectContaining({ surface: 'marketing', area: 'mobile_menu', destination: '/interview-questions', auth_state: 'guest' }),
+    );
   });
 
   it('keeps the conversion CTA visually primary on the showcase landing route', async () => {

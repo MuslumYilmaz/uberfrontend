@@ -34,7 +34,7 @@
 
 /* ---- Left / center ---- */
 .fah-left{ display:flex; align-items:center; gap:8px; min-width:0; }
-.fah-center{ display:flex; justify-content:center; align-items:center; }
+.fah-center{ display:flex; justify-content:center; align-items:center; gap:8px; min-width:0; }
 
 .fah-logo{
   width: 32px;
@@ -54,7 +54,7 @@
   border-radius:10px; border:1px solid var(--fah-border);
   background: color-mix(in srgb, var(--uf-text-primary) 4%, var(--uf-surface));
   color:var(--fah-fg);
-  font-size:14px; cursor:pointer; text-decoration:none;
+  font-size:14px; cursor:pointer; text-decoration:none; white-space:nowrap;
 }
 .fah-navlink:hover{ background: color-mix(in srgb, var(--uf-text-primary) 8%, var(--uf-surface)); }
 .fah-navlink--active{

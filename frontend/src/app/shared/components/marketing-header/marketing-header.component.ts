@@ -12,7 +12,7 @@ type MarketingLink = {
   route: any[];
   destination: string;
   queryParams?: Record<string, string>;
-  activeMatch?: 'question-library' | 'essential-60' | 'path';
+  activeMatch?: 'question-library' | 'interview-questions' | 'essential-60' | 'path';
 };
 
 @Component({
@@ -43,6 +43,12 @@ export class MarketingHeaderComponent {
       route: ['/guides', 'interview-blueprint', 'intro'],
       destination: '/guides/interview-blueprint/intro',
       activeMatch: 'path',
+    },
+    {
+      label: 'Interview Questions',
+      route: ['/interview-questions'],
+      destination: '/interview-questions',
+      activeMatch: 'interview-questions',
     },
     {
       label: 'Essential 60',
@@ -154,6 +160,7 @@ export class MarketingHeaderComponent {
 
   trackPrimaryClick(link: MarketingLink, area: 'primary' | 'mobile_menu' = 'primary') {
     this.trackTopNavClick(area, link.destination);
+    if (area === 'mobile_menu') this.mobileMenuOpen.set(false);
   }
 
   trackUtilityClick(link: MarketingLink, area: 'utility' | 'mobile_menu' = 'utility') {
@@ -183,6 +190,8 @@ export class MarketingHeaderComponent {
     const path = primary ? `/${primary.segments.map((segment) => segment.path).join('/')}` : '/';
 
     switch (link.activeMatch) {
+      case 'interview-questions':
+        return path === '/interview-questions';
       case 'question-library':
         return path === '/coding';
       case 'essential-60':

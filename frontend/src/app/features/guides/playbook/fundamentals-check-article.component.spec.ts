@@ -41,6 +41,26 @@ describe('FundamentalsCheckArticle', () => {
       .map((anchor) => anchor.getAttribute('href') || '');
   }
 
+  it('links each diagnostic topic to its matching public subject hub', () => {
+    const host = fixture.nativeElement as HTMLElement;
+    const sections = [
+      ['browser-rendering-interview-questions', '/html/interview-questions'],
+      ['css-layout-interview-questions', '/css/interview-questions'],
+      ['javascript-async-interview-quiz', '/javascript/interview-questions'],
+    ];
+
+    for (const [sectionId, target] of sections) {
+      const links: string[] = [];
+      let section = host.querySelector(`#${sectionId}`)?.nextElementSibling;
+      while (section && section.tagName !== 'H2') {
+        links.push(...Array.from(section.querySelectorAll('a')).map((link) => link.getAttribute('href') || ''));
+        section = section.nextElementSibling;
+      }
+
+      expect(links).withContext(sectionId).toContain(target);
+    }
+  });
+
   it('renders the fundamentals diagnostic shell and freshness signal', () => {
     const hostText = text();
     const h1 = fixture.nativeElement.querySelector('h1') as HTMLHeadingElement | null;

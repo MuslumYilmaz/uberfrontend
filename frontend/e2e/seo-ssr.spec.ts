@@ -17,7 +17,20 @@ const SSR_ENABLED = (() => {
 
 const TRIVIA_SCHEMA_HEADLINE_SUFFIX = 'Frontend interview practice question';
 
-const GUIDE_CONTEXTUAL_LINK_CASES = [
+const TECH_HUB_CONTEXTUAL_LINKS = ['javascript', 'react', 'angular', 'vue', 'html', 'css', 'html-css']
+  .map((tech) => ({ target: `/${tech}/interview-questions`, name: /\S/ }));
+
+const CONTEXTUAL_LINK_CASES = [
+  {
+    path: '/',
+    content: '[data-testid="showcase-focus-section"]',
+    links: [{ target: '/interview-questions', name: /\S/ }, ...TECH_HUB_CONTEXTUAL_LINKS],
+  },
+  {
+    path: '/coding',
+    content: '[data-testid="coding-tech-question-hubs"]',
+    links: TECH_HUB_CONTEXTUAL_LINKS,
+  },
   {
     path: '/guides/interview-blueprint/resume',
     content: 'fa-guide-shell .content',
@@ -32,6 +45,27 @@ const GUIDE_CONTEXTUAL_LINK_CASES = [
     links: [
       { target: '/tools/cv', name: 'check your frontend resume' },
       { target: '/guides/behavioral', name: 'behavioral interview blueprint' },
+      { target: '/interview-questions', name: /\S/ },
+      { target: '/javascript/interview-questions', name: /\S/ },
+      { target: '/html-css/interview-questions', name: /\S/ },
+    ],
+  },
+  {
+    path: '/guides/interview-blueprint/ui-interviews',
+    content: 'fa-guide-shell .content',
+    links: [
+      { target: '/css/interview-questions', name: /\S/ },
+      { target: '/html-css/interview-questions', name: /\S/ },
+      { target: '/machine-coding', name: /\S/ },
+    ],
+  },
+  {
+    path: '/guides/interview-blueprint/quiz',
+    content: 'fa-guide-shell .content',
+    links: [
+      { target: '/html/interview-questions', name: /\S/ },
+      { target: '/css/interview-questions', name: /\S/ },
+      { target: '/javascript/interview-questions', name: /\S/ },
     ],
   },
   {
@@ -970,8 +1004,8 @@ test.describe('seo-ssr', () => {
     'SSR tests require prerender/SSR output (set PLAYWRIGHT_SSR=1 to force).',
   );
 
-  for (const entry of GUIDE_CONTEXTUAL_LINK_CASES) {
-    test(`guide contextual links remain crawlable and navigable: ${entry.path}`, async ({ browser, page }) => {
+  for (const entry of CONTEXTUAL_LINK_CASES) {
+    test(`contextual links remain crawlable and navigable: ${entry.path}`, async ({ browser, page }) => {
       const rawContext = await browser.newContext({ javaScriptEnabled: false });
       try {
         const rawPage = await rawContext.newPage();
@@ -980,6 +1014,16 @@ test.describe('seo-ssr', () => {
         expect(response?.headers()['x-robots-tag'] || '').not.toMatch(/noindex|nofollow|none/i);
         await expect(rawPage.locator('link[rel="canonical"]')).toHaveAttribute('href', expectedCanonical(entry.path));
         await expect(rawPage.locator('meta[name="robots"]')).not.toHaveAttribute('content', /noindex|nofollow|none/i);
+        if (entry.path === '/' || entry.path === '/coding') {
+          const headerHub = entry.path === '/'
+            ? rawPage.locator('[data-testid="marketing-header-primary-link"][href="/interview-questions"]')
+            : rawPage.getByTestId('header-interview-hub');
+          await expect(headerHub).toHaveCount(1);
+          await expect(headerHub).toHaveAttribute('href', '/interview-questions');
+          await expect(headerHub).toHaveAccessibleName('Interview Questions');
+          await expect(headerHub).toBeVisible();
+          await expect(headerHub).not.toHaveAttribute('rel', /nofollow|sponsored|ugc/i);
+        }
         for (const { target, name } of entry.links) {
           const link = rawPage.locator(entry.content).locator(
             `a[href="${target}"], a[href^="${target}?"], a[href^="${target}#"]`,
@@ -1012,17 +1056,18 @@ test.describe('seo-ssr', () => {
       });
       await page.goto(fullUrl(entry.path), { waitUntil: 'load' });
       if (entry.content === 'fa-guide-shell .content') {
-        // The guide's active ToC entry is set only after its browser view initializes.
-        // Static anchors are intentionally usable before Angular attaches routerLink.
+        // Browser view initialization sets the active ToC entry after Angular has
+        // attached the article's routerLink handlers to the prerendered content.
         await expect(page.locator('fa-guide-shell .toc a.active')).toHaveCount(1);
       }
 
-      for (const width of [390, 834, 1440]) {
+      for (const width of [360, 390, 834, 1366, 1440]) {
         await page.setViewportSize({ width, height: 900 });
         for (const { target, name } of entry.links) {
-          const link = page.locator(entry.content).getByRole('link', { name, exact: true });
+          const link = page.locator(entry.content).locator(`a[href="${target}"]`);
           await expect(link).toHaveCount(1);
           await expect(link).toHaveAttribute('href', target);
+          await expect(link).toHaveAccessibleName(name);
           await link.scrollIntoViewIfNeeded();
           await expect(link).toBeVisible();
           const layout = await link.evaluate((element) => ({
@@ -1038,9 +1083,8 @@ test.describe('seo-ssr', () => {
           }
 
           const initialDocuments = documentRequests.length;
+          expect(await link.evaluate((element) => (element as HTMLAnchorElement).tabIndex)).toBeGreaterThanOrEqual(0);
           await link.focus();
-          await page.keyboard.press('Shift+Tab');
-          await page.keyboard.press('Tab');
           await expect(link).toBeFocused();
           await page.keyboard.press('Enter');
           await expect(page).toHaveURL(fullUrl(target));
@@ -1057,6 +1101,62 @@ test.describe('seo-ssr', () => {
       expectNoHydrationOrChunkIssues(issues, entry.path);
     });
   }
+
+  test('coding technology hub links follow the filter through reload and back, and stay out of formats view', async ({ page }) => {
+    await page.addInitScript(() => {
+      (window as Window & { __FA_SEO_HOST__?: string }).__FA_SEO_HOST__ = 'frontendatlas.com';
+      localStorage.setItem('fa:cdn:enabled', '0');
+    });
+    await page.route('https://api.frontendatlas.com/**', (route) => route.fulfill({
+      status: route.request().url().includes('/auth/me') ? 401 : 200,
+      contentType: 'application/json', body: '{}',
+    }));
+    const issues = collectClientRuntimeIssues(page);
+    const documentRequests: string[] = [];
+    page.on('request', (request) => {
+      if (request.isNavigationRequest() && request.frame() === page.mainFrame()) documentRequests.push(request.url());
+    });
+    const section = page.getByTestId('coding-tech-question-hubs');
+    const hubLinks = section.getByRole('link');
+    await page.goto(fullUrl('/coding'), { waitUntil: 'load' });
+    await expect(section).toBeVisible();
+    await expect(hubLinks).toHaveCount(7);
+    // Static filters precede client bootstrap; resolved auth is rendered only in the browser.
+    await expect(page.getByTestId('header-profile-button')).toBeVisible();
+    await page.waitForLoadState('networkidle');
+
+    // Use the visible top technology control, which remains available at every viewport.
+    await page.getByRole('navigation', { name: 'Tech and category filters', exact: true })
+      .getByRole('button', { name: 'JS JavaScript', exact: true }).click();
+    await expect(page).toHaveURL((url) => url.pathname === '/coding' && url.searchParams.get('tech') === 'javascript');
+    await expect(hubLinks).toHaveCount(1);
+    await expect(hubLinks).toHaveAttribute('href', '/javascript/interview-questions');
+    const filteredUrl = page.url();
+
+    await page.reload({ waitUntil: 'load' });
+    await expect(page).toHaveURL(filteredUrl);
+    await expect(hubLinks).toHaveCount(1);
+    await expect(hubLinks).toHaveAttribute('href', '/javascript/interview-questions');
+    const initialDocuments = documentRequests.length;
+    await hubLinks.focus();
+    await expect(hubLinks).toBeFocused();
+    await page.keyboard.press('Enter');
+    await expect(page).toHaveURL(fullUrl('/javascript/interview-questions'));
+    await expect(page.locator('h1').first()).toBeVisible();
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', expectedCanonical('/javascript/interview-questions'));
+    expect(documentRequests, 'filtered hub link uses Angular navigation').toHaveLength(initialDocuments);
+
+    await page.goBack();
+    await expect(page).toHaveURL(filteredUrl);
+    await expect(hubLinks).toHaveCount(1);
+    await expect(hubLinks).toHaveAttribute('href', '/javascript/interview-questions');
+    expect(documentRequests, 'back restores the filtered list without a document reload').toHaveLength(initialDocuments);
+
+    await page.goto(fullUrl('/coding?view=formats&category=ui'), { waitUntil: 'load' });
+    await expect(page.getByRole('heading', { name: 'Practice Types', exact: true })).toBeVisible();
+    await expect(section).toHaveCount(0);
+    expectNoHydrationOrChunkIssues(issues, '/coding');
+  });
 
   test('metadata repairs preserve literal HTML terms in SSR and client navigation', async ({ browser, page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });

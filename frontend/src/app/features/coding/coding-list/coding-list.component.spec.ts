@@ -269,6 +269,35 @@ describe('CodingListComponent', () => {
     expect(results!.compareDocumentPosition(discovery!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
+  it('keeps clean technology question links available with empty results and follows filter changes', async () => {
+    const fixture = await createComponent({ queryParams: { reset: '1' } });
+    const hrefs = () => Array.from(fixture.nativeElement.querySelectorAll(
+      '[data-testid="coding-tech-question-hubs"] a',
+    ) as NodeListOf<HTMLAnchorElement>, (link) => link.getAttribute('href'));
+    const technologies = ['javascript', 'react', 'angular', 'vue', 'html', 'css'] as const;
+    const allHubs = [...technologies, 'html-css'].map((tech) => `/${tech}/interview-questions`);
+
+    expect(hrefs()).toEqual(allHubs);
+    for (const tech of technologies) {
+      fixture.componentInstance.toggleTech(tech);
+      fixture.detectChanges();
+      expect(hrefs()).withContext(`Selected ${tech}`).toEqual([`/${tech}/interview-questions`]);
+      fixture.componentInstance.toggleTech(tech);
+      fixture.detectChanges();
+      expect(hrefs()).withContext(`Cleared ${tech}`).toEqual(allHubs);
+    }
+  });
+
+  it('omits technology question links in formats view', async () => {
+    const fixture = await createComponent({ queryParams: { view: 'formats', category: 'ui', reset: '1' } });
+    expect(fixture.nativeElement.querySelector('[data-testid="coding-tech-question-hubs"]')).toBeNull();
+  });
+
+  it('omits global technology discovery in a company question list', async () => {
+    const fixture = await createComponent({ source: 'company', companySlug: 'google' });
+    expect(fixture.nativeElement.querySelector('[data-testid="coding-tech-question-hubs"]')).toBeNull();
+  });
+
   it('renders free coding hub discovery anchors by technology and skips premium discovery items', async () => {
     const fixture = await createComponent({
       queryParams: { reset: '1' },

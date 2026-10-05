@@ -94,8 +94,13 @@ test('coding list filters sync to URL and persist on reload + back', async ({ pa
   await page.goto('/coding');
   await expect(page.getByTestId('coding-list-page')).toBeVisible();
   await expect(page.getByLabel('Search questions', { exact: true })).toBeVisible();
+  const technologyLinks = page.getByTestId('coding-tech-question-hubs').getByRole('link');
+  await expect(technologyLinks).toHaveCount(7);
 
   await page.getByTestId('filter-tech-javascript').click();
+  await expect(page).toHaveURL(/tech=javascript/);
+  await expect(technologyLinks).toHaveCount(1);
+  await expect(technologyLinks).toHaveAttribute('href', '/javascript/interview-questions');
   await page.getByTestId(`filter-difficulty-${jsFilters.difficulty}`).click();
   await page.getByTestId(`filter-importance-${jsFilters.importance}`).click();
   await page.getByTestId('coding-list-search').fill(JS_QUESTION.title);
@@ -109,6 +114,8 @@ test('coding list filters sync to URL and persist on reload + back', async ({ pa
 
   await page.reload();
   await expect(page.getByTestId('coding-list-page')).toBeVisible();
+  await expect(technologyLinks).toHaveCount(1);
+  await expect(technologyLinks).toHaveAttribute('href', '/javascript/interview-questions');
 
   await expect(page.getByTestId('coding-list-search')).toHaveValue(JS_QUESTION.title);
   await expect(page.getByTestId('filter-tech-javascript')).toHaveClass(/is-active/);
@@ -124,6 +131,8 @@ test('coding list filters sync to URL and persist on reload + back', async ({ pa
 
   await page.goBack();
   await expect(page.getByTestId('coding-list-page')).toBeVisible();
+  await expect(technologyLinks).toHaveCount(1);
+  await expect(technologyLinks).toHaveAttribute('href', '/javascript/interview-questions');
 
   await expect(page).toHaveURL(/tech=javascript/);
   await expect(page).toHaveURL(new RegExp(`diff=${jsFilters.difficulty}`));
