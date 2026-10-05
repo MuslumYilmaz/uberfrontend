@@ -66,7 +66,7 @@
         {{ feedbackAnnouncement() }}
       </p>
 
-      <section class="incident-stage-card incident-stage-card--overview" *ngIf="activeStepIndex() === 0">
+      <section class="incident-stage-card incident-stage-card--overview" [hidden]="activeStepIndex() !== 0" data-testid="incident-overview">
         <div class="incident-stage-card__header incident-overview__header">
           <div class="incident-overview__title">
             <p class="incident-stage-card__eyebrow">Overview</p>
@@ -114,7 +114,8 @@
         </div>
       </section>
 
-      <section class="incident-stage-card" *ngIf="currentStage() as stage" [attr.data-testid]="'incident-stage-' + stage.id">
+      <section class="incident-stage-card" *ngFor="let stage of scenario.stages; let stageIndex = index"
+        [hidden]="activeStepIndex() !== stageIndex + 1" [attr.data-testid]="'incident-stage-' + stage.id">
         <div class="incident-stage-card__header">
           <div>
             <p class="incident-stage-card__eyebrow">{{ stage.title }}</p>
@@ -203,33 +204,35 @@
           <p class="incident-priority__hint">Only the top {{ stage.expectedOrder.length }} positions are scored.</p>
         </div>
 
-        <div class="incident-feedback" *ngIf="currentFeedback() as feedback" [attr.data-testid]="'incident-feedback-' + stage.id">
-          <div class="incident-feedback__head" [attr.data-status]="stageFeedbackStatus(stage.id)">
+        <div class="incident-feedback" [hidden]="!isStageSubmitted(stage.id)" [attr.data-testid]="'incident-feedback-' + stage.id">
+          <div class="incident-feedback__head" *ngIf="stageResults()[stage.id] as feedback" [attr.data-status]="stageFeedbackStatus(stage.id)">
             <h3>{{ feedbackHeading(stage.id) }}</h3>
             <span>{{ feedback.rawScore }}/{{ feedback.maxScore }}</span>
           </div>
 
-          <div class="incident-feedback__body" *ngIf="feedback.optionFeedback.length">
-            <article class="incident-feedback__entry" *ngFor="let item of feedback.optionFeedback">
+          <div class="incident-feedback__body" *ngIf="stage.type !== 'priority-order'">
+            <article class="incident-feedback__entry" *ngFor="let item of stage.options"
+              [hidden]="!isOptionSelected(stage.id, item.id)">
               <div class="incident-feedback__entry-title">{{ item.label }}</div>
               <p>{{ item.feedback }}</p>
             </article>
           </div>
 
-          <div class="incident-feedback__body" *ngIf="feedback.priorityFeedback.length">
-            <article class="incident-feedback__entry" *ngFor="let slot of feedback.priorityFeedback">
-              <div class="incident-feedback__entry-title">
+          <div class="incident-feedback__body" *ngIf="stage.type === 'priority-order'">
+            <article class="incident-feedback__entry" *ngFor="let expectedId of stage.expectedOrder; let index = index"
+              [hidden]="index >= stage.slotWeights.length">
+              <div class="incident-feedback__entry-title" *ngIf="stageResults()[stage.id]?.priorityFeedback?.[index] as slot">
                 Slot {{ slot.slot }}: {{ slot.matched ? 'matched' : 'review this step' }}
               </div>
-              <p>Expected: {{ slot.expectedLabel }}</p>
-              <p>Chosen: {{ slot.actualLabel || 'None' }}</p>
+              <p>Expected: {{ candidateLabel(stage, expectedId) }}</p>
+              <p *ngIf="stageResults()[stage.id]?.priorityFeedback?.[index] as slot">Chosen: {{ slot.actualLabel || 'None' }}</p>
             </article>
           </div>
         </div>
       </section>
 
-      <section class="incident-stage-card" *ngIf="activeStepIndex() === debriefStepIndex()" data-testid="incident-debrief">
-        <div class="incident-stage-card__header">
+      <section class="incident-stage-card" [hidden]="activeStepIndex() !== debriefStepIndex()" data-testid="incident-debrief">
+        <div class="incident-stage-card__header" *ngIf="allStagesSubmitted()">
           <div>
             <p class="incident-stage-card__eyebrow">Debrief</p>
             <h2>{{ attemptEvaluation().passed ? 'Passed' : 'Review again' }} · {{ attemptEvaluation().score }}/100</h2>
@@ -239,7 +242,8 @@
           </span>
         </div>
 
-        <div class="incident-score-band" *ngIf="scoreBand() as band">
+        <div class="incident-score-band" *ngFor="let band of scenario.debrief.scoreBands"
+          [hidden]="!allStagesSubmitted() || scoreBand() !== band">
           <h3>{{ band.label }}</h3>
           <p>{{ band.summary }}</p>
         </div>
@@ -402,7 +406,7 @@
           </a>
         </div>
         <p class="locked-copy">
-          <ng-container *ngIf="auth.isLoggedIn(); else lockedGuest">
+          <ng-container *ngIf="renderedUser(); else lockedGuest">
             {{ lockedMemberCopy() }}
           </ng-container>
           <ng-template #lockedGuest>
@@ -412,7 +416,7 @@
         <div class="locked-actions">
           <button class="fa-btn fa-btn--primary" type="button" (click)="goToPricingFromLocked()">View pricing</button>
           <button class="fa-btn fa-btn--ghost" type="button" data-testid="incident-report-access-issue-btn" (click)="reportAccessIssue()">Report access issue</button>
-          <button *ngIf="!auth.isLoggedIn()" class="fa-btn fa-btn--ghost" type="button" (click)="goToLoginFromLocked()">Sign in</button>
+          <button *ngIf="!renderedUser()" class="fa-btn fa-btn--ghost" type="button" (click)="goToLoginFromLocked()">Sign in</button>
         </div>
       </div>
     </div>

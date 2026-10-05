@@ -45,6 +45,7 @@ testem.log
 /test-results/
 /e2e/*-snapshots/
 !/e2e/upgrade-visual.spec.ts-snapshots/
+!/e2e/incident-visual.spec.ts-snapshots/
 
 # System files
 .DS_Store

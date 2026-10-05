@@ -190,6 +190,24 @@ Or run locally with a prerendered build:
 2) Serve `dist/frontendatlas/browser` with a static server (any tool you prefer).
 3) `PLAYWRIGHT_BASE_URL=http://localhost:4200 PLAYWRIGHT_SSR=1 npx playwright test e2e/seo-ssr.spec.ts`
 
+### Incident content and UI contracts
+
+Build first with `npm run build:prod`, then run `npm run test:e2e:incidents:prod`.
+The suite checks every public incident's real prerendered educational markup,
+Premium solution exclusion, saved-session hydration, scoring, navigation, and
+keyboard accessibility. Backend requests are mocked. This suite also runs in
+the Playwright CI job against the production output.
+
+On macOS, `npm run test:e2e:incidents:visual` compares the same production output
+with 93 Chromium reference images captured before the renderer change
+(application revision `28a133614deb`). It covers every free incident at 390/1440px
+and the full Stale Search Race flow at 360/390/834/1366/1440px, with zero differing
+pixels allowed. The visual suite is opt-in (`INCIDENT_VISUAL=1`) and skips other
+operating systems because the committed references use macOS font rendering.
+Do not use `--update-snapshots` to verify a rendering change: investigate the
+diff first. New platform references must come from a known-good application
+using the same Chromium and font environment as the candidate.
+
 ## Draft versioning
 
 To safely handle “CDN updates a question (same id) while users have local drafts”, drafts are versioned by content. See `frontend/docs/draft-versioning.md`.

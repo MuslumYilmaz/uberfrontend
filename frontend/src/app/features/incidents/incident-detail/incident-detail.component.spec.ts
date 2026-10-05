@@ -15,11 +15,25 @@ import { BugReportService } from '../../../core/services/bug-report.service';
 describe('IncidentDetailComponent', () => {
   const PRACTICE_PROGRESS_KEY = 'fa:practice:progress:v3:guest';
   const INCIDENT_SESSION_KEY = 'fa:practice:session:v3:guest:incident:incident-1';
+  const SECOND_INCIDENT_SESSION_KEY = 'fa:practice:session:v3:guest:incident:incident-2';
+  const USER_SESSION_KEY = 'fa:practice:session:v3:user:incident-scope-test:incident:incident-1';
+  const USER_PROGRESS_KEY = 'fa:practice:progress:v3:user:incident-scope-test';
   let routeData$: ReplaySubject<any>;
   let seo: jasmine.SpyObj<SeoService>;
   let activity: jasmine.SpyObj<ActivityService>;
   let authUser: ReturnType<typeof signal<any>>;
   let httpMock: HttpTestingController;
+
+  function visiblePanels(root: HTMLElement): HTMLElement[] {
+    return Array.from(root.querySelectorAll<HTMLElement>('.incident-stage-card'))
+      .filter((panel) => !panel.hidden);
+  }
+
+  function visibleFeedbackEntries(root: HTMLElement, stageId: string): HTMLElement[] {
+    return Array.from(root.querySelectorAll<HTMLElement>(
+      `[data-testid="incident-feedback-${stageId}"] .incident-feedback__entry`,
+    )).filter((entry) => !entry.closest('[hidden]'));
+  }
 
   const resolvedDetail = {
     id: 'incident-1',
@@ -151,6 +165,9 @@ describe('IncidentDetailComponent', () => {
     authUser = signal<any>(null);
     localStorage.removeItem(PRACTICE_PROGRESS_KEY);
     localStorage.removeItem(INCIDENT_SESSION_KEY);
+    localStorage.removeItem(SECOND_INCIDENT_SESSION_KEY);
+    localStorage.removeItem(USER_SESSION_KEY);
+    localStorage.removeItem(USER_PROGRESS_KEY);
     localStorage.removeItem('fa:incidents:progress:v1');
     localStorage.removeItem('fa:incidents:session:v1:incident-1');
     localStorage.removeItem('fa:practice:progress:v2');
@@ -182,11 +199,233 @@ describe('IncidentDetailComponent', () => {
   afterEach(() => {
     localStorage.removeItem(PRACTICE_PROGRESS_KEY);
     localStorage.removeItem(INCIDENT_SESSION_KEY);
+    localStorage.removeItem(SECOND_INCIDENT_SESSION_KEY);
+    localStorage.removeItem(USER_SESSION_KEY);
+    localStorage.removeItem(USER_PROGRESS_KEY);
     localStorage.removeItem('fa:incidents:progress:v1');
     localStorage.removeItem('fa:incidents:session:v1:incident-1');
     localStorage.removeItem('fa:practice:progress:v2');
     localStorage.removeItem('fa:practice:session:v2:incident:incident-1');
     httpMock.verify();
+  });
+
+  it('keeps all public teaching content in the DOM while showing only the current panel', async () => {
+    routeData$.next({ incidentDetail: resolvedDetail });
+    const fixture = TestBed.createComponent(IncidentDetailComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const root = fixture.nativeElement as HTMLElement;
+    const panels = Array.from(root.querySelectorAll<HTMLElement>('.incident-stage-card'));
+    expect(panels.length).toBe(6);
+    expect(visiblePanels(root).length).toBe(1);
+    expect(visiblePanels(root)[0].classList).toContain('incident-stage-card--overview');
+    expect(root.textContent).toContain('Pick root cause');
+    expect(root.textContent).toContain('Correct diagnosis.');
+    expect(root.textContent).toContain('Partly relevant, but incomplete.');
+    expect(root.textContent).toContain('Expected: Check logs');
+    expect(root.textContent).toContain('Bad fix.');
+    expect(root.textContent).toContain('Best guard.');
+    expect(root.textContent).toContain('Weak guard.');
+    expect(root.textContent).toContain('Profile first');
+    expect(root.textContent).toContain('Debrief text.');
+    expect(root.textContent).not.toContain('Review again · 0/100');
+    expect(visibleFeedbackEntries(root, 'root-cause')).toEqual([]);
+
+    for (const panel of panels.filter((panel) => panel.hidden)) {
+      expect(getComputedStyle(panel).display).toBe('none');
+    }
+
+    const stagePanel = root.querySelector<HTMLElement>('[data-testid="incident-stage-root-cause"]')!;
+    fixture.componentInstance.startIncident();
+    fixture.detectChanges();
+    expect(visiblePanels(root)).toEqual([stagePanel]);
+    expect(root.querySelector('[data-testid="incident-stage-root-cause"]')).toBe(stagePanel);
+    expect(root.querySelector<HTMLButtonElement>('.incident-step-nav__item:nth-child(3)')?.disabled).toBeTrue();
+    fixture.componentInstance.goToStep(2);
+    fixture.detectChanges();
+    expect(visiblePanels(root)).toEqual([stagePanel]);
+    expect(activity.complete).not.toHaveBeenCalled();
+  });
+
+  it('shows only submitted selected explanations and keeps feedback attached to its own stage', async () => {
+    routeData$.next({ incidentDetail: resolvedDetail });
+    const fixture = TestBed.createComponent(IncidentDetailComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    const component = fixture.componentInstance;
+    const root = fixture.nativeElement as HTMLElement;
+
+    component.startIncident();
+    component.activateOption(component.stages()[0], 'wrong');
+    fixture.detectChanges();
+    expect(visibleFeedbackEntries(root, 'root-cause')).toEqual([]);
+    component.submitCurrentStage();
+    fixture.detectChanges();
+    const firstFeedback = visibleFeedbackEntries(root, 'root-cause');
+    expect(firstFeedback.length).toBe(1);
+    expect(firstFeedback[0].textContent).toContain('Partly relevant, but incomplete.');
+    expect(firstFeedback[0].textContent).not.toContain('Correct diagnosis.');
+    expect(root.querySelector('[data-testid="incident-feedback-root-cause"]')?.textContent).toContain('5/25');
+
+    component.nextStep();
+    component.submitCurrentStage();
+    component.nextStep();
+    component.activateOption(component.stages()[2], 'harmful');
+    component.activateOption(component.stages()[2], 'fix-a');
+    component.submitCurrentStage();
+    fixture.detectChanges();
+    const multiFeedback = visibleFeedbackEntries(root, 'fix-set');
+    expect(multiFeedback.length).toBe(2);
+    expect(multiFeedback.map((entry) => entry.querySelector('.incident-feedback__entry-title')?.textContent?.trim()))
+      .toEqual(['Fix A', 'Harmful']);
+    expect(multiFeedback.map((entry) => entry.textContent).join(' ')).toContain('A helps.');
+    expect(multiFeedback.map((entry) => entry.textContent).join(' ')).toContain('Bad fix.');
+    expect(multiFeedback.map((entry) => entry.textContent).join(' ')).not.toContain('B helps.');
+    expect(visibleFeedbackEntries(root, 'root-cause')).toEqual([]);
+
+    component.goToStep(1);
+    fixture.detectChanges();
+    expect(visibleFeedbackEntries(root, 'root-cause')[0]).toBe(firstFeedback[0]);
+    expect(root.querySelector('[data-testid="incident-feedback-root-cause"]')?.textContent).toContain('5/25');
+    expect(visibleFeedbackEntries(root, 'fix-set')).toEqual([]);
+  });
+
+  for (const activeStepIndex of [1, 2, 4, 5]) {
+    it(`restores a saved attempt at step ${activeStepIndex} after initial rendering without overwriting it`, async () => {
+      const progress = TestBed.inject(IncidentProgressService);
+      progress.completeAttempt('incident-1', 100, 'Keep requests isolated.');
+      const submittedStageIds = ['root-cause', 'debug-order', 'fix-set', 'guardrail']
+        .slice(0, activeStepIndex === 5 ? 4 : activeStepIndex - 1);
+      const session = {
+        activeStepIndex,
+        answers: {
+          'root-cause': 'correct',
+          'debug-order': ['check-logs', 'profile-ui', 'inspect-code'],
+          'fix-set': ['fix-a', 'fix-b', 'fix-c'],
+          guardrail: 'guard',
+        },
+        submittedStageIds,
+      };
+      progress.saveSession('incident-1', session);
+      const originalSession = localStorage.getItem(INCIDENT_SESSION_KEY);
+      const loadSession = spyOn(progress, 'loadSession').and.callThrough();
+      const completeAttempt = spyOn(progress, 'completeAttempt').and.callThrough();
+      routeData$.next({ incidentDetail: resolvedDetail });
+      const fixture = TestBed.createComponent(IncidentDetailComponent);
+      const component = fixture.componentInstance;
+
+      expect(component.activeStepIndex()).toBe(0);
+      expect(component.answers()).toEqual({});
+      expect(component.reflectionNote()).toBe('');
+      expect(component.progressRecord().bestScore).toBe(0);
+      expect(loadSession).not.toHaveBeenCalled();
+      expect(localStorage.getItem(INCIDENT_SESSION_KEY)).toBe(originalSession);
+
+      fixture.detectChanges();
+      await fixture.whenStable();
+      fixture.detectChanges();
+
+      expect(component.activeStepIndex()).toBe(activeStepIndex);
+      expect(component.answers()).toEqual(session.answers);
+      expect(component.reflectionNote()).toBe('Keep requests isolated.');
+      expect(component.progressRecord().bestScore).toBe(100);
+      expect(component.submittedStageIds()).toEqual(submittedStageIds);
+      expect(visiblePanels(fixture.nativeElement).length).toBe(1);
+      expect(visiblePanels(fixture.nativeElement)[0].classList).not.toContain('incident-stage-card--overview');
+      expect(fixture.nativeElement.querySelectorAll('.incident-step-nav__item[aria-current="step"]').length).toBe(1);
+      expect(localStorage.getItem(INCIDENT_SESSION_KEY)).toBe(originalSession);
+      expect(completeAttempt).not.toHaveBeenCalled();
+      expect(activity.complete).not.toHaveBeenCalled();
+    });
+  }
+
+  it('restores the latest route when it changes before the first render and clears missing incident state', async () => {
+    const progress = TestBed.inject(IncidentProgressService);
+    progress.saveSession('incident-1', { activeStepIndex: 1, answers: { 'root-cause': 'wrong' }, submittedStageIds: [] });
+    progress.saveSession('incident-2', { activeStepIndex: 2, answers: { 'root-cause': 'correct' }, submittedStageIds: ['root-cause'] });
+    const nextDetail = JSON.parse(JSON.stringify(resolvedDetail));
+    nextDetail.id = 'incident-2';
+    nextDetail.incident.meta.id = 'incident-2';
+    nextDetail.incident.meta.title = 'Incident two';
+    routeData$.next({ incidentDetail: resolvedDetail });
+    const fixture = TestBed.createComponent(IncidentDetailComponent);
+    routeData$.next({ incidentDetail: nextDetail });
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const component = fixture.componentInstance;
+    expect(component.incident()?.meta.id).toBe('incident-2');
+    expect(component.activeStepIndex()).toBe(2);
+    expect(component.answers()).toEqual({ 'root-cause': 'correct' });
+    expect(component.stageResults()['root-cause'].rawScore).toBe(25);
+    expect(visiblePanels(fixture.nativeElement).length).toBe(1);
+
+    routeData$.next({ incidentDetail: undefined });
+    fixture.detectChanges();
+    expect(component.incident()).toBeNull();
+    expect(component.activeStepIndex()).toBe(0);
+    expect(component.answers()).toEqual({});
+    expect(component.stageResults()).toEqual({});
+    expect(component.submittedStageIds()).toEqual([]);
+    expect(component.reflectionNote()).toBe('');
+    expect(visiblePanels(fixture.nativeElement)).toEqual([]);
+
+    routeData$.next({ incidentDetail: resolvedDetail });
+    fixture.detectChanges();
+    expect(component.incident()?.meta.id).toBe('incident-1');
+    expect(component.activeStepIndex()).toBe(1);
+    expect(component.answers()).toEqual({ 'root-cause': 'wrong' });
+    expect(component.stageResults()).toEqual({});
+    expect(visiblePanels(fixture.nativeElement).length).toBe(1);
+  });
+
+  it('restores the matching account session and ignores same-account auth refreshes', async () => {
+    const progress = TestBed.inject(IncidentProgressService);
+    progress.saveSession('incident-1', {
+      activeStepIndex: 1,
+      answers: { 'root-cause': 'wrong' },
+      submittedStageIds: [],
+    });
+    localStorage.setItem(USER_SESSION_KEY, JSON.stringify({
+      activeStepIndex: 2,
+      answers: { 'root-cause': 'correct' },
+      submittedStageIds: ['root-cause'],
+    }));
+    routeData$.next({ incidentDetail: resolvedDetail });
+    const fixture = TestBed.createComponent(IncidentDetailComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(fixture.componentInstance.answers()).toEqual({ 'root-cause': 'wrong' });
+
+    authUser.set({ _id: 'incident-scope-test', accessTier: 'premium' });
+    fixture.detectChanges();
+    httpMock.expectOne('/api/practice-progress').flush({ records: [] });
+    httpMock.match((req) => req.method === 'PUT' && req.url === '/api/practice-progress/incident/incident-1')
+      .forEach((req) => req.flush({ record: { family: 'incident', itemId: 'incident-1', ...req.request.body } }));
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(fixture.componentInstance.activeStepIndex()).toBe(2);
+    expect(fixture.componentInstance.answers()).toEqual({ 'root-cause': 'correct' });
+
+    const loadSession = spyOn(progress, 'loadSession').and.callThrough();
+    authUser.set({ _id: 'incident-scope-test', accessTier: 'premium', username: 'Updated name' });
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(loadSession).not.toHaveBeenCalled();
+    expect(fixture.componentInstance.activeStepIndex()).toBe(2);
+
+    authUser.set(null);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(fixture.componentInstance.activeStepIndex()).toBe(1);
+    expect(fixture.componentInstance.answers()).toEqual({ 'root-cause': 'wrong' });
+    expect(visiblePanels(fixture.nativeElement).length).toBe(1);
   });
 
   it('shows stage feedback after submitting a response', async () => {
@@ -243,7 +482,7 @@ describe('IncidentDetailComponent', () => {
     const prompt = fixture.nativeElement.querySelector('#incident-stage-prompt-root-cause') as HTMLElement | null;
     const group = fixture.nativeElement.querySelector('[role="radiogroup"]') as HTMLElement | null;
     const radios = Array.from(
-      fixture.nativeElement.querySelectorAll('[role="radiogroup"] [role="radio"]'),
+      fixture.nativeElement.querySelectorAll('[data-testid="incident-stage-root-cause"] [role="radio"]'),
     ) as HTMLButtonElement[];
 
     expect(prompt?.textContent?.trim()).toBe('Pick root cause');
@@ -272,7 +511,7 @@ describe('IncidentDetailComponent', () => {
     fixture.detectChanges();
 
     const radios = Array.from(
-      fixture.nativeElement.querySelectorAll('[role="radiogroup"] [role="radio"]'),
+      fixture.nativeElement.querySelectorAll('[data-testid="incident-stage-root-cause"] [role="radio"]'),
     ) as HTMLButtonElement[];
     const first = radios[0]!;
     const last = radios[radios.length - 1]!;
@@ -424,6 +663,10 @@ describe('IncidentDetailComponent', () => {
     expect(fixture.nativeElement.querySelector('[data-testid="premium-preview-rich"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('[data-testid="premium-preview"]')).toBeNull();
     expect(fixture.nativeElement.textContent || '').not.toContain('Begin simulator');
+    expect(fixture.nativeElement.querySelector('[data-testid="incident-stage-root-cause"]')).toBeNull();
+    expect(fixture.nativeElement.querySelector('[data-testid="incident-debrief"]')).toBeNull();
+    expect(fixture.nativeElement.textContent || '').not.toContain('Correct diagnosis.');
+    expect(fixture.nativeElement.textContent || '').not.toContain('Debrief text.');
 
     const payload = seo.updateTags.calls.mostRecent().args[0] as any;
     const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
@@ -434,6 +677,25 @@ describe('IncidentDetailComponent', () => {
     expect(JSON.stringify(graph)).not.toContain('Ideal runbook');
   });
 
+  it('keeps paid teaching content out of the DOM for signed-in free users', async () => {
+    const premiumDetail = JSON.parse(JSON.stringify(resolvedDetail));
+    premiumDetail.list[0].access = 'premium';
+    premiumDetail.incident.meta.access = 'premium';
+    authUser.set({ accessTier: 'free' });
+    routeData$.next({ incidentDetail: premiumDetail });
+
+    const fixture = TestBed.createComponent(IncidentDetailComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('[data-testid="premium-preview-rich"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelectorAll('.incident-stage-card').length).toBe(0);
+    expect(fixture.nativeElement.textContent || '').not.toContain('Correct diagnosis.');
+    expect(fixture.nativeElement.textContent || '').not.toContain('Debrief text.');
+    expect(activity.complete).not.toHaveBeenCalled();
+  });
+
   it('keeps premium incident robots noindex for active premium users', async () => {
     const premiumDetail = JSON.parse(JSON.stringify(resolvedDetail));
     premiumDetail.list[0].access = 'premium';
@@ -442,6 +704,7 @@ describe('IncidentDetailComponent', () => {
     routeData$.next({ incidentDetail: premiumDetail });
 
     const fixture = TestBed.createComponent(IncidentDetailComponent);
+    expect(fixture.componentInstance.locked()).toBeTrue();
     fixture.detectChanges();
     await fixture.whenStable();
     fixture.detectChanges();
@@ -449,6 +712,44 @@ describe('IncidentDetailComponent', () => {
     const payload = seo.updateTags.calls.mostRecent().args[0] as any;
     expect(payload.robots).toBe('noindex,follow');
     expect(fixture.nativeElement.textContent || '').toContain('Begin simulator');
+    expect(fixture.nativeElement.querySelectorAll('.incident-stage-card').length).toBe(6);
+    expect(visiblePanels(fixture.nativeElement).length).toBe(1);
+    expect(fixture.nativeElement.textContent || '').toContain('Correct diagnosis.');
+  });
+
+  it('restores a premium session when entitlement arrives and removes its panels when access ends', async () => {
+    const premiumDetail = JSON.parse(JSON.stringify(resolvedDetail));
+    premiumDetail.list[0].access = 'premium';
+    premiumDetail.incident.meta.access = 'premium';
+    TestBed.inject(IncidentProgressService).saveSession('incident-1', {
+      activeStepIndex: 2,
+      answers: { 'root-cause': 'correct' },
+      submittedStageIds: ['root-cause'],
+    });
+    routeData$.next({ incidentDetail: premiumDetail });
+    const fixture = TestBed.createComponent(IncidentDetailComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelectorAll('.incident-stage-card').length).toBe(0);
+
+    authUser.set({ accessTier: 'premium' });
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(fixture.componentInstance.activeStepIndex()).toBe(2);
+    expect(fixture.componentInstance.answers()).toEqual({ 'root-cause': 'correct' });
+    expect(visiblePanels(fixture.nativeElement).length).toBe(1);
+    expect(visiblePanels(fixture.nativeElement)[0].getAttribute('data-testid')).toBe('incident-stage-debug-order');
+
+    authUser.set(null);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelectorAll('.incident-stage-card').length).toBe(0);
+    expect(fixture.componentInstance.activeStepIndex()).toBe(0);
+    expect(fixture.componentInstance.answers()).toEqual({});
+    expect(activity.complete).not.toHaveBeenCalled();
   });
 
   it('reorders priority candidates with keyboard controls', async () => {

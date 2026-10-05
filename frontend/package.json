@@ -66,6 +66,8 @@
     "test:e2e:react:prod": "PLAYWRIGHT_WEB_SERVER=1 PLAYWRIGHT_SSR=1 PLAYWRIGHT_REUSE_SERVER=0 PLAYWRIGHT_PORT=4219 playwright test e2e/react-framework-checks.prod.spec.ts --project=chromium --workers=1",
     "test:e2e:framework-catalog:prod": "PLAYWRIGHT_WEB_SERVER=1 PLAYWRIGHT_SSR=1 PLAYWRIGHT_REUSE_SERVER=0 PLAYWRIGHT_PORT=4218 playwright test e2e/framework-catalog-solutions.prod.spec.ts --project=chromium --workers=4",
     "test:e2e:public:prod": "PLAYWRIGHT_WEB_SERVER=1 PLAYWRIGHT_SSR=1 PLAYWRIGHT_REUSE_SERVER=0 PLAYWRIGHT_PORT=4220 playwright test e2e/production-public-remediation.prod.spec.ts e2e/admin-private-shell.prod.spec.ts --project=chromium --workers=1",
+    "test:e2e:incidents:prod": "PLAYWRIGHT_WEB_SERVER=1 PLAYWRIGHT_SSR=1 PLAYWRIGHT_REUSE_SERVER=0 PLAYWRIGHT_PORT=4222 playwright test e2e/incident-ssr.spec.ts e2e/accessibility.smoke.spec.ts --project=chromium --workers=1 --grep=incident",
+    "test:e2e:incidents:visual": "INCIDENT_VISUAL=1 PLAYWRIGHT_WEB_SERVER=1 PLAYWRIGHT_SSR=1 PLAYWRIGHT_REUSE_SERVER=0 PLAYWRIGHT_PORT=4223 playwright test e2e/incident-visual.spec.ts --project=chromium --workers=2",
     "test:e2e:visual": "PLAYWRIGHT_WEB_SERVER=1 playwright test e2e/visual-smoke.spec.ts --project=chromium",
     "test:e2e:a11y": "PLAYWRIGHT_WEB_SERVER=1 playwright test e2e/accessibility.smoke.spec.ts --project=chromium",
     "test:playwright-webkit-health": "node --test scripts/check-playwright-webkit-health.test.mjs",

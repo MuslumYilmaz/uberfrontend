@@ -95,6 +95,11 @@ jobs:
         env:
           CI: true
 
+      - name: Run production incident content and interaction contracts
+        run: npm run test:e2e:incidents:prod
+        env:
+          CI: true
+
       - name: Upload Playwright artifacts (on failure)
         if: failure()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
