@@ -6,6 +6,7 @@
 }
 
 .event-loop-experience {
+  position: relative;
   min-width: 0;
   min-height: 43rem;
   padding: clamp(18px, 3.5vw, 34px);

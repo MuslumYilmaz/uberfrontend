@@ -11,7 +11,10 @@ process.env.PLAYWRIGHT_BASE_URL = baseURL;
 
 export default defineConfig({
   ...config,
-  testMatch: ['ui-visual.spec.ts'],
+  // Keep structural layout contracts in the same production-SSR job as the
+  // screenshot baselines. They catch scroll-owner and container-geometry
+  // regressions that a top-of-page image cannot reliably expose.
+  testMatch: ['ui-visual.spec.ts', 'ui-layout-contracts.spec.ts'],
   projects: config.projects?.filter(project => project.name === 'chromium'),
   retries: 0,
   workers: 3,

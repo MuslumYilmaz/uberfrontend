@@ -45,6 +45,91 @@ async function expectNoHorizontalOverflow(page: Page, label: string): Promise<vo
   ).toBeLessThanOrEqual(metrics.bodyClientWidth + 1);
 }
 
+async function expectTryFirstToFillCenterColumn(page: Page, label: string): Promise<void> {
+  const layout = await page.evaluate(() => {
+    const center = document.querySelector<HTMLElement>('.sdl-center');
+    const tryFirst = document.querySelector<HTMLElement>('[data-testid="sd-try-first"]');
+    if (!center || !tryFirst) return null;
+
+    const centerBounds = center.getBoundingClientRect();
+    const tryFirstBounds = tryFirst.getBoundingClientRect();
+    return {
+      centerLeft: centerBounds.left,
+      centerWidth: centerBounds.width,
+      tryFirstLeft: tryFirstBounds.left,
+      tryFirstWidth: tryFirstBounds.width,
+    };
+  });
+
+  expect(layout, `${label}: Try first and the center column must exist`).not.toBeNull();
+  const geometry = layout!;
+  expect(
+    Math.abs(geometry.tryFirstLeft - geometry.centerLeft),
+    `${label}: Try first aligns with the center column`,
+  ).toBeLessThanOrEqual(1);
+  expect(
+    Math.abs(geometry.tryFirstWidth - geometry.centerWidth),
+    `${label}: Try first fills the center column`,
+  ).toBeLessThanOrEqual(1);
+}
+
+async function expectSectionSummariesToFillCenterColumn(page: Page, label: string): Promise<void> {
+  const layout = await page.evaluate(() => {
+    const center = document.querySelector<HTMLElement>('.sdl-center');
+    if (!center) return null;
+
+    const centerBounds = center.getBoundingClientRect();
+    const sections = Array.from(document.querySelectorAll<HTMLElement>('details.sd-section')).map((section, index) => {
+      const summary = section.querySelector<HTMLElement>(':scope > .sd-section__summary');
+      const chevron = section.querySelector<HTMLElement>('.sd-section__chevron');
+      if (!summary || !chevron) return null;
+
+      const sectionBounds = section.getBoundingClientRect();
+      const summaryBounds = summary.getBoundingClientRect();
+      const chevronBounds = chevron.getBoundingClientRect();
+      const styles = getComputedStyle(section);
+      const contentLeft = sectionBounds.left
+        + Number.parseFloat(styles.borderLeftWidth || '0')
+        + Number.parseFloat(styles.paddingLeft || '0');
+      const contentRight = sectionBounds.right
+        - Number.parseFloat(styles.borderRightWidth || '0')
+        - Number.parseFloat(styles.paddingRight || '0');
+
+      return {
+        index,
+        sectionLeft: sectionBounds.left,
+        sectionRight: sectionBounds.right,
+        summaryLeft: summaryBounds.left,
+        summaryRight: summaryBounds.right,
+        chevronRight: chevronBounds.right,
+        contentLeft,
+        contentRight,
+      };
+    });
+
+    return {
+      centerLeft: centerBounds.left,
+      centerRight: centerBounds.right,
+      sections,
+    };
+  });
+
+  expect(layout, `${label}: section summaries and the center column must exist`).not.toBeNull();
+  const geometry = layout!;
+  expect(geometry.sections, `${label}: expected RADIO sections`).toHaveLength(5);
+
+  for (const section of geometry.sections) {
+    expect(section, `${label}: section summary must exist`).not.toBeNull();
+    const item = section!;
+    expect(Math.abs(item.sectionLeft - geometry.centerLeft)).toBeLessThanOrEqual(1);
+    expect(Math.abs(item.sectionRight - geometry.centerRight)).toBeLessThanOrEqual(1);
+    expect(Math.abs(item.summaryLeft - item.contentLeft)).toBeLessThanOrEqual(1);
+    expect(Math.abs(item.summaryRight - item.contentRight)).toBeLessThanOrEqual(1);
+    expect(item.chevronRight).toBeGreaterThanOrEqual(item.contentRight - 16);
+    expect(item.chevronRight).toBeLessThanOrEqual(item.contentRight + 1);
+  }
+}
+
 async function openAllRadioSections(page: Page): Promise<void> {
   const sections = page.locator('details.sd-section');
   await expect(sections).toHaveCount(5);
@@ -223,7 +308,9 @@ test.describe('System Design V2 acceptance', () => {
         await expect(page.getByTestId('sd-try-first')).toBeVisible();
         await expect(page.getByTestId('sd-try-first')).toContainText(pilot.level);
         await expect(page.getByTestId('sd-try-first')).toContainText(pilot.time);
+        await expectTryFirstToFillCenterColumn(page, `${viewport.width}px ${pilot.label} pilot`);
         await openAllRadioSections(page);
+        await expectSectionSummariesToFillCenterColumn(page, `${viewport.width}px ${pilot.label} pilot`);
         await expect(page.locator('.sd-figure img')).toHaveCount(2);
 
         await expectNoHorizontalOverflow(page, `${viewport.width}px ${pilot.label} pilot`);
