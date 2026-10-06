@@ -157,6 +157,37 @@ async function assertMobilePracticeFooterFits(page: import('@playwright/test').P
   expect(metrics!.outside, 'mobile footer controls should stay inside the footer bounds').toBe(false);
 }
 
+async function assertTriviaUsesOnlyItsContentScroller(page: import('@playwright/test').Page, viewportLabel: string) {
+  const main = page.getByTestId('trivia-detail-main');
+  await expect(main).toBeVisible();
+  await expect(page.getByTestId('javascript-event-loop-experience')).toBeVisible();
+
+  const metrics = await page.evaluate(() => {
+    const main = document.querySelector('[data-testid="trivia-detail-main"]') as HTMLElement | null;
+    const scrollingElement = document.scrollingElement;
+    if (!main || !scrollingElement) return null;
+
+    return {
+      documentClientHeight: document.documentElement.clientHeight,
+      documentScrollHeight: scrollingElement.scrollHeight,
+      mainClientHeight: main.clientHeight,
+      mainScrollHeight: main.scrollHeight,
+      mainOverflowY: getComputedStyle(main).overflowY,
+    };
+  });
+
+  expect(metrics, `${viewportLabel} trivia scroll metrics should be available`).not.toBeNull();
+  expect(metrics!.mainScrollHeight, `${viewportLabel} content panel should retain its own vertical scroll`).toBeGreaterThan(metrics!.mainClientHeight + 1);
+  expect(metrics!.mainOverflowY, `${viewportLabel} content panel should be the vertical scroll owner`).toMatch(/^(auto|scroll)$/);
+  expect(metrics!.documentScrollHeight, `${viewportLabel} document should not expose a second vertical scroll range`).toBeLessThanOrEqual(metrics!.documentClientHeight + 1);
+
+  await page.evaluate(() => window.scrollTo(0, Number.MAX_SAFE_INTEGER));
+  await expect.poll(
+    () => page.evaluate(() => window.scrollY),
+    { message: `${viewportLabel} document should remain at its only scroll position` },
+  ).toBeLessThanOrEqual(1);
+}
+
 test.describe('trivia mobile visual guardrail', () => {
   test.skip(({ browserName }) => browserName !== 'chromium', 'Visual baselines are chromium-only.');
   test.use({
@@ -235,6 +266,18 @@ test.describe('trivia mobile visual guardrail', () => {
 
     await stabilize(page);
     await assertNoTriviaOverflow(page);
+  });
+
+  test('event loop detail keeps vertical scrolling inside the content panel', async ({ page }) => {
+    for (const [viewportLabel, viewport] of [
+      ['mobile', MOBILE_VIEWPORT],
+      ['tablet', TABLET_VIEWPORT],
+    ] as const) {
+      await page.setViewportSize(viewport);
+      await page.goto('/javascript/trivia/js-event-loop');
+      await stabilize(page);
+      await assertTriviaUsesOnlyItsContentScroller(page, viewportLabel);
+    }
   });
 
   test('trivia detail mobile - high risk route sweep has no horizontal overflow', async ({ page }) => {
