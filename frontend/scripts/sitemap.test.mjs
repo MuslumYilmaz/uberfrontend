@@ -842,6 +842,20 @@ function assertAngularMasteryRedirects() {
   }
 }
 
+function assertLegacyVueQuestionRedirect(paths) {
+  const source = '/vue/trivia/vue-destructuring-breaks-reactivity-toRefs-toRef';
+  const destination = '/vue/trivia/vue-destructuring-breaks-reactivity-torefs-toref';
+  const config = JSON.parse(fs.readFileSync(VERCEL_CONFIG_PATH, 'utf8'));
+  const matches = config.redirects.filter((redirect) => redirect.source === source);
+  if (matches.length !== 1 || matches[0].destination !== destination || matches[0].permanent !== true) {
+    throw new Error('The legacy mixed-case Vue question URL must permanently redirect to its canonical URL.');
+  }
+  const prerender = new Set(fs.readFileSync(PRERENDER_PATH, 'utf8').split(/\r?\n/).filter(Boolean));
+  if (!paths.has(destination) || !prerender.has(destination) || paths.has(source) || prerender.has(source)) {
+    throw new Error('Only the canonical Vue question URL should be included in sitemap and prerender output.');
+  }
+}
+
 function assertRobotsAllowsCodingQueryNoindex() {
   if (!fs.existsSync(ROBOTS_PATH)) {
     throw new Error(`Missing ${ROBOTS_PATH}.`);
@@ -1205,6 +1219,7 @@ assertAngularHttpCancellationLabSitemapEntry(entries);
 assertReactStaleClosuresSitemapEntry(entries);
 assertIndexableRouteTitlesUnique();
 assertAngularMasteryRedirects();
+assertLegacyVueQuestionRedirect(paths);
 assertRobotsAllowsCodingQueryNoindex();
 assertVercelCodingQueryNoindexHeaders();
 assertVercelLockedRouteNoindexHeaders();

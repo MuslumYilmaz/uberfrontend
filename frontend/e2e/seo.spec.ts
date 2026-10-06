@@ -218,11 +218,19 @@ test('seo: css display flex page keeps route identity + structured data', async 
   await expect(triviaMain).toContainText(/flex:\s*auto/i);
 });
 
-test('seo: login page is noindex', async ({ page }) => {
-  await setSeoHost(page, 'frontendatlas.com');
-  await page.goto('/auth/login');
-  await expect.poll(async () => (await getMeta(page, 'robots')) || '').toContain('noindex');
-});
+for (const route of ['/auth/login', '/auth/signup']) {
+  for (const query of ['', '?src=showcase_hero&redirectTo=%2Fdashboard']) {
+    test(`seo: crawlable auth page stays noindex at ${route}${query}`, async ({ page }) => {
+      await setSeoHost(page, 'frontendatlas.com');
+      await page.goto(`${route}${query}`);
+      const base = process.env.PLAYWRIGHT_SSR === '1'
+        ? (process.env.PLAYWRIGHT_CANONICAL_BASE || 'https://frontendatlas.com').replace(/\/$/, '')
+        : new URL(page.url()).origin;
+      await expect.poll(() => getMeta(page, 'robots')).toBe('noindex,nofollow');
+      await expect.poll(() => getCanonical(page)).toBe(`${base}${route}`);
+    });
+  }
+}
 
 test('seo: preview host forces noindex', async ({ page }) => {
   await setSeoHost(page, 'preview.frontendatlas.vercel.app');

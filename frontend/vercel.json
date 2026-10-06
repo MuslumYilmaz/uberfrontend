@@ -104,6 +104,11 @@
   ],
   "redirects": [
     {
+      "source": "/vue/trivia/vue-destructuring-breaks-reactivity-toRefs-toRef",
+      "destination": "/vue/trivia/vue-destructuring-breaks-reactivity-torefs-toref",
+      "permanent": true
+    },
+    {
       "source": "/guides/framework-prep/react-prep-path/mastery",
       "destination": "/guides/framework-prep/react-prep-path",
       "permanent": false

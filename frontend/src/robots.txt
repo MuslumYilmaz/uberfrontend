@@ -1,6 +1,10 @@
 User-agent: *
 Allow: /
 Disallow: /auth/
+Allow: /auth/login$
+Allow: /auth/login?
+Allow: /auth/signup$
+Allow: /auth/signup?
 Disallow: /dashboard
 Disallow: /profile
 Disallow: /admin
