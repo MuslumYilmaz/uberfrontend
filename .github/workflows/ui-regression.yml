@@ -1,0 +1,129 @@
+name: UI Regression
+
+on:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      update_baselines:
+        description: Generate current Linux screenshots for review and commit
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ui-regression-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  changes:
+    name: UI Change Scope
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      ui: ${{ steps.scope.outputs.ui }}
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
+        with:
+          node-version-file: .nvmrc
+      - run: node --test scripts/ci-change-scope.test.mjs
+      - name: Detect UI changes
+        id: scope
+        env:
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          TESTED_SHA: ${{ github.sha }}
+        run: |
+          if [ "$GITHUB_EVENT_NAME" = pull_request ]; then
+            node scripts/ci-change-scope.mjs --base "$PR_BASE_SHA" --head "$TESTED_SHA"
+          else
+            node scripts/ci-change-scope.mjs --all
+          fi
+
+  ui-regression:
+    name: UI Regression
+    needs: changes
+    # A failed scope detector must fail this check, never silently skip it.
+    if: ${{ !cancelled() && (needs.changes.result != 'success' || needs.changes.outputs.ui != 'false') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    container:
+      image: mcr.microsoft.com/playwright:v1.57.0-noble@sha256:3bed4b1a12f2338642f3d8cba28e291deef3c66bd4a964bbeb3e57bbff511dbd
+      options: --ipc=host
+    defaults:
+      run:
+        shell: bash
+        working-directory: frontend
+    env:
+      CI: '1'
+      PLAYWRIGHT_ENABLE_FIREFOX: '1'
+      PLAYWRIGHT_ENABLE_WEBKIT: '1'
+    steps:
+      - name: Require a valid change classification
+        working-directory: .
+        env:
+          SCOPE_RESULT: ${{ needs.changes.result }}
+          UI_CHANGED: ${{ needs.changes.outputs.ui }}
+        run: test "$SCOPE_RESULT" = success && test "$UI_CHANGED" = true
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        with:
+          fetch-depth: 0
+      - name: Trust the mounted checkout for Git-based content generation
+        working-directory: .
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      - name: Align the container home ownership for Firefox
+        working-directory: .
+        # GitHub mounts a pwuser-owned home, while this container runs as root.
+        run: chown "$(id -u):$(id -g)" "$HOME"
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - name: Build one production candidate and inline SSR reference
+        id: build
+        run: npm run build:ui-test
+      - name: Compare current UI with reviewed screenshots
+        id: visual
+        env:
+          UPDATE_BASELINES: ${{ github.event_name == 'workflow_dispatch' && inputs.update_baselines }}
+        run: |
+          if [ "$UPDATE_BASELINES" = true ]; then
+            npm run test:e2e:ui:update
+          else
+            npm run test:e2e:ui -- --update-snapshots=none
+          fi
+      - name: Upload visual comparison evidence
+        if: ${{ !cancelled() && steps.visual.outcome != 'skipped' }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: ui-visual-evidence
+          path: |
+            frontend/playwright-report/
+            frontend/test-results/
+          retention-days: 7
+      - name: Upload refreshed Linux references for review
+        if: ${{ !cancelled() && github.event_name == 'workflow_dispatch' && inputs.update_baselines && steps.visual.outcome == 'success' }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: ui-visual-linux-baselines
+          path: frontend/e2e/ui-visual.spec.ts-snapshots/*-linux.png
+          if-no-files-found: error
+          retention-days: 7
+      - name: Check SSR styles and keyboard controls in all browsers
+        id: controls
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: npx playwright test --config=playwright.ssr-styles.config.ts --project=chromium --project=firefox --project=webkit --workers=2
+      - name: Upload control test evidence
+        if: ${{ !cancelled() && steps.controls.outcome != 'skipped' }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: ui-controls-evidence
+          path: |
+            frontend/playwright-report/
+            frontend/test-results/
+          retention-days: 7

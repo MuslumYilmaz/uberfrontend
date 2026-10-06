@@ -23,6 +23,12 @@ Load this for verification strategy, CI, regression risk, or test-quality work.
 - `frontend/e2e/**`
 - `.github/workflows/**`
 
+## UI and CI scope
+
+- `UI Regression` compares the current production UI with reviewed Linux screenshots and checks SSR styles/keyboard controls using one build.
+- UI and Interview checks use `scripts/ci-change-scope.mjs`; retain shared frontend/CDN/content dependencies when changing its scope.
+- See `docs/references/ui-regression.md` for coverage, intentional screenshot updates, and runtime requirements.
+
 ## Deep reference
 - `docs/references/trusted-vibe-coding.md`
 - `docs/audits/test-quality-audit.md`

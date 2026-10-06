@@ -10,6 +10,7 @@ This project uses repo-tracked checks first, then external enforcement after the
    - `Backend Verify`
    - `Frontend Unit Verify`
    - `Playwright Critical`
+   - `UI Regression`
    - `Interview Cross-browser Gate`
    - `Full-stack Smoke`
    - `SEO Prerender Guard`
@@ -17,7 +18,7 @@ This project uses repo-tracked checks first, then external enforcement after the
    - `Dependency Audit`
    - `Secret Scan`
    - `CodeQL Analyze`
-4. Review the diff for generated files, dependency lockfile changes, security allowlist changes, and production env changes.
+4. Review the diff for generated files, dependency lockfile changes, security allowlist changes, production env changes, and intentional UI screenshot updates. See [UI regression](ui-regression.md) for baseline review and renewal.
 5. Merge only after the required checks are green or the emergency bypass checklist below is satisfied.
 6. Promote production manually from the protected production environment.
 

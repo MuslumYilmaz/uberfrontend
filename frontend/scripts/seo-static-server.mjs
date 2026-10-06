@@ -147,10 +147,14 @@ export async function startSeoStaticServer({
       return;
     }
 
-    // Targeted CSR fallback only for private/app routes.
+    // Targeted CSR fallback only for private/app routes. The prerendered home
+    // index contains its own header and hydration state, which cannot be reused
+    // for another route without leaving stale marketing markup in the app.
     if (shouldRewriteToIndex(pathname)) {
-      const indexHtml = path.join(root, 'index.html');
-      if (existsFile(indexHtml)) {
+      const indexHtml = ['index.csr.html', 'index.html']
+        .map((filename) => path.join(root, filename))
+        .find(existsFile);
+      if (indexHtml) {
         sendFile(res, indexHtml, 200);
         return;
       }
@@ -164,10 +168,11 @@ export async function startSeoStaticServer({
     server.listen(port, host, () => resolve(null));
   });
 
+  const boundPort = server.address().port;
   return {
     host,
-    port,
-    baseUrl: `http://${host}:${port}`,
+    port: boundPort,
+    baseUrl: `http://${host}:${boundPort}`,
     close: () =>
       new Promise((resolve) => {
         server.close(() => resolve(null));
@@ -176,13 +181,16 @@ export async function startSeoStaticServer({
 }
 
 export function isNonNavigationalLink(rawUrl) {
-  const url = String(rawUrl || '').trim().toLowerCase();
-  return (
-    url.startsWith('#')
-    || url.startsWith('mailto:')
-    || url.startsWith('tel:')
-    || url.startsWith('javascript:')
-  );
+  const url = String(rawUrl || '').trim();
+  if (!url) return false;
+  if (url.startsWith('#')) return true;
+  try {
+    // Resolve relative paths as HTTP navigation and skip every other scheme.
+    const { protocol } = new URL(url, 'https://seo.invalid/');
+    return protocol !== 'http:' && protocol !== 'https:';
+  } catch {
+    return false;
+  }
 }
 
 export function isInternalHttpLink(rawUrl, baseUrl) {

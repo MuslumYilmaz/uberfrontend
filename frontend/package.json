@@ -102,13 +102,16 @@
     "metrics:design-system": "node scripts/design-system-metrics.mjs",
     "perf:contract": "node scripts/perf-contract.mjs",
     "perf:contract:strict": "node scripts/perf-contract.mjs --strict",
-    "test:e2e:upgrade-visual": "PLAYWRIGHT_WEB_SERVER=1 PLAYWRIGHT_REUSE_SERVER=0 PLAYWRIGHT_PORT=4242 playwright test e2e/upgrade-visual.spec.ts --project=chromium --workers=3 --retries=0",
+    "test:e2e:upgrade-visual": "npm run test:e2e:ui --",
     "optimize:ssr-styles": "node scripts/extract-prime-ssr-styles.mjs",
     "test:ssr-styles": "node --test scripts/extract-prime-ssr-styles.test.mjs",
     "postbuild:prod": "npm run optimize:ssr-styles",
     "gen:seo": "node scripts/ensure-seo-history.mjs && node scripts/generate-sitemap.mjs",
     "check:seo-dates": "node scripts/generate-sitemap.mjs --check",
-    "test:seo-dates": "node --test scripts/ensure-seo-history.test.mjs scripts/seo-content-*.test.mjs scripts/generate-sitemap.test.mjs scripts/seo-date-parity.test.mjs scripts/seo-sitemap-date-contract.test.mjs scripts/gen-data-version.test.mjs"
+    "test:seo-dates": "node --test scripts/ensure-seo-history.test.mjs scripts/seo-content-*.test.mjs scripts/generate-sitemap.test.mjs scripts/seo-date-parity.test.mjs scripts/seo-sitemap-date-contract.test.mjs scripts/gen-data-version.test.mjs",
+    "test:e2e:ui": "playwright test --config=playwright.ui-visual.config.ts",
+    "test:e2e:ui:update": "npm run test:e2e:ui -- --update-snapshots=all",
+    "build:ui-test": "node --test scripts/seo-static-server.test.mjs && npm run test:ssr-styles && npm run gen:data && ng build --configuration production && node scripts/prepare-ui-build.mjs && npm run optimize:ssr-styles"
   },
   "private": true,
   "dependencies": {

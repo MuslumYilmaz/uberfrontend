@@ -959,10 +959,10 @@ function assertVercelInterviewRouteControls() {
       .filter(({ rule }) => rule?.source === source);
     if (
       rewriteMatches.length !== 1
-      || rewriteMatches[0].rule?.destination !== '/index.html'
+      || rewriteMatches[0].rule?.destination !== '/index.csr.html'
       || (fallbackIndex >= 0 && rewriteMatches[0].index > fallbackIndex)
     ) {
-      throw new Error(`${source} must rewrite to /index.html before the 404 fallback.`);
+      throw new Error(`${source} must rewrite to /index.csr.html before the 404 fallback.`);
     }
   });
 }

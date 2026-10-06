@@ -190,6 +190,49 @@ describe('CodingDetailComponent', () => {
     document.body.style.overflow = '';
   });
 
+  it('creates a prep analytics ID from browser entropy and reuses it for the session', () => {
+    const component = TestBed.createComponent(CodingDetailComponent).componentInstance as any;
+    const random = spyOn(crypto, 'getRandomValues').and.callFake((bytes: any) => {
+      bytes.fill(15);
+      return bytes;
+    });
+
+    const id = component.resolvePrepAnalyticsSessionId();
+
+    expect(id).toBe(`prep_${'0f'.repeat(16)}`);
+    expect(sessionStorage.getItem('fa:prep:session-id:v1')).toBe(id);
+    expect(component.resolvePrepAnalyticsSessionId()).toBe(id);
+    expect(random).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps prep analytics safe during SSR without accessing browser storage or entropy', () => {
+    const component = TestBed.createComponent(CodingDetailComponent).componentInstance as any;
+    component.isBrowser = false;
+    const storage = spyOn(sessionStorage, 'getItem').and.throwError('browser storage unavailable');
+    const random = spyOn(crypto, 'getRandomValues').and.throwError('browser crypto unavailable');
+
+    expect(component.resolvePrepAnalyticsSessionId()).toBe('ssr');
+    expect(storage).not.toHaveBeenCalled();
+    expect(random).not.toHaveBeenCalled();
+  });
+
+  it('uses the non-identifying analytics fallback when browser entropy is unavailable', () => {
+    const component = TestBed.createComponent(CodingDetailComponent).componentInstance as any;
+    spyOn(crypto, 'getRandomValues').and.throwError('entropy unavailable');
+
+    expect(component.resolvePrepAnalyticsSessionId()).toBe('browser');
+    expect(sessionStorage.getItem('fa:prep:session-id:v1')).toBeNull();
+  });
+
+  it('uses the non-identifying analytics fallback when session storage is blocked', () => {
+    const component = TestBed.createComponent(CodingDetailComponent).componentInstance as any;
+    spyOn(sessionStorage, 'getItem').and.throwError('storage denied');
+    const random = spyOn(crypto, 'getRandomValues');
+
+    expect(component.resolvePrepAnalyticsSessionId()).toBe('browser');
+    expect(random).not.toHaveBeenCalled();
+  });
+
   for (const kind of ['coding', 'debug'] as const) {
     it(`matches ${kind} footer hrefs to practice navigation and retains return state`, () => {
       const component = TestBed.createComponent(CodingDetailComponent).componentInstance;
@@ -334,6 +377,8 @@ describe('CodingDetailComponent', () => {
     expect(description.querySelector('pre > code')?.textContent).toContain("await adopted.promise; // 'ok'");
     expect(solution.hidden).toBeTrue();
     expect(solution.textContent).toContain('Mental model:');
+    expect(solution.querySelector('pre > code')?.textContent).toContain('function createDeferred');
+    expect(solution.querySelector('app-monaco-editor')).toBeNull();
     expect(host.querySelector('[data-testid="coding-mobile-notice"]')).not.toBeNull();
     expect(host.querySelector('[data-testid="coding-workspace-panel"]')).toBeNull();
     expect(host.querySelector('[data-testid="coding-description-splitter"]')).toBeNull();
@@ -377,6 +422,12 @@ describe('CodingDetailComponent', () => {
     spyOn(component as any, 'resolveSolutionAsset').and.resolveTo({ files: {}, initialPath: '' });
     fixture.detectChanges();
     await fixture.whenStable();
+    fixture.detectChanges();
+    const closedSolution = fixture.nativeElement.querySelector('[data-testid="coding-solution-panel"]') as HTMLElement;
+    expect(closedSolution.hidden).toBeTrue();
+    expect(closedSolution.querySelector('[data-solution-language="html"] code')?.textContent).toContain('<nav');
+    expect(closedSolution.querySelector('[data-solution-language="css"] code')?.textContent).toContain('flex-wrap');
+    expect(closedSolution.querySelector('app-monaco-editor')).toBeNull();
     component.onSolutionTabClick();
     fixture.detectChanges();
 
@@ -881,6 +932,195 @@ describe('CodingDetailComponent', () => {
     expect(component.assessedSkillChips()).toEqual(['React state/effects', 'Debounce']);
     expect(fixture.nativeElement.querySelector('[data-testid="coding-interview-hero"]')).not.toBeNull();
     expect(fixture.nativeElement.querySelector('[data-testid="coding-start-coding"]')).toBeNull();
+  });
+
+  it('keeps every JavaScript and TypeScript solution in the closed desktop panel without mounting solution editors', async () => {
+    spyOnProperty(window, 'innerWidth', 'get').and.returnValue(1366);
+    const base = makeDeferredPromiseQuestion();
+    const approaches = [
+      {
+        title: 'Capture controls',
+        codeJs: 'export function createDeferred() { let resolve; const promise = new Promise(ok => { resolve = ok; }); return { promise, resolve }; }',
+        codeTs: 'export function createDeferred<T>() { let resolve!: (value: T) => void; const promise = new Promise<T>(ok => { resolve = ok; }); return { promise, resolve }; }',
+      },
+      {
+        title: 'Use native resolvers',
+        codeJs: 'export const createDeferred = () => Promise.withResolvers();',
+        codeTs: 'export const createDeferred = <T>() => Promise.withResolvers<T>();',
+      },
+    ];
+    const question = { ...base, solutionBlock: { ...base.solutionBlock, approaches } };
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    component.questionId = question.id;
+    component.questionTech = 'javascript';
+    component.disablePersistence = true;
+    component.hideFooterBar = true;
+    questionService.loadQuestions.and.returnValue(of([question] as any));
+    spyOn(component as any, 'resolveSolutionAsset').and.resolveTo({ files: {}, initialPath: '' });
+
+    fixture.detectChanges();
+    await fixture.whenStable();
+    component.liteEditors.set(false);
+    fixture.detectChanges();
+
+    const solution = fixture.nativeElement.querySelector('[data-testid="coding-solution-panel"]') as HTMLElement;
+    const codeText = (language: string) => Array.from(solution.querySelectorAll(`[data-solution-language="${language}"] code`))
+      .map((code) => code.textContent);
+    expect(component.activePanel()).toBe(0);
+    expect(solution.hidden).toBeTrue();
+    expect(codeText('js')).toEqual(approaches.map((approach) => approach.codeJs));
+    expect(codeText('ts')).toEqual(approaches.map((approach) => approach.codeTs));
+    expect(solution.querySelector('app-monaco-editor')).toBeNull();
+    expect(analytics.track.calls.allArgs().filter(([name]) => name === 'view_solution')).toEqual([]);
+
+    component.currentJsLang.set('ts');
+    fixture.detectChanges();
+    expect(Array.from(solution.querySelectorAll<HTMLElement>('[data-solution-language="js"]')).every((block) => block.hidden)).toBeTrue();
+    expect(Array.from(solution.querySelectorAll<HTMLElement>('[data-solution-language="ts"]')).every((block) => !block.hidden)).toBeTrue();
+
+    component.onSolutionTabClick();
+    fixture.detectChanges();
+    expect(solution.hidden).toBeFalse();
+    expect(solution.querySelectorAll('app-monaco-editor').length).toBe(approaches.length);
+    expect(codeText('js')).toEqual(approaches.map((approach) => approach.codeJs));
+    expect(codeText('ts')).toEqual(approaches.map((approach) => approach.codeTs));
+    expect(Array.from(solution.querySelectorAll<HTMLElement>('pre')).every((block) => block.hidden)).toBeTrue();
+
+    component.activePanel.set(0);
+    fixture.detectChanges();
+    expect(solution.hidden).toBeTrue();
+    expect(solution.querySelector('app-monaco-editor')).toBeNull();
+    component.onSolutionTabClick();
+    fixture.detectChanges();
+    expect(analytics.track.calls.allArgs().filter(([name]) => name === 'view_solution').length).toBe(1);
+  });
+
+  it('keeps all framework solution files in the closed panel even when there are no inline approaches', async () => {
+    spyOnProperty(window, 'innerWidth', 'get').and.returnValue(390);
+    const files = {
+      'src/App.tsx': 'export default function App() { return <output>Count: 0</output>; }',
+      'src/styles.css': 'output { font-variant-numeric: tabular-nums; }',
+    };
+    const question = {
+      id: 'react-free-solution-files', title: 'Counter files', technology: 'react', type: 'coding',
+      access: 'free', difficulty: 'easy', tags: ['react'], description: 'Build a counter.',
+      solutionBlock: { overview: 'Keep count state local.', approaches: [] },
+    } as any;
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    component.questionId = question.id;
+    component.questionTech = 'react';
+    questionService.loadQuestions.and.returnValue(of([question]));
+    spyOn(component as any, 'resolveSolutionAsset').and.resolveTo({ files, initialPath: 'src/App.tsx' });
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const solution = fixture.nativeElement.querySelector('[data-testid="coding-solution-panel"]') as HTMLElement;
+    expect(solution.hidden).toBeTrue();
+    for (const [path, code] of Object.entries(files)) {
+      expect(solution.querySelector(`[data-solution-file="${path}"] code`)?.textContent).toBe(code);
+    }
+    expect(solution.querySelectorAll('[data-solution-file]').length).toBe(2);
+    expect(solution.querySelector('app-monaco-editor')).toBeNull();
+
+    component.onSolutionTabClick();
+    component.openSolutionFile('src/styles.css');
+    fixture.detectChanges();
+    expect(solution.hidden).toBeFalse();
+    expect((solution.querySelector('[data-solution-file="src/App.tsx"]') as HTMLElement).hidden).toBeTrue();
+    expect((solution.querySelector('[data-solution-file="src/styles.css"]') as HTMLElement).hidden).toBeFalse();
+    expect(solution.querySelectorAll('[data-solution-file]').length).toBe(2);
+    expect(solution.querySelector('app-monaco-editor')).toBeNull();
+  });
+
+  it('keeps course solution confirmation and cancellation read-only and tracks only the confirmed reveal', async () => {
+    spyOnProperty(window, 'innerWidth', 'get').and.returnValue(390);
+    const base = makeDeferredPromiseQuestion();
+    const question = {
+      ...base,
+      solutionBlock: { ...base.solutionBlock, approaches: [{ title: 'Native resolvers', codeJs: 'export const createDeferred = () => Promise.withResolvers();' }] },
+    };
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    component.questionId = question.id;
+    component.questionTech = 'javascript';
+    questionService.loadQuestions.and.returnValue(of([question] as any));
+    spyOn(component as any, 'resolveSolutionAsset').and.resolveTo({ files: {}, initialPath: '' });
+    fixture.detectChanges();
+    await fixture.whenStable();
+    component.isCourseContext.set(true);
+    const skipKey = (component as any).SOLUTION_WARN_SKIP_KEY;
+    const readStorage = localStorage.getItem.bind(localStorage);
+    spyOn(localStorage, 'getItem').and.callFake((key: string) => key === skipKey ? null : readStorage(key));
+    const loadSolution = spyOn(component, 'loadSolutionCode');
+    const loadApproach = spyOn(component, 'loadApproach');
+    const applySolution = jasmine.createSpy('applySolution');
+    component.jsPanel = { applySolution } as any;
+    component.editorContent.set('user draft stays intact');
+    fixture.detectChanges();
+    const host = fixture.nativeElement as HTMLElement;
+    const solution = host.querySelector('[data-testid="coding-solution-panel"]') as HTMLElement;
+    expect(solution.hidden).toBeTrue();
+    expect(solution.querySelector('pre code')?.textContent).toContain('Promise.withResolvers');
+
+    (host.querySelector('[data-testid="coding-solution-tab"]') as HTMLButtonElement).click();
+    fixture.detectChanges();
+    expect(host.querySelector('[data-testid="solution-warning"]')).not.toBeNull();
+    expect(analytics.track.calls.allArgs().filter(([name]) => name === 'view_solution')).toEqual([]);
+    (host.querySelector('[data-testid="solution-warning-cancel"]') as HTMLButtonElement).click();
+    fixture.detectChanges();
+    expect(component.activePanel()).toBe(0);
+    expect(solution.hidden).toBeTrue();
+    expect(analytics.track.calls.allArgs().filter(([name]) => name === 'view_solution')).toEqual([]);
+
+    (host.querySelector('[data-testid="coding-solution-tab"]') as HTMLButtonElement).click();
+    fixture.detectChanges();
+    (host.querySelector('[data-testid="solution-warning-view"]') as HTMLButtonElement).click();
+    fixture.detectChanges();
+    expect(host.querySelector('[data-testid="solution-warning"]')).toBeNull();
+    expect(solution.hidden).toBeFalse();
+    expect(solution.querySelector('pre code')?.textContent).toContain('Promise.withResolvers');
+    component.confirmSolutionReveal();
+    expect(analytics.track.calls.allArgs().filter(([name]) => name === 'view_solution').length).toBe(1);
+    expect(component.editorContent()).toBe('user draft stays intact');
+    expect(loadSolution).not.toHaveBeenCalled();
+    expect(loadApproach).not.toHaveBeenCalled();
+    expect(applySolution).not.toHaveBeenCalled();
+  });
+
+  it('does not expose normal solution code while a requested pressure scenario is still loading', async () => {
+    spyOnProperty(window, 'innerWidth', 'get').and.returnValue(390);
+    const question = {
+      id: 'react-counter', title: 'Counter', technology: 'react', type: 'coding',
+      access: 'free', difficulty: 'easy', tags: ['react'], description: 'Build a counter.',
+      pressureModeAsset: 'assets/questions/pressure-modes/counter.v1.json',
+      solutionBlock: { overview: 'Normal solution overview', approaches: [] },
+    } as any;
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    component.questionId = question.id;
+    component.questionTech = 'react';
+    questionService.loadQuestions.and.returnValue(of([question]));
+    spyOn(component as any, 'resolveSolutionAsset').and.resolveTo({
+      files: { 'src/App.tsx': 'export const normalSolutionSentinel = 42;' }, initialPath: 'src/App.tsx',
+    });
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+    const solution = fixture.nativeElement.querySelector('[data-testid="coding-solution-panel"]') as HTMLElement;
+    expect(solution.textContent).toContain('normalSolutionSentinel');
+
+    component.pressureRequested.set(true);
+    component.pressureLoading.set(true);
+    component.pressureScenario.set(null);
+    fixture.detectChanges();
+    expect(component.pressureActive()).toBeFalse();
+    expect(component.activeSolutionFilesMap()).toEqual({});
+    expect(solution.textContent).not.toContain('normalSolutionSentinel');
+    expect(solution.textContent).not.toContain('Normal solution overview');
+    expect(solution.querySelector('pre code, app-monaco-editor')).toBeNull();
   });
 
   it('tracks solution reveal once when the solution body is shown', () => {
@@ -1781,6 +2021,83 @@ describe('CodingDetailComponent', () => {
     expect(openedSolutionText.indexOf('Preparing for interviews')).toBeLessThan(openedSolutionText.indexOf('Report issue'));
   });
 
+  for (const browser of [false, true]) {
+    it(`seeds resolver solution files synchronously ${browser ? 'during hydration without fetching again' : 'before the server-only return'}`, async () => {
+      const fixture = TestBed.createComponent(CodingDetailComponent);
+      const component = fixture.componentInstance;
+      (component as any).isBrowser = browser;
+      const question = {
+        id: 'react-snapshot', title: 'Snapshot counter', technology: 'react', type: 'coding',
+        access: 'free', difficulty: 'easy', tags: ['react'], description: 'Build a counter.',
+        solutionAsset: 'assets/sb/react/solution/react-snapshot.json',
+      } as any;
+      const solutionSnapshot = {
+        files: {
+          'src/App.tsx': 'export default function App() { return <output>Snapshot counter</output>; }',
+          'src/styles.css': 'output { display: block; }',
+        },
+        initialPath: 'src/App.tsx',
+      };
+      const resolveAsset = spyOn(component as any, 'resolveSolutionAsset').and.resolveTo({ files: {}, initialPath: '' });
+
+      (component as any).applyResolved({
+        tech: 'react', kind: 'coding', id: question.id, list: [question], question, solutionSnapshot,
+      });
+
+      expect(component.loadState()).toBe('loaded');
+      expect(component.solutionFilesMap()).toEqual(solutionSnapshot.files);
+      expect(component.solutionOpenPath()).toBe(solutionSnapshot.initialPath);
+      await (component as any).loadAuthorizedSolutionAsset(question, (component as any).loadQuestionSeq);
+      expect(resolveAsset).not.toHaveBeenCalled();
+      expect(component.solutionFilesMap()).toEqual(solutionSnapshot.files);
+    });
+  }
+
+  it('falls back to the browser asset loader when the resolver has no public solution snapshot', async () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    const question = {
+      id: 'react-snapshot-missing', title: 'Counter', technology: 'react', type: 'coding',
+      access: 'free', difficulty: 'easy', tags: ['react'], description: 'Build a counter.',
+      solutionAsset: 'assets/sb/react/solution/react-snapshot-missing.json',
+    } as any;
+    const asset = deferred<{ files: Record<string, string>; initialPath: string }>();
+    const resolveAsset = spyOn(component as any, 'resolveSolutionAsset').and.returnValue(asset.promise);
+
+    (component as any).applyResolved({ tech: 'react', kind: 'coding', id: question.id, list: [question], question });
+    expect(component.solutionFilesMap()).toEqual({});
+    expect(resolveAsset).toHaveBeenCalledOnceWith(question);
+    asset.resolve({ files: { 'src/App.tsx': 'export const browserFallback = true;' }, initialPath: 'src/App.tsx' });
+    await (component as any).loadAuthorizedSolutionAsset(question, (component as any).loadQuestionSeq);
+
+    expect(component.solutionFilesMap()['src/App.tsx']).toBe('export const browserFallback = true;');
+    expect(component.solutionOpenPath()).toBe('src/App.tsx');
+    expect(resolveAsset).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not seed normal framework files on a pressure route before the scenario resolves', () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    (component as any).isBrowser = false;
+    spyOn((component as any).route.snapshot.queryParamMap, 'get').and.callFake((key: string) => key === 'mode' ? 'pressure' : null);
+    const question = {
+      id: 'react-counter', title: 'Counter', technology: 'react', type: 'coding',
+      access: 'free', difficulty: 'easy', tags: ['react'], description: 'Build a counter.',
+      pressureModeAsset: 'assets/questions/pressure-modes/counter.v1.json',
+    } as any;
+    (component as any).applyResolved({
+      tech: 'react', kind: 'coding', id: question.id, list: [question], question,
+      solutionSnapshot: { files: { 'src/App.tsx': 'export const normalSolutionSentinel = true;' }, initialPath: 'src/App.tsx' },
+    });
+
+    expect(component.pressureRequested()).toBeTrue();
+    expect(component.pressureActive()).toBeFalse();
+    expect(component.solutionFilesMap()).toEqual({});
+    expect(component.activeSolutionFilesMap()).toEqual({});
+    expect(component.solutionOpenPath()).toBe('');
+    expect(pressureModes.load).not.toHaveBeenCalled();
+  });
+
   it('ignores stale solution assets from an older question load', async () => {
     const fixture = TestBed.createComponent(CodingDetailComponent);
     const component = fixture.componentInstance;
@@ -1866,7 +2183,9 @@ describe('CodingDetailComponent', () => {
     (component as any).dataLoaded = true;
     component.allQuestions = [question];
 
-    await (component as any).loadQuestion(question.id);
+    await (component as any).loadQuestion(question.id, {
+      files: { 'src/App.tsx': 'export const protectedSnapshot = true;' }, initialPath: 'src/App.tsx',
+    });
 
     expect(component.locked()).toBeTrue();
     component.lockedPreview();

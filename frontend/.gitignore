@@ -44,7 +44,7 @@ testem.log
 /playwright-report/
 /test-results/
 /e2e/*-snapshots/
-!/e2e/upgrade-visual.spec.ts-snapshots/
+!/e2e/ui-visual.spec.ts-snapshots/
 !/e2e/incident-visual.spec.ts-snapshots/
 
 # System files
