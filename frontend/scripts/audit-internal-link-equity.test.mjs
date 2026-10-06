@@ -222,8 +222,26 @@ test('repository robots allows clean/parameterized previews without exposing pri
     assert.equal(allows(`/${family}/example/preview?entry=x&v=2`), true);
     for (const suffix of ['', '/preview-extra', '/preview/child']) assert.equal(allows(`/${family}/example${suffix}`), false);
   }
-  assert.equal(allows('/auth/login'), false);
   assert.equal(allows('/dashboard'), false);
+});
+
+test('repository robots lets crawlers read login/signup noindex without opening other auth or private paths', () => {
+  const allows = createRobotsPolicy(fs.readFileSync(path.join(frontendRoot, 'src', 'robots.txt'), 'utf8'));
+  for (const route of ['/auth/login', '/auth/signup']) {
+    for (const suffix of ['', '?src=showcase_hero', '?redirectTo=%2Fdashboard&src=pricing']) {
+      assert.equal(allows(`${route}${suffix}`), true, `${route}${suffix}`);
+    }
+    for (const suffix of ['-extra', '/child', '/child?src=pricing']) {
+      assert.equal(allows(`${route}${suffix}`), false, `${route}${suffix}`);
+    }
+  }
+  for (const route of [
+    '/auth/callback?code=example', '/auth/forgot-password', '/auth/reset-password',
+    '/dashboard', '/profile?tab=activity', '/admin/users', '/tracks/foundations-30d',
+    '/companies/google',
+  ]) {
+    assert.equal(allows(route), false, route);
+  }
 });
 
 test('robots combines matching groups, prefers Allow ties and respects specific agent policy', () => {
