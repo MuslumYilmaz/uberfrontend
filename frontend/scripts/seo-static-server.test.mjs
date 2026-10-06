@@ -3,10 +3,54 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
-import { shouldRewriteToIndex, startSeoStaticServer } from './seo-static-server.mjs';
+import { isNonNavigationalLink, shouldRewriteToIndex, startSeoStaticServer } from './seo-static-server.mjs';
 
 const marketingHtml = '<app-root ngh="0"><app-marketing-header></app-marketing-header></app-root>';
 const csrHtml = '<app-root></app-root><script src="main.js"></script>';
+
+test('link checks skip fragments and all non-HTTP schemes, including obfuscated executable URLs', () => {
+  for (const url of [
+    '#section',
+    'mailto:support@example.com',
+    'tel:+1234567890',
+    'javascript:alert(1)',
+    'data:text/html,<script>alert(1)</script>',
+    'vbscript:msgbox(1)',
+    'blob:https://frontendatlas.com/example',
+    'file:///tmp/index.html',
+    'custom+app://open',
+    '  JaVaScRiPt:alert(1)  ',
+    ' DATA:text/html,example ',
+    ' VBScript:msgbox(1) ',
+    'java\tscript:alert(1)',
+    'da\nta:text/html,example',
+    'vb\rscript:msgbox(1)',
+  ]) {
+    assert.equal(isNonNavigationalLink(url), true, JSON.stringify(url));
+  }
+});
+
+test('link checks preserve HTTP navigation, relative paths, and empty or malformed input handling', () => {
+  for (const url of [
+    'https://frontendatlas.com/interview',
+    ' HTTP://frontendatlas.com/interview ',
+    '//frontendatlas.com/interview',
+    '/interview',
+    './interview',
+    '../interview',
+    'interview?mode=practice#question',
+    '?mode=practice',
+    '/examples/javascript:example',
+    'https://frontendatlas.com/?example=javascript:alert(1)',
+    '',
+    '   ',
+    undefined,
+    null,
+    'http://[',
+  ]) {
+    assert.equal(isNonNavigationalLink(url), false, JSON.stringify(url));
+  }
+});
 
 async function serveBuild(t, files) {
   const directory = await fs.mkdtemp(path.join(os.tmpdir(), 'seo-static-server-'));

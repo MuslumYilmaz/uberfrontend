@@ -190,6 +190,49 @@ describe('CodingDetailComponent', () => {
     document.body.style.overflow = '';
   });
 
+  it('creates a prep analytics ID from browser entropy and reuses it for the session', () => {
+    const component = TestBed.createComponent(CodingDetailComponent).componentInstance as any;
+    const random = spyOn(crypto, 'getRandomValues').and.callFake((bytes: any) => {
+      bytes.fill(15);
+      return bytes;
+    });
+
+    const id = component.resolvePrepAnalyticsSessionId();
+
+    expect(id).toBe(`prep_${'0f'.repeat(16)}`);
+    expect(sessionStorage.getItem('fa:prep:session-id:v1')).toBe(id);
+    expect(component.resolvePrepAnalyticsSessionId()).toBe(id);
+    expect(random).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps prep analytics safe during SSR without accessing browser storage or entropy', () => {
+    const component = TestBed.createComponent(CodingDetailComponent).componentInstance as any;
+    component.isBrowser = false;
+    const storage = spyOn(sessionStorage, 'getItem').and.throwError('browser storage unavailable');
+    const random = spyOn(crypto, 'getRandomValues').and.throwError('browser crypto unavailable');
+
+    expect(component.resolvePrepAnalyticsSessionId()).toBe('ssr');
+    expect(storage).not.toHaveBeenCalled();
+    expect(random).not.toHaveBeenCalled();
+  });
+
+  it('uses the non-identifying analytics fallback when browser entropy is unavailable', () => {
+    const component = TestBed.createComponent(CodingDetailComponent).componentInstance as any;
+    spyOn(crypto, 'getRandomValues').and.throwError('entropy unavailable');
+
+    expect(component.resolvePrepAnalyticsSessionId()).toBe('browser');
+    expect(sessionStorage.getItem('fa:prep:session-id:v1')).toBeNull();
+  });
+
+  it('uses the non-identifying analytics fallback when session storage is blocked', () => {
+    const component = TestBed.createComponent(CodingDetailComponent).componentInstance as any;
+    spyOn(sessionStorage, 'getItem').and.throwError('storage denied');
+    const random = spyOn(crypto, 'getRandomValues');
+
+    expect(component.resolvePrepAnalyticsSessionId()).toBe('browser');
+    expect(random).not.toHaveBeenCalled();
+  });
+
   for (const kind of ['coding', 'debug'] as const) {
     it(`matches ${kind} footer hrefs to practice navigation and retains return state`, () => {
       const component = TestBed.createComponent(CodingDetailComponent).componentInstance;

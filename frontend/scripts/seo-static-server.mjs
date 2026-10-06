@@ -181,13 +181,16 @@ export async function startSeoStaticServer({
 }
 
 export function isNonNavigationalLink(rawUrl) {
-  const url = String(rawUrl || '').trim().toLowerCase();
-  return (
-    url.startsWith('#')
-    || url.startsWith('mailto:')
-    || url.startsWith('tel:')
-    || url.startsWith('javascript:')
-  );
+  const url = String(rawUrl || '').trim();
+  if (!url) return false;
+  if (url.startsWith('#')) return true;
+  try {
+    // Resolve relative paths as HTTP navigation and skip every other scheme.
+    const { protocol } = new URL(url, 'https://seo.invalid/');
+    return protocol !== 'http:' && protocol !== 'https:';
+  } catch {
+    return false;
+  }
 }
 
 export function isInternalHttpLink(rawUrl, baseUrl) {

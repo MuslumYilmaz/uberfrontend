@@ -2705,7 +2705,8 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     try {
       const existing = sessionStorage.getItem(this.prepAnalyticsSessionKey);
       if (existing) return existing;
-      const next = `prep_${Math.random().toString(36).slice(2, 10)}`;
+      const bytes = crypto.getRandomValues(new Uint8Array(16));
+      const next = `prep_${Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('')}`;
       sessionStorage.setItem(this.prepAnalyticsSessionKey, next);
       return next;
     } catch {
