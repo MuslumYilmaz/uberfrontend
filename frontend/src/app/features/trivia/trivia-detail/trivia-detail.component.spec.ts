@@ -2351,10 +2351,37 @@ describe('TriviaDetailComponent', () => {
     component.tech = 'html';
     expect(component.interviewQuestionsHubRoute()).toEqual(['/html/interview-questions']);
     expect(component.interviewQuestionsHubLabel()).toBe('HTML interview questions');
+    expect(component.isHtmlTech()).toBeTrue();
+    expect(component.isHtmlCssTech()).toBeTrue();
 
     component.tech = 'css';
     expect(component.interviewQuestionsHubRoute()).toEqual(['/css/interview-questions']);
     expect(component.interviewQuestionsHubLabel()).toBe('CSS interview questions');
+    expect(component.isHtmlTech()).toBeFalse();
+    expect(component.isHtmlCssTech()).toBeTrue();
+  });
+
+  it('keeps CSS trivia prep links on the CSS hub and reserves the combined hub CTA for HTML', async () => {
+    const fixture = await createLoadedFixture();
+    const component = fixture.componentInstance;
+    const prepLinks = () => Array.from(
+      fixture.nativeElement.querySelectorAll('.prep-bridge__links a'),
+    ) as HTMLAnchorElement[];
+    const hasPrepLink = (path: string) => prepLinks().some((link) =>
+      (link.getAttribute('href') || '').includes(path));
+
+    component.tech = 'css';
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('[data-testid="trivia-prep-entry"]')).toBeTruthy();
+    expect(hasPrepLink('/css/interview-questions')).toBeTrue();
+    expect(hasPrepLink('/html-css/interview-questions')).toBeFalse();
+
+    component.tech = 'html';
+    fixture.detectChanges();
+
+    expect(hasPrepLink('/html/interview-questions')).toBeTrue();
+    expect(hasPrepLink('/html-css/interview-questions')).toBeTrue();
   });
 
   it('shows report access issue action on locked trivia detail', async () => {
