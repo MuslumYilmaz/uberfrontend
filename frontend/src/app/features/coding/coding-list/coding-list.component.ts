@@ -1521,7 +1521,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
         url: canonical,
         name: 'Frontend Coding Challenges',
         description:
-          'Focused frontend coding challenges with real prompts, starter code, tests, solutions, and follow-up practice across JavaScript, React, Angular, Vue, HTML, and CSS.',
+          'Choose a challenge, write the solution in the browser, run tests, and review follow-up questions for JavaScript, React, Angular, Vue, HTML, or CSS.',
         inLanguage: 'en',
         about: [
           { '@type': 'Thing', name: 'frontend coding challenges' },

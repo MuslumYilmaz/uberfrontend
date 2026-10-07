@@ -138,10 +138,10 @@
       "hooks",
       "basics"
     ],
-    "updatedAt": "2026-04-09",
+    "updatedAt": "2026-10-07",
     "seo": {
-      "title": "Angular constructor vs ngOnInit vs ngAfterViewInit: when to use",
-      "description": "Use constructor for DI, ngOnInit for input-dependent init, and ngAfterViewInit for DOM or ViewChild work. Includes static ViewChild pitfalls, *ngIf edge cases, and render-hook follow-ups."
+      "title": "constructor vs ngOnInit vs ngAfterViewInit in Angular",
+      "description": "Use constructor for DI, ngOnInit for input-based setup, and ngAfterViewInit for DOM or default ViewChild access."
     }
   },
   {
@@ -5083,10 +5083,10 @@
       "dependency-injection",
       "basics"
     ],
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-10-07",
     "seo": {
-      "title": "Angular forRoot vs forChild: singleton duplication bugs, legacy modules, and migration context",
-      "description": "Use forRoot() for root-only providers and routing, and forChild() for feature routes. The high-value angle is avoiding singleton duplication bugs in legacy NgModule apps and knowing how standalone Angular changes the pattern."
+      "title": "Angular forRoot vs forChild: When to Use Each",
+      "description": "In legacy NgModule apps, call forRoot() once for root providers or routing; use forChild() in feature modules to avoid a second singleton."
     }
   },
   {
@@ -5618,10 +5618,10 @@
       "async",
       "basics"
     ],
-    "updatedAt": "2026-04-10",
+    "updatedAt": "2026-10-07",
     "seo": {
-      "title": "switchMap vs mergeMap vs concatMap vs exhaustMap: when to use?",
-      "description": "Use switchMap to cancel stale streams, mergeMap for parallel streams, concatMap for ordered queues, and exhaustMap to ignore triggers during active work."
+      "title": "switchMap vs mergeMap vs concatMap vs exhaustMap in Angular",
+      "description": "Use switchMap for latest-only work, mergeMap for parallel work, concatMap for ordered work, and exhaustMap to ignore repeat triggers."
     },
     "incidentCard": {
       "title": "Autocomplete Race Condition Check",

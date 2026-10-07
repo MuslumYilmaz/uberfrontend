@@ -114,7 +114,7 @@ test('rejects prior truncated comparison output even when social tags agree', ()
     {
       route: '/javascript/trivia/js-compare-two-objects',
       before: 'How to compare two objects in JavaScript: shallow vs',
-      complete: 'How to compare two objects in JavaScript: shallow vs deep vs JSON pitfalls',
+      complete: 'Compare Two Objects in JavaScript: Shallow vs Deep',
     },
   ];
   for (const { route, before, complete } of comparisons) {
@@ -156,6 +156,19 @@ test('rejects the shipped JavaScript and Angular debug description fallbacks', (
     assert(!auditSeoPages([page({ route, description, robots: 'noindex,follow' })]).failures.some((issue) => issue.code === 'genericDebugDescription'));
     assert(!auditSeoPages([page({ route, description, canonical: `${ORIGIN}/another-owner` })]).failures.some((issue) => issue.code === 'genericDebugDescription'));
   }
+});
+
+test('rejects the indexable generic tradeoff metadata fallback', () => {
+  const route = '/tradeoffs/context-vs-zustand-vs-redux';
+  const title = 'Frontend Tradeoff Battle for Interview Practice';
+  const description =
+    'Practice a frontend tradeoff interview question and learn how to compare options, defend a balanced choice, and explain the downsides clearly.';
+  assert(auditSeoPages([page({ route, title, description })]).failures
+    .some((issue) => issue.code === 'genericTradeoffFallback'));
+  assert(!auditSeoPages([page({ route, title, description, robots: 'noindex,follow' })]).failures
+    .some((issue) => issue.code === 'genericTradeoffFallback'));
+  assert(!auditSeoPages([page({ route, title, description, canonical: `${ORIGIN}/another-owner` })]).failures
+    .some((issue) => issue.code === 'genericTradeoffFallback'));
 });
 
 test('preserves document-wide legacy keyword contracts including JSON-LD keywords', () => {

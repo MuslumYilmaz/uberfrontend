@@ -147,9 +147,9 @@ describe('HTML/CSS query ownership route contracts', () => {
       techs: ['html', 'css'],
     });
     expect(htmlCssSeo).toEqual({
-      title: 'HTML and CSS Interview Questions: 65 UI Q&A',
+      title: 'HTML & CSS Interview Questions and Answers',
       description:
-        '65 joint HTML and CSS interview questions for frontend UI rounds: semantic markup, accessible forms, layout implementation, browser behavior, and code scenarios.',
+        'Expect semantic HTML, accessibility, forms, layout, browser behavior, responsive UI, and code scenarios in HTML/CSS interview rounds.',
       keywords: HTML_CSS_SEO_KEYWORDS,
     });
 
@@ -1813,9 +1813,9 @@ describe('InterviewQuestionsLandingComponent', () => {
       isMasterHub: true,
     };
     routeStub.snapshot.data.seo = {
-      title: 'Frontend Interview Questions and Answers',
+      title: 'Frontend Interview Questions & Answers: Practice by Topic',
       description:
-        'Frontend interview questions and answers for front end developers, beginner to advanced, with Essential 60, UI coding, machine coding, JavaScript, HTML, CSS, React, Angular, Vue, debugging, testing, accessibility, performance, and frontend system design.',
+        'Choose a framework or interview round, then practice coding, testing, debugging, UI implementation, and system design questions and answers.',
     };
     routeStub.snapshot.data.interviewQuestionsList = {
       techs: ['javascript', 'react', 'angular', 'vue', 'html', 'css'],
@@ -2003,9 +2003,9 @@ describe('InterviewQuestionsLandingComponent', () => {
       techs: ['html', 'css'],
     };
     routeStub.snapshot.data.seo = {
-      title: 'HTML and CSS Interview Questions: 65 UI Q&A',
+      title: 'HTML & CSS Interview Questions and Answers',
       description:
-        '65 joint HTML and CSS interview questions for frontend UI rounds: semantic markup, accessible forms, layout implementation, browser behavior, and code scenarios.',
+        'Expect semantic HTML, accessibility, forms, layout, browser behavior, responsive UI, and code scenarios in HTML/CSS interview rounds.',
       keywords: HTML_CSS_SEO_KEYWORDS,
     };
     routeStub.snapshot.data.interviewQuestionsList = {

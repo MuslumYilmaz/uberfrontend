@@ -33,14 +33,14 @@ function collectHtmlFiles(dir, out = []) {
 const criticalRouteContracts = [
   {
     route: '/',
-    title: 'Frontend Interview Prep Platform',
+    title: 'Frontend Interview Prep: Questions, Coding & System Design',
     h1: 'Practice frontend interviews',
     descriptionTerms: [
-      'frontend interviews',
-      'frontend interview preparation platform',
-      'guided study plan',
-      'frontend coding interviews',
-      'checks',
+      'study plan',
+      'coding',
+      'UI implementation',
+      'system design',
+      'behavioral questions',
     ],
     bodyTerms: [
       'frontend interview preparation platform',
@@ -52,15 +52,19 @@ const criticalRouteContracts = [
   },
   {
     route: '/coding',
-    title: 'Frontend Coding Challenges',
+    title: 'Frontend Coding Challenges for Interview Practice',
     h1: 'Frontend Coding Challenges',
     descriptionTerms: [
-      'frontend coding challenges',
-      'real prompts',
-      'starter code',
-      'tests',
-      'solution follow-ups',
-      'free to start',
+      'choose a challenge',
+      'solution in the browser',
+      'run tests',
+      'follow-up questions',
+      'JavaScript',
+      'React',
+      'Angular',
+      'Vue',
+      'HTML',
+      'CSS',
     ],
     bodyTerms: [
       'Frontend Coding Challenges',
@@ -76,9 +80,9 @@ const criticalRouteContracts = [
   },
   {
     route: '/interview-questions',
-    title: 'Frontend Interview Questions',
+    title: 'Frontend Interview Questions & Answers: Practice by Topic',
     h1: 'Frontend Interview Questions',
-    descriptionTerms: ['frontend interview questions', 'coding', 'system design'],
+    descriptionTerms: ['framework', 'interview round', 'coding', 'testing', 'debugging', 'UI implementation', 'system design', 'questions and answers'],
   },
   {
     route: '/machine-coding',
@@ -178,15 +182,15 @@ const criticalRouteContracts = [
   },
   {
     route: '/html-css/interview-questions',
-    title: 'HTML and CSS Interview Questions: 65 UI Q&A',
+    title: 'HTML & CSS Interview Questions and Answers',
     h1: 'HTML and CSS Interview Questions and Answers',
     descriptionTerms: [
-      'joint HTML and CSS interview questions',
-      'frontend UI rounds',
-      'semantic markup',
-      'accessible forms',
-      'layout implementation',
+      'semantic HTML',
+      'accessibility',
+      'forms',
+      'layout',
       'browser behavior',
+      'responsive UI',
       'code scenarios',
     ],
   },
@@ -414,6 +418,64 @@ const criticalRouteContracts = [
   },
 ];
 
+const PUBLISH_COPY_CONTRACTS = [
+  {
+    route: '/',
+    title: 'Frontend Interview Prep: Questions, Coding & System Design',
+    description: 'Start with a study plan, then practice coding, UI implementation, system design, and behavioral questions in one workflow.',
+  },
+  {
+    route: '/coding',
+    title: 'Frontend Coding Challenges for Interview Practice',
+    description: 'Choose a challenge, write the solution in the browser, run tests, and review follow-up questions for JavaScript, React, Angular, Vue, HTML, or CSS.',
+  },
+  {
+    route: '/interview-questions',
+    title: 'Frontend Interview Questions & Answers: Practice by Topic',
+    description: 'Choose a framework or interview round, then practice coding, testing, debugging, UI implementation, and system design questions and answers.',
+  },
+  {
+    route: '/html-css/interview-questions',
+    title: 'HTML & CSS Interview Questions and Answers',
+    description: 'Expect semantic HTML, accessibility, forms, layout, browser behavior, responsive UI, and code scenarios in HTML/CSS interview rounds.',
+  },
+  {
+    route: '/guides/interview-blueprint/intro',
+    title: 'Frontend Interview Prep Guide (2026): Roadmap & Rounds',
+    description: 'Start with core questions and coding, add system design and behavioral practice, then follow the 30-day roadmap.',
+  },
+  {
+    route: '/javascript/trivia/js-compare-two-objects',
+    title: 'Compare Two Objects in JavaScript: Shallow vs Deep',
+    description: 'Use === for the same reference, compare top-level keys for flat objects, and use deep equality for nested values; do not rely on JSON.stringify.',
+  },
+  {
+    route: '/angular/trivia/angular-lifecycle-constructor-oninit-afterviewinit-dom',
+    title: 'constructor vs ngOnInit vs ngAfterViewInit in Angular',
+    description: 'Use constructor for DI, ngOnInit for input-based setup, and ngAfterViewInit for DOM or default ViewChild access.',
+  },
+  {
+    route: '/html/trivia/html-href-attribute',
+    title: 'HTML href Attribute: Definition, Uses & Examples',
+    description: 'Use href to set where a link or linked resource points: an absolute or relative URL, a #fragment, an email address, or a file.',
+  },
+  {
+    route: '/angular/trivia/rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use',
+    title: 'switchMap vs mergeMap vs concatMap vs exhaustMap in Angular',
+    description: 'Use switchMap for latest-only work, mergeMap for parallel work, concatMap for ordered work, and exhaustMap to ignore repeat triggers.',
+  },
+  {
+    route: '/angular/trivia/angular-forroot-forchild',
+    title: 'Angular forRoot vs forChild: When to Use Each',
+    description: 'In legacy NgModule apps, call forRoot() once for root providers or routing; use forChild() in feature modules to avoid a second singleton.',
+  },
+  {
+    route: '/vue/trivia/vue-provide-inject-vs-prop-drilling-tradeoffs',
+    title: 'Vue provide/inject vs Prop Drilling: When to Use Each',
+    description: 'Use props for explicit parent-child data, provide/inject for deep shared dependencies, and Pinia for app-wide state.',
+  },
+];
+
 function includesPhrase(value, phrase) {
   return normalizeText(value).toLowerCase().includes(normalizeText(phrase).toLowerCase());
 }
@@ -461,6 +523,39 @@ for (const contract of criticalRouteContracts) {
     if (!includesPhrase(page.documentText, term)) missing.push(`body lacks "${term}"`);
   }
   if (missing.length) failures.push({ route: contract.route, code: 'keywordContract', message: missing.join('; ') });
+}
+
+for (const contract of PUBLISH_COPY_CONTRACTS) {
+  const page = pagesByRoute.get(contract.route);
+  if (!page) {
+    failures.push({ route: contract.route, code: 'publishCopyContract', message: 'missing prerendered HTML' });
+    continue;
+  }
+
+  const missing = [];
+  for (const [field, actual, expected] of [
+    ['title', page.title, contract.title],
+    ['description', page.description, contract.description],
+    ['og:title', page.ogTitle, contract.title],
+    ['og:description', page.ogDescription, contract.description],
+    ['twitter:title', page.twitterTitle, contract.title],
+    ['twitter:description', page.twitterDescription, contract.description],
+  ]) {
+    if (actual !== expected) missing.push(`${field} differs from the publish-copy contract`);
+  }
+
+  const expectedCanonical = new URL(contract.route, CANONICAL_BASE).href;
+  if (page.canonical !== expectedCanonical) {
+    missing.push(`canonical is "${page.canonical || '(missing)'}", expected "${expectedCanonical}"`);
+  }
+  if (!/^index\s*,\s*follow$/i.test(page.robots)) {
+    missing.push(`robots is "${page.robots || '(missing)'}", expected "index,follow"`);
+  }
+  if (page.ogUrl !== expectedCanonical) {
+    missing.push(`og:url is "${page.ogUrl || '(missing)'}", expected "${expectedCanonical}"`);
+  }
+
+  if (missing.length) failures.push({ route: contract.route, code: 'publishCopyContract', message: missing.join('; ') });
 }
 
 console.log(`[seo:meta-check] pages scanned: ${files.length}`);
