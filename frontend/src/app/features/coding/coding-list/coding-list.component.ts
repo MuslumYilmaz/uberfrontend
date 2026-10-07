@@ -36,6 +36,8 @@ import {
   FaQuestionRowVariant,
 } from '../../../shared/ui/question-row/fa-question-row.component';
 import { FaSpinnerComponent } from '../../../shared/ui/spinner/fa-spinner.component';
+import { PriorityLinksComponent } from '../../../shared/components/priority-links/priority-links.component';
+import { CODING_PRIORITY_LINK_GROUPS } from '../../../core/content/priority-links';
 
 type StructuredDescription = { text?: string; summary?: string; examples?: string[] };
 type ListSource = 'tech' | 'company' | 'global-coding';
@@ -277,6 +279,7 @@ function inferCategory(q: any): CategoryKey {
         FaCardComponent,
         FaSpinnerComponent,
         FaQuestionRowComponent,
+        PriorityLinksComponent,
     ],
     templateUrl: './coding-list.component.html',
     styleUrls: ['./coding-list.component.scss']
@@ -880,6 +883,15 @@ export class CodingListComponent implements OnInit, OnDestroy {
     if (this.isFormatsMode()) return [];
     const tech = this.selectedTech$.value;
     return tech ? TECHNOLOGY_QUESTION_HUBS.filter((hub) => hub.tech === tech) : TECHNOLOGY_QUESTION_HUBS;
+  }
+
+  readonly priorityLinkGroups = CODING_PRIORITY_LINK_GROUPS;
+
+  showPriorityLinks(): boolean {
+    if (this.source !== 'global-coding') return false;
+    // Claim the prerendered /coding block before applying the client-only formats view.
+    if (!this.questionHubViewReady()) return true;
+    return !this.isFormatsMode();
   }
 
   contextualSupportLinks(): ContextualSupportLink[] {

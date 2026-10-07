@@ -6,6 +6,7 @@ import { pathToFileURL } from 'node:url';
 import { parse } from 'parse5';
 import { parsePage } from './audit-internal-link-equity.mjs';
 import { createRobotsPolicy } from './internal-link-robots.mjs';
+import { priorityLinkContracts } from './priority-links.mjs';
 
 const TECH_DETAIL_ROUTE = /^\/(html|css)\/(coding|trivia)\/[^/]+$/;
 const HTML_INTERVIEW_HUB = '/html/interview-questions';
@@ -47,6 +48,21 @@ export const CONTEXTUAL_HUB_LINKS = [
     targets: ['/html/interview-questions', '/css/interview-questions', '/javascript/interview-questions'],
   },
 ];
+
+// Curated detail pages that the home page and /coding link to directly (core/content/priority-links.json).
+export const PRIORITY_CONTENT_LINKS = priorityLinkContracts();
+
+export function mergeLinkContracts(...lists) {
+  const targetsBySource = new Map();
+  for (const { source, targets } of lists.flat()) {
+    const merged = targetsBySource.get(source) || new Set();
+    for (const target of targets) merged.add(target);
+    targetsBySource.set(source, merged);
+  }
+  return [...targetsBySource].map(([source, targets]) => ({ source, targets: [...targets] }));
+}
+
+export const DEFAULT_LINK_CONTRACTS = mergeLinkContracts(CONTEXTUAL_HUB_LINKS, PRIORITY_CONTENT_LINKS);
 
 function collectHtmlFiles(dir, out = []) {
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
@@ -147,7 +163,7 @@ function hasDedicatedCssWebPageSchemaMention(html, canonicalBase) {
 export function auditTechHubLinks({
   buildDir,
   canonicalBase = 'https://frontendatlas.com',
-  contracts = CONTEXTUAL_HUB_LINKS,
+  contracts = DEFAULT_LINK_CONTRACTS,
 }) {
   if (!fs.existsSync(buildDir)) throw new Error(`Build directory not found: ${buildDir}. Run npm run build first.`);
   canonicalBase = canonicalBase.replace(/\/+$/, '');

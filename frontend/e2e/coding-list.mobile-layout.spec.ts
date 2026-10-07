@@ -1,7 +1,10 @@
 import { test, expect } from './fixtures';
+import { assertPriorityLinksLayout } from './priority-links';
 
+const SMALL_MOBILE_VIEWPORT = { width: 360, height: 800 };
 const MOBILE_VIEWPORT = { width: 390, height: 844 };
 const DESKTOP_VIEWPORT = { width: 1366, height: 900 };
+const LARGE_DESKTOP_VIEWPORT = { width: 1440, height: 900 };
 
 test.describe('coding list mobile layout guardrail', () => {
   test.skip(({ browserName }) => browserName !== 'chromium', 'Layout guardrails are chromium-only.');
@@ -40,6 +43,17 @@ test.describe('coding list mobile layout guardrail', () => {
     await expect(page.getByTestId('coding-list-mobile-filter-drawer')).toBeHidden();
     await expect(results.locator('.list-row').first()).toBeVisible();
   });
+
+  for (const viewport of [SMALL_MOBILE_VIEWPORT, LARGE_DESKTOP_VIEWPORT]) {
+    test(`${viewport.width}px: priority page links reflow inside the list column`, async ({ page }) => {
+      await page.setViewportSize(viewport);
+      await page.goto('/coding');
+
+      await expect(page.getByTestId('coding-list-page')).toBeVisible();
+      await expect(page.getByTestId('coding-list-loading')).toBeHidden();
+      await assertPriorityLinksLayout(page, 'coding', `coding list ${viewport.width}px`);
+    });
+  }
 
   test('desktop keeps the filter rail sticky', async ({ page }) => {
     await page.setViewportSize(DESKTOP_VIEWPORT);

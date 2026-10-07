@@ -7,7 +7,13 @@ import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
-import { auditTechHubLinks, CONTEXTUAL_HUB_LINKS } from './audit-tech-hub-internal-links.mjs';
+import {
+  auditTechHubLinks,
+  CONTEXTUAL_HUB_LINKS,
+  DEFAULT_LINK_CONTRACTS,
+  mergeLinkContracts,
+  PRIORITY_CONTENT_LINKS,
+} from './audit-tech-hub-internal-links.mjs';
 
 const BASE = 'https://frontendatlas.com';
 const SOURCE = '/guide';
@@ -199,11 +205,44 @@ test('requires the combined hub dedicated CSS CTA marker and WebPage schema ment
   ]);
 });
 
+test('default contracts keep one entry per source and add the priority pages to home and /coding', () => {
+  const sources = DEFAULT_LINK_CONTRACTS.map(({ source }) => source);
+  assert.equal(new Set(sources).size, sources.length);
+  for (const source of ['/', '/coding']) {
+    const hubs = CONTEXTUAL_HUB_LINKS.find((contract) => contract.source === source).targets;
+    const priority = PRIORITY_CONTENT_LINKS.find((contract) => contract.source === source).targets;
+    assert(priority.length > 0);
+    assert.deepEqual(DEFAULT_LINK_CONTRACTS.find((contract) => contract.source === source).targets, [...hubs, ...priority]);
+  }
+  assert.deepEqual(mergeLinkContracts(
+    [{ source: '/a', targets: ['/x', '/y'] }],
+    [{ source: '/a', targets: ['/y', '/z'] }, { source: '/b', targets: ['/x'] }],
+  ), [{ source: '/a', targets: ['/x', '/y', '/z'] }, { source: '/b', targets: ['/x'] }]);
+});
+
+test('a priority page that loses its home link fails the default contract', (t) => {
+  const [home] = PRIORITY_CONTENT_LINKS;
+  const contracts = [{ source: home.source, targets: home.targets.slice(0, 2) }];
+  const f = fixture(t, contracts);
+  f.page(home.source, `<main>${link(contracts[0].targets[0])}</main><nav>${link(contracts[0].targets[1])}</nav>`);
+  assert.deepEqual(f.audit().failures, [
+    `${home.source} lacks a clean, followable content link to ${contracts[0].targets[1]}`,
+  ]);
+});
+
 test('CLI validates the default editorial relationships and honors build/base overrides', (t) => {
-  const f = fixture(t, CONTEXTUAL_HUB_LINKS);
+  const f = fixture(t, DEFAULT_LINK_CONTRACTS);
   f.page(HTML_CSS_HUB, combinedHubBody());
+  const routes = new Set(DEFAULT_LINK_CONTRACTS.flatMap(({ source, targets }) => [source, ...targets]));
+  // Priority targets include HTML/CSS details, which must keep their hub ownership links.
+  for (const route of routes) {
+    const match = /^\/(html|css)\/(coding|trivia)\/[^/]+$/.exec(route);
+    if (!match) continue;
+    const [, tech, kind] = match;
+    f.page(route, prepEntry(kind, tech === 'css' ? link(CSS_HUB) : `${link(HTML_HUB)}${link(HTML_CSS_HUB)}`));
+  }
   const canonicalBase = 'https://preview.example';
-  for (const route of new Set(CONTEXTUAL_HUB_LINKS.flatMap(({ source, targets }) => [source, ...targets]))) {
+  for (const route of routes) {
     const file = path.join(f.buildDir, route.slice(1), 'index.html');
     fs.writeFileSync(file, fs.readFileSync(file, 'utf8').replaceAll(BASE, canonicalBase));
   }

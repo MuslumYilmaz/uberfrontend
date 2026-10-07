@@ -44,6 +44,8 @@ import {
 } from '../../core/content/public-editorial-facts';
 import { CompanyLogoMarkComponent } from '../../shared/components/company-logo-mark/company-logo-mark.component';
 import { PrepRoadmapComponent, type PrepRoadmapItem } from '../../shared/components/prep-roadmap/prep-roadmap.component';
+import { PriorityLinksComponent } from '../../shared/components/priority-links/priority-links.component';
+import { HOME_PRIORITY_LINK_GROUPS } from '../../core/content/priority-links';
 import {
   TurnstileChallengeComponent,
   type TurnstileChallengeState,
@@ -85,7 +87,7 @@ if (!FOUNDATIONS_TRACK) {
 const FOUNDATIONS_TRACK_METRICS = deriveTrackMetrics(FOUNDATIONS_TRACK);
 
 @Component({
-    imports: [CommonModule, FormsModule, RouterModule, PricingPlansSectionComponent, FaqSectionComponent, ShowcaseIconComponent, CompanyLogoMarkComponent, PrepRoadmapComponent, TurnstileChallengeComponent, ConversionStickyCtaComponent],
+    imports: [CommonModule, FormsModule, RouterModule, PricingPlansSectionComponent, FaqSectionComponent, ShowcaseIconComponent, CompanyLogoMarkComponent, PrepRoadmapComponent, PriorityLinksComponent, TurnstileChallengeComponent, ConversionStickyCtaComponent],
     selector: 'app-showcase-page',
     templateUrl: './showcase.page.html',
     styleUrls: ['./showcase.page.css']
@@ -570,6 +572,8 @@ You can also reset any task back to the starter whenever you want to re-practice
     { no: 'Q-188', title: 'JS Event Loop', desc: 'Microtasks, macrotasks, render ticks.', tags: ['Concepts', 'Async'], meta: { difficulty: 'Medium', minutes: 15 }, link: ['/javascript', 'trivia', 'js-event-loop'] },
     { no: 'Q-240', title: 'Infinite Scroll List', desc: 'Cache, pagination, and perf budgets.', tags: ['System design', 'Performance'], meta: { difficulty: 'Medium', minutes: 45 }, link: ['/system-design', 'infinite-scroll-list'] },
   ];
+
+  readonly priorityLinkGroups = HOME_PRIORITY_LINK_GROUPS;
 
   companyQuestions: CompanyQuestionCard[] = [
     { name: 'Google', slug: 'google', note: 'UI, JS, systems', link: ['/companies', 'google', 'preview'] },
