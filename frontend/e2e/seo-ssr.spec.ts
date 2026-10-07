@@ -183,7 +183,7 @@ const ANGULAR_HTTP_CANCELLATION_LAB_SOURCES = [
 const CASES = [
   {
     path: '/coding',
-    titleIncludes: 'frontend coding challenges',
+    titleIncludes: 'Frontend Coding Challenges for Interview Practice',
     h1: 'Frontend Coding Challenges',
     detail: false,
     indexable: true,
@@ -230,7 +230,7 @@ const CASES = [
   },
   {
     path: '/javascript/trivia/js-compare-two-objects',
-    titleIncludes: 'How to compare two objects in JavaScript: shallow vs',
+    titleIncludes: 'Compare Two Objects in JavaScript: Shallow vs Deep',
     h1: 'How would you compare two objects in JavaScript?',
     detail: true,
     indexable: true,
@@ -253,7 +253,7 @@ const CASES = [
   },
   {
     path: '/html-css/interview-questions',
-    titleIncludes: 'HTML and CSS Interview Questions: 65 UI Q&A',
+    titleIncludes: 'HTML & CSS Interview Questions and Answers',
     h1: 'HTML and CSS Interview Questions and Answers',
     indexable: true,
     bodyTextIncludes: [
@@ -517,7 +517,7 @@ const RAW_HTML_CASES: Array<{
   },
 ];
 
-const HOME_TITLE = 'Frontend Interview Prep Platform';
+const HOME_TITLE = 'Frontend Interview Prep: Questions, Coding & System Design';
 
 const GOOGLE_PREVIEW_PATH = '/companies/google/preview';
 const GOOGLE_PREVIEW_TITLE = 'Google Frontend Interview Questions: 7 Prompts + Prep Guide';
@@ -1261,9 +1261,9 @@ test.describe('seo-ssr', () => {
     const anchorTitle = 'HTML <a> tag: navigation semantics, accessibility, and common pitfalls';
     const anchorDescription =
       'Learn when to use <a> for real navigation, how href/rel affect accessibility and SEO, and which common pitfalls break browser behavior.';
-    const hrefTitle = 'HTML href attribute: link destinations, navigation semantics, and pitfalls';
+    const hrefTitle = 'HTML href Attribute: Definition, Uses & Examples';
     const hrefDescription =
-      'Understand how href powers navigation and linked resources, and avoid common mistakes like fake links, bad fragments, or unsafe external targets.';
+      'Use href to set where a link or linked resource points: an absolute or relative URL, a #fragment, an email address, or a file.';
 
     const assertHead = async (target: Page, route: string, title: string, description: string) => {
       await expect(target).toHaveTitle(title);
@@ -1427,6 +1427,9 @@ test.describe('seo-ssr', () => {
     expect(normalizeText(extractRawMeta(html, 'robots')).replace(/\s+/g, '')).toBe('index,follow');
     expect(collectionPages).toHaveLength(1);
     expect(collectionPages[0]).not.toHaveProperty('numberOfItems');
+    expect(collectionPages[0].description).toBe(
+      'Choose a challenge, write the solution in the browser, run tests, and review follow-up questions for JavaScript, React, Angular, Vue, HTML, or CSS.',
+    );
     expect(itemLists).toHaveLength(1);
 
     const matchCount = rawVisibleText(html).match(/\b(\d+)\s+matches\b/);

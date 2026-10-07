@@ -120,10 +120,10 @@ describe('guide-seo.util', () => {
       intro!
     );
 
-    expect(meta.title).toBe('Frontend Interview Preparation Guide (2026): Rounds, Roadmap, Questions');
+    expect(meta.title).toBe('Frontend Interview Prep Guide (2026): Roadmap & Rounds');
     expect(meta.canonical).toBe('https://frontendatlas.com/guides/interview-blueprint/intro');
     expect(meta.description).toBe(
-      'Prepare for frontend interviews with a 2026 guide to rounds, coding and UI questions, system design, behavioral prep, and a 30-day roadmap.',
+      'Start with core questions and coding, add system design and behavioral practice, then follow the 30-day roadmap.',
     );
     expect(meta.keywords).toContain('frontend interview preparation guide');
     expect(meta.keywords).toContain('frontend interview prep guide');
@@ -137,7 +137,7 @@ describe('guide-seo.util', () => {
     const faqPage = graph.find((node: any) => node?.['@type'] === 'FAQPage');
 
     expect(breadcrumb).toBeTruthy();
-    expect(article?.headline).toBe('Frontend Interview Preparation Guide (2026): Rounds, Roadmap, Questions');
+    expect(article?.headline).toBe('Frontend Interview Prep Guide (2026): Roadmap & Rounds');
     expect(article?.dateModified).toBe(seoContentDateModified(article.url));
     expect(article?.author).toEqual({
       '@type': 'Organization',

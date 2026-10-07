@@ -102,6 +102,70 @@ describe('trivia-seo.util', () => {
     expect(seoDescriptionForQuestion(question, '', 'angular')).toBe(description);
   });
 
+  it('preserves the audited direct-answer metadata pairs', () => {
+    const questions = [
+      {
+        id: 'js-compare-two-objects',
+        technology: 'javascript',
+        title: 'How would you compare two objects in JavaScript?',
+        seo: {
+          title: 'Compare Two Objects in JavaScript: Shallow vs Deep',
+          description: 'Use === for the same reference, compare top-level keys for flat objects, and use deep equality for nested values; do not rely on JSON.stringify.',
+        },
+      },
+      {
+        id: 'angular-lifecycle-constructor-oninit-afterviewinit-dom',
+        technology: 'angular',
+        title: 'What’s the difference between constructor, ngOnInit, and ngAfterViewInit?',
+        seo: {
+          title: 'constructor vs ngOnInit vs ngAfterViewInit in Angular',
+          description: 'Use constructor for DI, ngOnInit for input-based setup, and ngAfterViewInit for DOM or default ViewChild access.',
+        },
+      },
+      {
+        id: 'html-href-attribute',
+        technology: 'html',
+        title: 'What is the href attribute used for?',
+        seo: {
+          title: 'HTML href Attribute: Definition, Uses & Examples',
+          description: 'Use href to set where a link or linked resource points: an absolute or relative URL, a #fragment, an email address, or a file.',
+        },
+      },
+      {
+        id: 'rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use',
+        technology: 'angular',
+        title: 'switchMap vs mergeMap vs exhaustMap vs concatMap: When Would You Use Each in Angular?',
+        seo: {
+          title: 'switchMap vs mergeMap vs concatMap vs exhaustMap in Angular',
+          description: 'Use switchMap for latest-only work, mergeMap for parallel work, concatMap for ordered work, and exhaustMap to ignore repeat triggers.',
+        },
+      },
+      {
+        id: 'angular-forroot-forchild',
+        technology: 'angular',
+        title: 'What are Angular modules’ forRoot() and forChild() methods used for?',
+        seo: {
+          title: 'Angular forRoot vs forChild: When to Use Each',
+          description: 'In legacy NgModule apps, call forRoot() once for root providers or routing; use forChild() in feature modules to avoid a second singleton.',
+        },
+      },
+      {
+        id: 'vue-provide-inject-vs-prop-drilling-tradeoffs',
+        technology: 'vue',
+        title: 'Provide / Inject in Vue: when should you use it instead of prop drilling?',
+        seo: {
+          title: 'Vue provide/inject vs Prop Drilling: When to Use Each',
+          description: 'Use props for explicit parent-child data, provide/inject for deep shared dependencies, and Pinia for app-wide state.',
+        },
+      },
+    ];
+
+    for (const question of questions) {
+      expect(seoTitleForQuestion(question as any)).toBe(question.seo.title);
+      expect(seoDescriptionForQuestion(question as any, '', question.technology)).toBe(question.seo.description);
+    }
+  });
+
   it('preserves the final word of an authored comparison title', () => {
     const question = {
       id: 'css-margin-vs-padding',
@@ -441,7 +505,7 @@ describe('trivia-seo.util', () => {
       seo: {
         title: 'React useEffect official docs wording',
         description:
-          'Official documentation and API docs wording for React useEffect cleanup behavior.',
+          'Use official documentation and API docs wording for React useEffect cleanup behavior.',
       },
     } as any;
 

@@ -19,14 +19,18 @@ export class ServerAssetReader implements AssetReader {
     const serverDir = path.dirname(fileURLToPath(import.meta.url));
     const repoContentPaths = this.resolveRepoContentPaths(normalized, cwd);
     const candidates = [
+      // During prerender Angular can run the server bundle with a different
+      // working directory (for example a previously built static artifact).
+      // Prefer the browser assets paired with this server bundle so SSR cannot
+      // pick stale content from that working directory.
+      path.resolve(serverDir, '..', 'browser', normalized),
+      path.resolve(serverDir, '../../browser', normalized),
+      path.resolve(cwd, 'dist', 'frontendatlas', 'browser', normalized),
+      path.resolve(cwd, '..', 'dist', 'frontendatlas', 'browser', normalized),
       path.resolve(cwd, normalized),
       path.resolve(cwd, 'src', normalized),
       path.resolve(cwd, 'frontend', normalized),
       path.resolve(cwd, 'frontend', 'src', normalized),
-      path.resolve(cwd, 'dist', 'frontendatlas', 'browser', normalized),
-      path.resolve(cwd, '..', 'dist', 'frontendatlas', 'browser', normalized),
-      path.resolve(serverDir, '..', 'browser', normalized),
-      path.resolve(serverDir, '../../browser', normalized),
       ...repoContentPaths,
     ];
 

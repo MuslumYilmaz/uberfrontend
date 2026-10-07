@@ -27,8 +27,10 @@ test('seo: home has title/description/canonical and is indexable', async ({ page
   await page.goto('/');
   const base = new URL(page.url()).origin;
 
-  await expect(page).toHaveTitle(/Frontend Interview Prep Platform/i);
-  await expect.poll(() => getMeta(page, 'description')).not.toBeNull();
+  await expect(page).toHaveTitle('Frontend Interview Prep: Questions, Coding & System Design');
+  await expect.poll(() => getMeta(page, 'description')).toBe(
+    'Start with a study plan, then practice coding, UI implementation, system design, and behavioral questions in one workflow.',
+  );
   await expect.poll(() => getCanonical(page)).toBe(`${base}/`);
   await expect.poll(async () => (await getMeta(page, 'robots')) || '').not.toContain('noindex');
   await expect(page.locator('h1').first()).toContainText(/frontend interview/i);

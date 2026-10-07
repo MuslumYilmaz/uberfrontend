@@ -1299,7 +1299,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-10",
+    "updatedAt": "2026-10-07",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use"
   },
@@ -1383,7 +1383,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-10-07",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#angular-forroot-forchild"
   },
@@ -1656,7 +1656,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-09",
+    "updatedAt": "2026-10-07",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#angular-lifecycle-constructor-oninit-afterviewinit-dom"
   },
@@ -3142,7 +3142,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-07-02",
+    "updatedAt": "2026-10-07",
     "schemaVersion": "question.v1",
     "assetRef": "questions/html/trivia.json#html-href-attribute"
   },
@@ -4941,7 +4941,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-08-20",
+    "updatedAt": "2026-10-07",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-compare-two-objects"
   },
@@ -9466,7 +9466,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-10-07",
     "schemaVersion": "question.v1",
     "assetRef": "questions/vue/trivia.json#vue-provide-inject-vs-prop-drilling-tradeoffs"
   },

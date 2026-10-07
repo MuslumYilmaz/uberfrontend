@@ -40,6 +40,12 @@ const COMPARISON_TITLE_TERMS = new Map([
   ['/javascript/trivia/js-compare-two-objects', ['shallow', 'deep']],
 ]);
 
+const GENERIC_TRADEOFF_FALLBACK = {
+  title: 'Frontend Tradeoff Battle for Interview Practice',
+  description:
+    'Practice a frontend tradeoff interview question and learn how to compare options, defend a balanced choice, and explain the downsides clearly.',
+};
+
 export function parseSeoPage(html, route) {
   const document = parse(html);
   const tags = Object.fromEntries(['title', 'canonical', ...Object.keys(META_FIELDS)].map((key) => [key, []]));
@@ -185,6 +191,11 @@ export function auditSeoPages(pages, { siteOrigin = 'https://frontendatlas.com',
       if (/\/debug\/[^/]+\/?$/.test(page.route)
           && /^Front-end debug question for (?:javascript|angular)\./i.test(page.description)) {
         add(failures, page, 'genericDebugDescription', 'indexable debug detail uses the generic description fallback');
+      }
+      if (/^\/tradeoffs\/[^/]+\/?$/.test(page.route)
+          && (page.title === GENERIC_TRADEOFF_FALLBACK.title
+            || page.description === GENERIC_TRADEOFF_FALLBACK.description)) {
+        add(failures, page, 'genericTradeoffFallback', 'indexable tradeoff detail uses the generic metadata fallback');
       }
     }
   }

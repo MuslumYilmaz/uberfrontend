@@ -74,9 +74,9 @@ export const routes: Routes = [
       import('./features/showcase/showcase.page').then((m) => m.ShowcasePageComponent),
     data: {
       seo: {
-        title: 'Frontend Interview Prep Platform',
+        title: 'Frontend Interview Prep: Questions, Coding & System Design',
         description:
-          'Prepare for frontend interviews with the FrontendAtlas frontend interview preparation platform: start a guided study plan, practice frontend coding interviews, and run checks in a real UI workflow.',
+          'Start with a study plan, then practice coding, UI implementation, system design, and behavioral questions in one workflow.',
         keywords: [
           'frontend interview preparation platform',
           'frontend interview practice',
@@ -140,9 +140,9 @@ export const routes: Routes = [
       import('./features/showcase/showcase.page').then((m) => m.ShowcasePageComponent),
     data: {
       seo: {
-        title: 'Frontend Interview Prep Platform',
+        title: 'Frontend Interview Prep: Questions, Coding & System Design',
         description:
-          'Prepare for frontend interviews with the FrontendAtlas frontend interview preparation platform: start a guided study plan, practice frontend coding interviews, and run checks in a real UI workflow.',
+          'Start with a study plan, then practice coding, UI implementation, system design, and behavioral questions in one workflow.',
         canonical: '/',
         keywords: [
           'frontend interview preparation platform',
@@ -1119,9 +1119,9 @@ export const routes: Routes = [
       source: 'global-coding',
       kind: 'coding',
       seo: {
-        title: 'Frontend Coding Challenges | JavaScript, React, Angular, HTML & CSS',
+        title: 'Frontend Coding Challenges for Interview Practice',
         description:
-          'Practice focused frontend coding challenges with real prompts, starter code, tests, and solution follow-ups across JavaScript, React, Angular, Vue, HTML, and CSS. Selected challenges are free to start; premium unlocks deeper sets and solutions.',
+          'Choose a challenge, write the solution in the browser, run tests, and review follow-up questions for JavaScript, React, Angular, Vue, HTML, or CSS.',
       },
     },
   },
@@ -1213,13 +1213,6 @@ export const routes: Routes = [
     resolve: {
       tradeoffBattleDetail: tradeoffBattleDetailResolver,
     },
-    data: {
-      seo: {
-        title: 'Frontend Tradeoff Battle for Interview Practice',
-        description:
-          'Practice a frontend tradeoff interview question and learn how to compare options, defend a balanced choice, and explain the downsides clearly.',
-      },
-    },
   },
 
   // Framework interview-question landing pages
@@ -1281,9 +1274,9 @@ export const routes: Routes = [
         isMasterHub: true,
       },
       seo: {
-        title: 'Frontend Interview Questions and Answers',
+        title: 'Frontend Interview Questions & Answers: Practice by Topic',
         description:
-          'Frontend interview questions and answers for front end developers, beginner to advanced, with Essential 60, UI coding, machine coding, JavaScript, HTML, CSS, React, Angular, Vue, debugging, testing, accessibility, performance, and frontend system design.',
+          'Choose a framework or interview round, then practice coding, testing, debugging, UI implementation, and system design questions and answers.',
       },
     },
   },
@@ -1450,9 +1443,9 @@ export const routes: Routes = [
         techs: ['html', 'css'],
       },
       seo: {
-        title: 'HTML and CSS Interview Questions: 65 UI Q&A',
+        title: 'HTML & CSS Interview Questions and Answers',
         description:
-          '65 joint HTML and CSS interview questions for frontend UI rounds: semantic markup, accessible forms, layout implementation, browser behavior, and code scenarios.',
+          'Expect semantic HTML, accessibility, forms, layout, browser behavior, responsive UI, and code scenarios in HTML/CSS interview rounds.',
         keywords: [
           'html and css interview questions',
           'html css interview questions',

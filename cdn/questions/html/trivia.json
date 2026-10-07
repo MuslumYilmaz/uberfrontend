@@ -1245,8 +1245,8 @@
     "importance": 4,
     "description": "The `href` attribute is the real destination reference behind links and linked resources. Production bugs happen when `href` is missing, misused for fake buttons, or paired with unsafe external-link behavior.",
     "seo": {
-      "title": "HTML href attribute: link destinations, navigation semantics, and pitfalls",
-      "description": "Understand how href powers navigation and linked resources, and avoid common mistakes like fake links, bad fragments, or unsafe external targets."
+      "title": "HTML href Attribute: Definition, Uses & Examples",
+      "description": "Use href to set where a link or linked resource points: an absolute or relative URL, a #fragment, an email address, or a file."
     },
     "answer": {
       "blocks": [
@@ -1328,7 +1328,7 @@
       "basics",
       "anchor"
     ],
-    "updatedAt": "2026-07-02",
+    "updatedAt": "2026-10-07",
     "incidentCard": {
       "title": "Destination Wiring Check",
       "scenario": "A teammate says, \"The anchor tag already tells the browser this is a link. The `href` value is optional detail, so we can add click handlers later and still consider it a proper hyperlink.\" Another teammate says, \"That misses the core role of `href`. It is the destination reference that tells the browser where the link or resource points. Without it, you lose the real navigation target and a lot of expected browser behavior.\" Which explanation is better?",

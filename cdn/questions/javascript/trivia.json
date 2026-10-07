@@ -2975,10 +2975,10 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-08-20",
+    "updatedAt": "2026-10-07",
     "seo": {
-      "title": "How to compare two objects in JavaScript: shallow vs deep vs JSON pitfalls",
-      "description": "Choose the right object comparison strategy in JavaScript: identity, shallow equality, deep equality, and the common JSON.stringify traps."
+      "title": "Compare Two Objects in JavaScript: Shallow vs Deep",
+      "description": "Use === for the same reference, compare top-level keys for flat objects, and use deep equality for nested values; do not rely on JSON.stringify."
     },
     "incidentCard": {
       "title": "Object Equality Strategy Check",

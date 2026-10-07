@@ -92,8 +92,8 @@ export const PLAYBOOK: GuideEntry[] = [
         minutes: 16,
         summary: 'Understand frontend interview rounds, what hiring teams evaluate, which questions to practice, and how to follow a realistic prep roadmap.',
         seo: {
-            title: 'Frontend Interview Preparation Guide (2026): Rounds, Roadmap, Questions',
-            description: 'Prepare for frontend interviews with a 2026 guide to rounds, coding and UI questions, system design, behavioral prep, and a 30-day roadmap.',
+            title: 'Frontend Interview Prep Guide (2026): Roadmap & Rounds',
+            description: 'Start with core questions and coding, add system design and behavioral practice, then follow the 30-day roadmap.',
             primaryKeyword: 'frontend interview preparation guide',
             keywords: [
                 'frontend interview preparation guide',
@@ -138,7 +138,7 @@ export const PLAYBOOK: GuideEntry[] = [
             },
             readerPromise: 'Use this frontend interview preparation guide to understand the 2026 interview loop, pick the right practice roadmap, and move into coding, UI, system design, and behavioral drills with clear next steps.',
             publishedAt: '2025-08-30',
-            updatedAt: '2026-06-18',
+            updatedAt: '2026-10-07',
             author: PUBLIC_GUIDE_AUTHOR,
             factCheckedAt: '2026-06-18',
         },

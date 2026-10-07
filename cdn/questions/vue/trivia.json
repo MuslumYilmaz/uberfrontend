@@ -3946,10 +3946,10 @@
       "state-management",
       "architecture"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-10-07",
     "seo": {
-      "title": "When to Use provide/inject vs Prop Drilling in Vue?",
-      "description": "Use provide/inject for deeply nested shared dependencies without long prop chains, but Vue tracks this implicit wiring less explicitly than props."
+      "title": "Vue provide/inject vs Prop Drilling: When to Use Each",
+      "description": "Use props for explicit parent-child data, provide/inject for deep shared dependencies, and Pinia for app-wide state."
     },
     "incidentCard": {
       "title": "Dependency Wiring Check",

@@ -19,6 +19,9 @@ const token = 'tradeoff-render-e2e-token';
 const user = buildMockUser();
 const progressKey = (scope = 'guest') => `fa:practice:progress:v3:${scope}`;
 const normalize = (value: string) => value.replace(/\s+/g, ' ').trim();
+const legacyFallbackTitle = 'Frontend Tradeoff Battle for Interview Practice';
+const legacyFallbackDescription =
+  'Practice a frontend tradeoff interview question and learn how to compare options, defend a balanced choice, and explain the downsides clearly.';
 
 type HtmlNode = DefaultTreeAdapterMap['node'];
 type HtmlElement = DefaultTreeAdapterMap['element'];
@@ -31,6 +34,25 @@ function elements(node: HtmlNode): HtmlElement[] {
 }
 function attr(node: HtmlElement, name: string): string | undefined {
   return node.attrs.find((entry) => entry.name === name)?.value;
+}
+function tradeoffTechLabel(tech: string): string {
+  switch (tech) {
+    case 'javascript': return 'JavaScript';
+    case 'react': return 'React';
+    case 'angular': return 'Angular';
+    case 'vue': return 'Vue';
+    case 'html': return 'HTML';
+    case 'css': return 'CSS';
+    case 'system-design': return 'System design';
+    default: return 'Frontend';
+  }
+}
+function expectedTitle(scenario: TradeoffBattleScenario): string {
+  return `${scenario.meta.title} - ${tradeoffTechLabel(scenario.meta.tech)} Tradeoff Question`;
+}
+function expectedDescription(scenario: TradeoffBattleScenario): string {
+  const tech = tradeoffTechLabel(scenario.meta.tech).toLowerCase();
+  return `Practice this ${tech} tradeoff interview question. ${scenario.meta.summary} Learn how to compare the options and defend a balanced answer clearly.`;
 }
 function htmlText(node: HtmlNode): string {
   if ('tagName' in node && ['script', 'style', 'template'].includes(node.tagName)) return '';
@@ -59,7 +81,19 @@ function expectDetailSchema(graph: Array<Record<string, unknown>>, scenario: Tra
 }
 function expectInitialHead(html: string, nodes: HtmlElement[], scenario: TradeoffBattleScenario) {
   const title = nodes.find((node) => node.tagName === 'title');
-  expect(title && htmlText(title)).toContain(scenario.meta.title);
+  const detailTitle = expectedTitle(scenario);
+  const detailDescription = expectedDescription(scenario);
+  expect(title && normalize(htmlText(title))).toBe(detailTitle);
+  const valueOf = (name: string, value: string, attribute = 'name') => nodes.find((node) =>
+    node.tagName === 'meta' && attr(node, attribute) === name && attr(node, 'content') === value,
+  );
+  expect(valueOf('description', detailDescription)).toBeTruthy();
+  expect(valueOf('og:title', detailTitle, 'property')).toBeTruthy();
+  expect(valueOf('og:description', detailDescription, 'property')).toBeTruthy();
+  expect(valueOf('twitter:title', detailTitle)).toBeTruthy();
+  expect(valueOf('twitter:description', detailDescription)).toBeTruthy();
+  expect(html).not.toContain(legacyFallbackTitle);
+  expect(html).not.toContain(legacyFallbackDescription);
   const canonical = nodes.find((node) => node.tagName === 'link' && attr(node, 'rel') === 'canonical');
   expect(canonical && attr(canonical, 'href')).toBe(`https://frontendatlas.com/tradeoffs/${scenario.meta.id}`);
   const schema = html.match(/<script\b[^>]*id="seo-jsonld"[^>]*>([\s\S]*?)<\/script>/)?.[1];

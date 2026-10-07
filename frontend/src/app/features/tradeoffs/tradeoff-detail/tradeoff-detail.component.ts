@@ -1,6 +1,4 @@
-import { seoContentDateModified } from '../../../core/utils/seo-content-date.util';
 import { CommonModule } from '@angular/common';
-import { publicEditorialAuthorSchema } from '../../../core/content/public-editorial-facts';
 import { Component, DestroyRef, afterNextRender, computed, effect, inject, signal, untracked } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -21,10 +19,7 @@ import { LockedPreviewComponent } from '../../../shared/components/locked-previe
 import { LoginRequiredDialogComponent } from '../../../shared/components/login-required-dialog/login-required-dialog.component';
 import { frameworkFromTech, freeChallengeForFramework } from '../../../core/utils/onboarding-personalization.util';
 import { isProActive } from '../../../core/utils/entitlements.util';
-import {
-  isContentAccessibleForFree,
-  robotsForContentAccess,
-} from '../../../core/utils/content-access-policy.util';
+import { buildTradeoffSeoMeta } from '../../../core/utils/tradeoff-seo.util';
 
 type LockedPath = {
   id: string;
@@ -251,102 +246,8 @@ export class TradeoffDetailComponent {
   }
 
   private updateSeo(scenario: TradeoffBattleScenario): void {
-    const meta = scenario.meta;
-    const techLabel = meta.tech === 'javascript'
-      ? 'JavaScript'
-      : meta.tech === 'react'
-        ? 'React'
-        : meta.tech === 'angular'
-          ? 'Angular'
-          : meta.tech === 'vue'
-            ? 'Vue'
-            : meta.tech === 'html'
-              ? 'HTML'
-              : meta.tech === 'css'
-                ? 'CSS'
-                : meta.tech === 'system-design'
-                  ? 'System design'
-                  : 'Frontend';
-    const canonicalPath = `/tradeoffs/${meta.id}`;
-    const canonicalUrl = this.seo.buildCanonicalUrl(canonicalPath);
-    const dateModified = seoContentDateModified(canonicalUrl);
-    const tradeoffHubUrl = this.seo.buildCanonicalUrl('/tradeoffs');
-    const imageUrl = this.seo.buildCanonicalUrl('/assets/images/frontend-atlas-logo.png');
-    const accessibleForFree = isContentAccessibleForFree(meta.access);
-    const description =
-      `Practice this ${techLabel.toLowerCase()} tradeoff interview question. ${meta.summary} Learn how to compare the options and defend a balanced answer clearly.`;
-    const breadcrumb = {
-      '@type': 'BreadcrumbList',
-      itemListElement: [
-        {
-          '@type': 'ListItem',
-          position: 1,
-          name: 'FrontendAtlas',
-          item: this.seo.buildCanonicalUrl('/'),
-        },
-        {
-          '@type': 'ListItem',
-          position: 2,
-          name: 'Tradeoff Battles',
-          item: tradeoffHubUrl,
-        },
-        {
-          '@type': 'ListItem',
-          position: 3,
-          name: meta.title,
-          item: canonicalUrl,
-        },
-      ],
-    };
-    const learningResource = {
-      '@type': 'LearningResource',
-      '@id': canonicalUrl,
-      name: meta.title,
-      headline: meta.title,
-      description,
-      url: canonicalUrl,
-      mainEntityOfPage: canonicalUrl,
-      inLanguage: 'en',
-      learningResourceType: 'Tradeoff battle',
-      educationalUse: 'Interview practice',
-      timeRequired: `PT${meta.estimatedMinutes}M`,
-      isAccessibleForFree: accessibleForFree,
-      keywords: meta.tags.join(', '),
-      ...(dateModified ? { dateModified } : {}),
-      author: publicEditorialAuthorSchema(),
-      publisher: {
-        '@type': 'Organization',
-        name: 'FrontendAtlas',
-        logo: {
-          '@type': 'ImageObject',
-          url: imageUrl,
-        },
-      },
-      isPartOf: {
-        '@type': 'CollectionPage',
-        '@id': tradeoffHubUrl,
-        url: tradeoffHubUrl,
-        name: 'Frontend Tradeoff Interview Questions and Architecture Decisions',
-      },
-      about: [
-        { '@type': 'Thing', name: `${techLabel} tradeoff interview question` },
-        { '@type': 'Thing', name: 'Frontend architecture tradeoffs' },
-      ],
-    };
-
-    this.seo.updateTags({
-      title: `${meta.title} - ${techLabel} Tradeoff Question`,
-      description,
-      canonical: canonicalPath,
-      robots: robotsForContentAccess(meta.access),
-      keywords: [
-        ...meta.tags,
-        'frontend tradeoff interview questions',
-        `${techLabel.toLowerCase()} tradeoff question`,
-        `${techLabel.toLowerCase()} architecture interview`,
-      ],
-      ogType: 'article',
-      jsonLd: [breadcrumb, learningResource],
-    });
+    this.seo.updateTags(
+      buildTradeoffSeoMeta(scenario.meta, (value) => this.seo.buildCanonicalUrl(value)),
+    );
   }
 }
