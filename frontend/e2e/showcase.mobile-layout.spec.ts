@@ -1,4 +1,5 @@
 import { test, expect } from './fixtures';
+import { assertPriorityLinksLayout } from './priority-links';
 
 const SMALL_MOBILE_VIEWPORT = { width: 360, height: 800 };
 const MOBILE_VIEWPORT = { width: 390, height: 844 };
@@ -160,6 +161,8 @@ async function assertTrustAndCompanyLayout(
     '.trust-shell',
     `${label} trust content`,
   );
+
+  await assertPriorityLinksLayout(page, 'home', label);
 
   const company = page.getByTestId('showcase-company-section');
   await company.scrollIntoViewIfNeeded();

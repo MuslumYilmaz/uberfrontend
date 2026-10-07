@@ -1,0 +1,24 @@
+<section class="priority-links" [attr.aria-labelledby]="labelId" [attr.data-testid]="testId">
+  <div class="priority-links__head" *ngIf="heading">
+    <p class="fa-page-kicker" *ngIf="kicker">{{ kicker }}</p>
+    <ng-container [ngSwitch]="headingLevel">
+      <h3 *ngSwitchCase="3" class="fa-section-title" [id]="headingId">{{ heading }}</h3>
+      <h2 *ngSwitchDefault class="fa-section-title" [id]="headingId">{{ heading }}</h2>
+    </ng-container>
+    <p class="fa-meta-text priority-links__description" *ngIf="description">{{ description }}</p>
+  </div>
+
+  <div class="priority-links__grid">
+    <div class="priority-links__group" *ngFor="let group of groups; trackBy: trackByGroup">
+      <ng-container [ngSwitch]="headingLevel">
+        <h4 *ngSwitchCase="3" class="priority-links__group-title">{{ group.title }}</h4>
+        <h3 *ngSwitchDefault class="priority-links__group-title">{{ group.title }}</h3>
+      </ng-container>
+      <ul class="priority-links__list" role="list">
+        <li *ngFor="let link of group.links; trackBy: trackByLink">
+          <a class="priority-links__link" [routerLink]="link.route">{{ link.label }}</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>

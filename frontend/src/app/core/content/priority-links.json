@@ -1,0 +1,171 @@
+{
+  "groups": [
+    {
+      "id": "system-design",
+      "title": "System design",
+      "links": [
+        {
+          "label": "Drag-and-drop dashboard system design",
+          "route": "/system-design/dashboard-widgets-draggable-resizable",
+          "surfaces": ["home", "coding"]
+        },
+        {
+          "label": "AI chat composer and streaming system design",
+          "route": "/system-design/ai-chat-textarea-design",
+          "surfaces": ["home", "coding"]
+        },
+        {
+          "label": "Toast notification system design",
+          "route": "/system-design/notification-toast-system",
+          "surfaces": ["home", "coding"]
+        },
+        {
+          "label": "Gmail-style offline email client system design",
+          "route": "/system-design/offline-email-client",
+          "surfaces": ["home", "coding"]
+        },
+        {
+          "label": "RADIO framework for frontend system design",
+          "route": "/guides/system-design-blueprint/radio-framework",
+          "surfaces": ["home"]
+        },
+        {
+          "label": "Frontend system design interview rubric",
+          "route": "/guides/system-design-blueprint/evaluation",
+          "surfaces": ["home"]
+        }
+      ]
+    },
+    {
+      "id": "javascript",
+      "title": "JavaScript",
+      "links": [
+        {
+          "label": "JavaScript async race conditions and stale UI",
+          "route": "/javascript/trivia/js-async-race-conditions",
+          "surfaces": ["home", "coding"]
+        },
+        {
+          "label": "Compare two objects in JavaScript",
+          "route": "/javascript/trivia/js-compare-two-objects",
+          "surfaces": ["home", "coding"]
+        },
+        {
+          "label": "ESM vs CommonJS in JavaScript",
+          "route": "/javascript/trivia/js-esm-vs-cjs",
+          "surfaces": ["home"]
+        }
+      ]
+    },
+    {
+      "id": "react",
+      "title": "React",
+      "links": [
+        {
+          "label": "React stale closure case files",
+          "route": "/react/trivia/react-stale-state-closures",
+          "surfaces": ["home", "coding"]
+        },
+        {
+          "label": "Why useEffect runs twice in React StrictMode",
+          "route": "/react/trivia/react-strictmode-double-invoke-effects",
+          "surfaces": ["home", "coding"]
+        },
+        {
+          "label": "What problem does React solve?",
+          "route": "/react/trivia/react-core-problem-and-non-goals",
+          "surfaces": ["home"]
+        },
+        {
+          "label": "Can a React component return undefined?",
+          "route": "/react/trivia/react-render-nothing-return-value",
+          "surfaces": ["home"]
+        }
+      ]
+    },
+    {
+      "id": "angular",
+      "title": "Angular",
+      "links": [
+        {
+          "label": "Does unsubscribe cancel an Angular HttpClient request?",
+          "route": "/angular/trivia/angular-http-what-actually-cancels-request",
+          "surfaces": ["home", "coding"]
+        },
+        {
+          "label": "switchMap vs mergeMap vs concatMap vs exhaustMap",
+          "route": "/angular/trivia/rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use",
+          "surfaces": ["home", "coding"]
+        },
+        {
+          "label": "constructor vs ngOnInit vs ngAfterViewInit in Angular",
+          "route": "/angular/trivia/angular-lifecycle-constructor-oninit-afterviewinit-dom",
+          "surfaces": ["home"]
+        }
+      ]
+    },
+    {
+      "id": "vue",
+      "title": "Vue",
+      "links": [
+        {
+          "label": "Why not use the array index as a v-for key in Vue?",
+          "route": "/vue/trivia/vue-v-for-keys-why-not-index",
+          "surfaces": ["home", "coding"]
+        },
+        {
+          "label": "How Vue reactivity works internally",
+          "route": "/vue/trivia/vue-reactivity-system",
+          "surfaces": ["home", "coding"]
+        },
+        {
+          "label": "Vue provide/inject vs prop drilling",
+          "route": "/vue/trivia/vue-provide-inject-vs-prop-drilling-tradeoffs",
+          "surfaces": ["home"]
+        }
+      ]
+    },
+    {
+      "id": "html-css",
+      "title": "HTML & CSS",
+      "links": [
+        {
+          "label": "CSS position: sticky not working",
+          "route": "/css/trivia/css-position-sticky-not-working",
+          "surfaces": ["home", "coding"]
+        },
+        {
+          "label": "Default HTML form method: GET or POST?",
+          "route": "/html/trivia/html-form-default-method",
+          "surfaces": ["home", "coding"]
+        },
+        {
+          "label": "HTML href attribute: uses and examples",
+          "route": "/html/trivia/html-href-attribute",
+          "surfaces": ["home"]
+        }
+      ]
+    },
+    {
+      "id": "guides-companies",
+      "title": "Guides & company prep",
+      "links": [
+        {
+          "label": "Frontend interview fundamentals quiz",
+          "route": "/guides/interview-blueprint/quiz",
+          "surfaces": ["home"]
+        },
+        {
+          "label": "Frontend behavioral interview questions",
+          "route": "/guides/behavioral/intro",
+          "surfaces": ["home"]
+        },
+        {
+          "label": "OpenAI frontend interview prep",
+          "route": "/companies/openai/preview",
+          "surfaces": ["home"]
+        }
+      ]
+    }
+  ]
+}

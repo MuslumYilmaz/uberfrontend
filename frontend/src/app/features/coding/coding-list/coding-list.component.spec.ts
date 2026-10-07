@@ -3,6 +3,7 @@ import { PLATFORM_ID, computed, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, UrlTree, convertToParamMap, provideRouter } from '@angular/router';
 import { BehaviorSubject, of } from 'rxjs';
+import { CODING_PRIORITY_LINK_GROUPS } from '../../../core/content/priority-links';
 import { AuthService } from '../../../core/services/auth.service';
 import { CodingListStateService } from '../../../core/services/coding-list-state';
 import { QuestionService } from '../../../core/services/question.service';
@@ -296,6 +297,41 @@ describe('CodingListComponent', () => {
   it('omits global technology discovery in a company question list', async () => {
     const fixture = await createComponent({ source: 'company', companySlug: 'google' });
     expect(fixture.nativeElement.querySelector('[data-testid="coding-tech-question-hubs"]')).toBeNull();
+  });
+
+  it('links the coding priority pages between the technology hubs and discovery, regardless of the tech filter', async () => {
+    const fixture = await createComponent({ queryParams: { reset: '1' } });
+    const host = fixture.nativeElement as HTMLElement;
+    const routes = CODING_PRIORITY_LINK_GROUPS.flatMap((group) => group.links.map((link) => link.route));
+    const priorityHrefs = () => Array.from(
+      host.querySelectorAll('[data-testid="coding-priority-links"] a'),
+      (link) => link.getAttribute('href'),
+    );
+
+    expect(routes).toContain('/system-design/dashboard-widgets-draggable-resizable');
+    expect(priorityHrefs()).toEqual(routes);
+    // The hub contract counts every anchor in its container, so the priority block must stay outside it.
+    expect(host.querySelectorAll('[data-testid="coding-tech-question-hubs"] a').length).toBe(7);
+
+    const hubs = host.querySelector('[data-testid="coding-tech-question-hubs"]') as HTMLElement;
+    const block = host.querySelector('[data-testid="coding-priority-links"]') as HTMLElement;
+    const discovery = host.querySelector('[data-testid="coding-discovery-sections"]') as HTMLElement;
+    expect(hubs.compareDocumentPosition(block) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(block.compareDocumentPosition(discovery) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+
+    fixture.componentInstance.toggleTech('react');
+    fixture.detectChanges();
+    expect(priorityHrefs()).toEqual(routes);
+  });
+
+  it('omits the coding priority pages in formats view', async () => {
+    const fixture = await createComponent({ queryParams: { view: 'formats', category: 'ui', reset: '1' } });
+    expect(fixture.nativeElement.querySelector('[data-testid="coding-priority-links"]')).toBeNull();
+  });
+
+  it('omits the coding priority pages in a company question list', async () => {
+    const fixture = await createComponent({ source: 'company', companySlug: 'google' });
+    expect(fixture.nativeElement.querySelector('[data-testid="coding-priority-links"]')).toBeNull();
   });
 
   it('renders free coding hub discovery anchors by technology and skips premium discovery items', async () => {

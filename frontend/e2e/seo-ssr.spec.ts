@@ -1,6 +1,7 @@
 import { test, expect, Page, APIRequestContext } from '@playwright/test';
 import { loadSitemapDateMap, schemaDateMatchesSitemap } from '../scripts/seo-sitemap-date-contract.mjs';
 import { parse, serialize, DefaultTreeAdapterMap } from 'parse5';
+import { PRIORITY_LINK_SURFACES, priorityLinksFor, type PriorityLinkSurface } from './priority-links';
 
 const WEB_HOST = process.env.PLAYWRIGHT_HOST || '127.0.0.1';
 const WEB_PORT = process.env.PLAYWRIGHT_PORT || '4200';
@@ -1100,6 +1101,35 @@ test.describe('seo-ssr', () => {
     }
   });
 
+  for (const surface of Object.keys(PRIORITY_LINK_SURFACES) as PriorityLinkSurface[]) {
+    const { path, testId } = PRIORITY_LINK_SURFACES[surface];
+    test(`priority page links are crawlable without JavaScript: ${path}`, async ({ browser }) => {
+      const rawContext = await browser.newContext({ javaScriptEnabled: false });
+      try {
+        const rawPage = await rawContext.newPage();
+        const response = await rawPage.goto(fullUrl(path), { waitUntil: 'domcontentloaded' });
+        expect(response?.status()).toBe(200);
+
+        const block = rawPage.getByTestId(testId);
+        const links = priorityLinksFor(surface);
+        await expect(block.locator('a')).toHaveCount(links.length);
+        // Link audits only credit anchors that sit in page content, not in a navigation landmark.
+        await expect(block.locator(
+          'xpath=ancestor-or-self::*[self::nav or self::aside or self::header or self::footer]',
+        )).toHaveCount(0);
+        for (const { route, label } of links) {
+          const link = block.locator(`a[href="${route}"]`);
+          await expect(link).toHaveCount(1);
+          await expect(link).toHaveAccessibleName(label);
+          await expect(link).toBeVisible();
+          await expect(link).not.toHaveAttribute('rel', /nofollow|sponsored|ugc/i);
+        }
+      } finally {
+        await rawContext.close();
+      }
+    });
+  }
+
   for (const entry of CONTEXTUAL_LINK_CASES) {
     test(`contextual links remain crawlable and navigable: ${entry.path}`, async ({ browser, page }) => {
       const rawContext = await browser.newContext({ javaScriptEnabled: false });
@@ -1251,6 +1281,7 @@ test.describe('seo-ssr', () => {
     await page.goto(fullUrl('/coding?view=formats&category=ui'), { waitUntil: 'load' });
     await expect(page.getByRole('heading', { name: 'Practice Types', exact: true })).toBeVisible();
     await expect(section).toHaveCount(0);
+    await expect(page.getByTestId('coding-priority-links')).toHaveCount(0);
     expectNoHydrationOrChunkIssues(issues, '/coding');
   });
 

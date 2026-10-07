@@ -12,7 +12,9 @@ import { BillingCheckoutService } from '../../core/services/billing-checkout.ser
 import { ExperimentService } from '../../core/services/experiment.service';
 import { QuestionService } from '../../core/services/question.service';
 import { TradeoffBattleService } from '../../core/services/tradeoff-battle.service';
+import { HOME_PRIORITY_LINK_GROUPS } from '../../core/content/priority-links';
 import { PrepRoadmapComponent } from '../../shared/components/prep-roadmap/prep-roadmap.component';
+import { PriorityLinksComponent } from '../../shared/components/priority-links/priority-links.component';
 import { ShowcasePageComponent } from './showcase.page';
 
 describe('ShowcasePageComponent', () => {
@@ -73,7 +75,7 @@ describe('ShowcasePageComponent', () => {
     })
       .overrideComponent(ShowcasePageComponent, {
         set: {
-          imports: [CommonModule, FormsModule, RouterModule, PrepRoadmapComponent],
+          imports: [CommonModule, FormsModule, RouterModule, PrepRoadmapComponent, PriorityLinksComponent],
           schemas: [NO_ERRORS_SCHEMA],
         },
       })
@@ -566,6 +568,33 @@ describe('ShowcasePageComponent', () => {
     for (const target of targets) {
       expect(hrefs.filter((href) => href === target)).withContext(target).toEqual([target]);
     }
+  });
+
+  it('links each priority page once from the browse landmark, independent of lazy section reveal', () => {
+    const page = fixture.nativeElement as HTMLElement;
+    const browse = page.querySelector('[data-showcase-landmark="browse"]') as HTMLElement;
+    const routes = HOME_PRIORITY_LINK_GROUPS.flatMap((group) => group.links.map((link) => link.route));
+    const priorityHrefs = () => Array.from(
+      browse.querySelectorAll('[data-testid="showcase-priority-links"] a'),
+      (link) => link.getAttribute('href'),
+    );
+
+    expect(routes).toContain('/system-design/dashboard-widgets-draggable-resizable');
+    expect(routes).toContain('/companies/openai/preview');
+    expect(new Set(routes).size).toBe(routes.length);
+    expect(priorityHrefs()).toEqual(routes);
+
+    const block = browse.querySelector('[data-testid="showcase-priority-links"]') as HTMLElement;
+    const library = browse.querySelector('[data-load="library"]') as HTMLElement;
+    const company = browse.querySelector('[data-testid="showcase-company-section"]') as HTMLElement;
+    expect(library.compareDocumentPosition(block) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(block.compareDocumentPosition(company) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(block.getAttribute('aria-labelledby')).toBe('showcase-priority-links-title');
+    expect(browse.querySelector('#showcase-priority-links-title')?.tagName).toBe('H3');
+
+    fixture.componentInstance.sectionVisible = { ...fixture.componentInstance.sectionVisible, library: false, company: false };
+    fixture.detectChanges();
+    expect(priorityHrefs()).toEqual(routes);
   });
 
   it('renders the recommended preparation roadmap with the intended first route and links', () => {

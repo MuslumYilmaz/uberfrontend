@@ -504,6 +504,28 @@
   </div>
 </div>
 
+  <div class="showcase-subsection">
+  <div class="shell">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Explore by topic</p>
+        <h3 id="showcase-priority-links-title">Jump straight into a specific question or scenario.</h3>
+        <p class="muted">
+          Worked answers, system design walkthroughs, and prep guides across JavaScript, React, Angular, Vue,
+          HTML, and CSS.
+        </p>
+      </div>
+    </div>
+
+    <app-priority-links
+      testId="showcase-priority-links"
+      labelledBy="showcase-priority-links-title"
+      [headingLevel]="3"
+      [groups]="priorityLinkGroups"
+    ></app-priority-links>
+  </div>
+</div>
+
   <div class="showcase-subsection reveal" #observeSection aria-labelledby="company-title" data-load="company"
   data-testid="showcase-company-section">
   <div class="shell">
