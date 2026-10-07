@@ -2299,6 +2299,59 @@ describe('CodingDetailComponent', () => {
     expect(component.interviewQuestionsHubLabel()).toBe('CSS interview questions');
   });
 
+  it('keeps CSS detail prep links focused on the CSS hub while HTML retains the combined hub CTA', () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    const renderPrep = (tech: 'css' | 'html', question: Question) => {
+      component.tech = tech;
+      component.kind = 'coding';
+      component.question.set(question);
+      component.loadState.set('loaded');
+      component.activePanel.set(1);
+      component.liteEditors.set(true);
+      fixture.detectChanges();
+
+      return fixture.nativeElement.querySelector('[data-testid="coding-prep-entry"]') as HTMLElement | null;
+    };
+
+    const cssQuestion = makeCssThemeVariablesQuestion() as Question;
+    const cssPrep = renderPrep('css', cssQuestion);
+
+    expect(cssPrep).not.toBeNull();
+    expect(cssPrep?.querySelector('a[href="/css/interview-questions"]')).not.toBeNull();
+    expect(cssPrep?.querySelector('a[href="/html-css/interview-questions"]')).toBeNull();
+
+    const htmlQuestion = {
+      ...makeCssThemeVariablesQuestion(),
+      id: 'html-semantic-card',
+      technology: 'html',
+    } as Question;
+    const htmlPrep = renderPrep('html', htmlQuestion);
+
+    expect(htmlPrep).not.toBeNull();
+    expect(htmlPrep?.querySelector('a[href="/html/interview-questions"]')).not.toBeNull();
+    expect(htmlPrep?.querySelector('a[href="/html-css/interview-questions"]')).not.toBeNull();
+
+    component.pressureRequested.set(true);
+    component.pressureScenario.set(pressureScenario);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('[data-testid="coding-prep-entry"]')).toBeNull();
+
+    component.pressureRequested.set(false);
+    component.pressureScenario.set(null);
+    component.question.set({
+      ...htmlQuestion,
+      solutionBlock: {
+        ...(htmlQuestion as any).solutionBlock,
+        curatedNextStepsOnly: true,
+      },
+    });
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('[data-testid="coding-prep-entry"]')).toBeNull();
+  });
+
   it('keeps editorial source readable but rejects unsafe code tokens from the rich locked preview', () => {
     const fixture = TestBed.createComponent(CodingDetailComponent);
     const component = fixture.componentInstance;

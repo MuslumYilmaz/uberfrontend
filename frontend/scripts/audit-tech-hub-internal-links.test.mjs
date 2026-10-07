@@ -12,7 +12,35 @@ import { auditTechHubLinks, CONTEXTUAL_HUB_LINKS } from './audit-tech-hub-intern
 const BASE = 'https://frontendatlas.com';
 const SOURCE = '/guide';
 const TARGET = '/javascript/interview-questions';
+const HTML_HUB = '/html/interview-questions';
+const CSS_HUB = '/css/interview-questions';
+const HTML_CSS_HUB = '/html-css/interview-questions';
+const CSS_CODING_DETAIL = '/css/coding/example';
+const CSS_TRIVIA_DETAIL = '/css/trivia/example';
+const HTML_CODING_DETAIL = '/html/coding/example';
+const HTML_TRIVIA_DETAIL = '/html/trivia/example';
 const link = (href = TARGET, attrs = '') => `<a href="${href}" ${attrs}>JavaScript interview questions</a>`;
+
+function dedicatedCssSchema(base = BASE) {
+  return `<script type="application/ld+json">${JSON.stringify({
+    '@context': 'https://schema.org',
+    '@graph': [{
+      '@type': 'WebPage',
+      name: 'Dedicated CSS interview questions',
+      url: `${base}${CSS_HUB}`,
+    }],
+  })}</script>`;
+}
+
+function combinedHubBody({ cta = true, marker = true, schema = true } = {}) {
+  const ctaAttrs = marker ? 'data-testid="html-css-dedicated-css-link"' : '';
+  return `${schema ? dedicatedCssSchema() : ''}<main>${cta ? link(CSS_HUB, ctaAttrs) : ''}</main>`;
+}
+
+function prepEntry(kind, body) {
+  // The nav wrapper mirrors the coding prerender context that prompted this guard.
+  return `<nav><section data-testid="${kind}-prep-entry">${body}</section></nav>`;
+}
 
 function fixture(t, contracts = [{ source: SOURCE, targets: [TARGET] }]) {
   const buildDir = fs.mkdtempSync(path.join(os.tmpdir(), 'fa-contextual-hubs-'));
@@ -27,6 +55,20 @@ function fixture(t, contracts = [{ source: SOURCE, targets: [TARGET] }]) {
   for (const route of new Set(contracts.flatMap(({ source, targets }) => [source, ...targets]))) page(route);
   for (const { source, targets } of contracts) page(source, `<main>${targets.map((target) => link(target)).join('')}</main>`);
   return { buildDir, page, robots, audit: () => auditTechHubLinks({ buildDir, contracts }) };
+}
+
+function ownershipFixture(t) {
+  const f = fixture(t, [{ source: HTML_CSS_HUB, targets: [CSS_HUB] }]);
+  f.page(HTML_HUB);
+  f.page(HTML_CSS_HUB, combinedHubBody());
+  return f;
+}
+
+function addValidOwnershipDetails(f) {
+  f.page(CSS_CODING_DETAIL, prepEntry('coding', link(CSS_HUB)));
+  f.page(CSS_TRIVIA_DETAIL, prepEntry('trivia', link(CSS_HUB)));
+  f.page(HTML_CODING_DETAIL, prepEntry('coding', `${link(HTML_HUB)}${link(HTML_CSS_HUB)}`));
+  f.page(HTML_TRIVIA_DETAIL, prepEntry('trivia', `${link(HTML_HUB)}${link(HTML_CSS_HUB)}`));
 }
 
 test('counts distinct eligible sources while preserving content, navigation and raw diagnostics', (t) => {
@@ -96,8 +138,70 @@ test('a valid content link can coexist with navigation, tracking and nofollow va
   assert.equal(f.audit().targets[0].contentSources, 1);
 });
 
+test('enforces CSS-only ownership while preserving HTML and combined-hub journeys', (t) => {
+  const f = ownershipFixture(t);
+  addValidOwnershipDetails(f);
+  assert.deepEqual(f.audit().failures, []);
+});
+
+test('CSS coding and trivia details need a clean dedicated CSS-hub prep-entry link', (t) => {
+  const f = ownershipFixture(t);
+  addValidOwnershipDetails(f);
+  f.page(CSS_TRIVIA_DETAIL, prepEntry('trivia', link(`${CSS_HUB}?ref=trivia`)));
+  assert.deepEqual(f.audit().failures, [
+    `CSS detail ${CSS_TRIVIA_DETAIL} lacks a clean, followable trivia-prep-entry link to ${CSS_HUB}`,
+  ]);
+});
+
+test('CSS details cannot retain a combined HTML/CSS link, including a nofollow query variant', (t) => {
+  const f = ownershipFixture(t);
+  addValidOwnershipDetails(f);
+  f.page(CSS_CODING_DETAIL, `${prepEntry('coding', link(CSS_HUB))}<main>${link(`${HTML_CSS_HUB}?ref=css`, 'rel="nofollow"')}</main>`);
+  assert.deepEqual(f.audit().failures, [
+    `CSS detail ${CSS_CODING_DETAIL} must not link to ${HTML_CSS_HUB}`,
+  ]);
+});
+
+test('HTML details must retain both their dedicated hub and the combined HTML/CSS hub', (t) => {
+  const f = ownershipFixture(t);
+  addValidOwnershipDetails(f);
+  f.page(HTML_CODING_DETAIL, prepEntry('coding', link(HTML_CSS_HUB)));
+  f.page(HTML_TRIVIA_DETAIL, prepEntry('trivia', link(HTML_HUB)));
+  assert.deepEqual(f.audit().failures, [
+    `HTML detail ${HTML_CODING_DETAIL} lacks a clean, followable coding-prep-entry link to ${HTML_HUB}`,
+    `HTML detail ${HTML_TRIVIA_DETAIL} lacks a clean, followable trivia-prep-entry link to ${HTML_CSS_HUB}`,
+  ]);
+});
+
+test('detail hub links outside the prep entry cannot satisfy CSS ownership', (t) => {
+  const f = ownershipFixture(t);
+  addValidOwnershipDetails(f);
+  f.page(CSS_CODING_DETAIL, `<main>${link(CSS_HUB)}</main>`);
+  assert.deepEqual(f.audit().failures, [
+    `CSS detail ${CSS_CODING_DETAIL} lacks a clean, followable coding-prep-entry link to ${CSS_HUB}`,
+  ]);
+});
+
+test('does not apply CSS ownership requirements to noindex details', (t) => {
+  const f = ownershipFixture(t);
+  addValidOwnershipDetails(f);
+  f.page(CSS_CODING_DETAIL, prepEntry('coding', link(HTML_CSS_HUB)), { directives: 'noindex,follow' });
+  assert.deepEqual(f.audit().failures, []);
+});
+
+test('requires the combined hub dedicated CSS CTA marker and WebPage schema mention', (t) => {
+  const f = ownershipFixture(t);
+  addValidOwnershipDetails(f);
+  f.page(HTML_CSS_HUB, combinedHubBody({ marker: false, schema: false }));
+  assert.deepEqual(f.audit().failures, [
+    `${HTML_CSS_HUB} lacks the dedicated CSS CTA marker and clean target`,
+    `${HTML_CSS_HUB} lacks the dedicated CSS WebPage schema mention`,
+  ]);
+});
+
 test('CLI validates the default editorial relationships and honors build/base overrides', (t) => {
   const f = fixture(t, CONTEXTUAL_HUB_LINKS);
+  f.page(HTML_CSS_HUB, combinedHubBody());
   const canonicalBase = 'https://preview.example';
   for (const route of new Set(CONTEXTUAL_HUB_LINKS.flatMap(({ source, targets }) => [source, ...targets]))) {
     const file = path.join(f.buildDir, route.slice(1), 'index.html');

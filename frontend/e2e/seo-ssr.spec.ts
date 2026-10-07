@@ -378,6 +378,37 @@ const GSC_OPPORTUNITY_PATHS = new Set([
 ]);
 const GSC_OPPORTUNITY_CASES = CASES.filter((entry) => GSC_OPPORTUNITY_PATHS.has(entry.path));
 
+const DETAIL_CTA_OWNERSHIP_CASES = [
+  {
+    path: '/css/coding/css-selectors-text-basics',
+    prepTestId: 'coding-prep-entry',
+    h1: 'Selectors & Text: Hero Title + Lead + Emphasis (Interview Warm-up)',
+    techHub: '/css/interview-questions',
+    keepsCombinedHub: false,
+  },
+  {
+    path: '/css/trivia/css-definition',
+    prepTestId: 'trivia-prep-entry',
+    h1: 'What does CSS stand for?',
+    techHub: '/css/interview-questions',
+    keepsCombinedHub: false,
+  },
+  {
+    path: '/html/coding/html-basic-structure',
+    prepTestId: 'coding-prep-entry',
+    h1: 'Warm-Up: Basic Structure',
+    techHub: '/html/interview-questions',
+    keepsCombinedHub: true,
+  },
+  {
+    path: '/html/trivia/html-dom',
+    prepTestId: 'trivia-prep-entry',
+    h1: 'What is the DOM?',
+    techHub: '/html/interview-questions',
+    keepsCombinedHub: true,
+  },
+] as const;
+
 const RAW_HTML_CASES: Array<{
   path: string;
   access: 'free' | 'premium';
@@ -1316,6 +1347,50 @@ test.describe('seo-ssr', () => {
         .toContain(entry.h1);
       await assertHydratedBasics(page, entry);
     }
+  });
+
+  test('CSS-only detail prep links keep CSS hub ownership in SSR and after hydration', async ({ page, request }) => {
+    for (const entry of DETAIL_CTA_OWNERSHIP_CASES) {
+      const rawHtml = await readRawHtml(request, entry.path);
+      const rawPrepBridge = rawTestIdMarkup(rawHtml, entry.prepTestId);
+      const rawRobots = normalizeText(extractRawMeta(rawHtml, 'robots')).replace(/\s+/g, '');
+
+      expect(extractRawCanonical(rawHtml), `raw canonical for ${entry.path}`).toBe(expectedCanonical(entry.path));
+      expect(rawRobots, `raw robots for ${entry.path}`).toBe('index,follow');
+      expect(normalizeText(extractRawH1(rawHtml)), `raw H1 contract for ${entry.path}`).toContain(
+        normalizeText(entry.h1),
+      );
+      expect(rawBodyMarkup(rawHtml).match(/<h1\b/gi) || [], `raw H1 count for ${entry.path}`).toHaveLength(1);
+      expectCleanRawLink(rawPrepBridge, entry.techHub, entry.path);
+      if (entry.keepsCombinedHub) {
+        expectCleanRawLink(rawPrepBridge, '/html-css/interview-questions', entry.path);
+      } else {
+        expectNoRawLink(rawPrepBridge, '/html-css/interview-questions', entry.path);
+      }
+    }
+
+    await page.addInitScript(() => {
+      (window as Window & { __FA_SEO_HOST__?: string }).__FA_SEO_HOST__ = 'frontendatlas.com';
+    });
+    const runtimeIssues = collectClientRuntimeIssues(page);
+
+    for (const entry of DETAIL_CTA_OWNERSHIP_CASES) {
+      await page.goto(entry.path, { waitUntil: 'domcontentloaded' });
+      await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', expectedCanonical(entry.path));
+      await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'index,follow');
+      await expect(page.locator('h1').first()).toContainText(entry.h1);
+
+      const prepBridge = page.getByTestId(entry.prepTestId);
+      await expect(prepBridge).toHaveCount(1);
+      await expect(prepBridge.locator(`a[href="${entry.techHub}"]`)).toHaveCount(1);
+      if (entry.keepsCombinedHub) {
+        await expect(prepBridge.locator('a[href="/html-css/interview-questions"]')).toHaveCount(1);
+      } else {
+        await expect(prepBridge.locator('a[href="/html-css/interview-questions"]')).toHaveCount(0);
+      }
+    }
+
+    expectNoHydrationOrChunkIssues(runtimeIssues, 'HTML/CSS detail prep links');
   });
 
   test('SSR HTML renders correct shell + meta (JS disabled)', async ({ browser }) => {

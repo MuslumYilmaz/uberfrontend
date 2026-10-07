@@ -1537,6 +1537,10 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     return tech === 'html' || tech === 'css';
   }
 
+  isHtmlTech(): boolean {
+    return this.tech === 'html';
+  }
+
   interviewTopicUiLabel(): string {
     return this.interviewTopicLabel();
   }

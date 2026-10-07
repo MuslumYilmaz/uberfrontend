@@ -3395,6 +3395,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   closeFiles() { this.showFileDrawer.set(false); }
 
   isWebTech(): boolean { return this.tech === 'html' || this.tech === 'css'; }
+  isHtmlTech(): boolean { return this.tech === 'html'; }
   isFrameworkTech(): boolean { return this.tech === 'angular' || this.tech === 'react' || this.tech === 'vue'; }
 
   interviewQuestionsHubRoute(): any[] {
