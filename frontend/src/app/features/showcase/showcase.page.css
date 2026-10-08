@@ -2353,7 +2353,6 @@
 }
 
 .contact-form{
-  position: relative;
   margin-top: 12px;
   display: grid;
   flex: 1 1 520px;
@@ -2399,35 +2398,6 @@
 .contact-textarea{
   resize: vertical;
   min-height: 120px;
-}
-
-.contact-honeypot{
-  position: absolute !important;
-  left: -10000px !important;
-  top: auto !important;
-  width: 1px !important;
-  height: 1px !important;
-  overflow: hidden !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
-}
-
-.contact-verification{
-  width: 100%;
-  min-width: 0;
-}
-
-.contact-verification app-turnstile-challenge{
-  display: block;
-  width: 100%;
-  min-width: 0;
-  max-width: 100%;
-}
-
-.contact-cooldown{
-  font-size: 13px;
-  line-height: 1.5;
-  color: color-mix(in srgb, var(--uf-text-secondary) 88%, var(--uf-accent) 12%);
 }
 
 .contact-input:focus,

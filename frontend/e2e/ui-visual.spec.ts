@@ -166,11 +166,6 @@ test.describe('UI visual regression', () => {
     test(`dialogs at ${width}px`, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 });
       await prepare(page, true);
-      // Keep the support fallback deterministic; external CAPTCHA timing must
-      // not change dialog height between reference and candidate captures.
-      await page.route('https://challenges.cloudflare.com/turnstile/v0/api.js*', route => route.fulfill({
-        status: 200, contentType: 'application/javascript', body: '/* Verification API unavailable. */',
-      }));
       await page.goto('/profile');
       await page.getByRole('button', { name: 'Security', exact: true }).click();
       await page.getByTestId('profile-change-password-open').click();
@@ -182,7 +177,6 @@ test.describe('UI visual regression', () => {
       if (!await reportBug.isVisible()) await page.getByRole('button', { name: 'Open sidebar', exact: true }).click();
       await reportBug.click();
       await expect(page.getByRole('heading', { name: 'Report a bug', exact: true })).toBeVisible();
-      await expect(page.locator('.bug-verification-error')).toBeVisible();
       await capture(page, `bug-dialog-${width}`);
       await page.getByRole('textbox', { name: 'What went wrong?', exact: true }).fill('A synthetic UI verification note.');
       await page.getByRole('button', { name: 'Close', exact: true }).click();

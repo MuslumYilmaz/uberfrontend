@@ -818,70 +818,14 @@
                 placeholder="What can we help with? Include URL + screenshot if it’s a bug."></textarea>
             </label>
 
-            <label class="contact-honeypot" aria-hidden="true">
-              <span>Website</span>
-              <input
-                name="website"
-                type="text"
-                [(ngModel)]="contact.website"
-                tabindex="-1"
-                autocomplete="off"
-                spellcheck="false" />
-            </label>
-
-            <div
-              class="contact-verification"
-              data-testid="showcase-contact-verification"
-              [attr.data-state]="contactChallengeState">
-              <app-turnstile-challenge
-                #contactTurnstile
-                action="contact"
-                [active]="sectionVisible.contact"
-                (tokenChange)="onContactTokenChange($event)"
-                (stateChange)="onContactChallengeStateChangeDeferred($event)">
-              </app-turnstile-challenge>
-            </div>
-
-            <div
-              class="contact-form-status"
-              data-testid="showcase-contact-challenge-status"
-              [attr.data-status]="contactChallengeState === 'verified' ? 'success' : null"
-              *ngIf="contactChallengeState === 'loading' || contactChallengeState === 'ready' || contactChallengeState === 'verified'"
-              role="status"
-              aria-live="polite">
-              <span *ngIf="contactChallengeState === 'loading'">Loading verification…</span>
-              <span *ngIf="contactChallengeState === 'ready'">Complete the verification above to send.</span>
-              <span *ngIf="contactChallengeState === 'verified'">Verification complete.</span>
-            </div>
-
-            <div
-              class="contact-form-status"
-              data-testid="showcase-contact-challenge-alert"
-              data-status="error"
-              *ngIf="contactChallengeState === 'error' || contactChallengeState === 'expired'"
-              role="alert">
-              <span *ngIf="contactChallengeState === 'error'">Verification is unavailable. Your message has been preserved.</span>
-              <span *ngIf="contactChallengeState === 'expired'">Verification expired. Your message has been preserved.</span>
-              <div class="contact-form-actions">
-                <button type="button" class="sk-btn sk-btn-ghost tiny" (click)="retryContactVerification()">
-                  Retry verification
-                </button>
-                <a [href]="'mailto:' + supportEmail">Email {{ supportEmail }}</a>
-              </div>
-            </div>
-
-            <div *ngIf="contactCooldownSeconds > 0" class="contact-cooldown" role="status" aria-live="polite">
-              Please wait {{ contactCooldownSeconds }}s before sending another message.
-            </div>
-
             <div class="contact-form-actions">
               <button
                 type="submit"
                 class="sk-btn sk-btn-primary"
                 data-testid="showcase-contact-submit"
-                [disabled]="f.invalid || contactSubmitting || contactCooldownSeconds > 0 || !contactVerificationToken">
+                [disabled]="f.invalid || contactSubmitting">
                 <span class="contact-action-mark" aria-hidden="true">→</span>
-                <span>{{ contactSubmitLabel() }}</span>
+                <span>{{ contactSubmitting ? 'Sending...' : 'Send message' }}</span>
               </button>
 
               <div class="contact-actions-note muted">

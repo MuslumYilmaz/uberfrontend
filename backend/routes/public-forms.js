@@ -1,19 +1,10 @@
 'use strict';
 
+const crypto = require('crypto');
 const express = require('express');
 const { resolveAllowedFrontendOrigins } = require('../config/urls');
-const { getClientIp } = require('../middleware/rateLimit');
+const { getClientIp, rateLimit } = require('../middleware/rateLimit');
 const { sendMail: defaultSendMail } = require('../services/email');
-const {
-  PublicFormProtectionError,
-  claimDuplicate,
-  consumeQuota,
-  createPublicFormStore,
-  fingerprint,
-  protectionUnavailableError,
-  releaseDuplicate,
-  verifyTurnstile: defaultVerifyTurnstile,
-} = require('../services/public-form-protection');
 
 const CONTACT_EMAIL_HARD_MAX_CHARS = 320;
 
@@ -144,16 +135,11 @@ function createConfig(env, allowedFrontendOrigins) {
   return {
     allowedOrigins: allowedFrontendOrigins,
     supportEmail: String(env.SUPPORT_EMAIL || 'support@frontendatlas.com').trim() || 'support@frontendatlas.com',
-    maxUrlChars: numberFromEnv(env, 'PUBLIC_FORM_MAX_URL_CHARS', numberFromEnv(env, 'BUG_REPORT_MAX_URL_CHARS', 2000)),
-    duplicateWindowMs: numberFromEnv(env, 'PUBLIC_FORM_DUP_WINDOW_MS', numberFromEnv(env, 'BUG_REPORT_DUP_WINDOW_MS', 600_000), 1000),
+    maxUrlChars: numberFromEnv(env, 'BUG_REPORT_MAX_URL_CHARS', 2000),
     contactBurstWindowMs: numberFromEnv(env, 'CONTACT_BURST_WINDOW_MS', 60_000, 1000),
     contactBurstMax: numberFromEnv(env, 'CONTACT_BURST_MAX', 2),
     contactWindowMs: numberFromEnv(env, 'CONTACT_WINDOW_MS', 3_600_000, 1000),
     contactMax: numberFromEnv(env, 'CONTACT_MAX', 5),
-    contactEmailHourlyWindowMs: numberFromEnv(env, 'CONTACT_EMAIL_HOURLY_WINDOW_MS', 3_600_000, 1000),
-    contactEmailHourlyMax: numberFromEnv(env, 'CONTACT_EMAIL_HOURLY_MAX', 3),
-    contactEmailDailyWindowMs: numberFromEnv(env, 'CONTACT_EMAIL_DAILY_WINDOW_MS', 86_400_000, 1000),
-    contactEmailDailyMax: numberFromEnv(env, 'CONTACT_EMAIL_DAILY_MAX', 5),
     contactMinMessageChars: numberFromEnv(env, 'CONTACT_MIN_MESSAGE_CHARS', 10),
     contactMaxMessageChars: numberFromEnv(env, 'CONTACT_MAX_MESSAGE_CHARS', 4000),
     contactMaxNameChars: numberFromEnv(env, 'CONTACT_MAX_NAME_CHARS', 120),
@@ -165,6 +151,7 @@ function createConfig(env, allowedFrontendOrigins) {
     bugReportBurstMax: numberFromEnv(env, 'BUG_REPORT_BURST_MAX', 2),
     bugReportWindowMs: numberFromEnv(env, 'BUG_REPORT_WINDOW_MS', 3_600_000, 1000),
     bugReportMax: numberFromEnv(env, 'BUG_REPORT_MAX', 5),
+    bugReportDuplicateWindowMs: numberFromEnv(env, 'BUG_REPORT_DUP_WINDOW_MS', 600_000, 1000),
     bugReportMinNoteChars: numberFromEnv(env, 'BUG_REPORT_MIN_NOTE_CHARS', 8),
     bugReportMaxNoteChars: numberFromEnv(env, 'BUG_REPORT_MAX_NOTE_CHARS', 4000),
   };
@@ -176,117 +163,84 @@ function logDecision(form, outcome, reason) {
   else console.warn(line);
 }
 
-function isHoneypotFilled(value) {
-  if (value === undefined || value === null) return false;
-  return String(value).trim().length > 0;
+function sendPayloadError(res, form, error) {
+  if (!(error instanceof PublicFormPayloadError)) throw error;
+  logDecision(form, 'rejected', error.reason);
+  return res.status(error.status).json({ error: error.message });
 }
 
-function sendProtectionError(res, form, error) {
-  const safeError = error instanceof PublicFormProtectionError
-    ? error
-    : protectionUnavailableError('protection_internal_error');
-  if (safeError.retryAfter) res.setHeader('Retry-After', String(safeError.retryAfter));
-  logDecision(form, 'rejected', safeError.reason || 'protection_error');
-  return res.status(safeError.status).json({ code: safeError.code, error: safeError.message });
+function normalizeBugText(value) {
+  return String(value || '').trim().toLowerCase().replace(/\s+/g, ' ');
 }
 
-async function protectIp({ store, form, sourceIp, config }) {
-  const isContact = form === 'contact';
-  await consumeQuota({
-    store,
-    scope: `${form}:ip:burst`,
-    value: sourceIp,
-    max: isContact ? config.contactBurstMax : config.bugReportBurstMax,
-    windowMs: isContact ? config.contactBurstWindowMs : config.bugReportBurstWindowMs,
-    reason: 'ip_burst_limit',
-  });
-  await consumeQuota({
-    store,
-    scope: `${form}:ip:hourly`,
-    value: sourceIp,
-    max: isContact ? config.contactMax : config.bugReportMax,
-    windowMs: isContact ? config.contactWindowMs : config.bugReportWindowMs,
-    reason: 'ip_hourly_limit',
-  });
+// Remembers what one client already reported, so a double submit does not reach the inbox twice.
+function createBugReportDuplicateGuard(windowMs) {
+  const recent = new Map(); // key -> expiresAt
+
+  return {
+    key(sourceIp, note, url) {
+      const digest = crypto.createHash('sha256')
+        .update(`${normalizeBugText(note)}|${normalizeBugText(url)}`)
+        .digest('hex');
+      return `${sourceIp}:${digest}`;
+    },
+    has(key, now = Date.now()) {
+      const expiresAt = recent.get(key);
+      if (!expiresAt) return false;
+      if (now >= expiresAt) {
+        recent.delete(key);
+        return false;
+      }
+      return true;
+    },
+    remember(key, now = Date.now()) {
+      recent.set(key, now + windowMs);
+
+      // Opportunistic cleanup to avoid unbounded growth.
+      if (recent.size > 10_000 && Math.random() < 0.02) {
+        for (const [entry, expiresAt] of recent) {
+          if (now >= expiresAt) recent.delete(entry);
+        }
+      }
+    },
+  };
 }
 
 function createPublicFormsRouter(options = {}) {
   const env = options.env || process.env;
   const allowedOrigins = options.allowedFrontendOrigins || resolveAllowedFrontendOrigins();
   const config = options.config || createConfig(env, allowedOrigins);
-  const store = options.store || createPublicFormStore({ env, fetchImpl: options.redisFetch });
   const sendMail = options.sendMail || defaultSendMail;
-  const verifyTurnstile = options.verifyTurnstile || defaultVerifyTurnstile;
+  const bugReportDuplicates = createBugReportDuplicateGuard(config.bugReportDuplicateWindowMs);
   const router = express.Router();
 
-  router.post('/contact', async (req, res) => {
-    const form = 'contact';
-    const sourceIp = getClientIp(req);
+  router.post(
+    '/contact',
+    rateLimit({
+      name: 'contact-burst',
+      windowMs: config.contactBurstWindowMs,
+      max: config.contactBurstMax,
+      message: 'Please wait a moment before sending another message.',
+    }),
+    rateLimit({
+      name: 'contact-hourly',
+      windowMs: config.contactWindowMs,
+      max: config.contactMax,
+      message: 'Too many messages, please try again later.',
+    }),
+    async (req, res) => {
+      const form = 'contact';
 
-    try {
-      await protectIp({ store, form, sourceIp, config });
-    } catch (error) {
-      return sendProtectionError(res, form, error);
-    }
-
-    if (isHoneypotFilled(req.body?.website)) {
-      logDecision(form, 'rejected', 'honeypot');
-      return res.status(204).end();
-    }
-
-    let payload;
-    try {
-      payload = contactPayload(req.body, config);
-    } catch (error) {
-      if (error instanceof PublicFormPayloadError) {
-        logDecision(form, 'rejected', error.reason);
-        return res.status(error.status).json({ error: error.message });
+      let payload;
+      try {
+        payload = contactPayload(req.body, config);
+      } catch (error) {
+        return sendPayloadError(res, form, error);
       }
-      return sendProtectionError(res, form, error);
-    }
 
-    try {
-      await verifyTurnstile({
-        token: req.body?.verificationToken,
-        expectedAction: 'contact',
-        remoteIp: sourceIp,
-        env,
-      });
-      await consumeQuota({
-        store,
-        scope: 'contact:email:hourly',
-        value: payload.email,
-        max: config.contactEmailHourlyMax,
-        windowMs: config.contactEmailHourlyWindowMs,
-        reason: 'email_hourly_limit',
-      });
-      await consumeQuota({
-        store,
-        scope: 'contact:email:daily',
-        value: payload.email,
-        max: config.contactEmailDailyMax,
-        windowMs: config.contactEmailDailyWindowMs,
-        reason: 'email_daily_limit',
-      });
-    } catch (error) {
-      return sendProtectionError(res, form, error);
-    }
-
-    let duplicateClaim;
-    try {
-      duplicateClaim = await claimDuplicate({
-        store,
-        scope: 'contact',
-        value: fingerprint([payload.email, payload.topic, payload.message, payload.url]),
-        windowMs: config.duplicateWindowMs,
-      });
-    } catch (error) {
-      return sendProtectionError(res, form, error);
-    }
-
-    const sentAt = new Date().toISOString();
-    const subject = `Contact form from FrontendAtlas: ${payload.topic} - ${payload.name}`;
-    const html = `
+      const sentAt = new Date().toISOString();
+      const subject = `Contact form from FrontendAtlas: ${payload.topic} - ${payload.name}`;
+      const html = `
       <h2 style="margin:0 0 8px">New Contact Message</h2>
       <p><strong>Name:</strong> ${escapeHtml(payload.name)}</p>
       <p><strong>Email:</strong> <a href="mailto:${escapeAttr(payload.email)}">${escapeHtml(payload.email)}</a></p>
@@ -298,87 +252,64 @@ function createPublicFormsRouter(options = {}) {
       <p style="color:#64748b;font-size:12px;margin:0">Sent ${sentAt}</p>
     `;
 
-    try {
-      await sendMail({
-        from: `"FrontendAtlas Contact" <${env.SMTP_USER}>`,
-        to: config.supportEmail,
-        replyTo: payload.email,
-        subject,
-        text:
-          `New contact message\n\n` +
-          `Name: ${payload.name}\n` +
-          `Email: ${payload.email}\n` +
-          `Topic: ${payload.topic}\n` +
-          `Page: ${payload.url || '(none)'}\n` +
-          `Sent: ${sentAt}\n\n` +
-          payload.message,
-        html,
-      });
-    } catch {
       try {
-        await releaseDuplicate(store, duplicateClaim);
+        await sendMail({
+          from: `"FrontendAtlas Contact" <${env.SMTP_USER}>`,
+          to: config.supportEmail,
+          replyTo: payload.email,
+          subject,
+          text:
+            `New contact message\n\n` +
+            `Name: ${payload.name}\n` +
+            `Email: ${payload.email}\n` +
+            `Topic: ${payload.topic}\n` +
+            `Page: ${payload.url || '(none)'}\n` +
+            `Sent: ${sentAt}\n\n` +
+            payload.message,
+          html,
+        });
       } catch {
-        logDecision(form, 'failed', 'duplicate_release_failed');
+        logDecision(form, 'failed', 'smtp_error');
+        return res.status(500).json({ error: 'Email send failed' });
       }
-      logDecision(form, 'failed', 'smtp_error');
-      return res.status(500).json({ error: 'Email send failed' });
-    }
 
-    logDecision(form, 'accepted', 'submitted');
-    return res.status(204).end();
-  });
-
-  router.post('/bug-report', async (req, res) => {
-    const form = 'bug_report';
-    const sourceIp = getClientIp(req);
-
-    try {
-      await protectIp({ store, form, sourceIp, config });
-    } catch (error) {
-      return sendProtectionError(res, form, error);
-    }
-
-    if (isHoneypotFilled(req.body?.website)) {
-      logDecision(form, 'rejected', 'honeypot');
+      logDecision(form, 'accepted', 'submitted');
       return res.status(204).end();
     }
+  );
 
-    let payload;
-    try {
-      payload = bugReportPayload(req.body, config);
-    } catch (error) {
-      if (error instanceof PublicFormPayloadError) {
-        logDecision(form, 'rejected', error.reason);
-        return res.status(error.status).json({ error: error.message });
+  router.post(
+    '/bug-report',
+    rateLimit({
+      name: 'bug-report-burst',
+      windowMs: config.bugReportBurstWindowMs,
+      max: config.bugReportBurstMax,
+      message: 'Please wait a moment before sending another bug report.',
+    }),
+    rateLimit({
+      name: 'bug-report-hourly',
+      windowMs: config.bugReportWindowMs,
+      max: config.bugReportMax,
+      message: 'Too many bug reports, please try again later.',
+    }),
+    async (req, res) => {
+      const form = 'bug_report';
+
+      let payload;
+      try {
+        payload = bugReportPayload(req.body, config);
+      } catch (error) {
+        return sendPayloadError(res, form, error);
       }
-      return sendProtectionError(res, form, error);
-    }
 
-    try {
-      await verifyTurnstile({
-        token: req.body?.verificationToken,
-        expectedAction: 'bug_report',
-        remoteIp: sourceIp,
-        env,
-      });
-    } catch (error) {
-      return sendProtectionError(res, form, error);
-    }
+      const duplicateKey = bugReportDuplicates.key(getClientIp(req) || 'unknown', payload.note, payload.url);
+      if (bugReportDuplicates.has(duplicateKey)) {
+        logDecision(form, 'rejected', 'duplicate');
+        return res.status(429).json({ error: 'Duplicate bug report detected. Please wait before sending again.' });
+      }
 
-    let duplicateClaim;
-    try {
-      duplicateClaim = await claimDuplicate({
-        store,
-        scope: 'bug-report',
-        value: fingerprint([sourceIp, payload.note, payload.url]),
-        windowMs: config.duplicateWindowMs,
-      });
-    } catch (error) {
-      return sendProtectionError(res, form, error);
-    }
-
-    const sentAt = new Date().toISOString();
-    const html = `
+      const sentAt = new Date().toISOString();
+      const html = `
       <h2 style="margin:0 0 8px">New Bug Report</h2>
       <p style="white-space:pre-wrap;font-family:ui-sans-serif,system-ui,Segoe UI,Roboto">${escapeHtml(payload.note)}</p>
       ${payload.url ? `<p><strong>Page:</strong> <a href="${escapeAttr(payload.url)}">${escapeHtml(payload.url)}</a></p>` : ''}
@@ -386,27 +317,25 @@ function createPublicFormsRouter(options = {}) {
       <p style="color:#64748b;font-size:12px;margin:0">Sent ${sentAt}</p>
     `;
 
-    try {
-      await sendMail({
-        from: `"Bug Reporter" <${env.SMTP_USER}>`,
-        to: config.supportEmail,
-        subject: 'Bug report from FrontendAtlas',
-        text: `Bug report:\n\n${payload.note}\n\nPage: ${payload.url || '(none)'}\nSent ${sentAt}`,
-        html,
-      });
-    } catch {
       try {
-        await releaseDuplicate(store, duplicateClaim);
+        await sendMail({
+          from: `"Bug Reporter" <${env.SMTP_USER}>`,
+          to: config.supportEmail,
+          subject: 'Bug report from FrontendAtlas',
+          text: `Bug report:\n\n${payload.note}\n\nPage: ${payload.url || '(none)'}\nSent ${sentAt}`,
+          html,
+        });
       } catch {
-        logDecision(form, 'failed', 'duplicate_release_failed');
+        logDecision(form, 'failed', 'smtp_error');
+        return res.status(500).json({ error: 'Email send failed' });
       }
-      logDecision(form, 'failed', 'smtp_error');
-      return res.status(500).json({ error: 'Email send failed' });
-    }
 
-    logDecision(form, 'accepted', 'submitted');
-    return res.status(204).end();
-  });
+      // Only a delivered report counts, so a failed send can be retried right away.
+      bugReportDuplicates.remember(duplicateKey);
+      logDecision(form, 'accepted', 'submitted');
+      return res.status(204).end();
+    }
+  );
 
   return router;
 }

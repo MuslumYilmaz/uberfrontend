@@ -13,62 +13,6 @@ async function seedHeroVariant(page: any, variant: 'control' | 'outcome'): Promi
   }, variant);
 }
 
-async function installTurnstileStub(page: any): Promise<void> {
-  await page.addInitScript(() => {
-    const widgets = new Map<string, any>();
-    let widgetSequence = 0;
-
-    (window as any).turnstile = {
-      render(container: string | HTMLElement, options: any) {
-        const element = typeof container === 'string'
-          ? document.querySelector(container)
-          : container;
-        const widgetId = `e2e-turnstile-${++widgetSequence}`;
-        widgets.set(widgetId, options);
-        element?.setAttribute('data-turnstile-stub', 'ready');
-        window.setTimeout(() => options.callback?.(`e2e-token-${widgetSequence}`), 0);
-        return widgetId;
-      },
-      reset(widgetId: string) {
-        const options = widgets.get(widgetId);
-        window.setTimeout(() => options?.callback?.(`e2e-token-${++widgetSequence}`), 0);
-      },
-      remove(widgetId: string) {
-        widgets.delete(widgetId);
-      },
-    };
-  });
-}
-
-async function installTurnstileErrorStub(page: any): Promise<void> {
-  await page.addInitScript(() => {
-    const widgets = new Map<string, any>();
-    let widgetSequence = 0;
-    (window as any).__showcaseTurnstileResetCount = 0;
-
-    (window as any).turnstile = {
-      render(container: string | HTMLElement, options: any) {
-        const element = typeof container === 'string'
-          ? document.querySelector(container)
-          : container;
-        const widgetId = `e2e-error-turnstile-${++widgetSequence}`;
-        widgets.set(widgetId, options);
-        element?.setAttribute('data-turnstile-stub', 'error');
-        window.setTimeout(() => options['error-callback']?.(), 0);
-        return widgetId;
-      },
-      reset(widgetId: string) {
-        (window as any).__showcaseTurnstileResetCount += 1;
-        const options = widgets.get(widgetId);
-        window.setTimeout(() => options?.['error-callback']?.(), 0);
-      },
-      remove(widgetId: string) {
-        widgets.delete(widgetId);
-      },
-    };
-  });
-}
-
 test('showcase: demo CTA routes to the correct question pages', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByTestId('showcase-hero-title')).toBeVisible();
@@ -133,8 +77,7 @@ test('showcase: trivia snapshot tabs resolve to real questions', async ({ page }
   );
 });
 
-test('showcase: contact form requires verification and sends the anti-spam payload', async ({ page }) => {
-  await installTurnstileStub(page);
+test('showcase: contact form posts the message to the contact API', async ({ page }) => {
   let postedBody: Record<string, unknown> | undefined;
   await page.route('**/api/contact', async (route) => {
     postedBody = route.request().postDataJSON() as Record<string, unknown>;
@@ -154,50 +97,51 @@ test('showcase: contact form requires verification and sends the anti-spam paylo
   await submit.click();
 
   await expect(page.getByTestId('showcase-contact-status')).toContainText('Message sent');
-  expect(postedBody).toEqual(expect.objectContaining({
+  expect(postedBody).toEqual({
     name: 'Alex Frontend',
     email: 'alex@example.com',
+    topic: 'general',
     message: 'Please add more debugging incidents.',
-    website: '',
-  }));
-  expect(String(postedBody?.['verificationToken'] || '')).toMatch(/^e2e-token-/);
+    url: expect.stringMatching(/^https?:\/\//),
+  });
 });
 
-test('showcase: verification errors preserve the contact draft and expose retry plus email fallback', async ({ page }) => {
-  await installTurnstileErrorStub(page);
-  await page.goto('/');
+test.describe('showcase: contact rate limit', () => {
+  // The browser logs the mocked 429 itself; every other browser error stays fatal.
+  test.use({ consoleErrorAllowlist: ['\\/api\\/contact'] });
 
-  await page.locator('[data-load="contact"]').scrollIntoViewIfNeeded();
-  const form = page.getByTestId('showcase-contact-form');
-  await expect(form).toBeVisible();
+  test('showcase: a rate-limited contact submit keeps the draft and offers the email fallback', async ({ page }) => {
+    await page.route('**/api/contact', async (route) => {
+      await route.fulfill({
+        status: 429,
+        contentType: 'application/json',
+        headers: { 'Retry-After': '30' },
+        body: JSON.stringify({ error: 'Please wait a moment before sending another message.' }),
+      });
+    });
+    await page.goto('/');
 
-  const name = form.locator('input[name="name"]');
-  const email = form.locator('input[name="email"]');
-  const message = form.locator('textarea[name="message"]');
-  await name.fill('Alex Frontend');
-  await email.fill('alex@example.com');
-  await message.fill('Please preserve this draft while verification is unavailable.');
+    await page.locator('[data-load="contact"]').scrollIntoViewIfNeeded();
+    const form = page.getByTestId('showcase-contact-form');
+    await expect(form).toBeVisible();
 
-  const alert = page.getByTestId('showcase-contact-challenge-alert');
-  await expect(alert).toBeVisible();
-  await expect(alert).toContainText('Verification is unavailable');
-  await expect(alert.getByRole('link', { name: /email support@frontendatlas\.com/i })).toHaveAttribute(
-    'href',
-    'mailto:support@frontendatlas.com',
-  );
+    const message = form.locator('textarea[name="message"]');
+    await form.locator('input[name="name"]').fill('Alex Frontend');
+    await form.locator('input[name="email"]').fill('alex@example.com');
+    await message.fill('Please preserve this draft while sending is rate limited.');
 
-  const submit = page.getByTestId('showcase-contact-submit');
-  await expect(submit).toBeDisabled();
-  await expect(submit).toContainText('Verification unavailable');
-  await expect(page.getByTestId('showcase-contact-status')).toHaveCount(0);
+    const submit = page.getByTestId('showcase-contact-submit');
+    await submit.click();
 
-  await alert.getByRole('button', { name: 'Retry verification' }).click();
-  await expect.poll(() => page.evaluate(() => (window as any).__showcaseTurnstileResetCount)).toBe(1);
-  await expect(alert).toBeVisible();
-  await expect(submit).toBeDisabled();
-  await expect(name).toHaveValue('Alex Frontend');
-  await expect(email).toHaveValue('alex@example.com');
-  await expect(message).toHaveValue('Please preserve this draft while verification is unavailable.');
+    const status = page.getByTestId('showcase-contact-status');
+    await expect(status).toContainText('30s');
+    await expect(status.getByRole('link', { name: 'Email support directly' })).toHaveAttribute(
+      'href',
+      'mailto:support@frontendatlas.com',
+    );
+    await expect(message).toHaveValue('Please preserve this draft while sending is rate limited.');
+    await expect(submit).toBeEnabled();
+  });
 });
 
 test('content: react-counter solution avoids React.useState', async () => {
