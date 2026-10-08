@@ -55,6 +55,19 @@ export async function assertPriorityLinksLayout(page: Page, surface: PriorityLin
       }
       if (linkRect.height < 24) issues.push(`link ${index + 1} is shorter than a 24px target`);
     });
+
+    // Groups sharing a row must end on the same line, however many links each one holds.
+    const rows = new Map<number, number[]>();
+    root.querySelectorAll<HTMLElement>('.priority-links__group').forEach((group) => {
+      const rect = group.getBoundingClientRect();
+      const top = Math.round(rect.top);
+      rows.set(top, [...(rows.get(top) ?? []), rect.height]);
+    });
+    Array.from(rows.values()).forEach((heights, index) => {
+      if (Math.max(...heights) - Math.min(...heights) > 1) {
+        issues.push(`groups in row ${index + 1} have uneven heights (${heights.map(Math.round).join(', ')})`);
+      }
+    });
     return issues;
   });
   expect(violations, `${label} priority links layout`).toEqual([]);

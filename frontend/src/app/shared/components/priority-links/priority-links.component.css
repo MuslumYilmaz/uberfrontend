@@ -24,21 +24,26 @@
   line-height: 1.5;
 }
 
-/* Columns follow the available width, so the block reflows inside narrow page columns too. */
+/*
+ * Columns follow the available width, so the block reflows inside narrow page columns too.
+ * Groups stretch to their row, so every card in a row ends on the same line.
+ */
 .priority-links__grid {
+  container: priority-links / inline-size;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 232px), 1fr));
   gap: var(--uf-space-3);
-  align-items: start;
   min-width: 0;
 }
 
 .priority-links__group {
+  --priority-links-group-padding: 14px;
+
   display: grid;
   align-content: start;
   gap: var(--uf-space-2);
   min-width: 0;
-  padding: 14px;
+  padding: var(--priority-links-group-padding);
   border: 1px solid color-mix(in srgb, var(--uf-border-subtle) 86%, transparent);
   border-radius: var(--uf-radius-8);
   background: color-mix(in srgb, var(--uf-surface-alt) 72%, var(--uf-surface));
@@ -64,6 +69,24 @@
 
 .priority-links__list li {
   min-width: 0;
+}
+
+/*
+ * A group with a much longer list takes two tracks and splits its links into two columns, so it
+ * stays as tall as its neighbours. 476px is two 232px tracks plus the gap: below that the grid has
+ * a single track, and spanning would force an overflowing second one.
+ */
+@container priority-links (min-width: 476px) {
+  .priority-links__group--wide {
+    grid-column: span 2;
+  }
+
+  /* The column gap mirrors the space between two cards (padding and 1px border on each side, plus the
+     grid gap), so both link columns line up with the tracks. */
+  .priority-links__group--wide .priority-links__list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: calc(2 * (var(--priority-links-group-padding) + 1px) + var(--uf-space-3));
+  }
 }
 
 .priority-links__link {

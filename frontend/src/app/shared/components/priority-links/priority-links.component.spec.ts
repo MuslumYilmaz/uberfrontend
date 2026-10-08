@@ -68,4 +68,22 @@ describe('PriorityLinksComponent', () => {
     expect(host.querySelector('h2, h3')).toBeNull();
     expect(Array.from(host.querySelectorAll('h4'), (item) => item.textContent?.trim())).toEqual(['React', 'Vue']);
   });
+
+  it('widens only a group holding at least twice the links of the shortest one', () => {
+    const groupOf = (id: string, linkCount: number): PriorityLinkGroup => ({
+      id,
+      title: id,
+      links: Array.from({ length: linkCount }, (_, index) => ({ label: `${id} ${index + 1}`, route: `/${id}/${index + 1}` })),
+    });
+    const host = render({
+      groups: [groupOf('system-design', 6), groupOf('react', 4), groupOf('vue', 3)],
+      heading: 'Concept questions',
+    });
+
+    const wideTitles = Array.from(
+      host.querySelectorAll('.priority-links__group--wide .priority-links__group-title'),
+      (item) => item.textContent?.trim(),
+    );
+    expect(wideTitles).toEqual(['system-design']);
+  });
 });
