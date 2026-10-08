@@ -9,7 +9,10 @@
   </div>
 
   <div class="priority-links__grid">
-    <div class="priority-links__group" *ngFor="let group of groups; trackBy: trackByGroup">
+    <div
+      class="priority-links__group"
+      [class.priority-links__group--wide]="isWideGroup(group)"
+      *ngFor="let group of groups; trackBy: trackByGroup">
       <ng-container [ngSwitch]="headingLevel">
         <h4 *ngSwitchCase="3" class="priority-links__group-title">{{ group.title }}</h4>
         <h3 *ngSwitchDefault class="priority-links__group-title">{{ group.title }}</h3>

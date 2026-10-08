@@ -10,7 +10,6 @@ import {
   QueryList,
   PLATFORM_ID,
   Type,
-  ViewChild,
   ViewChildren,
   inject,
 } from '@angular/core';
@@ -46,10 +45,6 @@ import { CompanyLogoMarkComponent } from '../../shared/components/company-logo-m
 import { PrepRoadmapComponent, type PrepRoadmapItem } from '../../shared/components/prep-roadmap/prep-roadmap.component';
 import { PriorityLinksComponent } from '../../shared/components/priority-links/priority-links.component';
 import { HOME_PRIORITY_LINK_GROUPS } from '../../core/content/priority-links';
-import {
-  TurnstileChallengeComponent,
-  type TurnstileChallengeState,
-} from '../../shared/components/turnstile-challenge/turnstile-challenge.component';
 import { ShowcaseIconComponent, ShowcaseIconName } from './showcase-icon.component';
 import { ConversionStickyCtaComponent } from '../../shared/components/conversion-sticky-cta/conversion-sticky-cta.component';
 import { TRACK_LOOKUP, deriveTrackMetrics } from '../tracks/track.data';
@@ -87,7 +82,7 @@ if (!FOUNDATIONS_TRACK) {
 const FOUNDATIONS_TRACK_METRICS = deriveTrackMetrics(FOUNDATIONS_TRACK);
 
 @Component({
-    imports: [CommonModule, FormsModule, RouterModule, PricingPlansSectionComponent, FaqSectionComponent, ShowcaseIconComponent, CompanyLogoMarkComponent, PrepRoadmapComponent, PriorityLinksComponent, TurnstileChallengeComponent, ConversionStickyCtaComponent],
+    imports: [CommonModule, FormsModule, RouterModule, PricingPlansSectionComponent, FaqSectionComponent, ShowcaseIconComponent, CompanyLogoMarkComponent, PrepRoadmapComponent, PriorityLinksComponent, ConversionStickyCtaComponent],
     selector: 'app-showcase-page',
     templateUrl: './showcase.page.html',
     styleUrls: ['./showcase.page.css']
@@ -97,7 +92,6 @@ export class ShowcasePageComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly http = inject(HttpClient);
   private readonly incidentService = inject(IncidentService);
   private readonly tradeoffBattleService = inject(TradeoffBattleService);
-  @ViewChild('contactTurnstile') contactTurnstile?: TurnstileChallengeComponent;
   @ViewChildren('observeSection', { read: ElementRef }) observeSections!: QueryList<
     ElementRef<HTMLElement>
   >;
@@ -113,20 +107,15 @@ export class ShowcasePageComponent implements OnInit, AfterViewInit, OnDestroy {
     email: '',
     topic: 'general' as ContactTopic,
     message: '',
-    website: '',
   };
 
   contactSubmitting = false;
   contactStatus: ContactStatus | null = null;
-  contactVerificationToken = '';
-  contactChallengeState: TurnstileChallengeState = 'idle';
-  contactCooldownSeconds = 0;
   readonly contactMinMessageChars = 10;
   readonly contactMaxMessageChars = 4000;
   readonly contactMaxNameChars = 120;
   readonly contactMaxEmailChars = 320;
   readonly supportEmail = 'support@frontendatlas.com';
-  private contactCooldownTimer?: number;
 
   readonly reduceMotion =
     typeof window !== 'undefined' &&
@@ -690,10 +679,6 @@ You can also reset any task back to the starter whenever you want to re-practice
     this.observer?.disconnect();
     if (this.isBrowser) {
       window.removeEventListener('resize', this.onViewportResize);
-      if (this.contactCooldownTimer) {
-        window.clearInterval(this.contactCooldownTimer);
-        this.contactCooldownTimer = undefined;
-      }
     }
   }
 
@@ -1076,18 +1061,14 @@ You can also reset any task back to the starter whenever you want to re-practice
   }
 
   async submitContact(): Promise<void> {
-    if (this.contactSubmitting || this.contactCooldownSeconds > 0) return;
+    if (this.contactSubmitting) return;
 
     const name = this.contact.name.trim();
     const email = this.contact.email.trim();
     const message = this.contact.message.trim();
     const topic = this.contact.topic;
-    const verificationToken = this.contactVerificationToken.trim();
 
     if (!name || !email || !message) return;
-    if (!verificationToken) {
-      return;
-    }
 
     this.contactSubmitting = true;
     this.contactStatus = null;
@@ -1099,129 +1080,54 @@ You can also reset any task back to the starter whenever you want to re-practice
         topic,
         message,
         url: typeof window !== 'undefined' ? window.location.href : '',
-        website: this.contact.website,
-        verificationToken,
       }, { responseType: 'text' }));
 
-      this.contact = { name: '', email: '', topic: 'general', message: '', website: '' };
+      this.contact = { name: '', email: '', topic: 'general', message: '' };
       this.contactStatus = {
         tone: 'success',
         text: 'Message sent. We will reply to the email address you provided.',
       };
     } catch (err) {
-      if (err instanceof HttpErrorResponse && err.status === 429) {
-        this.startContactCooldown(this.readRetryAfterSeconds(err));
-      }
       this.contactStatus = {
         tone: 'error',
         text: this.mapContactError(err),
       };
     } finally {
-      this.contactVerificationToken = '';
-      this.contactTurnstile?.reset();
       this.contactSubmitting = false;
     }
   }
 
-  onContactTokenChange(token: string): void {
-    this.contactVerificationToken = String(token || '').trim();
-  }
-
-  onContactChallengeStateChange(state: TurnstileChallengeState): void {
-    this.contactChallengeState = state;
-    if (state === 'error') {
-      this.contactVerificationToken = '';
-      return;
-    }
-    if (state === 'expired') {
-      this.contactVerificationToken = '';
-    }
-  }
-
-  onContactChallengeStateChangeDeferred(state: TurnstileChallengeState): void {
-    queueMicrotask(() => this.onContactChallengeStateChange(state));
-  }
-
-  retryContactVerification(): void {
-    this.contactVerificationToken = '';
-    this.contactChallengeState = 'loading';
-    this.contactTurnstile?.reset();
-  }
-
-  contactSubmitLabel(): string {
-    if (this.contactSubmitting) return 'Sending...';
-    if (this.contactChallengeState === 'error') return 'Verification unavailable';
-    if (this.contactChallengeState === 'expired') return 'Verification expired';
-    if (!this.contactVerificationToken) {
-      return this.contactChallengeState === 'loading'
-        ? 'Loading verification...'
-        : 'Complete verification to send';
-    }
-    return 'Send message';
-  }
-
   private mapContactError(err: unknown): string {
     if (err instanceof HttpErrorResponse) {
-      const apiError = this.parseContactApiError(err.error);
-      const apiCode = apiError.code;
       if (err.status === 429) {
         const retryAfter = this.readRetryAfterSeconds(err);
         return `Too many messages right now. Please wait ${retryAfter}s or email ${this.supportEmail} directly.`;
       }
-      if (err.status === 503 || apiCode === 'FORM_PROTECTION_UNAVAILABLE') {
-        return `Verification is unavailable. Please email ${this.supportEmail} directly.`;
-      }
-      if (
-        apiCode === 'FORM_VERIFICATION_REQUIRED'
-        || apiCode === 'FORM_VERIFICATION_FAILED'
-      ) {
-        return 'We could not verify this submission. Please complete the verification and try again.';
-      }
-      if (apiError.message) return apiError.message;
+      const apiMessage = this.parseContactApiMessage(err.error);
+      if (apiMessage) return apiMessage;
     }
     return `We could not send your message right now. Please email ${this.supportEmail} directly.`;
   }
 
-  private parseContactApiError(value: unknown): { code: string; message: string } {
+  // The request uses responseType 'text', so a JSON error body arrives as a string.
+  private parseContactApiMessage(value: unknown): string {
     let body = value;
     if (typeof body === 'string') {
       try {
         body = JSON.parse(body) as unknown;
       } catch {
-        return { code: '', message: String(body) };
+        return String(body);
       }
     }
 
-    if (!body || typeof body !== 'object') return { code: '', message: '' };
-    const candidate = body as { code?: unknown; error?: unknown };
-    return {
-      code: typeof candidate.code === 'string' ? candidate.code : '',
-      message: typeof candidate.error === 'string' ? candidate.error : '',
-    };
+    if (!body || typeof body !== 'object') return '';
+    const message = (body as { error?: unknown }).error;
+    return typeof message === 'string' ? message : '';
   }
 
   private readRetryAfterSeconds(err: HttpErrorResponse): number {
     const raw = Number(err.headers?.get('Retry-After') || 0);
     return Number.isFinite(raw) && raw > 0 ? Math.ceil(raw) : 60;
-  }
-
-  private startContactCooldown(seconds: number): void {
-    const safeSeconds = Math.max(1, Math.ceil(seconds));
-    this.contactCooldownSeconds = safeSeconds;
-    if (!this.isBrowser) return;
-
-    if (this.contactCooldownTimer) {
-      window.clearInterval(this.contactCooldownTimer);
-    }
-    const until = Date.now() + safeSeconds * 1000;
-    this.contactCooldownTimer = window.setInterval(() => {
-      const remaining = Math.max(0, Math.ceil((until - Date.now()) / 1000));
-      this.contactCooldownSeconds = remaining;
-      if (remaining === 0 && this.contactCooldownTimer) {
-        window.clearInterval(this.contactCooldownTimer);
-        this.contactCooldownTimer = undefined;
-      }
-    }, 250);
   }
 
   setActiveLane(lane: LibraryLane) {

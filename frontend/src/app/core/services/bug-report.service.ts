@@ -21,24 +21,23 @@ export class BugReportService {
   submitting = signal(false);
   submitOk = signal(false);
   note = signal('');
-  verificationToken = signal('');
-  website = signal('');
   error = signal<string | null>(null);
-  supportFallbackVisible = signal(false);
   context = signal<BugReportContext | null>(null);
   cooldownSeconds = signal(0);
   canSubmit = computed(() => {
     const length = this.note().trim().length;
     return !this.submitting()
       && this.cooldownSeconds() === 0
-      && this.verificationToken().trim().length > 0
       && length >= this.minNoteChars
       && length <= this.maxNoteChars;
   });
 
   private closeTimer?: number;
   private cooldownTimer?: number;
+  private lastFingerprint: string | null = null;
+  private lastFingerprintAt = 0;
   private readonly cooldownMs = 30_000;
+  private readonly duplicateWindowMs = 10 * 60_000;
 
   constructor(private http: HttpClient) { }
 
@@ -50,18 +49,13 @@ export class BugReportService {
 
     this.context.set(context);
     this.note.set('');
-    this.verificationToken.set('');
-    this.website.set('');
     this.error.set(null);
-    this.supportFallbackVisible.set(false);
     this.submitOk.set(false);
     this.visible.set(true);
   }
 
   close(): void {
     if (this.submitting()) return;
-    this.verificationToken.set('');
-    this.website.set('');
     this.visible.set(false);
   }
 
@@ -82,24 +76,22 @@ export class BugReportService {
       return;
     }
 
-    const verificationToken = this.verificationToken().trim();
-    if (!verificationToken) {
-      this.error.set('Please complete the verification check before sending your report.');
+    const now = Date.now();
+    const fingerprint = this.fingerprint(trimmed, this.context()?.url || '');
+    if (this.lastFingerprint === fingerprint && now - this.lastFingerprintAt < this.duplicateWindowMs) {
+      this.error.set('This looks like a duplicate report. Please wait before sending it again.');
       return;
     }
 
     this.submitting.set(true);
     this.error.set(null);
-    this.supportFallbackVisible.set(false);
 
     try {
-      const payload = this.composePayload(
-        trimmed,
-        verificationToken,
-        this.website()
-      );
+      const payload = this.composePayload(trimmed);
       await firstValueFrom(this.http.post(apiUrl('/bug-report'), payload, { responseType: 'text' }));
 
+      this.lastFingerprint = fingerprint;
+      this.lastFingerprintAt = now;
       this.startCooldown(this.cooldownMs);
 
       this.submitOk.set(true);
@@ -119,18 +111,11 @@ export class BugReportService {
     } catch (err) {
       this.error.set(this.mapSubmitError(err));
     } finally {
-      // Turnstile tokens are single-use. Never allow a completed backend attempt
-      // to be retried with the same token, regardless of the response status.
-      this.verificationToken.set('');
       this.submitting.set(false);
     }
   }
 
-  private composePayload(
-    note: string,
-    verificationToken: string,
-    website: string
-  ): { note: string; url: string; verificationToken: string; website: string } {
+  private composePayload(note: string): { note: string; url: string } {
     const ctx = this.context();
     const details: string[] = [];
 
@@ -147,8 +132,6 @@ export class BugReportService {
     return {
       note: `${note}${contextBlock}`,
       url: ctx?.url || (typeof window !== 'undefined' ? window.location.href : ''),
-      verificationToken,
-      website,
     };
   }
 
@@ -177,6 +160,12 @@ export class BugReportService {
     this.cooldownTimer = window.setInterval(tick, 250);
   }
 
+  private fingerprint(note: string, url: string): string {
+    const normalizedNote = note.trim().toLowerCase().replace(/\s+/g, ' ');
+    const normalizedUrl = String(url || '').trim().toLowerCase();
+    return `${normalizedNote}|${normalizedUrl}`;
+  }
+
   private mapSubmitError(err: unknown): string {
     if (err instanceof HttpErrorResponse) {
       if (err.status === 429) {
@@ -188,20 +177,8 @@ export class BugReportService {
         return 'Too many reports right now. Please try again in a bit.';
       }
 
-      const apiError = this.parseApiError(err.error);
-      const apiCode = apiError.code;
-      if (err.status === 503 || apiCode === 'FORM_PROTECTION_UNAVAILABLE') {
-        this.supportFallbackVisible.set(true);
-        return 'Bug report verification is temporarily unavailable. Please email support instead.';
-      }
-      if (apiCode === 'FORM_VERIFICATION_REQUIRED') {
-        return 'Please complete the verification check before sending your report.';
-      }
-      if (apiCode === 'FORM_VERIFICATION_FAILED') {
-        return 'We could not verify this submission. Please complete the check again.';
-      }
-
-      if (apiError.message) return apiError.message;
+      const apiMessage = this.parseApiMessage(err.error);
+      if (apiMessage) return apiMessage;
     }
     return 'Failed to send bug report. Please try again.';
   }
@@ -220,25 +197,20 @@ export class BugReportService {
     return Math.max(0, Math.ceil((retryAt - Date.now()) / 1000));
   }
 
-  private parseApiError(value: unknown): { code: string; message: string } {
+  // The request uses responseType 'text', so a JSON error body arrives as a string.
+  private parseApiMessage(value: unknown): string {
     let body = value;
 
     if (typeof body === 'string') {
       try {
         body = JSON.parse(body) as unknown;
       } catch {
-        return { code: '', message: '' };
+        return '';
       }
     }
 
-    if (!body || typeof body !== 'object') {
-      return { code: '', message: '' };
-    }
-
-    const candidate = body as { code?: unknown; error?: unknown };
-    return {
-      code: typeof candidate.code === 'string' ? candidate.code : '',
-      message: typeof candidate.error === 'string' ? candidate.error : '',
-    };
+    if (!body || typeof body !== 'object') return '';
+    const message = (body as { error?: unknown }).error;
+    return typeof message === 'string' ? message : '';
   }
 }

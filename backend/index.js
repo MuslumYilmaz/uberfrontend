@@ -162,8 +162,6 @@ const apiRateLimiter = expressRateLimit({
             path === '/api/hello' ||
             path === '/api/health' ||
             path === '/api/health/interview' ||
-            path === '/api/contact' ||
-            path === '/api/bug-report' ||
             path === '/api/billing/webhooks' ||
             path.startsWith('/api/billing/webhooks/');
     },
@@ -287,8 +285,7 @@ app.get('/api/health/interview', async (_req, res) => {
     return res.status(snapshot.ok ? 200 : 503).json(snapshot);
 });
 
-// Public contact and bug-report forms share fail-closed Turnstile, quota, and
-// duplicate protections without widening failure scope to other API routes.
+// Public contact and bug-report forms -> support inbox.
 app.use('/api', require('./routes/public-forms'));
 
 // ---- Auth routes ----

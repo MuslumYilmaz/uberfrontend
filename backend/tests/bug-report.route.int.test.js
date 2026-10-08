@@ -10,22 +10,7 @@ jest.mock('nodemailer', () => ({
 }));
 
 let app;
-const originalFetch = global.fetch;
 const originalEnv = { ...process.env };
-
-function mockTurnstileSuccess() {
-  global.fetch = jest.fn().mockResolvedValue({
-    ok: true,
-    status: 200,
-    json: async () => ({
-      success: true,
-      action: 'bug_report',
-      hostname: 'frontendatlas.com',
-      challenge_ts: new Date().toISOString(),
-      'error-codes': [],
-    }),
-  });
-}
 
 beforeAll(() => {
   process.env.MONGO_URL_TEST = process.env.MONGO_URL_TEST || 'mongodb://127.0.0.1:27017/backend-test';
@@ -40,9 +25,6 @@ beforeAll(() => {
   process.env.BUG_REPORT_MAX = '50';
   process.env.BUG_REPORT_DUP_WINDOW_MS = '600000';
   process.env.BUG_REPORT_MIN_NOTE_CHARS = '8';
-  process.env.PUBLIC_FORM_REDIS_REQUIRED = 'false';
-  process.env.TURNSTILE_SECRET_KEY = 'test-turnstile-secret';
-  process.env.TURNSTILE_ALLOWED_HOSTNAMES = 'frontendatlas.com';
 
   jest.resetModules();
   app = require('../index');
@@ -52,11 +34,9 @@ beforeEach(() => {
   mockSendMail.mockReset();
   mockCreateTransport.mockClear();
   mockSendMail.mockResolvedValue({ accepted: ['support@frontendatlas.com'] });
-  mockTurnstileSuccess();
 });
 
 afterAll(() => {
-  global.fetch = originalFetch;
   process.env = originalEnv;
 });
 
@@ -67,7 +47,6 @@ describe('POST /api/bug-report anti-spam protections', () => {
       .send({
         note: 'Submit button stays disabled after selecting a framework.',
         url: 'https://frontendatlas.com/react/trivia/q1',
-        verificationToken: 'valid-bug-report-turnstile-token',
       });
 
     expect(res.status).toBe(204);
@@ -81,7 +60,6 @@ describe('POST /api/bug-report anti-spam protections', () => {
     const payload = {
       note: 'The modal closes and reopens immediately when pressing escape.',
       url: 'https://frontendatlas.com/system-design/cache',
-      verificationToken: 'valid-bug-report-turnstile-token',
     };
 
     const first = await request(app).post('/api/bug-report').send(payload);
@@ -90,10 +68,8 @@ describe('POST /api/bug-report anti-spam protections', () => {
     expect(first.status).toBe(204);
     expect(second.status).toBe(429);
     expect(second.body).toEqual(expect.objectContaining({
-      code: 'FORM_RATE_LIMITED',
-      error: expect.any(String),
+      error: expect.stringContaining('Duplicate'),
     }));
-    expect(second.headers['retry-after']).toBeTruthy();
     expect(mockSendMail).toHaveBeenCalledTimes(1);
   });
 
@@ -103,36 +79,12 @@ describe('POST /api/bug-report anti-spam protections', () => {
       .send({
         note: 'short',
         url: 'https://frontendatlas.com/dashboard',
-        verificationToken: 'valid-bug-report-turnstile-token',
       });
 
     expect(res.status).toBe(400);
     expect(res.body).toEqual(expect.objectContaining({
       error: expect.stringContaining('at least'),
     }));
-    expect(mockSendMail).not.toHaveBeenCalled();
-  });
-
-  test('rejects a failed verification before attempting email send', async () => {
-    global.fetch = jest.fn().mockResolvedValue({
-      ok: true,
-      status: 200,
-      json: async () => ({ success: false, 'error-codes': ['invalid-input-response'] }),
-    });
-
-    const res = await request(app)
-      .post('/api/bug-report')
-      .send({
-        note: 'This report has a token that Cloudflare rejected.',
-        url: 'https://frontendatlas.com/dashboard',
-        verificationToken: 'invalid-bug-report-turnstile-token',
-      });
-
-    expect(res.status).toBe(403);
-    expect(res.body).toEqual({
-      code: 'FORM_VERIFICATION_FAILED',
-      error: expect.any(String),
-    });
     expect(mockSendMail).not.toHaveBeenCalled();
   });
 });

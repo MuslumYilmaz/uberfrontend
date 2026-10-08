@@ -33,7 +33,6 @@ describe('BugReportService', () => {
     });
 
     service.note.set('Button click does nothing');
-    service.verificationToken.set('turnstile-token');
 
     void service.submit(service.note());
 
@@ -46,15 +45,12 @@ describe('BugReportService', () => {
     expect(req.request.body.note).toContain('tech: react');
     expect(req.request.body.note).toContain('questionId: q1');
     expect(req.request.body.note).toContain('questionTitle: What is state?');
-    expect(req.request.body.verificationToken).toBe('turnstile-token');
-    expect(req.request.body.website).toBe('');
 
     req.flush('ok');
     tick();
 
     expect(service.submitOk()).toBeTrue();
     expect(service.visible()).toBeTrue();
-    expect(service.verificationToken()).toBe('');
 
     tick(900);
 
@@ -72,7 +68,6 @@ describe('BugReportService', () => {
     });
 
     service.note.set('Cannot open filters');
-    service.verificationToken.set('turnstile-token');
     const originalContext = service.context();
     void service.submit(service.note());
 
@@ -86,7 +81,6 @@ describe('BugReportService', () => {
     expect(service.submitting()).toBeFalse();
     expect(service.note()).toBe('Cannot open filters');
     expect(service.context()).toBe(originalContext);
-    expect(service.verificationToken()).toBe('');
   }));
 
   it('enforces cooldown after success and blocks further submit requests during cooldown', fakeAsync(() => {
@@ -96,7 +90,6 @@ describe('BugReportService', () => {
       route: '/dashboard',
     });
     service.note.set('The dashboard cards overlap on small screens.');
-    service.verificationToken.set('turnstile-token');
 
     void service.submit(service.note());
     const req = httpMock.expectOne(apiUrl('/bug-report'));
@@ -106,7 +99,6 @@ describe('BugReportService', () => {
     expect(service.cooldownSeconds()).toBeGreaterThan(0);
     expect(service.canSubmit()).toBeFalse();
 
-    service.verificationToken.set('replacement-token');
     void service.submit(service.note());
     httpMock.expectNone(apiUrl('/bug-report'));
     expect(service.error()).toContain('Please wait');
@@ -122,7 +114,6 @@ describe('BugReportService', () => {
     });
 
     service.note.set('Cannot open the bug report modal from sidebar.');
-    service.verificationToken.set('turnstile-token');
     void service.submit(service.note());
 
     const req = httpMock.expectOne(apiUrl('/bug-report'));
@@ -139,86 +130,53 @@ describe('BugReportService', () => {
     expect(service.error()).toBe('Too many reports right now. Please wait 42s and try again.');
     expect(service.cooldownSeconds()).toBe(42);
     expect(service.note()).toBe('Cannot open the bug report modal from sidebar.');
-    expect(service.verificationToken()).toBe('');
 
     tick(1000);
     expect(service.cooldownSeconds()).toBe(41);
     discardPeriodicTasks();
   }));
 
-  it('requires a fresh verification token before making a request', fakeAsync(() => {
+  it('blocks resending the same report once the cooldown has passed', fakeAsync(() => {
     service.open({
       source: 'sidebar',
       url: 'https://frontendatlas.com/dashboard',
     });
-    service.note.set('The filters do not open from the dashboard.');
+    service.note.set('The dashboard cards overlap on small screens.');
 
     void service.submit(service.note());
+    httpMock.expectOne(apiUrl('/bug-report')).flush('ok');
+    tick(31_000);
+    expect(service.cooldownSeconds()).toBe(0);
+
+    void service.submit('The dashboard cards overlap on small screens.');
     tick();
 
     httpMock.expectNone(apiUrl('/bug-report'));
-    expect(service.error()).toBe('Please complete the verification check before sending your report.');
-    expect(service.canSubmit()).toBeFalse();
+    expect(service.error()).toContain('duplicate');
   }));
 
-  it('shows the support fallback when form protection is unavailable', fakeAsync(() => {
-    service.open({
-      source: 'sidebar',
-      url: 'https://frontendatlas.com/dashboard',
-    });
-    service.note.set('The dashboard does not finish loading.');
-    service.verificationToken.set('turnstile-token');
-
-    void service.submit(service.note());
-
-    const req = httpMock.expectOne(apiUrl('/bug-report'));
-    req.flush(
-      JSON.stringify({
-        code: 'FORM_PROTECTION_UNAVAILABLE',
-        error: 'Form protection is temporarily unavailable.',
-      }),
-      {
-        status: 503,
-        statusText: 'Service Unavailable',
-        headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
-      }
-    );
-    tick();
-
-    expect(service.visible()).toBeTrue();
-    expect(service.note()).toBe('The dashboard does not finish loading.');
-    expect(service.supportFallbackVisible()).toBeTrue();
-    expect(service.error()).toContain('temporarily unavailable');
-    expect(service.verificationToken()).toBe('');
-  }));
-
-  it('maps a rejected verification response and preserves the report for retry', fakeAsync(() => {
+  it('maps a text-mode JSON error body to its message and preserves the report for retry', fakeAsync(() => {
     service.open({
       source: 'sidebar',
       url: 'https://frontendatlas.com/dashboard',
     });
     service.note.set('The navigation freezes after opening a track.');
-    service.verificationToken.set('rejected-token');
 
     void service.submit(service.note());
 
     const req = httpMock.expectOne(apiUrl('/bug-report'));
     req.flush(
-      JSON.stringify({
-        code: 'FORM_VERIFICATION_FAILED',
-        error: 'Verification failed.',
-      }),
+      JSON.stringify({ error: 'Bug report url must be an allowed frontend URL' }),
       {
-        status: 403,
-        statusText: 'Forbidden',
+        status: 400,
+        statusText: 'Bad Request',
         headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
       }
     );
     tick();
 
     expect(service.note()).toBe('The navigation freezes after opening a track.');
-    expect(service.error()).toContain('could not verify');
-    expect(service.verificationToken()).toBe('');
-    expect(service.supportFallbackVisible()).toBeFalse();
+    expect(service.error()).toBe('Bug report url must be an allowed frontend URL');
+    expect(service.canSubmit()).toBeTrue();
   }));
 });

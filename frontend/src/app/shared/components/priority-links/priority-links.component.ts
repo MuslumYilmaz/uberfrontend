@@ -28,6 +28,12 @@ export class PriorityLinksComponent {
     return this.labelledBy || (this.heading ? this.headingId : null);
   }
 
+  /** A group holding at least twice the links of the shortest one spans two grid tracks instead of towering over its row. */
+  isWideGroup(group: PriorityLinkGroup): boolean {
+    const shortest = Math.min(...this.groups.map((item) => item.links.length));
+    return group.links.length >= 2 * Math.max(shortest, 1);
+  }
+
   trackByGroup(_index: number, group: PriorityLinkGroup): string {
     return group.id;
   }

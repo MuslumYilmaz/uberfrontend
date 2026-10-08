@@ -81,7 +81,7 @@ Then start the API:
 npm run dev
 ```
 
-Do not point routine development or tests at `mongodb://127.0.0.1:27017/frontendatlas`; that database name is reserved as production data on the maintainer's machine. Never reuse production MongoDB, OAuth, email, billing, Turnstile, Redis, or signing credentials locally. Provider-specific test configuration is documented in [`backend/README.md`](backend/README.md), and frontend build details are documented in [`frontend/README.md`](frontend/README.md).
+Do not point routine development or tests at `mongodb://127.0.0.1:27017/frontendatlas`; that database name is reserved as production data on the maintainer's machine. Never reuse production MongoDB, OAuth, email, billing, Redis, or signing credentials locally. Provider-specific test configuration is documented in [`backend/README.md`](backend/README.md), and frontend build details are documented in [`frontend/README.md`](frontend/README.md).
 
 ## Verification
 

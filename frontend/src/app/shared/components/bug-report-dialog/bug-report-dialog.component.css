@@ -140,15 +140,6 @@
   background: color-mix(in srgb, var(--uf-surface) 84%, transparent);
 }
 
-.bug-honeypot {
-  position: absolute;
-  left: -10000px;
-  width: 1px;
-  height: 1px;
-  opacity: 0;
-  pointer-events: none;
-}
-
 .bug-meta {
   margin-top: -2px;
   display: flex;
@@ -171,36 +162,6 @@
   margin-top: -2px;
   font-size: 12px;
   color: color-mix(in srgb, var(--uf-text-secondary) 90%, var(--uf-accent) 10%);
-}
-
-.bug-challenge {
-  display: block;
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-}
-
-.bug-verification-error,
-.bug-support-fallback {
-  min-width: 0;
-  font-size: 12px;
-  line-height: 1.5;
-}
-
-.bug-verification-error {
-  color: color-mix(in srgb, #f87171 90%, var(--uf-text-primary) 10%);
-}
-
-.bug-support-fallback {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0 4px;
-  color: color-mix(in srgb, var(--uf-text-secondary) 90%, var(--uf-text-primary) 10%);
-}
-
-.bug-support-fallback a {
-  color: var(--uf-accent);
-  font-weight: 700;
 }
 
 .bug-actions {

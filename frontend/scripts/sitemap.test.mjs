@@ -1097,24 +1097,6 @@ function assertVercelCspAllowsGoogleAnalyticsCollection() {
   });
 }
 
-function assertVercelCspAllowsTurnstile() {
-  const config = readVercelConfig();
-  const headerNames = ['Content-Security-Policy', 'Content-Security-Policy-Report-Only'];
-
-  headerNames.forEach((headerName) => {
-    const policy = getGlobalVercelHeader(config, headerName);
-
-    ['script-src', 'script-src-elem', 'frame-src'].forEach((directiveName) => {
-      assertCspDirectiveSources({
-        headerName,
-        policy,
-        directiveName,
-        requiredSources: ['https://challenges.cloudflare.com'],
-      });
-    });
-  });
-}
-
 function assertVercelCspAllowsLemonSqueezyOverlay() {
   const config = readVercelConfig();
   const headerNames = ['Content-Security-Policy', 'Content-Security-Policy-Report-Only'];
@@ -1228,7 +1210,6 @@ assertVercelMasteryRedirects();
 assertUnavailableMasteryRedirects(paths);
 assertVercelCspAllowsCodingSandboxRunner();
 assertVercelCspAllowsGoogleAnalyticsCollection();
-assertVercelCspAllowsTurnstile();
 assertVercelCspAllowsLemonSqueezyOverlay();
 assertVercelPermissionsPolicyAllowsLemonSqueezyPayments();
 
