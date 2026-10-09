@@ -97,7 +97,7 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
   readonly router = inject(Router);
   private qs = inject(QuestionService);
   private seo = inject(SeoService);
-  private readonly suppressSeo = inject(SEO_SUPPRESS_TOKEN);
+  protected readonly suppressSeo = inject(SEO_SUPPRESS_TOKEN);
   readonly auth = inject(AuthService);
   private bugReport = inject(BugReportService);
   private onboarding = inject(OnboardingService);

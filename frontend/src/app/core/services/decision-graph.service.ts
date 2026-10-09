@@ -255,7 +255,8 @@ export class DecisionGraphService {
       return [normalized];
     }
 
-    const fallbackUrl = buildAssetUrl(normalized);
+    // The fallback must stay same-origin even when a CDN base is configured.
+    const fallbackUrl = normalized;
     if (!isCdnEnabled()) return [fallbackUrl];
 
     const base = getSafeAssetBase((environment as any).cdnBaseUrl || '');

@@ -38,6 +38,7 @@ import {
 import { FaSpinnerComponent } from '../../../shared/ui/spinner/fa-spinner.component';
 import { PriorityLinksComponent } from '../../../shared/components/priority-links/priority-links.component';
 import { CODING_PRIORITY_LINK_GROUPS } from '../../../core/content/priority-links';
+import { normalizeEditorialPlainText } from '../../../core/utils/locked-preview.util';
 
 type StructuredDescription = { text?: string; summary?: string; examples?: string[] };
 type ListSource = 'tech' | 'company' | 'global-coding';
@@ -1680,9 +1681,11 @@ export class CodingListComponent implements OnInit, OnDestroy {
 
   descriptionText(q: Question): string {
     const d: any = (q as any).description;
-    if (typeof d === 'string') return this.decodeHtmlEntities(d);
+    // Row previews and tooltips are plain text, so inline markup is stripped
+    // the same way the SEO description is.
+    if (typeof d === 'string') return normalizeEditorialPlainText(d);
     if (d && typeof d === 'object') {
-      return this.decodeHtmlEntities((d.summary || d.text || '') as string);
+      return normalizeEditorialPlainText((d.summary || d.text || '') as string);
     }
     return '';
   }

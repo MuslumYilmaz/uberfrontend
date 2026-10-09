@@ -715,6 +715,9 @@
 
 .iq-topic-card__link {
   align-self: end;
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
   width: fit-content;
   color: color-mix(in srgb, var(--uf-accent) 82%, var(--uf-text-primary));
   font-size: 12px;
@@ -936,6 +939,7 @@
 .iq-inline-link {
   display: inline-flex;
   align-items: center;
+  min-height: 24px;
   width: fit-content;
   text-decoration: none;
   font-size: 12px;

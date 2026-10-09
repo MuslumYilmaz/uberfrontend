@@ -1,4 +1,5 @@
 import { seoContentDateModified } from '../../../core/utils/seo-content-date.util';
+import { SEO_SUPPRESS_TOKEN } from '../../../core/services/seo-context';
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -295,6 +296,14 @@ describe('TriviaDetailComponent', () => {
 
     return { graph, breadcrumb, article };
   }
+
+  it('demotes the question title to h2 when SEO is suppressed for an embedded preview', async () => {
+    TestBed.overrideProvider(SEO_SUPPRESS_TOKEN, { useValue: true });
+    const fixture = await createLoadedFixture('free');
+    const host = fixture.nativeElement as HTMLElement;
+    expect(host.querySelector('h1')).toBeNull();
+    expect(host.querySelector('h2.title .title__question')?.textContent?.trim()).toBeTruthy();
+  });
 
   it('shows report issue button on unlocked trivia detail', async () => {
     routeData$.next({ questionDetail: makeResolved('free') });

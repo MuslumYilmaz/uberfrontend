@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { buildAssetUrl, getSafeAssetBase } from './asset-url.util';
+import { buildAssetUrl, getSafeAssetBase, normalizeAssetPath } from './asset-url.util';
 import { normalizeSdkFiles } from './snapshot.utils';
 
 export type SdkAsset = {
@@ -61,7 +61,8 @@ export async function fetchSdkAsset(http: HttpClient, url: string): Promise<SdkA
     }
 
     const base = isCdnEnabledByFlag() ? getSafeAssetBase((environment as any).cdnBaseUrl || '') : '';
-    const localUrl = buildAssetUrl(url);
+    // Same-origin fallback regardless of the configured CDN base.
+    const localUrl = normalizeAssetPath(url);
     const preferredUrl = base ? buildAssetUrl(url, { preferBase: base }) : localUrl;
 
     if (preferredUrl !== localUrl) {

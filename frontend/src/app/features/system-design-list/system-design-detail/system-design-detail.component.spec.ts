@@ -10,6 +10,7 @@ import { BugReportService } from '../../../core/services/bug-report.service';
 import { OnboardingService } from '../../../core/services/onboarding.service';
 import { QuestionService } from '../../../core/services/question.service';
 import { SeoService } from '../../../core/services/seo.service';
+import { SEO_SUPPRESS_TOKEN } from '../../../core/services/seo-context';
 import { SystemDesignDetailComponent } from './system-design-detail.component';
 
 describe('SystemDesignDetailComponent', () => {
@@ -193,6 +194,25 @@ describe('SystemDesignDetailComponent', () => {
       questionId: 'sd-1',
       questionTitle: 'Design URL Shortener',
     }));
+  });
+
+  it('demotes the title to h2 when SEO is suppressed for an embedded preview', () => {
+    TestBed.overrideProvider(SEO_SUPPRESS_TOKEN, { useValue: true });
+    const fixture = TestBed.createComponent(SystemDesignDetailComponent);
+    const component = fixture.componentInstance;
+
+    (component as any).applyResolvedQuestion({
+      id: 'dashboard-widgets-draggable-resizable',
+      title: 'Drag-and-Drop Dashboard Frontend System Design',
+      description: 'Long visible challenge description.',
+      tags: ['dashboard'],
+      access: 'free',
+    });
+    fixture.detectChanges();
+
+    const host = fixture.nativeElement as HTMLElement;
+    expect(host.querySelector('h1')).toBeNull();
+    expect(host.querySelector('h2.title')?.textContent?.trim()).toBe('Drag-and-Drop Dashboard Frontend System Design');
   });
 
   it('uses SEO override metadata without changing the visible question title', () => {

@@ -132,6 +132,16 @@ describe('CodingListComponent', () => {
     ...overrides,
   });
 
+  it('strips inline markup from row description previews', async () => {
+    const fixture = await createComponent();
+    const component = fixture.componentInstance;
+
+    expect(component.descriptionText(question({
+      description: { summary: 'Implement `compose(...fns)` from **right to left**.' },
+    }) as any)).toBe('Implement compose(...fns) from right to left.');
+    expect(component.descriptionText(question({ description: 'Parse &amp; keep entities.' }) as any)).toBe('Parse & keep entities.');
+  });
+
   it('labels output-formatted trivia rows as Output while preserving standard kind labels', async () => {
     const fixture = await createComponent();
     const component = fixture.componentInstance;

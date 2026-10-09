@@ -152,7 +152,7 @@ const correctedRouteCases: ReadonlyArray<{
   },
   {
     path: '/angular/coding/angular-todo-list-starter',
-    expected: ['modern `@for (...; track ...)` control flow'],
+    expected: ['modern @for (...; track ...) control flow'],
     forbidden: ['*ngFor="let todo of todos; trackBy: trackById"'],
   },
   {
@@ -219,17 +219,17 @@ const correctedRouteCases: ReadonlyArray<{
   },
   {
     path: '/javascript/coding/js-escape-html',
-    expected: ['assign `textContent` instead', 'not a sanitizer'],
+    expected: ['assign textContent instead', 'not a sanitizer'],
     forbidden: ['safe for any HTML context'],
   },
   {
     path: '/javascript/coding/js-implement-bind',
-    expected: ['detected with `new.target`', 'not a complete `Function.prototype.bind` polyfill'],
+    expected: ['detected with new.target', 'not a complete Function.prototype.bind polyfill'],
     forbidden: ['exactly like native bind'],
   },
   {
     path: '/javascript/coding/js-implement-instanceof',
-    expected: ['Invalid ordinary constructor inputs throw TypeError', 'Custom `Symbol.hasInstance`'],
+    expected: ['Invalid ordinary constructor inputs throw TypeError', 'Custom Symbol.hasInstance'],
   },
   {
     path: '/javascript/coding/js-create-deferred-promise',

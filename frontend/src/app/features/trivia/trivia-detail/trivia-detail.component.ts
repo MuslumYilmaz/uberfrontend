@@ -673,7 +673,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
   private outputDeepDiveTracked = false;
 
   private sub?: Subscription;
-  private readonly suppressSeo = inject(SEO_SUPPRESS_TOKEN);
+  protected readonly suppressSeo = inject(SEO_SUPPRESS_TOKEN);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly ngZone = inject(NgZone);
   private dataLoaded = false;

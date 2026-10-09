@@ -10,6 +10,9 @@
   --filter-focus-ring: 0 0 0 2px color-mix(in srgb, var(--uf-accent) 45%, transparent);
 
   display: grid;
+  /* A zero-minimum column keeps the nowrap tech chips scrolling inside
+     .chip-row-scroll instead of widening the hero and search on phones. */
+  grid-template-columns: minmax(0, 1fr);
   gap: 1.5rem;
   max-width: 78rem;
   margin: 0 auto;

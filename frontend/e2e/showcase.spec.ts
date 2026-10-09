@@ -183,3 +183,21 @@ test('showcase: hero experiment keeps the guided plan as the primary CTA', async
   await controlContext.close();
   await outcomeContext.close();
 });
+
+test('showcase: embedded previews never add a second h1', async ({ page }) => {
+  await page.setViewportSize({ width: 1366, height: 900 });
+  await page.goto('/');
+  await expect(page.getByTestId('showcase-hero-title')).toBeVisible();
+
+  await page.locator('#demo-pane').scrollIntoViewIfNeeded();
+  await expect(page.getByTestId('question-title')).toBeVisible({ timeout: 30_000 });
+
+  await page.getByTestId('showcase-trivia-open').scrollIntoViewIfNeeded();
+  await expect(page.locator('.trivia-frame .title').first()).toBeVisible({ timeout: 30_000 });
+
+  await page.locator('.system-frame').scrollIntoViewIfNeeded();
+  await expect(page.locator('.system-frame .title').first()).toBeVisible({ timeout: 30_000 });
+
+  await expect(page.locator('h1')).toHaveCount(1);
+  await expect(page.locator('h1')).toHaveText(/practice frontend interviews/i);
+});

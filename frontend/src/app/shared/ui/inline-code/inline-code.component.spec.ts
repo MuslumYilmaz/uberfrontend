@@ -27,4 +27,13 @@ describe('InlineCodeComponent', () => {
     fixture.detectChanges();
     expect(fixture.nativeElement.textContent).toBe('');
   });
+it('renders paired ** as strong while keeping ** inside code and unpaired markers literal', () => {
+    const fixture = TestBed.createComponent(InlineCodeComponent);
+    fixture.componentRef.setInput('text', 'Apply **right to left**; `a ** b` stays code; 2 ** 3 is **eight');
+    fixture.detectChanges();
+    const element: HTMLElement = fixture.nativeElement;
+    expect(Array.from(element.querySelectorAll('strong')).map((node) => node.textContent)).toEqual(['right to left']);
+    expect(Array.from(element.querySelectorAll('code')).map((node) => node.textContent)).toEqual(['a ** b']);
+    expect(element.textContent).toBe('Apply right to left; a ** b stays code; 2 ** 3 is **eight');
+  });
 });
