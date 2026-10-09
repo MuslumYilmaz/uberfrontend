@@ -1299,7 +1299,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-10-07",
+    "updatedAt": "2026-10-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use"
   },
@@ -1656,7 +1656,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-10-07",
+    "updatedAt": "2026-10-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#angular-lifecycle-constructor-oninit-afterviewinit-dom"
   },
@@ -3132,7 +3132,7 @@
     "route": "/html/trivia/html-href-attribute",
     "tech": "html",
     "difficulty": "easy",
-    "summary": "The `href` attribute is the real destination reference behind links and linked resources. Production bugs happen when `href` is missing, misused for fake buttons, or paired with unsafe external-link behavior.",
+    "summary": "`href` stands for hypertext reference: it is the attribute that tells the browser where a link or linked resource points, whether that is an absolute or relative URL, a `#fragment` on the same page, a `mailto:` or `tel:` address, or a file.",
     "tags": [
       "html",
       "links",
@@ -3142,7 +3142,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-10-07",
+    "updatedAt": "2026-10-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/html/trivia.json#html-href-attribute"
   },
@@ -3226,7 +3226,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-12",
+    "updatedAt": "2026-10-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/html/trivia.json#html-img-alt-attribute"
   },
@@ -3290,7 +3290,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-10-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/html/trivia.json#html-anchor-target"
   },
@@ -3332,7 +3332,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-07-02",
+    "updatedAt": "2026-10-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/html/trivia.json#html-a-tag"
   },
@@ -7417,7 +7417,7 @@
     "route": "/react/trivia/react-jsx-transform-and-why-not-required",
     "tech": "react",
     "difficulty": "intermediate",
-    "summary": "Explain what JSX actually is (syntax sugar), how a compiler (Babel/TypeScript) transforms it into plain JavaScript calls, and why React can work without JSX (you can call the element factory directly).",
+    "summary": "JSX is syntax sugar, not something React runs. Babel or TypeScript compiles each JSX tag into a call to createElement, or to jsx and jsxs from react/jsx-runtime with the automatic runtime.",
     "tags": [
       "react",
       "jsx",
@@ -7427,7 +7427,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-10-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-jsx-transform-and-why-not-required"
   },
@@ -8398,7 +8398,7 @@
     "route": "/react/trivia/react-why-props-immutable",
     "tech": "react",
     "difficulty": "intermediate",
-    "summary": "Explain props immutability as a production contract: parent ownership, predictable rendering, memoization safety, and the shared-state bugs you debug when children mutate props.",
+    "summary": "Props are immutable because React renders a component as a pure function of its inputs: the parent owns the data, so a child that mutates a prop object or array breaks that ownership, defeats memo and shallow comparison, and leaks the change into sibling components.",
     "tags": [
       "react",
       "props",
@@ -8408,7 +8408,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-10",
+    "updatedAt": "2026-10-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-why-props-immutable"
   },
