@@ -787,7 +787,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-09",
+    "updatedAt": "2026-10-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#angular-prevent-memory-leaks-unsubscribe-patterns"
   },
@@ -892,7 +892,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-19",
+    "updatedAt": "2026-10-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#angular-zonejs-change-detection"
   },
@@ -1171,7 +1171,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-09",
+    "updatedAt": "2026-10-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#angular-observables-rxjs"
   },
@@ -1213,7 +1213,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-19",
+    "updatedAt": "2026-10-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#rxjs-tap-vs-map-angular-when-to-use"
   },
@@ -1278,7 +1278,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-19",
+    "updatedAt": "2026-10-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#rxjs-subject-vs-behaviorsubject-vs-replaysubject-vs-asyncsubject"
   },
@@ -1467,7 +1467,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-19",
+    "updatedAt": "2026-10-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#angular-controlvalueaccessor-vs-custom-two-way-binding"
   },
@@ -1530,7 +1530,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-19",
+    "updatedAt": "2026-10-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#rxjs-sharereplay-angular-how-it-breaks-your-app"
   },
@@ -2633,7 +2633,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-07-14",
+    "updatedAt": "2026-10-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/html/trivia.json#html-clickable-image"
   },
@@ -2654,7 +2654,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-10-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/html/trivia.json#html-iframe-tag"
   },
@@ -2887,7 +2887,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-12",
+    "updatedAt": "2026-10-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/html/trivia.json#html-aria-roles"
   },
@@ -2929,7 +2929,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-07-02",
+    "updatedAt": "2026-10-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/html/trivia.json#html-semantic-elements"
   },
@@ -2971,7 +2971,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-10-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/html/trivia.json#html-title-tag"
   },
@@ -3247,7 +3247,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-10-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/html/trivia.json#html-data-attribute"
   },
@@ -3461,7 +3461,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-10-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-array-sort-pitfalls"
   },
@@ -4342,7 +4342,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-08",
+    "updatedAt": "2026-10-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-hoisting"
   },
@@ -7280,7 +7280,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-10-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-diffing-algorithm"
   },
@@ -7364,7 +7364,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-09",
+    "updatedAt": "2026-10-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-lifting-state-up"
   },
@@ -7448,7 +7448,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-10",
+    "updatedAt": "2026-10-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-rerender-decision-and-render"
   },
@@ -8030,7 +8030,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-10",
+    "updatedAt": "2026-10-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-useeffect-purpose"
   },
@@ -8219,7 +8219,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-10",
+    "updatedAt": "2026-10-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-keys-in-lists"
   },
@@ -8240,7 +8240,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-10-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-virtual-dom"
   },
@@ -8260,7 +8260,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-10-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-error-boundaries-what-they-solve"
   },
@@ -8429,7 +8429,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-10-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-pure-function-of-props-and-state"
   },
@@ -8491,7 +8491,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-10-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-why-batching-state-updates"
   },
@@ -8597,7 +8597,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-10-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-derived-state-anti-pattern"
   },
@@ -8618,7 +8618,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-10-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-usestate-purpose"
   },
@@ -9988,7 +9988,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-10",
+    "updatedAt": "2026-10-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/vue/trivia.json#vue-computed-properties"
   },
@@ -10222,7 +10222,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-05",
+    "updatedAt": "2026-10-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/vue/trivia.json#vue-router-navigation"
   },

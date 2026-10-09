@@ -1408,9 +1408,9 @@
       "derived-state",
       "performance"
     ],
-    "updatedAt": "2026-04-10",
+    "updatedAt": "2026-10-09",
     "seo": {
-      "title": "Vue computed properties: cached derived state, method pitfalls, and purity rules",
+      "title": "Vue Computed Properties: Caching, Methods, and Purity",
       "description": "Learn when computed properties beat template methods, why computed getters should stay pure and synchronous, and how caching helps real Vue components."
     },
     "incidentCard": {
@@ -3081,9 +3081,9 @@
       "routes",
       "guards"
     ],
-    "updatedAt": "2026-04-05",
+    "updatedAt": "2026-10-09",
     "seo": {
-      "title": "Vue Router in production: guards, async navigation, and route-debugging mental models",
+      "title": "Vue Router Navigation: Guards, Async Routes, Debugging",
       "description": "Vue Router is more than router-link and router-view. The practical issues are auth guards, async navigation flow, params, and scroll/debug behavior."
     },
     "incidentCard": {
