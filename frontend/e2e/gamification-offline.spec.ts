@@ -221,7 +221,10 @@ test('offline solve replays on reconnect exactly once and the dashboard loads', 
   await expect(page.getByRole('button', { name: 'Mark as complete' })).toBeVisible();
 
   await page.evaluate(() => window.dispatchEvent(new Event('offline')));
-  await page.getByRole('button', { name: 'Mark as complete' }).click();
+  // The offline banner is fixed to the bottom edge and covers the button on the
+  // 720px CI viewport, so a pointer click never reaches it there. The subject of
+  // this test is the queued completion, not pointer geometry.
+  await page.getByRole('button', { name: 'Mark as complete' }).dispatchEvent('click');
 
   await expect(page.getByRole('button', { name: 'Syncing completion...' })).toBeVisible();
   await expect.poll(() => state.completionCalls).toBe(0);
