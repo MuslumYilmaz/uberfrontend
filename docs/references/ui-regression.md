@@ -67,8 +67,9 @@ dependencies stay deliberately broad so auth, routing, editors and global
 styles cannot bypass coverage. Unrelated documentation skips these suites.
 
 Manual UI runs and manual/main-push Interview runs execute the full scope.
-The existing nightly perf schedule is unchanged. New PR runs cancel older
-runs of the same workflow/PR.
+The perf smoke has no schedule; it runs only from a manual Playwright E2E
+dispatch with `run_perf` enabled. New PR runs cancel older runs of the same
+workflow/PR.
 
 Keep **UI Regression** and **Interview Cross-browser Gate** as the stable
 required checks. The Interview gate distinguishes a deliberate scope skip

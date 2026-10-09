@@ -91,7 +91,7 @@ test.describe('Essential 60 mobile layout guardrail', () => {
     await page.goto('/interview-questions/essential');
     await stabilize(page);
 
-    await expect(page.getByRole('heading', { name: 'FrontendAtlas Essential 60' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'FrontendAtlas Essential 60', exact: true })).toBeVisible();
     await expect(page.getByTestId('prep-roadmap-switcher')).toBeVisible();
 
     await assertNoHorizontalOverflow(page, 'Essential 60 page');

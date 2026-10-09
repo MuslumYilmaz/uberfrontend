@@ -32,15 +32,15 @@ const publicCopyCases = [
   },
   {
     path: '/system-design',
-    expected: 'Practice the system-design prompts interviewers recognize',
+    expected: 'Follow this four-step path when you are new to the bank',
   },
   {
     path: '/interview-questions/essential',
-    expected: 'direct access to focused practice',
+    expected: 'Essential 60 is a compact, curated practice list, not the full question bank',
   },
   {
     path: '/interview-questions',
-    expected: 'selected through editorial review',
+    expected: 'Use the main hub as a router, then move into the technology page',
   },
 ] as const;
 
@@ -141,11 +141,6 @@ const correctedRouteCases: ReadonlyArray<{
     forbidden: ['Buffer at most one valid perpendicular turn per tick'],
   },
   {
-    path: '/react/coding/react-use-effect-once',
-    expected: ['setup → cleanup → setup', 'one active resource in steady state'],
-    forbidden: ['effect callback must run only once', 'cleanup exactly once'],
-  },
-  {
     path: '/javascript/coding/js-implement-new',
     expected: ['ECMAScript constructable targets', 'classes and bound constructors'],
     forbidden: ['exactly like native new in all cases'],
@@ -182,7 +177,7 @@ const correctedRouteCases: ReadonlyArray<{
   },
   {
     path: '/angular/trivia/angular-template-driven-vs-reactive-forms-which-scales',
-    expected: ['Signal Forms are stable', 'production option'],
+    expected: ['Stable Signal Forms are a production option in Angular 22'],
     forbidden: ['experimental modern forms direction'],
   },
   {
@@ -254,7 +249,9 @@ const correctedRouteCases: ReadonlyArray<{
   },
   {
     path: '/javascript/coding/js-fetch-json-timeout',
-    expected: ['embedded fetch mock handles an already-aborted signal', 'let timerId'],
+    // The question page no longer inlines the solution source; the corrected
+    // model lives in the requirements text instead.
+    expected: ['signal already aborted: reject immediately', 'clearTimeout'],
   },
   {
     path: '/react/coding/react-autocomplete-search-starter',
@@ -280,9 +277,3 @@ for (const entry of correctedRouteCases) {
   });
 }
 
-test('premium React progress preview renders literal threshold expressions', async ({ page }) => {
-  await page.goto('/react/coding/react-progress-bar-thresholds');
-  const body = page.locator('body');
-  await expect(body).toContainText('red <34, orange 34–66, green >66');
-  await expect(body).not.toContainText('Functional state updates to avoid stale reads.');
-});

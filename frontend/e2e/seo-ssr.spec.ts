@@ -602,7 +602,7 @@ const NETFLIX_OFFICIAL_SOURCES = [
 const NETFLIX_PREVIEW_INBOUND_PAGES = [
   { path: '/', anchor: 'View Netflix preview' },
   { path: '/companies', anchor: 'Netflix frontend interview questions' },
-  { path: '/system-design', anchor: 'Netflix frontend interview questions' },
+  // /system-design stopped linking to the Netflix preview in the V2.1 calibration (17c349f1).
 ] as const;
 
 const INFINITE_SCROLL_PATH = '/system-design/infinite-scroll-list';
@@ -683,6 +683,15 @@ function decodeBasicHtmlEntities(value: string): string {
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
     .replace(/&amp;/g, '&');
+}
+
+async function openCollapsedDetails(page: Page): Promise<void> {
+  // RADIO sections render collapsed; open them so hydrated content checks see the text.
+  const closedSummaries = page.locator('details:not([open]) > summary');
+  for (let attempt = 0; attempt < 40 && (await closedSummaries.count()) > 0; attempt += 1) {
+    await closedSummaries.first().click();
+  }
+  await expect(closedSummaries).toHaveCount(0);
 }
 
 function normalizeText(value: string): string {
@@ -891,6 +900,12 @@ function expectNoRawLink(html: string, target: string, source: string): void {
   expect(html, `${source} omits reference-only link ${target}`).not.toMatch(
     new RegExp(`<a\\b[^>]*href=["']${escapedTarget}(?:[?#][^"']*)?["'][^>]*>`, 'i'),
   );
+}
+
+function extractRawLinkTexts(html: string, target: string): string[] {
+  const escapedTarget = escapeRegExp(target);
+  const pattern = new RegExp(`<a\\b[^>]*href=["']${escapedTarget}["'][^>]*>([\\s\\S]*?)<\\/a>`, 'gi');
+  return Array.from(html.matchAll(pattern), (match) => rawVisibleText(match[1] || ''));
 }
 
 function extractRawLinkText(html: string, target: string): string {
@@ -1546,12 +1561,12 @@ test.describe('seo-ssr', () => {
     }
   });
 
-  test('raw premium progress-bar shell preserves literal threshold comparators without solution leakage', async ({ request }) => {
+  test('raw premium progress-bar shell withholds the solution and stays out of the index', async ({ request }) => {
     const html = await readRawHtml(request, '/react/coding/react-progress-bar-thresholds');
 
-    expect(html).toContain('&lt;34');
-    expect(html).toContain('&gt;66');
-    expect(html).toContain('orange 34–66');
+    // The premium question panel is withheld from the initial HTML by design
+    // (coding-mobile-reading.prod.spec.ts covers that contract), so only the
+    // solution-leak, locked-shell and robots contracts remain here.
     expect(html).not.toContain('Functional state updates to avoid stale reads.');
     expect(hasLockedShellMarkup(html)).toBe(true);
     expect(normalizeText(extractRawMeta(html, 'robots')).replace(/\s+/g, '')).toBe('noindex,follow');
@@ -2361,7 +2376,10 @@ test.describe('seo-ssr', () => {
       'virtualized treegrid',
     ].forEach((phrase) => {
       const normalizedPhrase = normalizeText(phrase);
-      const occurrenceCount = text.split(normalizedPhrase).length - 1;
+      // Architecture diagrams inside <pre> legitimately repeat component names,
+      // so the keyword-stuffing guard only counts prose.
+      const proseText = rawVisibleText(html.replace(/<pre\b[\s\S]*?<\/pre>/gi, ''));
+      const occurrenceCount = proseText.split(normalizedPhrase).length - 1;
       expect(occurrenceCount, `${phrase} appears once without keyword stuffing`).toBe(1);
     });
 
@@ -2436,7 +2454,7 @@ test.describe('seo-ssr', () => {
       description: OFFLINE_EMAIL_CLIENT_CATALOG_DESCRIPTION,
       url: expectedCanonical(OFFLINE_EMAIL_CLIENT_PATH),
       isAccessibleForFree: true,
-      educationalLevel: 'hard',
+      educationalLevel: 'senior',
     });
   });
 
@@ -2461,6 +2479,7 @@ test.describe('seo-ssr', () => {
     await expect(page.locator('h1')).toHaveText(AI_AGENT_RUN_INSPECTOR_TITLE);
     await expect(page.locator('h1')).toHaveCount(1);
     await expect(page.locator('.locked-card')).toHaveCount(0);
+    await openCollapsedDetails(page);
     await expect(page.getByText('Idempotent merge algorithm', { exact: true })).toBeVisible();
     await expect(page.getByText('Worked example: follow one run through the reducer', { exact: true })).toBeVisible();
     await expect(page.getByText('Event-by-event reconciliation', { exact: true })).toBeVisible();
@@ -2699,9 +2718,11 @@ test.describe('seo-ssr', () => {
     for (const inbound of GOOGLE_PREVIEW_INBOUND_PAGES) {
       const sourceHtml = await readRawHtml(request, inbound.path);
       expectCleanRawLink(sourceHtml, GOOGLE_PREVIEW_PATH, inbound.path);
-      expect(extractRawLinkText(sourceHtml, GOOGLE_PREVIEW_PATH), `anchor text on ${inbound.path}`).toContain(
-        normalizeText(inbound.anchor),
-      );
+      const anchorTexts = extractRawLinkTexts(sourceHtml, GOOGLE_PREVIEW_PATH);
+      expect(
+        anchorTexts.some((anchorText) => anchorText.includes(normalizeText(inbound.anchor))),
+        `anchor text on ${inbound.path}: ${anchorTexts.join(' | ')}`,
+      ).toBe(true);
     }
   });
 
@@ -2825,10 +2846,11 @@ test.describe('seo-ssr', () => {
     for (const inbound of NETFLIX_PREVIEW_INBOUND_PAGES) {
       const sourceHtml = await readRawHtml(request, inbound.path);
       expectCleanRawLink(sourceHtml, NETFLIX_PREVIEW_PATH, inbound.path);
+      const anchorTexts = extractRawLinkTexts(sourceHtml, NETFLIX_PREVIEW_PATH);
       expect(
-        extractRawLinkText(sourceHtml, NETFLIX_PREVIEW_PATH),
-        `anchor text on ${inbound.path}`,
-      ).toContain(normalizeText(inbound.anchor));
+        anchorTexts.some((anchorText) => anchorText.includes(normalizeText(inbound.anchor))),
+        `anchor text on ${inbound.path}: ${anchorTexts.join(' | ')}`,
+      ).toBe(true);
     }
   });
 
@@ -2908,14 +2930,14 @@ test.describe('seo-ssr', () => {
     const ssrHomeTitle = await ssrPage.title();
     const ssrHomeH1 = (await ssrPage.locator('h1').first().textContent())?.trim() || '';
 
-    expect(normalizeText(ssrHomeTitle)).toContain('frontend interview prep platform');
+    expect(normalizeText(ssrHomeTitle)).toContain('frontend interview prep: questions, coding & system design');
     expect(normalizeText(ssrHomeH1)).toContain('practice frontend interviews');
 
     await page.goto('/', { waitUntil: 'domcontentloaded' });
     const hydratedHomeTitle = await page.title();
     const hydratedHomeH1 = (await page.locator('h1').first().textContent())?.trim() || '';
 
-    expect(normalizeText(hydratedHomeTitle)).toContain('frontend interview prep platform');
+    expect(normalizeText(hydratedHomeTitle)).toContain('frontend interview prep: questions, coding & system design');
     expect(normalizeText(hydratedHomeH1)).toContain('practice frontend interviews');
     expect(normalizeText(hydratedHomeH1)).toBe(normalizeText(ssrHomeH1));
 
@@ -2923,7 +2945,7 @@ test.describe('seo-ssr', () => {
     const guidesTitle = await page.title();
     const guidesH1 = (await page.locator('h1').first().textContent())?.trim() || '';
 
-    expect(normalizeText(guidesTitle)).not.toContain('frontend interview prep platform');
+    expect(normalizeText(guidesTitle)).not.toContain('frontend interview prep: questions, coding & system design');
     expect(normalizeText(guidesTitle)).not.toBe(normalizeText(hydratedHomeTitle));
     expect(normalizeText(guidesH1)).not.toBe(normalizeText(hydratedHomeH1));
 
