@@ -4315,9 +4315,9 @@
       "async",
       "basics"
     ],
-    "updatedAt": "2026-04-09",
+    "updatedAt": "2026-10-09",
     "seo": {
-      "title": "Observables in Angular in production: RxJS, signals trade-offs, cancellation, and shared streams",
+      "title": "Observables in Angular: RxJS, Signals, and Cancellation",
       "description": "Explain Angular Observables through real app concerns: when RxJS still beats signals, how async pipe and cancellation work, and how shared streams behave with shareReplay."
     }
   },
@@ -4831,9 +4831,9 @@
       "performance",
       "basics"
     ],
-    "updatedAt": "2026-04-19",
+    "updatedAt": "2026-10-09",
     "seo": {
-      "title": "Angular Zone.js under the hood: async patching, stale-view debug, and zoneless trade-offs",
+      "title": "Angular Zone.js and Change Detection: How It Works",
       "description": "Explain Zone.js through the real debug model: patched async APIs, why Angular runs change detection after tasks finish, and what changes when apps go zoneless."
     }
   },
@@ -5863,9 +5863,9 @@
       "performance",
       "basics"
     ],
-    "updatedAt": "2026-04-09",
+    "updatedAt": "2026-10-09",
     "seo": {
-      "title": "Angular memory leaks in production: long-lived streams, AsyncPipe, and teardown patterns",
+      "title": "Angular Memory Leaks: Unsubscribe and Teardown Patterns",
       "description": "Explain Angular memory leaks through real teardown bugs: long-lived subscriptions, global listeners, timers, AsyncPipe, takeUntilDestroyed, and when manual unsubscribe still matters."
     },
     "incidentCard": {
@@ -6022,9 +6022,9 @@
       "two-way-binding",
       "basics"
     ],
-    "updatedAt": "2026-04-19",
+    "updatedAt": "2026-10-09",
     "seo": {
-      "title": "Angular ControlValueAccessor vs custom two-way binding: real forms integration and pitfalls",
+      "title": "Angular ControlValueAccessor vs Custom Two-Way Binding",
       "description": "Explain ControlValueAccessor through real form behavior: validation, touched or dirty state, disabled propagation, and why custom two-way binding breaks down in serious Angular forms."
     },
     "incidentCard": {
@@ -6493,9 +6493,9 @@
       "performance",
       "basics"
     ],
-    "updatedAt": "2026-04-19",
+    "updatedAt": "2026-10-09",
     "seo": {
-      "title": "RxJS shareReplay in Angular: HTTP caching, stale data, and refCount traps",
+      "title": "RxJS shareReplay in Angular: Caching and refCount Traps",
       "description": "Use shareReplay carefully in Angular services: it is great for cold HTTP caching, but wrong reset assumptions can keep stale values or long-lived subscriptions around."
     },
     "incidentCard": {
@@ -7055,9 +7055,9 @@
       "state",
       "basics"
     ],
-    "updatedAt": "2026-04-19",
+    "updatedAt": "2026-10-09",
     "seo": {
-      "title": "Subject vs BehaviorSubject vs ReplaySubject vs AsyncSubject: late subscribers and state rules",
+      "title": "Subject vs BehaviorSubject vs ReplaySubject vs AsyncSubject",
       "description": "Choose the right RxJS Subject variant by asking what late subscribers should receive, whether an initial value exists, and whether the stream only matters on completion."
     },
     "incidentCard": {
@@ -7233,9 +7233,9 @@
       "transformations",
       "basics"
     ],
-    "updatedAt": "2026-04-19",
+    "updatedAt": "2026-10-09",
     "seo": {
-      "title": "RxJS tap vs map in Angular: side effects, transformations, and common bugs",
+      "title": "RxJS tap vs map in Angular: Side Effects vs Transforms",
       "description": "Use map when downstream should receive a new value, and use tap for side effects that must not change the emitted stream."
     },
     "incidentCard": {

@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { DecisionGraphService } from './decision-graph.service';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 
 describe('DecisionGraphService', () => {
   let service: DecisionGraphService;
@@ -52,6 +53,45 @@ describe('DecisionGraphService', () => {
     }));
     expect(out.nodes.length).toBe(1);
     expect(out.nodes[0].anchor.lineEnd).toBe(3);
+  });
+
+  it('falls back to the same-origin asset when the CDN copy fails', () => {
+    const env = environment as any;
+    const saved = { cdnBaseUrl: env.cdnBaseUrl, cdnEnabled: env.cdnEnabled };
+    env.cdnBaseUrl = 'https://frontendatlas.vercel.app';
+    env.cdnEnabled = true;
+    localStorage.removeItem('fa:cdn:enabled');
+    try {
+      let out: any = 'unset';
+      service.load('assets/questions/javascript/decision-graphs/js-debounce.v1.json').subscribe((value) => {
+        out = value;
+      });
+
+      httpMock
+        .expectOne('https://frontendatlas.vercel.app/assets/questions/javascript/decision-graphs/js-debounce.v1.json')
+        .flush('Not found', { status: 404, statusText: 'Not Found' });
+      httpMock.expectOne('assets/questions/javascript/decision-graphs/js-debounce.v1.json').flush({
+        questionId: 'js-debounce',
+        version: 1,
+        language: 'javascript',
+        code: 'export default function debounce() {}',
+        nodes: [
+          {
+            id: 'd1',
+            title: 'Leading gate',
+            anchor: { lineStart: 3 },
+            why: 'Avoid repeated immediate calls.',
+            alternative: 'Use a timestamp gate.',
+            tradeoff: 'Simpler but less precise timing control.',
+          },
+        ],
+      });
+
+      expect(out).toEqual(jasmine.objectContaining({ questionId: 'js-debounce' }));
+    } finally {
+      env.cdnBaseUrl = saved.cdnBaseUrl;
+      env.cdnEnabled = saved.cdnEnabled;
+    }
   });
 
   it('returns null when the asset is malformed', () => {

@@ -165,7 +165,10 @@
             </nav>
 
             <div class="detail-title-row">
-              <h1 class="text-xl font-bold" data-testid="question-title">{{ questionHeading() }}</h1>
+              <h1 *ngIf="!demoMode; else demoTitle" class="text-xl font-bold" data-testid="question-title">{{ questionHeading() }}</h1>
+              <ng-template #demoTitle>
+                <h2 class="text-xl font-bold" data-testid="question-title">{{ questionHeading() }}</h2>
+              </ng-template>
               <span class="detail-solved" *ngIf="uiSolved()" aria-label="Solved">
                 <app-fa-glyph class="detail-solved__icon" icon="pi pi-check"></app-fa-glyph>
                 Solved
@@ -254,18 +257,14 @@
             </section>
 
             <!-- Özet / prose -->
-            <div *ngIf="(descSummary() || descriptionText()) as prose" class="whitespace-pre-wrap opacity-90 mt-3">
-              {{ displayText(prose) }}
-            </div>
+            <div *ngIf="(descSummary() || descriptionText()) as prose" class="whitespace-pre-wrap opacity-90 mt-3"><fa-inline-code [text]="displayText(prose)"></fa-inline-code></div>
 
             <!-- Prompt specs -->
             <ng-container *ngIf="descSpecs() as specs">
 
               <!-- Tech focus chips -->
               <div *ngIf="specs.techFocus?.length" class="mt-2 flex flex-wrap gap-1">
-                <span *ngFor="let t of specs.techFocus" class="fa-chip">
-                  {{ t }}
-                </span>
+                <span *ngFor="let t of specs.techFocus" class="fa-chip"><fa-inline-code [text]="t"></fa-inline-code></span>
               </div>
 
               <!-- Framework preview button styled like the yellow banner -->
@@ -282,7 +281,7 @@
               <div *ngIf="specs.practice?.length" class="mt-4">
                 <h3 class="text-sm font-semibold mb-1">What you'll practice:</h3>
                 <ul class="list-disc list-inside text-sm opacity-90 space-y-1">
-                  <li *ngFor="let p of specs.practice">{{ displayText(p) }}</li>
+                  <li *ngFor="let p of specs.practice"><fa-inline-code [text]="displayText(p)"></fa-inline-code></li>
                 </ul>
               </div>
 
@@ -290,7 +289,7 @@
               <div *ngIf="specs.requirements?.length" class="mt-4">
                 <h3 class="text-sm font-semibold mb-1">Requirements</h3>
                 <ul class="list-disc list-inside text-sm opacity-90 space-y-1">
-                  <li *ngFor="let r of specs.requirements">{{ displayText(r) }}</li>
+                  <li *ngFor="let r of specs.requirements"><fa-inline-code [text]="displayText(r)"></fa-inline-code></li>
                 </ul>
               </div>
 
@@ -298,7 +297,7 @@
               <div *ngIf="specs.acceptanceCriteria?.length" class="mt-3">
                 <h3 class="text-sm font-semibold mb-1">Acceptance criteria</h3>
                 <ul class="list-disc list-inside text-sm opacity-90 space-y-1">
-                  <li *ngFor="let item of specs.acceptanceCriteria">{{ displayText(item) }}</li>
+                  <li *ngFor="let item of specs.acceptanceCriteria"><fa-inline-code [text]="displayText(item)"></fa-inline-code></li>
                 </ul>
               </div>
 
@@ -309,7 +308,7 @@
                   {{ displayText(specs.expectedBehaviorIntro) }}
                 </p>
                 <ul class="list-disc list-inside text-sm opacity-90 space-y-1">
-                  <li *ngFor="let b of specs.expectedBehavior">{{ displayText(b) }}</li>
+                  <li *ngFor="let b of specs.expectedBehavior"><fa-inline-code [text]="displayText(b)"></fa-inline-code></li>
                 </ul>
               </div>
 
@@ -317,7 +316,7 @@
               <div *ngIf="specs.implementationNotes?.length" class="mt-3">
                 <h3 class="text-sm font-semibold mb-1">Implementation notes</h3>
                 <ul class="list-disc list-inside text-sm opacity-90 space-y-1">
-                  <li *ngFor="let n of specs.implementationNotes">{{ displayText(n) }}</li>
+                  <li *ngFor="let n of specs.implementationNotes"><fa-inline-code [text]="displayText(n)"></fa-inline-code></li>
                 </ul>
               </div>
 
@@ -325,7 +324,7 @@
               <div *ngIf="specs.commonMistakes?.length" class="mt-3">
                 <h3 class="text-sm font-semibold mb-1">Common mistakes</h3>
                 <ul class="list-disc list-inside text-sm opacity-90 space-y-1">
-                  <li *ngFor="let item of specs.commonMistakes">{{ displayText(item) }}</li>
+                  <li *ngFor="let item of specs.commonMistakes"><fa-inline-code [text]="displayText(item)"></fa-inline-code></li>
                 </ul>
               </div>
 
@@ -339,7 +338,7 @@
               <div *ngIf="specs.testingChecklist?.length" class="mt-3">
                 <h3 class="text-sm font-semibold mb-1">Testing checklist</h3>
                 <ul class="list-disc list-inside text-sm opacity-90 space-y-1">
-                  <li *ngFor="let item of specs.testingChecklist">{{ displayText(item) }}</li>
+                  <li *ngFor="let item of specs.testingChecklist"><fa-inline-code [text]="displayText(item)"></fa-inline-code></li>
                 </ul>
               </div>
 
@@ -362,7 +361,7 @@
                 <li *ngFor="let a of descArgs()">
                   <code class="opacity-80">{{ a.name }}</code>
                   <span *ngIf="a.type" class="opacity-60">: {{ a.type }}</span>
-                  <span *ngIf="a.desc"> — {{ a.desc }}</span>
+                  <span *ngIf="a.desc"> — <fa-inline-code [text]="a.desc"></fa-inline-code></span>
                 </li>
               </ul>
             </div>
@@ -374,7 +373,7 @@
                 <span *ngIf="descReturns()?.type">
                   <code class="opacity-80">{{ descReturns()?.type }}</code> —
                 </span>
-                <span class="font-sm">{{ descReturns()?.desc }}</span>
+                <span class="font-sm"><fa-inline-code [text]="descReturns()?.desc"></fa-inline-code></span>
               </div>
             </div>
 

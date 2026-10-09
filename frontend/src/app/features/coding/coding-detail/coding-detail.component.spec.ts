@@ -2434,6 +2434,58 @@ describe('CodingDetailComponent', () => {
     expect(document.body.style.overflow).toBe('');
   });
 
+  it('renders the question title as h2 inside the embedded home demo', async () => {
+    const question = makeDeferredPromiseQuestion();
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    component.questionId = question.id;
+    component.questionTech = 'javascript';
+    component.demoMode = true;
+    component.liteMode = true;
+    component.disablePersistence = true;
+    component.hideFooterBar = true;
+
+    questionService.loadQuestions.and.returnValue(of([question] as any));
+    spyOn(component as any, 'resolveSolutionAsset').and.resolveTo({ files: {}, initialPath: '' });
+    fixture.detectChanges();
+    await fixture.whenStable();
+    component.isPhoneViewport.set(false);
+    component.liteEditors.set(true);
+    fixture.detectChanges();
+
+    const host = fixture.nativeElement as HTMLElement;
+    const title = host.querySelector('[data-testid="question-title"]') as HTMLElement | null;
+    expect(title?.tagName).toBe('H2');
+    expect(title?.textContent?.trim()).toBeTruthy();
+    expect(host.querySelectorAll('h1').length).toBe(0);
+  });
+
+  it('renders inline code and bold in the prompt without a collapsed leading space', async () => {
+    const question = { ...makeDeferredPromiseQuestion(), description: { summary: 'Call `fn` **once**.' } };
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    component.questionId = question.id;
+    component.questionTech = 'javascript';
+    component.disablePersistence = true;
+    component.hideFooterBar = true;
+
+    questionService.loadQuestions.and.returnValue(of([question] as any));
+    spyOn(component as any, 'resolveSolutionAsset').and.resolveTo({ files: {}, initialPath: '' });
+    fixture.detectChanges();
+    await fixture.whenStable();
+    component.isPhoneViewport.set(false);
+    component.liteEditors.set(true);
+    fixture.detectChanges();
+
+    const prose = fixture.nativeElement.querySelector(
+      '[data-testid="coding-description-panel"] .whitespace-pre-wrap',
+    ) as HTMLElement | null;
+    expect(prose?.textContent).toBe('Call fn once.');
+    expect(prose?.querySelector('code')?.textContent).toBe('fn');
+    expect(prose?.querySelector('strong')?.textContent).toBe('once');
+    expect(component.descSummary()).toBe(component.descriptionText());
+  });
+
   const debugDescriptionCases: Array<{ label: string; description: Question['description']; expected?: string }> = [
     { label: 'string', description: '  String prompt.  ', expected: 'String prompt.' },
     { label: 'summary', description: { summary: '  Summary prompt.  ' }, expected: 'Summary prompt.' },

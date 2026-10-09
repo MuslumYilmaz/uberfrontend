@@ -83,6 +83,7 @@ import {
 import { FaButtonComponent } from '../../../shared/ui/button/fa-button.component';
 import { FaDialogComponent } from '../../../shared/ui/dialog/fa-dialog.component';
 import { FaGlyphComponent } from '../../../shared/ui/icon/fa-glyph.component';
+import { InlineCodeComponent } from '../../../shared/ui/inline-code/inline-code.component';
 import { SafeHtmlPipe } from '../../../core/pipes/safe-html.pipe';
 import { CodingFrameworkPanelComponent, FrameworkCheckRunEvent } from './coding-framework-panel/coding-framework-panel';
 import { CodingJsPanelComponent, JsLang } from './coding-js-panel/coding-js-panel.component';
@@ -165,6 +166,7 @@ const SEO_DESCRIPTION_MAX_LEN = 240;
         FaButtonComponent,
         FaDialogComponent,
         FaGlyphComponent,
+        InlineCodeComponent,
         SafeHtmlPipe,
     ],
     templateUrl: './coding-detail.component.html',

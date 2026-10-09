@@ -185,10 +185,6 @@ describe('trivia-seo.util', () => {
       id: 'rxjs-subject-vs-behaviorsubject-vs-replaysubject-vs-asyncsubject',
       technology: 'angular',
       title: 'Subject vs BehaviorSubject vs ReplaySubject vs AsyncSubject in Angular: when do you use which?',
-      seo: {
-        title: 'Subject vs BehaviorSubject vs ReplaySubject vs AsyncSubject: late subscribers and state rules',
-        description: 'Choose the right RxJS Subject variant by asking what late subscribers should receive.',
-      },
     } as any;
 
     expect(seoTitleForQuestion(question)).toBe(
@@ -197,6 +193,16 @@ describe('trivia-seo.util', () => {
     expect(seoDescriptionForQuestion(question, '', 'angular')).toBe(
       'Subject vs BehaviorSubject vs ReplaySubject vs AsyncSubject in Angular: quick interview answer, examples, common mistakes, and production pitfalls.',
     );
+
+    const authored = {
+      ...question,
+      seo: {
+        title: 'Subject vs BehaviorSubject vs ReplaySubject vs AsyncSubject: late subscribers and state rules',
+        description: 'Choose the right RxJS Subject variant by asking what late subscribers should receive.',
+      },
+    };
+    expect(seoTitleForQuestion(authored)).toBe(authored.seo.title);
+    expect(seoDescriptionForQuestion(authored, '', 'angular')).toBe(authored.seo.description);
   });
 
   it('preserves complete behavior questions and the concept used in their descriptions', () => {
@@ -204,16 +210,22 @@ describe('trivia-seo.util', () => {
       id: 'react-fragments-dom-and-reconciliation',
       technology: 'react',
       title: 'How do fragments affect the rendered DOM and reconciliation?',
-      seo: {
-        title: 'What do React fragments do and when should you use them?',
-        description: 'React fragments group children without adding extra DOM nodes.',
-      },
     } as any;
 
     expect(seoTitleForQuestion(question)).toBe(question.title);
     expect(seoDescriptionForQuestion(question, '', 'react')).toBe(
       'Understand fragments affect the rendered DOM and reconciliation: quick answer, real example, common mistake, and senior interview follow-up.',
     );
+
+    const authored = {
+      ...question,
+      seo: {
+        title: 'What do React fragments do and when should you use them?',
+        description: 'React fragments group children without adding extra DOM nodes.',
+      },
+    };
+    expect(seoTitleForQuestion(authored)).toBe(authored.seo.title);
+    expect(seoDescriptionForQuestion(authored, '', 'react')).toBe(authored.seo.description);
   });
 
   it('keeps literal HTML tag names in authored titles and descriptions', () => {
@@ -463,8 +475,8 @@ describe('trivia-seo.util', () => {
     );
   });
 
-  it('normalizes broad difference metadata into comparison interview intent', () => {
-    const title = seoTitleForQuestion({
+  it('keeps topic-specific authored metadata even without interview wording', () => {
+    const question = {
       id: 'react-usememo-vs-usecallback',
       title: 'useMemo vs useCallback in React: what is the difference?',
       technology: 'react',
@@ -472,29 +484,43 @@ describe('trivia-seo.util', () => {
         title: 'useMemo vs useCallback in React: what is the difference?',
         description: 'Learn the difference between useMemo and useCallback in React.',
       },
-    } as any);
+    } as any;
 
-    const description = seoDescriptionForQuestion(
-      {
-        id: 'react-usememo-vs-usecallback',
-        title: 'useMemo vs useCallback in React: what is the difference?',
-        technology: 'react',
-        seo: {
-          title: 'useMemo vs useCallback in React: what is the difference?',
-          description: 'Learn the difference between useMemo and useCallback in React.',
-        },
-      } as any,
-      'fallback description',
-      'react'
+    expect(seoTitleForQuestion(question)).toBe('useMemo vs useCallback in React: what is the difference?');
+    expect(seoDescriptionForQuestion(question, 'fallback description', 'react')).toBe(
+      'Learn the difference between useMemo and useCallback in React.'
     );
+  });
 
-    expect(title).toBe('useMemo vs useCallback in React: Interview Answer');
-    expect(title).not.toContain('the difference');
-    expect(title.length).toBeLessThanOrEqual(54);
-    expect(description).toBe(
+  it('falls back to the deterministic templates when authored metadata is too short to describe the page', () => {
+    const question = {
+      id: 'react-usememo-vs-usecallback',
+      title: 'useMemo vs useCallback in React: what is the difference?',
+      technology: 'react',
+      seo: { title: 'Hooks', description: 'React hooks memo.' },
+    } as any;
+
+    expect(seoTitleForQuestion(question)).toBe('useMemo vs useCallback in React: Interview Answer');
+    expect(seoDescriptionForQuestion(question, 'fallback description', 'react')).toBe(
       'useMemo vs useCallback in React: quick interview answer, examples, common mistakes, and production pitfalls.'
     );
-    expect(description.length).toBeLessThanOrEqual(155);
+  });
+
+  it('regenerates the title when only the authored description reads like documentation', () => {
+    const question = {
+      id: 'react-useeffect-cleanup',
+      title: 'Does React useEffect cleanup cancel stale updates?',
+      technology: 'react',
+      seo: {
+        title: 'React useEffect cleanup: stale updates and unmount timing',
+        description: 'Use official documentation and API docs wording for React useEffect cleanup behavior.',
+      },
+    } as any;
+
+    expect(seoTitleForQuestion(question)).toBe('Does React useEffect cleanup cancel stale updates?');
+    expect(seoDescriptionForQuestion(question, 'fallback description', 'react')).toBe(
+      'Understand React useEffect cleanup cancel stale updates: quick answer, real example, common mistake, and senior interview follow-up.'
+    );
   });
 
   it('regenerates docs-intent explicit seo metadata', () => {

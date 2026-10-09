@@ -6,7 +6,10 @@
             <div class="left-inner">
                 <div class="left-head">
                     <div class="title-row">
-                        <h1 class="title" [title]="title()">{{ title() }}</h1>
+                        <h1 *ngIf="!suppressSeo; else embeddedTitle" class="title" [title]="title()">{{ title() }}</h1>
+                        <ng-template #embeddedTitle>
+                            <h2 class="title" [title]="title()">{{ title() }}</h2>
+                        </ng-template>
                         <button
                             class="report-issue-btn"
                             type="button"

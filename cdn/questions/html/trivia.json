@@ -500,7 +500,7 @@
     "title": "What does the <title> tag do?",
     "description": "The <title> tag is one of the highest-leverage SEO and UX signals on a page. It shapes browser tabs, bookmarks, and often the search result headline, and duplicate or vague titles are a common discoverability pitfall.",
     "seo": {
-      "title": "HTML title tag: SEO headlines, tab clarity, and duplicate-title pitfalls",
+      "title": "HTML title Tag: What It Does, SEO, and Duplicate Pitfalls",
       "description": "Learn how the title tag affects browser tabs, search result headlines, and the common pitfall of shipping duplicate or vague page titles."
     },
     "type": "trivia",
@@ -598,7 +598,7 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-10-09",
     "incidentCard": {
       "title": "Page Title Signal Check",
       "scenario": "A teammate leaves `<title>Home</title>` on dozens of pages and says, \"The title tag is minor. Users already see the page heading, so the browser tab text and search result label are not a big deal.\" Another teammate says, \"That is a real problem. The title tag helps users identify tabs, bookmarks, and history entries, and search engines often use it as the result headline. Each page should have a clear, specific title.\" Which explanation is better?",
@@ -779,7 +779,7 @@
     "title": "What are semantic HTML elements?",
     "description": "Semantic HTML elements expose content roles like navigation, article, main content, and supporting sections. They improve accessibility landmarks, SEO structure, and teammate readability, and the common mistake is replacing them all with generic div soup instead of choosing landmarks, headings, and standalone content boundaries deliberately.",
     "seo": {
-      "title": "Semantic HTML elements: accessibility landmarks, SEO structure, and common mistakes",
+      "title": "Semantic HTML Elements: Landmarks, SEO, and Mistakes",
       "description": "Learn how semantic elements improve landmarks, debugging, and document structure, and when section, article, or plain div wrappers are actually the right choice."
     },
     "type": "trivia",
@@ -913,7 +913,7 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-07-02",
+    "updatedAt": "2026-10-09",
     "incidentCard": {
       "title": "Semantic Structure Check",
       "scenario": "A teammate builds the whole page with nested `div`s and says, \"Semantic tags are mostly style preferences. Search engines and assistive tools can figure the page out anyway, so using `header`, `main`, `nav`, or `article` does not really change much.\" Another teammate says, \"Those tags communicate structure on purpose. They make the document easier for screen readers, crawlers, and developers to understand, which improves accessibility, SEO, and maintainability.\" Which explanation is better?",
@@ -2102,7 +2102,7 @@
     "importance": 3,
     "description": "The &lt;iframe&gt; element creates a nested browsing context, so the real production concerns are sandboxing, performance, accessibility, and third-party embed pitfalls.",
     "seo": {
-      "title": "HTML iframe: sandbox, performance, and third-party embed pitfalls",
+      "title": "HTML iframe Tag: Definition, sandbox, and Embed Pitfalls",
       "description": "Learn how iframes work under the hood, when to sandbox them, and which security/performance pitfalls show up with real embeds."
     },
     "answer": {
@@ -2205,7 +2205,7 @@
       "security",
       "basics"
     ],
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-10-09",
     "incidentCard": {
       "title": "Embedded Content Risk Check",
       "scenario": "A teammate says, \"An iframe is just a visual embed box. If it loads, we are done. Accessibility titles, sandboxing, and source trust are extra details we can ignore for now.\" Another teammate says, \"That is risky. An iframe embeds another browsing context, so you need to think about what source you are loading, give it a useful `title`, and restrict it with attributes like `sandbox` when appropriate.\" Which explanation is better?",
@@ -2235,7 +2235,7 @@
     "importance": 4,
     "description": "data-* attributes are lightweight DOM hooks for custom metadata, testing selectors, or UI behavior flags that JavaScript reads via dataset. The common production mistake is treating them as private storage or stuffing too much application state into markup.",
     "seo": {
-      "title": "HTML data-* attributes: dataset hooks, testing, and when not to use them",
+      "title": "HTML data-* Attributes and dataset: Uses and Pitfalls",
       "description": "Use data attributes for lightweight DOM hooks, know that dataset values are strings, and avoid the common mistake of storing secrets or app state in markup."
     },
     "answer": {
@@ -2327,7 +2327,7 @@
       "javascript",
       "attributes"
     ],
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-10-09",
     "incidentCard": {
       "title": "Dataset Safety Check",
       "scenario": "A teammate says, \"Let's put the user's role, plan, and auth token into `data-*` attributes on the button. It keeps everything close to the markup, and users can't really see it anyway.\" Another teammate says, \"Use `data-*` for small, non-sensitive values like IDs or UI actions. They are still in the DOM, JavaScript reads them as strings through `dataset`, and secrets do not belong there.\" Which explanation is better?",
@@ -2363,7 +2363,7 @@
     "importance": 4,
     "description": "Make an image a hyperlink by wrapping it in an anchor with a real href attribute. An anchor without href is not a hyperlink. Good linked images also need meaningful alt text, clear destination context, and safe new-tab handling with rel=\"noopener noreferrer\" when needed.",
     "seo": {
-      "title": "Clickable images in HTML: anchor pattern, alt text, and new-tab pitfalls",
+      "title": "Clickable Image in HTML: Anchor Pattern and Alt Text",
       "description": "Wrap an image in an anchor with href, write alt text that communicates the destination, and avoid common accessibility or target=\"_blank\" pitfalls."
     },
     "answer": {
@@ -2456,7 +2456,7 @@
       "anchor",
       "accessibility"
     ],
-    "updatedAt": "2026-07-14",
+    "updatedAt": "2026-10-09",
     "incidentCard": {
       "title": "Linked Image Accessibility Check",
       "scenario": "A teammate says, \"We can make the image clickable by adding `href` to the `<img>` tag itself. The anchor is optional, and the `alt` text can just say `image` because users will see where it goes.\" Another teammate says, \"A clickable image should be an `<img>` wrapped inside an `<a>`. It still behaves like a link, so the destination belongs on `href`, the image needs meaningful `alt` text, and if it opens a new tab we should think about `rel` as well.\" Which explanation is better?",
@@ -3017,7 +3017,7 @@
     "importance": 5,
     "description": "ARIA roles describe element purpose for assistive technologies. They improve accessibility when native semantics aren't available, but should not replace proper HTML tags. The common mistake is treating ARIA like a shortcut: roles can label a custom widget, but they do not add keyboard support, focus management, or state updates for you.",
     "seo": {
-      "title": "ARIA roles in HTML: when they help, when they hurt, and common mistakes",
+      "title": "ARIA Roles in HTML: When They Help and When They Hurt",
       "description": "Use ARIA roles only when native semantics are missing, compare native buttons with custom role-based controls, and avoid forgetting keyboard or state behavior."
     },
     "answer": {
@@ -3100,7 +3100,7 @@
       "roles",
       "a11y"
     ],
-    "updatedAt": "2026-04-12",
+    "updatedAt": "2026-10-09",
     "incidentCard": {
       "title": "ARIA Reality Check",
       "scenario": "A teammate says, \"We can make any custom UI accessible just by sprinkling ARIA roles everywhere. It is basically a shortcut, so using a `<div role='button'>` is always as good as a real `<button>` even if we skip keyboard handling.\" Another teammate says, \"ARIA helps assistive technologies understand custom UI, but it does not replace native semantics or interaction behavior. If a native element already fits, use it first, and if you add ARIA to a custom control, the keyboard behavior and state updates have to match.\" Which explanation is better?",

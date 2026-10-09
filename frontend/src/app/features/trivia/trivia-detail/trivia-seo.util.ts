@@ -3,11 +3,12 @@ import { normalizeSeoPlainText } from '../../../core/utils/seo-text.util';
 
 const TITLE_SOFT_LEN = 54;
 const INTERVIEW_TITLE_SUFFIX = ': Interview Answer';
+// Authored metadata wins unless it reads like documentation or is too short to
+// describe the page; the deterministic templates below only cover missing copy.
+const MIN_AUTHORED_TITLE_WORDS = 2;
+const MIN_AUTHORED_DESCRIPTION_WORDS = 6;
 const INTERVIEW_INTENT_RE = /\b(interview(?:s)?|interviewer(?:s)?|prep(?:aration)?|practice|candidate(?:s)?|round(?:s)?|follow[\s-]?ups?|drill(?:s)?|question(?:s)?|answer(?:s)?)\b/i;
 const DOCS_INTENT_RE = /\b(?:official\s+docs?|docs\s+wording|memorized\s+docs\s+wording|official\s+documentation|documentation|official\s+guide|official\s+api|api\s+docs?|api\s+reference)\b/i;
-const ANSWER_FIRST_RE = /^(?:(?:yes|no|it depends)\s*[:.—]|use\b|in\s+[^.?!]{1,80},\s*(?:call|use)\b)/i;
-const PROBLEM_FIRST_RE = /\b(?:running|runs|called|firing)\s+twice\b|\bduplicate\s+(?:fetches|listeners|requests|api\s+calls)\b|\bmissing\s+returns?\b|\b(?:bugs?|fix(?:es|ing)?|gotchas?|leaks?|pitfalls?)\b/i;
-const APPLIED_REVIEW_INTENT_RE = /\b(?:code[\s-]?review|pull requests?|case files?|review clinic|predict (?:the )?(?:failure|result|output|behavior))\b/i;
 const BEHAVIOR_QUESTION_RE = /^(?:does|do|why|how)\b|\b(?:what\s+actually\s+happens|what\s+happens|how\s+(?:does|do).+\bwork|why\s+.+\bhappen|cancel(?:s|led|lation)?|unsubscribe|rerun|re-run|recompute|render(?:s|ing)?|execute(?:s|d)?|fire(?:s|d)?|update(?:s|d)?|mutate(?:s|d)?|leak(?:s|ed)?)\b/i;
 
 const TECH_LABELS: Record<string, string> = {
@@ -130,26 +131,17 @@ function hasDocsIntent(value: string): boolean {
   return DOCS_INTENT_RE.test(String(value || ''));
 }
 
-function hasAnswerFirstIntent(value: string): boolean {
-  return ANSWER_FIRST_RE.test(String(value || '').trim());
-}
-
-function hasProblemFirstIntent(value: string): boolean {
-  return PROBLEM_FIRST_RE.test(String(value || '').trim());
-}
-
 function hasBehaviorQuestionIntent(value: string): boolean {
   return BEHAVIOR_QUESTION_RE.test(String(value || '').trim());
 }
 
-function hasRetargetedIntent(value: string): boolean {
-  const text = String(value || '');
-  return hasInterviewIntent(text)
-    || hasAnswerFirstIntent(text)
-    || hasProblemFirstIntent(text)
-    || APPLIED_REVIEW_INTENT_RE.test(text)
-    || hasBehaviorQuestionIntent(text)
-    || /\b(?:quick answer|real examples?|examples?|common mistakes?|production pitfalls?|when to use|what actually happens)\b/i.test(text);
+function wordCount(value: string): number {
+  return String(value || '').split(/\s+/).filter(Boolean).length;
+}
+
+function usableAuthoredText(value: string, minWords: number): boolean {
+  const text = normalizeWhitespace(String(value || ''));
+  return Boolean(text) && !hasDocsIntent(text) && wordCount(text) >= minWords;
 }
 
 function stripFrameworkSuffix(value: string, framework: string): string {
@@ -236,16 +228,11 @@ function retargetedTitle(
 export function seoTitleForQuestion(q: Pick<Question, 'id' | 'title' | 'technology' | 'seo'>): string {
   const rawExplicit = rawQuestionSeoTitle(q);
   const rawExplicitDescription = rawQuestionSeoDescription(q);
-  const rawExplicitAllowed = rawExplicit && !hasDocsIntent(rawExplicit);
-  const rawMetadata = `${rawExplicit} ${rawExplicitDescription}`;
-  const rawMetadataHasRetargetedIntent = hasRetargetedIntent(rawMetadata)
-    || hasAnswerFirstIntent(rawExplicitDescription);
-  const explicit = sanitizeSerpText(rawExplicitAllowed ? rawExplicit : '');
   const framework = frameworkLabel(q.technology);
-  if (explicit) {
-    return rawMetadataHasRetargetedIntent && !hasDocsIntent(rawMetadata)
-      ? explicit
-      : retargetedTitle(q, framework);
+  if (usableAuthoredText(rawExplicit, MIN_AUTHORED_TITLE_WORDS)) {
+    // A documentation-flavored description taints the pair: regenerate both.
+    const explicit = sanitizeSerpText(rawExplicit);
+    if (explicit) return hasDocsIntent(rawExplicitDescription) ? retargetedTitle(q, framework) : explicit;
   }
 
   const questionTitle = normalizedQuestionTitle(q);
@@ -294,14 +281,10 @@ export function seoDescriptionForQuestion(
   tech: string
 ): string {
   const rawExplicit = rawQuestionSeoDescription(q);
-  const rawExplicitAllowed = rawExplicit && !hasDocsIntent(rawExplicit);
-  const rawExplicitHasRetargetedIntent = hasRetargetedIntent(rawExplicit);
-  const explicit = sanitizeSerpText(rawExplicitAllowed ? rawExplicit : '');
   const framework = frameworkLabel(q.technology || tech);
-  if (explicit) {
-    return rawExplicitHasRetargetedIntent
-      ? explicit
-      : interviewAnswerDescription(q, framework);
+  if (usableAuthoredText(rawExplicit, MIN_AUTHORED_DESCRIPTION_WORDS)) {
+    const explicit = sanitizeSerpText(rawExplicit);
+    if (explicit) return explicit;
   }
 
   return interviewAnswerDescription(q, framework);

@@ -3236,9 +3236,9 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-04-08",
+    "updatedAt": "2026-10-09",
     "seo": {
-      "title": "JavaScript Hoisting: undefined reads, early calls, and debug traps",
+      "title": "JavaScript Hoisting Explained: var, let, const, Functions",
       "description": "Understand hoisting under the hood so you can debug why var reads as undefined, function declarations work early, and classes or expressions do not."
     },
     "incidentCard": {
@@ -7902,9 +7902,9 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-10-09",
     "seo": {
-      "title": "JavaScript Array.sort pitfalls: mutation, lexicographic order, and comparator bugs",
+      "title": "JavaScript Array.sort Pitfalls: Mutation and Comparators",
       "description": "Explain Array.sort through the debug lens: in-place mutation, string-first ordering, and comparator mistakes that create subtle production bugs."
     },
     "incidentCard": {

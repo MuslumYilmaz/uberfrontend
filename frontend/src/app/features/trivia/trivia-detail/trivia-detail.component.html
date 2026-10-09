@@ -129,9 +129,14 @@
                 <div class="title-row">
                     <div class="title-copy">
                         <p class="title__intent" *ngIf="visibleH1IntentLabel(q) as intentLabel">{{ intentLabel }}</p>
-                        <h1 class="title">
+                        <h1 *ngIf="!suppressSeo; else embeddedTitle" class="title">
                             <span class="title__question">{{ visibleH1QuestionText(q) }}</span>
                         </h1>
+                        <ng-template #embeddedTitle>
+                            <h2 class="title">
+                                <span class="title__question">{{ visibleH1QuestionText(q) }}</span>
+                            </h2>
+                        </ng-template>
                     </div>
                     <span class="solved-pill" *ngIf="solved()" aria-label="Solved">
                         <app-fa-glyph class="solved-pill__icon" icon="fa-solid fa-check"></app-fa-glyph>

@@ -150,7 +150,7 @@
     "importance": 4,
     "description": "Explain why React expects rendering to be a pure computation (UI = f(props, state, context)) and why side effects must be moved to effects/event handlers. Connect it to render vs commit, Concurrent Rendering, StrictMode double-invocation, memoization, and predictable reconciliation. Pure rendering improves predictability and testing, but side effects must live in effects/hooks. Test with StrictMode and rerenders.",
     "seo": {
-      "title": "Why should React components be pure functions of props and state?",
+      "title": "Why React Components Should Be Pure Functions of Props",
       "description": "React components should be pure because the same props and state must produce the same UI output without side effects during render."
     },
     "answer": {
@@ -258,7 +258,7 @@
       "rendering",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-10-09",
     "incidentCard": {
       "title": "Render Purity Reality Check",
       "scenario": "In development with StrictMode, a profile page sends duplicate analytics pings. You discover the event call is inside the component body during render. What is the best fix?",
@@ -948,9 +948,9 @@
       "props",
       "performance"
     ],
-    "updatedAt": "2026-04-10",
+    "updatedAt": "2026-10-09",
     "seo": {
-      "title": "React rerender vs DOM update: render, commit, bailouts, and remounts",
+      "title": "When Does React Re-render? Render, Commit, and Bailouts",
       "description": "Learn what actually triggers React rerenders, why render work is not the same as DOM mutation, and how bailouts, context churn, and remounts change the result."
     },
     "incidentCard": {
@@ -1359,7 +1359,7 @@
     "importance": 5,
     "description": "Props are immutable because React renders a component as a pure function of its inputs: the parent owns the data, so a child that mutates a prop object or array breaks that ownership, defeats memo and shallow comparison, and leaks the change into sibling components. In production this shows up as stale UI and bugs that depend on timing. Request changes through callbacks and let the parent create a new value.",
     "seo": {
-      "title": "React props immutability: parent ownership, memoization, and mutation bugs",
+      "title": "Why Are Props Immutable in React? Parent Ownership and Bugs",
       "description": "Learn why React props are immutable, how mutation breaks parent ownership and memoization, and which production bugs appear when children mutate shared inputs."
     },
     "answer": {
@@ -1648,9 +1648,9 @@
       "basics",
       "components"
     ],
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-10-09",
     "seo": {
-      "title": "useState in React: render snapshots, rerender triggers, and common update mistakes",
+      "title": "useState in React: Snapshots, Rerenders, and Mistakes",
       "description": "useState stores local state, but the real production pitfalls are stale snapshots, mutated objects, and misunderstanding when setters take effect."
     }
   },
@@ -1909,9 +1909,9 @@
       "rendering",
       "basics"
     ],
-    "updatedAt": "2026-04-10",
+    "updatedAt": "2026-10-09",
     "seo": {
-      "title": "React keys in lists: identity bugs, reordered rows, and stable state",
+      "title": "React Keys in Lists: Identity, Reordering, and Bugs",
       "description": "Learn why React keys are about stable identity, how bad keys cause reordered-row bugs and state leakage, and which key choices are safe in production."
     }
   },
@@ -2573,9 +2573,9 @@
       "lifecycle",
       "basics"
     ],
-    "updatedAt": "2026-04-10",
+    "updatedAt": "2026-10-09",
     "seo": {
-      "title": "useEffect in React: external sync, cleanup pitfalls, and stale-closure debugging",
+      "title": "useEffect in React: Purpose, Cleanup, and Stale Closures",
       "description": "useEffect is for syncing with external systems. The real pitfalls are stale closures, missing cleanup, and accidentally using effects for pure render logic."
     }
   },
@@ -2883,12 +2883,12 @@
       "performance",
       "basics"
     ],
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-10-09",
     "companies": [
       "apple"
     ],
     "seo": {
-      "title": "React Virtual DOM under the hood: reconciliation, commit work, and performance misconceptions",
+      "title": "React Virtual DOM: Reconciliation and Performance Myths",
       "description": "The Virtual DOM is an in-memory React tree, but the useful production angle is debugging re-renders, commit work, and reconciliation misconceptions."
     }
   },
@@ -3356,9 +3356,9 @@
       "lifting-state",
       "data-flow"
     ],
-    "updatedAt": "2026-04-09",
+    "updatedAt": "2026-10-09",
     "seo": {
-      "title": "React lifting state up: sibling sync bugs, single source of truth, and trade-offs",
+      "title": "Lifting State Up in React: Sibling Sync and Trade-offs",
       "description": "Learn when to lift React state to a common parent, how it fixes sibling drift bugs, and when lifting too far creates prop drilling or rerender costs."
     },
     "incidentCard": {
@@ -4119,12 +4119,12 @@
       "performance",
       "basics"
     ],
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-10-09",
     "companies": [
       "apple"
     ],
     "seo": {
-      "title": "React diffing algorithm: O(n) heuristics, keys, and list-update pitfalls",
+      "title": "React Diffing Algorithm: Keys, Heuristics, and Pitfalls",
       "description": "Learn the under-the-hood heuristics React uses for diffing, how element type and keys drive updates, and which list-update pitfalls lead to confusing state bugs."
     },
     "incidentCard": {
@@ -5052,9 +5052,9 @@
       "performance",
       "state-management"
     ],
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-10-09",
     "seo": {
-      "title": "React state batching: render performance, async boundaries, and common mental-model mistakes",
+      "title": "React State Batching: Why Updates Are Batched",
       "description": "React batches updates to reduce extra renders, but the practical angle is understanding async boundaries, queued snapshots, and why setters do not update immediately."
     },
     "incidentCard": {
@@ -5086,7 +5086,7 @@
     "importance": 4,
     "description": "Explain derived state as a single-source-of-truth problem, focusing on drift bugs, copied props, stale computed values, and the narrow cases where derived state is justified.",
     "seo": {
-      "title": "Derived state in React: single-source-of-truth bugs, drift, and when it is actually OK",
+      "title": "Derived State in React: Anti-Pattern, Drift, and Fixes",
       "description": "Derived state becomes a production pitfall when copied props or computed values drift out of sync. Use it only for narrow, justified cases."
     },
     "answer": {
@@ -5224,7 +5224,7 @@
       "state-management",
       "best-practices"
     ],
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-10-09",
     "incidentCard": {
       "title": "Derived State Drift Root Cause Check",
       "scenario": "A profile form copies user.name from props into local state once, then keeps both values around. After a refetch, the header shows the new name but the input still shows the old one. What is the most likely root cause?",
@@ -5532,9 +5532,9 @@
       "components",
       "best-practices"
     ],
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-10-09",
     "seo": {
-      "title": "React Error Boundaries in production: render-crash isolation, fallback UI, and what they do not catch",
+      "title": "React Error Boundaries: What They Catch and Do Not Catch",
       "description": "Error Boundaries isolate render-time crashes, but a common production mistake is expecting them to catch event-handler, async, or SSR errors."
     },
     "incidentCard": {
