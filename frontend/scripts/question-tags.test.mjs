@@ -243,7 +243,9 @@ async function assertEditorialCorrections(errors) {
   const imageLinkCoding = await readQuestion("html", "coding", "html-links-and-images");
   for (const [kind, question] of [["trivia", imageLinkTrivia], ["coding", imageLinkCoding]]) {
     const contract = JSON.stringify(question || {});
-    if (!question || question.updatedAt !== "2026-07-14") {
+    // The image-link correction landed on 2026-07-14; later editorial updates
+    // (for example title rewrites) may move updatedAt forward, never back.
+    if (!question || !(String(question.updatedAt || "") >= "2026-07-14")) {
       errors.push(`html/${kind}.json: image-link content: missing current correction date`);
     }
     if (question?.access !== "free") {

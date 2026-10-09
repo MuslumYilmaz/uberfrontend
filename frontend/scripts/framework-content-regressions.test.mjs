@@ -5064,7 +5064,9 @@ for (const [label, question] of [
   ['HTML links-and-images coding', imageLinkCoding]
 ]) {
   assert.ok(question, `${label} must exist`);
-  assert.equal(question.updatedAt, '2026-07-14');
+  // The image-link correction landed on 2026-07-14; later editorial updates may
+  // move updatedAt forward, never back.
+  assert.ok(String(question.updatedAt || '') >= '2026-07-14', `${label} keeps the correction date`);
   assert.equal(question.access, 'free');
   const contract = JSON.stringify(question);
   assert.match(contract, /anchor without href is not a hyperlink/i);
