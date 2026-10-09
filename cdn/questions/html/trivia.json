@@ -657,7 +657,7 @@
         },
         {
           "type": "text",
-          "text": "## alt attribute examples"
+          "text": "## alt attribute examples\n\nFunctional images live inside links, so the destination still comes from the <a href=\"/html/trivia/html-href-attribute\">href attribute</a> and the opening context from the <a href=\"/html/trivia/html-anchor-target\">target attribute</a>; the alt text only names the action."
         },
         {
           "type": "code",
