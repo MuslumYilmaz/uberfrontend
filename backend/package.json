@@ -28,8 +28,9 @@
     "audit:billing-price-parity": "node scripts/check-billing-price-parity.js",
     "audit:billing-reconciliation": "node scripts/check-billing-reconciliation.js",
     "test": "jest",
-    "verify:ci": "npm run generate:interview-content:check && npm run validate:interview-content && npm test",
-    "test:cv-calibration": "jest cv-linter.calibration"
+    "verify:ci": "npm run lint && npm run generate:interview-content:check && npm run validate:interview-content && npm test",
+    "test:cv-calibration": "jest cv-linter.calibration",
+    "lint": "eslint ."
   },
   "keywords": [],
   "author": "",
@@ -52,7 +53,10 @@
     "pdf-parse": "^1.1.1"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.5",
     "@types/node": "^24.3.0",
+    "eslint": "^9.39.5",
+    "globals": "^17.13.0",
     "jest": "^30.1.3",
     "mongodb-memory-server": "^10.2.0",
     "nodemon": "^3.1.10",

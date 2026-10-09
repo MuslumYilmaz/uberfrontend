@@ -3,7 +3,6 @@
 const http = require('http');
 const jwt = require('jsonwebtoken');
 const { MongoMemoryReplSet } = require('mongodb-memory-server');
-const path = require('path');
 const request = require('supertest');
 
 jest.setTimeout(120000);

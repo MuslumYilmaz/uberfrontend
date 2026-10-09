@@ -29,7 +29,7 @@ function mutableUsersCollection(user) {
       state.user?.email === email ? { _id: state.user._id, role: state.user.role } : null
     )),
     state,
-    updateOne: jest.fn(async (filter, update, options) => {
+    updateOne: jest.fn(async (filter, update) => {
       if (
         state.user
         && String(state.user._id) === String(filter._id)

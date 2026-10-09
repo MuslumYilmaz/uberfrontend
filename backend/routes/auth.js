@@ -803,7 +803,7 @@ function redirectOAuthFailure(res, redirectUri, state, mode, error) {
     return res.redirect(dest.toString());
 }
 
-async function createOAuthUserWithUniqueUsername({ email, usernameHint, avatarUrl, provider, providerId, emailVerified = false }) {
+async function createOAuthUserWithUniqueUsername({ email, usernameHint, avatarUrl, emailVerified = false }) {
     const normalizedEmail = normalizeEmailInput(email);
     if (!normalizedEmail) throw new Error('Missing email for OAuth user');
 

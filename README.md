@@ -98,7 +98,7 @@ npm run build
 npx ng run frontendatlas:prerender
 ```
 
-Backend content validation and Jest suite:
+Backend lint, content validation and Jest suite:
 
 ```bash
 cd backend

@@ -19,7 +19,7 @@ const {
     readActiveActivityStreakCurrent,
 } = require('../services/gamification/engine');
 const { countTodayCompletedKinds, countWeeklySolvedUnique, buildProgressSummary } = require('../services/gamification/dashboard');
-const { currentWeekBounds, dayKeyInTimezone, dayDiffByKey } = require('../services/gamification/timezone');
+const { dayKeyInTimezone, dayDiffByKey } = require('../services/gamification/timezone');
 const { awardWeeklyGoalBonusIfEligible } = require('../services/gamification/weekly-goal');
 const { ensureCurrentWeeklyGoalState } = require('../services/gamification/weekly-goal-state');
 const { SOLVE_KINDS } = require('../services/gamification/constants');

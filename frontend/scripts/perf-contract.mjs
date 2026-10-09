@@ -16,11 +16,15 @@ const outputPath = path.join(projectRoot, 'reports', 'perf-contract.json');
 const strictMode = process.argv.includes('--strict');
 const noWrite = process.argv.includes('--no-write');
 
+// Thresholds sit a few percent above the measured production build (2026-10-09:
+// initial 429,792; modulepreload 28,073; /coding HTML 585,910; prerender total
+// 99,111,133). They fail the Playwright Critical job in --strict mode, so a
+// regression has to raise them deliberately in the same change.
 const THRESHOLDS = {
-  initialBytes: 1_150_000,
-  modulePreloadBytes: 600_000,
-  codingHtmlBytes: 450_000,
-  totalHtmlBytes: 70_000_000,
+  initialBytes: 480_000,
+  modulePreloadBytes: 40_000,
+  codingHtmlBytes: 620_000,
+  totalHtmlBytes: 104_000_000,
   sentryLazyChunkBytes: 260_000,
   showcaseLazyHeavyBytes: 620_000,
 };

@@ -256,29 +256,6 @@ async function seedFullJavascriptReadiness(user, catalog) {
   await seedWeeklyCompletions(user._id, { count: 10, tech: 'javascript' });
 }
 
-async function seedFullFrameworkReadiness(user, catalog, { tech = 'react' } = {}) {
-  const codingIds = selectDiverseQuestionIds(catalog, {
-    tech,
-    kind: 'coding',
-    target: 7,
-    perBucketCap: 3,
-  });
-  const triviaIds = selectDiverseQuestionIds(catalog, {
-    tech,
-    kind: 'trivia',
-    target: 12,
-    perBucketCap: 5,
-  });
-  user.solvedQuestionIds = [...codingIds, ...triviaIds];
-  await user.save();
-  await seedQuestionCompletions(user._id, catalog, {
-    ids: [...codingIds, ...triviaIds],
-    tech,
-  });
-  await seedPracticeProgress(user._id, { incidents: 3, tradeoffs: 3 });
-  await seedWeeklyCompletions(user._id, { count: 10, tech });
-}
-
 async function seedFullConceptOnlyReadiness(user, catalog, { tech = 'html' } = {}) {
   const conceptIds = selectDiverseQuestionIds(catalog, {
     tech,
