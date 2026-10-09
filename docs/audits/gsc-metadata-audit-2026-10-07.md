@@ -95,6 +95,10 @@ Recommended separate follow-up:
 2. Keep a deterministic fallback only for questions without usable authored metadata.
 3. If broadening the policy, add representative fallback and docs-style cases before running the metadata audit after a prerender build.
 
+### Resolution — 2026-10-09
+
+The follow-up was decided and implemented: authored `seo.title` and `seo.description` now win whenever they are present, are not documentation-flavored, and are long enough to describe the page (two words for titles, six for descriptions). The deterministic interview templates remain only for missing or rejected copy. A full prerender after the change showed zero template descriptions on the 261 indexable trivia pages (previously 99, 20 of them with broken grammar) and 64 titles returned to their authored form. The 29 longest authored titles with Search Console impressions were shortened to 60 characters or fewer in the same release.
+
 ## Suggested rollout order
 
 1. Deploy, request recrawls for the five P1 URLs, and compare GSC page-level impressions, CTR, and Google-selected titles/descriptions after a sufficient recrawl window.
