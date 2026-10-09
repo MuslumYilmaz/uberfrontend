@@ -67,15 +67,6 @@ function runtimeFixtureResult(
   }, { finalizedAt });
 }
 
-function changedDecisionId(fixture) {
-  return fixture.draft.decisions.find((decision) => {
-    const baselineDecision = fixture.baseline.decisions.find(
-      (entry) => entry.decisionId === decision.decisionId
-    );
-    return baselineDecision && baselineDecision.optionId !== decision.optionId;
-  })?.decisionId;
-}
-
 describe('guided system-design interview content', () => {
   test('builds the exact candidate scenario matrix without private-answer leakage', () => {
     const errors = runContentProbe(`

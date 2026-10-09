@@ -9,7 +9,7 @@ const {
   readStreakVisibility,
   readDailyChallengeTech,
 } = require('./engine');
-const { currentWeekBounds, dayKeyInTimezone } = require('./timezone');
+const { dayKeyInTimezone } = require('./timezone');
 const { loadQuestionCatalog } = require('./question-catalog');
 const { loadPracticeCatalog } = require('./practice-catalog');
 const {
@@ -1095,7 +1095,7 @@ function effectivePracticeTarget(target, entries) {
   return available > 0 ? Math.min(safeTarget, available) : safeTarget;
 }
 
-function buildFallbackDrill(goal) {
+function buildFallbackDrill() {
   return {
     title: 'JavaScript practice library',
     route: '/coding',

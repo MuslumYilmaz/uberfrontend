@@ -79,7 +79,7 @@ const LINKEDIN_RE = /\blinkedin\.com\/[^\s)]+/i;
 const DATE_PATTERN_MAP = Object.freeze({
   'MMM YYYY': /\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)[\s.-]+(?:19|20)\d{2}\b/i,
   'Month YYYY': /\b(?:January|February|March|April|May|June|July|August|September|October|November|December)[\s.-]+(?:19|20)\d{2}\b/i,
-  'MM/YYYY': /\b(?:0?[1-9]|1[0-2])[\/-](?:19|20)\d{2}\b/,
+  'MM/YYYY': /\b(?:0?[1-9]|1[0-2])[/-](?:19|20)\d{2}\b/,
   YYYY: /\b(?:19|20)\d{2}\b/,
 });
 const DATE_FORMAT_ORDER = ['MMM YYYY', 'Month YYYY', 'MM/YYYY', 'YYYY'];

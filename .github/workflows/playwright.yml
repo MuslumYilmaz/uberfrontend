@@ -98,8 +98,8 @@ jobs:
       - name: Build (production)
         run: npm run build
 
-      - name: Perf contract snapshot
-        run: npm run perf:contract
+      - name: Perf contract (strict budgets)
+        run: npm run perf:contract:strict
 
       - name: Cache Playwright browsers
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9

@@ -1,0 +1,60 @@
+name: Production Smoke
+
+on:
+  deployment_status:
+  schedule:
+    - cron: '17 */6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  production-smoke:
+    name: Production Smoke
+    # Runs after every successful Vercel production deployment and every six
+    # hours. Read-only: it never signs up, logs in or starts a checkout.
+    if: >-
+      github.event_name != 'deployment_status'
+      || (github.event.deployment_status.state == 'success'
+          && startsWith(github.event.deployment.environment, 'Production'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      API_BASE: https://api.frontendatlas.com
+      SITE_BASE: https://frontendatlas.com
+
+    steps:
+      - name: Probe the live API
+        run: |
+          set -euo pipefail
+          fetch() {
+            # $1 label, $2 url, $3 output file
+            local code
+            code="$(curl -sS -o "$3" -w '%{http_code}' --max-time 20 --retry 3 --retry-delay 10 --retry-all-errors "$2" || true)"
+            echo "$1 -> HTTP $code"
+            test "$code" = "200"
+          }
+
+          fetch "api health" "$API_BASE/api/health" /tmp/health.json
+
+          # Checkout configuration only; this never creates a checkout attempt.
+          fetch "checkout config" "$API_BASE/api/billing/checkout/config" /tmp/checkout-config.json
+          jq -e '.mode == "live" and .enabled == true and .provider == "lemonsqueezy"' /tmp/checkout-config.json >/dev/null \
+            || { echo "Production checkout config is not live/enabled:"; cat /tmp/checkout-config.json; exit 1; }
+
+      - name: Probe the crawl surfaces
+        run: |
+          set -euo pipefail
+          # HTML routes sit behind Vercel's bot challenge for non-browser clients,
+          # so only the machine-readable surfaces are checked here.
+          fetch() {
+            local code
+            code="$(curl -sS -o "$3" -w '%{http_code}' --max-time 20 --retry 3 --retry-delay 10 --retry-all-errors "$2" || true)"
+            echo "$1 -> HTTP $code"
+            test "$code" = "200"
+          }
+          fetch "robots.txt" "$SITE_BASE/robots.txt" /tmp/robots.txt
+          grep -qi 'sitemap' /tmp/robots.txt
+          fetch "sitemap.xml" "$SITE_BASE/sitemap.xml" /tmp/sitemap.xml
+          grep -q '<urlset\|<sitemapindex' /tmp/sitemap.xml

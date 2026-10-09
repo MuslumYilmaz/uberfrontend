@@ -3149,7 +3149,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Why interviewers care</strong><br><br>Putting side effects in the constructor makes component instantiation do \"real work\" before Angular finishes binding and before tests can set up spies. Putting Angular-dependent logic in <code>ngOnInit</code> is predictable: bindings are ready, and in tests it usually runs on <code>fixture.detectChanges()</code>."
+          "text": "<strong>Why interviewers care</strong><br><br>Putting side effects in the constructor makes component instantiation do \"real work\" before Angular finishes binding and before tests can set up spies. Putting Angular-dependent logic in <code>ngOnInit</code> is predictable: bindings are ready, and in tests it usually runs on <code>fixture.detectChanges()</code>.<br><br>When the question moves to the rendered view, for example DOM access or <code>@ViewChild</code>, the answer changes hook: see <a href=\"/angular/trivia/angular-lifecycle-constructor-oninit-afterviewinit-dom\">ngOnInit vs ngAfterViewInit</a> for that half."
         },
         {
           "type": "code",
@@ -3231,7 +3231,7 @@
       "components",
       "basics"
     ],
-    "updatedAt": "2026-04-09",
+    "updatedAt": "2026-10-09",
     "seo": {
       "title": "Constructor vs ngOnInit in Angular: what is the difference?",
       "description": "Constructor is for DI and trivial setup; ngOnInit is for input-dependent initialization. Includes test timing, ngOnChanges follow-ups, and constructor side-effect pitfalls."

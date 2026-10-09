@@ -624,7 +624,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-09",
+    "updatedAt": "2026-10-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#angular-ngoninit-vs-constructor"
   },
