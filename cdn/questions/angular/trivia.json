@@ -48,6 +48,10 @@
         },
         {
           "type": "text",
+          "text": "## ngOnInit vs ngAfterViewInit\n\n<strong>Verdict:</strong> <code>ngOnInit</code> runs once after the first input binding pass and before the view exists; use it for input-dependent setup, data loading, and subscriptions. <code>ngAfterViewInit</code> runs once after the component view and its child views are created; use it for <code>@ViewChild</code>, DOM measurement, focus, and third-party widget setup.\n\n<strong>Order on first render:</strong> <code>constructor</code>, then <code>ngOnChanges</code> (only when the component has bound inputs), then <code>ngOnInit</code>, then <code>ngAfterContentInit</code>, then <code>ngAfterViewInit</code>. Reading a default <code>@ViewChild</code> inside <code>ngOnInit</code> returns <code>undefined</code>; moving that code to <code>ngAfterViewInit</code> is the usual fix.\n\nFor the constructor half of this question (DI timing, when <code>@Input()</code> values exist, test timing) see <a href=\"/angular/trivia/angular-ngoninit-vs-constructor\">constructor vs ngOnInit</a>, which owns that comparison."
+        },
+        {
+          "type": "text",
           "text": "<strong>Important nuance: <code>@ViewChild</code> static option</strong><br><br><code>@ViewChild(..., { static: true })</code> resolves earlier (before/at init), so it can be used in <code>ngOnInit()</code> <em>if</em> the element is always present (not inside <code>*ngIf</code>/<code>*ngFor</code>). Default is <code>static: false</code>, which is available in <code>ngAfterViewInit()</code>."
         },
         {
@@ -138,7 +142,7 @@
       "hooks",
       "basics"
     ],
-    "updatedAt": "2026-10-07",
+    "updatedAt": "2026-10-09",
     "seo": {
       "title": "constructor vs ngOnInit vs ngAfterViewInit in Angular",
       "description": "Use constructor for DI, ngOnInit for input-based setup, and ngAfterViewInit for DOM or default ViewChild access."
@@ -5461,7 +5465,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core idea</strong><br><br>All four operators take a stream of “triggers” (typing, clicks, route params) and map each trigger to an inner Observable (usually an HTTP call). The difference is what they do when a <em>new trigger arrives before the previous one finishes</em>:<br><br><code>switchMap</code> = cancel old, keep latest<br><code>mergeMap</code> = run all in parallel<br><code>concatMap</code> = queue one by one<br><code>exhaustMap</code> = ignore new until current completes"
+          "text": "<strong>Core idea</strong><br><br><code>switchMap</code>, <code>mergeMap</code>, <code>concatMap</code>, and <code>exhaustMap</code> are RxJS flattening operators, and in Angular they decide what happens when overlapping HTTP calls, saves, or clicks compete. All four operators take a stream of “triggers” (typing, clicks, route params) and map each trigger to an inner Observable (usually an HTTP call). The difference is what they do when a <em>new trigger arrives before the previous one finishes</em>:<br><br><code>switchMap</code> = cancel old, keep latest<br><code>mergeMap</code> = run all in parallel<br><code>concatMap</code> = queue one by one<br><code>exhaustMap</code> = ignore new until current completes"
         },
         {
           "type": "list",
@@ -5498,6 +5502,59 @@
             ]
           ],
           "caption": "Which RxJS mapping operator should you use in Angular?"
+        },
+        {
+          "type": "text",
+          "text": "## switchMap vs exhaustMap\n\n<strong>Verdict:</strong> both handle a new trigger that arrives while the previous inner Observable is still running, but in opposite ways. <code>switchMap</code> cancels the running one and starts the new one (latest wins); <code>exhaustMap</code> keeps the running one and drops the new trigger (first wins until it completes).\n\n<strong>Pick:</strong> <code>switchMap</code> for search, filters, and route params where only the newest result matters; <code>exhaustMap</code> for login, submit, and pay buttons where a second click must not start a second request.\n\n<strong>Timeline:</strong> click A at 0 ms, click B at 100 ms, each request takes 300 ms. <code>switchMap</code> unsubscribes A at 100 ms and the UI gets only B at 400 ms. <code>exhaustMap</code> ignores B and the UI gets only A at 300 ms."
+        },
+        {
+          "type": "text",
+          "text": "## switchMap vs mergeMap\n\n<strong>Verdict:</strong> <code>switchMap</code> keeps at most one inner Observable alive and cancels the previous one; <code>mergeMap</code> keeps every inner Observable alive and lets responses arrive in any order.\n\n<strong>Pick:</strong> <code>switchMap</code> when the UI must show the latest request only; <code>mergeMap</code> for independent, fire-and-forget work such as analytics events or loading unrelated resources in parallel.\n\n<strong>Timeline:</strong> with the same clicks, <code>mergeMap</code> runs A and B together. If A responds after B, A overwrites the newer result, which is the classic stale search bug. <code>switchMap</code> cannot produce that overwrite because A was already unsubscribed."
+        },
+        {
+          "type": "text",
+          "text": "## switchMap vs concatMap\n\n<strong>Verdict:</strong> <code>switchMap</code> throws away in-flight work when a new trigger arrives; <code>concatMap</code> never throws anything away and runs triggers one after another in arrival order.\n\n<strong>Pick:</strong> <code>switchMap</code> for reads where only the newest value matters; <code>concatMap</code> for writes that must all complete in order, such as saving the steps of a wizard or queued commands.\n\n<strong>Timeline:</strong> with the same clicks, <code>concatMap</code> starts B only after A completes at 300 ms, so B finishes at 600 ms and both saves land in order. <code>switchMap</code> would have canceled the A save, which is data loss for a write."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Event",
+            "switchMap",
+            "mergeMap",
+            "concatMap",
+            "exhaustMap"
+          ],
+          "rows": [
+            [
+              "0 ms: trigger A",
+              "starts A",
+              "starts A",
+              "starts A",
+              "starts A"
+            ],
+            [
+              "100 ms: trigger B while A runs",
+              "cancels A, starts B",
+              "starts B, A keeps running",
+              "queues B behind A",
+              "ignores B"
+            ],
+            [
+              "300 ms: A would complete",
+              "nothing (A was unsubscribed)",
+              "A result arrives",
+              "A completes, B starts",
+              "A completes"
+            ],
+            [
+              "Result in the UI",
+              "B only",
+              "A and B in response order",
+              "A then B, in order",
+              "A only"
+            ]
+          ],
+          "caption": "Same trigger stream (A at 0 ms, B at 100 ms, 300 ms requests) under the four RxJS overlap policies."
         },
         {
           "type": "text",
@@ -5618,7 +5675,7 @@
       "async",
       "basics"
     ],
-    "updatedAt": "2026-10-07",
+    "updatedAt": "2026-10-09",
     "seo": {
       "title": "switchMap vs mergeMap vs concatMap vs exhaustMap in Angular",
       "description": "Use switchMap for latest-only work, mergeMap for parallel work, concatMap for ordered work, and exhaustMap to ignore repeat triggers."

@@ -27,7 +27,7 @@
       ],
       "ourEvidence": {
         "realWorldUseCases": [
-          "The `href` attribute is the real destination reference behind links and linked resources. Production bugs happen when `href` is missing, misused for fake buttons, or paired with unsafe external-link behavior."
+          "Without a valid `href`, an `<a>` is not a real link, so keyboard focus, middle-click, open in new tab, and crawling all break."
         ],
         "followUpConfusion": [
           "The same idea powers anchors, stylesheets, base URLs, and image-map areas."
@@ -71,7 +71,7 @@
       ],
       "ourEvidence": {
         "realWorldUseCases": [
-          "The `href` attribute is the real destination reference behind links and linked resources. Production bugs happen when `href` is missing, misused for fake buttons, or paired with unsafe external-link behavior."
+          "Without a valid `href`, an `<a>` is not a real link, so keyboard focus, middle-click, open in new tab, and crawling all break."
         ],
         "followUpConfusion": [
           "The same idea powers anchors, stylesheets, base URLs, and image-map areas."
@@ -115,7 +115,7 @@
       ],
       "ourEvidence": {
         "realWorldUseCases": [
-          "The `href` attribute is the real destination reference behind links and linked resources. Production bugs happen when `href` is missing, misused for fake buttons, or paired with unsafe external-link behavior."
+          "Without a valid `href`, an `<a>` is not a real link, so keyboard focus, middle-click, open in new tab, and crawling all break."
         ],
         "followUpConfusion": [
           "The same idea powers anchors, stylesheets, base URLs, and image-map areas."

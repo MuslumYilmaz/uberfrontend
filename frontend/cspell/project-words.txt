@@ -111,3 +111,7 @@ Muslum
 lockfiles
 prerendering
 uberfrontend
+jsxs
+jsxDEV
+noopener
+noreferrer

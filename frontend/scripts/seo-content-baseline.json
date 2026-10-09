@@ -1,2192 +1,2192 @@
 {
   "schemaVersion": 1,
-  "projectionVersion": "seo-content-v1",
-  "checkpointCommit": "6becd398115e8f25e674e06e87527f371ad457f9",
+  "projectionVersion": "seo-content-v2",
+  "checkpointCommit": "14934a5620ac5f8ba6194d38649f0337ccb74570",
   "routes": {
     "/": {
-      "fingerprint": "ce51e7fd089812150a7bcbe5aaab66cd508563c4dbe64159e16b8770dff7b0be",
-      "lastmod": "2026-10-05",
-      "sourceCommit": "6becd398115e8f25e674e06e87527f371ad457f9"
+      "fingerprint": "8c5b9d642f432d5eb7436b35b7d22c11215284074d06820bbf3c7c9067982d47",
+      "lastmod": "2026-10-08",
+      "sourceCommit": "45af0ff25c2221ca03a559cbd5af01020fff3522"
     },
     "/angular/coding/angular-counter-starter": {
-      "fingerprint": "6c7f19a7d15f4b2705bb425492ad6914ec8892802ff932a83d1d6700279926e5",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "4e3ef082e3dfe979e04d651f0f4a3cd9ed88e72a2777b4db0eb91be4821d00da",
+      "lastmod": "2026-08-06",
+      "sourceCommit": "8ff782f59fecd05281cf9edf0aae50e7d8fc19bf"
     },
     "/angular/coding/angular-snake-game": {
-      "fingerprint": "bf1a17bf146cef22e4fac1f757f8ff96f64e6c4f2508bea59fa7967cf872b815",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "ed176e3ff1d8ceeab1d74b3ca11fcd75291bc450d9a70b05a4a76de98a679d6d",
+      "lastmod": "2026-08-06",
+      "sourceCommit": "8ff782f59fecd05281cf9edf0aae50e7d8fc19bf"
     },
     "/angular/coding/angular-todo-list-starter": {
-      "fingerprint": "fe405d4c947c46159e7934d647ec8730cb3a1dd95f0e6858fd6e369477d1d99f",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "323a9bab21ac563c06bd1ec29f709bb8e8b4320ddefbcc4ab98c4c4b3dc9ca6b",
+      "lastmod": "2026-08-06",
+      "sourceCommit": "8ff782f59fecd05281cf9edf0aae50e7d8fc19bf"
     },
     "/angular/debug/ng-debug-counter-change-detection": {
-      "fingerprint": "948121288524817f193a0f35102b77d08927bb1f9d8d788a491c31dea06f4e80",
+      "fingerprint": "678a4e2b91ecc1e1ce98178e609ecbe3517b87582bb5863ceef9f5e8ef218270",
       "lastmod": "2026-10-02",
       "sourceCommit": "26d7f1f75d5717eb8adf7e62183504f8370309f8"
     },
     "/angular/interview-questions": {
-      "fingerprint": "19cfdec18a72bed52f5899679a6fb825146ff660761aa2058fcd214f601626a6",
+      "fingerprint": "608642d9ebad80728deb85e72eafb43bd949c35627767713e58ed2db74645f5c",
       "lastmod": "2026-10-02",
       "sourceCommit": "26d7f1f75d5717eb8adf7e62183504f8370309f8"
     },
     "/angular/trivia/angular-appmodule-standalone-changes": {
-      "fingerprint": "5c01827fd75388f35914d54b2191a88cd8a74102d7985dfc5adeb8d2563d2f7f",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "4719b6b6f8cf749377a59bd655a9671ab9c19e3e5ced04ab9b0a42b89798286a",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/angular/trivia/angular-change-detection-strategies": {
-      "fingerprint": "a97c3bd4c9227a594ad941d045de3c6f8f85212b07f5359eb5358e174c2dde16",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "e2185d3c5f1a3e943742c9607799a94567be5c71328003217044702a09d8d778",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/angular/trivia/angular-component-metadata": {
-      "fingerprint": "f8ffcc5de989f2917cc8948244f36167ff770ce4168c2fa13b567f6813c68eb6",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "4bf4c6f42834e8b6d4944951e09ef527087106abd9f468570fc8da54452fef39",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/angular/trivia/angular-component-vs-service-responsibilities": {
-      "fingerprint": "b57c0a1a5ceb729d267abf5e1684729970691388da10a5f31e498bc80b8d7df8",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "166e6ea2a712958396396930a4df973eb0d506ace1bae1cdb60b9c8a33c328c2",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/angular/trivia/angular-controlvalueaccessor-vs-custom-two-way-binding": {
-      "fingerprint": "5d948f712584953633c8acabf4546d63878b7cf812fb08337ca00a9f63e67e70",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "fe6fddaa25c4355e0bd60b477a3aeb46d4e5019f0e668eb9ba769f1d8e204655",
+      "lastmod": "2026-07-04",
+      "sourceCommit": "85d2d06328ffbbe83c317df7eb7f480a0c1e4d37"
     },
     "/angular/trivia/angular-custom-two-way-binding": {
-      "fingerprint": "eb679918325f3455286240d44fb231db0e76b7394139e64360e33dad430798e8",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "23c4c0d20d16c20d3301aca77131f562e552b46027c60915c575eeae684f11da",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/angular/trivia/angular-data-binding": {
-      "fingerprint": "4385f3ed78ba831175ab72685a7ebae5ff569105d8bdd4014c55d83ed9eb46b2",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "d207aea96010c47a34c1f4ee6b7950ebf5038c0075eacafb61d9c43d7c34f71a",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/angular/trivia/angular-dependency-injection": {
-      "fingerprint": "e5a95af996b9af6dc2513b127ec52e70e4f02e6735c52acea298d9189824259f",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "a8b9beb6240b7987f972812f50b716ee7db719d1db146eb60342e244e4df2c2a",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/angular/trivia/angular-directives": {
-      "fingerprint": "99815cfaf9e953f939757a030e9b46ee2eccd4e7e0389e7ae56b38bc99fc2f36",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "72b9ccb208eb63e57c63c93f64c89f13f6a9d24dbe91786d07d0ef632accd4dc",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/angular/trivia/angular-event-binding-dom-vs-output-change-detection": {
-      "fingerprint": "10cf6e00f20675c872ad1fe70098c3a6f0723345ea450ecc196992da8baaef89",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "8aafcb0db4a74d0cdbe372946d0cd4ed98b5e45785b90982b79fa5f5cc1f8f51",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/angular/trivia/angular-forroot-forchild": {
-      "fingerprint": "91f7758dc010fed6bd61b01684607e82d7ba7f1b2be7ebfb61d126a9853de744",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "ca594ed808636ff60f7045ecd2ee6912f911924f647fee6d138c63731f23bd21",
+      "lastmod": "2026-10-07",
+      "sourceCommit": "a68d95d22e4d5722c17f5ab50f19556ab7d6731f"
     },
     "/angular/trivia/angular-hierarchical-dependency-injection-real-bug": {
-      "fingerprint": "401317e597b37957211072ea6823c538c165d099796bd6c28e58eecf5d2f1532",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "da32d03de85437efe65901df1e196f20322c815a845b9745be08c9b35b0936e3",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/angular/trivia/angular-http-what-actually-cancels-request": {
-      "fingerprint": "66872d01277ba7635f364c66ee1480c071e980fd67d27cd091da5ca85535df8a",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "f7c98e4fdb683b08c4b23b9c5f37219a69366ba07ab3775ad5664e8035e54084",
+      "lastmod": "2026-09-26",
+      "sourceCommit": "c78370fe9a1e57800eb0415a45176b7f523b74e8"
     },
     "/angular/trivia/angular-input-output": {
-      "fingerprint": "7160deadc6ca9e03d6384b3e91e1886d3d141100aeab86970146b3920a48e69f",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "10b5fb82e25ca06da07bccfaa4e423fc291fbef1f5bcc8a6e0ff668337a27447",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/angular/trivia/angular-interpolation-vs-property-binding": {
-      "fingerprint": "92a289cd228d780046c1e605ebf91eb630709d32b7e82a04a3606e93f2e49df7",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "73db08918611bdf9f8b6a78b91ed25f955c25bb256e77fab8149cb47d5b30859",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/angular/trivia/angular-lazy-loading": {
-      "fingerprint": "41b41e61dab956eccf464922ba27bbe605e281d3395e39ea5be3e7b561bbf51a",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "de2eb2398d54b96767d978e87bd27f3ed00be445cc6ae839e6cdf353ce1a08e9",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/angular/trivia/angular-lifecycle-constructor-oninit-afterviewinit-dom": {
-      "fingerprint": "5e76cc282652944a4cffa64df7c69dd2ece03d73c680d105163159a3fb1618ed",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "a14de8f120f47b05a8f15c0e0798070544ba198657cc80e15406df9f375af8c1",
+      "lastmod": "2026-10-07",
+      "sourceCommit": "a68d95d22e4d5722c17f5ab50f19556ab7d6731f"
     },
     "/angular/trivia/angular-lifecycle-hooks": {
-      "fingerprint": "5189072e279989809fa590004d695b0bfce29617b60fa3922c1cff7e1bbae1fa",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "e25dae9b4f5243e7a584e74aa45f532241554304595ec341df30e1292044dcfc",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/angular/trivia/angular-ngfor-trackby": {
-      "fingerprint": "51a80c4baf47e242e4a00bac822c650448caf919335c1546de7048d19569e465",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "91c3fe676e7de7488b7fd63e93cceea1b337db2bd4f1ac1ba1dab452dee1d8df",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/angular/trivia/angular-ngif-dom-lifecycle": {
-      "fingerprint": "9299dc96ec1dc833ef616f9074df814d0df2c89afa5f88ad21c06302f8075324",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "aca910dcf69d320190ed78e0f943763294eea35ce942c613f26d7be5b3631690",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/angular/trivia/angular-ngmodules-vs-standalone": {
-      "fingerprint": "874b8db21177daf88b05e5690e66e51820e5206d9e590668e4fb9ce06f1b7fef",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "0a5226e37f6e9bcfe3fea7ea3401559ff89fa6de43ec1c22e8e4b92340af17d9",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/angular/trivia/angular-ngonchanges-vs-ngdocheck": {
-      "fingerprint": "a343455bd866ae0a84b848ad15183991d02e2fc8fd713212939c901c0283d82b",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "be0ee22291f4b0bae1305f4c44f38b53b50db8445ce62defdee16f8195670af5",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/angular/trivia/angular-ngoninit-vs-constructor": {
-      "fingerprint": "e97b67acbcc7679dd0011d5bde8bdf9bf834664c100ad6431ea24a7e41ed23af",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "065f6100b2971cf64dc9a9de4d9f46573940c1b4e06dbaa951809e71f613d8b9",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/angular/trivia/angular-observables-rxjs": {
-      "fingerprint": "af267805ad83152e8d89c7019937c9fd294b9c6298429985b41ffc0fe86f8f30",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "ecc02a972d61c453754600c9db5165280b01634976448b21e8923aea88e51863",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/angular/trivia/angular-onpush-change-detection-debugging-real-bug": {
-      "fingerprint": "7b851231f45030d9b25f0f062d9b4800bb7da495977f685c756418bb57329b3b",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "e00a52518262a2e842f0f1bba3d86de263458871d068a67a9ff16c1b4b4da4cc",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/angular/trivia/angular-performance-optimization": {
-      "fingerprint": "2b9c052b331be64f3e295aa3cf31e840616779bcaf28687a469849732f89c117",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "8553020ee8272dcd2896567f14fc10515064ebf427250df6b07c9a5ba83bc2a0",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/angular/trivia/angular-pipes": {
-      "fingerprint": "4b21fff531b63c6f30d37141a2110563e9c6d2ebd78be0ff69a1bbdd4bcf36e3",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "6ed67e7f418d0d4ca1ce66af68e83548278e745e53de5febf2dbf5d45c418488",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/angular/trivia/angular-prevent-memory-leaks-unsubscribe-patterns": {
-      "fingerprint": "2021fe31921a96739ebd544e8d2df77969e730093c17bb49809845dd03bc1b4c",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "ad3cf02e123eeae3a39027130b75367a15da91e2e2bfa393873238fabfa83168",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/angular/trivia/angular-routing": {
-      "fingerprint": "568f825ece4d739b9d721877d59ad39ae92b420c0d4fe2c7c93ced5ec783feef",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "1ea5f8947688020053ade6413a11847aebc411e669b31625d5095545b45099a8",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/angular/trivia/angular-services": {
-      "fingerprint": "16b05a02b8fd0d0ce9d5432be0c2c17c2654aef3ed301ff18929378c8f96bfcc",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "cd32c7611fcc99c11f6dc79e071b100db69ee6c49d3724ab7ec1b0e85c72dec6",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/angular/trivia/angular-structural-vs-attribute-directives": {
-      "fingerprint": "97104c7cf61465409bbff41a8a70a7ad4794b2f73bc77d6569bacc7885c3dcdd",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "767e6f51954d7f9e6db78b764e88087121fc63600863aba8bf95914ad52a596f",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/angular/trivia/angular-template-compilation-and-binding": {
-      "fingerprint": "ed923eac24df1faf0c5b03693f7dca48f85522df6e599575cd8c61b690c33dcd",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "41f25b4fa095b9242876cf55dbd4007d1e6dd016bf93bf96626bdc52a0c8c7cc",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/angular/trivia/angular-template-driven-vs-reactive-forms-which-scales": {
-      "fingerprint": "c7474e31c74767c3f287e41f4ea1d10ff5b06a924a1d0119bb50ddab61b1586f",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "ac67a71d782e87dd1d947a97879a785363206fa00bf1f9fb4d72b27ce98bc759",
+      "lastmod": "2026-08-27",
+      "sourceCommit": "3c84cb22af05efa4884026f061eea7c9c6897913"
     },
     "/angular/trivia/angular-vs-angularjs": {
-      "fingerprint": "3284fac21b47af835f8e235cd4aa6c9dc3b96562c01b608d2f9ed6bea9c01318",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "2dc3423704514a2d6da73970060efb3a4831395cd85c7a01b9113a8e3b6f098b",
+      "lastmod": "2026-04-04",
+      "sourceCommit": "61af843b5c010d1760398eaa2653e3fdcb8c352e"
     },
     "/angular/trivia/angular-zonejs-change-detection": {
-      "fingerprint": "d987525c7a6c27c2c91136064e09c29b8701222b70d47e483459a925c0649901",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "838f1585961e155a2e5001c121ff99cccc4c26d50dc5a227cca26f941bd10872",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/angular/trivia/ngrx-data-flow-end-to-end-angular": {
-      "fingerprint": "1855cb47315d514f199c1857f5cc1f47242533bfff4a7a6baf3054667f7583d3",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "fadbe2eb4bbd8c37995c7a315fc47e2ba2c206daad8ec51da1c2fea3ce8da498",
+      "lastmod": "2026-07-05",
+      "sourceCommit": "03c4468f4e6a057a610139f40073b674f1385551"
     },
     "/angular/trivia/ngrx-reducer-pure-function-immutability-side-effects": {
-      "fingerprint": "bdbe81488fee23cc2401f01381cb5e64dde72ea9bde53cdae0f4c435f6e5f78b",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "8a27e1ae6a55762c2a72a6d07ac3ad92645bd8d1b200533ab62b3cbc74592fd6",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/angular/trivia/ngrx-selectors-memoization-derived-state-performance": {
-      "fingerprint": "a2e05f3d2ea398049d9fbb04f42018b35688c13295ac30aa544b66c3ee43397c",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "33ea2251b61ffc9872bd5e9279fc7fe615296f361f28e3c16965881f95baf7b2",
+      "lastmod": "2026-07-04",
+      "sourceCommit": "85d2d06328ffbbe83c317df7eb7f480a0c1e4d37"
     },
     "/angular/trivia/ngrx-store-vs-component-state-angular-when-to-use": {
-      "fingerprint": "503c3564ef73e9b64570ebe225b98a2b69fbc2f19009f51db74f47d317931c8c",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "d7336e47e83ce87f4977927b44f1f1e1d1ddf1c1617f80e78000086fae0e59eb",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/angular/trivia/rxjs-sharereplay-angular-how-it-breaks-your-app": {
-      "fingerprint": "762cd91769e235078fa7d672b8720646210a1e88ba9992f0bcee18d7d1e10907",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "7670571763f471167a6de9c197bb3c050a63945e76e55ea532b33b1d2ea2d3b5",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/angular/trivia/rxjs-subject-vs-behaviorsubject-vs-replaysubject-vs-asyncsubject": {
-      "fingerprint": "61f6245c076cd770f020fe5e87d7c2f02ff7f9fe8c60df44aa77f690f5327073",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "254ea4518c1c855b4056bcc3b9877fec9fc3360d351cfc3f2c23d08d8a0c53ff",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/angular/trivia/rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use": {
-      "fingerprint": "5bc93276bac563c44e281c65f87a820cd11140fc4a3951f7f5cead7088e0c13c",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "ac1b7e02df807c6870658f745a74fc401d29560173cd959c0f2f8181a7707252",
+      "lastmod": "2026-10-07",
+      "sourceCommit": "a68d95d22e4d5722c17f5ab50f19556ab7d6731f"
     },
     "/angular/trivia/rxjs-tap-vs-map-angular-when-to-use": {
-      "fingerprint": "104aacc5132f28e3da0142164a3e91d0f55d150dd29c12144d5a46d3b096d515",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "c0750e0021955249dd0b38b7fa672e3b7ad6747d759c4b49586febd705c173cc",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/changelog": {
-      "fingerprint": "ccad0c2dc7678926b2b6d1ed8481373a82f136a33beac64076bf5ad153cff5da",
+      "fingerprint": "b6430746af284dafdf186e6ce09d03fbd4814802b9ed4775962fb9a8d0b0a87a",
       "lastmod": "2026-10-01",
       "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
     },
     "/coding": {
-      "fingerprint": "2fa3a24a54724adfd21515b7943f7515d8d11c600e86a7910036b48846abc323",
-      "lastmod": "2026-10-05",
-      "sourceCommit": "6becd398115e8f25e674e06e87527f371ad457f9"
+      "fingerprint": "16a1a7730528c962de0256e191803435b6d4e06f8b05bcf77d0ea6a867a3eac6",
+      "lastmod": "2026-10-07",
+      "sourceCommit": "0039c772e92412959d035d81f14fb73b18df28d4"
     },
     "/companies": {
-      "fingerprint": "2135cfecc16eb470b5f7c578115f324f9d58e618a28c7a6e079640efff66995a",
+      "fingerprint": "ac5a4099e76f0a66229c96ec2f98a311ec29bc846f3062391c8ccf1e306b8496",
       "lastmod": "2026-09-26",
       "sourceCommit": "c78370fe9a1e57800eb0415a45176b7f523b74e8"
     },
     "/companies/airbnb/preview": {
-      "fingerprint": "2e6144de96540f0a87960a9529a6b66f0b906327c11626f655e674c4e0e30af3",
+      "fingerprint": "ca3df8be57841e5387eafa69d322ba4f389e413f9de06154bc3a2220ba3e6657",
       "lastmod": "2026-09-22",
       "sourceCommit": "0d15c701675d72d0d5e4aa7a03e1aacd81c9e6c9"
     },
     "/companies/amazon/preview": {
-      "fingerprint": "027ba4d42bfd9d960e12a69ad3aacd882a1bac8aaa10e82d674709fc2535224a",
+      "fingerprint": "58b5844bd6b8a801ae70a19091b5a4938346b2acf3edf17115104a2ad02ff91e",
       "lastmod": "2026-09-22",
       "sourceCommit": "0d15c701675d72d0d5e4aa7a03e1aacd81c9e6c9"
     },
     "/companies/apple/preview": {
-      "fingerprint": "6ee6709ae7be481f1fe6438b0b1e6d87b6d2767863e2b8bab3cc162679726b37",
+      "fingerprint": "0c3f4e19b746152ca9056957274318d468c79e3c3df39c65101e58bc6cdc8deb",
       "lastmod": "2026-09-22",
       "sourceCommit": "0d15c701675d72d0d5e4aa7a03e1aacd81c9e6c9"
     },
     "/companies/bytedance/preview": {
-      "fingerprint": "40e04aa3fabb995ca236d15d5debb1474096fe1cc3cdb005c2a09d23fb2c1538",
+      "fingerprint": "bfbccb5171c2f2a1c5844d7da87faa8951661692a0a24cafb52f883cbcbaa844",
       "lastmod": "2026-09-22",
       "sourceCommit": "0d15c701675d72d0d5e4aa7a03e1aacd81c9e6c9"
     },
     "/companies/google/preview": {
-      "fingerprint": "85d0cb189dcfd17af0d754fb31bb2bbc42344dc53af85d7e5e821ccdd89c47d6",
+      "fingerprint": "d638bafa2a037585adf7b3146a8de5e01edde6122f7c5a3d9b2cea24cf769c77",
       "lastmod": "2026-09-22",
       "sourceCommit": "0d15c701675d72d0d5e4aa7a03e1aacd81c9e6c9"
     },
     "/companies/meta/preview": {
-      "fingerprint": "465a50386232491504aeb910849b0ced6dfa62cea439c8ffd1c65cd7f173f807",
+      "fingerprint": "047ad9b62c2ad563cb5d542d120e51d1bf56eb5a319069224d9923f49fcfd9ac",
       "lastmod": "2026-09-22",
       "sourceCommit": "0d15c701675d72d0d5e4aa7a03e1aacd81c9e6c9"
     },
     "/companies/microsoft/preview": {
-      "fingerprint": "a3523920d45acd446a94d96d57614b52f38b9d6e6e1232423fb947cacd0a3516",
+      "fingerprint": "d823f97d7271cf6a1fdc1ba4a56d175809f7ad681130021ef57914ed130bbf82",
       "lastmod": "2026-09-22",
       "sourceCommit": "0d15c701675d72d0d5e4aa7a03e1aacd81c9e6c9"
     },
     "/companies/netflix/preview": {
-      "fingerprint": "cc9f54a98ca5dfda2678eb9744608780165d8da708193612bf89a26fd7152fed",
+      "fingerprint": "dd200eedd5d582400e39f9c49b7117fd5b8b4c1e060b16dfdec250cffeac94a9",
       "lastmod": "2026-09-22",
       "sourceCommit": "0d15c701675d72d0d5e4aa7a03e1aacd81c9e6c9"
     },
     "/companies/openai/preview": {
-      "fingerprint": "7786c32ae56c2fa9e26ed0097660b872bdc2a61486b855cdfe18dca1d0fc3262",
+      "fingerprint": "9b1a249f30820707f3f538fa0d7e712a81820f0601c1a4acd857f094c4508e60",
       "lastmod": "2026-09-22",
       "sourceCommit": "0d15c701675d72d0d5e4aa7a03e1aacd81c9e6c9"
     },
     "/companies/stripe/preview": {
-      "fingerprint": "85d0e16ab0ba145d764e55f33f4d019b35c088c34a509f344bc74510dae0e207",
+      "fingerprint": "ee604a2acddc41130ed62dc718ed14aa3d5d8fd2d518560f94f7e3c3edb0aa73",
       "lastmod": "2026-09-22",
       "sourceCommit": "0d15c701675d72d0d5e4aa7a03e1aacd81c9e6c9"
     },
     "/companies/uber/preview": {
-      "fingerprint": "eb14b4c42a24fc4865bc348440b4f6c319bdff2829cb8ea30d935d2168e9b9f2",
+      "fingerprint": "b6964d302b2d428be914b63af244a2c139940179af7a0b2ca7e3a38fb86b3d38",
       "lastmod": "2026-09-22",
       "sourceCommit": "0d15c701675d72d0d5e4aa7a03e1aacd81c9e6c9"
     },
     "/css/coding/css-box-model-margin-padding-border": {
-      "fingerprint": "08b1b85cae563b4ef344035ca269e211f1f25137479385932b562213222bbb93",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "512f9ed73a4959240926bda07b104a40f4bbaee2e2d9cf05bc3aeedce44a0010",
+      "lastmod": "2026-03-01",
+      "sourceCommit": "06ea37af1dc8065bb35210c5dcda9e0f5cad3759"
     },
     "/css/coding/css-flexbox-navbar": {
-      "fingerprint": "6d165c3f0465c15ae18214c324e334a921d079849b344094dad45f0457e71371",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "d32ac7c7b9884619e765cb974fbab141847cc40a1689c7ad2cd49e650c003bd1",
+      "lastmod": "2026-07-09",
+      "sourceCommit": "ea9ebba2e255ef1e829aa656aedfe645c4d52fab"
     },
     "/css/coding/css-fluid-clamp": {
-      "fingerprint": "c890c2cd16688092baf99c1cbce714ea13f479c81a8168cf80c8a5d44dd53828",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "4d8bae843d35fa6019afd93db9f5460c24725abe7f123bc3de8531f421d1b24b",
+      "lastmod": "2026-03-01",
+      "sourceCommit": "06ea37af1dc8065bb35210c5dcda9e0f5cad3759"
     },
     "/css/coding/css-forms-pseudoclasses": {
-      "fingerprint": "e2924150d0048151403103c9309915144d6074485ac70dd6b9a96a9b38bd2b73",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "07a54001e8833b859c338cf488b46d0290772e122625e384c15a9610e3b22ec3",
+      "lastmod": "2026-03-01",
+      "sourceCommit": "06ea37af1dc8065bb35210c5dcda9e0f5cad3759"
     },
     "/css/coding/css-grid-card-gallery": {
-      "fingerprint": "2ab026b3f3dd2a3ecd7454b02612ebfb13ff84f1e2ad4e203f077b68ec7aaf9f",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "cbe9a2a2f95d0deb8f6c404f46ca41d73df4c3a24e11b4b1e9025932c711896a",
+      "lastmod": "2026-07-09",
+      "sourceCommit": "f1768f60d44b9384ab81d15f1f5d27a4eaca2472"
     },
     "/css/coding/css-inline-centering": {
-      "fingerprint": "2bf30e0d020330f223b2a82f20878559d61389370f8f6b69d129bc1d223f93b8",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "0f22357c934c64a76745e1bd2d8245942ed9bd316773a2e669d392e0e260a55c",
+      "lastmod": "2026-03-01",
+      "sourceCommit": "06ea37af1dc8065bb35210c5dcda9e0f5cad3759"
     },
     "/css/coding/css-positioning-badge": {
-      "fingerprint": "0f50fbd5cca37d9463e50f6d55422af4c06b768c041959a72e91d5a272649f8f",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "09e74b58b5ca658adc653080a6687573c49c26d09d2ddc261595c826c805d237",
+      "lastmod": "2026-03-01",
+      "sourceCommit": "06ea37af1dc8065bb35210c5dcda9e0f5cad3759"
     },
     "/css/coding/css-selectors-text-basics": {
-      "fingerprint": "7b09da48958aa2fa88804d516405b6c5ba4a09ed41360e02fc1ead5707201f3b",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "e4097d2d35ef534ae37566a3d7003211f2daf58d632e5b16e368a34f176668c7",
+      "lastmod": "2026-02-28",
+      "sourceCommit": "3424491933a3ab3a8693312573fe448fecca1c17"
     },
     "/css/coding/css-theme-variables-dark-mode": {
-      "fingerprint": "a1dce8b0e9c99aa298f7bea1d53abff6ced3ce2c5168bc352f95e3523259487e",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "8ccdb35dedd9265606998ce29c33c6b6b3e9b44dadb899ff945303fa48127190",
+      "lastmod": "2026-07-15",
+      "sourceCommit": "55ea1c1f2fab1d39d96277a3d1082605918a5038"
     },
     "/css/coding/css-transitions-transforms-lift": {
-      "fingerprint": "36eeaa0d4f978cc2852a993a427a8b19a810a027125ff58a6c6ad2816390ecae",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "82005e3004ff42d7add7591d5e4ebd9d331a8c515bdbc7b8082d800def9c1506",
+      "lastmod": "2026-03-01",
+      "sourceCommit": "06ea37af1dc8065bb35210c5dcda9e0f5cad3759"
     },
     "/css/interview-questions": {
-      "fingerprint": "1c07e5f0058ce05d7fc2c1f017ec81d79ec1ba60de0ec230482cfb7617a7ddcb",
+      "fingerprint": "9cbdf30dd4469e7a15a04a470151a2b84dfec87a171a811e289bf994e269eb77",
       "lastmod": "2026-09-22",
       "sourceCommit": "0d15c701675d72d0d5e4aa7a03e1aacd81c9e6c9"
     },
     "/css/trivia/css-background-color": {
-      "fingerprint": "9317f6ee2d8c9505d11e622a39e68e6cd0eff8b73a7c9d8160c859d1eca72b75",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "a758e19d0d612aede086dcfb192e402add92e2b9af53b8f0d0fea44dd2550a1b",
+      "lastmod": "2026-04-04",
+      "sourceCommit": "61af843b5c010d1760398eaa2653e3fdcb8c352e"
     },
     "/css/trivia/css-border-property": {
-      "fingerprint": "7633e1dd5f70856d9572a5badb4d00596bc2ff4daee05b2a811c329dde5b88ef",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "35f9def43c94731b1614a96190fd0a9bc7800aee31cd8883e57de6927c970883",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/css/trivia/css-box-model": {
-      "fingerprint": "831ebf23933879130fe9854162830c5948019f186f7b0b08dc85da9b23faa379",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "6ec5bb1aa44e843d0c6da89025e9ad8364fddaadccc484a042da5836d0690ffc",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/css/trivia/css-cascade-order": {
-      "fingerprint": "02276fc1f587c2b115c3fca365fe14e78259a40bdea35d679a35301636b50e93",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "14efdc79fbcfe498d79a0441b3c164e827f39cfb1e6888b917c28b2df19c6e88",
+      "lastmod": "2026-03-15",
+      "sourceCommit": "eb72a4b68b970093d8b2ba7626941ad9504ba8ae"
     },
     "/css/trivia/css-center-text": {
-      "fingerprint": "a1f346b9006c56d684e18945caf48eee7bb952c421f80ed2e703803c8359805e",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "ae26ca641a562b657bd2224e41e15705b6564948b118896dc4c75e600965f616",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/css/trivia/css-change-text-size": {
-      "fingerprint": "917a96eae34364716eee7d14ca8bcc758d787c4d18a7512cf8a8ce9aa2611c4c",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "4ad9614b55a80887c377db82dbd14f00974f6f2247f47fe4de40ea47483046ce",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/css/trivia/css-color-property": {
-      "fingerprint": "e916c345b2c5a2c02b30803f8d69a9ec7f3c71d5a2c2270ce9339c8a095ea414",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "5e3fd3a0abf0d3767210cfbde02198f02bada16b9ef89994b734b1124f55c330",
+      "lastmod": "2026-03-15",
+      "sourceCommit": "1f08d8ad57c62fbd2022b9a3ddceb9cc95fdd7f0"
     },
     "/css/trivia/css-custom-properties": {
-      "fingerprint": "3458f98b3eb34c52c4524fda59ac2dff09aacc36152650d3f45f782dc110e150",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "634d383b4623975719d536927d8186a51c5acb2f1704d5f8a111f33278108472",
+      "lastmod": "2026-07-15",
+      "sourceCommit": "55ea1c1f2fab1d39d96277a3d1082605918a5038"
     },
     "/css/trivia/css-definition": {
-      "fingerprint": "787c60d51ac7c86508cb77494d31b6fa6e87308f5de48da9d62fafbd7c1dfcbc",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "703b29ddcbbaf3e7164313b42268e18ea98320a45186c3dd48226bb4f6dcfc35",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/css/trivia/css-display-flex": {
-      "fingerprint": "642a59b9f32e75cc65fa72c1d9960dab20234224a3676230714caa0a92293dd0",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "e84eaf33697cfeb320f411052db1554e16e7ca433c537ccf7394b3ded0c7e736",
+      "lastmod": "2026-07-09",
+      "sourceCommit": "ea9ebba2e255ef1e829aa656aedfe645c4d52fab"
     },
     "/css/trivia/css-float-clear": {
-      "fingerprint": "b26d8b5ec6d1a93be69ce43a821a1bdf4fa3d5c7f6ab5ea4a77b2c38f070df57",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "586d23b47da94e4157d1b576c35458b47b18b1cc1ce39ed332ff87235a1e6f27",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/css/trivia/css-font-family": {
-      "fingerprint": "07027e257d7dae9a10061a0ef68de9ee6771f09b174fbe652473d876c2fcc688",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "620b1c12fa1022a98356fe7cbeb167a241bd50ed371eb2e138bee34273ace39d",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/css/trivia/css-grid-vs-flexbox": {
-      "fingerprint": "21a67df1a56246385f05df2567b2c23c5d3c131b551b86839756aedd86948d2e",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "5dc7890a099150fd4ada201539616f4a7ec21615734deefde1c553bdeb15df63",
+      "lastmod": "2026-07-09",
+      "sourceCommit": "f1768f60d44b9384ab81d15f1f5d27a4eaca2472"
     },
     "/css/trivia/css-hardware-acceleration": {
-      "fingerprint": "609c87689466e924827a7111a89d44eccd701357260685b30e9cfea7e5f40a89",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "fceb3bfe871f72cb1d37fe897b2db581841de2e4df70735c406e7126ecf08128",
+      "lastmod": "2026-06-17",
+      "sourceCommit": "abb58adb0edb167d1a0731feddb125189ed6d073"
     },
     "/css/trivia/css-id-vs-class": {
-      "fingerprint": "f353cc93cbb323075a18c427fb3c555c96a81b68c0271e54e948cd634d3820c6",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "851dabf5706aa6edfe43760997579993096abdc24ae8d58a359c1fa6548c67f8",
+      "lastmod": "2026-03-15",
+      "sourceCommit": "eb72a4b68b970093d8b2ba7626941ad9504ba8ae"
     },
     "/css/trivia/css-inline-internal-external": {
-      "fingerprint": "15082dbc621d03778d55c0c0df9715c5810bdfef7ca2dc420486b51927753c51",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "984f0826fb3a67c919208781cf2e9f00e7a82f002583a4869256425fd655baa5",
+      "lastmod": "2026-03-15",
+      "sourceCommit": "1f08d8ad57c62fbd2022b9a3ddceb9cc95fdd7f0"
     },
     "/css/trivia/css-link-html": {
-      "fingerprint": "2a391fb1e2adbe826ad863ba79e7047e5ff6e83e37fa228d0f2e1974f364dc82",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "162948c070c76e3b988c504555a7ec9f854b0203ada71abc270e11838440afb1",
+      "lastmod": "2026-04-04",
+      "sourceCommit": "61af843b5c010d1760398eaa2653e3fdcb8c352e"
     },
     "/css/trivia/css-make-element-responsive": {
-      "fingerprint": "e224bd4b79a5e62813ce20e48ff61a8a11cefb8e88387faa671b28de9e4855b4",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "08be1efb9009a92def49cfe85d2e9dfe062ff80c170de26c8f09f6225760fa5b",
+      "lastmod": "2026-07-09",
+      "sourceCommit": "f1768f60d44b9384ab81d15f1f5d27a4eaca2472"
     },
     "/css/trivia/css-make-text-bold": {
-      "fingerprint": "bf77a5e5efc68f7d90875a72e444ae546b7591750dc704ade26b042cbc39e9c7",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "9fad4f61dd594bcf96cffe90b506b8e95d60046eb1f89f6b52d5dfc226253811",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/css/trivia/css-margin-property": {
-      "fingerprint": "bd66a1910d9b0324dd5fe5b158f712856ab149b2255e61b1b26bcb9b50e57523",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "a7c40e9c69ec1e7f67fd01de71a95ae42c03ea553b4b79c9d1acd8576545abf3",
+      "lastmod": "2026-03-15",
+      "sourceCommit": "eb72a4b68b970093d8b2ba7626941ad9504ba8ae"
     },
     "/css/trivia/css-margin-vs-padding": {
-      "fingerprint": "94660390a7fe5b357f1c823d43734a02d97b9b05c1ad15c84ce598174eab7908",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "4e06b7796e59b7acec67a2cbd054f58dcc7ebd0f3c3418e37560c57feeee91ee",
+      "lastmod": "2026-03-15",
+      "sourceCommit": "1f08d8ad57c62fbd2022b9a3ddceb9cc95fdd7f0"
     },
     "/css/trivia/css-media-queries": {
-      "fingerprint": "5afebb24ef02b7fe834d6c33ab5064d8cba20f579862a1ef7d1441e736c1c22b",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "775b9c742733cb1fe0c2ffebf707dcb966e58a3ba83567317614d916701b3875",
+      "lastmod": "2026-07-09",
+      "sourceCommit": "f1768f60d44b9384ab81d15f1f5d27a4eaca2472"
     },
     "/css/trivia/css-padding-property": {
-      "fingerprint": "b16f3d86639fd6654137e60c081625a2cc438e30f0db60e837a14d9f75476fbe",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "b482713ca6c2c32b6ecaae361881e3cc3295b609c0f7db7d1981371412fa04b8",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/css/trivia/css-position-relative-absolute-fixed": {
-      "fingerprint": "9e2e48658978b8ff2144ebd7b30ceda3a65dadbabed9e0e3206b0ef99681a822",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "4bd357653eb75442a525cbaba3abc159db6c08173f6576aea68fe855cb1b1b11",
+      "lastmod": "2026-08-13",
+      "sourceCommit": "0109e4e1f3366733c31e167ab4794bf3acc678ae"
     },
     "/css/trivia/css-position-sticky-not-working": {
-      "fingerprint": "5ace7ac9300706bb34cd435790ab4832cf7ba5c0060c3f0fed663d96211e03c2",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "319a07fcb9c0e49fe3a9b48642f903baca947b0c68cdf2cf358bcc2f815f310c",
+      "lastmod": "2026-08-13",
+      "sourceCommit": "69af1e501b8f29e2a4a6526862274060b773c692"
     },
     "/css/trivia/css-pseudo-classes-elements": {
-      "fingerprint": "4db21f4ef36ff8fbbb8e64bcc02410f3840caac985467713a6beae30933d1dd9",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "9c140b9966bf81e1808360a26a9f852a03e4904a7d2025a809c2fd69e61f10e4",
+      "lastmod": "2026-03-15",
+      "sourceCommit": "1f08d8ad57c62fbd2022b9a3ddceb9cc95fdd7f0"
     },
     "/css/trivia/css-specificity-hierarchy": {
-      "fingerprint": "f71b946a74cb1eca03f9b773feec131fb37a62321f1706948c956cbbfb22391d",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "499886d0e3991450a06c8d9306b85e4f55726431a053864a1ebd8cf2da00dbd2",
+      "lastmod": "2026-04-04",
+      "sourceCommit": "61af843b5c010d1760398eaa2653e3fdcb8c352e"
     },
     "/css/trivia/css-text-color": {
-      "fingerprint": "560da1f978f99647e627c553098a6f86012e454c48976697c397a255522c2dc2",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "2f4dcca22f51c741d8eb164e1c426e451efe159a7382b5086102fa2679302422",
+      "lastmod": "2026-03-15",
+      "sourceCommit": "eb72a4b68b970093d8b2ba7626941ad9504ba8ae"
     },
     "/css/trivia/css-units-em-rem-percent-px": {
-      "fingerprint": "28971046d44a338219f5e2544014106ae1d001d114c45851f3d1bc89f91084d1",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "23bf3ce6fc2e8f63af460918df22ba825cd60811083fbb5bc9b069ba96541d18",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/css/trivia/css-visibility-vs-display": {
-      "fingerprint": "43e8471bfbe7346ad9e9ece33015741ce2c0168c299c55c89bb4301f9dfb2186",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "ac347df05b8129ff839003bee60818a83ff409890ed0c40a37d8898027ab7dc6",
+      "lastmod": "2026-03-15",
+      "sourceCommit": "eb72a4b68b970093d8b2ba7626941ad9504ba8ae"
     },
     "/css/trivia/css-z-index": {
-      "fingerprint": "b0e9740594b0a41a5818f492845a930852cff17a07143bd440eb2fe0021841c4",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "5b12d0562608da6f94ee78dcdfd26c0e4542ebf2b91b32568611ab0fd03e1869",
+      "lastmod": "2026-08-13",
+      "sourceCommit": "0109e4e1f3366733c31e167ab4794bf3acc678ae"
     },
     "/focus-areas": {
-      "fingerprint": "e1c05167bc43e95b65c3124e9ca6a493a1e0336aad93701910bbd7524e20855a",
+      "fingerprint": "0f0d89ac51b1e83062bfe617667d2b46a8a8afe33357a9a855e2557e70d0291f",
       "lastmod": "2026-06-04",
       "sourceCommit": "24cfedc8c86529215e1af1a2205ff15cbc1d49b3"
     },
     "/guides/behavioral": {
-      "fingerprint": "a3a04b2038eb3a839747368a6e54bd606e0ddf5a354ceaa4834aceaa4ca21e8e",
+      "fingerprint": "4b05ec0c99a49982fc86412f2b9a9bfeb51db43f81e91d4d340d40ca2c91cb7a",
       "lastmod": "2026-06-19",
       "sourceCommit": "ff7bcf174c67a93a05f4716f88fde280a115b8e8"
     },
     "/guides/behavioral/big-picture": {
-      "fingerprint": "96743b9a50a7f2838ea1e91bd4002a88cf99eb0c94ff5adad191c8cf49cc33cb",
+      "fingerprint": "874c8b3a53ddebd31397197f5e2527f343f01358962bde2af563af615c7ed968",
       "lastmod": "2026-07-16",
       "sourceCommit": "0bfdf5c8027365dca2ee03cb234c59d624dacdfd"
     },
     "/guides/behavioral/checklist": {
-      "fingerprint": "147d72644c45f35369253d152c3ca03f7c3a94719ef910558a148e17a7c22820",
+      "fingerprint": "859909530c7df0262463f90eadfb85e5d0a9ec641c714c90677a3ee134a8a7e7",
       "lastmod": "2026-07-16",
       "sourceCommit": "0bfdf5c8027365dca2ee03cb234c59d624dacdfd"
     },
     "/guides/behavioral/common-questions": {
-      "fingerprint": "f56341e2a4c83314bd358eb73324b82537e0470585f381b5f8fc7a93dfe7aa1e",
+      "fingerprint": "e6bfbf1974921f7dfb2566cf76f24f8ff2220174b18376008af017d9ddda0253",
       "lastmod": "2026-07-16",
       "sourceCommit": "0bfdf5c8027365dca2ee03cb234c59d624dacdfd"
     },
     "/guides/behavioral/evaluation-areas": {
-      "fingerprint": "2fca702dee8eac3d5ac1b6e35db4c08efbd1939ebab7fad60c7924dcff00f0e8",
+      "fingerprint": "4f05185a2e6c0cea3f1cc1c48ef036efbca6ab32ca9bcabde8562d4cb7de4094",
       "lastmod": "2026-07-16",
       "sourceCommit": "0bfdf5c8027365dca2ee03cb234c59d624dacdfd"
     },
     "/guides/behavioral/fe-advanced": {
-      "fingerprint": "cbac9ac701973d76e47b22e7d99e4997573a1707bc1d99a2191a5ca57e6a06cc",
+      "fingerprint": "f060ec12205c5502f35b55f34cc430ffc60633eaa66796a7e9522aca067a23fb",
       "lastmod": "2026-07-16",
       "sourceCommit": "0bfdf5c8027365dca2ee03cb234c59d624dacdfd"
     },
     "/guides/behavioral/intro": {
-      "fingerprint": "0512748df92baaef9fa7e7cedc6f0741d041bc617d5ba5d63b4ec8af64686b05",
+      "fingerprint": "b961e8812dc4d8d00e56916f40a9f49c58f515d78ce475ae141f123c6862117d",
       "lastmod": "2026-07-16",
       "sourceCommit": "0bfdf5c8027365dca2ee03cb234c59d624dacdfd"
     },
     "/guides/behavioral/practical-tips": {
-      "fingerprint": "468f09e4093f27cf1ec9c79a5f6efb5802cf2c2e238b5489b3d32e4beb024d08",
+      "fingerprint": "7a759c025f194c981e5f936e2408fa24f6f2665971246dffb3f660bc19af31cd",
       "lastmod": "2026-07-16",
       "sourceCommit": "0bfdf5c8027365dca2ee03cb234c59d624dacdfd"
     },
     "/guides/behavioral/prep": {
-      "fingerprint": "6269272317c8e4e7e1c067e38c41e2b2f15cd2d8d5b38b9aa4c41f31d6509241",
+      "fingerprint": "bb7383667293399d41ecce9ee9865d194278f165c70e8c770e3a63f2bb9aefc2",
       "lastmod": "2026-07-16",
       "sourceCommit": "0bfdf5c8027365dca2ee03cb234c59d624dacdfd"
     },
     "/guides/behavioral/stories": {
-      "fingerprint": "975beede62c2d236327e5cddc153d71fc046e6583d13133e9bf33b2da546a56c",
+      "fingerprint": "1c1b884a61021217e3b71d8b38264b55fcdb9ee805a1bb480264177527b8a4ce",
       "lastmod": "2026-07-16",
       "sourceCommit": "0bfdf5c8027365dca2ee03cb234c59d624dacdfd"
     },
     "/guides/framework-prep": {
-      "fingerprint": "0a327bbbc87eed8548fd2c6b8f827013da4a184bf936d9ec95696a8800fe4be1",
+      "fingerprint": "ca16adfe9c9fa0c53b3b4a672ae49a1e5f59c1a095f9a70f387f7d9493720fa3",
       "lastmod": "2026-07-16",
       "sourceCommit": "0bfdf5c8027365dca2ee03cb234c59d624dacdfd"
     },
     "/guides/framework-prep/angular-prep-path": {
-      "fingerprint": "627252cd0231d0f8e1ab41881569b79678a3f5e8a6802011d084ad6fcf18da0f",
+      "fingerprint": "a644eebb67d581c65513964b3972fe45c7194558ad41f7032ebd78ec1abc4115",
       "lastmod": "2026-07-16",
       "sourceCommit": "0bfdf5c8027365dca2ee03cb234c59d624dacdfd"
     },
     "/guides/framework-prep/javascript-prep-path": {
-      "fingerprint": "effca29b2ea59e18e8cae3b6a1f6336cc1f4f4400aaac4202dd0f2ecacad4fa0",
+      "fingerprint": "077c9dcfcf1ae4b9d4af8f91683187fd29930b3f6860efae281208a96a2cf32d",
       "lastmod": "2026-07-16",
       "sourceCommit": "0bfdf5c8027365dca2ee03cb234c59d624dacdfd"
     },
     "/guides/framework-prep/javascript-prep-path/mastery": {
-      "fingerprint": "33f13ee2a1bbd6e7293d48b9599e604ae656215f7b7fbf230f8ba38364a427a6",
+      "fingerprint": "77af7182eb9d0ec6070d5f3b5e073432a880e1eee0b364e282e0fa6ba9c986d4",
       "lastmod": "2026-10-01",
       "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
     },
     "/guides/framework-prep/react-prep-path": {
-      "fingerprint": "a9655d8fc8d37de1d6ec5a730a9cc861b6d257ceafd77fff8e83f00230e0a73a",
+      "fingerprint": "77dfeea6bca05d37f6f9b7d9ab42d8e4f51d0e166d5a8119811f5f0348e6deb6",
       "lastmod": "2026-07-16",
       "sourceCommit": "0bfdf5c8027365dca2ee03cb234c59d624dacdfd"
     },
     "/guides/framework-prep/vue-prep-path": {
-      "fingerprint": "987e03884666fe6bd0f329e6069e8eb85874b7abe383880b9cfba8e06eea082f",
+      "fingerprint": "19d376ef09ec766124b8775365653e2f170ccd412e9bdf4766da5e07e19dd3f0",
       "lastmod": "2026-07-16",
       "sourceCommit": "0bfdf5c8027365dca2ee03cb234c59d624dacdfd"
     },
     "/guides/interview-blueprint": {
-      "fingerprint": "d509b031ae4c17761cf7c219b102fe1c890bff20b2cdc93411e55e6b5b443b50",
-      "lastmod": "2026-10-02",
-      "sourceCommit": "a607cb21672efc6f868f65e31eba0565a711f248"
+      "fingerprint": "860df15c1e6fd019d25daf8b0d8badc3e9c76b9b7221cfcb0f07a6819d5b86f0",
+      "lastmod": "2026-10-07",
+      "sourceCommit": "a68d95d22e4d5722c17f5ab50f19556ab7d6731f"
     },
     "/guides/interview-blueprint/api-design": {
-      "fingerprint": "1643365b4ef6a6b4babe5657bf47d61f9c0126a9cf3383af4f4ad0f18421b752",
+      "fingerprint": "c0bbd27ff614ae2a1eb860a51d9f4f01b08a6132735c3444d80045a896a9b61b",
       "lastmod": "2026-07-16",
       "sourceCommit": "0bfdf5c8027365dca2ee03cb234c59d624dacdfd"
     },
     "/guides/interview-blueprint/coding-interviews": {
-      "fingerprint": "a8fad512fa8d234faf93ea7fbb3c58a41f7f0a670ae3bdbbb26950a877db69ba",
+      "fingerprint": "eb3f98c0336874355091a0a3015f8e539219ef299ef7100a044c56c5d38ccdc6",
       "lastmod": "2026-07-16",
       "sourceCommit": "0bfdf5c8027365dca2ee03cb234c59d624dacdfd"
     },
     "/guides/interview-blueprint/dsa-for-fe": {
-      "fingerprint": "c309774e175964abe1e7f567747fbceee656053bc937cb1c9641e42cb2624165",
+      "fingerprint": "3e87185ad71f3daf95ba732d1846ecd4d61ad7179281521db2c6a23817fb3029",
       "lastmod": "2026-07-16",
       "sourceCommit": "0bfdf5c8027365dca2ee03cb234c59d624dacdfd"
     },
     "/guides/interview-blueprint/intro": {
-      "fingerprint": "529169f5d4331758c4e77b6083a59028806ee6dd811e2cba53f7c4e96188722a",
-      "lastmod": "2026-10-05",
-      "sourceCommit": "6becd398115e8f25e674e06e87527f371ad457f9"
+      "fingerprint": "8641e801ecb9ca679ed2a66cb0fdcbe0630db245914aae06f4ae8d11f39c30b8",
+      "lastmod": "2026-10-07",
+      "sourceCommit": "a68d95d22e4d5722c17f5ab50f19556ab7d6731f"
     },
     "/guides/interview-blueprint/javascript-interviews": {
-      "fingerprint": "be43c5458a2b9033bbb3df6dab661d57c5f34fe77966a184e3fa0746783dc28c",
+      "fingerprint": "475b8590a83828fafcee507e3a67b62e1117953ccd2a0d12bf879879bf10b20e",
       "lastmod": "2026-08-03",
       "sourceCommit": "b4827a4a9de905150cc702323af4a9eb7838d60b"
     },
     "/guides/interview-blueprint/quiz": {
-      "fingerprint": "835b7f53435c198f935c0eed3d37e7965d0bb9215eea9abb40c8f7c8206f8893",
+      "fingerprint": "642627abe13b6adb1d71d3487b4c5397be0642338312585559552f831e70f9ea",
       "lastmod": "2026-10-05",
       "sourceCommit": "6becd398115e8f25e674e06e87527f371ad457f9"
     },
     "/guides/interview-blueprint/resume": {
-      "fingerprint": "8e5a913d7a480e660486dca8c468ae69f3b0ead2edcf97fa8bfeb1fdb5eea119",
+      "fingerprint": "c7b5df806c1c33b479b4e6eb596a495ff8c4c3b567a5c7cd807c74e97e531403",
       "lastmod": "2026-10-02",
       "sourceCommit": "a607cb21672efc6f868f65e31eba0565a711f248"
     },
     "/guides/interview-blueprint/system-design": {
-      "fingerprint": "0ac42a396c8c1462de98c2138a23f814c8c0ccfeb1489e638767a1d2ea17d0ae",
+      "fingerprint": "f962e26f3cd6e89fb48ebf17ab68592046d784d5114e98031dcbca1d923b986d",
       "lastmod": "2026-08-12",
       "sourceCommit": "a79f3d12a12801e0387905e27e19692c0d1a3c48"
     },
     "/guides/interview-blueprint/ui-interviews": {
-      "fingerprint": "276b94a13269304237983cc3965bb9f7cb2f3e1bdf55c281e50490ff8003774d",
+      "fingerprint": "f0d42abf11a0de127d2ae512c9768b6f3c472a5a5f20c970b210173e1453924c",
       "lastmod": "2026-10-05",
       "sourceCommit": "6becd398115e8f25e674e06e87527f371ad457f9"
     },
     "/guides/system-design-blueprint": {
-      "fingerprint": "823ef26478e8918dd6d71a92655e1f34f34300228ca915dd9d91ac6594f37a64",
+      "fingerprint": "f4741a814ab2fe1fee3733191811ec7c878e7544b3ee43ebe686013feca36c9d",
       "lastmod": "2026-10-02",
       "sourceCommit": "a607cb21672efc6f868f65e31eba0565a711f248"
     },
     "/guides/system-design-blueprint/architecture": {
-      "fingerprint": "7f9c010ce24b3aff66b608d9c15a4bd7873863d3fce63e1c4e6c1649cc9591bf",
+      "fingerprint": "b23f8c18275393d70ebf9ae84093781d1a50ba4515ef5a82264e3a7eebfb5bc8",
       "lastmod": "2026-07-16",
       "sourceCommit": "0bfdf5c8027365dca2ee03cb234c59d624dacdfd"
     },
     "/guides/system-design-blueprint/checklist": {
-      "fingerprint": "f2b12b8b5b8adfb549a42711a12bd28d640f3af16c70c22f63c16f733ddf641a",
+      "fingerprint": "649f003c616ee002ccfa66bfbb012041615426fe0616673aad9febb637ec225e",
       "lastmod": "2026-07-16",
       "sourceCommit": "0bfdf5c8027365dca2ee03cb234c59d624dacdfd"
     },
     "/guides/system-design-blueprint/evaluation": {
-      "fingerprint": "56779f487e8a80fae5fbd0ed01e39110c8e6d1e9a894110c3f51899f41347450",
+      "fingerprint": "1c1706efbfc0409b4595376ed5df80ace1c50f89f0c1eaebca59629483a58934",
       "lastmod": "2026-07-16",
       "sourceCommit": "0bfdf5c8027365dca2ee03cb234c59d624dacdfd"
     },
     "/guides/system-design-blueprint/foundations": {
-      "fingerprint": "479939cdc8510f2c1125be9861a43d9c51f187c6dc945945d6c819fbe8f15996",
+      "fingerprint": "18951828c4d147ea0513bf4350bc3b2e5e166ada7038d08fb976dced3fcd4e5a",
       "lastmod": "2026-10-02",
       "sourceCommit": "a607cb21672efc6f868f65e31eba0565a711f248"
     },
     "/guides/system-design-blueprint/framework": {
-      "fingerprint": "83a650d4e755f5f69ff29a86144b6241da93d4b9c8fffafa1b15fcd8d0334083",
+      "fingerprint": "d62b7c3a4f2fdf6072e733fa71c1349acc86d6ae400d43071594bbcb8530c7fe",
       "lastmod": "2026-07-16",
       "sourceCommit": "0bfdf5c8027365dca2ee03cb234c59d624dacdfd"
     },
     "/guides/system-design-blueprint/intro": {
-      "fingerprint": "94140f8366cf8d1838e6fd0b20d104edeb4c6fb75c964fed5db3f683f206bfbb",
+      "fingerprint": "cd5e7cd08af9c84099b7627de9a44f69d03a7f20113c808e8f994efae9868a9a",
       "lastmod": "2026-08-13",
       "sourceCommit": "0269a1c2e3f41eebfa79205952cc081a634bb6f5"
     },
     "/guides/system-design-blueprint/performance": {
-      "fingerprint": "9fdd6fd41fb7e564580e6e167421b9f9a0ace6140aa80f4110aa8ec8d0320394",
+      "fingerprint": "9fa53987f4d4bc94da59be3b3058449c7450dca0a2599d221f0056d3a82f91d4",
       "lastmod": "2026-07-16",
       "sourceCommit": "0bfdf5c8027365dca2ee03cb234c59d624dacdfd"
     },
     "/guides/system-design-blueprint/pitfalls": {
-      "fingerprint": "b070153708ced353621a2ba38edf60dcd4958e61fad2aadf5f3d6e482d503725",
+      "fingerprint": "71316d6f94ca42e55feb65863ffecacb5c39f24cf8278d152f0e748fb5a89cd7",
       "lastmod": "2026-07-16",
       "sourceCommit": "0bfdf5c8027365dca2ee03cb234c59d624dacdfd"
     },
     "/guides/system-design-blueprint/radio-framework": {
-      "fingerprint": "301ea48f1014da8227f8ba20c5ceda8d0543b5d6505549b6acef9ec348e42d3e",
+      "fingerprint": "fae0a492120bb64c224d0b7d11e70372492ab4c68d8223c1c9f644bb3c19dbe4",
       "lastmod": "2026-08-12",
       "sourceCommit": "a79f3d12a12801e0387905e27e19692c0d1a3c48"
     },
     "/guides/system-design-blueprint/radio-requirements": {
-      "fingerprint": "fcdbe1546bca95dbb3ecba7755aede999a525f823ca71f60cf7927f014c970de",
+      "fingerprint": "59eef99c842a60f06a36d523d88b1325e73054d0d44b30d90125ca5261017b8f",
       "lastmod": "2026-07-16",
       "sourceCommit": "0bfdf5c8027365dca2ee03cb234c59d624dacdfd"
     },
     "/guides/system-design-blueprint/state-data": {
-      "fingerprint": "84fcfe9df1a23f2b8eff99890b7e64813051be3adfbb74dfb9c9b54a3d745dcb",
+      "fingerprint": "32d0209b20b3601914ecd03ea38e784763b924d13675c4fe333bbdf7f9d67731",
       "lastmod": "2026-10-02",
       "sourceCommit": "a607cb21672efc6f868f65e31eba0565a711f248"
     },
     "/guides/system-design-blueprint/ux": {
-      "fingerprint": "b9876e63445f298d8a9431d99b15d38362429af26320158c6c33f8579f802bce",
+      "fingerprint": "b7cfd179741a4eb6a114acce9964ed65b797d09629fe43953c2bfa5de312a910",
       "lastmod": "2026-07-16",
       "sourceCommit": "0bfdf5c8027365dca2ee03cb234c59d624dacdfd"
     },
     "/html-css/interview-questions": {
-      "fingerprint": "2c4d999061e7a2e3906ecc3b0902277f7ffbf3967c48f73d0ded540f53abfe08",
-      "lastmod": "2026-09-22",
-      "sourceCommit": "0d15c701675d72d0d5e4aa7a03e1aacd81c9e6c9"
+      "fingerprint": "15451d3b8e62973e0ba15aa70023b690fcc0bb84b074af3d3b2d1b4afd28b121",
+      "lastmod": "2026-10-07",
+      "sourceCommit": "a68d95d22e4d5722c17f5ab50f19556ab7d6731f"
     },
     "/html/coding/html-basic-structure": {
-      "fingerprint": "08ed441dfb01ece1d3aea6441cc7b1734ae8d5f427959351fdada4aed50d719b",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "f298130da519d2bd4105b434eb550e3a3f208ae51851975180b0194167d3615f",
+      "lastmod": "2026-03-01",
+      "sourceCommit": "06ea37af1dc8065bb35210c5dcda9e0f5cad3759"
     },
     "/html/coding/html-contact-form-labeled": {
-      "fingerprint": "e4f4ac897f95c683dada804435fe859d2588535b57e57b2ba516ca9b6ac5e613",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "ba75ef0aa1c11bd14cdfb71ea89fc524ac0c7a05d8b29fb82bdaaef25f6ea789",
+      "lastmod": "2026-03-01",
+      "sourceCommit": "06ea37af1dc8065bb35210c5dcda9e0f5cad3759"
     },
     "/html/coding/html-forms-validation-required": {
-      "fingerprint": "f3dba36e0c2766b2f9ee0f7dd9eebbbfa8d732682073c0b776bd9ac938f72c87",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "9866b6e011efc96b8cc8387cb0372e4fb7cb9418051bcaf2d7a6e58241a002e1",
+      "lastmod": "2026-03-01",
+      "sourceCommit": "06ea37af1dc8065bb35210c5dcda9e0f5cad3759"
     },
     "/html/coding/html-head-seo-basics": {
-      "fingerprint": "c3d25b42cc83a11b873158638e71ed5d6951945f42de12664b956ce29b9c792f",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "793989be37c50441d8d33f0c691bd2b379dc4233077a5e88e3af3a46eb28e5b9",
+      "lastmod": "2026-03-01",
+      "sourceCommit": "06ea37af1dc8065bb35210c5dcda9e0f5cad3759"
     },
     "/html/coding/html-inline-vs-block": {
-      "fingerprint": "008c84cc8f6e191c32a44bb68bd116d2c4b2e78cc97216a0543c71f7773ae792",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "8f0c897f509c5417b11eb61e601d6742c232f54339db7bb7f281d42e122c91e6",
+      "lastmod": "2026-03-01",
+      "sourceCommit": "06ea37af1dc8065bb35210c5dcda9e0f5cad3759"
     },
     "/html/coding/html-links-and-images": {
-      "fingerprint": "5a8e1f5e815ccaf617b52eec000747d307e4f870ff5374eacb13f20e2a59d3b8",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "3e976cf99a7e93a11da44e3aefc41c48d15147cad033c9cc514889d63b32ea85",
+      "lastmod": "2026-07-15",
+      "sourceCommit": "55ea1c1f2fab1d39d96277a3d1082605918a5038"
     },
     "/html/coding/html-lists-and-navigation": {
-      "fingerprint": "4695825bb3d8b362b40af9c3973bf1711a5f4182fc41a76cc459de092d8ded9b",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "a70fe82abf1a94357db4d0b849562cd69e8621c66365f2ee8528c7eb712a20b3",
+      "lastmod": "2026-03-01",
+      "sourceCommit": "06ea37af1dc8065bb35210c5dcda9e0f5cad3759"
     },
     "/html/coding/html-semantic-layout": {
-      "fingerprint": "19711c0e4aceb7b58ab2b729441b3a80f260d6a6d0045194e16c593a22e23293",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "316347821c84ec6ea55a6276b18581f331e7bd064340076e6c336ac0751dd38c",
+      "lastmod": "2026-03-01",
+      "sourceCommit": "06ea37af1dc8065bb35210c5dcda9e0f5cad3759"
     },
     "/html/coding/html-tables-accessibility": {
-      "fingerprint": "993c24bebc4d8a6f6bf7bc1a203d68dec1cc2397b60975ce829626016eb4424c",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "dcb91cb3ce1152d24e2f36dfa59f4dad0fd352756c176297768f9919e2d6aec2",
+      "lastmod": "2026-03-01",
+      "sourceCommit": "06ea37af1dc8065bb35210c5dcda9e0f5cad3759"
     },
     "/html/interview-questions": {
-      "fingerprint": "561be15827bab29ce6207548f3ea09d030d7589fae1e167477f7d9b73c5125e3",
+      "fingerprint": "5487a77fd609955a954f1b3cea7c5baf042f0b359fea954473f996a008a763a4",
       "lastmod": "2026-09-22",
       "sourceCommit": "0d15c701675d72d0d5e4aa7a03e1aacd81c9e6c9"
     },
     "/html/trivia/html-a-tag": {
-      "fingerprint": "cce2953647ad0277b12df1c17790058d5423d1ff13607f6036287e9ef7755751",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "0f6883ac88aa1378f383837882261762ef380101c845d6e6f2e27d6638c87b19",
+      "lastmod": "2026-07-04",
+      "sourceCommit": "85d2d06328ffbbe83c317df7eb7f480a0c1e4d37"
     },
     "/html/trivia/html-anchor-target": {
-      "fingerprint": "f0d1453b0697392db9c0072332dbdd2ada65185758fc3a2ef36284cf92528cce",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "0fd04095e8f951d0fb2696a62c3ad36304ade452829533b6e7fa8b2d8d449a0c",
+      "lastmod": "2026-07-04",
+      "sourceCommit": "85d2d06328ffbbe83c317df7eb7f480a0c1e4d37"
     },
     "/html/trivia/html-aria-roles": {
-      "fingerprint": "b9a204356cedbb86efbb1643b5071d9f86e800749cb04188bdca86bdbf68eebb",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "2f247370ba933c2747697ed6a4c24ee008c32845264b12a70646812a586924e1",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/html/trivia/html-block-inline-elements": {
-      "fingerprint": "9da38679c67378112198f2b712a19497e0e130c4c552f0971f6bdeb5803187c5",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "4e35f86b1da63b4b3802a159fcdbe1c2e8ab48fc18759499c72ec0f8a3353af8",
+      "lastmod": "2026-03-15",
+      "sourceCommit": "eb72a4b68b970093d8b2ba7626941ad9504ba8ae"
     },
     "/html/trivia/html-br-tag": {
-      "fingerprint": "b6f736f4fd90778b396cae4ef273ca27df3c601b610861291de8be35ff63a138",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "f1bcd5f94a18cc7ba0cc4201753fbaecb75ef761a1ec6278349a50acaeb9bbf9",
+      "lastmod": "2026-04-04",
+      "sourceCommit": "61af843b5c010d1760398eaa2653e3fdcb8c352e"
     },
     "/html/trivia/html-clickable-image": {
-      "fingerprint": "859627dd20e036316173d975ceec34f534a05c79cd8a19d29c3e70b2661c0797",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "341d157a6b3b24d3cd5bbf8f82ba917edaed2cd99f9563c77c9c643043b8f8bd",
+      "lastmod": "2026-07-15",
+      "sourceCommit": "55ea1c1f2fab1d39d96277a3d1082605918a5038"
     },
     "/html/trivia/html-data-attribute": {
-      "fingerprint": "5de7db2e14197eae0065d5e5f108d112d79df9db90fcc2a9bf9d0f821f12755d",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "d4e0cae4a11cc4007b0cbae9dc9140157299814bda887e99b9e21b97ac0184a3",
+      "lastmod": "2026-04-04",
+      "sourceCommit": "61af843b5c010d1760398eaa2653e3fdcb8c352e"
     },
     "/html/trivia/html-div-vs-span": {
-      "fingerprint": "5009cf5ab19667d5cee02e38b2aad47e0af7eaf1f8749cff4c23c3cbf300a019",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "4af76b3ec1f91e095d7255cd31fd9894bf60af100f281d3ccddac102081c1254",
+      "lastmod": "2026-04-04",
+      "sourceCommit": "61af843b5c010d1760398eaa2653e3fdcb8c352e"
     },
     "/html/trivia/html-dom": {
-      "fingerprint": "936b8b8ddc9c361ff3913f4a59a1327752c8a94fa7f95b16aeda458bf7a581cf",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "defb853d0c7ac4140bfb7c2fe1c4963973c0b5aa25380f87fb4360433fdc90c9",
+      "lastmod": "2026-04-04",
+      "sourceCommit": "61af843b5c010d1760398eaa2653e3fdcb8c352e"
     },
     "/html/trivia/html-dom-tree-structure": {
-      "fingerprint": "1e1526844a357337136a60b28eb95d95ceafde3f5b610fc879b3127765d74b1a",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "7e183299fc6d24b6507ba43e2ed244dabebb86f70ca8186a780bd98907472d76",
+      "lastmod": "2026-04-04",
+      "sourceCommit": "61af843b5c010d1760398eaa2653e3fdcb8c352e"
     },
     "/html/trivia/html-form-default-method": {
-      "fingerprint": "1915569f32bff61f544f50c50028db205034d86f94ee7cb889a718f068a629c0",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "7851009adc6088e74a9f2962e125c7287f500a3e0c8f21af7c91821b6c95e582",
+      "lastmod": "2026-07-20",
+      "sourceCommit": "a6259b2108763860becd3a96b10cfd3b7f1fb651"
     },
     "/html/trivia/html-head-tag": {
-      "fingerprint": "3edb5a117adc0e7938c04f40e865f151dd8ca2e67f0cb6657ce1b494136f6252",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "88500608b55b69ca87536eddd7f29ab1ec803fcf1bf3b991db3550d3839c2f89",
+      "lastmod": "2026-04-04",
+      "sourceCommit": "61af843b5c010d1760398eaa2653e3fdcb8c352e"
     },
     "/html/trivia/html-href-attribute": {
-      "fingerprint": "bdeb8477574e1384206505df8d45323505cfa392575acf003be364d7a95a181b",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "61413815fc3abaad98a0ed0df20bf40b5240e978608f68aa81a92d285effea10",
+      "lastmod": "2026-10-07",
+      "sourceCommit": "a68d95d22e4d5722c17f5ab50f19556ab7d6731f"
     },
     "/html/trivia/html-id-vs-class": {
-      "fingerprint": "791a5cfca6ce6d7d8d63b520bda067a9c16b223991851d76bc656839b50efa72",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "d1acd7188e5b8805bc26a5f07977dd67be6017303e3a0c0c3d40fa89af31f9e2",
+      "lastmod": "2026-04-04",
+      "sourceCommit": "61af843b5c010d1760398eaa2653e3fdcb8c352e"
     },
     "/html/trivia/html-iframe-tag": {
-      "fingerprint": "a92309fa91091a5005e6d8ca31b22a97710a2d3e595a974790e39a6c18782458",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "1014f8c7166cc8b8ab44e95526e45bb9f8ba6e1658f81a6fce4a18a1fc0df9d1",
+      "lastmod": "2026-07-04",
+      "sourceCommit": "85d2d06328ffbbe83c317df7eb7f480a0c1e4d37"
     },
     "/html/trivia/html-img-alt-attribute": {
-      "fingerprint": "56aeeb435c0e8e12f16eba83ae174e1ab193fba516b054fb21da03bfd8370cd6",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "c30fe911c22bdc4fa71f4e1c1ea2ceaab1d3aa676b4077385dd5538fc334d5aa",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/html/trivia/html-img-srcset": {
-      "fingerprint": "552d28ca51cc75b65c50ae0ce99cfaeb7e6ef25f2cf002f22f19795072dce01f",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "5e44cc2a7f0ee857fefdd68cb38bf8b3745032a7314b5d8e3a56400b8b176226",
+      "lastmod": "2026-04-04",
+      "sourceCommit": "61af843b5c010d1760398eaa2653e3fdcb8c352e"
     },
     "/html/trivia/html-input-placeholder": {
-      "fingerprint": "5deb942156b6fe066981f52ce0ffead2116ea1ad54e9e24266b0c47b9cdfcf73",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "cb84eb8a3c9f6f4e363097d22237668a8724d10a8725c14a95ba67307dcb8eca",
+      "lastmod": "2026-04-04",
+      "sourceCommit": "61af843b5c010d1760398eaa2653e3fdcb8c352e"
     },
     "/html/trivia/html-meta-tag": {
-      "fingerprint": "ac2490326093cd5534cb8ea65ab7641b3359f67ce26cd7c7e782583856f97cff",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "6c44b9c1fc3a47673ae41fad31956cbe034422d26e28770d0804ec23a6becc0a",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/html/trivia/html-ol-ul-dl-difference": {
-      "fingerprint": "427f3a04baaf6ac57314ac7909d07c76dcc137af83ddc55a1ebd2b9cdbbba773",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "88d453c2ac27f375d3e04e20f4473c7c14a3ed3486f37d7884814f5d56c15aec",
+      "lastmod": "2026-04-04",
+      "sourceCommit": "61af843b5c010d1760398eaa2653e3fdcb8c352e"
     },
     "/html/trivia/html-parsing-rendering": {
-      "fingerprint": "46e4c175b9d35ec1fe5c2ec53e72c1b84159e2277e5dcceddad947f879676641",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "020542f794e75680af89d07ffacb0284d0fcbc896ea328de65635e3a8a3975b5",
+      "lastmod": "2026-04-04",
+      "sourceCommit": "61af843b5c010d1760398eaa2653e3fdcb8c352e"
     },
     "/html/trivia/html-semantic-elements": {
-      "fingerprint": "59bb3b8c8d278fdcd629111bbb15dfb45d43a8e1afe4419a4d5c695a47cca210",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "5e64ae20fd16ef3eea779bf07934737b9be87a816c24ad172583fa4a09015ec5",
+      "lastmod": "2026-07-02",
+      "sourceCommit": "3464f0ef7f34fc8aa9d4568568193e45d1678081"
     },
     "/html/trivia/html-shadow-dom": {
-      "fingerprint": "daa02914e3689624b18aba93382690a855faeba6fa776446ab1c6776339d6a3f",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "026eaf7ac75c66c852140adca2b7f2bb763aa3e9e94400a2ea520c4f523c085b",
+      "lastmod": "2026-04-04",
+      "sourceCommit": "61af843b5c010d1760398eaa2653e3fdcb8c352e"
     },
     "/html/trivia/html-tags": {
-      "fingerprint": "a637352c095429e0ab7c28c65cde315730ad27e0a16fc98207198cf7618c5f1b",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "37379b86c201ac78d6a7ad05a87f13b06a03d6a219af61e1cb48cfade5237521",
+      "lastmod": "2026-04-04",
+      "sourceCommit": "61af843b5c010d1760398eaa2653e3fdcb8c352e"
     },
     "/html/trivia/html-title-tag": {
-      "fingerprint": "d78e91a7b0761389c7380a75d46d099aee25f4cf7474496c645791822b4e179d",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "17c0bf8dc500c52ad20705e585c6a0ddf134b3ce0e1a3521e7bbd8e64fc36e42",
+      "lastmod": "2026-04-04",
+      "sourceCommit": "61af843b5c010d1760398eaa2653e3fdcb8c352e"
     },
     "/html/trivia/html-vs-xhtml": {
-      "fingerprint": "5b819cb66fdfb6242699b8fb1cddad60b1b31636dac73f3ee15ad105075492ca",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "d5749166cd820cdb8c16718009ff84b41e9f4eb361834343944c662fdb98bb1b",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/html/trivia/web-accessibility-make-page-accessible": {
-      "fingerprint": "16a5632f0158680fcc83b1561683b7656fad4b2d0d5b99bda465e44b2ae82f19",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "fd8db1428259ff3a05041b393602a67b62a8ba951a097e6ba32e21e1e2752180",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/incidents": {
-      "fingerprint": "68c41fafc7a885141ef9026edb71c0925337a175a47108d39263cfcb5e51cd71",
+      "fingerprint": "d53f23bb13dd6bad132ec6e9e357926b48c2cd350dc3c83308a6c02f316202c1",
       "lastmod": "2026-08-23",
       "sourceCommit": "48fa784c43a51cee561f9f7ececa5a8bf2fe1313"
     },
     "/incidents/angular-duplicate-cart-service": {
-      "fingerprint": "bd95aa5a959525e0c45eb288f5d1309fd4d91a11938d89a47ff110d03a99ebf7",
-      "lastmod": "2026-08-19",
-      "sourceCommit": "8f668f067faf790d21e4fc79debed5527ebb476e"
+      "fingerprint": "6973639d02075382c8a0474ee1fbc83a5484eb530344b55025258e729d5f2223",
+      "lastmod": "2026-03-30",
+      "sourceCommit": "21f83b2fb959656de53c2f07454db06d2bb4d964"
     },
     "/incidents/modal-screen-reader-failure": {
-      "fingerprint": "06a0c81aaebce94b1eb11230a216cfb4e8b45a03e6005f845c132b9d72520836",
-      "lastmod": "2026-08-19",
-      "sourceCommit": "8f668f067faf790d21e4fc79debed5527ebb476e"
+      "fingerprint": "af93ef41c19e2ee07ac639128275fb2c29d38e7a3af0e62f3d21e7eef5fe3206",
+      "lastmod": "2026-03-30",
+      "sourceCommit": "21f83b2fb959656de53c2f07454db06d2bb4d964"
     },
     "/incidents/search-typing-lag": {
-      "fingerprint": "d04ac24aeeceb9426c60ecc906db5443378d65be70e1abe2707eb4997b163591",
-      "lastmod": "2026-08-19",
-      "sourceCommit": "8f668f067faf790d21e4fc79debed5527ebb476e"
+      "fingerprint": "238d419af520a0dde05b2ae8cf11ce962f9c41338c3f67380f23a6c5c83256bf",
+      "lastmod": "2026-03-30",
+      "sourceCommit": "21f83b2fb959656de53c2f07454db06d2bb4d964"
     },
     "/incidents/stale-search-race": {
-      "fingerprint": "ae68a8a323a3be4e96beaf3f878206aa4b654688fec4cf594f04a999782b8c3d",
-      "lastmod": "2026-08-19",
-      "sourceCommit": "8f668f067faf790d21e4fc79debed5527ebb476e"
+      "fingerprint": "70861a375c7309071165ca5d629c47df4c29b0e087e7bc1481c4cf598e5657e6",
+      "lastmod": "2026-03-30",
+      "sourceCommit": "21f83b2fb959656de53c2f07454db06d2bb4d964"
     },
     "/incidents/vue-index-key-wrong-row-state": {
-      "fingerprint": "9b45395f7435ace5720c0a702c7ade4e59286645881e40bf50b787c20817abb4",
-      "lastmod": "2026-08-19",
-      "sourceCommit": "8f668f067faf790d21e4fc79debed5527ebb476e"
+      "fingerprint": "a696f72fab865ff72abac4e8f40275cbaa7fa72c3a7a0518af4d7e2b34bdb075",
+      "lastmod": "2026-03-30",
+      "sourceCommit": "21f83b2fb959656de53c2f07454db06d2bb4d964"
     },
     "/interview-questions": {
-      "fingerprint": "df1bcee86b18b774047686edf93bdc56dcb1920fa136c9b4a83e68ac1694d941",
-      "lastmod": "2026-10-02",
-      "sourceCommit": "26d7f1f75d5717eb8adf7e62183504f8370309f8"
+      "fingerprint": "8c2204b5e95aeeb2867cef86ab599a96f50b303dea523b3b46d615cd7c840317",
+      "lastmod": "2026-10-07",
+      "sourceCommit": "a68d95d22e4d5722c17f5ab50f19556ab7d6731f"
     },
     "/interview-questions/essential": {
-      "fingerprint": "f29f3c2c097fd64e9e3ed420f46eb1b7aed29f1399492d5d742e12dc1c88e4c4",
+      "fingerprint": "d3c7a4ec6f6003a582df720bbc6110007f3d59d4d893184cdf9fc72cabc04960",
       "lastmod": "2026-08-16",
       "sourceCommit": "ca2d879e66c4a2c08be21db767375fe7f6f80038"
     },
     "/javascript/coding/js-array-foreach": {
-      "fingerprint": "840aba21b5da0f3cc20ec6f5a6974878ffe2f9bc162ec256c70e25d77b8ec156",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "8d06b236ee5f4998205c7b4a194f8fbaa29ea8076716edadd3aa804274ba3e37",
+      "lastmod": "2026-03-10",
+      "sourceCommit": "fb766346263c75e48ed11a65ca984a858f2068cc"
     },
     "/javascript/coding/js-arrays-equal": {
-      "fingerprint": "1b8811470193287756d7d6f5ffbc9cfb552622833ea5118c5e72107ad73ffb31",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "cda09a3fb85d3b67065c9a84970188127c892fd52aa17621dc0d46d348079591",
+      "lastmod": "2026-03-10",
+      "sourceCommit": "fb766346263c75e48ed11a65ca984a858f2068cc"
     },
     "/javascript/coding/js-capitalize-words": {
-      "fingerprint": "7ee798c87b55217563ff67106000b9f3a7197808f862339b5479e6d1dd9695eb",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "aa21fa2c306f252900b75e51fb6259dbbedf5af0ce235a8c7cbc12a4485d4138",
+      "lastmod": "2026-03-10",
+      "sourceCommit": "fb766346263c75e48ed11a65ca984a858f2068cc"
     },
     "/javascript/coding/js-compact": {
-      "fingerprint": "944f3f39a910beee9dc6fcc347b28ffa7340e872c238c64af4f9a4ae28ae3528",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "9fe5161cad48027a838355751c5ce4357b78ef8b81905b77e4ba1db2bb77214f",
+      "lastmod": "2026-03-10",
+      "sourceCommit": "fb766346263c75e48ed11a65ca984a858f2068cc"
     },
     "/javascript/coding/js-count-vowels": {
-      "fingerprint": "82e61ff0cedc2962e7e15648894d2b55d8631473493b389ac631709674038040",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "1b4fcbc66a75a09ae281853e8bc15a5aaf064e42bf36031b16f22fef95c9fe03",
+      "lastmod": "2026-03-10",
+      "sourceCommit": "fb766346263c75e48ed11a65ca984a858f2068cc"
     },
     "/javascript/coding/js-create-cleanup-bag": {
-      "fingerprint": "7e4d4c5df0552c2c7de789947410452d4f52507ad370ca15a1e6dbce8c02ecf0",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "76ac74e150d6ad599926f0084323bf4c1df8c51372994af7b412e50aaafce5d4",
+      "lastmod": "2026-03-10",
+      "sourceCommit": "fb766346263c75e48ed11a65ca984a858f2068cc"
     },
     "/javascript/coding/js-create-counter": {
-      "fingerprint": "361e9fcee1d87227cf5994af6f11268f4c22c651ae319de5001330ecc398e14e",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "f4db7511e41abf9d3f022f6c03c2210f72c6b7fa7fe746defb2df5da5dee2f04",
+      "lastmod": "2026-03-10",
+      "sourceCommit": "fb766346263c75e48ed11a65ca984a858f2068cc"
     },
     "/javascript/coding/js-create-deferred-promise": {
-      "fingerprint": "581034b335586d29b76ec2efe020c7901bd449d75332d630a24fc7bc8454a986",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "fcb80fdcce8e670c9b83c255855294e16f4ab3adbbd698694a523ea0665fc412",
+      "lastmod": "2026-07-15",
+      "sourceCommit": "55ea1c1f2fab1d39d96277a3d1082605918a5038"
     },
     "/javascript/coding/js-create-lru-cache": {
-      "fingerprint": "f25ec6ec24aaa4745544a5c61b31d052b1042227eda12b7d5f98cca9fb905232",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "d30b777112b5c13233f5b4576eea07604844a20dccc950d295ff791a24f7a312",
+      "lastmod": "2026-03-10",
+      "sourceCommit": "fb766346263c75e48ed11a65ca984a858f2068cc"
     },
     "/javascript/coding/js-create-spy-function": {
-      "fingerprint": "64fefc27a1277df402c58e353aef507f18670e80afe57b527d62490f495634aa",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "b01c22abe90f9ea6d7b7f56b20352e04e13734b0bd772311f16b8e6e7d96a923",
+      "lastmod": "2026-03-10",
+      "sourceCommit": "fb766346263c75e48ed11a65ca984a858f2068cc"
     },
     "/javascript/coding/js-debounce": {
-      "fingerprint": "1f282e8ab1c5c9ee5491a0dd6f98b050bf2d04a181c73e754ef585f978c54df4",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "bc78d4612f98da71290129166c6c347cce33e706f0ced937135e3099055c19bb",
+      "lastmod": "2026-07-15",
+      "sourceCommit": "55ea1c1f2fab1d39d96277a3d1082605918a5038"
     },
     "/javascript/coding/js-escape-html": {
-      "fingerprint": "373297f9fb81384d7a29b55478373a275c2f5d104691b7870c12e671d7b1ee8f",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "331d35a59a095b39e297bc9ce77d792a6fddba9711dad4c4ccd608b2ab73deae",
+      "lastmod": "2026-07-15",
+      "sourceCommit": "55ea1c1f2fab1d39d96277a3d1082605918a5038"
     },
     "/javascript/coding/js-fetch-json-timeout": {
-      "fingerprint": "4f5d4c43171ca783b597094c7472fbf6d5e00edc09570ab064110dd01b66a6df",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "8cfb1494f431a2efdccc207a1fa4f27dbaffd1496185f8b868e494748480045e",
+      "lastmod": "2026-07-15",
+      "sourceCommit": "55ea1c1f2fab1d39d96277a3d1082605918a5038"
     },
     "/javascript/coding/js-flatten-once": {
-      "fingerprint": "8e465cb3c4065b12c9065b5afaa961fa9c5c24f25bf5c0e59698ed0e3acfd517",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "ad9242f662f61c0e9937892e08135df593767bb8333578671cca3414eabd5717",
+      "lastmod": "2026-03-10",
+      "sourceCommit": "fb766346263c75e48ed11a65ca984a858f2068cc"
     },
     "/javascript/coding/js-format-date-timezone": {
-      "fingerprint": "236b5036fc741c2cc871e4e063bba582a3038915abf3ce75121a5f0c29672dc9",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "700e0d09dc35367fe9b8f8fd6cadc00ce1c81ca2d7a312d14d2db65f7468946a",
+      "lastmod": "2026-03-10",
+      "sourceCommit": "fb766346263c75e48ed11a65ca984a858f2068cc"
     },
     "/javascript/coding/js-get-by-path-1": {
-      "fingerprint": "593b574df3f8c99ac9783ca368044a400bdbc25e9569b63a0e9ee6e29282822f",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "6d1476d5afcaaca6a36acf4d6228b4553212be98fca1d1413103294328307999",
+      "lastmod": "2026-03-10",
+      "sourceCommit": "fb766346263c75e48ed11a65ca984a858f2068cc"
     },
     "/javascript/coding/js-implement-bind": {
-      "fingerprint": "5e3d4d1f18324e006f5e20b2aab6b9971a3c93e0fcc22ebaf815c1598f6abe1b",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "524a5bd9a711bb4490e77db4db5e8ae83b592e4cd68001ec82eacaad35d4cee3",
+      "lastmod": "2026-07-15",
+      "sourceCommit": "55ea1c1f2fab1d39d96277a3d1082605918a5038"
     },
     "/javascript/coding/js-implement-instanceof": {
-      "fingerprint": "5c3e5f7c80e52bfcc895927b88fb558e9f902aa975a1fc660aab2e7c5672851f",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "1ca81f0960b9e5f9a1630519ad5e84c613111c372fe3fe4adfee860778073232",
+      "lastmod": "2026-07-15",
+      "sourceCommit": "55ea1c1f2fab1d39d96277a3d1082605918a5038"
     },
     "/javascript/coding/js-implement-new": {
-      "fingerprint": "b5f8ee2e893e61a86f888c30b6afa7f7fdf0bebd84b81530ce64bf429bc6e8a3",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "d9fcaf01b9099f64880381a611dd5703cbadd291eb7593d0cf3180495e1e51d4",
+      "lastmod": "2026-07-15",
+      "sourceCommit": "55ea1c1f2fab1d39d96277a3d1082605918a5038"
     },
     "/javascript/coding/js-is-object-empty": {
-      "fingerprint": "455906eebd502f25cb299e8b1b0b5cea5090a001bba5fe2a347fb89cea253bff",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "8350535fa2bd8595f93bf0f043c4d13369602496d1b198335a40ef036f760cf8",
+      "lastmod": "2026-03-10",
+      "sourceCommit": "fb766346263c75e48ed11a65ca984a858f2068cc"
     },
     "/javascript/coding/js-measure-duration": {
-      "fingerprint": "1b664350ec7b5d7d37eb1be8732b91c2996c3e24295b16ade0f0c99cc5bf03ee",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "34db4c5d6f3fea5e3ae9c9f89b65ca0f7a8fa4926e17a6152e0c5a8ead392921",
+      "lastmod": "2026-03-10",
+      "sourceCommit": "fb766346263c75e48ed11a65ca984a858f2068cc"
     },
     "/javascript/coding/js-number-clamp": {
-      "fingerprint": "90b8c26fe53124ee5aec9ed8c98ef88183fbe4fcbceb23a9ad63318771c61fa8",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "0156b94381282abb71306953f731795d9724464a9d2d99c18ac9ebe8ae4a4e76",
+      "lastmod": "2026-03-10",
+      "sourceCommit": "18d23c4200b434b4882f8215c3e317e447a594c3"
     },
     "/javascript/coding/js-object-create": {
-      "fingerprint": "13d761fc5451a45d51816650557bac2bdca4f2aa3c16108a88fb861f0127eb61",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "4790e104f18aa15a19321dc4c6371148c32d4961a228c3f60a4ea3229235184a",
+      "lastmod": "2026-03-10",
+      "sourceCommit": "fb766346263c75e48ed11a65ca984a858f2068cc"
     },
     "/javascript/coding/js-once": {
-      "fingerprint": "c611308781e6bd1e75db82db836cb7fcc8f9f548425e4266c3f75c5cb9fd335f",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "50b14b912ca7ffaba80b982807e030a83879c0b3f12570d0d1b526ed4b0bb09b",
+      "lastmod": "2026-03-10",
+      "sourceCommit": "fb766346263c75e48ed11a65ca984a858f2068cc"
     },
     "/javascript/coding/js-poll-until": {
-      "fingerprint": "06486610bf6b8ed4e2555a5ec0dbe2f82eb89f75754695c6e50c5484434187c5",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "c3d418069b24fe6003d0db965050ceef23a4e977cf8d266d625182488d6734ba",
+      "lastmod": "2026-07-15",
+      "sourceCommit": "55ea1c1f2fab1d39d96277a3d1082605918a5038"
     },
     "/javascript/coding/js-promise-any": {
-      "fingerprint": "c47f7bd5a6cd532461601752fa9a5184c5dd37bd9f1002fbbe34c4004a3a1eb9",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "0c6bc5a13e041e298791166067088322364849f33fe4d6ffb8524f7610c0225b",
+      "lastmod": "2026-07-15",
+      "sourceCommit": "55ea1c1f2fab1d39d96277a3d1082605918a5038"
     },
     "/javascript/coding/js-querystring-parse-1": {
-      "fingerprint": "3e81d4fcec7e7104c74309f22a3c7761379f0cbdfee65bb428f35e5113848c6a",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "1d28b2c7e0460001214cc410475952f11ce988e6d099ef41561f87a1076341fd",
+      "lastmod": "2026-03-10",
+      "sourceCommit": "fb766346263c75e48ed11a65ca984a858f2068cc"
     },
     "/javascript/coding/js-resolve-package-exports": {
-      "fingerprint": "dfc7071272c193dc1e22f75430b72df083269215ae6b486843f95d64947acb71",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "84e8cdb3d0463ce438ef34a0cf47f5a4f3b31b79ddd3de3b69bc1324344cae75",
+      "lastmod": "2026-03-10",
+      "sourceCommit": "fb766346263c75e48ed11a65ca984a858f2068cc"
     },
     "/javascript/coding/js-run-with-perf-budget": {
-      "fingerprint": "9a512f79794ed3f643af21a26b464b2b46e4bfd5e6276aa5dd81daa3057fc3aa",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "f8a9348ed2c4ddb22a01b2db205c9c560a7f3ec22edd076597657f8a00e47064",
+      "lastmod": "2026-03-10",
+      "sourceCommit": "fb766346263c75e48ed11a65ca984a858f2068cc"
     },
     "/javascript/coding/js-safe-json-parse": {
-      "fingerprint": "dbdfca2ec94f28891a7468389339b6d68aad8da2823341d4e5c4e91609f78e74",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "7988c855aa781bf06a9c77db2748af82b2abf66429785c5cc9bd02f2c1acfd9a",
+      "lastmod": "2026-03-10",
+      "sourceCommit": "fb766346263c75e48ed11a65ca984a858f2068cc"
     },
     "/javascript/coding/js-sanitize-href-url": {
-      "fingerprint": "6a7635633334eb769e5241296fc95d69c135db3ba6a2544b97c15086cfe1a8c4",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "1ddab22c9c9e93024e391d0fd83652cfa3211b5bd374106cd9c648fbab829b15",
+      "lastmod": "2026-07-15",
+      "sourceCommit": "55ea1c1f2fab1d39d96277a3d1082605918a5038"
     },
     "/javascript/coding/js-shallow-clone": {
-      "fingerprint": "ad9daf0e4156d148bdd1c89f9e1f546d32c5997e74bf1918bbb1e93bb30747e6",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "2ea37aff3a18059af8754c89e4fe353e67aa099e1a2585ee8ca12c3bef4c0863",
+      "lastmod": "2026-07-15",
+      "sourceCommit": "55ea1c1f2fab1d39d96277a3d1082605918a5038"
     },
     "/javascript/coding/js-sleep": {
-      "fingerprint": "2b02e36a9e8710389b98e42c0bde20b301f28658c1d279894745b49c279bc4c1",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "728b65a64bc76a08b8f5dd6e2520c82b78b6ea2db780dd405db465ba47f204b0",
+      "lastmod": "2026-03-10",
+      "sourceCommit": "fb766346263c75e48ed11a65ca984a858f2068cc"
     },
     "/javascript/coding/js-storage-ttl-cache": {
-      "fingerprint": "6b9df619569e0cdcfd7ff0061f499cb65bfc00fdf61fb187a7007fd1b509e118",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "b075ac6d7367218cf51c7f8055a96a2d63b2ee79570b25ab92cef27168e621f5",
+      "lastmod": "2026-03-10",
+      "sourceCommit": "fb766346263c75e48ed11a65ca984a858f2068cc"
     },
     "/javascript/coding/js-stream-to-text": {
-      "fingerprint": "9314d7ec787e8c32387fab89440ec1c7bd319b6d8bd93f958278073a1b156a1a",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "c6019eaf352a86e56613112404dd708f9e3d013f901d2a906fff2a8601ee7ec2",
+      "lastmod": "2026-07-15",
+      "sourceCommit": "55ea1c1f2fab1d39d96277a3d1082605918a5038"
     },
     "/javascript/coding/js-sum-numbers": {
-      "fingerprint": "2470ce6d318289daf70002a06b5f1157d7d56813e6c25ed844e710d2845115d5",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "c5a3d9871f48417a603f9fc2ae0467fd13dfa1e280bd57b0495e0a0ea67da3f8",
+      "lastmod": "2026-03-10",
+      "sourceCommit": "fb766346263c75e48ed11a65ca984a858f2068cc"
     },
     "/javascript/coding/js-take-latest": {
-      "fingerprint": "5bb21a24fe61647b1fbbb8f4d83bf76dd885c6b577f27b907c50761498fa8c67",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "dff9c4bb008b84947c740465cd361bc8fac29f8847d3c1229a1d18aa644dae45",
+      "lastmod": "2026-07-15",
+      "sourceCommit": "55ea1c1f2fab1d39d96277a3d1082605918a5038"
     },
     "/javascript/coding/js-update-at-index": {
-      "fingerprint": "62d1346b9fe14cad66a48a79fb56167167ec6345505ea40d6dabac9c99bd66e7",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "e98703bc563184874352958ae60e31b43477b813ef135d7b13d54f8f00422110",
+      "lastmod": "2026-03-10",
+      "sourceCommit": "fb766346263c75e48ed11a65ca984a858f2068cc"
     },
     "/javascript/coding/js-validate-username": {
-      "fingerprint": "e0938c735994b13aaae4d332d8ffece0be9449cc3d3ea531b88eb59993030c7c",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "ec467827071846bac938197b61686a55543b1c9b385ef7aed7d4aabc0e266650",
+      "lastmod": "2026-03-10",
+      "sourceCommit": "fb766346263c75e48ed11a65ca984a858f2068cc"
     },
     "/javascript/debug/js-debug-async-race": {
-      "fingerprint": "62068d5249a985d4d1777dc3bb709451d33a8b0e255b1e648e7d8ccaf0c958d7",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "6b36dd6d19d43f91be8f99b5180ef089efb1b1fcb240f40b03c0a5e2fbcf8773",
+      "lastmod": "2026-04-02",
+      "sourceCommit": "cff40275699b24a784e26b2ab4ef9b6492d7745f"
     },
     "/javascript/debug/js-debug-lost-this-binding": {
-      "fingerprint": "d6148adc20a83782d6ba5901592fa94243b4861e7f0aa3ccda6ee5a5c93224d0",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "70e8e6d4bd5f2631428cc15262913b90b0356ca637b7950dc0358efc64eb5978",
+      "lastmod": "2026-04-02",
+      "sourceCommit": "cff40275699b24a784e26b2ab4ef9b6492d7745f"
     },
     "/javascript/debug/js-debug-missing-return-map-filter": {
-      "fingerprint": "6115702eb7181755d52e1d183a515d86026a33d40a50dd727d01eded65aa3a0a",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "5400a49fd3e22c0bb592473a97b9e5d68854b35a6acebb7bf1a3e9b7d26c42ef",
+      "lastmod": "2026-04-02",
+      "sourceCommit": "cff40275699b24a784e26b2ab4ef9b6492d7745f"
     },
     "/javascript/debug/js-debug-mutating-input": {
-      "fingerprint": "01252d85bd298441f26c35d55df98421800316848d51de995aeb6b5c496fb93b",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "2e479e59f149e0c91c741ab80e6568b223efae40ce47d0c1d73c71e852d55c84",
+      "lastmod": "2026-04-02",
+      "sourceCommit": "cff40275699b24a784e26b2ab4ef9b6492d7745f"
     },
     "/javascript/debug/js-debug-nullish-defaults": {
-      "fingerprint": "17216de46d39fcd9aa1c8d97ef35b844a0a97556008e3e5cd41c6e56e5eacaf9",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "75eafb707135dafc3c0ea7a45ee2f898477da59e0392117004de51415aed57bd",
+      "lastmod": "2026-04-02",
+      "sourceCommit": "cff40275699b24a784e26b2ab4ef9b6492d7745f"
     },
     "/javascript/debug/js-debug-numeric-sort": {
-      "fingerprint": "ba7656102d48d0d29df92e56f8d19d6471933ca2cf5d4ead2cd57b2d4969ea7d",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "a3227a74cff2cb4ab329458111ee6636eee74b056bcb307cb091970698a0f4e9",
+      "lastmod": "2026-04-02",
+      "sourceCommit": "cff40275699b24a784e26b2ab4ef9b6492d7745f"
     },
     "/javascript/debug/js-debug-off-by-one": {
-      "fingerprint": "20be2524ca9ec17dab4d530c5e808132349901add0e50812aa403aeafbb8989b",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "45f5aa6f4c5f9c2f9e04c522e614cffcf0353eda15a40144405e44d951915e0e",
+      "lastmod": "2026-04-02",
+      "sourceCommit": "cff40275699b24a784e26b2ab4ef9b6492d7745f"
     },
     "/javascript/debug/js-debug-stale-closure-autosave": {
-      "fingerprint": "38a6fbee59384f861bde6255b93d5a6c6df7762bd8f0222904bf86854bcbc61c",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "8605540c4dca92885a61b07b42829631013ecc4b67c4e46748f910ed9c495124",
+      "lastmod": "2026-04-02",
+      "sourceCommit": "cff40275699b24a784e26b2ab4ef9b6492d7745f"
     },
     "/javascript/interview-questions": {
-      "fingerprint": "ad388ee0536bfda97f140494977cec5a450d4023e46453b60de15b47f39b89e7",
+      "fingerprint": "927dd0339f40b1b21f40f0d07f6b95b5adf716081ec84267af2193081bef6049",
       "lastmod": "2026-09-22",
       "sourceCommit": "0d15c701675d72d0d5e4aa7a03e1aacd81c9e6c9"
     },
     "/javascript/trivia/ai-streaming-data-handling": {
-      "fingerprint": "caa90d498d7998b8f5507b5227bca5b8a30f345cba6298227ae9ccf2e3dae25e",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "baa0ede783ed7b7953cf57d351f1dc560039d74356b5c459b571ebab4db6e5f7",
+      "lastmod": "2026-04-04",
+      "sourceCommit": "61af843b5c010d1760398eaa2653e3fdcb8c352e"
     },
     "/javascript/trivia/ai-ux-integration-challenges": {
-      "fingerprint": "4fce8d346692533c7f578b6a4d5db1ae5a63c49e7bba30bed6fd35883f43cd10",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "48ba2efaae8a07edd0a62d4bf53877197a4338e949f928ff29901e783ee6f1ea",
+      "lastmod": "2026-03-13",
+      "sourceCommit": "7188174e3c9122f94de7b3ca1bcd5d9dedc225ad"
     },
     "/javascript/trivia/chat-conversation-state-management": {
-      "fingerprint": "8cc869fb854e75a7011f52b2534e4ccc417777ec67175fe28da0727b1e42be54",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "9e573d8e54c484cab200f62b284c37d64fb880ac07049cd96747e87e0fc1c5ed",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/javascript/trivia/content-delivery-caching-strategies-streaming": {
-      "fingerprint": "e29c9af42ae6a8c8dafd05b2ebabd39c1a28534e34c926c2cacbe76638681e87",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "53beb428f9ed5e41c89da65dc506972f6a061b1a15e798a2f1777e9ec5586970",
+      "lastmod": "2026-03-15",
+      "sourceCommit": "1f08d8ad57c62fbd2022b9a3ddceb9cc95fdd7f0"
     },
     "/javascript/trivia/debounce-vs-throttle-search-input": {
-      "fingerprint": "873c9c299ae07a07009c9da4721d104061ebb18ecf23c7aa282eefbe72900b96",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "1a9a82a10ee0d68ce7c6324b611f31428dcee121e679cea6889c31225e50a190",
+      "lastmod": "2026-03-15",
+      "sourceCommit": "1f08d8ad57c62fbd2022b9a3ddceb9cc95fdd7f0"
     },
     "/javascript/trivia/http-caching-basics": {
-      "fingerprint": "90fd3c734e97f1302e1f255a5e4d63a80be8ce9e72cbbd515f6b3be49f322ad5",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "a3dd04d30f58ca0dfeb8f86ac7dab58ab4aaf214e4ad55ce836a858a923f05bc",
+      "lastmod": "2026-03-15",
+      "sourceCommit": "1f08d8ad57c62fbd2022b9a3ddceb9cc95fdd7f0"
     },
     "/javascript/trivia/js-argument-passing-object-mutation-output": {
-      "fingerprint": "da69eedc86836741103549d6336345736666a8121db678133ab0ddc94361e441",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "288023120ea12b080b960114188a0457df1be2120d51d4504c8414a6f21e6604",
+      "lastmod": "2026-07-18",
+      "sourceCommit": "0cdcc6ae58c6b7b528a9e5d96c68fb69f074416a"
     },
     "/javascript/trivia/js-array-sort-pitfalls": {
-      "fingerprint": "700a8c3e879dc08c656e0ba4e5b258134c6fe75a898a803c7931ea1d3088a736",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "c00a27a006a479e006da354b23a886df1e314017f7cf1c5bf241337bb3d0086f",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/javascript/trivia/js-arrow-functions": {
-      "fingerprint": "b732ef9d78845426bbd27dbd31ebe560a060d96f4435c5e0fa4131f779d28abf",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "61a10ef88aa9a6bee120f79c093cff98ae5363e2ab7e476cc9fd32aaba24766d",
+      "lastmod": "2026-04-04",
+      "sourceCommit": "61af843b5c010d1760398eaa2653e3fdcb8c352e"
     },
     "/javascript/trivia/js-arrow-vs-regular-functions": {
-      "fingerprint": "404768a56edcf9b09e8738b4a2f1b6adfcf766206d36c45020b279115019fd9c",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "f1dd6c1370c382cb81e5c970d56c31f2edb94021881cf7c225e75a9c0c19671c",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/javascript/trivia/js-async-await-example-when-promise-is-preferred": {
-      "fingerprint": "092c4f0c6b316bed0ea4c6f1dd152cb700c51dd18531f9fb0f3ab179b46afd4e",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "4caf0c4bb32e2eae8ddcaaa5e64283ff3854f37f1472fc8abb75da156d23b2dd",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/javascript/trivia/js-async-race-conditions": {
-      "fingerprint": "5d9bcec349796274daea7ab184fbb915b1df112350f453ee0b91edcaef57a44f",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "a8608fd96a78c24185e597b55c354ecf441cd33fa486d9b7de8c81b34d594b27",
+      "lastmod": "2026-09-26",
+      "sourceCommit": "c78370fe9a1e57800eb0415a45176b7f523b74e8"
     },
     "/javascript/trivia/js-big-o-notation": {
-      "fingerprint": "059cae334e60424152c9d1de18c7c16500a00439b694b6222263ea64d16a2dfa",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "4bf165200869b7091f931d92915e581fce56cd1d54837c2c42ecee7439b1af32",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/javascript/trivia/js-bigint-data-type": {
-      "fingerprint": "0f6905b19b6aee2f91426b1f8b3e00c7b01fd2d77b17744b0182637340d49243",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "1fd20c795a86302589c9926853fb9c04a33ae1f37fae2de887607c4f366ee3cb",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/javascript/trivia/js-block-scoped-or-function-scoped": {
-      "fingerprint": "c8883e738481a0cc823f8219846362a9d61e569d0f07050c393b42541497714b",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "9094d078ade0795b5a196e703fa9d42cad685164270fa5bd8a6c259594c391a1",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/javascript/trivia/js-calback-hell-resolved-with-promise": {
-      "fingerprint": "efab29791e7dadbd56a8c28839a23fe7c63f45a929443184e49c8fcc5079cddd",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "cf7b4178abb3a88d646d26864f35330d2626e5e445f1ac4bbd5e04d2850bd4f9",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/javascript/trivia/js-call-apply-bind": {
-      "fingerprint": "a01eeee00ff3bb311c744817570ed000638702f049d2551ef8c9c0be5cccb676",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "128c951f32c63b8bd411aeece44ae1b9a3c96fd6c1b276735b91b47e7280c28f",
+      "lastmod": "2026-03-15",
+      "sourceCommit": "1f08d8ad57c62fbd2022b9a3ddceb9cc95fdd7f0"
     },
     "/javascript/trivia/js-callbacks": {
-      "fingerprint": "ae05cc382cd7f016759711ccf3b7bc07e6ef7d8e23a4a520e4298621d2fdfb0f",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "d68c13bc53002190c700df6743cbc9878a2e3ffedec0555c1a56e403d4804688",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/javascript/trivia/js-check-data-type-with-typeof": {
-      "fingerprint": "fa69e8778b2e5456b03a48eedf61e4ef3112552a9fb6e8551509d947c12a5bb5",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "20b63117858077cddf2a8f1b58f44ad8258e69f4d88be6e5b6106070e9bf2d0c",
+      "lastmod": "2026-03-15",
+      "sourceCommit": "1f08d8ad57c62fbd2022b9a3ddceb9cc95fdd7f0"
     },
     "/javascript/trivia/js-classes": {
-      "fingerprint": "6359c0b6b4514a9575a178d0f0ec4c5323ee6928848281a37cf6626323870e21",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "1292001e5aee860551698dd21986eea823e2a31cefca33bdb6893468d93357b8",
+      "lastmod": "2026-04-04",
+      "sourceCommit": "61af843b5c010d1760398eaa2653e3fdcb8c352e"
     },
     "/javascript/trivia/js-closures": {
-      "fingerprint": "bfe613f08b5f1a10bb99a81d61201a142b5dd1a5ffb493da43c8c18de8999d5c",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "54f203025bd96ec038e9ced16613a59b6f5bb78c7777b6679dfb617f1a9d84fd",
+      "lastmod": "2026-07-20",
+      "sourceCommit": "dcc95ca9d36d39f6a29613899d6664f33a912984"
     },
     "/javascript/trivia/js-compare-two-objects": {
-      "fingerprint": "32c7423f3fc3172644d36a0e134fc74b8e2efee918b0bfe8be1db15506e54b8c",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "67a4ce2452dae5d6be87b3bb92157a8b2ce7eaae3f6c0bc34a6e943b6b94c1cb",
+      "lastmod": "2026-10-07",
+      "sourceCommit": "a68d95d22e4d5722c17f5ab50f19556ab7d6731f"
     },
     "/javascript/trivia/js-cookie-options": {
-      "fingerprint": "400214e7bbed5b500dd600223c6e66857d855403ab29e1216664dc7e36b7b821",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "b4efd49e1555ecc0ed5d3a158d2db8bb4bcfe06077ad70a2dd740e4ebddc7723",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/javascript/trivia/js-cookie-sessionstorage-localstorage": {
-      "fingerprint": "fa0b903997d0c4f0100a329830ed77b620b36e9d358aec99d33599d2e5ddc575",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "05388e73d2d1b40e899e6ebae2824cfa6b7bc120a9c38cf2085f8d9a2d12321e",
+      "lastmod": "2026-03-15",
+      "sourceCommit": "1f08d8ad57c62fbd2022b9a3ddceb9cc95fdd7f0"
     },
     "/javascript/trivia/js-current-trends": {
-      "fingerprint": "7dc7343613d0b833613e79639a00893f3356cc6828d52037fcd111f9574bd1b4",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "1c0bc1e89736bfaec001c638cbc6c2eaeeb15dd7e20a3f13379e79fee9f94988",
+      "lastmod": "2026-03-15",
+      "sourceCommit": "1f08d8ad57c62fbd2022b9a3ddceb9cc95fdd7f0"
     },
     "/javascript/trivia/js-currying": {
-      "fingerprint": "59e992dc5fc888471cb4ff6ca353351fee7d3e07aa3af39b231a7d7a47dcfddd",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "13e1dcc856ee8df3b3134ab1542a8cf8e7358083da4c9d781ecd8434830ee993",
+      "lastmod": "2026-04-22",
+      "sourceCommit": "cbc3f8e6a54e91f84a61cfcabe0a7317f31741eb"
     },
     "/javascript/trivia/js-data-types": {
-      "fingerprint": "4d8bc4ecc5b9010eb72b3f2b13398bcd7a370cc12ddbe6f7908511c0452dc67b",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "efc0d694a8c29dada110e2a415b000bac6306727ee52f7738eb4e91eaa136a77",
+      "lastmod": "2026-03-13",
+      "sourceCommit": "7188174e3c9122f94de7b3ca1bcd5d9dedc225ad"
     },
     "/javascript/trivia/js-deferred-scripts": {
-      "fingerprint": "1ea8bd6fa97974e362e358bc0d97e64f98e3977ecaf375082c8f090337c6bf21",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "20638c13f6431d36d1be11d02cca491ca3d0ae220fd3455928306df4d3db65d6",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/javascript/trivia/js-design-patterns": {
-      "fingerprint": "d9e28ba45dbafd1cf76d228368cbac37b912c72c5520117119246e1fff0f4b46",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "885b2435f408c4949ac0d9075ca6833079c06db1c1bde85541339bfb858c16c8",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/javascript/trivia/js-equality-vs-strict-equality": {
-      "fingerprint": "b4e24a2a0455dd5f3c7b8ea8209c99cbfca1f21c749635359d1a2210090099d0",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "bef636af4d16d97c7d68e5a3baef073787574117cd9c58ee132a2eb913018020",
+      "lastmod": "2026-08-20",
+      "sourceCommit": "258c85b41f39dcf0bceb6364b19d2560d20ece9d"
     },
     "/javascript/trivia/js-escape-vs-sanitize": {
-      "fingerprint": "5fa884a2fa5caa7db1d7f71c918122b64593948662b5ee7c093809412ec26d19",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "63e007ee49f03020bbd58288ffa697d2e4b0b57c024df4a3d7ee3a521d2d8f7d",
+      "lastmod": "2026-03-15",
+      "sourceCommit": "1f08d8ad57c62fbd2022b9a3ddceb9cc95fdd7f0"
     },
     "/javascript/trivia/js-esm-vs-cjs": {
-      "fingerprint": "8b9552afc7d436440cebc5c27833908e983477144be780ecf98692b65d48a881",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "cf1be62f80599cf39309fd6c49fdbbb33506d7c77485b76748d60a1585b38a2d",
+      "lastmod": "2026-03-13",
+      "sourceCommit": "7188174e3c9122f94de7b3ca1bcd5d9dedc225ad"
     },
     "/javascript/trivia/js-event-bubbling-capturing": {
-      "fingerprint": "127caef5ab213cef21ca991097a031693426c848b91a63db745bf10abfeba8c9",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "0504069cb5d9dfbcf028665d48f5cf42c593da7af3fe31234bef77a15c0e40bd",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/javascript/trivia/js-event-delegation": {
-      "fingerprint": "194b5d0657260c2f6863e9a04dcbe91e03fe86138fb07308c68d868325dc796c",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "8a8cfa7cfb019ccf82d5be17cfce05f385ca8b475fcc0b3ba46cf47dcab80eb8",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/javascript/trivia/js-event-loop": {
-      "fingerprint": "c767905ba418309d74a7244878d8260592014d069d4a52bedc55e475edb6f01c",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "940924fbe9d7c2e03a1d5e77ceba3c26d975000355816a7aaccea498f1e523cf",
+      "lastmod": "2026-08-12",
+      "sourceCommit": "6e88c58b485c31974172089460a7a722f6cc80ec"
     },
     "/javascript/trivia/js-event-loop-nested-microtask-output": {
-      "fingerprint": "6ab4ecca02158d41a2fd41bfa65b2f24054180618863c16653b7940388ce544f",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "7785dda32535b878cc172896a2b27f5009a8916b24f3a8336358c2c1c7b3078a",
+      "lastmod": "2026-07-18",
+      "sourceCommit": "0cdcc6ae58c6b7b528a9e5d96c68fb69f074416a"
     },
     "/javascript/trivia/js-foreach-vs-map": {
-      "fingerprint": "356aad4f61e923786e687b29f891519b1a111f2b294ead01da01d359e7cadb70",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "3e6a8754a6d0c8eda82c5d547d3f128b4b3cf09b7ceadca6355c07714e086fb0",
+      "lastmod": "2026-03-13",
+      "sourceCommit": "7188174e3c9122f94de7b3ca1bcd5d9dedc225ad"
     },
     "/javascript/trivia/js-garbage-collection-and-gc-pauses": {
-      "fingerprint": "ea19df0af1c1148f410c2ef00f4289cbf713c1119e91f948a0d8d128998d4acf",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "c17e51bd035529d6177fe94c30cbd9f95560e7cd604669713704c588779b8a99",
+      "lastmod": "2026-04-04",
+      "sourceCommit": "61af843b5c010d1760398eaa2653e3fdcb8c352e"
     },
     "/javascript/trivia/js-higher-order-function": {
-      "fingerprint": "59d596958000085dd44c3ba9da57c8c5648957444b00e607d9f58aeb525b4636",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "46e25e04272248ff2a7a6f1a40b6ff6ba46ae928e8838f0e9842b1b22f79299f",
+      "lastmod": "2026-04-04",
+      "sourceCommit": "61af843b5c010d1760398eaa2653e3fdcb8c352e"
     },
     "/javascript/trivia/js-hoisting": {
-      "fingerprint": "28263a3a4ef0bc8c8a7084892d052d928e7291948fa6e4a1ea10b780b92c9443",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "80e1369ea934d5bc8acc702eda1a9b6d952d9acba0b8f8dd0f7111efe23e9316",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/javascript/trivia/js-hoisting-tdz": {
-      "fingerprint": "e9612d7eefbaaa9569cd28cfd83b1fb8ac417f1c099cff481fa27a4ffca3852d",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "232be12d6d12258bd2d5672a92fdd279f4b6a3b4f6df8c54900294bdbc04feed",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/javascript/trivia/js-intl-datetime-timezone": {
-      "fingerprint": "d4efb16468059298232f3e713a72832059dff05100bc1047712af97de427b494",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "fd2488ce57c411ff8a281058afd5a68c56a052569c2628721e57779b4b71d728",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/javascript/trivia/js-map-filter-reduce": {
-      "fingerprint": "7c8962fa78c53586ab4d442a3809f83ff11c4f95f64e673c8c381456fedd5652",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "03b2ee5a1f496467866e9f7714ebbabc9e4b0f95fb7b6d6ec8dc03df2e5a68cb",
+      "lastmod": "2026-03-15",
+      "sourceCommit": "1f08d8ad57c62fbd2022b9a3ddceb9cc95fdd7f0"
     },
     "/javascript/trivia/js-map-parseint-callback-arity-output": {
-      "fingerprint": "d2d82e5d3efbbb27433c0d978d1ba5a94e00c135e65929d0cabe4fe91058dfc6",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "05f8a960bb717f2167069d25c6e8a5b00aa77244da3a239b106cd5e0080dd8fd",
+      "lastmod": "2026-07-18",
+      "sourceCommit": "0cdcc6ae58c6b7b528a9e5d96c68fb69f074416a"
     },
     "/javascript/trivia/js-map-set-get": {
-      "fingerprint": "2a4dd0c3f5d69fbdad495a2475abab8191ea240721618e2a185253293f48181e",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "59a335dc577f5643a73d2fbcd185ecea6ebb7b2956a0d7388dda2346e7d9c0b9",
+      "lastmod": "2026-03-15",
+      "sourceCommit": "1f08d8ad57c62fbd2022b9a3ddceb9cc95fdd7f0"
     },
     "/javascript/trivia/js-map-vs-object": {
-      "fingerprint": "b0bc17c19f6cd3257e305f0ffb93c547c50a684b35f059defaf63413c8314798",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "3d4b0f995e4ed61a2a648a6390a0bbfecaece0a56b08097be08339365ea0f83c",
+      "lastmod": "2026-03-13",
+      "sourceCommit": "7188174e3c9122f94de7b3ca1bcd5d9dedc225ad"
     },
     "/javascript/trivia/js-memoization": {
-      "fingerprint": "0326f21f2c5b216116e5f50f373f3f3ff490154b7acb1d2339794dcf2fbb7b96",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "eb5eca5b28852dd730cc8d5ee0f247b033b4e521bb9a5ca84be0949c34c9aa01",
+      "lastmod": "2026-04-04",
+      "sourceCommit": "61af843b5c010d1760398eaa2653e3fdcb8c352e"
     },
     "/javascript/trivia/js-memory-leaks-common-sources": {
-      "fingerprint": "eb6d06b942327fa9eb49b1650cc9f32146ee6b2e9b15972ab6f6e464932c36cf",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "d57e06f7463ab9abb229460f8c156a49d2e168504f401fafb7dd50156328293f",
+      "lastmod": "2026-03-15",
+      "sourceCommit": "1f08d8ad57c62fbd2022b9a3ddceb9cc95fdd7f0"
     },
     "/javascript/trivia/js-microtasks-vs-macrotasks": {
-      "fingerprint": "2af25f9919168e628298678ad789ee341c6c32f04502561c7bb74df6d0dbd17a",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "df1bdf03d2d824329591c7c31171bca6de619fabdab462aa5846950e12b68ded",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/javascript/trivia/js-mock-vs-stub-vs-spy": {
-      "fingerprint": "b19162fbb90cf61708798406f9d6e8dd810756128e0c508f20dbdd1d184264cc",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "61301eb6d851730bcb04705383565d312c725be7c4e9d99ba329d787f1b9a5cb",
+      "lastmod": "2026-03-15",
+      "sourceCommit": "1f08d8ad57c62fbd2022b9a3ddceb9cc95fdd7f0"
     },
     "/javascript/trivia/js-mutability-vs-immutability": {
-      "fingerprint": "b86c9fac20fbf21d563c1c3b12e845fd6394e96181509e6e8a724898ff05d34b",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "82d24603cbc15a526ebb2799436edfec143c9c554021f48eff0b3b9297b10f24",
+      "lastmod": "2026-03-15",
+      "sourceCommit": "1f08d8ad57c62fbd2022b9a3ddceb9cc95fdd7f0"
     },
     "/javascript/trivia/js-nan-property": {
-      "fingerprint": "a48467faa376831b550a9d86cb87149a676826fb1a714566ad4db777972949c1",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "2243cc0c9b68d6fb622bfe72c151cef05599b62f5036edaadf2ded8eb864406e",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/javascript/trivia/js-null-coalescing-operator": {
-      "fingerprint": "24d6a55a0bfac3950ed46408fd0e1569e691ae25674e20845b7ef1110573b788",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "90adf81140c227e0d78280d3d925a36e8ece536177f747ff608d478451ac2b28",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/javascript/trivia/js-null-undefined-undeclared": {
-      "fingerprint": "283e309e2379452a8d16b19b3d7fdad77b71494714807ed8cbd8c6f6856aa41c",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "0e532215850c82516d521ce653ea05bcc50fc3bd2d5c7bdd088f01084f78cf26",
+      "lastmod": "2026-03-13",
+      "sourceCommit": "7188174e3c9122f94de7b3ca1bcd5d9dedc225ad"
     },
     "/javascript/trivia/js-object-create-vs-new": {
-      "fingerprint": "715ea966805d1a64b66f111363327dd0c913b6209980a52b98e5e412fa8f36ca",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "49e73f3eda9446ab65245e7c5f70a0ec77704006f31b92a9bca86efb9a2099a5",
+      "lastmod": "2026-03-15",
+      "sourceCommit": "1f08d8ad57c62fbd2022b9a3ddceb9cc95fdd7f0"
     },
     "/javascript/trivia/js-object-creation-methods": {
-      "fingerprint": "d6c248c2a58b0923553e52a0d39fe471c556152f6c8bafcbf1270a839e0ae172",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "e658886e639e38a0db89e765b76cae1f0e910e668c664ae85f0249f9c44e558d",
+      "lastmod": "2026-04-04",
+      "sourceCommit": "61af843b5c010d1760398eaa2653e3fdcb8c352e"
     },
     "/javascript/trivia/js-object-destructuring": {
-      "fingerprint": "9d9af7503ab158ee4ddcf3dc292fe6c8203385b43a6370ce6956630908c82867",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "d86f6f333db3eec812ca0f816f5aaa1a5505f670c1827ed17031a0b5608ec996",
+      "lastmod": "2026-04-04",
+      "sourceCommit": "61af843b5c010d1760398eaa2653e3fdcb8c352e"
     },
     "/javascript/trivia/js-passing-by-value-and-by-reference": {
-      "fingerprint": "ce17f8a69560d71310f9798c53ab043d1c70b0fa23c2265d1a4a6c2c7649e79d",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "63ac76ccf19b83e63fff37b6f5f500b36d90415dcc1b1758d181c25fbc6f593d",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/javascript/trivia/js-performance-profiling-workflow": {
-      "fingerprint": "b78b200a266abc07cd8bee212485610658db6619fc96aaa7796258ec7deb732d",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "5196c855094cb8591a0ca1492f4b0c948acab0582f34185c06be018e8cf006dc",
+      "lastmod": "2026-04-04",
+      "sourceCommit": "61af843b5c010d1760398eaa2653e3fdcb8c352e"
     },
     "/javascript/trivia/js-promise-combinators-all-allsettled-race-any": {
-      "fingerprint": "d95fb8adbda7f42305629bdd2e20ace852143e2d75fc39ea8ff292d302d23500",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "a6b3b587ffddce519fe017024d7918244a9cbb7a55b08e1f407c88bcf08a2cba",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/javascript/trivia/js-promise-fundamental-understanding": {
-      "fingerprint": "c2621d66d3fff57b713c1e944e2914de2996d56fc9d541c51bbd9e3eb1c0ac00",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "75186b8459019e3c237dbe7bb30df89d181d114fd4f4d7e268d3cc3bac321f3b",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/javascript/trivia/js-promises-async-await": {
-      "fingerprint": "c64ab4aa0f20e09ad9f5b907cea4304b1d9db64972c8b408ff09387acee637e1",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "dcc5aa3713b618cc9cdc3935763caec9897b86f2965bfd8d9c7503b3a1042a5e",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/javascript/trivia/js-prototypal-inheritance": {
-      "fingerprint": "42a739203ca93c72192f39694420e59234738119a36af980aa279089a085d5ae",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "2d6f8cccf7182bb8ebe290ee49e0ac646417c4360b0f6a36c17d11931cf8a5a9",
+      "lastmod": "2026-04-04",
+      "sourceCommit": "61af843b5c010d1760398eaa2653e3fdcb8c352e"
     },
     "/javascript/trivia/js-prototype-vs-proto": {
-      "fingerprint": "568a5224c28c48173c73ca1c6ea048b883ab2d19be97dff5db675a96ee738f3e",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "339918bcc1bc7af070bc51500c8ed980111967510d5c9f14f6080aad987a47e9",
+      "lastmod": "2026-07-04",
+      "sourceCommit": "85d2d06328ffbbe83c317df7eb7f480a0c1e4d37"
     },
     "/javascript/trivia/js-queue-vs-stack": {
-      "fingerprint": "3b8f91e0015b05bbea2e7cb461e5cd27beefc52b1e6fcb8cbdc7ee946fdd97cf",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "71a8f8e7fe58cde61204730fc97b840bbe84bbac32e7bb41a7b081c9c5ec335a",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "a91c420d9397798d5d510cdc72ce48abdb653239"
     },
     "/javascript/trivia/js-repaint-reflow": {
-      "fingerprint": "9da0120c9c732f503e8f2cda43f003b82af58fa4b8d53d7f48af6dd64f191ae0",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "2fd6fd84a33545c83828e1f64ecfa9f7e3abe181dcf5998479fcc1b809de014f",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/javascript/trivia/js-secure-cors-handling": {
-      "fingerprint": "f9e3241640933ee226500e61596ec0fc8d07f50ae47ba9b0aee97a540585f6cc",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "5d86063a27a6a8dd492f169c3ddfa4f422d1e58c85b949be4714ad1cf9154ca2",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/javascript/trivia/js-shallow-vs-deep-copy": {
-      "fingerprint": "6ecae518d0e46cebe9e875c51aa7b9613cef93879bcd2e8c3a9ac878245a308f",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "59b0410bcd83f8c4d630635fe5656506d2c1bca51a8de7e333a319279eec489d",
+      "lastmod": "2026-08-20",
+      "sourceCommit": "258c85b41f39dcf0bceb6364b19d2560d20ece9d"
     },
     "/javascript/trivia/js-spread-vs-rest-parameters": {
-      "fingerprint": "27d5b900e7c2fdc2bdc3862a35da0d0e5e5e9fede42cc76ccc5cc398046601da",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "4a8bc7d3876929ad477c136a68ae6161d294d1773dcd33597a0776df397baaa8",
+      "lastmod": "2026-03-13",
+      "sourceCommit": "7188174e3c9122f94de7b3ca1bcd5d9dedc225ad"
     },
     "/javascript/trivia/js-static-vs-dynamic-typing": {
-      "fingerprint": "b8cefc7480ec60fddb8d95929daebd4c4b07b8dfd27ae826ac3acc4e6d3f3102",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "7b4a03f1ab859b44eb2c4e749aab4dffa140aad490945a7b1e30c99d3a78d6ab",
+      "lastmod": "2026-03-15",
+      "sourceCommit": "1f08d8ad57c62fbd2022b9a3ddceb9cc95fdd7f0"
     },
     "/javascript/trivia/js-testing-edge-cases-strategy": {
-      "fingerprint": "a240006883c9fc31b7874118a1ec86836e4fbb416d785d49da7cb56b0a3ce196",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "293d6c8ee60bf200d5f3ec78df9a91318daa98ccc6ee20fc60052486c187e1de",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/javascript/trivia/js-this-keyword": {
-      "fingerprint": "6cdbb33e137d4cc36386338e4775adb20e0fa71efa280159eb9f116bb10600e5",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "5fdc4140130391cea6a744b81f842cffafbce008168aa8605dbc04a600c3052e",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/javascript/trivia/js-tree-shaking": {
-      "fingerprint": "fdcac447767982238e2c07cc56ee7b125bfc0a9ade7df8b8e17ee8aca7e3b590",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "87c87fa03732898636f169ae023740a23525b17fcaab9873b99b31cc308a5734",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/javascript/trivia/js-truthy-falsy-pass-by-value-reference-strict-equality-use-case": {
-      "fingerprint": "e41a030633454bdc9e6dcdf8f9d7eefc9e837c5d4f620f281137ef6a0755f1de",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "ca7952005cfb4a15167cb8c96571c1cd5e161284ac5024755d00ba90c52b6715",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/javascript/trivia/js-type-coercion": {
-      "fingerprint": "0cf8c970ebd1042a590a19bb96d7e4faa5eb3a23844856f8b31a437705066c6b",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "fdf8d1d0d672ac7f2191ba5d8541fcabcae112385a766d98191ae52d213ec6db",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/javascript/trivia/js-undefined-vs-not-defined": {
-      "fingerprint": "fa19fd569b8186261476f58ad37362dfe374a1fc63c2102077034150c7c6db6f",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "e469ad5b6e8ee25f9278aba03c690a98c92e4b9d6b6b90bea06273459915503a",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/javascript/trivia/js-use-strict-describe": {
-      "fingerprint": "1dfd794b47b2e0bb378356b9faa51e46e85cac856f7dfddb5bfafe66907a9bf3",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "a5432d5100bb865cb5978cc6a2700bc101000cd4fc0cad19ce5cd6a82d546d18",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/javascript/trivia/js-var-hoisting-shadowing-output": {
-      "fingerprint": "95fe4043ec75b2b70530c1897c0bbd192e2b7d89330e423880f8b7f8e06a8af0",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "356cf4a517ce71e2bc70672728d8e5576219a785ebdaa8221dda9618a28b2bea",
+      "lastmod": "2026-07-18",
+      "sourceCommit": "0cdcc6ae58c6b7b528a9e5d96c68fb69f074416a"
     },
     "/javascript/trivia/js-var-let-const-hoisting": {
-      "fingerprint": "049944ab46e0ce0208b69b18dae1696b30446999861a0176ae758b7a19b95fef",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "92aee4923ad3c312bbbb5410f84d352f7e8eb8d9f7fc95a33a566cc6461d023d",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/javascript/trivia/js-web-workers-basics": {
-      "fingerprint": "018269803fdc7a96d6e36caee64d1bec23fcc745fd265bca7b0d8d0693a4753e",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "b41bd63058664f0cb51c05ee8a401034b58d653905cccfc96a395024d4c004a7",
+      "lastmod": "2026-03-13",
+      "sourceCommit": "7188174e3c9122f94de7b3ca1bcd5d9dedc225ad"
     },
     "/javascript/trivia/js-why-eval-function-considered-dangerous": {
-      "fingerprint": "4c36c565978ad0853892376757dbea0c126a7178d29d6f27c6dc494d16ca7a74",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "9213ae042adf0c860220ff6f73baa474830f462e4074bf739f613d35293243ec",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/javascript/trivia/js-xss-dom-sinks": {
-      "fingerprint": "6fa4af86738ce50f70990434fe10b5736d62dc47465c22e1971f890584945eaf",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "af0a566450f16454bde85ad85a5467a70c37cecbb1ac3c826413577eb0b8da27",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/javascript/trivia/prompt-engineering-frontend": {
-      "fingerprint": "e5268841ed8e62e593fbc8e44547ef92166bf8f330c627399dd00f279c044089",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "332e579746a27bb5185d19dc89136ca80b78952c39df2f6c84796c1378f4046c",
+      "lastmod": "2026-03-15",
+      "sourceCommit": "1f08d8ad57c62fbd2022b9a3ddceb9cc95fdd7f0"
     },
     "/javascript/trivia/sse-vs-websocket-real-time": {
-      "fingerprint": "66016c3dedc8d6a90395d0b5c656603ed4a97a1b93c0a6a389722ebcfd3566eb",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "4ab93468a6eb2d94a528990a545c35dceb31f0dd7020c1b177641f1e590f81b4",
+      "lastmod": "2026-03-15",
+      "sourceCommit": "1f08d8ad57c62fbd2022b9a3ddceb9cc95fdd7f0"
     },
     "/javascript/trivia/web-performance-optimize-load-time": {
-      "fingerprint": "25c56a2452dc97a80630bd139ddad523f12a4767d3f414bbfe1c627661b0770b",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "0e29a898c0e051e55b3b6cf224a14e96440fefafc176432f4fe099048dd2f163",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/legal": {
-      "fingerprint": "47e350e808ba7df09d0a8c3560a2ec26051c154fcfccee64c72fb2302838d472",
+      "fingerprint": "b3402e6b29f6669885b5e4cd65ba3e104f3e7b7f92a1998dff4937002d1f5483",
       "lastmod": "2026-01-30",
       "sourceCommit": "bdf70b75859d98afb7a07caea117a7bbf3dd4dce"
     },
     "/legal/cookies": {
-      "fingerprint": "851b1bb003b1f2954db362828d31b5ab0bf633fa9733ba368a0aa6678a504c67",
+      "fingerprint": "feaea1c35d529f36a1d400c5309ba7c3b400f0810b6bd83bf5966fef1d6e0a66",
       "lastmod": "2026-08-09",
       "sourceCommit": "dd8ae69efc275212f710fdc9267239bc09cf955b"
     },
     "/legal/editorial-policy": {
-      "fingerprint": "731ed0e43e4ba280cb68b643deefd656561473de83c329f99faf821693fb5c42",
+      "fingerprint": "4e3f684556eec262d9151c675781ef5a000b5d396622c0ab25e058ee7dac36a3",
       "lastmod": "2026-07-16",
       "sourceCommit": "0bfdf5c8027365dca2ee03cb234c59d624dacdfd"
     },
     "/legal/privacy": {
-      "fingerprint": "94bdc1f2cba05c520b618771054dcfcdf944db37fe2b1df7dbf5cf33b198c1a0",
+      "fingerprint": "de043045c7c06c61de4db0dc2ff00f5c2f02fa798b12e8083fee2f6f58f83c1d",
       "lastmod": "2026-10-01",
       "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
     },
     "/legal/refund": {
-      "fingerprint": "c8fd2ae08086d8746ca18b7d702a6b1e91705accde4e771c8c1e1558762ea4da",
+      "fingerprint": "ae314d6c73459e8a0819187ee792d953710ad919e0001aff6c50f103e0ab2997",
       "lastmod": "2026-08-09",
       "sourceCommit": "dd8ae69efc275212f710fdc9267239bc09cf955b"
     },
     "/legal/terms": {
-      "fingerprint": "4cace40a3aa9da8812490a65f819db5e3990aaf450379c7c59988ac45db3276a",
+      "fingerprint": "cdc4e24b61e6bc36ab05bdc406e73229e457261b49e4fbaff01569e4672da369",
       "lastmod": "2026-08-09",
       "sourceCommit": "dd8ae69efc275212f710fdc9267239bc09cf955b"
     },
     "/machine-coding": {
-      "fingerprint": "f62508a4f657dd332b6ba47e9a30a84fc819d1c7f2bc9c17ff8ff9e0ab46a55f",
+      "fingerprint": "b4d1170966f716fb5ce9e2b79644dc9b614f666409e6f2a5dbda187204d4b8a4",
       "lastmod": "2026-07-15",
       "sourceCommit": "55ea1c1f2fab1d39d96277a3d1082605918a5038"
     },
     "/pricing": {
-      "fingerprint": "00be254eecbff6708fc6a2c32a9959d07525c63c6b156a9d6cc75c8c18dccd92",
+      "fingerprint": "4a226a1918c2e75ccbbdaa5fe408d10ca1b53690cc4be84ed5c1ddb17d8cb97d",
       "lastmod": "2026-08-23",
       "sourceCommit": "0dcc6800cf72ce060038c594ed776ab7ed27a2c5"
     },
     "/react/coding/react-autocomplete-search-starter": {
-      "fingerprint": "7bcc27bc30dbdc699d5781d5d292f7a7dd266d1820fd9169ff2a74c168448c7f",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "095a554e1c266a18f2d36f547d8c57f5eec6569a649fac30e41ee414b9a9b043",
+      "lastmod": "2026-08-06",
+      "sourceCommit": "8ff782f59fecd05281cf9edf0aae50e7d8fc19bf"
     },
     "/react/coding/react-counter": {
-      "fingerprint": "0a8923389d2ada98728d78885319bd9b1bbcbe4b349d2b34f6944dfc57133a8a",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "ddeda44904e9044062578fd41a3eaffdbf4727b4d2551635c19ff1526775fcbe",
+      "lastmod": "2026-08-20",
+      "sourceCommit": "258c85b41f39dcf0bceb6364b19d2560d20ece9d"
     },
     "/react/coding/react-todo-list": {
-      "fingerprint": "136e9537a056ac62b2e70d3de6d2d4f1bca0f232f3a7c0474b6d3934b55d6d2f",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "97439a80fb80c867258f053a9ed936e04a3082319a8ccd7448134d6648eca9d8",
+      "lastmod": "2026-08-06",
+      "sourceCommit": "8ff782f59fecd05281cf9edf0aae50e7d8fc19bf"
     },
     "/react/interview-questions": {
-      "fingerprint": "d2f875cff7a76e646271e5d4f52640b78d4390d14bd843676d0d079204adb8f9",
+      "fingerprint": "9d933b48d45474ca554fdc3a55118ca77f7a744c6a4839e3efed761e9ff039b4",
       "lastmod": "2026-09-22",
       "sourceCommit": "0d15c701675d72d0d5e4aa7a03e1aacd81c9e6c9"
     },
     "/react/trivia/react-18-whats-new": {
-      "fingerprint": "988e1815f06d8280735d9eb926f500a1e61fd6857e8eaf695c012576497bd212",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "bea0463dadaf80b89bf745294ec8f89e0766e53b8836a71c8845dcca3edd79ba",
+      "lastmod": "2026-04-04",
+      "sourceCommit": "61af843b5c010d1760398eaa2653e3fdcb8c352e"
     },
     "/react/trivia/react-component-rerendering": {
-      "fingerprint": "f6399177c3b0b482041e8dce0f3acdd1c51f9dc8b01bebb63b061596a601e4b4",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "d717ed6861ed140c16b618bad84f431f23d1b38aedd63559212f09e8eedd2713",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/react/trivia/react-concurrent-rendering": {
-      "fingerprint": "bc8a72071fa4369516f681bb9ccab6dec29994f48827a6a0ceba5fb7fcf070b7",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "df670708ad770b3de6446447249c05248b3f2805b17fdff2b6b9108c4f0dff07",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/react/trivia/react-conditional-rendering": {
-      "fingerprint": "57652a937046eec0660f27ad8eda5b45eecf2039927b8e02753dd4aaeee53040",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "7ef37f76043329b66b366aa2b9653690fb343a2f0970facf2e8903482f56e3ea",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/react/trivia/react-context-performance-issues": {
-      "fingerprint": "0f976fc853137a895c617842062a7d38fdd1a7313fb39265b16d7ebb1c3c54e9",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "f8bda82c41b85168975e58990831b18bb47cb720f16e7e9dcf3355c9af350282",
+      "lastmod": "2026-03-13",
+      "sourceCommit": "7188174e3c9122f94de7b3ca1bcd5d9dedc225ad"
     },
     "/react/trivia/react-controlled-vs-uncontrolled": {
-      "fingerprint": "c4ffed82c0ee89be2ac545f92053b5d48e1679eeec71bfce92de0bf5e8508c03",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "d439ef23d53dd8a0047a63c4e9bd870dcc732aee3a9c8a10db99bc40e39e625c",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/react/trivia/react-core-problem-and-non-goals": {
-      "fingerprint": "fb77d02d8ef4fe973504cef805b31db0aa12195d6b7fd5d6f4490d0438682501",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "5e95c63b69c6a4d911ac69b19ad242af24bf34991eae09e2dcfbf494a91e3088",
+      "lastmod": "2026-03-15",
+      "sourceCommit": "1f08d8ad57c62fbd2022b9a3ddceb9cc95fdd7f0"
     },
     "/react/trivia/react-default-vs-named-exports-runtime-break": {
-      "fingerprint": "19745915748ddc16ccaa954fbae4154a9644e19b40ed3918e09df063f3a6690c",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "a7618f056d4c510bdecdde59d42df53945cb960c1771d9ac589202fdb7a2f8bf",
+      "lastmod": "2026-03-15",
+      "sourceCommit": "1f08d8ad57c62fbd2022b9a3ddceb9cc95fdd7f0"
     },
     "/react/trivia/react-derived-state-anti-pattern": {
-      "fingerprint": "03a0b0bfc4e959199b17388367de56ad44f089b517c4d58696c1dcdc40a917ae",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "f3dcd65084daf7cbc0b02e491dbd0f3a8cd5f11b848261e91b117b639ab68e39",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/react/trivia/react-diffing-algorithm": {
-      "fingerprint": "164899c66d9b7a0f17161ce960ca14978b615be487cf42b1e1f264fb40f5cacd",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "601b067abf9d17cdd6bb22616fe332e9b10952b4bf34f4206ab7642609e5a6d1",
+      "lastmod": "2026-04-04",
+      "sourceCommit": "61af843b5c010d1760398eaa2653e3fdcb8c352e"
     },
     "/react/trivia/react-error-boundaries-what-they-solve": {
-      "fingerprint": "3f3baacaf884211ba76d11afde86741c8086f8c4fe22138230e46f4a7177d534",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "8a07600317a4b07ad55dd7d9d745a14081ba8b73a9cb4cce2693775d505d3681",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/react/trivia/react-fragments-dom-and-reconciliation": {
-      "fingerprint": "b764dcf64b05947fe98c2e1861f6d520bcc1c0067826e033f4b507abf76764bf",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "37be09366faff75589a426c79932111d5aaa931a251c330bf49032fc2ddc3cdb",
+      "lastmod": "2026-03-11",
+      "sourceCommit": "98e7c9c3a8f11eb8b4cc0e73830ee11213a10569"
     },
     "/react/trivia/react-function-treated-as-component-rules": {
-      "fingerprint": "8a73003b1b0c6f0b5d34ea4e986fa952bebc5c5496fccd56a70f7e9e74407a9e",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "7cdc91877c7a02ac1162abd8bc0f1eaf5a2078344a87d3abea2464ddbd62d7c6",
+      "lastmod": "2026-03-13",
+      "sourceCommit": "7188174e3c9122f94de7b3ca1bcd5d9dedc225ad"
     },
     "/react/trivia/react-functional-vs-class-components": {
-      "fingerprint": "f7205d63b1f206e2615a5b45306606609d913f558e5b471bc0df734e2326e4d0",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "48bfdea66004b17f106b5233ce75e68f8c3da9462cb251d2950e3387e0033e61",
+      "lastmod": "2026-03-15",
+      "sourceCommit": "1f08d8ad57c62fbd2022b9a3ddceb9cc95fdd7f0"
     },
     "/react/trivia/react-higher-order-components": {
-      "fingerprint": "6836538070117e382cfef7ea76e90cb385a8cfb03c24282ef4c8cd966b6ce852",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "5acf4edc0f2330bca63bada948fa3230f05d59b0b9eb25d788d922042a9649c6",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/react/trivia/react-hooks-youve-used": {
-      "fingerprint": "80c3d42101172328f9f6bd904026c4cdc4012f86717140b345b2f4943de0365a",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "5cee6359d171e9f63f246b84d6acf41451c0cd43d11a129c70c020ba1c1d0386",
+      "lastmod": "2026-04-22",
+      "sourceCommit": "cbc3f8e6a54e91f84a61cfcabe0a7317f31741eb"
     },
     "/react/trivia/react-jsx-transform-and-why-not-required": {
-      "fingerprint": "d1710ea54ac9a41b372ccc5f00170f99cb243e0294141d659235adfb1e1a53be",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "f4522453a05bc51346803b2e6a9c196b6afd5dd1810ef42f0abe5b99bbc20ac5",
+      "lastmod": "2026-03-13",
+      "sourceCommit": "7188174e3c9122f94de7b3ca1bcd5d9dedc225ad"
     },
     "/react/trivia/react-keys-in-lists": {
-      "fingerprint": "1c982c70e1fbd3d58264f2d9042b0f8a6e8bc91a7840fdf4e1ab9dfdd6cb88e1",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "114714626e3c24ce7c6c0df8b3f7345a20a7a718b96ea0032b4675fa111f651f",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/react/trivia/react-lifting-state-up": {
-      "fingerprint": "7637315250a4a730c5d8ec3d35f67d9b4582534d183d0cac8c71fbe50878fc8c",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "95879e73c682baae3e08fefa23e5be7ecb7275878622f3a371019051e6183416",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/react/trivia/react-mixing-state-and-props-responsibilities": {
-      "fingerprint": "de6977b3405380863806a6b16bf186e1de83ca3d3f60bb90121d182ea6c3d09a",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "44cb5f5662bbd51041d95eaf2cf855bed963eaa532c042f5f8a76f5aa7fa445c",
+      "lastmod": "2026-03-15",
+      "sourceCommit": "1f08d8ad57c62fbd2022b9a3ddceb9cc95fdd7f0"
     },
     "/react/trivia/react-one-way-data-flow": {
-      "fingerprint": "061b38440cf20f18560e3556db3f3363233fecdccc4acb01d79168651c6eb2f6",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "47452e73947bcbe90f525d3e16ace5b4aa34ee8152023ad7fc4c1555964a7d15",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/react/trivia/react-portals": {
-      "fingerprint": "daf99923a94b0c6a8983a64d502c35cae070b6723c2e279a3f0cd65064531ffc",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "5a01276903c249d8df506d26245b5c502f157e8e2cf5e810ed4b6e687710f7f9",
+      "lastmod": "2026-03-15",
+      "sourceCommit": "1f08d8ad57c62fbd2022b9a3ddceb9cc95fdd7f0"
     },
     "/react/trivia/react-prevent-unnecessary-rerenders": {
-      "fingerprint": "bb67c4cd18608787bba867e9cdf5de9f1824a81aae4da8299bb6c0fb6cf5f669",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "73bd16a75c0572511ea661040eeccbe9fb74f6207c900376194cdadeb92d6786",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/react/trivia/react-pure-function-of-props-and-state": {
-      "fingerprint": "f0c53976f3ddcf913c74255af0b5d015d80a62625f02a03373add76d511c65b8",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "5255b7243a8de62d9caba61132ce728b7c14feac9c6a95b1f080dac13e7f2cf4",
+      "lastmod": "2026-03-15",
+      "sourceCommit": "1f08d8ad57c62fbd2022b9a3ddceb9cc95fdd7f0"
     },
     "/react/trivia/react-reconciliation": {
-      "fingerprint": "bec9836dc18c4b6c04c05c15cf0e49ea36d694edaaa6715668117fde0c27ac2d",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "69773fb8cd960ca1bee78103a7a9b160fccc8f2bc0f3651c2c141612f7cc72c1",
+      "lastmod": "2026-04-04",
+      "sourceCommit": "61af843b5c010d1760398eaa2653e3fdcb8c352e"
     },
     "/react/trivia/react-render-nothing-return-value": {
-      "fingerprint": "6960fca7c4fa55643a1f19ba36e11abcdbd350a6d15763b0dcb364efaa367fa8",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "00423977e34a32d8e2d7e6ea8a12d2fd9ea5a68b7b2d3844aa506a4d464c42d1",
+      "lastmod": "2026-09-26",
+      "sourceCommit": "c78370fe9a1e57800eb0415a45176b7f523b74e8"
     },
     "/react/trivia/react-render-props-vs-hocs": {
-      "fingerprint": "490b4caa2aed6830f126b661ae64f46316306b5d041187c3ffb3e985ad92bb57",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "b961107a71dd518405bb702d04f0ab24c06690115702e99c6649f4dfa5c2bca2",
+      "lastmod": "2026-03-13",
+      "sourceCommit": "7188174e3c9122f94de7b3ca1bcd5d9dedc225ad"
     },
     "/react/trivia/react-rerender-decision-and-render": {
-      "fingerprint": "e119b44b58ececcf4d73b77a9a66ee6da973cde6dec5127b3aacaa05b61f86a5",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "88abde3bdf1d3858dc8746a37ea11a29b692c0d2388a4bd691fd60b6ec741a25",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/react/trivia/react-stale-state-closures": {
-      "fingerprint": "620152a3f457c11b556e112155b290594be75418cf0ca5adac5e08ef80b06311",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "b996601a832e50623156c39f3eba0424d189fd917c1e538e97634d2d61ecebdd",
+      "lastmod": "2026-08-03",
+      "sourceCommit": "47bb55f92a723068d1b75a9e840f06045bf5371c"
     },
     "/react/trivia/react-strictmode-double-invoke-effects": {
-      "fingerprint": "1667d1f38d8307741f532eee2552b4b1fd08643c3632c00ec148b5b8f11f2313",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "2d56e3676a1dc6da3c337702efd02ca1fbb47eccb9877a60727a135a9db3e2a3",
+      "lastmod": "2026-06-29",
+      "sourceCommit": "ac7744b847115e6f8c4221289818d566af98f39c"
     },
     "/react/trivia/react-strictmode-purpose": {
-      "fingerprint": "efcbe929a37ccca6424657b978676055912ad369b6603ac685e4946d07eed21c",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "c181a364e917109a58373071a9dd803afe41f4efebeb8c52d63be835aae3d226",
+      "lastmod": "2026-03-15",
+      "sourceCommit": "1f08d8ad57c62fbd2022b9a3ddceb9cc95fdd7f0"
     },
     "/react/trivia/react-useeffect-purpose": {
-      "fingerprint": "a0504fce1270ba15229ca1857ef36887f9c7a4b67adead207660ecf57d623259",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "902f0a7d01f26c0f88e6b02ca4469afa4b8ecb2fdbff3c2df04e0ceba4d98e21",
+      "lastmod": "2026-07-20",
+      "sourceCommit": "dcc95ca9d36d39f6a29613899d6664f33a912984"
     },
     "/react/trivia/react-useeffect-vs-uselayouteffect": {
-      "fingerprint": "3f11d7310c2942c2d28d695862518f4ac716641238878def7cddc45454b62d09",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "0655d5be2777609ce84776b0e7608b9a5a3041cb72e3a44cb07ce02988ee9173",
+      "lastmod": "2026-07-15",
+      "sourceCommit": "55ea1c1f2fab1d39d96277a3d1082605918a5038"
     },
     "/react/trivia/react-usememo-vs-usecallback": {
-      "fingerprint": "07dc09957310629bc289f9d8828d879adacd4f4a65d5b2a3e33337e0d7c89d54",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "4a258223c69f205c531ab7bbb9545939531304680de23be87b90bafd1bf94afb",
+      "lastmod": "2026-03-15",
+      "sourceCommit": "1f08d8ad57c62fbd2022b9a3ddceb9cc95fdd7f0"
     },
     "/react/trivia/react-useref-vs-usestate": {
-      "fingerprint": "6aa66554daa6d796fe3e3889a917440e2dae9411d2deb88f4393efdc4699fb14",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "c2da62e6d45fc600296ca0a89224df4c3072601e123b038b1530b230c244f8ae",
+      "lastmod": "2026-03-15",
+      "sourceCommit": "1f08d8ad57c62fbd2022b9a3ddceb9cc95fdd7f0"
     },
     "/react/trivia/react-usestate-purpose": {
-      "fingerprint": "98835695b8273cec4d646843174f114ef849825d225ca34a8430e97d805e94bc",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "1294e7c2b27646e71f771cb3a2f558e64b2818a33aa2053ba7c8ee1893a0edd8",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/react/trivia/react-virtual-dom": {
-      "fingerprint": "5f8ff30980e30b4d9e1015d1357826ac55881f64c58747755c33daed1c859139",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "b7f8f220af82c18c4da3ae87079744daa9f4e5acab927ddd9ac36aed3da90314",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/react/trivia/react-why-batching-state-updates": {
-      "fingerprint": "34aef6c72a0a8548b8d84d794c735a748c160edb2466bec3d1037a5338219b57",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "cb4ff5d150a17e6c518421692a0858d2af57cf332fe54b3df96d456785b7dd87",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/react/trivia/react-why-event-delegation": {
-      "fingerprint": "6438619bad3b3cec1fb07cc7ee276a529f432a991a47d882378344691379468c",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "255455811df920ac49c65a73bf155a21bd539135f4f3f6fafd61faf6b77f0dc4",
+      "lastmod": "2026-03-15",
+      "sourceCommit": "1f08d8ad57c62fbd2022b9a3ddceb9cc95fdd7f0"
     },
     "/react/trivia/react-why-hooks-have-rules": {
-      "fingerprint": "0b1888ff6a40ca42da56ed9d78e7d739654195a1525002274aabf374b2cfd82d",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "0bf6218c426683c2faeaf55e22e7d0f85b503210a83d88292542381ccb12a846",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/react/trivia/react-why-props-immutable": {
-      "fingerprint": "1234a23e63729487dd80ade0b480c878edc648cc6fdfb07fc15c29bb9a01fed4",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "9b168be30af4d8d4d4056c07ce2cbe24319f4274dfa1ff831a174382a7a28e78",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/system-design": {
-      "fingerprint": "014f36f2cd21ab59f6c2e79a3592bd83a230fb7c3b4d148ee2ea7a61c178333e",
+      "fingerprint": "00c57440795b7f34af92d0188920c096f5eab3907f9443e31cbf3030533bc6cd",
       "lastmod": "2026-08-13",
       "sourceCommit": "0269a1c2e3f41eebfa79205952cc081a634bb6f5"
     },
     "/system-design/ai-agent-run-inspector": {
-      "fingerprint": "dcb65abbb52b32eda76243de770d6c3a4f633696af23a6f489fd32467e9c2d26",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "afe27c99c81155c966bd20673134a1ffceb7cbc76fdfee990dac2b206e4fee2e",
+      "lastmod": "2026-08-06",
+      "sourceCommit": "17c349f143666a633d7fc00d09b1df7d279eaa3f"
     },
     "/system-design/ai-chat-textarea-design": {
-      "fingerprint": "2aaa5d18be283172905ae6757ab7296ca42ad185423d9b1bcc8252f8858a3c0d",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "673bec538504feed99e2d5eeee4c3bb4375d7a1c5ed9d25b761b637665cacad2",
+      "lastmod": "2026-08-06",
+      "sourceCommit": "17c349f143666a633d7fc00d09b1df7d279eaa3f"
     },
     "/system-design/dashboard-widgets-draggable-resizable": {
-      "fingerprint": "036a070a0702b6e89dde9c532cc49827af2b5d85abf10393505bd62bf833a453",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "ae6874386dd1d6b66716579d31ea3a2a474e6d1e225bbaff31dc1a160eb6e5c2",
+      "lastmod": "2026-09-26",
+      "sourceCommit": "c78370fe9a1e57800eb0415a45176b7f523b74e8"
     },
     "/system-design/infinite-scroll-list": {
-      "fingerprint": "8578dbf31e6a4a368c9855a40446da1f2474468ea51a01ef639fd474ed0437ae",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "163658c944c95556528191b527dbdab3e08bb2d5d0a1860f9ea24ca0cf9fffc4",
+      "lastmod": "2026-08-13",
+      "sourceCommit": "0269a1c2e3f41eebfa79205952cc081a634bb6f5"
     },
     "/system-design/notification-toast-system": {
-      "fingerprint": "af1c067fb919b7c5a42a26725aab93f9209e080632004649172c862d6f3be12b",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "a1ad2d3d789f52902e980279eb93c2e8c0ddc790a8efcdaf995d383eef780cd0",
+      "lastmod": "2026-08-06",
+      "sourceCommit": "17c349f143666a633d7fc00d09b1df7d279eaa3f"
     },
     "/system-design/offline-email-client": {
-      "fingerprint": "3bf53bee1eb78ec7ed237dc3f669acc0b0bb7fe448cd653f9c975f75164a347b",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "188c0a4bee617652c328ad6462a5ad1af021900dc56ae0ebe6a56f5825215798",
+      "lastmod": "2026-08-06",
+      "sourceCommit": "17c349f143666a633d7fc00d09b1df7d279eaa3f"
     },
     "/system-design/resilient-checkout-payment-flow": {
-      "fingerprint": "35bfb9befa4a909d4bbc8ecbd7996eea6f50b07407cf5b608eb7f7383b28e008",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "14ce89ceddc34651c9581719e8c7cf250102826262d9f4327a09743b89d51618",
+      "lastmod": "2026-08-12",
+      "sourceCommit": "b5457493ca20888a3ae0d32185ef154e2839b562"
     },
     "/tools/cv": {
-      "fingerprint": "1eb664706f933e856eb1fc3ac4cf7b2f1a7c85fa740d583f041a1aa5a6f25581",
+      "fingerprint": "8a342cf0f7ace516073b112639e6149e2f3f4dff256ac9d3acb6f7e289ee5300",
       "lastmod": "2026-07-07",
       "sourceCommit": "e1b8acd52e6840d3905fdde160177b07953a4065"
     },
     "/tracks": {
-      "fingerprint": "704e39c31b3ff21d0a520e54147a2d8ffb84b1624971bfe08d846938a6986346",
+      "fingerprint": "7d02fd67195d67d98b74bbb19fbfed90be0aeee87afa04f476ac2c2296426d2b",
       "lastmod": "2026-08-08",
       "sourceCommit": "ce7b727b850857b1c1f5dd0693c091aece38f45a"
     },
     "/tracks/crash-7d/preview": {
-      "fingerprint": "6cfd387f055135e1a05e0bf8a1db4f1c978c67d5ad7c0a133a2756b83f62307f",
+      "fingerprint": "1cdfde1e5924f44b6dfa0f934ccd3472b31886eea3e5f989f0b28c4ccc01f4fe",
       "lastmod": "2026-08-13",
       "sourceCommit": "0269a1c2e3f41eebfa79205952cc081a634bb6f5"
     },
     "/tracks/foundations-30d/preview": {
-      "fingerprint": "cc859a29a9b5ad7249b79a0d4bf3c254b121148990ce6b4c55a1863a9f2c1771",
+      "fingerprint": "cb7b017aafb5633361f872afc31ba686f242e10b8080ffb3b4fdeeef452d7d66",
       "lastmod": "2026-08-13",
       "sourceCommit": "0269a1c2e3f41eebfa79205952cc081a634bb6f5"
     },
     "/tradeoffs": {
-      "fingerprint": "9e9fb958eb2628c143916d986b1cab3d186ce64cada9418e0bc46d0a8f1f6bcc",
+      "fingerprint": "2823e9e9a49efd8dc9cb702597d39023e2649e2c84f9a3386c573adb91d9e547",
       "lastmod": "2026-03-30",
       "sourceCommit": "21f83b2fb959656de53c2f07454db06d2bb4d964"
     },
     "/tradeoffs/async-pipe-vs-manual-subscribe-angular": {
-      "fingerprint": "b858e499ab79533a743a442bfe30b286c4a74584b9ab13e6f4111f498981c487",
-      "lastmod": "2026-09-22",
-      "sourceCommit": "0d15c701675d72d0d5e4aa7a03e1aacd81c9e6c9"
+      "fingerprint": "34dce140c1786256fd620c4d8448e749b0edfc545d9d9944157dbe063e9282b5",
+      "lastmod": "2026-03-30",
+      "sourceCommit": "21f83b2fb959656de53c2f07454db06d2bb4d964"
     },
     "/tradeoffs/context-vs-zustand-vs-redux": {
-      "fingerprint": "e7ef8f9663259390a8f9f8ef1a8b7d50ece8f235db17361b53c1ac373db966dc",
-      "lastmod": "2026-09-22",
-      "sourceCommit": "0d15c701675d72d0d5e4aa7a03e1aacd81c9e6c9"
+      "fingerprint": "99f021c0e52bf3e93c5e94269411bf5a9db63963db85e68c9d6dc78ff0887549",
+      "lastmod": "2026-03-30",
+      "sourceCommit": "21f83b2fb959656de53c2f07454db06d2bb4d964"
     },
     "/tradeoffs/object-vs-map-keyed-collections": {
-      "fingerprint": "67c47a02e47c85babdbbd82e7630cb039e5719699663709d77b92a62138707ca",
-      "lastmod": "2026-09-22",
-      "sourceCommit": "0d15c701675d72d0d5e4aa7a03e1aacd81c9e6c9"
+      "fingerprint": "c4c46f9b5ebe18002719417a96defcfa363aec1753b9879166ca89efbf5cbd37",
+      "lastmod": "2026-03-30",
+      "sourceCommit": "21f83b2fb959656de53c2f07454db06d2bb4d964"
     },
     "/tradeoffs/promise-all-vs-sequential-awaits": {
-      "fingerprint": "159f97c1b97dd187c9382368765ff872a6f8cdbf47373e47ecb69c802bcb4796",
-      "lastmod": "2026-09-22",
-      "sourceCommit": "0d15c701675d72d0d5e4aa7a03e1aacd81c9e6c9"
+      "fingerprint": "c60bf669348710f669499cf1b6b2f4561f87e3eca94b0c1f9080b3c03164d599",
+      "lastmod": "2026-03-30",
+      "sourceCommit": "21f83b2fb959656de53c2f07454db06d2bb4d964"
     },
     "/tradeoffs/props-drilling-vs-context-shared-ui": {
-      "fingerprint": "ad5bc8d082fe017fe46da38d414416524d053094cbb8cfb927b54b3fa21dcd03",
-      "lastmod": "2026-09-22",
-      "sourceCommit": "0d15c701675d72d0d5e4aa7a03e1aacd81c9e6c9"
+      "fingerprint": "21a54632e8a2edb1ca706053f084d115e4d67aed46cd4e0618f7571cab9572ac",
+      "lastmod": "2026-03-30",
+      "sourceCommit": "21f83b2fb959656de53c2f07454db06d2bb4d964"
     },
     "/tradeoffs/props-emits-vs-provide-inject-vue-context": {
-      "fingerprint": "2f022ab364c92dfbfd1213e1f76bec6bd6e9bcbec74b4d674ea661b5c3e699c4",
-      "lastmod": "2026-09-22",
-      "sourceCommit": "0d15c701675d72d0d5e4aa7a03e1aacd81c9e6c9"
+      "fingerprint": "b44243e1412d61367f27d14739bacb9dc0a8d6068827b7319194fd29a48137f1",
+      "lastmod": "2026-03-30",
+      "sourceCommit": "21f83b2fb959656de53c2f07454db06d2bb4d964"
     },
     "/tradeoffs/reactive-forms-vs-template-driven-angular": {
-      "fingerprint": "14ee5560dccac450a7c68fb0dce2c1a3ad8fce5eac43b426189a3248625218ea",
-      "lastmod": "2026-09-22",
-      "sourceCommit": "0d15c701675d72d0d5e4aa7a03e1aacd81c9e6c9"
+      "fingerprint": "98ca8e4e29f59903f6c61bb93e46b0856413229057f653fdf3325cb7a228f6b2",
+      "lastmod": "2026-03-30",
+      "sourceCommit": "21f83b2fb959656de53c2f07454db06d2bb4d964"
     },
     "/tradeoffs/sse-vs-websocket-live-dashboard": {
-      "fingerprint": "44b9fdb9cc20ec2ab4a8ef49a6d86e3ad11c8364e5f1e059e82089eb2c25436d",
-      "lastmod": "2026-09-22",
-      "sourceCommit": "0d15c701675d72d0d5e4aa7a03e1aacd81c9e6c9"
+      "fingerprint": "15e6ba8e15d2d77753da8f79f902d090c55bf5e9b98f76f026ccd23dc7d92b5d",
+      "lastmod": "2026-03-30",
+      "sourceCommit": "21f83b2fb959656de53c2f07454db06d2bb4d964"
     },
     "/tradeoffs/usestate-vs-usereducer-growing-state": {
-      "fingerprint": "f9012c0a7996ee2d705c05165af0587cbcf2e0363e72ff92d2da0796c2e95918",
-      "lastmod": "2026-09-22",
-      "sourceCommit": "0d15c701675d72d0d5e4aa7a03e1aacd81c9e6c9"
+      "fingerprint": "e2e8a01b7e5d12262f2788cac85e43da6400321a1da065dfe986650501ed8126",
+      "lastmod": "2026-03-30",
+      "sourceCommit": "21f83b2fb959656de53c2f07454db06d2bb4d964"
     },
     "/tradeoffs/watch-vs-watcheffect-vue-reactive-effects": {
-      "fingerprint": "a29242f7599fa0fdf34016cc350fd095587f42a263b00aa972af6ca54bffa44f",
-      "lastmod": "2026-09-22",
-      "sourceCommit": "0d15c701675d72d0d5e4aa7a03e1aacd81c9e6c9"
+      "fingerprint": "915a0cedd13867091e5d6a37ce56ec5739c97c68fece352c51aabf76944db224",
+      "lastmod": "2026-03-30",
+      "sourceCommit": "21f83b2fb959656de53c2f07454db06d2bb4d964"
     },
     "/vue/coding/vue-counter": {
-      "fingerprint": "e1c16358e29b1dc7fe12262eeb8e2e7af4cf2db8d335ecfbc00145b4111ad660",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "be958940ae51943a5f118d0f00751ca4ec7a23dc9392d962edceeffb0d6e4a58",
+      "lastmod": "2026-08-06",
+      "sourceCommit": "8ff782f59fecd05281cf9edf0aae50e7d8fc19bf"
     },
     "/vue/coding/vue-todo-list": {
-      "fingerprint": "c71aefc372b0d86b4885ef8366f8952cc4e967c83adb98ef5fdf4efd2373065d",
-      "lastmod": "2026-10-01",
-      "sourceCommit": "ebe39c2e3cd9d71a9db069aa690d301b2a9078f2"
+      "fingerprint": "db6c39990e5174937d91e8660128c59afb1f6ea77b9ecef41578791e9e9cb78e",
+      "lastmod": "2026-08-06",
+      "sourceCommit": "8ff782f59fecd05281cf9edf0aae50e7d8fc19bf"
     },
     "/vue/interview-questions": {
-      "fingerprint": "14cc774143feec92dd0a07e8f5e55e5ef4deda89ca9ed56c2981d4ddd2dd92cb",
+      "fingerprint": "61236a737d57e055fab9f0f44c7f09b8c17c5476cf99168bfba6379c2ea19818",
       "lastmod": "2026-09-22",
       "sourceCommit": "0d15c701675d72d0d5e4aa7a03e1aacd81c9e6c9"
     },
     "/vue/trivia/vue-architecture-decisions-scalability": {
-      "fingerprint": "4f5f583b471005e49898f43ac4ff6b519f65df96fd944734e8795df954db9390",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "7f814f041dc9582a3be3dfffa5565b8c06901ce3ca5607351f2602dc3d0645bd",
+      "lastmod": "2026-03-15",
+      "sourceCommit": "1f08d8ad57c62fbd2022b9a3ddceb9cc95fdd7f0"
     },
     "/vue/trivia/vue-child-mutates-prop-directly": {
-      "fingerprint": "855c3e81c1cc60f6704cdfb07bd864a7e39dbeea519eb91a7b426b48ad5a4265",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "fce6730109ffe93a3343595d57574e15e11f9e425a210f0a1a382e043574c563",
+      "lastmod": "2026-03-15",
+      "sourceCommit": "1f08d8ad57c62fbd2022b9a3ddceb9cc95fdd7f0"
     },
     "/vue/trivia/vue-composition-api": {
-      "fingerprint": "4af21bf5599edf117694e521986c9be183c7ae10358b1d16911e2f334df182d9",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "9d9fa702f2a910657c15587fdc94005e80436fdf57100a10cbe8de33875dd25b",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/vue/trivia/vue-composition-api-vs-mixins": {
-      "fingerprint": "3a8840816c5bc9373c12e8e1f353e60406ed45756a6fa848b98670418af7f2bc",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "44d84d36e905b4f0864c781f37a407038e1ee9572dc5b93a175ae7dcc1ce3ab8",
+      "lastmod": "2026-03-15",
+      "sourceCommit": "1f08d8ad57c62fbd2022b9a3ddceb9cc95fdd7f0"
     },
     "/vue/trivia/vue-computed-properties": {
-      "fingerprint": "18349c659f7b8af31744aeb67db5d6ec59733a17f5bf73c76db7b3fd6d507cde",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "e9d4c8f562526824787ef7222e18df8f2f21569a732f107b7986dee4ba73c52e",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/vue/trivia/vue-computed-vs-watchers": {
-      "fingerprint": "43b27ccbc5ad14bed896ee1d4964e889eb571de679c42552eddbf5156509bcfc",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "57537374fb7803a74127cb785a644638cb9d6f2ce4303072d3748ee3a7823326",
+      "lastmod": "2026-03-15",
+      "sourceCommit": "1f08d8ad57c62fbd2022b9a3ddceb9cc95fdd7f0"
     },
     "/vue/trivia/vue-conditional-list-rendering": {
-      "fingerprint": "48f3dfebb4d8db41f2ed41c03c6a375fd0e57d282aa793e2efbba66067307903",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "0875059fad66608a436c3ce3fd96b41c2ccba9f640aac20e532060bc8af9e410",
+      "lastmod": "2026-04-04",
+      "sourceCommit": "61af843b5c010d1760398eaa2653e3fdcb8c352e"
     },
     "/vue/trivia/vue-data-must-be-function": {
-      "fingerprint": "6ccc7cfd8f5c760175730a4e3f63f05a030ef0b6f01f9a6d095606c743eef477",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "7e5006399224ffb9922801e51fc2fd6a7b14dd19a59a761a88338ae81843b9db",
+      "lastmod": "2026-03-15",
+      "sourceCommit": "1f08d8ad57c62fbd2022b9a3ddceb9cc95fdd7f0"
     },
     "/vue/trivia/vue-destructuring-breaks-reactivity-torefs-toref": {
-      "fingerprint": "35712a79ec4ccc3bff6c301f379bd41cd8c4fa4eb53c20dee23baa5954720b99",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "9387b548897776bfe9c70d7296fb01f79d09407491fbdc383be6dad1ecd184b4",
+      "lastmod": "2026-06-17",
+      "sourceCommit": "c06b4820d4615164cd5df45537805ffb6042a790"
     },
     "/vue/trivia/vue-directives": {
-      "fingerprint": "1fa795b2b68f782ead6b9fd205a18525a55aa4b5923b1bc0adcc93d7acf10a64",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "0010c12c89556655406e09cffdfb747843d01f94095991fb60069c57416f1626",
+      "lastmod": "2026-04-04",
+      "sourceCommit": "61af843b5c010d1760398eaa2653e3fdcb8c352e"
     },
     "/vue/trivia/vue-internal-rendering-pipeline": {
-      "fingerprint": "8af7732ea0181860289fc6d4da804df3d9641a5cade63d4132dd798a26379793",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "211fb3145d6afb3eeb9dc5e0a2df5090ca8441ab35a0e1cd924583c82006e891",
+      "lastmod": "2026-03-15",
+      "sourceCommit": "1f08d8ad57c62fbd2022b9a3ddceb9cc95fdd7f0"
     },
     "/vue/trivia/vue-lifecycle-hooks": {
-      "fingerprint": "1abfd8054c864057945d1c9915eb6b5fe402b04029ac8893006c93551005afc0",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "950e67430cd39acf95caa58983ed16cc9883f393c51c7116c546d715562d07b3",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/vue/trivia/vue-methods-in-templates": {
-      "fingerprint": "a602db4526129682cf4916ba2665030c846dc9d3475cb4d62abf9e892f65dab8",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "76090c2a5a3a1cfd346d515e21424314fa12fdeb0e31f6be95911a83ffe42adb",
+      "lastmod": "2026-03-15",
+      "sourceCommit": "1f08d8ad57c62fbd2022b9a3ddceb9cc95fdd7f0"
     },
     "/vue/trivia/vue-native-vs-component-events": {
-      "fingerprint": "fb41540607533fcbe35f63bdb0b461be14ceb990c6761dd88ec821728612cf5a",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "178c3309566167b45d064735fb0c800b299b4f030a6c1fc25a702a2371af69e4",
+      "lastmod": "2026-03-14",
+      "sourceCommit": "b32e5e92d5af2a57f451452f7965f9f661714052"
     },
     "/vue/trivia/vue-nexttick-dom-update-queue": {
-      "fingerprint": "4c3dd23ca3c9c6c951b9e182e8ed3dc4108992631a9723a999ac27413c9e5436",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "cd3ac5fa94a02cc4af7c52c9339fb5a4bcb60ae6a436677ea600d511f0a656f2",
+      "lastmod": "2026-03-15",
+      "sourceCommit": "eb72a4b68b970093d8b2ba7626941ad9504ba8ae"
     },
     "/vue/trivia/vue-provide-inject-vs-prop-drilling-tradeoffs": {
-      "fingerprint": "1bd89b86e8bb8a2a0f04927de71befdc745a4d4e411441931b41e0eeb068f6ca",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "fa9c194050a8c10d147b739a19f0ff14e965e89890f516f096cccfca6789326e",
+      "lastmod": "2026-10-07",
+      "sourceCommit": "a68d95d22e4d5722c17f5ab50f19556ab7d6731f"
     },
     "/vue/trivia/vue-reactive-interpolation-into-dom": {
-      "fingerprint": "cc66ab9f34303aaff8401314c5ba3e9734b04c4898c65a5575b7e97bef0d0d2c",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "56c62f69c3b2dbe5421e8a97ae188a5c87fba2e9c68cd0a29f50de6862376223",
+      "lastmod": "2026-03-14",
+      "sourceCommit": "b32e5e92d5af2a57f451452f7965f9f661714052"
     },
     "/vue/trivia/vue-reactivity-system": {
-      "fingerprint": "ee4c237a990719726d5c182dbb1571aa126800c4e9a00ba647b3eb1a7c7e03e5",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "344d23621dea1e1dce97fa699883abe43d6b092d9bc908d9d6eacf380fdd6530",
+      "lastmod": "2026-06-17",
+      "sourceCommit": "c06b4820d4615164cd5df45537805ffb6042a790"
     },
     "/vue/trivia/vue-reactivity-vs-react-concepts": {
-      "fingerprint": "99edafb36e15ee5cc2419cfe3378d2b39996322f31e156a70b60202ac54906cd",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "e764ee4b0e35ab15f96cb1d878691595fd0c47838d86ab51107aefc8b007a62a",
+      "lastmod": "2026-03-15",
+      "sourceCommit": "1f08d8ad57c62fbd2022b9a3ddceb9cc95fdd7f0"
     },
     "/vue/trivia/vue-ref-vs-reactive-difference-traps": {
-      "fingerprint": "cba70e1fb322b17192671e2c8259b780d167a55ff26ca43b0ff1a93b055c9602",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "34cbfc7fb2194a2b2ee57b548252c754bdf053d4bb73afbf77124cd714da91ec",
+      "lastmod": "2026-06-17",
+      "sourceCommit": "c06b4820d4615164cd5df45537805ffb6042a790"
     },
     "/vue/trivia/vue-router-navigation": {
-      "fingerprint": "bc4a967b7ed84f3eb0e4bc3d67b53c07fc21b0ae91a2a92f86a435f839e3d2fe",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "f2971b7d0551e7c2c12287ce110b48c5502aa0d37ebe03b5d55295a97e7004ca",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/vue/trivia/vue-sfc-vs-global-components": {
-      "fingerprint": "3bb2962613ddfcee958a5d689a73c85544fd1d8ccdd6c42a04049f7a5fb7e589",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "ccfaf8f801e45ca710f509a50803d007c11a383b8011eef0939471340cae1994",
+      "lastmod": "2026-04-04",
+      "sourceCommit": "61af843b5c010d1760398eaa2653e3fdcb8c352e"
     },
     "/vue/trivia/vue-slots-default-named-scoped-slot-props": {
-      "fingerprint": "9c8831a2f5b7e6643ded35cf9154f9207562bd4a052694b483096f895b5db6ca",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "d41e87ea68a9d9ed13689ba1bcf49bb70324d42bcaf884c7e5a1dd5f54d136cf",
+      "lastmod": "2026-03-15",
+      "sourceCommit": "1f08d8ad57c62fbd2022b9a3ddceb9cc95fdd7f0"
     },
     "/vue/trivia/vue-v-bind-reactive-attributes": {
-      "fingerprint": "9deaa249c7e117b4627b66f8ddd0e0f72682260f202b779a880d6f0d1642a25c",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "7e3debf6844823ead9890b77b8b9f4734aabb6d29f467b52ba060b1e10e1e4d8",
+      "lastmod": "2026-03-14",
+      "sourceCommit": "b32e5e92d5af2a57f451452f7965f9f661714052"
     },
     "/vue/trivia/vue-v-bind-v-on-fundamental-template-syntax": {
-      "fingerprint": "10636873255e44cd90c444fe3b21992027d906fcd45674430ef02c4ea14e7277",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "0f62784e71884c426146eea8b15477cd01a00d63588db29f5316324d2fb48f58",
+      "lastmod": "2026-03-15",
+      "sourceCommit": "1f08d8ad57c62fbd2022b9a3ddceb9cc95fdd7f0"
     },
     "/vue/trivia/vue-v-for-keys": {
-      "fingerprint": "429e46bfb1d6a7a9cf13f23ea80b55624acd6e038410ec51cc4e23e094acd203",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "6782702bb22772adae76710ede8dd152c428b6ddfc3fa8e6543adb0323cfb61a",
+      "lastmod": "2026-03-14",
+      "sourceCommit": "b32e5e92d5af2a57f451452f7965f9f661714052"
     },
     "/vue/trivia/vue-v-for-keys-why-not-index": {
-      "fingerprint": "975486ed497e8a9bc1af3564a30da86928ffee8c33110865d42fd95199319dae",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "e8a554a9b3faccecaa3ff6b6c15fd33c083808641ea2f29817ce904bc749256f",
+      "lastmod": "2026-03-15",
+      "sourceCommit": "1f08d8ad57c62fbd2022b9a3ddceb9cc95fdd7f0"
     },
     "/vue/trivia/vue-v-if-component-creation-destruction": {
-      "fingerprint": "b3619e5ab9a4934b781629ba0fcc8d818d9446e5caacf885594fefb088c1cb98",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "c6bffc6e2037465d48f27468dae9642b6ab22723678aae3de47bb862c389baa3",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/vue/trivia/vue-v-model-syntax-sugar-expansion": {
-      "fingerprint": "535bc375dbe7ec3fa3bf39f7798fb4a5660b61b722da1eee06b53ef5a4a98a40",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "0cb6d13509903326f42002c3b77e0e758c67126fdd5d3e269a3961d0c6b6469a",
+      "lastmod": "2026-04-04",
+      "sourceCommit": "61af843b5c010d1760398eaa2653e3fdcb8c352e"
     },
     "/vue/trivia/vue-v-show-vs-v-if-dom-lifecycle": {
-      "fingerprint": "2690ec153afd014da1c9fa4cf42bcec6d029e369b55e65fe28fe0b78b4ae4032",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "92e368a7990cd5a9f5708c1d067aa39f3678f6a5f370efa59756ace1061974bf",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/vue/trivia/vue-virtual-dom-diffing": {
-      "fingerprint": "387d5c876cc0cb84256e1737b85b2fa2a16d62ecee2e2c54c4969421497aaa61",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "1db2bee400e41f7686074f71c1052baf0e46a411aa9a2105ee6b1938c87d1fa2",
+      "lastmod": "2026-04-19",
+      "sourceCommit": "799d39a704a44cb472cdd863cfa7f27e2c267bdf"
     },
     "/vue/trivia/vue-watch-vs-watcheffect-differences-infinite-loops": {
-      "fingerprint": "c98148705860103711ee66e4d4920c6edff5fc7d5356d85aa291c1b336f3ef63",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "551afda8332615411cccf3858021ad4870850c2a63266aa9c44dab85136ca558",
+      "lastmod": "2026-07-15",
+      "sourceCommit": "55ea1c1f2fab1d39d96277a3d1082605918a5038"
     },
     "/vue/trivia/vue-why-declare-emits-type-safety-maintenance": {
-      "fingerprint": "7a074eaba8c9a36e9d66b21ec131e4dcb65c6bbb0bf0bc26954f9fd0afe9d6d4",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "34b1afdaee5ad9447acb06ef00ef23a5f7459155a792a85d0971fb2d8cf80843",
+      "lastmod": "2026-03-15",
+      "sourceCommit": "1f08d8ad57c62fbd2022b9a3ddceb9cc95fdd7f0"
     },
     "/vue/trivia/vuex-state-management": {
-      "fingerprint": "c21f9c09a6834938b78e9b58847a01e3a20bd2182d5e258be776db37c996016a",
-      "lastmod": "2026-09-30",
-      "sourceCommit": "c9c0f70035dc2dd51b77e75c68c4b99bf50fd332"
+      "fingerprint": "f49838b0059692e488ea9d2513a0e14bf3476994c620cbdd0701e4d7c9f66a3a",
+      "lastmod": "2026-04-22",
+      "sourceCommit": "cbc3f8e6a54e91f84a61cfcabe0a7317f31741eb"
     }
   }
 }

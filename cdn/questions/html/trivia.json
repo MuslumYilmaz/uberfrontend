@@ -625,8 +625,8 @@
     "title": "What is the purpose of the alt attribute in the <img> tag?",
     "description": "The alt attribute gives an image a text alternative for screen readers, fallback rendering, and search understanding. The real production decision is whether an image is decorative, informative, or functional, because linked logos and icon buttons should describe the destination or action, not the pixels.",
     "seo": {
-      "title": "HTML img alt attribute: accessibility, SEO, and common mistakes",
-      "description": "Write alt text based on image purpose, distinguish decorative vs informative vs functional images, and avoid SEO stuffing or redundant descriptions."
+      "title": "HTML img alt Attribute: Definition, Examples and Mistakes",
+      "description": "Use alt to give an image a text alternative: describe informative images, name the action for linked icons, and set alt=\"\" on decorative ones."
     },
     "type": "trivia",
     "technology": "html",
@@ -644,7 +644,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nThe **alt attribute** (short for “alternative text”) in the <code>&lt;img&gt;</code> tag provides a text alternative for what the image means in context. It’s a key part of **web accessibility**, and the common production mistake is treating alt text like a caption or SEO keyword bucket. Good alt text tells assistive tech what the image contributes, while decorative images should usually use empty alt so screen readers skip noise."
+          "text": "## What is the alt attribute?\n\nThe <code>alt</code> attribute (alternative text, often called the alt tag) gives an <code>&lt;img&gt;</code> a text alternative. Screen readers announce it, the browser shows it when the image fails to load, and search engines use it to understand the image. Every <code>&lt;img&gt;</code> should carry an <code>alt</code> attribute; the value is empty (<code>alt=\"\"</code>) when the image is decorative. The common production mistake is treating alt text like a caption or an SEO keyword bucket instead of describing what the image contributes in context."
         },
         {
           "type": "code",
@@ -654,6 +654,15 @@
         {
           "type": "text",
           "text": "In this example:\n- If the image loads successfully, users see the picture.  \n- If it fails to load, the browser displays the text: “A beautiful orange sunset over the ocean.”  \n- Screen readers announce this description for visually impaired users, allowing them to understand the page content."
+        },
+        {
+          "type": "text",
+          "text": "## alt attribute examples"
+        },
+        {
+          "type": "code",
+          "language": "html",
+          "code": "<!-- Informative image: describe what it adds in this context -->\n<img src=\"q3-revenue.png\" alt=\"Q3 revenue up 18% over Q2\">\n\n<!-- Functional image (inside a link): describe the destination or action -->\n<a href=\"/\"><img src=\"logo.svg\" alt=\"FrontendAtlas home\"></a>\n\n<!-- Decorative image: empty alt so screen readers skip it -->\n<img src=\"divider.svg\" alt=\"\">\n\n<!-- Image of text: repeat the text -->\n<img src=\"banner.png\" alt=\"Summer sale: 20% off all plans\">"
         },
         {
           "type": "list",
@@ -743,7 +752,7 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-04-12",
+    "updatedAt": "2026-10-09",
     "incidentCard": {
       "title": "Alt Text Purpose Check",
       "scenario": "A teammate leaves product images without `alt` text and says, \"That is mostly an SEO bonus. If the image fails to load, users can still refresh the page, so it is not a real accessibility issue.\" Another teammate says, \"That misses the point. `alt` text gives screen reader users a text alternative, shows useful fallback if the image fails, and should be written based on what the image contributes to the page. Decorative images can use an empty alt instead.\" Which explanation is better?",
@@ -1138,7 +1147,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Direct answer</strong><br><br>Use <code>&lt;a&gt;</code> when the user is navigating to another URL, document, or fragment target. In production, the common mistake is treating anchors and buttons as interchangeable: <code>&lt;a&gt;</code> preserves link semantics, open-in-new-tab behavior, browser history, and SEO, while <code>&lt;button&gt;</code> is for in-page actions."
+          "text": "<strong>Direct answer</strong><br><br>Use <code>&lt;a&gt;</code> when the user is navigating to another URL, document, or fragment target. In production, the common mistake is treating anchors and buttons as interchangeable: <code>&lt;a&gt;</code> preserves link semantics, open-in-new-tab behavior, browser history, and SEO, while <code>&lt;button&gt;</code> is for in-page actions. The <a href=\"/html/trivia/html-href-attribute\">href attribute</a> supplies the destination; without it the element is not a link."
         },
         {
           "type": "code",
@@ -1215,7 +1224,7 @@
       "basics",
       "elements"
     ],
-    "updatedAt": "2026-07-02",
+    "updatedAt": "2026-10-09",
     "incidentCard": {
       "title": "Navigation Primitive Check",
       "scenario": "A teammate wires the sidebar with plain `div`s and click handlers, saying, \"An anchor tag is basically just a styling choice. If JavaScript can navigate, we do not need real links.\" Another teammate says, \"If the element performs navigation, `<a>` is the right primitive because it carries link semantics, supports browser behaviors like open-in-new-tab and history, and uses `href` as the destination.\" Which explanation is better?",
@@ -1243,7 +1252,7 @@
     "technology": "html",
     "difficulty": "easy",
     "importance": 4,
-    "description": "The `href` attribute is the real destination reference behind links and linked resources. Production bugs happen when `href` is missing, misused for fake buttons, or paired with unsafe external-link behavior.",
+    "description": "`href` stands for hypertext reference: it is the attribute that tells the browser where a link or linked resource points, whether that is an absolute or relative URL, a `#fragment` on the same page, a `mailto:` or `tel:` address, or a file. Without a valid `href`, an `<a>` is not a real link, so keyboard focus, middle-click, open in new tab, and crawling all break.",
     "seo": {
       "title": "HTML href Attribute: Definition, Uses & Examples",
       "description": "Use href to set where a link or linked resource points: an absolute or relative URL, a #fragment, an email address, or a file."
@@ -1252,11 +1261,16 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Definition and Purpose</strong>\n\nThe <code>href</code> attribute is the browser's destination reference for navigation and linked resources. It is not decorative metadata. In production, missing or fake <code>href</code> values create accessibility issues, broken keyboard behavior, and confusing link debugging. The same idea powers anchors, stylesheets, base URLs, and image-map areas."
+          "text": "## What does href stand for?\n\n`href` stands for <strong>hypertext reference</strong>. It is the HTML attribute that holds the destination of a link or a linked resource, and the browser reads it to decide where to navigate or what to load. On an `<a>` element it is what turns the text into a hyperlink. The same idea powers anchors, stylesheets, base URLs, and image-map areas.\n\nIn production, a missing or fake `href` (for example `href=\"#\"` on an element that only runs JavaScript) breaks keyboard access, open in new tab, browser history, and crawling. That is why the attribute matters beyond decoration."
         },
         {
           "type": "text",
-          "text": "<strong>Basic Example</strong>\n\n``<code>html\n&lt;a href=\"https://www.wikipedia.org\"&gt;Visit Wikipedia&lt;/a&gt;\n</code>``\n\nIn this example, clicking the link will navigate the user to the Wikipedia homepage."
+          "text": "## href examples\n\nEach value below changes what the browser does when the link is activated:"
+        },
+        {
+          "type": "code",
+          "language": "html",
+          "code": "<!-- Absolute URL: another site -->\n<a href=\"https://developer.mozilla.org/\">MDN</a>\n\n<!-- Root-relative URL: same site -->\n<a href=\"/coding\">Coding practice</a>\n\n<!-- Relative path: resolved against the current page -->\n<a href=\"guides/intro.html\">Intro</a>\n\n<!-- Fragment: scroll to the element with id=\"contact\" -->\n<a href=\"#contact\">Contact</a>\n\n<!-- Email and phone -->\n<a href=\"mailto:support@example.com\">Email support</a>\n<a href=\"tel:+15551234567\">Call us</a>\n\n<!-- File download -->\n<a href=\"/files/report.pdf\" download>Download report</a>\n\n<!-- Not only anchors: a stylesheet uses href too -->\n<link rel=\"stylesheet\" href=\"styles.css\">"
         },
         {
           "type": "text",
@@ -1271,27 +1285,27 @@
           ],
           "rows": [
             [
-              "`<a>`",
-              "`<a href='https://example.com'>Go</a>`",
+              "<code>&lt;a&gt;</code>",
+              "<code>&lt;a href=\"https://example.com\"&gt;Go&lt;/a&gt;</code>",
               "Creates a clickable hyperlink"
             ],
             [
-              "`<link>`",
-              "`<link href='styles.css' rel='stylesheet'>`",
+              "<code>&lt;link&gt;</code>",
+              "<code>&lt;link href=\"styles.css\" rel=\"stylesheet\"&gt;</code>",
               "Links an external CSS file"
             ],
             [
-              "`<base>`",
-              "`<base href='https://mysite.com/'>`",
+              "<code>&lt;base&gt;</code>",
+              "<code>&lt;base href=\"https://mysite.com/\"&gt;</code>",
               "Sets a base URL for relative paths"
             ],
             [
-              "`<area>`",
-              "`<area href='map.html' shape='circle'>`",
+              "<code>&lt;area&gt;</code>",
+              "<code>&lt;area href=\"map.html\" shape=\"circle\"&gt;</code>",
               "Defines a linkable area in an image map"
             ]
           ],
-          "caption": "Different HTML elements that use the `href` attribute."
+          "caption": "Different HTML elements that use the href attribute."
         },
         {
           "type": "text",
@@ -1307,7 +1321,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Security and Best Practices</strong>\n\n- Always use **absolute URLs** when linking to external websites.\n- Add the attribute `rel=\"noopener noreferrer\"` when using `target=\"_blank\"` to prevent malicious access to the parent window.\n- Avoid using broken or incomplete URLs — it can harm SEO and accessibility.\n- For internal navigation, prefer **relative links** for flexibility during site deployment."
+          "text": "<strong>Security and Best Practices</strong>\n\n- Always use **absolute URLs** when linking to external websites.\n- Add the attribute `rel=\"noopener noreferrer\"` when using `target=\"_blank\"` to prevent malicious access to the parent window.\n- Avoid broken or incomplete URLs; they hurt SEO and accessibility.\n- For internal navigation, prefer **relative links** for flexibility during site deployment."
         },
         {
           "type": "text",
@@ -1328,7 +1342,7 @@
       "basics",
       "anchor"
     ],
-    "updatedAt": "2026-10-07",
+    "updatedAt": "2026-10-09",
     "incidentCard": {
       "title": "Destination Wiring Check",
       "scenario": "A teammate says, \"The anchor tag already tells the browser this is a link. The `href` value is optional detail, so we can add click handlers later and still consider it a proper hyperlink.\" Another teammate says, \"That misses the core role of `href`. It is the destination reference that tells the browser where the link or resource points. Without it, you lose the real navigation target and a lot of expected browser behavior.\" Which explanation is better?",
@@ -2612,11 +2626,15 @@
     "importance": 4,
     "description": "The target attribute controls where a link opens. target=\"_blank\" opens a new tab/window; target=\"_self\" is the default. For _blank, add rel=\"noopener noreferrer\" for security. New tabs are a UX and security trade-off, so test keyboard flow and rel attributes.",
     "seo": {
-      "title": "What does target _blank do in an anchor tag?",
-      "description": "The target attribute controls where a linked document opens, and _blank opens it in a new tab or window."
+      "title": "HTML Anchor target Attribute: _blank, _self, _parent, _top",
+      "description": "Use target to choose where a link opens: _self (same tab, the default), _blank (new tab, add rel=\"noopener noreferrer\"), _parent, _top, or a frame name."
     },
     "answer": {
       "blocks": [
+        {
+          "type": "text",
+          "text": "## Quick answer: what the target attribute does\n\n<code>target</code> sets the browsing context in which the linked document opens. <code>_self</code> opens it in the current tab or frame and is the default. <code>_blank</code> opens a new tab or window. <code>_parent</code> opens it in the parent browsing context of the current frame. <code>_top</code> opens it in the full window and escapes every frame. A frame name opens it inside that named <code>&lt;iframe&gt;</code>. When you use <code>_blank</code>, add <code>rel=\"noopener noreferrer\"</code>. The destination itself comes from the <a href=\"/html/trivia/html-href-attribute\">href attribute</a>; <code>target</code> only decides where that destination opens."
+        },
         {
           "type": "text",
           "text": "<strong>Overview</strong><br><br>The <code>target</code> attribute specifies where the linked page will open when a user clicks on a hyperlink. It’s part of the <a> (anchor) tag and defines the browsing context such as a new tab, a parent frame, or the current window."
@@ -2668,7 +2686,7 @@
         },
         {
           "type": "text",
-          "text": "The linked page replaces the current one — this is the default even if you omit the <code>target</code> attribute."
+          "text": "The linked page replaces the current one; this is the default even if you omit the <code>target</code> attribute."
         },
         {
           "type": "text",
@@ -2698,7 +2716,12 @@
         },
         {
           "type": "text",
-          "text": "<strong>Security Tip</strong><br><ul><li>When using <code>target=\"_blank\"</code>, always include <code>rel=\"noopener noreferrer\"</code> to prevent security risks such as tab hijacking.</li><li>Example: <a href=\"...\" target=\"_blank\" rel=\"noopener noreferrer\"&gt;/></li></ul>"
+          "text": "<strong>Security Tip</strong><br><br>When you use <code>target=\"_blank\"</code>, add <code>rel=\"noopener noreferrer\"</code>. <code>noopener</code> stops the new page from reaching <code>window.opener</code> (tab hijacking), and <code>noreferrer</code> also hides the referrer."
+        },
+        {
+          "type": "code",
+          "language": "html",
+          "code": "<a href=\"https://example.com\" target=\"_blank\" rel=\"noopener noreferrer\">Open example in a new tab</a>"
         },
         {
           "type": "text",
@@ -2724,7 +2747,7 @@
       "links",
       "noopener"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-10-09",
     "incidentCard": {
       "title": "New Tab Link Check",
       "scenario": "A teammate says, \"Let's add `target=\"_blank\"` to all links so users never leave our page. That is the normal default anyway, and we do not need to think about anything else.\" Another teammate says, \"`target` controls where a link opens. `_self` is the normal default, `_blank` opens a new tab or window, and when we use it we should think about user expectations and add `rel=\"noopener noreferrer\"` for safety.\" Which explanation is better?",

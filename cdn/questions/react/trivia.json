@@ -468,7 +468,7 @@
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 2,
-    "description": "Explain what JSX actually is (syntax sugar), how a compiler (Babel/TypeScript) transforms it into plain JavaScript calls, and why React can work without JSX (you can call the element factory directly). Mention the two JSX runtimes (classic createElement vs automatic react/jsx-runtime) and the practical implications (React import, tooling, and why JSX isn’t HTML). Modern JSX transform removes the explicit React import, but tooling must be configured. Test build output and lint rules.",
+    "description": "JSX is syntax sugar, not something React runs. Babel or TypeScript compiles each JSX tag into a call to createElement, or to jsx and jsxs from react/jsx-runtime with the automatic runtime. React only needs the resulting element objects, so you can skip JSX and call those functions yourself. The production trade-off is tooling: the JSX setting must match across packages, and lint rules must not still expect React in scope.",
     "answer": {
       "blocks": [
         {
@@ -526,6 +526,10 @@
           "code": "// Output (automatic runtime - conceptual)\nimport { jsx, jsxs } from 'react/jsx-runtime';\n\nfunction App({ user }) {\n  return jsxs('main', {\n    className: 'page',\n    children: [\n      jsxs('h1', { children: ['Hello, ', user.name] }),\n      jsx('button', { onClick: () => alert('hi'), children: 'Click' })\n    ]\n  });\n}\n"
         },
         {
+          "type": "text",
+          "text": "## What are jsx and jsxs?\n\n<code>jsx</code> and <code>jsxs</code> are the two element factory functions exported by <code>react/jsx-runtime</code> (development builds use <code>jsxDEV</code> from <code>react/jsx-dev-runtime</code>). The compiler emits <code>jsx(type, props, key)</code> when an element has zero or one child and <code>jsxs(type, props, key)</code> when it has several static children, so React can skip the missing-key warning for arrays it knows were written inline. Both return the same React element object as <code>React.createElement</code>; only the call signature differs: <code>key</code> is a separate argument and <code>children</code> live inside <code>props</code>. You never import them yourself; the automatic runtime inserts the import during the build."
+        },
+        {
           "type": "list",
           "columns": [
             "Detail",
@@ -566,7 +570,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Practical scenario</strong><br>You upgrade to React 17+ and remove <code>import React</code> from files using JSX.<br><br><strong>Common pitfalls</strong><br><ul><li>Tooling not configured for the new JSX transform.</li><li>Babel/TS settings inconsistent across packages.</li><li>Lint rules still expecting React in scope.</li></ul><strong>Trade-off or test tip</strong><br>New transform reduces boilerplate but needs config. Test build output and update linters.</strong>"
+          "text": "<strong>Practical scenario</strong><br>You upgrade to React 17+ and remove <code>import React</code> from files using JSX.<br><br><strong>Common pitfalls</strong><br><ul><li>Tooling not configured for the new JSX transform.</li><li>Babel/TS settings inconsistent across packages.</li><li>Lint rules still expecting React in scope.</li></ul><strong>Trade-off or test tip</strong><br>New transform reduces boilerplate but needs config. Test build output and update linters."
         }
       ]
     },
@@ -579,10 +583,10 @@
       "build",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-10-09",
     "seo": {
       "title": "How is JSX transformed in React and do you need it?",
-      "description": "JSX compiles to JavaScript function calls, and React does not require JSX because you can write elements with plain JavaScript APIs."
+      "description": "In React 17+, use the automatic JSX runtime: Babel or TypeScript compiles JSX into jsx and jsxs calls from react/jsx-runtime, so React never needs JSX."
     },
     "incidentCard": {
       "title": "JSX Runtime Config Check",
@@ -1353,7 +1357,7 @@
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Explain props immutability as a production contract: parent ownership, predictable rendering, memoization safety, and the shared-state bugs you debug when children mutate props.",
+    "description": "Props are immutable because React renders a component as a pure function of its inputs: the parent owns the data, so a child that mutates a prop object or array breaks that ownership, defeats memo and shallow comparison, and leaks the change into sibling components. In production this shows up as stale UI and bugs that depend on timing. Request changes through callbacks and let the parent create a new value.",
     "seo": {
       "title": "React props immutability: parent ownership, memoization, and mutation bugs",
       "description": "Learn why React props are immutable, how mutation breaks parent ownership and memoization, and which production bugs appear when children mutate shared inputs."
@@ -1494,7 +1498,7 @@
       "data-flow",
       "basics"
     ],
-    "updatedAt": "2026-04-10",
+    "updatedAt": "2026-10-09",
     "incidentCard": {
       "title": "Props Immutability Bug Check",
       "scenario": "A memoized `UserCard` receives `user` as a prop. Inside the child, someone mutates `user.name` directly and now updates are inconsistent across siblings. What is the best fix?",
