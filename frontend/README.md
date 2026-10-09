@@ -237,6 +237,13 @@ publication and editorial dates remain separate from `dateModified`.
 The inventory selects individual catalog objects, article content and explicitly
 mapped page dependencies. It ignores date fields, generated files, tests,
 comments and visual styles. Adding a public route requires a content mapping.
+Question, debug, system design, incident and tradeoff pages are dated only by
+their own catalog object, the CDN assets it references, per-entry bundles and
+page-specific lab components. The shared detail components, templates,
+parameterized route metadata and SEO helpers that render every entry of a
+family are not part of a per-entry projection, so a shared edit never re-dates
+a whole family. Hub, landing, guide and company pages still follow their own
+components and templates.
 When changing the meaning of a projection, increment `PROJECTION_VERSION` and
 rebuild the historical baseline from Git; do not stamp the current date. A build
 with an older projection checkpoint recomputes dates from full Git history

@@ -261,17 +261,70 @@ test('current public registry has complete coverage and deterministic output', (
   assert.ok([...inventory.values()].every((entry) => /^[a-f0-9]{64}$/.test(entry.fingerprint) && entry.sources.length));
 });
 
-test('actual shared detail copy and SEO contracts are tracked without component infrastructure churn', () => {
+test('actual shared detail component edits never move per-entry dates', () => {
   const file = `${APP}features/trivia/trivia-detail/trivia-detail.component.ts`;
   const read = currentReader();
   const before = buildSeoInventory(read);
   const changes = (text) => [...buildSeoInventory(currentReader({ [file]: text }))].filter(([route, entry]) => before.get(route)?.fingerprint !== entry.fingerprint).map(([route]) => route);
   const modified = read.read(file).replace("const TRIVIA_H1_INTENT_LABEL = 'Frontend interview practice question'", "const TRIVIA_H1_INTENT_LABEL = 'Frontend interview explanation question'");
   assert.notEqual(modified, read.read(file));
-  const updated = changes(modified);
-  assert.ok(updated.includes('/javascript/trivia/js-event-loop'));
-  assert.ok(updated.every((route) => route.includes('/trivia/')));
+  assert.deepEqual(changes(modified), []);
   assert.deepEqual(changes(read.read(file).replace('@Component({', '@Component({ preserveWhitespaces: false,')), []);
+});
+
+test('shared detail component, template, route metadata and SEO helper do not re-date entry routes', () => {
+  const detail = `${APP}features/trivia/trivia-detail/trivia-detail.component.ts`;
+  const template = `${APP}features/trivia/trivia-detail/trivia-detail.component.html`;
+  const helper = `${APP}features/trivia/trivia-detail/trivia-seo.util.ts`;
+  const catalog = 'cdn/questions/javascript/trivia.json';
+  const files = {
+    ...staticFiles(),
+    [catalog]: JSON.stringify([question('a'), question('b')]),
+    [detail]: `import {Component} from '@angular/core'; import {seoTitleForQuestion} from './trivia-seo.util'; @Component({templateUrl:'./trivia-detail.component.html'}) export class Page { private updateSeo(q) { return seoTitleForQuestion(q); } visibleH1IntentLabel() { return 'Practice question'; } }`,
+    [template]: '<h1>{{ visibleH1IntentLabel() }}</h1><p>Shared intro</p>',
+    [helper]: `export function seoTitleForQuestion(q) { return q.title + ': Interview Answer'; }`,
+  };
+  files[ROUTES] = files[ROUTES].replace('export const routes = [', `export const routes = [
+    {matcher: techMatcher, children: [{path:'trivia/:id',loadComponent:()=>import('./features/trivia/trivia-detail/trivia-detail.component'),data:{seo:{title:'Concept question'}}}]},`);
+  assert.ok(buildSeoInventory(reader(files)).has('/javascript/trivia/a'));
+  assert.deepEqual(changed(files, { ...files, [template]: '<h1>{{ visibleH1IntentLabel() }}</h1><p>Updated shared intro</p>' }), []);
+  assert.deepEqual(changed(files, { ...files, [detail]: files[detail].replace('Practice question', 'Explanation question') }), []);
+  assert.deepEqual(changed(files, { ...files, [helper]: files[helper].replace(': Interview Answer', ': Interview Answers') }), []);
+  assert.deepEqual(changed(files, { ...files, [ROUTES]: files[ROUTES].replace("title:'Concept question'", "title:'Interview concept question'") }), []);
+  assert.deepEqual(changed(files, { ...files, [catalog]: JSON.stringify([question('a', 'Improved answer'), question('b')]) }), ['/javascript/trivia/a']);
+});
+
+test('page-specific lab components re-date only their own entry route', () => {
+  const catalog = 'cdn/questions/javascript/trivia.json';
+  const folder = `${APP}features/trivia/trivia-detail/javascript-event-loop-experience/javascript-event-loop-experience`;
+  const lab = `${folder}.component.ts`;
+  const template = `${folder}.component.html`;
+  const content = `${folder}.content.ts`;
+  const files = {
+    ...staticFiles(),
+    [catalog]: JSON.stringify([question('js-event-loop'), question('b')]),
+    [lab]: `import {Component} from '@angular/core'; import {STEPS} from './javascript-event-loop-experience.content'; @Component({templateUrl:'./javascript-event-loop-experience.component.html', styles:['h1{color:red}']}) export class Lab { steps = STEPS; }`,
+    [template]: '<h1>Event loop lab</h1>',
+    [content]: `export const STEPS = ['Step one'];`,
+  };
+  assert.deepEqual(changed(files, { ...files, [template]: '<h1>Browser event loop lab</h1>' }), ['/javascript/trivia/js-event-loop']);
+  assert.deepEqual(changed(files, { ...files, [content]: `export const STEPS = ['Step one', 'Step two'];` }), ['/javascript/trivia/js-event-loop']);
+  assert.deepEqual(changed(files, { ...files, [lab]: files[lab].replace('color:red', 'color:blue') }), []);
+});
+
+test('actual shared detail templates and helpers do not re-date entry routes; actual lab content does', () => {
+  const read = currentReader();
+  const before = buildSeoInventory(read);
+  function changes(file, from, to) {
+    const text = read.read(file).replace(from, to);
+    assert.notEqual(text, read.read(file), file);
+    return [...buildSeoInventory(currentReader({ [file]: text }))].filter(([route, entry]) => before.get(route)?.fingerprint !== entry.fingerprint).map(([route]) => route);
+  }
+  assert.deepEqual(changes(`${APP}features/trivia/trivia-detail/trivia-detail.component.html`, 'Open Essential 60', 'Open the Essential 60'), []);
+  assert.deepEqual(changes(`${APP}features/coding/coding-detail/coding-detail.component.html`, 'Open Essential 60', 'Open the Essential 60'), []);
+  assert.deepEqual(changes(`${APP}features/trivia/trivia-detail/trivia-seo.util.ts`, "': Interview Answer'", "': Interview Answers'"), []);
+  assert.deepEqual(changes(ROUTES, "title: 'Front-end interview concept question'", "title: 'Frontend interview concept question'"), []);
+  assert.deepEqual(changes(`${APP}features/trivia/trivia-detail/javascript-event-loop-experience/javascript-event-loop-experience.component.html`, 'Predict the browser event loop before it runs', 'Predict the event loop before it runs'), ['/javascript/trivia/js-event-loop']);
 });
 
 test('actual React FAQ/profile/template content only refreshes the React hub', () => {

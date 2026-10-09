@@ -8,7 +8,7 @@ import { parseTypeScript } from './content-typescript.mjs';
 
 // Increment when the meaning of a projection changes. This module deliberately
 // has no filesystem or Git access: the same projection reads a worktree or a commit.
-export const PROJECTION_VERSION = 'seo-content-v1';
+export const PROJECTION_VERSION = 'seo-content-v2';
 const APP = 'frontend/src/app/';
 const ROUTES = `${APP}app.routes.ts`;
 const GUIDES = `${APP}shared/guides/guide.registry.ts`;
@@ -24,7 +24,6 @@ const DATE_NAME = /(?:dateModified|datePublished|lastmod|lastModified|updatedAt|
 const jsonCache = new Map();
 const projectionCache = new Map();
 const htmlCache = new Map();
-const detailPlanCache = new Map();
 const own = (node, key) => node?.properties?.find((p) => p.name && propertyName(p.name) === key);
 const init = (node, key) => own(node, key)?.initializer;
 const propertyName = (name) => ts.isIdentifier(name) || ts.isStringLiteralLike(name) ? name.text : '';
@@ -272,68 +271,6 @@ function tsContent(reader, file, parts, sources, visited = new Set(), names = nu
   return !visited.failed;
 }
 
-// Shared detail pages contribute the rendered template and the code computing
-// headings/SEO, not editor state, DI, change detection, or component imports.
-function detailContent(reader, file, parts, sources, route) {
-  const raw = reader.read(file);
-  if (raw === null) return false;
-  sources.add(file);
-  if (!detailPlanCache.has(raw)) {
-    const source = ast(raw);
-    const methods = new Map();
-    const templates = [];
-    function find(node) {
-      if (ts.isMethodDeclaration(node) || ts.isGetAccessorDeclaration(node)) methods.set(propertyName(node.name), node);
-      if (ts.isPropertyAssignment(node) && ['template', 'templateUrl'].includes(propertyName(node.name))) templates.push({ kind: propertyName(node.name), text: string(node.initializer) });
-      node.forEachChild(find);
-    }
-    find(source);
-    const selected = new Set([...methods.keys()].filter((name) => /(?:updateSeo|SeoForQuestion|Schema|visibleH1|visibleQuestionHeadline|frameworkSeo|sanitizeSeoText)/.test(name)));
-    const used = new Set();
-    function visit(node) {
-      const name = node.name ? propertyName(node.name) : '';
-      if (OMIT.has(name) || DATE_NAME.test(name) || dateOnly(node)) return;
-      if (ts.isSpreadAssignment(node) && /\bdateModified\b|\bdatePublished\b/.test(node.getText())) return;
-      if (ts.isIdentifier(node)) used.add(node.text);
-      if (ts.isPropertyAccessExpression(node) && node.expression.kind === ts.SyntaxKind.ThisKeyword && methods.has(node.name.text)) selected.add(node.name.text);
-      node.forEachChild(visit);
-    }
-    for (let previous = -1; previous !== selected.size;) {
-      previous = selected.size;
-      for (const name of selected) visit(methods.get(name));
-    }
-    const constants = selectedStatements(source, [...used]).filter((node) => ts.isVariableStatement(node) || ts.isFunctionDeclaration(node));
-    constants.forEach(visit);
-    const nodes = [...[...selected].sort().map((name) => methods.get(name)), ...constants];
-    const deps = [];
-    for (const statement of source.statements) {
-      if (!ts.isImportDeclaration(statement) || statement.importClause?.isTypeOnly) continue;
-      const bindings = statement.importClause?.namedBindings;
-      if (!bindings || !ts.isNamedImports(bindings)) continue;
-      const names = bindings.elements.filter((item) => used.has(item.name.text)).map((item) => (item.propertyName || item.name).text);
-      const specifier = string(statement.moduleSpecifier);
-      if (names.length && /(?:seo|content-access-policy|core\/content)/.test(specifier) && !/\/services\//.test(specifier)) deps.push({ specifier, names });
-    }
-    detailPlanCache.set(raw, { projection: nodes.map((node) => projectNode(node)).filter((value) => value !== null), templates, deps });
-  }
-  const plan = detailPlanCache.get(raw);
-  parts.push(plan.projection);
-  let complete = true;
-  for (const template of plan.templates) {
-    if (template.kind === 'template') parts.push(html(template.text));
-    else {
-      const target = resolve(reader, file, template.text) || path.posix.normalize(path.posix.join(path.posix.dirname(file), template.text));
-      complete = tsContent(reader, target, parts, sources, new Set(), null, { route }) && complete;
-    }
-  }
-  for (const dependency of plan.deps) {
-    const target = resolve(reader, file, dependency.specifier)
-      || `${path.posix.normalize(path.posix.join(path.posix.dirname(file), dependency.specifier))}.ts`;
-    if (!excluded(target)) complete = tsContent(reader, target, parts, sources, new Set(), dependency.names, { route }) && complete;
-  }
-  return complete;
-}
-
 function routeEntries(reader) {
   const raw = reader.read(ROUTES);
   if (raw === null) return new Map();
@@ -442,6 +379,11 @@ export function buildSeoInventory(reader) {
     const entries = readJson(file);
     if (Array.isArray(entries)) for (const entry of entries) if (entry?.id) records.push({ route: `/${prefix}/${entry.id}`, entry, file, kind, tech: entry.tech || kind });
   }
+  // Per-entry pages are dated by their own content: the catalog object, the CDN
+  // assets it references, per-entry bundles and page-specific lab components.
+  // The shared detail component, its template, the parameterized route metadata
+  // and the SEO helpers render every entry of a family and deliberately take no
+  // part, so one shared edit cannot re-date hundreds of pages at once.
   for (const record of records) {
     const { route, entry, file, kind } = record;
     if (!['incident', 'tradeoff-battle'].includes(kind)) for (const company of entry.companies || entry.companyTags || []) companies.add(String(company).trim().toLowerCase());
@@ -449,10 +391,7 @@ export function buildSeoInventory(reader) {
     const assets = collectSeoContentAssets(reader, entry, { tech: record.tech, route, clean });
     const parts = [assets.value ?? clean(entry), ...assets.parts];
     const sources = new Set([file, ...assets.sources]);
-    const descriptor = routes.get(['coding', 'trivia', 'debug'].includes(kind) ? `/:tech/${kind}/:id` : `/${route.split('/')[1]}/:id`);
-    if (descriptor) { parts.push(descriptor.data); sources.add(ROUTES); }
     let complete = assets.complete;
-    if (descriptor?.component) complete = detailContent(reader, descriptor.component, parts, sources, route) && complete;
     if (kind === 'system-design') {
       const base = `cdn/questions/system-design/${entry.id}/`;
       sources.add(base);
