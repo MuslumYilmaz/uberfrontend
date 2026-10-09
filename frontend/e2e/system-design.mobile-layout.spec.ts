@@ -134,6 +134,17 @@ async function assertSemanticCodeIsSelectable(page: import('@playwright/test').P
   expect(selectedText).toContain('type MailboxSnapshot');
 }
 
+async function openAllSdSections(page: import('@playwright/test').Page): Promise<void> {
+  // RADIO sections render collapsed by default; open them before measuring worked examples.
+  const sections = page.locator('details.sd-section');
+  for (const section of await sections.all()) {
+    if (await section.getAttribute('open') === null) {
+      await section.locator('summary').click();
+    }
+    await expect(section).toHaveAttribute('open', '');
+  }
+}
+
 test.describe('system design mobile layout guardrail', () => {
   test.skip(({ browserName }) => browserName !== 'chromium', 'Layout guardrails are chromium-only.');
   test.use({
@@ -376,6 +387,7 @@ test.describe('system design mobile layout guardrail', () => {
       expect(response?.status()).toBe(200);
       await assertSingleVisibleH1(page, OFFLINE_EMAIL_H1, width);
       await expect(page.locator('.locked-card')).toHaveCount(0);
+      await openAllSdSections(page);
 
       const workedExampleHeading = page.getByText(
         'Worked example: the send succeeds and the response disappears',
@@ -438,6 +450,7 @@ test.describe('system design mobile layout guardrail', () => {
       expect(response?.status()).toBe(200);
       await expect(page.locator('h1')).toHaveText(entry.title);
       await expect(page.locator('.locked-card')).toHaveCount(0);
+      await openAllSdSections(page);
       await expect(page.getByText(entry.workedExample, { exact: true })).toBeVisible();
       await expect(page.locator('.sd-table').filter({ hasText: entry.table })).toHaveCount(1);
       await expect(page.locator('.sd-code')).not.toHaveCount(0);

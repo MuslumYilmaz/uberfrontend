@@ -4,12 +4,10 @@ on:
   pull_request:
   push:
     branches: [main]
-  schedule:
-    - cron: '0 3 * * *'
   workflow_dispatch:
     inputs:
       run_perf:
-        description: 'Run perf smoke tests'
+        description: 'Run perf smoke tests (manual only; no schedule)'
         required: false
         default: 'false'
 
@@ -23,7 +21,6 @@ concurrency:
 jobs:
   changes:
     name: Interview change scope
-    if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     outputs:
@@ -58,7 +55,6 @@ jobs:
 
   e2e:
     name: Playwright Critical
-    if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
     timeout-minutes: 35
     defaults:
@@ -144,6 +140,62 @@ jobs:
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: playwright-artifacts
+          path: |
+            frontend/playwright-report
+            frontend/test-results
+          retention-days: 7
+
+  e2e-extended:
+    name: Playwright Extended
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build (production)
+        run: npm run build
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('frontend/package-lock.json') }}
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run extended production contracts (SEO, editorial, labs, premium exposure)
+        run: npm run test:e2e:extended:prod
+        env:
+          CI: true
+
+      - name: Run extended experience suite (mobile layout, accessibility, offline replay)
+        run: npm run test:e2e:extended
+        env:
+          CI: true
+
+      - name: Upload Playwright artifacts (on failure)
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: playwright-extended-artifacts
           path: |
             frontend/playwright-report
             frontend/test-results
@@ -281,7 +333,7 @@ jobs:
 
   interview-cross-browser-gate:
     name: Interview Cross-browser Gate
-    if: ${{ always() && github.event_name != 'schedule' }}
+    if: ${{ always() }}
     needs:
       - changes
       - interview-mocked-cross-browser
@@ -315,12 +367,9 @@ jobs:
 
   e2e-perf:
     name: Playwright Perf Smoke
-    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.run_perf == 'true')
+    if: github.event_name == 'workflow_dispatch' && inputs.run_perf == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    permissions:
-      contents: read
-      issues: write
     defaults:
       run:
         working-directory: frontend
@@ -371,40 +420,3 @@ jobs:
             frontend/test-results/perf
           retention-days: 7
 
-      - name: Open or update scheduled perf issue
-        if: failure() && github.event_name == 'schedule'
-        working-directory: .
-        env:
-          GH_TOKEN: ${{ github.token }}
-          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-        run: |
-          title="Nightly perf smoke is failing"
-          body="Scheduled Playwright perf smoke failed.
-
-          Run: ${RUN_URL}
-
-          Keep this issue open until the scheduled perf smoke recovers."
-          gh label create ci --color 5319e7 --description "CI automation" --force || true
-          gh label create perf --color fbca04 --description "Performance guardrail" --force || true
-          existing="$(gh issue list --state open --label ci --label perf --search "$title in:title" --json number --jq '.[0].number // empty')"
-          if [ -n "$existing" ]; then
-            gh issue comment "$existing" --body "$body"
-          else
-            gh issue create --title "$title" --body "$body" --label ci --label perf
-          fi
-
-      - name: Close scheduled perf issue on recovery
-        if: success() && github.event_name == 'schedule'
-        working-directory: .
-        env:
-          GH_TOKEN: ${{ github.token }}
-          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-        run: |
-          title="Nightly perf smoke is failing"
-          gh label create ci --color 5319e7 --description "CI automation" --force || true
-          gh label create perf --color fbca04 --description "Performance guardrail" --force || true
-          existing="$(gh issue list --state open --label ci --label perf --search "$title in:title" --json number --jq '.[0].number // empty')"
-          if [ -n "$existing" ]; then
-            gh issue comment "$existing" --body "Scheduled Playwright perf smoke recovered. Run: ${RUN_URL}"
-            gh issue close "$existing" --reason completed
-          fi

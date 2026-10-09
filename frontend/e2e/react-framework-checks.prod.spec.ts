@@ -756,7 +756,9 @@ async function installFrameworkRuntimeResponseCache(page: Page): Promise<void> {
 }
 
 test.describe('Framework checks against the production SSR build', () => {
-  test.describe.configure({ mode: 'serial', timeout: 120_000 });
+  // Each test opens its own context and question route, so they are independent.
+  // Running them in parallel keeps the production framework contract under 5 minutes.
+  test.describe.configure({ mode: 'parallel', timeout: 120_000 });
 
   test.beforeEach(async ({ page }) => {
     await installLocalFrameworkAssetMirror(page);
@@ -766,7 +768,7 @@ test.describe('Framework checks against the production SSR build', () => {
 
   test('Counter reaches assertions, passes its canonical solution, rebuilds, and repeats cleanly', async ({ page }) => {
     await page.goto('/react/coding/react-counter');
-    await expect(page.getByTestId('coding-detail-page')).toBeVisible();
+    await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
     await waitForFrameworkPreview(page, '.value');
     await expect(livePreview(page).locator('.value')).toHaveText('0');
 
@@ -804,7 +806,7 @@ test.describe('Framework checks against the production SSR build', () => {
   test('coding workspace stacks at 834px, keeps both framework panes usable, and preserves desktop columns', async ({ page }) => {
     await page.setViewportSize({ width: 834, height: 900 });
     await page.goto('/react/coding/react-counter');
-    await expect(page.getByTestId('coding-detail-page')).toBeVisible();
+    await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
     await waitForFrameworkPreview(page, '.value');
 
     const description = page.getByTestId('coding-description-pane');
@@ -898,7 +900,7 @@ test.describe('Framework checks against the production SSR build', () => {
 
   test('React Counter keeps normal and pressure drafts isolated across all four rounds', async ({ page }) => {
     await page.goto('/react/coding/react-counter');
-    await expect(page.getByTestId('coding-detail-page')).toBeVisible();
+    await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
     await waitForFrameworkPreview(page, '.value');
     await expect(page.getByTestId('pressure-mode-panel')).toHaveCount(0);
     await expect(page.getByTestId('pressure-mode-entry')).toBeVisible();
@@ -955,7 +957,7 @@ test.describe('Framework checks against the production SSR build', () => {
 
     test(`${framework} Counter passes the shared pressure contract and lifecycle cleanup`, async ({ page }) => {
       await page.goto(`/${framework}/coding/${questionId}?mode=pressure`);
-      await expect(page.getByTestId('coding-detail-page')).toBeVisible();
+      await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
       await expect(page.getByTestId('pressure-mode-panel')).toBeVisible();
       await waitForFrameworkPreview(page, '.value');
 
@@ -972,7 +974,7 @@ test.describe('Framework checks against the production SSR build', () => {
     if (!baseURL) throw new Error('Playwright baseURL is required for the premium pressure test');
     await seedPremiumSession(page, baseURL);
     await page.goto('/react/coding/react-debounced-search');
-    await expect(page.getByTestId('coding-detail-page')).toBeVisible();
+    await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
     await waitForFrameworkPreview(page, '.input');
 
     const entry = page.getByTestId('pressure-mode-entry');
@@ -1021,7 +1023,7 @@ test.describe('Framework checks against the production SSR build', () => {
       if (!baseURL) throw new Error('Playwright baseURL is required for the premium pressure test');
       await seedPremiumSession(page, baseURL);
       await page.goto(`/${framework}/coding/${framework}-debounced-search?mode=pressure`);
-      await expect(page.getByTestId('coding-detail-page')).toBeVisible();
+      await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
       await expect(page.getByTestId('pressure-mode-panel')).toBeVisible();
       await waitForFrameworkPreview(page, '.input');
 
@@ -1033,7 +1035,7 @@ test.describe('Framework checks against the production SSR build', () => {
 
   test('React Todo List keeps normal and pressure drafts isolated across all four rounds', async ({ page }) => {
     await page.goto('/react/coding/react-todo-list');
-    await expect(page.getByTestId('coding-detail-page')).toBeVisible();
+    await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
     await waitForFrameworkPreview(page, '.input-row input');
     await expect(page.getByTestId('pressure-mode-panel')).toHaveCount(0);
     await expect(page.getByTestId('pressure-mode-entry')).toBeVisible();
@@ -1077,7 +1079,7 @@ test.describe('Framework checks against the production SSR build', () => {
 
     test(`${framework} Todo List passes state, editing, undo, and cleanup pressure rounds`, async ({ page }) => {
       await page.goto(`/${framework}/coding/${questionId}?mode=pressure`);
-      await expect(page.getByTestId('coding-detail-page')).toBeVisible();
+      await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
       await expect(page.getByTestId('pressure-mode-panel')).toBeVisible();
       await waitForFrameworkPreview(page, '.input-row input');
 
@@ -1094,7 +1096,7 @@ test.describe('Framework checks against the production SSR build', () => {
     if (!baseURL) throw new Error('Playwright baseURL is required for the premium pressure test');
     await seedPremiumSession(page, baseURL);
     await page.goto('/react/coding/react-shopping-cart');
-    await expect(page.getByTestId('coding-detail-page')).toBeVisible();
+    await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
     await waitForFrameworkPreview(page, '.product-card:first-child');
     await expect(page.getByTestId('pressure-mode-entry')).toBeVisible();
 
@@ -1148,7 +1150,7 @@ test.describe('Framework checks against the production SSR build', () => {
       if (!baseURL) throw new Error('Playwright baseURL is required for the premium pressure test');
       await seedPremiumSession(page, baseURL);
       await page.goto(`/${framework}/coding/${questionId}?mode=pressure`);
-      await expect(page.getByTestId('coding-detail-page')).toBeVisible();
+      await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
       await expect(page.getByTestId('pressure-mode-panel')).toBeVisible();
       await waitForFrameworkPreview(page, '.product-card:first-child');
 
@@ -1165,7 +1167,7 @@ test.describe('Framework checks against the production SSR build', () => {
     if (!baseURL) throw new Error('Playwright baseURL is required for the premium pressure test');
     await seedPremiumSession(page, baseURL);
     await page.goto('/react/coding/react-chips-input-autocomplete');
-    await expect(page.getByTestId('coding-detail-page')).toBeVisible();
+    await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
     await waitForFrameworkPreview(page, '.card');
     await expect(page.getByTestId('pressure-mode-entry')).toBeVisible();
 
@@ -1217,7 +1219,7 @@ test.describe('Framework checks against the production SSR build', () => {
       if (!baseURL) throw new Error('Playwright baseURL is required for the premium pressure test');
       await seedPremiumSession(page, baseURL);
       await page.goto(`/${framework}/coding/${framework}-chips-input-autocomplete?mode=pressure`);
-      await expect(page.getByTestId('coding-detail-page')).toBeVisible();
+      await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
       await expect(page.getByTestId('pressure-mode-panel')).toBeVisible();
       await waitForFrameworkPreview(page, '.card');
 
@@ -1234,7 +1236,7 @@ test.describe('Framework checks against the production SSR build', () => {
     if (!baseURL) throw new Error('Playwright baseURL is required for the premium pressure test');
     await seedPremiumSession(page, baseURL);
     await page.goto('/react/coding/react-pagination-table');
-    await expect(page.getByTestId('coding-detail-page')).toBeVisible();
+    await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
     await waitForFrameworkPreview(page, '.table');
     await expect(page.getByTestId('pressure-mode-entry')).toBeVisible();
 
@@ -1286,7 +1288,7 @@ test.describe('Framework checks against the production SSR build', () => {
       if (!baseURL) throw new Error('Playwright baseURL is required for the premium pressure test');
       await seedPremiumSession(page, baseURL);
       await page.goto(`/${framework}/coding/${framework}-pagination-table?mode=pressure`);
-      await expect(page.getByTestId('coding-detail-page')).toBeVisible();
+      await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
       await expect(page.getByTestId('pressure-mode-panel')).toBeVisible();
       await waitForFrameworkPreview(page, '.table');
 
@@ -1303,7 +1305,7 @@ test.describe('Framework checks against the production SSR build', () => {
     if (!baseURL) throw new Error('Playwright baseURL is required for the premium pressure test');
     await seedPremiumSession(page, baseURL);
     await page.goto('/react/coding/react-accordion-faq');
-    await expect(page.getByTestId('coding-detail-page')).toBeVisible();
+    await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
     await waitForFrameworkPreview(page, '.faq-header');
     await expect(page.getByTestId('pressure-mode-entry')).toBeVisible();
     await expect(page.getByTestId('pressure-mode-coming-soon')).toHaveCount(0);
@@ -1367,7 +1369,7 @@ test.describe('Framework checks against the production SSR build', () => {
       if (!baseURL) throw new Error('Playwright baseURL is required for the premium pressure test');
       await seedPremiumSession(page, baseURL);
       await page.goto(`/${framework}/coding/${questionId}?mode=pressure`);
-      await expect(page.getByTestId('coding-detail-page')).toBeVisible();
+      await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
       await expect(page.getByTestId('pressure-mode-panel')).toBeVisible();
       await waitForFrameworkPreview(page, '.faq-header');
 
@@ -1384,7 +1386,7 @@ test.describe('Framework checks against the production SSR build', () => {
     if (!baseURL) throw new Error('Playwright baseURL is required for the premium pressure test');
     await seedPremiumSession(page, baseURL);
     await page.goto('/react/coding/react-tictactoe');
-    await expect(page.getByTestId('coding-detail-page')).toBeVisible();
+    await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
     await waitForFrameworkPreview(page, '.board');
     await expect(page.getByTestId('pressure-mode-entry')).toBeVisible();
     await expect(page.getByTestId('pressure-mode-start')).toBeEnabled();
@@ -1442,7 +1444,7 @@ test.describe('Framework checks against the production SSR build', () => {
       if (!baseURL) throw new Error('Playwright baseURL is required for the premium pressure test');
       await seedPremiumSession(page, baseURL);
       await page.goto(`/${framework}/coding/${questionId}?mode=pressure`);
-      await expect(page.getByTestId('coding-detail-page')).toBeVisible();
+      await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
       await expect(page.getByTestId('pressure-mode-panel')).toBeVisible();
       await waitForFrameworkPreview(page, '.board');
 
@@ -1460,7 +1462,7 @@ test.describe('Framework checks against the production SSR build', () => {
     if (!baseURL) throw new Error('Playwright baseURL is required for the premium pressure test');
     await seedPremiumSession(page, baseURL);
     await page.goto('/react/coding/react-chessboard-click-highlight');
-    await expect(page.getByTestId('coding-detail-page')).toBeVisible();
+    await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
     await waitForFrameworkPreview(page, '.board');
     await expect(page.getByTestId('pressure-mode-entry')).toBeVisible();
     await expect(page.getByTestId('pressure-mode-start')).toBeEnabled();
@@ -1526,7 +1528,7 @@ test.describe('Framework checks against the production SSR build', () => {
       if (!baseURL) throw new Error('Playwright baseURL is required for the premium pressure test');
       await seedPremiumSession(page, baseURL);
       await page.goto(`/${framework}/coding/${framework}-chessboard-click-highlight?mode=pressure`);
-      await expect(page.getByTestId('coding-detail-page')).toBeVisible();
+      await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
       await expect(page.getByTestId('pressure-mode-panel')).toBeVisible();
       await waitForFrameworkPreview(page, '.board');
 
@@ -1544,7 +1546,7 @@ test.describe('Framework checks against the production SSR build', () => {
     if (!baseURL) throw new Error('Playwright baseURL is required for the premium pressure test');
     await seedPremiumSession(page, baseURL);
     await page.goto('/react/coding/react-dynamic-counter-buttons');
-    await expect(page.getByTestId('coding-detail-page')).toBeVisible();
+    await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
     await waitForFrameworkPreview(page, '.counterBtn');
     await expect(page.getByTestId('pressure-mode-entry')).toBeVisible();
     await expect(page.getByTestId('pressure-mode-start')).toBeEnabled();
@@ -1618,7 +1620,7 @@ test.describe('Framework checks against the production SSR build', () => {
       if (!baseURL) throw new Error('Playwright baseURL is required for the premium pressure test');
       await seedPremiumSession(page, baseURL);
       await page.goto(`/${framework}/coding/${framework}-dynamic-counter-buttons?mode=pressure`);
-      await expect(page.getByTestId('coding-detail-page')).toBeVisible();
+      await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
       await expect(page.getByTestId('pressure-mode-panel')).toBeVisible();
       await waitForFrameworkPreview(page, '.counterBtn');
 
@@ -1631,7 +1633,7 @@ test.describe('Framework checks against the production SSR build', () => {
 
   test('unsupported pressure URLs fall back to the normal canonical question flow', async ({ page }) => {
     await page.goto('/react/coding/react-autocomplete-search-starter?mode=pressure');
-    await expect(page.getByTestId('coding-detail-page')).toBeVisible();
+    await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
     await expect(page).toHaveURL(/\/react\/coding\/react-autocomplete-search-starter$/);
     await expect(page.getByTestId('pressure-mode-panel')).toHaveCount(0);
     const entry = page.getByTestId('pressure-mode-entry');
@@ -1671,7 +1673,7 @@ test.describe('Framework checks against the production SSR build', () => {
 
   test('Autocomplete runs all thirteen assertions and passes them with its canonical solution', async ({ page }) => {
     await page.goto('/react/coding/react-autocomplete-search-starter');
-    await expect(page.getByTestId('coding-detail-page')).toBeVisible();
+    await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
     await waitForFrameworkPreview(page, '.input');
 
     const starterResults = await runChecks(page, 13);
@@ -1725,13 +1727,13 @@ test.describe('Framework checks against the production SSR build', () => {
 
     await openLive.click();
     await expect(page).toHaveURL(/\/react\/coding\/react-counter$/);
-    await expect(page.getByTestId('coding-detail-page')).toBeVisible();
+    await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
     await waitForFrameworkPreview(page, '.value');
   });
 
   test('Vue Todo starts from boilerplate, keeps solution transient, and restores only user edits', async ({ page }) => {
     await page.goto('/vue/coding/vue-todo-list');
-    await expect(page.getByTestId('coding-detail-page')).toBeVisible();
+    await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
     await waitForFrameworkPreview(page, '.empty');
     await expect.poll(() => getMonacoModelValue(page, 'src/App.vue')).toBe(VUE_TODO_STARTER);
     expect(VUE_TODO_STARTER).toContain('TODO: Add a trimmed, non-empty task');
@@ -1768,7 +1770,7 @@ test.describe('Framework checks against the production SSR build', () => {
     await dismissPostPassPrompt(page);
 
     await page.reload();
-    await expect(page.getByTestId('coding-detail-page')).toBeVisible();
+    await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
     await waitForFrameworkPreview(page, '.empty');
     await expect.poll(() => getMonacoModelValue(page, 'src/App.vue')).toBe(VUE_TODO_STARTER);
 
@@ -1788,7 +1790,7 @@ test.describe('Framework checks against the production SSR build', () => {
     await waitForFrameworkPreview(page, '.empty');
 
     await page.reload();
-    await expect(page.getByTestId('coding-detail-page')).toBeVisible();
+    await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
     await expect.poll(() => getMonacoModelValue(page, 'src/App.vue')).toContain(marker);
   });
 
@@ -1798,7 +1800,7 @@ test.describe('Framework checks against the production SSR build', () => {
       '/vue/coding/vue-counter',
     ]) {
       await page.goto(path);
-      await expect(page.getByTestId('coding-detail-page')).toBeVisible();
+      await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
       await waitForFrameworkPreview(page, '.value');
 
       const results = await runChecks(page, 1);

@@ -127,9 +127,15 @@ Run full suite (critical + extended + optional specs):
 
 `npm run test:e2e:full`
 
-Run extended/non-blocking suite only:
+Run the extended experience suite (mobile layout, accessibility, offline replay) against the dev server:
 
 `npm run test:e2e:extended`
+
+Run the extended production contracts (SEO SSR, editorial copy, labs, premium exposure, system design V2) against a production build (`npm run build` first):
+
+`npm run test:e2e:extended:prod`
+
+Both extended suites run in the `Playwright Extended` CI job on every pull request and main push, next to `Playwright Critical`.
 
 Enable WebKit locally (optional, for whichever suite you run):
 

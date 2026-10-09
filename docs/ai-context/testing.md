@@ -27,6 +27,7 @@ Load this for verification strategy, CI, regression risk, or test-quality work.
 
 - `UI Regression` compares the current production UI with reviewed Linux screenshots and checks SSR styles/keyboard controls using one build.
 - UI and Interview checks use `scripts/ci-change-scope.mjs`; retain shared frontend/CDN/content dependencies when changing its scope.
+- `Playwright Extended` runs `test:e2e:extended` (dev server: mobile layout, accessibility, offline replay) and `test:e2e:extended:prod` (production build: SEO SSR, editorial copy, labs, premium exposure) on every PR and main push. Specs that live in `frontend/e2e/` but in neither suite nor `test:e2e:critical` do not run anywhere; wire new specs into one of them.
 - See `docs/references/ui-regression.md` for coverage, intentional screenshot updates, and runtime requirements.
 
 ## Deep reference

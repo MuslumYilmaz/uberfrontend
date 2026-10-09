@@ -64,7 +64,7 @@ async function assertGuideShellMobileLayout(page: import('@playwright/test').Pag
   await expect(main).toBeVisible();
   await expect(page.locator('.mobile-panels')).toBeVisible();
   await expect(page.locator('.left')).toBeHidden();
-  await expect(page.locator('.toc')).toBeHidden();
+  await expect(page.locator('aside.toc')).toBeHidden();
 
   await stabilize(page);
   await assertElementFitsWidth(main, `${route} .main`);
@@ -120,7 +120,7 @@ test.describe('guide mobile layout guardrail', () => {
     await expect(main).toBeVisible();
     await expect(page.locator('.mobile-panels')).toBeVisible();
     await expect(page.locator('.left')).toBeHidden();
-    await expect(page.locator('.toc')).toBeHidden();
+    await expect(page.locator('aside.toc')).toBeHidden();
 
     await stabilize(page);
     await assertDocumentNoOverflow(page, 'tablet guide detail');
@@ -156,7 +156,7 @@ test.describe('guide mobile layout guardrail', () => {
     await page.goto('/guides/system-design-blueprint/radio-framework');
 
     await expect(page.locator('.left')).toBeVisible();
-    await expect(page.locator('.toc')).toBeVisible();
+    await expect(page.locator('aside.toc')).toBeVisible();
     await expect(page.locator('.mobile-panels')).toBeHidden();
   });
 });
