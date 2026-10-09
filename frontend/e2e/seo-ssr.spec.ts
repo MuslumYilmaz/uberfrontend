@@ -1147,6 +1147,9 @@ test.describe('seo-ssr', () => {
 
   for (const entry of CONTEXTUAL_LINK_CASES) {
     test(`contextual links remain crawlable and navigable: ${entry.path}`, async ({ browser, page }) => {
+      // Five viewports x every contextual link, each navigated and checked; the
+      // /coding case exceeds the 60s default on GitHub runners.
+      test.slow();
       const rawContext = await browser.newContext({ javaScriptEnabled: false });
       try {
         const rawPage = await rawContext.newPage();
