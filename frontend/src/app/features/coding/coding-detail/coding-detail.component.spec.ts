@@ -20,6 +20,7 @@ import { UserProgressService } from '../../../core/services/user-progress.servic
 import { MonacoEditorComponent } from '../../../monaco-editor.component';
 import { CodingDetailComponent } from './coding-detail.component';
 import { CodingJsPanelComponent } from './coding-js-panel/coding-js-panel.component';
+import { listQuestionFailureHints } from '../../../core/utils/failure-explain-rules';
 import { PUBLIC_QUESTION_NAVIGATION } from '../../../generated/public-question-navigation';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
@@ -399,6 +400,41 @@ describe('CodingDetailComponent', () => {
     expect(component.descriptionCollapsed()).toBeFalse();
     component.isPhoneViewport.set(false);
     expect(component.descriptionCollapsed()).toBeTrue();
+  });
+
+  it('prerenders authored common mistakes inside the closed solution panel only for questions that have failure hints', async () => {
+    spyOnProperty(window, 'innerWidth', 'get').and.returnValue(390);
+    const render = async (question: ReturnType<typeof makeDeferredPromiseQuestion>) => {
+      const fixture = TestBed.createComponent(CodingDetailComponent);
+      const component = fixture.componentInstance;
+      component.questionId = question.id;
+      component.questionTech = 'javascript';
+      questionService.loadQuestions.and.returnValue(of([question] as any));
+      spyOn(component as any, 'resolveSolutionAsset').and.resolveTo({ files: {}, initialPath: '' });
+      fixture.detectChanges();
+      await fixture.whenStable();
+      fixture.detectChanges();
+      return fixture.nativeElement as HTMLElement;
+    };
+
+    const question = makeDeferredPromiseQuestion();
+    const expected = listQuestionFailureHints(question.id);
+    expect(expected.length).toBeGreaterThan(0);
+    const host = await render(question);
+    const solution = host.querySelector('[data-testid="coding-solution-panel"]') as HTMLElement;
+    const mistakes = solution.querySelector('[data-testid="coding-common-mistakes"]') as HTMLElement;
+    expect(solution.hidden).toBeTrue();
+    expect(mistakes).not.toBeNull();
+    expect(Array.from(mistakes.querySelectorAll('[data-testid="coding-common-mistake-title"]')).map((node) => node.textContent?.trim()))
+      .toEqual(expected.map((hint) => hint.title));
+    expect(mistakes.textContent).toContain(expected[0].why);
+    expect(mistakes.textContent).toContain(expected[0].actions[0]);
+    expect(mistakes.textContent).not.toContain('Multiple tests are failing');
+    expect(host.querySelector('[data-testid="coding-description-panel"]')?.textContent).not.toContain(expected[0].title);
+
+    const plain = await render({ ...question, id: 'js-question-without-authored-hints' });
+    expect(plain.querySelector('[data-testid="coding-solution-panel"]')).not.toBeNull();
+    expect(plain.querySelector('[data-testid="coding-common-mistakes"]')).toBeNull();
   });
 
   it('renders both HTML and CSS solution blocks as mobile read-only code', async () => {

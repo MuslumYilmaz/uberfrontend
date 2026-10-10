@@ -14,6 +14,8 @@ const ROUTES = `${APP}app.routes.ts`;
 const GUIDES = `${APP}shared/guides/guide.registry.ts`;
 const REGISTRY = 'cdn/practice/registry.json';
 const TRACKS = 'cdn/questions/track-registry.json';
+const HINT_RULES = `${APP}core/utils/failure-explain-rules.ts`;
+const CODING_DETAIL_TEMPLATE = `${APP}features/coding/coding-detail/coding-detail.component.html`;
 const OMIT = new Set([
   'updatedAt', 'createdAt', 'publishedAt', 'lastmod', 'lastModified', 'dateModified',
   'datePublished', 'factCheckedAt', 'reviewedAt', 'reviewedBy', 'draftSource',
@@ -22,6 +24,7 @@ const OMIT = new Set([
 ]);
 const DATE_NAME = /(?:dateModified|datePublished|lastmod|lastModified|updatedAt|publishedAt|createdAt|factCheckedAt|reviewedAt|_DATE_MODIFIED|_DATE_PUBLISHED|seoLastmod)/i;
 const jsonCache = new Map();
+const hintCache = new Map();
 const projectionCache = new Map();
 const htmlCache = new Map();
 const own = (node, key) => node?.properties?.find((p) => p.name && propertyName(p.name) === key);
@@ -160,6 +163,44 @@ function projectNode(node, scope = {}) {
   const children = [];
   node.forEachChild((child) => { const value = projectNode(child, scope); if (value !== null) children.push(value); });
   return [node.kind, ...children];
+}
+
+const unwrap = (node) => node && (ts.isAsExpression(node) || ts.isParenthesizedExpression(node) || ts.isSatisfiesExpression?.(node)) ? unwrap(node.expression) : node;
+
+// Authored failure hints render statically next to each public solution. The
+// rules module is shared by every exercise, so only the rule objects of one
+// question take part in that question's projection: editing or formatting
+// another question's hint moves nothing here.
+function failureHintParts(reader, questionId) {
+  const raw = reader.read(HINT_RULES);
+  if (raw === null) return null;
+  if (!hintCache.has(raw)) {
+    const byId = new Map();
+    const add = (id, node) => { if (!byId.has(id)) byId.set(id, []); byId.get(id).push(projectNode(node)); };
+    const declarations = new Map();
+    for (const statement of ast(raw).statements) {
+      if (ts.isVariableStatement(statement)) for (const declaration of statement.declarationList.declarations) declarations.set(propertyName(declaration.name), unwrap(declaration.initializer));
+    }
+    const rules = declarations.get('QUESTION_HINT_RULES');
+    for (const element of rules && ts.isArrayLiteralExpression(rules) ? rules.elements : []) {
+      if (ts.isObjectLiteralExpression(element)) {
+        // `matches: () => true` marks a question's generic fallback, which the page does not render.
+        const matches = init(element, 'matches');
+        const fallback = matches && ts.isArrowFunction(matches) && !matches.parameters.length && matches.body.kind === ts.SyntaxKind.TrueKeyword;
+        const id = string(init(element, 'questionId'));
+        if (id && !fallback) add(id, element);
+        continue;
+      }
+      // One rule mapped over a list of question ids: `IDS.map((questionId) => ({ ... }))`.
+      const mapped = ts.isSpreadElement(element) && ts.isIdentifier(element.expression) ? declarations.get(element.expression.text) : null;
+      if (!mapped || !ts.isCallExpression(mapped) || !ts.isPropertyAccessExpression(mapped.expression) || mapped.expression.name.text !== 'map') continue;
+      const ids = ts.isIdentifier(mapped.expression.expression) ? declarations.get(mapped.expression.expression.text) : null;
+      if (!ids || !ts.isArrayLiteralExpression(ids)) continue;
+      for (const id of ids.elements.map(string).filter(Boolean)) add(id, mapped.arguments[0]);
+    }
+    hintCache.set(raw, byId);
+  }
+  return hintCache.get(raw).get(questionId) || [];
 }
 
 function declarationNames(node) {
@@ -412,6 +453,20 @@ export function buildSeoInventory(reader) {
     if (lab) {
       const component = `${APP}features/trivia/trivia-detail/${lab}/${lab}.component.ts`;
       if (reader.read(component) !== null) complete = tsContent(reader, component, parts, sources, new Set(), null, { route }) && complete;
+    }
+    if (kind === 'coding' || kind === 'debug') {
+      // Authored failure hints are page content only while the shared detail
+      // template renders them, so they date each exercise from the commit that
+      // made them visible, not from when the rule was first written.
+      const template = reader.read(CODING_DETAIL_TEMPLATE);
+      if (template !== null) {
+        sources.add(CODING_DETAIL_TEMPLATE);
+        const hints = template.includes('data-testid="coding-common-mistakes"') ? failureHintParts(reader, entry.id) : null;
+        if (hints) {
+          sources.add(HINT_RULES);
+          if (hints.length) parts.push(['failureHints', ...hints]);
+        }
+      }
     }
     if (complete) emit(route, parts, sources);
   }

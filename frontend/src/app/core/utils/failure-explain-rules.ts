@@ -4153,3 +4153,28 @@ export function buildFailureHint(input: {
   if (mapped) return mapped;
   return FALLBACK_HINT;
 }
+
+
+/**
+ * Snapshot-free view of a question's authored failure hints, highest priority
+ * first and one entry per rule. The coding page prerenders these next to the
+ * solution so readers and crawlers can see them without a failing run; the
+ * editor keeps selecting the single matching hint after each run.
+ */
+export function listQuestionFailureHints(questionId: string | null | undefined): FailureHint[] {
+  const id = String(questionId || '').trim();
+  if (!id) return [];
+  const snapshot = buildSnapshot({ questionId: id, errorLine: '' });
+  const seen = new Set<string>();
+  // A rule that matches an empty run is the question's generic fallback, not a
+  // specific mistake, so it stays in the editor flow only.
+  return QUESTION_HINT_RULES
+    .filter((rule) => rule.questionId === id && !rule.matches(snapshot))
+    .sort((a, b) => b.priority - a.priority)
+    .map((rule) => rule.buildHint(snapshot))
+    .filter((hint) => {
+      if (seen.has(hint.ruleId)) return false;
+      seen.add(hint.ruleId);
+      return true;
+    });
+}

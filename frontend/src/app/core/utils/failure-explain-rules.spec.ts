@@ -1,4 +1,4 @@
-import { buildFailureHint } from './failure-explain-rules';
+import { buildFailureHint, listQuestionFailureHints } from './failure-explain-rules';
 
 describe('failure-explain-rules', () => {
   it('prioritizes Angular template compilation guidance before framework assertions', () => {
@@ -820,5 +820,34 @@ describe('failure-explain-rules', () => {
       category: 'unknown',
     });
     expect(hint.ruleId).toBe('generic-debug');
+  });
+});
+
+describe('listQuestionFailureHints', () => {
+  it('lists a question\'s authored hints statically, highest priority first, without run-progress prefixes', () => {
+    const hints = listQuestionFailureHints('js-sleep');
+    expect(hints.map((hint) => hint.ruleId)).toEqual(['js-sleep-return-promise', 'js-sleep-delay-timing']);
+    for (const hint of hints) {
+      expect(hint.title.trim()).not.toBe('');
+      expect(hint.why).not.toMatch(/^(?:Good progress|Multiple tests are failing)/);
+      expect(hint.actions.length).toBeGreaterThan(0);
+    }
+    const runtime = buildFailureHint({
+      questionId: 'js-sleep',
+      errorLine: 'Expected undefined to be "function"',
+      firstFailName: 'returns a promise',
+      passCount: 0,
+      totalCount: 1,
+      failCount: 1,
+      failedTests: [{ name: 'returns a promise', errorLine: 'Expected undefined to be "function"' }],
+    });
+    expect(hints[0]).toEqual(runtime);
+  });
+
+  it('shares one mapped rule per Angular template question and lists nothing for unknown ids', () => {
+    expect(listQuestionFailureHints('angular-tabs-switcher').map((hint) => hint.ruleId)).toEqual(['angular-modern-template-compile']);
+    expect(listQuestionFailureHints('question-without-authored-hints')).toEqual([]);
+    expect(listQuestionFailureHints('')).toEqual([]);
+    expect(listQuestionFailureHints(undefined)).toEqual([]);
   });
 });

@@ -359,3 +359,45 @@ test('actual question cards propagate to their public hubs and Essential 60, whi
   assert.ok(added.includes('/'));
   assert.ok(added.includes('/companies'));
 });
+
+test('authored failure hints date only their own question and ignore the shared rules module otherwise', () => {
+  const hints = `${APP}core/utils/failure-explain-rules.ts`;
+  const rules = (a, b, fallback = 'Start with the first failing test') => `export const QUESTION_HINT_RULES = [
+    { ruleId: 'a-1', questionId: 'a', priority: 100, matches: (snapshot) => snapshot.failCount > 0, buildHint: (snapshot) => ({ ruleId: 'a-1', title: '${a}', why: 'why', actions: ['do'], confidence: 0.9 }) },
+    { ruleId: 'a-default', questionId: 'a', priority: 40, matches: () => true, buildHint: (snapshot) => ({ ruleId: 'a-default', title: '${fallback}', why: 'why', actions: ['do'], confidence: 0.7 }) },
+    { ruleId: 'b-1', questionId: 'b', priority: 100, matches: (snapshot) => snapshot.failCount > 0, buildHint: (snapshot) => ({ ruleId: 'b-1', title: '${b}', why: 'why', actions: ['do'], confidence: 0.9 }) },
+  ];`;
+  const template = `${APP}features/coding/coding-detail/coding-detail.component.html`;
+  const rendering = '<section data-testid="coding-solution-panel"><ul data-testid="coding-common-mistakes"></ul></section>';
+  const catalog = { [CATALOG]: JSON.stringify([question('a'), question('b'), question('c')]), [template]: '<section data-testid="coding-solution-panel"></section>' };
+  const authored = { ...catalog, [hints]: rules('Return early', 'Keep state') };
+  const withRules = { ...authored, [template]: rendering };
+  // Rules that the template does not render yet are not page content; rendering them dates only the questions that have them.
+  assert.deepEqual(changed(catalog, authored), []);
+  assert.deepEqual(changed(authored, withRules), ['/javascript/coding/a', '/javascript/coding/b']);
+  assert.equal(fingerprint(catalog, '/javascript/coding/c'), fingerprint(withRules, '/javascript/coding/c'));
+  assert.deepEqual(changed(withRules, { ...withRules, [hints]: rules('Return the promise', 'Keep state') }), ['/javascript/coding/a']);
+  assert.deepEqual(changed(withRules, { ...withRules, [hints]: `// formatted\n${rules('Return early', 'Keep state').replace(/\n    /g, '\n\t\t')}` }), []);
+  assert.deepEqual(changed(withRules, { ...withRules, [template]: `${rendering}<p>Shared footer copy</p>` }), []);
+  assert.deepEqual(changed(withRules, { ...withRules, [hints]: rules('Return early', 'Keep state', 'Re-read the failing assertion') }), []);
+  assert.deepEqual(buildSeoInventory(reader(withRules)).get('/javascript/coding/a').sources, [CATALOG, hints, template]);
+  assert.deepEqual(buildSeoInventory(reader(withRules)).get('/javascript/coding/c').sources, [CATALOG, hints, template]);
+});
+
+test('actual hint edits re-date one exercise, and mapped rules re-date only the public exercises they cover', () => {
+  const hints = `${APP}core/utils/failure-explain-rules.ts`;
+  const read = currentReader();
+  const before = buildSeoInventory(read);
+  const changes = (text) => [...buildSeoInventory(currentReader({ [hints]: text }))].filter(([route, entry]) => before.get(route)?.fingerprint !== entry.fingerprint).map(([route]) => route);
+  const source = read.read(hints);
+  const edited = source.replace("title: 'sleep must return a Promise'", "title: 'sleep must always return a Promise'");
+  assert.notEqual(edited, source);
+  assert.deepEqual(changes(edited), ['/javascript/coding/js-sleep']);
+  assert.deepEqual(changes(source.replace("title: 'sleep must return a Promise',", "title:   'sleep must return a Promise', // promise contract")), []);
+  const ids = Array.from(source.match(/ANGULAR_MODERN_TEMPLATE_QUESTION_IDS = \[([^\]]+)\]/)[1].matchAll(/'([^']+)'/g), ([, id]) => id);
+  const shared = source.replace("title: 'Fix the Angular template compilation contract first'", "title: 'Fix the Angular template compilation contract before anything else'");
+  assert.notEqual(shared, source);
+  const covered = ids.map((id) => `/angular/coding/${id}`).filter((route) => before.has(route));
+  assert.ok(covered.length >= 1 && covered.length < ids.length, 'premium Angular exercises stay out of the inventory');
+  assert.deepEqual(changes(shared), covered);
+});

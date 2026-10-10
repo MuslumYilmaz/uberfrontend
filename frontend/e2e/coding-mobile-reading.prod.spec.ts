@@ -6,6 +6,7 @@ import type { Page } from '@playwright/test';
 import { test, expect } from './fixtures';
 import { buildMockUser, installAuthMock } from './auth-mocks';
 import { getMonacoModelValue, setMonacoModelValue, waitForMonacoModel } from './helpers';
+import { listQuestionFailureHints } from '../src/app/core/utils/failure-explain-rules';
 
 type HtmlNode = DefaultTreeAdapterMap['node'];
 type HtmlElement = DefaultTreeAdapterMap['element'];
@@ -232,6 +233,19 @@ test.describe('coding solution source in production HTML', () => {
       expectInitialSolutionCode(await response.text(), item);
     });
   }
+  test('a question with authored failure hints prerenders them next to its solution', async ({ request }) => {
+    const hints = listQuestionFailureHints('js-sleep');
+    expect(hints.length).toBeGreaterThan(0);
+    const response = await request.get('/javascript/coding/js-sleep');
+    expect(response.status()).toBe(200);
+    const sections = elements(parse(await response.text())).filter((node) => attr(node, 'data-testid') === 'coding-common-mistakes');
+    expect(sections).toHaveLength(1);
+    const text = normalize(htmlText(sections[0]));
+    for (const hint of hints) {
+      expect(text).toContain(normalize(hint.title));
+      expect(text).toContain(normalize(hint.actions[0]));
+    }
+  });
   test('premium HTML excludes solution snapshots and code payloads', async ({ request }) => {
     for (const id of ['react-debounced-search', 'js-throttle', 'angular-contact-form-starter']) {
       const item = solutionCases.find((entry) => entry.id === id)!;
@@ -240,6 +254,7 @@ test.describe('coding solution source in production HTML', () => {
       const html = await response.text();
       const nodes = elements(parse(html));
       expect(nodes.some((node) => attr(node, 'data-testid') === 'coding-solution-panel')).toBe(false);
+      expect(nodes.some((node) => attr(node, 'data-testid') === 'coding-common-mistakes')).toBe(false);
       expect(nodes.some((node) => attr(node, 'data-solution-file') !== undefined || attr(node, 'data-solution-language') !== undefined)).toBe(false);
       expect(html).not.toContain('question-solution:');
       // Check raw document and decoded serialized JSON as well as rendered text.
