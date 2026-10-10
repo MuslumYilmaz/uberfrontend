@@ -17,6 +17,7 @@ describe('AnalyticsService', () => {
   const originalUrl = window.location.href;
   let doc: Document;
   let win: TestWindow;
+  let chromeRuntimeShimAdded = false;
 
   function cleanupGlobals() {
     if (!doc?.defaultView) return;
@@ -30,6 +31,13 @@ describe('AnalyticsService', () => {
     delete view.Cypress;
     delete navigatorOverride.userAgent;
     delete navigatorOverride.webdriver;
+    delete navigatorOverride.languages;
+    delete (view as any).outerWidth;
+    delete (view as any).outerHeight;
+    if (chromeRuntimeShimAdded) {
+      delete (view as any).chrome;
+      chromeRuntimeShimAdded = false;
+    }
     sessionStorage.removeItem('fa:analytics:decision_session:v1');
     sessionStorage.removeItem('fa:analytics:traffic_class:v1');
     window.history.replaceState({}, '', originalUrl);
@@ -52,6 +60,18 @@ describe('AnalyticsService', () => {
       configurable: true,
       get: () => false,
     });
+    // Pin a plausible human desktop browser so the suspect heuristics stay quiet
+    // in headless Karma, which reports a zero-sized window.
+    Object.defineProperty(win.navigator, 'languages', {
+      configurable: true,
+      get: () => ['en-US', 'en'],
+    });
+    Object.defineProperty(win, 'outerWidth', { configurable: true, get: () => 1280 });
+    Object.defineProperty(win, 'outerHeight', { configurable: true, get: () => 720 });
+    if (typeof (win as any).chrome === 'undefined') {
+      (win as any).chrome = { runtime: {} };
+      chromeRuntimeShimAdded = true;
+    }
   });
 
   afterEach(() => {
@@ -232,8 +252,96 @@ describe('AnalyticsService', () => {
     service.ensureInitialized();
     service.trackPageView('/pricing');
 
+    expect(service.getVisitorClass()).toBe('automation');
     expect(doc.getElementById('ga4-gtag-script')).toBeNull();
     expect(win.dataLayer).toBeUndefined();
     expect(win.gtag).toBeUndefined();
+  });
+
+  it('skips analytics bootstrap for self-declared crawlers and HTTP clients', () => {
+    const crawlers = [
+      'Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; GPTBot/1.2; +https://openai.com/gptbot)',
+      'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
+      'Mozilla/5.0 (compatible; Bytespider; spider-feedback@bytedance.com)',
+      'python-requests/2.32.0',
+      'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/124.0.0.0 Safari/537.36',
+    ];
+
+    for (const userAgent of crawlers) {
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({ imports: [BrowserTestingModule], providers: [AnalyticsService] });
+      Object.defineProperty(win.navigator, 'userAgent', { configurable: true, get: () => userAgent });
+
+      const service = TestBed.inject(AnalyticsService);
+      service.ensureInitialized();
+      service.trackPageView('/pricing');
+
+      expect(service.getVisitorClass()).withContext(userAgent).toBe('automation');
+      expect(doc.getElementById('ga4-gtag-script')).withContext(userAgent).toBeNull();
+      expect(win.dataLayer).withContext(userAgent).toBeUndefined();
+    }
+  });
+
+  it('treats a normal desktop browser as human and sends no traffic marker', () => {
+    const service = TestBed.inject(AnalyticsService);
+    expect(service.getVisitorClass()).toBe('human');
+
+    service.track('pricing_viewed');
+    service.ensureInitialized();
+
+    const eventCall = Array.from(win.dataLayer?.[2] as IArguments);
+    expect(eventCall[2]).not.toEqual(jasmine.objectContaining({ traffic_type: jasmine.anything() }));
+  });
+
+  it('keeps suspect browsers but tags every hit with traffic_type=bot_suspect', () => {
+    Object.defineProperty(win.navigator, 'languages', { configurable: true, get: () => [] });
+
+    const service = TestBed.inject(AnalyticsService);
+    expect(service.getVisitorClass()).toBe('suspect');
+
+    service.trackPageView('/pricing');
+    service.track('pricing_viewed', { surface: 'pricing_page' });
+    service.ensureInitialized();
+
+    expect(doc.getElementById('ga4-gtag-script')).not.toBeNull();
+    const eventCalls = (win.dataLayer || [])
+      .map((entry) => Array.from(entry as IArguments))
+      .filter((entry) => entry[0] === 'event');
+    expect(eventCalls.map((entry) => entry[1])).toEqual(['page_view', 'pricing_viewed']);
+    expect(eventCalls[0][2]).toEqual(jasmine.objectContaining({ page_path: '/pricing', traffic_type: 'bot_suspect' }));
+    expect(eventCalls[1][2]).toEqual(jasmine.objectContaining({ surface: 'pricing_page', traffic_type: 'bot_suspect' }));
+  });
+
+  it('flags a zero-sized window and a desktop Chrome without the chrome runtime as suspect', () => {
+    Object.defineProperty(win, 'outerWidth', { configurable: true, get: () => 0 });
+    expect(TestBed.inject(AnalyticsService).getVisitorClass()).toBe('suspect');
+
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({ imports: [BrowserTestingModule], providers: [AnalyticsService] });
+    Object.defineProperty(win, 'outerWidth', { configurable: true, get: () => 1280 });
+    delete (win as any).chrome;
+    chromeRuntimeShimAdded = false;
+    expect(TestBed.inject(AnalyticsService).getVisitorClass()).toBe('suspect');
+
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({ imports: [BrowserTestingModule], providers: [AnalyticsService] });
+    Object.defineProperty(win.navigator, 'userAgent', {
+      configurable: true,
+      get: () => 'Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36',
+    });
+    expect(TestBed.inject(AnalyticsService).getVisitorClass()).withContext('mobile Chrome has no chrome runtime check').toBe('human');
+  });
+
+  it('lets an explicit team traffic marker win over the bot_suspect tag', () => {
+    Object.defineProperty(win.navigator, 'languages', { configurable: true, get: () => [] });
+    window.history.replaceState({}, '', '/pricing?fa_traffic=internal');
+
+    const service = TestBed.inject(AnalyticsService);
+    expect(service.getVisitorClass()).toBe('suspect');
+    service.track('pricing_viewed');
+    service.ensureInitialized();
+
+    const eventCall = Array.from(win.dataLayer?.[2] as IArguments);
+    expect(eventCall[2]).toEqual(jasmine.objectContaining({ traffic_type: 'internal' }));
   });
 });

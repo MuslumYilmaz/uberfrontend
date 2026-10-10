@@ -23,6 +23,12 @@ type PendingAnalyticsDispatch =
 
 export type DecisionSessionQualificationMethod = 'trusted_interaction' | 'foreground_15s';
 export type AnalyticsTrafficClass = 'internal' | 'test';
+export type AnalyticsVisitorClass = 'human' | 'suspect' | 'automation';
+
+const BOT_SUSPECT_TRAFFIC_TYPE = 'bot_suspect';
+// Crawlers, HTTP clients and automation runtimes that identify themselves never
+// load GA. Google's own bot list only covers a subset of these.
+const AUTOMATION_USER_AGENT_RE = /HeadlessChrome|Headless|Playwright|Puppeteer|Cypress|PhantomJS|Selenium|Lighthouse|PageSpeed|GTmetrix|Google-InspectionTool|bot(?![a-z])|crawler|crawl(?![a-z])|spider|slurp|scrapy|python-requests|python\/|curl\/|wget\/|httpclient|okhttp|axios\/|node-fetch|go-http-client|java\/|GPTBot|ChatGPT-User|OAI-SearchBot|ClaudeBot|anthropic-ai|Claude-Web|PerplexityBot|Bytespider|CCBot|cohere-ai|Applebot|Amazonbot|Baiduspider|facebookexternalhit|WhatsApp/i;
 
 const TRAFFIC_CLASS_QUERY_PARAM = 'fa_traffic';
 const TRAFFIC_CLASS_STORAGE_KEY = 'fa:analytics:traffic_class:v1';
@@ -46,7 +52,8 @@ export class AnalyticsService {
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly document = inject(DOCUMENT);
   private readonly measurementId = String(environment.gaMeasurementId || '').trim();
-  private readonly analyticsEnabled = this.isBrowser && !!this.measurementId && !this.detectAutomationContext();
+  private readonly visitorClass = this.classifyVisitor();
+  private readonly analyticsEnabled = this.isBrowser && !!this.measurementId && this.visitorClass !== 'automation';
   private readonly trafficClass = this.resolveTrafficClass();
   private readonly scriptId = 'ga4-gtag-script';
   private readonly decisionSessionStorageKey = 'fa:analytics:decision_session:v1';
@@ -138,13 +145,19 @@ export class AnalyticsService {
     return this.initialized;
   }
 
+  /** `automation` never loads GA; `suspect` loads GA but tags every hit with `traffic_type=bot_suspect`. */
+  getVisitorClass(): AnalyticsVisitorClass {
+    return this.visitorClass;
+  }
+
   private dispatchEvent(name: string, params?: Record<string, unknown>) {
     const gtag = this.getGtag();
     if (!gtag) return;
 
+    const trafficType = this.effectiveTrafficType();
     gtag('event', name, {
       ...(params || {}),
-      ...(this.trafficClass ? { traffic_type: this.trafficClass } : {}),
+      ...(trafficType ? { traffic_type: trafficType } : {}),
       ...(this.measurementId ? { send_to: this.measurementId } : {}),
     });
   }
@@ -153,13 +166,24 @@ export class AnalyticsService {
     const gtag = this.getGtag();
     if (!gtag) return;
 
+    const trafficType = this.effectiveTrafficType();
     gtag('event', 'page_view', {
       page_path: pageView.path,
       page_location: pageView.location,
       page_title: pageView.title,
-      ...(this.trafficClass ? { traffic_type: this.trafficClass } : {}),
+      ...(trafficType ? { traffic_type: trafficType } : {}),
       ...(this.measurementId ? { send_to: this.measurementId } : {}),
     });
+  }
+
+  /**
+   * GA4 data filters key off `traffic_type`. An explicit team marker wins;
+   * otherwise suspect browsers are tagged so a filter can exclude them from
+   * reports without dropping the signal before it has been measured.
+   */
+  private effectiveTrafficType(): string | null {
+    if (this.trafficClass) return this.trafficClass;
+    return this.visitorClass === 'suspect' ? BOT_SUSPECT_TRAFFIC_TYPE : null;
   }
 
   private sanitizeEventParams(params?: Record<string, unknown>): Record<string, unknown> | undefined {
@@ -293,20 +317,43 @@ export class AnalyticsService {
     }
   }
 
-  // Suppress analytics in browser automation so local/CI traffic does not pollute GA.
-  private detectAutomationContext(): boolean {
-    if (!this.isBrowser) return false;
+  // Browser automation, crawlers and HTTP clients never load GA so local/CI
+  // traffic and self-declared bots do not pollute reports. Browsers that only
+  // look automated are kept but tagged (see effectiveTrafficType).
+  private classifyVisitor(): AnalyticsVisitorClass {
+    if (!this.isBrowser) return 'human';
 
     const globalScope = window as AnalyticsWindow;
     const navigatorObject = globalScope.navigator;
     const userAgent = String(navigatorObject?.userAgent || '');
 
-    return Boolean(
+    const automation = Boolean(
       navigatorObject?.webdriver ||
       typeof globalScope.__playwright__binding__ !== 'undefined' ||
       typeof globalScope.__pwInitScripts !== 'undefined' ||
       typeof globalScope.Cypress !== 'undefined' ||
-      /HeadlessChrome|Playwright|Puppeteer|Cypress/i.test(userAgent),
+      AUTOMATION_USER_AGENT_RE.test(userAgent),
     );
+    if (automation) return 'automation';
+
+    return this.hasSuspectBrowserSignals(userAgent) ? 'suspect' : 'human';
+  }
+
+  // Conservative signals of a scripted Chromium that spoofs a normal user agent:
+  // no accepted languages, a zero-sized window, or a desktop Chrome without the
+  // chrome runtime object. Mobile and embedded WebViews are deliberately skipped.
+  private hasSuspectBrowserSignals(userAgent: string): boolean {
+    const globalScope = window as Window & { chrome?: unknown };
+    const navigatorObject = globalScope.navigator as Navigator & { languages?: readonly string[] };
+    const languages = navigatorObject?.languages;
+    const missingLanguages = Array.isArray(languages)
+      ? languages.length === 0
+      : !navigatorObject?.language;
+    const zeroSizedWindow = globalScope.outerWidth === 0 || globalScope.outerHeight === 0;
+    const desktopChrome = /Chrome\/\d/.test(userAgent)
+      && !/Mobile|Android|CriOS|iPhone|iPad|\bwv\b|Edg\/|OPR\/|SamsungBrowser|YaBrowser/.test(userAgent);
+    const chromeWithoutRuntime = desktopChrome && typeof globalScope.chrome === 'undefined';
+
+    return missingLanguages || zeroSizedWindow || chromeWithoutRuntime;
   }
 }

@@ -2,7 +2,7 @@
   "contentId": "angular-change-detection-strategies",
   "tech": "angular",
   "query": "Angular change detection strategies interview question",
-  "reviewedAt": "2026-04-09",
+  "reviewedAt": "2026-10-10",
   "reviewedBy": "Codex AI draft",
   "selection": {
     "querySource": "seo_primary_keyword",
@@ -33,6 +33,10 @@
         "followUpConfusion": [
           "ExpressionChangedAfterItHasBeenCheckedError:",
           "ViewChild or direct child mutation:"
+        ],
+        "actionableExamples": [
+          "Zoneless change detection: what changes",
+          "Prove it with Angular DevTools"
         ]
       },
       "theirEvidence": {
@@ -40,7 +44,7 @@
           "The Angular guide ties strategy choice directly to large component trees and performance-sensitive change detection paths, but our page is now more explicit about the Default-versus-OnPush architecture choice and stale-UI symptom."
         ],
         "actionableExamples": [
-          "It still gives official trigger diagrams and subtree cases, so the pure example criterion remains close."
+          "It still gives official trigger diagrams and subtree cases, so the pure example criterion remains close, but our page now adds an interactive visualizer with five preset bugs, a zoneless section, and an Angular DevTools proof."
         ],
         "followUpConfusion": [
           "It handles mutable inputs and subtree skipping well, but our page now covers ExpressionChanged timing and markForCheck versus detectChanges more directly in one compact answer."
@@ -48,9 +52,7 @@
       },
       "nextActions": {
         "realWorldUseCases": [],
-        "actionableExamples": [
-          "Add one tiny zoneless or detached-view example if we want to beat the official docs on raw example coverage."
-        ],
+        "actionableExamples": [],
         "followUpConfusion": []
       }
     },
@@ -77,7 +79,9 @@
         ],
         "actionableExamples": [
           "Compact trigger matrix",
-          "renameWrong()"
+          "renameWrong()",
+          "Zoneless change detection: what changes",
+          "Prove it with Angular DevTools"
         ],
         "followUpConfusion": [
           "ExpressionChangedAfterItHasBeenCheckedError:",
@@ -89,7 +93,7 @@
           "The experienced guide ties OnPush, trackBy, and profiling to real performance investigations, but it is not as focused on the single Default-versus-OnPush decision path."
         ],
         "actionableExamples": [
-          "It provides concrete suggestions like Angular DevTools and Chrome Performance, but our page now also includes a broken-versus-fixed immutable update example and a trigger matrix."
+          "It provides concrete suggestions like Angular DevTools and Chrome Performance, but our page now also includes a broken-versus-fixed immutable update example and a trigger matrix, but our page now adds an interactive visualizer with five preset bugs, a zoneless section, and an Angular DevTools proof."
         ],
         "followUpConfusion": [
           "It covers expression-changed debugging too, but our page now answers the likely follow-ups in a more compact, page-specific way."
@@ -97,9 +101,7 @@
       },
       "nextActions": {
         "realWorldUseCases": [],
-        "actionableExamples": [
-          "Add one smaller zoneless or detached-view example if we want to beat a broad experienced-Angular guide on example breadth."
-        ],
+        "actionableExamples": [],
         "followUpConfusion": []
       }
     },
@@ -127,6 +129,10 @@
         "followUpConfusion": [
           "ExpressionChangedAfterItHasBeenCheckedError:",
           "Why OnPush still updates after events and async work"
+        ],
+        "actionableExamples": [
+          "Zoneless change detection: what changes",
+          "Prove it with Angular DevTools"
         ]
       },
       "theirEvidence": {
@@ -134,7 +140,7 @@
           "Angular University connects change detection to mutable object bugs, async triggers, and performance concerns, but our page now frames the Default-versus-OnPush choice more directly as an app-architecture decision."
         ],
         "actionableExamples": [
-          "It still walks through more step-by-step examples than our compact answer, so the example comparison remains close."
+          "It still walks through more step-by-step examples than our compact answer, so the example comparison remains close, but our page now adds an interactive visualizer with five preset bugs, a zoneless section, and an Angular DevTools proof."
         ],
         "followUpConfusion": [
           "It answers the likely follow-ups too, but our page now surfaces the ExpressionChanged timing note and parent-child mutation trap more explicitly for interview use."
@@ -142,9 +148,7 @@
       },
       "nextActions": {
         "realWorldUseCases": [],
-        "actionableExamples": [
-          "Add one smaller detached-view or zoneless example if we want to beat a long-form deep dive on example breadth."
-        ],
+        "actionableExamples": [],
         "followUpConfusion": []
       }
     }

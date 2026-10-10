@@ -255,6 +255,7 @@ describe('TriviaDetailComponent', () => {
 
   afterEach(() => {
     sessionStorage.removeItem('fa:trivia:lab-complete:js_event_loop_75s_v1');
+    sessionStorage.removeItem('fa:trivia:lab-complete:angular_change_detection_visualizer');
     window.history.pushState({}, '', originalPath || '/');
     if (originalHiddenDescriptor) {
       Object.defineProperty(document, 'hidden', originalHiddenDescriptor);
@@ -2670,6 +2671,105 @@ describe('TriviaDetailComponent', () => {
     expect(fixture.nativeElement.querySelector('[data-testid="css-sticky-debugging-lab-slot"]')).toBeNull();
   });
 
+  it('places the deferred Angular change detection visualizer after the direct answer and before interview practice', async () => {
+    const fixture = await createLoadedFixture('free', {
+      id: 'angular-change-detection-strategies',
+      title: 'What are change detection strategies in Angular, and how do they work?',
+      technology: 'angular' as any,
+      tags: ['angular', 'change-detection', 'performance'],
+    });
+
+    const quickAnswer = Array.from(fixture.nativeElement.querySelectorAll('.card'))
+      .find((element: any) => element.querySelector('.card-head')?.textContent?.includes('Direct answer')) as HTMLElement | undefined;
+    const labSlot = fixture.nativeElement.querySelector('[data-testid="angular-change-detection-visualizer-slot"]') as HTMLElement | null;
+    const interviewFocus = fixture.nativeElement.querySelector('.interview-focus') as HTMLElement | null;
+    const fullAnswer = fixture.nativeElement.querySelector('[data-testid="trivia-full-answer"]') as HTMLElement | null;
+
+    expect(quickAnswer).toBeTruthy();
+    expect(labSlot).toBeTruthy();
+    expect(interviewFocus).toBeTruthy();
+    expect(fullAnswer).toBeTruthy();
+    expect(quickAnswer!.compareDocumentPosition(labSlot!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(labSlot!.compareDocumentPosition(interviewFocus!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(interviewFocus!.compareDocumentPosition(fullAnswer!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(labSlot?.textContent || '').toContain('Trace which components Angular checks after each trigger');
+    expect(labSlot?.textContent || '').toContain('Zoneless timer');
+    expect(labSlot?.querySelectorAll('[id^="cd-scenario-"]').length).toBe(5);
+    expect(fullAnswer?.querySelector('.card-head')?.textContent).toContain('Trigger rules, zoneless migration, and DevTools proof');
+  });
+
+  it('does not render the Angular change detection visualizer on other trivia questions', async () => {
+    const fixture = await createLoadedFixture('free');
+
+    expect(fixture.nativeElement.querySelector('[data-testid="angular-change-detection-visualizer-slot"]')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.card-head')?.textContent).not.toContain('Direct answer');
+  });
+
+  it('uses a completed change detection visualizer instead of the incident gate without auto-completing', async () => {
+    auth.isLoggedIn.and.returnValue(true);
+    triviaIncident.getIncident.and.returnValue(of({
+      questionId: 'angular-change-detection-strategies',
+      tech: 'angular' as any,
+      title: 'OnPush trigger check',
+      scenario: 'Which explanation is better?',
+      options: [
+        { id: 'wrong', label: 'OnPush is flaky' },
+        { id: 'right', label: 'OnPush needs a trigger' },
+      ],
+    }));
+    const fixture = await createLoadedFixture('free', {
+      id: 'angular-change-detection-strategies',
+      title: 'What are change detection strategies in Angular, and how do they work?',
+      technology: 'angular' as any,
+    });
+    const component = fixture.componentInstance;
+
+    component.onJavascriptEventLoopExperienceCompleted();
+    expect(component.labCompletedQuestionId()).toBeNull();
+
+    component.onAngularChangeDetectionVisualizerCompleted();
+
+    expect(component.labCompletedQuestionId()).toBe('angular-change-detection-strategies');
+    expect(sessionStorage.getItem('fa:trivia:lab-complete:angular_change_detection_visualizer')).toBe('angular-change-detection-strategies');
+    expect(activity.complete).not.toHaveBeenCalled();
+
+    await component.markComplete();
+
+    expect(triviaIncident.getIncident).not.toHaveBeenCalled();
+    expect(activity.complete).toHaveBeenCalledWith(jasmine.objectContaining({
+      kind: 'trivia',
+      itemId: 'angular-change-detection-strategies',
+    }));
+  });
+
+  it('restores change detection visualizer eligibility from session storage for its own question only', async () => {
+    sessionStorage.setItem('fa:trivia:lab-complete:angular_change_detection_visualizer', 'angular-change-detection-strategies');
+    const fixture = await createLoadedFixture('free', {
+      id: 'angular-change-detection-strategies',
+      title: 'What are change detection strategies in Angular, and how do they work?',
+      technology: 'angular' as any,
+    });
+    const component = fixture.componentInstance;
+
+    expect(component.labCompletedQuestionId()).toBe('angular-change-detection-strategies');
+
+    const nextResolved = makeResolved('free', { id: 'angular-onpush-change-detection-debugging-real-bug', technology: 'angular' as any });
+    const nextQuestion = nextResolved.list[0];
+    routeData$.next({
+      questionDetail: {
+        ...nextResolved,
+        id: nextQuestion.id,
+        question: nextQuestion,
+      },
+    });
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(component.question()?.id).toBe('angular-onpush-change-detection-debugging-real-bug');
+    expect(component.labCompletedQuestionId()).toBeNull();
+  });
+
   it('uses a completed event-loop experience instead of the incident gate without auto-completing', async () => {
     auth.isLoggedIn.and.returnValue(true);
     triviaIncident.getIncident.and.returnValue(of({
@@ -2690,7 +2790,7 @@ describe('TriviaDetailComponent', () => {
 
     component.onJavascriptEventLoopExperienceCompleted();
 
-    expect(component.eventLoopCompletedQuestionId()).toBe('js-event-loop');
+    expect(component.labCompletedQuestionId()).toBe('js-event-loop');
     expect(activity.complete).not.toHaveBeenCalled();
     expect(triviaIncident.getIncident).not.toHaveBeenCalled();
 
@@ -2751,7 +2851,7 @@ describe('TriviaDetailComponent', () => {
     });
     const component = fixture.componentInstance;
 
-    expect(component.eventLoopCompletedQuestionId()).toBe('js-event-loop');
+    expect(component.labCompletedQuestionId()).toBe('js-event-loop');
 
     const nextResolved = makeResolved('free', { id: 'js-event-loop-second-question' });
     const nextQuestion = nextResolved.list[0];
@@ -2767,7 +2867,7 @@ describe('TriviaDetailComponent', () => {
     fixture.detectChanges();
 
     expect(component.question()?.id).toBe('js-event-loop-second-question');
-    expect(component.eventLoopCompletedQuestionId()).toBeNull();
+    expect(component.labCompletedQuestionId()).toBeNull();
   });
 
   it('places the output challenge before the hidden deep dive without rendering the quick answer', async () => {

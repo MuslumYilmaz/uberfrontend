@@ -2,7 +2,7 @@
   "contentId": "angular-onpush-change-detection-debugging-real-bug",
   "tech": "angular",
   "query": "Angular OnPush change detection debugging interview question",
-  "reviewedAt": "2026-04-09",
+  "reviewedAt": "2026-10-10",
   "reviewedBy": "Codex AI draft",
   "selection": {
     "querySource": "seo_primary_keyword",
@@ -36,7 +36,8 @@
         "followUpConfusion": [
           "AsyncPipe is your best friend",
           "markForCheck() vs detectChanges()",
-          "Assuming a parent mutating child.input.deep.nestedValue should refresh the child even though the input reference stayed the same"
+          "Assuming a parent mutating child.input.deep.nestedValue should refresh the child even though the input reference stayed the same",
+          "Run these bugs in the visualizer"
         ]
       },
       "theirEvidence": {
@@ -85,7 +86,8 @@
         ],
         "followUpConfusion": [
           "AsyncPipe is your best friend",
-          "markForCheck() vs detectChanges()"
+          "markForCheck() vs detectChanges()",
+          "Run these bugs in the visualizer"
         ]
       },
       "theirEvidence": {
@@ -130,7 +132,8 @@
         ],
         "followUpConfusion": [
           "Assuming a parent mutating child.input.deep.nestedValue should refresh the child even though the input reference stayed the same",
-          "Use Angular DevTools or a quick logging pass to verify which component is actually being checked."
+          "Use Angular DevTools or a quick logging pass to verify which component is actually being checked.",
+          "Run these bugs in the visualizer"
         ]
       },
       "theirEvidence": {

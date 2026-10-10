@@ -5,6 +5,7 @@ const TABLET_VIEWPORT = { width: 834, height: 1112 };
 
 const HIGH_RISK_ROUTES = [
   '/javascript/trivia/js-event-loop',
+  '/angular/trivia/angular-change-detection-strategies',
   '/angular/trivia/angular-lifecycle-constructor-oninit-afterviewinit-dom',
   '/html/trivia/html-dom',
   '/html/trivia/html-div-vs-span',

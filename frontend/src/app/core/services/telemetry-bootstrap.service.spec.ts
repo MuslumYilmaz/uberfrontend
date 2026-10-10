@@ -528,33 +528,38 @@ describe('TelemetryBootstrapService', () => {
     }
   });
 
-  it('defers analytics initialization on app routes until the post-load delay', fakeAsync(() => {
+  it('never initializes analytics for a visitor whose session does not qualify', fakeAsync(() => {
     environment.production = false;
     analytics.isInitialized.and.returnValue(false);
+    setDocumentVisibility('hidden');
 
     const service = TestBed.inject(TelemetryBootstrapService);
     service.armForUrl('/javascript/trivia/js-escape-vs-sanitize');
+    tick(30_000);
+    service.armForUrl('/');
+    tick(30_000);
+    invokeDecisionSessionInteraction(service, false);
+    tick(30_000);
 
     expect(analytics.ensureInitialized).not.toHaveBeenCalled();
-    tick(1199);
-    expect(analytics.ensureInitialized).not.toHaveBeenCalled();
-    tick(1);
-    expect(analytics.ensureInitialized).toHaveBeenCalledTimes(1);
+    expect(analytics.trackDecisionSessionQualified).not.toHaveBeenCalled();
     service.ngOnDestroy();
   }));
 
-  it('initializes analytics on marketing routes after the post-load delay', fakeAsync(() => {
+  it('initializes analytics on a marketing route only once 15 visible seconds qualify the session', fakeAsync(() => {
     environment.production = false;
     analytics.isInitialized.and.returnValue(false);
+    setDocumentVisibility('visible', false);
+    setUserActivation(true);
 
     const service = TestBed.inject(TelemetryBootstrapService);
     service.armForUrl('/');
 
-    expect(analytics.ensureInitialized).not.toHaveBeenCalled();
-    tick(1199);
+    tick(14_999);
     expect(analytics.ensureInitialized).not.toHaveBeenCalled();
     tick(1);
     expect(analytics.ensureInitialized).toHaveBeenCalledTimes(1);
+    expect(analytics.trackDecisionSessionQualified).toHaveBeenCalledOnceWith('foreground_15s');
     service.ngOnDestroy();
   }));
 

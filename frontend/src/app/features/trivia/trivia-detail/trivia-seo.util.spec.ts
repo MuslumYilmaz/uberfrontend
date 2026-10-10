@@ -454,6 +454,30 @@ describe('trivia-seo.util', () => {
     expect(description.length).toBeLessThanOrEqual(155);
   });
 
+  it('preserves the Angular change detection visualizer SEO contract', () => {
+    const question = {
+      id: 'angular-change-detection-strategies',
+      title: 'What are change detection strategies in Angular, and how do they work?',
+      technology: 'angular',
+      seo: {
+        title: 'Angular Change Detection Visualizer: Default vs OnPush',
+        h1: 'Angular Change Detection Strategies: Visualize Default vs OnPush',
+        description:
+          'Default checks every component each pass. OnPush checks only after a new input reference, an event, an async pipe, a signal, or markForCheck().',
+      },
+    } as any;
+
+    const title = seoTitleForQuestion(question);
+    const description = seoDescriptionForQuestion(question, 'fallback description', 'angular');
+
+    expect(title).toBe('Angular Change Detection Visualizer: Default vs OnPush');
+    expect(title.length).toBeLessThanOrEqual(60);
+    expect(description).toBe(
+      'Default checks every component each pass. OnPush checks only after a new input reference, an event, an async pipe, a signal, or markForCheck().'
+    );
+    expect(description.length).toBeLessThanOrEqual(155);
+  });
+
   it('preserves interview-first React StrictMode useEffect SEO override', () => {
     const question = {
       id: 'react-strictmode-double-invoke-effects',

@@ -282,7 +282,7 @@ const ANGULAR_PREP_PATTERNS: AngularPrepPatternCard[] = [
     prepGoal: 'Practice Angular change detection interview reasoning: Default vs OnPush, input references, events, AsyncPipe, and zone-triggered checks.',
     testFocus: 'Trigger paths, mutation vs immutable updates, markForCheck(), detectChanges(), runOutsideAngular(), and zoneless follow-ups.',
     route: ['/angular', 'trivia', 'angular-change-detection-strategies'],
-    linkLabel: 'Practice change detection',
+    linkLabel: 'Run the change detection visualizer',
     testId: 'angular-prep-pattern-change-detection',
   },
   {

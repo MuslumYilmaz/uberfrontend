@@ -274,6 +274,67 @@
                 }
             </section>
 
+            <section
+                *ngIf="showAngularChangeDetectionVisualizer(q)"
+                id="angular-change-detection-visualizer"
+                class="angular-change-detection-visualizer-slot"
+                data-testid="angular-change-detection-visualizer-slot"
+                aria-label="Angular change detection visualizer">
+                @defer (on viewport; prefetch on idle) {
+                    <app-angular-change-detection-visualizer
+                        (completed)="onAngularChangeDetectionVisualizerCompleted()">
+                    </app-angular-change-detection-visualizer>
+                } @placeholder {
+                    <div class="card cd-visualizer-shell" data-testid="angular-change-detection-visualizer-placeholder">
+                        <div class="cd-visualizer-shell__body">
+                            <p class="cd-visualizer-shell__eyebrow">Interactive Angular change detection lab</p>
+                            <h2>Trace which components Angular checks after each trigger</h2>
+                            <p class="cd-visualizer-shell__copy">
+                                Default views are checked on every pass that reaches them. OnPush views are checked
+                                only after a new input reference, an event in their subtree, an async pipe emission,
+                                a signal they read, or markForCheck(). Without Zone.js, only those notifications
+                                schedule a pass at all. The lab replays five production bugs on a seven-component
+                                tree and shows which views Angular checks, skips, or only traverses.
+                            </p>
+                            <ol class="cd-visualizer-shell__bugs" aria-label="Preset production bugs">
+                                <li id="cd-scenario-push-mutation">
+                                    <strong>Array push with an OnPush list:</strong> the parent mutates the same array,
+                                    so UserList is skipped and keeps the old rows. Fix: pass a new reference.
+                                </li>
+                                <li id="cd-scenario-timer-in-service">
+                                    <strong>Service timer with an OnPush footer:</strong> Zone.js runs a pass, but nothing
+                                    marked LiveCount, so Angular skips it. Fix: markForCheck().
+                                </li>
+                                <li id="cd-scenario-manual-subscribe">
+                                    <strong>subscribe() without a mark:</strong> the callback assigns a field on an OnPush
+                                    card and the view stays stale. Fix: the async pipe.
+                                </li>
+                                <li id="cd-scenario-signal-in-onpush">
+                                    <strong>Signal inside OnPush:</strong> one view refreshes; its OnPush ancestors are
+                                    traversed, not re-rendered.
+                                </li>
+                                <li id="cd-scenario-zoneless-timer">
+                                    <strong>Zoneless timer:</strong> no signal, event, async pipe, or markForCheck() ran,
+                                    so no pass is scheduled. Fix: store the value in a signal.
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                } @loading (minimum 120ms) {
+                    <div class="card cd-visualizer-shell cd-visualizer-shell--status" role="status">
+                        Preparing the change detection simulator…
+                    </div>
+                } @error {
+                    <div class="card cd-visualizer-shell cd-visualizer-shell--status" role="alert">
+                        <strong>The interactive simulator could not load.</strong>
+                        <span>The full answer remains available below.</span>
+                        <a [routerLink]="['/angular', 'trivia', 'angular-onpush-change-detection-debugging-real-bug']">
+                            Debug the OnPush production bug
+                        </a>
+                    </div>
+                }
+            </section>
+
             <ng-container *ngTemplateOutlet="interviewPracticeTpl; context: { $implicit: q }"></ng-container>
 
             <app-angular-http-cancellation-lab

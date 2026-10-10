@@ -1670,7 +1670,7 @@ const ANGULAR_SHORT_ANSWERS: AngularShortAnswerItem[] = [
     q: 'What is change detection in Angular?',
     a: 'Change detection is how Angular checks application state and updates templates. Zone-based apps usually schedule checks from async activity, events, and framework hooks, while newer patterns can make update triggers more explicit. When debugging stale UI, first identify the trigger path before reaching for detectChanges or markForCheck.',
     route: ['/angular', 'trivia', 'angular-change-detection-strategies'],
-    cta: 'Review change detection',
+    cta: 'Run the change detection visualizer',
   },
   {
     category: 'di-change-detection',
@@ -3568,7 +3568,7 @@ const ANGULAR_TOPIC_CARDS: AngularTopicCard[] = [
     title: 'Change detection and OnPush',
     answer: 'Change detection answers should name the trigger path, not just the API. Default, OnPush, AsyncPipe, signals, markForCheck, and detectChanges all matter when you debug stale UI or excessive rerenders.',
     link: {
-      label: 'Debug change detection strategies',
+      label: 'Visualize Default vs OnPush',
       route: ['/angular', 'trivia', 'angular-change-detection-strategies'],
     },
   },
