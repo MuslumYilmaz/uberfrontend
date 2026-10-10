@@ -58,6 +58,7 @@
     >
       <fa-chip
         *ngFor="let scenario of scenarios"
+        [id]="'cancellation-scenario-' + scenario.id"
         [label]="scenario.label"
         [selected]="selectedScenarioId() === scenario.id"
         [testId]="'cancellation-scenario-' + scenario.id"

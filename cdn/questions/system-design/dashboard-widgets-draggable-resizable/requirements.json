@@ -32,9 +32,9 @@
           "description": "Use it for the pointermove, render-loop, and INP trade-offs."
         },
         {
-          "label": "Machine coding hub",
+          "label": "Build it instead: machine coding practice",
           "href": "/machine-coding",
-          "description": "Turn the same interaction into implementation practice."
+          "description": "Came here for a working drag-and-drop dashboard? Start with implementation exercises, then come back for the design answer."
         },
         {
           "label": "Related dashboard performance scenario",

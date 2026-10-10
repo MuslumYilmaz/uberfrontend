@@ -1,5 +1,5 @@
 {
-  "definitionHash": "01a85477486ceca26ce2b4c235b44f93d49b7619f86f6eb578b59848e762cfc1",
+  "definitionHash": "dd2aa9b58688daef987d4682ef3e3917686962e0d39ea1f55b01e3d50c6a6173",
   "finalApproval": null,
   "registryId": "interview-system-design-registry-v1",
   "registryVersion": "1.2.0",
@@ -31,7 +31,7 @@
           "clarificationId": "chat-stop-truth"
         }
       ],
-      "contentHash": "4255f79fd212920ece9b6710ed61c05f6c812ae3f636a161d47cde9bcd202693",
+      "contentHash": "b6512f58e2e283efdf0dfabccbb48ded43dcc6d5413f590680379e1d2e51fa9d",
       "id": "int-sd-ai-chat-composer-mid-v1",
       "provenance": {
         "authoredAt": "2026-07-29",
@@ -73,8 +73,8 @@
           "reviewerType": "ai",
           "status": "passed"
         },
-        "contentHash": "4255f79fd212920ece9b6710ed61c05f6c812ae3f636a161d47cde9bcd202693",
-        "definitionHash": "01a85477486ceca26ce2b4c235b44f93d49b7619f86f6eb578b59848e762cfc1",
+        "contentHash": "b6512f58e2e283efdf0dfabccbb48ded43dcc6d5413f590680379e1d2e51fa9d",
+        "definitionHash": "dd2aa9b58688daef987d4682ef3e3917686962e0d39ea1f55b01e3d50c6a6173",
         "editorial": {
           "notes": [
             "Checkout guided language matches the resilient checkout static story and links to resilient-checkout-payment-flow without exposing authoring notes.",
@@ -94,7 +94,8 @@
             "Hosted redirect and embedded provider-field fixtures exercise distinct accepted architectures; redirect-as-success, feature-owned card data, replacement attempts, and browser-lock authority are critical conflicts.",
             "Toast, Autocomplete, and Ranked Feed adaptation now grades accepted post-state instead of requiring a performative change from baseline.",
             "Autocomplete requires input and results UI boundaries; Ranked Feed requires view, normalized entities, and page membership plus explicit removed-anchor recovery.",
-            "2026-09-26 source-pin maintenance review: the dashboard requirements source only moves the existing Interview opening callout; all block values and the other five source files are unchanged. Guided prompts, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval."
+            "2026-09-26 source-pin maintenance review: the dashboard requirements source only moves the existing Interview opening callout; all block values and the other five source files are unchanged. Guided prompts, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
+            "2026-10-10 source-pin maintenance review: the dashboard source changes only meta.json seo.title and seo.description and one requirements link label and description; the AI chat source changes only meta.json seo.title and seo.description, drops one sentence from the overlapping-responses callout, and adds a two-item Build it links block to requirements. Candidate prompts, clarifications, requirements, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-system-design-technical-v8",
           "reviewerType": "ai",
@@ -416,15 +417,15 @@
         ]
       },
       "sourceEvidence": {
-        "bundleHash": "bbe587d9fc4d4454b198a638e838fd7734cba1b1ea482816fb441e3fe66a2a19",
+        "bundleHash": "0522c064c9a08cd6ab06db7f884cd3bd4f3c5886c21a7430198fddac6d68635d",
         "files": [
           {
             "file": "cdn/questions/system-design/ai-chat-textarea-design/meta.json",
-            "sha256": "e6c9c63c64a8c034b26a806918536665a3bd0124cbf10e0195cfc31c9a4cfcdc"
+            "sha256": "ab1ff9ad89de9f8245ddb74e42204610b4fd7a2567d67c5705a36a8feb1140f0"
           },
           {
             "file": "cdn/questions/system-design/ai-chat-textarea-design/requirements.json",
-            "sha256": "ecddd6bcc2923c386005509810e737bb5ee7935b148f994830893882b6803dcd"
+            "sha256": "7560db8216c817e8e15e152a6fae0e0644d6691a32d13113635e035cb974b333"
           },
           {
             "file": "cdn/questions/system-design/ai-chat-textarea-design/architecture.json",
@@ -1516,7 +1517,7 @@
           "status": "passed"
         },
         "contentHash": "f9a76b65da48d48c1b268203f04992af217fd226c4b98c1eb3045f340db8e272",
-        "definitionHash": "01a85477486ceca26ce2b4c235b44f93d49b7619f86f6eb578b59848e762cfc1",
+        "definitionHash": "dd2aa9b58688daef987d4682ef3e3917686962e0d39ea1f55b01e3d50c6a6173",
         "editorial": {
           "notes": [
             "Checkout guided language matches the resilient checkout static story and links to resilient-checkout-payment-flow without exposing authoring notes.",
@@ -1536,7 +1537,8 @@
             "Hosted redirect and embedded provider-field fixtures exercise distinct accepted architectures; redirect-as-success, feature-owned card data, replacement attempts, and browser-lock authority are critical conflicts.",
             "Toast, Autocomplete, and Ranked Feed adaptation now grades accepted post-state instead of requiring a performative change from baseline.",
             "Autocomplete requires input and results UI boundaries; Ranked Feed requires view, normalized entities, and page membership plus explicit removed-anchor recovery.",
-            "2026-09-26 source-pin maintenance review: the dashboard requirements source only moves the existing Interview opening callout; all block values and the other five source files are unchanged. Guided prompts, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval."
+            "2026-09-26 source-pin maintenance review: the dashboard requirements source only moves the existing Interview opening callout; all block values and the other five source files are unchanged. Guided prompts, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
+            "2026-10-10 source-pin maintenance review: the dashboard source changes only meta.json seo.title and seo.description and one requirements link label and description; the AI chat source changes only meta.json seo.title and seo.description, drops one sentence from the overlapping-responses callout, and adds a two-item Build it links block to requirements. Candidate prompts, clarifications, requirements, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-system-design-technical-v8",
           "reviewerType": "ai",
@@ -2668,7 +2670,7 @@
           "status": "passed"
         },
         "contentHash": "e75229a1aca9b1c3ff92b5a6d2d244baa40e2ddafbdff41d107514a58073452e",
-        "definitionHash": "01a85477486ceca26ce2b4c235b44f93d49b7619f86f6eb578b59848e762cfc1",
+        "definitionHash": "dd2aa9b58688daef987d4682ef3e3917686962e0d39ea1f55b01e3d50c6a6173",
         "editorial": {
           "notes": [
             "Checkout guided language matches the resilient checkout static story and links to resilient-checkout-payment-flow without exposing authoring notes.",
@@ -2688,7 +2690,8 @@
             "Hosted redirect and embedded provider-field fixtures exercise distinct accepted architectures; redirect-as-success, feature-owned card data, replacement attempts, and browser-lock authority are critical conflicts.",
             "Toast, Autocomplete, and Ranked Feed adaptation now grades accepted post-state instead of requiring a performative change from baseline.",
             "Autocomplete requires input and results UI boundaries; Ranked Feed requires view, normalized entities, and page membership plus explicit removed-anchor recovery.",
-            "2026-09-26 source-pin maintenance review: the dashboard requirements source only moves the existing Interview opening callout; all block values and the other five source files are unchanged. Guided prompts, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval."
+            "2026-09-26 source-pin maintenance review: the dashboard requirements source only moves the existing Interview opening callout; all block values and the other five source files are unchanged. Guided prompts, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
+            "2026-10-10 source-pin maintenance review: the dashboard source changes only meta.json seo.title and seo.description and one requirements link label and description; the AI chat source changes only meta.json seo.title and seo.description, drops one sentence from the overlapping-responses callout, and adds a two-item Build it links block to requirements. Candidate prompts, clarifications, requirements, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-system-design-technical-v8",
           "reviewerType": "ai",
@@ -4236,7 +4239,7 @@
           "clarificationId": "dash-accessibility"
         }
       ],
-      "contentHash": "5df01fcb61ad84a367616dcf319ab5aa021f375efa4f9e84ab877cb8e62177db",
+      "contentHash": "5bd681d66f6274df90633235cba5278bc151694882cf1d041c2b1c873c9b66d8",
       "id": "int-sd-dashboard-layout-sr-v1",
       "provenance": {
         "authoredAt": "2026-08-04",
@@ -4271,8 +4274,8 @@
           "reviewerType": "ai",
           "status": "passed"
         },
-        "contentHash": "5df01fcb61ad84a367616dcf319ab5aa021f375efa4f9e84ab877cb8e62177db",
-        "definitionHash": "01a85477486ceca26ce2b4c235b44f93d49b7619f86f6eb578b59848e762cfc1",
+        "contentHash": "5bd681d66f6274df90633235cba5278bc151694882cf1d041c2b1c873c9b66d8",
+        "definitionHash": "dd2aa9b58688daef987d4682ef3e3917686962e0d39ea1f55b01e3d50c6a6173",
         "editorial": {
           "notes": [
             "Checkout guided language matches the resilient checkout static story and links to resilient-checkout-payment-flow without exposing authoring notes.",
@@ -4292,7 +4295,8 @@
             "Hosted redirect and embedded provider-field fixtures exercise distinct accepted architectures; redirect-as-success, feature-owned card data, replacement attempts, and browser-lock authority are critical conflicts.",
             "Toast, Autocomplete, and Ranked Feed adaptation now grades accepted post-state instead of requiring a performative change from baseline.",
             "Autocomplete requires input and results UI boundaries; Ranked Feed requires view, normalized entities, and page membership plus explicit removed-anchor recovery.",
-            "2026-09-26 source-pin maintenance review: the dashboard requirements source only moves the existing Interview opening callout; all block values and the other five source files are unchanged. Guided prompts, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval."
+            "2026-09-26 source-pin maintenance review: the dashboard requirements source only moves the existing Interview opening callout; all block values and the other five source files are unchanged. Guided prompts, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
+            "2026-10-10 source-pin maintenance review: the dashboard source changes only meta.json seo.title and seo.description and one requirements link label and description; the AI chat source changes only meta.json seo.title and seo.description, drops one sentence from the overlapping-responses callout, and adds a two-item Build it links block to requirements. Candidate prompts, clarifications, requirements, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-system-design-technical-v8",
           "reviewerType": "ai",
@@ -4667,15 +4671,15 @@
         ]
       },
       "sourceEvidence": {
-        "bundleHash": "02ba4b4bc75c8ba0b2e98639ed289815c3fd9c31942ad5945a7313fe11610d09",
+        "bundleHash": "6939eeb2c586bcbeb7540a82433e7a756a55ccbbe26ab0f5ff8c993d9fd1be67",
         "files": [
           {
             "file": "cdn/questions/system-design/dashboard-widgets-draggable-resizable/meta.json",
-            "sha256": "805d9256b67c52e28ba67ef82191e3d3eff7fec804a0b3b5c68f04f107e53ef7"
+            "sha256": "aae46522de3d4b2e5ecef05a45be8d690fa5e7f73ddffa092592d291c0926f78"
           },
           {
             "file": "cdn/questions/system-design/dashboard-widgets-draggable-resizable/requirements.json",
-            "sha256": "2e22a16817e10fd61441472f3cb7f48a9e5917a493f551cc38a82990c5b2d1d5"
+            "sha256": "e4d06d47af4fb321c3fd3d0ac67854d1d60dba2b33f0e26ee98ee8f5816f4046"
           },
           {
             "file": "cdn/questions/system-design/dashboard-widgets-draggable-resizable/architecture.json",
@@ -5676,7 +5680,7 @@
           "status": "passed"
         },
         "contentHash": "eeb26e0a93d42a9662990f5cc4aef2ce5fc0d8fcf4c1221511db5ff28126aca4",
-        "definitionHash": "01a85477486ceca26ce2b4c235b44f93d49b7619f86f6eb578b59848e762cfc1",
+        "definitionHash": "dd2aa9b58688daef987d4682ef3e3917686962e0d39ea1f55b01e3d50c6a6173",
         "editorial": {
           "notes": [
             "Checkout guided language matches the resilient checkout static story and links to resilient-checkout-payment-flow without exposing authoring notes.",
@@ -5696,7 +5700,8 @@
             "Hosted redirect and embedded provider-field fixtures exercise distinct accepted architectures; redirect-as-success, feature-owned card data, replacement attempts, and browser-lock authority are critical conflicts.",
             "Toast, Autocomplete, and Ranked Feed adaptation now grades accepted post-state instead of requiring a performative change from baseline.",
             "Autocomplete requires input and results UI boundaries; Ranked Feed requires view, normalized entities, and page membership plus explicit removed-anchor recovery.",
-            "2026-09-26 source-pin maintenance review: the dashboard requirements source only moves the existing Interview opening callout; all block values and the other five source files are unchanged. Guided prompts, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval."
+            "2026-09-26 source-pin maintenance review: the dashboard requirements source only moves the existing Interview opening callout; all block values and the other five source files are unchanged. Guided prompts, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
+            "2026-10-10 source-pin maintenance review: the dashboard source changes only meta.json seo.title and seo.description and one requirements link label and description; the AI chat source changes only meta.json seo.title and seo.description, drops one sentence from the overlapping-responses callout, and adds a two-item Build it links block to requirements. Candidate prompts, clarifications, requirements, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-system-design-technical-v8",
           "reviewerType": "ai",
@@ -7449,7 +7454,7 @@
           "status": "passed"
         },
         "contentHash": "051cfb98717b613151e42dc73ecead253abe6edfc92d7883ca41252645a807c8",
-        "definitionHash": "01a85477486ceca26ce2b4c235b44f93d49b7619f86f6eb578b59848e762cfc1",
+        "definitionHash": "dd2aa9b58688daef987d4682ef3e3917686962e0d39ea1f55b01e3d50c6a6173",
         "editorial": {
           "notes": [
             "Checkout guided language matches the resilient checkout static story and links to resilient-checkout-payment-flow without exposing authoring notes.",
@@ -7469,7 +7474,8 @@
             "Hosted redirect and embedded provider-field fixtures exercise distinct accepted architectures; redirect-as-success, feature-owned card data, replacement attempts, and browser-lock authority are critical conflicts.",
             "Toast, Autocomplete, and Ranked Feed adaptation now grades accepted post-state instead of requiring a performative change from baseline.",
             "Autocomplete requires input and results UI boundaries; Ranked Feed requires view, normalized entities, and page membership plus explicit removed-anchor recovery.",
-            "2026-09-26 source-pin maintenance review: the dashboard requirements source only moves the existing Interview opening callout; all block values and the other five source files are unchanged. Guided prompts, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval."
+            "2026-09-26 source-pin maintenance review: the dashboard requirements source only moves the existing Interview opening callout; all block values and the other five source files are unchanged. Guided prompts, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
+            "2026-10-10 source-pin maintenance review: the dashboard source changes only meta.json seo.title and seo.description and one requirements link label and description; the AI chat source changes only meta.json seo.title and seo.description, drops one sentence from the overlapping-responses callout, and adds a two-item Build it links block to requirements. Candidate prompts, clarifications, requirements, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-system-design-technical-v8",
           "reviewerType": "ai",
@@ -9132,7 +9138,7 @@
           "status": "passed"
         },
         "contentHash": "f54fd3cc3c54b89715b99c6b3f9fe620984b0c55594c999ba8bbb83cdfbd46e5",
-        "definitionHash": "01a85477486ceca26ce2b4c235b44f93d49b7619f86f6eb578b59848e762cfc1",
+        "definitionHash": "dd2aa9b58688daef987d4682ef3e3917686962e0d39ea1f55b01e3d50c6a6173",
         "editorial": {
           "notes": [
             "Checkout guided language matches the resilient checkout static story and links to resilient-checkout-payment-flow without exposing authoring notes.",
@@ -9152,7 +9158,8 @@
             "Hosted redirect and embedded provider-field fixtures exercise distinct accepted architectures; redirect-as-success, feature-owned card data, replacement attempts, and browser-lock authority are critical conflicts.",
             "Toast, Autocomplete, and Ranked Feed adaptation now grades accepted post-state instead of requiring a performative change from baseline.",
             "Autocomplete requires input and results UI boundaries; Ranked Feed requires view, normalized entities, and page membership plus explicit removed-anchor recovery.",
-            "2026-09-26 source-pin maintenance review: the dashboard requirements source only moves the existing Interview opening callout; all block values and the other five source files are unchanged. Guided prompts, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval."
+            "2026-09-26 source-pin maintenance review: the dashboard requirements source only moves the existing Interview opening callout; all block values and the other five source files are unchanged. Guided prompts, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
+            "2026-10-10 source-pin maintenance review: the dashboard source changes only meta.json seo.title and seo.description and one requirements link label and description; the AI chat source changes only meta.json seo.title and seo.description, drops one sentence from the overlapping-responses callout, and adds a two-item Build it links block to requirements. Candidate prompts, clarifications, requirements, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-system-design-technical-v8",
           "reviewerType": "ai",
@@ -10286,7 +10293,7 @@
           "status": "passed"
         },
         "contentHash": "0a691d04fd291d4973821fe1de752c7b6f78bb029e3aaef8b4d07ec674e9863b",
-        "definitionHash": "01a85477486ceca26ce2b4c235b44f93d49b7619f86f6eb578b59848e762cfc1",
+        "definitionHash": "dd2aa9b58688daef987d4682ef3e3917686962e0d39ea1f55b01e3d50c6a6173",
         "editorial": {
           "notes": [
             "Checkout guided language matches the resilient checkout static story and links to resilient-checkout-payment-flow without exposing authoring notes.",
@@ -10306,7 +10313,8 @@
             "Hosted redirect and embedded provider-field fixtures exercise distinct accepted architectures; redirect-as-success, feature-owned card data, replacement attempts, and browser-lock authority are critical conflicts.",
             "Toast, Autocomplete, and Ranked Feed adaptation now grades accepted post-state instead of requiring a performative change from baseline.",
             "Autocomplete requires input and results UI boundaries; Ranked Feed requires view, normalized entities, and page membership plus explicit removed-anchor recovery.",
-            "2026-09-26 source-pin maintenance review: the dashboard requirements source only moves the existing Interview opening callout; all block values and the other five source files are unchanged. Guided prompts, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval."
+            "2026-09-26 source-pin maintenance review: the dashboard requirements source only moves the existing Interview opening callout; all block values and the other five source files are unchanged. Guided prompts, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
+            "2026-10-10 source-pin maintenance review: the dashboard source changes only meta.json seo.title and seo.description and one requirements link label and description; the AI chat source changes only meta.json seo.title and seo.description, drops one sentence from the overlapping-responses callout, and adds a two-item Build it links block to requirements. Candidate prompts, clarifications, requirements, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-system-design-technical-v8",
           "reviewerType": "ai",

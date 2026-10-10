@@ -1,0 +1,483 @@
+<section
+  class="overlap-lab"
+  data-testid="rxjs-overlap-playground"
+  aria-labelledby="overlap-lab-title"
+>
+  <header class="overlap-lab__header">
+    <p class="overlap-lab__eyebrow">Interactive RxJS overlap playground</p>
+    <h2 id="overlap-lab-title">Run the same trigger stream through switchMap, mergeMap, concatMap, and exhaustMap</h2>
+    <p>
+      Place triggers on a 1200 ms axis, set how long each request takes, predict which responses
+      reach the UI, then reveal. Every reveal runs the real RxJS operators on a virtual clock;
+      nothing calls a server.
+    </p>
+    <div class="overlap-lab__meta" aria-label="Lab details">
+      <span>4 operators</span>
+      <span>7 scenarios</span>
+      <span>Up to 6 triggers</span>
+      <span>Real RxJS on virtual time</span>
+    </div>
+  </header>
+
+  <nav class="overlap-lab__scenarios" aria-label="Preset scenarios">
+    @for (scenario of scenarios; track scenario.id) {
+      <fa-chip
+        [id]="fragmentId(scenario.id)"
+        size="sm"
+        [label]="scenario.chipLabel"
+        [selected]="state().scenario?.id === scenario.id"
+        [testId]="'overlap-scenario-' + scenario.id"
+        (chipClick)="selectScenario(scenario.id)"
+      ></fa-chip>
+    }
+  </nav>
+
+  <article faCard padding="lg" class="overlap-lab__scenario" data-testid="overlap-scenario-card">
+    <div class="overlap-lab__scenario-heading" data-focus-target="scenario" tabindex="-1">
+      @if (scenario(); as scenario) {
+        <span class="overlap-lab__step">Scenario {{ scenarioIndex() }} of {{ scenarios.length }}</span>
+        <h3>{{ scenario.title }}</h3>
+      } @else {
+        <span class="overlap-lab__step">Your own pattern</span>
+        <h3>Build a trigger stream and watch four policies handle it</h3>
+      }
+    </div>
+    @if (scenario(); as scenario) {
+      <p class="overlap-lab__story">{{ scenario.story }}</p>
+    } @else {
+      <p class="overlap-lab__story">
+        Add triggers, change request durations, pick an operator, and predict before you reveal.
+        Load a preset above to replay a production bug.
+      </p>
+    }
+    <p class="overlap-lab__line" data-testid="overlap-stream"><strong>Stream:</strong> {{ streamText() }}</p>
+    <p class="overlap-lab__line" data-testid="overlap-promise">
+      <strong>UI promise:</strong> {{ intentLabel() }} ({{ recommendedOperator() }} encodes it)
+    </p>
+  </article>
+
+  <div class="overlap-lab__controls">
+    <fieldset class="overlap-lab__operators" data-testid="overlap-operators">
+      <legend>Operator</legend>
+      <div class="overlap-lab__radio-grid">
+        @for (operator of operators; track operator) {
+          <label
+            class="overlap-lab__radio"
+            [class.is-selected]="state().view === 'single' && state().operator === operator"
+            [class.is-muted]="state().view === 'compare'"
+          >
+            <input
+              type="radio"
+              name="overlap-operator"
+              [value]="operator"
+              [checked]="state().operator === operator"
+              [disabled]="state().view === 'compare'"
+              (change)="setOperator(operator)"
+            />
+            <span class="overlap-lab__radio-text">
+              <strong>{{ operator }}</strong>
+              <small>{{ taglines[operator] }}</small>
+            </span>
+          </label>
+        }
+      </div>
+      <div class="overlap-lab__view" role="group" aria-label="View">
+        <button
+          faButton
+          type="button"
+          size="sm"
+          [variant]="state().view === 'single' ? 'primary' : 'neutral'"
+          data-testid="overlap-view-single"
+          [attr.aria-pressed]="state().view === 'single'"
+          (click)="setView('single')"
+        >
+          One operator
+        </button>
+        <button
+          faButton
+          type="button"
+          size="sm"
+          [variant]="state().view === 'compare' ? 'primary' : 'neutral'"
+          data-testid="overlap-view-compare"
+          [attr.aria-pressed]="state().view === 'compare'"
+          (click)="setView('compare')"
+        >
+          Compare all four
+        </button>
+      </div>
+    </fieldset>
+
+    <div class="overlap-lab__settings">
+      <label class="overlap-lab__field">
+        <span>UI promise</span>
+        <select data-testid="overlap-intent" (change)="setIntent($any($event.target).value)">
+          @for (intent of intents; track intent) {
+            <option [value]="intent" [selected]="state().intent === intent">{{ intentLabels[intent] }}</option>
+          }
+        </select>
+      </label>
+      <label class="overlap-lab__field">
+        <span>Request duration: <strong data-testid="overlap-duration-value">{{ state().defaultDurationMs }} ms</strong></span>
+        <input
+          type="range"
+          data-testid="overlap-duration"
+          [min]="minDuration"
+          [max]="maxDuration"
+          [step]="durationStep"
+          [value]="state().defaultDurationMs"
+          (change)="setDefaultDuration($any($event.target).value)"
+        />
+      </label>
+    </div>
+  </div>
+
+  <section class="overlap-lab__editor" aria-labelledby="overlap-editor-title">
+    <div class="overlap-lab__panel-heading">
+      <h3 id="overlap-editor-title">Trigger stream</h3>
+      <span class="overlap-lab__meter" data-testid="overlap-trigger-count">{{ state().triggers.length }} of {{ maxTriggers }} triggers</span>
+    </div>
+    <div class="overlap-lab__axis" data-testid="overlap-axis" (click)="addTriggerFromAxis($event)">
+      <div class="overlap-lab__ticks" aria-hidden="true">
+        @for (tick of ticks; track tick.ms) {
+          <span [style.left.%]="tick.pct">{{ tick.ms }}</span>
+        }
+      </div>
+      @for (marker of triggerMarkers(); track marker.triggerId) {
+        <button
+          type="button"
+          class="overlap-lab__marker"
+          [style.left.%]="marker.pct"
+          [attr.aria-label]="'Trigger ' + marker.label + ' at ' + marker.at + ' ms'"
+          [attr.data-testid]="'overlap-marker-' + marker.triggerId"
+          (click)="focusTrigger(marker.triggerId, $event)"
+        >
+          {{ marker.label }}
+        </button>
+      }
+    </div>
+    <p class="overlap-lab__hint">Click the axis to add a trigger at that time, or open the editor below.</p>
+    <details class="overlap-lab__editor-details" data-testid="overlap-editor">
+      <summary class="overlap-lab__editor-summary">
+        <span class="overlap-lab__step">Edit triggers</span>
+        <span class="overlap-lab__editor-title">Times, request durations, and burst patterns</span>
+      </summary>
+    <ol class="overlap-lab__triggers" data-testid="overlap-triggers">
+      @for (row of triggerRows(); track row.id) {
+        <li class="overlap-lab__trigger-row" [attr.data-trigger]="row.id">
+          <span class="overlap-lab__trigger-label">{{ row.label }}</span>
+          <label class="overlap-lab__number">
+            <span>Time (ms)</span>
+            <input
+              type="number"
+              [attr.data-testid]="'overlap-time-' + row.id"
+              [attr.data-focus-target]="'trigger-' + row.id"
+              min="0"
+              [max]="maxTriggerAt"
+              step="10"
+              [value]="row.at"
+              (change)="moveTrigger(row.id, $any($event.target).value)"
+            />
+          </label>
+          <label class="overlap-lab__number">
+            <span>Request (ms)</span>
+            <input
+              type="number"
+              [attr.data-testid]="'overlap-request-' + row.id"
+              [min]="minDuration"
+              [max]="maxDuration"
+              [step]="durationStep"
+              [value]="row.durationMs ?? ''"
+              [placeholder]="state().defaultDurationMs"
+              (change)="setTriggerDuration(row.id, $any($event.target).value)"
+            />
+          </label>
+          <button
+            faButton
+            type="button"
+            variant="ghost"
+            size="sm"
+            [attr.data-testid]="'overlap-remove-' + row.id"
+            [disabled]="state().triggers.length <= 1"
+            (click)="removeTrigger(row.id)"
+          >
+            Remove
+          </button>
+        </li>
+      }
+    </ol>
+    <div class="overlap-lab__editor-actions">
+      <button
+        faButton
+        type="button"
+        variant="neutral"
+        size="sm"
+        data-testid="overlap-add-trigger"
+        [disabled]="!canAddTrigger()"
+        (click)="addTrigger()"
+      >
+        Add trigger (+100 ms)
+      </button>
+      @for (pattern of burstPatterns; track pattern) {
+        <button
+          faButton
+          type="button"
+          variant="ghost"
+          size="sm"
+          [attr.data-testid]="'overlap-burst-' + pattern"
+          (click)="applyBurst(pattern)"
+        >
+          {{ burstLabels[pattern] }}
+        </button>
+      }
+      <button faButton type="button" variant="ghost" size="sm" data-testid="overlap-reset" (click)="reset()">
+        Reset
+      </button>
+    </div>
+    </details>
+  </section>
+
+  <section class="overlap-lab__timeline" aria-labelledby="overlap-timeline-title">
+    <div class="overlap-lab__panel-heading">
+      <h3 id="overlap-timeline-title">Timeline</h3>
+      <span class="overlap-lab__meter" data-testid="overlap-stage">{{ stageLabel() }}</span>
+    </div>
+    <div class="overlap-lab__ticks overlap-lab__ticks--lanes" aria-hidden="true">
+      @for (tick of ticks; track tick.ms) {
+        <span [style.left.%]="tick.pct">{{ tick.ms }} ms</span>
+      }
+    </div>
+    @for (lane of lanes(); track lane.operator) {
+      <div class="overlap-lab__lane" [attr.data-operator]="lane.operator" [attr.data-testid]="'overlap-lane-' + lane.operator">
+        <div class="overlap-lab__lane-heading">
+          <strong>{{ lane.operator }}</strong>
+          <span class="overlap-lab__lane-tagline">{{ lane.tagline }}</span>
+          @if (lane.revealed) {
+            <span class="overlap-lab__badge">{{ lane.summary }}</span>
+          }
+        </div>
+        <div class="overlap-lab__lane-bars" aria-hidden="true" [style.height.px]="lane.heightPx">
+          @for (bar of lane.bars; track bar.triggerId) {
+            @if (bar.waitWidthPct > 0) {
+              <span
+                class="overlap-lab__wait"
+                [style.left.%]="bar.waitStartPct"
+                [style.width.%]="bar.waitWidthPct"
+                [style.top.px]="bar.row * rowPx"
+              ></span>
+            }
+            @if (bar.widthPct > 0) {
+              <span
+                class="overlap-lab__bar"
+                [attr.data-outcome]="bar.outcome"
+                [style.left.%]="bar.startPct"
+                [style.width.%]="bar.widthPct"
+                [style.top.px]="bar.row * rowPx"
+                [title]="bar.title"
+              >
+                <span class="overlap-lab__bar-label">{{ bar.label }}</span>
+              </span>
+            }
+            @if (bar.tailWidthPct > 0) {
+              <span
+                class="overlap-lab__tail"
+                [style.left.%]="bar.tailStartPct"
+                [style.width.%]="bar.tailWidthPct"
+                [style.top.px]="bar.row * rowPx"
+              ></span>
+            }
+          }
+          @for (drop of lane.drops; track drop.triggerId) {
+            <span class="overlap-lab__drop" [style.left.%]="drop.pct">{{ drop.label }}</span>
+          }
+          @if (lane.revealed) {
+            <span class="overlap-lab__cursor" [style.left.%]="cursorPct()"></span>
+          } @else {
+            <span class="overlap-lab__lane-empty">
+              {{ state().view === 'compare' ? 'Reveal to run all four operators.' : 'Predict first, then reveal.' }}
+            </span>
+          }
+        </div>
+        <div class="overlap-lab__deliveries" aria-hidden="true">
+          <span class="overlap-lab__deliveries-label">UI</span>
+          @for (delivery of lane.deliveries; track delivery.triggerId) {
+            <span class="overlap-lab__delivery" [style.left.%]="delivery.pct">{{ delivery.label }}</span>
+          }
+        </div>
+        @if (lane.revealed) {
+          <ol class="overlap-lab__lane-text" [attr.data-testid]="'overlap-lane-text-' + lane.operator">
+            @for (sentence of lane.sentences; track $index) {
+              <li>{{ sentence }}</li>
+            }
+          </ol>
+          <p class="overlap-lab__ui-line" [attr.data-testid]="'overlap-ui-' + lane.operator">
+            <strong>UI shows:</strong> {{ lane.uiLine }}
+          </p>
+        }
+      </div>
+    }
+    @if (revealed()) {
+      <div class="overlap-lab__cursor-controls">
+        <label class="overlap-lab__field overlap-lab__field--cursor">
+          <span>Time cursor: <strong data-testid="overlap-cursor-value">{{ state().cursorMs }} ms</strong></span>
+          <input
+            type="range"
+            data-testid="overlap-cursor"
+            min="0"
+            [max]="axisMs"
+            step="10"
+            [value]="state().cursorMs"
+            (input)="setCursor($any($event.target).value)"
+          />
+        </label>
+        <button faButton type="button" variant="neutral" size="sm" data-testid="overlap-prev-event" (click)="stepCursor(-1)">
+          Previous event
+        </button>
+        <button faButton type="button" variant="neutral" size="sm" data-testid="overlap-next-event" (click)="stepCursor(1)">
+          Next event
+        </button>
+        @if (!reducedMotion()) {
+          <button faButton type="button" variant="neutral" size="sm" data-testid="overlap-play" (click)="togglePlay()">
+            {{ playing() ? 'Pause' : 'Play' }}
+          </button>
+        }
+      </div>
+    }
+  </section>
+
+  @if (showPrediction()) {
+    <section faCard padding="lg" class="overlap-lab__prediction" data-testid="overlap-prediction" aria-labelledby="overlap-prediction-title">
+      <span class="overlap-lab__step">Before you reveal</span>
+      <h3 id="overlap-prediction-title">With {{ state().operator }}, which responses reach the UI, and when?</h3>
+      <fieldset class="overlap-lab__choices">
+        <legend>Pick the sequence you expect.</legend>
+        @for (choice of predictionChoices(); track choice.key; let index = $index) {
+          <label class="overlap-lab__choice" [class.is-selected]="state().prediction.choiceKey === choice.key">
+            <input
+              type="radio"
+              name="overlap-prediction"
+              [value]="choice.key"
+              [checked]="state().prediction.choiceKey === choice.key"
+              [attr.data-focus-target]="index === 0 ? 'prediction' : null"
+              (change)="selectPrediction(choice.key)"
+            />
+            <span class="overlap-lab__choice-marker" aria-hidden="true">{{ choiceMarker(index) }}</span>
+            <span>{{ choice.label }}</span>
+          </label>
+        }
+      </fieldset>
+    </section>
+  }
+
+  @if (!revealed()) {
+    <div class="overlap-lab__reveal">
+      <button
+        faButton
+        type="button"
+        variant="primary"
+        size="md"
+        data-testid="overlap-reveal"
+        [disabled]="!canReveal()"
+        (click)="reveal()"
+      >
+        {{ revealLabel() }}
+      </button>
+    </div>
+  }
+
+  @if (verdict(); as verdict) {
+    <section
+      faCard
+      elevated
+      padding="lg"
+      class="overlap-lab__verdict"
+      [attr.data-fit]="verdict.fits"
+      data-testid="overlap-verdict"
+      data-focus-target="result"
+      tabindex="-1"
+      aria-labelledby="overlap-verdict-title"
+    >
+      <span class="overlap-lab__step">Verdict</span>
+      <h3 id="overlap-verdict-title">{{ verdict.heading }}</h3>
+      <p>{{ verdict.sentence }}</p>
+      @if (verdict.predictionFeedback) {
+        <p class="overlap-lab__feedback" data-testid="overlap-prediction-feedback" [attr.data-correct]="verdict.predictionCorrect">
+          {{ verdict.predictionFeedback }}
+        </p>
+      }
+      @if (verdict.hazards.length) {
+        <ul class="overlap-lab__hazards" data-testid="overlap-hazards">
+          @for (hazard of verdict.hazards; track hazard.code) {
+            <li [attr.data-hazard]="hazard.code" [attr.data-severity]="hazard.severity">
+              <strong>{{ hazard.title }}</strong>
+              <span>{{ hazard.sentence }}</span>
+            </li>
+          }
+        </ul>
+      }
+      @if (verdict.fixLabel) {
+        <button faButton type="button" variant="primary" size="md" data-testid="overlap-apply-fix" (click)="applyFix()">
+          {{ verdict.fixLabel }}
+        </button>
+      }
+    </section>
+  }
+
+  @if (compareRows().length) {
+    <section
+      faCard
+      padding="lg"
+      class="overlap-lab__compare"
+      data-testid="overlap-compare"
+      data-focus-target="result"
+      tabindex="-1"
+      aria-labelledby="overlap-compare-title"
+    >
+      <span class="overlap-lab__step">Compare</span>
+      <h3 id="overlap-compare-title">Same stream, four policies, for "{{ intentLabel() }}"</h3>
+      <div class="overlap-lab__table-wrap">
+        <table class="overlap-lab__table">
+          <thead>
+            <tr>
+              <th scope="col">Operator</th>
+              <th scope="col">UI shows</th>
+              <th scope="col">Verdict</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of compareRows(); track row.operator) {
+              <tr [attr.data-operator]="row.operator" [attr.data-fit]="row.fits">
+                <th scope="row">{{ row.operator }}</th>
+                <td>{{ row.uiSummary }}</td>
+                <td>{{ row.verdict }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+  }
+
+  <p class="overlap-lab__score" data-testid="overlap-score">{{ scoreText() }}</p>
+
+  <div class="overlap-lab__takeaway">
+    <span>Keep this rule</span>
+    <p>{{ finalTakeaway }}</p>
+  </div>
+
+  <div class="overlap-lab__related" aria-label="Related pages">
+    @for (link of relatedLinks; track link.id) {
+      <fa-chip
+        variant="outline"
+        size="md"
+        [toggle]="false"
+        [label]="link.label"
+        [routerLink]="link.route"
+        [fragment]="link.fragment"
+        [testId]="'overlap-related-' + link.id"
+        (chipClick)="onRelatedLinkClick(link.id)"
+      ></fa-chip>
+    }
+  </div>
+
+  <p class="sr-only" aria-live="polite" aria-atomic="true">{{ liveMessage() }}</p>
+</section>

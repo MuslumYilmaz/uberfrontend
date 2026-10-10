@@ -65,6 +65,7 @@ import { JavaScriptEventLoopExperienceComponent } from './javascript-event-loop-
 import { ReactStaleClosureCaseFilesComponent } from './react-stale-closure-case-files/react-stale-closure-case-files.component';
 import { CssStickyDebuggingLabComponent } from './css-sticky-debugging-lab/css-sticky-debugging-lab.component';
 import { AngularChangeDetectionVisualizerComponent } from './angular-change-detection-visualizer/angular-change-detection-visualizer.component';
+import { RxjsOverlapPlaygroundComponent } from './rxjs-overlap-playground/rxjs-overlap-playground.component';
 
 /** ============== Rich Answer Format ============== */
 type BlockText = { type: 'text'; text: string };
@@ -202,11 +203,13 @@ const ANGULAR_HTTP_CANCELLATION_LAB_QUESTION_ID = 'angular-http-what-actually-ca
 const JAVASCRIPT_EVENT_LOOP_QUESTION_ID = 'js-event-loop';
 const CSS_STICKY_DEBUGGING_LAB_QUESTION_ID = 'css-position-sticky-not-working';
 const ANGULAR_CHANGE_DETECTION_VISUALIZER_QUESTION_ID = 'angular-change-detection-strategies';
+const RXJS_OVERLAP_PLAYGROUND_QUESTION_ID = 'rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use';
 /** Labs whose completion replaces the incident gate, keyed by question id. */
 const LAB_COMPLETION_STORAGE_KEYS: Readonly<Record<string, string>> = {
   [JAVASCRIPT_EVENT_LOOP_QUESTION_ID]: 'fa:trivia:lab-complete:js_event_loop_75s_v1',
   // Keep this a literal: importing a value from the lab module would pull the deferred chunk into this one.
   [ANGULAR_CHANGE_DETECTION_VISUALIZER_QUESTION_ID]: 'fa:trivia:lab-complete:angular_change_detection_visualizer',
+  [RXJS_OVERLAP_PLAYGROUND_QUESTION_ID]: 'fa:trivia:lab-complete:rxjs_overlap_playground',
 };
 const RETURN_VALUE_SIMULATOR_OPTIONS: ReturnValueSimulatorOption[] = [
   {
@@ -623,6 +626,7 @@ function buildTagRegex(tag: string): RegExp {
         ReactStaleClosureCaseFilesComponent,
         CssStickyDebuggingLabComponent,
         AngularChangeDetectionVisualizerComponent,
+        RxjsOverlapPlaygroundComponent,
     ],
     templateUrl: './trivia-detail.component.html',
     styleUrls: ['./trivia-detail.component.css']
@@ -951,12 +955,20 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     return q?.id === ANGULAR_CHANGE_DETECTION_VISUALIZER_QUESTION_ID;
   }
 
+  showRxjsOverlapPlayground(q?: Question | null): boolean {
+    return q?.id === RXJS_OVERLAP_PLAYGROUND_QUESTION_ID;
+  }
+
   onJavascriptEventLoopExperienceCompleted(): void {
     this.onLabCompleted(JAVASCRIPT_EVENT_LOOP_QUESTION_ID);
   }
 
   onAngularChangeDetectionVisualizerCompleted(): void {
     this.onLabCompleted(ANGULAR_CHANGE_DETECTION_VISUALIZER_QUESTION_ID);
+  }
+
+  onRxjsOverlapPlaygroundCompleted(): void {
+    this.onLabCompleted(RXJS_OVERLAP_PLAYGROUND_QUESTION_ID);
   }
 
   private onLabCompleted(questionId: string): void {
@@ -983,6 +995,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.showAngularHttpCancellationLab(q)) return '15-second answer';
     if (this.showCssStickyDebuggingLab(q)) return 'Quick diagnosis';
     if (this.showAngularChangeDetectionVisualizer(q)) return 'Direct answer';
+    if (this.showRxjsOverlapPlayground(q)) return 'Direct answer';
     return this.isReactStaleClosuresLanding(q)
       ? 'React stale closures: direct answer'
       : 'Interview quick answer';
@@ -993,6 +1006,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.showAngularHttpCancellationLab(q)) return 'Cancellation patterns, proof, and production rules';
     if (this.showCssStickyDebuggingLab(q)) return 'CSS sticky failure modes, proof, and fixes';
     if (this.showAngularChangeDetectionVisualizer(q)) return 'Trigger rules, zoneless migration, and DevTools proof';
+    if (this.showRxjsOverlapPlayground(q)) return 'Operator policies, timelines, and senior pitfalls';
     if (this.isReactStaleClosuresLanding(q)) return 'Diagnosis table and production review';
     if (this.showAsyncRaceSimulator(q)) return 'How to prevent stale async UI';
     return 'Full interview answer';

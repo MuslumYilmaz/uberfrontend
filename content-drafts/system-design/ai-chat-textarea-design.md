@@ -102,6 +102,10 @@ The primary control follows current-turn state:
 - While Stop is uncertain, partial text remains visible and the UI says stopping rather than stopped.
 - After `complete`, `stopped`, or `failed`, Retry or Regenerate becomes available as a new user intent.
 
+### Build it
+- [React chat streaming UI exercise (Premium)](/react/coding/react-chat-streaming-ui)
+- [takeLatest exercise for stale events (free)](/javascript/coding/js-take-latest)
+
 ## Worked example: IME, Send loss, and Stop loss
 
 A Japanese IME is composing when the user presses Enter. `isComposing` prevents submit, so Enter commits or selects text normally. After `compositionend`, the attachment is ready and the user sends. The coordinator freezes a command and immediately renders one optimistic user row.

@@ -412,6 +412,39 @@
   margin: var(--uf-space-3) 0 0;
   padding-left: 22px;
 }
+/* Constraints + evaluation spine collapse so the prompt, the actions and the
+   first RADIO section fit on the first screen. */
+.sd-try-first__details{
+  border: 1px solid var(--uf-border-subtle);
+  border-radius: var(--uf-radius-12);
+  background: color-mix(in srgb, var(--uf-surface-alt) 68%, transparent);
+}
+.sd-try-first__summary{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--uf-space-3);
+  padding: var(--uf-space-3) var(--uf-space-4);
+  list-style: none;
+  cursor: pointer;
+  color: var(--uf-text-primary);
+  font-weight: 750;
+  font-size: var(--uf-subsection-title-size);
+  line-height: 1.4;
+}
+.sd-try-first__summary::-webkit-details-marker{
+  display: none;
+}
+.sd-try-first__summary:focus-visible{
+  outline: none;
+  border-radius: var(--uf-radius-12);
+  box-shadow: var(--uf-focus-ring);
+}
+.sd-try-first__details-body{
+  display: grid;
+  gap: var(--uf-space-4);
+  padding: 0 var(--uf-space-4) var(--uf-space-4);
+}
 .sd-try-first__actions{
   display: flex;
   flex-wrap: wrap;
@@ -449,7 +482,8 @@
   border-radius: var(--uf-radius-8);
   box-shadow: var(--uf-focus-ring);
 }
-.sd-section__chevron{
+.sd-section__chevron,
+.sd-try-first__chevron{
   width: 10px;
   height: 10px;
   margin-right: 4px;
@@ -459,7 +493,8 @@
   transform: rotate(45deg);
   transition: transform var(--uf-motion-base) ease;
 }
-.sd-section[open] .sd-section__chevron{
+.sd-section[open] .sd-section__chevron,
+.sd-try-first__details[open] .sd-try-first__chevron{
   transform: rotate(225deg);
 }
 .sd-section[open] .sd-blocks{
@@ -1272,6 +1307,7 @@
   .report-issue-btn,
   .guide-summary::after,
   .sd-section__chevron,
+  .sd-try-first__chevron,
   .sdl-mobile-trigger{
     transition: none;
   }

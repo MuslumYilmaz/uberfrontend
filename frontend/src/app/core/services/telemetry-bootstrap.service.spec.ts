@@ -54,6 +54,7 @@ describe('TelemetryBootstrapService', () => {
   let originalRequestIdleCallback: unknown;
   let originalVisibilityStateDescriptor: PropertyDescriptor | undefined;
   let originalHiddenDescriptor: PropertyDescriptor | undefined;
+  let originalReferrerDescriptor: PropertyDescriptor | undefined;
   let originalUserActivationDescriptor: PropertyDescriptor | undefined;
   let originalApiBaseOverride: unknown;
   let originalDeploymentConfig: unknown;
@@ -113,6 +114,7 @@ describe('TelemetryBootstrapService', () => {
     doc = TestBed.inject(DOCUMENT);
     originalVisibilityStateDescriptor = Object.getOwnPropertyDescriptor(doc, 'visibilityState');
     originalHiddenDescriptor = Object.getOwnPropertyDescriptor(doc, 'hidden');
+    originalReferrerDescriptor = Object.getOwnPropertyDescriptor(doc, 'referrer');
     originalUserActivationDescriptor = Object.getOwnPropertyDescriptor(
       window.navigator,
       'userActivation',
@@ -127,6 +129,7 @@ describe('TelemetryBootstrapService', () => {
     (window as any).requestIdleCallback = originalRequestIdleCallback;
     restoreOwnProperty(doc, 'visibilityState', originalVisibilityStateDescriptor);
     restoreOwnProperty(doc, 'hidden', originalHiddenDescriptor);
+    restoreOwnProperty(doc, 'referrer', originalReferrerDescriptor);
     restoreOwnProperty(window.navigator, 'userActivation', originalUserActivationDescriptor);
     if (originalApiBaseOverride === undefined) {
       delete (window as any).__FA_API_BASE__;
@@ -563,6 +566,65 @@ describe('TelemetryBootstrapService', () => {
     service.ngOnDestroy();
   }));
 
+  it('qualifies a visible search-engine lander immediately instead of waiting 15 seconds', fakeAsync(() => {
+    environment.production = false;
+    analytics.isInitialized.and.returnValue(false);
+    setDocumentVisibility('visible', false);
+    setUserActivation(true);
+    setReferrer('https://www.google.com/');
+
+    const service = TestBed.inject(TelemetryBootstrapService);
+    service.armForUrl('/system-design/dashboard-widgets-draggable-resizable');
+
+    expect(analytics.ensureInitialized).toHaveBeenCalledTimes(1);
+    expect(analytics.trackDecisionSessionQualified).toHaveBeenCalledOnceWith('search_referrer');
+
+    tick(30_000);
+    service.armForUrl('/system-design/ai-chat-textarea-design');
+    invokeDecisionSessionInteraction(service, true);
+    expect(analytics.ensureInitialized).toHaveBeenCalledTimes(1);
+    expect(analytics.trackDecisionSessionQualified).toHaveBeenCalledTimes(1);
+    service.ngOnDestroy();
+  }));
+
+  it('keeps the 15-second rule for non-search referrers', fakeAsync(() => {
+    environment.production = false;
+    analytics.isInitialized.and.returnValue(false);
+    setDocumentVisibility('visible', false);
+    setUserActivation(true);
+    setReferrer('https://frontendatlas.com/coding');
+
+    const service = TestBed.inject(TelemetryBootstrapService);
+    service.armForUrl('/system-design/dashboard-widgets-draggable-resizable');
+
+    tick(14_999);
+    expect(analytics.ensureInitialized).not.toHaveBeenCalled();
+    expect(analytics.trackDecisionSessionQualified).not.toHaveBeenCalled();
+    tick(1);
+    expect(analytics.trackDecisionSessionQualified).toHaveBeenCalledOnceWith('foreground_15s');
+    service.ngOnDestroy();
+  }));
+
+  it('defers search-referrer qualification until a hidden tab becomes visible', fakeAsync(() => {
+    environment.production = false;
+    analytics.isInitialized.and.returnValue(false);
+    setDocumentVisibility('hidden', false);
+    setUserActivation(true);
+    setReferrer('https://www.bing.com/search?q=drag+and+drop+dashboard');
+
+    const service = TestBed.inject(TelemetryBootstrapService);
+    service.armForUrl('/system-design/dashboard-widgets-draggable-resizable');
+
+    tick(30_000);
+    expect(analytics.ensureInitialized).not.toHaveBeenCalled();
+    expect(analytics.trackDecisionSessionQualified).not.toHaveBeenCalled();
+
+    setDocumentVisibility('visible');
+    expect(analytics.ensureInitialized).toHaveBeenCalledTimes(1);
+    expect(analytics.trackDecisionSessionQualified).toHaveBeenCalledOnceWith('search_referrer');
+    service.ngOnDestroy();
+  }));
+
   it('registers qualification and first-interaction listeners outside Angular', () => {
     const service = TestBed.inject(TelemetryBootstrapService);
     const ngZone = TestBed.inject(NgZone);
@@ -738,6 +800,13 @@ describe('TelemetryBootstrapService', () => {
       get: () => state !== 'visible',
     });
     if (emitChange) doc.dispatchEvent(new Event('visibilitychange'));
+  }
+
+  function setReferrer(value: string): void {
+    Object.defineProperty(doc, 'referrer', {
+      configurable: true,
+      get: () => value,
+    });
   }
 
   function setUserActivation(hasBeenActive: boolean | undefined): void {

@@ -404,16 +404,17 @@ test.describe('System Design V2 acceptance', () => {
 
     const sections = page.locator('details.sd-section');
     await expect(sections).toHaveCount(5);
-    await expect(page.locator('details.sd-section[open]')).toHaveCount(0);
+    await expect(page.locator('details.sd-section[open]')).toHaveCount(1);
+    await expect(sections.nth(0)).toHaveAttribute('open', '');
 
     const firstSummary = sections.nth(0).locator(':scope > summary');
     const secondSummary = sections.nth(1).locator(':scope > summary');
     await firstSummary.focus();
     await page.keyboard.press('Space');
-    await expect(sections.nth(0)).toHaveAttribute('open', '');
+    await expect(sections.nth(0)).not.toHaveAttribute('open', '');
     await secondSummary.focus();
     await page.keyboard.press('Enter');
-    await expect(sections.nth(0)).toHaveAttribute('open', '');
+    await expect(sections.nth(0)).not.toHaveAttribute('open', '');
     await expect(sections.nth(1)).toHaveAttribute('open', '');
 
     await page.goto(TOAST_PATH);
@@ -424,7 +425,8 @@ test.describe('System Design V2 acceptance', () => {
 
     await page.goBack();
     await expect(page).toHaveURL(new RegExp(`${TOAST_PATH}$`));
-    await expect(page.locator('details.sd-section[open]')).toHaveCount(0);
+    await expect(page.locator('details.sd-section[open]')).toHaveCount(1);
+    await expect(page.locator('details.sd-section').first()).toHaveAttribute('open', '');
 
     await page.setViewportSize({ width: 390, height: 844 });
     const tocHistoryLength = await page.evaluate(() => window.history.length);
@@ -437,7 +439,35 @@ test.describe('System Design V2 acceptance', () => {
 
     await page.goto('/system-design');
     await page.goto(`${TOAST_PATH}#not-a-section`);
-    await expect(page.locator('details.sd-section[open]')).toHaveCount(0);
+    await expect(page.locator('details.sd-section[open]')).toHaveCount(1);
+  });
+
+  test('first RADIO section opens by default and Back after Start restores that default', async ({ page }) => {
+    await page.setViewportSize({ width: 1366, height: 900 });
+    await page.goto(TOAST_PATH);
+
+    const sections = page.locator('details.sd-section');
+    await expect(sections).toHaveCount(5);
+    await expect(page.locator('details.sd-section[open]')).toHaveCount(1);
+    await expect(sections.first()).toHaveAttribute('open', '');
+    // Try-first keeps the prompt and the actions on the first screen; the
+    // constraints and evaluation spine stay collapsed until requested.
+    await expect(page.getByTestId('sd-try-first-details')).not.toHaveAttribute('open', '');
+    await expect(page.getByRole('button', { name: 'Start reference answer' })).toBeVisible();
+
+    await page.getByRole('button', { name: 'Start reference answer' }).click();
+    await expect(page).toHaveURL(new RegExp(`${TOAST_PATH}#answer$`));
+    await expect(page.locator('details.sd-section[open]')).toHaveCount(1);
+    await expect(sections.first()).toHaveAttribute('open', '');
+
+    await page.goBack();
+    await expect(page).toHaveURL(new RegExp(`${TOAST_PATH}$`));
+    await expect(page.locator('details.sd-section[open]')).toHaveCount(1);
+    await expect(sections.first()).toHaveAttribute('open', '');
+
+    await page.goto(`${TOAST_PATH}#not-a-section`);
+    await expect(page.locator('details.sd-section[open]')).toHaveCount(1);
+    await expect(sections.first()).toHaveAttribute('open', '');
   });
 
   test('mobile diagrams scroll inside a focused viewport and expose their text alternative on demand', async ({ page }) => {
@@ -494,7 +524,8 @@ test.describe('System Design V2 acceptance', () => {
     await expect(page.getByTestId('sd-try-first')).toContainText('Mid-level');
     await expect(page.getByTestId('sd-try-first')).toContainText('15 min');
     await expect(page.locator('details.sd-section')).toHaveCount(5);
-    await expect(page.locator('details.sd-section[open]')).toHaveCount(0);
+    await expect(page.locator('details.sd-section[open]')).toHaveCount(1);
+    await expect(page.locator('details.sd-section').first()).toHaveAttribute('open', '');
     await openAllRadioSections(page);
     await expect(page.locator('.sd-figure img')).toHaveCount(2);
     await expect(page.getByRole('link', { name: 'Practice this exact case' })).toHaveCount(0);

@@ -2,7 +2,7 @@ import { seoContentDateModified } from '../../../core/utils/seo-content-date.uti
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { PUBLIC_EDITORIAL_FACTS, publicEditorialAuthorSchema } from '../../../core/content/public-editorial-facts';
 import {
-  AfterViewInit, Component, ElementRef, OnDestroy, OnInit, PLATFORM_ID,
+  AfterViewInit, Component, ElementRef, NgZone, OnDestroy, OnInit, PLATFORM_ID,
   QueryList, ViewChild, ViewChildren, WritableSignal, computed, effect, inject, signal
 } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -69,6 +69,10 @@ type BlueprintGuideLink = {
 };
 
 const RADIO_GUIDE_SLUG: SystemDesignGuideSlug = 'radio-framework';
+// A visit counts as an engaged read once the tab stayed visible this long and
+// the reader either scrolled into the answer or opened a section themselves.
+const READ_ENGAGED_MIN_VISIBLE_MS = 10_000;
+const READ_ENGAGED_MIN_DEPTH_PERCENT = 25;
 const DEFAULT_DETAIL_GUIDE_SLUGS: readonly SystemDesignGuideSlug[] = [
   'intro',
   'framework',
@@ -98,6 +102,10 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
   private qs = inject(QuestionService);
   private seo = inject(SeoService);
   protected readonly suppressSeo = inject(SEO_SUPPRESS_TOKEN);
+  // Real pages open the first RADIO section so the answer is on the first
+  // screen; the embedded home-page preview keeps every section collapsed.
+  private readonly defaultOpenFirstSection = !this.suppressSeo;
+  private readonly ngZone = inject(NgZone);
   readonly auth = inject(AuthService);
   private bugReport = inject(BugReportService);
   private onboarding = inject(OnboardingService);
@@ -387,6 +395,13 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
   private pendingFragment: string | null = null;
   private answerHistoryActive = false;
 
+  // read-engagement telemetry (mirrors trivia_read_engaged)
+  private visibleMs = 0;
+  private visibleIntervalId: number | null = null;
+  private maxDepthPercent = 0;
+  private userOpenedSectionKeys = new Set<string>();
+  private readEngagedTracked = false;
+
   // ---- lifecycle ----
   ngOnInit(): void {
     this.pendingFragment = this.route.snapshot.fragment;
@@ -418,6 +433,8 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
 
     window.addEventListener('scroll', this.onScroll, { passive: true });
     window.addEventListener('resize', this.onResize, { passive: true });
+    this.startVisibilityTimer();
+    this.updateScrollDepth();
 
     setTimeout(() => {
       this.updateActiveFromPositions();
@@ -426,6 +443,7 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
 
   ngOnDestroy(): void {
     this.closeMobilePanels();
+    this.stopVisibilityTimer();
     if (this.isBrowser) {
       window.removeEventListener('scroll', this.onScroll);
       window.removeEventListener('resize', this.onResize);
@@ -552,8 +570,20 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
   onSectionToggle(key: string, event: Event): void {
     const details = event.currentTarget as HTMLDetailsElement | null;
     if (!details) return;
+    // Native `toggle` also fires when the [open] binding changes from code.
+    // Code paths update the signal before the DOM, so a matching state means
+    // an echo; a user click arrives while the signal still disagrees.
+    const echo = this.openSectionKeys().has(key) === details.open;
     this.setSectionOpen(key, details.open);
     if (details.open) this.activeKey.set(key);
+    if (echo) return;
+    if (details.open) this.trackSectionOpened(key);
+    this.updateScrollDepth();
+  }
+
+  private defaultOpenKeys(): Set<string> {
+    const first = this.sections()[0];
+    return first && this.defaultOpenFirstSection ? new Set([first.key]) : new Set<string>();
   }
 
   private setSectionOpen(key: string, open: boolean): void {
@@ -569,7 +599,8 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
     const first = this.sections()[0];
     if (!fragment) {
       if (this.answerHistoryActive && first) {
-        this.setSectionOpen(first.key, false);
+        // Back after "Start reference answer" returns to the page default.
+        this.openSectionKeys.set(this.defaultOpenKeys());
         this.answerHistoryActive = false;
       }
       return;
@@ -682,8 +713,8 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
   private applyResolvedQuestion(question: SDQuestion, preserveDisclosure = false): void {
     this.contentRetrying.set(false);
     if (!preserveDisclosure) {
-      this.openSectionKeys.set(new Set<string>());
       this.answerHistoryActive = false;
+      this.resetEngagementState();
     }
     this.activeKey.set(null);
     this.q.set(question);
@@ -709,6 +740,10 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
       this.openSectionKeys.set(new Set(
         [...this.openSectionKeys()].filter((key) => availableKeys.has(key)),
       ));
+    } else {
+      // Derived synchronously from the resolved question, so the prerendered
+      // `open` attribute and the first client render agree (hydration-safe).
+      this.openSectionKeys.set(this.defaultOpenKeys());
     }
     this.activeKey.set(secs[0]?.key ?? null);
     setTimeout(() => {
@@ -998,9 +1033,88 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
   };
 
   private onScroll = () => {
+    this.updateScrollDepth();
     if (this.isProgrammaticScroll) return;
     this.updateActiveFromPositions();
   };
+
+  // ---- read-engagement telemetry ----
+  private engagementContext(): { question_id: string } | null {
+    const question = this.q();
+    if (!this.isBrowser || !question || this.locked() || this.suppressSeo) return null;
+    if (this.contentLoadState() === 'error') return null;
+    return { question_id: question.id };
+  }
+
+  private resetEngagementState(): void {
+    this.visibleMs = 0;
+    this.maxDepthPercent = 0;
+    this.userOpenedSectionKeys = new Set<string>();
+    this.readEngagedTracked = false;
+  }
+
+  private trackSectionOpened(key: string): void {
+    const context = this.engagementContext();
+    if (!context) return;
+    this.userOpenedSectionKeys.add(key);
+    this.analytics.track('system_design_section_opened', {
+      ...context,
+      section_key: key,
+      section_index: this.sections().findIndex((section) => section.key === key),
+      open: true,
+    });
+    this.maybeTrackReadEngaged();
+  }
+
+  private startVisibilityTimer(): void {
+    if (!this.isBrowser || this.visibleIntervalId !== null) return;
+    this.ngZone.runOutsideAngular(() => {
+      this.visibleIntervalId = window.setInterval(() => {
+        if (document.hidden || !this.engagementContext()) return;
+        this.visibleMs += 1000;
+        this.maybeTrackReadEngaged();
+      }, 1000);
+    });
+  }
+
+  private stopVisibilityTimer(): void {
+    if (this.visibleIntervalId === null) return;
+    window.clearInterval(this.visibleIntervalId);
+    this.visibleIntervalId = null;
+  }
+
+  private computeScrollDepth(): number {
+    if (!this.isBrowser) return 0;
+    const scrollHeight = Math.max(document.documentElement.scrollHeight, 1);
+    const reached = Math.min(scrollHeight, window.pageYOffset + window.innerHeight);
+    return Math.max(0, Math.min(100, Math.round((reached / scrollHeight) * 100)));
+  }
+
+  private updateScrollDepth(): void {
+    if (!this.engagementContext()) return;
+    const depthPercent = this.computeScrollDepth();
+    if (depthPercent > this.maxDepthPercent) this.maxDepthPercent = depthPercent;
+    this.maybeTrackReadEngaged();
+  }
+
+  private maybeTrackReadEngaged(): void {
+    if (this.readEngagedTracked) return;
+    const context = this.engagementContext();
+    if (!context) return;
+    if (this.visibleMs < READ_ENGAGED_MIN_VISIBLE_MS) return;
+    const reachedAnswer = this.maxDepthPercent >= READ_ENGAGED_MIN_DEPTH_PERCENT
+      || this.userOpenedSectionKeys.size > 0;
+    if (!reachedAnswer) return;
+
+    this.readEngagedTracked = true;
+    this.analytics.track('system_design_read_engaged', {
+      ...context,
+      seconds_visible: Math.floor(this.visibleMs / 1000),
+      max_depth_percent: this.maxDepthPercent,
+      sections_opened: this.userOpenedSectionKeys.size,
+      first_section_default_open: this.defaultOpenFirstSection,
+    });
+  }
 
   private onResize = () => {
     if (this.resizeRaf) cancelAnimationFrame(this.resizeRaf);

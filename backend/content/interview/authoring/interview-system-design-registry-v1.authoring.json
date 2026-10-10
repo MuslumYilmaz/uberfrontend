@@ -4,9 +4,9 @@
   "registryVersion": "1.2.0",
   "status": "candidate",
   "finalApproval": null,
-  "definitionHash": "01a85477486ceca26ce2b4c235b44f93d49b7619f86f6eb578b59848e762cfc1",
+  "definitionHash": "dd2aa9b58688daef987d4682ef3e3917686962e0d39ea1f55b01e3d50c6a6173",
   "reviewBatch": {
-    "reviewedDefinitionHash": "01a85477486ceca26ce2b4c235b44f93d49b7619f86f6eb578b59848e762cfc1",
+    "reviewedDefinitionHash": "dd2aa9b58688daef987d4682ef3e3917686962e0d39ea1f55b01e3d50c6a6173",
     "reviewedAt": "2026-08-12",
     "technical": {
       "reviewer": "codex-system-design-technical-v8",
@@ -17,7 +17,8 @@
         "Hosted redirect and embedded provider-field fixtures exercise distinct accepted architectures; redirect-as-success, feature-owned card data, replacement attempts, and browser-lock authority are critical conflicts.",
         "Toast, Autocomplete, and Ranked Feed adaptation now grades accepted post-state instead of requiring a performative change from baseline.",
         "Autocomplete requires input and results UI boundaries; Ranked Feed requires view, normalized entities, and page membership plus explicit removed-anchor recovery.",
-        "2026-09-26 source-pin maintenance review: the dashboard requirements source only moves the existing Interview opening callout; all block values and the other five source files are unchanged. Guided prompts, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval."
+        "2026-09-26 source-pin maintenance review: the dashboard requirements source only moves the existing Interview opening callout; all block values and the other five source files are unchanged. Guided prompts, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
+        "2026-10-10 source-pin maintenance review: the dashboard source changes only meta.json seo.title and seo.description and one requirements link label and description; the AI chat source changes only meta.json seo.title and seo.description, drops one sentence from the overlapping-responses callout, and adds a two-item Build it links block to requirements. Candidate prompts, clarifications, requirements, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval."
       ]
     },
     "blind": {
@@ -3042,7 +3043,7 @@
       },
       "private": {
         "sourceContentId": "ai-chat-textarea-design",
-        "expectedSourceBundleHash": "bbe587d9fc4d4454b198a638e838fd7734cba1b1ea482816fb441e3fe66a2a19",
+        "expectedSourceBundleHash": "0522c064c9a08cd6ab06db7f884cd3bd4f3c5886c21a7430198fddac6d68635d",
         "clarificationAnswers": [
           {
             "clarificationId": "chat-draft-scope",
@@ -6069,7 +6070,7 @@
       },
       "private": {
         "sourceContentId": "dashboard-widgets-draggable-resizable",
-        "expectedSourceBundleHash": "02ba4b4bc75c8ba0b2e98639ed289815c3fd9c31942ad5945a7313fe11610d09",
+        "expectedSourceBundleHash": "6939eeb2c586bcbeb7540a82433e7a756a55ccbbe26ab0f5ff8c993d9fd1be67",
         "clarificationAnswers": [
           {
             "clarificationId": "dash-widget-scale",

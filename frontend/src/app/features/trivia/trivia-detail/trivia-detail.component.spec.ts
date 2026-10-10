@@ -1,4 +1,5 @@
 import { seoContentDateModified } from '../../../core/utils/seo-content-date.util';
+import { SEED_STREAM_SENTENCES } from './rxjs-overlap-playground/rxjs-overlap-playground.content';
 import { SEO_SUPPRESS_TOKEN } from '../../../core/services/seo-context';
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
@@ -256,6 +257,7 @@ describe('TriviaDetailComponent', () => {
   afterEach(() => {
     sessionStorage.removeItem('fa:trivia:lab-complete:js_event_loop_75s_v1');
     sessionStorage.removeItem('fa:trivia:lab-complete:angular_change_detection_visualizer');
+    sessionStorage.removeItem('fa:trivia:lab-complete:rxjs_overlap_playground');
     window.history.pushState({}, '', originalPath || '/');
     if (originalHiddenDescriptor) {
       Object.defineProperty(document, 'hidden', originalHiddenDescriptor);
@@ -2767,6 +2769,109 @@ describe('TriviaDetailComponent', () => {
     fixture.detectChanges();
 
     expect(component.question()?.id).toBe('angular-onpush-change-detection-debugging-real-bug');
+    expect(component.labCompletedQuestionId()).toBeNull();
+  });
+
+  it('places the deferred RxJS overlap playground after the direct answer and before interview practice', async () => {
+    const fixture = await createLoadedFixture('free', {
+      id: 'rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use',
+      title: 'switchMap vs mergeMap vs exhaustMap vs concatMap: When Would You Use Each in Angular?',
+      technology: 'angular' as any,
+      tags: ['angular', 'rxjs', 'operators'],
+    });
+
+    const quickAnswer = Array.from(fixture.nativeElement.querySelectorAll('.card'))
+      .find((element: any) => element.querySelector('.card-head')?.textContent?.includes('Direct answer')) as HTMLElement | undefined;
+    const labSlot = fixture.nativeElement.querySelector('[data-testid="rxjs-overlap-playground-slot"]') as HTMLElement | null;
+    const interviewFocus = fixture.nativeElement.querySelector('.interview-focus') as HTMLElement | null;
+    const fullAnswer = fixture.nativeElement.querySelector('[data-testid="trivia-full-answer"]') as HTMLElement | null;
+
+    expect(quickAnswer).toBeTruthy();
+    expect(labSlot).toBeTruthy();
+    expect(interviewFocus).toBeTruthy();
+    expect(fullAnswer).toBeTruthy();
+    expect(quickAnswer!.compareDocumentPosition(labSlot!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(labSlot!.compareDocumentPosition(interviewFocus!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(interviewFocus!.compareDocumentPosition(fullAnswer!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    const slotText = (labSlot?.textContent || '').replace(/\s+/g, ' ');
+    expect(slotText).toContain('Run the same trigger stream through switchMap, mergeMap, concatMap, and exhaustMap');
+    for (const sentence of SEED_STREAM_SENTENCES) {
+      expect(slotText).toContain(sentence);
+    }
+    expect(labSlot?.querySelectorAll('[id^="overlap-scenario-"]').length).toBe(7);
+    expect(labSlot?.querySelector('a[href="/angular/trivia/angular-http-what-actually-cancels-request"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('[data-testid="angular-change-detection-visualizer-slot"]')).toBeNull();
+    expect(fullAnswer?.querySelector('.card-head')?.textContent).toContain('Operator policies, timelines, and senior pitfalls');
+  });
+
+  it('does not render the RxJS overlap playground on other trivia questions', async () => {
+    const fixture = await createLoadedFixture('free');
+
+    expect(fixture.nativeElement.querySelector('[data-testid="rxjs-overlap-playground-slot"]')).toBeNull();
+  });
+
+  it('uses a completed overlap playground instead of the incident gate for its own question only', async () => {
+    auth.isLoggedIn.and.returnValue(true);
+    triviaIncident.getIncident.and.returnValue(of({
+      questionId: 'rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use',
+      tech: 'angular' as any,
+      title: 'Autocomplete race condition check',
+      scenario: 'Which explanation is better?',
+      options: [
+        { id: 'merge', label: 'Use mergeMap' },
+        { id: 'switch', label: 'Use switchMap' },
+      ],
+    }));
+    const fixture = await createLoadedFixture('free', {
+      id: 'rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use',
+      title: 'switchMap vs mergeMap vs exhaustMap vs concatMap: When Would You Use Each in Angular?',
+      technology: 'angular' as any,
+    });
+    const component = fixture.componentInstance;
+
+    component.onAngularChangeDetectionVisualizerCompleted();
+    expect(component.labCompletedQuestionId()).toBeNull();
+
+    component.onRxjsOverlapPlaygroundCompleted();
+
+    expect(component.labCompletedQuestionId()).toBe('rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use');
+    expect(sessionStorage.getItem('fa:trivia:lab-complete:rxjs_overlap_playground')).toBe('rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use');
+    expect(activity.complete).not.toHaveBeenCalled();
+
+    await component.markComplete();
+
+    expect(triviaIncident.getIncident).not.toHaveBeenCalled();
+    expect(activity.complete).toHaveBeenCalledWith(jasmine.objectContaining({
+      kind: 'trivia',
+      itemId: 'rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use',
+    }));
+  });
+
+  it('restores overlap playground eligibility from session storage for its own question only', async () => {
+    sessionStorage.setItem('fa:trivia:lab-complete:rxjs_overlap_playground', 'rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use');
+    const fixture = await createLoadedFixture('free', {
+      id: 'rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use',
+      title: 'switchMap vs mergeMap vs exhaustMap vs concatMap: When Would You Use Each in Angular?',
+      technology: 'angular' as any,
+    });
+    const component = fixture.componentInstance;
+
+    expect(component.labCompletedQuestionId()).toBe('rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use');
+
+    const nextResolved = makeResolved('free', { id: 'angular-http-what-actually-cancels-request', technology: 'angular' as any });
+    const nextQuestion = nextResolved.list[0];
+    routeData$.next({
+      questionDetail: {
+        ...nextResolved,
+        id: nextQuestion.id,
+        question: nextQuestion,
+      },
+    });
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(component.question()?.id).toBe('angular-http-what-actually-cancels-request');
     expect(component.labCompletedQuestionId()).toBeNull();
   });
 
