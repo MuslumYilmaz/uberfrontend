@@ -73,6 +73,8 @@ import {
   timelineLabel,
 } from '../../../core/utils/onboarding-personalization.util';
 import { fetchSdkAsset, resolveSolutionFiles } from '../../../core/utils/solution-asset.util';
+import { listQuestionFailureHints } from '../../../core/utils/failure-explain-rules';
+import type { FailureHint } from '../../../core/models/editor-assist.model';
 import { PreviewBuilderService } from '../../../core/services/preview-builder.service';
 import { PressureModeProgressService } from '../../../core/services/pressure-mode-progress.service';
 import { PressureModeService } from '../../../core/services/pressure-mode.service';
@@ -3740,6 +3742,14 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   hasAnyNotes = computed<boolean>(() => {
     const n = this.structuredSolution()?.notes;
     return !!(n && ((n.pitfalls?.length ?? 0) + (n.edgeCases?.length ?? 0) + (n.techniques?.length ?? 0)));
+  });
+
+  // Authored failure hints of this question, rendered statically with the
+  // solution so the prerendered page carries them for readers and crawlers.
+  commonMistakes = computed<FailureHint[]>(() => {
+    const q = this.question();
+    if (!q || !this.canAccessQuestionSolution(q)) return [];
+    return listQuestionFailureHints(q.id);
   });
 
   // Pick code for current lang

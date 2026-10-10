@@ -252,6 +252,15 @@ parameterized route metadata and SEO helpers that render every entry of a
 family are not part of a per-entry projection, so a shared edit never re-dates
 a whole family. Hub, landing, guide and company pages still follow their own
 components and templates.
+Authored failure hints (`core/utils/failure-explain-rules.ts`) are part of a
+coding or debug exercise's projection only while the detail template renders
+them, and only the rule objects of that question take part: editing one hint
+re-dates one exercise, and the fallback `() => true` rules never do.
+When a shared template release changes what crawlers see across a whole family
+(for example prerendering every public solution), record it once in
+`scripts/seo-content-releases.mjs` with its live day; matching routes dated
+earlier are floored to that day, later per-entry dates still win, and pending
+routes stay undated.
 When changing the meaning of a projection, increment `PROJECTION_VERSION` and
 rebuild the historical baseline from Git; do not stamp the current date. A build
 with an older projection checkpoint recomputes dates from full Git history

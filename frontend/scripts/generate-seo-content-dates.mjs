@@ -4,6 +4,7 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { repoRoot, seoDatesModulePath, seoDatesReportPath } from './content-paths.mjs';
 import { resolveContentDates, validateStagedContent } from './seo-content-history.mjs';
+import { applySharedContentReleases } from './seo-content-releases.mjs';
 
 export function strictSeoEnvironment(env = process.env) {
   return (Boolean(env.CI) && env.CI !== 'false') || env.VERCEL === '1'
@@ -36,7 +37,7 @@ export function verifyOrWriteFiles(files, { check = false } = {}) {
 
 export async function generateContentDates({ check = false, staged = false, strict = strictSeoEnvironment() } = {}) {
   const report = staged ? validateStagedContent({ repoRoot })
-    : await resolveContentDates({ repoRoot, mode: strict ? 'strict' : 'local', snapshot: 'worktree' });
+    : applySharedContentReleases(await resolveContentDates({ repoRoot, mode: strict ? 'strict' : 'local', snapshot: 'worktree' }));
   if (!staged) verifyOrWriteFiles(contentDateFiles(report), { check });
   console.log(`[seo:dates] revision=${report.revision.slice(0, 12)} routes=${Object.keys(report.routes).length}`
     + ` pending=${report.pending.length} unresolved=${report.unresolved.length}`);

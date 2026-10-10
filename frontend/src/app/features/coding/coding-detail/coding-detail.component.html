@@ -674,6 +674,20 @@
                 </div>
               </section>
 
+              <!-- Common mistakes: the authored failure hints the editor shows after failing runs -->
+              <section class="space-y-3 mb-6" *ngIf="!pressureRequested() && commonMistakes().length" data-testid="coding-common-mistakes">
+                <h3 class="text-sm font-semibold opacity-90">Common mistakes on this challenge</h3>
+                <ul class="space-y-3">
+                  <li *ngFor="let hint of commonMistakes()" class="p-3 rounded border border-white/10">
+                    <p class="text-sm font-medium" data-testid="coding-common-mistake-title">{{ hint.title }}</p>
+                    <p class="text-sm opacity-80 mt-1">{{ hint.why }}</p>
+                    <ul class="list-disc list-inside text-sm space-y-1 mt-2">
+                      <li class="font-sm" *ngFor="let action of hint.actions">{{ action }}</li>
+                    </ul>
+                  </li>
+                </ul>
+              </section>
+
               <!-- Short solution follow-ups -->
               <section class="space-y-2 mb-6" *ngIf="!pressureRequested() && structuredSolution()?.followUp?.length">
                 <h3 class="text-sm font-semibold opacity-90">Common interview follow-ups:</h3>
