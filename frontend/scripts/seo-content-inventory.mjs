@@ -406,6 +406,7 @@ export function buildSeoInventory(reader) {
       'css-position-sticky-not-working': 'css-sticky-debugging-lab',
       'angular-http-what-actually-cancels-request': 'angular-http-cancellation-lab',
       'react-stale-state-closures': 'react-stale-closure-case-files',
+      'angular-change-detection-strategies': 'angular-change-detection-visualizer',
     }[entry.id];
     if (lab) {
       const component = `${APP}features/trivia/trivia-detail/${lab}/${lab}.component.ts`;

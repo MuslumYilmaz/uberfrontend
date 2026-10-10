@@ -64,6 +64,7 @@ import { AngularHttpCancellationLabComponent } from './angular-http-cancellation
 import { JavaScriptEventLoopExperienceComponent } from './javascript-event-loop-experience/javascript-event-loop-experience.component';
 import { ReactStaleClosureCaseFilesComponent } from './react-stale-closure-case-files/react-stale-closure-case-files.component';
 import { CssStickyDebuggingLabComponent } from './css-sticky-debugging-lab/css-sticky-debugging-lab.component';
+import { AngularChangeDetectionVisualizerComponent } from './angular-change-detection-visualizer/angular-change-detection-visualizer.component';
 
 /** ============== Rich Answer Format ============== */
 type BlockText = { type: 'text'; text: string };
@@ -200,7 +201,13 @@ const ANGULAR_FORMS_FLOW_QUESTION_ID = 'angular-template-driven-vs-reactive-form
 const ANGULAR_HTTP_CANCELLATION_LAB_QUESTION_ID = 'angular-http-what-actually-cancels-request';
 const JAVASCRIPT_EVENT_LOOP_QUESTION_ID = 'js-event-loop';
 const CSS_STICKY_DEBUGGING_LAB_QUESTION_ID = 'css-position-sticky-not-working';
-const JAVASCRIPT_EVENT_LOOP_COMPLETION_STORAGE_KEY = 'fa:trivia:lab-complete:js_event_loop_75s_v1';
+const ANGULAR_CHANGE_DETECTION_VISUALIZER_QUESTION_ID = 'angular-change-detection-strategies';
+/** Labs whose completion replaces the incident gate, keyed by question id. */
+const LAB_COMPLETION_STORAGE_KEYS: Readonly<Record<string, string>> = {
+  [JAVASCRIPT_EVENT_LOOP_QUESTION_ID]: 'fa:trivia:lab-complete:js_event_loop_75s_v1',
+  // Keep this a literal: importing a value from the lab module would pull the deferred chunk into this one.
+  [ANGULAR_CHANGE_DETECTION_VISUALIZER_QUESTION_ID]: 'fa:trivia:lab-complete:angular_change_detection_visualizer',
+};
 const RETURN_VALUE_SIMULATOR_OPTIONS: ReturnValueSimulatorOption[] = [
   {
     key: 'null',
@@ -615,6 +622,7 @@ function buildTagRegex(tag: string): RegExp {
         JavaScriptEventLoopExperienceComponent,
         ReactStaleClosureCaseFilesComponent,
         CssStickyDebuggingLabComponent,
+        AngularChangeDetectionVisualizerComponent,
     ],
     templateUrl: './trivia-detail.component.html',
     styleUrls: ['./trivia-detail.component.css']
@@ -644,7 +652,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
   solved = signal(false);
   outputAttempted = signal(false);
   outputDeepDiveOpen = signal(false);
-  eventLoopCompletedQuestionId = signal<string | null>(null);
+  labCompletedQuestionId = signal<string | null>(null);
   loadState = signal<'loading' | 'loaded' | 'notFound'>('loading');
   loginPromptOpen = false;
   lifecyclePromptOpen = false;
@@ -939,15 +947,29 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     return q?.id === CSS_STICKY_DEBUGGING_LAB_QUESTION_ID;
   }
 
-  onJavascriptEventLoopExperienceCompleted(): void {
-    const q = this.question();
-    if (!q || !this.showJavascriptEventLoopExperience(q)) return;
+  showAngularChangeDetectionVisualizer(q?: Question | null): boolean {
+    return q?.id === ANGULAR_CHANGE_DETECTION_VISUALIZER_QUESTION_ID;
+  }
 
-    this.eventLoopCompletedQuestionId.set(q.id);
+  onJavascriptEventLoopExperienceCompleted(): void {
+    this.onLabCompleted(JAVASCRIPT_EVENT_LOOP_QUESTION_ID);
+  }
+
+  onAngularChangeDetectionVisualizerCompleted(): void {
+    this.onLabCompleted(ANGULAR_CHANGE_DETECTION_VISUALIZER_QUESTION_ID);
+  }
+
+  private onLabCompleted(questionId: string): void {
+    const q = this.question();
+    if (!q || q.id !== questionId) return;
+
+    this.labCompletedQuestionId.set(q.id);
     if (!this.isBrowser) return;
 
+    const storageKey = LAB_COMPLETION_STORAGE_KEYS[q.id];
+    if (!storageKey) return;
     try {
-      sessionStorage.setItem(JAVASCRIPT_EVENT_LOOP_COMPLETION_STORAGE_KEY, q.id);
+      sessionStorage.setItem(storageKey, q.id);
     } catch {
       // In-memory eligibility still covers the current route when storage is unavailable.
     }
@@ -960,6 +982,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
   primaryAnswerHeading(q?: Question | null): string {
     if (this.showAngularHttpCancellationLab(q)) return '15-second answer';
     if (this.showCssStickyDebuggingLab(q)) return 'Quick diagnosis';
+    if (this.showAngularChangeDetectionVisualizer(q)) return 'Direct answer';
     return this.isReactStaleClosuresLanding(q)
       ? 'React stale closures: direct answer'
       : 'Interview quick answer';
@@ -969,6 +992,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.isOutputQuestion(q)) return 'Deep dive';
     if (this.showAngularHttpCancellationLab(q)) return 'Cancellation patterns, proof, and production rules';
     if (this.showCssStickyDebuggingLab(q)) return 'CSS sticky failure modes, proof, and fixes';
+    if (this.showAngularChangeDetectionVisualizer(q)) return 'Trigger rules, zoneless migration, and DevTools proof';
     if (this.isReactStaleClosuresLanding(q)) return 'Diagnosis table and production review';
     if (this.showAsyncRaceSimulator(q)) return 'How to prevent stale async UI';
     return 'Full interview answer';
@@ -1206,7 +1230,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
       ? resolvedQuestion
       : this.isFullQuestion(listHit) ? listHit : null;
     this.question.set(found);
-    this.restoreEventLoopCompletionEligibility(found);
+    this.restoreLabCompletionEligibility(found);
     this.ensureQuestionIconFonts(found);
     this.resetTriviaEngagementState();
     this.resetOutputQuestionState();
@@ -1798,8 +1822,8 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     if (!this.solved() && this.isOutputQuestion(q) && !this.outputAttempted()) return;
     if (!this.solved()) {
       if (!this.isOutputQuestion(q)) {
-        const experienceReplacesIncident = this.showJavascriptEventLoopExperience(q)
-          && this.eventLoopCompletedQuestionId() === q.id;
+        const experienceReplacesIncident = Boolean(LAB_COMPLETION_STORAGE_KEYS[q.id])
+          && this.labCompletedQuestionId() === q.id;
         if (!experienceReplacesIncident) {
           const opened = await this.tryOpenIncidentPrompt(q);
           if (opened) return;
@@ -1993,13 +2017,14 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     return this.incidentPromptCache.get(key) ?? null;
   }
 
-  private restoreEventLoopCompletionEligibility(q: Question | null): void {
-    this.eventLoopCompletedQuestionId.set(null);
-    if (!q || !this.showJavascriptEventLoopExperience(q) || !this.isBrowser) return;
+  private restoreLabCompletionEligibility(q: Question | null): void {
+    this.labCompletedQuestionId.set(null);
+    const storageKey = q ? LAB_COMPLETION_STORAGE_KEYS[q.id] : undefined;
+    if (!q || !storageKey || !this.isBrowser) return;
 
     try {
-      if (sessionStorage.getItem(JAVASCRIPT_EVENT_LOOP_COMPLETION_STORAGE_KEY) === q.id) {
-        this.eventLoopCompletedQuestionId.set(q.id);
+      if (sessionStorage.getItem(storageKey) === q.id) {
+        this.labCompletedQuestionId.set(q.id);
       }
     } catch {
       // Storage is optional; a fresh completion still grants in-memory eligibility.

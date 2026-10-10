@@ -1,0 +1,285 @@
+<section
+  class="cd-lab"
+  data-testid="angular-change-detection-visualizer"
+  aria-labelledby="cd-lab-title"
+>
+  <header class="cd-lab__header">
+    <p class="cd-lab__eyebrow">Interactive Angular change detection lab</p>
+    <h2 id="cd-lab-title">Simulate Angular change detection: Default vs OnPush vs zoneless</h2>
+    <p>
+      Load a production bug or fire any trigger on any component, then read which of the seven
+      views Angular checks, skips, or only traverses, and why a value stays stale. The model
+      applies Angular's trigger rules deterministically; it does not execute your code.
+    </p>
+    <div class="cd-lab__meta" aria-label="Lab details">
+      <span>7 components</span>
+      <span>10 triggers</span>
+      <span>5 production bugs</span>
+      <span>Zone.js and zoneless</span>
+    </div>
+  </header>
+
+  <nav class="cd-lab__scenarios" aria-label="Preset production bugs">
+    @for (scenario of scenarios; track scenario.id) {
+      <fa-chip
+        [id]="fragmentId(scenario.id)"
+        size="sm"
+        [label]="scenario.chipLabel"
+        [selected]="state().scenario?.id === scenario.id"
+        [testId]="'cd-scenario-' + scenario.id"
+        (chipClick)="selectScenario(scenario.id)"
+      ></fa-chip>
+    }
+  </nav>
+
+  <article faCard padding="lg" class="cd-lab__scenario" data-testid="cd-scenario-card">
+    @if (selectedScenario(); as scenario) {
+      <div class="cd-lab__scenario-heading" data-focus-target="scenario" tabindex="-1">
+        <span class="cd-lab__step">Production bug {{ selectedScenarioIndex() }} of {{ scenarios.length }}</span>
+        <h3>{{ scenario.title }}</h3>
+      </div>
+      <p class="cd-lab__story">{{ scenario.story }}</p>
+      <p class="cd-lab__setup"><strong>Setup:</strong> {{ scenario.setup }}</p>
+      <div class="cd-lab__actions">
+        <button
+          faButton
+          type="button"
+          variant="primary"
+          size="md"
+          data-testid="cd-run-scenario"
+          (click)="runScenario()"
+        >
+          {{ runLabel() }}
+        </button>
+        <button faButton type="button" variant="ghost" size="md" data-testid="cd-reset" (click)="reset()">
+          Reset
+        </button>
+      </div>
+    } @else {
+      <div class="cd-lab__scenario-heading" data-focus-target="scenario" tabindex="-1">
+        <span class="cd-lab__step">Free sandbox</span>
+        <h3>Fire any trigger on any component</h3>
+      </div>
+      <p class="cd-lab__story">
+        Select a component in the tree, pick a trigger, and compare Default against OnPush or
+        Zone.js against zoneless. Choose a preset above to load one of the production bugs.
+      </p>
+      <div class="cd-lab__actions">
+        <button faButton type="button" variant="ghost" size="md" data-testid="cd-reset" (click)="reset()">
+          Reset
+        </button>
+      </div>
+    }
+  </article>
+
+  <div class="cd-lab__controls">
+    <fieldset class="cd-lab__mode" data-testid="cd-mode">
+      <legend>Scheduling mode</legend>
+      <div class="cd-lab__mode-options">
+        @for (mode of modes; track mode.id) {
+          <label class="cd-lab__radio" [class.is-selected]="state().mode === mode.id">
+            <input
+              type="radio"
+              name="cd-mode"
+              [value]="mode.id"
+              [checked]="state().mode === mode.id"
+              (change)="setMode(mode.id)"
+            />
+            <span class="cd-lab__radio-text">
+              <strong>{{ mode.label }}</strong>
+              <small>{{ mode.hint }}</small>
+            </span>
+          </label>
+        }
+      </div>
+    </fieldset>
+
+    <details class="cd-lab__sandbox" data-testid="cd-sandbox">
+      <summary class="cd-lab__sandbox-summary">
+        <span class="cd-lab__step">Sandbox</span>
+        <span id="cd-triggers-title" class="cd-lab__sandbox-title">
+          Fire any trigger on <strong data-testid="cd-selected-node">{{ selectedNodeLabel() }}</strong>
+        </span>
+      </summary>
+      <div class="cd-lab__triggers" role="group" aria-labelledby="cd-triggers-title">
+      <div class="cd-lab__trigger-grid">
+        @for (trigger of triggers(); track trigger.type) {
+          <button
+            faButton
+            type="button"
+            variant="neutral"
+            size="sm"
+            [attr.data-testid]="'cd-trigger-' + trigger.type"
+            [disabled]="trigger.disabled"
+            [title]="trigger.description"
+            (click)="fireTrigger(trigger.type)"
+          >
+            {{ trigger.label }}
+          </button>
+        }
+      </div>
+      <p class="cd-lab__trigger-hint">
+        Select a component in the tree to change the target. Input triggers need a parent, so they
+        are unavailable on the root component.
+      </p>
+      </div>
+    </details>
+  </div>
+
+  <div class="cd-lab__workspace">
+    <section class="cd-lab__panel" aria-labelledby="cd-tree-title">
+      <div class="cd-lab__panel-heading">
+        <h3 id="cd-tree-title">Component tree</h3>
+        <span class="cd-lab__meter" data-testid="cd-checked-count">
+          Checked {{ checkedCount() }} of {{ nodeCount }}
+        </span>
+      </div>
+      <ol class="cd-lab__tree" data-testid="cd-tree">
+        @for (view of nodeViews(); track view.meta.id) {
+          <li
+            class="cd-lab__node"
+            [attr.data-depth]="view.depth"
+            [attr.data-outcome]="view.node.outcome"
+            [attr.data-stale]="view.stale"
+            [attr.data-node]="view.meta.id"
+            [class.is-selected]="view.selected"
+          >
+            <article faCard padding="sm" class="cd-lab__node-card">
+              <button
+                type="button"
+                class="cd-lab__node-select"
+                [attr.aria-pressed]="view.selected"
+                [attr.data-testid]="'cd-node-' + view.meta.id"
+                (click)="selectNode(view.meta.id)"
+              >
+                <span class="cd-lab__node-name">{{ view.meta.label }}</span>
+                <span class="cd-lab__node-data">
+                  {{ view.meta.dataLabel }}: DOM v{{ view.node.renderedDataVersion }}, data v{{ view.node.dataVersion }}
+                </span>
+              </button>
+              <div class="cd-lab__node-row">
+                <fa-chip
+                  size="sm"
+                  [label]="view.strategyLabel"
+                  [selected]="view.node.strategy === 'onpush'"
+                  [testId]="'cd-strategy-' + view.meta.id"
+                  (chipClick)="toggleStrategy(view.meta.id)"
+                ></fa-chip>
+                <span class="cd-lab__badge" [attr.data-kind]="view.stale ? 'stale' : 'fresh'">
+                  {{ view.stale ? 'stale' : 'fresh' }}
+                </span>
+                <span class="cd-lab__badge" [attr.data-kind]="view.node.outcome">{{ view.outcomeLabel }}</span>
+                @if (view.node.dirty) {
+                  <span class="cd-lab__badge" data-kind="pending">dirty</span>
+                }
+                @if (view.node.refreshRequested) {
+                  <span class="cd-lab__badge" data-kind="pending">signal pending</span>
+                }
+                <span class="cd-lab__badge" data-kind="count">{{ view.node.checkCount }} checks</span>
+              </div>
+            </article>
+          </li>
+        }
+      </ol>
+      <p class="cd-lab__legend">
+        <span data-kind="updated">checked, DOM updated</span>
+        <span data-kind="checked">checked</span>
+        <span data-kind="traversed">traversed only</span>
+        <span data-kind="skipped">skipped</span>
+        <span data-kind="stale">stale</span>
+      </p>
+    </section>
+
+    <section class="cd-lab__panel" aria-labelledby="cd-trace-title">
+      <div class="cd-lab__panel-heading">
+        <h3 id="cd-trace-title">Change detection trace</h3>
+        @if (traceHeading()) {
+          <span class="cd-lab__meter" data-testid="cd-schedule">{{ traceHeading() }}</span>
+        }
+      </div>
+      @if (lastRun()) {
+        <p class="cd-lab__trace-trigger" data-testid="cd-trace-trigger">{{ traceTrigger() }}</p>
+        <ol class="cd-lab__trace" data-testid="cd-trace">
+          @for (step of traceSteps(); track step.index) {
+            <li class="cd-lab__trace-step" [attr.data-outcome]="step.outcome">
+              <span class="cd-lab__trace-node">{{ step.nodeLabel }}</span>
+              <span class="cd-lab__trace-text">{{ step.text }}</span>
+            </li>
+          }
+        </ol>
+      } @else {
+        <p class="cd-lab__trace-empty" data-testid="cd-trace-empty">
+          No pass yet. Run a scenario or fire a trigger to see the order in which Angular walks
+          the tree.
+        </p>
+      }
+    </section>
+  </div>
+
+  @if (diagnosis(); as verdict) {
+    <section
+      faCard
+      elevated
+      padding="lg"
+      class="cd-lab__verdict cd-lab__verdict--stale"
+      data-testid="cd-diagnosis"
+      data-focus-target="result"
+      tabindex="-1"
+      aria-labelledby="cd-diagnosis-title"
+    >
+      <span class="cd-lab__step">Diagnosis</span>
+      <h3 id="cd-diagnosis-title">{{ verdict.heading }}</h3>
+      <p>{{ verdict.sentence }}</p>
+      <div class="cd-lab__fix">
+        <span class="cd-lab__fix-label">Fix: {{ verdict.fixTitle }}</span>
+        <pre class="cd-lab__code" tabindex="0" [attr.aria-label]="'Fix code: ' + verdict.fixTitle"><code>{{ verdict.fixCode }}</code></pre>
+        <p>{{ verdict.fixExplanation }}</p>
+        <button
+          faButton
+          type="button"
+          variant="primary"
+          size="md"
+          data-testid="cd-apply-fix"
+          (click)="applyFix()"
+        >
+          Apply fix and run again
+        </button>
+      </div>
+    </section>
+  } @else if (fresh(); as verdict) {
+    <section
+      faCard
+      padding="lg"
+      class="cd-lab__verdict cd-lab__verdict--fresh"
+      data-testid="cd-fresh"
+      data-focus-target="result"
+      tabindex="-1"
+      aria-labelledby="cd-fresh-title"
+    >
+      <span class="cd-lab__step">Verdict</span>
+      <h3 id="cd-fresh-title">{{ verdict.heading }}</h3>
+      <p>{{ verdict.sentence }}</p>
+    </section>
+  }
+
+  <div class="cd-lab__takeaway">
+    <span>Keep this rule</span>
+    <p>{{ finalTakeaway }}</p>
+  </div>
+
+  <div class="cd-lab__related" aria-label="Related pages">
+    @for (link of relatedLinks; track link.id) {
+      <fa-chip
+        variant="outline"
+        size="md"
+        [toggle]="false"
+        [label]="link.label"
+        [routerLink]="link.route"
+        [testId]="'cd-related-' + link.id"
+        (chipClick)="onRelatedLinkClick(link.id)"
+      ></fa-chip>
+    }
+  </div>
+
+  <p class="sr-only" aria-live="polite" aria-atomic="true">{{ liveMessage() }}</p>
+</section>
