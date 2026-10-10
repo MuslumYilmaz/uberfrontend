@@ -823,7 +823,7 @@
   }
 
   .overlap-lab {
-    min-height: calc(206rem - var(--uf-space-5) * 2);
+    min-height: calc(220rem - var(--uf-space-5) * 2);
     padding: var(--uf-space-4);
     border-radius: var(--uf-radius-12);
   }

@@ -1890,7 +1890,8 @@ pre.line-numbers .line-numbers-rows { left: 16px; opacity: .55; border-right: 1p
 
 @media (max-width: 700px) {
   .overlap-shell {
-    min-height: 206rem;
+    /* Linux font fallbacks wrap the mobile lab taller than macOS; keep the shell above that natural height. */
+    min-height: 220rem;
   }
 
   .overlap-shell__body {

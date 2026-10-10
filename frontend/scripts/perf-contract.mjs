@@ -16,13 +16,20 @@ const outputPath = path.join(projectRoot, 'reports', 'perf-contract.json');
 const strictMode = process.argv.includes('--strict');
 const noWrite = process.argv.includes('--no-write');
 
-// Thresholds sit a few percent above the measured production build (2026-10-09:
-// initial 429,792; modulepreload 28,073; /coding HTML 585,910; prerender total
-// 99,111,133). They fail the Playwright Critical job in --strict mode, so a
+// Thresholds sit a few percent above the measured production build (2026-10-10:
+// eager JS 1,193,000; initial 1,327,000; /coding HTML 585,978; prerender total
+// 99,949,880). They fail the Playwright Critical job in --strict mode, so a
 // regression has to raise them deliberately in the same change.
+//
+// "Eager JS" is the static import closure of the module scripts in index.html,
+// i.e. everything the browser must load before the app boots. The modulepreload
+// hints are not used as a budget: Angular only emits hints for the first ten
+// static imports of main, so the hinted set shifts with chunk order even when
+// the eager graph is unchanged (2026-10-10: identical 51-file graph, hinted
+// bytes moved from 37,580 to 74,155).
 const THRESHOLDS = {
-  initialBytes: 480_000,
-  modulePreloadBytes: 40_000,
+  initialBytes: 1_400_000,
+  eagerJsBytes: 1_260_000,
   codingHtmlBytes: 620_000,
   totalHtmlBytes: 104_000_000,
   sentryLazyChunkBytes: 260_000,
@@ -94,6 +101,35 @@ async function sumAssets(root, hrefs) {
     resolved.push({ href, bytes });
   }
   return { total, resolved };
+}
+
+// Static import closure of the entry module scripts. Minified output references
+// chunks as `from"./chunk-X.js"` or `import"./chunk-X.js"`; dynamic imports use
+// `import(` and are deliberately excluded.
+async function collectEagerModuleGraph(root, entryHrefs) {
+  const seen = new Map();
+  const queue = entryHrefs.map(cleanAssetHref).filter(Boolean);
+  const importRe = /\b(?:from|import)\s*["'](\.\.?\/[^"']+\.js)["']/g;
+  while (queue.length) {
+    const rel = queue.shift();
+    if (seen.has(rel)) continue;
+    const fullPath = path.join(root, rel);
+    let source;
+    try {
+      source = await fs.readFile(fullPath, 'utf8');
+    } catch {
+      continue;
+    }
+    seen.set(rel, await fileSizeOrZero(fullPath));
+    const dir = path.posix.dirname(rel);
+    for (const match of source.matchAll(importRe)) {
+      const dep = path.posix.normalize(path.posix.join(dir, match[1]));
+      if (!seen.has(dep)) queue.push(dep);
+    }
+  }
+  let total = 0;
+  for (const bytes of seen.values()) total += bytes;
+  return { total, files: [...seen.keys()] };
 }
 
 async function walkFiles(dir, out = []) {
@@ -227,6 +263,7 @@ async function main() {
   const preloadMetrics = await sumAssets(buildRoot, modulePreloads);
   const stylesheetMetrics = await sumAssets(buildRoot, stylesheets);
   const scriptMetrics = await sumAssets(buildRoot, moduleScripts);
+  const eagerGraph = await collectEagerModuleGraph(buildRoot, moduleScripts);
   const htmlMetrics = await collectHtmlMetrics(buildRoot);
   let bundleStatsPath = null;
   let bundleStats = null;
@@ -238,8 +275,7 @@ async function main() {
     if (bundleStats) break;
   }
 
-  const initialBytes =
-    preloadMetrics.total + stylesheetMetrics.total + scriptMetrics.total;
+  const initialBytes = eagerGraph.total + stylesheetMetrics.total;
 
   const warnings = [];
   if (initialBytes > THRESHOLDS.initialBytes) {
@@ -247,9 +283,9 @@ async function main() {
       `Initial critical bytes ${initialBytes} exceed ${THRESHOLDS.initialBytes}`,
     );
   }
-  if (preloadMetrics.total > THRESHOLDS.modulePreloadBytes) {
+  if (eagerGraph.total > THRESHOLDS.eagerJsBytes) {
     warnings.push(
-      `Modulepreload bytes ${preloadMetrics.total} exceed ${THRESHOLDS.modulePreloadBytes}`,
+      `Eager JS bytes ${eagerGraph.total} exceed ${THRESHOLDS.eagerJsBytes}`,
     );
   }
   if (htmlMetrics.codingRouteBytes > THRESHOLDS.codingHtmlBytes) {
@@ -280,6 +316,8 @@ async function main() {
     thresholds: THRESHOLDS,
     metrics: {
       initialBytes,
+      eagerJsBytes: eagerGraph.total,
+      eagerJsFileCount: eagerGraph.files.length,
       modulePreloadBytes: preloadMetrics.total,
       modulePreloadCount: preloadMetrics.resolved.length,
       entryScriptBytes: scriptMetrics.total,
@@ -307,7 +345,7 @@ async function main() {
     await fs.writeFile(outputPath, `${JSON.stringify(payload, null, 2)}\n`, 'utf8');
     console.log(`[perf-contract] wrote ${normalizeRel(outputPath)}`);
   }
-  console.log(`[perf-contract] initialBytes=${initialBytes} modulePreloadBytes=${preloadMetrics.total} modulePreloadCount=${preloadMetrics.resolved.length}`);
+  console.log(`[perf-contract] initialBytes=${initialBytes} eagerJsBytes=${eagerGraph.total} eagerJsFiles=${eagerGraph.files.length} modulePreloadBytes=${preloadMetrics.total} modulePreloadCount=${preloadMetrics.resolved.length}`);
   console.log(`[perf-contract] codingHtmlBytes=${htmlMetrics.codingRouteBytes} totalHtmlBytes=${htmlMetrics.totalHtmlBytes}`);
   if (bundleStats) {
     console.log(
