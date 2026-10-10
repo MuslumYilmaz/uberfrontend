@@ -152,6 +152,20 @@ const CSS_STICKY_LAB_H1 = 'CSS position: sticky not working? Diagnose the root c
 const CSS_STICKY_LAB_DESCRIPTION =
   'Diagnose CSS position: sticky failures with five broken layouts. Inspect overflow, insets, container height, flex/grid stretch, then test the fix.';
 
+const ANGULAR_CD_VISUALIZER_PATH = '/angular/trivia/angular-change-detection-strategies';
+const ANGULAR_CD_VISUALIZER_TITLE = 'Angular Change Detection Visualizer: Default vs OnPush';
+const ANGULAR_CD_VISUALIZER_H1 = 'Angular Change Detection Strategies: Visualize Default vs OnPush';
+const ANGULAR_CD_VISUALIZER_DESCRIPTION =
+  'Default checks every component each pass. OnPush checks only after a new input reference, an event, an async pipe, a signal, or markForCheck().';
+const ANGULAR_CD_SIBLING_PATH = '/angular/trivia/angular-onpush-change-detection-debugging-real-bug';
+const ANGULAR_CD_SCENARIO_IDS = [
+  'push-mutation',
+  'timer-in-service',
+  'manual-subscribe',
+  'signal-in-onpush',
+  'zoneless-timer',
+] as const;
+
 const ANGULAR_HTTP_CANCELLATION_LAB_PATH =
   '/angular/trivia/angular-http-what-actually-cancels-request';
 const ANGULAR_HTTP_CANCELLATION_LAB_TITLE =
@@ -299,6 +313,31 @@ const CASES = [
       'No travel room',
       'Grid stretch',
       'Sticks but is covered',
+    ],
+  },
+  {
+    path: ANGULAR_CD_VISUALIZER_PATH,
+    titleIncludes: 'Angular Change Detection Visualizer: Default vs OnPush',
+    h1: ANGULAR_CD_VISUALIZER_H1,
+    detail: true,
+    indexable: true,
+    expectNoMonaco: true,
+    bodyTextIncludes: [
+      'Direct answer',
+      'Interactive Angular change detection lab',
+      'Trace which components Angular checks after each trigger',
+      'Array push with an OnPush list',
+      'Zoneless timer',
+      'Interview focus',
+      'Trigger rules, zoneless migration, and DevTools proof',
+    ],
+    hydratedBodyTextIncludes: [
+      'Direct answer',
+      'Interactive Angular change detection lab',
+      'Signal inside OnPush',
+      'Zoneless timer',
+      'Interview focus',
+      'Trigger rules, zoneless migration, and DevTools proof',
     ],
   },
   {
@@ -1709,6 +1748,96 @@ test.describe('seo-ssr', () => {
       datePublished: '2026-08-12T00:00:00.000Z',
     });
     await expectSitemapModificationDate(request, CSS_STICKY_LAB_PATH, article);
+  });
+
+  test('raw Angular change detection visualizer page exposes exact SEO, a crawlable lab shell, the full answer, and supported schema', async ({ request }) => {
+    const html = await readRawHtml(request, ANGULAR_CD_VISUALIZER_PATH);
+    const bodyMarkup = rawBodyMarkup(html);
+    const text = rawVisibleText(html);
+    const robots = normalizeText(extractRawMeta(html, 'robots')).replace(/\s+/g, '');
+    const schemaNodes = extractRawJsonLdNodes(html);
+    const schemaTypes = extractRawJsonLdTypes(html);
+
+    expect(extractRawTitle(html)).toBe(ANGULAR_CD_VISUALIZER_TITLE);
+    expect(extractRawMeta(html, 'description')).toBe(ANGULAR_CD_VISUALIZER_DESCRIPTION);
+    expect(extractRawH1(html)).toBe(ANGULAR_CD_VISUALIZER_H1);
+    expect(bodyMarkup.match(/<h1\b/gi) || []).toHaveLength(1);
+    expect(extractRawCanonical(html)).toBe(expectedCanonical(ANGULAR_CD_VISUALIZER_PATH));
+    expect(robots).toBe('index,follow');
+    expect(hasLockedShellMarkup(html)).toBe(false);
+    expect(bodyMarkup).toContain('data-testid="angular-change-detection-visualizer-placeholder"');
+    expect(bodyMarkup).not.toContain('<app-monaco-editor');
+    for (const id of ANGULAR_CD_SCENARIO_IDS) {
+      expect(bodyMarkup, `placeholder anchor ${id}`).toContain(`id="cd-scenario-${id}"`);
+    }
+
+    expectTextOrder(text, [
+      'Direct answer',
+      'Trace which components Angular checks after each trigger',
+      'Interview focus',
+      'Interview answer drill',
+      'Trigger rules, zoneless migration, and DevTools proof',
+    ], 'raw Angular change detection visualizer HTML');
+    for (const expectedText of [
+      'Array push with an OnPush list',
+      'Service timer with an OnPush footer',
+      'subscribe() without a mark',
+      'Signal inside OnPush',
+      'Zoneless timer',
+      'Read the visualizer trace from the root',
+      'Default vs OnPush: the production decision',
+      'Why OnPush still updates after events and async work',
+      'Compact trigger matrix',
+      'Zoneless change detection: what changes',
+      'Prove it with Angular DevTools',
+      'Profiling-first debug checklist',
+      'Run the production bugs next',
+      'Summary',
+    ]) {
+      expect(text, `Angular change detection raw HTML includes ${expectedText}`).toContain(
+        normalizeText(expectedText),
+      );
+    }
+
+    expect(schemaTypes).toContain('BreadcrumbList');
+    expect(schemaTypes).toContain('Article');
+    for (const forbiddenType of [
+      'TechArticle',
+      'Question',
+      'Quiz',
+      'FAQPage',
+      'QAPage',
+      'HowTo',
+      'SoftwareApplication',
+    ]) {
+      expect(schemaTypes, `Angular change detection schema excludes ${forbiddenType}`).not.toContain(
+        forbiddenType,
+      );
+    }
+    const article = schemaNodes.find((node) => node['@type'] === 'Article');
+    expect(article).toMatchObject({
+      '@id': expectedCanonical(ANGULAR_CD_VISUALIZER_PATH),
+      headline: `${ANGULAR_CD_VISUALIZER_H1} - ${TRIVIA_SCHEMA_HEADLINE_SUFFIX}`,
+      description: ANGULAR_CD_VISUALIZER_DESCRIPTION,
+      url: expectedCanonical(ANGULAR_CD_VISUALIZER_PATH),
+      mainEntityOfPage: expectedCanonical(ANGULAR_CD_VISUALIZER_PATH),
+      isAccessibleForFree: true,
+    });
+    await expectSitemapModificationDate(request, ANGULAR_CD_VISUALIZER_PATH, article);
+  });
+
+  test('raw OnPush debugging page links each bug story to a visualizer scenario', async ({ request }) => {
+    const html = await readRawHtml(request, ANGULAR_CD_SIBLING_PATH);
+    const text = rawVisibleText(html);
+
+    expect(text).toContain(normalizeText('Run these bugs in the visualizer'));
+    for (const id of ANGULAR_CD_SCENARIO_IDS) {
+      const href = `${ANGULAR_CD_VISUALIZER_PATH}#cd-scenario-${id}`;
+      expect(html, `sibling link to ${href}`).toMatch(
+        new RegExp(`<a\\b[^>]*href=["']${escapeRegExp(href)}["'][^>]*>`, 'i'),
+      );
+    }
+    expect(extractRawLinkTexts(html, ANGULAR_CD_VISUALIZER_PATH)).toContain(normalizeText('Angular change detection visualizer'));
   });
 
   test('raw Angular HttpClient cancellation lab exposes the complete public debugging answer and schema', async ({ request }) => {

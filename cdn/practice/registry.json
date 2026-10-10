@@ -745,7 +745,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-09",
+    "updatedAt": "2026-10-10",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#angular-onpush-change-detection-debugging-real-bug"
   },
@@ -1394,7 +1394,7 @@
     "route": "/angular/trivia/angular-change-detection-strategies",
     "tech": "angular",
     "difficulty": "intermediate",
-    "summary": "Angular change detection strategy is a production performance and debugging choice, not just a framework definition.",
+    "summary": "Angular has two change detection strategies. Default checks a component on every change detection pass that reaches it.",
     "tags": [
       "angular",
       "change-detection",
@@ -1404,7 +1404,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-09",
+    "updatedAt": "2026-10-10",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#angular-change-detection-strategies"
   },

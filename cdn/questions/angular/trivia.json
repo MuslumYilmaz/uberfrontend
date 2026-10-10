@@ -4565,20 +4565,16 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Angular change detection strategy is a production performance and debugging choice, not just a framework definition. The useful answer compares Default versus OnPush through stale-UI bugs, trigger rules, immutable updates, and when to use markForCheck() or detectChanges().",
+    "description": "Angular has two change detection strategies. Default checks a component on every change detection pass that reaches it. OnPush checks a component only when its input reference changes, an event fires inside its subtree, an async pipe emits, a signal it reads changes, or code calls markForCheck(). Most production stale-UI bugs are OnPush components whose data changed without one of those triggers: an object mutated in place, a field assigned inside a manual subscribe(), or a timer in a zoneless app that notified nobody. Run each bug in the visualizer below and watch which of the seven components Angular checks, skips, or only traverses.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Production decision first</strong><br><br>The real question is not “what is change detection?” but <strong>when should this subtree be checked</strong>. <strong>Default</strong> is the safe baseline when you want fewer stale-UI surprises. <strong>OnPush</strong> is the performance strategy when you want predictable checks, immutable inputs, and fewer wasted passes through a large component tree."
+          "text": "<strong>Read the visualizer trace from the root</strong><br><br>The lab above walks a seven-component tree the way Angular does: depth first from AppComponent, deciding at every view whether to check it, skip it, or only pass through it. Three outcomes explain almost every change detection question. A <strong>checked</strong> view had its template re-evaluated, and its DOM updated if a binding changed. A <strong>skipped</strong> view is OnPush with the same input reference and no dirty flag, so Angular ignored it together with its whole subtree. A <strong>traversed</strong> view is an OnPush ancestor on the path to a signal refresh: Angular walks through it without re-evaluating its template. A value turns <strong>stale</strong> when the data changed but the view was skipped, or when no pass ran at all."
         },
         {
           "type": "text",
-          "text": "<strong>How Angular thinks about it</strong><br>Angular keeps a tree of views. On each detection pass it decides which branches need checking, evaluates bindings, and updates the DOM if values changed. That is why strategy choice matters more in large trees than in tiny demo components."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Two strategies, two trade-offs</strong><br>Interviewers usually want the architecture trade-off, not just the names:"
+          "text": "<strong>Default vs OnPush: the production decision</strong><br><br>The real question is not “what is change detection?” but <strong>when should this subtree be checked</strong>. <strong>Default</strong> is the safe baseline when you want fewer stale-UI surprises. <strong>OnPush</strong> is the performance strategy when you want predictable checks, immutable inputs, and fewer wasted passes through a large component tree. Angular keeps a tree of views. On each pass it decides which branches need checking, evaluates bindings, and updates the DOM where values changed. That is why the strategy choice matters far more in a large tree than in a demo component, and why interviewers want the trade-off, not just the two names."
         },
         {
           "type": "list",
@@ -4591,15 +4587,15 @@
           "rows": [
             [
               "<code>ChangeDetectionStrategy.Default</code>",
-              "Checks the component whenever Angular runs a normal change-detection pass for that branch.",
+              "Checks the component on every change detection pass that reaches its branch.",
               "Simpler state model and fewer stale-view surprises.",
-              "Large trees rerender too often because everything stays eligible for checks."
+              "Large trees re-render too often because every view stays eligible for checks."
             ],
             [
               "<code>ChangeDetectionStrategy.OnPush</code>",
-              "Checks mainly when an input reference changes, an event happens in the subtree, an async pipe emits, or you mark the view manually.",
+              "Checks the component when an input reference changes, an event happens in the subtree, an async pipe emits, a signal it reads changes, or you mark the view manually.",
               "Large lists, reactive UIs, and predictable immutable state flows.",
-              "UI looks stale because code mutated an object or updated state in a manual subscription without marking the view."
+              "UI looks stale because code mutated an object or assigned state in a manual subscription without marking the view."
             ]
           ],
           "caption": "Default vs OnPush in real apps"
@@ -4611,7 +4607,7 @@
         },
         {
           "type": "text",
-          "text": "This child is <code>OnPush</code>, so Angular cares about <strong>reference changes and explicit triggers</strong>, not deep mutation. If a parent does <code>user.name = 'Bob'</code> on the same object, the child can stay stale even though the data technically changed."
+          "text": "This child is <code>OnPush</code>, so Angular cares about <strong>reference changes and explicit triggers</strong>, not deep mutation. If a parent does <code>user.name = 'Bob'</code> on the same object, the child stays stale even though the data changed. The first preset in the visualizer, the array push with an OnPush list, is this bug at list scale: the parent is checked, UserList is skipped, and the new row never renders."
         },
         {
           "type": "code",
@@ -4620,7 +4616,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Why OnPush still updates after events and async work</strong><br>OnPush does <strong>not</strong> mean “never update unless an input changes.” Events inside the subtree, <code>async</code> pipe emissions, and manual CDR calls still mark the view dirty. That is why a stale card sometimes “wakes up” after a click or Observable emission."
+          "text": "<strong>Why OnPush still updates after events and async work</strong><br>OnPush does <strong>not</strong> mean “never update unless an input changes.” Events inside the subtree, <code>async</code> pipe emissions, signals the template reads, and manual CDR calls still mark the view dirty or request a refresh. That is why a stale card sometimes “wakes up” after a click or an Observable emission: the click marked the branch dirty, so the pending data finally rendered. In the visualizer, fire <em>Click inside</em> on a stale OnPush card and watch it update for a reason that has nothing to do with the data."
         },
         {
           "type": "list",
@@ -4632,9 +4628,9 @@
           ],
           "rows": [
             [
-              "Parent mutates existing object",
-              "✅ Usually visible on next pass",
-              "❌ Often skipped",
+              "Parent mutates an existing object",
+              "✅ Visible on the next pass",
+              "❌ Skipped",
               "OnPush compares input references, not deep object state."
             ],
             [
@@ -4647,32 +4643,56 @@
               "Event happens inside the component subtree",
               "✅ Yes",
               "✅ Yes",
-              "Angular marks that branch dirty."
+              "Angular marks that branch and its ancestors dirty."
             ],
             [
-              "Observable emits through <code>async</code> pipe",
+              "Observable emits through the <code>async</code> pipe",
               "✅ Yes",
               "✅ Yes",
-              "AsyncPipe internally marks the view for checking."
+              "AsyncPipe calls <code>markForCheck()</code> on every emission."
+            ],
+            [
+              "A signal read in the template changes",
+              "✅ Yes",
+              "✅ Yes, that view only",
+              "Ancestors are traversed, not re-rendered."
             ],
             [
               "<code>markForCheck()</code>",
               "✅ Yes",
               "✅ Yes",
-              "Schedules the branch for the next normal pass."
+              "Marks the view and its ancestors for the next pass."
             ],
             [
               "<code>detectChanges()</code>",
-              "✅ Yes",
-              "✅ Yes",
-              "Forces an immediate synchronous check on this subtree."
+              "✅ Yes, this subtree",
+              "✅ Yes, this subtree",
+              "Synchronous check of this view and its children; views outside stay as they are."
+            ],
+            [
+              "<code>setTimeout</code> or manual <code>subscribe()</code> assigns a field, Zone.js app",
+              "✅ Next pass",
+              "❌ Skipped",
+              "Zone.js schedules the pass, but nothing marked the OnPush view."
+            ],
+            [
+              "The same assignment in a zoneless app",
+              "❌ No pass",
+              "❌ No pass",
+              "Nothing notified Angular, so no pass is scheduled at all."
+            ],
+            [
+              "Timer inside <code>runOutsideAngular()</code>",
+              "❌ No pass",
+              "❌ No pass",
+              "Zone.js never sees the task finish."
             ]
           ],
           "caption": "Compact trigger matrix"
         },
         {
           "type": "text",
-          "text": "<strong>markForCheck() vs detectChanges()</strong><br><br><code>markForCheck()</code> says “include me in the next normal pass.” <code>detectChanges()</code> says “run my subtree right now.” If you reach for <code>detectChanges()</code> by default, you usually have a lifecycle-timing smell rather than a true need for synchronous rendering."
+          "text": "<strong>markForCheck() vs detectChanges()</strong><br><br><code>markForCheck()</code> says “include me and my ancestors in the next normal pass.” <code>detectChanges()</code> says “check my subtree right now.” If you reach for <code>detectChanges()</code> by default, you usually have a lifecycle-timing smell rather than a true need for synchronous rendering. The visualizer shows the second trap: <code>detectChanges()</code> on UserList checks that subtree only, so a stale LiveCount outside it stays stale until a normal pass includes it."
         },
         {
           "type": "code",
@@ -4681,7 +4701,15 @@
         },
         {
           "type": "text",
-          "text": "<strong>Follow-up confusion that comes up in real debugging</strong><br><br><strong>ViewChild or direct child mutation:</strong> if you grab a child instance and mutate state directly, Angular may not treat that as a meaningful OnPush input change, so you often need a new reference or <code>markForCheck()</code>.<br><br><strong>ExpressionChangedAfterItHasBeenCheckedError:</strong> this usually means you changed bound state during the same detection turn after Angular already checked it. The fix is usually to move the update earlier, schedule it to the next turn, or rethink the data flow instead of blindly calling <code>detectChanges()</code> everywhere."
+          "text": "<strong>Zoneless change detection: what changes</strong><br><br>Zone.js patches browser APIs so that every finished task, whether a timer, an XHR callback, or an event, schedules a pass from the root. Zoneless Angular removes that patching. Angular 21 creates new applications zoneless by default, and Angular 20 apps opt in with <code>provideZonelessChangeDetection()</code> while removing <code>zone.js</code> from the build and test polyfills. Without the zone, only explicit notifications schedule a pass: a signal that a template reads changes, <code>markForCheck()</code> runs (the <code>async</code> pipe calls it for you), a template or host event listener fires, <code>ComponentRef.setInput()</code> is called, or a view that was marked dirty is attached. A plain field assignment in a <code>setTimeout</code> or a manual <code>subscribe()</code> callback notifies nobody, which is why the zoneless preset in the visualizer shows zero views checked. The migration rule is short: keep state that templates read in signals, keep Observables behind the <code>async</code> pipe, and treat every leftover <code>markForCheck()</code> as a hint that a signal would remove it. <code>NgZone.run()</code> and <code>runOutsideAngular()</code> can stay; they do no harm in a zoneless app. Current TestBed runs zoneless by default, so tests should <code>await fixture.whenStable()</code> instead of calling <code>fixture.detectChanges()</code> out of habit."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Prove it with Angular DevTools</strong><br><br>Open the Angular tab in Chrome or Firefox DevTools, switch to <strong>Profiler</strong>, and click <strong>Start recording</strong>. Each bar is one change detection cycle; a taller bar means Angular spent longer in that pass. Select a bar to open the flame graph, where each tile is a component at its position in the render tree and the color intensity shows how much time Angular spent there. Turn on <strong>Show only change detection</strong> to grey out the views that did not go through change detection, such as OnPush components that did not re-render. That greyed-out tile is the <strong>skipped</strong> outcome in the visualizer. When a stale bug reproduces on staging, <strong>Save Profile</strong> exports the recording as JSON so a reviewer can load it with <strong>Choose file</strong> and see which component the pass never touched."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Follow-up confusion that comes up in real debugging</strong><br><br><strong>ViewChild or direct child mutation:</strong> if you grab a child instance and mutate state directly, Angular may not treat that as a meaningful OnPush input change, so you often need a new reference or <code>markForCheck()</code>.<br><br><strong>ExpressionChangedAfterItHasBeenCheckedError:</strong> this usually means you changed bound state during the same detection turn after Angular already checked it. The fix is usually to move the update earlier, schedule it to the next turn, or rethink the data flow instead of blindly calling <code>detectChanges()</code> everywhere. In a zoneless app the same error also appears when a template value changes without any change notification, which points at a field that should have been a signal.<br><br><strong>Traversed is not checked:</strong> when a signal refreshes one OnPush view, its OnPush ancestors appear in the pass but their templates are not re-evaluated. Angular DevTools shows them greyed out, and the visualizer labels them traversed."
         },
         {
           "type": "list",
@@ -4692,7 +4720,7 @@
           ],
           "rows": [
             [
-              "Why is this list rerendering too often?",
+              "Why is this list re-rendering too often?",
               "Angular DevTools and whether child subtrees should be OnPush",
               "You want evidence before changing strategy."
             ],
@@ -4705,13 +4733,22 @@
               "Why did this expression-changed error appear?",
               "Check lifecycle timing and state writes after Angular already checked the view",
               "The problem is often timing, not missing brute-force detection."
+            ],
+            [
+              "Why does nothing update after the zoneless migration?",
+              "Find the state write that is not a signal, <code>markForCheck()</code>, an event, or an <code>async</code> pipe",
+              "Zoneless schedules passes only for explicit notifications."
             ]
           ],
           "caption": "Profiling-first debug checklist"
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li><code>Default</code> favors simplicity; <code>OnPush</code> favors predictable performance in large trees.</li><li>OnPush still updates on events, <code>async</code> pipe emissions, and manual CDR APIs, but it will skip deep mutation on the same input reference.</li><li><code>markForCheck()</code> is the normal manual escape hatch; <code>detectChanges()</code> is the sharper synchronous tool.</li><li>The highest-signal production bugs are stale OnPush UIs from mutation, manual subscription updates without marking, and lifecycle-timing errors like <code>ExpressionChangedAfterItHasBeenCheckedError</code>.</li></ul>"
+          "text": "<strong>Run the production bugs next</strong><br><br>The <a href=\"/angular/trivia/angular-onpush-change-detection-debugging-real-bug\">OnPush production bug walkthrough</a> tells the two stale-UI stories behind the first and third presets in full, with broken and fixed code side by side. <a href=\"/angular/trivia/angular-zonejs-change-detection\">How Zone.js schedules change detection</a> explains the patching that the zoneless preset removes. The <a href=\"/angular/trivia/angular-lifecycle-constructor-oninit-afterviewinit-dom\">lifecycle hooks page</a> covers the timing behind <code>ExpressionChangedAfterItHasBeenCheckedError</code>, and the <a href=\"/angular/trivia/angular-http-what-actually-cancels-request\">HttpClient cancellation lab</a> shows the other half of stale UI: responses that arrive after the user stopped caring."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Summary</strong><br><ul><li><code>Default</code> favors simplicity; <code>OnPush</code> favors predictable performance in large trees.</li><li>OnPush still updates on events, <code>async</code> pipe emissions, signals, and manual CDR APIs, but it skips deep mutation on the same input reference.</li><li><code>markForCheck()</code> is the normal manual escape hatch; <code>detectChanges()</code> is the sharper synchronous tool and only covers its own subtree.</li><li>Zoneless removes the automatic pass after every task: only signals, <code>markForCheck()</code>, events, async pipes, and <code>setInput()</code> schedule one.</li><li>The highest-signal production bugs are stale OnPush UIs from mutation, manual subscription updates without marking, timers in zoneless apps, and lifecycle-timing errors like <code>ExpressionChangedAfterItHasBeenCheckedError</code>.</li></ul>"
         }
       ]
     },
@@ -4744,10 +4781,11 @@
       "basics",
       "components"
     ],
-    "updatedAt": "2026-04-09",
+    "updatedAt": "2026-10-10",
     "seo": {
-      "title": "Angular change detection strategies in production: Default vs OnPush, triggers, and stale-UI bugs",
-      "description": "Compare Default vs OnPush through real Angular bugs: immutable updates, trigger rules, markForCheck vs detectChanges, and why stale views happen in production."
+      "title": "Angular Change Detection Visualizer: Default vs OnPush",
+      "h1": "Angular Change Detection Strategies: Visualize Default vs OnPush",
+      "description": "Default checks every component each pass. OnPush checks only after a new input reference, an event, an async pipe, a signal, or markForCheck()."
     }
   },
   {
@@ -5415,6 +5453,10 @@
         },
         {
           "type": "text",
+          "text": "<strong>Run these bugs in the visualizer</strong><br><br>Both stale-UI stories on this page are preset scenarios in the <a href=\"/angular/trivia/angular-change-detection-strategies\">Angular change detection visualizer</a>, which traces which of seven components Angular checks after each trigger, in Default and OnPush and with or without Zone.js:<ul><li><a href=\"/angular/trivia/angular-change-detection-strategies#cd-scenario-push-mutation\">Array push with an OnPush list</a>: the same array reference, so UserList is skipped and the new row never renders.</li><li><a href=\"/angular/trivia/angular-change-detection-strategies#cd-scenario-manual-subscribe\">subscribe() without a mark</a>: SummaryCard assigns a field in the callback and stays stale until the next click.</li><li><a href=\"/angular/trivia/angular-change-detection-strategies#cd-scenario-timer-in-service\">Service timer with an OnPush footer</a>: Zone.js runs the pass, but nothing marked LiveCount.</li><li><a href=\"/angular/trivia/angular-change-detection-strategies#cd-scenario-signal-in-onpush\">Signal inside OnPush</a>: one view refreshes while its OnPush ancestors are only traversed.</li><li><a href=\"/angular/trivia/angular-change-detection-strategies#cd-scenario-zoneless-timer\">Zoneless timer</a>: no signal, event, async pipe, or markForCheck() ran, so no pass runs at all.</li></ul>"
+        },
+        {
+          "type": "text",
           "text": "<strong>Interview-level summary</strong><br><br><code>OnPush</code> makes Angular check a component only when inputs change by reference, an event happens, an async pipe emits, or you manually trigger detection. It gives big performance wins, but <strong>requires immutable state updates</strong>. Most “UI not updating” bugs in OnPush come from mutating objects instead of replacing them."
         }
       ]
@@ -5448,7 +5490,7 @@
       "debugging",
       "performance"
     ],
-    "updatedAt": "2026-04-09",
+    "updatedAt": "2026-10-10",
     "seo": {
       "title": "Angular OnPush in production: triggers, stale-UI bugs, and markForCheck debugging",
       "description": "Explain OnPush like a real Angular bug: input mutation, manual subscriptions, parent-child boundaries, async pipe, and when markForCheck fixes stale UI."
