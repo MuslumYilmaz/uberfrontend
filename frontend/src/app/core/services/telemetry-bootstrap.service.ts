@@ -319,7 +319,6 @@ export class TelemetryBootstrapService implements OnDestroy {
   private inMemoryAnonymousId: string | null = null;
   private sentry: SentryBrowserClient | null = null;
   private sentryInitPromise: Promise<void> | null = null;
-  private analyticsInitScheduled = false;
   private interviewRouteActive = false;
   private qualificationCleanup: (() => void) | null = null;
   private qualificationTimer: number | null = null;
@@ -337,16 +336,17 @@ export class TelemetryBootstrapService implements OnDestroy {
     if (!this.isBrowser) return;
 
     this.interviewRouteActive = INTERVIEW_PAGE_ROUTE_PATTERN.test(url);
+    // GA loads only once the session qualifies as human (a trusted interaction
+    // or 15 visible seconds); scripted visitors that render and leave never
+    // reach Google Analytics. Page views queue in AnalyticsService until then.
     this.armDecisionSessionQualification();
 
     if (isMarketingPath(url)) {
-      this.scheduleAnalyticsInitialization();
       this.armOnFirstInteraction();
       return;
     }
 
     this.disarmOnFirstInteraction();
-    this.scheduleAnalyticsInitialization();
     void this.ensureSentryInitialized();
   }
 
@@ -499,12 +499,11 @@ export class TelemetryBootstrapService implements OnDestroy {
 
   private armOnFirstInteraction(): void {
     if (this.interactionCleanup) return;
-    if (this.analytics.isInitialized() && this.sentryInitPromise) return;
+    if (this.sentryInitPromise) return;
 
     this.zone.runOutsideAngular(() => {
       const activate = () => {
         this.disarmOnFirstInteraction();
-        this.scheduleAnalyticsInitialization();
         void this.ensureSentryInitialized();
       };
 
@@ -528,18 +527,6 @@ export class TelemetryBootstrapService implements OnDestroy {
 
   private disarmOnFirstInteraction(): void {
     this.interactionCleanup?.();
-  }
-
-  private scheduleAnalyticsInitialization(): void {
-    if (!this.isBrowser || this.analytics.isInitialized() || this.analyticsInitScheduled) return;
-
-    this.analyticsInitScheduled = true;
-    this.schedulePostLoad(() => {
-      window.setTimeout(() => {
-        this.analyticsInitScheduled = false;
-        this.analytics.ensureInitialized();
-      }, 1200);
-    });
   }
 
   private ensureSentryInitialized(): Promise<void> {

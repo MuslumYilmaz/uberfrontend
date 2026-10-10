@@ -46,6 +46,8 @@ Notes:
 ## Analytics traffic hygiene
 
 - Local/test builds do not load GA because their measurement ID is empty, and browser automation is suppressed even in a production build.
+- GA loads only after a session qualifies as human: a trusted pointer, key or touch interaction, or 15 cumulative seconds with the tab visible. Page views queue until then, so scripted visitors that render a page and leave never reach GA.
+- Self-declared crawlers, HTTP clients and automation runtimes never load GA. Browsers that only look scripted (no accepted languages, a zero-sized window, desktop Chrome without the `chrome` runtime) still load GA but send `traffic_type=bot_suspect`; a GA4 internal-traffic data filter for that value excludes them from reports once it is switched from Testing to Active.
 - To mark a real production browser tab used by the team, open any page once with `?fa_traffic=internal`. Use `?fa_traffic=test` for an intentional live analytics verification. The PII-free `traffic_type` marker remains only for that tab.
 - Open a page with `?fa_traffic=external` to clear the tab marker. Qualified-visitor reporting should exclude `traffic_type` values `internal` and `test`.
 
