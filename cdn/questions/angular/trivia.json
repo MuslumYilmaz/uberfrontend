@@ -5657,6 +5657,10 @@
         },
         {
           "type": "text",
+          "text": "<strong>Run the stream yourself</strong><br><br>The overlap playground above runs the real RxJS operators on a virtual clock. Load a scenario, predict which responses reach the UI, then reveal: <a href=\"#overlap-scenario-typeahead-search\">typeahead search</a>, <a href=\"#overlap-scenario-save-double-click\">save button double click</a>, <a href=\"#overlap-scenario-parallel-loads\">dashboard parallel loads</a>, <a href=\"#overlap-scenario-wizard-saves\">wizard step saves</a>, and three production bugs: <a href=\"#overlap-scenario-stale-overwrite\">a stale response that wins</a>, <a href=\"#overlap-scenario-dropped-click\">a second filter change that is ignored</a>, and <a href=\"#overlap-scenario-cancel-not-server\">a switchMap payment that charges twice</a>. Then build your own trigger stream, change request durations, and compare all four operators on it."
+        },
+        {
+          "type": "text",
           "text": "<strong>Senior pitfall #1: race conditions with mergeMap</strong><br><br>If you use <code>mergeMap</code> for UI state that should reflect the latest request, you can get <em>out-of-order overwrites</em>: request A starts, then request B starts, B returns first (UI shows B), then A returns later and overwrites the UI with stale data. That’s why typeahead/search is almost always <code>switchMap</code>."
         },
         {
@@ -5717,7 +5721,7 @@
       "async",
       "basics"
     ],
-    "updatedAt": "2026-10-09",
+    "updatedAt": "2026-10-10",
     "seo": {
       "title": "switchMap vs mergeMap vs concatMap vs exhaustMap in Angular",
       "description": "Use switchMap for latest-only work, mergeMap for parallel work, concatMap for ordered work, and exhaustMap to ignore repeat triggers."

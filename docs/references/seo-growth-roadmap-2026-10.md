@@ -41,6 +41,18 @@ Implementation lives in `frontend/src/app/features/trivia/trivia-detail/angular-
 
 Second iteration (only if engagement is healthy): a real Default/OnPush mini demo behind the `CdEngine` seam, counting actual renders instead of simulating them.
 
+## Step 3b (current): RxJS overlap playground
+
+Target page: `/angular/trivia/rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use` (503 impressions per 28 days at position 7.9, one click; human pairwise queries such as "exhaustmap vs switchmap" at 7.0 to 7.6 with zero clicks in the 14-day query report). Title, description and H1 stay frozen for the 2026-10-07 measurement window; only the body gained a lab and one linking block.
+
+The lab runs the real RxJS operators on a `VirtualTimeScheduler`: the visitor places up to six triggers on a 1200 ms axis, sets request durations, predicts which responses reach the UI, reveals, and compares all four operators; seven presets reproduce typeahead, double submit, parallel loads, ordered saves and three production bugs, each with a verdict, hazards and a one-click fix. Code: `frontend/src/app/features/trivia/trivia-detail/rxjs-overlap-playground/`.
+
+| Checkpoint | Check |
+|---|---|
+| Deploy day | Placeholder text and the seven `overlap-scenario-*` anchors in live HTML; URL Inspection request; GA4 `trivia_lab_*` with `lab_id=rxjs_overlap_playground` |
+| Plus 14 days | Recrawl only |
+| Plus 6 to 8 weeks | Pairwise queries ("exhaustmap vs switchmap", "switchmap vs mergemap", "switchmap vs concatmap") at position 5 or better; at least 700 impressions and 10 clicks per 28 days; at least 30% of qualified views reveal and 15% complete |
+
 ## Step 4 (open): descriptions that answer instead of describe
 
 - 28 trivia `seo.description` values still start with "Explain" and 84 are longer than 160 characters (prerender audit, 2026-10-09).

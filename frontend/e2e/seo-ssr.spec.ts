@@ -158,6 +158,26 @@ const ANGULAR_CD_VISUALIZER_H1 = 'Angular Change Detection Strategies: Visualize
 const ANGULAR_CD_VISUALIZER_DESCRIPTION =
   'Default checks every component each pass. OnPush checks only after a new input reference, an event, an async pipe, a signal, or markForCheck().';
 const ANGULAR_CD_SIBLING_PATH = '/angular/trivia/angular-onpush-change-detection-debugging-real-bug';
+const RXJS_OVERLAP_PATH = '/angular/trivia/rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use';
+const RXJS_OVERLAP_TITLE = 'switchMap vs mergeMap vs concatMap vs exhaustMap in Angular';
+const RXJS_OVERLAP_H1 = 'switchMap vs mergeMap vs exhaustMap vs concatMap: When Would You Use Each in Angular?';
+const RXJS_OVERLAP_DESCRIPTION =
+  'Use switchMap for latest-only work, mergeMap for parallel work, concatMap for ordered work, and exhaustMap to ignore repeat triggers.';
+const RXJS_OVERLAP_SCENARIO_IDS = [
+  'typeahead-search',
+  'save-double-click',
+  'parallel-loads',
+  'wizard-saves',
+  'stale-overwrite',
+  'dropped-click',
+  'cancel-not-server',
+] as const;
+const RXJS_OVERLAP_SEED_SENTENCES = [
+  'switchMap cancels A at 100 ms and the UI gets B at 400 ms.',
+  'mergeMap keeps every request and the UI gets A at 300 ms, then B at 400 ms.',
+  'concatMap starts B only after the previous request completes, so the UI gets A at 300 ms, then B at 600 ms.',
+  'exhaustMap ignores B and the UI gets A at 300 ms.',
+] as const;
 const ANGULAR_CD_SCENARIO_IDS = [
   'push-mutation',
   'timer-in-service',
@@ -338,6 +358,22 @@ const CASES = [
       'Zoneless timer',
       'Interview focus',
       'Trigger rules, zoneless migration, and DevTools proof',
+    ],
+  },
+  {
+    path: RXJS_OVERLAP_PATH,
+    titleIncludes: 'switchMap vs mergeMap vs concatMap vs exhaustMap in Angular',
+    h1: RXJS_OVERLAP_H1,
+    detail: true,
+    indexable: true,
+    expectNoMonaco: true,
+    bodyTextIncludes: [
+      'Direct answer',
+      'Interactive RxJS overlap playground',
+      'Run the same trigger stream through',
+      'Bug: stale response wins',
+      'Interview focus',
+      'Operator policies, timelines, and senior pitfalls',
     ],
   },
   {
@@ -1824,6 +1860,71 @@ test.describe('seo-ssr', () => {
       isAccessibleForFree: true,
     });
     await expectSitemapModificationDate(request, ANGULAR_CD_VISUALIZER_PATH, article);
+  });
+
+  test('raw RxJS overlap playground page keeps its frozen SEO, exposes the crawlable lab shell, and supported schema', async ({ request }) => {
+    const html = await readRawHtml(request, RXJS_OVERLAP_PATH);
+    const bodyMarkup = rawBodyMarkup(html);
+    const text = rawVisibleText(html);
+    const robots = normalizeText(extractRawMeta(html, 'robots')).replace(/\s+/g, '');
+    const schemaNodes = extractRawJsonLdNodes(html);
+    const schemaTypes = extractRawJsonLdTypes(html);
+
+    expect(extractRawTitle(html)).toBe(RXJS_OVERLAP_TITLE);
+    expect(extractRawMeta(html, 'description')).toBe(RXJS_OVERLAP_DESCRIPTION);
+    expect(extractRawH1(html)).toBe(RXJS_OVERLAP_H1);
+    expect(bodyMarkup.match(/<h1\b/gi) || []).toHaveLength(1);
+    expect(extractRawCanonical(html)).toBe(expectedCanonical(RXJS_OVERLAP_PATH));
+    expect(robots).toBe('index,follow');
+    expect(hasLockedShellMarkup(html)).toBe(false);
+    expect(bodyMarkup).toContain('data-testid="rxjs-overlap-playground-placeholder"');
+    expect(bodyMarkup).not.toContain('<app-monaco-editor');
+    for (const id of RXJS_OVERLAP_SCENARIO_IDS) {
+      expect(bodyMarkup, `placeholder anchor ${id}`).toContain(`id="overlap-scenario-${id}"`);
+    }
+    expect(extractRawLinkTexts(html, ANGULAR_HTTP_CANCELLATION_LAB_PATH)).toContain(
+      normalizeText('Test what actually cancels an HttpClient request'),
+    );
+
+    expectTextOrder(text, [
+      'Direct answer',
+      'Run the same trigger stream through switchMap, mergeMap, concatMap, and exhaustMap',
+      'Interview focus',
+      'Interview answer drill',
+      'Operator policies, timelines, and senior pitfalls',
+    ], 'raw RxJS overlap playground HTML');
+    for (const expectedText of [
+      ...RXJS_OVERLAP_SEED_SENTENCES,
+      'Typeahead search',
+      'Save button double click',
+      'Dashboard parallel loads',
+      'Wizard step saves',
+      'Bug: stale response wins',
+      'Bug: second filter ignored',
+      'Bug: switchMap, paid twice',
+      'Core idea',
+      'Run the stream yourself',
+      'Senior pitfall #1: race conditions with mergeMap',
+      'Summary',
+    ]) {
+      expect(text, `RxJS overlap raw HTML includes ${expectedText}`).toContain(normalizeText(expectedText));
+    }
+
+    expect(schemaTypes).toContain('BreadcrumbList');
+    expect(schemaTypes).toContain('Article');
+    for (const forbiddenType of ['TechArticle', 'Question', 'Quiz', 'FAQPage', 'QAPage', 'HowTo', 'SoftwareApplication']) {
+      expect(schemaTypes, `RxJS overlap schema excludes ${forbiddenType}`).not.toContain(forbiddenType);
+    }
+    const article = schemaNodes.find((node) => node['@type'] === 'Article');
+    expect(article).toMatchObject({
+      '@id': expectedCanonical(RXJS_OVERLAP_PATH),
+      headline: `${RXJS_OVERLAP_H1} - ${TRIVIA_SCHEMA_HEADLINE_SUFFIX}`,
+      description: RXJS_OVERLAP_DESCRIPTION,
+      url: expectedCanonical(RXJS_OVERLAP_PATH),
+      mainEntityOfPage: expectedCanonical(RXJS_OVERLAP_PATH),
+      isAccessibleForFree: true,
+    });
+    await expectSitemapModificationDate(request, RXJS_OVERLAP_PATH, article);
   });
 
   test('raw OnPush debugging page links each bug story to a visualizer scenario', async ({ request }) => {
