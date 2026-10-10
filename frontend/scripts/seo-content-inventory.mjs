@@ -407,6 +407,7 @@ export function buildSeoInventory(reader) {
       'angular-http-what-actually-cancels-request': 'angular-http-cancellation-lab',
       'react-stale-state-closures': 'react-stale-closure-case-files',
       'angular-change-detection-strategies': 'angular-change-detection-visualizer',
+      'rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use': 'rxjs-overlap-playground',
     }[entry.id];
     if (lab) {
       const component = `${APP}features/trivia/trivia-detail/${lab}/${lab}.component.ts`;

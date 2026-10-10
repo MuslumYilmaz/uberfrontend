@@ -1826,6 +1826,78 @@ pre.line-numbers .line-numbers-rows { left: 16px; opacity: .55; border-right: 1p
   }
 }
 
+.rxjs-overlap-playground-slot {
+  min-width: 0;
+}
+
+.overlap-shell {
+  display: grid;
+  min-width: 0;
+  min-height: 140rem;
+  align-items: center;
+  overflow: hidden;
+  background: var(--uf-surface);
+}
+
+.overlap-shell__body {
+  display: grid;
+  min-width: 0;
+  gap: 12px;
+  padding: clamp(20px, 4vw, 34px);
+}
+
+.overlap-shell__body h2,
+.overlap-shell__body p {
+  margin: 0;
+}
+
+.overlap-shell__body h2 {
+  max-width: 34ch;
+}
+
+.overlap-shell__eyebrow {
+  color: var(--uf-accent-strong);
+  font-weight: 800;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.overlap-shell__copy {
+  max-width: 72ch;
+  color: var(--uf-text-secondary);
+}
+
+.overlap-shell__scenarios {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding-inline-start: 1.25rem;
+  color: var(--uf-text-secondary);
+}
+
+.overlap-shell--status {
+  gap: 8px;
+  padding: 24px;
+  align-content: center;
+  color: var(--uf-text-secondary);
+}
+
+.overlap-shell--status a,
+.overlap-shell__copy a {
+  color: var(--uf-accent-strong);
+  font-weight: 800;
+}
+
+@media (max-width: 700px) {
+  .overlap-shell {
+    min-height: 206rem;
+  }
+
+  .overlap-shell__body {
+    padding: 20px 16px;
+  }
+}
+
 .event-loop-experience-shell {
   min-width: 0;
   min-height: 64rem;

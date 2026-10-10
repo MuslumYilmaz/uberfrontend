@@ -335,6 +335,82 @@
                 }
             </section>
 
+            <section
+                *ngIf="showRxjsOverlapPlayground(q)"
+                id="rxjs-overlap-playground"
+                class="rxjs-overlap-playground-slot"
+                data-testid="rxjs-overlap-playground-slot"
+                aria-label="RxJS overlap playground">
+                @defer (on viewport; prefetch on idle) {
+                    <app-rxjs-overlap-playground
+                        (completed)="onRxjsOverlapPlaygroundCompleted()">
+                    </app-rxjs-overlap-playground>
+                } @placeholder {
+                    <div class="card overlap-shell" data-testid="rxjs-overlap-playground-placeholder">
+                        <div class="overlap-shell__body">
+                            <p class="overlap-shell__eyebrow">Interactive RxJS overlap playground</p>
+                            <h2>Run the same trigger stream through switchMap, mergeMap, concatMap, and exhaustMap</h2>
+                            <p class="overlap-shell__copy">
+                                Trigger A at 0 ms, trigger B at 100 ms, each request 300 ms. switchMap cancels A at
+                                100 ms and the UI gets B at 400 ms. mergeMap keeps every request and the UI gets A at
+                                300 ms, then B at 400 ms. concatMap starts B only after the previous request completes,
+                                so the UI gets A at 300 ms, then B at 600 ms. exhaustMap ignores B and the UI gets A at
+                                300 ms. The playground runs the real RxJS operators on a virtual clock, so you can change
+                                the stream, predict the result, and compare all four policies.
+                            </p>
+                            <ol class="overlap-shell__scenarios" aria-label="Preset scenarios">
+                                <li id="overlap-scenario-typeahead-search">
+                                    <strong>Typeahead search:</strong> a slow first request makes mergeMap show results
+                                    for an older query; switchMap keeps only the newest query.
+                                </li>
+                                <li id="overlap-scenario-save-double-click">
+                                    <strong>Save button double click:</strong> mergeMap posts twice; exhaustMap ignores
+                                    the second click while the first request runs.
+                                </li>
+                                <li id="overlap-scenario-parallel-loads">
+                                    <strong>Dashboard parallel loads:</strong> concatMap runs three independent requests
+                                    one after another and finishes at 950 ms; mergeMap finishes them by 480 ms.
+                                </li>
+                                <li id="overlap-scenario-wizard-saves">
+                                    <strong>Wizard step saves:</strong> switchMap cancels two of three draft saves;
+                                    concatMap lands all three in order.
+                                </li>
+                                <li id="overlap-scenario-stale-overwrite">
+                                    <strong>Bug: stale response wins:</strong> under mergeMap a 500 ms response arrives
+                                    after a 200 ms one and overwrites it; switchMap cancels the old request.
+                                </li>
+                                <li id="overlap-scenario-dropped-click">
+                                    <strong>Bug: second filter ignored:</strong> exhaustMap drops the newer filter change;
+                                    switchMap makes the latest change win.
+                                </li>
+                                <li id="overlap-scenario-cancel-not-server">
+                                    <strong>Bug: switchMap, paid twice:</strong> switchMap cancels the client subscription,
+                                    but the server already received the first payment; exhaustMap blocks the second click.
+                                </li>
+                            </ol>
+                            <p class="overlap-shell__copy">
+                                switchMap cancels the client subscription, not the server.
+                                <a [routerLink]="['/angular', 'trivia', 'angular-http-what-actually-cancels-request']">
+                                    Test what actually cancels an HttpClient request
+                                </a>
+                            </p>
+                        </div>
+                    </div>
+                } @loading (minimum 120ms) {
+                    <div class="card overlap-shell overlap-shell--status" role="status">
+                        Preparing the RxJS overlap playground…
+                    </div>
+                } @error {
+                    <div class="card overlap-shell overlap-shell--status" role="alert">
+                        <strong>The interactive playground could not load.</strong>
+                        <span>The full answer remains available below.</span>
+                        <a [routerLink]="['/angular', 'trivia', 'angular-http-what-actually-cancels-request']">
+                            Open the HttpClient cancellation lab
+                        </a>
+                    </div>
+                }
+            </section>
+
             <ng-container *ngTemplateOutlet="interviewPracticeTpl; context: { $implicit: q }"></ng-container>
 
             <app-angular-http-cancellation-lab

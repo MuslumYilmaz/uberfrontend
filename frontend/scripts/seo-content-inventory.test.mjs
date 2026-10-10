@@ -327,6 +327,7 @@ test('actual shared detail templates and helpers do not re-date entry routes; ac
   assert.deepEqual(changes(`${APP}features/trivia/trivia-detail/javascript-event-loop-experience/javascript-event-loop-experience.component.html`, 'Predict the browser event loop before it runs', 'Predict the event loop before it runs'), ['/javascript/trivia/js-event-loop']);
   assert.deepEqual(changes(`${APP}features/trivia/trivia-detail/angular-change-detection-visualizer/angular-change-detection-visualizer.component.html`, 'Simulate Angular change detection: Default vs OnPush vs zoneless', 'Simulate change detection: Default vs OnPush vs zoneless'), ['/angular/trivia/angular-change-detection-strategies']);
   assert.deepEqual(changes(`${APP}features/trivia/trivia-detail/angular-change-detection-visualizer/angular-change-detection-visualizer.content.ts`, 'The list keeps the old users after push()', 'The list keeps stale users after push()'), ['/angular/trivia/angular-change-detection-strategies']);
+  assert.deepEqual(changes(`${APP}features/trivia/trivia-detail/rxjs-overlap-playground/rxjs-overlap-playground.content.ts`, 'The search box shows results for the wrong query', 'The search box shows results for an older query'), ['/angular/trivia/rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use']);
 });
 
 test('actual React FAQ/profile/template content only refreshes the React hub', () => {

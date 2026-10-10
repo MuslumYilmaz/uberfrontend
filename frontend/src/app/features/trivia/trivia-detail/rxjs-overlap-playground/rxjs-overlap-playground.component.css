@@ -1,0 +1,869 @@
+:host {
+  display: block;
+  min-width: 0;
+  margin: var(--uf-space-6) 0;
+  color: var(--uf-text-primary);
+}
+
+.overlap-lab {
+  position: relative;
+  min-width: 0;
+  /* Keep the slot height equal to the placeholder shell: shell min-height minus the host margins. */
+  min-height: calc(140rem - var(--uf-space-6) * 2);
+  padding: clamp(18px, 3vw, 28px);
+  overflow: hidden;
+  border: 1px solid var(--uf-border-strong);
+  border-radius: var(--uf-radius-16);
+  background:
+    radial-gradient(circle at 4% 0, color-mix(in srgb, var(--uf-badge-cyan-b) 14%, transparent), transparent 34%),
+    color-mix(in srgb, var(--uf-surface) 95%, var(--uf-bg));
+  box-shadow: var(--uf-shadow-md);
+}
+
+.overlap-lab h2,
+.overlap-lab h3,
+.overlap-lab p {
+  margin-top: 0;
+}
+
+.overlap-lab h2,
+.overlap-lab h3 {
+  color: var(--uf-text-primary);
+  font-family: var(--uf-font-heading);
+}
+
+.overlap-lab__header {
+  max-width: 780px;
+}
+
+.overlap-lab__eyebrow,
+.overlap-lab__step,
+.overlap-lab__takeaway > span,
+.overlap-lab__operators legend,
+.overlap-lab__field > span,
+.overlap-lab__deliveries-label {
+  color: var(--uf-accent-strong);
+  font-size: 0.75rem;
+  font-weight: 750;
+  letter-spacing: 0.055em;
+  text-transform: uppercase;
+}
+
+.overlap-lab__eyebrow {
+  margin-bottom: var(--uf-space-2);
+}
+
+.overlap-lab__header h2 {
+  margin-bottom: var(--uf-space-3);
+  font-size: clamp(1.45rem, 3vw, 2.05rem);
+  line-height: 1.15;
+}
+
+.overlap-lab__header > p:not(.overlap-lab__eyebrow),
+.overlap-lab__story,
+.overlap-lab__line,
+.overlap-lab__hint,
+.overlap-lab__verdict p,
+.overlap-lab__compare p,
+.overlap-lab__score {
+  color: var(--uf-text-secondary);
+  line-height: 1.6;
+}
+
+.overlap-lab__header > p:not(.overlap-lab__eyebrow) {
+  margin-bottom: var(--uf-space-4);
+}
+
+.overlap-lab__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--uf-space-2);
+}
+
+.overlap-lab__meta span,
+.overlap-lab__meter,
+.overlap-lab__badge {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  padding: 5px 10px;
+  border: 1px solid var(--uf-border-subtle);
+  border-radius: var(--uf-radius-pill);
+  background: color-mix(in srgb, var(--uf-surface-alt) 82%, transparent);
+  color: var(--uf-text-secondary);
+  font-size: 0.76rem;
+  font-weight: 650;
+  line-height: 1.25;
+}
+
+.overlap-lab__scenarios,
+.overlap-lab__related {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--uf-space-2);
+  margin-top: var(--uf-space-5);
+}
+
+.overlap-lab__scenarios fa-chip,
+.overlap-lab__related fa-chip {
+  min-width: 0;
+  scroll-margin-top: 96px;
+}
+
+.overlap-lab__scenario,
+.overlap-lab__prediction,
+.overlap-lab__verdict,
+.overlap-lab__compare {
+  min-width: 0;
+  margin-top: var(--uf-space-4);
+  border-color: color-mix(in srgb, var(--uf-accent) 32%, var(--uf-border-subtle));
+}
+
+.overlap-lab__scenario h3,
+.overlap-lab__prediction h3,
+.overlap-lab__verdict h3,
+.overlap-lab__compare h3,
+.overlap-lab__panel-heading h3 {
+  margin: var(--uf-space-1) 0 0;
+  font-size: clamp(1.05rem, 2.2vw, 1.35rem);
+  line-height: 1.3;
+}
+
+.overlap-lab__story {
+  margin: var(--uf-space-3) 0 0;
+}
+
+.overlap-lab__line {
+  margin: var(--uf-space-2) 0 0;
+  font-size: 0.9rem;
+}
+
+.overlap-lab__line strong {
+  color: var(--uf-text-primary);
+}
+
+[data-focus-target]:focus-visible,
+.overlap-lab__marker:focus-visible,
+.overlap-lab__axis:focus-visible {
+  outline: 2px solid var(--uf-accent);
+  outline-offset: 3px;
+}
+
+/* Controls */
+
+.overlap-lab__controls {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  gap: var(--uf-space-3);
+  margin-top: var(--uf-space-4);
+}
+
+.overlap-lab__operators,
+.overlap-lab__settings,
+.overlap-lab__editor,
+.overlap-lab__timeline {
+  min-width: 0;
+  margin: 0;
+  padding: var(--uf-space-3) var(--uf-space-4);
+  border: 1px solid var(--uf-border-subtle);
+  border-radius: var(--uf-radius-12);
+  background: color-mix(in srgb, var(--uf-surface-alt) 70%, transparent);
+}
+
+.overlap-lab__operators legend {
+  padding: 0;
+  margin-bottom: var(--uf-space-2);
+}
+
+.overlap-lab__radio-grid {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--uf-space-2);
+}
+
+.overlap-lab__radio,
+.overlap-lab__choice {
+  display: grid;
+  min-width: 0;
+  min-height: 44px;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--uf-space-2);
+  align-items: center;
+  padding: var(--uf-space-2) var(--uf-space-3);
+  border: 1px solid var(--uf-border-subtle);
+  border-radius: var(--uf-radius-8);
+  background: color-mix(in srgb, var(--uf-surface) 85%, transparent);
+  color: var(--uf-text-secondary);
+  cursor: pointer;
+  transition: border-color 140ms ease, background-color 140ms ease;
+}
+
+.overlap-lab__choice {
+  grid-template-columns: auto auto minmax(0, 1fr);
+  min-height: 48px;
+  line-height: 1.4;
+}
+
+.overlap-lab__radio:hover,
+.overlap-lab__radio.is-selected,
+.overlap-lab__choice:hover,
+.overlap-lab__choice.is-selected {
+  border-color: color-mix(in srgb, var(--uf-accent) 64%, var(--uf-border-subtle));
+  background: var(--uf-accent-soft);
+  color: var(--uf-text-primary);
+}
+
+.overlap-lab__radio.is-muted {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.overlap-lab__radio:focus-within,
+.overlap-lab__choice:focus-within {
+  outline: 2px solid var(--uf-accent);
+  outline-offset: 2px;
+}
+
+.overlap-lab__radio input,
+.overlap-lab__choice input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--uf-accent);
+}
+
+.overlap-lab__radio-text {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+  line-height: 1.3;
+}
+
+.overlap-lab__radio-text small {
+  font-size: 0.78rem;
+  color: var(--uf-text-secondary);
+}
+
+.overlap-lab__view {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--uf-space-2);
+  margin-top: var(--uf-space-3);
+}
+
+.overlap-lab__settings {
+  display: grid;
+  gap: var(--uf-space-3);
+  align-content: start;
+}
+
+.overlap-lab__field {
+  display: grid;
+  min-width: 0;
+  gap: var(--uf-space-1);
+}
+
+.overlap-lab__field > span strong {
+  color: var(--uf-text-primary);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.overlap-lab__field select,
+.overlap-lab__number input {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 40px;
+  padding: 6px 10px;
+  border: 1px solid var(--uf-border-strong);
+  border-radius: var(--uf-radius-8);
+  background: var(--uf-surface);
+  color: var(--uf-text-primary);
+  font: inherit;
+}
+
+.overlap-lab__field input[type='range'] {
+  width: 100%;
+  margin: 0;
+  accent-color: var(--uf-accent);
+}
+
+/* Trigger editor */
+
+.overlap-lab__editor,
+.overlap-lab__timeline {
+  margin-top: var(--uf-space-3);
+}
+
+.overlap-lab__panel-heading {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--uf-space-2);
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--uf-space-3);
+}
+
+.overlap-lab__axis {
+  position: relative;
+  min-width: 0;
+  height: 56px;
+  margin: var(--uf-space-4) 0 var(--uf-space-1);
+  border: 1px dashed var(--uf-border-strong);
+  border-radius: var(--uf-radius-8);
+  background:
+    repeating-linear-gradient(90deg, var(--uf-border-subtle) 0 1px, transparent 1px 25%),
+    var(--uf-surface);
+  cursor: crosshair;
+}
+
+.overlap-lab__ticks {
+  position: relative;
+  height: 16px;
+  margin: 0 0 var(--uf-space-1);
+  color: var(--uf-text-tertiary);
+  font-size: 0.7rem;
+  font-weight: 650;
+}
+
+.overlap-lab__axis .overlap-lab__ticks {
+  position: absolute;
+  inset: 2px 0 auto;
+  height: auto;
+}
+
+.overlap-lab__ticks span {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+.overlap-lab__ticks span:first-child {
+  transform: none;
+}
+
+.overlap-lab__ticks span:last-child {
+  transform: translateX(-100%);
+}
+
+.overlap-lab__marker {
+  position: absolute;
+  bottom: 6px;
+  display: inline-flex;
+  min-width: 26px;
+  height: 26px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 6px;
+  border: 2px solid var(--uf-accent);
+  border-radius: var(--uf-radius-pill);
+  background: var(--uf-accent-soft);
+  color: var(--uf-text-primary);
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1;
+  transform: translateX(-50%);
+  cursor: pointer;
+}
+
+.overlap-lab__hint {
+  margin: 0 0 var(--uf-space-3);
+  font-size: 0.8rem;
+}
+
+.overlap-lab__editor-details {
+  min-width: 0;
+  padding: var(--uf-space-2) var(--uf-space-3);
+  border: 1px solid var(--uf-border-subtle);
+  border-radius: var(--uf-radius-8);
+  background: color-mix(in srgb, var(--uf-surface) 85%, transparent);
+}
+
+.overlap-lab__editor-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--uf-space-1) var(--uf-space-3);
+  align-items: baseline;
+  min-height: 40px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.overlap-lab__editor-summary::-webkit-details-marker {
+  display: none;
+}
+
+.overlap-lab__editor-summary::before {
+  content: '+';
+  display: inline-flex;
+  width: 1.4rem;
+  height: 1.4rem;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  border: 1px solid var(--uf-border-strong);
+  border-radius: var(--uf-radius-pill);
+  color: var(--uf-accent-strong);
+  font-weight: 800;
+  line-height: 1;
+}
+
+.overlap-lab__editor-details[open] .overlap-lab__editor-summary::before {
+  content: '\2212';
+}
+
+.overlap-lab__editor-summary:focus-visible {
+  outline: 2px solid var(--uf-accent);
+  outline-offset: 3px;
+}
+
+.overlap-lab__editor-title {
+  color: var(--uf-text-secondary);
+  font-size: 0.9rem;
+}
+
+.overlap-lab__editor-details[open] .overlap-lab__triggers {
+  margin-top: var(--uf-space-3);
+}
+
+.overlap-lab__triggers {
+  display: grid;
+  min-width: 0;
+  gap: var(--uf-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.overlap-lab__trigger-row {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: 3rem minmax(0, 1fr) minmax(0, 1fr) auto;
+  gap: var(--uf-space-2);
+  align-items: end;
+}
+
+.overlap-lab__trigger-label {
+  padding-bottom: 10px;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.overlap-lab__number {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+  color: var(--uf-text-secondary);
+  font-size: 0.74rem;
+  font-weight: 650;
+}
+
+.overlap-lab__editor-actions,
+.overlap-lab__cursor-controls,
+.overlap-lab__reveal {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--uf-space-2);
+  align-items: center;
+  margin-top: var(--uf-space-3);
+}
+
+.overlap-lab__reveal button {
+  min-height: 44px;
+}
+
+/* Timeline lanes */
+
+.overlap-lab__ticks--lanes {
+  margin-bottom: var(--uf-space-2);
+}
+
+.overlap-lab__lane {
+  min-width: 0;
+  padding: var(--uf-space-2) 0;
+  border-top: 1px solid var(--uf-border-subtle);
+}
+
+.overlap-lab__lane-heading {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--uf-space-2);
+  align-items: center;
+  margin-bottom: var(--uf-space-2);
+  font-size: 0.86rem;
+}
+
+.overlap-lab__lane-heading strong {
+  font-size: 0.95rem;
+}
+
+.overlap-lab__lane-tagline {
+  color: var(--uf-text-secondary);
+}
+
+.overlap-lab__lane-bars {
+  position: relative;
+  min-width: 0;
+  min-height: 30px;
+  overflow: hidden;
+  border-radius: var(--uf-radius-8);
+  background:
+    repeating-linear-gradient(90deg, var(--uf-border-subtle) 0 1px, transparent 1px 25%),
+    var(--uf-surface);
+}
+
+.overlap-lab__bar,
+.overlap-lab__wait,
+.overlap-lab__tail {
+  position: absolute;
+  box-sizing: border-box;
+  height: 22px;
+  margin-top: 4px;
+}
+
+.overlap-lab__bar {
+  display: flex;
+  min-width: 2px;
+  align-items: center;
+  overflow: hidden;
+  padding: 0 6px;
+  border: 2px solid var(--uf-badge-green-b);
+  border-radius: var(--uf-radius-8);
+  background: color-mix(in srgb, var(--uf-badge-green-b) 22%, var(--uf-surface));
+  color: var(--uf-text-primary);
+  font-size: 0.72rem;
+  font-weight: 750;
+  white-space: nowrap;
+}
+
+.overlap-lab__bar[data-outcome='cancelled'] {
+  border-style: dashed;
+  border-color: var(--uf-status-danger-border);
+  background: color-mix(in srgb, var(--uf-status-danger-bg) 70%, var(--uf-surface));
+}
+
+.overlap-lab__bar[data-outcome='running'] {
+  border-right-style: dotted;
+  border-color: var(--uf-badge-amber-b);
+  background: color-mix(in srgb, var(--uf-badge-amber-b) 18%, var(--uf-surface));
+}
+
+.overlap-lab__wait {
+  border: 2px dotted var(--uf-badge-violet-b);
+  border-radius: var(--uf-radius-8);
+}
+
+.overlap-lab__tail {
+  border: 1px dashed var(--uf-text-tertiary);
+  border-left: 0;
+  border-radius: 0 var(--uf-radius-8) var(--uf-radius-8) 0;
+  background: repeating-linear-gradient(135deg, transparent 0 3px, color-mix(in srgb, var(--uf-text-tertiary) 45%, transparent) 3px 6px);
+}
+
+.overlap-lab__drop {
+  position: absolute;
+  top: 4px;
+  display: inline-flex;
+  min-width: 22px;
+  height: 22px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+  border: 2px dashed var(--uf-text-tertiary);
+  border-radius: var(--uf-radius-pill);
+  color: var(--uf-text-tertiary);
+  font-size: 0.7rem;
+  font-weight: 750;
+  text-decoration: line-through;
+  transform: translateX(-50%);
+}
+
+.overlap-lab__cursor {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--uf-accent-strong);
+  transform: translateX(-1px);
+}
+
+.overlap-lab__lane-empty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--uf-text-tertiary);
+  font-size: 0.8rem;
+}
+
+.overlap-lab__deliveries {
+  position: relative;
+  min-width: 0;
+  height: 26px;
+  margin-top: 2px;
+}
+
+.overlap-lab__deliveries-label {
+  position: absolute;
+  top: 6px;
+  left: 0;
+}
+
+.overlap-lab__delivery {
+  position: absolute;
+  top: 2px;
+  display: inline-flex;
+  min-width: 22px;
+  height: 22px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 6px;
+  border-radius: var(--uf-radius-pill);
+  background: var(--uf-accent);
+  color: var(--uf-bg);
+  font-size: 0.7rem;
+  font-weight: 800;
+  transform: translateX(-50%);
+}
+
+.overlap-lab__lane-text {
+  display: grid;
+  gap: 2px;
+  margin: var(--uf-space-2) 0 0;
+  padding-inline-start: 1.1rem;
+  color: var(--uf-text-secondary);
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.overlap-lab__ui-line {
+  margin: var(--uf-space-1) 0 0;
+  color: var(--uf-text-secondary);
+  font-size: 0.86rem;
+}
+
+.overlap-lab__ui-line strong {
+  color: var(--uf-text-primary);
+}
+
+.overlap-lab__field--cursor {
+  flex: 1 1 220px;
+}
+
+/* Prediction and verdict */
+
+.overlap-lab__choices {
+  display: grid;
+  min-width: 0;
+  gap: var(--uf-space-2);
+  margin: var(--uf-space-3) 0 0;
+  padding: 0;
+  border: 0;
+}
+
+.overlap-lab__choices legend {
+  margin-bottom: var(--uf-space-2);
+  color: var(--uf-text-secondary);
+  font-size: 0.9rem;
+}
+
+.overlap-lab__choice-marker {
+  display: inline-flex;
+  width: 26px;
+  height: 26px;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--uf-radius-8);
+  background: color-mix(in srgb, var(--uf-text-primary) 7%, transparent);
+  color: var(--uf-text-primary);
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.overlap-lab__verdict,
+.overlap-lab__compare {
+  display: grid;
+  gap: var(--uf-space-2);
+}
+
+.overlap-lab__verdict[data-fit='true'] {
+  border-color: color-mix(in srgb, var(--uf-badge-green-b) 48%, var(--uf-border-subtle));
+  background: color-mix(in srgb, var(--uf-badge-green-b) 8%, var(--uf-surface-alt));
+}
+
+.overlap-lab__verdict[data-fit='false'] {
+  border-color: var(--uf-status-warn-border);
+  background: color-mix(in srgb, var(--uf-status-warn-bg) 55%, var(--uf-surface));
+}
+
+.overlap-lab__feedback {
+  padding: var(--uf-space-2) var(--uf-space-3);
+  border-inline-start: 3px solid var(--uf-accent);
+  background: color-mix(in srgb, var(--uf-accent) 8%, var(--uf-surface));
+  font-size: 0.9rem;
+}
+
+.overlap-lab__feedback[data-correct='false'] {
+  border-inline-start-color: var(--uf-status-danger-border);
+}
+
+.overlap-lab__hazards {
+  display: grid;
+  gap: var(--uf-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.overlap-lab__hazards li {
+  display: grid;
+  gap: 2px;
+  padding: var(--uf-space-2) var(--uf-space-3);
+  border: 1px solid var(--uf-border-subtle);
+  border-inline-start-width: 4px;
+  border-radius: var(--uf-radius-8);
+  background: var(--uf-surface);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.overlap-lab__hazards li span {
+  color: var(--uf-text-secondary);
+}
+
+.overlap-lab__hazards li[data-severity='danger'] {
+  border-inline-start-color: var(--uf-status-danger-border);
+}
+
+.overlap-lab__hazards li[data-severity='warn'] {
+  border-inline-start-color: var(--uf-status-warn-border);
+}
+
+.overlap-lab__hazards li[data-severity='info'] {
+  border-inline-start-color: var(--uf-status-info-border);
+}
+
+.overlap-lab__verdict button {
+  justify-self: start;
+  min-height: 44px;
+}
+
+.overlap-lab__table-wrap {
+  min-width: 0;
+  overflow-x: auto;
+}
+
+.overlap-lab__table {
+  width: 100%;
+  min-width: 460px;
+  border-collapse: collapse;
+  font-size: 0.86rem;
+}
+
+.overlap-lab__table th,
+.overlap-lab__table td {
+  padding: var(--uf-space-2) var(--uf-space-3);
+  border-bottom: 1px solid var(--uf-border-subtle);
+  text-align: start;
+  vertical-align: top;
+}
+
+.overlap-lab__table th[scope='row'] {
+  white-space: nowrap;
+}
+
+.overlap-lab__table tr[data-fit='true'] th[scope='row'] {
+  color: var(--uf-badge-green-a);
+}
+
+.overlap-lab__score {
+  margin: var(--uf-space-4) 0 0;
+  font-size: 0.88rem;
+  font-weight: 650;
+}
+
+.overlap-lab__takeaway {
+  display: grid;
+  min-width: 0;
+  gap: var(--uf-space-2);
+  margin-top: var(--uf-space-3);
+  padding: var(--uf-space-3) var(--uf-space-4);
+  border: 1px solid var(--uf-border-subtle);
+  border-radius: var(--uf-radius-8);
+  background: var(--uf-bg);
+}
+
+.overlap-lab__takeaway p {
+  margin: 0;
+  color: var(--uf-text-primary);
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+@media (max-width: 700px) {
+  :host {
+    margin: var(--uf-space-5) 0;
+  }
+
+  .overlap-lab {
+    min-height: calc(206rem - var(--uf-space-5) * 2);
+    padding: var(--uf-space-4);
+    border-radius: var(--uf-radius-12);
+  }
+
+  .overlap-lab__controls,
+  .overlap-lab__radio-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .overlap-lab__trigger-row {
+    grid-template-columns: 2.4rem minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .overlap-lab__trigger-row button {
+    grid-column: 2 / -1;
+  }
+
+  .overlap-lab__ticks span:nth-child(2),
+  .overlap-lab__ticks span:nth-child(4) {
+    display: none;
+  }
+
+  .overlap-lab__bar-label {
+    display: none;
+  }
+
+  .overlap-lab__reveal button,
+  .overlap-lab__verdict button,
+  .overlap-lab__related fa-chip {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .overlap-lab *,
+  .overlap-lab *::before,
+  .overlap-lab *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
