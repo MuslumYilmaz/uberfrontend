@@ -2,7 +2,9 @@ import type { Page } from '@playwright/test';
 import { test, expect } from './fixtures';
 
 const DASHBOARD = '/system-design/dashboard-widgets-draggable-resizable';
-const DASHBOARD_TITLE = 'Drag-and-Drop Dashboard Frontend System Design';
+// <title> and og:title come from seo.title; the Article headline keeps the H1.
+const DASHBOARD_TITLE = 'Drag-and-Drop Dashboard System Design: Grid, Resize, Persist';
+const DASHBOARD_HEADLINE = 'Drag-and-Drop Dashboard Frontend System Design';
 const CANONICAL = 'https://frontendatlas.com';
 
 test.use({ consoleErrorAllowlist: ['\\/api\\/auth\\/me'] });
@@ -65,7 +67,7 @@ test('dashboard metadata survives hydration and hash navigation, then clears on 
   await expect(page.locator('meta[property="og:description"]')).toHaveAttribute('content', description!);
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', CANONICAL + DASHBOARD);
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'index,follow');
-  expect((await article(page)).headline).toBe(DASHBOARD_TITLE);
+  expect((await article(page)).headline).toBe(DASHBOARD_HEADLINE);
 
   await page.getByRole('button', { name: 'Start reference answer', exact: true }).click();
   await expect(page).toHaveURL(/#answer$/);

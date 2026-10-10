@@ -46,7 +46,7 @@ A strong opening is: Model every widget as a rectangle on a logical grid, use a 
 - [Frontend system design question bank](/system-design) — Use this prompt alongside other frontend architecture scenarios.
 - [Frontend system design answer blueprint](/guides/system-design-blueprint/radio-framework) — Structure the design before diving into layout math.
 - [Performance optimization guide](/guides/system-design-blueprint/performance) — Use it for the pointermove, render-loop, and INP trade-offs.
-- [Machine coding hub](/machine-coding) — Turn the same interaction into implementation practice.
+- [Build it instead: machine coding practice](/machine-coding) — Came here for a working drag-and-drop dashboard? Start with implementation exercises, then come back for the design answer.
 - [Related dashboard performance scenario](/system-design/model-training-progress-dashboard) — Compare layout interaction performance with high-frequency dashboard updates.
 
 ### What to lock down in the first 5 minutes

@@ -38,8 +38,8 @@
   ],
   "updatedAt": "2026-08-06",
   "seo": {
-    "title": "Drag-and-Drop Dashboard Frontend System Design",
-    "description": "Design dashboard widgets with pointer and keyboard movement, grid constraints, optimistic persistence, versioned layouts, and responsive reflow."
+    "title": "Drag-and-Drop Dashboard System Design: Grid, Resize, Persist",
+    "description": "Frontend system design answer for a draggable, resizable widget dashboard: grid model, pointer and keyboard moves, collision rules, saved layouts."
   },
   "editorial": {
     "draftSource": "content-drafts/system-design/dashboard-widgets-draggable-resizable.md",

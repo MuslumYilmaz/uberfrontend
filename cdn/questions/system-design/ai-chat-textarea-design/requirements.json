@@ -33,7 +33,21 @@
       "type": "callout",
       "variant": "warning",
       "title": "Rejected alternative: overlapping responses",
-      "text": "Allowing a second Send while the first response streams makes the Stop target ambiguous and lets answers appear beside the wrong prompt after a race. That user cost is not justified for this scope. Drafting stays available, but Send becomes Stop until the active turn reaches an authoritative terminal state."
+      "text": "Allowing a second Send while the first response streams makes the Stop target ambiguous and lets answers appear beside the wrong prompt after a race. Drafting stays available, but Send becomes Stop until the active turn reaches an authoritative terminal state."
+    },
+    {
+      "type": "links",
+      "title": "Build it",
+      "items": [
+        {
+          "label": "React chat streaming UI exercise (Premium)",
+          "href": "/react/coding/react-chat-streaming-ui"
+        },
+        {
+          "label": "takeLatest exercise for stale events (free)",
+          "href": "/javascript/coding/js-take-latest"
+        }
+      ]
     },
     {
       "type": "heading",

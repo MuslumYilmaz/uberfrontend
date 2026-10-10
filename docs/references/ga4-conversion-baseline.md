@@ -41,6 +41,7 @@ of these methods:
 | --- | --- | --- |
 | `qualification_method` | `trusted_interaction` | A trusted `pointerdown`, `keydown`, or `touchstart`; when the User Activation API is available, `hasBeenActive` must also be true |
 | `qualification_method` | `foreground_15s` | 15 cumulative seconds with the document visible |
+| `qualification_method` | `search_referrer` | The document is visible and `document.referrer` is a google.*, bing.com, or duckduckgo.com page; applied on arrival, or on the first `visibilitychange` to visible for a tab opened in the background (added 2026-10-10) |
 | `qualification_version` | `v1` | The qualification contract in this runbook |
 
 The event has no path, email, username, or other user-entered/PII parameter. A

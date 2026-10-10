@@ -1,5 +1,5 @@
 import { seoContentDateModified } from '../../../core/utils/seo-content-date.util';
-import { TestBed } from '@angular/core/testing';
+import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
@@ -20,8 +20,10 @@ describe('SystemDesignDetailComponent', () => {
   let analytics: jasmine.SpyObj<AnalyticsService>;
   let authUser: any;
   let interviewAvailability: jasmine.SpyObj<InterviewAvailabilityStore>;
+  let originalHiddenDescriptor: PropertyDescriptor | undefined;
 
   beforeEach(async () => {
+    originalHiddenDescriptor = Object.getOwnPropertyDescriptor(document, 'hidden');
     bugReport = jasmine.createSpyObj<BugReportService>('BugReportService', ['open']);
     seo = jasmine.createSpyObj<SeoService>('SeoService', ['updateTags', 'buildCanonicalUrl']);
     questionService = jasmine.createSpyObj<QuestionService>(
@@ -74,6 +76,43 @@ describe('SystemDesignDetailComponent', () => {
       ],
     }).compileComponents();
   });
+
+  afterEach(() => {
+    if (originalHiddenDescriptor) {
+      Object.defineProperty(document, 'hidden', originalHiddenDescriptor);
+    } else {
+      delete (document as any).hidden;
+    }
+  });
+
+  function trackCalls(eventName: string) {
+    return analytics.track.calls.allArgs().filter(([name]) => name === eventName);
+  }
+
+  function setDocumentHidden(value: boolean) {
+    Object.defineProperty(document, 'hidden', {
+      configurable: true,
+      get: () => value,
+    });
+  }
+
+  function toggleEvent(open: boolean): Event {
+    return { currentTarget: { open } } as unknown as Event;
+  }
+
+  function toastRadioQuestion() {
+    return {
+      id: 'notification-toast-system',
+      title: 'Design a Toast Notification System',
+      description: 'Design global toast behavior.',
+      tags: ['toast'],
+      access: 'free' as const,
+      radio: [
+        { key: 'R', title: 'Requirements', blocks: [{ type: 'text' as const, text: 'Requirements answer.' }] },
+        { key: 'A', title: 'Architecture', blocks: [{ type: 'text' as const, text: 'Architecture answer.' }] },
+      ],
+    };
+  }
 
   it('omits unresolved modification dates and preserves the editorial publication fallback and visible date', () => {
     const fixture = TestBed.createComponent(SystemDesignDetailComponent);
@@ -511,6 +550,26 @@ describe('SystemDesignDetailComponent', () => {
     expect(hint).not.toBeNull();
     expect(hint?.open).toBeFalse();
     expect(host.querySelector('.sd-try-first__decisions')).toBeNull();
+
+    // The prompt and the actions stay on the first screen; constraints and the
+    // evaluation spine collapse into one closed disclosure below the prompt.
+    const tryFirstDetails = host.querySelector('.sd-try-first__details') as HTMLDetailsElement | null;
+    expect(tryFirstDetails).not.toBeNull();
+    expect(tryFirstDetails?.open).toBeFalse();
+    expect(tryFirstDetails?.querySelector('summary')?.textContent?.replace(/\s+/g, ' ').trim())
+      .toBe('Constraints and what good looks like');
+    expect(tryFirstDetails?.querySelector('.sd-try-first__grid')).not.toBeNull();
+    expect(tryFirstDetails?.querySelector('.sd-decision-hint')).not.toBeNull();
+    expect(tryFirstDetails?.querySelector('.sd-try-first__prompt')).toBeNull();
+    expect(tryFirstDetails?.querySelector('.sd-try-first__actions')).toBeNull();
+    const prompt = host.querySelector('.sd-try-first__prompt');
+    const actions = host.querySelector('.sd-try-first__actions');
+    expect(prompt && tryFirstDetails
+      ? prompt.compareDocumentPosition(tryFirstDetails) & Node.DOCUMENT_POSITION_FOLLOWING
+      : 0).toBeTruthy();
+    expect(tryFirstDetails && actions
+      ? tryFirstDetails.compareDocumentPosition(actions) & Node.DOCUMENT_POSITION_FOLLOWING
+      : 0).toBeTruthy();
   });
 
   it('normalizes divider runs and only strips a matching source step number without mutating content', () => {
@@ -727,35 +786,160 @@ describe('SystemDesignDetailComponent', () => {
     expect(prepBridge!.hasAttribute('data-nosnippet')).toBeTrue();
   });
 
-  it('keeps reference content in the DOM while native RADIO disclosures start closed and open independently', () => {
+  it('keeps reference content in the DOM, opens the first RADIO disclosure by default, and toggles the rest independently', () => {
     const fixture = TestBed.createComponent(SystemDesignDetailComponent);
     const component = fixture.componentInstance;
-    component.q.set({
-      id: 'notification-toast-system',
-      title: 'Design a Toast Notification System',
-      description: 'Design global toast behavior.',
-      tags: ['toast'],
-      access: 'free',
-      radio: [
-        { key: 'R', title: 'Requirements', blocks: [{ type: 'text', text: 'Requirements answer.' }] },
-        { key: 'A', title: 'Architecture', blocks: [{ type: 'text', text: 'Architecture answer.' }] },
-      ],
-    });
+    (component as any).applyResolvedQuestion(toastRadioQuestion());
+    fixture.detectChanges();
+
+    const host = fixture.nativeElement as HTMLElement;
+    const details = Array.from(host.querySelectorAll('details.sd-section')) as HTMLDetailsElement[];
+    expect(details.map((item) => item.open)).toEqual([true, false]);
+    expect(host.textContent).toContain('Requirements answer.');
+    expect(host.textContent).toContain('Architecture answer.');
+
+    component.onSectionToggle('A', toggleEvent(true));
+    fixture.detectChanges();
+    expect(details.map((item) => item.open)).toEqual([true, true]);
+
+    component.onSectionToggle('R', toggleEvent(false));
+    fixture.detectChanges();
+    expect(details.map((item) => item.open)).toEqual([false, true]);
+    fixture.destroy();
+  });
+
+  it('keeps every RADIO disclosure closed inside the embedded preview', () => {
+    TestBed.overrideProvider(SEO_SUPPRESS_TOKEN, { useValue: true });
+    const fixture = TestBed.createComponent(SystemDesignDetailComponent);
+    const component = fixture.componentInstance;
+    (component as any).applyResolvedQuestion(toastRadioQuestion());
     fixture.detectChanges();
 
     const host = fixture.nativeElement as HTMLElement;
     const details = Array.from(host.querySelectorAll('details.sd-section')) as HTMLDetailsElement[];
     expect(details.map((item) => item.open)).toEqual([false, false]);
-    expect(host.textContent).toContain('Requirements answer.');
-    expect(host.textContent).toContain('Architecture answer.');
-
-    component.onSectionToggle('R', { currentTarget: { open: true } } as unknown as Event);
-    component.onSectionToggle('A', { currentTarget: { open: true } } as unknown as Event);
-    fixture.detectChanges();
-    expect(details.map((item) => item.open)).toEqual([true, true]);
+    expect(component.openSectionKeys().size).toBe(0);
+    fixture.destroy();
   });
 
-  it('opens only Requirements through #answer and closes it when that history state is left', () => {
+  it('tracks only user-initiated section opens and ignores echoes of code-driven disclosure changes', () => {
+    const fixture = TestBed.createComponent(SystemDesignDetailComponent);
+    const component = fixture.componentInstance;
+    const router = TestBed.inject(Router);
+    spyOn(router, 'navigate').and.resolveTo(true);
+    (component as any).applyResolvedQuestion(toastRadioQuestion());
+    fixture.detectChanges();
+    analytics.track.calls.reset();
+
+    // Native toggle echoing the default-open first section.
+    component.onSectionToggle('R', toggleEvent(true));
+    expect(trackCalls('system_design_section_opened').length).toBe(0);
+
+    component.onSectionToggle('A', toggleEvent(true));
+    expect(trackCalls('system_design_section_opened').length).toBe(1);
+    expect(trackCalls('system_design_section_opened')[0][1]).toEqual(jasmine.objectContaining({
+      question_id: 'notification-toast-system',
+      section_key: 'A',
+      section_index: 1,
+      open: true,
+    }));
+
+    component.onSectionToggle('A', toggleEvent(false));
+    expect(trackCalls('system_design_section_opened').length).toBe(1);
+
+    // TOC navigation opens the section in code first; the native echo must not count.
+    component.navigateToSection('A', false);
+    component.onSectionToggle('A', toggleEvent(true));
+    expect(trackCalls('system_design_section_opened').length).toBe(1);
+    fixture.destroy();
+  });
+
+  it('tracks system_design_read_engaged once after ten visible seconds with enough scroll depth', fakeAsync(() => {
+    const fixture = TestBed.createComponent(SystemDesignDetailComponent);
+    const component = fixture.componentInstance as any;
+    spyOn(component, 'computeScrollDepth').and.returnValue(30);
+    component.applyResolvedQuestion(toastRadioQuestion());
+    fixture.detectChanges();
+    tick();
+    analytics.track.calls.reset();
+
+    tick(9_000);
+    expect(trackCalls('system_design_read_engaged').length).toBe(0);
+
+    tick(1_000);
+    expect(trackCalls('system_design_read_engaged').length).toBe(1);
+    expect(trackCalls('system_design_read_engaged')[0][1]).toEqual(jasmine.objectContaining({
+      question_id: 'notification-toast-system',
+      seconds_visible: 10,
+      max_depth_percent: 30,
+      sections_opened: 0,
+      first_section_default_open: true,
+    }));
+
+    tick(10_000);
+    expect(trackCalls('system_design_read_engaged').length).toBe(1);
+    fixture.destroy();
+  }));
+
+  it('counts a user-opened section as engagement even when the page was not scrolled', fakeAsync(() => {
+    const fixture = TestBed.createComponent(SystemDesignDetailComponent);
+    const component = fixture.componentInstance as any;
+    spyOn(component, 'computeScrollDepth').and.returnValue(5);
+    component.applyResolvedQuestion(toastRadioQuestion());
+    fixture.detectChanges();
+    tick();
+    analytics.track.calls.reset();
+
+    tick(10_000);
+    expect(trackCalls('system_design_read_engaged').length).toBe(0);
+
+    component.onSectionToggle('A', toggleEvent(true));
+    tick(1_000);
+    expect(trackCalls('system_design_read_engaged').length).toBe(1);
+    expect(trackCalls('system_design_read_engaged')[0][1]).toEqual(jasmine.objectContaining({
+      max_depth_percent: 5,
+      sections_opened: 1,
+    }));
+    fixture.destroy();
+  }));
+
+  it('does not count hidden-tab time toward system_design_read_engaged', fakeAsync(() => {
+    const fixture = TestBed.createComponent(SystemDesignDetailComponent);
+    const component = fixture.componentInstance as any;
+    spyOn(component, 'computeScrollDepth').and.returnValue(60);
+    component.applyResolvedQuestion(toastRadioQuestion());
+    fixture.detectChanges();
+    tick();
+    analytics.track.calls.reset();
+
+    setDocumentHidden(true);
+    tick(10_000);
+    expect(trackCalls('system_design_read_engaged').length).toBe(0);
+
+    setDocumentHidden(false);
+    tick(10_000);
+    expect(trackCalls('system_design_read_engaged').length).toBe(1);
+    fixture.destroy();
+  }));
+
+  it('never emits engagement events from the embedded preview', fakeAsync(() => {
+    TestBed.overrideProvider(SEO_SUPPRESS_TOKEN, { useValue: true });
+    const fixture = TestBed.createComponent(SystemDesignDetailComponent);
+    const component = fixture.componentInstance as any;
+    spyOn(component, 'computeScrollDepth').and.returnValue(100);
+    component.applyResolvedQuestion(toastRadioQuestion());
+    fixture.detectChanges();
+    tick();
+    analytics.track.calls.reset();
+
+    component.onSectionToggle('A', toggleEvent(true));
+    tick(20_000);
+    expect(trackCalls('system_design_section_opened').length).toBe(0);
+    expect(trackCalls('system_design_read_engaged').length).toBe(0);
+    fixture.destroy();
+  }));
+
+  it('opens only Requirements through #answer and restores the default disclosure when that history state is left', () => {
     const fixture = TestBed.createComponent(SystemDesignDetailComponent);
     const component = fixture.componentInstance;
     const router = TestBed.inject(Router);
@@ -785,8 +969,11 @@ describe('SystemDesignDetailComponent', () => {
       jasmine.objectContaining({ question_id: 'notification-toast-system' }),
     );
 
+    component.onSectionToggle('A', { currentTarget: { open: true } } as unknown as Event);
+    expect([...component.openSectionKeys()]).toEqual(['R', 'A']);
+
     (component as any).applyFragment(null);
-    expect(component.isSectionOpen('R')).toBeFalse();
+    expect([...component.openSectionKeys()]).toEqual(['R']);
   });
 
   it('opens recognized section fragments and ignores unknown fragments', () => {

@@ -45,6 +45,9 @@ const INTERVIEW_MCQ_QUESTION_PATTERN = /(\/api\/interviews\/:sessionId\/mcq\/)([
 const INTERVIEW_PAGE_SESSION_PATTERN = /(\/interview\/)([^/?#\s"'`]+)/gi;
 const INTERVIEW_URL_QUERY_PATTERN = /((?:\/api\/interviews|\/interview)(?:\/[^?#\s"'`]*)?)[?#][^\s"'`]*/gi;
 const DECISION_SESSION_FOREGROUND_MS = 15_000;
+// Search landers qualify immediately: they are real people by construction,
+// and most who leave a question page do so well before the 15-second timer.
+const SEARCH_REFERRER_PATTERN = /^https?:\/\/([a-z0-9-]+\.)*(google\.[a-z.]+|bing\.com|duckduckgo\.com)\//i;
 const DECISION_SESSION_INTERACTION_EVENTS: Array<keyof DocumentEventMap> = [
   'pointerdown',
   'keydown',
@@ -336,9 +339,10 @@ export class TelemetryBootstrapService implements OnDestroy {
     if (!this.isBrowser) return;
 
     this.interviewRouteActive = INTERVIEW_PAGE_ROUTE_PATTERN.test(url);
-    // GA loads only once the session qualifies as human (a trusted interaction
-    // or 15 visible seconds); scripted visitors that render and leave never
-    // reach Google Analytics. Page views queue in AnalyticsService until then.
+    // GA loads only once the session qualifies as human (a trusted interaction,
+    // 15 visible seconds, or a search-engine referrer); scripted visitors that
+    // render and leave never reach Google Analytics. Page views queue in
+    // AnalyticsService until then.
     this.armDecisionSessionQualification();
 
     if (isMarketingPath(url)) {
@@ -366,6 +370,10 @@ export class TelemetryBootstrapService implements OnDestroy {
     if (this.qualificationCompleted) return;
 
     if (this.isDocumentVisible()) {
+      if (this.hasSearchReferrer()) {
+        this.qualifyDecisionSession('search_referrer');
+        return;
+      }
       this.startQualificationForegroundTimer();
     } else {
       this.pauseQualificationForegroundTimer();
@@ -405,8 +413,23 @@ export class TelemetryBootstrapService implements OnDestroy {
         this.qualificationCleanup = null;
       };
 
+      if (this.hasSearchReferrer()) {
+        // Hidden tabs qualify on their next visibilitychange instead.
+        this.qualifyDecisionSession('search_referrer');
+        if (this.qualificationCompleted) return;
+      }
       this.startQualificationForegroundTimer();
     });
+  }
+
+  private hasSearchReferrer(): boolean {
+    let referrer = '';
+    try {
+      referrer = String(this.document.referrer || '');
+    } catch {
+      return false;
+    }
+    return SEARCH_REFERRER_PATTERN.test(referrer);
   }
 
   private startQualificationForegroundTimer(): void {

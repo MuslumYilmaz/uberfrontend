@@ -21,7 +21,7 @@ type PendingAnalyticsDispatch =
   | { type: 'event'; name: string; params?: Record<string, unknown> }
   | { type: 'page_view'; pageView: AnalyticsPageView };
 
-export type DecisionSessionQualificationMethod = 'trusted_interaction' | 'foreground_15s';
+export type DecisionSessionQualificationMethod = 'trusted_interaction' | 'foreground_15s' | 'search_referrer';
 export type AnalyticsTrafficClass = 'internal' | 'test';
 export type AnalyticsVisitorClass = 'human' | 'suspect' | 'automation';
 

@@ -40,8 +40,8 @@
   ],
   "updatedAt": "2026-08-06",
   "seo": {
-    "title": "AI Chat Composer and Streaming Turn System Design",
-    "description": "Design an IME-safe chat composer with attachment readiness, one active response stream, idempotent commands, and stale-event recovery."
+    "title": "AI Chat Textarea Design: IME-Safe Enter, Streaming Replies",
+    "description": "Design an AI chat textarea and composer: IME-safe Enter, one streaming reply at a time, idempotent Send and Stop, stale-event recovery."
   },
   "editorial": {
     "draftSource": "content-drafts/system-design/ai-chat-textarea-design.md",
