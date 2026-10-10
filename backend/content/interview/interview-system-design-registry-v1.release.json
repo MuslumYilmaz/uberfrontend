@@ -2,29 +2,29 @@
   "artifacts": {
     "private": {
       "file": "interview-system-design-registry-v1.private.json",
-      "sha256": "b9693a6cef21a51b725c3b5da45e06a49e6514a83352d4bdbed2a58f5919aee9"
+      "sha256": "5fdfaa591fd87d1cb007f6ed5e6dfa99b96976af330a259da6f5e65f598381ee"
     },
     "public": {
       "file": "interview-system-design-registry-v1.public.json",
-      "sha256": "ea18f2c352364cfd6f79bdae22dc5d5115230281d2cf59eee176a3da87a2aa0f"
+      "sha256": "6c2b78be6a8398d87917ce94ba4bb590f5daf91680510701d2ae1b8d639af73c"
     }
   },
-  "contentHash": "15d1ad1849cabe56867df290f943814fa90bb922cabf2913919475c83eb9722b",
-  "definitionHash": "01a85477486ceca26ce2b4c235b44f93d49b7619f86f6eb578b59848e762cfc1",
+  "contentHash": "9a6fbbb6afd5dbe7600645a3f669feb8a9a5533976ce2ff0df2fccc1ddac348e",
+  "definitionHash": "dd2aa9b58688daef987d4682ef3e3917686962e0d39ea1f55b01e3d50c6a6173",
   "enabledScenarioCount": 8,
   "finalApproval": null,
-  "registryContentHash": "15d1ad1849cabe56867df290f943814fa90bb922cabf2913919475c83eb9722b",
+  "registryContentHash": "9a6fbbb6afd5dbe7600645a3f669feb8a9a5533976ce2ff0df2fccc1ddac348e",
   "registryId": "interview-system-design-registry-v1",
   "registryVersion": "1.2.0",
   "scenarioCount": 8,
   "scenarioRefs": [
     {
-      "contentHash": "4255f79fd212920ece9b6710ed61c05f6c812ae3f636a161d47cde9bcd202693",
+      "contentHash": "b6512f58e2e283efdf0dfabccbb48ded43dcc6d5413f590680379e1d2e51fa9d",
       "enabled": true,
       "id": "int-sd-ai-chat-composer-mid-v1",
       "level": "mid",
       "revision": 3,
-      "sourceBundleHash": "bbe587d9fc4d4454b198a638e838fd7734cba1b1ea482816fb441e3fe66a2a19"
+      "sourceBundleHash": "0522c064c9a08cd6ab06db7f884cd3bd4f3c5886c21a7430198fddac6d68635d"
     },
     {
       "contentHash": "f9a76b65da48d48c1b268203f04992af217fd226c4b98c1eb3045f340db8e272",
@@ -43,12 +43,12 @@
       "sourceBundleHash": "7054f4b19f21f8940ee778874c8d2b3f4ab44874d0ff400f237d651ddc5b13ea"
     },
     {
-      "contentHash": "5df01fcb61ad84a367616dcf319ab5aa021f375efa4f9e84ab877cb8e62177db",
+      "contentHash": "5bd681d66f6274df90633235cba5278bc151694882cf1d041c2b1c873c9b66d8",
       "enabled": true,
       "id": "int-sd-dashboard-layout-sr-v1",
       "level": "senior",
       "revision": 2,
-      "sourceBundleHash": "02ba4b4bc75c8ba0b2e98639ed289815c3fd9c31942ad5945a7313fe11610d09"
+      "sourceBundleHash": "6939eeb2c586bcbeb7540a82433e7a756a55ccbbe26ab0f5ff8c993d9fd1be67"
     },
     {
       "contentHash": "eeb26e0a93d42a9662990f5cc4aef2ce5fc0d8fcf4c1221511db5ff28126aca4",
