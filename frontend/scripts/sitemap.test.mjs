@@ -872,8 +872,11 @@ function assertRobotsAllowsCodingQueryNoindex() {
   // on the CSR shell, meta on the prerendered page). Google can only honor that
   // when it is allowed to fetch them: blocking them in robots.txt left them
   // "indexed, though blocked by robots.txt" with empty snippets.
+  const disallowed = robots.split(/\r?\n/)
+    .map((line) => /^\s*Disallow:\s*(\S*)/i.exec(line)?.[1])
+    .filter((value) => typeof value === 'string');
   for (const prefix of ['/tracks/', '/companies/', '/dashboard']) {
-    if (new RegExp(`^\\s*Disallow:\\s*${prefix.replace(/[/]/g, '\\/')}`, 'im').test(robots)) {
+    if (disallowed.some((value) => value.startsWith(prefix))) {
       throw new Error(`robots.txt must not disallow ${prefix}; those routes are noindex and must stay crawlable.`);
     }
   }
