@@ -11,6 +11,7 @@ import {
 } from '@angular/router';
 import { Observable, catchError, map, of } from 'rxjs';
 import { AuthService, User } from '../services/auth.service';
+import { AuthSessionAuthorityService } from '../services/auth-session-authority.service';
 import { PremiumGateReason, PremiumGateService } from '../services/premium-gate.service';
 import { isProActive } from '../utils/entitlements.util';
 
@@ -146,6 +147,7 @@ export const trackPreviewAccessGuard: CanActivateFn = (
   state: RouterStateSnapshot,
 ): boolean | UrlTree | Observable<boolean | UrlTree> => {
   const auth = inject(AuthService);
+  const sessionAuthority = inject(AuthSessionAuthorityService);
   const router = inject(Router);
 
   const routeSlug = (route.paramMap.get('slug') || '').trim().toLowerCase();
@@ -159,6 +161,11 @@ export const trackPreviewAccessGuard: CanActivateFn = (
     return resolveAccess(auth.user());
   }
 
+  // Public preview pages only redirect premium members to the full route. A
+  // visitor with no session hint (first visit, crawler rendering) is anonymous
+  // without asking the API, which otherwise answered 401 on every render.
+  if (!sessionAuthority.hasSessionHint()) return true;
+
   return auth.ensureMe().pipe(
     map((u) => resolveAccess(u)),
     catchError(() => of(true)),
@@ -170,6 +177,7 @@ export const companyPreviewAccessGuard: CanActivateFn = (
   state: RouterStateSnapshot,
 ): boolean | UrlTree | Observable<boolean | UrlTree> => {
   const auth = inject(AuthService);
+  const sessionAuthority = inject(AuthSessionAuthorityService);
   const router = inject(Router);
 
   const routeSlug = (route.paramMap.get('slug') || '').trim().toLowerCase();
@@ -182,6 +190,11 @@ export const companyPreviewAccessGuard: CanActivateFn = (
   if (auth.isLoggedIn()) {
     return resolveAccess(auth.user());
   }
+
+  // Public preview pages only redirect premium members to the full route. A
+  // visitor with no session hint (first visit, crawler rendering) is anonymous
+  // without asking the API, which otherwise answered 401 on every render.
+  if (!sessionAuthority.hasSessionHint()) return true;
 
   return auth.ensureMe().pipe(
     map((u) => resolveAccess(u)),

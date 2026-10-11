@@ -226,6 +226,19 @@ Notes:
 - Apply targeted rewrites only for private CSR paths (for this repo: `/dashboard`, `/profile`, `/admin/*`, `/billing/*`, `/onboarding/*`, premium `/tracks/:slug`, premium `/companies/:slug/*`).
 - Keep unknown URLs as real `404` responses.
 
+### Previous build assets (crawler render safety)
+
+`postbuild` runs `node scripts/carry-forward-assets.mjs` after the Sentry
+release. It stores every hashed bundle, style sheet and media file of the build
+under `node_modules/.cache/frontendatlas-asset-carry` (restored by the Vercel
+build cache) and copies files from earlier builds back into
+`dist/frontendatlas/browser` for 60 days after the last build that shipped
+them. Googlebot renders pages days after fetching the HTML, so without this the
+cached HTML asks for `chunk-XXXXXXXX.js` files the newest deploy no longer has.
+The step never fails a build (an empty or missing cache just carries nothing);
+`FA_ASSET_CARRY=0` disables it, `FA_ASSET_CARRY_MAX_AGE_DAYS` and
+`FA_ASSET_CARRY_DIR` override the window and the store location.
+
 ## Sitemap content dates
 
 `npm run gen:seo` generates sitemap XML under `.angular/seo/sitemaps/` and the
