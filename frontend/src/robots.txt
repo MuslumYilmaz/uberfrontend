@@ -1,19 +1,13 @@
 User-agent: *
 Allow: /
+Disallow: /api/
 Disallow: /auth/
 Allow: /auth/login$
 Allow: /auth/login?
 Allow: /auth/signup$
 Allow: /auth/signup?
-Disallow: /dashboard
 Disallow: /profile
 Disallow: /admin
-Disallow: /tracks/
-Allow: /tracks/*/preview$
-Allow: /tracks/*/preview?
-Disallow: /companies/
-Allow: /companies/*/preview$
-Allow: /companies/*/preview?
 
 Sitemap: https://frontendatlas.com/sitemap.xml
 Sitemap: https://frontendatlas.com/sitemap-index.xml

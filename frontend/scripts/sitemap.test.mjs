@@ -868,17 +868,17 @@ function assertRobotsAllowsCodingQueryNoindex() {
   if (/^\s*Disallow:\s*\/coding\?/im.test(robots)) {
     throw new Error('robots.txt must not disallow /coding?; query variants need to be crawlable for noindex.');
   }
-  if (!/^\s*Disallow:\s*\/tracks\/\s*$/im.test(robots)) {
-    throw new Error('Deploy A must keep /tracks/ blocked until production X-Robots-Tag verification.');
+  // Locked track/company routes and the dashboard carry noindex (X-Robots-Tag
+  // on the CSR shell, meta on the prerendered page). Google can only honor that
+  // when it is allowed to fetch them: blocking them in robots.txt left them
+  // "indexed, though blocked by robots.txt" with empty snippets.
+  for (const prefix of ['/tracks/', '/companies/', '/dashboard']) {
+    if (new RegExp(`^\\s*Disallow:\\s*${prefix.replace(/[/]/g, '\\/')}`, 'im').test(robots)) {
+      throw new Error(`robots.txt must not disallow ${prefix}; those routes are noindex and must stay crawlable.`);
+    }
   }
-  if (!/^\s*Allow:\s*\/tracks\/\*\/preview\$\s*$/im.test(robots)) {
-    throw new Error('robots.txt must explicitly allow /tracks/*/preview$ routes during Deploy A.');
-  }
-  if (!/^\s*Disallow:\s*\/companies\/\s*$/im.test(robots)) {
-    throw new Error('Deploy A must keep /companies/ blocked until production X-Robots-Tag verification.');
-  }
-  if (!/^\s*Allow:\s*\/companies\/\*\/preview\$\s*$/im.test(robots)) {
-    throw new Error('robots.txt must explicitly allow /companies/*/preview$ routes during Deploy A.');
+  if (!/^\s*Disallow:\s*\/api\/\s*$/im.test(robots)) {
+    throw new Error('robots.txt must disallow /api/; crawlers lift API paths out of code samples and 404 on them.');
   }
 }
 

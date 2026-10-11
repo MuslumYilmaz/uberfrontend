@@ -45,7 +45,7 @@
     "build": "npm run gen:data && ng build --configuration production",
     "build:analyze": "npm run gen:data && ng build --configuration production --stats-json --source-map && npm run optimize:ssr-styles && npx source-map-explorer dist/frontendatlas/browser/*.js --summary",
     "test:unit": "npm run gen:seo && node scripts/gen-content-metadata.mjs && ng test --watch=false --browsers=ChromeHeadlessUnit --reporters=dots",
-    "test:content-regressions": "npm run test:ssr-styles && node --test scripts/sync-cdn-assets.test.mjs && node --test scripts/gen-showcase-stats.test.mjs && node scripts/output-question-validator.test.mjs && node scripts/question-solution-regressions.test.mjs && node scripts/catalog-solution-execution.test.mjs && node scripts/framework-content-regressions.test.mjs && node scripts/premium-preview-content.test.mjs && node scripts/public-trust-regressions.test.mjs && node scripts/essential-evidence.test.mjs && node scripts/lint-system-design-editorial-quality.test.mjs && node scripts/system-design-content-regressions.test.mjs && node scripts/validate-interview-reference-set.test.mjs && node scripts/interview-bank-validator.test.mjs",
+    "test:content-regressions": "npm run test:ssr-styles && npm run test:asset-carry && node --test scripts/sync-cdn-assets.test.mjs && node --test scripts/gen-showcase-stats.test.mjs && node scripts/output-question-validator.test.mjs && node scripts/question-solution-regressions.test.mjs && node scripts/catalog-solution-execution.test.mjs && node scripts/framework-content-regressions.test.mjs && node scripts/premium-preview-content.test.mjs && node scripts/public-trust-regressions.test.mjs && node scripts/essential-evidence.test.mjs && node scripts/lint-system-design-editorial-quality.test.mjs && node scripts/system-design-content-regressions.test.mjs && node scripts/validate-interview-reference-set.test.mjs && node scripts/interview-bank-validator.test.mjs",
     "test:content-drafts": "node scripts/lint-content-drafts.test.mjs",
     "test:interview-bank": "node scripts/interview-bank-validator.test.mjs",
     "test:interview-reference-set": "node scripts/validate-interview-reference-set.test.mjs",
@@ -90,7 +90,7 @@
     "e2e:ui": "PLAYWRIGHT_WEB_SERVER=1 playwright test --ui",
     "e2e:perf": "PLAYWRIGHT_WEB_SERVER=1 playwright test e2e/perf --project=chromium",
     "postinstall": "patch-package --error-on-fail && node scripts/sync-app-ui-assets.mjs && node scripts/sync-monaco-assets.mjs && node scripts/gen-deployment-env.mjs && node scripts/gen-content-metadata.mjs && node scripts/sync-cdn-assets.mjs && npm run gen:seo",
-    "postbuild": "npm run optimize:ssr-styles && node scripts/sentry-release.mjs",
+    "postbuild": "npm run optimize:ssr-styles && node scripts/sentry-release.mjs && node scripts/carry-forward-assets.mjs",
     "seo:sitemap-sample": "node scripts/sitemap-sample-audit.mjs",
     "seo:meta-check": "node scripts/seo-meta-check.mjs",
     "test:seo-meta-check": "node --test scripts/seo-meta-check.test.mjs",
@@ -112,7 +112,8 @@
     "test:seo-dates": "node --test scripts/ensure-seo-history.test.mjs scripts/seo-content-*.test.mjs scripts/generate-sitemap.test.mjs scripts/seo-date-parity.test.mjs scripts/seo-sitemap-date-contract.test.mjs scripts/gen-data-version.test.mjs",
     "test:e2e:ui": "playwright test --config=playwright.ui-visual.config.ts",
     "test:e2e:ui:update": "npm run test:e2e:ui -- --update-snapshots=all",
-    "build:ui-test": "node --test scripts/seo-static-server.test.mjs && npm run test:ssr-styles && npm run gen:data && ng build --configuration production && node scripts/prepare-ui-build.mjs && npm run optimize:ssr-styles"
+    "build:ui-test": "node --test scripts/seo-static-server.test.mjs && npm run test:ssr-styles && npm run gen:data && ng build --configuration production && node scripts/prepare-ui-build.mjs && npm run optimize:ssr-styles",
+    "test:asset-carry": "node --test scripts/carry-forward-assets.test.mjs"
   },
   "private": true,
   "dependencies": {

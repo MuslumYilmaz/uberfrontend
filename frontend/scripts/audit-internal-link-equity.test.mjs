@@ -215,14 +215,18 @@ test('sitemap index validates every shard rather than only the first', (t) => {
   assert.match(failures(f.audit()), /Missing prerendered sitemap page: \/missing/);
 });
 
-test('repository robots allows clean/parameterized previews without exposing private routes', () => {
+test('repository robots keeps noindex previews, locked routes and the dashboard crawlable while hiding API, admin and profile paths', () => {
   const allows = createRobotsPolicy(fs.readFileSync(path.join(frontendRoot, 'src', 'robots.txt'), 'utf8'));
   for (const family of ['companies', 'tracks']) {
     assert.equal(allows(`/${family}/example/preview`), true);
     assert.equal(allows(`/${family}/example/preview?entry=x&v=2`), true);
-    for (const suffix of ['', '/preview-extra', '/preview/child']) assert.equal(allows(`/${family}/example${suffix}`), false);
+    // Locked routes answer with X-Robots-Tag: noindex; Google must be able to fetch them to see it.
+    assert.equal(allows(`/${family}/example`), true);
   }
-  assert.equal(allows('/dashboard'), false);
+  assert.equal(allows('/dashboard'), true);
+  for (const route of ['/api/users', '/api/report', '/admin', '/admin/users', '/profile', '/profile?tab=billing']) {
+    assert.equal(allows(route), false, route);
+  }
 });
 
 test('repository robots lets crawlers read login/signup noindex without opening other auth or private paths', () => {
@@ -237,8 +241,7 @@ test('repository robots lets crawlers read login/signup noindex without opening 
   }
   for (const route of [
     '/auth/callback?code=example', '/auth/forgot-password', '/auth/reset-password',
-    '/dashboard', '/profile?tab=activity', '/admin/users', '/tracks/foundations-30d',
-    '/companies/google',
+    '/profile?tab=activity', '/admin/users',
   ]) {
     assert.equal(allows(route), false, route);
   }
