@@ -760,13 +760,17 @@
   },
   {
     "id": "react-rerender-decision-and-render",
-    "title": "How does React decide when to re-render a component, and what role does render() play in that process?",
+    "title": "Why does my component re-render when its props didn't change?",
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Explain React rerenders through render vs commit, parent-child propagation, memo bailouts, context churn, and the follow-up confusion around remounts versus ordinary rerenders.",
+    "description": "Trace a React re-render to its real trigger: a parent render, prop identity that changed even though values look equal, a context provider value recreated inline, or a remount caused by key, type, or position. Covers render vs commit, bailouts, a profiling-first workflow, and when memoization makes things worse.",
     "answer": {
       "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>The bug to explain</strong><br><br>The props did not change, yet the child rendered again. Three explanations cover almost every case: the parent rendered and children render by default unless a <code>React.memo</code> boundary bails out; the props changed by identity even though they look equal, because an inline object or callback is a new reference every render; or a context provider value was recreated and every consumer re-ran. A fourth case looks like a re-render but is a remount: the key, type, or position changed and local state was thrown away. The sections below show how React decides, how to tell these apart in the Profiler, and which fix is smallest."
+        },
         {
           "type": "text",
           "text": "<strong>Core idea</strong><br><br>React re-renders a component when it thinks that component’s <em>inputs</em> might have changed (state/props/context). A re-render means: “run the component again to produce a new element tree.” It does <em>not</em> necessarily mean the browser DOM will change."
@@ -931,6 +935,108 @@
         },
         {
           "type": "text",
+          "text": "<strong>Before/after bug: memoized child still hot because prop identity changes</strong><br><br>The usual production surprise is: “But the child is memoized.” If you keep allocating new objects/functions in the parent, the memo boundary sees changed props every time."
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "const Chart = React.memo(function Chart({ filters, onPointClick }) {\n  console.log('Chart rendered');\n  return <canvas />;\n});\n\nfunction Dashboard({ region }) {\n  // ❌ New references every render\n  return (\n    <Chart\n      filters={{ region, includeArchived: false }}\n      onPointClick={(id) => console.log(id)}\n    />\n  );\n}\n\nfunction DashboardFixed({ region }) {\n  const filters = React.useMemo(() => ({ region, includeArchived: false }), [region]);\n  const onPointClick = React.useCallback((id) => console.log(id), []);\n  return <Chart filters={filters} onPointClick={onPointClick} />;\n}"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Common misconception",
+            "Correct framing"
+          ],
+          "rows": [
+            [
+              "“React re-renders the whole app.”",
+              "React schedules work for the affected part of the tree. But parent renders do propagate unless you add bailout boundaries (memo) and keep identities stable."
+            ],
+            [
+              "“Virtual DOM diff always computes the minimal edit.”",
+              "Reconciliation is heuristic and optimized for common UI patterns. With good keys/types, it’s very efficient; with bad keys/identity churn, it can do extra work."
+            ],
+            [
+              "“If a component re-rendered, the DOM changed.”",
+              "Not necessarily. If the computed output is the same (or the changed parts don’t affect the DOM), commit can be a no-op."
+            ],
+            [
+              "“useCallback/useMemo always improves performance.”",
+              "They help only when they prevent real work (rerenders of expensive children, expensive computations). Overuse adds complexity and overhead."
+            ]
+          ],
+          "caption": "Interview-grade corrections to typical statements"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Profiling-first workflow</strong><br><br>The goal is not to stop every rerender. The goal is to debug the expensive ones first. Start with React DevTools Profiler or “Why did this render?” before you optimize, then ask three questions in order: which component is actually hot, which prop, context, or state change triggered it, and can you reduce the blast radius without adding a maze of memoization?"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Optimization lever",
+            "What it actually reduces",
+            "Best use"
+          ],
+          "rows": [
+            [
+              "Colocate state (move it down)",
+              "The number of components affected by updates",
+              "Keep state as close as possible to where it’s used, so fewer parents re-render."
+            ],
+            [
+              "Split components",
+              "The size of the rerendered subtree",
+              "Separate “fast-changing” parts from “mostly-static” parts."
+            ],
+            [
+              "React.memo / PureComponent",
+              "Re-rendering of child components",
+              "Pure/presentational children with stable props."
+            ],
+            [
+              "Stable prop identities",
+              "False-positive “prop changed” signals",
+              "Avoid inline objects/functions when they’re passed to memoized children."
+            ],
+            [
+              "Memoize Context value",
+              "Broad consumer rerenders",
+              "Wrap provider value creation in <code>useMemo</code> to avoid rerendering all consumers."
+            ]
+          ],
+          "caption": "Practical ways to reduce unnecessary re-renders (in the order that usually matters most)"
+        },
+        {
+          "type": "text",
+          "text": "<strong>When memoization hurts</strong><br><br>Memoization is a pitfall when you add it before profiling. Dependency arrays become harder to reason about, stale closures sneak in, and shallow comparison work can outweigh the rerender you were trying to save. Use memo tools when they remove a measured bottleneck, not as a blanket rule. If the real issue is that an update is legitimately expensive or low-priority, <code>useTransition()</code> and <code>useDeferredValue()</code> keep the input responsive while heavier results lag slightly behind."
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "const Row = React.memo(function Row({ item, onSelect }) {\n  return <button onClick={() => onSelect(item.id)}>{item.label}</button>;\n});\n\nfunction List({ items }) {\n  return items.map((item) => (\n    <Row\n      key={item.id}\n      item={item}\n      onSelect={(id) => console.log(id)} // ❌ new function every render\n    />\n  ));\n}\n\nfunction ListFixed({ items }) {\n  const onSelect = useCallback((id) => console.log(id), []);\n  return items.map((item) => <Row key={item.id} item={item} onSelect={onSelect} />);\n}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Broad context blast radius</strong><br><br>A memoized child still re-renders if it reads from a context whose value changes every keypress. This is why context splitting often beats adding more memo wrappers."
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "const SearchContext = React.createContext(null);\n\nfunction App() {\n  const [theme, setTheme] = useState('light');\n  const [searchTerm, setSearchTerm] = useState('');\n\n  // ❌ Theme-only consumers still rerender on every keystroke\n  const value = useMemo(() => ({ theme, searchTerm, setSearchTerm }), [theme, searchTerm]);\n  return <SearchContext.Provider value={value}><Layout /></SearchContext.Provider>;\n}\n\n// Better: split fast-changing search state from slower theme state."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Remount, not rerender: keys and wrappers</strong><br><br>Changing a component’s key or swapping wrappers (for example Fragment to div) causes a remount with fresh local state, not a re-render. Double render logs under StrictMode in development are a separate signal, not production behavior."
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "function Editor({ userId }) {\n  const [draft, setDraft] = React.useState('');\n  return <input value={draft} onChange={(e) => setDraft(e.target.value)} />;\n}\n\n// ❌ Re-render keeps local state, but changing key remounts and wipes it\n<Editor userId={activeUserId} key={activeUserId} />"
+        },
+        {
+          "type": "text",
           "text": "<strong>One-line distinction</strong><br><br><em>Rerender</em> means React ran the component again, <em>remount</em> means React threw away the old identity and local state, and <em>commit</em> means React actually mutated the DOM. Those are related, but they are not the same event."
         },
         {
@@ -946,24 +1052,26 @@
       "rendering",
       "state",
       "props",
-      "performance"
+      "performance",
+      "basics",
+      "memoization"
     ],
-    "updatedAt": "2026-10-09",
+    "updatedAt": "2026-10-12",
     "seo": {
-      "title": "When Does React Re-render? Render, Commit, and Bailouts",
-      "description": "Learn what actually triggers React rerenders, why render work is not the same as DOM mutation, and how bailouts, context churn, and remounts change the result."
+      "title": "Why React Re-renders Without Prop Changes: Fixes",
+      "description": "Trace React re-renders to parent renders, unstable prop identity, context churn, or remounts, then fix them with memo, stable references, and scoped state."
     },
     "incidentCard": {
       "title": "Render vs Commit Reality Check",
       "scenario": "A parent component updates on each keystroke, and a child logs \"render\" every time. A teammate says this proves React rewrites the DOM on every keypress. What is the best response?",
       "options": [
         {
-          "id": "render-compute-commit-diff",
-          "label": "A render is recomputing the element tree; DOM changes happen only in commit if the diff changed. Optimize with memoization/stable props only where it prevents real work."
-        },
-        {
           "id": "every-render-means-full-dom-write",
           "label": "That is correct: every render call always forces a full DOM rewrite, so the only fix is reducing all state updates."
+        },
+        {
+          "id": "render-compute-commit-diff",
+          "label": "A render is recomputing the element tree; DOM changes happen only in commit if the diff changed. Optimize with memoization/stable props only where it prevents real work."
         },
         {
           "id": "forceupdate-to-skip-renders",
@@ -972,7 +1080,10 @@
       ],
       "correctOptionId": "render-compute-commit-diff",
       "rereadPrompt": "Close. Re-read render vs commit: render computes next UI, commit mutates the DOM only when there are actual differences."
-    }
+    },
+    "companies": [
+      "netflix"
+    ]
   },
   {
     "id": "react-render-nothing-return-value",
@@ -1917,13 +2028,17 @@
   },
   {
     "id": "react-controlled-vs-uncontrolled",
-    "title": "What is the difference between controlled and uncontrolled components?",
+    "title": "Why does React warn about an uncontrolled input becoming controlled?",
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Compare controlled and uncontrolled React inputs through validation, reset behavior, defaultValue, file-input limits, and the production warning/debugging cases that appear when a field switches ownership.",
+    "description": "Fix the 'changing an uncontrolled input to be controlled' warning by fixing ownership: an undefined initial value lets the DOM own the input until state arrives. Covers value vs defaultValue, optional API fields, reset flows, validation, and why file inputs are always uncontrolled.",
     "answer": {
       "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>The warning to explain</strong><br><br><em>A component is changing an uncontrolled input to be controlled.</em> React is telling you the input changed owners. On the first render <code>value</code> was <code>undefined</code> (state not initialized, or an API field missing), so the DOM owned the input; once state arrived, <code>value</code> became a string and React took over. Fix the ownership, not the warning: initialize state with <code>''</code>, use <code>value={field ?? ''}</code> for optional data, or switch to <code>defaultValue</code> and a ref when the DOM should own it. File inputs are always uncontrolled."
+        },
         {
           "type": "text",
           "text": "<strong>Overview</strong><br><br>The real distinction is <strong>ownership</strong>. A controlled input is owned by React state, which makes validation, derived UI, and reset flows predictable. An uncontrolled input is owned by the DOM, which is often simpler for one-off forms, file inputs, and low-friction submissions. The production bugs appear when one field tries to switch owners halfway through its lifecycle."
@@ -2018,10 +2133,10 @@
       "inputs",
       "basics"
     ],
-    "updatedAt": "2026-04-09",
+    "updatedAt": "2026-10-12",
     "seo": {
-      "title": "Controlled vs uncontrolled React inputs: warnings, defaultValue, and file input rules",
-      "description": "Learn when React state should own a form field, when the DOM should, and how to debug uncontrolled-to-controlled warnings, defaultValue mistakes, and file input edge cases."
+      "title": "Uncontrolled to Controlled Input Warning: Fix",
+      "description": "Fix React's 'changing an uncontrolled input to be controlled' warning: who owns the value, undefined initial state, defaultValue vs value, and file inputs."
     }
   },
   {
@@ -2740,377 +2855,6 @@
     }
   },
   {
-    "id": "react-virtual-dom",
-    "title": "What is the Virtual DOM in React, and how does it relate to reconciliation?",
-    "technology": "react",
-    "difficulty": "intermediate",
-    "importance": 4,
-    "description": "Explain the React Virtual DOM through reconciliation, commit work, and performance debugging. Emphasize the under-the-hood difference between a re-render, a diff, and a real DOM mutation.",
-    "answer": {
-      "blocks": [
-        {
-          "type": "text",
-          "text": "<strong>Under the hood</strong><br><br>The Virtual DOM is React’s in-memory description of what the UI <em>should</em> look like after a render. The production debugging value is not the buzzword itself, but the mental model: React can re-run components, compare trees, and still commit zero DOM changes. That distinction explains why some “performance issues” are really JS/render work or key/identity mistakes, not raw DOM mutation cost."
-        },
-        {
-          "type": "list",
-          "columns": [
-            "Claim",
-            "Accurate?",
-            "Better wording / why it matters"
-          ],
-          "rows": [
-            [
-              "“VDOM is a copy of the real DOM.”",
-              "⚠️ half-true",
-              "It’s a JS representation of the UI (<code>type</code>, <code>props</code>, <code>children</code>). It models what the DOM <em>should</em> look like, not a full DOM clone."
-            ],
-            [
-              "“React updates the minimal set of DOM changes.”",
-              "⚠️ usually",
-              "React uses reconciliation heuristics. With stable keys/types, it’s very efficient, but it’s not a perfect minimal-edit solver."
-            ],
-            [
-              "“Re-render means the DOM changed.”",
-              "❌",
-              "Re-render means React re-ran components to compute a new UI tree. DOM mutations only happen in the commit phase if something actually differs."
-            ],
-            [
-              "“VDOM makes React fast.”",
-              "⚠️ incomplete",
-              "The win is: predictable re-rendering + efficient diffing + batching. Many perf issues are still JS work, reconciliation work, or browser layout/paint."
-            ]
-          ],
-          "caption": "Common Virtual DOM misconceptions (and the interview-correct framing)"
-        },
-        {
-          "type": "text",
-          "text": "<strong>What happens on an update</strong><br><br>When state/props/context change, React schedules work, re-runs the affected components, builds a new tree, then reconciles it against the previous one. If it detects differences, it commits DOM mutations for only those differences."
-        },
-        {
-          "type": "code",
-          "language": "jsx",
-          "code": "import React from 'react';\n\nexport default function Counter() {\n  const [count, setCount] = React.useState(0);\n\n  // When you click:\n  // 1) React re-runs Counter() to compute a new element tree\n  // 2) Reconciliation compares old vs new children\n  // 3) Commit applies the minimal DOM changes (often just the text node)\n  return (\n    <button onClick={() => setCount((c) => c + 1)}>\n      Count: {count}\n    </button>\n  );\n}\n"
-        },
-        {
-          "type": "list",
-          "columns": [
-            "Phase",
-            "What React does",
-            "Rules / why it matters"
-          ],
-          "rows": [
-            [
-              "Render phase",
-              "Runs components to compute the next UI tree",
-              "Should be pure (no subscriptions, network calls, DOM writes). React may re-run renders (especially in dev/StrictMode)."
-            ],
-            [
-              "Reconciliation",
-              "Matches old vs new elements (type + key + position) and decides what to keep, move, mount, unmount",
-              "Keys are crucial for stable identity in lists; changing element type at a position can cause remount/state loss."
-            ],
-            [
-              "Commit phase",
-              "Mutates the real DOM + runs effects/lifecycles",
-              "This is where DOM changes actually happen; effects run after commit."
-            ]
-          ],
-          "caption": "Virtual DOM is the input to reconciliation; reconciliation decides the DOM commit"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Keys are a big part of “VDOM performance”</strong><br><br>Reconciliation is fast when React can match previous children to next children reliably. In lists, stable <code>key</code> values give identity; bad keys (like index in reordering lists) can cause unnecessary remounts, DOM churn, and state bugs."
-        },
-        {
-          "type": "list",
-          "columns": [
-            "Why React uses this model",
-            "Practical benefit"
-          ],
-          "rows": [
-            [
-              "Declarative UI (UI as a function of data)",
-              "You describe <em>what</em> the UI should be; React computes <em>how</em> to update it."
-            ],
-            [
-              "Batching + scheduling",
-              "Multiple state updates can be grouped; React can prioritize urgent updates."
-            ],
-            [
-              "Efficient updates for dynamic trees",
-              "As the UI shape changes, React can mount/unmount/move nodes without manual DOM bookkeeping."
-            ],
-            [
-              "Tooling + predictability",
-              "The same inputs produce the same tree (when render is pure), which makes behavior easier to reason about and debug."
-            ]
-          ],
-          "caption": "What the “Virtual DOM + reconciliation” architecture buys you"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Interview-quality summary</strong><br><br>In React, “Virtual DOM” refers to the in-memory UI tree (React elements/fibers). On updates, React re-renders to produce a new tree, then runs reconciliation (diffing + keys + heuristics) to compute what changed, and finally commits only the necessary DOM mutations. A re-render is just recomputing UI — it does not automatically mean the browser DOM changed."
-        }
-      ]
-    },
-    "incidentCard": {
-      "title": "Render vs DOM Root Cause Check",
-      "scenario": "A teammate says \"every re-render rewrites the whole DOM.\" But in profiling, a component re-renders while its DOM subtree stays unchanged. What is the most likely explanation?",
-      "options": [
-        {
-          "id": "vdom-off-prod",
-          "label": "Virtual DOM diffing is disabled in production builds, so DOM writes are skipped by default."
-        },
-        {
-          "id": "rerender-means-mutate",
-          "label": "A re-render always mutates DOM nodes, but browser devtools cannot detect most React updates."
-        },
-        {
-          "id": "render-not-commit",
-          "label": "React recomputed the next tree, but reconciliation found no DOM differences to commit for that subtree."
-        }
-      ],
-      "correctOptionId": "render-not-commit",
-      "rereadPrompt": "Close. Re-read render vs reconciliation vs commit. Re-render computes UI; DOM updates happen only when commit has real diffs."
-    },
-    "access": "free",
-    "type": "trivia",
-    "tags": [
-      "react",
-      "virtual-dom",
-      "rendering",
-      "performance",
-      "basics"
-    ],
-    "updatedAt": "2026-10-09",
-    "companies": [
-      "apple"
-    ],
-    "seo": {
-      "title": "React Virtual DOM: Reconciliation and Performance Myths",
-      "description": "The Virtual DOM is an in-memory React tree, but the useful production angle is debugging re-renders, commit work, and reconciliation misconceptions."
-    }
-  },
-  {
-    "id": "react-component-rerendering",
-    "title": "When does React re-render a component, and when does it actually update the DOM?",
-    "technology": "react",
-    "difficulty": "intermediate",
-    "importance": 5,
-    "description": "Explain React rerendering through render work, reconciliation, commit, context fanout, and remount-vs-rerender identity bugs that make the DOM story easy to misread.",
-    "answer": {
-      "blocks": [
-        {
-          "type": "text",
-          "text": "<strong>Debug mental model</strong><br><br>A React re-render means React re-ran part of the tree to compute the next UI. It does <em>not</em> automatically mean the browser DOM changed. That distinction matters in production: many rerender bugs are really identity bugs, context fanout, or remount problems, while many DOM-performance fears disappear once you separate render work from commit work."
-        },
-        {
-          "type": "list",
-          "columns": [
-            "Trigger",
-            "What happens",
-            "Important nuance"
-          ],
-          "rows": [
-            [
-              "State update (useState/useReducer)",
-              "Schedules a render for that component",
-              "If the new state is <code>Object.is</code>-equal to the old state, React can bail out (no re-render). New object/array references are always “different”."
-            ],
-            [
-              "Parent re-renders",
-              "Children are rendered by default",
-              "Even if props “look the same”, React will call the child again unless you use <code>React.memo</code>/<code>PureComponent</code> (or a custom comparison)."
-            ],
-            [
-              "Prop identity changes",
-              "Child re-renders",
-              "Inline objects/functions create new references every render → looks like “props changed” to memo/shallow compare."
-            ],
-            [
-              "Context Provider value changes",
-              "All consumers may re-render",
-              "Context is identity-based too. <code>value={{...}}</code> created inline changes every render unless memoized."
-            ],
-            [
-              "Key / type changes at a position",
-              "React remounts the subtree",
-              "This is bigger than a re-render: local state resets because React treats it as a different component."
-            ]
-          ],
-          "caption": "What typically causes re-renders (and the gotchas)"
-        },
-        {
-          "type": "list",
-          "columns": [
-            "Phase",
-            "What React does",
-            "Rule of thumb"
-          ],
-          "rows": [
-            [
-              "Render phase",
-              "Runs component functions / class <code>render()</code> to compute the next tree",
-              "Must be pure (no subscriptions, network calls, DOM writes). React may run it more than once in dev/StrictMode."
-            ],
-            [
-              "Reconciliation",
-              "Compares old vs new elements (type + key + position) and decides what to keep/move/mount/unmount",
-              "Stable keys/types preserve state and reduce work; unstable identity causes extra work and bugs."
-            ],
-            [
-              "Commit phase",
-              "Applies DOM mutations and runs effects/lifecycles",
-              "This is when the browser DOM can actually change; effects run after commit."
-            ]
-          ],
-          "caption": "Render vs reconcile vs commit (the mental model interviewers want)"
-        },
-        {
-          "type": "code",
-          "language": "jsx",
-          "code": "import React from 'react';\n\nconst Child = React.memo(function Child({ onInc, config }) {\n  console.log('Child rendered');\n  return <button onClick={onInc}>Inc</button>;\n});\n\nexport default function Parent() {\n  const [count, setCount] = React.useState(0);\n\n  // ❌ NEW function/object every render -> Child sees \"new props\" -> re-renders\n  // const onInc = () => setCount(count + 1);\n  // const config = { step: 1 };\n\n  // ✅ Stable identities -> Child can skip renders via React.memo\n  const onInc = React.useCallback(() => setCount((c) => c + 1), []);\n  const config = React.useMemo(() => ({ step: 1 }), []);\n\n  console.log('Parent rendered');\n\n  return (\n    <div>\n      <p>Count: {count}</p>\n      <Child onInc={onInc} config={config} />\n    </div>\n  );\n}\n"
-        },
-        {
-          "type": "text",
-          "text": "<strong>What this example proves</strong><br><br>1) Updating <code>count</code> re-renders <code>Parent</code>.<br>2) By default, children render too.<br>3) <code>React.memo</code> lets a child <em>bail out</em> if props are shallow-equal, but only if you keep prop identities stable (callbacks/objects)."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Before/after bug: memoized child still hot because prop identity changes</strong><br><br>The usual production surprise is: “But the child is memoized.” If you keep allocating new objects/functions in the parent, the memo boundary sees changed props every time."
-        },
-        {
-          "type": "code",
-          "language": "jsx",
-          "code": "const Chart = React.memo(function Chart({ filters, onPointClick }) {\n  console.log('Chart rendered');\n  return <canvas />;\n});\n\nfunction Dashboard({ region }) {\n  // ❌ New references every render\n  return (\n    <Chart\n      filters={{ region, includeArchived: false }}\n      onPointClick={(id) => console.log(id)}\n    />\n  );\n}\n\nfunction DashboardFixed({ region }) {\n  const filters = React.useMemo(() => ({ region, includeArchived: false }), [region]);\n  const onPointClick = React.useCallback((id) => console.log(id), []);\n  return <Chart filters={filters} onPointClick={onPointClick} />;\n}"
-        },
-        {
-          "type": "list",
-          "columns": [
-            "Common misconception",
-            "Correct framing"
-          ],
-          "rows": [
-            [
-              "“React re-renders the whole app.”",
-              "React schedules work for the affected part of the tree. But parent renders do propagate unless you add bailout boundaries (memo) and keep identities stable."
-            ],
-            [
-              "“Virtual DOM diff always computes the minimal edit.”",
-              "Reconciliation is heuristic and optimized for common UI patterns. With good keys/types, it’s very efficient; with bad keys/identity churn, it can do extra work."
-            ],
-            [
-              "“If a component re-rendered, the DOM changed.”",
-              "Not necessarily. If the computed output is the same (or the changed parts don’t affect the DOM), commit can be a no-op."
-            ],
-            [
-              "“useCallback/useMemo always improves performance.”",
-              "They help only when they prevent real work (rerenders of expensive children, expensive computations). Overuse adds complexity and overhead."
-            ]
-          ],
-          "caption": "Interview-grade corrections to typical statements"
-        },
-        {
-          "type": "list",
-          "columns": [
-            "Optimization lever",
-            "What it actually reduces",
-            "Best use"
-          ],
-          "rows": [
-            [
-              "Colocate state (move it down)",
-              "The number of components affected by updates",
-              "Keep state as close as possible to where it’s used, so fewer parents re-render."
-            ],
-            [
-              "Split components",
-              "The size of the rerendered subtree",
-              "Separate “fast-changing” parts from “mostly-static” parts."
-            ],
-            [
-              "React.memo / PureComponent",
-              "Re-rendering of child components",
-              "Pure/presentational children with stable props."
-            ],
-            [
-              "Stable prop identities",
-              "False-positive “prop changed” signals",
-              "Avoid inline objects/functions when they’re passed to memoized children."
-            ],
-            [
-              "Memoize Context value",
-              "Broad consumer rerenders",
-              "Wrap provider value creation in <code>useMemo</code> to avoid rerendering all consumers."
-            ]
-          ],
-          "caption": "Practical ways to reduce unnecessary re-renders (in the order that usually matters most)"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Another classic production bug: context fanout</strong><br><br>A provider value object created inline changes identity every render. That means every consumer can re-render even if only one tiny field in the object changed. This is why rerender debugging often starts by looking at provider values, not only at prop comparisons."
-        },
-        {
-          "type": "code",
-          "language": "jsx",
-          "code": "const SearchContext = React.createContext(null);\n\nfunction App() {\n  const [theme, setTheme] = React.useState('light');\n  const [query, setQuery] = React.useState('');\n\n  // ❌ New object every render -> all consumers re-render\n  // const value = { theme, query, setQuery };\n\n  // ✅ Stable when only query changes? Split contexts or memoize\n  const value = React.useMemo(() => ({ theme, query, setQuery }), [theme, query]);\n\n  return <SearchContext.Provider value={value}><Layout /></SearchContext.Provider>;\n}\n"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Two important gotchas</strong><br><br>• <strong>StrictMode (dev)</strong>: React may intentionally run render logic more than once to surface unsafe side effects. Don’t treat “double logs” in dev as production behavior.<br>• <strong>Keys/type changes</strong>: Changing a component’s key or swapping wrappers (e.g., Fragment ↔ div) can cause a remount (state reset), not just a re-render."
-        },
-        {
-          "type": "code",
-          "language": "jsx",
-          "code": "function Editor({ userId }) {\n  const [draft, setDraft] = React.useState('');\n  return <input value={draft} onChange={(e) => setDraft(e.target.value)} />;\n}\n\n// ❌ Re-render keeps local state, but changing key remounts and wipes it\n<Editor userId={activeUserId} key={activeUserId} />"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Commit vs rerender vs remount</strong><br><br>A rerender is compute work. A commit is visible DOM work. A remount is identity loss plus fresh local state. Keeping those separate makes render debugging much easier."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Summary</strong><br><br>React re-renders when state/props/context might have changed. A re-render is “recompute the next UI tree”, not “mutate the DOM”. React then reconciles and commits only necessary DOM changes. Unnecessary re-renders usually come from unclear state ownership, unstable prop identities (inline objects/functions), broad context updates, or bad keys."
-        }
-      ]
-    },
-    "incidentCard": {
-      "title": "Re-render Root Cause Check",
-      "scenario": "You wrapped a heavy child with React.memo, but it still re-renders on every parent update. Parent passes onSave={() => ...} and options={{ mode: 'fast' }} inline. What is the most likely root cause?",
-      "options": [
-        {
-          "id": "commit-always-reruns-child",
-          "label": "Any DOM commit in a parent subtree forces all memoized children to re-render by design."
-        },
-        {
-          "id": "unstable-prop-identity",
-          "label": "Inline function/object props create new references each render, so shallow prop comparison sees them as changed."
-        },
-        {
-          "id": "memo-forces-rerender",
-          "label": "React.memo intentionally re-renders children whenever parent state changes, regardless of props."
-        }
-      ],
-      "correctOptionId": "unstable-prop-identity",
-      "rereadPrompt": "Almost. Re-read the stable identity section (useCallback/useMemo) and how React.memo compares props."
-    },
-    "access": "free",
-    "type": "trivia",
-    "tags": [
-      "react",
-      "rendering",
-      "state",
-      "props",
-      "basics"
-    ],
-    "updatedAt": "2026-04-10",
-    "seo": {
-      "title": "React rerenders vs DOM updates: bailouts, identity pitfalls, and debug mental models",
-      "description": "React can re-render without mutating the DOM. The production bugs usually come from identity changes, context fanout, and confusing render work with commit work."
-    }
-  },
-  {
     "id": "react-mixing-state-and-props-responsibilities",
     "title": "What bugs appear when state and props responsibilities are mixed?",
     "technology": "react",
@@ -3581,17 +3325,21 @@
   },
   {
     "id": "react-usememo-vs-usecallback",
-    "title": "What is the difference between useMemo() and useCallback()?",
+    "title": "useMemo vs useCallback: when does memoizing make it slower?",
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 4,
-    "description": "useMemo memoizes a computed value; useCallback memoizes a function reference. Use them to avoid expensive recalculations or re-renders, but only when it actually helps.",
+    "description": "useMemo caches a computed value, useCallback a function reference. Explain when they prevent real work, when the dependency comparison and retained memory cost more than they save, and the pitfalls (stale closures, non-memoized children) that make memoization a no-op.",
     "seo": {
-      "title": "useMemo vs useCallback in React: what is the difference?",
-      "description": "useMemo memoizes a computed value, while useCallback memoizes a function reference between renders."
+      "title": "useMemo vs useCallback: When Memoizing Hurts",
+      "description": "useMemo caches a value, useCallback a function reference. See when they prevent re-renders, when the comparison cost exceeds the win, and the dependency pitfalls."
     },
     "answer": {
       "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>The follow-up to explain</strong><br><br>Memoizing can make a render slower. <code>useMemo</code> and <code>useCallback</code> both pay for a dependency comparison on every render and keep the cached value alive. They win only when the thing they cache is expensive to recompute or when the stable reference lets a <code>React.memo</code> child or an effect skip work. A <code>useCallback</code> passed to a child that is not memoized saves nothing, and a <code>useMemo</code> around cheap arithmetic costs more than it protects."
+        },
         {
           "type": "text",
           "text": "<strong>Overview</strong><br><br><code>useMemo()</code> and <code>useCallback()</code> help improve performance by caching results or function references between re-renders. React components re-render when their props or state change, and these hooks prevent expensive re-computations or re-creations that could slow the app down."
@@ -3661,7 +3409,7 @@
       "performance",
       "hooks"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-10-12",
     "incidentCard": {
       "title": "Memo Hook Choice Root Cause Check",
       "scenario": "You wrapped SearchResults with React.memo. The filtered list is memoized with useMemo, but SearchResults still re-renders on every parent keystroke. Parent also passes onSelect={(id) => selectItem(id)} inline. What is the most likely root cause?",
@@ -3684,370 +3432,23 @@
     }
   },
   {
-    "id": "react-prevent-unnecessary-rerenders",
-    "title": "How can you prevent unnecessary re-renders in React?",
-    "technology": "react",
-    "companies": [
-      "netflix"
-    ],
-    "difficulty": "hard",
-    "importance": 5,
-    "description": "Prevent unnecessary React rerenders with a profiling-first workflow: find unstable props, broad context churn, and memoization pitfalls before reaching for blanket useMemo or useCallback.",
-    "answer": {
-      "blocks": [
-        {
-          "type": "text",
-          "text": "<strong>Overview</strong><br><br>The goal is not to stop every rerender. The goal is to <strong>debug</strong> the expensive ones first. In production, unnecessary rerenders usually come from unstable object or function props, context fanout, or state stored too high in the tree. Good answers start with profiling, then choose the smallest fix instead of scattering <code>React.memo()</code>, <code>useMemo()</code>, and <code>useCallback()</code> everywhere."
-        },
-        {
-          "type": "text",
-          "text": "<strong>When memoization hurts</strong><br><br>Memoization is a <strong>pitfall</strong> when you add it before profiling. Dependency arrays become harder to reason about, stale closures sneak in, and shallow comparison work can outweigh the rerender you were trying to save. Use memo tools when they remove a measured bottleneck, not as a blanket rule."
-        },
-        {
-          "type": "list",
-          "columns": [
-            "Technique",
-            "Description",
-            "Use Case"
-          ],
-          "rows": [
-            [
-              "React.memo()",
-              "Prevents re-rendering of a functional component unless its props change.",
-              "When a child component receives the same props repeatedly."
-            ],
-            [
-              "useMemo()",
-              "Memoizes a computed value and reuses it until its dependencies change.",
-              "When performing expensive calculations in render."
-            ],
-            [
-              "useCallback()",
-              "Memoizes a function definition so that it doesn’t re-trigger re-renders in memoized children.",
-              "When passing callbacks as props."
-            ],
-            [
-              "PureComponent / shallow comparison",
-              "Automatically skips re-renders when prop and state values have not changed.",
-              "When using class-based components."
-            ],
-            [
-              "Splitting state",
-              "Store state closer to the component that actually needs it to avoid global updates.",
-              "When managing complex UI with multiple interactive areas."
-            ]
-          ],
-          "caption": "Common strategies to prevent unnecessary re-renders in React"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Profiling-first workflow</strong><br><br>Start with React DevTools Profiler or “Why did this render?” before you optimize. Then ask three questions in order: which component is actually hot, which prop/context/state change triggered it, and can I reduce the blast radius without adding a maze of memoization?"
-        },
-        {
-          "type": "code",
-          "language": "jsx",
-          "code": "// Example using React.memo and useCallback\nconst Button = React.memo(({ onClick, label }) => {\n  console.log('Button rendered');\n  return <button onClick={onClick}>{label}</button>;\n});\n\nfunction App() {\n  const [count, setCount] = useState(0);\n\n  const handleClick = useCallback(() => {\n    setCount((prev) => prev + 1);\n  }, []);\n\n  return (\n    <div>\n      <h1>Count: {count}</h1>\n      <Button onClick={handleClick} label='Increment' />\n    </div>\n  );\n}"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Detailed Explanation</strong><br><ul><li><strong>Memoization:</strong> By caching values and functions, React avoids re-creating them during re-renders.</li><li><strong>Pure Components:</strong> Class-based components that implement shallow comparison for props and state, ensuring only changed data triggers updates.</li><li><strong>Restructuring State:</strong> Large shared state causes global re-renders; move state down to relevant child components when possible.</li><li><strong>Context Optimization:</strong> Context triggers re-renders in all consumers; use memoized context values or split contexts by responsibility.</li></ul>"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Broad context blast radius</strong><br><br>A memoized child still re-renders if it reads from a context whose value changes every keypress. This is why context splitting often beats adding more memo wrappers."
-        },
-        {
-          "type": "code",
-          "language": "jsx",
-          "code": "const SearchContext = React.createContext(null);\n\nfunction App() {\n  const [theme, setTheme] = useState('light');\n  const [searchTerm, setSearchTerm] = useState('');\n\n  // ❌ Theme-only consumers still rerender on every keystroke\n  const value = useMemo(() => ({ theme, searchTerm, setSearchTerm }), [theme, searchTerm]);\n  return <SearchContext.Provider value={value}><Layout /></SearchContext.Provider>;\n}\n\n// Better: split fast-changing search state from slower theme state."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Inline callback pitfall</strong><br><br><code>React.memo</code> only helps when props are actually stable. Passing a new callback every render keeps the child hot even when the visual output barely changes."
-        },
-        {
-          "type": "code",
-          "language": "jsx",
-          "code": "const Row = React.memo(function Row({ item, onSelect }) {\n  return <button onClick={() => onSelect(item.id)}>{item.label}</button>;\n});\n\nfunction List({ items }) {\n  return items.map((item) => (\n    <Row\n      key={item.id}\n      item={item}\n      onSelect={(id) => console.log(id)} // ❌ new function every render\n    />\n  ));\n}\n\nfunction ListFixed({ items }) {\n  const onSelect = useCallback((id) => console.log(id), []);\n  return items.map((item) => <Row key={item.id} item={item} onSelect={onSelect} />);\n}"
-        },
-        {
-          "type": "code",
-          "language": "jsx",
-          "code": "// Example: Context optimization with useMemo\nconst ThemeContext = React.createContext();\n\nfunction App() {\n  const [theme, setTheme] = useState('light');\n  const value = useMemo(() => ({ theme, setTheme }), [theme]);\n\n  return (\n    <ThemeContext.Provider value={value}>\n      <Toolbar />\n    </ThemeContext.Provider>\n  );\n}"
-        },
-        {
-          "type": "text",
-          "text": "<strong>When transition/deferred value is better than memoization</strong><br><br>If the real issue is that an update is legitimately expensive or low-priority, memoization may be the wrong tool. <code>useTransition()</code> and <code>useDeferredValue()</code> help when the user should keep typing or interacting while heavier list filtering or search results lag slightly behind."
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> Efficient React apps don’t avoid re-renders entirely — they control when and where they happen. The goal is to ensure only components affected by data changes re-render."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li>React re-renders components on state, props, or context changes.</li><li>Prevent redundant re-renders with memoization, stable callbacks, and scoped state.</li><li>Proper optimization ensures smooth UI updates without unnecessary computation.</li></ul>"
-        }
-      ]
-    },
-    "access": "free",
-    "type": "trivia",
-    "tags": [
-      "react",
-      "performance",
-      "memoization",
-      "rendering",
-      "basics"
-    ],
-    "updatedAt": "2026-04-10",
-    "seo": {
-      "title": "Prevent React rerenders: profiling-first fixes and memoization pitfalls",
-      "description": "Debug React rerenders by profiling first, stabilizing references, shrinking context blast radius, and avoiding memoization patterns that add complexity without real wins."
-    },
-    "incidentCard": {
-      "title": "Rerender Scope Root Cause Check",
-      "scenario": "You store both theme and a rapidly changing searchTerm in one Context value object. Components that only read theme still rerender on every keystroke. What is the most likely root cause?",
-      "options": [
-        {
-          "id": "keys-control-context",
-          "label": "Missing list keys in child components causes provider-level rerenders for every context change."
-        },
-        {
-          "id": "broad-context-churn",
-          "label": "The shared context value changes whenever searchTerm updates, so all consumers rerender; split context or memoize/scope state."
-        },
-        {
-          "id": "reactmemo-blocks-context",
-          "label": "React.memo blocks context updates, so React rerenders the whole subtree to keep values accurate."
-        }
-      ],
-      "correctOptionId": "broad-context-churn",
-      "rereadPrompt": "Almost. Re-read the sections on context optimization and state scoping to reduce rerender blast radius."
-    }
-  },
-  {
-    "id": "react-strictmode-purpose",
-    "title": "What is the purpose of the React.StrictMode component?",
-    "technology": "react",
-    "difficulty": "intermediate",
-    "importance": 4,
-    "description": "React.StrictMode runs extra checks in development to surface unsafe lifecycles, deprecated APIs, and side-effect bugs. It does not affect production output. StrictMode catches unsafe patterns by double-invoking in dev; ensure effects are idempotent and tested.",
-    "answer": {
-      "blocks": [
-        {
-          "type": "text",
-          "text": "<strong>Overview</strong><br><br><code>React.StrictMode</code> is a wrapper component provided by React to help developers identify unsafe or deprecated code patterns. It activates additional development checks and warnings to ensure components adhere to modern React practices and will behave correctly in concurrent rendering scenarios."
-        },
-        {
-          "type": "code",
-          "language": "jsx",
-          "code": "import React from 'react';\nimport ReactDOM from 'react-dom/client';\nimport App from './App';\n\nReactDOM.createRoot(document.getElementById('root')).render(\n  <React.StrictMode>\n    <App />\n  </React.StrictMode>\n);"
-        },
-        {
-          "type": "list",
-          "columns": [
-            "Feature",
-            "Behavior"
-          ],
-          "rows": [
-            [
-              "Detects Unsafe Lifecycles",
-              "Warns when using outdated lifecycle methods like <code>componentWillMount</code> or <code>componentWillReceiveProps</code>."
-            ],
-            [
-              "Detects Side-Effect Issues",
-              "Runs certain functions twice (like useEffect callbacks) to ensure side effects are idempotent."
-            ],
-            [
-              "Highlights Deprecated APIs",
-              "Warns about legacy string refs, findDOMNode, and legacy context usage."
-            ],
-            [
-              "Identifies Unexpected Behavior",
-              "Detects potential issues in asynchronous rendering with React concurrent features."
-            ]
-          ],
-          "caption": "Key development checks enabled by React.StrictMode"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Why It Matters</strong><br><ul><li>Encourages developers to write cleaner, future-proof React code.</li><li>Ensures that effects and updates behave consistently in upcoming React features.</li><li>Improves debugging and helps migrate older codebases to modern React hooks and concurrent rendering.</li></ul>"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Important Notes</strong><br><ul><li>Only active in development mode; it has no effect in production builds.</li><li>May cause duplicate console logs or API calls in development due to intentional double-invocation of certain functions.</li><li>Does not render any UI or change component behavior; it’s purely diagnostic.</li></ul>"
-        },
-        {
-          "type": "code",
-          "language": "jsx",
-          "code": "// Example of StrictMode highlighting a side-effect\nfunction Example() {\n  useEffect(() => {\n    console.log('Effect triggered');\n    return () => console.log('Cleanup');\n  }, []);\n\n  return <p>Hello World</p>;\n}\n\n// The effect above runs twice in development to test cleanup behavior."
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> Think of <code>React.StrictMode</code> as React’s 'training mode' — it helps you find potential bugs early, making your app stronger and more resilient in production."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li>StrictMode helps detect side effects, deprecated APIs, and unsafe lifecycles.</li><li>It runs additional checks in development without affecting production.</li><li>Useful for ensuring your React app is ready for future updates and concurrent rendering.</li></ul>"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Practical scenario</strong><br>In development, you notice effects running twice; StrictMode is intentionally exposing unsafe side effects.\n<br><br><strong>Common pitfalls</strong><br><ul><li>Assuming double-invocation happens in production (it does not).</li><li>Writing non-idempotent effects that break when re-run.</li><li>Doing side effects directly in render.</li></ul><strong>Trade-off or test tip</strong><br>StrictMode makes dev noisier but catches bugs early. Test by making effects idempotent and verifying cleanup works."
-        }
-      ]
-    },
-    "access": "free",
-    "type": "trivia",
-    "tags": [
-      "react",
-      "strictmode",
-      "devtools",
-      "warnings",
-      "hooks"
-    ],
-    "updatedAt": "2026-01-30",
-    "seo": {
-      "title": "What is React.StrictMode used for?",
-      "description": "React.StrictMode enables extra development checks to surface unsafe patterns and side effects before production."
-    },
-    "incidentCard": {
-      "title": "StrictMode Dev Signal Root Cause Check",
-      "scenario": "In development, an analytics effect sends two pageview requests on first mount, but production sends one. A teammate says StrictMode is broken and should be removed. What is the most likely root cause?",
-      "options": [
-        {
-          "id": "jsx-double-render-network",
-          "label": "JSX elements trigger duplicate network calls whenever React renders fragments."
-        },
-        {
-          "id": "non-idempotent-effect",
-          "label": "The effect is not idempotent or lacks proper cleanup/guarding, and StrictMode is intentionally exposing that in development."
-        },
-        {
-          "id": "strictmode-prod-duplicate",
-          "label": "StrictMode duplicates production effects by design, so removing it is the only correct fix."
-        }
-      ],
-      "correctOptionId": "non-idempotent-effect",
-      "rereadPrompt": "Close. Re-read the StrictMode section: double invocation is a dev-only safety check, and effects should be resilient to reruns."
-    }
-  },
-  {
-    "id": "react-reconciliation",
-    "title": "What is React reconciliation and how does it work?",
-    "technology": "react",
-    "difficulty": "intermediate",
-    "importance": 4,
-    "description": "Reconciliation is React’s identity model for deciding whether a subtree keeps state or remounts. The high-value interview explanation is about preserve-vs-replace behavior when element types or keys change.",
-    "answer": {
-      "blocks": [
-        {
-          "type": "text",
-          "text": "<strong>Overview</strong><br><br>Reconciliation is React’s decision process for component identity: should this subtree be preserved, updated in place, or remounted? That distinction matters in interview and production bugs because changing an element type or unstable key can reset local state even when the UI looks almost the same. Diffing is one implementation detail inside that bigger preserve-vs-replace decision."
-        },
-        {
-          "type": "list",
-          "columns": [
-            "Step",
-            "Description"
-          ],
-          "rows": [
-            [
-              "Render Phase",
-              "React creates a new Virtual DOM representation of the UI based on the latest component state and props."
-            ],
-            [
-              "Diffing Phase",
-              "React compares the new Virtual DOM with the old one to detect what has changed."
-            ],
-            [
-              "Commit Phase",
-              "React updates only the changed elements in the real DOM, leaving the rest untouched."
-            ]
-          ],
-          "caption": "Main phases of React’s reconciliation process"
-        },
-        {
-          "type": "code",
-          "language": "jsx",
-          "code": "// Example: Reconciliation in action\nfunction Counter() {\n  const [count, setCount] = useState(0);\n\n  return (\n    <div>\n      <h2>Count: {count}</h2>\n      <button onClick={() => setCount(count + 1)}>Increment</button>\n    </div>\n  );\n}\n\n// Only <h2> changes when count updates; React reuses <div> and <button>."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Why It Matters</strong><br>Direct manipulation of the DOM is expensive. React’s reconciliation process ensures that only necessary updates happen, minimizing reflows and improving performance. This approach makes React declarative — you describe the UI, and React efficiently figures out how to update it."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Rules of Reconciliation</strong><br><ul><li>Elements of the same type are compared recursively.</li><li>If an element type changes (e.g., <code>&lt;div&gt;</code> → <code>&lt;span&gt;</code>), React destroys and rebuilds that node.</li><li>Keys help React identify elements across renders, especially in lists, ensuring stable updates instead of re-creating entire subtrees.</li></ul>"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Reconciliation and Keys</strong><br><ul><li>Keys allow React to match old and new elements efficiently.</li><li>When keys are missing or inconsistent, React may re-render entire lists instead of updating only changed items.</li><li>Stable, unique keys (like IDs) help React maintain state between renders.</li></ul>"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Example</strong><br>If you render a list and change one item’s position, React uses the <code>key</code> attribute to identify which element moved instead of destroying and re-creating all items."
-        },
-        {
-          "type": "code",
-          "language": "jsx",
-          "code": "{items.map(item => (\n  <li key={item.id}>{item.name}</li>\n))}"
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> Reconciliation is React’s secret engine — it ensures your UI stays fast by updating only what’s necessary, not everything that changed."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li>Reconciliation is React’s process for updating the DOM efficiently.</li><li>It compares old and new Virtual DOM trees using the diffing algorithm.</li><li>Only changed parts of the real DOM are updated, ensuring optimal performance.</li></ul>"
-        }
-      ]
-    },
-    "access": "free",
-    "type": "trivia",
-    "tags": [
-      "react",
-      "rendering",
-      "reconciliation",
-      "diffing",
-      "basics"
-    ],
-    "updatedAt": "2026-04-04",
-    "companies": [
-      "apple"
-    ],
-    "seo": {
-      "title": "React reconciliation: state preservation, remounts, and key-driven identity",
-      "description": "Understand how React decides to preserve or remount a subtree when element types or keys change, and why that shows up as form-reset and state-loss bugs in production."
-    },
-    "incidentCard": {
-      "title": "Reconciliation Reset Root Cause Check",
-      "scenario": "A checkout form keeps losing typed input when a layout toggle changes the wrapper from <section> to <div>. The child component and props stay the same. What is the most likely root cause?",
-      "options": [
-        {
-          "id": "reconciliation-skipped-on-toggle",
-          "label": "React skips reconciliation for layout toggles, so it fully rebuilds the tree on every toggle by default."
-        },
-        {
-          "id": "element-type-changed-remount",
-          "label": "Changing the parent element type makes React treat it as a different subtree, so children remount and local state resets."
-        },
-        {
-          "id": "props-always-reset-state",
-          "label": "Any prop update automatically clears child local state, even when component identity is stable."
-        }
-      ],
-      "correctOptionId": "element-type-changed-remount",
-      "rereadPrompt": "Close. Re-read the reconciliation rules about element type changes and when React preserves vs remounts state."
-    }
-  },
-  {
     "id": "react-diffing-algorithm",
-    "title": "Explain how React’s diffing algorithm determines which parts of the DOM to update.",
+    "title": "Why did React remount my component instead of updating it? Reconciliation, keys, and element type",
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 4,
-    "description": "React’s diffing algorithm uses O(n) heuristics based on element type and keys. The useful beyond-basics angle is understanding the under-the-hood assumptions, list-update pitfalls, and where those heuristics give the wrong intuition.",
+    "description": "Explain reconciliation through the remount bug: a changed element type, an unstable key, or a shifted position makes React discard a subtree and its state. Covers the Virtual DOM, the O(n) diffing heuristics, render vs commit, and the key mistakes behind form resets and wrong-row state.",
     "answer": {
       "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>The bug to explain</strong><br><br>A form resets while the user is typing, or a list row keeps the wrong state after a reorder. React did not update the component; it remounted it. Reconciliation decides, per position in the tree, whether the next element is the same identity as the previous one: same type and same key means update in place and keep state; a different type, a different key, or a shifted position without keys means unmount and mount fresh. The diffing heuristics below are the rules behind that decision, and bad keys are the most common way to trigger it by accident."
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "// Same position, different element type: React remounts the subtree\nfunction Panel({ compact }) {\n  return compact ? <section><Editor /></section> : <div><Editor /></div>;\n}\n// Toggling compact throws away Editor's local state.\n\n// Index keys pin state to the slot, not the item\n{items.map((item, index) => <Row key={index} item={item} />)} // row state sticks to the slot after a reorder\n{items.map((item) => <Row key={item.id} item={item} />)}      // row state follows the item"
+        },
         {
           "type": "text",
           "text": "<strong>Overview</strong><br><br>React’s diffing algorithm is the under-the-hood heuristic that makes reconciliation fast enough to use constantly. Instead of computing the perfect tree edit distance, React makes a few bets about element type and keys. Those bets are why list reordering with bad keys creates state bugs, and why the algorithm can feel surprising if you expect a full semantic understanding of your UI."
@@ -4102,6 +3503,75 @@
         },
         {
           "type": "text",
+          "text": "<strong>Preserve vs replace: the reconciliation decision</strong><br><br>Reconciliation is React’s decision process for component identity: should this subtree be preserved, updated in place, or remounted? Changing an element type or using an unstable key can reset local state even when the UI looks almost the same. Diffing is one implementation detail inside that bigger preserve-vs-replace decision."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Phase",
+            "What React does",
+            "Rules / why it matters"
+          ],
+          "rows": [
+            [
+              "Render phase",
+              "Runs components to compute the next UI tree",
+              "Should be pure (no subscriptions, network calls, DOM writes). React may re-run renders (especially in dev/StrictMode)."
+            ],
+            [
+              "Reconciliation",
+              "Matches old vs new elements (type + key + position) and decides what to keep, move, mount, unmount",
+              "Keys are crucial for stable identity in lists; changing element type at a position can cause remount/state loss."
+            ],
+            [
+              "Commit phase",
+              "Mutates the real DOM + runs effects/lifecycles",
+              "This is where DOM changes actually happen; effects run after commit."
+            ]
+          ],
+          "caption": "Virtual DOM is the input to reconciliation; reconciliation decides the DOM commit"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Virtual DOM: the input to reconciliation</strong><br><br>The Virtual DOM is React’s in-memory description of what the UI should look like after a render. React can re-run components, compare trees, and still commit zero DOM changes. That distinction explains why some “performance issues” are really JS/render work or key/identity mistakes, not raw DOM mutation cost."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Claim",
+            "Accurate?",
+            "Better wording / why it matters"
+          ],
+          "rows": [
+            [
+              "“VDOM is a copy of the real DOM.”",
+              "⚠️ half-true",
+              "It’s a JS representation of the UI (<code>type</code>, <code>props</code>, <code>children</code>). It models what the DOM <em>should</em> look like, not a full DOM clone."
+            ],
+            [
+              "“React updates the minimal set of DOM changes.”",
+              "⚠️ usually",
+              "React uses reconciliation heuristics. With stable keys/types, it’s very efficient, but it’s not a perfect minimal-edit solver."
+            ],
+            [
+              "“Re-render means the DOM changed.”",
+              "❌",
+              "Re-render means React re-ran components to compute a new UI tree. DOM mutations only happen in the commit phase if something actually differs."
+            ],
+            [
+              "“VDOM makes React fast.”",
+              "⚠️ incomplete",
+              "The win is: predictable re-rendering + efficient diffing + batching. Many perf issues are still JS work, reconciliation work, or browser layout/paint."
+            ]
+          ],
+          "caption": "Common Virtual DOM misconceptions (and the interview-correct framing)"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Rules of reconciliation</strong><br><ul><li>Elements of the same type are compared recursively.</li><li>If an element type changes (e.g., <code>&lt;div&gt;</code> → <code>&lt;span&gt;</code>), React destroys and rebuilds that node.</li><li>Keys give elements identity across renders, especially in lists, so React updates or moves items instead of re-creating subtrees.</li><li>Keys must be unique and stable (like database ids); index keys are only safe for static lists.</li></ul>"
+        },
+        {
+          "type": "text",
           "text": "<i class='fa-solid fa-lightbulb'></i> The diffing algorithm is React’s performance superpower — it ensures your UI updates surgically instead of rebuilding the whole DOM every time something changes."
         },
         {
@@ -4117,15 +3587,17 @@
       "rendering",
       "diffing",
       "performance",
-      "basics"
+      "basics",
+      "reconciliation",
+      "virtual-dom"
     ],
-    "updatedAt": "2026-10-09",
+    "updatedAt": "2026-10-12",
     "companies": [
       "apple"
     ],
     "seo": {
-      "title": "React Diffing Algorithm: Keys, Heuristics, and Pitfalls",
-      "description": "Learn the under-the-hood heuristics React uses for diffing, how element type and keys drive updates, and which list-update pitfalls lead to confusing state bugs."
+      "title": "Why React Remounts Instead of Updating: Keys and Type",
+      "description": "Explain reconciliation through the remount bug: changed element type, unstable keys, or position shifts make React discard state. Virtual DOM, diffing, commit."
     },
     "incidentCard": {
       "title": "Diffing Identity Root Cause Check",
@@ -4136,12 +3608,12 @@
           "label": "React intentionally randomizes list matching in diffing to improve performance on large arrays."
         },
         {
-          "id": "virtual-dom-loses-state",
-          "label": "Virtual DOM cannot preserve list item state, so all dynamic lists lose local state after inserts."
-        },
-        {
           "id": "index-key-identity-shift",
           "label": "Index keys shift when list order changes, so React matches the wrong previous items and state appears to move."
+        },
+        {
+          "id": "virtual-dom-loses-state",
+          "label": "Virtual DOM cannot preserve list item state, so all dynamic lists lose local state after inserts."
         }
       ],
       "correctOptionId": "index-key-identity-shift",
@@ -4258,13 +3730,21 @@
   },
   {
     "id": "react-portals",
-    "title": "What are React portals and when would you use them?",
+    "title": "Why do events from a portal still bubble to the parent? React portals",
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 4,
-    "description": "Portals render children into a DOM node outside the parent hierarchy, useful for modals, tooltips, and overlays while preserving React event bubbling. Portals help overlays but require focus management and accessibility checks; test event bubbling and scroll lock.",
+    "description": "Portals render children into another DOM node while keeping them in the React tree, so synthetic events bubble to React parents and context flows through. Explain why that is the feature for modals and tooltips, the trap for outside-click logic, and the focus and accessibility work portals still need.",
     "answer": {
       "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>The surprise to explain</strong><br><br>A modal rendered through a portal sits at <code>document.body</code>, yet a click inside it still runs the <code>onClick</code> on the React parent that rendered the modal. Portals change where the DOM nodes go, not where the component lives in the React tree, so synthetic events bubble through React ancestors and context flows down as usual. That is the feature for modals and tooltips, and the trap for outside-click handlers that assume DOM containment."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Quick answer</strong><br>Portals render children into a DOM node outside the parent hierarchy, useful for modals, tooltips, and overlays while preserving React event bubbling. Portals help overlays but require focus management and accessibility checks; test event bubbling and scroll lock."
+        },
         {
           "type": "text",
           "text": "<strong>Overview</strong><br><br>By default, components in React render into a specific section of the DOM tree — typically inside a root element. However, there are cases where you need to render an element outside of this hierarchy (like a modal that overlays the entire page). React Portals make this possible while preserving the component’s state and event bubbling behavior."
@@ -4336,10 +3816,10 @@
       "overlays",
       "dom"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-10-12",
     "seo": {
-      "title": "What are React portals and when should you use them?",
-      "description": "React portals render children into a different DOM node while keeping them in the same React tree for events and context."
+      "title": "Portal Events Still Bubble: React Portals Explained",
+      "description": "Portals render into another DOM node but stay in the React tree, so clicks bubble to React parents and context flows through. Modals, focus, and testing notes."
     },
     "incidentCard": {
       "title": "Portal Event Path Root Cause Check",
@@ -4742,13 +4222,21 @@
   },
   {
     "id": "react-useref-vs-usestate",
-    "title": "What’s the difference between useRef and useState? When should each be used?",
+    "title": "Why doesn't changing a ref re-render? useRef vs useState",
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 4,
-    "description": "Explain how useState triggers re-renders and is used for UI state, while useRef holds a mutable value that persists across renders without re-rendering — and when each is the correct tool (DOM refs, timers, previous values, avoiding stale closures, and render-driving state).",
+    "description": "Explain why a ref update never shows on screen: React does not watch .current, while setState schedules a render. Covers when state is the right tool (anything the UI shows), when refs are (DOM nodes, timers, latest values in stale closures), and the bug of storing render-driving data in a ref.",
     "answer": {
       "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>The bug to explain</strong><br><br><code>countRef.current += 1</code> runs, the number on screen never changes. Refs are mutable containers that React does not watch: changing <code>.current</code> schedules nothing. State is the opposite contract: <code>setCount</code> tells React to re-render. Use state for anything the UI shows and refs for values that must persist across renders without rendering, such as DOM nodes, timer ids, and the latest value inside a stale closure."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Quick answer</strong><br>Explain how useState triggers re-renders and is used for UI state, while useRef holds a mutable value that persists across renders without re-rendering — and when each is the correct tool (DOM refs, timers, previous values, avoiding stale closures, and render-driving state)."
+        },
         {
           "type": "text",
           "text": "<strong>Short answer</strong><br><br><code>useState</code> is for data that should <strong>drive what you render</strong> (changing it re-renders). <code>useRef</code> is for data you want to <strong>persist across renders</strong> but changing it should <strong>not</strong> trigger a re-render (a mutable container)."
@@ -4894,10 +4382,10 @@
       "state",
       "dom"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-10-12",
     "seo": {
-      "title": "useRef vs useState in React: what is the difference?",
-      "description": "useState stores reactive values that trigger re-renders, while useRef stores mutable values that persist across renders without re-rendering."
+      "title": "Why a Ref Change Doesn't Re-render: useRef vs useState",
+      "description": "useState re-renders on change, useRef persists a value silently. Learn why ref updates never show on screen, when that is the right tool, and the stale-closure fix."
     },
     "incidentCard": {
       "title": "Ref vs State Ownership Root Cause Check",
@@ -5415,13 +4903,21 @@
   },
   {
     "id": "react-error-boundaries-what-they-solve",
-    "title": "What problem do Error Boundaries solve? What don’t they catch?",
+    "title": "Why didn't my Error Boundary catch the error? Async, event handlers, and SSR",
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 4,
-    "description": "Explain Error Boundaries through render-crash isolation, fallback UI, monitoring, and the common production mistake of expecting them to catch event-handler, async, or SSR errors.",
+    "description": "Error Boundaries isolate render-time crashes only. Explain why errors in event handlers, async callbacks, server-side rendering, and the boundary itself slip past them, what to do for each case, and how fallback UI plus monitoring fit together.",
     "answer": {
       "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>The bug to explain</strong><br><br>The boundary is in place, the error still shows up as an unhandled rejection, and the UI stays broken. Error Boundaries catch errors thrown during rendering, in lifecycle methods, and in constructors of the subtree below them. They do not catch errors in event handlers, in <code>setTimeout</code> or Promise callbacks, during server-side rendering, or inside the boundary itself. The sections below cover what to do for each miss: try/catch in handlers, state for async failures, framework error routes for SSR."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Quick answer</strong><br>Explain Error Boundaries through render-crash isolation, fallback UI, monitoring, and the common production mistake of expecting them to catch event-handler, async, or SSR errors."
+        },
         {
           "type": "text",
           "text": "<strong>Production bug to isolate</strong><br><br>Error Boundaries exist to stop one crashing subtree from taking down the entire visible UI. The beyond-basics part is scope: they are great for render-time crashes and fallback UX, but a common production mistake is assuming they also catch event-handler failures, async errors, or SSR problems. They isolate the render tree, not every possible runtime exception."
@@ -5532,22 +5028,22 @@
       "components",
       "best-practices"
     ],
-    "updatedAt": "2026-10-09",
+    "updatedAt": "2026-10-12",
     "seo": {
-      "title": "React Error Boundaries: What They Catch and Do Not Catch",
-      "description": "Error Boundaries isolate render-time crashes, but a common production mistake is expecting them to catch event-handler, async, or SSR errors."
+      "title": "Why Error Boundaries Miss Async and Event Errors",
+      "description": "Error Boundaries isolate render crashes only. Learn why async code, event handlers, SSR, and the boundary's own errors slip past them, and what to do instead."
     },
     "incidentCard": {
       "title": "Error Boundary Coverage Root Cause Check",
       "scenario": "A teammate wraps a widget with an Error Boundary, but a crash thrown inside an onClick handler still breaks the interaction and no fallback UI appears. What is the most likely root cause?",
       "options": [
         {
-          "id": "event-handler-not-caught",
-          "label": "Error Boundaries catch render/lifecycle errors in descendants, not exceptions thrown inside event handlers."
-        },
-        {
           "id": "boundary-needs-suspense",
           "label": "Error Boundaries only work when nested inside Suspense, otherwise they ignore runtime errors."
+        },
+        {
+          "id": "event-handler-not-caught",
+          "label": "Error Boundaries catch render/lifecycle errors in descendants, not exceptions thrown inside event handlers."
         },
         {
           "id": "fallback-must-be-async",
@@ -5682,6 +5178,41 @@
         },
         {
           "type": "text",
+          "text": "<strong>What StrictMode is</strong><br><br><code>React.StrictMode</code> is a wrapper component that activates additional development checks. It renders no UI and does nothing in production builds. Besides the extra effect setup and cleanup cycle, it warns about unsafe legacy lifecycles (<code>componentWillMount</code>, <code>componentWillReceiveProps</code>), legacy string refs, <code>findDOMNode</code>, and legacy context, and it double-invokes render-phase functions to surface impure render logic."
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "import React from 'react';\nimport ReactDOM from 'react-dom/client';\nimport App from './App';\n\nReactDOM.createRoot(document.getElementById('root')).render(\n  <React.StrictMode>\n    <App />\n  </React.StrictMode>\n);"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Feature",
+            "Behavior"
+          ],
+          "rows": [
+            [
+              "Detects Unsafe Lifecycles",
+              "Warns when using outdated lifecycle methods like <code>componentWillMount</code> or <code>componentWillReceiveProps</code>."
+            ],
+            [
+              "Detects Side-Effect Issues",
+              "Runs certain functions twice (like useEffect callbacks) to ensure side effects are idempotent."
+            ],
+            [
+              "Highlights Deprecated APIs",
+              "Warns about legacy string refs, findDOMNode, and legacy context usage."
+            ],
+            [
+              "Identifies Unexpected Behavior",
+              "Detects potential issues in asynchronous rendering with React concurrent features."
+            ]
+          ],
+          "caption": "Key development checks enabled by React.StrictMode"
+        },
+        {
+          "type": "text",
           "text": "<strong>60-second interview framing</strong><br><br>Say it like this:<br><em>\"In development, React StrictMode can run an extra effect setup and cleanup cycle. That is why useEffect may appear to run twice. It is not a production duplicate; it is a diagnostic that exposes missing cleanup, unsafe subscriptions, stale requests, and side effects that should be idempotent or owned somewhere else.\"</em>"
         },
         {
@@ -5697,13 +5228,15 @@
       "effects",
       "strictmode",
       "hooks",
-      "best-practices"
+      "best-practices",
+      "devtools",
+      "warnings"
     ],
-    "updatedAt": "2026-06-29",
+    "updatedAt": "2026-10-12",
     "seo": {
-      "title": "Why StrictMode Re-runs useEffect: What Interviewers Expect",
-      "description": "Practice a natural React StrictMode answer: why effects re-run in dev, why event handlers stay single, and how cleanup prevents duplicate fetches.",
-      "h1": "Why StrictMode re-runs useEffect: what interviewers expect"
+      "title": "useEffect Runs Twice in StrictMode: Why and the Fix",
+      "description": "StrictMode runs one extra setup and cleanup cycle in development only. Fix duplicate fetches, listeners and analytics with cleanup and AbortController; the interview answer comes last.",
+      "h1": "useEffect runs twice in StrictMode: why, and the fix"
     },
     "interviewFocus": {
       "summary": "This React interview question tests whether you can explain the StrictMode signal without overreacting: dev-only effect re-runs, event handlers staying single, and cleanup preventing duplicate work.",
@@ -5736,16 +5269,24 @@
   },
   {
     "id": "react-useeffect-vs-uselayouteffect",
-    "title": "What’s the difference between useEffect and useLayoutEffect? When does it matter?",
+    "title": "Why does my UI flicker on first paint? useEffect vs useLayoutEffect",
     "technology": "react",
     "companies": [
       "bytedance"
     ],
     "difficulty": "intermediate",
     "importance": 4,
-    "description": "Explain the timing guarantees of useEffect and useLayoutEffect, why useLayoutEffect blocks repainting, and when layout work needs a pre-paint guarantee. Passive effects generally run after paint for non-interaction updates, but interaction-caused effects may run before paint.",
+    "description": "Explain the one-frame flicker: useEffect gives no pre-paint guarantee (it generally runs after paint for non-interaction updates), so a layout correction made there can be visible for a frame, while useLayoutEffect runs after DOM mutations and blocks paint until synchronous updates finish. Covers the timing guarantees, interaction-caused effects, and when each hook is right.",
     "answer": {
       "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>The flicker to explain</strong><br><br>A tooltip renders at the wrong spot for one frame, then jumps into place. The position was measured and corrected in <code>useEffect</code>, which generally runs after paint for non-interaction updates and gives no pre-paint guarantee, so users can see the uncorrected frame. <code>useLayoutEffect</code> runs after DOM mutations but before paint and blocks painting until its synchronous state updates finish, so the correction lands in the same frame. Use it only for layout reads and visible corrections; everything else belongs in <code>useEffect</code>."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Quick answer</strong><br>Explain the timing guarantees of useEffect and useLayoutEffect, why useLayoutEffect blocks repainting, and when layout work needs a pre-paint guarantee. Passive effects generally run after paint for non-interaction updates, but interaction-caused effects may run before paint."
+        },
         {
           "type": "text",
           "text": "<strong>Short answer</strong><br><br>Passive <code>useEffect</code> callbacks generally run after paint for non-interaction updates, but React may run an interaction-caused effect before paint. Unlike <code>useLayoutEffect</code>, <code>useEffect</code> does not provide a pre-paint guarantee. <code>useLayoutEffect</code> runs after DOM mutations and blocks repainting until its setup and synchronous state updates finish, which matters for layout measurement and visible corrections."
@@ -5872,10 +5413,10 @@
       "performance",
       "dom"
     ],
-    "updatedAt": "2026-07-14",
+    "updatedAt": "2026-10-12",
     "seo": {
-      "title": "useEffect vs useLayoutEffect: what is the difference?",
-      "description": "useLayoutEffect guarantees layout work before repaint; useEffect generally follows paint for non-interaction updates but may run before paint for interactions."
+      "title": "First-Paint Flicker: useEffect vs useLayoutEffect",
+      "description": "Explain the flicker: useEffect gives no pre-paint guarantee, useLayoutEffect blocks paint until layout reads and synchronous state updates finish. When each is right."
     },
     "incidentCard": {
       "title": "Layout Flicker Timing Root Cause Check",

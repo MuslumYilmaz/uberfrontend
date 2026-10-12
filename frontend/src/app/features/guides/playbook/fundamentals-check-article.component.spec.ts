@@ -180,7 +180,7 @@ describe('FundamentalsCheckArticle', () => {
     expect(linkTargets).toContain('/javascript/trivia/js-microtasks-vs-macrotasks');
     expect(linkTargets).toContain('/javascript/trivia/http-caching-basics');
     expect(linkTargets).toContain('/css/trivia/css-box-model');
-    expect(linkTargets).toContain('/css/trivia/css-specificity-hierarchy');
+    expect(linkTargets).toContain('/css/trivia/css-cascade-order');
     expect(linkTargets).toContain('/css/trivia/css-grid-vs-flexbox');
     expect(linkTargets).toContain('/html/trivia/html-dom');
     expect(linkTargets).toContain('/html/trivia/html-parsing-rendering');

@@ -698,8 +698,8 @@
   },
   {
     "id": "js-this-keyword",
-    "title": "Explain the `this` keyword in JavaScript",
-    "description": "The value of `this` is a call-site problem, not a definition-site feature. Strong answers show detached methods, callback context loss, module and class-field follow-ups, and when `bind()` or arrows are the right fix.",
+    "title": "Why is this undefined in my callback? Detached methods, arrows, and bind",
+    "description": "Debug the most common this failure: a method passed as a callback loses its receiver. Covers call-site rules, arrow functions, bind, class-field arrows, and the module-level undefined case, with the trade-off of each fix.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -718,6 +718,10 @@
     ],
     "answer": {
       "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>The bug to explain</strong><br><br><code>account.greet()</code> works, but <code>button.addEventListener('click', account.greet)</code> logs <code>Hi, undefined</code> or throws. The method did not change; the call site did. <code>this</code> is the receiver at call time, and a method passed as a callback is called with no receiver, so <code>this</code> is <code>undefined</code> in strict mode and in modules. The fixes are <code>bind</code>, an arrow wrapper, or a class-field arrow, each with a trade-off covered below."
+        },
         {
           "type": "text",
           "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nThe value of <code>this</code> is determined by <strong>how a function is called</strong>, not by where it is written. The most common production/debug failure is extracting a method, passing it to a browser or framework callback, and then discovering the receiver disappeared.\n\nSo the useful mental model is not 'owner of the function' but 'receiver at call time.'"
@@ -823,10 +827,10 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-04-10",
+    "updatedAt": "2026-10-12",
     "seo": {
-      "title": "JavaScript this: detached method bugs, bind fixes, and module follow-ups",
-      "description": "Learn this through real debugging cases: extracted methods, callback context loss, bind fixes, arrow trade-offs, and module-level edge cases."
+      "title": "Why this Is undefined in a Callback: bind and Arrows",
+      "description": "Debug lost this: a method passed as a callback loses its receiver. Call-site rules, arrow functions, bind, class fields, and the module-level undefined case."
     },
     "incidentCard": {
       "title": "this Binding Debug Check",
@@ -847,252 +851,6 @@
       ],
       "correctOptionId": "bind-method-to-owner",
       "rereadPrompt": "Close. Re-read call-site rules: when a method is detached, it loses its receiver, so `bind`/explicit invocation is needed."
-    }
-  },
-  {
-    "id": "js-hoisting-tdz",
-    "title": "Explain Hoisting and the Temporal Dead Zone (TDZ)",
-    "description": "TDZ is the debug reason let, const, and class throw before initialization even though they are hoisted. Strong answers separate TDZ from undeclared identifiers and show the startup bugs this creates in real modules.",
-    "type": "trivia",
-    "technology": "javascript",
-    "difficulty": "intermediate",
-    "tags": [
-      "hoisting",
-      "temporal-dead-zone",
-      "scope",
-      "variables"
-    ],
-    "importance": 5,
-    "companies": [],
-    "answer": {
-      "blocks": [
-        {
-          "type": "text",
-          "text": "<strong>Core idea</strong><br><br>JavaScript has a setup phase before running lines of code. In that phase, declarations are registered (hoisting), but <code>let</code>/<code>const</code> stay unavailable until execution reaches their initialization line. That blocked window is the <strong>Temporal Dead Zone (TDZ)</strong>, and it is the first thing to debug when you see <code>Cannot access X before initialization</code>."
-        },
-        {
-          "type": "list",
-          "columns": [
-            "Declaration",
-            "Before declaration read",
-            "Why"
-          ],
-          "rows": [
-            [
-              "<code>var a</code>",
-              "<code>undefined</code>",
-              "Hoisted and initialized with undefined."
-            ],
-            [
-              "<code>let b</code>",
-              "ReferenceError",
-              "Hoisted but uninitialized (TDZ)."
-            ],
-            [
-              "<code>const c</code>",
-              "ReferenceError",
-              "Same TDZ rule; also must be initialized at declaration."
-            ]
-          ],
-          "caption": "Behavior difference that causes most interview bugs."
-        },
-        {
-          "type": "code",
-          "language": "javascript",
-          "code": "console.log(a); // undefined\nvar a = 1;\n\nconsole.log(b); // ReferenceError\nlet b = 2;"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Function nuance</strong>"
-        },
-        {
-          "type": "code",
-          "language": "javascript",
-          "code": "sayHi(); // works\nfunction sayHi() { console.log('hi'); }\n\nsayBye(); // ReferenceError (TDZ, because const)\nconst sayBye = () => console.log('bye');"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Production bug to recognize</strong><br>A startup file reads <code>config</code> before the later <code>const config = ...</code> line executes, or a class is used before initialization. That is TDZ, not “JavaScript forgot to hoist.”"
-        },
-        {
-          "type": "code",
-          "language": "javascript",
-          "code": "{\n  // console.log(typeof featureFlag); // ReferenceError inside TDZ\n  const featureFlag = true;\n}\n\n// console.log(Service); // ReferenceError\nclass Service {}"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Important follow-up</strong><br><ul><li>Undeclared identifier: name lookup fails.</li><li>TDZ: name exists, but initialization has not happened yet.</li><li><code>typeof</code> is safe for undeclared globals, but not for TDZ variables.</li></ul>"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Debugging rule of thumb</strong><br>If you see <code>ReferenceError: Cannot access X before initialization</code>, think TDZ first, not typo first."
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Hoisting books a variable in advance. TDZ is the \"do not enter yet\" sign until execution reaches that line."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li>Hoisting happens before execution.</li><li><code>var</code> reads as undefined before assignment.</li><li><code>let</code>/<code>const</code> throw before declaration because of TDZ.</li><li>Function declarations are callable early; function expressions follow variable rules.</li></ul>"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Interview tip</strong><br>A high-signal answer is: \"All are hoisted, but initialization differs. TDZ is why let/const fail before declaration.\""
-        }
-      ]
-    },
-    "access": "free",
-    "updatedAt": "2026-04-08",
-    "seo": {
-      "title": "JavaScript TDZ and hoisting: Cannot access before initialization explained",
-      "description": "Learn how TDZ differs from undeclared variables, why typeof can still throw inside TDZ, and how to debug startup ordering bugs."
-    },
-    "incidentCard": {
-      "title": "TDZ Runtime Failure Check",
-      "scenario": "Your app crashes at startup with `ReferenceError: Cannot access 'config' before initialization` on a `let config` variable. A teammate says \"let is not hoisted, switch to var.\" What is the best fix?",
-      "options": [
-        {
-          "id": "disable-strict-mode",
-          "label": "Disable strict mode so TDZ errors are downgraded and pre-declaration reads become valid."
-        },
-        {
-          "id": "initialize-before-read",
-          "label": "Keep `let`/`const`, and reorder code so reads happen after declaration/initialization (or pass the value as an argument)."
-        },
-        {
-          "id": "replace-with-var",
-          "label": "Replace `let` with `var` everywhere so hoisting initializes variables to `undefined` and avoids runtime errors."
-        }
-      ],
-      "correctOptionId": "initialize-before-read",
-      "rereadPrompt": "Close. `let`/`const` are hoisted but uninitialized in TDZ; fix by changing execution order, not by downgrading declarations."
-    }
-  },
-  {
-    "id": "js-var-let-const-hoisting",
-    "title": "Explain the difference in hoisting between `var`, `let`, and `const`",
-    "description": "var, let, and const are all hoisted, but interviewers usually care about three axes at once: access-before-declaration behavior, scope boundaries, and redeclaration/reassignment rules. Strong answers connect those rules to loop bugs and accidental leakage.",
-    "type": "trivia",
-    "technology": "javascript",
-    "difficulty": "intermediate",
-    "tags": [
-      "hoisting",
-      "variables",
-      "let",
-      "const",
-      "scope"
-    ],
-    "importance": 5,
-    "companies": [
-      "google",
-      "apple"
-    ],
-    "answer": {
-      "blocks": [
-        {
-          "type": "text",
-          "text": "<strong>Comparison answer</strong><br><br>All three are hoisted. The real difference is what happens before declaration is reached. High-signal answers also mention scope boundaries and redeclaration rules, because that is where production bugs show up."
-        },
-        {
-          "type": "list",
-          "columns": [
-            "Keyword",
-            "Before declaration access",
-            "Scope",
-            "Redeclare same scope?",
-            "Reassign?"
-          ],
-          "rows": [
-            [
-              "<code>var</code>",
-              "<code>undefined</code>",
-              "Function/global",
-              "Yes",
-              "Yes"
-            ],
-            [
-              "<code>let</code>",
-              "ReferenceError (TDZ)",
-              "Block",
-              "No",
-              "Yes"
-            ],
-            [
-              "<code>const</code>",
-              "ReferenceError (TDZ)",
-              "Block",
-              "No",
-              "No"
-            ]
-          ],
-          "caption": "Cheat sheet interviewers expect you to know cold."
-        },
-        {
-          "type": "code",
-          "language": "javascript",
-          "code": "console.log(x); // undefined\nvar x = 10;\n\nconsole.log(y); // ReferenceError\nlet y = 10;\n\nconsole.log(z); // ReferenceError\nconst z = 10;"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Why this matters in production code</strong>"
-        },
-        {
-          "type": "text",
-          "text": "<ul><li><code>let</code>/<code>const</code> reduce accidental early-use bugs.</li><li>Block scope makes loops/conditionals safer.</li><li><code>const</code> communicates intent (binding should not change).</li></ul>"
-        },
-        {
-          "type": "code",
-          "language": "javascript",
-          "code": "for (let i = 0; i < 3; i++) {\n  setTimeout(() => console.log(i), 0);\n}\n// 0 1 2 (expected)\n\nfor (var j = 0; j < 3; j++) {\n  setTimeout(() => console.log(j), 0);\n}\n// 3 3 3 (common var trap)"
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br><code>var</code> gives you a key immediately (value may be empty). <code>let</code>/<code>const</code> reserve the room but keep it locked until you arrive at that line."
-        },
-        {
-          "type": "code",
-          "language": "javascript",
-          "code": "if (true) {\n  var leaked = 1;\n  let scoped = 2;\n}\n\nconsole.log(leaked); // 1\n// console.log(scoped); // ReferenceError"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Follow-up rule of thumb</strong><br><ul><li><code>var</code> is function-scoped and can leak outside blocks.</li><li><code>let</code>/<code>const</code> are block-scoped and stay in TDZ before initialization.</li><li><code>const</code> blocks rebinding, not internal object mutation.</li></ul>"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li>Hoisting is common to all three.</li><li>Initialization behavior is the key difference.</li><li>Modern default: <code>const</code> first, <code>let</code> when reassignment is needed, avoid <code>var</code> in new code.</li></ul>"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Interview-ready one-liner</strong><br>\"They are all hoisted, but only var is initialized early; let/const stay in TDZ and throw on access before declaration.\""
-        }
-      ]
-    },
-    "access": "free",
-    "updatedAt": "2026-04-08",
-    "seo": {
-      "title": "var vs let vs const hoisting: TDZ, scope, and real bug patterns",
-      "description": "Compare var, let, and const the way interviewers expect: hoisting, TDZ, scope, reassignment, and the classic loop-closure trap."
-    },
-    "incidentCard": {
-      "title": "var/let/const Hoisting Choice Check",
-      "scenario": "A teammate reads a variable before its declaration and says, \"Let's switch to var so it stops throwing.\" What is the best response?",
-      "options": [
-        {
-          "id": "use-var-everywhere",
-          "label": "Use `var` everywhere so pre-declaration access returns `undefined` instead of throwing."
-        },
-        {
-          "id": "try-catch-tdz",
-          "label": "Keep reading before declaration and wrap TDZ errors with `try/catch` to preserve current control flow."
-        },
-        {
-          "id": "const-first-let-when-needed",
-          "label": "Keep `const` by default and `let` when reassignment is needed, then reorder code so variables are declared before reads."
-        }
-      ],
-      "correctOptionId": "const-first-let-when-needed",
-      "rereadPrompt": "Close. All are hoisted, but `let`/`const` protect you with TDZ. The fix is declaration order, not downgrading to `var`."
     }
   },
   {
@@ -1250,8 +1008,8 @@
   },
   {
     "id": "js-promises-async-await",
-    "title": "Promises and async/await",
-    "description": "Promises and async/await use the same async model, but production decisions are really about concurrency, stale-request cancellation, request identity, and error boundaries rather than syntax alone.",
+    "title": "Why does my .then() get undefined? Promise chains, async/await, and callback hell",
+    "description": "Trace a Promise chain the way interviewers do: executor timing, microtask order, what each handler returns, why a missing return hands undefined to the next step, and how chains and async/await replace nested callbacks without solving cancellation on their own.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -1260,14 +1018,33 @@
       "concurrency",
       "error-handling",
       "microtasks",
-      "promise"
+      "promise",
+      "async",
+      "callbacks",
+      "event-loop",
+      "functions",
+      "higher-order-functions",
+      "refactoring"
     ],
     "importance": 5,
     "companies": [
-      "meta"
+      "meta",
+      "google",
+      "amazon",
+      "microsoft",
+      "uber"
     ],
     "answer": {
       "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>The bug to explain</strong><br><br>A chain renders <code>undefined</code> even though every request succeeded. The usual cause is one <code>.then()</code> handler that forgot to <code>return</code>: each <code>.then()</code> creates a fresh Promise, and that Promise resolves with whatever the handler returned, so a missing return hands <code>undefined</code> to the next step. The same rule explains why <code>async/await</code> reads like synchronous code: <code>await</code> unwraps exactly that returned value. Below: a worked trace, the chain rules, the callback-hell shape those rules replace, and the production pitfalls that syntax alone does not fix."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "console.log('sync start');\n\nPromise.resolve('u42')\n  .then((id) => {\n    console.log('then 1', id);\n    return { id, name: 'Ada' };\n  })\n  .then((user) => {\n    console.log('then 2', user.name);\n    return user.name; // remove this return and the next handler gets undefined\n  })\n  .finally(() => {\n    console.log('finally cleanup');\n  })\n  .then((name) => {\n    console.log('render', name);\n  });\n\nconsole.log('sync end');\n\n// Output:\n// sync start\n// sync end\n// then 1 u42\n// then 2 Ada\n// finally cleanup\n// render Ada"
+        },
         {
           "type": "text",
           "text": "<strong>Short version</strong><br><br>A Promise represents a future result. <code>async/await</code> is a cleaner way to <em>consume</em> Promises. Same engine behavior, different readability style, but the production pitfall is assuming <code>await</code> is always clearer when it may accidentally serialize independent work. A strong production answer usually shows both independent work started together and one stale-request guard, because syntax is not the hard part."
@@ -1350,71 +1127,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Promise is the contract for future data. <code>await</code> is just cleaner punctuation when reading that contract."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li>Promises and async/await are the same async model.</li><li>Use try/catch (or .catch) consistently.</li><li>Parallelize independent work with <code>Promise.all</code>.</li><li>Use cancellation for stale UI requests.</li></ul>"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Practical scenario</strong><br>Autocomplete requests fire on each keystroke. You debounce input, cancel stale requests, and only render the latest resolved result to avoid flicker and race bugs.<br><br><strong>Common pitfalls</strong><br><ul><li>Using <code>await</code> inside loops when calls are independent.</li><li>Forgetting terminal error handling.</li><li>Assuming Promise cancellation exists automatically.</li></ul>"
-        }
-      ]
-    },
-    "access": "free",
-    "updatedAt": "2026-04-10",
-    "seo": {
-      "title": "Promises vs async await: concurrency, stale-request control, and production pitfalls",
-      "description": "Learn when async and await improves readability, when Promise.all is clearer, and how cancellation plus request identity avoids stale UI bugs."
-    },
-    "incidentCard": {
-      "title": "Async Flow Performance Check",
-      "scenario": "A page loads user profile and notifications with two independent `await` calls in sequence, and users report slow loading. What is the best first fix?",
-      "options": [
-        {
-          "id": "delay-second-call",
-          "label": "Add a short `setTimeout` before the second request so each Promise has time to settle cleanly."
-        },
-        {
-          "id": "parallelize-independent-awaits",
-          "label": "Start both independent requests together and await them with `Promise.all`, keeping centralized error handling."
-        },
-        {
-          "id": "keep-sequential-awaits",
-          "label": "Keep sequential `await` calls because `await` automatically runs network work in parallel under the hood."
-        }
-      ],
-      "correctOptionId": "parallelize-independent-awaits",
-      "rereadPrompt": "Close. `await` pauses the current async function; independent operations should be started together and combined with `Promise.all`."
-    }
-  },
-  {
-    "id": "js-promise-fundamental-understanding",
-    "title": "Promise - Fundamental Understanding",
-    "description": "Promise fundamentals are under-the-hood mechanics: executor timing, single settlement, chain propagation, and microtask ordering. Strong answers also explain UI-order debugging, missing-return bugs, and why settlement is not the same as a callback already running.",
-    "type": "trivia",
-    "technology": "javascript",
-    "difficulty": "intermediate",
-    "tags": [
-      "promise",
-      "asynchronous-javascript",
-      "microtasks",
-      "error-handling",
-      "interview-question"
-    ],
-    "importance": 5,
-    "companies": [
-      "google",
-      "meta",
-      "amazon",
-      "microsoft"
-    ],
-    "answer": {
-      "blocks": [
-        {
-          "type": "text",
-          "text": "<strong>Core mental model</strong><br><br>A Promise is a one-way state machine: <code>pending -> fulfilled</code> or <code>pending -> rejected</code>. The useful part is understanding it <strong>under the hood</strong>: the executor runs immediately, callbacks wait as microtasks, and tiny mistakes like a missing <code>return</code> can change what the UI renders later."
+          "text": "<strong>Promise mechanics under the hood</strong><br><br>A Promise is a one-way state machine: <code>pending -> fulfilled</code> or <code>pending -> rejected</code>. The executor runs immediately, callbacks wait as microtasks, and the Promise settles once."
         },
         {
           "type": "list",
@@ -1457,15 +1170,6 @@
           "code": "Promise.resolve(10)\n  .then(v => v + 1)                  // next gets 11\n  .then(v => Promise.resolve(v * 2)) // waits, next gets 22\n  .then(() => { throw new Error('boom'); })\n  .catch(err => {\n    console.log(err.message); // boom\n    return 7;                 // recovery value\n  })\n  .then(v => console.log(v)); // 7"
         },
         {
-          "type": "text",
-          "text": "<strong>Worked debug example</strong><br><br>This is the kind of production bug interviewers care about: the Promise is already settled, but the render callback still waits in the microtask queue, and one missing <code>return</code> silently turns the next value into <code>undefined</code>."
-        },
-        {
-          "type": "code",
-          "language": "javascript",
-          "code": "console.log('sync start');\n\nPromise.resolve('u42')\n  .then((id) => {\n    console.log('then 1', id);\n    return { id, name: 'Ada' };\n  })\n  .then((user) => {\n    console.log('then 2', user.name);\n    return user.name; // remove this return and the next handler gets undefined\n  })\n  .finally(() => {\n    console.log('finally cleanup');\n  })\n  .then((name) => {\n    console.log('render', name);\n  });\n\nconsole.log('sync end');\n\n// Output:\n// sync start\n// sync end\n// then 1 u42\n// then 2 Ada\n// finally cleanup\n// render Ada"
-        },
-        {
           "type": "list",
           "columns": [
             "If handler returns...",
@@ -1493,43 +1197,136 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>A Promise chain is like a relay race: each runner must pass the baton (return). If one runner drops it, the next runner gets nothing."
+          "text": "<strong>Where callbacks fit, and where callback hell starts</strong><br><br>A callback is a function you hand to another API so it can decide when to call you. That is still the right model for repeated notifications such as DOM events, observers, and WebSocket messages, because there is no single final value to resolve. It becomes <strong>callback hell</strong> when one async step owns the next async step and every branch repeats error handling: sequencing becomes implicit, failures get duplicated, and control flow is hard to debug."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "getUser(userId, (err, user) => {\n  if (err) return handleError(err);\n\n  getOrders(user.id, (err, orders) => {\n    if (err) return handleError(err);\n\n    getRecommendations(orders, (err, recs) => {\n      if (err) return handleError(err);\n\n      renderDashboard(user, orders, recs);\n    });\n  });\n});"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Problem in callback hell",
+            "Why it hurts",
+            "Promise-based fix"
+          ],
+          "rows": [
+            [
+              "Pyramid-shaped nesting",
+              "Low readability, hard reviews",
+              "Flat <code>.then()</code> chain or <code>async/await</code>"
+            ],
+            [
+              "Repeated error checks",
+              "Missed error branches, inconsistent behavior",
+              "Single terminal <code>.catch()</code>"
+            ],
+            [
+              "Hard composition",
+              "Sequential/parallel logic becomes messy",
+              "<code>Promise.all</code>, <code>race</code>, <code>allSettled</code>"
+            ],
+            [
+              "Hidden control flow",
+              "Difficult debugging and testing",
+              "Deterministic chain with explicit returns"
+            ]
+          ],
+          "caption": "Promises reduce structural complexity and improve error flow."
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li>Executor is synchronous; handlers are microtasks.</li><li>Promise settles once.</li><li>Each chain step returns a new Promise.</li><li><code>finally()</code> is cleanup, not a value-transform shortcut.</li></ul>"
+          "text": "<strong>After: one chain, one error boundary</strong><br>Each step returns a Promise. Data flows forward, and one <code>.catch()</code> handles failures."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "getUserP(userId)\n  .then((user) =>\n    getOrdersP(user.id).then((orders) => ({ user, orders }))\n  )\n  .then(({ user, orders }) =>\n    getRecommendationsP(orders).then((recs) => ({ user, orders, recs }))\n  )\n  .then(({ user, orders, recs }) => {\n    renderDashboard(user, orders, recs);\n  })\n  .catch((err) => {\n    logError(err);\n    showFallbackUI();\n  });"
         },
         {
           "type": "text",
-          "text": "<strong>Practical scenario</strong><br>A checkout screen shows a spinner, then loads profile -> shipping -> payment intent. If one <code>.then()</code> forgets to return parsed data, the next render step gets <code>undefined</code> even though the Promise already settled correctly.<br><br><strong>Common pitfalls</strong><br><ul><li>Missing return in <code>.then()</code> handlers.</li><li>Assuming a fulfilled Promise means the UI callback already ran.</li><li>Using broad <code>catch</code> blocks that hide the original failure path.</li></ul>"
+          "text": "<strong>Converting callback APIs safely</strong><br><br>Wrap error-first callback APIs once in a small promisify helper and reuse the wrapper, so callback-style code stays at the boundary and the rest of the flow moves into chains."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "function promisify1(fn) {\n  return (...args) =>\n    new Promise((resolve, reject) => {\n      fn(...args, (err, value) => {\n        if (err) reject(err);\n        else resolve(value);\n      });\n    });\n}\n\nconst readFileP = promisify1(readFile);"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Common migration mistakes</strong><br><ul><li>Wrapping everything in Promises but still nesting deeply.</li><li>Forgetting to <code>return</code> inside <code>.then()</code> (breaks the chain).</li><li>Mixing callback and Promise style in the same function without clear boundaries.</li><li>Catching errors too early and swallowing diagnostic context.</li><li>Assuming Promises solve cancellation automatically.</li></ul>"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "saveDraftP(data)\n  .then((result) => {\n    auditP(result.id); // missing return -> chain no longer waits for audit\n  })\n  .then(() => showSuccess())\n  .catch(reportError);"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Pattern",
+            "What it means",
+            "Why it matters"
+          ],
+          "rows": [
+            [
+              "Event callback",
+              "Runs every time the source emits a new event.",
+              "Great for DOM events, observers, and repeated notifications."
+            ],
+            [
+              "Error-first callback",
+              "First argument represents failure, second carries data.",
+              "Common in legacy Node-style APIs and old libraries."
+            ],
+            [
+              "Callback hell",
+              "Nested callbacks own each next step.",
+              "Makes sequencing, cancellation, and testing harder."
+            ]
+          ],
+          "caption": "The callback concept is simple; the control-flow shape is where bugs start."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Promise is the contract for future data. <code>await</code> is just cleaner punctuation when reading that contract."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Summary</strong><br><ul><li>Promises and async/await are the same async model.</li><li>Use try/catch (or .catch) consistently.</li><li>Parallelize independent work with <code>Promise.all</code>.</li><li>Use cancellation for stale UI requests.</li></ul>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>Autocomplete requests fire on each keystroke. You debounce input, cancel stale requests, and only render the latest resolved result to avoid flicker and race bugs.<br><br><strong>Common pitfalls</strong><br><ul><li>Using <code>await</code> inside loops when calls are independent.</li><li>Forgetting terminal error handling.</li><li>Assuming Promise cancellation exists automatically.</li></ul>"
         }
       ]
     },
     "access": "free",
-    "updatedAt": "2026-04-10",
+    "updatedAt": "2026-10-12",
     "seo": {
-      "title": "JavaScript Promises under the hood: timing, missing returns, and finally",
-      "description": "Understand Promise internals: executor timing, microtask order, missing-return bugs, chain propagation, and what finally really does."
+      "title": "Why .then() Gets undefined: Promise Chains Explained",
+      "description": "Trace Promise chain order, missing returns, finally, and microtask timing; see why callback hell happens, how chains and async/await fix it, and the cancellation limit."
     },
     "incidentCard": {
-      "title": "Promise Chain Propagation Check",
-      "scenario": "In production, a `.then()` callback parses JSON but forgets to `return` it. The next `.then()` receives `undefined`, and errors skip your intended branch. What is the best fix?",
+      "title": "Async Flow Performance Check",
+      "scenario": "A page loads user profile and notifications with two independent `await` calls in sequence, and users report slow loading. What is the best first fix?",
       "options": [
         {
-          "id": "return-or-throw-explicitly",
-          "label": "Always `return` values/Promises from `.then()` handlers and `throw` errors you want to propagate so the chain stays deterministic."
+          "id": "delay-second-call",
+          "label": "Add a short `setTimeout` before the second request so each Promise has time to settle cleanly."
         },
         {
-          "id": "add-timeout-between-thens",
-          "label": "Insert `setTimeout` between chain links so each `.then()` gets time to resolve the previous value."
+          "id": "parallelize-independent-awaits",
+          "label": "Start both independent requests together and await them with `Promise.all`, keeping centralized error handling."
         },
         {
-          "id": "duplicate-catch-each-step",
-          "label": "Add a separate `.catch()` after every `.then()` and ignore returns, because catches will reconstruct the missing chain values."
+          "id": "keep-sequential-awaits",
+          "label": "Keep sequential `await` calls because `await` automatically runs network work in parallel under the hood."
         }
       ],
-      "correctOptionId": "return-or-throw-explicitly",
-      "rereadPrompt": "Close. Promise chains depend on explicit `return`/`throw`; missing returns often produce `undefined` and broken propagation."
+      "correctOptionId": "parallelize-independent-awaits",
+      "rereadPrompt": "Close. `await` pauses the current async function; independent operations should be started together and combined with `Promise.all`."
     }
   },
   {
@@ -1690,8 +1487,8 @@
   },
   {
     "id": "js-event-delegation",
-    "title": "Explain Event Delegation in JavaScript",
-    "description": "Event delegation uses one ancestor listener instead of many child listeners. The production value is handling dynamic DOM, nested targets, stopPropagation surprises, and list performance without attaching handlers everywhere.",
+    "title": "Why does my click handler fire twice? Bubbling, capturing, and event delegation",
+    "description": "Debug nested click handlers the way interviewers probe them: the capture, target, and bubble phases, event.target vs event.currentTarget, why stopPropagation hides the real bug, and how one delegated listener with closest() handles dynamic lists safely.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -1699,15 +1496,79 @@
       "event-delegation",
       "dom",
       "events",
-      "bubbling"
+      "bubbling",
+      "capturing",
+      "event-propagation"
     ],
     "importance": 5,
     "companies": [
       "bytedance",
-      "meta"
+      "meta",
+      "google"
     ],
     "answer": {
       "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>The bug to explain</strong><br><br>A save button inside a modal panel inside a backdrop: one click, three handlers run. Nothing is duplicated. The event travels a three-phase path, capture -> target -> bubble, and every ancestor with a listener for that phase gets its turn. That same propagation is what makes <strong>event delegation</strong> possible: one listener on a stable ancestor handles every child, including children added later. The interviewer wants both halves: why the parent fires, and how to read the real target without reaching for <code>stopPropagation()</code> first."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Phase",
+            "Direction",
+            "Triggered On",
+            "Listener Option"
+          ],
+          "rows": [
+            [
+              "Capturing",
+              "Top → Down",
+              "From document to target",
+              "<code>addEventListener('click', handler, true)</code>"
+            ],
+            [
+              "Target",
+              "—",
+              "Actual element clicked",
+              "Event fires directly on target"
+            ],
+            [
+              "Bubbling",
+              "Bottom → Up",
+              "From target to document",
+              "<code>addEventListener('click', handler)</code> (default)"
+            ]
+          ],
+          "caption": "The three phases of DOM event propagation."
+        },
+        {
+          "type": "code",
+          "language": "html",
+          "code": "<div id='backdrop'>\n  <div id='panel'>\n    <button id='save'>Save</button>\n  </div>\n</div>"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "backdrop.addEventListener('click', (event) => {\n  console.log('backdrop', {\n    target: event.target.id,\n    currentTarget: event.currentTarget.id\n  });\n});\n\npanel.addEventListener('click', (event) => {\n  console.log('panel', {\n    target: event.target.id,\n    currentTarget: event.currentTarget.id\n  });\n});\n\nsave.addEventListener('click', (event) => {\n  console.log('button', {\n    target: event.target.id,\n    currentTarget: event.currentTarget.id\n  });\n});"
+        },
+        {
+          "type": "text",
+          "text": "Output when you click the save button:\n<pre class='md-pre'><code>button { target: 'save', currentTarget: 'save' }\npanel { target: 'save', currentTarget: 'panel' }\nbackdrop { target: 'save', currentTarget: 'backdrop' }</code></pre>\n\nThis is the first follow-up most people miss: <code>event.target</code> is the deepest clicked node, while <code>event.currentTarget</code> is whichever listener is currently running."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-wave-square'></i> <strong>Single trace: capture -> target -> bubble</strong>\n\nA combined trace is often the fastest way to debug whether the wrong handler is firing or the right handler is firing in the wrong phase."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "function trace(label) {\n  return (event) => {\n    console.log(label, {\n      target: event.target.id,\n      currentTarget: event.currentTarget.id\n    });\n  };\n}\n\nshell.addEventListener('click', trace('shell capture'), true);\nmenu.addEventListener('click', trace('menu capture'), true);\nitem.addEventListener('click', trace('item target'));\nmenu.addEventListener('click', trace('menu bubble'));\nshell.addEventListener('click', trace('shell bubble'));"
+        },
+        {
+          "type": "text",
+          "text": "Expected order for a click on <code>item</code>:\n<pre class='md-pre'><code>shell capture -> menu capture -> item target -> menu bubble -> shell bubble</code></pre>\n\nThis makes phase order visible and shows why <code>target</code> stays the same while <code>currentTarget</code> changes as the event moves."
+        },
         {
           "type": "text",
           "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\n<strong>Event delegation</strong> lets you attach <strong>one event listener</strong> to a common ancestor instead of wiring every child separately. The production/debug value is not just fewer listeners. It is surviving dynamic DOM updates, nested click targets, and propagation edge cases without silently handling the wrong element."
@@ -1785,6 +1646,19 @@
         },
         {
           "type": "text",
+          "text": "<strong>Likely follow-up confusion</strong><br><ul><li><code>event.target</code> answers 'what was actually clicked?'</li><li><code>event.currentTarget</code> answers 'which listener is running right now?'</li><li>Capture is opt-in; bubbling is default.</li><li>Use <code>stopPropagation()</code> narrowly, because it can break delegation, analytics, and outside-click handlers higher in the tree.</li><li>If a component uses shadow DOM, <code>composedPath()</code> can reveal the full path more accurately than guessing from one node.</li></ul>"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-bug'></i> <strong>Stopping propagation</strong>\n\nYou can stop the event from moving further in either direction using:\n- <code>event.stopPropagation()</code> -> stops it from continuing up or down.\n- <code>event.stopImmediatePropagation()</code> -> also prevents other handlers on the same element from firing.\n\nUse it as a targeted fix, not as a blanket answer to every propagation bug."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "document.getElementById('save').addEventListener('click', (event) => {\n  event.stopPropagation();\n  console.log('Only the save button handles this.');\n});"
+        },
+        {
+          "type": "text",
           "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nImagine a restaurant. Instead of each waiter (child) taking orders, there’s one manager (parent) who hears all requests and decides who called — that’s **event delegation**!"
         },
         {
@@ -1794,10 +1668,10 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-04-08",
+    "updatedAt": "2026-10-12",
     "seo": {
-      "title": "JavaScript Event Delegation: dynamic DOM, closest(), and debug traps",
-      "description": "Learn delegation beyond bubbling basics: fewer listeners, better list performance, and the common pitfall of reading event.target too literally."
+      "title": "Click Handler Fires Twice: Bubbling and Delegation",
+      "description": "Debug nested click handlers: capture, target, bubble order, target vs currentTarget, stopPropagation side effects, and delegation with closest() for dynamic lists."
     },
     "incidentCard": {
       "title": "Delegation Targeting Check",
@@ -3130,8 +3004,8 @@
   },
   {
     "id": "js-hoisting",
-    "title": "Explain 'hoisting' in JavaScript",
-    "description": "Hoisting is JavaScript declaration processing before execution. The practical debug value is mapping symptoms: `undefined` reads, early callable function declarations, and ReferenceError or TypeError when the wrong construct is used.",
+    "title": "Why does var log undefined while let throws? Hoisting and the TDZ",
+    "description": "Debug the three hoisting symptoms interviewers probe: var reads as undefined, let and const throw a ReferenceError inside the temporal dead zone, and function declarations run before their line. Covers scope boundaries, redeclaration rules, and the loop-closure trap.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -3139,15 +3013,28 @@
       "hoisting",
       "scope",
       "variables",
-      "functions"
+      "functions",
+      "temporal-dead-zone",
+      "let",
+      "const"
     ],
     "importance": 5,
     "companies": [
       "google",
-      "meta"
+      "meta",
+      "apple"
     ],
     "answer": {
       "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>The bug to explain</strong><br><br>Two reads above the declaration line, two different results: <code>console.log(a)</code> logs <code>undefined</code> when <code>a</code> is a <code>var</code>, but throws <code>ReferenceError: Cannot access 'b' before initialization</code> when <code>b</code> is a <code>let</code>. Both bindings were hoisted. The difference is initialization: <code>var</code> is initialized to <code>undefined</code> during setup, while <code>let</code>, <code>const</code>, and <code>class</code> stay in the temporal dead zone (TDZ) until execution reaches their line. Function declarations are the third case: fully initialized early, so calling one above its line works."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "console.log(a); // undefined\nvar a = 1;\n\nconsole.log(b); // ReferenceError: Cannot access 'b' before initialization\nlet b = 2;\n\nsayHi(); // works\nfunction sayHi() { console.log('hi'); }\n\nsayBye(); // ReferenceError (TDZ, because const)\nconst sayBye = () => console.log('bye');"
+        },
         {
           "type": "text",
           "text": "<strong>Big-picture definition</strong><br><br>Hoisting is not code movement. It is how the engine prepares scope before running the script, registering declarations first. That under-the-hood setup explains several debug traps: <code>var</code> reads as <code>undefined</code>, function declarations work early, and function expressions or classes fail for different reasons."
@@ -3223,6 +3110,67 @@
         },
         {
           "type": "text",
+          "text": "<strong>var vs let vs const: the comparison interviewers expect</strong><br><br>All three are hoisted. The real difference is what happens before the declaration is reached, plus scope boundaries and redeclaration rules, because that is where production bugs show up."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Keyword",
+            "Before declaration access",
+            "Scope",
+            "Redeclare same scope?",
+            "Reassign?"
+          ],
+          "rows": [
+            [
+              "<code>var</code>",
+              "<code>undefined</code>",
+              "Function/global",
+              "Yes",
+              "Yes"
+            ],
+            [
+              "<code>let</code>",
+              "ReferenceError (TDZ)",
+              "Block",
+              "No",
+              "Yes"
+            ],
+            [
+              "<code>const</code>",
+              "ReferenceError (TDZ)",
+              "Block",
+              "No",
+              "No"
+            ]
+          ],
+          "caption": "Cheat sheet interviewers expect you to know cold."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "for (let i = 0; i < 3; i++) {\n  setTimeout(() => console.log(i), 0);\n}\n// 0 1 2 (expected)\n\nfor (var j = 0; j < 3; j++) {\n  setTimeout(() => console.log(j), 0);\n}\n// 3 3 3 (common var trap)"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "if (true) {\n  var leaked = 1;\n  let scoped = 2;\n}\n\nconsole.log(leaked); // 1\n// console.log(scoped); // ReferenceError"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Undeclared vs TDZ</strong><br><ul><li>Undeclared identifier: name lookup fails.</li><li>TDZ: name exists, but initialization has not happened yet.</li><li><code>typeof</code> is safe for undeclared globals, but not for TDZ variables.</li></ul><br><strong>Production bug to recognize</strong><br>A startup file reads <code>config</code> before the later <code>const config = ...</code> line executes, or a class is used before initialization. That is TDZ, not “JavaScript forgot to hoist.” If you see <code>ReferenceError: Cannot access X before initialization</code>, think TDZ first, not typo first."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "{\n  // console.log(typeof featureFlag); // ReferenceError inside TDZ\n  const featureFlag = true;\n}\n\n// console.log(Service); // ReferenceError\nclass Service {}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Follow-up rule of thumb</strong><br><ul><li><code>var</code> is function-scoped and can leak outside blocks.</li><li><code>let</code>/<code>const</code> are block-scoped and stay in TDZ before initialization.</li><li><code>const</code> blocks rebinding, not internal object mutation.</li><li>Modern default: <code>const</code> first, <code>let</code> when reassignment is needed, avoid <code>var</code> in new code.</li></ul>"
+        },
+        {
+          "type": "text",
           "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Before the show starts, the stage crew places props (declarations). Some props are usable immediately, others are covered until the right scene (execution line)."
         },
         {
@@ -3236,10 +3184,10 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-10-09",
+    "updatedAt": "2026-10-12",
     "seo": {
-      "title": "JavaScript Hoisting Explained: var, let, const, Functions",
-      "description": "Understand hoisting under the hood so you can debug why var reads as undefined, function declarations work early, and classes or expressions do not."
+      "title": "var undefined vs let ReferenceError: Hoisting and TDZ",
+      "description": "Debug why var reads as undefined, let and const throw before their line, and function declarations run early: hoisting, TDZ, scope, and the loop trap."
     },
     "incidentCard": {
       "title": "Hoisting Symptom Check",
@@ -3361,150 +3309,6 @@
       ],
       "correctOptionId": "functions-used-as-values",
       "rereadPrompt": "Close. A higher-order function does not need to do both things. Accepting a function or returning one is enough, because the key idea is that functions are being passed around as values."
-    }
-  },
-  {
-    "id": "js-event-bubbling-capturing",
-    "title": "What is event bubbling and capturing in JavaScript?",
-    "description": "Event bubbling and capturing matter most when nested buttons trigger parents, delegated menus read the wrong node, or stopPropagation hides the real bug. Strong answers explain phase order, target vs currentTarget, and when capture or composedPath are useful.",
-    "type": "trivia",
-    "technology": "javascript",
-    "difficulty": "intermediate",
-    "tags": [
-      "dom",
-      "events",
-      "bubbling",
-      "capturing",
-      "event-propagation"
-    ],
-    "importance": 5,
-    "companies": [
-      "google"
-    ],
-    "answer": {
-      "blocks": [
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nWhen an event (like a click) occurs in the DOM, it does not belong to only one element. It travels through a <strong>three-phase path</strong>: capture -> target -> bubble. The real production/debug value is understanding why a nested button can trigger its panel and backdrop, why delegated menus sometimes read the wrong node, and why blindly calling <code>stopPropagation()</code> often hides the wrong bug."
-        },
-        {
-          "type": "list",
-          "columns": [
-            "Phase",
-            "Direction",
-            "Triggered On",
-            "Listener Option"
-          ],
-          "rows": [
-            [
-              "Capturing",
-              "Top → Down",
-              "From document to target",
-              "<code>addEventListener('click', handler, true)</code>"
-            ],
-            [
-              "Target",
-              "—",
-              "Actual element clicked",
-              "Event fires directly on target"
-            ],
-            [
-              "Bubbling",
-              "Bottom → Up",
-              "From target to document",
-              "<code>addEventListener('click', handler)</code> (default)"
-            ]
-          ],
-          "caption": "The three phases of DOM event propagation."
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Example: bubbling in a modal</strong>\n\nA modal often contains a clickable panel inside a clickable backdrop. If you click a nested save button, the event still bubbles to the panel and then to the backdrop unless you handle it deliberately."
-        },
-        {
-          "type": "code",
-          "language": "html",
-          "code": "<div id='backdrop'>\n  <div id='panel'>\n    <button id='save'>Save</button>\n  </div>\n</div>"
-        },
-        {
-          "type": "code",
-          "language": "javascript",
-          "code": "backdrop.addEventListener('click', (event) => {\n  console.log('backdrop', {\n    target: event.target.id,\n    currentTarget: event.currentTarget.id\n  });\n});\n\npanel.addEventListener('click', (event) => {\n  console.log('panel', {\n    target: event.target.id,\n    currentTarget: event.currentTarget.id\n  });\n});\n\nsave.addEventListener('click', (event) => {\n  console.log('button', {\n    target: event.target.id,\n    currentTarget: event.currentTarget.id\n  });\n});"
-        },
-        {
-          "type": "text",
-          "text": "Output when you click the save button:\n<pre class='md-pre'><code>button { target: 'save', currentTarget: 'save' }\npanel { target: 'save', currentTarget: 'panel' }\nbackdrop { target: 'save', currentTarget: 'backdrop' }</code></pre>\n\nThis is the first follow-up most people miss: <code>event.target</code> is the deepest clicked node, while <code>event.currentTarget</code> is whichever listener is currently running."
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-wave-square'></i> <strong>Single trace: capture -> target -> bubble</strong>\n\nA combined trace is often the fastest way to debug whether the wrong handler is firing or the right handler is firing in the wrong phase."
-        },
-        {
-          "type": "code",
-          "language": "javascript",
-          "code": "function trace(label) {\n  return (event) => {\n    console.log(label, {\n      target: event.target.id,\n      currentTarget: event.currentTarget.id\n    });\n  };\n}\n\nshell.addEventListener('click', trace('shell capture'), true);\nmenu.addEventListener('click', trace('menu capture'), true);\nitem.addEventListener('click', trace('item target'));\nmenu.addEventListener('click', trace('menu bubble'));\nshell.addEventListener('click', trace('shell bubble'));"
-        },
-        {
-          "type": "text",
-          "text": "Expected order for a click on <code>item</code>:\n<pre class='md-pre'><code>shell capture -> menu capture -> item target -> menu bubble -> shell bubble</code></pre>\n\nThis makes phase order visible and shows why <code>target</code> stays the same while <code>currentTarget</code> changes as the event moves."
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-list'></i> <strong>Delegated menu/list example</strong>\n\nPropagation knowledge matters most when one ancestor listener handles many dynamic children."
-        },
-        {
-          "type": "code",
-          "language": "javascript",
-          "code": "menu.addEventListener('click', (event) => {\n  const actionButton = event.target.closest('[data-action]');\n  if (!actionButton || !menu.contains(actionButton)) return;\n\n  runAction(actionButton.dataset.action);\n});"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Likely follow-up confusion</strong><br><ul><li><code>event.target</code> answers 'what was actually clicked?'</li><li><code>event.currentTarget</code> answers 'which listener is running right now?'</li><li>Capture is opt-in; bubbling is default.</li><li>Use <code>stopPropagation()</code> narrowly, because it can break delegation, analytics, and outside-click handlers higher in the tree.</li><li>If a component uses shadow DOM, <code>composedPath()</code> can reveal the full path more accurately than guessing from one node.</li></ul>"
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-bug'></i> <strong>Stopping propagation</strong>\n\nYou can stop the event from moving further in either direction using:\n- <code>event.stopPropagation()</code> -> stops it from continuing up or down.\n- <code>event.stopImmediatePropagation()</code> -> also prevents other handlers on the same element from firing.\n\nUse it as a targeted fix, not as a blanket answer to every propagation bug."
-        },
-        {
-          "type": "code",
-          "language": "javascript",
-          "code": "document.getElementById('save').addEventListener('click', (event) => {\n  event.stopPropagation();\n  console.log('Only the save button handles this.');\n});"
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- The event path has three phases: capture -> target -> bubble.\n- Bubbling is the default in JavaScript.\n- <code>event.target</code> and <code>event.currentTarget</code> answer different questions.\n- This is core knowledge for event delegation, outside-click logic, and nested UI debugging."
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of event flow like a messenger walking through a building: down the halls to the room (capture), delivering the message in the room (target), then walking back out past the same checkpoints (bubble)."
-        }
-      ]
-    },
-    "access": "free",
-    "updatedAt": "2026-04-10",
-    "seo": {
-      "title": "JavaScript event bubbling vs capturing: delegated menus and debug flow",
-      "description": "Debug nested click handlers with confidence: bubbling, capture, target vs currentTarget, delegated menus, stopPropagation, and composedPath follow-ups."
-    },
-    "incidentCard": {
-      "title": "Event Propagation Check",
-      "scenario": "A modal contains a button inside a panel. Clicking the button logs the button handler first, then the panel handler, and finally closes the modal because the backdrop listener also runs. You want the button click handled without bubbling up and closing everything. What is the best explanation and fix?",
-      "options": [
-        {
-          "id": "remove-all-parent-listeners",
-          "label": "Parent handlers should never coexist with child handlers, so the right fix is to remove the panel and backdrop listeners entirely."
-        },
-        {
-          "id": "default-bubbling-stop-propagation",
-          "label": "The click is using the default bubbling phase, so it travels from the target outward. Handle the button click and call `event.stopPropagation()` when you need to prevent ancestor listeners from running."
-        },
-        {
-          "id": "capturing-is-default",
-          "label": "This happens because capturing is the default phase, so the event starts at the document and cannot be stopped once the target handler runs."
-        }
-      ],
-      "correctOptionId": "default-bubbling-stop-propagation",
-      "rereadPrompt": "Close. DOM clicks bubble by default after reaching the target. If ancestor handlers should not run for that interaction, stop propagation deliberately instead of assuming the event only belongs to one element."
     }
   },
   {
@@ -4285,154 +4089,9 @@
     }
   },
   {
-    "id": "js-data-types",
-    "title": "What are the various data types in JavaScript?",
-    "description": "JavaScript has eight main data types: seven primitives (string, number, bigint, boolean, undefined, symbol, null) and one non-primitive type (object). Understanding which values are primitive vs object helps with comparisons, copying, and mutation behavior. This affects state updates, copying, and performance; test typeof null and array detection.",
-    "type": "trivia",
-    "technology": "javascript",
-    "difficulty": "easy",
-    "tags": [
-      "data-types",
-      "basics",
-      "fundamentals",
-      "primitives",
-      "objects"
-    ],
-    "importance": 4,
-    "companies": [],
-    "answer": {
-      "blocks": [
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\\n\\nJavaScript values fall into two main categories:\\n- **Primitive types** — stored directly, immutable, and compared by value.\\n- **Non-primitive type** — objects, which are mutable and compared by reference.\\n\\nThere are **8 total data types** in JavaScript (as of ES2020)."
-        },
-        {
-          "type": "list",
-          "columns": [
-            "Category",
-            "Data Type",
-            "Description",
-            "Example"
-          ],
-          "rows": [
-            [
-              "Primitive",
-              "<strong>Number</strong>",
-              "Represents both integers and floating-point numbers.",
-              "<code>42</code>, <code>3.14</code>, <code>NaN</code>"
-            ],
-            [
-              "Primitive",
-              "<strong>String</strong>",
-              "Represents text data enclosed in quotes.",
-              "<code>'Hello'</code>, <code>\\\"World\\\"</code>, <code>`Hi`</code>"
-            ],
-            [
-              "Primitive",
-              "<strong>Boolean</strong>",
-              "Represents true/false values.",
-              "<code>true</code>, <code>false</code>"
-            ],
-            [
-              "Primitive",
-              "<strong>Undefined</strong>",
-              "A variable that has been declared but not assigned a value.",
-              "<code>let x; console.log(x); // undefined</code>"
-            ],
-            [
-              "Primitive",
-              "<strong>Null</strong>",
-              "An intentional empty value (represents 'nothing').",
-              "<code>let y = null;</code>"
-            ],
-            [
-              "Primitive",
-              "<strong>Symbol</strong>",
-              "A unique and immutable value often used as object keys.",
-              "<code>const id = Symbol('id');</code>"
-            ],
-            [
-              "Primitive",
-              "<strong>BigInt</strong>",
-              "Used for integers larger than <code>2^53 - 1</code>.",
-              "<code>12345678901234567890n</code>"
-            ],
-            [
-              "Non-Primitive",
-              "<strong>Object</strong>",
-              "Used to store collections of data and more complex entities.",
-              "<code>{ name: 'Alice', age: 25 }</code>"
-            ]
-          ],
-          "caption": "JavaScript data types at a glance."
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Primitives Are Immutable</strong>\\n\\nPrimitive values can’t be changed directly — any modification creates a new value instead.\\n\\n```javascript\\nlet str = 'Hi';\\nstr[0] = 'Y'; // ❌ has no effect\\nconsole.log(str); // 'Hi'\\n```"
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Objects Are Mutable</strong>\\n\\nObjects, arrays, and functions can be modified because they are stored by reference."
-        },
-        {
-          "type": "code",
-          "language": "javascript",
-          "code": "const user = { name: 'Alice' };\\nconst ref = user;\\nref.name = 'Bob';\\nconsole.log(user.name); // 'Bob' (same reference)"
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-bug'></i> <strong>Common Confusion</strong>\\n\\n<code>typeof null</code> returns <code>'object'</code> — this is a well-known JavaScript quirk kept for backward compatibility."
-        },
-        {
-          "type": "code",
-          "language": "javascript",
-          "code": "console.log(typeof null); // 'object'"
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- **Primitive types (7):** Number, String, Boolean, Undefined, Null, Symbol, BigInt.\n- **Non-primitive type (1):** Object.\n\nEverything else in JavaScript (arrays, functions, dates, regex, etc.) is an object."
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of primitives as single paper notes — once written, they can’t be changed. Objects are like folders — you can add, remove, or edit their contents anytime."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Practical scenario</strong><br>An API returns mixed values; you need to detect primitives vs objects before cloning or updating state.<br><br><strong>Common pitfalls</strong><br><ul><li>Assuming <code>typeof null</code> is \"object\" for valid checks.</li><li>Treating arrays as plain objects without <code>Array.isArray</code>.</li><li>Mutating objects when you meant to copy.</li></ul><strong>Trade-off or test tip</strong><br>Primitives are predictable, objects are flexible but mutable. Test <code>typeof</code>, <code>Array.isArray</code>, and reference equality.</strong>"
-        }
-      ]
-    },
-    "access": "free",
-    "updatedAt": "2026-01-30",
-    "seo": {
-      "title": "What are the data types in JavaScript?",
-      "description": "JavaScript has primitive types (string, number, bigint, boolean, undefined, symbol, null) and object types."
-    },
-    "incidentCard": {
-      "title": "Data Type Reality Check",
-      "scenario": "A teammate is debugging mixed API data and says, \"`typeof null` is `'object'`, arrays are objects too, so we can treat `null`, arrays, and plain objects the same. Also, if I copy an object into another variable and change it, that should not affect the original.\" What is the best correction?",
-      "options": [
-        {
-          "id": "primitives-vs-reference-types-matter",
-          "label": "`null` is a historical `typeof` quirk, arrays are objects, and assigning an object to another variable copies the reference, not the data. Primitive values behave differently because they are compared and copied by value."
-        },
-        {
-          "id": "typeof-object-means-same-behavior",
-          "label": "Anything reported as `'object'` behaves the same in JavaScript, so `null`, arrays, and plain objects can all be cloned, checked, and mutated with one generic rule."
-        },
-        {
-          "id": "objects-copy-by-value-too",
-          "label": "Objects and arrays work like strings and numbers during assignment, so changing one variable after assignment should not affect the original."
-        }
-      ],
-      "correctOptionId": "primitives-vs-reference-types-matter",
-      "rereadPrompt": "Close. The important distinction is primitive vs reference-type behavior. `typeof null` is a well-known quirk, arrays are objects, and object assignment shares a reference unless you clone explicitly."
-    }
-  },
-  {
     "id": "js-check-data-type-with-typeof",
-    "title": "How to check data type in JavaScript using typeof",
-    "description": "The typeof operator is the fastest built-in way to inspect value types at runtime in JavaScript, but it has well-known edge cases such as typeof null, arrays returning object, and NaN returning number. High-quality answers show when typeof is enough and when to combine it with Array.isArray, Number.isNaN, and Object.prototype.toString.",
+    "title": "Why does typeof null return 'object'? Data types, typeof, and NaN checks",
+    "description": "Explain the eight JavaScript data types through the runtime checks that go wrong: typeof null is 'object', arrays are objects, NaN is a number that is not equal to itself, and global isNaN coerces its input. Shows when typeof is enough and which check to pair it with.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -4441,7 +4100,10 @@
       "data-types",
       "runtime-checks",
       "debugging",
-      "validation"
+      "validation",
+      "primitives",
+      "nan",
+      "type-coercion"
     ],
     "importance": 5,
     "companies": [
@@ -4451,6 +4113,10 @@
     ],
     "answer": {
       "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>The quirk to explain</strong><br><br><code>typeof null</code> returns <code>'object'</code> because of a bug in the first JavaScript engine: values carried a type tag, objects used tag 0, and <code>null</code> was the null pointer, also all zeros. Fixing it would break the web, so it stays. Interviewers use it to check whether you know the eight data types and which runtime check to reach for when <code>typeof</code> lies: <code>value === null</code> for null, <code>Array.isArray</code> for arrays, and <code>Number.isNaN</code> for the one value that is not equal to itself."
+        },
         {
           "type": "text",
           "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nUse <code>typeof</code> when you need a quick runtime type check in JavaScript. It returns a string like <code>'string'</code>, <code>'number'</code>, or <code>'object'</code>.\n\nIt is very useful, but not complete. Senior-level usage means knowing its blind spots and combining it with a few targeted checks."
@@ -4564,6 +4230,110 @@
         },
         {
           "type": "text",
+          "text": "<strong>The eight data types</strong><br><br>Primitive values are stored directly, immutable, and compared by value. Objects are mutable and compared by reference. Everything that is not one of the seven primitives, including arrays, functions, dates, and regular expressions, is an object."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Category",
+            "Data type",
+            "Description",
+            "Example"
+          ],
+          "rows": [
+            [
+              "Primitive",
+              "<strong>Number</strong>",
+              "Integers and floating-point numbers, plus <code>NaN</code> and <code>Infinity</code>.",
+              "<code>42</code>, <code>3.14</code>, <code>NaN</code>"
+            ],
+            [
+              "Primitive",
+              "<strong>String</strong>",
+              "Text data in single, double, or backtick quotes.",
+              "<code>'Hello'</code>, <code>`Hi ${name}`</code>"
+            ],
+            [
+              "Primitive",
+              "<strong>Boolean</strong>",
+              "<code>true</code> or <code>false</code>.",
+              "<code>true</code>"
+            ],
+            [
+              "Primitive",
+              "<strong>Undefined</strong>",
+              "Declared but never assigned.",
+              "<code>let x; // undefined</code>"
+            ],
+            [
+              "Primitive",
+              "<strong>Null</strong>",
+              "Intentional empty value.",
+              "<code>let y = null;</code>"
+            ],
+            [
+              "Primitive",
+              "<strong>Symbol</strong>",
+              "Unique, immutable value, often an object key.",
+              "<code>Symbol('id')</code>"
+            ],
+            [
+              "Primitive",
+              "<strong>BigInt</strong>",
+              "Integers beyond <code>2^53 - 1</code>.",
+              "<code>12345678901234567890n</code>"
+            ],
+            [
+              "Non-primitive",
+              "<strong>Object</strong>",
+              "Collections and complex entities, including arrays and functions.",
+              "<code>{ name: 'Alice' }</code>, <code>[1, 2]</code>"
+            ]
+          ],
+          "caption": "JavaScript data types at a glance."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "let str = 'Hi';\nstr[0] = 'Y'; // no effect: primitives are immutable\nconsole.log(str); // 'Hi'\n\nconst user = { name: 'Alice' };\nconst ref = user;\nref.name = 'Bob';\nconsole.log(user.name); // 'Bob' (same reference)"
+        },
+        {
+          "type": "text",
+          "text": "<strong>NaN: the number that is not equal to itself</strong><br><br><code>NaN</code> is a production validation pitfall because <code>NaN !== NaN</code>, global <code>isNaN</code> coerces values, and empty strings or bad payloads can silently turn checks into bugs. The safer debugging rule is <code>Number.isNaN</code>."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "console.log(0 / 0);          // NaN\nconsole.log(parseInt('Hi'));  // NaN\nconsole.log(typeof NaN);      // 'number'\nconsole.log(NaN === NaN);     // false\n\nisNaN('Hello');        // true (string coerced first)\nNumber.isNaN('Hello'); // false\nNumber.isNaN(NaN);     // true"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Property",
+            "Description",
+            "Example"
+          ],
+          "rows": [
+            [
+              "<strong>Type</strong>",
+              "The type of <code>NaN</code> is actually <code>number</code>.",
+              "<code>typeof NaN // 'number'</code>"
+            ],
+            [
+              "<strong>Equality</strong>",
+              "<code>NaN</code> is the only value in JavaScript that is <strong>not equal to itself</strong>.",
+              "<code>NaN === NaN // false</code>"
+            ],
+            [
+              "<strong>Check</strong>",
+              "Use <code>Number.isNaN()</code> to check if a value is truly NaN.",
+              "<code>Number.isNaN(NaN) // true</code>"
+            ]
+          ],
+          "caption": "Key characteristics of NaN in JavaScript."
+        },
+        {
+          "type": "text",
           "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of <code>typeof</code> like a quick airport screening. It catches most cases fast. For suspicious baggage (null, arrays, NaN), you send it to a more specific scanner."
         },
         {
@@ -4573,10 +4343,10 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-03-02",
+    "updatedAt": "2026-10-12",
     "seo": {
-      "title": "Check Data Type in JavaScript with typeof (and Pitfalls)",
-      "description": "Learn how to check data types with typeof in JavaScript, including null, array, NaN, TDZ caveats, and safer validation patterns."
+      "title": "Why typeof null Is 'object': Data Types and NaN Checks",
+      "description": "Explain the eight JavaScript data types through typeof traps: null is 'object', arrays are objects, NaN is a number not equal to itself. Safer checks included."
     },
     "incidentCard": {
       "title": "typeof Edge-Case Check",
@@ -5285,109 +5055,6 @@
     }
   },
   {
-    "id": "js-nan-property",
-    "title": "What is the NaN property in JavaScript?",
-    "description": "NaN matters in production numeric validation because it is the only JavaScript value not equal to itself, global isNaN coerces inputs, and empty strings or malformed payloads create common mistake cases.",
-    "type": "trivia",
-    "technology": "javascript",
-    "difficulty": "easy",
-    "tags": [
-      "global-object",
-      "isnan",
-      "nan",
-      "numbers",
-      "type-coercion"
-    ],
-    "importance": 3,
-    "companies": [],
-    "answer": {
-      "blocks": [
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>Common mistake</strong>\n\n<code>NaN</code> is not just a trivia definition. It is a production validation pitfall because <code>NaN !== NaN</code>, global <code>isNaN</code> coerces values, and empty strings or bad payloads can silently turn checks into bugs. The safer debugging rule is usually <code>Number.isNaN</code>."
-        },
-        {
-          "type": "code",
-          "language": "javascript",
-          "code": "console.log(0 / 0);         // NaN\nconsole.log(parseInt('Hi'));  // NaN\nconsole.log(Math.sqrt(-1));   // NaN"
-        },
-        {
-          "type": "list",
-          "columns": [
-            "Property",
-            "Description",
-            "Example"
-          ],
-          "rows": [
-            [
-              "<strong>Type</strong>",
-              "The type of <code>NaN</code> is actually <code>number</code>.",
-              "<code>typeof NaN // 'number'</code>"
-            ],
-            [
-              "<strong>Equality</strong>",
-              "<code>NaN</code> is the only value in JavaScript that is <strong>not equal to itself</strong>.",
-              "<code>NaN === NaN // false</code>"
-            ],
-            [
-              "<strong>Check</strong>",
-              "Use <code>Number.isNaN()</code> to check if a value is truly NaN.",
-              "<code>Number.isNaN(NaN) // true</code>"
-            ]
-          ],
-          "caption": "Key characteristics of NaN in JavaScript."
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Why not just 'isNaN'?</strong>\n\nThe global <code>isNaN()</code> function tries to coerce values before checking, which can give confusing results. Always prefer <code>Number.isNaN()</code> because it doesn’t perform type coercion."
-        },
-        {
-          "type": "code",
-          "language": "javascript",
-          "code": "isNaN('Hello');         // true ❌ (string coerced)\nNumber.isNaN('Hello');   // false ✅"
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- <code>NaN</code> represents 'Not-a-Number' but its type is actually <code>number</code>.\n- It results from invalid numeric operations.\n- It’s the only value in JS that is not equal to itself.\n- Use <code>Number.isNaN()</code> instead of <code>isNaN()</code> to check safely."
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of <code>NaN</code> like a 'broken calculator' output — the operation ran, but the result doesn’t make mathematical sense, so JavaScript gives you NaN instead of crashing."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Practical scenario</strong><br>A numeric input can return <code>''</code> or <code>'foo'</code>; you need to detect NaN before calculations.\n<br><br><strong>Common pitfalls</strong><br><ul><li>Using global <code>isNaN</code>, which coerces values.</li><li>Assuming <code>NaN === NaN</code> is true.</li><li>Mixing <code>parseInt</code> and <code>Number</code> without checks.</li></ul><strong>Trade-off or test tip</strong><br>Prefer <code>Number.isNaN</code> for accuracy. Test empty strings, <code>null</code>, and non-numeric inputs.</strong>"
-        }
-      ]
-    },
-    "access": "free",
-    "updatedAt": "2026-04-04",
-    "seo": {
-      "title": "JavaScript NaN common mistakes: Number.isNaN, coercion traps, and validation bugs",
-      "description": "Learn the NaN production pitfall: coercion hides invalid input, global isNaN misleads checks, and Number.isNaN is the safer debugging rule."
-    },
-    "incidentCard": {
-      "title": "NaN Validation Check",
-      "scenario": "A form accepts a numeric field. One teammate uses global `isNaN(value)` and starts flagging some string inputs in confusing ways, while another compares `value === NaN` and never catches the bad result. What is the better fix?",
-      "options": [
-        {
-          "id": "compare-directly-to-nan",
-          "label": "Compare against `NaN` directly with `===`, because NaN is just another numeric constant once the input has been parsed."
-        },
-        {
-          "id": "global-isnan-is-more-complete",
-          "label": "Use global `isNaN()` everywhere, because its automatic coercion catches more invalid values than `Number.isNaN()` and is therefore safer."
-        },
-        {
-          "id": "use-number-isnan-after-conversion",
-          "label": "Convert the input intentionally first if needed, then use `Number.isNaN(...)` to detect real NaN values without the coercion surprises of global `isNaN()`."
-        }
-      ],
-      "correctOptionId": "use-number-isnan-after-conversion",
-      "rereadPrompt": "Close. `NaN` is tricky because it is not equal to itself, and global `isNaN()` coerces before checking. The reliable pattern is explicit conversion plus `Number.isNaN()`."
-    }
-  },
-  {
     "id": "js-currying",
     "title": "What is currying in JavaScript?",
     "description": "Currying is useful when you want to lock in one argument at a time and reuse the partially configured result later. Strong JavaScript answers separate currying from partial application and explain when the extra indirection is worth it.",
@@ -5484,297 +5151,6 @@
       ],
       "correctOptionId": "currying-enables-partial-reuse",
       "rereadPrompt": "Close. The value of currying is not extra syntax by itself; it is that each step can capture one argument and return a reusable function for the next step."
-    }
-  },
-  {
-    "id": "js-callbacks",
-    "title": "What are callbacks in JavaScript?",
-    "description": "Callbacks are the original control-flow hook in JavaScript. Strong answers explain inversion of control, callback hell, legacy async debugging, and why callbacks still fit repeated-notification APIs like DOM events.",
-    "type": "trivia",
-    "technology": "javascript",
-    "difficulty": "easy",
-    "tags": [
-      "async",
-      "callbacks",
-      "event-loop",
-      "functions",
-      "higher-order-functions"
-    ],
-    "importance": 5,
-    "companies": [],
-    "answer": {
-      "blocks": [
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nA <strong>callback</strong> is a function you hand to another API so it can decide when to call you. The real production/debug issue is inversion of control: DOM events, file APIs, or legacy libraries own the timing, the error path, and whether the work can be canceled or composed cleanly."
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-repeat'></i> <strong>Callbacks still fit repeated notifications</strong>\n\nEvent sources fire many times, so a callback is still the natural model when there is no single final value to resolve."
-        },
-        {
-          "type": "code",
-          "language": "javascript",
-          "code": "const searchInput = document.querySelector('#search');\n\nsearchInput.addEventListener('input', (event) => {\n  renderPreview(event.target.value);\n});"
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-bug'></i> <strong>Legacy async bug pattern: nested callbacks</strong>\n\nCallbacks become painful when one async step owns the next async step and every branch repeats error handling."
-        },
-        {
-          "type": "code",
-          "language": "javascript",
-          "code": "loadUser(userId, (err, user) => {\n  if (err) return showError(err);\n\n  loadOrders(user.id, (err2, orders) => {\n    if (err2) return showError(err2);\n    renderDashboard(user, orders);\n  });\n});"
-        },
-        {
-          "type": "code",
-          "language": "javascript",
-          "code": "loadUserPromise(userId)\n  .then((user) => Promise.all([Promise.resolve(user), loadOrdersPromise(user.id)]))\n  .then(([user, orders]) => {\n    renderDashboard(user, orders);\n  })\n  .catch(showError);"
-        },
-        {
-          "type": "list",
-          "columns": [
-            "Pattern",
-            "What it means",
-            "Why it matters"
-          ],
-          "rows": [
-            [
-              "Event callback",
-              "Runs every time the source emits a new event.",
-              "Great for DOM events, observers, and repeated notifications."
-            ],
-            [
-              "Error-first callback",
-              "First argument represents failure, second carries data.",
-              "Common in legacy Node-style APIs and old libraries."
-            ],
-            [
-              "Callback hell",
-              "Nested callbacks own each next step.",
-              "Makes sequencing, cancellation, and testing harder."
-            ]
-          ],
-          "caption": "The callback concept is simple; the control-flow shape is where bugs start."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Likely follow-up confusion</strong><br><ul><li>Promises settle once; callbacks can be called many times.</li><li>Callbacks are still a good fit for DOM events, observers, and WebSocket message handlers.</li><li>The main problem is not the callback itself; it is when nested callbacks own sequencing and error propagation.</li></ul>"
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- A callback is a function passed to another API to be called later.\n- The production issue is inversion of control, not the definition itself.\n- Nested callbacks create sequencing and error-handling pain.\n- Callbacks still shine for repeated-notification APIs like events."
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of callbacks like giving a venue your phone number: they decide when to call you back. That is useful for repeated updates, but awkward when you need one clean, linear workflow."
-        }
-      ]
-    },
-    "access": "free",
-    "updatedAt": "2026-04-10",
-    "seo": {
-      "title": "JavaScript callbacks: inversion of control, legacy async, and event APIs",
-      "description": "Learn callbacks through real event APIs and legacy async flows: why nested callbacks get messy, how Promise refactors help, and when callbacks still fit."
-    },
-    "incidentCard": {
-      "title": "Callback Pattern Check",
-      "scenario": "A teammate sees `setTimeout(() => saveDraft(), 500)` and says, \"`saveDraft()` is just being called normally, there is nothing special here.\" You want to explain what makes that arrow function a callback. What is the best answer?",
-      "options": [
-        {
-          "id": "function-passed-for-later-execution",
-          "label": "It is a callback because a function is being passed into another function so it can be executed later when that outer function decides to run it."
-        },
-        {
-          "id": "callbacks-only-mean-network-code",
-          "label": "It is not really a callback unless it is attached to a network request or file read; timers and event handlers are separate concepts."
-        },
-        {
-          "id": "callback-means-immediate-nesting",
-          "label": "A callback is any function written inline inside another function call, even if it executes immediately and is not passed around."
-        }
-      ],
-      "correctOptionId": "function-passed-for-later-execution",
-      "rereadPrompt": "Close. The important part is not where the function is written, but that it is passed into another function to be invoked later or by that function’s control flow."
-    }
-  },
-  {
-    "id": "js-calback-hell-resolved-with-promise",
-    "title": "How does Promise resolve callback hell in JavaScript?",
-    "description": "Callback hell is a legacy async debugging problem: deep nesting duplicates error handling and sequencing logic. Promise chains make return propagation, shared error boundaries, and staged migrations easier to reason about even though cancellation still needs separate support.",
-    "type": "trivia",
-    "technology": "javascript",
-    "difficulty": "intermediate",
-    "tags": [
-      "callbacks",
-      "promise",
-      "asynchronous-javascript",
-      "error-handling",
-      "refactoring"
-    ],
-    "importance": 5,
-    "companies": [
-      "google",
-      "amazon",
-      "meta",
-      "uber"
-    ],
-    "answer": {
-      "blocks": [
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>Async debug problem</strong>\n\n<strong>Callback hell</strong> is not just ugly indentation. It is a production reliability problem where sequencing becomes implicit, failures get duplicated, and async control flow is hard to debug.\n\nPromises improve that by turning nested callbacks into a <strong>linear chain</strong> where values and errors move through a predictable pipeline. This matters most in flows like file upload -> metadata save -> audit log -> analytics, where one late failure should still hit one predictable error boundary."
-        },
-        {
-          "type": "list",
-          "columns": [
-            "Problem in callback hell",
-            "Why it hurts",
-            "Promise-based fix"
-          ],
-          "rows": [
-            [
-              "Pyramid-shaped nesting",
-              "Low readability, hard reviews",
-              "Flat <code>.then()</code> chain or <code>async/await</code>"
-            ],
-            [
-              "Repeated error checks",
-              "Missed error branches, inconsistent behavior",
-              "Single terminal <code>.catch()</code>"
-            ],
-            [
-              "Hard composition",
-              "Sequential/parallel logic becomes messy",
-              "<code>Promise.all</code>, <code>race</code>, <code>allSettled</code>"
-            ],
-            [
-              "Hidden control flow",
-              "Difficult debugging and testing",
-              "Deterministic chain with explicit returns"
-            ]
-          ],
-          "caption": "Promises reduce structural complexity and improve error flow."
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-code'></i> <strong>Before: callback hell</strong>"
-        },
-        {
-          "type": "code",
-          "language": "javascript",
-          "code": "getUser(userId, (err, user) => {\n  if (err) return handleError(err);\n\n  getOrders(user.id, (err, orders) => {\n    if (err) return handleError(err);\n\n    getRecommendations(orders, (err, recs) => {\n      if (err) return handleError(err);\n\n      renderDashboard(user, orders, recs);\n    });\n  });\n});"
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-code'></i> <strong>After: Promise chain</strong>\n\nEach step returns a Promise. Data flows forward, and one <code>.catch()</code> handles failures."
-        },
-        {
-          "type": "code",
-          "language": "javascript",
-          "code": "getUserP(userId)\n  .then((user) =>\n    getOrdersP(user.id).then((orders) => ({ user, orders }))\n  )\n  .then(({ user, orders }) =>\n    getRecommendationsP(orders).then((recs) => ({ user, orders, recs }))\n  )\n  .then(({ user, orders, recs }) => {\n    renderDashboard(user, orders, recs);\n  })\n  .catch((err) => {\n    logError(err);\n    showFallbackUI();\n  });"
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-gears'></i> <strong>How to convert callback APIs safely</strong>\n\nMany legacy Node/browser APIs use error-first callbacks. Wrap them once in Promise utilities, then reuse those wrappers across the codebase."
-        },
-        {
-          "type": "code",
-          "language": "javascript",
-          "code": "function getUserP(id) {\n  return new Promise((resolve, reject) => {\n    getUser(id, (err, data) => {\n      if (err) reject(err);\n      else resolve(data);\n    });\n  });\n}"
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-wand-magic-sparkles'></i> <strong>Reusable wrapper pattern</strong>\n\nA small promisify helper is often the cleanest migration point because it keeps callback-style code at the boundary and lets the rest of the flow move into Promise chains."
-        },
-        {
-          "type": "code",
-          "language": "javascript",
-          "code": "function promisify1(fn) {\n  return (...args) =>\n    new Promise((resolve, reject) => {\n      fn(...args, (err, value) => {\n        if (err) reject(err);\n        else resolve(value);\n      });\n    });\n}\n\nconst readFileP = promisify1(readFile);"
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-people-arrows'></i> <strong>Sequential vs parallel: another major win</strong>\n\nCallback hell often serializes work by accident. With Promises you can run independent async operations concurrently and wait once."
-        },
-        {
-          "type": "code",
-          "language": "javascript",
-          "code": "// Sequential (slower)\nconst profile = await getProfileP(userId);\nconst settings = await getSettingsP(userId);\n\n// Parallel (faster for independent calls)\nconst [profile2, settings2] = await Promise.all([\n  getProfileP(userId),\n  getSettingsP(userId)\n]);"
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Common migration mistakes</strong>\n\n- Wrapping everything in Promises but still nesting deeply.\n- Forgetting to <code>return</code> inside <code>.then()</code> (breaks chain).\n- Mixing callback and Promise style in the same function without clear boundaries.\n- Catching errors too early and swallowing diagnostic context.\n- Assuming Promises solve cancellation automatically."
-        },
-        {
-          "type": "code",
-          "language": "javascript",
-          "code": "saveDraftP(data)\n  .then((result) => {\n    auditP(result.id); // missing return -> chain no longer waits for audit\n  })\n  .then(() => showSuccess())\n  .catch(reportError);"
-        },
-        {
-          "type": "list",
-          "columns": [
-            "Goal",
-            "Recommendation",
-            "Reason"
-          ],
-          "rows": [
-            [
-              "Readable async flow",
-              "Flatten logic into one Promise chain",
-              "Lower cognitive load in reviews and debugging."
-            ],
-            [
-              "Reliable error handling",
-              "Use one terminal <code>.catch()</code> for the flow",
-              "Prevents missed nested callback errors."
-            ],
-            [
-              "Incremental migration",
-              "Promisify boundary functions first",
-              "Lets you modernize without rewriting everything at once."
-            ]
-          ],
-          "caption": "Refactor in layers: wrapper utilities first, flow rewrite second."
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Interview one-liner</strong>\n\nPromises resolve callback hell by flattening nested async control flow into composable chains with centralized error propagation."
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nCallback hell is like asking five people in sequence by passing messages manually. Promises give you a tracked workflow where each step hands off cleanly and failures route to one place."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Practical scenario</strong><br>An upload flow saves metadata, writes an audit log, and triggers analytics after the file reaches storage. Callback nesting led to duplicate error handling, hidden sequencing, and retries that were hard to reason about.\n<br><br><strong>Common pitfalls</strong><br><ul><li>Nested callbacks with repeated <code>if (err)</code> blocks.</li><li>Independent calls executed serially.</li><li>Missing <code>return</code> inside a Promise chain after migration.</li><li>Assuming Promises automatically cancel in-flight work.</li></ul><strong>Trade-off or test tip</strong><br>After migration, test both success and each failure branch, and verify that one rejection path triggers the same user-facing fallback consistently.</strong>"
-        }
-      ]
-    },
-    "access": "free",
-    "updatedAt": "2026-04-10",
-    "seo": {
-      "title": "Promises vs callback hell: async sequencing, return propagation, and cancellation limits",
-      "description": "Explain why Promise chains beat callback hell in production: flatter sequencing, one error boundary, reusable wrappers, and the common missing-return pitfall."
-    },
-    "incidentCard": {
-      "title": "Promise Refactor Check",
-      "scenario": "An onboarding flow nests callbacks three levels deep, repeats `if (err)` in every branch, and runs independent async steps one after another by accident. A teammate says, \"Promises just rename callbacks.\" What is the better explanation?",
-      "options": [
-        {
-          "id": "promises-only-change-syntax",
-          "label": "Promises mainly change punctuation. The control flow, composition options, and error handling model are basically the same as callback hell."
-        },
-        {
-          "id": "promises-force-sequential-work",
-          "label": "Promises fix callback hell by making async work run strictly one after another, so there is no need to think about parallel calls or returned values anymore."
-        },
-        {
-          "id": "promises-flatten-and-centralize-errors",
-          "label": "Promises turn nested async control flow into a flatter chain, let values move through predictable steps, and centralize failures with a shared `.catch()` instead of repeating error handling in every callback."
-        }
-      ],
-      "correctOptionId": "promises-flatten-and-centralize-errors",
-      "rereadPrompt": "Close. The point of Promises is not just nicer syntax. They improve composition, flatten nested flow, and make error propagation much more predictable."
     }
   },
   {
@@ -6209,8 +5585,8 @@
   },
   {
     "id": "js-spread-vs-rest-parameters",
-    "title": "Spread operator vs rest parameters in JavaScript",
-    "description": "Spread and rest use the same ... syntax but solve opposite problems. Spread expands arrays/objects into individual values, while rest collects multiple values into one array. Interview-ready understanding includes function arguments, object/array usage, shallow-copy caveats, and when each improves clarity.",
+    "title": "Why does the spread copy still share nested objects? Spread vs rest",
+    "description": "Spread expands, rest gathers, and both are shallow. Explain why a spread copy still mutates nested state, how rest parameters differ from arguments, the object and array forms, and the fixes interviewers expect (structuredClone, nested spread, immutable helpers).",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -6231,6 +5607,10 @@
     ],
     "answer": {
       "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>The bug to explain</strong><br><br><code>const copy = { ...settings }; copy.theme.dark = true;</code> flips dark mode on the original <code>settings</code> as well. Spread copies one level: nested objects are shared references, so the copy is shallow. Rest is the same syntax pointed the other way, gathering remaining arguments or properties into one array or object. The interview follow-up is almost always about direction (spread expands, rest gathers) and depth (both are shallow)."
+        },
         {
           "type": "text",
           "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nSpread and rest share the same syntax (<code>...</code>) but do <strong>opposite jobs</strong>:\n- <strong>Spread</strong> breaks one value into many.\n- <strong>Rest</strong> collects many values into one.\n\nIf you remember direction, you almost never confuse them:\n<strong>spread = expand</strong>, <strong>rest = gather</strong>."
@@ -6337,10 +5717,10 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-03-02",
+    "updatedAt": "2026-10-12",
     "seo": {
-      "title": "Spread vs Rest in JavaScript: Differences and Examples",
-      "description": "Understand spread operator and rest parameters in JavaScript with practical examples, function patterns, and common interview pitfalls."
+      "title": "Spread Copies Share Nested Objects: Spread vs Rest",
+      "description": "Spread expands, rest gathers, and both are shallow. See why a spread copy still mutates nested state, how rest parameters differ from arguments, and the fixes."
     },
     "incidentCard": {
       "title": "Spread or Rest Check",
@@ -7930,8 +7310,8 @@
   },
   {
     "id": "js-mutability-vs-immutability",
-    "title": "Mutability vs Immutability in JavaScript (State, References, and Side Effects)",
-    "description": "Mutable data can be changed in place, while immutable data is never modified — instead, new copies are created. Understanding this difference is critical for predictable state management in React, Angular, Redux/NgRx, and for avoiding side effects and hard-to-debug bugs.",
+    "title": "Why does changing the copy mutate the original? References and Object.freeze",
+    "description": "Explain reference bugs the way interviewers probe them: objects and arrays are mutable, spread copies are shallow, const freezes the binding and not the value, and frameworks that compare by reference skip updates when you mutate in place. Immutable update patterns and Object.freeze included.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -7946,6 +7326,10 @@
     "companies": [],
     "answer": {
       "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>The bug to explain</strong><br><br><code>const next = state; next.user.name = 'Bob';</code> and suddenly the original <code>state</code> shows Bob too. Nothing was copied: <code>next</code> is a second reference to the same object. A spread copy helps only one level deep, so <code>{ ...state }.user.name = 'Bob'</code> still mutates the shared nested object, and <code>const</code> freezes the binding, not the value. Frameworks that compare by reference (React, Angular OnPush, Redux, NgRx) then skip the update, because the reference never changed."
+        },
         {
           "type": "text",
           "text": "<i class='fa-solid fa-brain'></i> <strong>The core difference</strong>\n\n- <strong>Mutable</strong> data can be <strong>changed in place</strong>.\n- <strong>Immutable</strong> data is <strong>never modified</strong>; instead, you <strong>create a new value</strong>.\n\nIn JavaScript, <strong>objects and arrays are mutable by default</strong>. Most bugs in UI state management come from <strong>mutating something you thought was 'a copy'</strong>."
@@ -8048,10 +7432,10 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-10-12",
     "seo": {
-      "title": "Mutability vs immutability in JavaScript: what is the difference?",
-      "description": "Mutability allows changing existing objects, while immutability creates new values instead of modifying existing references."
+      "title": "Why Changing a Copy Mutates the Original in JS",
+      "description": "Explain reference bugs: objects and arrays are mutable, spread copies are shallow, const does not freeze. Immutable updates, Object.freeze, and framework impact."
     },
     "incidentCard": {
       "title": "State Update Check",
@@ -11622,8 +11006,8 @@
   },
   {
     "id": "js-tree-shaking",
-    "title": "Tree-Shaking: How It Works and Common Pitfalls",
-    "description": "Tree shaking is dead-code elimination, but real bundler results depend on ESM, side-effect declarations, and import shape. The production pitfall is assuming unused code disappears automatically when package structure still blocks elimination.",
+    "title": "Why didn't tree shaking remove my unused import? sideEffects and barrels",
+    "description": "Debug a bundle that stays fat after importing one export: CommonJS dependencies, a missing sideEffects flag, barrel re-exports, and namespace imports all block elimination. Shows how to verify with a bundle analyzer and which fix applies to each cause.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -11639,6 +11023,10 @@
     "companies": [],
     "answer": {
       "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>The bug to explain</strong><br><br>You import one icon from a library and the whole icon set lands in the bundle. Tree shaking did not fail at random. One of four things blocked it: the package ships CommonJS instead of ESM, its <code>package.json</code> does not declare <code>sideEffects: false</code>, a barrel file re-exports everything so the bundler must keep the module graph, or the code uses a namespace import with property access the bundler cannot prove static. Each has a specific fix below."
+        },
         {
           "type": "text",
           "text": "<i class='fa-solid fa-seedling'></i> <strong>Bundler pitfall</strong>\n\nTree-shaking is not a magic \"remove everything unused\" switch. Bundlers need static ESM structure and trustworthy side-effect signals. When bundles stay fat, the <strong>debug question</strong> is usually where hidden side effects, barrel exports, or import shape prevented elimination."
@@ -11736,10 +11124,10 @@
       "rereadPrompt": "Not quite. Tree-shaking is not guaranteed just because a bundler exists. It relies on statically analyzable ESM graphs and accurate side-effect signals so unused exports can be removed safely. CommonJS, dynamic loading, and hidden side effects often block that optimization."
     },
     "access": "free",
-    "updatedAt": "2026-04-04",
+    "updatedAt": "2026-10-12",
     "seo": {
-      "title": "Tree shaking in bundlers: ESM requirements, side-effect pitfalls, and bundle debug",
-      "description": "Explain tree shaking through the real bundler pitfall: ESM helps, side effects block elimination, and verification matters when bundles stay large after optimizing."
+      "title": "Why Tree Shaking Kept Your Unused Import: Fixes",
+      "description": "Debug a bundle that stays fat: CommonJS dependencies, missing sideEffects flags, barrel re-exports, and namespace imports block elimination. Verify with an analyzer."
     }
   },
   {

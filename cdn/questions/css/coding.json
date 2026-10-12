@@ -526,12 +526,12 @@
           "label": "CSS"
         },
         {
-          "title": "Review CSS media queries for responsive breakpoints",
+          "title": "Review responsive CSS: media and container queries",
           "route": [
             "/",
             "css",
             "trivia",
-            "css-media-queries"
+            "css-make-element-responsive"
           ],
           "label": "CSS"
         },
@@ -761,12 +761,12 @@
           "label": "CSS"
         },
         {
-          "title": "Review CSS media queries for responsive breakpoints",
+          "title": "Review responsive CSS: media and container queries",
           "route": [
             "/",
             "css",
             "trivia",
-            "css-media-queries"
+            "css-make-element-responsive"
           ],
           "label": "CSS"
         },
@@ -1209,7 +1209,7 @@
             "/",
             "css",
             "trivia",
-            "css-media-queries"
+            "css-make-element-responsive"
           ],
           "label": "Concept"
         },

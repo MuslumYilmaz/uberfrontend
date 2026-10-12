@@ -24,6 +24,7 @@
 | 12b9f739 | 29 long trivia titles shortened to 60 characters or fewer | SERP truncation on low-impression pages |
 | d5f6c9c9 | GA4 loads only for qualified sessions; suspect browsers tagged `traffic_type=bot_suspect` | About half of GA users were bot-like; reports were not usable for decisions |
 | 2026-10-09 | Indexing requested through URL Inspection for the wave pages; sitemap resubmitted | Daily quota of about 10 requests |
+| 2026-10-12 | Trivia wave 1: 25 head-on or definition pages retired (301 to merge target or hub), 8 merge targets and 13 further pages re-titled as the interviewer's follow-up with a new opening block | GreatFrontEnd overlap audit: 81 head-on pages earned 13% of trivia impressions and one in three was dropped or never crawled; details and page list in `docs/audits/greatfrontend-sitemap-2026-10-11.md` |
 
 ## Step 3 (current): Angular Change Detection Visualizer
 

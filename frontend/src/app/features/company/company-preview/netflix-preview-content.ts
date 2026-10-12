@@ -145,7 +145,7 @@ export const NETFLIX_PRACTICE_PROMPTS: readonly NetflixPracticePrompt[] = [
     commonMiss:
       'Adding memo everywhere before profiling, which can preserve poor state boundaries and add comparison overhead.',
     resourceLabel: 'Review unnecessary React re-renders',
-    resourcePath: '/react/trivia/react-prevent-unnecessary-rerenders',
+    resourcePath: '/react/trivia/react-rerender-decision-and-render',
   },
   {
     id: 'streaming-caching-failure-states',
@@ -336,9 +336,9 @@ export const NETFLIX_RESOURCE_LINKS: readonly NetflixResourceLink[] = [
     path: '/javascript/coding/js-take-latest',
   },
   {
-    label: 'Prevent unnecessary React re-renders',
+    label: 'Explain unnecessary React re-renders',
     description: 'Connect profiling evidence to state boundaries and selective memoization.',
-    path: '/react/trivia/react-prevent-unnecessary-rerenders',
+    path: '/react/trivia/react-rerender-decision-and-render',
   },
   {
     label: 'Review streaming delivery and caching',

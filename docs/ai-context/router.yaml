@@ -219,6 +219,25 @@ reference_rules:
       - docs/audits/seo-audit.md
     max_docs: 1
 
+  - id: gsc_issues
+    priority: 105
+    keywords:
+      - organic traffic
+      - search console
+      - gsc
+      - index coverage
+      - crawled not indexed
+      - discovered not indexed
+      - impressions
+      - site quality
+      - deindexed
+    paths:
+      - docs/audits/gsc-issues.md
+      - docs/references/seo-growth-roadmap-2026-10.md
+    load:
+      - docs/audits/gsc-issues.md
+    max_docs: 1
+
   - id: test_quality_audit
     priority: 70
     keywords:
@@ -234,6 +253,21 @@ reference_rules:
       - docs/ai-context/testing.md
     load:
       - docs/audits/test-quality-audit.md
+    max_docs: 1
+
+  - id: competitor_seo_audit
+    priority: 100
+    keywords:
+      - greatfrontend
+      - competitor sitemap
+      - competitor seo
+      - quiz overlap
+      - trivia overlap
+      - trivia topic selection
+    paths:
+      - cdn/questions/*/trivia.json
+    load:
+      - docs/audits/greatfrontend-sitemap-2026-10-11.md
     max_docs: 1
 
   - id: font_size_audit

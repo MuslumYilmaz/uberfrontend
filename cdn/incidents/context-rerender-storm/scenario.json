@@ -248,7 +248,7 @@
     {
       "tech": "react",
       "kind": "trivia",
-      "id": "react-prevent-unnecessary-rerenders"
+      "id": "react-rerender-decision-and-render"
     }
   ]
 }

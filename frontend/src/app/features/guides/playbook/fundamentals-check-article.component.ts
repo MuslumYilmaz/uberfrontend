@@ -406,7 +406,7 @@ import { PUBLIC_EDITORIAL_FACTS } from '../../../core/content/public-editorial-f
         <h3>CSS box model</h3>
         <p>Explain content-box, border-box, padding, margin, and overflow surprises.</p>
       </a>
-      <a class="practice-card" [routerLink]="['/css','trivia','css-specificity-hierarchy']">
+      <a class="practice-card" [routerLink]="['/css','trivia','css-cascade-order']">
         <div class="question-meta"><span>CSS</span><span>Specificity</span></div>
         <h3>CSS specificity hierarchy</h3>
         <p>Practice cascade order, specificity scoring, source order, and conflict debugging.</p>
@@ -459,7 +459,7 @@ import { PUBLIC_EDITORIAL_FACTS } from '../../../core/content/public-editorial-f
         <strong>Fix async output misses</strong>
         <span>Trace event loop, microtask, timer, and async/await behavior.</span>
       </a>
-      <a class="next-link" [routerLink]="['/css','trivia','css-specificity-hierarchy']">
+      <a class="next-link" [routerLink]="['/css','trivia','css-cascade-order']">
         <strong>Fix CSS cascade misses</strong>
         <span>Practice specificity, source order, cascade, and computed style reasoning.</span>
       </a>

@@ -153,6 +153,131 @@
       "destination": "/guides/framework-prep/vue-prep-path",
       "permanent": true
     },
+    {
+      "source": "/javascript/trivia/js-hoisting-tdz",
+      "destination": "/javascript/trivia/js-hoisting",
+      "permanent": true
+    },
+    {
+      "source": "/javascript/trivia/js-var-let-const-hoisting",
+      "destination": "/javascript/trivia/js-hoisting",
+      "permanent": true
+    },
+    {
+      "source": "/javascript/trivia/js-promise-fundamental-understanding",
+      "destination": "/javascript/trivia/js-promises-async-await",
+      "permanent": true
+    },
+    {
+      "source": "/javascript/trivia/js-callbacks",
+      "destination": "/javascript/trivia/js-promises-async-await",
+      "permanent": true
+    },
+    {
+      "source": "/javascript/trivia/js-calback-hell-resolved-with-promise",
+      "destination": "/javascript/trivia/js-promises-async-await",
+      "permanent": true
+    },
+    {
+      "source": "/javascript/trivia/js-data-types",
+      "destination": "/javascript/trivia/js-check-data-type-with-typeof",
+      "permanent": true
+    },
+    {
+      "source": "/javascript/trivia/js-nan-property",
+      "destination": "/javascript/trivia/js-check-data-type-with-typeof",
+      "permanent": true
+    },
+    {
+      "source": "/javascript/trivia/js-event-bubbling-capturing",
+      "destination": "/javascript/trivia/js-event-delegation",
+      "permanent": true
+    },
+    {
+      "source": "/react/trivia/react-component-rerendering",
+      "destination": "/react/trivia/react-rerender-decision-and-render",
+      "permanent": true
+    },
+    {
+      "source": "/react/trivia/react-prevent-unnecessary-rerenders",
+      "destination": "/react/trivia/react-rerender-decision-and-render",
+      "permanent": true
+    },
+    {
+      "source": "/react/trivia/react-reconciliation",
+      "destination": "/react/trivia/react-diffing-algorithm",
+      "permanent": true
+    },
+    {
+      "source": "/react/trivia/react-virtual-dom",
+      "destination": "/react/trivia/react-diffing-algorithm",
+      "permanent": true
+    },
+    {
+      "source": "/react/trivia/react-strictmode-purpose",
+      "destination": "/react/trivia/react-strictmode-double-invoke-effects",
+      "permanent": true
+    },
+    {
+      "source": "/css/trivia/css-specificity-hierarchy",
+      "destination": "/css/trivia/css-cascade-order",
+      "permanent": true
+    },
+    {
+      "source": "/css/trivia/css-id-vs-class",
+      "destination": "/css/trivia/css-cascade-order",
+      "permanent": true
+    },
+    {
+      "source": "/css/trivia/css-media-queries",
+      "destination": "/css/trivia/css-make-element-responsive",
+      "permanent": true
+    },
+    {
+      "source": "/css/trivia/css-definition",
+      "destination": "/css/interview-questions",
+      "permanent": true
+    },
+    {
+      "source": "/css/trivia/css-make-text-bold",
+      "destination": "/css/interview-questions",
+      "permanent": true
+    },
+    {
+      "source": "/css/trivia/css-center-text",
+      "destination": "/css/interview-questions",
+      "permanent": true
+    },
+    {
+      "source": "/css/trivia/css-change-text-size",
+      "destination": "/css/interview-questions",
+      "permanent": true
+    },
+    {
+      "source": "/css/trivia/css-background-color",
+      "destination": "/css/interview-questions",
+      "permanent": true
+    },
+    {
+      "source": "/css/trivia/css-border-property",
+      "destination": "/css/interview-questions",
+      "permanent": true
+    },
+    {
+      "source": "/css/trivia/css-text-color",
+      "destination": "/css/interview-questions",
+      "permanent": true
+    },
+    {
+      "source": "/css/trivia/css-link-html",
+      "destination": "/css/interview-questions",
+      "permanent": true
+    },
+    {
+      "source": "/html/trivia/html-br-tag",
+      "destination": "/html/interview-questions",
+      "permanent": true
+    },
     { "source": "/:path+/", "destination": "/:path+", "permanent": true }
   ],
   "rewrites": [

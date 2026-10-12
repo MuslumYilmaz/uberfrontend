@@ -343,7 +343,7 @@
   align-items: stretch;
 }
 
-.coding-detail aside {
+.coding-detail .coding-description-pane {
   background: var(--uf-surface);
   border: 1px solid var(--uf-border-subtle);
   border-radius: var(--uf-card-radius);
@@ -697,14 +697,14 @@
   height: 100%;
   overflow: auto;
 }
-.coding-detail.demo-embed aside,
+.coding-detail.demo-embed .coding-description-pane,
 .coding-detail.demo-embed main {
   height: 100%;
   min-height: 0;
 }
 .coding-detail.demo-embed main { background: var(--uf-surface); }
 .coding-detail.demo-embed .flex.gap-\[5px\] { height: 100%; }
-.coding-detail.demo-embed aside {
+.coding-detail.demo-embed .coding-description-pane {
   display: flex;
   flex-direction: column;
   min-height: 0;
@@ -821,6 +821,14 @@
 }
 
 /* Reading remains available while the editing workspace requires a wider screen. */
+.solution-idea > summary {
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+.solution-idea > summary h3 {
+  display: inline;
+}
+
 .mobile-workspace-notice {
   margin: 0 0 var(--uf-space-5);
   padding: var(--uf-space-3) var(--uf-space-4);
@@ -872,7 +880,7 @@
     flex-direction: column;
   }
 
-  .coding-detail > aside,
+  .coding-detail > .coding-description-pane,
   .coding-detail > main {
     width: 100%;
     max-width: 100%;

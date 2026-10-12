@@ -1299,7 +1299,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-10-10",
+    "updatedAt": "2026-10-12",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use"
   },
@@ -1656,7 +1656,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-10-09",
+    "updatedAt": "2026-10-12",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#angular-lifecycle-constructor-oninit-afterviewinit-dom"
   },
@@ -1831,26 +1831,6 @@
     "assetRef": "questions/css/coding.json#css-grid-card-gallery"
   },
   {
-    "id": "css-border-property",
-    "family": "question",
-    "title": "How can you add a border around an element?",
-    "route": "/css/trivia/css-border-property",
-    "tech": "css",
-    "difficulty": "easy",
-    "summary": "CSS borders are simple until validation states, focus rings, and hover transitions cause layout shift or contrast regressions. Explain shorthand, per-side control, and when outline or box-shadow is safer.",
-    "tags": [
-      "css",
-      "border",
-      "box-model",
-      "styles"
-    ],
-    "access": "free",
-    "estimatedMinutes": 7,
-    "updatedAt": "2026-04-05",
-    "schemaVersion": "question.v1",
-    "assetRef": "questions/css/trivia.json#css-border-property"
-  },
-  {
     "id": "css-make-element-responsive",
     "family": "question",
     "title": "How can you make an element responsive using CSS?",
@@ -1863,34 +1843,14 @@
       "responsive",
       "layout",
       "units",
-      "basics"
+      "basics",
+      "media-queries"
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-10-12",
     "schemaVersion": "question.v1",
     "assetRef": "questions/css/trivia.json#css-make-element-responsive"
-  },
-  {
-    "id": "css-specificity-hierarchy",
-    "family": "question",
-    "title": "How do CSS selectors with higher specificity override others?",
-    "route": "/css/trivia/css-specificity-hierarchy",
-    "tech": "css",
-    "difficulty": "intermediate",
-    "summary": "This question is specifically about selector scoring (specificity points), not the full cascade algorithm. Explain how selector weights are computed and compared, then mention tie-breakers briefly.",
-    "tags": [
-      "css",
-      "selectors",
-      "specificity",
-      "cascade",
-      "basics"
-    ],
-    "access": "free",
-    "estimatedMinutes": 7,
-    "updatedAt": "2026-02-01",
-    "schemaVersion": "question.v1",
-    "assetRef": "questions/css/trivia.json#css-specificity-hierarchy"
   },
   {
     "id": "css-hardware-acceleration",
@@ -1912,132 +1872,6 @@
     "updatedAt": "2026-06-16",
     "schemaVersion": "question.v1",
     "assetRef": "questions/css/trivia.json#css-hardware-acceleration"
-  },
-  {
-    "id": "css-center-text",
-    "family": "question",
-    "title": "How do you center text horizontally in CSS?",
-    "route": "/css/trivia/css-center-text",
-    "tech": "css",
-    "difficulty": "easy",
-    "summary": "Centering text with text-align is easy, but the common mistake is using it for layout centering when flexbox or grid should own the alignment.",
-    "tags": [
-      "css",
-      "text",
-      "alignment",
-      "layout",
-      "basics"
-    ],
-    "access": "free",
-    "estimatedMinutes": 7,
-    "updatedAt": "2026-04-05",
-    "schemaVersion": "question.v1",
-    "assetRef": "questions/css/trivia.json#css-center-text"
-  },
-  {
-    "id": "css-background-color",
-    "family": "question",
-    "title": "How do you change the background color of a page using CSS?",
-    "route": "/css/trivia/css-background-color",
-    "tech": "css",
-    "difficulty": "easy",
-    "summary": "Use background-color on the body or on individual elements, but treat it as a readability decision, not just paint.",
-    "tags": [
-      "css",
-      "colors",
-      "background",
-      "properties",
-      "basics"
-    ],
-    "access": "free",
-    "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
-    "schemaVersion": "question.v1",
-    "assetRef": "questions/css/trivia.json#css-background-color"
-  },
-  {
-    "id": "css-change-text-size",
-    "family": "question",
-    "title": "How do you change the size of text in CSS?",
-    "route": "/css/trivia/css-change-text-size",
-    "tech": "css",
-    "difficulty": "easy",
-    "summary": "font-size is really about scale strategy: rem/em/px choices, zoom behavior, component nesting, and accessibility bugs caused by hard-coded sizes.",
-    "tags": [
-      "css",
-      "typography",
-      "font-size",
-      "properties",
-      "basics"
-    ],
-    "access": "free",
-    "estimatedMinutes": 7,
-    "updatedAt": "2026-04-05",
-    "schemaVersion": "question.v1",
-    "assetRef": "questions/css/trivia.json#css-change-text-size"
-  },
-  {
-    "id": "css-link-html",
-    "family": "question",
-    "title": "How do you link a CSS file to an HTML document?",
-    "route": "/css/trivia/css-link-html",
-    "tech": "css",
-    "difficulty": "easy",
-    "summary": "\"> inside the document head. Loading styles early prevents flashes of unstyled content, and most real bugs come from wrong paths, wrong placement, or render-blocking trade-offs you should debug in DevTools.",
-    "tags": [
-      "css",
-      "html",
-      "link",
-      "external-stylesheet",
-      "head"
-    ],
-    "access": "free",
-    "estimatedMinutes": 7,
-    "updatedAt": "2026-03-08",
-    "schemaVersion": "question.v1",
-    "assetRef": "questions/css/trivia.json#css-link-html"
-  },
-  {
-    "id": "css-make-text-bold",
-    "family": "question",
-    "title": "How do you make text bold in CSS?",
-    "route": "/css/trivia/css-make-text-bold",
-    "tech": "css",
-    "difficulty": "easy",
-    "summary": "font-weight looks trivial until fallback fonts, missing weights, and variable-font interpolation make bold text render inconsistently. Explain common readability and hierarchy mistakes.",
-    "tags": [
-      "css",
-      "typography",
-      "font-weight",
-      "text"
-    ],
-    "access": "free",
-    "estimatedMinutes": 7,
-    "updatedAt": "2026-04-05",
-    "schemaVersion": "question.v1",
-    "assetRef": "questions/css/trivia.json#css-make-text-bold"
-  },
-  {
-    "id": "css-cascade-order",
-    "family": "question",
-    "title": "How does the CSS cascade determine which styles are applied?",
-    "route": "/css/trivia/css-cascade-order",
-    "tech": "css",
-    "difficulty": "intermediate",
-    "summary": "important), origin (user vs author), specificity, and source order. More specific selectors win; if specificity ties, later rules take precedence.",
-    "tags": [
-      "css",
-      "cascade",
-      "specificity",
-      "best-practices",
-      "selectors",
-      "order"
-    ],
-    "access": "free",
-    "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
-    "schemaVersion": "question.v1",
-    "assetRef": "questions/css/trivia.json#css-cascade-order"
   },
   {
     "id": "css-z-index",
@@ -2148,6 +1982,27 @@
     "assetRef": "questions/css/coding.json#css-transitions-transforms-lift"
   },
   {
+    "id": "css-visibility-vs-display",
+    "family": "question",
+    "title": "visibility: hidden vs display: none: layout, focus, and screen readers",
+    "route": "/css/trivia/css-visibility-vs-display",
+    "tech": "css",
+    "difficulty": "intermediate",
+    "summary": "Compare the three ways to hide an element by what actually changes: display: none removes layout, focus, and accessibility exposure; visibility: hidden keeps the space and can transition; opacity: 0 keeps everything, including focus and screen-reader exposure.",
+    "tags": [
+      "css",
+      "layout",
+      "visibility",
+      "display",
+      "basics"
+    ],
+    "access": "free",
+    "estimatedMinutes": 7,
+    "updatedAt": "2026-10-12",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/css/trivia.json#css-visibility-vs-display"
+  },
+  {
     "id": "css-custom-properties",
     "family": "question",
     "title": "What are CSS custom properties (variables) and how are they used?",
@@ -2170,27 +2025,6 @@
     "assetRef": "questions/css/trivia.json#css-custom-properties"
   },
   {
-    "id": "css-media-queries",
-    "family": "question",
-    "title": "What are media queries and why are they used?",
-    "route": "/css/trivia/css-media-queries",
-    "tech": "css",
-    "difficulty": "intermediate",
-    "summary": "Use media queries as a production breakpoint strategy: adapt layouts, respect user preferences, and avoid responsive pitfalls caused by viewport-only thinking.",
-    "tags": [
-      "css",
-      "responsive",
-      "media-queries",
-      "layout",
-      "basics"
-    ],
-    "access": "free",
-    "estimatedMinutes": 7,
-    "updatedAt": "2026-04-04",
-    "schemaVersion": "question.v1",
-    "assetRef": "questions/css/trivia.json#css-media-queries"
-  },
-  {
     "id": "css-pseudo-classes-elements",
     "family": "question",
     "title": "What are pseudo-classes and pseudo-elements? Give examples.",
@@ -2210,27 +2044,6 @@
     "updatedAt": "2026-01-30",
     "schemaVersion": "question.v1",
     "assetRef": "questions/css/trivia.json#css-pseudo-classes-elements"
-  },
-  {
-    "id": "css-definition",
-    "family": "question",
-    "title": "What does CSS stand for?",
-    "route": "/css/trivia/css-definition",
-    "tech": "css",
-    "difficulty": "easy",
-    "summary": "CSS stands for Cascading Style Sheets, but the practical production angle is the cascade itself: specificity, source order, and competing rules that create hard-to-debug styling bugs.",
-    "tags": [
-      "css",
-      "basics",
-      "definition",
-      "styles",
-      "html"
-    ],
-    "access": "free",
-    "estimatedMinutes": 7,
-    "updatedAt": "2026-04-05",
-    "schemaVersion": "question.v1",
-    "assetRef": "questions/css/trivia.json#css-definition"
   },
   {
     "id": "css-display-flex",
@@ -2296,27 +2109,6 @@
     "assetRef": "questions/css/trivia.json#css-padding-property"
   },
   {
-    "id": "css-box-model",
-    "family": "question",
-    "title": "What is the box model in CSS?",
-    "route": "/css/trivia/css-box-model",
-    "tech": "css",
-    "difficulty": "intermediate",
-    "summary": "The CSS box model is the source of countless sizing bugs. Explain content, padding, border, margin, box-sizing, and why width calculations break when teams forget what is included.",
-    "tags": [
-      "css",
-      "box-model",
-      "layout",
-      "basics",
-      "spacing"
-    ],
-    "access": "free",
-    "estimatedMinutes": 7,
-    "updatedAt": "2026-04-05",
-    "schemaVersion": "question.v1",
-    "assetRef": "questions/css/trivia.json#css-box-model"
-  },
-  {
     "id": "css-grid-vs-flexbox",
     "family": "question",
     "title": "What is the difference between Grid and Flexbox, and when should each be used?",
@@ -2336,27 +2128,6 @@
     "updatedAt": "2026-01-30",
     "schemaVersion": "question.v1",
     "assetRef": "questions/css/trivia.json#css-grid-vs-flexbox"
-  },
-  {
-    "id": "css-id-vs-class",
-    "family": "question",
-    "title": "What is the difference between id and class selectors?",
-    "route": "/css/trivia/css-id-vs-class",
-    "tech": "css",
-    "difficulty": "easy",
-    "summary": "An id is unique on a page and selected with #id; a class can be reused and selected with .class. IDs have higher specificity and are often used for anchors or JS hooks, while classes are for styling groups.",
-    "tags": [
-      "css",
-      "selectors",
-      "id",
-      "class",
-      "specificity"
-    ],
-    "access": "free",
-    "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
-    "schemaVersion": "question.v1",
-    "assetRef": "questions/css/trivia.json#css-id-vs-class"
   },
   {
     "id": "css-inline-internal-external",
@@ -2399,51 +2170,6 @@
     "updatedAt": "2026-01-30",
     "schemaVersion": "question.v1",
     "assetRef": "questions/css/trivia.json#css-margin-vs-padding"
-  },
-  {
-    "id": "css-position-relative-absolute-fixed",
-    "family": "question",
-    "title": "What is the difference between position: relative, absolute, and fixed?",
-    "route": "/css/trivia/css-position-relative-absolute-fixed",
-    "tech": "css",
-    "difficulty": "intermediate",
-    "summary": "Position: relative keeps the element in normal flow but allows offsetting it; absolute removes it from flow and positions it relative to the nearest positioned ancestor; fixed removes it from flow and usually anchors to the viewport.",
-    "tags": [
-      "css",
-      "position",
-      "layout",
-      "relative",
-      "absolute",
-      "fixed",
-      "stacking",
-      "offsets"
-    ],
-    "access": "free",
-    "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
-    "schemaVersion": "question.v1",
-    "assetRef": "questions/css/trivia.json#css-position-relative-absolute-fixed"
-  },
-  {
-    "id": "css-visibility-vs-display",
-    "family": "question",
-    "title": "What is the difference between visibility: hidden and display: none?",
-    "route": "/css/trivia/css-visibility-vs-display",
-    "tech": "css",
-    "difficulty": "intermediate",
-    "summary": "Both visibility and display control element rendering in CSS, but they behave differently.",
-    "tags": [
-      "css",
-      "layout",
-      "visibility",
-      "display",
-      "basics"
-    ],
-    "access": "free",
-    "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
-    "schemaVersion": "question.v1",
-    "assetRef": "questions/css/trivia.json#css-visibility-vs-display"
   },
   {
     "id": "css-color-property",
@@ -2509,25 +2235,53 @@
     "assetRef": "questions/css/trivia.json#css-font-family"
   },
   {
-    "id": "css-text-color",
+    "id": "css-position-relative-absolute-fixed",
     "family": "question",
-    "title": "What property is used to change the text color in CSS?",
-    "route": "/css/trivia/css-text-color",
+    "title": "Why does position: absolute ignore my parent? relative vs absolute vs fixed",
+    "route": "/css/trivia/css-position-relative-absolute-fixed",
     "tech": "css",
-    "difficulty": "easy",
-    "summary": "Use the CSS color property to set text (foreground) color. It supports named colors, hex, rgb/rgba, hsl/hsla, and currentColor. In practice, the key is readable contrast against the background.",
+    "difficulty": "intermediate",
+    "summary": "Fix an absolutely positioned element that escapes its parent: absolute uses the nearest ancestor that establishes a containing block, so a position: relative anchor is the fix.",
     "tags": [
       "css",
-      "colors",
-      "text",
-      "properties",
-      "basics"
+      "position",
+      "layout",
+      "relative",
+      "absolute",
+      "fixed",
+      "stacking",
+      "offsets"
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-03-08",
+    "updatedAt": "2026-10-12",
     "schemaVersion": "question.v1",
-    "assetRef": "questions/css/trivia.json#css-text-color"
+    "assetRef": "questions/css/trivia.json#css-position-relative-absolute-fixed"
+  },
+  {
+    "id": "css-cascade-order",
+    "family": "question",
+    "title": "Why doesn't my CSS override apply? Cascade, specificity, and !important",
+    "route": "/css/trivia/css-cascade-order",
+    "tech": "css",
+    "difficulty": "intermediate",
+    "summary": "important hides the real problem instead of fixing it.",
+    "tags": [
+      "css",
+      "cascade",
+      "specificity",
+      "best-practices",
+      "selectors",
+      "order",
+      "basics",
+      "id",
+      "class"
+    ],
+    "access": "free",
+    "estimatedMinutes": 7,
+    "updatedAt": "2026-10-12",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/css/trivia.json#css-cascade-order"
   },
   {
     "id": "css-position-sticky-not-working",
@@ -2552,6 +2306,27 @@
     "updatedAt": "2026-08-12",
     "schemaVersion": "question.v1",
     "assetRef": "questions/css/trivia.json#css-position-sticky-not-working"
+  },
+  {
+    "id": "css-box-model",
+    "family": "question",
+    "title": "Why is this element wider than its width? box-sizing and the box model",
+    "route": "/css/trivia/css-box-model",
+    "tech": "css",
+    "difficulty": "intermediate",
+    "summary": "Debug CSS sizing through the overflow bug: under content-box, width sizes the content and padding plus border are added outside it, so a 300px box renders 344px.",
+    "tags": [
+      "css",
+      "box-model",
+      "layout",
+      "basics",
+      "spacing"
+    ],
+    "access": "free",
+    "estimatedMinutes": 7,
+    "updatedAt": "2026-10-12",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/css/trivia.json#css-box-model"
   },
   {
     "id": "html-contact-form-labeled",
@@ -2932,27 +2707,6 @@
     "updatedAt": "2026-10-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/html/trivia.json#html-semantic-elements"
-  },
-  {
-    "id": "html-br-tag",
-    "family": "question",
-    "title": "What does the <br> tag do?",
-    "route": "/html/trivia/html-br-tag",
-    "tech": "html",
-    "difficulty": "easy",
-    "summary": "The &lt;br&gt; tag inserts a semantic line break inside the same text block. The real pitfall is using it as a layout spacer instead of CSS, which hurts readability, accessibility, and maintainability.",
-    "tags": [
-      "html",
-      "br",
-      "text",
-      "semantics",
-      "line-break"
-    ],
-    "access": "free",
-    "estimatedMinutes": 7,
-    "updatedAt": "2026-04-04",
-    "schemaVersion": "question.v1",
-    "assetRef": "questions/html/trivia.json#html-br-tag"
   },
   {
     "id": "html-title-tag",
@@ -4327,26 +4081,6 @@
     "assetRef": "questions/javascript/coding.json#js-event-emitter-mini"
   },
   {
-    "id": "js-hoisting",
-    "family": "question",
-    "title": "Explain 'hoisting' in JavaScript",
-    "route": "/javascript/trivia/js-hoisting",
-    "tech": "javascript",
-    "difficulty": "intermediate",
-    "summary": "Hoisting is JavaScript declaration processing before execution.",
-    "tags": [
-      "hoisting",
-      "scope",
-      "variables",
-      "functions"
-    ],
-    "access": "free",
-    "estimatedMinutes": 7,
-    "updatedAt": "2026-10-09",
-    "schemaVersion": "question.v1",
-    "assetRef": "questions/javascript/trivia.json#js-hoisting"
-  },
-  {
     "id": "js-closures",
     "family": "question",
     "title": "Explain Closures in JavaScript",
@@ -4367,46 +4101,6 @@
     "assetRef": "questions/javascript/trivia.json#js-closures"
   },
   {
-    "id": "js-event-delegation",
-    "family": "question",
-    "title": "Explain Event Delegation in JavaScript",
-    "route": "/javascript/trivia/js-event-delegation",
-    "tech": "javascript",
-    "difficulty": "intermediate",
-    "summary": "Event delegation uses one ancestor listener instead of many child listeners.",
-    "tags": [
-      "event-delegation",
-      "dom",
-      "events",
-      "bubbling"
-    ],
-    "access": "free",
-    "estimatedMinutes": 7,
-    "updatedAt": "2026-04-08",
-    "schemaVersion": "question.v1",
-    "assetRef": "questions/javascript/trivia.json#js-event-delegation"
-  },
-  {
-    "id": "js-hoisting-tdz",
-    "family": "question",
-    "title": "Explain Hoisting and the Temporal Dead Zone (TDZ)",
-    "route": "/javascript/trivia/js-hoisting-tdz",
-    "tech": "javascript",
-    "difficulty": "intermediate",
-    "summary": "TDZ is the debug reason let, const, and class throw before initialization even though they are hoisted. Strong answers separate TDZ from undeclared identifiers and show the startup bugs this creates in real modules.",
-    "tags": [
-      "hoisting",
-      "temporal-dead-zone",
-      "scope",
-      "variables"
-    ],
-    "access": "free",
-    "estimatedMinutes": 7,
-    "updatedAt": "2026-04-08",
-    "schemaVersion": "question.v1",
-    "assetRef": "questions/javascript/trivia.json#js-hoisting-tdz"
-  },
-  {
     "id": "js-prototypal-inheritance",
     "family": "question",
     "title": "Explain how prototypal inheritance works in JavaScript",
@@ -4425,47 +4119,6 @@
     "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-prototypal-inheritance"
-  },
-  {
-    "id": "js-this-keyword",
-    "family": "question",
-    "title": "Explain the `this` keyword in JavaScript",
-    "route": "/javascript/trivia/js-this-keyword",
-    "tech": "javascript",
-    "difficulty": "intermediate",
-    "summary": "The value of `this` is a call-site problem, not a definition-site feature. Strong answers show detached methods, callback context loss, module and class-field follow-ups, and when `bind()` or arrows are the right fix.",
-    "tags": [
-      "binding",
-      "context",
-      "functions",
-      "this"
-    ],
-    "access": "free",
-    "estimatedMinutes": 7,
-    "updatedAt": "2026-04-10",
-    "schemaVersion": "question.v1",
-    "assetRef": "questions/javascript/trivia.json#js-this-keyword"
-  },
-  {
-    "id": "js-var-let-const-hoisting",
-    "family": "question",
-    "title": "Explain the difference in hoisting between `var`, `let`, and `const`",
-    "route": "/javascript/trivia/js-var-let-const-hoisting",
-    "tech": "javascript",
-    "difficulty": "intermediate",
-    "summary": "var, let, and const are all hoisted, but interviewers usually care about three axes at once: access-before-declaration behavior, scope boundaries, and redeclaration/reassignment rules.",
-    "tags": [
-      "hoisting",
-      "variables",
-      "let",
-      "const",
-      "scope"
-    ],
-    "access": "free",
-    "estimatedMinutes": 7,
-    "updatedAt": "2026-04-08",
-    "schemaVersion": "question.v1",
-    "assetRef": "questions/javascript/trivia.json#js-var-let-const-hoisting"
   },
   {
     "id": "js-compact",
@@ -4861,27 +4514,6 @@
     "assetRef": "questions/javascript/trivia.json#web-performance-optimize-load-time"
   },
   {
-    "id": "js-calback-hell-resolved-with-promise",
-    "family": "question",
-    "title": "How does Promise resolve callback hell in JavaScript?",
-    "route": "/javascript/trivia/js-calback-hell-resolved-with-promise",
-    "tech": "javascript",
-    "difficulty": "intermediate",
-    "summary": "Callback hell is a legacy async debugging problem: deep nesting duplicates error handling and sequencing logic.",
-    "tags": [
-      "callbacks",
-      "promise",
-      "asynchronous-javascript",
-      "error-handling",
-      "refactoring"
-    ],
-    "access": "free",
-    "estimatedMinutes": 7,
-    "updatedAt": "2026-04-10",
-    "schemaVersion": "question.v1",
-    "assetRef": "questions/javascript/trivia.json#js-calback-hell-resolved-with-promise"
-  },
-  {
     "id": "ai-streaming-data-handling",
     "family": "question",
     "title": "How should a front-end handle streaming data from an AI model?",
@@ -4902,27 +4534,6 @@
     "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#ai-streaming-data-handling"
-  },
-  {
-    "id": "js-check-data-type-with-typeof",
-    "family": "question",
-    "title": "How to check data type in JavaScript using typeof",
-    "route": "/javascript/trivia/js-check-data-type-with-typeof",
-    "tech": "javascript",
-    "difficulty": "intermediate",
-    "summary": "The typeof operator is the fastest built-in way to inspect value types at runtime in JavaScript, but it has well-known edge cases such as typeof null, arrays returning object, and NaN returning number. toString.",
-    "tags": [
-      "typeof",
-      "data-types",
-      "runtime-checks",
-      "debugging",
-      "validation"
-    ],
-    "access": "free",
-    "estimatedMinutes": 7,
-    "updatedAt": "2026-03-02",
-    "schemaVersion": "question.v1",
-    "assetRef": "questions/javascript/trivia.json#js-check-data-type-with-typeof"
   },
   {
     "id": "js-compare-two-objects",
@@ -5528,27 +5139,6 @@
     "assetRef": "questions/javascript/trivia.json#js-mock-vs-stub-vs-spy"
   },
   {
-    "id": "js-mutability-vs-immutability",
-    "family": "question",
-    "title": "Mutability vs Immutability in JavaScript (State, References, and Side Effects)",
-    "route": "/javascript/trivia/js-mutability-vs-immutability",
-    "tech": "javascript",
-    "difficulty": "intermediate",
-    "summary": "Mutable data can be changed in place, while immutable data is never modified — instead, new copies are created.",
-    "tags": [
-      "immutability",
-      "state",
-      "state-management",
-      "change-detection",
-      "objects"
-    ],
-    "access": "free",
-    "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
-    "schemaVersion": "question.v1",
-    "assetRef": "questions/javascript/trivia.json#js-mutability-vs-immutability"
-  },
-  {
     "id": "js-object-create-vs-new",
     "family": "question",
     "title": "Object.create vs new in JavaScript (Prototypes, Constructors, and Inheritance)",
@@ -5744,27 +5334,6 @@
     "assetRef": "questions/javascript/trivia.json#js-var-hoisting-shadowing-output"
   },
   {
-    "id": "js-promise-fundamental-understanding",
-    "family": "question",
-    "title": "Promise - Fundamental Understanding",
-    "route": "/javascript/trivia/js-promise-fundamental-understanding",
-    "tech": "javascript",
-    "difficulty": "intermediate",
-    "summary": "Promise fundamentals are under-the-hood mechanics: executor timing, single settlement, chain propagation, and microtask ordering.",
-    "tags": [
-      "promise",
-      "asynchronous-javascript",
-      "microtasks",
-      "error-handling",
-      "interview-question"
-    ],
-    "access": "free",
-    "estimatedMinutes": 7,
-    "updatedAt": "2026-04-10",
-    "schemaVersion": "question.v1",
-    "assetRef": "questions/javascript/trivia.json#js-promise-fundamental-understanding"
-  },
-  {
     "id": "js-promise-combinators-all-allsettled-race-any",
     "family": "question",
     "title": "Promise.all vs allSettled vs race vs any (JavaScript Promise Combinators)",
@@ -5804,27 +5373,6 @@
     "updatedAt": "2026-07-14",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/coding.json#js-promise-any"
-  },
-  {
-    "id": "js-promises-async-await",
-    "family": "question",
-    "title": "Promises and async/await",
-    "route": "/javascript/trivia/js-promises-async-await",
-    "tech": "javascript",
-    "difficulty": "intermediate",
-    "summary": "Promises and async/await use the same async model, but production decisions are really about concurrency, stale-request cancellation, request identity, and error boundaries rather than syntax alone.",
-    "tags": [
-      "async-await",
-      "concurrency",
-      "error-handling",
-      "microtasks",
-      "promise"
-    ],
-    "access": "free",
-    "estimatedMinutes": 7,
-    "updatedAt": "2026-04-10",
-    "schemaVersion": "question.v1",
-    "assetRef": "questions/javascript/trivia.json#js-promises-async-await"
   },
   {
     "id": "js-prototype-vs-proto",
@@ -6204,28 +5752,6 @@
     "assetRef": "questions/javascript/coding.json#js-array-sort"
   },
   {
-    "id": "js-spread-vs-rest-parameters",
-    "family": "question",
-    "title": "Spread operator vs rest parameters in JavaScript",
-    "route": "/javascript/trivia/js-spread-vs-rest-parameters",
-    "tech": "javascript",
-    "difficulty": "intermediate",
-    "summary": "Spread and rest use the same ... syntax but solve opposite problems. Spread expands arrays/objects into individual values, while rest collects multiple values into one array.",
-    "tags": [
-      "spread-operator",
-      "rest-parameters",
-      "es6",
-      "functions",
-      "arrays",
-      "objects"
-    ],
-    "access": "free",
-    "estimatedMinutes": 7,
-    "updatedAt": "2026-03-02",
-    "schemaVersion": "question.v1",
-    "assetRef": "questions/javascript/trivia.json#js-spread-vs-rest-parameters"
-  },
-  {
     "id": "sse-vs-websocket-real-time",
     "family": "question",
     "title": "SSE vs WebSocket in JavaScript: which real-time transport should you choose?",
@@ -6459,28 +5985,6 @@
     "assetRef": "questions/javascript/coding.json#js-throttle"
   },
   {
-    "id": "js-tree-shaking",
-    "family": "question",
-    "title": "Tree-Shaking: How It Works and Common Pitfalls",
-    "route": "/javascript/trivia/js-tree-shaking",
-    "tech": "javascript",
-    "difficulty": "intermediate",
-    "summary": "Tree shaking is dead-code elimination, but real bundler results depend on ESM, side-effect declarations, and import shape.",
-    "tags": [
-      "modules",
-      "build",
-      "tooling",
-      "optimization",
-      "tree",
-      "performance"
-    ],
-    "access": "free",
-    "estimatedMinutes": 7,
-    "updatedAt": "2026-04-04",
-    "schemaVersion": "question.v1",
-    "assetRef": "questions/javascript/trivia.json#js-tree-shaking"
-  },
-  {
     "id": "js-truthy-falsy-pass-by-value-reference-strict-equality-use-case",
     "family": "question",
     "title": "Truthy/falsy, pass-by-value vs reference, and strict equality: practical use case",
@@ -6630,27 +6134,6 @@
     "assetRef": "questions/javascript/trivia.json#js-arrow-functions"
   },
   {
-    "id": "js-callbacks",
-    "family": "question",
-    "title": "What are callbacks in JavaScript?",
-    "route": "/javascript/trivia/js-callbacks",
-    "tech": "javascript",
-    "difficulty": "easy",
-    "summary": "Callbacks are the original control-flow hook in JavaScript. Strong answers explain inversion of control, callback hell, legacy async debugging, and why callbacks still fit repeated-notification APIs like DOM events.",
-    "tags": [
-      "async",
-      "callbacks",
-      "event-loop",
-      "functions",
-      "higher-order-functions"
-    ],
-    "access": "free",
-    "estimatedMinutes": 7,
-    "updatedAt": "2026-04-10",
-    "schemaVersion": "question.v1",
-    "assetRef": "questions/javascript/trivia.json#js-callbacks"
-  },
-  {
     "id": "js-classes",
     "family": "question",
     "title": "What are classes in JavaScript?",
@@ -6715,27 +6198,6 @@
     "assetRef": "questions/javascript/trivia.json#js-cookie-options"
   },
   {
-    "id": "js-data-types",
-    "family": "question",
-    "title": "What are the various data types in JavaScript?",
-    "route": "/javascript/trivia/js-data-types",
-    "tech": "javascript",
-    "difficulty": "easy",
-    "summary": "JavaScript has eight main data types: seven primitives (string, number, bigint, boolean, undefined, symbol, null) and one non-primitive type (object).",
-    "tags": [
-      "data-types",
-      "basics",
-      "fundamentals",
-      "primitives",
-      "objects"
-    ],
-    "access": "free",
-    "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
-    "schemaVersion": "question.v1",
-    "assetRef": "questions/javascript/trivia.json#js-data-types"
-  },
-  {
     "id": "js-design-patterns",
     "family": "question",
     "title": "What do you mean by JavaScript Design Patterns?",
@@ -6796,27 +6258,6 @@
     "updatedAt": "2026-04-19",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-currying"
-  },
-  {
-    "id": "js-event-bubbling-capturing",
-    "family": "question",
-    "title": "What is event bubbling and capturing in JavaScript?",
-    "route": "/javascript/trivia/js-event-bubbling-capturing",
-    "tech": "javascript",
-    "difficulty": "intermediate",
-    "summary": "Event bubbling and capturing matter most when nested buttons trigger parents, delegated menus read the wrong node, or stopPropagation hides the real bug.",
-    "tags": [
-      "dom",
-      "events",
-      "bubbling",
-      "capturing",
-      "event-propagation"
-    ],
-    "access": "free",
-    "estimatedMinutes": 7,
-    "updatedAt": "2026-04-10",
-    "schemaVersion": "question.v1",
-    "assetRef": "questions/javascript/trivia.json#js-event-bubbling-capturing"
   },
   {
     "id": "js-memoization",
@@ -7006,27 +6447,6 @@
     "assetRef": "questions/javascript/trivia.json#js-repaint-reflow"
   },
   {
-    "id": "js-nan-property",
-    "family": "question",
-    "title": "What is the NaN property in JavaScript?",
-    "route": "/javascript/trivia/js-nan-property",
-    "tech": "javascript",
-    "difficulty": "easy",
-    "summary": "NaN matters in production numeric validation because it is the only JavaScript value not equal to itself, global isNaN coerces inputs, and empty strings or malformed payloads create common mistake cases.",
-    "tags": [
-      "global-object",
-      "isnan",
-      "nan",
-      "numbers",
-      "type-coercion"
-    ],
-    "access": "free",
-    "estimatedMinutes": 7,
-    "updatedAt": "2026-04-04",
-    "schemaVersion": "question.v1",
-    "assetRef": "questions/javascript/trivia.json#js-nan-property"
-  },
-  {
     "id": "js-null-coalescing-operator",
     "family": "question",
     "title": "What is the nullish coalescing operator (??) in JavaScript?",
@@ -7134,6 +6554,167 @@
     "assetRef": "questions/javascript/trivia.json#js-async-await-example-when-promise-is-preferred"
   },
   {
+    "id": "js-tree-shaking",
+    "family": "question",
+    "title": "Why didn't tree shaking remove my unused import? sideEffects and barrels",
+    "route": "/javascript/trivia/js-tree-shaking",
+    "tech": "javascript",
+    "difficulty": "intermediate",
+    "summary": "Debug a bundle that stays fat after importing one export: CommonJS dependencies, a missing sideEffects flag, barrel re-exports, and namespace imports all block elimination.",
+    "tags": [
+      "modules",
+      "build",
+      "tooling",
+      "optimization",
+      "tree",
+      "performance"
+    ],
+    "access": "free",
+    "estimatedMinutes": 7,
+    "updatedAt": "2026-10-12",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/javascript/trivia.json#js-tree-shaking"
+  },
+  {
+    "id": "js-mutability-vs-immutability",
+    "family": "question",
+    "title": "Why does changing the copy mutate the original? References and Object.freeze",
+    "route": "/javascript/trivia/js-mutability-vs-immutability",
+    "tech": "javascript",
+    "difficulty": "intermediate",
+    "summary": "Explain reference bugs the way interviewers probe them: objects and arrays are mutable, spread copies are shallow, const freezes the binding and not the value, and frameworks that compare by reference skip updates when you mutate in place.",
+    "tags": [
+      "immutability",
+      "state",
+      "state-management",
+      "change-detection",
+      "objects"
+    ],
+    "access": "free",
+    "estimatedMinutes": 7,
+    "updatedAt": "2026-10-12",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/javascript/trivia.json#js-mutability-vs-immutability"
+  },
+  {
+    "id": "js-promises-async-await",
+    "family": "question",
+    "title": "Why does my .then() get undefined? Promise chains, async/await, and callback hell",
+    "route": "/javascript/trivia/js-promises-async-await",
+    "tech": "javascript",
+    "difficulty": "intermediate",
+    "summary": "Trace a Promise chain the way interviewers do: executor timing, microtask order, what each handler returns, why a missing return hands undefined to the next step, and how chains and async/await replace nested callbacks without solving cancellation on their own.",
+    "tags": [
+      "async-await",
+      "concurrency",
+      "error-handling",
+      "microtasks",
+      "promise",
+      "async",
+      "callbacks",
+      "event-loop",
+      "functions",
+      "higher-order-functions",
+      "refactoring"
+    ],
+    "access": "free",
+    "estimatedMinutes": 7,
+    "updatedAt": "2026-10-12",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/javascript/trivia.json#js-promises-async-await"
+  },
+  {
+    "id": "js-event-delegation",
+    "family": "question",
+    "title": "Why does my click handler fire twice? Bubbling, capturing, and event delegation",
+    "route": "/javascript/trivia/js-event-delegation",
+    "tech": "javascript",
+    "difficulty": "intermediate",
+    "summary": "currentTarget, why stopPropagation hides the real bug, and how one delegated listener with closest() handles dynamic lists safely.",
+    "tags": [
+      "event-delegation",
+      "dom",
+      "events",
+      "bubbling",
+      "capturing",
+      "event-propagation"
+    ],
+    "access": "free",
+    "estimatedMinutes": 7,
+    "updatedAt": "2026-10-12",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/javascript/trivia.json#js-event-delegation"
+  },
+  {
+    "id": "js-spread-vs-rest-parameters",
+    "family": "question",
+    "title": "Why does the spread copy still share nested objects? Spread vs rest",
+    "route": "/javascript/trivia/js-spread-vs-rest-parameters",
+    "tech": "javascript",
+    "difficulty": "intermediate",
+    "summary": "Spread expands, rest gathers, and both are shallow.",
+    "tags": [
+      "spread-operator",
+      "rest-parameters",
+      "es6",
+      "functions",
+      "arrays",
+      "objects"
+    ],
+    "access": "free",
+    "estimatedMinutes": 7,
+    "updatedAt": "2026-10-12",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/javascript/trivia.json#js-spread-vs-rest-parameters"
+  },
+  {
+    "id": "js-check-data-type-with-typeof",
+    "family": "question",
+    "title": "Why does typeof null return 'object'? Data types, typeof, and NaN checks",
+    "route": "/javascript/trivia/js-check-data-type-with-typeof",
+    "tech": "javascript",
+    "difficulty": "intermediate",
+    "summary": "Explain the eight JavaScript data types through the runtime checks that go wrong: typeof null is 'object', arrays are objects, NaN is a number that is not equal to itself, and global isNaN coerces its input.",
+    "tags": [
+      "typeof",
+      "data-types",
+      "runtime-checks",
+      "debugging",
+      "validation",
+      "primitives",
+      "nan",
+      "type-coercion"
+    ],
+    "access": "free",
+    "estimatedMinutes": 7,
+    "updatedAt": "2026-10-12",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/javascript/trivia.json#js-check-data-type-with-typeof"
+  },
+  {
+    "id": "js-hoisting",
+    "family": "question",
+    "title": "Why does var log undefined while let throws? Hoisting and the TDZ",
+    "route": "/javascript/trivia/js-hoisting",
+    "tech": "javascript",
+    "difficulty": "intermediate",
+    "summary": "Debug the three hoisting symptoms interviewers probe: var reads as undefined, let and const throw a ReferenceError inside the temporal dead zone, and function declarations run before their line.",
+    "tags": [
+      "hoisting",
+      "scope",
+      "variables",
+      "functions",
+      "temporal-dead-zone",
+      "let",
+      "const"
+    ],
+    "access": "free",
+    "estimatedMinutes": 7,
+    "updatedAt": "2026-10-12",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/javascript/trivia.json#js-hoisting"
+  },
+  {
     "id": "js-why-eval-function-considered-dangerous",
     "family": "question",
     "title": "Why is the eval() function considered dangerous in JavaScript?",
@@ -7154,6 +6735,26 @@
     "updatedAt": "2026-04-10",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-why-eval-function-considered-dangerous"
+  },
+  {
+    "id": "js-this-keyword",
+    "family": "question",
+    "title": "Why is this undefined in my callback? Detached methods, arrows, and bind",
+    "route": "/javascript/trivia/js-this-keyword",
+    "tech": "javascript",
+    "difficulty": "intermediate",
+    "summary": "Debug the most common this failure: a method passed as a callback loses its receiver.",
+    "tags": [
+      "binding",
+      "context",
+      "functions",
+      "this"
+    ],
+    "access": "free",
+    "estimatedMinutes": 7,
+    "updatedAt": "2026-10-12",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/javascript/trivia.json#js-this-keyword"
   },
   {
     "id": "react-render-nothing-return-value",
@@ -7264,27 +6865,6 @@
     "assetRef": "questions/react/coding.json#react-debug-double-render"
   },
   {
-    "id": "react-diffing-algorithm",
-    "family": "question",
-    "title": "Explain how React’s diffing algorithm determines which parts of the DOM to update.",
-    "route": "/react/trivia/react-diffing-algorithm",
-    "tech": "react",
-    "difficulty": "intermediate",
-    "summary": "React’s diffing algorithm uses O(n) heuristics based on element type and keys.",
-    "tags": [
-      "react",
-      "rendering",
-      "diffing",
-      "performance",
-      "basics"
-    ],
-    "access": "free",
-    "estimatedMinutes": 7,
-    "updatedAt": "2026-10-09",
-    "schemaVersion": "question.v1",
-    "assetRef": "questions/react/trivia.json#react-diffing-algorithm"
-  },
-  {
     "id": "react-functional-vs-class-components",
     "family": "question",
     "title": "Functional vs class components in React: what actually differs?",
@@ -7369,27 +6949,6 @@
     "assetRef": "questions/react/trivia.json#react-lifting-state-up"
   },
   {
-    "id": "react-prevent-unnecessary-rerenders",
-    "family": "question",
-    "title": "How can you prevent unnecessary re-renders in React?",
-    "route": "/react/trivia/react-prevent-unnecessary-rerenders",
-    "tech": "react",
-    "difficulty": "hard",
-    "summary": "Prevent unnecessary React rerenders with a profiling-first workflow: find unstable props, broad context churn, and memoization pitfalls before reaching for blanket useMemo or useCallback.",
-    "tags": [
-      "react",
-      "performance",
-      "memoization",
-      "rendering",
-      "basics"
-    ],
-    "access": "free",
-    "estimatedMinutes": 7,
-    "updatedAt": "2026-04-10",
-    "schemaVersion": "question.v1",
-    "assetRef": "questions/react/trivia.json#react-prevent-unnecessary-rerenders"
-  },
-  {
     "id": "react-fragments-dom-and-reconciliation",
     "family": "question",
     "title": "How do fragments affect the rendered DOM and reconciliation?",
@@ -7430,27 +6989,6 @@
     "updatedAt": "2026-10-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-jsx-transform-and-why-not-required"
-  },
-  {
-    "id": "react-rerender-decision-and-render",
-    "family": "question",
-    "title": "How does React decide when to re-render a component, and what role does render() play in that process?",
-    "route": "/react/trivia/react-rerender-decision-and-render",
-    "tech": "react",
-    "difficulty": "intermediate",
-    "summary": "Explain React rerenders through render vs commit, parent-child propagation, memo bailouts, context churn, and the follow-up confusion around remounts versus ordinary rerenders.",
-    "tags": [
-      "react",
-      "rendering",
-      "state",
-      "props",
-      "performance"
-    ],
-    "access": "free",
-    "estimatedMinutes": 7,
-    "updatedAt": "2026-10-09",
-    "schemaVersion": "question.v1",
-    "assetRef": "questions/react/trivia.json#react-rerender-decision-and-render"
   },
   {
     "id": "react-concurrent-rendering",
@@ -8035,25 +7573,25 @@
     "assetRef": "questions/react/trivia.json#react-useeffect-purpose"
   },
   {
-    "id": "react-portals",
+    "id": "react-usememo-vs-usecallback",
     "family": "question",
-    "title": "What are React portals and when would you use them?",
-    "route": "/react/trivia/react-portals",
+    "title": "useMemo vs useCallback: when does memoizing make it slower?",
+    "route": "/react/trivia/react-usememo-vs-usecallback",
     "tech": "react",
     "difficulty": "intermediate",
-    "summary": "Portals render children into a DOM node outside the parent hierarchy, useful for modals, tooltips, and overlays while preserving React event bubbling.",
+    "summary": "useMemo caches a computed value, useCallback a function reference.",
     "tags": [
       "react",
-      "portals",
-      "modals",
-      "overlays",
-      "dom"
+      "memoization",
+      "callbacks",
+      "performance",
+      "hooks"
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-10-12",
     "schemaVersion": "question.v1",
-    "assetRef": "questions/react/trivia.json#react-portals"
+    "assetRef": "questions/react/trivia.json#react-usememo-vs-usecallback"
   },
   {
     "id": "react-render-props-vs-hocs",
@@ -8119,90 +7657,6 @@
     "assetRef": "questions/react/trivia.json#react-core-problem-and-non-goals"
   },
   {
-    "id": "react-reconciliation",
-    "family": "question",
-    "title": "What is React reconciliation and how does it work?",
-    "route": "/react/trivia/react-reconciliation",
-    "tech": "react",
-    "difficulty": "intermediate",
-    "summary": "Reconciliation is React’s identity model for deciding whether a subtree keeps state or remounts. The high-value interview explanation is about preserve-vs-replace behavior when element types or keys change.",
-    "tags": [
-      "react",
-      "rendering",
-      "reconciliation",
-      "diffing",
-      "basics"
-    ],
-    "access": "free",
-    "estimatedMinutes": 7,
-    "updatedAt": "2026-04-04",
-    "schemaVersion": "question.v1",
-    "assetRef": "questions/react/trivia.json#react-reconciliation"
-  },
-  {
-    "id": "react-controlled-vs-uncontrolled",
-    "family": "question",
-    "title": "What is the difference between controlled and uncontrolled components?",
-    "route": "/react/trivia/react-controlled-vs-uncontrolled",
-    "tech": "react",
-    "difficulty": "intermediate",
-    "summary": "Compare controlled and uncontrolled React inputs through validation, reset behavior, defaultValue, file-input limits, and the production warning/debugging cases that appear when a field switches ownership.",
-    "tags": [
-      "react",
-      "forms",
-      "state",
-      "inputs",
-      "basics"
-    ],
-    "access": "free",
-    "estimatedMinutes": 7,
-    "updatedAt": "2026-04-09",
-    "schemaVersion": "question.v1",
-    "assetRef": "questions/react/trivia.json#react-controlled-vs-uncontrolled"
-  },
-  {
-    "id": "react-usememo-vs-usecallback",
-    "family": "question",
-    "title": "What is the difference between useMemo() and useCallback()?",
-    "route": "/react/trivia/react-usememo-vs-usecallback",
-    "tech": "react",
-    "difficulty": "intermediate",
-    "summary": "useMemo memoizes a computed value; useCallback memoizes a function reference. Use them to avoid expensive recalculations or re-renders, but only when it actually helps.",
-    "tags": [
-      "react",
-      "memoization",
-      "callbacks",
-      "performance",
-      "hooks"
-    ],
-    "access": "free",
-    "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
-    "schemaVersion": "question.v1",
-    "assetRef": "questions/react/trivia.json#react-usememo-vs-usecallback"
-  },
-  {
-    "id": "react-strictmode-purpose",
-    "family": "question",
-    "title": "What is the purpose of the React.StrictMode component?",
-    "route": "/react/trivia/react-strictmode-purpose",
-    "tech": "react",
-    "difficulty": "intermediate",
-    "summary": "StrictMode runs extra checks in development to surface unsafe lifecycles, deprecated APIs, and side-effect bugs. It does not affect production output.",
-    "tags": [
-      "react",
-      "strictmode",
-      "devtools",
-      "warnings",
-      "hooks"
-    ],
-    "access": "free",
-    "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
-    "schemaVersion": "question.v1",
-    "assetRef": "questions/react/trivia.json#react-strictmode-purpose"
-  },
-  {
     "id": "react-keys-in-lists",
     "family": "question",
     "title": "What is the significance of keys in lists in React?",
@@ -8222,47 +7676,6 @@
     "updatedAt": "2026-10-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-keys-in-lists"
-  },
-  {
-    "id": "react-virtual-dom",
-    "family": "question",
-    "title": "What is the Virtual DOM in React, and how does it relate to reconciliation?",
-    "route": "/react/trivia/react-virtual-dom",
-    "tech": "react",
-    "difficulty": "intermediate",
-    "summary": "Explain the React Virtual DOM through reconciliation, commit work, and performance debugging. Emphasize the under-the-hood difference between a re-render, a diff, and a real DOM mutation.",
-    "tags": [
-      "react",
-      "virtual-dom",
-      "rendering",
-      "performance",
-      "basics"
-    ],
-    "access": "free",
-    "estimatedMinutes": 7,
-    "updatedAt": "2026-10-09",
-    "schemaVersion": "question.v1",
-    "assetRef": "questions/react/trivia.json#react-virtual-dom"
-  },
-  {
-    "id": "react-error-boundaries-what-they-solve",
-    "family": "question",
-    "title": "What problem do Error Boundaries solve? What don’t they catch?",
-    "route": "/react/trivia/react-error-boundaries-what-they-solve",
-    "tech": "react",
-    "difficulty": "intermediate",
-    "summary": "Explain Error Boundaries through render-crash isolation, fallback UI, monitoring, and the common production mistake of expecting them to catch event-handler, async, or SSR errors.",
-    "tags": [
-      "react",
-      "error-handling",
-      "components",
-      "best-practices"
-    ],
-    "access": "free",
-    "estimatedMinutes": 7,
-    "updatedAt": "2026-10-09",
-    "schemaVersion": "question.v1",
-    "assetRef": "questions/react/trivia.json#react-error-boundaries-what-they-solve"
   },
   {
     "id": "react-function-treated-as-component-rules",
@@ -8306,68 +7719,6 @@
     "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-18-whats-new"
-  },
-  {
-    "id": "react-useeffect-vs-uselayouteffect",
-    "family": "question",
-    "title": "What’s the difference between useEffect and useLayoutEffect? When does it matter?",
-    "route": "/react/trivia/react-useeffect-vs-uselayouteffect",
-    "tech": "react",
-    "difficulty": "intermediate",
-    "summary": "Explain the timing guarantees of useEffect and useLayoutEffect, why useLayoutEffect blocks repainting, and when layout work needs a pre-paint guarantee.",
-    "tags": [
-      "react",
-      "hooks",
-      "effects",
-      "performance",
-      "dom"
-    ],
-    "access": "free",
-    "estimatedMinutes": 7,
-    "updatedAt": "2026-07-14",
-    "schemaVersion": "question.v1",
-    "assetRef": "questions/react/trivia.json#react-useeffect-vs-uselayouteffect"
-  },
-  {
-    "id": "react-useref-vs-usestate",
-    "family": "question",
-    "title": "What’s the difference between useRef and useState? When should each be used?",
-    "route": "/react/trivia/react-useref-vs-usestate",
-    "tech": "react",
-    "difficulty": "intermediate",
-    "summary": "Explain how useState triggers re-renders and is used for UI state, while useRef holds a mutable value that persists across renders without re-rendering — and when each is the correct tool (DOM refs, timers, previous values, avoiding stale closures, and render-driving state).",
-    "tags": [
-      "react",
-      "hooks",
-      "state",
-      "dom"
-    ],
-    "access": "free",
-    "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
-    "schemaVersion": "question.v1",
-    "assetRef": "questions/react/trivia.json#react-useref-vs-usestate"
-  },
-  {
-    "id": "react-component-rerendering",
-    "family": "question",
-    "title": "When does React re-render a component, and when does it actually update the DOM?",
-    "route": "/react/trivia/react-component-rerendering",
-    "tech": "react",
-    "difficulty": "intermediate",
-    "summary": "Explain React rerendering through render work, reconciliation, commit, context fanout, and remount-vs-rerender identity bugs that make the DOM story easy to misread.",
-    "tags": [
-      "react",
-      "rendering",
-      "state",
-      "props",
-      "basics"
-    ],
-    "access": "free",
-    "estimatedMinutes": 7,
-    "updatedAt": "2026-04-10",
-    "schemaVersion": "question.v1",
-    "assetRef": "questions/react/trivia.json#react-component-rerendering"
   },
   {
     "id": "react-hooks-youve-used",
@@ -8434,6 +7785,70 @@
     "assetRef": "questions/react/trivia.json#react-pure-function-of-props-and-state"
   },
   {
+    "id": "react-diffing-algorithm",
+    "family": "question",
+    "title": "Why did React remount my component instead of updating it? Reconciliation, keys, and element type",
+    "route": "/react/trivia/react-diffing-algorithm",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "Explain reconciliation through the remount bug: a changed element type, an unstable key, or a shifted position makes React discard a subtree and its state.",
+    "tags": [
+      "react",
+      "rendering",
+      "diffing",
+      "performance",
+      "basics",
+      "reconciliation",
+      "virtual-dom"
+    ],
+    "access": "free",
+    "estimatedMinutes": 7,
+    "updatedAt": "2026-10-12",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/trivia.json#react-diffing-algorithm"
+  },
+  {
+    "id": "react-error-boundaries-what-they-solve",
+    "family": "question",
+    "title": "Why didn't my Error Boundary catch the error? Async, event handlers, and SSR",
+    "route": "/react/trivia/react-error-boundaries-what-they-solve",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "Error Boundaries isolate render-time crashes only.",
+    "tags": [
+      "react",
+      "error-handling",
+      "components",
+      "best-practices"
+    ],
+    "access": "free",
+    "estimatedMinutes": 7,
+    "updatedAt": "2026-10-12",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/trivia.json#react-error-boundaries-what-they-solve"
+  },
+  {
+    "id": "react-portals",
+    "family": "question",
+    "title": "Why do events from a portal still bubble to the parent? React portals",
+    "route": "/react/trivia/react-portals",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "Portals render children into another DOM node while keeping them in the React tree, so synthetic events bubble to React parents and context flows through.",
+    "tags": [
+      "react",
+      "portals",
+      "modals",
+      "overlays",
+      "dom"
+    ],
+    "access": "free",
+    "estimatedMinutes": 7,
+    "updatedAt": "2026-10-12",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/trivia.json#react-portals"
+  },
+  {
     "id": "react-why-hooks-have-rules",
     "family": "question",
     "title": "Why do Hooks have rules? What breaks if you call Hooks conditionally?",
@@ -8474,6 +7889,50 @@
     "updatedAt": "2026-01-30",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-context-performance-issues"
+  },
+  {
+    "id": "react-rerender-decision-and-render",
+    "family": "question",
+    "title": "Why does my component re-render when its props didn't change?",
+    "route": "/react/trivia/react-rerender-decision-and-render",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "Trace a React re-render to its real trigger: a parent render, prop identity that changed even though values look equal, a context provider value recreated inline, or a remount caused by key, type, or position.",
+    "tags": [
+      "react",
+      "rendering",
+      "state",
+      "props",
+      "performance",
+      "basics",
+      "memoization"
+    ],
+    "access": "free",
+    "estimatedMinutes": 7,
+    "updatedAt": "2026-10-12",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/trivia.json#react-rerender-decision-and-render"
+  },
+  {
+    "id": "react-useeffect-vs-uselayouteffect",
+    "family": "question",
+    "title": "Why does my UI flicker on first paint? useEffect vs useLayoutEffect",
+    "route": "/react/trivia/react-useeffect-vs-uselayouteffect",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "Explain the one-frame flicker: useEffect gives no pre-paint guarantee (it generally runs after paint for non-interaction updates), so a layout correction made there can be visible for a frame, while useLayoutEffect runs after DOM mutations and blocks paint until synchronous updates finish.",
+    "tags": [
+      "react",
+      "hooks",
+      "effects",
+      "performance",
+      "dom"
+    ],
+    "access": "free",
+    "estimatedMinutes": 7,
+    "updatedAt": "2026-10-12",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/trivia.json#react-useeffect-vs-uselayouteffect"
   },
   {
     "id": "react-why-batching-state-updates",
@@ -8560,6 +8019,27 @@
     "assetRef": "questions/react/trivia.json#react-why-event-delegation"
   },
   {
+    "id": "react-controlled-vs-uncontrolled",
+    "family": "question",
+    "title": "Why does React warn about an uncontrolled input becoming controlled?",
+    "route": "/react/trivia/react-controlled-vs-uncontrolled",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "Fix the 'changing an uncontrolled input to be controlled' warning by fixing ownership: an undefined initial value lets the DOM own the input until state arrives.",
+    "tags": [
+      "react",
+      "forms",
+      "state",
+      "inputs",
+      "basics"
+    ],
+    "access": "free",
+    "estimatedMinutes": 7,
+    "updatedAt": "2026-10-12",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/trivia.json#react-controlled-vs-uncontrolled"
+  },
+  {
     "id": "react-strictmode-double-invoke-effects",
     "family": "question",
     "title": "Why does useEffect run twice in React StrictMode?",
@@ -8572,13 +8052,35 @@
       "effects",
       "strictmode",
       "hooks",
-      "best-practices"
+      "best-practices",
+      "devtools",
+      "warnings"
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-06-29",
+    "updatedAt": "2026-10-12",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-strictmode-double-invoke-effects"
+  },
+  {
+    "id": "react-useref-vs-usestate",
+    "family": "question",
+    "title": "Why doesn't changing a ref re-render? useRef vs useState",
+    "route": "/react/trivia/react-useref-vs-usestate",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "current, while setState schedules a render.",
+    "tags": [
+      "react",
+      "hooks",
+      "state",
+      "dom"
+    ],
+    "access": "free",
+    "estimatedMinutes": 7,
+    "updatedAt": "2026-10-12",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/trivia.json#react-useref-vs-usestate"
   },
   {
     "id": "react-derived-state-anti-pattern",

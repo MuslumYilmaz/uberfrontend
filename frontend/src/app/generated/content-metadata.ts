@@ -263,6 +263,11 @@ export const TRACK_REGISTRY = {
           "kind": "trivia"
         },
         {
+          "id": "js-shallow-vs-deep-copy",
+          "tech": "javascript",
+          "kind": "trivia"
+        },
+        {
           "id": "js-array-prototype-reduce",
           "tech": "javascript",
           "kind": "coding"
@@ -283,7 +288,12 @@ export const TRACK_REGISTRY = {
           "kind": "coding"
         },
         {
-          "id": "js-var-let-const-hoisting",
+          "id": "js-hoisting",
+          "tech": "javascript",
+          "kind": "trivia"
+        },
+        {
+          "id": "js-var-hoisting-shadowing-output",
           "tech": "javascript",
           "kind": "trivia"
         },
@@ -318,17 +328,7 @@ export const TRACK_REGISTRY = {
           "kind": "trivia"
         },
         {
-          "id": "js-hoisting-tdz",
-          "tech": "javascript",
-          "kind": "trivia"
-        },
-        {
           "id": "js-event-delegation",
-          "tech": "javascript",
-          "kind": "trivia"
-        },
-        {
-          "id": "js-event-bubbling-capturing",
           "tech": "javascript",
           "kind": "trivia"
         },
@@ -624,12 +624,12 @@ export const TRACK_REGISTRY = {
           "kind": "trivia"
         },
         {
-          "id": "js-hoisting-tdz",
+          "id": "js-hoisting",
           "tech": "javascript",
           "kind": "trivia"
         },
         {
-          "id": "js-var-let-const-hoisting",
+          "id": "js-var-hoisting-shadowing-output",
           "tech": "javascript",
           "kind": "trivia"
         },
@@ -659,11 +659,6 @@ export const TRACK_REGISTRY = {
           "kind": "trivia"
         },
         {
-          "id": "js-event-bubbling-capturing",
-          "tech": "javascript",
-          "kind": "trivia"
-        },
-        {
           "id": "js-call-apply-bind",
           "tech": "javascript",
           "kind": "trivia"
@@ -679,7 +674,7 @@ export const TRACK_REGISTRY = {
           "kind": "trivia"
         },
         {
-          "id": "js-data-types",
+          "id": "js-check-data-type-with-typeof",
           "tech": "javascript",
           "kind": "trivia"
         },
@@ -695,6 +690,11 @@ export const TRACK_REGISTRY = {
         },
         {
           "id": "js-object-destructuring",
+          "tech": "javascript",
+          "kind": "trivia"
+        },
+        {
+          "id": "js-spread-vs-rest-parameters",
           "tech": "javascript",
           "kind": "trivia"
         },
@@ -744,17 +744,17 @@ export const TRACK_REGISTRY = {
           "kind": "trivia"
         },
         {
-          "id": "css-definition",
-          "tech": "css",
-          "kind": "trivia"
-        },
-        {
           "id": "css-box-model",
           "tech": "css",
           "kind": "trivia"
         },
         {
-          "id": "css-specificity-hierarchy",
+          "id": "css-position-relative-absolute-fixed",
+          "tech": "css",
+          "kind": "trivia"
+        },
+        {
+          "id": "css-cascade-order",
           "tech": "css",
           "kind": "trivia"
         },
@@ -769,7 +769,7 @@ export const TRACK_REGISTRY = {
           "kind": "trivia"
         },
         {
-          "id": "css-media-queries",
+          "id": "css-make-element-responsive",
           "tech": "css",
           "kind": "trivia"
         },
@@ -1533,7 +1533,7 @@ export const TAG_REGISTRY = {
 };
 
 export const SHOWCASE_STATS = {
-  "totalQuestions": 514,
+  "totalQuestions": 489,
   "premiumPracticeCount": 165,
   "companyCounts": {
     "airbnb": {
@@ -1543,15 +1543,15 @@ export const SHOWCASE_STATS = {
       "system": 0
     },
     "amazon": {
-      "all": 39,
+      "all": 38,
       "coding": 15,
-      "trivia": 24,
+      "trivia": 23,
       "system": 0
     },
     "apple": {
-      "all": 34,
+      "all": 32,
       "coding": 20,
-      "trivia": 14,
+      "trivia": 12,
       "system": 0
     },
     "bytedance": {
@@ -1561,15 +1561,15 @@ export const SHOWCASE_STATS = {
       "system": 0
     },
     "google": {
-      "all": 44,
+      "all": 42,
       "coding": 11,
-      "trivia": 33,
+      "trivia": 31,
       "system": 0
     },
     "meta": {
-      "all": 50,
+      "all": 48,
       "coding": 16,
-      "trivia": 34,
+      "trivia": 32,
       "system": 0
     },
     "microsoft": {

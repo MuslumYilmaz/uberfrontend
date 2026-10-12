@@ -1494,9 +1494,9 @@ export const routes: Routes = [
         techs: ['css'],
         featuredLinks: [
           {
-            label: 'CSS specificity hierarchy',
-            route: ['/css/trivia/css-specificity-hierarchy'],
-            path: '/css/trivia/css-specificity-hierarchy',
+            label: 'Why an element is wider than its width',
+            route: ['/css/trivia/css-box-model'],
+            path: '/css/trivia/css-box-model',
           },
           {
             label: 'Cascade order and origin rules',

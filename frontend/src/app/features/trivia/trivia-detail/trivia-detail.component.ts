@@ -1399,9 +1399,15 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
 
   updatedLabel(q?: Question | null): string | null {
     if (!q) return null;
-    const iso = this.resolveUpdatedIso(q);
+    const iso = this.resolveDisplayedUpdatedIso(q);
     if (!iso) return null;
     return new Date(iso).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+  }
+
+  /** The visible "Updated" date follows the sitemap lastmod and the JSON-LD dateModified; the catalog updatedAt is only the fallback. */
+  private resolveDisplayedUpdatedIso(q: Question): string | null {
+    const canonical = this.seo.buildCanonicalUrl(`/${this.tech}/trivia/${q.id}`);
+    return seoContentDateModified(canonical) ?? this.resolveUpdatedIso(q);
   }
 
   private updateSeo(q: Question | null): void {

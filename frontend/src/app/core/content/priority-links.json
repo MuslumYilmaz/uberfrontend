@@ -98,7 +98,7 @@
           "surfaces": ["home", "coding"]
         },
         {
-          "label": "constructor vs ngOnInit vs ngAfterViewInit in Angular",
+          "label": "ngOnInit vs ngAfterViewInit in Angular",
           "route": "/angular/trivia/angular-lifecycle-constructor-oninit-afterviewinit-dom",
           "surfaces": ["home"]
         }

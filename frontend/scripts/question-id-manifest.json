@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-08-12T21:04:38.689Z",
+  "generatedAt": "2026-10-12T06:48:30.604Z",
   "entries": [
     {
       "tech": "angular",
@@ -485,18 +485,6 @@
     {
       "tech": "css",
       "kind": "trivia",
-      "id": "css-background-color",
-      "file": "css/trivia.json"
-    },
-    {
-      "tech": "css",
-      "kind": "trivia",
-      "id": "css-border-property",
-      "file": "css/trivia.json"
-    },
-    {
-      "tech": "css",
-      "kind": "trivia",
       "id": "css-box-model",
       "file": "css/trivia.json"
     },
@@ -509,18 +497,6 @@
     {
       "tech": "css",
       "kind": "trivia",
-      "id": "css-center-text",
-      "file": "css/trivia.json"
-    },
-    {
-      "tech": "css",
-      "kind": "trivia",
-      "id": "css-change-text-size",
-      "file": "css/trivia.json"
-    },
-    {
-      "tech": "css",
-      "kind": "trivia",
       "id": "css-color-property",
       "file": "css/trivia.json"
     },
@@ -528,12 +504,6 @@
       "tech": "css",
       "kind": "trivia",
       "id": "css-custom-properties",
-      "file": "css/trivia.json"
-    },
-    {
-      "tech": "css",
-      "kind": "trivia",
-      "id": "css-definition",
       "file": "css/trivia.json"
     },
     {
@@ -569,31 +539,13 @@
     {
       "tech": "css",
       "kind": "trivia",
-      "id": "css-id-vs-class",
-      "file": "css/trivia.json"
-    },
-    {
-      "tech": "css",
-      "kind": "trivia",
       "id": "css-inline-internal-external",
       "file": "css/trivia.json"
     },
     {
       "tech": "css",
       "kind": "trivia",
-      "id": "css-link-html",
-      "file": "css/trivia.json"
-    },
-    {
-      "tech": "css",
-      "kind": "trivia",
       "id": "css-make-element-responsive",
-      "file": "css/trivia.json"
-    },
-    {
-      "tech": "css",
-      "kind": "trivia",
-      "id": "css-make-text-bold",
       "file": "css/trivia.json"
     },
     {
@@ -606,12 +558,6 @@
       "tech": "css",
       "kind": "trivia",
       "id": "css-margin-vs-padding",
-      "file": "css/trivia.json"
-    },
-    {
-      "tech": "css",
-      "kind": "trivia",
-      "id": "css-media-queries",
       "file": "css/trivia.json"
     },
     {
@@ -636,18 +582,6 @@
       "tech": "css",
       "kind": "trivia",
       "id": "css-pseudo-classes-elements",
-      "file": "css/trivia.json"
-    },
-    {
-      "tech": "css",
-      "kind": "trivia",
-      "id": "css-specificity-hierarchy",
-      "file": "css/trivia.json"
-    },
-    {
-      "tech": "css",
-      "kind": "trivia",
-      "id": "css-text-color",
       "file": "css/trivia.json"
     },
     {
@@ -750,12 +684,6 @@
       "tech": "html",
       "kind": "trivia",
       "id": "html-block-inline-elements",
-      "file": "html/trivia.json"
-    },
-    {
-      "tech": "html",
-      "kind": "trivia",
-      "id": "html-br-tag",
       "file": "html/trivia.json"
     },
     {
@@ -1559,19 +1487,7 @@
     {
       "tech": "javascript",
       "kind": "trivia",
-      "id": "js-calback-hell-resolved-with-promise",
-      "file": "javascript/trivia.json"
-    },
-    {
-      "tech": "javascript",
-      "kind": "trivia",
       "id": "js-call-apply-bind",
-      "file": "javascript/trivia.json"
-    },
-    {
-      "tech": "javascript",
-      "kind": "trivia",
-      "id": "js-callbacks",
       "file": "javascript/trivia.json"
     },
     {
@@ -1625,12 +1541,6 @@
     {
       "tech": "javascript",
       "kind": "trivia",
-      "id": "js-data-types",
-      "file": "javascript/trivia.json"
-    },
-    {
-      "tech": "javascript",
-      "kind": "trivia",
       "id": "js-deferred-scripts",
       "file": "javascript/trivia.json"
     },
@@ -1656,12 +1566,6 @@
       "tech": "javascript",
       "kind": "trivia",
       "id": "js-esm-vs-cjs",
-      "file": "javascript/trivia.json"
-    },
-    {
-      "tech": "javascript",
-      "kind": "trivia",
-      "id": "js-event-bubbling-capturing",
       "file": "javascript/trivia.json"
     },
     {
@@ -1704,12 +1608,6 @@
       "tech": "javascript",
       "kind": "trivia",
       "id": "js-hoisting",
-      "file": "javascript/trivia.json"
-    },
-    {
-      "tech": "javascript",
-      "kind": "trivia",
-      "id": "js-hoisting-tdz",
       "file": "javascript/trivia.json"
     },
     {
@@ -1775,12 +1673,6 @@
     {
       "tech": "javascript",
       "kind": "trivia",
-      "id": "js-nan-property",
-      "file": "javascript/trivia.json"
-    },
-    {
-      "tech": "javascript",
-      "kind": "trivia",
       "id": "js-null-coalescing-operator",
       "file": "javascript/trivia.json"
     },
@@ -1824,12 +1716,6 @@
       "tech": "javascript",
       "kind": "trivia",
       "id": "js-promise-combinators-all-allsettled-race-any",
-      "file": "javascript/trivia.json"
-    },
-    {
-      "tech": "javascript",
-      "kind": "trivia",
-      "id": "js-promise-fundamental-understanding",
       "file": "javascript/trivia.json"
     },
     {
@@ -1932,12 +1818,6 @@
       "tech": "javascript",
       "kind": "trivia",
       "id": "js-var-hoisting-shadowing-output",
-      "file": "javascript/trivia.json"
-    },
-    {
-      "tech": "javascript",
-      "kind": "trivia",
-      "id": "js-var-let-const-hoisting",
       "file": "javascript/trivia.json"
     },
     {
@@ -2153,12 +2033,6 @@
     {
       "tech": "react",
       "kind": "trivia",
-      "id": "react-component-rerendering",
-      "file": "react/trivia.json"
-    },
-    {
-      "tech": "react",
-      "kind": "trivia",
       "id": "react-concurrent-rendering",
       "file": "react/trivia.json"
     },
@@ -2279,19 +2153,7 @@
     {
       "tech": "react",
       "kind": "trivia",
-      "id": "react-prevent-unnecessary-rerenders",
-      "file": "react/trivia.json"
-    },
-    {
-      "tech": "react",
-      "kind": "trivia",
       "id": "react-pure-function-of-props-and-state",
-      "file": "react/trivia.json"
-    },
-    {
-      "tech": "react",
-      "kind": "trivia",
-      "id": "react-reconciliation",
       "file": "react/trivia.json"
     },
     {
@@ -2327,12 +2189,6 @@
     {
       "tech": "react",
       "kind": "trivia",
-      "id": "react-strictmode-purpose",
-      "file": "react/trivia.json"
-    },
-    {
-      "tech": "react",
-      "kind": "trivia",
       "id": "react-useeffect-purpose",
       "file": "react/trivia.json"
     },
@@ -2358,12 +2214,6 @@
       "tech": "react",
       "kind": "trivia",
       "id": "react-usestate-purpose",
-      "file": "react/trivia.json"
-    },
-    {
-      "tech": "react",
-      "kind": "trivia",
-      "id": "react-virtual-dom",
       "file": "react/trivia.json"
     },
     {
@@ -2743,6 +2593,233 @@
       "kind": "trivia",
       "id": "vuex-state-management",
       "file": "vue/trivia.json"
+    }
+  ],
+  "retired": [
+    {
+      "tech": "css",
+      "kind": "trivia",
+      "id": "css-background-color",
+      "file": "css/trivia.json",
+      "redirectTo": "/css/interview-questions",
+      "retiredAt": "2026-10-12",
+      "reason": "beginner definition page folded into the CSS hub (GreatFrontEnd/MDN-owned query, never indexed)"
+    },
+    {
+      "tech": "css",
+      "kind": "trivia",
+      "id": "css-border-property",
+      "file": "css/trivia.json",
+      "redirectTo": "/css/interview-questions",
+      "retiredAt": "2026-10-12",
+      "reason": "beginner definition page folded into the CSS hub (GreatFrontEnd/MDN-owned query, never indexed)"
+    },
+    {
+      "tech": "css",
+      "kind": "trivia",
+      "id": "css-center-text",
+      "file": "css/trivia.json",
+      "redirectTo": "/css/interview-questions",
+      "retiredAt": "2026-10-12",
+      "reason": "beginner definition page folded into the CSS hub (GreatFrontEnd/MDN-owned query, never indexed)"
+    },
+    {
+      "tech": "css",
+      "kind": "trivia",
+      "id": "css-change-text-size",
+      "file": "css/trivia.json",
+      "redirectTo": "/css/interview-questions",
+      "retiredAt": "2026-10-12",
+      "reason": "beginner definition page folded into the CSS hub (GreatFrontEnd/MDN-owned query, never indexed)"
+    },
+    {
+      "tech": "css",
+      "kind": "trivia",
+      "id": "css-definition",
+      "file": "css/trivia.json",
+      "redirectTo": "/css/interview-questions",
+      "retiredAt": "2026-10-12",
+      "reason": "beginner definition page folded into the CSS hub (GreatFrontEnd/MDN-owned query, never indexed)"
+    },
+    {
+      "tech": "css",
+      "kind": "trivia",
+      "id": "css-id-vs-class",
+      "file": "css/trivia.json",
+      "redirectTo": "/css/trivia/css-cascade-order",
+      "retiredAt": "2026-10-12",
+      "reason": "merged into css-cascade-order (duplicate concept page; see docs/audits/greatfrontend-sitemap-2026-10-11.md)"
+    },
+    {
+      "tech": "css",
+      "kind": "trivia",
+      "id": "css-link-html",
+      "file": "css/trivia.json",
+      "redirectTo": "/css/interview-questions",
+      "retiredAt": "2026-10-12",
+      "reason": "beginner definition page folded into the CSS hub (GreatFrontEnd/MDN-owned query, never indexed)"
+    },
+    {
+      "tech": "css",
+      "kind": "trivia",
+      "id": "css-make-text-bold",
+      "file": "css/trivia.json",
+      "redirectTo": "/css/interview-questions",
+      "retiredAt": "2026-10-12",
+      "reason": "beginner definition page folded into the CSS hub (GreatFrontEnd/MDN-owned query, never indexed)"
+    },
+    {
+      "tech": "css",
+      "kind": "trivia",
+      "id": "css-media-queries",
+      "file": "css/trivia.json",
+      "redirectTo": "/css/trivia/css-make-element-responsive",
+      "retiredAt": "2026-10-12",
+      "reason": "merged into css-make-element-responsive (duplicate concept page; see docs/audits/greatfrontend-sitemap-2026-10-11.md)"
+    },
+    {
+      "tech": "css",
+      "kind": "trivia",
+      "id": "css-specificity-hierarchy",
+      "file": "css/trivia.json",
+      "redirectTo": "/css/trivia/css-cascade-order",
+      "retiredAt": "2026-10-12",
+      "reason": "merged into css-cascade-order (duplicate concept page; see docs/audits/greatfrontend-sitemap-2026-10-11.md)"
+    },
+    {
+      "tech": "css",
+      "kind": "trivia",
+      "id": "css-text-color",
+      "file": "css/trivia.json",
+      "redirectTo": "/css/interview-questions",
+      "retiredAt": "2026-10-12",
+      "reason": "beginner definition page folded into the CSS hub (GreatFrontEnd/MDN-owned query, never indexed)"
+    },
+    {
+      "tech": "html",
+      "kind": "trivia",
+      "id": "html-br-tag",
+      "file": "html/trivia.json",
+      "redirectTo": "/html/interview-questions",
+      "retiredAt": "2026-10-12",
+      "reason": "beginner definition page folded into the HTML hub (never indexed)"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-calback-hell-resolved-with-promise",
+      "file": "javascript/trivia.json",
+      "redirectTo": "/javascript/trivia/js-promises-async-await",
+      "retiredAt": "2026-10-12",
+      "reason": "merged into js-promises-async-await (duplicate concept page; see docs/audits/greatfrontend-sitemap-2026-10-11.md)"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-callbacks",
+      "file": "javascript/trivia.json",
+      "redirectTo": "/javascript/trivia/js-promises-async-await",
+      "retiredAt": "2026-10-12",
+      "reason": "merged into js-promises-async-await (duplicate concept page; see docs/audits/greatfrontend-sitemap-2026-10-11.md)"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-data-types",
+      "file": "javascript/trivia.json",
+      "redirectTo": "/javascript/trivia/js-check-data-type-with-typeof",
+      "retiredAt": "2026-10-12",
+      "reason": "merged into js-check-data-type-with-typeof (duplicate concept page; see docs/audits/greatfrontend-sitemap-2026-10-11.md)"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-event-bubbling-capturing",
+      "file": "javascript/trivia.json",
+      "redirectTo": "/javascript/trivia/js-event-delegation",
+      "retiredAt": "2026-10-12",
+      "reason": "merged into js-event-delegation (duplicate concept page; see docs/audits/greatfrontend-sitemap-2026-10-11.md)"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-hoisting-tdz",
+      "file": "javascript/trivia.json",
+      "redirectTo": "/javascript/trivia/js-hoisting",
+      "retiredAt": "2026-10-12",
+      "reason": "merged into js-hoisting (duplicate concept page; see docs/audits/greatfrontend-sitemap-2026-10-11.md)"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-nan-property",
+      "file": "javascript/trivia.json",
+      "redirectTo": "/javascript/trivia/js-check-data-type-with-typeof",
+      "retiredAt": "2026-10-12",
+      "reason": "merged into js-check-data-type-with-typeof (duplicate concept page; see docs/audits/greatfrontend-sitemap-2026-10-11.md)"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-promise-fundamental-understanding",
+      "file": "javascript/trivia.json",
+      "redirectTo": "/javascript/trivia/js-promises-async-await",
+      "retiredAt": "2026-10-12",
+      "reason": "merged into js-promises-async-await (duplicate concept page; see docs/audits/greatfrontend-sitemap-2026-10-11.md)"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-var-let-const-hoisting",
+      "file": "javascript/trivia.json",
+      "redirectTo": "/javascript/trivia/js-hoisting",
+      "retiredAt": "2026-10-12",
+      "reason": "merged into js-hoisting (duplicate concept page; see docs/audits/greatfrontend-sitemap-2026-10-11.md)"
+    },
+    {
+      "tech": "react",
+      "kind": "trivia",
+      "id": "react-component-rerendering",
+      "file": "react/trivia.json",
+      "redirectTo": "/react/trivia/react-rerender-decision-and-render",
+      "retiredAt": "2026-10-12",
+      "reason": "merged into react-rerender-decision-and-render (duplicate concept page; see docs/audits/greatfrontend-sitemap-2026-10-11.md)"
+    },
+    {
+      "tech": "react",
+      "kind": "trivia",
+      "id": "react-prevent-unnecessary-rerenders",
+      "file": "react/trivia.json",
+      "redirectTo": "/react/trivia/react-rerender-decision-and-render",
+      "retiredAt": "2026-10-12",
+      "reason": "merged into react-rerender-decision-and-render (duplicate concept page; see docs/audits/greatfrontend-sitemap-2026-10-11.md)"
+    },
+    {
+      "tech": "react",
+      "kind": "trivia",
+      "id": "react-reconciliation",
+      "file": "react/trivia.json",
+      "redirectTo": "/react/trivia/react-diffing-algorithm",
+      "retiredAt": "2026-10-12",
+      "reason": "merged into react-diffing-algorithm (duplicate concept page; see docs/audits/greatfrontend-sitemap-2026-10-11.md)"
+    },
+    {
+      "tech": "react",
+      "kind": "trivia",
+      "id": "react-strictmode-purpose",
+      "file": "react/trivia.json",
+      "redirectTo": "/react/trivia/react-strictmode-double-invoke-effects",
+      "retiredAt": "2026-10-12",
+      "reason": "merged into react-strictmode-double-invoke-effects (duplicate concept page; see docs/audits/greatfrontend-sitemap-2026-10-11.md)"
+    },
+    {
+      "tech": "react",
+      "kind": "trivia",
+      "id": "react-virtual-dom",
+      "file": "react/trivia.json",
+      "redirectTo": "/react/trivia/react-diffing-algorithm",
+      "retiredAt": "2026-10-12",
+      "reason": "merged into react-diffing-algorithm (duplicate concept page; see docs/audits/greatfrontend-sitemap-2026-10-11.md)"
     }
   ]
 }

@@ -417,7 +417,7 @@ describe('CompanyPreviewComponent', () => {
     const resourcePaths = [
       '/javascript/coding/js-debounce',
       '/javascript/coding/js-take-latest',
-      '/react/trivia/react-prevent-unnecessary-rerenders',
+      '/react/trivia/react-rerender-decision-and-render',
       '/javascript/trivia/content-delivery-caching-strategies-streaming',
       '/system-design/infinite-scroll-list',
       '/system-design/dashboard-widgets-draggable-resizable',

@@ -1,208 +1,5 @@
 [
   {
-    "id": "css-definition",
-    "title": "What does CSS stand for?",
-    "technology": "css",
-    "difficulty": "easy",
-    "importance": 2,
-    "description": "CSS stands for Cascading Style Sheets, but the practical production angle is the cascade itself: specificity, source order, and competing rules that create hard-to-debug styling bugs.",
-    "seo": {
-      "title": "CSS meaning in production: the cascade, specificity, and style-debugging basics",
-      "description": "CSS means Cascading Style Sheets, but the real beyond-basics topic is how the cascade, specificity, and source order create or prevent styling bugs."
-    },
-    "answer": {
-      "blocks": [
-        {
-          "type": "text",
-          "text": "<strong>Debug lens</strong><br><br>CSS means <strong>Cascading Style Sheets</strong>, but the word that matters in production is <em>cascading</em>. Multiple rules can target the same element, and the browser must decide which one wins. That is why CSS basics quickly turn into specificity, override, and debugging problems instead of just adding color and spacing."
-        },
-        {
-          "type": "list",
-          "columns": [
-            "Word",
-            "What it means in practice"
-          ],
-          "rows": [
-            [
-              "<strong>Cascading</strong>",
-              "If two rules conflict, the browser picks the winner using specificity + source order (+ !important when present)."
-            ],
-            [
-              "<strong>Style</strong>",
-              "Defines appearance: color, spacing, typography, layout, animation."
-            ],
-            [
-              "<strong>Sheets</strong>",
-              "Rules usually live in reusable .css files, not inline everywhere."
-            ]
-          ],
-          "caption": "Why the full name matters, not just the acronym."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Example: what cascade actually means</strong>"
-        },
-        {
-          "type": "code",
-          "language": "css",
-          "code": "p { color: #444; }\n.article p { color: #1d4ed8; }\np { color: #111; }\n\n/* <p> inside .article will be blue (#1d4ed8)\n   because .article p is more specific. */"
-        },
-        {
-          "type": "text",
-          "text": "This is why CSS is not just paint. Good CSS is about predictable rule systems, not random overrides."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Why this matters for interviews and real work</strong><br><ul><li>You can debug style bugs quickly by reasoning about selector specificity.</li><li>You can scale styles by using tokens/classes instead of one-off inline rules.</li><li>You can ship consistent UI across pages and breakpoints.</li></ul>"
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Imagine your UI has multiple stylists giving instructions. CSS cascade is the rulebook deciding whose instruction the browser follows."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li>CSS = Cascading Style Sheets.</li><li>It controls presentation, not content structure.</li><li>The cascade is the key mental model for debugging and maintainability.</li><li>If you can explain why a rule wins, you understand CSS at a practical level.</li></ul>"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Practical scenario</strong><br>You receive a bug: button color is wrong only in cards. You inspect selectors and find a more specific card rule overriding your base button class.<br><br><strong>Common pitfalls</strong><br><ul><li>Using <code>!important</code> as a first reaction.</li><li>Stacking deeply nested selectors that are hard to reason about.</li><li>Mixing inline styles with class-based systems.</li></ul><strong>Trade-off or test tip</strong><br>Prefer predictable class + token systems. In DevTools, check the Styles panel to see exactly which rule wins and why."
-        }
-      ]
-    },
-    "access": "free",
-    "type": "trivia",
-    "tags": [
-      "css",
-      "basics",
-      "definition",
-      "styles",
-      "html"
-    ],
-    "updatedAt": "2026-04-05",
-    "incidentCard": {
-      "title": "Cascade Meaning Check",
-      "scenario": "A teammate says, \"CSS just means styling. The 'cascading' part is basically branding language, not something you really need to understand.\" Later, a button looks right on one page and wrong inside a card component because a more specific selector overrides the base class. Another teammate says, \"That bug is exactly why the cascade matters. CSS is not only about colors and spacing. You need to understand how rules win through specificity, source order, and importance.\" Which explanation is better?",
-      "options": [
-        {
-          "id": "css-is-only-presentation-and-cascade-is-not-practical",
-          "label": "The first explanation is better. CSS is just a presentation layer, so knowing the acronym is enough. Real style bugs usually come from browser quirks, not from how conflicting rules are resolved."
-        },
-        {
-          "id": "cascade-only-matters-with-important-flags",
-          "label": "The better explanation is that the cascade only starts mattering when `!important` is involved. Without `!important`, CSS rules do not really compete with each other in a meaningful way."
-        },
-        {
-          "id": "cascade-explains-which-style-rule-wins",
-          "label": "The second explanation is better. CSS stands for Cascading Style Sheets, and the cascade is the rule system that decides which declaration wins when multiple rules target the same element. That is why specificity and source order matter in real debugging."
-        }
-      ],
-      "correctOptionId": "cascade-explains-which-style-rule-wins",
-      "rereadPrompt": "Not quite. The key lesson is that CSS is not just visual paint. The cascade is the mechanism that decides which rule wins, and that is central to debugging selector conflicts in real projects."
-    }
-  },
-  {
-    "id": "css-link-html",
-    "title": "How do you link a CSS file to an HTML document?",
-    "technology": "css",
-    "difficulty": "easy",
-    "importance": 4,
-    "description": "Link CSS with <link rel=\"stylesheet\" href=\"...\"> inside the document head. Loading styles early prevents flashes of unstyled content, and most real bugs come from wrong paths, wrong placement, or render-blocking trade-offs you should debug in DevTools.",
-    "seo": {
-      "title": "Link CSS to HTML: debug broken paths and avoid FOUC",
-      "description": "Use <link rel=\"stylesheet\"> in <head>, debug 404/path mistakes, and avoid unstyled first paint when wiring CSS into real pages."
-    },
-    "answer": {
-      "blocks": [
-        {
-          "type": "text",
-          "text": "<strong>Direct answer</strong><br><br>Use a <code>&lt;link&gt;</code> tag in the <code>&lt;head&gt;</code> of your HTML file:"
-        },
-        {
-          "type": "code",
-          "language": "html",
-          "code": "<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <link rel=\"stylesheet\" href=\"styles.css\">\n</head>"
-        },
-        {
-          "type": "list",
-          "columns": [
-            "Part",
-            "Why it matters"
-          ],
-          "rows": [
-            [
-              "<code>rel=\"stylesheet\"</code>",
-              "Tells the browser this file is CSS."
-            ],
-            [
-              "<code>href=\"styles.css\"</code>",
-              "Path to your stylesheet (relative or absolute)."
-            ],
-            [
-              "Placed in <code>&lt;head&gt;</code>",
-              "Lets styles load before visible content paints."
-            ]
-          ],
-          "caption": "Three things that must be correct."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Path examples</strong>"
-        },
-        {
-          "type": "code",
-          "language": "html",
-          "code": "<!-- same folder -->\n<link rel=\"stylesheet\" href=\"styles.css\">\n\n<!-- inside /assets/css -->\n<link rel=\"stylesheet\" href=\"assets/css/main.css\">\n\n<!-- root-relative -->\n<link rel=\"stylesheet\" href=\"/css/main.css\">"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Fast debugging checklist</strong><br><ul><li>Open DevTools Network tab and confirm the CSS file returns 200 (not 404).</li><li>Verify the path is correct for the current HTML location.</li><li>Hard refresh if caching hides a recent change.</li></ul>"
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>The <code>&lt;link&gt;</code> tag is your page's style import line. Without it, HTML renders with browser defaults."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li>Use <code>&lt;link rel=\"stylesheet\" href=\"...\"&gt;</code> in <code>&lt;head&gt;</code>.</li><li>Correct path + early loading are the two big correctness factors.</li><li>External stylesheets improve reuse and caching across pages.</li></ul>"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Practical scenario</strong><br>You split a prototype into multiple pages and move shared styles into one stylesheet so all screens stay consistent.<br><br><strong>Common pitfalls</strong><br><ul><li>Wrong relative path after moving files.</li><li>Forgetting <code>rel=\"stylesheet\"</code>.</li><li>Linking CSS too late and causing FOUC.</li></ul><strong>Trade-off or test tip</strong><br>One large CSS file is simpler but heavier upfront; route-level CSS can improve first paint but adds build complexity."
-        }
-      ]
-    },
-    "access": "free",
-    "type": "trivia",
-    "tags": [
-      "css",
-      "html",
-      "link",
-      "external-stylesheet",
-      "head"
-    ],
-    "updatedAt": "2026-03-08",
-    "incidentCard": {
-      "title": "Stylesheet Loading Check",
-      "scenario": "A teammate says, \"I already referenced the CSS file, so the page should be styled,\" but the page still renders with default browser styles. You open the HTML and see they used the wrong tag and placed it late in the document. Another teammate says, \"For an external stylesheet, you need `<link rel=\"stylesheet\" href=\"...\">` in the `<head>` so the browser knows it is CSS and can load it before the page paints.\" Which explanation is better?",
-      "options": [
-        {
-          "id": "use-link-rel-stylesheet-in-head",
-          "label": "The second explanation is better. External CSS should be loaded with `<link rel=\"stylesheet\" href=\"...\">`, usually in the `<head>`, so the browser fetches styles early and applies them before first paint."
-        },
-        {
-          "id": "any-reference-to-css-file-works-the-same",
-          "label": "The first explanation is better. As long as the CSS filename appears somewhere in the HTML, the browser will figure out that it is a stylesheet and load it correctly."
-        },
-        {
-          "id": "stylesheets-should-prefer-body-for-faster-render",
-          "label": "The better explanation is that external stylesheets belong at the end of `<body>` so HTML paints first, and then CSS can catch up afterward without affecting correctness."
-        }
-      ],
-      "correctOptionId": "use-link-rel-stylesheet-in-head",
-      "rereadPrompt": "Not quite. The key lesson is that external CSS is not loaded by magic. The browser expects a proper `<link rel=\"stylesheet\" href=\"...\">`, and putting it in the `<head>` helps avoid unstyled first paint."
-    }
-  },
-  {
     "id": "css-inline-internal-external",
     "title": "What is the difference between inline, internal, and external CSS?",
     "technology": "css",
@@ -334,368 +131,6 @@
     }
   },
   {
-    "id": "css-background-color",
-    "title": "How do you change the background color of a page using CSS?",
-    "technology": "css",
-    "difficulty": "easy",
-    "importance": 2,
-    "description": "Use background-color on the body or on individual elements, but treat it as a readability decision, not just paint. Compare hex/rgb/hsl formats, watch contrast in dark mode, and avoid common theming pitfalls where a \"simple\" color change hurts legibility.",
-    "seo": {
-      "title": "CSS background-color in practice: body vs sections, contrast, and theme pitfalls",
-      "description": "Set page or component backgrounds with accessible contrast, compare color formats, and avoid common theme or readability pitfalls."
-    },
-    "answer": {
-      "blocks": [
-        {
-          "type": "text",
-          "text": "<strong>Overview</strong><br><br>The <code>background-color</code> property is one of the most fundamental styling tools in CSS. It defines the color that appears behind an element’s content and padding. You can apply it to the &lt;body&gt; element to color the entire page, or to specific containers like &lt;div&gt; or &lt;section&gt; for localized visual effects."
-        },
-        {
-          "type": "list",
-          "columns": [
-            "Color Format",
-            "Example",
-            "Description"
-          ],
-          "rows": [
-            [
-              "Named Colors",
-              "background-color: lightblue;",
-              "Simple, readable names such as 'red', 'green', or 'lightblue'."
-            ],
-            [
-              "Hexadecimal",
-              "background-color: #ff5733;",
-              "Defines color with hex codes representing red, green, and blue values."
-            ],
-            [
-              "RGB",
-              "background-color: rgb(255, 200, 100);",
-              "Specifies color using numeric red, green, and blue components (0–255)."
-            ],
-            [
-              "RGBA",
-              "background-color: rgba(0, 0, 0, 0.5);",
-              "Adds transparency with an alpha channel (0 = transparent, 1 = opaque)."
-            ],
-            [
-              "HSL",
-              "background-color: hsl(200, 80%, 50%);",
-              "Represents color by hue, saturation, and lightness."
-            ]
-          ],
-          "caption": "Color value formats supported by background-color"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Example: Coloring the Entire Page</strong>"
-        },
-        {
-          "type": "code",
-          "language": "css",
-          "code": "body {\n  background-color: lavender;\n}"
-        },
-        {
-          "type": "text",
-          "text": "This code sets the background of the entire webpage to a soft lavender color by targeting the &lt;body&gt; element."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Example: Coloring a Specific Section</strong>"
-        },
-        {
-          "type": "code",
-          "language": "css",
-          "code": "div.hero {\n  background-color: linear-gradient(to right, #ff9a9e, #fad0c4);\n  padding: 40px;\n  border-radius: 12px;\n}"
-        },
-        {
-          "type": "text",
-          "text": "Here, a gradient is applied to a &lt;div&gt; with class 'hero'. Although <code>background-color</code> supports solid colors only, CSS allows gradients using the <code>background</code> shorthand."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Accessibility and Design Tips</strong><br><ul><li>Ensure sufficient contrast between text and background colors.</li><li>Light backgrounds are easier for reading long text sections.</li><li>Consistent use of background color enhances brand identity and user experience.</li></ul>"
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of <code>background-color</code> as your page’s <em>canvas color</em> — it sets the tone and mood for everything layered on top."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li>Use <code>background-color</code> to define background hues for any element.</li><li>Supports multiple color systems like HEX, RGB, and HSL.</li><li>Applying it to &lt;body&gt; colors the entire page.</li><li>Combine with gradients or images using the <code>background</code> shorthand.</li></ul>"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Practical scenario</strong><br>Set a card background to highlight selected items in a list.<br><br><strong>Common pitfalls</strong><br><ul><li>Low contrast with text or icons.</li><li>Forgetting background affects stacking and opacity overlays.</li><li>Using hard-coded colors instead of tokens.</li></ul><strong>Trade-off or test tip</strong><br>Tokens ease theming but need maintenance. Test contrast and dark mode.</strong>"
-        }
-      ]
-    },
-    "access": "free",
-    "type": "trivia",
-    "tags": [
-      "css",
-      "colors",
-      "background",
-      "properties",
-      "basics"
-    ],
-    "updatedAt": "2026-01-30",
-    "incidentCard": {
-      "title": "Background Styling Check",
-      "scenario": "A teammate wants to make a page section feel highlighted and writes `background-color: #111;` on the container. Then they try to use `background-color: linear-gradient(...)` for a fancy hero and say, \"It should work because gradients are just colors.\" Another teammate says, \"Use `background-color` for solid fills, but use `background` when you need gradients, images, or layered backgrounds. Also check text contrast after changing the background.\" Which explanation is better?",
-      "options": [
-        {
-          "id": "background-only-affects-visual-mood-not-readability",
-          "label": "The better explanation is that background changes are mostly decorative. As long as the container color looks good, text contrast and page-level readability are not a major concern."
-        },
-        {
-          "id": "background-color-is-for-solid-fills-background-handles-gradients",
-          "label": "The second explanation is better. `background-color` is for solid color fills on an element, including the `body`, while gradients belong in `background` or related background-image syntax. Changing the background also means you need to verify readable text contrast."
-        },
-        {
-          "id": "background-color-and-background-gradient-work-the-same",
-          "label": "The first explanation is better. `background-color` and `background` are interchangeable, so gradients, images, and solid fills can all be safely dropped into `background-color` without changing behavior."
-        }
-      ],
-      "correctOptionId": "background-color-is-for-solid-fills-background-handles-gradients",
-      "rereadPrompt": "Not quite. The key lesson is that `background-color` handles solid color fills, while gradients belong under `background`-related syntax. Any background change also needs a contrast check so the content stays readable."
-    }
-  },
-  {
-    "id": "css-text-color",
-    "title": "What property is used to change the text color in CSS?",
-    "technology": "css",
-    "difficulty": "easy",
-    "importance": 2,
-    "description": "Use the CSS color property to set text (foreground) color. It supports named colors, hex, rgb/rgba, hsl/hsla, and currentColor. In practice, the key is readable contrast against the background.",
-    "seo": {
-      "title": "CSS Text Color Property: How to Use color Correctly",
-      "description": "Understand how the CSS color property changes text color, which formats to use, and how to maintain accessible contrast across themes and backgrounds."
-    },
-    "answer": {
-      "blocks": [
-        {
-          "type": "text",
-          "text": "<strong>Direct answer</strong><br><br>The property is <code>color</code>."
-        },
-        {
-          "type": "code",
-          "language": "css",
-          "code": "h1 {\n  color: #1d4ed8;\n}\n\np {\n  color: rgb(31, 41, 55);\n}"
-        },
-        {
-          "type": "list",
-          "columns": [
-            "Format",
-            "Example",
-            "When teams usually use it"
-          ],
-          "rows": [
-            [
-              "Hex",
-              "<code>color: #0f172a;</code>",
-              "Design tokens and handoff specs."
-            ],
-            [
-              "RGB/RGBA",
-              "<code>color: rgba(15, 23, 42, 0.85);</code>",
-              "When opacity control is needed."
-            ],
-            [
-              "HSL/HSLA",
-              "<code>color: hsl(222 47% 11%);</code>",
-              "Theme tuning with hue/lightness."
-            ],
-            [
-              "currentColor",
-              "<code>border-color: currentColor;</code>",
-              "Keep icon/border aligned with text color."
-            ]
-          ],
-          "caption": "Same property, different value styles."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Accessibility-first example</strong>"
-        },
-        {
-          "type": "code",
-          "language": "css",
-          "code": ":root {\n  --text-primary: #111827;\n  --surface: #ffffff;\n}\n\n.card {\n  background: var(--surface);\n  color: var(--text-primary);\n}"
-        },
-        {
-          "type": "text",
-          "text": "Pick colors as a pair (text + background), not in isolation. Good contrast is part of correctness, not polish."
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>If HTML is the content, <code>color</code> is the ink the user reads. Wrong ink/background pairing makes even correct content unusable."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li>Use <code>color</code> for text/foreground color.</li><li>It supports multiple color formats and inherits down the tree.</li><li>Always validate contrast on real backgrounds and themes.</li></ul>"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Practical scenario</strong><br>You are building form states: default text, helper text, error text, success text. You define semantic token colors and reuse them consistently.<br><br><strong>Common pitfalls</strong><br><ul><li>Using color alone for status (no icon/text label).</li><li>Passing contrast in light mode but failing in dark mode.</li><li>Hard-coding random hex values across components.</li></ul><strong>Trade-off or test tip</strong><br>Design tokens require setup, but they pay off in consistency and theme support."
-        }
-      ]
-    },
-    "access": "free",
-    "type": "trivia",
-    "tags": [
-      "css",
-      "colors",
-      "text",
-      "properties",
-      "basics"
-    ],
-    "updatedAt": "2026-03-08",
-    "incidentCard": {
-      "title": "Text Contrast Check",
-      "scenario": "A teammate wants to make paragraph text lighter and writes `background-color: #6b7280;` on the text element, then says, \"That should change the text color enough.\" Another teammate says, \"The property for text color is `color`, not `background-color`. And once you change text color, you still need to check contrast against the actual background so the content stays readable.\" Which explanation is better?",
-      "options": [
-        {
-          "id": "use-color-for-foreground-text-and-check-contrast",
-          "label": "The second explanation is better. `color` controls text and foreground color, while `background-color` affects the area behind the content. Text color choices should be evaluated together with the background to keep contrast readable."
-        },
-        {
-          "id": "background-color-is-close-enough-for-text-styling",
-          "label": "The first explanation is better. `background-color` and `color` both affect how text looks, so either one is fine as long as the final design appears roughly correct."
-        },
-        {
-          "id": "text-color-does-not-need-background-context",
-          "label": "The better explanation is that text color can be chosen independently. If the hex value looks good in the design file, contrast with the actual page background is usually not an important concern."
-        }
-      ],
-      "correctOptionId": "use-color-for-foreground-text-and-check-contrast",
-      "rereadPrompt": "Not quite. The key lesson is that `color` sets the text itself, not the background behind it. And text color is only correct if it remains readable against the real background."
-    }
-  },
-  {
-    "id": "css-center-text",
-    "title": "How do you center text horizontally in CSS?",
-    "technology": "css",
-    "difficulty": "easy",
-    "importance": 3,
-    "description": "Centering text with text-align is easy, but the common mistake is using it for layout centering when flexbox or grid should own the alignment. Explain inline content vs box alignment and responsive readability trade-offs.",
-    "seo": {
-      "title": "Centering text in CSS: text-align, layout mistakes, and when not to use it",
-      "description": "text-align centers inline content, not whole layout boxes. The common mistake is reaching for it when flexbox or grid should handle alignment."
-    },
-    "answer": {
-      "blocks": [
-        {
-          "type": "text",
-          "text": "<strong>Common mistake</strong><br><br><code>text-align: center</code> centers inline content inside a container; it does not magically center every layout problem. The production/debug issue is using text centering for boxes, buttons, or whole sections that actually need flexbox, grid, or auto margins. Start by asking: am I aligning text, or am I aligning a layout object?"
-        },
-        {
-          "type": "list",
-          "columns": [
-            "Value",
-            "Description",
-            "Common Use"
-          ],
-          "rows": [
-            [
-              "left",
-              "Aligns text to the left edge of the container (default).",
-              "Used for most content."
-            ],
-            [
-              "center",
-              "Centers text horizontally.",
-              "Used for titles, banners, and centered content blocks."
-            ],
-            [
-              "right",
-              "Aligns text to the right edge.",
-              "Used for special design layouts or right-to-left languages."
-            ],
-            [
-              "justify",
-              "Distributes text evenly between margins.",
-              "Used in documents or paragraphs for clean edges."
-            ]
-          ],
-          "caption": "Common values for text-align"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Example: Centering Text in a Div</strong>"
-        },
-        {
-          "type": "code",
-          "language": "html",
-          "code": "<div style=\"text-align: center;\">\n  <h1>Welcome to My Website</h1>\n  <p>This paragraph is centered horizontally within its container.</p>\n</div>"
-        },
-        {
-          "type": "text",
-          "text": "All inline content within the &lt;div&gt; — such as text and inline images — will be horizontally centered."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Example: Using an External CSS Rule</strong>"
-        },
-        {
-          "type": "code",
-          "language": "css",
-          "code": "div.container {\n  text-align: center;\n  border: 2px dashed #999;\n  padding: 20px;\n}"
-        },
-        {
-          "type": "text",
-          "text": "By applying this rule, any text or inline content inside elements with the 'container' class will appear centered, maintaining clean layout separation from HTML structure."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Important Notes</strong><br><ul><li><code>text-align</code> affects inline content, not the container itself.</li><li>To center a block-level element (like a &lt;div&gt;), use <code>margin: 0 auto;</code> instead.</li><li>Combining <code>text-align: center;</code> with <code>display: flex;</code> offers even more control in modern layouts.</li></ul>"
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Imagine a box filled with text — <code>text-align: center;</code> tells everything inside to stand neatly in the middle of that box."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li>Use <code>text-align: center;</code> to center text horizontally within a block container.</li><li>Applies to inline-level content like text and inline images.</li><li>Does not center block-level elements themselves.</li><li>Combine with flexbox or grid for advanced alignment control.</li></ul>"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Practical scenario</strong><br>Center a hero heading and call-to-action text on a landing page.<br><br><strong>Common pitfalls</strong><br><ul><li>Centering container instead of text, causing misalignment.</li><li>Ignoring line wrapping and making text hard to read.</li><li>Using <code>text-align</code> where alignment should be handled by layout.</li></ul><strong>Trade-off or test tip</strong><br>Centered text can reduce readability for long paragraphs. Test with long strings and responsive widths.</strong>"
-        }
-      ]
-    },
-    "access": "free",
-    "type": "trivia",
-    "tags": [
-      "css",
-      "text",
-      "alignment",
-      "layout",
-      "basics"
-    ],
-    "updatedAt": "2026-04-05",
-    "incidentCard": {
-      "title": "Text Centering Check",
-      "scenario": "A teammate says, \"This card is not centered, so I'll add `text-align: center` to the wrapper and that will center the whole block.\" Another teammate says, \"`text-align: center` centers inline content like text inside the container. If the real problem is centering the block itself, you need a layout technique such as auto margins, flexbox, or grid.\" Which explanation is better?",
-      "options": [
-        {
-          "id": "text-align-centers-any-element-inside-a-wrapper",
-          "label": "The first explanation is better. `text-align: center` is the general CSS centering rule, so it works equally well for text, buttons, cards, and any block element in the wrapper."
-        },
-        {
-          "id": "text-align-only-works-when-width-is-fixed",
-          "label": "The better explanation is that `text-align: center` mainly fails because the wrapper width is flexible. Once you give the wrapper a fixed width, it becomes the correct tool for centering both text and the container itself."
-        },
-        {
-          "id": "text-align-centers-inline-content-not-the-block-itself",
-          "label": "The second explanation is better. `text-align: center` centers text and other inline-level content inside the container. It does not move the block container itself into the middle of the page."
-        }
-      ],
-      "correctOptionId": "text-align-centers-inline-content-not-the-block-itself",
-      "rereadPrompt": "Not quite. The key lesson is that `text-align: center` affects inline content inside a box. If the box itself needs centering, that is a layout problem and needs a different technique."
-    }
-  },
-  {
     "id": "css-font-family",
     "title": "What is the purpose of the font-family property?",
     "technology": "css",
@@ -811,132 +246,6 @@
       ],
       "correctOptionId": "font-family-should-include-fallbacks-and-a-generic-family",
       "rereadPrompt": "Not quite. The key lesson is that `font-family` is usually a prioritized font stack, not just one font name. Fallbacks and a generic family keep typography readable when the preferred font is missing or slow to load."
-    }
-  },
-  {
-    "id": "css-border-property",
-    "title": "How can you add a border around an element?",
-    "technology": "css",
-    "difficulty": "easy",
-    "importance": 3,
-    "description": "CSS borders are simple until validation states, focus rings, and hover transitions cause layout shift or contrast regressions. Explain shorthand, per-side control, and when outline or box-shadow is safer.",
-    "seo": {
-      "title": "CSS borders in production: shorthand, focus-state pitfalls, and layout-shift debugging",
-      "description": "Adding a border is easy; the real pitfalls are focus states, contrast, per-side overrides, and layout shifts when borders appear late."
-    },
-    "answer": {
-      "blocks": [
-        {
-          "type": "text",
-          "text": "<strong>Production pitfall</strong><br><br>Adding a border is easy. Adding one without causing layout shift, weak contrast, or a broken focus state is harder. In real UI work, the important question is not just <code>border: 1px solid</code>; it is whether border width, side overrides, and interactive states will change sizing or accessibility."
-        },
-        {
-          "type": "list",
-          "columns": [
-            "Property",
-            "Purpose",
-            "Example"
-          ],
-          "rows": [
-            [
-              "border-width",
-              "Sets the thickness of the border.",
-              "border-width: 2px;"
-            ],
-            [
-              "border-style",
-              "Defines the border’s line pattern.",
-              "border-style: solid;"
-            ],
-            [
-              "border-color",
-              "Specifies the border color.",
-              "border-color: #333;"
-            ],
-            [
-              "border",
-              "Shorthand combining width, style, and color.",
-              "border: 2px dashed blue;"
-            ]
-          ],
-          "caption": "Core border properties in CSS"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Example: Adding a Simple Border</strong>"
-        },
-        {
-          "type": "code",
-          "language": "css",
-          "code": "div.box {\n  border: 3px solid #4CAF50;\n  padding: 20px;\n  background-color: #f9f9f9;\n}"
-        },
-        {
-          "type": "text",
-          "text": "This creates a 3px solid green border around a &lt;div&gt; while adding internal padding and a light background."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Example: Customizing Each Side</strong>"
-        },
-        {
-          "type": "code",
-          "language": "css",
-          "code": "p.note {\n  border-top: 2px solid black;\n  border-right: 2px dotted gray;\n  border-bottom: 2px dashed red;\n  border-left: 2px double blue;\n}"
-        },
-        {
-          "type": "text",
-          "text": "Each side of the paragraph element uses a unique style and color, demonstrating the flexibility of individual border properties."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Border Styles</strong><br><ul><li><code>solid</code> – A continuous line.</li><li><code>dashed</code> – Broken dashes.</li><li><code>dotted</code> – Circular dots.</li><li><code>double</code> – Two parallel lines.</li><li><code>groove</code>, <code>ridge</code>, <code>inset</code>, <code>outset</code> – 3D effects based on color shading.</li></ul>"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Advanced Tip</strong><br><br>You can also use <code>border-radius</code> to round corners or <code>outline</code> for non-space-consuming visual emphasis. Example:<br><code>border-radius: 10px;</code> creates smooth, rounded corners."
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of a border like the <em>frame around a picture</em> — it separates your content from the rest of the page and draws attention where needed."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li>Use <code>border</code> to define a visual frame around elements.</li><li>Combine width, style, and color in one shorthand rule.</li><li>Customize each side with individual border properties.</li><li>Enhance design with <code>border-radius</code> for curved edges.</li></ul>"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Practical scenario</strong><br>Add a red border to invalid inputs or a subtle outline around cards for separation.<br><br><strong>Common pitfalls</strong><br><ul><li>Adding borders on hover/focus that change element size (layout shift).</li><li>Forgetting <code>box-sizing</code> so border changes width.</li><li>Misordering shorthand values (width, style, color).</li></ul><strong>Trade-off or test tip</strong><br>Use <code>outline</code> to avoid layout shifts, but note it does not affect layout. Test focus styles with keyboard navigation."
-        }
-      ]
-    },
-    "access": "free",
-    "type": "trivia",
-    "tags": [
-      "css",
-      "border",
-      "box-model",
-      "styles"
-    ],
-    "updatedAt": "2026-04-05",
-    "incidentCard": {
-      "title": "Border Behavior Check",
-      "scenario": "A teammate adds `border: 2px solid red` to an invalid input on focus and then complains that the form layout jumps around. They say, \"Borders are just visual, so if the layout moved the browser must be buggy.\" Another teammate says, \"Borders affect the element box unless you planned for them. If you add them only on hover or focus, you can cause layout shift. Sometimes `outline` or a preallocated border is the better approach.\" Which explanation is better?",
-      "options": [
-        {
-          "id": "only-border-color-matters-for-ui-validation-states",
-          "label": "The better explanation is that border width and style are not important for validation states. As long as the border color communicates error or focus, the layout side effects are negligible."
-        },
-        {
-          "id": "borders-can-change-layout-and-cause-shift",
-          "label": "The second explanation is better. A border is part of the box model, so adding it dynamically can change the element size and cause layout shift unless you account for it with box sizing, reserved space, or a different technique like `outline`."
-        },
-        {
-          "id": "borders-are-purely-visual-and-never-affect-layout",
-          "label": "The first explanation is better. Borders do not participate in layout, so if a border seems to move nearby elements the issue must be unrelated to the border itself."
-        }
-      ],
-      "correctOptionId": "borders-can-change-layout-and-cause-shift",
-      "rereadPrompt": "Not quite. The key lesson is that borders are part of the box model. Adding them conditionally can change element dimensions and create layout shifts unless you plan for that behavior."
     }
   },
   {
@@ -1327,362 +636,6 @@
     }
   },
   {
-    "id": "css-make-text-bold",
-    "title": "How do you make text bold in CSS?",
-    "technology": "css",
-    "difficulty": "easy",
-    "importance": 2,
-    "description": "font-weight looks trivial until fallback fonts, missing weights, and variable-font interpolation make bold text render inconsistently. Explain common readability and hierarchy mistakes.",
-    "seo": {
-      "title": "Making text bold in CSS: font-weight support, fallback pitfalls, and readability choices",
-      "description": "font-weight can fail quietly when a font lacks the requested weight. The production angle is fallback behavior, hierarchy, and readability."
-    },
-    "answer": {
-      "blocks": [
-        {
-          "type": "text",
-          "text": "<strong>Common mistake</strong><br><br><code>font-weight</code> does not guarantee the exact boldness you asked for. The browser can only use weights the chosen font actually provides, so a production design may look different across fallback fonts or variable-font settings. The real job is choosing emphasis that preserves hierarchy and readability, not just making text bold."
-        },
-        {
-          "type": "list",
-          "columns": [
-            "Value",
-            "Meaning",
-            "Notes"
-          ],
-          "rows": [
-            [
-              "normal (400)",
-              "Regular text weight",
-              "Default for most fonts"
-            ],
-            [
-              "bold (700)",
-              "Bold text weight",
-              "Common emphasis weight"
-            ],
-            [
-              "bolder / lighter",
-              "Relative to the parent weight",
-              "Browser computes based on available faces"
-            ],
-            [
-              "100–900",
-              "Numeric weights",
-              "Requires corresponding font faces to render accurately"
-            ]
-          ],
-          "caption": "Common font-weight values"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Example: Bold Headings</strong>"
-        },
-        {
-          "type": "code",
-          "language": "css",
-          "code": "h1, h2 {\n  font-weight: 700;\n}"
-        },
-        {
-          "type": "text",
-          "text": "This sets headings to a typical bold weight (700). If the font doesn’t include a 700 face, the browser may simulate bold."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Example: Variable Fonts with Fine-Grained Control</strong>"
-        },
-        {
-          "type": "code",
-          "language": "css",
-          "code": "@font-face {\n  font-family: 'InterVar';\n  src: url('Inter-VariableFont_slnt,wght.ttf') format('truetype');\n  font-weight: 100 900;\n  font-style: normal;\n}\n.body-copy {\n  font-family: 'InterVar', system-ui, sans-serif;\n  font-weight: 550; /* mid-weight for better readability */\n}"
-        },
-        {
-          "type": "text",
-          "text": "Variable fonts allow any numeric value in a supported range, giving precise control over boldness."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Semantic HTML Reminder</strong><br><ul><li>Use <strong> for semantic importance; style with CSS via <code>strong { font-weight: 700; }</code>.</li><li><b> is purely stylistic; prefer CSS for presentation and keep markup semantic.</li></ul>"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Accessibility & Design Tips</strong><br><ul><li>Use bold to create hierarchy, not for entire paragraphs.</li><li>Pair bold text with adequate color contrast; weight alone may not provide sufficient emphasis.</li><li>Check available weights in your chosen font; avoid forcing unsupported weights that degrade rendering.</li></ul>"
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br><code>font-weight</code> is your <em>volume knob</em> for text — turn it up to make headings stand out, down for body copy comfort."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li>Bold text is controlled via <code>font-weight</code> (e.g., 700 or bold).</li><li>Numeric ranges offer finer control, especially with variable fonts.</li><li>Prefer semantic HTML for meaning and CSS for presentation.</li><li>Use bold sparingly to maintain clear visual hierarchy.</li></ul>"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Practical scenario</strong><br>Emphasize headings and error labels by increasing font weight without changing layout.\n<br><br><strong>Common pitfalls</strong><br><ul><li>Fonts missing intermediate weights (e.g., 600) leading to fallback.</li><li>Bold text causing layout shifts when width changes.</li><li>Using <code>&lt;b&gt;</code> instead of semantic CSS.</li></ul><strong>Trade-off or test tip</strong><br>Variable fonts offer smooth weights but require font support. Test with real fonts and verify contrast for accessibility.</strong>"
-        }
-      ]
-    },
-    "access": "free",
-    "type": "trivia",
-    "tags": [
-      "css",
-      "typography",
-      "font-weight",
-      "text"
-    ],
-    "updatedAt": "2026-04-05",
-    "incidentCard": {
-      "title": "Bold Text Check",
-      "scenario": "A teammate wants a heading to look bold and says, \"I'll use `font-family` or maybe the `<b>` tag everywhere, that should be the same thing.\" Another teammate says, \"If the goal is visual boldness in CSS, the property is `font-weight`. And whether a weight really appears depends on what the chosen font family supports.\" Which explanation is better?",
-      "options": [
-        {
-          "id": "html-bold-tags-fully-replace-css-font-weight",
-          "label": "The better explanation is that visual boldness should be handled only with HTML tags like `<b>` or `<strong>`, because CSS properties are not the right tool for weight changes."
-        },
-        {
-          "id": "font-weight-controls-boldness-while-font-support-still-matters",
-          "label": "The second explanation is better. `font-weight` controls how bold text should appear, using values like `bold` or `700`. The final result still depends on the available font weights in the selected font family."
-        },
-        {
-          "id": "font-family-is-the-main-way-to-make-text-bold",
-          "label": "The first explanation is better. Bold text is mostly a font-family decision, so changing the family is the normal CSS way to make text appear bold."
-        }
-      ],
-      "correctOptionId": "font-weight-controls-boldness-while-font-support-still-matters",
-      "rereadPrompt": "Not quite. The key lesson is that `font-weight` is the CSS property for boldness. The chosen font family still matters because some fonts do not provide every weight you ask for."
-    }
-  },
-  {
-    "id": "css-change-text-size",
-    "title": "How do you change the size of text in CSS?",
-    "technology": "css",
-    "difficulty": "easy",
-    "importance": 2,
-    "description": "font-size is really about scale strategy: rem/em/px choices, zoom behavior, component nesting, and accessibility bugs caused by hard-coded sizes.",
-    "answer": {
-      "blocks": [
-        {
-          "type": "text",
-          "text": "<strong>Production decision</strong><br><br><code>font-size</code> is not just a bigger or smaller switch. It sets the scaling rules for an entire interface. The common mistake is picking units without thinking about zoom, root-size changes, nested components, or readability. In production, text sizing is a typography and accessibility decision, not only a visual one."
-        },
-        {
-          "type": "list",
-          "columns": [
-            "Unit",
-            "Type",
-            "Description"
-          ],
-          "rows": [
-            [
-              "px",
-              "Absolute",
-              "Fixed pixel value. Common for precise control in static layouts."
-            ],
-            [
-              "em",
-              "Relative",
-              "Scales based on the parent element’s font size."
-            ],
-            [
-              "rem",
-              "Relative",
-              "Scales based on the root element (<html>) font size."
-            ],
-            [
-              "%",
-              "Relative",
-              "Percentage relative to the parent’s font size."
-            ],
-            [
-              "vw / vh",
-              "Viewport",
-              "Scales with viewport width or height — great for responsive text."
-            ]
-          ],
-          "caption": "Common font-size units and their behavior"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Example: Basic Text Size</strong>"
-        },
-        {
-          "type": "code",
-          "language": "css",
-          "code": "p {\n  font-size: 16px;\n}\n\nh1 {\n  font-size: 2em; /* twice the size of parent font */\n}\n\nh2 {\n  font-size: 1.5rem; /* 1.5 times the root font size */\n}"
-        },
-        {
-          "type": "text",
-          "text": "Here, <code>em</code> and <code>rem</code> units make typography more adaptive to the overall design structure."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Responsive Typography Tip</strong><br>Modern CSS allows <code>clamp()</code> for fluid scaling:<br><code>font-size: clamp(1rem, 2vw, 2rem);</code> — ensures text stays readable across devices."
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of <code>font-size</code> as a zoom level for your text — pixels are rigid, but <code>rem</code> and <code>em</code> scale flexibly with user preferences and layouts."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li>Use <code>font-size</code> to control text height.</li><li>Prefer relative units (<code>rem</code>, <code>em</code>) for accessibility.</li><li>Use <code>clamp()</code> for fluid, responsive text.</li><li>Adjust font-size to maintain visual hierarchy and readability.</li></ul>"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Practical scenario</strong><br>Adjust typography for a card title and body text across breakpoints.<br><br><strong>Common pitfalls</strong><br><ul><li>Setting fixed px sizes that ignore user zoom.</li><li>Using <code>em</code> and accidentally compounding sizes.</li><li>Not testing line-height alongside font-size.</li></ul><strong>Trade-off or test tip</strong><br>Rem keeps sizes consistent but less local. Test with root font-size changes and accessibility zoom.</strong>"
-        }
-      ]
-    },
-    "access": "free",
-    "type": "trivia",
-    "tags": [
-      "css",
-      "typography",
-      "font-size",
-      "properties",
-      "basics"
-    ],
-    "updatedAt": "2026-04-05",
-    "seo": {
-      "title": "CSS text sizing in production: rem vs em vs px, zoom behavior, and accessibility pitfalls",
-      "description": "Changing text size is easy; the real production decisions are unit choice, zoom behavior, nested scaling, and accessible typography."
-    },
-    "incidentCard": {
-      "title": "Text Size Strategy Check",
-      "scenario": "A teammate says, \"I'll just use fixed `px` everywhere for text size because that is the simplest and most precise option.\" Another teammate says, \"`font-size` is the right property, but the unit choice matters. Relative units like `rem` usually scale better with user settings and accessibility zoom, while `em` can compound and `px` can be more rigid.\" Which explanation is better?",
-      "options": [
-        {
-          "id": "px-is-always-best-because-it-is-most-accurate",
-          "label": "The first explanation is better. Text sizing should almost always use `px` because precision matters more than user scaling, and responsive or accessible typography is mostly handled by media queries anyway."
-        },
-        {
-          "id": "font-family-and-font-weight-are-better-than-font-size-for-hierarchy",
-          "label": "The better explanation is that text hierarchy is mainly a font family and weight problem, so `font-size` choice is less important as long as the text looks visually different enough."
-        },
-        {
-          "id": "font-size-is-correct-and-unit-choice-affects-accessibility",
-          "label": "The second explanation is better. `font-size` controls text size, and units are part of the real decision. `rem` is often a safer default for scalable typography because it respects root sizing and user preferences more predictably than hard-coded `px`."
-        }
-      ],
-      "correctOptionId": "font-size-is-correct-and-unit-choice-affects-accessibility",
-      "rereadPrompt": "Not quite. The key lesson is that `font-size` is the correct property, but sizing units affect readability, scaling, and accessibility. Relative sizing choices are part of the implementation, not just a stylistic preference."
-    }
-  },
-  {
-    "id": "css-id-vs-class",
-    "title": "What is the difference between id and class selectors?",
-    "technology": "css",
-    "difficulty": "easy",
-    "importance": 4,
-    "description": "An id is unique on a page and selected with #id; a class can be reused and selected with .class. IDs have higher specificity and are often used for anchors or JS hooks, while classes are for styling groups.",
-    "answer": {
-      "blocks": [
-        {
-          "type": "text",
-          "text": "<strong>Overview</strong><br><br>In CSS, <strong>id</strong> and <strong>class</strong> selectors target elements for styling or scripting, but they serve different purposes. IDs are unique identifiers for single elements, while classes group multiple elements under a shared style."
-        },
-        {
-          "type": "list",
-          "columns": [
-            "Aspect",
-            "id Selector",
-            "class Selector"
-          ],
-          "rows": [
-            [
-              "Syntax",
-              "#elementID",
-              ".elementClass"
-            ],
-            [
-              "Uniqueness",
-              "Must be unique per page",
-              "Can be used on multiple elements"
-            ],
-            [
-              "Specificity",
-              "Higher (overrides class styles)",
-              "Lower (can be overridden by id)"
-            ],
-            [
-              "Use Case",
-              "For specific, unique components",
-              "For reusable, shared styles"
-            ],
-            [
-              "Example HTML",
-              "<div id='header'></div>",
-              "<div class='card'></div>"
-            ]
-          ],
-          "caption": "Differences between id and class selectors"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Example: Styling with id and class</strong>"
-        },
-        {
-          "type": "code",
-          "language": "css",
-          "code": "#header {\n  background: #0ea5e9;\n  color: white;\n}\n\n.card {\n  border: 1px solid #cbd5e1;\n  padding: 12px;\n  border-radius: 6px;\n}"
-        },
-        {
-          "type": "text",
-          "text": "Here, <code>#header</code> targets a unique section, while <code>.card</code> can style multiple elements throughout the page."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Best Practices</strong><br><ul><li>Use <code>id</code> for elements that occur only once (like navigation bars or main headers).</li><li>Use <code>class</code> for groups of similar elements that share styling.</li><li>Avoid overusing IDs in CSS — they increase specificity and reduce maintainability.</li><li>Use <code>class</code> selectors in component-based systems like React or Angular for modularity.</li></ul>"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Specificity Hierarchy</strong><br>CSS calculates priority using a scoring system. IDs (100 points) outrank classes (10 points). Inline styles override both, but using classes promotes flexibility and scalability."
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of <code>id</code> as your unique name (only one of you), and <code>class</code> as your role or group — many people can share the same role."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li><code>id</code> is unique and used once per page.</li><li><code>class</code> is reusable across elements.</li><li>IDs have higher specificity; use sparingly for maintainability.</li><li>Use classes for scalable, component-based design.</li></ul>"
-        }
-      ]
-    },
-    "access": "free",
-    "type": "trivia",
-    "tags": [
-      "css",
-      "selectors",
-      "id",
-      "class",
-      "specificity"
-    ],
-    "updatedAt": "2026-01-30",
-    "seo": {
-      "title": "id vs class Selectors in CSS: Differences and Specificity",
-      "description": "Understand when to use #id versus .class selectors, how specificity differs, and why class-based styling scales better in reusable component systems."
-    },
-    "incidentCard": {
-      "title": "Selector Choice Check",
-      "scenario": "A teammate wants to style every product card by giving all of them the same `id`, then says, \"IDs are stronger than classes, so this is the best way to make sure the styles win.\" Another teammate says, \"That is the wrong tradeoff. IDs are meant to be unique and they create high specificity that is harder to maintain. Reusable styling should usually be done with classes, while IDs should stay rare and truly unique.\" Which explanation is better?",
-      "options": [
-        {
-          "id": "classes-are-for-reusable-styling-ids-should-stay-unique",
-          "label": "The second explanation is better. Classes are reusable and are the normal tool for styling repeated UI patterns. IDs should stay unique, and relying on them for general styling usually creates unnecessary specificity problems."
-        },
-        {
-          "id": "ids-are-best-for-shared-component-styling-because-they-win",
-          "label": "The first explanation is better. If multiple elements need the same visual treatment, giving them the same `id` is a practical shortcut because the stronger selector makes the CSS easier to enforce."
-        },
-        {
-          "id": "ids-and-classes-only-differ-in-syntax-not-behavior",
-          "label": "The better explanation is that `#id` and `.class` mostly differ in syntax. In practice they behave the same for maintainability and specificity, so the choice is mostly stylistic."
-        }
-      ],
-      "correctOptionId": "classes-are-for-reusable-styling-ids-should-stay-unique",
-      "rereadPrompt": "Not quite. The key lesson is that classes are the reusable styling tool, while IDs are supposed to be unique and carry higher specificity. Using IDs for repeated styling usually makes CSS harder to scale."
-    }
-  },
-  {
     "id": "css-color-property",
     "title": "What is the purpose of the color property?",
     "technology": "css",
@@ -1786,7 +739,7 @@
   },
   {
     "id": "css-box-model",
-    "title": "What is the box model in CSS?",
+    "title": "Why is this element wider than its width? box-sizing and the box model",
     "technology": "css",
     "companies": [
       "amazon",
@@ -1795,9 +748,13 @@
     ],
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "The CSS box model is the source of countless sizing bugs. Explain content, padding, border, margin, box-sizing, and why width calculations break when teams forget what is included.",
+    "description": "Debug CSS sizing through the overflow bug: under content-box, width sizes the content and padding plus border are added outside it, so a 300px box renders 344px. border-box fixes it, margins stay outside either way and collapse vertically. The box model as a debugging tool, not a definition.",
     "answer": {
       "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>The bug to explain</strong><br><br><code>width: 300px; padding: 20px; border: 2px solid</code> renders 344px wide and overflows its 300px column. Under the default <code>box-sizing: content-box</code>, <code>width</code> sizes the content only; padding and border are added outside it. <code>box-sizing: border-box</code> makes <code>width</code> include padding and border, which is why most resets apply it globally. Margins stay outside either way, and vertical margins between blocks collapse."
+        },
         {
           "type": "text",
           "text": "<strong>Debug mental model</strong><br><br>The box model is where many CSS sizing bugs start. When a layout looks 320px wide but actually overflows, the problem is usually not magic; it is whether width applies to content only or to content plus padding and border. Understanding that under the hood is what makes spacing and overflow debugging predictable."
@@ -1877,10 +834,10 @@
       "basics",
       "spacing"
     ],
-    "updatedAt": "2026-04-05",
+    "updatedAt": "2026-10-12",
     "seo": {
-      "title": "CSS box model in production: box-sizing, width bugs, and spacing-debug mental models",
-      "description": "The box model matters because sizing bugs usually come from forgetting what width includes and how padding, border, and margin interact."
+      "title": "Why an Element Is Wider Than Its Width: box-sizing",
+      "description": "Debug CSS sizing: width plus padding and border overflow under content-box, border-box fixes it, margins collapse. The box model as an overflow debugging tool."
     },
     "incidentCard": {
       "title": "Box Model Overflow Check",
@@ -2018,7 +975,7 @@
   },
   {
     "id": "css-position-relative-absolute-fixed",
-    "title": "What is the difference between position: relative, absolute, and fixed?",
+    "title": "Why does position: absolute ignore my parent? relative vs absolute vs fixed",
     "technology": "css",
     "companies": [
       "amazon",
@@ -2026,9 +983,13 @@
     ],
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Position: relative keeps the element in normal flow but allows offsetting it; absolute removes it from flow and positions it relative to the nearest positioned ancestor; fixed removes it from flow and usually anchors to the viewport. Use relative for anchoring children, absolute for overlays, and fixed for persistent viewport controls. Positioning affects stacking and layout flow, so test scrolling and overlap edge cases.",
+    "description": "Fix an absolutely positioned element that escapes its parent: absolute uses the nearest ancestor that establishes a containing block, so a position: relative anchor is the fix. Covers relative, absolute, and fixed behaviour, the transform trap that breaks fixed, stacking, and when each value fits.",
     "answer": {
       "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>The bug to explain</strong><br><br>A badge with <code>position: absolute; top: 0; right: 0</code> lands in the corner of the page instead of the card. Absolute positioning does not look at the parent; it looks for the nearest ancestor that establishes a containing block, which means one with <code>position</code> other than <code>static</code> (or a <code>transform</code>, <code>filter</code>, or <code>contain</code>). With none, it uses the initial containing block. Adding <code>position: relative</code> to the card fixes it without moving the card. The same containing-block rule explains why <code>fixed</code> elements stop sticking to the viewport inside a transformed parent."
+        },
         {
           "type": "text",
           "text": "<strong>Overview</strong><br><br>CSS positioning allows you to precisely control where elements appear. The key difference among <code>relative</code>, <code>absolute</code>, and <code>fixed</code> lies in their reference points and whether they occupy space in the normal document flow."
@@ -2114,10 +1075,10 @@
       "stacking",
       "offsets"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-10-12",
     "seo": {
-      "title": "position relative vs absolute vs fixed: what is the difference?",
-      "description": "Relative keeps the element in normal flow with offsets, absolute positions it to the nearest positioned ancestor, and fixed pins it to the viewport."
+      "title": "Why Absolute Positioning Ignores the Parent: Fix",
+      "description": "Fix an absolute element escaping its parent: containing blocks, position: relative anchors, fixed and transform traps, stacking, and when each value fits."
     },
     "incidentCard": {
       "title": "Positioning Model Check",
@@ -2529,13 +1490,21 @@
   },
   {
     "id": "css-visibility-vs-display",
-    "title": "What is the difference between visibility: hidden and display: none?",
+    "title": "visibility: hidden vs display: none: layout, focus, and screen readers",
     "technology": "css",
     "difficulty": "intermediate",
     "importance": 4,
-    "description": "Both visibility and display control element rendering in CSS, but they behave differently. visibility: hidden hides the element visually while preserving its layout space, whereas display: none removes the element completely from the document flow.",
+    "description": "Compare the three ways to hide an element by what actually changes: display: none removes layout, focus, and accessibility exposure; visibility: hidden keeps the space and can transition; opacity: 0 keeps everything, including focus and screen-reader exposure. Pick by layout, focus, and assistive technology, not by looks.",
     "answer": {
       "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>The decision to explain</strong><br><br>Three ways to hide an element, three different results. <code>display: none</code> removes it from layout, the accessibility tree, and focus order. <code>visibility: hidden</code> keeps its space, removes it from the accessibility tree and focus, and still lets you transition it. <code>opacity: 0</code> keeps space, focus, and screen-reader exposure, which is a bug for hidden menus and a feature for custom checkboxes. Pick by what should happen to layout, focus, and assistive technology, not by what looks right."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Quick answer</strong><br>Both visibility and display control element rendering in CSS, but they behave differently. visibility: hidden hides the element visually while preserving its layout space, whereas display: none removes the element completely from the document flow."
+        },
         {
           "type": "text",
           "text": "<strong>Overview</strong><br><br>The <code>visibility</code> and <code>display</code> properties determine whether elements appear and how they affect layout. They differ in whether the element continues to occupy space or not."
@@ -2604,10 +1573,10 @@
       "display",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-10-12",
     "seo": {
-      "title": "visibility hidden vs display none: what is the difference?",
-      "description": "visibility:hidden hides an element but keeps its layout space, while display:none removes it from layout and rendering flow."
+      "title": "visibility hidden vs display none: Layout and A11y",
+      "description": "Compare visibility: hidden, display: none, and opacity: 0 by layout space, focus order, screen readers, transitions, and when each is the right way to hide."
     },
     "incidentCard": {
       "title": "Hidden vs Removed Check",
@@ -2748,257 +1717,12 @@
     }
   },
   {
-    "id": "css-specificity-hierarchy",
-    "title": "How do CSS selectors with higher specificity override others?",
-    "technology": "css",
-    "companies": [
-      "google",
-      "meta"
-    ],
-    "difficulty": "intermediate",
-    "importance": 5,
-    "description": "This question is specifically about selector scoring (specificity points), not the full cascade algorithm. Explain how selector weights are computed and compared, then mention tie-breakers briefly. Use it to debug why one rule wins, why another loses, and why !important often hides the real specificity problem. Keep the deep dive on origin/importance/order for the dedicated cascade question.",
-    "answer": {
-      "blocks": [
-        {
-          "type": "text",
-          "text": "<strong>Overview</strong><br><br>When multiple CSS rules apply to the same element, the browser resolves conflicts using <em>specificity</em>. Specificity is calculated based on the selector's type - IDs, classes, attributes, and element names each contribute differently to its weight. When a \"simple\" override refuses to apply, specificity is often the first debug clue."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Scope guard</strong><br><br>This page answers <em>“How are selectors scored?”</em> If the interviewer asks about full conflict resolution order (origin, <code>!important</code>, layers, then source order), jump to <a href=\"/css/trivia/css-cascade-order\">How does the CSS cascade determine which styles are applied?</a>."
-        },
-        {
-          "type": "list",
-          "columns": [
-            "Selector Type",
-            "Example",
-            "Specificity Weight"
-          ],
-          "rows": [
-            [
-              "Inline Styles",
-              "style='color: red;'",
-              "1000"
-            ],
-            [
-              "ID Selectors",
-              "#header",
-              "100"
-            ],
-            [
-              "Class, Attribute, or Pseudo-class",
-              ".btn, [type='text'], :hover",
-              "10"
-            ],
-            [
-              "Element or Pseudo-element",
-              "div, p, ::before",
-              "1"
-            ],
-            [
-              "Universal or Inherited",
-              "* or inherited styles",
-              "0"
-            ]
-          ],
-          "caption": "Specificity scoring system"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Example: Competing Rules</strong>"
-        },
-        {
-          "type": "code",
-          "language": "css",
-          "code": "p { color: blue; }       /* 1 */\n.text { color: green; }  /* 10 */\n#intro { color: red; }   /* 100 */"
-        },
-        {
-          "type": "text",
-          "text": "In this case, <code>#intro</code> (specificity 100) overrides <code>.text</code> (10) and <code>p</code> (1), resulting in red text."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Special Case: !important</strong><br><br>The <code>!important</code> flag overrides all other specificity rules except inline styles with <code>!important</code>. Overusing it can lead to maintenance headaches, so use it sparingly and strategically."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Calculation Formula</strong><br>Specificity is commonly represented as a four-part value (a,b,c,d):<br><ul><li><strong>a</strong> – Inline styles (1 if present)</li><li><strong>b</strong> – Number of IDs</li><li><strong>c</strong> – Number of classes, attributes, pseudo-classes</li><li><strong>d</strong> – Number of element names and pseudo-elements</li></ul><br>Example: <code>#nav .menu li:hover</code> → (0,1,2,1) → Specificity = 121."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Best Practices</strong><br><ul><li>Keep selectors simple and avoid chaining too many elements or classes.</li><li>Use class-based selectors for scalability instead of IDs.</li><li>Reserve <code>!important</code> for utility classes or third-party overrides.</li><li>Refactor conflicting styles rather than stacking specificity.</li></ul>"
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of specificity like a ranking system — inline styles are presidents, IDs are generals, classes are officers, and element selectors are soldiers. The higher rank always wins the battle for styling control."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li>Specificity is the selector scoring step inside the cascade.</li><li>Selector type weights decide which matching selector wins.</li><li>If specificity ties, later source order wins (unless higher-priority cascade rules apply).</li><li>Keep selectors simple and class-driven to avoid specificity wars.</li></ul>"
-        }
-      ]
-    },
-    "access": "free",
-    "type": "trivia",
-    "tags": [
-      "css",
-      "selectors",
-      "specificity",
-      "cascade",
-      "basics"
-    ],
-    "updatedAt": "2026-02-01",
-    "seo": {
-      "title": "CSS specificity under the hood: debug override bugs without !important",
-      "description": "Learn selector scoring, tie-breakers, and the common pitfalls that create specificity wars in production CSS."
-    },
-    "incidentCard": {
-      "title": "Specificity Conflict Check",
-      "scenario": "A button matches these selectors at the same time: `button`, `.primary`, and `#checkout`. A teammate says, \"The browser just sort of picks whichever rule feels most specific, and source order is all that really matters.\" Another teammate says, \"Specificity is scored by selector type. The ID selector is heavier than the class selector, and the class selector is heavier than the element selector, so `#checkout` wins unless a higher-priority cascade rule changes the result.\" Which explanation is better?",
-      "options": [
-        {
-          "id": "class-selectors-are-stronger-than-ids-for-maintainability",
-          "label": "The better explanation is that classes are effectively stronger than IDs in modern CSS because teams use them more often, so a class rule is usually the one that overrides an ID rule in practice."
-        },
-        {
-          "id": "specificity-is-scored-by-selector-type-id-class-element",
-          "label": "The second explanation is better. Specificity is based on selector weight, so IDs outrank classes, and classes outrank element selectors. Source order only breaks ties when the competing rules have the same weight."
-        },
-        {
-          "id": "source-order-matters-more-than-selector-weight",
-          "label": "The first explanation is better. Specificity is mostly a fuzzy browser preference, and the later rule in the file usually wins even when the selector types are very different."
-        }
-      ],
-      "correctOptionId": "specificity-is-scored-by-selector-type-id-class-element",
-      "rereadPrompt": "Not quite. The key lesson is that specificity is a scoring system, not a guess. IDs carry more weight than classes, classes carry more weight than element selectors, and source order only decides things when the competing selectors tie."
-    }
-  },
-  {
-    "id": "css-media-queries",
-    "title": "What are media queries and why are they used?",
-    "technology": "css",
-    "difficulty": "intermediate",
-    "importance": 5,
-    "description": "Use media queries as a production breakpoint strategy: adapt layouts, respect user preferences, and avoid responsive pitfalls caused by viewport-only thinking.",
-    "answer": {
-      "blocks": [
-        {
-          "type": "text",
-          "text": "<strong>Overview</strong><br><br>Media queries are not just responsive CSS trivia. In production they define your breakpoint strategy, user-preference handling, and fallback rules when layouts change across devices. Strong answers talk about <strong>mobile-first defaults</strong>, <strong>pitfalls</strong> like overfitting to a few screen widths, and when viewport queries should give way to container queries."
-        },
-        {
-          "type": "list",
-          "columns": [
-            "Feature",
-            "Example",
-            "Purpose"
-          ],
-          "rows": [
-            [
-              "min-width",
-              "@media (min-width: 768px)",
-              "Applies when the viewport is at least 768px wide."
-            ],
-            [
-              "max-width",
-              "@media (max-width: 600px)",
-              "Applies when the viewport is 600px wide or less."
-            ],
-            [
-              "orientation",
-              "@media (orientation: landscape)",
-              "Applies styles for landscape or portrait mode."
-            ],
-            [
-              "resolution",
-              "@media (min-resolution: 300dpi)",
-              "Targets high-resolution (Retina) displays."
-            ]
-          ],
-          "caption": "Common media query conditions"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Example: Responsive Layout</strong>"
-        },
-        {
-          "type": "code",
-          "language": "css",
-          "code": "body {\n  font-size: 16px;\n}\n@media (max-width: 768px) {\n  body {\n    font-size: 14px;\n  }\n}\n@media (max-width: 480px) {\n  body {\n    font-size: 12px;\n  }\n}"
-        },
-        {
-          "type": "text",
-          "text": "This example adjusts the text size for tablets and mobile screens, improving readability on smaller devices."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Combining Conditions</strong><br>Media queries can combine multiple conditions using logical operators:<br><ul><li><code>and</code> – combine features (<code>@media (min-width: 600px) and (orientation: landscape)</code>).</li><li><code>not</code> – exclude specific conditions.</li><li><code>only</code> – prevent older browsers from applying the rule.</li></ul>"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Mobile-First Approach</strong><br>Modern best practice is to start with default (mobile) styles and add media queries for larger viewports. This ensures faster rendering and fewer overrides:<br><br><code>@media (min-width: 768px) { /* tablet styles */ }</code><br><code>@media (min-width: 1024px) { /* desktop styles */ }</code>"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Advanced Features</strong><br><ul><li>Media queries support <em>prefers-color-scheme</em> for dark/light mode.</li><li><em>prefers-reduced-motion</em> helps accessibility by disabling animations for users who prefer reduced motion.</li><li>Container queries (in modern browsers) extend this concept to parent element widths rather than the viewport.</li></ul>"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Practice next</strong><br>Use the <a href=\"/css/coding/css-theme-variables-dark-mode\">CSS theme variables coding challenge</a> to apply <code>prefers-color-scheme</code> with custom properties and a manual dark-mode override. For a layout-focused breakpoint drill, try the <a href=\"/css/coding/css-grid-card-gallery\">CSS Grid minmax() card gallery challenge</a> and explain the required <code>min-width: 1024px</code> switch."
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of media queries as smart CSS switches — they turn on or off specific styles depending on the screen’s size or features, just like adaptive headlights adjusting to road conditions."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li>Media queries adapt designs to different screen sizes and device capabilities.</li><li>Essential for responsive design and accessibility.</li><li>Support conditions like width, orientation, resolution, and user preferences.</li><li>Combine with a mobile-first strategy for performance and scalability.</li></ul>"
-        }
-      ]
-    },
-    "access": "free",
-    "type": "trivia",
-    "tags": [
-      "css",
-      "responsive",
-      "media-queries",
-      "layout",
-      "basics"
-    ],
-    "updatedAt": "2026-04-04",
-    "seo": {
-      "title": "CSS media queries: breakpoint strategy, user preferences, and pitfalls",
-      "description": "Use CSS media queries for breakpoint strategy, prefers-reduced-motion and color-scheme support, and avoid common mobile-first or viewport-only pitfalls."
-    },
-    "incidentCard": {
-      "title": "Responsive Rule Check",
-      "scenario": "A layout looks fine on desktop but breaks on phones. A teammate says, \"We should duplicate the stylesheet for mobile because CSS cannot really react to screen conditions on its own.\" Another teammate says, \"This is exactly what media queries are for. They let us apply conditional CSS based on things like viewport width, orientation, or user preferences, so the same interface can adapt without an entirely separate stylesheet.\" Which explanation is better?",
-      "options": [
-        {
-          "id": "media-queries-apply-conditional-css-based-on-conditions",
-          "label": "The second explanation is better. Media queries are conditional CSS rules that activate only when conditions like width, orientation, resolution, or user preferences match, which is why they are a core tool for responsive design."
-        },
-        {
-          "id": "responsive-design-needs-totally-separate-stylesheets",
-          "label": "The first explanation is better. Responsive layouts usually require separate CSS files for each device type because normal CSS cannot selectively react to screen size or device features."
-        },
-        {
-          "id": "media-queries-are-mainly-for-javascript-device-detection",
-          "label": "The better explanation is that media queries mostly exist to help JavaScript detect devices, while layout adaptation itself still has to be handled manually with duplicated CSS rules outside the media query system."
-        }
-      ],
-      "correctOptionId": "media-queries-apply-conditional-css-based-on-conditions",
-      "rereadPrompt": "Not quite. The key lesson is that media queries are CSS conditions. They let styles turn on only when the screen or user environment matches certain criteria, which is why they are central to responsive design."
-    }
-  },
-  {
     "id": "css-make-element-responsive",
     "title": "How can you make an element responsive using CSS?",
     "technology": "css",
     "difficulty": "intermediate",
     "importance": 4,
-    "description": "Making an element responsive means it adapts fluidly to different screen sizes, container widths, and user settings. Core techniques include fluid sizing, flexible media, modern layout systems (flexbox/grid), media and container queries, responsive typography, and intrinsic sizing utilities like aspect-ratio.",
+    "description": "Making an element responsive means it adapts fluidly to different screen sizes, container widths, and user settings. Core techniques include fluid sizing, flexible media, modern layout systems (flexbox/grid), media and container queries, responsive typography, and intrinsic sizing utilities like aspect-ratio. Includes the media query breakpoint strategy, user-preference queries like prefers-reduced-motion and prefers-color-scheme, and the pitfalls of viewport-only thinking.",
     "answer": {
       "blocks": [
         {
@@ -3140,7 +1864,50 @@
         },
         {
           "type": "text",
-          "text": "<strong>Practice next</strong><br><a href=\"/css/coding/css-grid-card-gallery\">CSS Grid minmax() card gallery challenge</a> to practice responsive tracks, card minimum width, extra cards, and narrow-width overflow checks."
+          "text": "<strong>Media queries: breakpoint strategy, not trivia</strong><br><br>In production, media queries define your breakpoint strategy, user-preference handling, and fallback rules when layouts change across devices. Strong answers talk about mobile-first defaults, pitfalls like overfitting to a few screen widths, and when viewport queries should give way to container queries."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Feature",
+            "Example",
+            "Purpose"
+          ],
+          "rows": [
+            [
+              "min-width",
+              "@media (min-width: 768px)",
+              "Applies when the viewport is at least 768px wide."
+            ],
+            [
+              "max-width",
+              "@media (max-width: 600px)",
+              "Applies when the viewport is 600px wide or less."
+            ],
+            [
+              "orientation",
+              "@media (orientation: landscape)",
+              "Applies styles for landscape or portrait mode."
+            ],
+            [
+              "resolution",
+              "@media (min-resolution: 300dpi)",
+              "Targets high-resolution (Retina) displays."
+            ]
+          ],
+          "caption": "Common media query conditions"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Combining Conditions</strong><br>Media queries can combine multiple conditions using logical operators:<br><ul><li><code>and</code> – combine features (<code>@media (min-width: 600px) and (orientation: landscape)</code>).</li><li><code>not</code> – exclude specific conditions.</li><li><code>only</code> – prevent older browsers from applying the rule.</li></ul>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Advanced Features</strong><br><ul><li>Media queries support <em>prefers-color-scheme</em> for dark/light mode.</li><li><em>prefers-reduced-motion</em> helps accessibility by disabling animations for users who prefer reduced motion.</li><li>Container queries (in modern browsers) extend this concept to parent element widths rather than the viewport.</li></ul>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practice next</strong><br><a href=\"/css/coding/css-grid-card-gallery\">CSS Grid minmax() card gallery challenge</a> to practice responsive tracks, card minimum width, extra cards, and narrow-width overflow checks. Use the <a href=\"/css/coding/css-theme-variables-dark-mode\">CSS theme variables coding challenge</a> to apply <code>prefers-color-scheme</code> with custom properties and a manual dark-mode override."
         },
         {
           "type": "text",
@@ -3159,9 +1926,10 @@
       "responsive",
       "layout",
       "units",
-      "basics"
+      "basics",
+      "media-queries"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-10-12",
     "seo": {
       "title": "How do you make an element responsive in CSS?",
       "description": "Make an element responsive with fluid units, flexible layouts, and min/max constraints so it adapts across different screen sizes."
@@ -3309,13 +2077,17 @@
   },
   {
     "id": "css-cascade-order",
-    "title": "How does the CSS cascade determine which styles are applied?",
+    "title": "Why doesn't my CSS override apply? Cascade, specificity, and !important",
     "technology": "css",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "The CSS cascade resolves conflicts by comparing importance (!important), origin (user vs author), specificity, and source order. More specific selectors win; if specificity ties, later rules take precedence. Edge cases like !important and inline styles can override expectations; test computed styles.",
+    "description": "Debug a rule that refuses to win the way interviewers probe it: cascade order (importance, origin, layers, specificity, source order), how selector specificity is scored, why an id beats any number of classes, and when !important hides the real problem instead of fixing it.",
     "answer": {
       "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>The bug to explain</strong><br><br>Your rule is later in the file, it matches the element, and DevTools shows it crossed out. The cascade did not pick it. Browsers resolve conflicting declarations in a fixed order: importance, origin, cascade layers, specificity, then source order. Source order only matters when everything else ties, and a single <code>#id</code> or an inline style outranks any number of classes. The sections below cover the order, selector scoring, and the id vs class decision that produces most override bugs."
+        },
         {
           "type": "text",
           "text": "<strong>Overview</strong><br><br>The cascade is the algorithm browsers use to combine styles from different sources. When multiple rules target the same element, CSS evaluates them using a four-step hierarchy: <em>importance, origin, specificity, and order of appearance.</em>"
@@ -3366,6 +2138,103 @@
         },
         {
           "type": "text",
+          "text": "<strong>Specificity: how selectors are scored</strong><br><br>Specificity is calculated from the selector’s parts. IDs, classes, attributes, and element names each contribute differently to its weight. When a “simple” override refuses to apply, specificity is often the first debug clue."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Selector Type",
+            "Example",
+            "Specificity Weight"
+          ],
+          "rows": [
+            [
+              "Inline Styles",
+              "style='color: red;'",
+              "1000"
+            ],
+            [
+              "ID Selectors",
+              "#header",
+              "100"
+            ],
+            [
+              "Class, Attribute, or Pseudo-class",
+              ".btn, [type='text'], :hover",
+              "10"
+            ],
+            [
+              "Element or Pseudo-element",
+              "div, p, ::before",
+              "1"
+            ],
+            [
+              "Universal or Inherited",
+              "* or inherited styles",
+              "0"
+            ]
+          ],
+          "caption": "Specificity scoring system"
+        },
+        {
+          "type": "code",
+          "language": "css",
+          "code": "p { color: blue; }       /* 1 */\n.text { color: green; }  /* 10 */\n#intro { color: red; }   /* 100 */"
+        },
+        {
+          "type": "text",
+          "text": "In this case, <code>#intro</code> (specificity 100) overrides <code>.text</code> (10) and <code>p</code> (1), resulting in red text."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Calculation Formula</strong><br>Specificity is commonly represented as a four-part value (a,b,c,d):<br><ul><li><strong>a</strong> – Inline styles (1 if present)</li><li><strong>b</strong> – Number of IDs</li><li><strong>c</strong> – Number of classes, attributes, pseudo-classes</li><li><strong>d</strong> – Number of element names and pseudo-elements</li></ul><br>Example: <code>#nav .menu li:hover</code> → (0,1,2,1) → Specificity = 121."
+        },
+        {
+          "type": "text",
+          "text": "<strong>id vs class selectors</strong><br><br>Both target elements, but they carry different weight and intent. An id is unique per page and scores 100; a class is reusable and scores 10, which is why class-based styling scales better in component systems: overrides stay cheap. Reserve ids for anchors and JavaScript hooks."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Aspect",
+            "id Selector",
+            "class Selector"
+          ],
+          "rows": [
+            [
+              "Syntax",
+              "#elementID",
+              ".elementClass"
+            ],
+            [
+              "Uniqueness",
+              "Must be unique per page",
+              "Can be used on multiple elements"
+            ],
+            [
+              "Specificity",
+              "Higher (overrides class styles)",
+              "Lower (can be overridden by id)"
+            ],
+            [
+              "Use Case",
+              "For specific, unique components",
+              "For reusable, shared styles"
+            ],
+            [
+              "Example HTML",
+              "<div id='header'></div>",
+              "<div class='card'></div>"
+            ]
+          ],
+          "caption": "Differences between id and class selectors"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Best practices</strong><br><ul><li>Keep selectors simple and class-driven to avoid specificity wars.</li><li>Use <code>@layer</code> to order framework and app styles instead of stacking specificity.</li><li>Reserve <code>!important</code> for utility classes or third-party overrides.</li><li>Refactor conflicting styles rather than adding more selectors.</li></ul>"
+        },
+        {
+          "type": "text",
           "text": "<i class='fa-solid fa-lightbulb'></i> The cascade is like a courtroom: importance is the judge, specificity is the lawyer’s strength, and source order is who speaks last."
         },
         {
@@ -3382,12 +2251,15 @@
       "specificity",
       "best-practices",
       "selectors",
-      "order"
+      "order",
+      "basics",
+      "id",
+      "class"
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-10-12",
     "seo": {
-      "title": "How does the CSS cascade decide which style wins?",
-      "description": "The CSS cascade resolves conflicts by origin and importance, then specificity, then source order when selectors still tie."
+      "title": "Why Your CSS Override Doesn't Apply: Specificity",
+      "description": "Debug a CSS rule that refuses to win: cascade order, selector specificity scoring, id vs class weight, layers, inline styles, and when !important hides the bug."
     },
     "incidentCard": {
       "title": "Cascade Decision Check",
@@ -3408,7 +2280,11 @@
       ],
       "correctOptionId": "cascade-checks-importance-origin-specificity-then-order",
       "rereadPrompt": "Not quite. The key lesson is that the cascade is a priority system, not just a file-order rule. Importance and origin can outrank specificity, and source order only settles a tie after those earlier checks."
-    }
+    },
+    "companies": [
+      "google",
+      "meta"
+    ]
   },
   {
     "id": "css-custom-properties",

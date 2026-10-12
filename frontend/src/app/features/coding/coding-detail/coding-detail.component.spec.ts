@@ -437,6 +437,46 @@ describe('CodingDetailComponent', () => {
     expect(plain.querySelector('[data-testid="coding-common-mistakes"]')).toBeNull();
   });
 
+  it('shows the first paragraph of the solution overview inside the description panel for accessible questions only', async () => {
+    spyOnProperty(window, 'innerWidth', 'get').and.returnValue(390);
+    const render = async (question: any) => {
+      const fixture = TestBed.createComponent(CodingDetailComponent);
+      const component = fixture.componentInstance;
+      component.questionId = question.id;
+      component.questionTech = 'javascript';
+      questionService.loadQuestions.and.returnValue(of([question] as any));
+      spyOn(component as any, 'resolveSolutionAsset').and.resolveTo({ files: {}, initialPath: '' });
+      fixture.detectChanges();
+      await fixture.whenStable();
+      fixture.detectChanges();
+      return { host: fixture.nativeElement as HTMLElement, component };
+    };
+
+    const question = {
+      ...makeDeferredPromiseQuestion(),
+      solutionBlock: {
+        overview: 'Keep one pending promise per key and resolve it from the outside.\n\nThe second paragraph stays in the solution tab.',
+        approaches: [],
+      },
+    };
+    const { host, component } = await render(question);
+    const description = host.querySelector('[data-testid="coding-description-panel"]') as HTMLElement;
+    const idea = host.querySelector('[data-testid="coding-solution-idea"]') as HTMLDetailsElement;
+    expect(idea).not.toBeNull();
+    expect(description.contains(idea)).toBeTrue();
+    expect(idea.open).toBeTrue();
+    expect(idea.textContent).toContain('Keep one pending promise per key and resolve it from the outside.');
+    expect(idea.textContent).not.toContain('second paragraph');
+    expect(host.querySelector('[data-testid="coding-solution-panel"]')?.textContent).toContain('second paragraph');
+
+    component.pressureRequested.set(true);
+    expect(component.solutionIdea()).toBe('');
+
+    const locked = await render({ ...question, access: 'premium' });
+    expect(locked.host.querySelector('[data-testid="coding-solution-idea"]')).toBeNull();
+    expect(locked.component.solutionIdea()).toBe('');
+  });
+
   it('renders both HTML and CSS solution blocks as mobile read-only code', async () => {
     spyOnProperty(window, 'innerWidth', 'get').and.returnValue(360);
     const base = makeCssFlexboxNavbarQuestion();
@@ -2561,7 +2601,15 @@ describe('CodingDetailComponent', () => {
         expect(prose).toBeNull();
       }
       expect(component.descSummary()).toBe(component.descriptionText());
-      expect(panel.textContent).not.toContain('Interview answer:');
+      // The prompt never falls back to the solution text. The answer appears only inside the
+      // solution idea disclosure, which stays collapsed beside a desktop workspace.
+      const idea = panel.querySelector('[data-testid="coding-solution-idea"]') as HTMLDetailsElement | null;
+      expect(idea).not.toBeNull();
+      expect(idea!.open).toBeFalse();
+      expect(idea!.textContent).toContain('Interview answer:');
+      const promptOnly = panel.cloneNode(true) as HTMLElement;
+      promptOnly.querySelector('[data-testid="coding-solution-idea"]')?.remove();
+      expect(promptOnly.textContent).not.toContain('Interview answer:');
     });
 
     it(`uses ${testCase.label} for debug metadata while preserving access and excluding solutions`, () => {
@@ -2640,15 +2688,21 @@ describe('CodingDetailComponent', () => {
     (component as any).updateSeoForQuestion(question);
     const payload = seo.updateTags.calls.mostRecent().args[0] as any;
     const article = payload.jsonLd.find((entry: any) => entry['@type'] === 'TechArticle');
-    expect(article.dateModified).toBe(seoContentDateModified(article.url));
+    const contentDate = seoContentDateModified(article.url);
+    expect(contentDate).toBeTruthy();
+    expect(article.dateModified).toBe(contentDate);
     expect(article.datePublished).toBe('2025-03-15T00:00:00.000Z');
+    // The visible "Updated" label shows the same day as the sitemap and the schema, not the catalog updatedAt.
+    expect(component.updatedLabel(question as any))
+      .toBe(new Date(contentDate!).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }));
+    expect(component.updatedLabel(question as any)).not.toBe('Mar 15, 2025');
 
     (component as any).updateSeoForQuestion({ ...question, id: 'unresolved-content-date' });
     const unresolved = (seo.updateTags.calls.mostRecent().args[0] as any).jsonLd
       .find((entry: any) => entry['@type'] === 'TechArticle');
     expect(Object.prototype.hasOwnProperty.call(unresolved, 'dateModified')).toBeFalse();
     expect(unresolved.datePublished).toBe('2025-03-15T00:00:00.000Z');
-    expect(component.updatedLabel(question as any)).toBe('Mar 15, 2025');
+    expect(component.updatedLabel({ ...question, id: 'unresolved-content-date' } as any)).toBe('Mar 15, 2025');
   });
 
   it('prefers question seo title/description and sanitizes/clamps values', () => {
