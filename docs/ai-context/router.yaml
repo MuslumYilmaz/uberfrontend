@@ -219,6 +219,25 @@ reference_rules:
       - docs/audits/seo-audit.md
     max_docs: 1
 
+  - id: gsc_issues
+    priority: 105
+    keywords:
+      - organic traffic
+      - search console
+      - gsc
+      - index coverage
+      - crawled not indexed
+      - discovered not indexed
+      - impressions
+      - site quality
+      - deindexed
+    paths:
+      - docs/audits/gsc-issues.md
+      - docs/references/seo-growth-roadmap-2026-10.md
+    load:
+      - docs/audits/gsc-issues.md
+    max_docs: 1
+
   - id: test_quality_audit
     priority: 70
     keywords:

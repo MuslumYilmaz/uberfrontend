@@ -6,7 +6,7 @@
   [class.coding-detail--mobile-reading]="showMobileDesktopGuard()"
   [class.fixed-under-header]="!demoMode" [class.demo-embed]="demoMode">
   <!-- LEFT COLUMN -->
-  <aside class="coding-description-pane flex flex-col min-h-0 bg-neutral-900/95 rounded-lg shadow-sm border border-white/10 overflow-hidden coding-detail__scroll"
+  <section class="coding-description-pane flex flex-col min-h-0 bg-neutral-900/95 rounded-lg shadow-sm border border-white/10 overflow-hidden coding-detail__scroll"
     data-testid="coding-description-pane" aria-label="Challenge description and solution"
     [class.coding-description-pane--collapsed]="descriptionCollapsed()"
     [style.flex]="asideFlex()" style="min-width:0;">
@@ -376,6 +376,14 @@
                 <span class="font-sm"><fa-inline-code [text]="descReturns()?.desc"></fa-inline-code></span>
               </div>
             </div>
+
+            <!-- Solution idea: the first paragraph of the authored overview, readable on phones and in the initial HTML without opening the solution tab -->
+            <details *ngIf="solutionIdea()" class="solution-idea mt-6" data-testid="coding-solution-idea"
+              [attr.open]="solutionIdeaOpen() ? '' : null">
+              <summary><h3 class="inline text-sm font-semibold">Solution idea</h3></summary>
+              <div class="solution-prose prose prose-invert max-w-none text-sm opacity-90 mt-1"
+                [innerHTML]="md(solutionIdea()) | safeHtml"></div>
+            </details>
 
             <!-- Örnekler -->
             <ng-container *ngIf="!isFrameworkTech() && !isWebTech() && combinedExamples()">
@@ -794,7 +802,7 @@
 
       </div>
     </ng-container>
-  </aside>
+  </section>
 
   <!-- DESCRIPTION / WORKSPACE SPLITTER -->
   <div *ngIf="workspaceAvailable() && !descriptionCollapsed()" class="splitter" data-testid="coding-description-splitter"

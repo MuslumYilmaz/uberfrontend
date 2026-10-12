@@ -1215,6 +1215,18 @@ describe('TriviaDetailComponent', () => {
     fixture.destroy();
   });
 
+  it('shows the sitemap modification date as the visible updated label when it resolves', async () => {
+    const fixture = await createLoadedFixture('free', { id: 'js-equality-vs-strict-equality', updatedAt: '2025-03-15' });
+    const payload = seo.updateTags.calls.mostRecent().args[0] as any;
+    const contentDate = seoContentDateModified(payload.canonical);
+    expect(contentDate).toBeTruthy();
+    expect(fixture.componentInstance.updatedLabel(fixture.componentInstance.question())).toBe(
+      new Date(contentDate!).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }),
+    );
+    expect(fixture.componentInstance.updatedLabel(fixture.componentInstance.question())).not.toBe('Mar 15, 2025');
+    fixture.destroy();
+  });
+
   it('uses the common trivia schema for async race and generic questions', async () => {
     const targetFixture = await createLoadedFixture('free', {
       id: 'js-async-race-conditions',

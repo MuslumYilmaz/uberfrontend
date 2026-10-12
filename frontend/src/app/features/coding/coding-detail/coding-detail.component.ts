@@ -1383,9 +1383,15 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
   updatedLabel(q?: Question | null): string | null {
     if (!q) return null;
-    const iso = this.resolveUpdatedIso(q);
+    const iso = this.resolveDisplayedUpdatedIso(q);
     if (!iso) return null;
     return new Date(iso).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+  }
+
+  /** The visible "Updated" date follows the sitemap lastmod and the JSON-LD dateModified; the catalog updatedAt is only the fallback. */
+  private resolveDisplayedUpdatedIso(q: Question): string | null {
+    const canonical = this.seo.buildCanonicalUrl(`/${this.tech}/${this.kind}/${q.id}`);
+    return seoContentDateModified(canonical) ?? this.resolveUpdatedIso(q);
   }
 
   demoStorageKey(id?: string | null): string | null {
@@ -3722,6 +3728,22 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     const legacy = this.solutionInfo();
     return { overview: legacy.explanation };
   });
+
+  /**
+   * First paragraph of the authored solution overview. The description panel
+   * shows it so phones (which never mount the workspace) and the initial HTML
+   * carry the answer without opening the closed solution tab. Locked questions
+   * yield nothing because structuredSolution() is already empty for them.
+   */
+  solutionIdea = computed<string>(() => {
+    if (this.demoMode || this.pressureRequested()) return '';
+    const overview = String(this.structuredSolution()?.overview ?? '').trim();
+    if (!overview) return '';
+    return overview.split(/\n\s*\n/)[0].trim();
+  });
+
+  /** Open in the initial HTML and in mobile reading mode; collapsed beside a desktop workspace so the prompt is not spoiled. */
+  solutionIdeaOpen = computed<boolean>(() => !this.isBrowser || this.showMobileDesktopGuard());
 
   curatedNextStepsOnly = computed<boolean>(() => this.structuredSolution()?.curatedNextStepsOnly === true);
 
