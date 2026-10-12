@@ -2331,11 +2331,11 @@ function onInput(value) {
               routeUrl: '/react/trivia/react-keys-in-lists',
             },
             {
-              id: 'react-component-rerendering',
-              title: 'When does React re-render a component, and when does it actually update the DOM?',
+              id: 'react-rerender-decision-and-render',
+              title: "Why does my component re-render when its props didn't change?",
               filePath: 'cdn/questions/react/trivia.json',
-              route: ['/react', 'trivia', 'react-component-rerendering'],
-              routeUrl: '/react/trivia/react-component-rerendering',
+              route: ['/react', 'trivia', 'react-rerender-decision-and-render'],
+              routeUrl: '/react/trivia/react-rerender-decision-and-render',
             },
             {
               id: 'react-transfer-list',

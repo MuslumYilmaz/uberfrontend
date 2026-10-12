@@ -358,20 +358,8 @@ export const PUBLIC_QUESTION_NAVIGATION: readonly PublicQuestionNavigationItem[]
   {
     "tech": "css",
     "kind": "trivia",
-    "title": "How can you add a border around an element?",
-    "route": "/css/trivia/css-border-property"
-  },
-  {
-    "tech": "css",
-    "kind": "trivia",
     "title": "How can you make an element responsive using CSS?",
     "route": "/css/trivia/css-make-element-responsive"
-  },
-  {
-    "tech": "css",
-    "kind": "trivia",
-    "title": "How do CSS selectors with higher specificity override others?",
-    "route": "/css/trivia/css-specificity-hierarchy"
   },
   {
     "tech": "css",
@@ -382,44 +370,14 @@ export const PUBLIC_QUESTION_NAVIGATION: readonly PublicQuestionNavigationItem[]
   {
     "tech": "css",
     "kind": "trivia",
-    "title": "How do you center text horizontally in CSS?",
-    "route": "/css/trivia/css-center-text"
-  },
-  {
-    "tech": "css",
-    "kind": "trivia",
-    "title": "How do you change the background color of a page using CSS?",
-    "route": "/css/trivia/css-background-color"
-  },
-  {
-    "tech": "css",
-    "kind": "trivia",
-    "title": "How do you change the size of text in CSS?",
-    "route": "/css/trivia/css-change-text-size"
-  },
-  {
-    "tech": "css",
-    "kind": "trivia",
-    "title": "How do you link a CSS file to an HTML document?",
-    "route": "/css/trivia/css-link-html"
-  },
-  {
-    "tech": "css",
-    "kind": "trivia",
-    "title": "How do you make text bold in CSS?",
-    "route": "/css/trivia/css-make-text-bold"
-  },
-  {
-    "tech": "css",
-    "kind": "trivia",
-    "title": "How does the CSS cascade determine which styles are applied?",
-    "route": "/css/trivia/css-cascade-order"
-  },
-  {
-    "tech": "css",
-    "kind": "trivia",
     "title": "How does z-index work in CSS?",
     "route": "/css/trivia/css-z-index"
+  },
+  {
+    "tech": "css",
+    "kind": "trivia",
+    "title": "visibility: hidden vs display: none: layout, focus, and screen readers",
+    "route": "/css/trivia/css-visibility-vs-display"
   },
   {
     "tech": "css",
@@ -430,20 +388,8 @@ export const PUBLIC_QUESTION_NAVIGATION: readonly PublicQuestionNavigationItem[]
   {
     "tech": "css",
     "kind": "trivia",
-    "title": "What are media queries and why are they used?",
-    "route": "/css/trivia/css-media-queries"
-  },
-  {
-    "tech": "css",
-    "kind": "trivia",
     "title": "What are pseudo-classes and pseudo-elements? Give examples.",
     "route": "/css/trivia/css-pseudo-classes-elements"
-  },
-  {
-    "tech": "css",
-    "kind": "trivia",
-    "title": "What does CSS stand for?",
-    "route": "/css/trivia/css-definition"
   },
   {
     "tech": "css",
@@ -466,20 +412,8 @@ export const PUBLIC_QUESTION_NAVIGATION: readonly PublicQuestionNavigationItem[]
   {
     "tech": "css",
     "kind": "trivia",
-    "title": "What is the box model in CSS?",
-    "route": "/css/trivia/css-box-model"
-  },
-  {
-    "tech": "css",
-    "kind": "trivia",
     "title": "What is the difference between Grid and Flexbox, and when should each be used?",
     "route": "/css/trivia/css-grid-vs-flexbox"
-  },
-  {
-    "tech": "css",
-    "kind": "trivia",
-    "title": "What is the difference between id and class selectors?",
-    "route": "/css/trivia/css-id-vs-class"
   },
   {
     "tech": "css",
@@ -492,18 +426,6 @@ export const PUBLIC_QUESTION_NAVIGATION: readonly PublicQuestionNavigationItem[]
     "kind": "trivia",
     "title": "What is the difference between margin and padding?",
     "route": "/css/trivia/css-margin-vs-padding"
-  },
-  {
-    "tech": "css",
-    "kind": "trivia",
-    "title": "What is the difference between position: relative, absolute, and fixed?",
-    "route": "/css/trivia/css-position-relative-absolute-fixed"
-  },
-  {
-    "tech": "css",
-    "kind": "trivia",
-    "title": "What is the difference between visibility: hidden and display: none?",
-    "route": "/css/trivia/css-visibility-vs-display"
   },
   {
     "tech": "css",
@@ -526,14 +448,26 @@ export const PUBLIC_QUESTION_NAVIGATION: readonly PublicQuestionNavigationItem[]
   {
     "tech": "css",
     "kind": "trivia",
-    "title": "What property is used to change the text color in CSS?",
-    "route": "/css/trivia/css-text-color"
+    "title": "Why does position: absolute ignore my parent? relative vs absolute vs fixed",
+    "route": "/css/trivia/css-position-relative-absolute-fixed"
+  },
+  {
+    "tech": "css",
+    "kind": "trivia",
+    "title": "Why doesn't my CSS override apply? Cascade, specificity, and !important",
+    "route": "/css/trivia/css-cascade-order"
   },
   {
     "tech": "css",
     "kind": "trivia",
     "title": "Why is CSS position: sticky not working?",
     "route": "/css/trivia/css-position-sticky-not-working"
+  },
+  {
+    "tech": "css",
+    "kind": "trivia",
+    "title": "Why is this element wider than its width? box-sizing and the box model",
+    "route": "/css/trivia/css-box-model"
   },
   {
     "tech": "html",
@@ -636,12 +570,6 @@ export const PUBLIC_QUESTION_NAVIGATION: readonly PublicQuestionNavigationItem[]
     "kind": "trivia",
     "title": "What are semantic HTML elements?",
     "route": "/html/trivia/html-semantic-elements"
-  },
-  {
-    "tech": "html",
-    "kind": "trivia",
-    "title": "What does the <br> tag do?",
-    "route": "/html/trivia/html-br-tag"
   },
   {
     "tech": "html",
@@ -1102,44 +1030,14 @@ export const PUBLIC_QUESTION_NAVIGATION: readonly PublicQuestionNavigationItem[]
   {
     "tech": "javascript",
     "kind": "trivia",
-    "title": "Explain 'hoisting' in JavaScript",
-    "route": "/javascript/trivia/js-hoisting"
-  },
-  {
-    "tech": "javascript",
-    "kind": "trivia",
     "title": "Explain Closures in JavaScript",
     "route": "/javascript/trivia/js-closures"
   },
   {
     "tech": "javascript",
     "kind": "trivia",
-    "title": "Explain Event Delegation in JavaScript",
-    "route": "/javascript/trivia/js-event-delegation"
-  },
-  {
-    "tech": "javascript",
-    "kind": "trivia",
-    "title": "Explain Hoisting and the Temporal Dead Zone (TDZ)",
-    "route": "/javascript/trivia/js-hoisting-tdz"
-  },
-  {
-    "tech": "javascript",
-    "kind": "trivia",
     "title": "Explain how prototypal inheritance works in JavaScript",
     "route": "/javascript/trivia/js-prototypal-inheritance"
-  },
-  {
-    "tech": "javascript",
-    "kind": "trivia",
-    "title": "Explain the `this` keyword in JavaScript",
-    "route": "/javascript/trivia/js-this-keyword"
-  },
-  {
-    "tech": "javascript",
-    "kind": "trivia",
-    "title": "Explain the difference in hoisting between `var`, `let`, and `const`",
-    "route": "/javascript/trivia/js-var-let-const-hoisting"
   },
   {
     "tech": "javascript",
@@ -1162,20 +1060,8 @@ export const PUBLIC_QUESTION_NAVIGATION: readonly PublicQuestionNavigationItem[]
   {
     "tech": "javascript",
     "kind": "trivia",
-    "title": "How does Promise resolve callback hell in JavaScript?",
-    "route": "/javascript/trivia/js-calback-hell-resolved-with-promise"
-  },
-  {
-    "tech": "javascript",
-    "kind": "trivia",
     "title": "How should a front-end handle streaming data from an AI model?",
     "route": "/javascript/trivia/ai-streaming-data-handling"
-  },
-  {
-    "tech": "javascript",
-    "kind": "trivia",
-    "title": "How to check data type in JavaScript using typeof",
-    "route": "/javascript/trivia/js-check-data-type-with-typeof"
   },
   {
     "tech": "javascript",
@@ -1258,12 +1144,6 @@ export const PUBLIC_QUESTION_NAVIGATION: readonly PublicQuestionNavigationItem[]
   {
     "tech": "javascript",
     "kind": "trivia",
-    "title": "Mutability vs Immutability in JavaScript (State, References, and Side Effects)",
-    "route": "/javascript/trivia/js-mutability-vs-immutability"
-  },
-  {
-    "tech": "javascript",
-    "kind": "trivia",
     "title": "Object.create vs new in JavaScript (Prototypes, Constructors, and Inheritance)",
     "route": "/javascript/trivia/js-object-create-vs-new"
   },
@@ -1306,20 +1186,8 @@ export const PUBLIC_QUESTION_NAVIGATION: readonly PublicQuestionNavigationItem[]
   {
     "tech": "javascript",
     "kind": "trivia",
-    "title": "Promise - Fundamental Understanding",
-    "route": "/javascript/trivia/js-promise-fundamental-understanding"
-  },
-  {
-    "tech": "javascript",
-    "kind": "trivia",
     "title": "Promise.all vs allSettled vs race vs any (JavaScript Promise Combinators)",
     "route": "/javascript/trivia/js-promise-combinators-all-allsettled-race-any"
-  },
-  {
-    "tech": "javascript",
-    "kind": "trivia",
-    "title": "Promises and async/await",
-    "route": "/javascript/trivia/js-promises-async-await"
   },
   {
     "tech": "javascript",
@@ -1332,12 +1200,6 @@ export const PUBLIC_QUESTION_NAVIGATION: readonly PublicQuestionNavigationItem[]
     "kind": "trivia",
     "title": "Shallow Copy vs Deep Copy in JavaScript (Objects, Arrays, References)",
     "route": "/javascript/trivia/js-shallow-vs-deep-copy"
-  },
-  {
-    "tech": "javascript",
-    "kind": "trivia",
-    "title": "Spread operator vs rest parameters in JavaScript",
-    "route": "/javascript/trivia/js-spread-vs-rest-parameters"
   },
   {
     "tech": "javascript",
@@ -1366,12 +1228,6 @@ export const PUBLIC_QUESTION_NAVIGATION: readonly PublicQuestionNavigationItem[]
   {
     "tech": "javascript",
     "kind": "trivia",
-    "title": "Tree-Shaking: How It Works and Common Pitfalls",
-    "route": "/javascript/trivia/js-tree-shaking"
-  },
-  {
-    "tech": "javascript",
-    "kind": "trivia",
     "title": "Truthy/falsy, pass-by-value vs reference, and strict equality: practical use case",
     "route": "/javascript/trivia/js-truthy-falsy-pass-by-value-reference-strict-equality-use-case"
   },
@@ -1396,12 +1252,6 @@ export const PUBLIC_QUESTION_NAVIGATION: readonly PublicQuestionNavigationItem[]
   {
     "tech": "javascript",
     "kind": "trivia",
-    "title": "What are callbacks in JavaScript?",
-    "route": "/javascript/trivia/js-callbacks"
-  },
-  {
-    "tech": "javascript",
-    "kind": "trivia",
     "title": "What are classes in JavaScript?",
     "route": "/javascript/trivia/js-classes"
   },
@@ -1420,12 +1270,6 @@ export const PUBLIC_QUESTION_NAVIGATION: readonly PublicQuestionNavigationItem[]
   {
     "tech": "javascript",
     "kind": "trivia",
-    "title": "What are the various data types in JavaScript?",
-    "route": "/javascript/trivia/js-data-types"
-  },
-  {
-    "tech": "javascript",
-    "kind": "trivia",
     "title": "What do you mean by JavaScript Design Patterns?",
     "route": "/javascript/trivia/js-design-patterns"
   },
@@ -1440,12 +1284,6 @@ export const PUBLIC_QUESTION_NAVIGATION: readonly PublicQuestionNavigationItem[]
     "kind": "trivia",
     "title": "What is currying in JavaScript?",
     "route": "/javascript/trivia/js-currying"
-  },
-  {
-    "tech": "javascript",
-    "kind": "trivia",
-    "title": "What is event bubbling and capturing in JavaScript?",
-    "route": "/javascript/trivia/js-event-bubbling-capturing"
   },
   {
     "tech": "javascript",
@@ -1504,12 +1342,6 @@ export const PUBLIC_QUESTION_NAVIGATION: readonly PublicQuestionNavigationItem[]
   {
     "tech": "javascript",
     "kind": "trivia",
-    "title": "What is the NaN property in JavaScript?",
-    "route": "/javascript/trivia/js-nan-property"
-  },
-  {
-    "tech": "javascript",
-    "kind": "trivia",
     "title": "What is the nullish coalescing operator (??) in JavaScript?",
     "route": "/javascript/trivia/js-null-coalescing-operator"
   },
@@ -1540,8 +1372,56 @@ export const PUBLIC_QUESTION_NAVIGATION: readonly PublicQuestionNavigationItem[]
   {
     "tech": "javascript",
     "kind": "trivia",
+    "title": "Why didn't tree shaking remove my unused import? sideEffects and barrels",
+    "route": "/javascript/trivia/js-tree-shaking"
+  },
+  {
+    "tech": "javascript",
+    "kind": "trivia",
+    "title": "Why does changing the copy mutate the original? References and Object.freeze",
+    "route": "/javascript/trivia/js-mutability-vs-immutability"
+  },
+  {
+    "tech": "javascript",
+    "kind": "trivia",
+    "title": "Why does my .then() get undefined? Promise chains, async/await, and callback hell",
+    "route": "/javascript/trivia/js-promises-async-await"
+  },
+  {
+    "tech": "javascript",
+    "kind": "trivia",
+    "title": "Why does my click handler fire twice? Bubbling, capturing, and event delegation",
+    "route": "/javascript/trivia/js-event-delegation"
+  },
+  {
+    "tech": "javascript",
+    "kind": "trivia",
+    "title": "Why does the spread copy still share nested objects? Spread vs rest",
+    "route": "/javascript/trivia/js-spread-vs-rest-parameters"
+  },
+  {
+    "tech": "javascript",
+    "kind": "trivia",
+    "title": "Why does typeof null return 'object'? Data types, typeof, and NaN checks",
+    "route": "/javascript/trivia/js-check-data-type-with-typeof"
+  },
+  {
+    "tech": "javascript",
+    "kind": "trivia",
+    "title": "Why does var log undefined while let throws? Hoisting and the TDZ",
+    "route": "/javascript/trivia/js-hoisting"
+  },
+  {
+    "tech": "javascript",
+    "kind": "trivia",
     "title": "Why is the eval() function considered dangerous in JavaScript?",
     "route": "/javascript/trivia/js-why-eval-function-considered-dangerous"
+  },
+  {
+    "tech": "javascript",
+    "kind": "trivia",
+    "title": "Why is this undefined in my callback? Detached methods, arrows, and bind",
+    "route": "/javascript/trivia/js-this-keyword"
   },
   {
     "tech": "react",
@@ -1576,12 +1456,6 @@ export const PUBLIC_QUESTION_NAVIGATION: readonly PublicQuestionNavigationItem[]
   {
     "tech": "react",
     "kind": "trivia",
-    "title": "Explain how React’s diffing algorithm determines which parts of the DOM to update.",
-    "route": "/react/trivia/react-diffing-algorithm"
-  },
-  {
-    "tech": "react",
-    "kind": "trivia",
     "title": "Functional vs class components in React: what actually differs?",
     "route": "/react/trivia/react-functional-vs-class-components"
   },
@@ -1606,12 +1480,6 @@ export const PUBLIC_QUESTION_NAVIGATION: readonly PublicQuestionNavigationItem[]
   {
     "tech": "react",
     "kind": "trivia",
-    "title": "How can you prevent unnecessary re-renders in React?",
-    "route": "/react/trivia/react-prevent-unnecessary-rerenders"
-  },
-  {
-    "tech": "react",
-    "kind": "trivia",
     "title": "How do fragments affect the rendered DOM and reconciliation?",
     "route": "/react/trivia/react-fragments-dom-and-reconciliation"
   },
@@ -1620,12 +1488,6 @@ export const PUBLIC_QUESTION_NAVIGATION: readonly PublicQuestionNavigationItem[]
     "kind": "trivia",
     "title": "How does JSX get transformed, and why doesn’t React require it?",
     "route": "/react/trivia/react-jsx-transform-and-why-not-required"
-  },
-  {
-    "tech": "react",
-    "kind": "trivia",
-    "title": "How does React decide when to re-render a component, and what role does render() play in that process?",
-    "route": "/react/trivia/react-rerender-decision-and-render"
   },
   {
     "tech": "react",
@@ -1642,8 +1504,8 @@ export const PUBLIC_QUESTION_NAVIGATION: readonly PublicQuestionNavigationItem[]
   {
     "tech": "react",
     "kind": "trivia",
-    "title": "What are React portals and when would you use them?",
-    "route": "/react/trivia/react-portals"
+    "title": "useMemo vs useCallback: when does memoizing make it slower?",
+    "route": "/react/trivia/react-usememo-vs-usecallback"
   },
   {
     "tech": "react",
@@ -1666,44 +1528,8 @@ export const PUBLIC_QUESTION_NAVIGATION: readonly PublicQuestionNavigationItem[]
   {
     "tech": "react",
     "kind": "trivia",
-    "title": "What is React reconciliation and how does it work?",
-    "route": "/react/trivia/react-reconciliation"
-  },
-  {
-    "tech": "react",
-    "kind": "trivia",
-    "title": "What is the difference between controlled and uncontrolled components?",
-    "route": "/react/trivia/react-controlled-vs-uncontrolled"
-  },
-  {
-    "tech": "react",
-    "kind": "trivia",
-    "title": "What is the difference between useMemo() and useCallback()?",
-    "route": "/react/trivia/react-usememo-vs-usecallback"
-  },
-  {
-    "tech": "react",
-    "kind": "trivia",
-    "title": "What is the purpose of the React.StrictMode component?",
-    "route": "/react/trivia/react-strictmode-purpose"
-  },
-  {
-    "tech": "react",
-    "kind": "trivia",
     "title": "What is the significance of keys in lists in React?",
     "route": "/react/trivia/react-keys-in-lists"
-  },
-  {
-    "tech": "react",
-    "kind": "trivia",
-    "title": "What is the Virtual DOM in React, and how does it relate to reconciliation?",
-    "route": "/react/trivia/react-virtual-dom"
-  },
-  {
-    "tech": "react",
-    "kind": "trivia",
-    "title": "What problem do Error Boundaries solve? What don’t they catch?",
-    "route": "/react/trivia/react-error-boundaries-what-they-solve"
   },
   {
     "tech": "react",
@@ -1716,24 +1542,6 @@ export const PUBLIC_QUESTION_NAVIGATION: readonly PublicQuestionNavigationItem[]
     "kind": "trivia",
     "title": "What's new in React 18?",
     "route": "/react/trivia/react-18-whats-new"
-  },
-  {
-    "tech": "react",
-    "kind": "trivia",
-    "title": "What’s the difference between useEffect and useLayoutEffect? When does it matter?",
-    "route": "/react/trivia/react-useeffect-vs-uselayouteffect"
-  },
-  {
-    "tech": "react",
-    "kind": "trivia",
-    "title": "What’s the difference between useRef and useState? When should each be used?",
-    "route": "/react/trivia/react-useref-vs-usestate"
-  },
-  {
-    "tech": "react",
-    "kind": "trivia",
-    "title": "When does React re-render a component, and when does it actually update the DOM?",
-    "route": "/react/trivia/react-component-rerendering"
   },
   {
     "tech": "react",
@@ -1756,6 +1564,24 @@ export const PUBLIC_QUESTION_NAVIGATION: readonly PublicQuestionNavigationItem[]
   {
     "tech": "react",
     "kind": "trivia",
+    "title": "Why did React remount my component instead of updating it? Reconciliation, keys, and element type",
+    "route": "/react/trivia/react-diffing-algorithm"
+  },
+  {
+    "tech": "react",
+    "kind": "trivia",
+    "title": "Why didn't my Error Boundary catch the error? Async, event handlers, and SSR",
+    "route": "/react/trivia/react-error-boundaries-what-they-solve"
+  },
+  {
+    "tech": "react",
+    "kind": "trivia",
+    "title": "Why do events from a portal still bubble to the parent? React portals",
+    "route": "/react/trivia/react-portals"
+  },
+  {
+    "tech": "react",
+    "kind": "trivia",
     "title": "Why do Hooks have rules? What breaks if you call Hooks conditionally?",
     "route": "/react/trivia/react-why-hooks-have-rules"
   },
@@ -1764,6 +1590,18 @@ export const PUBLIC_QUESTION_NAVIGATION: readonly PublicQuestionNavigationItem[]
     "kind": "trivia",
     "title": "Why does Context cause performance issues? How do you fix them?",
     "route": "/react/trivia/react-context-performance-issues"
+  },
+  {
+    "tech": "react",
+    "kind": "trivia",
+    "title": "Why does my component re-render when its props didn't change?",
+    "route": "/react/trivia/react-rerender-decision-and-render"
+  },
+  {
+    "tech": "react",
+    "kind": "trivia",
+    "title": "Why does my UI flicker on first paint? useEffect vs useLayoutEffect",
+    "route": "/react/trivia/react-useeffect-vs-uselayouteffect"
   },
   {
     "tech": "react",
@@ -1792,8 +1630,20 @@ export const PUBLIC_QUESTION_NAVIGATION: readonly PublicQuestionNavigationItem[]
   {
     "tech": "react",
     "kind": "trivia",
+    "title": "Why does React warn about an uncontrolled input becoming controlled?",
+    "route": "/react/trivia/react-controlled-vs-uncontrolled"
+  },
+  {
+    "tech": "react",
+    "kind": "trivia",
     "title": "Why does useEffect run twice in React StrictMode?",
     "route": "/react/trivia/react-strictmode-double-invoke-effects"
+  },
+  {
+    "tech": "react",
+    "kind": "trivia",
+    "title": "Why doesn't changing a ref re-render? useRef vs useState",
+    "route": "/react/trivia/react-useref-vs-usestate"
   },
   {
     "tech": "react",

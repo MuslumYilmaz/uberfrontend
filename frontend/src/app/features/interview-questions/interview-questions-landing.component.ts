@@ -611,7 +611,7 @@ const MASTER_SHORT_ANSWERS: MasterShortAnswerItem[] = [
   {
     q: 'How does CSS specificity affect frontend bugs?',
     a: 'Specificity decides which CSS rule wins when multiple selectors target the same property. Bugs appear when a broad selector, utility class, inline style, or later rule overrides the intended style. Debugging should inspect the winning rule first, then reduce selector complexity instead of adding more force.',
-    route: ['/css', 'trivia', 'css-specificity-hierarchy'],
+    route: ['/css', 'trivia', 'css-cascade-order'],
     cta: 'Practice specificity',
     category: 'html-css',
     level: 'intermediate',
@@ -1176,7 +1176,7 @@ const JAVASCRIPT_SHORT_ANSWERS: JavaScriptShortAnswerItem[] = [
     level: 'beginner',
     q: 'What are callbacks in JavaScript?',
     a: 'A callback is a function passed into another function so it can be called later. Callbacks are used in event handlers, array methods, timers, and older asynchronous APIs. The main risk is losing clear control flow or error handling when callbacks become deeply nested or when this is not preserved.',
-    route: ['/javascript', 'trivia', 'js-callbacks'],
+    route: ['/javascript', 'trivia', 'js-promises-async-await'],
     cta: 'Review callbacks',
   },
   {
@@ -1224,7 +1224,7 @@ const JAVASCRIPT_SHORT_ANSWERS: JavaScriptShortAnswerItem[] = [
     level: 'beginner',
     q: 'What is the difference between var, let, and const?',
     a: 'var is scoped to the nearest function and can be redeclared in the same scope. let and const are scoped to the nearest block, which makes them safer inside loops and conditionals. const requires an initial value and prevents rebinding, but object properties and array items can still be mutated.',
-    route: ['/javascript', 'trivia', 'js-var-let-const-hoisting'],
+    route: ['/javascript', 'trivia', 'js-hoisting'],
     cta: 'Review variable scope',
   },
   {
@@ -1256,7 +1256,7 @@ const JAVASCRIPT_SHORT_ANSWERS: JavaScriptShortAnswerItem[] = [
     level: 'beginner',
     q: 'What is the purpose of Promises?',
     a: 'A Promise is an object that represents the eventual result of asynchronous work. It starts pending, then either fulfills with a value or rejects with a reason. Promises make async code easier to compose because success, failure, chaining, and fan-out behavior all use the same contract.',
-    route: ['/javascript', 'trivia', 'js-promise-fundamental-understanding'],
+    route: ['/javascript', 'trivia', 'js-promises-async-await'],
     cta: 'Review Promise fundamentals',
   },
   {
@@ -1428,7 +1428,7 @@ true`,
 3
 3`,
     explanation: 'var creates one function-scoped binding shared by every callback. By the time the timers run, the loop has finished and that shared i is 3.',
-    route: ['/javascript', 'trivia', 'js-var-let-const-hoisting'],
+    route: ['/javascript', 'trivia', 'js-hoisting'],
     cta: 'Review var and let',
   },
   {
@@ -1500,7 +1500,7 @@ const JAVASCRIPT_BROWSER_QUESTIONS: JavaScriptBrowserQuestionItem[] = [
     level: 'intermediate',
     q: 'What is the difference between event bubbling and capturing?',
     a: 'Capturing runs listeners from the document down toward the target before the target phase. Bubbling runs listeners from the target back up toward the document. Most app code relies on bubbling, while capture is useful when a parent must observe an event before child handlers run.',
-    route: ['/javascript', 'trivia', 'js-event-bubbling-capturing'],
+    route: ['/javascript', 'trivia', 'js-event-delegation'],
     cta: 'Compare event phases',
   },
   {
@@ -2477,7 +2477,7 @@ const REACT_SHORT_ANSWERS: ReactShortAnswerItem[] = [
     level: 'intermediate',
     q: 'What causes a React component to re-render?',
     a: 'A component can re-render when its state updates, its parent renders, a consumed context value changes, or an external store subscription notifies it. Rendering does not always mean the DOM changes; React still compares the result before committing updates. Performance debugging should separate render frequency from actual slow commits.',
-    route: ['/react', 'trivia', 'react-component-rerendering'],
+    route: ['/react', 'trivia', 'react-rerender-decision-and-render'],
     cta: 'Review rerender causes',
   },
   {
@@ -2546,7 +2546,7 @@ const REACT_RENDERING_INTERNALS_QUESTIONS: ReactFocusedQuestionItem[] = [
     level: 'intermediate',
     q: 'What is the Virtual DOM in React?',
     a: 'The Virtual DOM is a lightweight description of the UI that React creates from components. React compares the new description with the previous one, decides what changed, and commits the necessary host updates. The important detail is that the Virtual DOM is a means to coordinate updates, not a guarantee that every render is cheap.',
-    route: ['/react', 'trivia', 'react-virtual-dom'],
+    route: ['/react', 'trivia', 'react-diffing-algorithm'],
     cta: 'Review Virtual DOM',
   },
   {
@@ -2560,7 +2560,7 @@ const REACT_RENDERING_INTERNALS_QUESTIONS: ReactFocusedQuestionItem[] = [
     level: 'intermediate',
     q: 'What is reconciliation in React?',
     a: 'Reconciliation is the process React uses to compare the previous element tree with the next one. It matches elements by type and key, then decides which parts can be reused, updated, moved, or remounted. Incorrect keys or changing component types can reset state because React sees a different identity.',
-    route: ['/react', 'trivia', 'react-reconciliation'],
+    route: ['/react', 'trivia', 'react-diffing-algorithm'],
     cta: 'Review reconciliation',
   },
   {
@@ -2574,7 +2574,7 @@ const REACT_RENDERING_INTERNALS_QUESTIONS: ReactFocusedQuestionItem[] = [
     level: 'advanced',
     q: 'What is Fiber in React?',
     a: 'Fiber is React internal architecture for organizing rendering work as units that can be scheduled, paused, resumed, or abandoned. It enables React to prioritize urgent updates differently from non-urgent work. You do not usually program against Fiber directly, but it explains why render logic must be pure and why concurrent rendering can restart work.',
-    route: ['/react', 'trivia', 'react-reconciliation'],
+    route: ['/react', 'trivia', 'react-concurrent-rendering'],
     cta: 'Review render internals',
   },
   {
@@ -2805,7 +2805,7 @@ const REACT_MODERN_QUESTIONS: ReactModernQuestionItem[] = [
     level: 'advanced',
     q: 'What does StrictMode check in modern React apps?',
     a: 'StrictMode enables extra development checks for unsafe rendering and effect behavior. It can reveal effects that do not clean up, render logic with side effects, and assumptions that fail under remounting. The fix is usually ownership and cleanup, not disabling StrictMode.',
-    route: ['/react', 'trivia', 'react-strictmode-purpose'],
+    route: ['/react', 'trivia', 'react-strictmode-double-invoke-effects'],
     cta: 'Review StrictMode purpose',
   },
   {
@@ -2817,7 +2817,7 @@ const REACT_MODERN_QUESTIONS: ReactModernQuestionItem[] = [
     level: 'advanced',
     q: 'What are transitions in React?',
     a: 'Transitions mark updates as non-urgent so React can keep urgent interactions responsive. They are useful when typing, clicking, or selecting should stay immediate while expensive UI updates can lag slightly. They do not make slow code fast, so profiling and splitting expensive work still matter.',
-    route: ['/react', 'trivia', 'react-prevent-unnecessary-rerenders'],
+    route: ['/react', 'trivia', 'react-rerender-decision-and-render'],
     cta: 'Review render performance',
   },
   {
@@ -3468,7 +3468,7 @@ const REACT_TOPIC_CARDS: ReactTopicCard[] = [
     answer: 'Start with profiling, then target real waste: unstable props, broad context updates, expensive derived work, list rendering, unnecessary effects, and memoization that adds complexity without reducing work.',
     link: {
       label: 'Prevent unnecessary rerenders',
-      route: ['/react', 'trivia', 'react-prevent-unnecessary-rerenders'],
+      route: ['/react', 'trivia', 'react-rerender-decision-and-render'],
     },
   },
   {
@@ -3772,7 +3772,7 @@ const HTML_CSS_SHORT_ANSWERS: HtmlCssShortAnswerItem[] = [
   {
     q: 'How can semantic markup avoid CSS specificity conflicts?',
     a: 'Start with the correct native elements and shallow component or state selectors, then let cascade layers define broader priority. Semantic markup removes many styling and behavior workarounds that otherwise invite deeply nested selectors. When a conflict appears, inspect the winning rule and simplify the selector contract instead of adding another ID or !important.',
-    route: ['/css', 'trivia', 'css-specificity-hierarchy'],
+    route: ['/css', 'trivia', 'css-cascade-order'],
     cta: 'Practice specificity',
     category: 'css',
     level: 'intermediate',
@@ -3812,7 +3812,7 @@ const HTML_CSS_SHORT_ANSWERS: HtmlCssShortAnswerItem[] = [
   {
     q: 'How should content structure and media queries adapt together?',
     a: 'HTML should keep one meaningful source and reading order, while media queries change layout, spacing, and presentation when the available environment requires it. Responsive changes must preserve labels, controls, headings, and keyboard access. If a narrow layout hides content, the UI needs another semantic way to reach it.',
-    route: ['/css', 'trivia', 'css-media-queries'],
+    route: ['/css', 'trivia', 'css-make-element-responsive'],
     cta: 'Review media queries',
     category: 'responsive-debugging',
     level: 'beginner',
@@ -3959,7 +3959,7 @@ const HTML_CSS_LAYOUT_QUESTIONS: HtmlCssFocusedQuestionItem[] = [
   {
     q: 'How do stable markup hooks prevent specificity wars?',
     a: 'Use shallow component classes and meaningful state attributes instead of selectors coupled to several ancestor levels. Correct native elements also remove many role and interaction workarounds. Cascade layers and custom properties can then express priority and variation without each new UI needing a more specific override.',
-    route: ['/css', 'trivia', 'css-specificity-hierarchy'],
+    route: ['/css', 'trivia', 'css-cascade-order'],
     cta: 'Practice specificity',
     level: 'intermediate',
   },
@@ -3985,7 +3985,7 @@ const HTML_CSS_LAYOUT_QUESTIONS: HtmlCssFocusedQuestionItem[] = [
   {
     q: 'How should content structure determine layout breakpoints?',
     a: 'Choose a breakpoint when real headings, controls, navigation, or card content stop fitting their semantic structure, not only at common device widths. The adapted layout must keep every action reachable and preserve reading order. Content-driven breakpoints age better than a fixed device list.',
-    route: ['/css', 'trivia', 'css-media-queries'],
+    route: ['/css', 'trivia', 'css-make-element-responsive'],
     cta: 'Review media queries',
     level: 'intermediate',
   },
@@ -4114,7 +4114,7 @@ const HTML_CSS_RESPONSIVE_QUESTIONS: HtmlCssFocusedQuestionItem[] = [
   {
     q: 'What does mobile-first CSS mean?',
     a: 'Mobile-first CSS starts with the narrowest useful layout and adds complexity as space becomes available. This usually creates fewer overrides because the base styles handle constrained screens. The edge case is a desktop-only component that still needs a usable narrow fallback.',
-    route: ['/css', 'trivia', 'css-media-queries'],
+    route: ['/css', 'trivia', 'css-make-element-responsive'],
     cta: 'Review responsive CSS',
     level: 'beginner',
   },
@@ -4152,7 +4152,7 @@ const HTML_CSS_RESPONSIVE_QUESTIONS: HtmlCssFocusedQuestionItem[] = [
   {
     q: 'How do reduced motion preferences affect CSS?',
     a: 'The prefers-reduced-motion media query lets users request less animation. Use it to remove or simplify motion that can distract, delay, or cause discomfort. Essential state changes should still be visible without relying on animation.',
-    route: ['/css', 'trivia', 'css-media-queries'],
+    route: ['/css', 'trivia', 'css-make-element-responsive'],
     cta: 'Review media features',
     level: 'intermediate',
   },
@@ -4226,8 +4226,8 @@ const CSS_SHORT_ANSWERS: CssShortAnswerItem[] = [
   {
     q: 'What is CSS?',
     a: 'CSS is the styling language browsers use to control presentation, layout, and visual states for HTML documents. It maps selectors to declarations, then the browser resolves those declarations through the cascade and computes final styles. CSS can fail in surprising ways because multiple rules, inherited values, browser defaults, and responsive constraints all interact.',
-    route: ['/css', 'trivia', 'css-definition'],
-    cta: 'Review CSS basics',
+    route: ['/css', 'trivia', 'css-cascade-order'],
+    cta: 'Review the cascade',
     category: 'fundamentals',
     level: 'beginner',
   },
@@ -4242,7 +4242,7 @@ const CSS_SHORT_ANSWERS: CssShortAnswerItem[] = [
   {
     q: 'What is CSS specificity?',
     a: 'Specificity is the selector weight used when competing declarations are in the same origin and layer. Inline styles, IDs, classes or attributes, and element selectors carry different weight. Specificity fixes can become a maintenance problem when every override needs a stronger selector.',
-    route: ['/css', 'trivia', 'css-specificity-hierarchy'],
+    route: ['/css', 'trivia', 'css-cascade-order'],
     cta: 'Practice specificity',
     category: 'cascade-selectors',
     level: 'intermediate',
@@ -4328,7 +4328,7 @@ const CSS_SHORT_ANSWERS: CssShortAnswerItem[] = [
   {
     q: 'What are media queries used for?',
     a: 'Media queries apply CSS when viewport, device, environment, or user preference conditions match. They are used for responsive layouts, reduced motion, color scheme, print styles, and input capabilities. Good media queries respond to layout constraints instead of copying a fixed list of device sizes.',
-    route: ['/css', 'trivia', 'css-media-queries'],
+    route: ['/css', 'trivia', 'css-make-element-responsive'],
     cta: 'Review media queries',
     category: 'responsive',
     level: 'beginner',
@@ -4394,7 +4394,7 @@ const CSS_SHORT_ANSWERS: CssShortAnswerItem[] = [
   {
     q: 'How should CSS animations be used safely?',
     a: 'CSS animations should support the UI state without delaying essential information or causing motion discomfort. Use prefers-reduced-motion to simplify or remove nonessential motion for users who request it. Animating layout-heavy properties can create performance problems on slower devices.',
-    route: ['/css', 'trivia', 'css-media-queries'],
+    route: ['/css', 'trivia', 'css-make-element-responsive'],
     cta: 'Review media features',
     category: 'debugging-performance',
     level: 'intermediate',
@@ -4439,7 +4439,7 @@ const CSS_CASCADE_QUESTIONS: CssFocusedQuestionItem[] = [
   {
     q: 'How is CSS specificity calculated?',
     a: 'Specificity compares selector weight from IDs, classes or attributes, pseudo-classes, elements, and pseudo-elements. It is compared only after higher cascade factors such as origin and layers are resolved. Inline styles and !important can change the conflict path and should be treated carefully.',
-    route: ['/css', 'trivia', 'css-specificity-hierarchy'],
+    route: ['/css', 'trivia', 'css-cascade-order'],
     cta: 'Practice specificity',
     level: 'intermediate',
   },
@@ -4597,7 +4597,7 @@ const CSS_RESPONSIVE_QUESTIONS: CssFocusedQuestionItem[] = [
   {
     q: 'What does mobile-first CSS mean?',
     a: 'Mobile-first CSS starts with the narrowest useful layout and adds rules as more space becomes available. It usually reduces overrides because the base styles already handle constrained screens. The component still needs to be tested with long text and zoom, not only a phone-width viewport.',
-    route: ['/css', 'trivia', 'css-media-queries'],
+    route: ['/css', 'trivia', 'css-make-element-responsive'],
     cta: 'Review media queries',
     level: 'beginner',
   },
@@ -4637,7 +4637,7 @@ const CSS_RESPONSIVE_QUESTIONS: CssFocusedQuestionItem[] = [
   {
     q: 'How should reduced motion be handled in CSS?',
     a: 'Use prefers-reduced-motion to simplify or remove nonessential motion for users who request it. State changes should still be understandable without animation. Reduced motion is not only an accessibility detail; it also prevents motion-heavy UI from delaying important feedback.',
-    route: ['/css', 'trivia', 'css-media-queries'],
+    route: ['/css', 'trivia', 'css-make-element-responsive'],
     cta: 'Review media features',
     level: 'intermediate',
   },
@@ -4661,7 +4661,7 @@ const CSS_DEBUGGING_PERFORMANCE_QUESTIONS: CssScenarioQuestionItem[] = [
   {
     q: 'How do you debug a specificity conflict?',
     a: 'Inspect the losing declaration and compare layer, importance, specificity, and source order against the winner. Lowering the winning selector or using a planned layer is often better than adding a stronger selector. Specificity escalation makes the next change harder.',
-    route: ['/css', 'trivia', 'css-specificity-hierarchy'],
+    route: ['/css', 'trivia', 'css-cascade-order'],
     cta: 'Practice specificity',
     level: 'intermediate',
   },

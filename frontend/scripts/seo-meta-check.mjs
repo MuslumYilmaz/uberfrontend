@@ -312,17 +312,16 @@ const criticalRouteContracts = [
   },
   {
     route: '/angular/trivia/rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use',
-    title: 'switchMap vs mergeMap vs concatMap vs exhaustMap in Angular',
+    title: 'switchMap vs exhaustMap vs mergeMap vs concatMap: Pick by UI Case',
     h1: 'switchMap vs mergeMap vs exhaustMap vs concatMap: When Would You Use Each in Angular?',
     canonical: 'https://frontendatlas.com/angular/trivia/rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use',
     robotsMustNotInclude: ['noindex'],
     googlebotMustNotInclude: ['noindex'],
     schemaTypes: ['BreadcrumbList', 'Article'],
     descriptionTerms: [
-      'switchMap for latest-only work',
-      'mergeMap for parallel work',
-      'concatMap for ordered work',
-      'exhaustMap to ignore repeat triggers',
+      'Save button, search box, upload queue, polling',
+      'decision table for switchMap, exhaustMap, mergeMap and concatMap',
+      'the bug each wrong pick causes in Angular',
     ],
     bodyTerms: [
       'Direct answer',
@@ -510,8 +509,8 @@ const PUBLISH_COPY_CONTRACTS = [
   },
   {
     route: '/angular/trivia/angular-lifecycle-constructor-oninit-afterviewinit-dom',
-    title: 'constructor vs ngOnInit vs ngAfterViewInit in Angular',
-    description: 'Use constructor for DI, ngOnInit for input-based setup, and ngAfterViewInit for DOM or default ViewChild access.',
+    title: 'ngOnInit vs ngAfterViewInit: ViewChild Undefined Fix',
+    description: 'ngOnInit runs after inputs are set, ngAfterViewInit after the view exists, so a ViewChild read in ngOnInit is undefined. Which hook owns DOM, inputs and DI work.',
   },
   {
     route: '/html/trivia/html-href-attribute',
@@ -520,8 +519,8 @@ const PUBLISH_COPY_CONTRACTS = [
   },
   {
     route: '/angular/trivia/rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use',
-    title: 'switchMap vs mergeMap vs concatMap vs exhaustMap in Angular',
-    description: 'Use switchMap for latest-only work, mergeMap for parallel work, concatMap for ordered work, and exhaustMap to ignore repeat triggers.',
+    title: 'switchMap vs exhaustMap vs mergeMap vs concatMap: Pick by UI Case',
+    description: 'Save button, search box, upload queue, polling: a decision table for switchMap, exhaustMap, mergeMap and concatMap, plus the bug each wrong pick causes in Angular.',
   },
   {
     route: '/angular/trivia/angular-forroot-forchild',

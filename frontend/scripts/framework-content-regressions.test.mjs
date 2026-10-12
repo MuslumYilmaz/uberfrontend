@@ -4948,7 +4948,7 @@ const reactTiming = json('cdn/questions/react/trivia.json').find(
   (entry) => entry.id === 'react-useeffect-vs-uselayouteffect'
 );
 assert.ok(reactTiming);
-assert.equal(reactTiming.updatedAt, '2026-07-14');
+assert.equal(reactTiming.updatedAt, '2026-10-12');
 const reactTimingContract = JSON.stringify(reactTiming);
 assert.match(reactTimingContract, /generally run after paint for non-interaction updates/i);
 assert.match(reactTimingContract, /interaction-caused effect before paint/i);

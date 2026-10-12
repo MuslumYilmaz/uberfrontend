@@ -1282,7 +1282,7 @@ export const PLAYBOOK: GuideEntry[] = [
                     { name: 'Microtasks vs macrotasks', description: 'Compare Promise callbacks, timers, rendering checkpoints, and output ordering.', url: '/javascript/trivia/js-microtasks-vs-macrotasks' },
                     { name: 'HTTP caching basics', description: 'Practice Cache-Control, ETag, freshness, revalidation, and user-visible stale data.', url: '/javascript/trivia/http-caching-basics' },
                     { name: 'CSS box model', description: 'Explain content-box, border-box, padding, margin, and overflow surprises.', url: '/css/trivia/css-box-model' },
-                    { name: 'CSS specificity hierarchy', description: 'Practice cascade order, specificity scoring, source order, and conflict debugging.', url: '/css/trivia/css-specificity-hierarchy' },
+                    { name: 'Why your CSS override does not apply', description: 'Practice cascade order, specificity scoring, id vs class weight, source order, and conflict debugging.', url: '/css/trivia/css-cascade-order' },
                     { name: 'Grid vs Flexbox', description: 'Choose between one-dimensional alignment and two-dimensional layout tracks.', url: '/css/trivia/css-grid-vs-flexbox' },
                     { name: 'HTML DOM', description: 'Explain HTML parsing, DOM nodes, and how browser APIs expose document structure.', url: '/html/trivia/html-dom' },
                     { name: 'HTML parsing and rendering', description: 'Practice progressive parsing, blocking resources, script loading, and render timing.', url: '/html/trivia/html-parsing-rendering' },

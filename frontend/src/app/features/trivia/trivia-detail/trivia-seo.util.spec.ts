@@ -118,8 +118,8 @@ describe('trivia-seo.util', () => {
         technology: 'angular',
         title: 'What’s the difference between constructor, ngOnInit, and ngAfterViewInit?',
         seo: {
-          title: 'constructor vs ngOnInit vs ngAfterViewInit in Angular',
-          description: 'Use constructor for DI, ngOnInit for input-based setup, and ngAfterViewInit for DOM or default ViewChild access.',
+          title: 'ngOnInit vs ngAfterViewInit: ViewChild Undefined Fix',
+          description: 'ngOnInit runs after inputs are set, ngAfterViewInit after the view exists, so a ViewChild read in ngOnInit is undefined. Which hook owns DOM, inputs and DI work.',
         },
       },
       {
@@ -136,8 +136,8 @@ describe('trivia-seo.util', () => {
         technology: 'angular',
         title: 'switchMap vs mergeMap vs exhaustMap vs concatMap: When Would You Use Each in Angular?',
         seo: {
-          title: 'switchMap vs mergeMap vs concatMap vs exhaustMap in Angular',
-          description: 'Use switchMap for latest-only work, mergeMap for parallel work, concatMap for ordered work, and exhaustMap to ignore repeat triggers.',
+          title: 'switchMap vs exhaustMap vs mergeMap vs concatMap: Pick by UI Case',
+          description: 'Save button, search box, upload queue, polling: a decision table for switchMap, exhaustMap, mergeMap and concatMap, plus the bug each wrong pick causes in Angular.',
         },
       },
       {
@@ -484,18 +484,18 @@ describe('trivia-seo.util', () => {
       title: 'Why does useEffect run twice in React StrictMode?',
       technology: 'react',
       seo: {
-        title: 'Why StrictMode Re-runs useEffect: What Interviewers Expect',
+        title: 'useEffect Runs Twice in StrictMode: Why and the Fix',
         description:
-          'Practice a natural React StrictMode answer: why effects re-run in dev, why event handlers stay single, and how cleanup prevents duplicate fetches.',
+          'StrictMode runs one extra setup and cleanup cycle in development only. Fix duplicate fetches, listeners and analytics with cleanup and AbortController; the interview answer comes last.',
       },
     } as any;
 
     const title = seoTitleForQuestion(question);
     const description = seoDescriptionForQuestion(question, 'fallback description', 'react');
 
-    expect(title).toBe('Why StrictMode Re-runs useEffect: What Interviewers Expect');
+    expect(title).toBe('useEffect Runs Twice in StrictMode: Why and the Fix');
     expect(description).toBe(
-      'Practice a natural React StrictMode answer: why effects re-run in dev, why event handlers stay single, and how cleanup prevents duplicate fetches.'
+      'StrictMode runs one extra setup and cleanup cycle in development only. Fix duplicate fetches, listeners and analytics with cleanup and AbortController; the interview answer comes last.'
     );
   });
 

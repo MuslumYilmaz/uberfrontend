@@ -87,12 +87,19 @@ export function duplicateKeys(identities) {
   return duplicates;
 }
 
-export function buildManifest(identities, generatedAt = new Date().toISOString()) {
-  return {
+export function buildManifest(identities, generatedAt = new Date().toISOString(), retired = []) {
+  const manifest = {
     version: 1,
     generatedAt,
     entries: identities.map(({ tech, kind, id, file }) => ({ tech, kind, id, file })),
   };
+  const retiredEntries = readRetiredEntries({ retired });
+  if (retiredEntries.length > 0) {
+    manifest.retired = retiredEntries.map(({ tech, kind, id, file, redirectTo, retiredAt, reason }) => ({
+      tech, kind, id, file, redirectTo, retiredAt, reason,
+    }));
+  }
+  return manifest;
 }
 
 export function readManifestEntries(manifest) {
@@ -108,4 +115,65 @@ export function readManifestEntries(manifest) {
     })
     .filter(Boolean)
     .sort((left, right) => left.key.localeCompare(right.key));
+}
+
+/** Retired identities are the explicit migration record for a removed shipped
+ * question: the route must 301 to `redirectTo` and the identity may never be
+ * reused, because historical gamification records still reference it. */
+export function readRetiredEntries(manifest) {
+  const entries = Array.isArray(manifest?.retired) ? manifest.retired : [];
+  return entries
+    .map((entry) => {
+      const tech = typeof entry?.tech === 'string' ? entry.tech.trim() : '';
+      const kind = typeof entry?.kind === 'string' ? entry.kind.trim() : '';
+      const id = typeof entry?.id === 'string' ? entry.id.trim() : '';
+      const file = typeof entry?.file === 'string' ? entry.file.trim() : `${tech}/${kind}.json`;
+      const redirectTo = typeof entry?.redirectTo === 'string' ? entry.redirectTo.trim() : '';
+      const retiredAt = typeof entry?.retiredAt === 'string' ? entry.retiredAt.trim() : '';
+      const reason = typeof entry?.reason === 'string' ? entry.reason.trim() : '';
+      if (!tech || !kind || !id) return null;
+      return { tech, kind, id, file, redirectTo, retiredAt, reason, key: `${tech}/${kind}/${id}` };
+    })
+    .filter(Boolean)
+    .sort((left, right) => left.key.localeCompare(right.key));
+}
+
+export function collectIdentityErrors(cdnIdentities, manifest, manifestLabel = 'frontend/scripts/question-id-manifest.json') {
+  const errors = [];
+  const manifestEntries = readManifestEntries(manifest);
+  const retiredEntries = readRetiredEntries(manifest);
+
+  for (const key of duplicateKeys(cdnIdentities)) {
+    errors.push(`Duplicate CDN question identity: ${key}`);
+  }
+
+  const manifestKeySet = toKeySet(manifestEntries);
+  const cdnKeySet = toKeySet(cdnIdentities);
+  const retiredByKey = new Map(retiredEntries.map((entry) => [entry.key, entry]));
+
+  for (const entry of retiredEntries) {
+    if (!/^\/[^\s?#]+$/.test(entry.redirectTo)) {
+      errors.push(`Retired question identity ${entry.key} needs an absolute-path redirectTo in ${manifestLabel}.`);
+    }
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(entry.retiredAt)) {
+      errors.push(`Retired question identity ${entry.key} needs a retiredAt date (YYYY-MM-DD) in ${manifestLabel}.`);
+    }
+    if (cdnKeySet.has(entry.key)) {
+      errors.push(`Retired question identity ${entry.key} is back in the CDN catalog. Retired identities cannot be reused; add the content under a new id or drop the retired record on purpose.`);
+    }
+    if (manifestKeySet.has(entry.key)) {
+      errors.push(`Question identity ${entry.key} is listed both as shipped and as retired in ${manifestLabel}. Run: node scripts/update-question-id-manifest.mjs`);
+    }
+  }
+
+  for (const identity of manifestEntries) {
+    if (cdnKeySet.has(identity.key) || retiredByKey.has(identity.key)) continue;
+    errors.push(`Question identity was removed or moved after being shipped: ${identity.key}. Historical gamification depends on immutable tech/kind/id. Record it under "retired" with a redirectTo, or restore it.`);
+  }
+  for (const identity of cdnIdentities) {
+    if (manifestKeySet.has(identity.key)) continue;
+    errors.push(`New question identity is not recorded in ${manifestLabel}: ${identity.key}. Run: node scripts/update-question-id-manifest.mjs`);
+  }
+
+  return errors;
 }

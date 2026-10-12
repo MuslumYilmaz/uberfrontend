@@ -236,7 +236,7 @@ describe('PricingPlansSectionComponent', () => {
       '/react/coding/react-counter?src=pricing_product_proof',
       '/javascript/coding/js-throttle?src=pricing_product_proof',
     ]);
-    expect(page.textContent || '').toContain('514 questions');
+    expect(page.textContent || '').toContain(`${SHOWCASE_STATS.totalQuestions} questions`);
     expect(page.textContent || '').toContain(`${SHOWCASE_STATS.premiumPracticeCount} Premium practice prompts`);
     expect(page.textContent || '').toContain('generally require limited Premium usage');
     expect(page.textContent || '').toContain('Renewal charges and unused subscription time are generally non-refundable');

@@ -1101,25 +1101,20 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-controlled-vs-uncontrolled"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-keys-in-lists"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-lifting-state-up"]')).toBeTruthy();
-    expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-component-rerendering"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-why-batching-state-updates"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-derived-state-anti-pattern"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-error-boundaries-what-they-solve"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-portals"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-render-props-vs-hocs"]')).toBeTruthy();
-    expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-virtual-dom"]')).toBeTruthy();
-    expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-reconciliation"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-diffing-algorithm"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-fragments-dom-and-reconciliation"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-useeffect-vs-uselayouteffect"]')).toBeTruthy();
-    expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-strictmode-purpose"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-strictmode-double-invoke-effects"]')).toBeTruthy();
     expect(text).toContain('Why does useEffect run twice in React StrictMode?');
     expect(text).toContain('Fix useEffect running twice');
     expect(text).toContain('Event handlers are not double-invoked');
     expect(fixture.nativeElement.querySelector('a[href="/react/coding/react-chat-streaming-ui"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-functional-vs-class-components"]')).toBeTruthy();
-    expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-prevent-unnecessary-rerenders"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/react/coding/react-debug-double-render"]')).toBeTruthy();
     const reactPrepLinks = fixture.nativeElement.querySelectorAll(
       'a[href="/guides/framework-prep/react-prep-path"]'
@@ -1491,16 +1486,13 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(fixture.nativeElement.querySelector('.iq-section--html-css-short-answers')).toBeNull();
     expect(fixture.nativeElement.querySelector('.iq-section--html-css-code')).toBeNull();
     expect(fixture.nativeElement.querySelector('a[href="/javascript/trivia/js-closures"]')).toBeTruthy();
-    expect(fixture.nativeElement.querySelector('a[href="/javascript/trivia/js-callbacks"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/javascript/trivia/js-event-loop"]')).toBeTruthy();
-    expect(fixture.nativeElement.querySelector('a[href="/javascript/trivia/js-promise-fundamental-understanding"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/javascript/trivia/js-async-race-conditions"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/javascript/trivia/js-xss-dom-sinks"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/javascript/trivia/js-map-filter-reduce"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/javascript/trivia/js-prototypal-inheritance"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/javascript/trivia/js-type-coercion"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/javascript/trivia/js-event-delegation"]')).toBeTruthy();
-    expect(fixture.nativeElement.querySelector('a[href="/javascript/trivia/js-event-bubbling-capturing"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/javascript/trivia/js-cookie-sessionstorage-localstorage"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/javascript/coding/js-dom-find-node"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/javascript/debug/js-debug-lost-this-binding"]')).toBeTruthy();
@@ -1894,7 +1886,6 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-keys-in-lists"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/react/trivia/react-controlled-vs-uncontrolled"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/html-css/interview-questions"]')).toBeTruthy();
-    expect(fixture.nativeElement.querySelector('a[href="/css/trivia/css-specificity-hierarchy"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/css/trivia/css-grid-vs-flexbox"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/system-design"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/incidents"]')).toBeTruthy();
@@ -2139,14 +2130,12 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(fixture.nativeElement.querySelector('a[href="/html/coding/html-head-seo-basics"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/html/coding/html-dialog-confirm-a11y"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/css/trivia/css-box-model"]')).toBeTruthy();
-    expect(fixture.nativeElement.querySelector('a[href="/css/trivia/css-specificity-hierarchy"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/css/trivia/css-cascade-order"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/css/trivia/css-display-flex"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/css/trivia/css-grid-vs-flexbox"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/css/trivia/css-position-relative-absolute-fixed"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/css/trivia/css-position-sticky-not-working"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/css/trivia/css-z-index"]')).toBeTruthy();
-    expect(fixture.nativeElement.querySelector('a[href="/css/trivia/css-media-queries"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/css/trivia/css-make-element-responsive"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/css/coding/css-flexbox-navbar"]')).toBeTruthy();
     const htmlCssNavbarLinks = Array.from(
@@ -3022,9 +3011,7 @@ describe('InterviewQuestionsLandingComponent', () => {
       ).length
     ).toBe(65);
 
-    expect(fixture.nativeElement.querySelector('a[href="/css/trivia/css-definition"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/css/trivia/css-cascade-order"]')).toBeTruthy();
-    expect(fixture.nativeElement.querySelector('a[href="/css/trivia/css-specificity-hierarchy"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/css/trivia/css-box-model"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/css/trivia/css-margin-vs-padding"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/css/trivia/css-display-flex"]')).toBeTruthy();
@@ -3032,7 +3019,6 @@ describe('InterviewQuestionsLandingComponent', () => {
     expect(fixture.nativeElement.querySelector('a[href="/css/trivia/css-position-relative-absolute-fixed"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/css/trivia/css-position-sticky-not-working"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/css/trivia/css-z-index"]')).toBeTruthy();
-    expect(fixture.nativeElement.querySelector('a[href="/css/trivia/css-media-queries"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/css/trivia/css-make-element-responsive"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/css/trivia/css-units-em-rem-percent-px"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/css/trivia/css-pseudo-classes-elements"]')).toBeTruthy();

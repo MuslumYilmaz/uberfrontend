@@ -262,6 +262,11 @@
           "kind": "trivia"
         },
         {
+          "id": "js-shallow-vs-deep-copy",
+          "tech": "javascript",
+          "kind": "trivia"
+        },
+        {
           "id": "js-array-prototype-reduce",
           "tech": "javascript",
           "kind": "coding"
@@ -282,7 +287,12 @@
           "kind": "coding"
         },
         {
-          "id": "js-var-let-const-hoisting",
+          "id": "js-hoisting",
+          "tech": "javascript",
+          "kind": "trivia"
+        },
+        {
+          "id": "js-var-hoisting-shadowing-output",
           "tech": "javascript",
           "kind": "trivia"
         },
@@ -317,17 +327,7 @@
           "kind": "trivia"
         },
         {
-          "id": "js-hoisting-tdz",
-          "tech": "javascript",
-          "kind": "trivia"
-        },
-        {
           "id": "js-event-delegation",
-          "tech": "javascript",
-          "kind": "trivia"
-        },
-        {
-          "id": "js-event-bubbling-capturing",
           "tech": "javascript",
           "kind": "trivia"
         },
@@ -623,12 +623,12 @@
           "kind": "trivia"
         },
         {
-          "id": "js-hoisting-tdz",
+          "id": "js-hoisting",
           "tech": "javascript",
           "kind": "trivia"
         },
         {
-          "id": "js-var-let-const-hoisting",
+          "id": "js-var-hoisting-shadowing-output",
           "tech": "javascript",
           "kind": "trivia"
         },
@@ -658,11 +658,6 @@
           "kind": "trivia"
         },
         {
-          "id": "js-event-bubbling-capturing",
-          "tech": "javascript",
-          "kind": "trivia"
-        },
-        {
           "id": "js-call-apply-bind",
           "tech": "javascript",
           "kind": "trivia"
@@ -678,7 +673,7 @@
           "kind": "trivia"
         },
         {
-          "id": "js-data-types",
+          "id": "js-check-data-type-with-typeof",
           "tech": "javascript",
           "kind": "trivia"
         },
@@ -694,6 +689,11 @@
         },
         {
           "id": "js-object-destructuring",
+          "tech": "javascript",
+          "kind": "trivia"
+        },
+        {
+          "id": "js-spread-vs-rest-parameters",
           "tech": "javascript",
           "kind": "trivia"
         },
@@ -743,17 +743,17 @@
           "kind": "trivia"
         },
         {
-          "id": "css-definition",
-          "tech": "css",
-          "kind": "trivia"
-        },
-        {
           "id": "css-box-model",
           "tech": "css",
           "kind": "trivia"
         },
         {
-          "id": "css-specificity-hierarchy",
+          "id": "css-position-relative-absolute-fixed",
+          "tech": "css",
+          "kind": "trivia"
+        },
+        {
+          "id": "css-cascade-order",
           "tech": "css",
           "kind": "trivia"
         },
@@ -768,7 +768,7 @@
           "kind": "trivia"
         },
         {
-          "id": "css-media-queries",
+          "id": "css-make-element-responsive",
           "tech": "css",
           "kind": "trivia"
         },

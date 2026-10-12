@@ -1,5 +1,5 @@
 {
-  "totalQuestions": 514,
+  "totalQuestions": 489,
   "premiumPracticeCount": 165,
   "companyCounts": {
     "airbnb": {
@@ -9,15 +9,15 @@
       "system": 0
     },
     "amazon": {
-      "all": 39,
+      "all": 38,
       "coding": 15,
-      "trivia": 24,
+      "trivia": 23,
       "system": 0
     },
     "apple": {
-      "all": 34,
+      "all": 32,
       "coding": 20,
-      "trivia": 14,
+      "trivia": 12,
       "system": 0
     },
     "bytedance": {
@@ -27,15 +27,15 @@
       "system": 0
     },
     "google": {
-      "all": 44,
+      "all": 42,
       "coding": 11,
-      "trivia": 33,
+      "trivia": 31,
       "system": 0
     },
     "meta": {
-      "all": 50,
+      "all": 48,
       "coding": 16,
-      "trivia": 34,
+      "trivia": 32,
       "system": 0
     },
     "microsoft": {

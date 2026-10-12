@@ -61,38 +61,6 @@ describe('Trivia incident routes', () => {
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
-  test('returns public incident card for javascript hoisting tdz trivia question', async () => {
-    const res = await request(app).get('/api/trivia/javascript/js-hoisting-tdz/incident');
-
-    expect(res.status).toBe(200);
-    expect(res.body).toEqual(expect.objectContaining({
-      questionId: 'js-hoisting-tdz',
-      tech: 'javascript',
-      title: expect.any(String),
-      scenario: expect.any(String),
-      options: expect.any(Array),
-    }));
-    expect(res.body.options).toHaveLength(3);
-    expect(res.body.title.trim()).not.toBe('');
-    expect(res.body.correctOptionId).toBeUndefined();
-  });
-
-  test('returns public incident card for javascript var let const hoisting trivia question', async () => {
-    const res = await request(app).get('/api/trivia/javascript/js-var-let-const-hoisting/incident');
-
-    expect(res.status).toBe(200);
-    expect(res.body).toEqual(expect.objectContaining({
-      questionId: 'js-var-let-const-hoisting',
-      tech: 'javascript',
-      title: expect.any(String),
-      scenario: expect.any(String),
-      options: expect.any(Array),
-    }));
-    expect(res.body.options).toHaveLength(3);
-    expect(res.body.title.trim()).not.toBe('');
-    expect(res.body.correctOptionId).toBeUndefined();
-  });
-
   test('returns public incident card for javascript block scoped or function scoped trivia question', async () => {
     const res = await request(app).get('/api/trivia/javascript/js-block-scoped-or-function-scoped/incident');
 
@@ -115,22 +83,6 @@ describe('Trivia incident routes', () => {
     expect(res.status).toBe(200);
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-promises-async-await',
-      tech: 'javascript',
-      title: expect.any(String),
-      scenario: expect.any(String),
-      options: expect.any(Array),
-    }));
-    expect(res.body.options).toHaveLength(3);
-    expect(res.body.title.trim()).not.toBe('');
-    expect(res.body.correctOptionId).toBeUndefined();
-  });
-
-  test('returns public incident card for javascript promise fundamental understanding trivia question', async () => {
-    const res = await request(app).get('/api/trivia/javascript/js-promise-fundamental-understanding/incident');
-
-    expect(res.status).toBe(200);
-    expect(res.body).toEqual(expect.objectContaining({
-      questionId: 'js-promise-fundamental-understanding',
       tech: 'javascript',
       title: expect.any(String),
       scenario: expect.any(String),
@@ -333,22 +285,6 @@ describe('Trivia incident routes', () => {
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
-  test('returns public incident card for javascript event bubbling capturing trivia question', async () => {
-    const res = await request(app).get('/api/trivia/javascript/js-event-bubbling-capturing/incident');
-
-    expect(res.status).toBe(200);
-    expect(res.body).toEqual(expect.objectContaining({
-      questionId: 'js-event-bubbling-capturing',
-      tech: 'javascript',
-      title: expect.any(String),
-      scenario: expect.any(String),
-      options: expect.any(Array),
-    }));
-    expect(res.body.options).toHaveLength(3);
-    expect(res.body.title.trim()).not.toBe('');
-    expect(res.body.correctOptionId).toBeUndefined();
-  });
-
   test('returns public incident card for javascript call apply bind trivia question', async () => {
     const res = await request(app).get('/api/trivia/javascript/js-call-apply-bind/incident');
 
@@ -419,22 +355,6 @@ describe('Trivia incident routes', () => {
     expect(res.status).toBe(200);
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-prototypal-inheritance',
-      tech: 'javascript',
-      title: expect.any(String),
-      scenario: expect.any(String),
-      options: expect.any(Array),
-    }));
-    expect(res.body.options).toHaveLength(3);
-    expect(res.body.title.trim()).not.toBe('');
-    expect(res.body.correctOptionId).toBeUndefined();
-  });
-
-  test('returns public incident card for javascript data types trivia question', async () => {
-    const res = await request(app).get('/api/trivia/javascript/js-data-types/incident');
-
-    expect(res.status).toBe(200);
-    expect(res.body).toEqual(expect.objectContaining({
-      questionId: 'js-data-types',
       tech: 'javascript',
       title: expect.any(String),
       scenario: expect.any(String),
@@ -525,60 +445,12 @@ describe('Trivia incident routes', () => {
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
-  test('returns public incident card for javascript nan trivia question', async () => {
-    const res = await request(app).get('/api/trivia/javascript/js-nan-property/incident');
-
-    expect(res.status).toBe(200);
-    expect(res.body).toEqual(expect.objectContaining({
-      questionId: 'js-nan-property',
-      tech: 'javascript',
-      title: expect.any(String),
-      scenario: expect.any(String),
-      options: expect.any(Array),
-    }));
-    expect(res.body.options).toHaveLength(3);
-    expect(res.body.title.trim()).not.toBe('');
-    expect(res.body.correctOptionId).toBeUndefined();
-  });
-
   test('returns public incident card for javascript currying trivia question', async () => {
     const res = await request(app).get('/api/trivia/javascript/js-currying/incident');
 
     expect(res.status).toBe(200);
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'js-currying',
-      tech: 'javascript',
-      title: expect.any(String),
-      scenario: expect.any(String),
-      options: expect.any(Array),
-    }));
-    expect(res.body.options).toHaveLength(3);
-    expect(res.body.title.trim()).not.toBe('');
-    expect(res.body.correctOptionId).toBeUndefined();
-  });
-
-  test('returns public incident card for javascript callbacks trivia question', async () => {
-    const res = await request(app).get('/api/trivia/javascript/js-callbacks/incident');
-
-    expect(res.status).toBe(200);
-    expect(res.body).toEqual(expect.objectContaining({
-      questionId: 'js-callbacks',
-      tech: 'javascript',
-      title: expect.any(String),
-      scenario: expect.any(String),
-      options: expect.any(Array),
-    }));
-    expect(res.body.options).toHaveLength(3);
-    expect(res.body.title.trim()).not.toBe('');
-    expect(res.body.correctOptionId).toBeUndefined();
-  });
-
-  test('returns public incident card for javascript promise resolves callback hell trivia question', async () => {
-    const res = await request(app).get('/api/trivia/javascript/js-calback-hell-resolved-with-promise/incident');
-
-    expect(res.status).toBe(200);
-    expect(res.body).toEqual(expect.objectContaining({
-      questionId: 'js-calback-hell-resolved-with-promise',
       tech: 'javascript',
       title: expect.any(String),
       scenario: expect.any(String),
@@ -2541,38 +2413,6 @@ describe('Trivia incident routes', () => {
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
-  test('returns public incident card for css definition trivia question', async () => {
-    const res = await request(app).get('/api/trivia/css/css-definition/incident');
-
-    expect(res.status).toBe(200);
-    expect(res.body).toEqual(expect.objectContaining({
-      questionId: 'css-definition',
-      tech: 'css',
-      title: expect.any(String),
-      scenario: expect.any(String),
-      options: expect.any(Array),
-    }));
-    expect(res.body.options).toHaveLength(3);
-    expect(res.body.title.trim()).not.toBe('');
-    expect(res.body.correctOptionId).toBeUndefined();
-  });
-
-  test('returns public incident card for css link html trivia question', async () => {
-    const res = await request(app).get('/api/trivia/css/css-link-html/incident');
-
-    expect(res.status).toBe(200);
-    expect(res.body).toEqual(expect.objectContaining({
-      questionId: 'css-link-html',
-      tech: 'css',
-      title: expect.any(String),
-      scenario: expect.any(String),
-      options: expect.any(Array),
-    }));
-    expect(res.body.options).toHaveLength(3);
-    expect(res.body.title.trim()).not.toBe('');
-    expect(res.body.correctOptionId).toBeUndefined();
-  });
-
   test('returns public incident card for css inline internal external trivia question', async () => {
     const res = await request(app).get('/api/trivia/css/css-inline-internal-external/incident');
 
@@ -2589,76 +2429,12 @@ describe('Trivia incident routes', () => {
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
-  test('returns public incident card for css background color trivia question', async () => {
-    const res = await request(app).get('/api/trivia/css/css-background-color/incident');
-
-    expect(res.status).toBe(200);
-    expect(res.body).toEqual(expect.objectContaining({
-      questionId: 'css-background-color',
-      tech: 'css',
-      title: expect.any(String),
-      scenario: expect.any(String),
-      options: expect.any(Array),
-    }));
-    expect(res.body.options).toHaveLength(3);
-    expect(res.body.title.trim()).not.toBe('');
-    expect(res.body.correctOptionId).toBeUndefined();
-  });
-
-  test('returns public incident card for css text color trivia question', async () => {
-    const res = await request(app).get('/api/trivia/css/css-text-color/incident');
-
-    expect(res.status).toBe(200);
-    expect(res.body).toEqual(expect.objectContaining({
-      questionId: 'css-text-color',
-      tech: 'css',
-      title: expect.any(String),
-      scenario: expect.any(String),
-      options: expect.any(Array),
-    }));
-    expect(res.body.options).toHaveLength(3);
-    expect(res.body.title.trim()).not.toBe('');
-    expect(res.body.correctOptionId).toBeUndefined();
-  });
-
-  test('returns public incident card for css center text trivia question', async () => {
-    const res = await request(app).get('/api/trivia/css/css-center-text/incident');
-
-    expect(res.status).toBe(200);
-    expect(res.body).toEqual(expect.objectContaining({
-      questionId: 'css-center-text',
-      tech: 'css',
-      title: expect.any(String),
-      scenario: expect.any(String),
-      options: expect.any(Array),
-    }));
-    expect(res.body.options).toHaveLength(3);
-    expect(res.body.title.trim()).not.toBe('');
-    expect(res.body.correctOptionId).toBeUndefined();
-  });
-
   test('returns public incident card for css font family trivia question', async () => {
     const res = await request(app).get('/api/trivia/css/css-font-family/incident');
 
     expect(res.status).toBe(200);
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'css-font-family',
-      tech: 'css',
-      title: expect.any(String),
-      scenario: expect.any(String),
-      options: expect.any(Array),
-    }));
-    expect(res.body.options).toHaveLength(3);
-    expect(res.body.title.trim()).not.toBe('');
-    expect(res.body.correctOptionId).toBeUndefined();
-  });
-
-  test('returns public incident card for css border property trivia question', async () => {
-    const res = await request(app).get('/api/trivia/css/css-border-property/incident');
-
-    expect(res.status).toBe(200);
-    expect(res.body).toEqual(expect.objectContaining({
-      questionId: 'css-border-property',
       tech: 'css',
       title: expect.any(String),
       scenario: expect.any(String),
@@ -2707,54 +2483,6 @@ describe('Trivia incident routes', () => {
     expect(res.status).toBe(200);
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'css-margin-vs-padding',
-      tech: 'css',
-      title: expect.any(String),
-      scenario: expect.any(String),
-      options: expect.any(Array),
-    }));
-    expect(res.body.options).toHaveLength(3);
-    expect(res.body.title.trim()).not.toBe('');
-    expect(res.body.correctOptionId).toBeUndefined();
-  });
-
-  test('returns public incident card for css make text bold trivia question', async () => {
-    const res = await request(app).get('/api/trivia/css/css-make-text-bold/incident');
-
-    expect(res.status).toBe(200);
-    expect(res.body).toEqual(expect.objectContaining({
-      questionId: 'css-make-text-bold',
-      tech: 'css',
-      title: expect.any(String),
-      scenario: expect.any(String),
-      options: expect.any(Array),
-    }));
-    expect(res.body.options).toHaveLength(3);
-    expect(res.body.title.trim()).not.toBe('');
-    expect(res.body.correctOptionId).toBeUndefined();
-  });
-
-  test('returns public incident card for css change text size trivia question', async () => {
-    const res = await request(app).get('/api/trivia/css/css-change-text-size/incident');
-
-    expect(res.status).toBe(200);
-    expect(res.body).toEqual(expect.objectContaining({
-      questionId: 'css-change-text-size',
-      tech: 'css',
-      title: expect.any(String),
-      scenario: expect.any(String),
-      options: expect.any(Array),
-    }));
-    expect(res.body.options).toHaveLength(3);
-    expect(res.body.title.trim()).not.toBe('');
-    expect(res.body.correctOptionId).toBeUndefined();
-  });
-
-  test('returns public incident card for css id vs class trivia question', async () => {
-    const res = await request(app).get('/api/trivia/css/css-id-vs-class/incident');
-
-    expect(res.status).toBe(200);
-    expect(res.body).toEqual(expect.objectContaining({
-      questionId: 'css-id-vs-class',
       tech: 'css',
       title: expect.any(String),
       scenario: expect.any(String),
@@ -2883,38 +2611,6 @@ describe('Trivia incident routes', () => {
     expect(res.status).toBe(200);
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'css-float-clear',
-      tech: 'css',
-      title: expect.any(String),
-      scenario: expect.any(String),
-      options: expect.any(Array),
-    }));
-    expect(res.body.options).toHaveLength(3);
-    expect(res.body.title.trim()).not.toBe('');
-    expect(res.body.correctOptionId).toBeUndefined();
-  });
-
-  test('returns public incident card for css specificity hierarchy trivia question', async () => {
-    const res = await request(app).get('/api/trivia/css/css-specificity-hierarchy/incident');
-
-    expect(res.status).toBe(200);
-    expect(res.body).toEqual(expect.objectContaining({
-      questionId: 'css-specificity-hierarchy',
-      tech: 'css',
-      title: expect.any(String),
-      scenario: expect.any(String),
-      options: expect.any(Array),
-    }));
-    expect(res.body.options).toHaveLength(3);
-    expect(res.body.title.trim()).not.toBe('');
-    expect(res.body.correctOptionId).toBeUndefined();
-  });
-
-  test('returns public incident card for css media queries trivia question', async () => {
-    const res = await request(app).get('/api/trivia/css/css-media-queries/incident');
-
-    expect(res.status).toBe(200);
-    expect(res.body).toEqual(expect.objectContaining({
-      questionId: 'css-media-queries',
       tech: 'css',
       title: expect.any(String),
       scenario: expect.any(String),
@@ -3139,22 +2835,6 @@ describe('Trivia incident routes', () => {
     expect(res.status).toBe(200);
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'html-block-inline-elements',
-      tech: 'html',
-      title: expect.any(String),
-      scenario: expect.any(String),
-      options: expect.any(Array),
-    }));
-    expect(res.body.options).toHaveLength(3);
-    expect(res.body.title.trim()).not.toBe('');
-    expect(res.body.correctOptionId).toBeUndefined();
-  });
-
-  test('returns public incident card for html br tag trivia question', async () => {
-    const res = await request(app).get('/api/trivia/html/html-br-tag/incident');
-
-    expect(res.status).toBe(200);
-    expect(res.body).toEqual(expect.objectContaining({
-      questionId: 'html-br-tag',
       tech: 'html',
       title: expect.any(String),
       scenario: expect.any(String),
@@ -3709,38 +3389,6 @@ describe('Trivia incident routes', () => {
     expect(res.body.correctOptionId).toBeUndefined();
   });
 
-  test('returns public incident card for react virtual dom trivia question', async () => {
-    const res = await request(app).get('/api/trivia/react/react-virtual-dom/incident');
-
-    expect(res.status).toBe(200);
-    expect(res.body).toEqual(expect.objectContaining({
-      questionId: 'react-virtual-dom',
-      tech: 'react',
-      title: expect.any(String),
-      scenario: expect.any(String),
-      options: expect.any(Array),
-    }));
-    expect(res.body.options).toHaveLength(3);
-    expect(res.body.title.trim()).not.toBe('');
-    expect(res.body.correctOptionId).toBeUndefined();
-  });
-
-  test('returns public incident card for react component rerendering trivia question', async () => {
-    const res = await request(app).get('/api/trivia/react/react-component-rerendering/incident');
-
-    expect(res.status).toBe(200);
-    expect(res.body).toEqual(expect.objectContaining({
-      questionId: 'react-component-rerendering',
-      tech: 'react',
-      title: expect.any(String),
-      scenario: expect.any(String),
-      options: expect.any(Array),
-    }));
-    expect(res.body.options).toHaveLength(3);
-    expect(res.body.title.trim()).not.toBe('');
-    expect(res.body.correctOptionId).toBeUndefined();
-  });
-
   test('returns public incident card for react state and props ownership trivia question', async () => {
     const res = await request(app).get('/api/trivia/react/react-mixing-state-and-props-responsibilities/incident');
 
@@ -3795,54 +3443,6 @@ describe('Trivia incident routes', () => {
     expect(res.status).toBe(200);
     expect(res.body).toEqual(expect.objectContaining({
       questionId: 'react-usememo-vs-usecallback',
-      tech: 'react',
-      title: expect.any(String),
-      scenario: expect.any(String),
-      options: expect.any(Array),
-    }));
-    expect(res.body.options).toHaveLength(3);
-    expect(res.body.title.trim()).not.toBe('');
-    expect(res.body.correctOptionId).toBeUndefined();
-  });
-
-  test('returns public incident card for react prevent unnecessary rerenders trivia question', async () => {
-    const res = await request(app).get('/api/trivia/react/react-prevent-unnecessary-rerenders/incident');
-
-    expect(res.status).toBe(200);
-    expect(res.body).toEqual(expect.objectContaining({
-      questionId: 'react-prevent-unnecessary-rerenders',
-      tech: 'react',
-      title: expect.any(String),
-      scenario: expect.any(String),
-      options: expect.any(Array),
-    }));
-    expect(res.body.options).toHaveLength(3);
-    expect(res.body.title.trim()).not.toBe('');
-    expect(res.body.correctOptionId).toBeUndefined();
-  });
-
-  test('returns public incident card for react strictmode purpose trivia question', async () => {
-    const res = await request(app).get('/api/trivia/react/react-strictmode-purpose/incident');
-
-    expect(res.status).toBe(200);
-    expect(res.body).toEqual(expect.objectContaining({
-      questionId: 'react-strictmode-purpose',
-      tech: 'react',
-      title: expect.any(String),
-      scenario: expect.any(String),
-      options: expect.any(Array),
-    }));
-    expect(res.body.options).toHaveLength(3);
-    expect(res.body.title.trim()).not.toBe('');
-    expect(res.body.correctOptionId).toBeUndefined();
-  });
-
-  test('returns public incident card for react reconciliation trivia question', async () => {
-    const res = await request(app).get('/api/trivia/react/react-reconciliation/incident');
-
-    expect(res.status).toBe(200);
-    expect(res.body).toEqual(expect.objectContaining({
-      questionId: 'react-reconciliation',
       tech: 'react',
       title: expect.any(String),
       scenario: expect.any(String),

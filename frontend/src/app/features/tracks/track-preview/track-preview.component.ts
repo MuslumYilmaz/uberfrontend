@@ -371,9 +371,9 @@ const CRASH_7D_FALLBACKS: Record<string, Omit<PreviewQuestion, 'kind' | 'tech'>>
     difficulty: 'intermediate',
     access: 'premium',
   },
-  'js-var-let-const-hoisting': {
-    id: 'js-var-let-const-hoisting',
-    title: 'Explain the difference in hoisting between `var`, `let`, and `const`',
+  'js-hoisting': {
+    id: 'js-hoisting',
+    title: 'Why does var log undefined while let throws? Hoisting and the TDZ',
     difficulty: 'intermediate',
     access: 'free',
   },
@@ -397,7 +397,7 @@ const CRASH_7D_FALLBACKS: Record<string, Omit<PreviewQuestion, 'kind' | 'tech'>>
   },
   'js-promises-async-await': {
     id: 'js-promises-async-await',
-    title: 'Promises and async/await',
+    title: 'Why does my .then() get undefined? Promise chains, async/await, and callback hell',
     difficulty: 'intermediate',
     access: 'free',
   },
@@ -409,25 +409,13 @@ const CRASH_7D_FALLBACKS: Record<string, Omit<PreviewQuestion, 'kind' | 'tech'>>
   },
   'js-this-keyword': {
     id: 'js-this-keyword',
-    title: 'Explain the `this` keyword in JavaScript',
-    difficulty: 'intermediate',
-    access: 'free',
-  },
-  'js-hoisting-tdz': {
-    id: 'js-hoisting-tdz',
-    title: 'Explain Hoisting and the Temporal Dead Zone (TDZ)',
+    title: 'Why is this undefined in my callback? Detached methods, arrows, and bind',
     difficulty: 'intermediate',
     access: 'free',
   },
   'js-event-delegation': {
     id: 'js-event-delegation',
-    title: 'Explain Event Delegation in JavaScript',
-    difficulty: 'intermediate',
-    access: 'free',
-  },
-  'js-event-bubbling-capturing': {
-    id: 'js-event-bubbling-capturing',
-    title: 'What is event bubbling and capturing in JavaScript?',
+    title: 'Why does my click handler fire twice? Bubbling, capturing, and event delegation',
     difficulty: 'intermediate',
     access: 'free',
   },
@@ -581,7 +569,6 @@ const TRACK_PREVIEW_CONTENT: Record<string, PreviewNarrative> = {
           { id: 'realtime-search-debounce-cache', kind: 'system-design' },
           { id: 'infinite-scroll-list', kind: 'system-design' },
           { id: 'js-event-delegation', tech: 'javascript', kind: 'trivia' },
-          { id: 'js-event-bubbling-capturing', tech: 'javascript', kind: 'trivia' },
         ],
       },
       {
@@ -604,11 +591,10 @@ const TRACK_PREVIEW_CONTENT: Record<string, PreviewNarrative> = {
         time: '45 min',
         topic: 'Final review',
         refs: [
-          { id: 'js-var-let-const-hoisting', tech: 'javascript', kind: 'trivia' },
+          { id: 'js-hoisting', tech: 'javascript', kind: 'trivia' },
           { id: 'js-prototype-vs-proto', tech: 'javascript', kind: 'trivia' },
           { id: 'js-closures', tech: 'javascript', kind: 'trivia' },
           { id: 'js-this-keyword', tech: 'javascript', kind: 'trivia' },
-          { id: 'js-hoisting-tdz', tech: 'javascript', kind: 'trivia' },
         ],
       },
     ],

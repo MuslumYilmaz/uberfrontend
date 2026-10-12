@@ -255,6 +255,21 @@ reference_rules:
       - docs/audits/test-quality-audit.md
     max_docs: 1
 
+  - id: competitor_seo_audit
+    priority: 100
+    keywords:
+      - greatfrontend
+      - competitor sitemap
+      - competitor seo
+      - quiz overlap
+      - trivia overlap
+      - trivia topic selection
+    paths:
+      - cdn/questions/*/trivia.json
+    load:
+      - docs/audits/greatfrontend-sitemap-2026-10-11.md
+    max_docs: 1
+
   - id: font_size_audit
     priority: 75
     keywords:

@@ -163,7 +163,7 @@ async function assertEditorialCorrections(errors) {
 
   const reactTiming = await readQuestion("react", "trivia", "react-useeffect-vs-uselayouteffect");
   const reactContract = JSON.stringify(reactTiming || {});
-  if (!reactTiming || reactTiming.updatedAt !== "2026-07-14") {
+  if (!reactTiming || reactTiming.updatedAt !== "2026-10-12") {
     errors.push("react/trivia.json: react-useeffect-vs-uselayouteffect: missing current correction date");
   }
   if (!/generally run after paint for non-interaction updates/i.test(reactContract)

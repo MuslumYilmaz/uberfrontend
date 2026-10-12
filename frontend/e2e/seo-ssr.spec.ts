@@ -159,10 +159,10 @@ const ANGULAR_CD_VISUALIZER_DESCRIPTION =
   'Default checks every component each pass. OnPush checks only after a new input reference, an event, an async pipe, a signal, or markForCheck().';
 const ANGULAR_CD_SIBLING_PATH = '/angular/trivia/angular-onpush-change-detection-debugging-real-bug';
 const RXJS_OVERLAP_PATH = '/angular/trivia/rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use';
-const RXJS_OVERLAP_TITLE = 'switchMap vs mergeMap vs concatMap vs exhaustMap in Angular';
+const RXJS_OVERLAP_TITLE = 'switchMap vs exhaustMap vs mergeMap vs concatMap: Pick by UI Case';
 const RXJS_OVERLAP_H1 = 'switchMap vs mergeMap vs exhaustMap vs concatMap: When Would You Use Each in Angular?';
 const RXJS_OVERLAP_DESCRIPTION =
-  'Use switchMap for latest-only work, mergeMap for parallel work, concatMap for ordered work, and exhaustMap to ignore repeat triggers.';
+  'Save button, search box, upload queue, polling: a decision table for switchMap, exhaustMap, mergeMap and concatMap, plus the bug each wrong pick causes in Angular.';
 const RXJS_OVERLAP_SCENARIO_IDS = [
   'typeahead-search',
   'save-double-click',
@@ -362,7 +362,7 @@ const CASES = [
   },
   {
     path: RXJS_OVERLAP_PATH,
-    titleIncludes: 'switchMap vs mergeMap vs concatMap vs exhaustMap in Angular',
+    titleIncludes: 'switchMap vs exhaustMap vs mergeMap vs concatMap: Pick by UI Case',
     h1: RXJS_OVERLAP_H1,
     detail: true,
     indexable: true,
@@ -463,9 +463,9 @@ const DETAIL_CTA_OWNERSHIP_CASES = [
     keepsCombinedHub: false,
   },
   {
-    path: '/css/trivia/css-definition',
+    path: '/css/trivia/css-box-model',
     prepTestId: 'trivia-prep-entry',
-    h1: 'What does CSS stand for?',
+    h1: 'Why is this element wider than its width? box-sizing and the box model',
     techHub: '/css/interview-questions',
     keepsCombinedHub: false,
   },
@@ -660,7 +660,7 @@ const NETFLIX_PREVIEW_PROMPTS = [
 const NETFLIX_PREVIEW_RESOURCES = [
   '/javascript/coding/js-debounce',
   '/javascript/coding/js-take-latest',
-  '/react/trivia/react-prevent-unnecessary-rerenders',
+  '/react/trivia/react-rerender-decision-and-render',
   '/javascript/trivia/content-delivery-caching-strategies-streaming',
   '/system-design/infinite-scroll-list',
   '/system-design/dashboard-widgets-draggable-resizable',
