@@ -2,7 +2,7 @@
   <nav class="preview-breadcrumb" aria-label="Company breadcrumb">
     <a [routerLink]="['/companies']">Companies</a>
     <span>/</span>
-    <span>{{ isOpenAiPreview ? openAiH1 : (isGooglePreview ? googleH1 : (isNetflixPreview ? netflixH1 : label + ' frontend interview questions preview')) }}</span>
+    <span>{{ breadcrumbLabel() }}</span>
   </nav>
 
   <p class="preview-caveat" data-testid="company-practice-disclaimer">
@@ -565,6 +565,187 @@
   </ng-template>
 
   <ng-template #genericPreview>
+  <ng-container *ngIf="authoredPreview as preview; else catalogPreview">
+    <header class="preview-hero company-guide-hero fa-card fa-card--elevated" data-testid="authored-company-preview">
+      <p class="preview-kicker">{{ preview.hero.kicker }}</p>
+      <h1>{{ preview.h1 }}</h1>
+      <p class="preview-subtitle">{{ preview.hero.subtitle }}</p>
+      <p class="preview-caveat">{{ preview.hero.caveat }}</p>
+      <div class="preview-meta" [attr.aria-label]="preview.label + ' guide coverage'">
+        <span class="preview-chip" *ngFor="let chip of preview.hero.chips">{{ chip }}</span>
+      </div>
+    </header>
+
+    <section class="company-guide-section company-guide-section--intro" [attr.aria-labelledby]="preview.slug + '-study-first'">
+      <div>
+        <p class="preview-kicker">{{ preview.studyPriorities.kicker }}</p>
+        <h2 [attr.id]="preview.slug + '-study-first'">{{ preview.studyPriorities.title }}</h2>
+        <p *ngFor="let paragraph of preview.studyPriorities.paragraphs">{{ paragraph }}</p>
+      </div>
+      <aside class="company-guide-note company-guide-note--trust" aria-label="Trust note">
+        <strong>Trust note:</strong> {{ preview.trustNote }}
+      </aside>
+    </section>
+
+    <aside class="company-process-note" [attr.aria-labelledby]="preview.slug + '-published-context'">
+      <p class="preview-kicker">{{ preview.sourceBoundary.kicker }}</p>
+      <h2 [attr.id]="preview.slug + '-published-context'">{{ preview.sourceBoundary.title }}</h2>
+      <p *ngFor="let paragraph of preview.sourceBoundary.paragraphs">{{ paragraph }}</p>
+    </aside>
+
+    <section class="company-guide-section" *ngIf="preview.roleLenses as lenses" [attr.aria-labelledby]="preview.slug + '-role-lenses'">
+      <div class="company-guide-section__head">
+        <p class="preview-kicker">{{ lenses.kicker }}</p>
+        <h2 [attr.id]="preview.slug + '-role-lenses'">{{ lenses.title }}</h2>
+        <p>{{ lenses.intro }}</p>
+      </div>
+      <div class="company-role-grid">
+        <article *ngFor="let lens of lenses.items">
+          <h3>{{ lens.title }}</h3>
+          <p>{{ lens.description }}</p>
+          <p><strong>Practice focus:</strong> {{ lens.practiceFocus }}</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="company-guide-section" [attr.aria-labelledby]="preview.slug + '-practice-prompts'">
+      <div class="company-guide-section__head">
+        <p class="preview-kicker">{{ preview.prompts.kicker }}</p>
+        <h2 [attr.id]="preview.slug + '-practice-prompts'">{{ preview.prompts.title }}</h2>
+        <p>{{ preview.prompts.intro }}</p>
+      </div>
+
+      <div class="company-prompt-list">
+        <article
+          class="company-prompt"
+          *ngFor="let prompt of preview.prompts.items; let i = index"
+          [attr.id]="prompt.id">
+          <p class="company-prompt__number">Prompt {{ i + 1 }}</p>
+          <h3>{{ prompt.title }}</h3>
+          <p>{{ prompt.statement }}</p>
+          <p class="company-prompt__reported" *ngIf="prompt.reportedRound as round" data-testid="company-prompt-reported-round">
+            Practice version modelled on a reported round:
+            <a [href]="round.url" target="_blank" rel="noopener noreferrer nofollow">{{ round.label }}</a>
+          </p>
+
+          <div class="company-prompt__detail">
+            <h4>What this measures</h4>
+            <p>{{ prompt.whatThisMeasures }}</p>
+          </div>
+
+          <div class="company-prompt__detail">
+            <h4>Clarify first</h4>
+            <ul>
+              <li *ngFor="let item of prompt.clarifyFirst">{{ item }}</li>
+            </ul>
+          </div>
+
+          <div class="company-prompt__detail">
+            <h4>Strong answer should cover</h4>
+            <ul>
+              <li *ngFor="let item of prompt.strongAnswer">{{ item }}</li>
+            </ul>
+          </div>
+
+          <p class="company-prompt__miss"><strong>Common miss:</strong> {{ prompt.commonMiss }}</p>
+          <a class="company-resource-link company-resource-link--inline" [routerLink]="prompt.resourcePath">
+            {{ prompt.resourceLabel }}
+          </a>
+        </article>
+      </div>
+    </section>
+
+    <section class="company-guide-section company-guide-walkthrough" *ngIf="preview.walkthrough as walkthrough" [attr.aria-labelledby]="preview.slug + '-walkthrough'">
+      <p class="preview-kicker">{{ walkthrough.kicker }}</p>
+      <h2 [attr.id]="preview.slug + '-walkthrough'">{{ walkthrough.title }}</h2>
+      <p>{{ walkthrough.intro }}</p>
+      <ol class="company-walkthrough-steps">
+        <li *ngFor="let step of walkthrough.steps">
+          <h3>{{ step.title }}</h3>
+          <p>{{ step.description }}</p>
+        </li>
+      </ol>
+    </section>
+
+    <section class="company-guide-section" [attr.aria-labelledby]="preview.slug + '-prep-plan'">
+      <div class="company-guide-section__head">
+        <p class="preview-kicker">{{ preview.prepPlan.kicker }}</p>
+        <h2 [attr.id]="preview.slug + '-prep-plan'">{{ preview.prepPlan.title }}</h2>
+        <p>{{ preview.prepPlan.intro }}</p>
+      </div>
+      <ol class="company-prep-sequence">
+        <li *ngFor="let item of preview.prepPlan.days">
+          <strong>{{ item.day }}</strong>
+          <div>
+            <p>{{ item.focus }}</p>
+            <p class="company-prep-sequence__artifact"><strong>Deliverable:</strong> {{ item.artifact }}</p>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <section class="company-guide-section" [attr.aria-labelledby]="preview.slug + '-prep-faq'">
+      <div class="company-guide-section__head">
+        <p class="preview-kicker">{{ preview.faqs.kicker }}</p>
+        <h2 [attr.id]="preview.slug + '-prep-faq'">{{ preview.faqs.title }}</h2>
+      </div>
+      <div class="company-faq-list">
+        <article *ngFor="let item of preview.faqs.items">
+          <h3>{{ item.question }}</h3>
+          <p>{{ item.answer }}</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="company-guide-section company-guide-links" [attr.aria-labelledby]="preview.slug + '-free-practice'">
+      <div>
+        <p class="preview-kicker">{{ preview.resourceLinks.kicker }}</p>
+        <h2 [attr.id]="preview.slug + '-free-practice'">{{ preview.resourceLinks.title }}</h2>
+        <p>{{ preview.resourceLinks.intro }}</p>
+      </div>
+      <div class="company-link-grid">
+        <a
+          *ngFor="let link of preview.resourceLinks.items"
+          class="company-resource-link"
+          [routerLink]="link.path">
+          <strong>{{ link.label }}</strong>
+          <span>{{ link.description }}</span>
+        </a>
+      </div>
+    </section>
+
+    <section class="company-guide-section" [attr.aria-labelledby]="preview.slug + '-source-notes'">
+      <div class="company-guide-section__head">
+        <p class="preview-kicker">{{ preview.sources.kicker }}</p>
+        <h2 [attr.id]="preview.slug + '-source-notes'">{{ preview.sources.title }}</h2>
+        <p>{{ preview.sources.intro }}</p>
+      </div>
+      <div class="company-source-list">
+        <article *ngFor="let source of preview.sources.items">
+          <h3>
+            <a [href]="source.url" target="_blank" [attr.rel]="sourceRel(source)">{{ source.label }}</a>
+          </h3>
+          <p>{{ source.note }}</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="company-guide-section company-guide-cta" [attr.aria-labelledby]="preview.slug + '-premium-route'">
+      <div>
+        <p class="preview-kicker">{{ preview.cta.kicker }}</p>
+        <h2 [attr.id]="preview.slug + '-premium-route'">{{ preview.cta.title }}</h2>
+        <p>{{ preview.cta.copy }}</p>
+      </div>
+      <a
+        class="preview-btn preview-btn--primary"
+        [routerLink]="['/pricing']"
+        [queryParams]="{ src: preview.cta.src }">
+        {{ preview.cta.buttonLabel }}
+      </a>
+    </section>
+  </ng-container>
+
+  <ng-template #catalogPreview>
   <header class="preview-hero fa-card fa-card--elevated">
     <p class="preview-kicker">Public preview</p>
     <h1>{{ label }} Frontend Interview Questions Preview</h1>
@@ -642,5 +823,6 @@
       </a>
     </section>
   </ng-container>
+  </ng-template>
   </ng-template>
 </section>

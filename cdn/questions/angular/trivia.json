@@ -488,7 +488,7 @@
         {
           "type": "code",
           "language": "typescript",
-          "code": "// Broken: the class exists, but metadata still leaves template scope + DI wrong\nimport { Component, ChangeDetectionStrategy, ViewEncapsulation } from '@angular/core';\nimport { MatButtonModule } from '@angular/material/button';\nimport { ChildProfileCardComponent } from './child-profile-card.component';\nimport { UserCardStore } from './user-card.store';\n\n@Component({\n  selector: 'app-user-card',\n  standalone: true,\n  template: `\n    <button mat-button [disabled]=\"saving\">Save</button>\n    <child-profile-card [user]=\"user\"></child-profile-card>\n  `,\n  providers: [UserCardStore],\n  changeDetection: ChangeDetectionStrategy.Default\n})\nexport class BrokenUserCardComponent {\n  saving = false;\n  user = { name: 'Ada' };\n}\n\n// Fixed: metadata now tells Angular template scope, provider scope, and runtime policy\n@Component({\n  selector: 'app-user-card',\n  standalone: true,\n  imports: [MatButtonModule, ChildProfileCardComponent],\n  template: `\n    <button mat-button [disabled]=\"saving\">Save</button>\n    <child-profile-card [user]=\"user\"></child-profile-card>\n  `,\n  providers: [],\n  changeDetection: ChangeDetectionStrategy.OnPush,\n  encapsulation: ViewEncapsulation.Emulated\n})\nexport class UserCardComponent {\n  saving = false;\n  user = { name: 'Ada' };\n}"
+          "code": "// Broken: the class exists, but metadata still leaves template scope + DI wrong\nimport { Component, ChangeDetectionStrategy, ViewEncapsulation } from '@angular/core';\nimport { MatButtonModule } from '@angular/material/button';\nimport { ChildProfileCardComponent } from './child-profile-card.component';\nimport { UserCardStore } from './user-card.store';\n\n@Component({\n  selector: 'app-user-card',\n  standalone: true,\n  template: `\n    <button mat-button [disabled]=\"saving\">Save</button>\n    <child-profile-card [user]=\"user\"></child-profile-card>\n  `,\n  providers: [UserCardStore],\n  changeDetection: ChangeDetectionStrategy.Eager\n})\nexport class BrokenUserCardComponent {\n  saving = false;\n  user = { name: 'Ada' };\n}\n\n// Fixed: metadata now tells Angular template scope, provider scope, and runtime policy\n@Component({\n  selector: 'app-user-card',\n  standalone: true,\n  imports: [MatButtonModule, ChildProfileCardComponent],\n  template: `\n    <button mat-button [disabled]=\"saving\">Save</button>\n    <child-profile-card [user]=\"user\"></child-profile-card>\n  `,\n  providers: [],\n  changeDetection: ChangeDetectionStrategy.OnPush,\n  encapsulation: ViewEncapsulation.Emulated\n})\nexport class UserCardComponent {\n  saving = false;\n  user = { name: 'Ada' };\n}"
         },
         {
           "type": "list",
@@ -511,7 +511,7 @@
             [
               "Child updates feel too eager or too stale",
               "<code>changeDetection</code>",
-              "The metadata decides whether Angular uses default checks or <code>OnPush</code> rules."
+              "The metadata decides whether Angular uses <code>OnPush</code> rules, the default since Angular 22, or <code>Eager</code> checks on every pass."
             ],
             [
               "Styles bleed in or out of the component",
@@ -557,7 +557,7 @@
             [
               "<code>changeDetection</code>",
               "How Angular runs change detection for this component.",
-              "Affects performance + update semantics (e.g., <code>OnPush</code> vs default)."
+              "Affects performance + update semantics (<code>OnPush</code>, the default since Angular 22, vs <code>Eager</code>)."
             ],
             [
               "<code>encapsulation</code>",
@@ -650,7 +650,8 @@
       "metadata",
       "basics"
     ],
-    "updatedAt": "2026-04-12",
+    "publishedAt": "2026-04-12",
+    "updatedAt": "2026-10-14",
     "seo": {
       "title": "Angular @Component metadata under the hood: selector, scope, and runtime",
       "description": "Learn how @Component metadata drives Angular compilation, template scope, DI boundaries, and runtime behavior when components render or update incorrectly."
@@ -2813,6 +2814,10 @@
         },
         {
           "type": "text",
+          "text": "<strong>Angular 22 note: <code>@Service()</code></strong><br><br>Angular 22 adds <code>@Service()</code>, a shorthand for <code>@Injectable({ providedIn: 'root' })</code>, and <code>ng generate service</code> in Angular CLI 22 emits it by default. The scope rules on this page do not change: the class is still a root singleton unless you opt out with <code>autoProvided: false</code> and list it in a <code>providers</code> array. The catch is dependencies. <code>@Service()</code> accepts <code>inject()</code> only, so the constructor-injected examples above stay on <code>@Injectable</code> until they move to <code>inject()</code>."
+        },
+        {
+          "type": "text",
           "text": "<strong>Summary</strong><br><br>Angular services are where reusable logic and side effects should live so components stay UI-focused. Strong answers show clear boundaries, sensible provider scope (root vs component), and testability benefits. Keep deep DI mechanics and token-level provider patterns in the dedicated DI discussion."
         }
       ]
@@ -2846,7 +2851,8 @@
       "architecture",
       "basics"
     ],
-    "updatedAt": "2026-04-10",
+    "publishedAt": "2026-04-10",
+    "updatedAt": "2026-10-14",
     "seo": {
       "title": "Angular services in production: DI scope, boundaries, and when to use one",
       "description": "Use services for shared logic, HTTP, caching, and orchestration; learn provider scope, component-vs-service boundaries, and common architecture mistakes."
@@ -3036,6 +3042,10 @@
         },
         {
           "type": "text",
+          "text": "<strong>Angular 22 additions to the DI toolbox</strong><br><br>Two Angular 22 APIs change how services are declared and loaded, not how resolution works. <code>@Service()</code> is a root-provided shorthand for <code>@Injectable({ providedIn: 'root' })</code> that accepts <code>inject()</code> only and replaces <code>useClass</code>, <code>useValue</code>, <code>useExisting</code>, and <code>useFactory</code> with one <code>factory</code> option. <code>injectAsync()</code> loads an auto-provided service on demand and resolves it from the injector that called it, through the same hierarchy described above."
+        },
+        {
+          "type": "text",
           "text": "<strong>Summary</strong><br><br>Angular DI resolves dependencies by <strong>token</strong> using <strong>providers</strong> in a <strong>hierarchical injector tree</strong> (closest provider wins). Providers define how to create a value (<code>useClass</code>/<code>useValue</code>/<code>useFactory</code>/<code>useExisting</code>). Where you provide controls lifetime (root singleton vs component-scoped). For non-class deps use <code>InjectionToken</code>. Multi providers collect values into arrays (e.g., interceptors). Common pitfalls are accidental multiple instances, wrong tokens, and circular deps."
         },
         {
@@ -3073,7 +3083,8 @@
       "architecture",
       "basics"
     ],
-    "updatedAt": "2026-04-09",
+    "publishedAt": "2026-04-09",
+    "updatedAt": "2026-10-14",
     "seo": {
       "title": "Angular dependency injection in production: providers, injector hierarchy, and scope bugs",
       "description": "Explain Angular DI through real provider-scope bugs, injector hierarchy, provider shapes, and resolution modifiers like Optional, Self, and SkipSelf."
@@ -4385,6 +4396,10 @@
         },
         {
           "type": "text",
+          "text": "<strong>Angular 22 note: child routes now inherit parent params</strong><br><br>Angular 22 changed the router's <code>paramsInheritanceStrategy</code> default from <code>'emptyOnly'</code> to <code>'always'</code>. In the route tree above, the lazy <code>settings</code> child can now read <code>projectId</code> from its own <code>ActivatedRoute</code>, and it also inherits the parent's <code>data</code> and resolved data. Code that walks <code>route.parent</code> keeps working, but breadcrumb builders that print <code>data</code> at every level, and routed inputs bound with <code>withComponentInputBinding()</code>, can change. <code>ng update</code> does not pin the old value, so add <code>withRouterConfig({ paramsInheritanceStrategy: 'emptyOnly' })</code> if the app depends on it."
+        },
+        {
+          "type": "text",
           "text": "<strong>What a strong interview answer sounds like</strong><br><br>“Angular routing is a route tree rendered through matching <code>RouterOutlet</code>s. The interesting production pieces are not just paths, but how guards, resolvers, params, and lazy-loaded children combine, and how you debug failures when one branch renders blank or navigation gets stuck.”"
         },
         {
@@ -4422,7 +4437,8 @@
       "router",
       "basics"
     ],
-    "updatedAt": "2026-04-09",
+    "publishedAt": "2026-04-09",
+    "updatedAt": "2026-10-14",
     "seo": {
       "title": "Angular routing in production: route trees, RouterOutlet, guards, and lazy loading",
       "description": "Explain Angular routing through the real production concerns: route trees, RouterOutlet placement, guards, lazy loading, and the navigation bugs caused by misconfigured routes."
@@ -4520,6 +4536,10 @@
         },
         {
           "type": "text",
+          "text": "<strong>Angular 22 note: lazy-load a service, not only a route</strong><br><br><code>loadChildren</code> and <code>loadComponent</code> split code at navigation boundaries. Angular 22 adds <code>injectAsync()</code> for a different boundary: one heavy service, such as an export or charting engine, that a screen needs only after a user action. The bundler moves the service into its own chunk, the first call fetches it, and an optional <code>onIdle</code> prefetch can download it while the browser is idle. The service must be auto-provided with <code>@Service()</code> or <code>@Injectable({ providedIn: 'root' })</code>, and no eager file may import it as a value."
+        },
+        {
+          "type": "text",
           "text": "<strong>Summary</strong><br><ul><li>Lazy loading defers loading feature modules until needed.</li><li>Improves performance by reducing the initial bundle size.</li><li>Configured via <code>loadChildren</code> in the routing module.</li><li>Ideal for large, modular, and enterprise-level applications.</li></ul>"
         }
       ]
@@ -4553,7 +4573,8 @@
       "performance",
       "basics"
     ],
-    "updatedAt": "2026-04-19",
+    "publishedAt": "2026-04-19",
+    "updatedAt": "2026-10-14",
     "seo": {
       "title": "Angular lazy loading in production: route boundaries, preloading, and bundle trade-offs",
       "description": "Explain Angular lazy loading through real routing decisions: route boundaries, initial-bundle savings, preloading strategy, and the performance pitfalls of over-fragmented features."
@@ -4565,7 +4586,7 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Angular has two change detection strategies. Default checks a component on every change detection pass that reaches it. OnPush checks a component only when its input reference changes, an event fires inside its subtree, an async pipe emits, a signal it reads changes, or code calls markForCheck(). Most production stale-UI bugs are OnPush components whose data changed without one of those triggers: an object mutated in place, a field assigned inside a manual subscribe(), or a timer in a zoneless app that notified nobody. Run each bug in the visualizer below and watch which of the seven components Angular checks, skips, or only traverses.",
+    "description": "Angular has two change detection strategies. OnPush, the default since Angular 22, checks a component only when its input reference changes, an event fires inside its subtree, an async pipe emits, a signal it reads changes, or code calls markForCheck(). Eager, called Default before v22, checks a component on every change detection pass that reaches it. Most production stale-UI bugs are OnPush components whose data changed without one of those triggers: an object mutated in place, a field assigned inside a manual subscribe(), or a timer in a zoneless app that notified nobody. Run each bug in the visualizer below and watch which of the seven components Angular checks, skips, or only traverses.",
     "answer": {
       "blocks": [
         {
@@ -4574,7 +4595,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Default vs OnPush: the production decision</strong><br><br>The real question is not “what is change detection?” but <strong>when should this subtree be checked</strong>. <strong>Default</strong> is the safe baseline when you want fewer stale-UI surprises. <strong>OnPush</strong> is the performance strategy when you want predictable checks, immutable inputs, and fewer wasted passes through a large component tree. Angular keeps a tree of views. On each pass it decides which branches need checking, evaluates bindings, and updates the DOM where values changed. That is why the strategy choice matters far more in a large tree than in a demo component, and why interviewers want the trade-off, not just the two names."
+          "text": "<strong>Eager vs OnPush: the production decision</strong><br><br>The real question is not “what is change detection?” but <strong>when should this subtree be checked</strong>. <strong>OnPush</strong> is the performance strategy when you want predictable checks, immutable inputs, and fewer wasted passes through a large component tree, and since Angular 22 it is what a component gets when it sets no strategy. <strong>Eager</strong>, the strategy called <code>Default</code> before v22, checks a view on every pass that reaches it and is now the explicit opt-in for code that still mutates state where OnPush cannot see it. Angular keeps a tree of views. On each pass it decides which branches need checking, evaluates bindings, and updates the DOM where values changed. That is why the strategy choice matters far more in a large tree than in a demo component, and why interviewers want the trade-off, not just the two names."
         },
         {
           "type": "list",
@@ -4586,24 +4607,28 @@
           ],
           "rows": [
             [
-              "<code>ChangeDetectionStrategy.Default</code>",
+              "<code>ChangeDetectionStrategy.Eager</code>, named <code>Default</code> before v22",
               "Checks the component on every change detection pass that reaches its branch.",
               "Simpler state model and fewer stale-view surprises.",
               "Large trees re-render too often because every view stays eligible for checks."
             ],
             [
-              "<code>ChangeDetectionStrategy.OnPush</code>",
+              "<code>ChangeDetectionStrategy.OnPush</code>, the default since v22",
               "Checks the component when an input reference changes, an event happens in the subtree, an async pipe emits, a signal it reads changes, or you mark the view manually.",
               "Large lists, reactive UIs, and predictable immutable state flows.",
               "UI looks stale because code mutated an object or assigned state in a manual subscription without marking the view."
             ]
           ],
-          "caption": "Default vs OnPush in real apps"
+          "caption": "Eager vs OnPush in real apps"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Angular 22 made OnPush the default</strong><br><br>Angular 22, released on June 3, 2026, changed the default: a component whose metadata has no <code>changeDetection</code> property is now OnPush. Write <code>changeDetection: ChangeDetectionStrategy.Eager</code> to keep the previous behavior. <code>ChangeDetectionStrategy.Default</code> still compiles, but it is a deprecated alias with the same value as <code>Eager</code> and is due to be removed. Running <code>ng update</code> to v22 applies a migration that adds <code>Eager</code> to every component without a strategy and renames <code>Default</code> to <code>Eager</code>, so an upgraded app keeps its old checks until someone removes those lines. Component libraries compiled before v22 keep Eager semantics as well, because the linker reads the Angular version each component was compiled with. The v22 interview answer is therefore short: OnPush is the baseline, Eager is the explicit opt-out, and a stale view means a trigger was missing. The <a href=\"/angular/trivia/angular-onpush-change-detection-debugging-real-bug\">OnPush-by-default debugging guide</a> lists where those stale views appear after the upgrade."
         },
         {
           "type": "code",
           "language": "typescript",
-          "code": "import { ChangeDetectionStrategy, Component, Input } from '@angular/core';\n\n@Component({\n  selector: 'app-user-card',\n  template: `<p>{{ user.name }}</p>`,\n  changeDetection: ChangeDetectionStrategy.OnPush\n})\nexport class UserCardComponent {\n  @Input() user!: { name: string };\n}"
+          "code": "import { ChangeDetectionStrategy, Component, Input } from '@angular/core';\n\n@Component({\n  selector: 'app-user-card',\n  template: `<p>{{ user.name }}</p>`,\n  // Written out for readers; OnPush is also the default since Angular 22.\n  changeDetection: ChangeDetectionStrategy.OnPush\n})\nexport class UserCardComponent {\n  @Input() user!: { name: string };\n}"
         },
         {
           "type": "text",
@@ -4622,7 +4647,7 @@
           "type": "list",
           "columns": [
             "Trigger",
-            "Default",
+            "Eager",
             "OnPush",
             "Why it matters"
           ],
@@ -4701,7 +4726,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Zoneless change detection: what changes</strong><br><br>Zone.js patches browser APIs so that every finished task, whether a timer, an XHR callback, or an event, schedules a pass from the root. Zoneless Angular removes that patching. Angular 21 creates new applications zoneless by default, and Angular 20 apps opt in with <code>provideZonelessChangeDetection()</code> while removing <code>zone.js</code> from the build and test polyfills. Without the zone, only explicit notifications schedule a pass: a signal that a template reads changes, <code>markForCheck()</code> runs (the <code>async</code> pipe calls it for you), a template or host event listener fires, <code>ComponentRef.setInput()</code> is called, or a view that was marked dirty is attached. A plain field assignment in a <code>setTimeout</code> or a manual <code>subscribe()</code> callback notifies nobody, which is why the zoneless preset in the visualizer shows zero views checked. The migration rule is short: keep state that templates read in signals, keep Observables behind the <code>async</code> pipe, and treat every leftover <code>markForCheck()</code> as a hint that a signal would remove it. <code>NgZone.run()</code> and <code>runOutsideAngular()</code> can stay; they do no harm in a zoneless app. Current TestBed runs zoneless by default, so tests should <code>await fixture.whenStable()</code> instead of calling <code>fixture.detectChanges()</code> out of habit."
+          "text": "<strong>Zoneless change detection: what changes</strong><br><br>Zone.js patches browser APIs so that every finished task, whether a timer, an XHR callback, or an event, schedules a pass from the root. Zoneless Angular removes that patching. Angular 21 creates new applications zoneless by default, and Angular 20 apps opt in with <code>provideZonelessChangeDetection()</code> while removing <code>zone.js</code> from the build and test polyfills. Angular 22 adds OnPush as the default strategy on top of that, so a new v22 application is zoneless and OnPush unless you configure it otherwise. Without the zone, only explicit notifications schedule a pass: a signal that a template reads changes, <code>markForCheck()</code> runs (the <code>async</code> pipe calls it for you), a template or host event listener fires, <code>ComponentRef.setInput()</code> is called, or a view that was marked dirty is attached. A plain field assignment in a <code>setTimeout</code> or a manual <code>subscribe()</code> callback notifies nobody, which is why the zoneless preset in the visualizer shows zero views checked. The migration rule is short: keep state that templates read in signals, keep Observables behind the <code>async</code> pipe, and treat every leftover <code>markForCheck()</code> as a hint that a signal would remove it. <code>NgZone.run()</code> and <code>runOutsideAngular()</code> can stay; they do no harm in a zoneless app. Current TestBed runs zoneless by default, so tests should <code>await fixture.whenStable()</code> instead of calling <code>fixture.detectChanges()</code> out of habit."
         },
         {
           "type": "text",
@@ -4748,13 +4773,13 @@
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li><code>Default</code> favors simplicity; <code>OnPush</code> favors predictable performance in large trees.</li><li>OnPush still updates on events, <code>async</code> pipe emissions, signals, and manual CDR APIs, but it skips deep mutation on the same input reference.</li><li><code>markForCheck()</code> is the normal manual escape hatch; <code>detectChanges()</code> is the sharper synchronous tool and only covers its own subtree.</li><li>Zoneless removes the automatic pass after every task: only signals, <code>markForCheck()</code>, events, async pipes, and <code>setInput()</code> schedule one.</li><li>The highest-signal production bugs are stale OnPush UIs from mutation, manual subscription updates without marking, timers in zoneless apps, and lifecycle-timing errors like <code>ExpressionChangedAfterItHasBeenCheckedError</code>.</li></ul>"
+          "text": "<strong>Summary</strong><br><ul><li>OnPush is the default since Angular 22 and favors predictable performance in large trees; <code>Eager</code>, formerly <code>Default</code>, favors simplicity and is now an explicit opt-out.</li><li>OnPush still updates on events, <code>async</code> pipe emissions, signals, and manual CDR APIs, but it skips deep mutation on the same input reference.</li><li><code>markForCheck()</code> is the normal manual escape hatch; <code>detectChanges()</code> is the sharper synchronous tool and only covers its own subtree.</li><li>Zoneless removes the automatic pass after every task: only signals, <code>markForCheck()</code>, events, async pipes, and <code>setInput()</code> schedule one.</li><li>The highest-signal production bugs are stale OnPush UIs from mutation, manual subscription updates without marking, timers in zoneless apps, and lifecycle-timing errors like <code>ExpressionChangedAfterItHasBeenCheckedError</code>.</li></ul>"
         }
       ]
     },
     "incidentCard": {
       "title": "OnPush Trigger Check",
-      "scenario": "A dashboard row component was switched to `ChangeDetectionStrategy.OnPush`. After that, one bug appeared: the parent does `user.name = 'New name'`, but the child card sometimes keeps showing the old value until a click happens somewhere. One teammate says, \"OnPush is flaky, so we should switch everything back to Default.\" Another says, \"This is expected. OnPush mostly reacts to input reference changes, component events, async pipe emissions, or manual marks. If we mutate the same object in place, Angular may skip the child because the reference did not change.\" Which explanation is better?",
+      "scenario": "A dashboard row component was switched to `ChangeDetectionStrategy.OnPush`. After that, one bug appeared: the parent does `user.name = 'New name'`, but the child card sometimes keeps showing the old value until a click happens somewhere. One teammate says, \"OnPush is flaky, so we should put `ChangeDetectionStrategy.Eager` back on everything.\" Another says, \"This is expected. OnPush mostly reacts to input reference changes, component events, async pipe emissions, or manual marks. If we mutate the same object in place, Angular may skip the child because the reference did not change.\" Which explanation is better?",
       "options": [
         {
           "id": "onpush-only-works-correctly-when-zonejs-is-disabled",
@@ -4770,7 +4795,7 @@
         }
       ],
       "correctOptionId": "onpush-needs-a-meaningful-trigger-like-a-new-reference-or-markforcheck",
-      "rereadPrompt": "Not quite. `OnPush` is a deliberate optimization, not a broken version of Default change detection. It works best when state updates are immutable or come through clear triggers like events, async pipe emissions, or `markForCheck()`. Mutating objects in place is the classic reason an OnPush child appears stale."
+      "rereadPrompt": "Not quite. `OnPush` is a deliberate optimization and the Angular 22 default, not a broken version of Eager change detection. It works best when state updates are immutable or come through clear triggers like events, async pipe emissions, or `markForCheck()`. Mutating objects in place is the classic reason an OnPush child appears stale."
     },
     "access": "free",
     "type": "trivia",
@@ -4781,11 +4806,12 @@
       "basics",
       "components"
     ],
-    "updatedAt": "2026-10-10",
+    "publishedAt": "2026-10-10",
+    "updatedAt": "2026-10-14",
     "seo": {
-      "title": "Angular Change Detection Visualizer: Default vs OnPush",
-      "h1": "Angular Change Detection Strategies: Visualize Default vs OnPush",
-      "description": "Default checks every component each pass. OnPush checks only after a new input reference, an event, an async pipe, a signal, or markForCheck()."
+      "title": "Angular Change Detection Visualizer: Eager vs OnPush",
+      "h1": "Angular Change Detection Strategies: Visualize Eager vs OnPush",
+      "description": "Eager, formerly Default, checks on every pass. OnPush, the Angular 22 default, checks after a new input, event, async pipe, signal, or markForCheck()."
     }
   },
   {
@@ -5154,7 +5180,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>1. Efficient Change Detection with OnPush</strong><br>By default, Angular checks all components in every change detection cycle. However, for large apps, this can be costly. Using <code>ChangeDetectionStrategy.OnPush</code> allows Angular to check components only when their input references change, significantly reducing unnecessary updates."
+          "text": "<strong>1. Efficient Change Detection with OnPush</strong><br>Since Angular 22, a component that sets no strategy is OnPush: Angular checks it only after a new input reference, an event in its subtree, an <code>async</code> pipe emission, a signal its template reads, or <code>markForCheck()</code>. Before v22 the default checked every component on every pass, and that strategy is now called <code>Eager</code>. In an upgraded codebase, <code>ng update</code> writes <code>ChangeDetectionStrategy.Eager</code> into existing components, so the performance work is removing <code>Eager</code> from hot subtrees once their state updates are immutable or signal-based."
         },
         {
           "type": "code",
@@ -5181,7 +5207,7 @@
         {
           "type": "code",
           "language": "bash",
-          "code": "ng build --prod --aot"
+          "code": "ng build"
         },
         {
           "type": "text",
@@ -5189,7 +5215,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>4. Tree Shaking and Bundle Optimization</strong><br>Tree shaking removes unused code from the final bundle. Angular’s build system (based on Webpack) automatically performs tree-shaking, minification, and dead-code elimination when building with production mode (<code>--configuration production</code>)."
+          "text": "<strong>4. Tree Shaking and Bundle Optimization</strong><br>Tree shaking removes unused code from the final bundle. Angular’s build system automatically performs tree-shaking, minification, and dead-code elimination when building with the production configuration, which is the default for <code>ng build</code>."
         },
         {
           "type": "text",
@@ -5265,7 +5291,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>13. Server-Side Rendering (SSR)</strong><br>Using Angular Universal for server-side rendering improves perceived performance and SEO. The initial HTML is rendered on the server, so the app appears faster to users before the client-side bundle fully loads."
+          "text": "<strong>13. Server-Side Rendering (SSR)</strong><br>Using Angular SSR (<code>@angular/ssr</code>, formerly Angular Universal) for server-side rendering improves perceived performance and SEO. The initial HTML is rendered on the server, so the app appears faster to users before the client-side bundle fully loads."
         },
         {
           "type": "text",
@@ -5306,7 +5332,8 @@
       "optimization",
       "basics"
     ],
-    "updatedAt": "2026-04-19",
+    "publishedAt": "2026-04-19",
+    "updatedAt": "2026-10-14",
     "seo": {
       "title": "Angular performance optimization in production: profiling, change detection, and render hotspots",
       "description": "Explain Angular performance through real bottlenecks: profiling first, change-detection hotspots, large-list rendering costs, bundle trade-offs, and fixes like OnPush or trackBy."
@@ -5318,12 +5345,12 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "OnPush change detection is easiest to explain as a real stale-UI debugging story. Angular skips a component unless a narrow trigger happens, so production bugs usually come from mutating references, updating state inside manual subscriptions, or misunderstanding parent-child boundaries.",
+    "description": "OnPush change detection is easiest to explain as a real stale-UI debugging story, and since Angular 22 it is the default for every component that does not set a strategy. Angular skips an OnPush component unless a narrow trigger happens, so production bugs usually come from mutating references, updating state inside manual subscriptions, or misunderstanding parent-child boundaries. After the v22 upgrade the same bugs show up in the components that the Eager migration did not cover.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core idea</strong><br><br><code>ChangeDetectionStrategy.OnPush</code> tells Angular: “Only check this component if something <em>meaningful</em> happened.” Meaningful = an <code>@Input</code> reference changed, an event happened in this component, an <code>async</code> pipe emitted, or you manually asked Angular to check."
+          "text": "<strong>Core idea</strong><br><br><code>ChangeDetectionStrategy.OnPush</code> tells Angular: “Only check this component if something <em>meaningful</em> happened.” Meaningful = an <code>@Input</code> reference changed, an event happened in this component or its children, an <code>async</code> pipe emitted, a signal read by its template changed, or you manually asked Angular to check. Since Angular 22 this is also the default: a component without a <code>changeDetection</code> property is OnPush."
         },
         {
           "type": "list",
@@ -5368,6 +5395,46 @@
         },
         {
           "type": "text",
+          "text": "<strong>After the Angular 22 upgrade: where stale UI comes from</strong><br><br>Angular 22 made OnPush the default, but an upgraded app does not change behavior on day one. <code>ng update</code> runs a migration that writes <code>changeDetection: ChangeDetectionStrategy.Eager</code> into every component that had no strategy and renames <code>ChangeDetectionStrategy.Default</code> to <code>Eager</code>. Component libraries compiled before v22 keep Eager semantics too, because the linker reads the Angular version each component was compiled with. Stale UI appears where neither safety net applies:\n\n<ul><li><strong>New components.</strong> <code>ng generate component</code> in Angular CLI 22 writes no <code>changeDetection</code> line, so the component is OnPush. Pre-v22 habits such as <code>this.items.push(item)</code> or assigning a field inside <code>subscribe()</code> go stale right away.</li><li><strong>Cleanup commits.</strong> Deleting the migrated <code>Eager</code> lines to adopt the new default turns every hidden mutation in those components into a stale-UI bug.</li><li><strong>Classes the migration did not visit.</strong> In the 22.2 schematic source, the migration rewrites top-level component classes whose <code>@Component()</code> call receives an inline object literal. A test host declared inside a <code>describe()</code> callback, or a decorator that receives a shared metadata constant, keeps no strategy and becomes OnPush.</li><li><strong>Upgrades that skipped <code>ng update</code>.</strong> Bumping versions in <code>package.json</code> by hand runs no migration at all.</li></ul>\n\nRun the trigger checklist below on those components first. The <a href=\"/angular/trivia/angular-change-detection-strategies\">Eager vs OnPush visualizer</a> replays the same bugs step by step."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Symptom after the upgrade",
+            "Likely cause",
+            "Fix"
+          ],
+          "rows": [
+            [
+              "A list misses the new row until something else is clicked.",
+              "The parent mutates the array with <code>push()</code> or <code>splice()</code>, so the input reference stays the same.",
+              "Pass a new array, or keep the list in a signal and call <code>update()</code> with a new array."
+            ],
+            [
+              "A counter or total changes only after an unrelated click.",
+              "A <code>subscribe()</code>, timer, or WebSocket callback assigns a plain field.",
+              "Render the Observable with the <code>async</code> pipe, store the value in a signal, or call <code>markForCheck()</code>."
+            ],
+            [
+              "A child ignores a value set through <code>@ViewChild</code>.",
+              "TypeScript code writes the child input directly, and Angular does not check an OnPush child for that write.",
+              "Bind the value in the parent template, or call <code>markForCheck()</code> in the child."
+            ],
+            [
+              "A unit test fails because <code>fixture.detectChanges()</code> no longer shows the new value.",
+              "The test writes a field on <code>fixture.componentInstance</code> of an OnPush component, which marks nothing dirty.",
+              "Use <code>fixture.componentRef.setInput()</code> for inputs, drive state through signals or events, or give the test host <code>ChangeDetectionStrategy.Eager</code>."
+            ],
+            [
+              "The screen worked after the upgrade and broke in a later refactor.",
+              "An <code>Eager</code> line written by the migration was deleted while the component still mutates state.",
+              "Delete <code>Eager</code> only after the component reads its state from inputs, signals, or the <code>async</code> pipe."
+            ]
+          ],
+          "caption": "Post-upgrade stale UI checklist"
+        },
+        {
+          "type": "text",
           "text": "<strong>The classic real-world bug</strong><br><br>“My data changes but the UI doesn’t update.” This almost always means <strong>you mutated an object or array instead of creating a new reference</strong>."
         },
         {
@@ -5377,7 +5444,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Why OnPush exists</strong><br><br>Default change detection checks <em>the whole component tree</em> on every async event (timers, HTTP, clicks, etc). OnPush lets Angular <strong>skip huge parts of the tree</strong> unless something relevant changed. This is critical for large apps and big lists."
+          "text": "<strong>Why OnPush exists</strong><br><br>Eager change detection, called Default before Angular 22, checks <em>every view the pass reaches</em>, and in a Zone.js app a pass follows every async event (timers, HTTP, clicks, etc). OnPush lets Angular <strong>skip huge parts of the tree</strong> unless something relevant changed. This is critical for large apps and big lists."
         },
         {
           "type": "text",
@@ -5453,17 +5520,26 @@
         },
         {
           "type": "text",
-          "text": "<strong>Run these bugs in the visualizer</strong><br><br>Both stale-UI stories on this page are preset scenarios in the <a href=\"/angular/trivia/angular-change-detection-strategies\">Angular change detection visualizer</a>, which traces which of seven components Angular checks after each trigger, in Default and OnPush and with or without Zone.js:<ul><li><a href=\"/angular/trivia/angular-change-detection-strategies#cd-scenario-push-mutation\">Array push with an OnPush list</a>: the same array reference, so UserList is skipped and the new row never renders.</li><li><a href=\"/angular/trivia/angular-change-detection-strategies#cd-scenario-manual-subscribe\">subscribe() without a mark</a>: SummaryCard assigns a field in the callback and stays stale until the next click.</li><li><a href=\"/angular/trivia/angular-change-detection-strategies#cd-scenario-timer-in-service\">Service timer with an OnPush footer</a>: Zone.js runs the pass, but nothing marked LiveCount.</li><li><a href=\"/angular/trivia/angular-change-detection-strategies#cd-scenario-signal-in-onpush\">Signal inside OnPush</a>: one view refreshes while its OnPush ancestors are only traversed.</li><li><a href=\"/angular/trivia/angular-change-detection-strategies#cd-scenario-zoneless-timer\">Zoneless timer</a>: no signal, event, async pipe, or markForCheck() ran, so no pass runs at all.</li></ul>"
+          "text": "<strong>Copyable test: prove the stale row before you fix it</strong><br><br>This spec reproduces the most common post-upgrade bug without a browser. The child sets no strategy, so on Angular 22 it is OnPush, and the host opts into <code>Eager</code> so the test isolates the child. The first test passes because the row stays stale, which is the proof. The second test shows the fix. On Angular 21 or earlier the first test fails, because the child would still be checked eagerly. Run it with the test runner your Angular CLI project already uses, Karma with Jasmine or Vitest."
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "import { ChangeDetectionStrategy, Component, Input } from '@angular/core';\nimport { TestBed } from '@angular/core/testing';\n\ntype User = { id: number; name: string };\n\n@Component({\n  selector: 'app-user-list',\n  // No changeDetection here: OnPush by default since Angular 22.\n  template: `<ul>@for (user of users; track user.id) { <li>{{ user.name }}</li> }</ul>`,\n})\nclass UserListComponent {\n  @Input() users: User[] = [];\n}\n\n@Component({\n  selector: 'app-user-list-host',\n  imports: [UserListComponent],\n  changeDetection: ChangeDetectionStrategy.Eager,\n  template: `<app-user-list [users]=\"users\" />`,\n})\nclass UserListHostComponent {\n  users: User[] = [{ id: 1, name: 'Ada' }];\n}\n\ndescribe('UserListComponent after the Angular 22 upgrade', () => {\n  function rowCount(element: HTMLElement): number {\n    return element.querySelectorAll('li').length;\n  }\n\n  it('stays stale when the parent mutates the same array', () => {\n    const fixture = TestBed.createComponent(UserListHostComponent);\n    fixture.detectChanges();\n\n    fixture.componentInstance.users.push({ id: 2, name: 'Linus' });\n    fixture.detectChanges();\n\n    expect(rowCount(fixture.nativeElement)).toBe(1);\n  });\n\n  it('renders the new row when the parent passes a new array', () => {\n    const fixture = TestBed.createComponent(UserListHostComponent);\n    fixture.detectChanges();\n\n    const host = fixture.componentInstance;\n    host.users = [...host.users, { id: 2, name: 'Linus' }];\n    fixture.detectChanges();\n\n    expect(rowCount(fixture.nativeElement)).toBe(2);\n  });\n});"
         },
         {
           "type": "text",
-          "text": "<strong>Interview-level summary</strong><br><br><code>OnPush</code> makes Angular check a component only when inputs change by reference, an event happens, an async pipe emits, or you manually trigger detection. It gives big performance wins, but <strong>requires immutable state updates</strong>. Most “UI not updating” bugs in OnPush come from mutating objects instead of replacing them."
+          "text": "<strong>Run these bugs in the visualizer</strong><br><br>Both stale-UI stories on this page are preset scenarios in the <a href=\"/angular/trivia/angular-change-detection-strategies\">Angular change detection visualizer</a>, which traces which of seven components Angular checks after each trigger, in Eager and OnPush and with or without Zone.js:<ul><li><a href=\"/angular/trivia/angular-change-detection-strategies#cd-scenario-push-mutation\">Array push with an OnPush list</a>: the same array reference, so UserList is skipped and the new row never renders.</li><li><a href=\"/angular/trivia/angular-change-detection-strategies#cd-scenario-manual-subscribe\">subscribe() without a mark</a>: SummaryCard assigns a field in the callback and stays stale until the next click.</li><li><a href=\"/angular/trivia/angular-change-detection-strategies#cd-scenario-timer-in-service\">Service timer with an OnPush footer</a>: Zone.js runs the pass, but nothing marked LiveCount.</li><li><a href=\"/angular/trivia/angular-change-detection-strategies#cd-scenario-signal-in-onpush\">Signal inside OnPush</a>: one view refreshes while its OnPush ancestors are only traversed.</li><li><a href=\"/angular/trivia/angular-change-detection-strategies#cd-scenario-zoneless-timer\">Zoneless timer</a>: no signal, event, async pipe, or markForCheck() ran, so no pass runs at all.</li></ul>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Interview-level summary</strong><br><br><code>OnPush</code> makes Angular check a component only when inputs change by reference, an event happens, an async pipe emits, or you manually trigger detection. It gives big performance wins, but <strong>requires immutable state updates</strong>. Most “UI not updating” bugs in OnPush come from mutating objects instead of replacing them. Since Angular 22 OnPush is the default, so the same bugs now appear in any component that sets no strategy and did not get an <code>Eager</code> line from the migration."
         }
       ]
     },
     "incidentCard": {
       "title": "Stale UI Debug Check",
-      "scenario": "A production bug report says: \"The save succeeded, but the OnPush summary card still shows the old count until I click somewhere.\" In the code, a subscription mutates `stats.total++` on an existing object and never calls `markForCheck()`. One teammate says, \"This proves OnPush is too fragile for real apps; the safe fix is to go back to Default everywhere.\" Another says, \"This is a classic OnPush debugging case. Either emit a new object reference or explicitly mark the component for check when external subscription code updates state.\" Which explanation is better?",
+      "scenario": "A production bug report says: \"The save succeeded, but the OnPush summary card still shows the old count until I click somewhere.\" In the code, a subscription mutates `stats.total++` on an existing object and never calls `markForCheck()`. One teammate says, \"This proves OnPush is too fragile for real apps; the safe fix is to put `ChangeDetectionStrategy.Eager` back on every component.\" Another says, \"This is a classic OnPush debugging case. Either emit a new object reference or explicitly mark the component for check when external subscription code updates state.\" Which explanation is better?",
       "options": [
         {
           "id": "onpush-bug-comes-from-in-place-mutation-or-missing-markforcheck-not-from-onpush-itself",
@@ -5471,7 +5547,7 @@
         },
         {
           "id": "production-stale-ui-means-onpush-should-not-be-used-in-data-heavy-components",
-          "label": "The first explanation is better. If users can hit stale UI in production, that usually means OnPush is too risky for stateful screens and should be avoided in favor of Default change detection."
+          "label": "The first explanation is better. If users can hit stale UI in production, that usually means OnPush is too risky for stateful screens and should be avoided in favor of Eager change detection."
         },
         {
           "id": "detectchanges-should-run-after-every-subscription-callback-by-default",
@@ -5490,10 +5566,12 @@
       "debugging",
       "performance"
     ],
-    "updatedAt": "2026-10-10",
+    "publishedAt": "2026-10-10",
+    "updatedAt": "2026-10-14",
     "seo": {
-      "title": "Angular OnPush in production: triggers, stale-UI bugs, and markForCheck debugging",
-      "description": "Explain OnPush like a real Angular bug: input mutation, manual subscriptions, parent-child boundaries, async pipe, and when markForCheck fixes stale UI."
+      "title": "Angular OnPush by Default: Debug Stale UI After v22",
+      "h1": "Angular OnPush by Default: Debug Stale UI After the v22 Upgrade",
+      "description": "Angular 22 made OnPush the default. See which components go stale after the upgrade, why ng update adds Eager, and a test that proves each fix."
     }
   },
   {

@@ -153,10 +153,10 @@ const CSS_STICKY_LAB_DESCRIPTION =
   'Diagnose CSS position: sticky failures with five broken layouts. Inspect overflow, insets, container height, flex/grid stretch, then test the fix.';
 
 const ANGULAR_CD_VISUALIZER_PATH = '/angular/trivia/angular-change-detection-strategies';
-const ANGULAR_CD_VISUALIZER_TITLE = 'Angular Change Detection Visualizer: Default vs OnPush';
-const ANGULAR_CD_VISUALIZER_H1 = 'Angular Change Detection Strategies: Visualize Default vs OnPush';
+const ANGULAR_CD_VISUALIZER_TITLE = 'Angular Change Detection Visualizer: Eager vs OnPush';
+const ANGULAR_CD_VISUALIZER_H1 = 'Angular Change Detection Strategies: Visualize Eager vs OnPush';
 const ANGULAR_CD_VISUALIZER_DESCRIPTION =
-  'Default checks every component each pass. OnPush checks only after a new input reference, an event, an async pipe, a signal, or markForCheck().';
+  'Eager, formerly Default, checks on every pass. OnPush, the Angular 22 default, checks after a new input, event, async pipe, signal, or markForCheck().';
 const ANGULAR_CD_SIBLING_PATH = '/angular/trivia/angular-onpush-change-detection-debugging-real-bug';
 const RXJS_OVERLAP_PATH = '/angular/trivia/rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use';
 const RXJS_OVERLAP_TITLE = 'switchMap vs exhaustMap vs mergeMap vs concatMap: Pick by UI Case';
@@ -337,7 +337,7 @@ const CASES = [
   },
   {
     path: ANGULAR_CD_VISUALIZER_PATH,
-    titleIncludes: 'Angular Change Detection Visualizer: Default vs OnPush',
+    titleIncludes: 'Angular Change Detection Visualizer: Eager vs OnPush',
     h1: ANGULAR_CD_VISUALIZER_H1,
     detail: true,
     indexable: true,
@@ -678,6 +678,199 @@ const NETFLIX_PREVIEW_INBOUND_PAGES = [
   { path: '/', anchor: 'View Netflix preview' },
   { path: '/companies', anchor: 'Netflix frontend interview questions' },
   // /system-design stopped linking to the Netflix preview in the V2.1 calibration (17c349f1).
+] as const;
+
+const AUTHORED_GUIDE_CASES = [
+  {
+    label: 'Waymo',
+    path: '/companies/waymo/preview',
+    title: 'Waymo Frontend Interview Questions: 5 Prompts + Prep Guide',
+    description:
+      'Prepare for a Waymo frontend interview with 5 prompts modelled on a public 2026 report: tree filtering, Angular debugging, Promises, AI chat and autocomplete.',
+    h1: 'Waymo Frontend Interview Questions',
+    kicker: 'Public Waymo prep guide',
+    headings: [
+      'Prepare for product judgment, not Waymo trivia',
+      'What the report establishes, and what you still need to confirm',
+      'Five Waymo frontend interview practice questions',
+      'Scope the tree filter before writing the first line',
+      'A 7-day Waymo frontend interview preparation plan',
+      'Common Waymo frontend interview preparation questions',
+      'Build the underlying skills with free practice',
+      'Sources and evidence limits',
+    ],
+    trustFragment: 'not leaked, confirmed or official Waymo questions',
+    prompts: [
+      { id: 'tree-filter-render', title: 'Filter a tree by substring and render it indented' },
+      { id: 'angular-bug-reports-debugging', title: 'Fix an Angular screen from three user bug reports' },
+      { id: 'promise-contract-typescript', title: 'Implement a Promise contract in TypeScript' },
+      { id: 'ai-chat-frontend-design', title: 'Design the frontend of an AI chat application' },
+      { id: 'debounced-autocomplete', title: 'Build an autocomplete search bar with debounce' },
+    ],
+    resources: [
+      '/javascript/coding/js-filter-tree-render-indented',
+      '/javascript/coding/js-create-deferred-promise',
+      '/javascript/coding/js-take-latest',
+      '/react/coding/react-autocomplete-search-starter',
+      '/system-design/ai-chat-textarea-design',
+      '/angular/trivia/angular-http-what-actually-cancels-request',
+      '/angular/trivia/angular-onpush-change-detection-debugging-real-bug',
+    ],
+    reportUrl:
+      'https://prachub.com/interview-experiences/waymo-senior-frontend-engineer-interview-experience-rejected-30-minutes-after-pushing-on-the-process',
+  },
+  {
+    label: 'ElevenLabs',
+    path: '/companies/elevenlabs/preview',
+    title: 'ElevenLabs Frontend Interview Questions: 5 Prompts + Guide',
+    description:
+      'Prepare for an ElevenLabs frontend interview with 5 prompts modelled on public reports: audio-transcript sync, dubbing review UI, live fix, timed assessment.',
+    h1: 'ElevenLabs Frontend Interview Questions',
+    kicker: 'Public ElevenLabs prep guide',
+    headings: [
+      'Prepare for product judgment, not ElevenLabs trivia',
+      'What the public pages establish, and what you still need to confirm',
+      'Five ElevenLabs frontend interview practice questions',
+      'Scope the transcript highlight before writing the first line',
+      'A 7-day ElevenLabs frontend interview preparation plan',
+      'Common ElevenLabs frontend interview preparation questions',
+      'Build the underlying skills with free practice',
+      'Sources and evidence limits',
+    ],
+    trustFragment: 'not leaked, confirmed or official ElevenLabs questions',
+    prompts: [
+      { id: 'audio-transcript-sync', title: 'Synchronise audio playback with transcript highlighting' },
+      { id: 'dubbing-review-interface', title: 'Design a review and collaboration interface for a voice-dubbing project' },
+      { id: 'fix-a-practical-react-problem', title: 'Fix a practical React problem live with the interviewer' },
+      { id: 'timed-assessment-react-and-algorithms', title: 'Clear a timed assessment that mixes React tasks with medium algorithms' },
+      { id: 'streaming-audio-and-text-ui', title: 'Stream generated audio and text to the screen without losing control' },
+    ],
+    resources: [
+      '/javascript/coding/js-stream-to-text',
+      '/javascript/coding/js-poll-until',
+      '/javascript/debug/js-debug-async-race',
+      '/javascript/debug/js-debug-stale-closure-autosave',
+      '/react/coding/react-autocomplete-search-starter',
+      '/javascript/trivia/ai-streaming-data-handling',
+      '/system-design/ai-chat-textarea-design',
+    ],
+    reportUrl: 'https://www.aced.io/guides/elevenlabs-software-engineer-interview/questions',
+  },
+  {
+    label: 'Datadog',
+    path: '/companies/datadog/preview',
+    title: 'Datadog Frontend Interview Questions: 5 Prompts + Prep Guide',
+    description:
+      'Prepare for a Datadog frontend interview with 5 practice prompts: sortable real-time tables, Live Tail log architecture, timed sorting and filtering.',
+    h1: 'Datadog Frontend Interview Questions',
+    kicker: 'Public Datadog prep guide',
+    headings: [
+      'Prepare for product judgment, not Datadog trivia',
+      'What the public accounts establish, and what you still need to confirm',
+      'Five Datadog frontend interview practice questions',
+      'Scope the sortable real-time table before writing the first line',
+      'A 7-day Datadog frontend interview preparation plan',
+      'Common Datadog frontend interview preparation questions',
+      'Build the underlying skills with free practice',
+      'Sources and evidence limits',
+    ],
+    trustFragment: 'not leaked, confirmed or official Datadog questions',
+    prompts: [
+      { id: 'sortable-real-time-table', title: 'Build a table of real-time data that sorts by any column' },
+      { id: 'live-tail-logs-architecture', title: 'Design the frontend architecture of a Live Tail log view' },
+      { id: 'ordering-and-filtering-under-time', title: 'Solve an ordering-and-filtering exercise under time' },
+      { id: 'incremental-live-coding-on-tables', title: 'Survive incremental live coding on data and tables' },
+      { id: 'feature-or-major-bug-walkthrough', title: 'Explain how you would build a feature or fix a major bug' },
+    ],
+    resources: [
+      '/javascript/coding/js-update-at-index',
+      '/javascript/coding/js-count-vowels',
+      '/javascript/debug/js-debug-numeric-sort',
+      '/system-design/infinite-scroll-list',
+      '/incidents/search-typing-lag',
+      '/tradeoffs/sse-vs-websocket-live-dashboard',
+      '/guides/system-design-blueprint/performance',
+    ],
+    reportUrl:
+      'https://www.jointaro.com/interviews/companies/datadog/experiences/senior-frontend-developer-valbonne-october-1-2024-accepted-offer-positive-47d59048/',
+  },
+  {
+    label: 'Intuit',
+    path: '/companies/intuit/preview',
+    title: 'Intuit Frontend Interview Questions: 5 Prompts + Prep Guide',
+    description:
+      'Prepare for an Intuit frontend interview with 5 practice prompts: craft demo app build, typeahead in a given codebase, promise retry, LLM streaming story.',
+    h1: 'Intuit Frontend Interview Questions',
+    kicker: 'Public Intuit prep guide',
+    headings: [
+      'Prepare for product judgment, not Intuit trivia',
+      'What the public accounts establish, and what you still need to confirm',
+      'Five Intuit frontend interview practice questions',
+      'Scope the craft demo app before the panel joins',
+      'A 7-day Intuit frontend interview preparation plan',
+      'Common Intuit frontend interview preparation questions',
+      'Build the underlying skills with free practice',
+      'Sources and evidence limits',
+    ],
+    trustFragment: 'not leaked, confirmed or official Intuit questions',
+    prompts: [
+      { id: 'craft-demo-build-and-extend', title: 'Build a small app from a brief, then extend it live in the craft demo' },
+      { id: 'typeahead-in-an-unfamiliar-codebase', title: 'Implement a typeahead in a codebase you received yesterday, then test it' },
+      { id: 'promise-retry-and-race-polyfill', title: 'Implement a promise retry with delay, then a Promise.race polyfill' },
+      { id: 'llm-user-story-with-streaming', title: 'Deliver an LLM user story with streaming output, error handling and tests' },
+      { id: 'javascript-fundamentals-under-questioning', title: 'Answer JavaScript fundamentals under questioning: currying, memoization, output prediction, DOM comparison' },
+    ],
+    resources: [
+      '/javascript/coding/js-promise-any',
+      '/javascript/coding/js-stream-to-text',
+      '/javascript/coding/js-sleep',
+      '/react/coding/react-autocomplete-search-starter',
+      '/javascript/trivia/js-hoisting',
+      '/javascript/trivia/js-xss-dom-sinks',
+      '/react/trivia/react-usememo-vs-usecallback',
+    ],
+    reportUrl:
+      'https://leetcode.com/discuss/post/7320927/',
+  },
+  {
+    label: 'ServiceNow',
+    path: '/companies/servicenow/preview',
+    title: 'ServiceNow Frontend Interview Questions: 5 Prompts + Guide',
+    description:
+      'Prepare for a ServiceNow frontend interview with 5 practice prompts: polyfills with edge cases, closures and output prediction, a tiny virtual DOM, UI design.',
+    h1: 'ServiceNow Frontend Interview Questions',
+    kicker: 'Public ServiceNow prep guide',
+    headings: [
+      'Prepare for product judgment, not ServiceNow trivia',
+      'What the public accounts establish, and what you still need to confirm',
+      'Five ServiceNow frontend interview practice questions',
+      'Scope the map polyfill before writing the first line',
+      'A 7-day ServiceNow frontend interview preparation plan',
+      'Common ServiceNow frontend interview preparation questions',
+      'Build the underlying skills with free practice',
+      'Sources and evidence limits',
+    ],
+    trustFragment: 'not leaked, confirmed or official ServiceNow questions',
+    prompts: [
+      { id: 'polyfills-with-edge-cases', title: 'Write polyfills for built-in methods and defend the edge cases' },
+      { id: 'closures-and-output-prediction', title: 'Predict console output and write loop counters that prove you understand closures' },
+      { id: 'tiny-virtual-dom-renderer', title: 'Implement a tiny virtual DOM renderer' },
+      { id: 'ui-design-and-data-flow', title: 'Design the components and data flow of a UI feature: notification panel, nested comments or autocomplete' },
+      { id: 'fundamentals-over-frameworks', title: 'Explain Map versus Object and other fundamentals without leaning on a framework' },
+    ],
+    resources: [
+      '/javascript/coding/js-array-foreach',
+      '/javascript/coding/js-create-counter',
+      '/javascript/coding/js-implement-bind',
+      '/javascript/trivia/js-map-vs-object',
+      '/javascript/trivia/js-closures',
+      '/javascript/trivia/js-var-hoisting-shadowing-output',
+      '/system-design/notification-toast-system',
+      '/system-design/infinite-scroll-list',
+    ],
+    reportUrl:
+      'https://medium.com/@karunakumari000532/my-servicenow-software-engineer-ui-interview-experience-2025-23f315b960dc',
+  },
 ] as const;
 
 const INFINITE_SCROLL_PATH = '/system-design/infinite-scroll-list';
@@ -1821,7 +2014,8 @@ test.describe('seo-ssr', () => {
       'Signal inside OnPush',
       'Zoneless timer',
       'Read the visualizer trace from the root',
-      'Default vs OnPush: the production decision',
+      'Eager vs OnPush: the production decision',
+      'Angular 22 made OnPush the default',
       'Why OnPush still updates after events and async work',
       'Compact trigger matrix',
       'Zoneless change detection: what changes',
@@ -3120,6 +3314,87 @@ test.describe('seo-ssr', () => {
     await page.waitForTimeout(300);
     expectNoHydrationOrChunkIssues(runtimeIssues, NETFLIX_PREVIEW_PATH);
   });
+
+  for (const guide of AUTHORED_GUIDE_CASES) {
+    test(`raw ${guide.label} company preview exposes the authored guide, sourced prompts, schema and crawlable links`, async ({ request }) => {
+      test.setTimeout(120_000);
+
+      const html = await readRawHtml(request, guide.path);
+      const text = rawVisibleText(html);
+      const caseText = rawVisibleTextPreserveCase(html);
+      const robots = normalizeText(extractRawMeta(html, 'robots')).replace(/\s+/g, '');
+      const schemaNodes = extractRawJsonLdNodes(html);
+      const schemaTypes = extractRawJsonLdTypes(html);
+
+      expect(extractRawTitle(html)).toBe(guide.title);
+      expect(extractRawMeta(html, 'description')).toBe(guide.description);
+      expect(extractRawPropertyMeta(html, 'og:title')).toBe(guide.title);
+      expect(extractRawH1(html)).toBe(guide.h1);
+      expect(extractRawCanonical(html)).toBe(expectedCanonical(guide.path));
+      expect(robots).toBe('index,follow');
+
+      [guide.kicker, ...guide.headings].forEach((expectedText) => {
+        expect(text, `${guide.label} preview includes ${expectedText}`).toContain(normalizeText(expectedText));
+      });
+
+      expect(caseText).toContain(guide.trustFragment);
+      expect(caseText).toContain('Practice version modelled on a reported round');
+      expect(caseText).not.toContain('known questions');
+      expect(caseText).not.toContain('Sample FrontendAtlas practice prompts');
+      expect(caseText).not.toContain('Try free challenge');
+
+      for (const prompt of guide.prompts) {
+        expect(text, `visible prompt ${prompt.title}`).toContain(normalizeText(prompt.title));
+        expect(html, `visible prompt anchor ${prompt.id}`).toMatch(
+          new RegExp(`\\bid=["']${escapeRegExp(prompt.id)}["']`, 'i'),
+        );
+      }
+      for (const resource of guide.resources) {
+        expect(html, `crawlable resource link ${resource}`).toContain(`href="${resource}"`);
+      }
+      expect(html).toMatch(new RegExp(`href="${escapeRegExp(guide.reportUrl)}"[^>]*rel="noopener noreferrer nofollow"`));
+
+      for (const schemaType of ['BreadcrumbList', 'CollectionPage', 'ItemList']) {
+        expect(schemaTypes, `schema type ${schemaType}`).toContain(schemaType);
+      }
+      const itemList = schemaNodes.find((node: any) => node?.['@type'] === 'ItemList') as any;
+      expect(itemList?.numberOfItems).toBe(guide.prompts.length);
+      expect(itemList?.itemListElement?.[0]?.url).toBe(`${expectedCanonical(guide.path)}#${guide.prompts[0].id}`);
+    });
+
+    test(`${guide.label} company preview reflows without horizontal overflow at target widths`, async ({ page }) => {
+      const runtimeIssues = collectClientRuntimeIssues(page);
+      const viewports = [
+        { width: 360, height: 800 },
+        { width: 390, height: 844 },
+        { width: 834, height: 1112 },
+        { width: 1366, height: 900 },
+      ];
+
+      await page.setViewportSize(viewports[0]);
+      await page.goto(guide.path, { waitUntil: 'domcontentloaded' });
+      await expect(page.locator('h1')).toHaveText(guide.h1);
+
+      for (const viewport of viewports) {
+        await page.setViewportSize(viewport);
+        const layout = await page.evaluate(() => {
+          const preview = document.querySelector<HTMLElement>('[data-testid="company-preview-page"]');
+          return {
+            documentOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+            previewOverflow: preview ? preview.scrollWidth - preview.clientWidth : Number.POSITIVE_INFINITY,
+            h1Count: document.querySelectorAll('h1').length,
+          };
+        });
+
+        expect(layout.documentOverflow, `document overflow at ${viewport.width}px`).toBeLessThanOrEqual(1);
+        expect(layout.previewOverflow, `${guide.label} preview overflow at ${viewport.width}px`).toBeLessThanOrEqual(1);
+        expect(layout.h1Count, `single H1 at ${viewport.width}px`).toBe(1);
+      }
+
+      await page.waitForTimeout(300);
+      expectNoHydrationOrChunkIssues(runtimeIssues, guide.path);
+    });
+  }
 
   test('Hydrated HTML renders correct shell + meta (JS enabled)', async ({ page }) => {
     await page.addInitScript(() => {

@@ -1,5 +1,5 @@
 {
-  "definitionHash": "dd2aa9b58688daef987d4682ef3e3917686962e0d39ea1f55b01e3d50c6a6173",
+  "definitionHash": "bd045d1cb9c0c6a5a2d2da1e20937dcde19015ed27878065368daf3ae479e8eb",
   "finalApproval": null,
   "registryId": "interview-system-design-registry-v1",
   "registryVersion": "1.2.0",
@@ -31,7 +31,7 @@
           "clarificationId": "chat-stop-truth"
         }
       ],
-      "contentHash": "b6512f58e2e283efdf0dfabccbb48ded43dcc6d5413f590680379e1d2e51fa9d",
+      "contentHash": "12d488ca94b935c89f08613492cdb92980851cf8315f59eb1605d8582857e4bb",
       "id": "int-sd-ai-chat-composer-mid-v1",
       "provenance": {
         "authoredAt": "2026-07-29",
@@ -73,8 +73,8 @@
           "reviewerType": "ai",
           "status": "passed"
         },
-        "contentHash": "b6512f58e2e283efdf0dfabccbb48ded43dcc6d5413f590680379e1d2e51fa9d",
-        "definitionHash": "dd2aa9b58688daef987d4682ef3e3917686962e0d39ea1f55b01e3d50c6a6173",
+        "contentHash": "12d488ca94b935c89f08613492cdb92980851cf8315f59eb1605d8582857e4bb",
+        "definitionHash": "bd045d1cb9c0c6a5a2d2da1e20937dcde19015ed27878065368daf3ae479e8eb",
         "editorial": {
           "notes": [
             "Checkout guided language matches the resilient checkout static story and links to resilient-checkout-payment-flow without exposing authoring notes.",
@@ -95,7 +95,9 @@
             "Toast, Autocomplete, and Ranked Feed adaptation now grades accepted post-state instead of requiring a performative change from baseline.",
             "Autocomplete requires input and results UI boundaries; Ranked Feed requires view, normalized entities, and page membership plus explicit removed-anchor recovery.",
             "2026-09-26 source-pin maintenance review: the dashboard requirements source only moves the existing Interview opening callout; all block values and the other five source files are unchanged. Guided prompts, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
-            "2026-10-10 source-pin maintenance review: the dashboard source changes only meta.json seo.title and seo.description and one requirements link label and description; the AI chat source changes only meta.json seo.title and seo.description, drops one sentence from the overlapping-responses callout, and adds a two-item Build it links block to requirements. Candidate prompts, clarifications, requirements, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval."
+            "2026-10-10 source-pin maintenance review: the dashboard source changes only meta.json seo.title and seo.description and one requirements link label and description; the AI chat source changes only meta.json seo.title and seo.description, drops one sentence from the overlapping-responses callout, and adds a two-item Build it links block to requirements. Candidate prompts, clarifications, requirements, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval.",
+            "2026-10-14 source-pin maintenance review: the AI chat composer meta.json adds a Waymo company tag, a companyEvidence record and a public source list pointing at one public interview report; all five section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
+            "2026-10-14 source-pin maintenance review: the notification toast meta.json adds a ServiceNow company tag, a companyEvidence record and a public source list pointing at two public interview threads; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval."
           ],
           "reviewer": "codex-system-design-technical-v8",
           "reviewerType": "ai",
@@ -417,11 +419,11 @@
         ]
       },
       "sourceEvidence": {
-        "bundleHash": "0522c064c9a08cd6ab06db7f884cd3bd4f3c5886c21a7430198fddac6d68635d",
+        "bundleHash": "585435667d7a5b673fc30ecac795e50b71a3c9fabc2c88d220502884ecc86d3d",
         "files": [
           {
             "file": "cdn/questions/system-design/ai-chat-textarea-design/meta.json",
-            "sha256": "ab1ff9ad89de9f8245ddb74e42204610b4fd7a2567d67c5705a36a8feb1140f0"
+            "sha256": "1327897531264265df026891c638ed994e2d664f14a68546b9c2b51601c8c9c7"
           },
           {
             "file": "cdn/questions/system-design/ai-chat-textarea-design/requirements.json",
@@ -1517,7 +1519,7 @@
           "status": "passed"
         },
         "contentHash": "f9a76b65da48d48c1b268203f04992af217fd226c4b98c1eb3045f340db8e272",
-        "definitionHash": "dd2aa9b58688daef987d4682ef3e3917686962e0d39ea1f55b01e3d50c6a6173",
+        "definitionHash": "bd045d1cb9c0c6a5a2d2da1e20937dcde19015ed27878065368daf3ae479e8eb",
         "editorial": {
           "notes": [
             "Checkout guided language matches the resilient checkout static story and links to resilient-checkout-payment-flow without exposing authoring notes.",
@@ -1538,7 +1540,9 @@
             "Toast, Autocomplete, and Ranked Feed adaptation now grades accepted post-state instead of requiring a performative change from baseline.",
             "Autocomplete requires input and results UI boundaries; Ranked Feed requires view, normalized entities, and page membership plus explicit removed-anchor recovery.",
             "2026-09-26 source-pin maintenance review: the dashboard requirements source only moves the existing Interview opening callout; all block values and the other five source files are unchanged. Guided prompts, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
-            "2026-10-10 source-pin maintenance review: the dashboard source changes only meta.json seo.title and seo.description and one requirements link label and description; the AI chat source changes only meta.json seo.title and seo.description, drops one sentence from the overlapping-responses callout, and adds a two-item Build it links block to requirements. Candidate prompts, clarifications, requirements, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval."
+            "2026-10-10 source-pin maintenance review: the dashboard source changes only meta.json seo.title and seo.description and one requirements link label and description; the AI chat source changes only meta.json seo.title and seo.description, drops one sentence from the overlapping-responses callout, and adds a two-item Build it links block to requirements. Candidate prompts, clarifications, requirements, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval.",
+            "2026-10-14 source-pin maintenance review: the AI chat composer meta.json adds a Waymo company tag, a companyEvidence record and a public source list pointing at one public interview report; all five section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
+            "2026-10-14 source-pin maintenance review: the notification toast meta.json adds a ServiceNow company tag, a companyEvidence record and a public source list pointing at two public interview threads; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval."
           ],
           "reviewer": "codex-system-design-technical-v8",
           "reviewerType": "ai",
@@ -2670,7 +2674,7 @@
           "status": "passed"
         },
         "contentHash": "e75229a1aca9b1c3ff92b5a6d2d244baa40e2ddafbdff41d107514a58073452e",
-        "definitionHash": "dd2aa9b58688daef987d4682ef3e3917686962e0d39ea1f55b01e3d50c6a6173",
+        "definitionHash": "bd045d1cb9c0c6a5a2d2da1e20937dcde19015ed27878065368daf3ae479e8eb",
         "editorial": {
           "notes": [
             "Checkout guided language matches the resilient checkout static story and links to resilient-checkout-payment-flow without exposing authoring notes.",
@@ -2691,7 +2695,9 @@
             "Toast, Autocomplete, and Ranked Feed adaptation now grades accepted post-state instead of requiring a performative change from baseline.",
             "Autocomplete requires input and results UI boundaries; Ranked Feed requires view, normalized entities, and page membership plus explicit removed-anchor recovery.",
             "2026-09-26 source-pin maintenance review: the dashboard requirements source only moves the existing Interview opening callout; all block values and the other five source files are unchanged. Guided prompts, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
-            "2026-10-10 source-pin maintenance review: the dashboard source changes only meta.json seo.title and seo.description and one requirements link label and description; the AI chat source changes only meta.json seo.title and seo.description, drops one sentence from the overlapping-responses callout, and adds a two-item Build it links block to requirements. Candidate prompts, clarifications, requirements, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval."
+            "2026-10-10 source-pin maintenance review: the dashboard source changes only meta.json seo.title and seo.description and one requirements link label and description; the AI chat source changes only meta.json seo.title and seo.description, drops one sentence from the overlapping-responses callout, and adds a two-item Build it links block to requirements. Candidate prompts, clarifications, requirements, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval.",
+            "2026-10-14 source-pin maintenance review: the AI chat composer meta.json adds a Waymo company tag, a companyEvidence record and a public source list pointing at one public interview report; all five section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
+            "2026-10-14 source-pin maintenance review: the notification toast meta.json adds a ServiceNow company tag, a companyEvidence record and a public source list pointing at two public interview threads; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval."
           ],
           "reviewer": "codex-system-design-technical-v8",
           "reviewerType": "ai",
@@ -4275,7 +4281,7 @@
           "status": "passed"
         },
         "contentHash": "5bd681d66f6274df90633235cba5278bc151694882cf1d041c2b1c873c9b66d8",
-        "definitionHash": "dd2aa9b58688daef987d4682ef3e3917686962e0d39ea1f55b01e3d50c6a6173",
+        "definitionHash": "bd045d1cb9c0c6a5a2d2da1e20937dcde19015ed27878065368daf3ae479e8eb",
         "editorial": {
           "notes": [
             "Checkout guided language matches the resilient checkout static story and links to resilient-checkout-payment-flow without exposing authoring notes.",
@@ -4296,7 +4302,9 @@
             "Toast, Autocomplete, and Ranked Feed adaptation now grades accepted post-state instead of requiring a performative change from baseline.",
             "Autocomplete requires input and results UI boundaries; Ranked Feed requires view, normalized entities, and page membership plus explicit removed-anchor recovery.",
             "2026-09-26 source-pin maintenance review: the dashboard requirements source only moves the existing Interview opening callout; all block values and the other five source files are unchanged. Guided prompts, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
-            "2026-10-10 source-pin maintenance review: the dashboard source changes only meta.json seo.title and seo.description and one requirements link label and description; the AI chat source changes only meta.json seo.title and seo.description, drops one sentence from the overlapping-responses callout, and adds a two-item Build it links block to requirements. Candidate prompts, clarifications, requirements, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval."
+            "2026-10-10 source-pin maintenance review: the dashboard source changes only meta.json seo.title and seo.description and one requirements link label and description; the AI chat source changes only meta.json seo.title and seo.description, drops one sentence from the overlapping-responses callout, and adds a two-item Build it links block to requirements. Candidate prompts, clarifications, requirements, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval.",
+            "2026-10-14 source-pin maintenance review: the AI chat composer meta.json adds a Waymo company tag, a companyEvidence record and a public source list pointing at one public interview report; all five section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
+            "2026-10-14 source-pin maintenance review: the notification toast meta.json adds a ServiceNow company tag, a companyEvidence record and a public source list pointing at two public interview threads; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval."
           ],
           "reviewer": "codex-system-design-technical-v8",
           "reviewerType": "ai",
@@ -5680,7 +5688,7 @@
           "status": "passed"
         },
         "contentHash": "eeb26e0a93d42a9662990f5cc4aef2ce5fc0d8fcf4c1221511db5ff28126aca4",
-        "definitionHash": "dd2aa9b58688daef987d4682ef3e3917686962e0d39ea1f55b01e3d50c6a6173",
+        "definitionHash": "bd045d1cb9c0c6a5a2d2da1e20937dcde19015ed27878065368daf3ae479e8eb",
         "editorial": {
           "notes": [
             "Checkout guided language matches the resilient checkout static story and links to resilient-checkout-payment-flow without exposing authoring notes.",
@@ -5701,7 +5709,9 @@
             "Toast, Autocomplete, and Ranked Feed adaptation now grades accepted post-state instead of requiring a performative change from baseline.",
             "Autocomplete requires input and results UI boundaries; Ranked Feed requires view, normalized entities, and page membership plus explicit removed-anchor recovery.",
             "2026-09-26 source-pin maintenance review: the dashboard requirements source only moves the existing Interview opening callout; all block values and the other five source files are unchanged. Guided prompts, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
-            "2026-10-10 source-pin maintenance review: the dashboard source changes only meta.json seo.title and seo.description and one requirements link label and description; the AI chat source changes only meta.json seo.title and seo.description, drops one sentence from the overlapping-responses callout, and adds a two-item Build it links block to requirements. Candidate prompts, clarifications, requirements, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval."
+            "2026-10-10 source-pin maintenance review: the dashboard source changes only meta.json seo.title and seo.description and one requirements link label and description; the AI chat source changes only meta.json seo.title and seo.description, drops one sentence from the overlapping-responses callout, and adds a two-item Build it links block to requirements. Candidate prompts, clarifications, requirements, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval.",
+            "2026-10-14 source-pin maintenance review: the AI chat composer meta.json adds a Waymo company tag, a companyEvidence record and a public source list pointing at one public interview report; all five section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
+            "2026-10-14 source-pin maintenance review: the notification toast meta.json adds a ServiceNow company tag, a companyEvidence record and a public source list pointing at two public interview threads; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval."
           ],
           "reviewer": "codex-system-design-technical-v8",
           "reviewerType": "ai",
@@ -7454,7 +7464,7 @@
           "status": "passed"
         },
         "contentHash": "051cfb98717b613151e42dc73ecead253abe6edfc92d7883ca41252645a807c8",
-        "definitionHash": "dd2aa9b58688daef987d4682ef3e3917686962e0d39ea1f55b01e3d50c6a6173",
+        "definitionHash": "bd045d1cb9c0c6a5a2d2da1e20937dcde19015ed27878065368daf3ae479e8eb",
         "editorial": {
           "notes": [
             "Checkout guided language matches the resilient checkout static story and links to resilient-checkout-payment-flow without exposing authoring notes.",
@@ -7475,7 +7485,9 @@
             "Toast, Autocomplete, and Ranked Feed adaptation now grades accepted post-state instead of requiring a performative change from baseline.",
             "Autocomplete requires input and results UI boundaries; Ranked Feed requires view, normalized entities, and page membership plus explicit removed-anchor recovery.",
             "2026-09-26 source-pin maintenance review: the dashboard requirements source only moves the existing Interview opening callout; all block values and the other five source files are unchanged. Guided prompts, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
-            "2026-10-10 source-pin maintenance review: the dashboard source changes only meta.json seo.title and seo.description and one requirements link label and description; the AI chat source changes only meta.json seo.title and seo.description, drops one sentence from the overlapping-responses callout, and adds a two-item Build it links block to requirements. Candidate prompts, clarifications, requirements, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval."
+            "2026-10-10 source-pin maintenance review: the dashboard source changes only meta.json seo.title and seo.description and one requirements link label and description; the AI chat source changes only meta.json seo.title and seo.description, drops one sentence from the overlapping-responses callout, and adds a two-item Build it links block to requirements. Candidate prompts, clarifications, requirements, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval.",
+            "2026-10-14 source-pin maintenance review: the AI chat composer meta.json adds a Waymo company tag, a companyEvidence record and a public source list pointing at one public interview report; all five section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
+            "2026-10-14 source-pin maintenance review: the notification toast meta.json adds a ServiceNow company tag, a companyEvidence record and a public source list pointing at two public interview threads; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval."
           ],
           "reviewer": "codex-system-design-technical-v8",
           "reviewerType": "ai",
@@ -9138,7 +9150,7 @@
           "status": "passed"
         },
         "contentHash": "f54fd3cc3c54b89715b99c6b3f9fe620984b0c55594c999ba8bbb83cdfbd46e5",
-        "definitionHash": "dd2aa9b58688daef987d4682ef3e3917686962e0d39ea1f55b01e3d50c6a6173",
+        "definitionHash": "bd045d1cb9c0c6a5a2d2da1e20937dcde19015ed27878065368daf3ae479e8eb",
         "editorial": {
           "notes": [
             "Checkout guided language matches the resilient checkout static story and links to resilient-checkout-payment-flow without exposing authoring notes.",
@@ -9159,7 +9171,9 @@
             "Toast, Autocomplete, and Ranked Feed adaptation now grades accepted post-state instead of requiring a performative change from baseline.",
             "Autocomplete requires input and results UI boundaries; Ranked Feed requires view, normalized entities, and page membership plus explicit removed-anchor recovery.",
             "2026-09-26 source-pin maintenance review: the dashboard requirements source only moves the existing Interview opening callout; all block values and the other five source files are unchanged. Guided prompts, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
-            "2026-10-10 source-pin maintenance review: the dashboard source changes only meta.json seo.title and seo.description and one requirements link label and description; the AI chat source changes only meta.json seo.title and seo.description, drops one sentence from the overlapping-responses callout, and adds a two-item Build it links block to requirements. Candidate prompts, clarifications, requirements, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval."
+            "2026-10-10 source-pin maintenance review: the dashboard source changes only meta.json seo.title and seo.description and one requirements link label and description; the AI chat source changes only meta.json seo.title and seo.description, drops one sentence from the overlapping-responses callout, and adds a two-item Build it links block to requirements. Candidate prompts, clarifications, requirements, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval.",
+            "2026-10-14 source-pin maintenance review: the AI chat composer meta.json adds a Waymo company tag, a companyEvidence record and a public source list pointing at one public interview report; all five section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
+            "2026-10-14 source-pin maintenance review: the notification toast meta.json adds a ServiceNow company tag, a companyEvidence record and a public source list pointing at two public interview threads; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval."
           ],
           "reviewer": "codex-system-design-technical-v8",
           "reviewerType": "ai",
@@ -10257,7 +10271,7 @@
           "clarificationId": "toast-navigation"
         }
       ],
-      "contentHash": "0a691d04fd291d4973821fe1de752c7b6f78bb029e3aaef8b4d07ec674e9863b",
+      "contentHash": "aed895aea6c83b3b96723ad90795496f25df3bd55e6edb24a23a0c7591f4dc96",
       "id": "int-sd-toast-lifecycle-jr-v1",
       "provenance": {
         "authoredAt": "2026-07-29",
@@ -10292,8 +10306,8 @@
           "reviewerType": "ai",
           "status": "passed"
         },
-        "contentHash": "0a691d04fd291d4973821fe1de752c7b6f78bb029e3aaef8b4d07ec674e9863b",
-        "definitionHash": "dd2aa9b58688daef987d4682ef3e3917686962e0d39ea1f55b01e3d50c6a6173",
+        "contentHash": "aed895aea6c83b3b96723ad90795496f25df3bd55e6edb24a23a0c7591f4dc96",
+        "definitionHash": "bd045d1cb9c0c6a5a2d2da1e20937dcde19015ed27878065368daf3ae479e8eb",
         "editorial": {
           "notes": [
             "Checkout guided language matches the resilient checkout static story and links to resilient-checkout-payment-flow without exposing authoring notes.",
@@ -10314,7 +10328,9 @@
             "Toast, Autocomplete, and Ranked Feed adaptation now grades accepted post-state instead of requiring a performative change from baseline.",
             "Autocomplete requires input and results UI boundaries; Ranked Feed requires view, normalized entities, and page membership plus explicit removed-anchor recovery.",
             "2026-09-26 source-pin maintenance review: the dashboard requirements source only moves the existing Interview opening callout; all block values and the other five source files are unchanged. Guided prompts, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
-            "2026-10-10 source-pin maintenance review: the dashboard source changes only meta.json seo.title and seo.description and one requirements link label and description; the AI chat source changes only meta.json seo.title and seo.description, drops one sentence from the overlapping-responses callout, and adds a two-item Build it links block to requirements. Candidate prompts, clarifications, requirements, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval."
+            "2026-10-10 source-pin maintenance review: the dashboard source changes only meta.json seo.title and seo.description and one requirements link label and description; the AI chat source changes only meta.json seo.title and seo.description, drops one sentence from the overlapping-responses callout, and adds a two-item Build it links block to requirements. Candidate prompts, clarifications, requirements, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval.",
+            "2026-10-14 source-pin maintenance review: the AI chat composer meta.json adds a Waymo company tag, a companyEvidence record and a public source list pointing at one public interview report; all five section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
+            "2026-10-14 source-pin maintenance review: the notification toast meta.json adds a ServiceNow company tag, a companyEvidence record and a public source list pointing at two public interview threads; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval."
           ],
           "reviewer": "codex-system-design-technical-v8",
           "reviewerType": "ai",
@@ -10607,11 +10623,11 @@
         ]
       },
       "sourceEvidence": {
-        "bundleHash": "47e97c5f1ffbb840f4bf81b21d9c0fcebfdff6b2ea05a5985a7a526eaccde986",
+        "bundleHash": "e6c034a086fb49a28545adbc5ca5c798e12724b17dd795264a57d95fb57340d2",
         "files": [
           {
             "file": "cdn/questions/system-design/notification-toast-system/meta.json",
-            "sha256": "0cf10848db4634728620579ac98a5a29e5a39321ed8db573c4dd297aa71f3901"
+            "sha256": "0dc67fe931f460d41162f3e6e712981c58066557055c8a3cd3dd9590b1898e52"
           },
           {
             "file": "cdn/questions/system-design/notification-toast-system/requirements.json",

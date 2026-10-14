@@ -52,5 +52,157 @@
                 ]
             }
         ]
+    },
+    {
+        "id": "ng-debug-fleet-status-bug-reports",
+        "title": "Fix a fleet status board from three user bug reports",
+        "difficulty": "intermediate",
+        "importance": 4,
+        "updatedAt": "2026-10-14",
+        "tags": [
+            "debugging",
+            "components",
+            "state",
+            "event-binding"
+        ],
+        "description": {
+            "text": "Three user reports arrived for the fleet status board. Report 1: \"After I pick Offline and then Online, the list goes empty even though two vehicles are online.\" Report 2: \"When I choose Maintenance and go back to All, the empty-state message stays on screen above the full list.\" Report 3: \"Retry sync counts two refreshes for one click.\" Reproduce each report from the template and component, find the root cause, and fix all three. Keep the existing test ids, the four filter buttons and the refresh counter text."
+        },
+        "sdk": {
+            "asset": "assets/sb/angular/debug/fleet-status-reports.json",
+            "openFile": "src/app/app.component.ts"
+        },
+        "solutionAsset": "assets/sb/angular/solution/ng-debug-fleet-status-bug-reports.solution.json",
+        "solutionBlock": {
+            "overview": "Report 1 is a derived-state bug: applyFilter() filters the already-filtered array instead of the full vehicles array, so every status change narrows the previous result until nothing is left. Derive filtered from vehicles every time. Report 2 is a one-way flag: showEmpty is set to true when a filter has no matches but never set back, so assign it from the filtered length on every run instead of only inside an if. Report 3 is a double handler: the Retry button is a submit button inside a form that also listens for submit, so one click runs retry() twice. Keep one handler, a type=\"button\" with (click), and drop the form."
+        },
+        "frameworkTests": [
+            {
+                "id": "filter-recomputes-from-full-list",
+                "name": "Switching from Offline to Online shows the two online vehicles",
+                "steps": [
+                    {
+                        "type": "expectCount",
+                        "selector": "[data-testid=\"vehicle-row\"]",
+                        "count": 3
+                    },
+                    {
+                        "type": "click",
+                        "selector": "[data-testid=\"filter-offline\"]"
+                    },
+                    {
+                        "type": "waitForCount",
+                        "selector": "[data-testid=\"vehicle-row\"]",
+                        "count": 1
+                    },
+                    {
+                        "type": "waitForText",
+                        "selector": "[data-testid=\"vehicle-row\"]",
+                        "text": "WM-117",
+                        "match": "contains"
+                    },
+                    {
+                        "type": "click",
+                        "selector": "[data-testid=\"filter-online\"]"
+                    },
+                    {
+                        "type": "waitForCount",
+                        "selector": "[data-testid=\"vehicle-row\"]",
+                        "count": 2
+                    },
+                    {
+                        "type": "waitForText",
+                        "selector": "[data-testid=\"vehicle-row\"]",
+                        "text": "WM-104",
+                        "match": "contains"
+                    }
+                ]
+            },
+            {
+                "id": "empty-state-clears",
+                "name": "The empty state disappears when a filter with results is chosen again",
+                "steps": [
+                    {
+                        "type": "click",
+                        "selector": "[data-testid=\"filter-maintenance\"]"
+                    },
+                    {
+                        "type": "waitForCount",
+                        "selector": "[data-testid=\"empty-state\"]",
+                        "count": 1
+                    },
+                    {
+                        "type": "expectCount",
+                        "selector": "[data-testid=\"vehicle-row\"]",
+                        "count": 0
+                    },
+                    {
+                        "type": "click",
+                        "selector": "[data-testid=\"filter-all\"]"
+                    },
+                    {
+                        "type": "waitForCount",
+                        "selector": "[data-testid=\"vehicle-row\"]",
+                        "count": 3
+                    },
+                    {
+                        "type": "expectCount",
+                        "selector": "[data-testid=\"empty-state\"]",
+                        "count": 0
+                    }
+                ]
+            },
+            {
+                "id": "retry-counts-once",
+                "name": "One Retry click counts exactly one refresh",
+                "steps": [
+                    {
+                        "type": "expectText",
+                        "selector": "[data-testid=\"refresh-count\"]",
+                        "text": "Refreshed 0 times"
+                    },
+                    {
+                        "type": "click",
+                        "selector": "[data-testid=\"retry\"]"
+                    },
+                    {
+                        "type": "waitForText",
+                        "selector": "[data-testid=\"refresh-count\"]",
+                        "text": "Refreshed 1 time"
+                    },
+                    {
+                        "type": "click",
+                        "selector": "[data-testid=\"retry\"]"
+                    },
+                    {
+                        "type": "waitForText",
+                        "selector": "[data-testid=\"refresh-count\"]",
+                        "text": "Refreshed 2 times"
+                    }
+                ]
+            }
+        ],
+        "access": "premium",
+        "premiumPreview": {
+            "summary": "Three user bug reports against one small Angular screen: a filter that narrows the wrong list, an empty state that never clears, and a button that fires twice.",
+            "learningOutcomes": [
+                "Reproduce a bug from a user report before touching code.",
+                "Derive filtered state from the source list instead of from a previous result.",
+                "Spot duplicate event handlers created by form submit and click bindings."
+            ],
+            "unlockDescription": "Premium unlocks the runnable Angular workspace, the three behavioral checks, the fixed solution and the root-cause walkthrough."
+        },
+        "companies": [
+            "waymo"
+        ],
+        "sources": [
+            {
+                "label": "PracHub: Waymo senior frontend engineer interview experience, May 2026",
+                "url": "https://prachub.com/interview-experiences/waymo-senior-frontend-engineer-interview-experience-rejected-30-minutes-after-pushing-on-the-process",
+                "publisher": "PracHub",
+                "date": "2026-05",
+                "note": "One self-reported senior loop. It establishes that an onsite round handed the candidate an Angular app plus user bug reports to fix; the three bugs here are practice versions, not the reported ones."
+            }
+        ]
     }
 ]

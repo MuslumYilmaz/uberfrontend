@@ -1,4 +1,5 @@
 import { seoContentDateModified } from '../../../core/utils/seo-content-date.util';
+import { SEO_CONTENT_DATES } from '../../../generated/seo-content-dates';
 import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { PLATFORM_ID, signal } from '@angular/core';
@@ -2683,11 +2684,16 @@ describe('CodingDetailComponent', () => {
     const component = fixture.componentInstance;
     component.tech = 'javascript';
     component.kind = 'coding';
-    const question = { ...makeDeferredPromiseQuestion(), updatedAt: '2025-03-15' };
+    // Any JavaScript coding route with a published sitemap date: the fixture's own route is pending
+    // until its latest content change is committed, so the assertion must not depend on it.
+    const datedRoute = Object.keys(SEO_CONTENT_DATES).find((route) => /^\/javascript\/coding\/[a-z0-9-]+$/.test(route));
+    expect(datedRoute).toBeTruthy();
+    const question = { ...makeDeferredPromiseQuestion(), id: datedRoute!.split('/').pop()!, updatedAt: '2025-03-15' };
 
     (component as any).updateSeoForQuestion(question);
     const payload = seo.updateTags.calls.mostRecent().args[0] as any;
     const article = payload.jsonLd.find((entry: any) => entry['@type'] === 'TechArticle');
+    expect(article.url).toBe(`https://frontendatlas.com${datedRoute}`);
     const contentDate = seoContentDateModified(article.url);
     expect(contentDate).toBeTruthy();
     expect(article.dateModified).toBe(contentDate);
@@ -3157,6 +3163,79 @@ describe('CodingDetailComponent', () => {
     expect(starterCssText).toContain('--panel-shadow');
     expect(starterCssText).toContain('box-shadow: var(--panel-shadow)');
     expect(starterCssText).not.toContain('box-shadow: 0 1px 2px rgba');
+  });
+
+  describe('question sources', () => {
+    const sources = [{
+      label: 'PracHub: Waymo senior frontend interview experience, May 2026',
+      url: 'https://prachub.com/interview-experiences/waymo-senior-frontend-engineer',
+      publisher: 'PracHub',
+      date: '2026-05',
+      note: 'One self-reported senior loop.',
+    }];
+
+    const render = async (question: any) => {
+      const fixture = TestBed.createComponent(CodingDetailComponent);
+      const component = fixture.componentInstance;
+      component.questionId = question.id;
+      component.questionTech = 'javascript';
+      questionService.loadQuestions.and.returnValue(of([question] as any));
+      spyOn(component as any, 'resolveSolutionAsset').and.resolveTo({ files: {}, initialPath: '' });
+      fixture.detectChanges();
+      await fixture.whenStable();
+      fixture.detectChanges();
+      return { host: fixture.nativeElement as HTMLElement, component };
+    };
+
+    it('lists public interview reports under the description and cites them in the TechArticle schema', async () => {
+      const { host } = await render({ ...makeDeferredPromiseQuestion(), sources });
+      const panel = host.querySelector('[data-testid="coding-description-panel"]') as HTMLElement;
+      const block = host.querySelector('[data-testid="question-sources"]') as HTMLElement;
+      expect(block).not.toBeNull();
+      expect(panel.contains(block)).toBeTrue();
+      expect(block.textContent).toContain('Public interview reports');
+      expect(block.textContent).toContain('PracHub, May 2026');
+      expect(block.textContent).toContain('One self-reported senior loop.');
+      const link = block.querySelector('a') as HTMLAnchorElement;
+      expect(link.getAttribute('href')).toBe(sources[0].url);
+      expect(link.getAttribute('target')).toBe('_blank');
+      expect(link.getAttribute('rel')).toBe('noopener noreferrer nofollow');
+      expect(host.querySelector('[data-testid="question-sources-compact"]')).toBeNull();
+
+      const payload = seo.updateTags.calls.mostRecent().args[0] as any;
+      const article = payload.jsonLd.find((entry: any) => entry['@type'] === 'TechArticle');
+      expect(article.citation).toEqual([jasmine.objectContaining({
+        '@type': 'CreativeWork',
+        name: sources[0].label,
+        url: sources[0].url,
+        datePublished: '2026-05',
+      })]);
+    });
+
+    it('renders no sources block and no citation when a question has none', async () => {
+      const { host } = await render(makeDeferredPromiseQuestion());
+      expect(host.querySelector('[data-testid="question-sources"]')).toBeNull();
+      expect(host.querySelector('[data-testid="question-sources-compact"]')).toBeNull();
+      const payload = seo.updateTags.calls.mostRecent().args[0] as any;
+      const article = payload.jsonLd.find((entry: any) => entry['@type'] === 'TechArticle');
+      expect(article.citation).toBeUndefined();
+    });
+
+    it('shows a compact sources line on the locked premium view instead of the full block', async () => {
+      const { host, component } = await render({
+        ...makeDeferredPromiseQuestion(),
+        id: 'js-locked-with-sources',
+        access: 'premium',
+        sources,
+      });
+      expect(component.locked()).toBeTrue();
+      const compact = host.querySelector('[data-testid="question-sources-compact"]') as HTMLElement;
+      expect(compact).not.toBeNull();
+      expect(compact.textContent).toContain('PracHub (May 2026)');
+      expect(compact.querySelector('a')?.getAttribute('rel')).toBe('noopener noreferrer nofollow');
+      expect(host.querySelector('[data-testid="question-sources"]')).toBeNull();
+      expect(host.textContent).not.toContain('One self-reported senior loop.');
+    });
   });
 });
 

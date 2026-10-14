@@ -7,10 +7,11 @@ import { cdnPracticeRegistryPath, cdnQuestionsDir, frontendRoot } from './conten
 import { buildFrameworkFamilyByIdMap, collectCompanyCounts } from './gen-showcase-stats.mjs';
 import { shouldIncludeRegistryDetailInSitemap } from './registry-detail-access-policy.mjs';
 import { createRobotsPolicy } from './internal-link-robots.mjs';
+import { AUTHORED_COMPANY_SET } from './authored-companies.mjs';
 
 const TECHS = ['javascript', 'angular', 'react', 'vue', 'html', 'css'];
 const QUESTION_ROUTE = /^\/(javascript|angular|react|vue|html|css)\/(coding|trivia|debug)\/[^/]+$/;
-const AUTHORED_COMPANIES = new Set(['google', 'openai', 'netflix']);
+const AUTHORED_COMPANIES = AUTHORED_COMPANY_SET;
 export const CRITICAL_HUBS = [
   '/interview-questions', '/interview-questions/essential', '/machine-coding', '/coding',
   '/system-design', '/guides/system-design-blueprint', '/tracks', '/companies',

@@ -170,6 +170,18 @@
         },
         "starterCode": "const cache = new Map();\nconst inflight = new Map();\n\nexport default async function fetchWithCache(key, fetcher){\n  if(cache.has(key)) return cache.get(key);\n  const p = fetcher().then(res => { cache.set(key, res); inflight.delete(key); return res; });\n  inflight.set(key, p);\n  return p;\n}\n",
         "tests": "import fetchWithCache from './js-debug-async-race';\n\ndescribe('fetchWithCache', () => {\n  test('shares one in-flight request for concurrent callers', async () => {\n    let calls = 0;\n    const fetcher = async () => {\n      calls++;\n      await new Promise(r => setTimeout(r, 20));\n      return 'OK';\n    };\n\n    const [a, b, c] = await Promise.all([\n      fetchWithCache('k', fetcher),\n      fetchWithCache('k', fetcher),\n      fetchWithCache('k', fetcher)\n    ]);\n\n    expect(a).toBe('OK');\n    expect(b).toBe('OK');\n    expect(c).toBe('OK');\n    expect(calls).toBe(1);\n  });\n\n  test('uses the cached value on later calls after success', async () => {\n    let calls = 0;\n    const fetcher = async () => {\n      calls++;\n      return 'VAL';\n    };\n\n    await fetchWithCache('x', fetcher);\n    const v2 = await fetchWithCache('x', fetcher);\n\n    expect(v2).toBe('VAL');\n    expect(calls).toBe(1);\n  });\n\n  test('cleans up failed in-flight requests so the next call can retry', async () => {\n    let calls = 0;\n    const fetcher = async () => {\n      calls++;\n      if (calls === 1) throw new Error('boom');\n      return 'RECOVERED';\n    };\n\n    await expect(fetchWithCache('retry-key', fetcher)).rejects.toThrow('boom');\n    await expect(fetchWithCache('retry-key', fetcher)).resolves.toBe('RECOVERED');\n    expect(calls).toBe(2);\n  });\n});\n",
-        "solution": "const cache = new Map();\nconst inflight = new Map();\n\nexport default async function fetchWithCache(key, fetcher){\n  if(cache.has(key)) return cache.get(key);\n  if(inflight.has(key)) return inflight.get(key);\n\n  const p = Promise.resolve()\n    .then(() => fetcher())\n    .then(res => {\n      cache.set(key, res);\n      return res;\n    })\n    .finally(() => {\n      inflight.delete(key);\n    });\n\n  inflight.set(key, p);\n  return p;\n}\n"
+        "solution": "const cache = new Map();\nconst inflight = new Map();\n\nexport default async function fetchWithCache(key, fetcher){\n  if(cache.has(key)) return cache.get(key);\n  if(inflight.has(key)) return inflight.get(key);\n\n  const p = Promise.resolve()\n    .then(() => fetcher())\n    .then(res => {\n      cache.set(key, res);\n      return res;\n    })\n    .finally(() => {\n      inflight.delete(key);\n    });\n\n  inflight.set(key, p);\n  return p;\n}\n",
+        "companies": [
+            "elevenlabs"
+        ],
+        "sources": [
+            {
+                "label": "Aced: ElevenLabs senior full-stack (frontend-leaning) interview experience, 2026",
+                "url": "https://www.aced.io/experiences/eleven-labs-senior-frontend-engineer-interview-925c04",
+                "publisher": "Aced",
+                "date": "2026-08",
+                "note": "One senior account describes a live round spent fixing a practical problem together with the interviewer. This async-race fix is a practice version of that round shape, not the reported problem."
+            }
+        ]
     }
 ]

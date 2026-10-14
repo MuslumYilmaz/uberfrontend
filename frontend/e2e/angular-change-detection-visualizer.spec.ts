@@ -96,7 +96,7 @@ test.describe('Angular change detection visualizer lab', () => {
 
     await expect(page.getByRole('heading', {
       level: 2,
-      name: 'Simulate Angular change detection: Default vs OnPush vs zoneless',
+      name: 'Simulate Angular change detection: Eager vs OnPush vs zoneless',
     })).toBeVisible();
     await expect(page.getByTestId('cd-tree').locator('> li')).toHaveCount(7);
     await expect(page.locator('[data-testid^="cd-trigger-"]')).toHaveCount(10);
@@ -171,7 +171,7 @@ test.describe('Angular change detection visualizer lab', () => {
     await slot.scrollIntoViewIfNeeded();
     await expect(page.getByTestId('angular-change-detection-visualizer')).toBeVisible();
 
-    await expect(page.getByTestId('cd-scenario-card')).toContainText('Default everywhere, but zoneless skips the timer');
+    await expect(page.getByTestId('cd-scenario-card')).toContainText('Eager everywhere, but zoneless skips the timer');
     await expect(page.locator('input[name="cd-mode"][value="zoneless"]')).toBeChecked();
     await expect(page.locator('#cd-scenario-zoneless-timer')).toHaveCount(1);
   });

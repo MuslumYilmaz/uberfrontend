@@ -1,10 +1,11 @@
 import { normalizeRoutePath } from './registry-detail-access-policy.mjs';
+import { AUTHORED_COMPANIES } from './authored-companies.mjs';
 
 // These route families already publish a dated main content schema. Requiring
 // the field here prevents silently dropping dates from both code and tests.
 const DATED_DETAIL = /^\/(?:[^/]+\/(?:coding|debug|trivia)\/[^/]+|(?:system-design|incidents|tradeoffs)\/[^/]+|guides\/(?:interview-blueprint|framework-prep|system-design-blueprint|behavioral)\/[^/]+)$/;
 const DATED_LANDINGS = new Set(['/interview-questions/essential', ...['javascript', 'react', 'angular', 'vue', 'html', 'css', 'html-css']
-  .map((tech) => `/${tech}/interview-questions`), ...['google', 'openai', 'netflix'].map((slug) => `/companies/${slug}/preview`)]);
+  .map((tech) => `/${tech}/interview-questions`), ...AUTHORED_COMPANIES.map((slug) => `/companies/${slug}/preview`)]);
 
 export function auditContentDateParity(pages, sitemapDates) {
   const failures = [];

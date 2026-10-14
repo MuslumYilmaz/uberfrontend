@@ -20,6 +20,34 @@ export const COMPANY_BRANDS: Record<string, CompanyBrand> = {
     logoUrl: `${COMPANY_LOGO_BASE}/google.svg`,
     monogram: 'G',
   },
+  waymo: {
+    slug: 'waymo',
+    label: 'Waymo',
+    monogram: 'W',
+  },
+  elevenlabs: {
+    slug: 'elevenlabs',
+    label: 'ElevenLabs',
+    logoUrl: `${COMPANY_LOGO_BASE}/elevenlabs.svg`,
+    monogram: 'E',
+  },
+  datadog: {
+    slug: 'datadog',
+    label: 'Datadog',
+    logoUrl: `${COMPANY_LOGO_BASE}/datadog.svg`,
+    monogram: 'D',
+  },
+  intuit: {
+    slug: 'intuit',
+    label: 'Intuit',
+    logoUrl: `${COMPANY_LOGO_BASE}/intuit.svg`,
+    monogram: 'I',
+  },
+  servicenow: {
+    slug: 'servicenow',
+    label: 'ServiceNow',
+    monogram: 'S',
+  },
   amazon: {
     slug: 'amazon',
     label: 'Amazon',

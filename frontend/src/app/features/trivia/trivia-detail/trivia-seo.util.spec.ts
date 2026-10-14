@@ -460,20 +460,20 @@ describe('trivia-seo.util', () => {
       title: 'What are change detection strategies in Angular, and how do they work?',
       technology: 'angular',
       seo: {
-        title: 'Angular Change Detection Visualizer: Default vs OnPush',
-        h1: 'Angular Change Detection Strategies: Visualize Default vs OnPush',
+        title: 'Angular Change Detection Visualizer: Eager vs OnPush',
+        h1: 'Angular Change Detection Strategies: Visualize Eager vs OnPush',
         description:
-          'Default checks every component each pass. OnPush checks only after a new input reference, an event, an async pipe, a signal, or markForCheck().',
+          'Eager, formerly Default, checks on every pass. OnPush, the Angular 22 default, checks after a new input, event, async pipe, signal, or markForCheck().',
       },
     } as any;
 
     const title = seoTitleForQuestion(question);
     const description = seoDescriptionForQuestion(question, 'fallback description', 'angular');
 
-    expect(title).toBe('Angular Change Detection Visualizer: Default vs OnPush');
+    expect(title).toBe('Angular Change Detection Visualizer: Eager vs OnPush');
     expect(title.length).toBeLessThanOrEqual(60);
     expect(description).toBe(
-      'Default checks every component each pass. OnPush checks only after a new input reference, an event, an async pipe, a signal, or markForCheck().'
+      'Eager, formerly Default, checks on every pass. OnPush, the Angular 22 default, checks after a new input, event, async pipe, signal, or markForCheck().'
     );
     expect(description.length).toBeLessThanOrEqual(155);
   });

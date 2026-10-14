@@ -47,8 +47,11 @@ import { CodeStorageService } from '../../../core/services/code-storage.service'
 import { QuestionService } from '../../../core/services/question.service';
 import { MonacoEditorComponent } from '../../../monaco-editor.component';
 import { FooterComponent } from '../../../shared/components/footer/footer.component';
+import { GithubStarCtaComponent } from '../../../shared/components/github-star-cta/github-star-cta.component';
 import { publicQuestionHref } from '../../../core/utils/public-question-link.util';
 import { LockedPreviewComponent } from '../../../shared/components/locked-preview/locked-preview.component';
+import { QuestionSourcesComponent } from '../../../shared/components/question-sources/question-sources.component';
+import { buildQuestionSourceCitations, normalizeQuestionSources } from '../../../core/utils/question-sources.util';
 import { ConsoleEntry, ConsoleLoggerComponent, TestResult } from '../console-logger/console-logger.component';
 
 import type { Tech } from '../../../core/models/user.model';
@@ -161,9 +164,10 @@ const SEO_DESCRIPTION_MAX_LEN = 240;
     selector: 'app-coding-detail',
     imports: [
         CommonModule, RouterModule,
-        MonacoEditorComponent, ConsoleLoggerComponent, FooterComponent,
+        MonacoEditorComponent, ConsoleLoggerComponent, FooterComponent, GithubStarCtaComponent,
         CodingJsPanelComponent, CodingWebPanelComponent, CodingFrameworkPanelComponent,
         LockedPreviewComponent,
+        QuestionSourcesComponent,
         LoginRequiredDialogComponent,
         FaButtonComponent,
         FaDialogComponent,
@@ -193,6 +197,8 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   tech!: Tech;
   kind: Kind = 'coding';
   question = signal<Question | null>(null);
+  /** Public interview reports behind this practice question (empty for most of the catalog). */
+  sources = computed(() => normalizeQuestionSources(this.question()?.sources));
   questionHeading = computed(() => {
     const q = this.question();
     return String(q?.seo?.h1 || q?.title || '').trim();
@@ -1451,6 +1457,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       ],
     };
 
+    const citation = buildQuestionSourceCitations(q.sources);
     const article = {
       '@type': 'TechArticle',
       '@id': canonical,
@@ -1491,6 +1498,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       isAccessibleForFree: accessibleForFree,
       keywords: keywords.join(', '),
       ...(dateModified ? { dateModified } : {}),
+      ...(citation.length ? { citation } : {}),
     };
 
     const howTo = accessibleForFree ? this.buildHowToSchema(q, canonical) : null;

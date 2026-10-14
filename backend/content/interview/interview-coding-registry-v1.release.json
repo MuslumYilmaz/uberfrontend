@@ -2,27 +2,28 @@
   "artifacts": {
     "private": {
       "file": "interview-coding-registry-v1.private.json",
-      "sha256": "61e187fe3973b40fdb4efd6a051af18747adfce770d7528c4978e6bc4d8f5ad8"
+      "sha256": "346de76ccd51545ef1844904c6cc61aa643d8bd7b778252f9a89ce68243d238b"
     },
     "public": {
       "file": "interview-coding-registry-v1.public.json",
-      "sha256": "21a56ab71298384ab1bc8444c1a5edb1b8320941c024c5ba39b42545a81abd6e"
+      "sha256": "2b9c7ede74f9e56284493ccde4206fd5b8541327bf4e357c62214ef7496d95fe"
     }
   },
-  "contentHash": "d84c6c6f733ae9aff4b4f516656bc93a10643f570ea85034d5cf1e924e35dae8",
-  "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+  "contentHash": "9176a4496e56b02b83b4f634a8e1bede3da648c8d792823623c5215ddd5b15e3",
+  "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
   "enabledVariantCount": 60,
   "finalApproval": {
     "approvedAt": "2026-08-24",
     "approvedBy": "project-owner",
     "notes": [
-      "Project owner approved coding registry v1.1.0 for editorial-gold production use after the release-readiness audit."
+      "Project owner approved coding registry v1.1.0 for editorial-gold production use after the release-readiness audit.",
+      "2026-10-14 source-pin maintenance: registryContentHash refreshed after the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments source questions gained company tags and public source lists. Public variant content is unchanged apart from contentHash; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release."
     ],
-    "registryContentHash": "d84c6c6f733ae9aff4b4f516656bc93a10643f570ea85034d5cf1e924e35dae8",
+    "registryContentHash": "9176a4496e56b02b83b4f634a8e1bede3da648c8d792823623c5215ddd5b15e3",
     "registryVersion": "1.1.0",
     "selectionDefinitionHash": "95ae46b01019649017306384cd4928315a33ccb8d77c50f48306b2ecb5bc4c3e"
   },
-  "registryContentHash": "d84c6c6f733ae9aff4b4f516656bc93a10643f570ea85034d5cf1e924e35dae8",
+  "registryContentHash": "9176a4496e56b02b83b4f634a8e1bede3da648c8d792823623c5215ddd5b15e3",
   "registryId": "frontend-interview-coding-registry-v1",
   "registryVersion": "1.1.0",
   "schemaVersion": "1.0.0",
@@ -103,7 +104,7 @@
       "revision": 1
     },
     {
-      "contentHash": "cb69a6983eff1132fe1e5743a241de9538fe399804c3a0b6171a004599959c3e",
+      "contentHash": "cb6dc081f09de41b70192a0aaae75bcefaf736ac24719b12f69235ee90934c6b",
       "enabled": true,
       "id": "int-code-angular-senior-debounced-search-v1",
       "revision": 1
@@ -151,7 +152,7 @@
       "revision": 1
     },
     {
-      "contentHash": "4c8da20455c17d829fb5cc625051a7688856ffd593faff3d511b0f3f95a2f12a",
+      "contentHash": "8fe9a1b00e4c07cf8fb38e4604b63ac87784b495e3d6aca39a89aa0ddd6e8a3f",
       "enabled": true,
       "id": "int-code-core-web-mid-debounce-v1",
       "revision": 1
@@ -163,7 +164,7 @@
       "revision": 1
     },
     {
-      "contentHash": "df93f85ae99b2c7234c596f509b013146679c2a26d27b4a68660c9be531d4534",
+      "contentHash": "cb702533ffe4fb71021750122df6d4b146fa47790f73c0239a9164c07b9159c7",
       "enabled": true,
       "id": "int-code-core-web-mid-fetch-timeout-v1",
       "revision": 1
@@ -289,7 +290,7 @@
       "revision": 1
     },
     {
-      "contentHash": "c8daed7f741b6cab403f453151892a7e9d1c3494066b97d478c851039ad27777",
+      "contentHash": "5d00058e6caa4952ce1222a9fed1390579b23c33fa48dd0c30407d9490ee86ba",
       "enabled": true,
       "id": "int-code-react-senior-nested-comments-v1",
       "revision": 1

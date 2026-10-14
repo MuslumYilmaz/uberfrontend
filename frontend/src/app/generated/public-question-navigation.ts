@@ -778,6 +778,12 @@ export const PUBLIC_QUESTION_NAVIGATION: readonly PublicQuestionNavigationItem[]
   {
     "tech": "javascript",
     "kind": "coding",
+    "title": "Filter a Tree by Substring and Render It Indented",
+    "route": "/javascript/coding/js-filter-tree-render-indented"
+  },
+  {
+    "tech": "javascript",
+    "kind": "coding",
     "title": "Flatten One Level",
     "route": "/javascript/coding/js-flatten-once"
   },

@@ -290,7 +290,8 @@
                             <p class="cd-visualizer-shell__eyebrow">Interactive Angular change detection lab</p>
                             <h2>Trace which components Angular checks after each trigger</h2>
                             <p class="cd-visualizer-shell__copy">
-                                Default views are checked on every pass that reaches them. OnPush views are checked
+                                Eager views, called Default before Angular 22, are checked on every pass that reaches
+                                them. OnPush views, the Angular 22 default, are checked
                                 only after a new input reference, an event in their subtree, an async pipe emission,
                                 a signal they read, or markForCheck(). Without Zone.js, only those notifications
                                 schedule a pass at all. The lab replays five production bugs on a seven-component
@@ -329,7 +330,7 @@
                         <strong>The interactive simulator could not load.</strong>
                         <span>The full answer remains available below.</span>
                         <a [routerLink]="['/angular', 'trivia', 'angular-onpush-change-detection-debugging-real-bug']">
-                            Debug the OnPush production bug
+                            Debug OnPush after the v22 upgrade
                         </a>
                     </div>
                 }
@@ -973,6 +974,8 @@
                     </div>
                 </div>
             </section>
+
+            <app-github-star-cta data-testid="trivia-github-cta"></app-github-star-cta>
 
             </ng-container>
         </div>

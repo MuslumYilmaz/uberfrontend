@@ -156,6 +156,15 @@ export type QuestionFaqItem = {
   answer: string;
 };
 
+/** A public interview report or reference that informed a practice question. */
+export type QuestionSource = {
+  label: string;
+  url: string;        // https only
+  publisher: string;  // e.g. "PracHub", "Glassdoor"
+  date: string;       // YYYY-MM or YYYY-MM-DD
+  note?: string;      // what the source can and cannot establish
+};
+
 export interface Question {
   id: string;
   title: string;
@@ -185,6 +194,7 @@ export interface Question {
   frameworkTests?: FrameworkTest[];
   examples?: string[]; // fallback if structured description lacks examples
   companies?: string[];  // e.g. ["google", "meta"] or ["Google"]
+  sources?: QuestionSource[];
   decisionGraphAsset?: string;
   decisionGraphKey?: string;
   pressureModeAsset?: string;

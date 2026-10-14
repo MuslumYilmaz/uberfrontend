@@ -10,6 +10,9 @@
     "api-calls",
     "storage"
   ],
+  "companies": [
+    "waymo"
+  ],
   "type": "system-design",
   "sections": [
     {
@@ -51,7 +54,15 @@
     "uniqueAngle": "Connect native text entry, recoverable drafts, upload readiness, and streaming cancellation through explicit command and stream identities.",
     "factCheckedAt": "2026-08-06",
     "reviewedBy": "FrontendAtlas editorial",
-    "companyEvidence": []
+    "companyEvidence": [
+      {
+        "company": "waymo",
+        "evidenceType": "reported-interview-question",
+        "sourceUrl": "https://prachub.com/interview-experiences/waymo-senior-frontend-engineer-interview-experience-rejected-30-minutes-after-pushing-on-the-process",
+        "sourceTitle": "Waymo senior frontend engineer interview experience (PracHub, May 2026)",
+        "checkedAt": "2026-10-14"
+      }
+    ]
   },
   "contentSchemaVersion": 2,
   "practice": {
@@ -93,5 +104,14 @@
       "expertStretch": "Account drafts, cross-tab ownership, and safe Markdown.",
       "redFlag": "Local abort masquerades as server Stop, or stale streams mutate the active turn."
     }
-  }
+  },
+  "sources": [
+    {
+      "label": "PracHub: Waymo senior frontend engineer interview experience, May 2026",
+      "url": "https://prachub.com/interview-experiences/waymo-senior-frontend-engineer-interview-experience-rejected-30-minutes-after-pushing-on-the-process",
+      "publisher": "PracHub",
+      "date": "2026-05",
+      "note": "One self-reported senior loop. It establishes that an onsite round asked for frontend-focused system design of an AI chat application; this composer-and-streaming case is a practice version of that round, not its wording."
+    }
+  ]
 }

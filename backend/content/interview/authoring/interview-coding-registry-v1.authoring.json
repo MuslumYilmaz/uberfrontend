@@ -9,15 +9,16 @@
     "approvedBy": "project-owner",
     "approvedAt": "2026-08-24",
     "registryVersion": "1.1.0",
-    "registryContentHash": "d84c6c6f733ae9aff4b4f516656bc93a10643f570ea85034d5cf1e924e35dae8",
+    "registryContentHash": "9176a4496e56b02b83b4f634a8e1bede3da648c8d792823623c5215ddd5b15e3",
     "selectionDefinitionHash": "95ae46b01019649017306384cd4928315a33ccb8d77c50f48306b2ecb5bc4c3e",
     "notes": [
-      "Project owner approved coding registry v1.1.0 for editorial-gold production use after the release-readiness audit."
+      "Project owner approved coding registry v1.1.0 for editorial-gold production use after the release-readiness audit.",
+      "2026-10-14 source-pin maintenance: registryContentHash refreshed after the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments source questions gained company tags and public source lists. Public variant content is unchanged apart from contentHash; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release."
     ]
   },
-  "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+  "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
   "reviewBatch": {
-    "reviewedDefinitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+    "reviewedDefinitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
     "reviewedAt": "2026-08-24",
     "technical": {
       "reviewer": "codex-interview-coding-technical-v1",
@@ -26,7 +27,8 @@
       "notes": [
         "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
         "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-        "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+        "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+        "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
       ]
     },
     "editorial": {
@@ -328,7 +330,7 @@
       "level": "mid",
       "catalog": "javascript",
       "sourceQuestionId": "js-fetch-json-timeout",
-      "expectedQuestionHash": "1aa0d039934137375ab1b3c426a1d12713da5d6b6b5844f19add92c8f8cad37d",
+      "expectedQuestionHash": "ce738cbd5964cc8541e07710a37bac1ecf55f6b7cf6b238bf15a662a011208b6",
       "timeLimitSeconds": 2100,
       "roundLimit": 1,
       "runner": "javascript",
@@ -612,7 +614,7 @@
       "level": "mid",
       "catalog": "javascript",
       "sourceQuestionId": "js-debounce",
-      "expectedQuestionHash": "ce43e67e31018c88ba0e14facccd88d289a49ac5372a495db5c446735c500b75",
+      "expectedQuestionHash": "1b75fd04272e58895c34974868db6e05f339cb52fead968545d648ef90970ac0",
       "timeLimitSeconds": 2100,
       "roundLimit": 1,
       "runner": "javascript",
@@ -1085,7 +1087,7 @@
       "level": "senior",
       "catalog": "angular",
       "sourceQuestionId": "angular-debounced-search",
-      "expectedQuestionHash": "efcf186b9f682a3670dd554859968dab7d3a5d30529fc87f2f028edb6f6c733d",
+      "expectedQuestionHash": "c8496298690b7916279e5adb478244d0dcf1fce6a8b69b9dc5c4c66a38d70440",
       "expectedStarterAssetHash": "f763520c6e2734c6c3be11db4c65aaac0aac3269cb53289ea436a16df6f94c90",
       "expectedPressureAssetHash": "059c690882468d40432598a815947da6eba101de556a4925f7b4148d204971e2",
       "timeLimitSeconds": 2700,
@@ -1392,7 +1394,7 @@
       "level": "senior",
       "catalog": "react",
       "sourceQuestionId": "react-nested-comments",
-      "expectedQuestionHash": "d4c05d54993a4bb613f86c78d9416d40663c723199c7718fd6a88feb8a1b0019",
+      "expectedQuestionHash": "65bc6931f98aa5d16a2a151d32ccfcaa09b1551db8f09e2b9e1d0bf1394e6d38",
       "expectedStarterAssetHash": "31a9041d9ccfddd2bfc461a67fbae4c017310234d74b512774e4f1d04c9db656",
       "pressureAsset": "authoring://pressure-modes/nested-comments.candidate-v1.json",
       "expectedPressureAssetHash": "b0ae17da60cfd3b7b3c5a9a46dc0089d65f826f8511eb732fedb83f2f6f08fd2",

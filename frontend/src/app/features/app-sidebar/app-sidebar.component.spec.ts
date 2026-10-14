@@ -155,6 +155,19 @@ describe('AppSidebarComponent', () => {
     };
   }
 
+  it('links the sidebar tools row to the public repository in a new tab', async () => {
+    await configureTestingModule();
+
+    const fixture = TestBed.createComponent(AppSidebarComponent);
+    fixture.detectChanges();
+
+    const link = fixture.nativeElement.querySelector('[data-testid="sidebar-github-link"]') as HTMLAnchorElement;
+    expect(link).toBeTruthy();
+    expect(link.getAttribute('href')).toBe('https://github.com/MuslumYilmaz/uberfrontend');
+    expect(link.getAttribute('target')).toBe('_blank');
+    expect(link.getAttribute('rel')).toContain('noopener');
+  });
+
   it('opens bug report flow from sidebar action', async () => {
     const { bugReport } = await configureTestingModule();
 

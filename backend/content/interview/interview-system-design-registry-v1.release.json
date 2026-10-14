@@ -2,29 +2,29 @@
   "artifacts": {
     "private": {
       "file": "interview-system-design-registry-v1.private.json",
-      "sha256": "5fdfaa591fd87d1cb007f6ed5e6dfa99b96976af330a259da6f5e65f598381ee"
+      "sha256": "6a03836bdf5ba75e71dbc2714ea9b7d59181f2041a39f76331f2b7c6a713e19e"
     },
     "public": {
       "file": "interview-system-design-registry-v1.public.json",
-      "sha256": "6c2b78be6a8398d87917ce94ba4bb590f5daf91680510701d2ae1b8d639af73c"
+      "sha256": "cad3c807e9abf3eda1b88fb79f229c4078521c73c7820b50026c95651e3363db"
     }
   },
-  "contentHash": "9a6fbbb6afd5dbe7600645a3f669feb8a9a5533976ce2ff0df2fccc1ddac348e",
-  "definitionHash": "dd2aa9b58688daef987d4682ef3e3917686962e0d39ea1f55b01e3d50c6a6173",
+  "contentHash": "53d47df114e0985c5a599ed79dcc94c96718d339dd30a6f0d41eb6a207ec0595",
+  "definitionHash": "bd045d1cb9c0c6a5a2d2da1e20937dcde19015ed27878065368daf3ae479e8eb",
   "enabledScenarioCount": 8,
   "finalApproval": null,
-  "registryContentHash": "9a6fbbb6afd5dbe7600645a3f669feb8a9a5533976ce2ff0df2fccc1ddac348e",
+  "registryContentHash": "53d47df114e0985c5a599ed79dcc94c96718d339dd30a6f0d41eb6a207ec0595",
   "registryId": "interview-system-design-registry-v1",
   "registryVersion": "1.2.0",
   "scenarioCount": 8,
   "scenarioRefs": [
     {
-      "contentHash": "b6512f58e2e283efdf0dfabccbb48ded43dcc6d5413f590680379e1d2e51fa9d",
+      "contentHash": "12d488ca94b935c89f08613492cdb92980851cf8315f59eb1605d8582857e4bb",
       "enabled": true,
       "id": "int-sd-ai-chat-composer-mid-v1",
       "level": "mid",
       "revision": 3,
-      "sourceBundleHash": "0522c064c9a08cd6ab06db7f884cd3bd4f3c5886c21a7430198fddac6d68635d"
+      "sourceBundleHash": "585435667d7a5b673fc30ecac795e50b71a3c9fabc2c88d220502884ecc86d3d"
     },
     {
       "contentHash": "f9a76b65da48d48c1b268203f04992af217fd226c4b98c1eb3045f340db8e272",
@@ -75,12 +75,12 @@
       "sourceBundleHash": "ca070d73f0f227441aecf336af6dcffe6a67041f03cbb7a534842660de817948"
     },
     {
-      "contentHash": "0a691d04fd291d4973821fe1de752c7b6f78bb029e3aaef8b4d07ec674e9863b",
+      "contentHash": "aed895aea6c83b3b96723ad90795496f25df3bd55e6edb24a23a0c7591f4dc96",
       "enabled": true,
       "id": "int-sd-toast-lifecycle-jr-v1",
       "level": "junior",
       "revision": 6,
-      "sourceBundleHash": "47e97c5f1ffbb840f4bf81b21d9c0fcebfdff6b2ea05a5985a7a526eaccde986"
+      "sourceBundleHash": "e6c034a086fb49a28545adbc5ca5c798e12724b17dd795264a57d95fb57340d2"
     }
   ],
   "schemaVersion": "1.0.0",

@@ -325,7 +325,7 @@ test('actual shared detail templates and helpers do not re-date entry routes; ac
   assert.deepEqual(changes(`${APP}features/trivia/trivia-detail/trivia-seo.util.ts`, "': Interview Answer'", "': Interview Answers'"), []);
   assert.deepEqual(changes(ROUTES, "title: 'Front-end interview concept question'", "title: 'Frontend interview concept question'"), []);
   assert.deepEqual(changes(`${APP}features/trivia/trivia-detail/javascript-event-loop-experience/javascript-event-loop-experience.component.html`, 'Predict the browser event loop before it runs', 'Predict the event loop before it runs'), ['/javascript/trivia/js-event-loop']);
-  assert.deepEqual(changes(`${APP}features/trivia/trivia-detail/angular-change-detection-visualizer/angular-change-detection-visualizer.component.html`, 'Simulate Angular change detection: Default vs OnPush vs zoneless', 'Simulate change detection: Default vs OnPush vs zoneless'), ['/angular/trivia/angular-change-detection-strategies']);
+  assert.deepEqual(changes(`${APP}features/trivia/trivia-detail/angular-change-detection-visualizer/angular-change-detection-visualizer.component.html`, 'Simulate Angular change detection: Eager vs OnPush vs zoneless', 'Simulate change detection: Eager vs OnPush vs zoneless'), ['/angular/trivia/angular-change-detection-strategies']);
   assert.deepEqual(changes(`${APP}features/trivia/trivia-detail/angular-change-detection-visualizer/angular-change-detection-visualizer.content.ts`, 'The list keeps the old users after push()', 'The list keeps stale users after push()'), ['/angular/trivia/angular-change-detection-strategies']);
   assert.deepEqual(changes(`${APP}features/trivia/trivia-detail/rxjs-overlap-playground/rxjs-overlap-playground.content.ts`, 'The search box shows results for the wrong query', 'The search box shows results for an older query'), ['/angular/trivia/rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use']);
 });
@@ -400,4 +400,18 @@ test('actual hint edits re-date one exercise, and mapped rules re-date only the 
   const covered = ids.map((id) => `/angular/coding/${id}`).filter((route) => before.has(route));
   assert.ok(covered.length >= 1 && covered.length < ids.length, 'premium Angular exercises stay out of the inventory');
   assert.deepEqual(changes(shared), covered);
+});
+
+test('actual Waymo guide edits re-date only the Waymo preview and the directory that lists it', () => {
+  const file = `${APP}shared/company-previews/waymo-preview-content.ts`;
+  const read = currentReader();
+  const before = buildSeoInventory(read);
+  const original = read.read(file);
+  const modified = original.replace("title: 'Prepare for product judgment, not Waymo trivia'", "title: 'Prepare for product judgment, not Waymo trivia questions'");
+  assert.notEqual(modified, original);
+  const changes = [...buildSeoInventory(currentReader({ [file]: modified }))].filter(([route, entry]) => before.get(route)?.fingerprint !== entry.fingerprint).map(([route]) => route);
+  assert.ok(changes.includes('/companies/waymo/preview'), changes.join(','));
+  for (const route of ['/companies/google/preview', '/companies/netflix/preview', '/companies/openai/preview', '/companies/amazon/preview', '/']) {
+    assert.ok(!changes.includes(route), `${route} must not re-date: ${changes.join(',')}`);
+  }
 });

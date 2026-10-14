@@ -9,6 +9,9 @@
     "real-time",
     "performance"
   ],
+  "companies": [
+    "elevenlabs"
+  ],
   "type": "system-design",
   "sections": [
     {
@@ -60,7 +63,15 @@
     "uniqueAngle": "Ground AI safety in a concrete customer-operations task: lifecycle-stage edits backed by last-activity and open-invoice evidence with truthful per-record recovery.",
     "factCheckedAt": "2026-08-06",
     "reviewedBy": "FrontendAtlas editorial",
-    "companyEvidence": []
+    "companyEvidence": [
+      {
+        "company": "elevenlabs",
+        "evidenceType": "reported-interview-question",
+        "sourceUrl": "https://www.aced.io/guides/elevenlabs-software-engineer-interview/questions",
+        "sourceTitle": "ElevenLabs software engineer interview questions (Aced, candidate-sourced, October 2026)",
+        "checkedAt": "2026-10-14"
+      }
+    ]
   },
   "contentSchemaVersion": 2,
   "practice": {
@@ -102,5 +113,14 @@
       "expertStretch": "Permission churn, audit export, and reversible bulk undo.",
       "redFlag": "Proposal, optimistic result, or Cancel appears as confirmed product truth."
     }
-  }
+  },
+  "sources": [
+    {
+      "label": "Aced: ElevenLabs software engineer interview questions, candidate-sourced, October 2026",
+      "url": "https://www.aced.io/guides/elevenlabs-software-engineer-interview/questions",
+      "publisher": "Aced",
+      "date": "2026-10",
+      "note": "The bank lists a prompt to design a new interface for an editor managing a voice-dubbing project tracked in a spreadsheet: review progress, manage feedback, collaborate with voice actors. This AI-assisted review flow is a practice version of that design round, not its wording."
+    }
+  ]
 }

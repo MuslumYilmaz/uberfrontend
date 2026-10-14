@@ -77,13 +77,18 @@
 - [Amazon interview preview](https://frontendatlas.com/companies/amazon/preview): Amazon frontend interview practice preview.
 - [Apple interview preview](https://frontendatlas.com/companies/apple/preview): Apple frontend interview practice preview.
 - [ByteDance interview preview](https://frontendatlas.com/companies/bytedance/preview): ByteDance frontend interview practice preview.
+- [Datadog frontend interview questions](https://frontendatlas.com/companies/datadog/preview): Public Datadog prep guide with five practice prompts modelled on public senior frontend interview accounts.
+- [ElevenLabs frontend interview questions](https://frontendatlas.com/companies/elevenlabs/preview): Public ElevenLabs prep guide with five practice prompts modelled on candidate-sourced reports.
 - [Google frontend interview questions](https://frontendatlas.com/companies/google/preview): Public Google prep guide with seven representative prompts and a framework-neutral preparation plan.
+- [Intuit frontend interview questions](https://frontendatlas.com/companies/intuit/preview): Public Intuit prep guide with five practice prompts modelled on public frontend interview accounts from 2021 to 2025.
 - [Meta interview preview](https://frontendatlas.com/companies/meta/preview): Meta frontend interview practice preview.
 - [Microsoft interview preview](https://frontendatlas.com/companies/microsoft/preview): Microsoft frontend interview practice preview.
 - [Netflix frontend interview questions](https://frontendatlas.com/companies/netflix/preview): Public Netflix prep guide with six representative prompts and a broad frontend preparation plan.
 - [OpenAI interview preview](https://frontendatlas.com/companies/openai/preview): OpenAI frontend interview practice preview.
+- [ServiceNow frontend interview questions](https://frontendatlas.com/companies/servicenow/preview): Public ServiceNow prep guide with five practice prompts modelled on public frontend interview accounts from 2021 to 2025.
 - [Stripe interview preview](https://frontendatlas.com/companies/stripe/preview): Stripe frontend interview practice preview.
 - [Uber interview preview](https://frontendatlas.com/companies/uber/preview): Uber frontend interview practice preview.
+- [Waymo frontend interview questions](https://frontendatlas.com/companies/waymo/preview): Public Waymo prep guide with five practice prompts modelled on a public 2026 interview report.
 
 ## Policies and Discovery
 

@@ -986,6 +986,9 @@
   border-radius: 12px;
   background: #0f1116;
 }
+.sd-github-cta{
+  margin: 0 6px 24px;
+}
 .sd-prep-bridge{
   margin: 0 6px 24px;
   padding: 12px;

@@ -735,7 +735,7 @@
     "route": "/angular/trivia/angular-onpush-change-detection-debugging-real-bug",
     "tech": "angular",
     "difficulty": "intermediate",
-    "summary": "OnPush change detection is easiest to explain as a real stale-UI debugging story.",
+    "summary": "OnPush change detection is easiest to explain as a real stale-UI debugging story, and since Angular 22 it is the default for every component that does not set a strategy.",
     "tags": [
       "angular",
       "change-detection",
@@ -745,9 +745,29 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-10-10",
+    "updatedAt": "2026-10-14",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#angular-onpush-change-detection-debugging-real-bug"
+  },
+  {
+    "id": "ng-debug-fleet-status-bug-reports",
+    "family": "question",
+    "title": "Fix a fleet status board from three user bug reports",
+    "route": "/angular/debug/ng-debug-fleet-status-bug-reports",
+    "tech": "angular",
+    "difficulty": "intermediate",
+    "summary": "Three user bug reports against one small Angular screen: a filter that narrows the wrong list, an empty state that never clears, and a button that fires twice.",
+    "tags": [
+      "debugging",
+      "components",
+      "state",
+      "event-binding"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 12,
+    "updatedAt": "2026-10-14",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/angular/debug.json#ng-debug-fleet-status-bug-reports"
   },
   {
     "id": "angular-input-output",
@@ -871,7 +891,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-19",
+    "updatedAt": "2026-10-14",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#angular-performance-optimization"
   },
@@ -1394,7 +1414,7 @@
     "route": "/angular/trivia/angular-change-detection-strategies",
     "tech": "angular",
     "difficulty": "intermediate",
-    "summary": "Angular has two change detection strategies. Default checks a component on every change detection pass that reaches it.",
+    "summary": "Angular has two change detection strategies.",
     "tags": [
       "angular",
       "change-detection",
@@ -1404,7 +1424,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-10-10",
+    "updatedAt": "2026-10-14",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#angular-change-detection-strategies"
   },
@@ -1425,7 +1445,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-10",
+    "updatedAt": "2026-10-14",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#angular-services"
   },
@@ -1446,7 +1466,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-09",
+    "updatedAt": "2026-10-14",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#angular-routing"
   },
@@ -1488,7 +1508,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-09",
+    "updatedAt": "2026-10-14",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#angular-dependency-injection"
   },
@@ -1509,7 +1529,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-19",
+    "updatedAt": "2026-10-14",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#angular-lazy-loading"
   },
@@ -1593,7 +1613,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-12",
+    "updatedAt": "2026-10-14",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#angular-component-metadata"
   },
@@ -4162,6 +4182,26 @@
     "updatedAt": "2026-07-14",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/coding.json#js-fetch-json-timeout"
+  },
+  {
+    "id": "js-filter-tree-render-indented",
+    "family": "question",
+    "title": "Filter a Tree by Substring and Render It Indented",
+    "route": "/javascript/coding/js-filter-tree-render-indented",
+    "tech": "javascript",
+    "difficulty": "intermediate",
+    "summary": "Given an n-ary tree of { value, children } nodes and a needle string, drop every node whose value contains the needle together with its whole subtree, then render what remains as text: one line per node, depth-first in sibling order, indented two spaces per level.",
+    "tags": [
+      "tree",
+      "recursion",
+      "strings",
+      "immutability"
+    ],
+    "access": "free",
+    "estimatedMinutes": 18,
+    "updatedAt": "2026-10-14",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/javascript/coding.json#js-filter-tree-render-indented"
   },
   {
     "id": "js-dom-find-node",

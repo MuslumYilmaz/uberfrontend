@@ -293,3 +293,72 @@ reference_rules:
     load:
       - docs/audits/font-size-best-practices-audit.md
     max_docs: 1
+
+  - id: growth_strategy
+    priority: 95
+    keywords:
+      - growth strategy
+      - differentiation
+      - positioning
+      - distribution channel
+      - brand demand
+      - growth story
+      - new site growth
+      - launch strategy
+      - show hn
+    paths:
+      - docs/references/new-site-growth-2026-10.md
+    load:
+      - docs/references/new-site-growth-2026-10.md
+    max_docs: 1
+
+  - id: ai_product_frontend_track
+    priority: 94
+    keywords:
+      - ai product frontend
+      - ai track
+      - streaming chat
+      - llm streaming
+      - stop generating
+      - agent ui
+      - ai chat case
+      - streaming challenge
+    paths:
+      - docs/references/ai-product-frontend-track-2026-10.md
+    load:
+      - docs/references/ai-product-frontend-track-2026-10.md
+    max_docs: 1
+
+  - id: interview_prep_market_research
+    priority: 93
+    keywords:
+      - market research
+      - what candidates pay for
+      - competitor pricing
+      - company interview pages
+      - company guides
+      - market saturation
+      - white space
+    paths:
+      - docs/references/interview-prep-market-research-2026-10.md
+    load:
+      - docs/references/interview-prep-market-research-2026-10.md
+    max_docs: 1
+
+  - id: company_pages_plan
+    priority: 96
+    keywords:
+      - company pages plan
+      - company page
+      - waymo
+      - question sources
+      - sources on questions
+      - authored preview
+      - company preview
+    paths:
+      - docs/references/company-pages-plan-2026-10.md
+      - frontend/src/app/features/company/
+      - frontend/src/app/shared/company-previews/
+    load:
+      - docs/references/company-pages-plan-2026-10.md
+    max_docs: 1

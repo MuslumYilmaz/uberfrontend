@@ -1,12 +1,13 @@
 {
-  "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+  "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
   "finalApproval": {
     "approvedAt": "2026-08-24",
     "approvedBy": "project-owner",
     "notes": [
-      "Project owner approved coding registry v1.1.0 for editorial-gold production use after the release-readiness audit."
+      "Project owner approved coding registry v1.1.0 for editorial-gold production use after the release-readiness audit.",
+      "2026-10-14 source-pin maintenance: registryContentHash refreshed after the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments source questions gained company tags and public source lists. Public variant content is unchanged apart from contentHash; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release."
     ],
-    "registryContentHash": "d84c6c6f733ae9aff4b4f516656bc93a10643f570ea85034d5cf1e924e35dae8",
+    "registryContentHash": "9176a4496e56b02b83b4f634a8e1bede3da648c8d792823623c5215ddd5b15e3",
     "registryVersion": "1.1.0",
     "selectionDefinitionHash": "95ae46b01019649017306384cd4928315a33ccb8d77c50f48306b2ecb5bc4c3e"
   },
@@ -27,7 +28,7 @@
       ],
       "review": {
         "contentHash": "04797a7d03d8affd6a13ae07171976abdd209f2a4693df5de93d45597ac56a66",
-        "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+        "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -53,7 +54,8 @@
           "notes": [
             "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
             "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+            "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -243,7 +245,7 @@
       ],
       "review": {
         "contentHash": "1f193cf1828079f735b253b293440c21289e40d3512107c3bf033e8927bf8f8c",
-        "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+        "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -269,7 +271,8 @@
           "notes": [
             "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
             "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+            "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -413,7 +416,7 @@
       ],
       "review": {
         "contentHash": "cf4846dca9d8b5cc1901b84843017044a18530f56035d2b9362138363253ca89",
-        "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+        "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -439,7 +442,8 @@
           "notes": [
             "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
             "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+            "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -583,7 +587,7 @@
       ],
       "review": {
         "contentHash": "6e65ebc91dc1a76b3b536076dab5c7f62d30ab7405f15a6dedf16d6f83c3b868",
-        "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+        "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -609,7 +613,8 @@
           "notes": [
             "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
             "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+            "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -765,7 +770,7 @@
       ],
       "review": {
         "contentHash": "18de554492733266341bd37fa07776ad0242dd41a81ee7649c874d7432e6d497",
-        "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+        "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -791,7 +796,8 @@
           "notes": [
             "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
             "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+            "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -1081,7 +1087,7 @@
       ],
       "review": {
         "contentHash": "22605ebdb734033a820a7d8be6916bb691a02efa6750df095d1b999bf9a7ab96",
-        "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+        "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -1107,7 +1113,8 @@
           "notes": [
             "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
             "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+            "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -1321,7 +1328,7 @@
       ],
       "review": {
         "contentHash": "84118ae8cbd1cce6204a3388544fd10b2f7ac50d61aa5fdb9478fe1258472f23",
-        "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+        "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -1347,7 +1354,8 @@
           "notes": [
             "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
             "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+            "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -1519,7 +1527,7 @@
       ],
       "review": {
         "contentHash": "b4baf4a74d743f215d81551801598d745f6580dc71d5b37eba92e6f9d44d4dab",
-        "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+        "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -1545,7 +1553,8 @@
           "notes": [
             "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
             "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+            "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -2056,7 +2065,7 @@
       ],
       "review": {
         "contentHash": "7c28ac1b8fc4ff421b5bff288f7b49dc4c66b1a5811aeaaa9c4f40869a7c9825",
-        "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+        "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -2082,7 +2091,8 @@
           "notes": [
             "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
             "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+            "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -2618,7 +2628,7 @@
       ],
       "review": {
         "contentHash": "71059fd19aeef7489dd0929a6299035ea1fc745385a9282c8e0135248de4ceb6",
-        "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+        "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -2644,7 +2654,8 @@
           "notes": [
             "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
             "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+            "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -2837,7 +2848,7 @@
       ],
       "review": {
         "contentHash": "b59941489c364a0e5c383461688868814c724b881c7850856acb0b0f9f5fd43a",
-        "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+        "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -2863,7 +2874,8 @@
           "notes": [
             "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
             "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+            "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -3659,7 +3671,7 @@
       ],
       "review": {
         "contentHash": "7d1d298b8b3226918aa6016fa0c848b39f42bee1cb2fb1d96053959ad753f96b",
-        "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+        "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -3685,7 +3697,8 @@
           "notes": [
             "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
             "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+            "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -3977,7 +3990,7 @@
     },
     {
       "conceptId": "coding-ui-debounced-search",
-      "contentHash": "cb69a6983eff1132fe1e5743a241de9538fe399804c3a0b6171a004599959c3e",
+      "contentHash": "cb6dc081f09de41b70192a0aaae75bcefaf736ac24719b12f69235ee90934c6b",
       "id": "int-code-angular-senior-debounced-search-v1",
       "remediationTopics": [
         "RxJS cancellation ownership",
@@ -3985,8 +3998,8 @@
         "Accessible async states"
       ],
       "review": {
-        "contentHash": "cb69a6983eff1132fe1e5743a241de9538fe399804c3a0b6171a004599959c3e",
-        "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+        "contentHash": "cb6dc081f09de41b70192a0aaae75bcefaf736ac24719b12f69235ee90934c6b",
+        "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -4012,7 +4025,8 @@
           "notes": [
             "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
             "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+            "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -4391,7 +4405,7 @@
         "pressureAsset": "assets/questions/pressure-modes/debounced-search.v1.json",
         "pressureAssetHash": "059c690882468d40432598a815947da6eba101de556a4925f7b4148d204971e2",
         "selectedCheckContractHash": "a5add5b9521c81ea1648c09ad851d3694de71da9bb881e6d1c56f58f3910a31c",
-        "sourceQuestionHash": "efcf186b9f682a3670dd554859968dab7d3a5d30529fc87f2f028edb6f6c733d",
+        "sourceQuestionHash": "c8496298690b7916279e5adb478244d0dcf1fce6a8b69b9dc5c4c66a38d70440",
         "starterAsset": "assets/sb/angular/question/angular-debounced-search.v2.json",
         "starterAssetHash": "f763520c6e2734c6c3be11db4c65aaac0aac3269cb53289ea436a16df6f94c90"
       }
@@ -4407,7 +4421,7 @@
       ],
       "review": {
         "contentHash": "ad7053bcc1d4390d866052f4a8451ff95554d8395b77102cbd0434e42b66d316",
-        "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+        "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -4433,7 +4447,8 @@
           "notes": [
             "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
             "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+            "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -4727,7 +4742,7 @@
       ],
       "review": {
         "contentHash": "bd529822fa9573af9320418361a48114ef09de629e9a5fbe09e52308f78b0455",
-        "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+        "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -4753,7 +4768,8 @@
           "notes": [
             "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
             "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+            "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -5019,7 +5035,7 @@
       ],
       "review": {
         "contentHash": "882884703e2bb0d404d314de45e382214cd3fb929b28cf21205a95f0acbefa17",
-        "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+        "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -5045,7 +5061,8 @@
           "notes": [
             "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
             "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+            "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -5120,7 +5137,7 @@
       ],
       "review": {
         "contentHash": "c7bd8c5cdb98b7759ad2574f615eafe7e4dcbfbd3c3eaca0fa656b4eb56ae11d",
-        "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+        "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -5146,7 +5163,8 @@
           "notes": [
             "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
             "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+            "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -5216,7 +5234,7 @@
       ],
       "review": {
         "contentHash": "fa14fb89ed1e273da742a9c21c62190c445cb54507153d7f5e1939d2d56b0faf",
-        "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+        "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -5242,7 +5260,8 @@
           "notes": [
             "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
             "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+            "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -5317,7 +5336,7 @@
       ],
       "review": {
         "contentHash": "0485f010763eec89f62793bf913d61dbbcfed03fef8fb8ffe964ca7a77fed43c",
-        "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+        "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -5343,7 +5362,8 @@
           "notes": [
             "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
             "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+            "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -5429,7 +5449,7 @@
       ],
       "review": {
         "contentHash": "8ba4e2e62fd3ba91c8634fd77cfe5b7f86b25a3c995dcc390002a9b9f7c09ef9",
-        "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+        "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -5455,7 +5475,8 @@
           "notes": [
             "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
             "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+            "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -5532,7 +5553,7 @@
     },
     {
       "conceptId": "coding-trailing-edge-debounce",
-      "contentHash": "4c8da20455c17d829fb5cc625051a7688856ffd593faff3d511b0f3f95a2f12a",
+      "contentHash": "8fe9a1b00e4c07cf8fb38e4604b63ac87784b495e3d6aca39a89aa0ddd6e8a3f",
       "id": "int-code-core-web-mid-debounce-v1",
       "remediationTopics": [
         "Timer cancellation",
@@ -5540,8 +5561,8 @@
         "Receiver and argument forwarding"
       ],
       "review": {
-        "contentHash": "4c8da20455c17d829fb5cc625051a7688856ffd593faff3d511b0f3f95a2f12a",
-        "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+        "contentHash": "8fe9a1b00e4c07cf8fb38e4604b63ac87784b495e3d6aca39a89aa0ddd6e8a3f",
+        "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -5567,7 +5588,8 @@
           "notes": [
             "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
             "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+            "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -5627,7 +5649,7 @@
         "catalogAccess": "free",
         "catalogFile": "cdn/questions/javascript/coding.json",
         "checkContractHash": "53659157014294431516cc3b775df82f680e6d72f50e8923bfbc399a5e05c2c0",
-        "sourceQuestionHash": "ce43e67e31018c88ba0e14facccd88d289a49ac5372a495db5c446735c500b75",
+        "sourceQuestionHash": "1b75fd04272e58895c34974868db6e05f339cb52fead968545d648ef90970ac0",
         "starterContentHash": "7e34092bfb8a9ae1e9950b2573f6dbd67e38444b636a020bc3099686d967caff"
       }
     },
@@ -5642,7 +5664,7 @@
       ],
       "review": {
         "contentHash": "ae28b3fc61abfc1977f4113e38461493ab31695aebe2388a3be23f1777f7203b",
-        "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+        "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -5668,7 +5690,8 @@
           "notes": [
             "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
             "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+            "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -5739,7 +5762,7 @@
     },
     {
       "conceptId": "coding-fetch-timeout-signal-composition",
-      "contentHash": "df93f85ae99b2c7234c596f509b013146679c2a26d27b4a68660c9be531d4534",
+      "contentHash": "cb702533ffe4fb71021750122df6d4b146fa47790f73c0239a9164c07b9159c7",
       "id": "int-code-core-web-mid-fetch-timeout-v1",
       "remediationTopics": [
         "Fetch error handling",
@@ -5747,8 +5770,8 @@
         "Timer and listener cleanup"
       ],
       "review": {
-        "contentHash": "df93f85ae99b2c7234c596f509b013146679c2a26d27b4a68660c9be531d4534",
-        "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+        "contentHash": "cb702533ffe4fb71021750122df6d4b146fa47790f73c0239a9164c07b9159c7",
+        "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -5774,7 +5797,8 @@
           "notes": [
             "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
             "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+            "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -5856,7 +5880,7 @@
         "catalogAccess": "free",
         "catalogFile": "cdn/questions/javascript/coding.json",
         "checkContractHash": "72cc8f124bd23b02b4a165ef12156b34366fb9a8be0fdd418c3c2b01384b3589",
-        "sourceQuestionHash": "1aa0d039934137375ab1b3c426a1d12713da5d6b6b5844f19add92c8f8cad37d",
+        "sourceQuestionHash": "ce738cbd5964cc8541e07710a37bac1ecf55f6b7cf6b238bf15a662a011208b6",
         "starterContentHash": "4501420ca6b96d6e3e95e21247525b367de51ee760853c5ca289af6a4c1f3592"
       }
     },
@@ -5871,7 +5895,7 @@
       ],
       "review": {
         "contentHash": "f2685d05968738500a4cd007f9e384656cb33b127efb7183d3ba7ad7ef9a94fd",
-        "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+        "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -5897,7 +5921,8 @@
           "notes": [
             "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
             "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+            "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -5977,7 +6002,7 @@
       ],
       "review": {
         "contentHash": "20a2623018ce44bf0fb4eb009744f32fc7ee71326c89a54a37e69bd626c8b4cc",
-        "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+        "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -6003,7 +6028,8 @@
           "notes": [
             "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
             "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+            "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -6100,7 +6126,7 @@
       ],
       "review": {
         "contentHash": "f2076171a37a169991ed1c204cc805ae10711573207f18dad8b6e778307b0266",
-        "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+        "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -6126,7 +6152,8 @@
           "notes": [
             "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
             "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+            "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -6228,7 +6255,7 @@
       ],
       "review": {
         "contentHash": "a46562a3755178280473a3aba3ca56d411c25b4f2733b4409a199ed6860aeece",
-        "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+        "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -6254,7 +6281,8 @@
           "notes": [
             "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
             "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+            "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -6351,7 +6379,7 @@
       ],
       "review": {
         "contentHash": "7d348ec8566efab4c387ec5cdc114af2da13488d2b00d8853ba47a07638b42bc",
-        "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+        "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -6377,7 +6405,8 @@
           "notes": [
             "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
             "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+            "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -6463,7 +6492,7 @@
       ],
       "review": {
         "contentHash": "2a13a53222648c16758abd064e7a9bfc24a306a0a4d29a49ee091a070675e19c",
-        "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+        "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -6489,7 +6518,8 @@
           "notes": [
             "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
             "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+            "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -6580,7 +6610,7 @@
       ],
       "review": {
         "contentHash": "20daae37965fdeb2f68367312c19b302064418d4f23195f500dacc7e6faaba87",
-        "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+        "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -6606,7 +6636,8 @@
           "notes": [
             "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
             "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+            "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -6687,7 +6718,7 @@
       ],
       "review": {
         "contentHash": "56a8c441b543ba6cbaa94a5eccd6ec2883e6c84a290848b75f1a405e4fc4d8aa",
-        "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+        "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -6713,7 +6744,8 @@
           "notes": [
             "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
             "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+            "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -6903,7 +6935,7 @@
       ],
       "review": {
         "contentHash": "a7b270f4f5482d8228053db2cac8e99a3ebd38835c99381312104884fbaa433c",
-        "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+        "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -6929,7 +6961,8 @@
           "notes": [
             "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
             "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+            "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -7073,7 +7106,7 @@
       ],
       "review": {
         "contentHash": "c31eb3ce2a84c639ebb430bc78e44b340047f8c73fd6ccd4de1c8cbbcb039d63",
-        "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+        "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -7099,7 +7132,8 @@
           "notes": [
             "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
             "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+            "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -7243,7 +7277,7 @@
       ],
       "review": {
         "contentHash": "5d9c859d01ca5272af2569d1bae8c5ae3f638890b94c899ff37e8581c6b49f05",
-        "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+        "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -7269,7 +7303,8 @@
           "notes": [
             "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
             "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+            "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -7425,7 +7460,7 @@
       ],
       "review": {
         "contentHash": "a2a0dd6d5e1d57e19ab9bfe333123dd78cbeda836901caa45936bbead24fcc93",
-        "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+        "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -7451,7 +7486,8 @@
           "notes": [
             "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
             "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+            "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -7741,7 +7777,7 @@
       ],
       "review": {
         "contentHash": "1b4fd9d66cf3d6d6ad3e36971a6e0b60467b031fe27d8d0082dfae38515405fc",
-        "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+        "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -7767,7 +7803,8 @@
           "notes": [
             "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
             "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+            "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -7981,7 +8018,7 @@
       ],
       "review": {
         "contentHash": "9052154fd5f82bc14b24a623f0b026717ded8021aea3c0323e8be23fb4d99122",
-        "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+        "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -8007,7 +8044,8 @@
           "notes": [
             "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
             "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+            "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -8179,7 +8217,7 @@
       ],
       "review": {
         "contentHash": "720b1615c56664129a257e2cb267465990129502ed6ddec8e5781c171a521ea9",
-        "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+        "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -8205,7 +8243,8 @@
           "notes": [
             "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
             "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+            "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -8716,7 +8755,7 @@
       ],
       "review": {
         "contentHash": "b874b97658c4f3a14555c3c4c0abd38e3c85c3279ebe7e69f0a7db488ea736f7",
-        "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+        "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -8742,7 +8781,8 @@
           "notes": [
             "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
             "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+            "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -9278,7 +9318,7 @@
       ],
       "review": {
         "contentHash": "73190fb1187c8f48227b44d340b58678e71cc8a9c05e944c8ddb1a983c053a9c",
-        "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+        "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -9304,7 +9344,8 @@
           "notes": [
             "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
             "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+            "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -9497,7 +9538,7 @@
       ],
       "review": {
         "contentHash": "3b6e0fce1141b6aca00a6ba1cf78e5dd4f16a22435eb608a58a7d36ced2436ad",
-        "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+        "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -9523,7 +9564,8 @@
           "notes": [
             "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
             "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+            "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -10319,7 +10361,7 @@
       ],
       "review": {
         "contentHash": "d2a98846d26c204209b7d9a6081ba126f7b80e0e7cc1dcb0f84381cbe9e23fcd",
-        "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+        "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -10345,7 +10387,8 @@
           "notes": [
             "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
             "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+            "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -10646,7 +10689,7 @@
       ],
       "review": {
         "contentHash": "db2fe2b668f4ec350e26e24c142dc613008917b921ed03e2275cf294889bdeb8",
-        "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+        "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -10672,7 +10715,8 @@
           "notes": [
             "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
             "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+            "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -11058,7 +11102,7 @@
     },
     {
       "conceptId": "coding-ui-recursive-comment-tree",
-      "contentHash": "c8daed7f741b6cab403f453151892a7e9d1c3494066b97d478c851039ad27777",
+      "contentHash": "5d00058e6caa4952ce1222a9fed1390579b23c33fa48dd0c30407d9490ee86ba",
       "id": "int-code-react-senior-nested-comments-v1",
       "remediationTopics": [
         "Recursive React tree updates",
@@ -11066,8 +11110,8 @@
         "Accessible reply focus"
       ],
       "review": {
-        "contentHash": "c8daed7f741b6cab403f453151892a7e9d1c3494066b97d478c851039ad27777",
-        "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+        "contentHash": "5d00058e6caa4952ce1222a9fed1390579b23c33fa48dd0c30407d9490ee86ba",
+        "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -11093,7 +11137,8 @@
           "notes": [
             "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
             "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+            "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -11371,7 +11416,7 @@
         "pressureAsset": "authoring://pressure-modes/nested-comments.candidate-v1.json",
         "pressureAssetHash": "b0ae17da60cfd3b7b3c5a9a46dc0089d65f826f8511eb732fedb83f2f6f08fd2",
         "selectedCheckContractHash": "c551d0d30c371630dcd2d5502396e76466cf3add29f445a613abed84dbd2f312",
-        "sourceQuestionHash": "d4c05d54993a4bb613f86c78d9416d40663c723199c7718fd6a88feb8a1b0019",
+        "sourceQuestionHash": "65bc6931f98aa5d16a2a151d32ccfcaa09b1551db8f09e2b9e1d0bf1394e6d38",
         "starterAsset": "assets/sb/react/question/react-nested-comments.v1.json",
         "starterAssetHash": "31a9041d9ccfddd2bfc461a67fbae4c017310234d74b512774e4f1d04c9db656"
       }
@@ -11387,7 +11432,7 @@
       ],
       "review": {
         "contentHash": "8217d15cf01e71357c86c4ba04102d5fdc64ab11b8bce652ee1417ad25a46421",
-        "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+        "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -11413,7 +11458,8 @@
           "notes": [
             "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
             "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+            "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -11679,7 +11725,7 @@
       ],
       "review": {
         "contentHash": "1d74cb13400467d4e2f68246908edd48aa20da006a9be7e427a752528e51554f",
-        "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+        "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -11705,7 +11751,8 @@
           "notes": [
             "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
             "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+            "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -11895,7 +11942,7 @@
       ],
       "review": {
         "contentHash": "9acef8519ed948ac203f3ced99ec0c58b38ca677fa90f9acfda9aaf414ae3467",
-        "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+        "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -11921,7 +11968,8 @@
           "notes": [
             "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
             "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+            "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -12065,7 +12113,7 @@
       ],
       "review": {
         "contentHash": "44cd2098db8de6d16f4541ecf2a2ae264f22886e75551d3395c6d0a57679a462",
-        "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+        "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -12091,7 +12139,8 @@
           "notes": [
             "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
             "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+            "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -12235,7 +12284,7 @@
       ],
       "review": {
         "contentHash": "e15d3466f4ba72cefa0f0fff800f9965420584220d589a69f277e384b5cfa864",
-        "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+        "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -12261,7 +12310,8 @@
           "notes": [
             "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
             "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+            "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -12417,7 +12467,7 @@
       ],
       "review": {
         "contentHash": "24028642630407880de1f004bb38dd82c96625850b87b6a369116ebc119346a8",
-        "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+        "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -12443,7 +12493,8 @@
           "notes": [
             "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
             "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+            "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -12733,7 +12784,7 @@
       ],
       "review": {
         "contentHash": "95585f9b27f994c78e35d121c8e6ba3b5dc3f448b2e470116d0fc0abc582b0af",
-        "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+        "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -12759,7 +12810,8 @@
           "notes": [
             "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
             "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+            "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -12973,7 +13025,7 @@
       ],
       "review": {
         "contentHash": "84316b60221181903c3accc25ca754d68329e648a0b420f6fc3f5c12c9d39896",
-        "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+        "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -12999,7 +13051,8 @@
           "notes": [
             "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
             "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+            "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -13171,7 +13224,7 @@
       ],
       "review": {
         "contentHash": "fc81a0a3893597fdc0019d6e48be4898266f97b96e4f63ad4880b74e1957278e",
-        "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+        "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -13197,7 +13250,8 @@
           "notes": [
             "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
             "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+            "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -13708,7 +13762,7 @@
       ],
       "review": {
         "contentHash": "edf2d7389f53db3faea4cf5ce7801a39963f441d503b410ac25c1c64a2b87ec2",
-        "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+        "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -13734,7 +13788,8 @@
           "notes": [
             "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
             "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+            "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -14270,7 +14325,7 @@
       ],
       "review": {
         "contentHash": "2a540d48d394f1db52e497d613824a27ce5fa3ab34758aae2d85f041bc3c8a37",
-        "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+        "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -14296,7 +14351,8 @@
           "notes": [
             "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
             "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+            "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -14489,7 +14545,7 @@
       ],
       "review": {
         "contentHash": "3bc2bb4e551a0d0d99315af7026a2d93b7f34d830f3d8f37fc875ead4830e240",
-        "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+        "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -14515,7 +14571,8 @@
           "notes": [
             "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
             "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+            "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -15311,7 +15368,7 @@
       ],
       "review": {
         "contentHash": "2ce356333cbbc1f0e9f8a5419a3679e100a193a56a2c7becea0557366f23218b",
-        "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+        "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -15337,7 +15394,8 @@
           "notes": [
             "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
             "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+            "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -15638,7 +15696,7 @@
       ],
       "review": {
         "contentHash": "5c12650312cca9f6fb8b26cd283c032d167a2b3e94a97858a99cfe9c10d7feff",
-        "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+        "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -15664,7 +15722,8 @@
           "notes": [
             "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
             "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+            "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -16059,7 +16118,7 @@
       ],
       "review": {
         "contentHash": "12d95fd90633a3f3f13a54bba4ec058fbefc8bd34048c3aeb0527ef84d97cab5",
-        "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+        "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -16085,7 +16144,8 @@
           "notes": [
             "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
             "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+            "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -16379,7 +16439,7 @@
       ],
       "review": {
         "contentHash": "a194dcdd79f03241e9db8fb95cff276b2f1a1f1c2b14eb4b07bf88dc269d0cc3",
-        "definitionHash": "d207d3b71a2c1769443ab5a5d587b1bf8a5d5d3e86f7a1dfae06c29263df0cb1",
+        "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -16405,7 +16465,8 @@
           "notes": [
             "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
             "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
-            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields."
+            "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
+            "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",

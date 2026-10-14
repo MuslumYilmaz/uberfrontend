@@ -5,6 +5,7 @@ import { parseFragment, serialize } from 'parse5';
 import { buildFrameworkFamilyByIdMap, collectCompanyCounts } from './gen-showcase-stats.mjs';
 import { collectSeoContentAssets } from './seo-content-assets.mjs';
 import { parseTypeScript } from './content-typescript.mjs';
+import { AUTHORED_COMPANIES, AUTHORED_COMPANY_SET } from './authored-companies.mjs';
 
 // Increment when the meaning of a projection changes. This module deliberately
 // has no filesystem or Git access: the same projection reads a worktree or a commit.
@@ -126,7 +127,13 @@ function projectNode(node, scope = {}) {
     || ts.isExportDeclaration(node)) return null;
   const name = node.name ? propertyName(node.name) : '';
   if (OMIT.has(name) || DATE_NAME.test(name)) return null;
-  if (scope.company && /^(?:OPENAI|GOOGLE|NETFLIX)_/.test(name) && !name.startsWith(`${scope.company.toUpperCase()}_`)) return null;
+  if (scope.company) {
+    const companyPrefix = name.match(/^([A-Z][A-Z0-9]*)_/)?.[1]?.toLowerCase();
+    if (companyPrefix && AUTHORED_COMPANY_SET.has(companyPrefix) && companyPrefix !== scope.company) return null;
+    if (ts.isVariableDeclaration(node) && name === 'AUTHORED_COMPANY_PREVIEWS' && ts.isObjectLiteralExpression(node.initializer)) {
+      return [name, ...node.initializer.properties.filter((property) => propertyName(property.name) === scope.company).map((property) => projectNode(property, scope))];
+    }
+  }
   if (scope.tech && /^(?:REACT|ANGULAR|VUE)_/.test(name) && !name.startsWith(`${scope.tech.toUpperCase()}_`)) return null;
   if (scope.hub) {
     const prefix = name.match(/^(HTML_CSS|MASTER|JAVASCRIPT|REACT|ANGULAR|VUE|HTML|CSS)_/)?.[1];
@@ -231,6 +238,8 @@ function excluded(file) {
 function contentDependency(from, target) {
   if (excluded(target)) return false;
   if (target.startsWith(`${APP}core/content/`)) return true;
+  // Registry-driven authored company guides live beside their content modules.
+  if (target.startsWith(`${APP}shared/company-previews/`)) return true;
   if (/\/(?:content|data|paths)\//.test(target) || /(?:-content|\.data|\.path)\.ts$/.test(target)) return true;
   // Local article helpers and components can render substantive page content.
   return path.posix.dirname(from) === path.posix.dirname(target)
@@ -300,7 +309,7 @@ function tsContent(reader, file, parts, sources, visited = new Set(), names = nu
       : null;
     if (ts.isImportDeclaration(statement) && selected && !selected.length) continue;
     if (!target) { missing(/\.(?:ts|json|html|md|[cm]?js)$/.test(candidate) ? candidate : `${candidate}.ts`); continue; }
-    const companyFile = target.match(/\/(google|netflix)-preview-content\.ts$/);
+    const companyFile = target.match(/\/([a-z0-9-]+)-preview-content\.ts$/);
     if (companyFile && scope.company && companyFile[1] !== scope.company) continue;
     if (ts.isExportDeclaration(statement)) { dependencies.push({ target, names: null }); continue; }
     if (bindings && ts.isNamedImports(bindings)) {
@@ -537,7 +546,7 @@ export function buildSeoInventory(reader) {
     const route = `/companies/${company}/preview`;
     const value = page(route, '/companies/:slug/preview');
     if (!value) continue;
-    if (!['google', 'openai', 'netflix'].includes(company)) {
+    if (!AUTHORED_COMPANIES.includes(company)) {
       const techOrder = ['javascript', 'angular', 'react', 'vue', 'html', 'css'];
       const matching = records.filter(({ entry, kind }) => ['coding', 'trivia', 'system-design'].includes(kind) && (entry.companies || entry.companyTags || []).includes(company))
         .sort((a, b) => techOrder.indexOf(a.tech) - techOrder.indexOf(b.tech));

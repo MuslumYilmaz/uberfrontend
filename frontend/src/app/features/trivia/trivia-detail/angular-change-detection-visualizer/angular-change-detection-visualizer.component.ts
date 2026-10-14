@@ -125,7 +125,7 @@ export class AngularChangeDetectionVisualizerComponent implements AfterViewInit,
         selected: selectedNodeId === meta.id,
         stale: isStale(node),
         outcomeLabel: CD_OUTCOME_LABELS[node.outcome],
-        strategyLabel: node.strategy === 'onpush' ? 'OnPush' : 'Default',
+        strategyLabel: node.strategy === 'onpush' ? 'OnPush' : 'Eager',
       };
     });
   });
@@ -247,7 +247,7 @@ export class AngularChangeDetectionVisualizerComponent implements AfterViewInit,
     const current = this.state().nodes[nodeId].strategy;
     this.beginInteraction();
     this.dispatch({ type: 'set-strategy', nodeId, strategy: current === 'onpush' ? 'default' : 'onpush' });
-    const next = this.state().nodes[nodeId].strategy === 'onpush' ? 'OnPush' : 'Default';
+    const next = this.state().nodes[nodeId].strategy === 'onpush' ? 'OnPush' : 'Eager';
     this.liveMessage.set(`${CD_NODE_LABELS[nodeId]} now uses ${next}. Run a trigger to compare.`);
     this.trackInteraction('strategy_toggled', { node: nodeId, strategy: this.state().nodes[nodeId].strategy });
   }
@@ -271,7 +271,7 @@ export class AngularChangeDetectionVisualizerComponent implements AfterViewInit,
     this.dispatch({ type: 'reset' });
     this.liveMessage.set(this.state().scenario
       ? 'Scenario reset to its starting state.'
-      : 'Sandbox reset: every component is Default and fresh.');
+      : 'Sandbox reset: every component is Eager and fresh.');
     this.trackInteraction('reset');
     this.focusAfterStateChange('scenario');
   }

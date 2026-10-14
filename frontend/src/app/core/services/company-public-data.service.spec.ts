@@ -4,11 +4,19 @@ import { firstValueFrom, of, Subject, throwError } from 'rxjs';
 import { CompanyIndexResolved, CompanyPreviewResolved } from '../models/company-public.model';
 import { CompanyPublicDataService } from './company-public-data.service';
 import { MixedQuestionListItem, QuestionService } from './question.service';
+import type { AuthoredCompanyPreview } from '../../shared/company-previews/authored-company-preview.model';
+import { AUTHORED_COMPANY_PREVIEWS } from '../../shared/company-previews/authored-company-previews';
+import { AUTHORED_COMPANY_SLUGS_TOKEN } from '../../shared/company-previews/authored-company-slugs';
+import { buildAuthoredCompanyPreviewFixture } from '../../shared/company-previews/authored-company-preview.spec-fixture';
 
 describe('CompanyPublicDataService', () => {
   let questions: jasmine.SpyObj<QuestionService>;
 
-  function configure(platform = 'browser', transferState = new TransferState()): CompanyPublicDataService {
+  function configure(
+    platform = 'browser',
+    transferState = new TransferState(),
+    authored: Record<string, AuthoredCompanyPreview> = AUTHORED_COMPANY_PREVIEWS,
+  ): CompanyPublicDataService {
     TestBed.resetTestingModule();
     questions = jasmine.createSpyObj<QuestionService>('QuestionService', ['loadAllQuestionSummaries', 'loadSystemDesign']);
     questions.loadAllQuestionSummaries.and.returnValue(of([]));
@@ -17,6 +25,7 @@ describe('CompanyPublicDataService', () => {
       { provide: QuestionService, useValue: questions },
       { provide: PLATFORM_ID, useValue: platform },
       { provide: TransferState, useValue: transferState },
+      { provide: AUTHORED_COMPANY_SLUGS_TOKEN, useValue: Object.keys(authored) },
     ] });
     return TestBed.inject(CompanyPublicDataService);
   }
@@ -127,5 +136,15 @@ describe('CompanyPublicDataService', () => {
     expect(resolved.counts.all).toBe(0);
     expect(resolved.samples).toEqual([]);
     expect(transferState.hasKey(makeStateKey('company-public:preview:amazon'))).toBeTrue();
+  });
+
+  it('treats registry-driven authored guides as editorial without loading the catalog', async () => {
+    const service = configure('browser', new TransferState(), { acme: buildAuthoredCompanyPreviewFixture() });
+    questions.loadAllQuestionSummaries.and.throwError('Catalog must not be loaded');
+    const resolved = await firstValueFrom(service.loadPreview('ACME '));
+    expect(resolved.mode).toBe('editorial');
+    expect(resolved.slug).toBe('acme');
+    expect(resolved.samples).toEqual([]);
+    expect(questions.loadAllQuestionSummaries).not.toHaveBeenCalled();
   });
 });

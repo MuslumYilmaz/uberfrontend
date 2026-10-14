@@ -31,6 +31,26 @@ const publicCopyCases = [
     expected: 'Prepare for product judgment, not Netflix trivia',
   },
   {
+    path: '/companies/waymo/preview',
+    expected: 'Prepare for product judgment, not Waymo trivia',
+  },
+  {
+    path: '/companies/elevenlabs/preview',
+    expected: 'Prepare for product judgment, not ElevenLabs trivia',
+  },
+  {
+    path: '/companies/datadog/preview',
+    expected: 'Prepare for product judgment, not Datadog trivia',
+  },
+  {
+    path: '/companies/intuit/preview',
+    expected: 'Prepare for product judgment, not Intuit trivia',
+  },
+  {
+    path: '/companies/servicenow/preview',
+    expected: 'Prepare for product judgment, not ServiceNow trivia',
+  },
+  {
     path: '/system-design',
     expected: 'Follow this four-step path when you are new to the bank',
   },

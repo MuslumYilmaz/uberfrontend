@@ -3566,9 +3566,9 @@ const ANGULAR_TOPIC_CARDS: AngularTopicCard[] = [
   },
   {
     title: 'Change detection and OnPush',
-    answer: 'Change detection answers should name the trigger path, not just the API. Default, OnPush, AsyncPipe, signals, markForCheck, and detectChanges all matter when you debug stale UI or excessive rerenders.',
+    answer: 'Change detection answers should name the trigger path, not just the API. OnPush (the Angular 22 default), Eager, AsyncPipe, signals, markForCheck, and detectChanges all matter when you debug stale UI or excessive rerenders.',
     link: {
-      label: 'Visualize Default vs OnPush',
+      label: 'Visualize Eager vs OnPush',
       route: ['/angular', 'trivia', 'angular-change-detection-strategies'],
     },
   },

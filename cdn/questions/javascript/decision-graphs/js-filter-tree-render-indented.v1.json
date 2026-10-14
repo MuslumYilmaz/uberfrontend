@@ -1,0 +1,115 @@
+{
+  "questionId": "js-filter-tree-render-indented",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "javascript",
+      "code": "export default function renderFilteredTree(root, needle) {\n  if (!root) return '';\n  if (needle && root.value.includes(needle)) return '';\n  const lines = [];\n  const walk = (node, depth) => {\n    lines.push(`${'  '.repeat(depth)}${node.value}`);\n    for (const child of node.children || []) {\n      if (needle && child.value.includes(needle)) continue;\n      walk(child, depth + 1);\n    }\n  };\n  walk(root, 0);\n  return lines.join('\\n');\n}\n",
+      "nodes": [
+        {
+          "id": "d1-gate-the-root-first",
+          "title": "Gate the root before walking",
+          "anchor": {
+            "lineStart": 3,
+            "lineEnd": 3,
+            "snippet": "root.value.includes(needle)"
+          },
+          "why": "A matching root removes the whole tree, so checking it first returns the empty string without any traversal.",
+          "alternative": "Treat the root like a child inside the walk and special-case the output.",
+          "tradeoff": "One extra line, but the contract for a matching root is explicit."
+        },
+        {
+          "id": "d2-derive-indentation-from-depth",
+          "title": "Turn depth into indentation",
+          "anchor": {
+            "lineStart": 6,
+            "lineEnd": 6,
+            "snippet": "'  '.repeat(depth)"
+          },
+          "why": "Carrying a depth counter means the output line is computed at visit time; no second pass over the tree is needed.",
+          "alternative": "Build nested arrays first and flatten them with indentation later.",
+          "tradeoff": "Simple and linear, though the depth must be threaded through every recursive call."
+        },
+        {
+          "id": "d3-prune-children-at-visit-time",
+          "title": "Skip a matching child and its subtree",
+          "anchor": {
+            "lineStart": 8,
+            "lineEnd": 8,
+            "snippet": "continue"
+          },
+          "why": "Skipping the recursive call drops the entire subtree in one decision, which is the required semantics.",
+          "alternative": "Filter children into a new array before recursing.",
+          "tradeoff": "Avoids allocating filtered arrays, but the prune rule lives inside the loop body."
+        },
+        {
+          "id": "d4-join-lines-without-trailing-newline",
+          "title": "Join collected lines once",
+          "anchor": {
+            "lineStart": 13,
+            "lineEnd": 13,
+            "snippet": "lines.join('\\n')"
+          },
+          "why": "Collecting lines in an array and joining once avoids a trailing newline and repeated string concatenation.",
+          "alternative": "Append to a string with a newline after every node.",
+          "tradeoff": "Cleaner output contract at the cost of one array."
+        }
+      ]
+    },
+    "approach2": {
+      "language": "javascript",
+      "code": "export default function renderFilteredTree(root, needle) {\n  if (!root || (needle && root.value.includes(needle))) return '';\n  const lines = [];\n  const stack = [{ node: root, depth: 0 }];\n  while (stack.length) {\n    const { node, depth } = stack.pop();\n    lines.push(`${'  '.repeat(depth)}${node.value}`);\n    const children = node.children || [];\n    for (let i = children.length - 1; i >= 0; i -= 1) {\n      const child = children[i];\n      if (needle && child.value.includes(needle)) continue;\n      stack.push({ node: child, depth: depth + 1 });\n    }\n  }\n  return lines.join('\\n');\n}\n",
+      "nodes": [
+        {
+          "id": "d1-use-an-explicit-stack",
+          "title": "Keep traversal state on an explicit stack",
+          "anchor": {
+            "lineStart": 4,
+            "lineEnd": 4,
+            "snippet": "const stack = [{ node: root, depth: 0 }];"
+          },
+          "why": "Frames of node and depth replace the call stack, so very deep trees cannot overflow it.",
+          "alternative": "Recurse and rely on the engine's call stack.",
+          "tradeoff": "More code, but no recursion limit and a visible traversal order."
+        },
+        {
+          "id": "d2-push-children-in-reverse",
+          "title": "Push children in reverse to keep sibling order",
+          "anchor": {
+            "lineStart": 9,
+            "lineEnd": 9,
+            "snippet": "i = children.length - 1"
+          },
+          "why": "A stack pops the last pushed frame first, so pushing the last child first makes the first child come out next.",
+          "alternative": "Use a queue, which would turn the walk into breadth-first order.",
+          "tradeoff": "A reverse loop is slightly unusual to read but preserves the required depth-first order."
+        },
+        {
+          "id": "d3-prune-while-pushing",
+          "title": "Apply the prune gate while pushing",
+          "anchor": {
+            "lineStart": 11,
+            "lineEnd": 11,
+            "snippet": "continue"
+          },
+          "why": "A matching child is never pushed, so neither it nor its subtree is ever visited.",
+          "alternative": "Push every child and check the gate after popping.",
+          "tradeoff": "Fewer frames on the stack; the gate is evaluated once per child either way."
+        },
+        {
+          "id": "d4-join-lines-once",
+          "title": "Join collected lines once",
+          "anchor": {
+            "lineStart": 15,
+            "lineEnd": 15,
+            "snippet": "lines.join('\\n')"
+          },
+          "why": "The output contract has no trailing newline, which a single join guarantees.",
+          "alternative": "Concatenate strings during the loop.",
+          "tradeoff": "One array allocation for a clean contract."
+        }
+      ]
+    }
+  }
+}
