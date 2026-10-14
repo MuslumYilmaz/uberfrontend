@@ -28,16 +28,19 @@ export const COMPANY_BRANDS: Record<string, CompanyBrand> = {
   elevenlabs: {
     slug: 'elevenlabs',
     label: 'ElevenLabs',
+    logoUrl: `${COMPANY_LOGO_BASE}/elevenlabs.svg`,
     monogram: 'E',
   },
   datadog: {
     slug: 'datadog',
     label: 'Datadog',
+    logoUrl: `${COMPANY_LOGO_BASE}/datadog.svg`,
     monogram: 'D',
   },
   intuit: {
     slug: 'intuit',
     label: 'Intuit',
+    logoUrl: `${COMPANY_LOGO_BASE}/intuit.svg`,
     monogram: 'I',
   },
   servicenow: {
