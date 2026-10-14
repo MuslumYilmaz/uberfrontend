@@ -279,7 +279,7 @@ const ANGULAR_PREP_PATTERNS: AngularPrepPatternCard[] = [
   {
     title: 'Change Detection triggers',
     meta: ['Rendering', 'Zones'],
-    prepGoal: 'Practice Angular change detection interview reasoning: Default vs OnPush, input references, events, AsyncPipe, and zone-triggered checks.',
+    prepGoal: 'Practice Angular change detection interview reasoning: Eager vs OnPush, input references, events, AsyncPipe, and zone-triggered checks.',
     testFocus: 'Trigger paths, mutation vs immutable updates, markForCheck(), detectChanges(), runOutsideAngular(), and zoneless follow-ups.',
     route: ['/angular', 'trivia', 'angular-change-detection-strategies'],
     linkLabel: 'Run the change detection visualizer',
@@ -2866,7 +2866,7 @@ function onInput(value) {
           why:
             'This is where “it works locally but the screen does not update correctly” bugs usually come from.',
           prompts: [
-            'Explain Default vs OnPush and what actually triggers checks.',
+            'Explain Eager (formerly Default) vs OnPush and what actually triggers checks.',
             'When to use markForCheck() vs detectChanges() and why.',
             'AsyncPipe behavior: mark-for-check + auto-unsubscribe.',
             'NgZone.runOutsideAngular() and zone-pollution mitigation.',

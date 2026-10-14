@@ -204,7 +204,7 @@ describe('AngularChangeDetectionVisualizerComponent', () => {
 
     expect(component.state().scenario?.id).toBe('zoneless-timer');
     expect(component.state().mode).toBe('zoneless');
-    expect(text('[data-testid="cd-scenario-card"] h3')).toBe('Default everywhere, but zoneless skips the timer');
+    expect(text('[data-testid="cd-scenario-card"] h3')).toBe('Eager everywhere, but zoneless skips the timer');
     expect(analytics.track).not.toHaveBeenCalled();
   });
 

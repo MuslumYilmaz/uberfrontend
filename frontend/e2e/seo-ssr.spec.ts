@@ -153,10 +153,10 @@ const CSS_STICKY_LAB_DESCRIPTION =
   'Diagnose CSS position: sticky failures with five broken layouts. Inspect overflow, insets, container height, flex/grid stretch, then test the fix.';
 
 const ANGULAR_CD_VISUALIZER_PATH = '/angular/trivia/angular-change-detection-strategies';
-const ANGULAR_CD_VISUALIZER_TITLE = 'Angular Change Detection Visualizer: Default vs OnPush';
-const ANGULAR_CD_VISUALIZER_H1 = 'Angular Change Detection Strategies: Visualize Default vs OnPush';
+const ANGULAR_CD_VISUALIZER_TITLE = 'Angular Change Detection Visualizer: Eager vs OnPush';
+const ANGULAR_CD_VISUALIZER_H1 = 'Angular Change Detection Strategies: Visualize Eager vs OnPush';
 const ANGULAR_CD_VISUALIZER_DESCRIPTION =
-  'Default checks every component each pass. OnPush checks only after a new input reference, an event, an async pipe, a signal, or markForCheck().';
+  'Eager, formerly Default, checks on every pass. OnPush, the Angular 22 default, checks after a new input, event, async pipe, signal, or markForCheck().';
 const ANGULAR_CD_SIBLING_PATH = '/angular/trivia/angular-onpush-change-detection-debugging-real-bug';
 const RXJS_OVERLAP_PATH = '/angular/trivia/rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use';
 const RXJS_OVERLAP_TITLE = 'switchMap vs exhaustMap vs mergeMap vs concatMap: Pick by UI Case';
@@ -337,7 +337,7 @@ const CASES = [
   },
   {
     path: ANGULAR_CD_VISUALIZER_PATH,
-    titleIncludes: 'Angular Change Detection Visualizer: Default vs OnPush',
+    titleIncludes: 'Angular Change Detection Visualizer: Eager vs OnPush',
     h1: ANGULAR_CD_VISUALIZER_H1,
     detail: true,
     indexable: true,
@@ -1821,7 +1821,8 @@ test.describe('seo-ssr', () => {
       'Signal inside OnPush',
       'Zoneless timer',
       'Read the visualizer trace from the root',
-      'Default vs OnPush: the production decision',
+      'Eager vs OnPush: the production decision',
+      'Angular 22 made OnPush the default',
       'Why OnPush still updates after events and async work',
       'Compact trigger matrix',
       'Zoneless change detection: what changes',

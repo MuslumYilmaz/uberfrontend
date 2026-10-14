@@ -981,7 +981,7 @@ export const PLAYBOOK: GuideEntry[] = [
             itemList: {
                 name: '12 Angular interview prep patterns to practice',
                 items: [
-                    { name: 'Change Detection triggers', description: 'Practice Default vs OnPush, input references, events, AsyncPipe, zone-triggered checks, and zoneless follow-ups.', url: '/angular/trivia/angular-change-detection-strategies' },
+                    { name: 'Change Detection triggers', description: 'Practice Eager vs OnPush, input references, events, AsyncPipe, zone-triggered checks, and zoneless follow-ups.', url: '/angular/trivia/angular-change-detection-strategies' },
                     { name: 'OnPush debugging', description: 'Practice Angular OnPush change detection interview bugs, stale rows, mutated arrays, markForCheck vs detectChanges, and root-cause narration.', url: '/angular/trivia/angular-onpush-change-detection-debugging-real-bug' },
                     { name: 'RxJS Observables', description: 'Practice Angular RxJS interview questions around cold vs hot Observables, AsyncPipe, teardown, shareReplay lifetime, and stream ownership.', url: '/angular/trivia/angular-observables-rxjs' },
                     { name: 'switchMap / mergeMap / exhaustMap / concatMap', description: 'Practice switchMap vs mergeMap, cancellation, parallelism, queueing, ignore-while-busy behavior, and stale response risk.', url: '/angular/trivia/rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use' },

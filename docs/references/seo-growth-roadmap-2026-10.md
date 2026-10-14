@@ -28,7 +28,7 @@
 
 ## Step 3 (current): Angular Change Detection Visualizer
 
-Target page: `/angular/trivia/angular-change-detection-strategies` (never crawled, question id unchanged). The page gets a deterministic simulator that shows which of seven components Angular checks after ten trigger types, in Default vs OnPush and in zone vs zoneless mode, with five preset production bugs and a diagnosis plus fix for each. The sibling page `angular-onpush-change-detection-debugging-real-bug` stays and links its bug stories to the preset scenarios by fragment.
+Target page: `/angular/trivia/angular-change-detection-strategies` (never crawled, question id unchanged). The page gets a deterministic simulator that shows which of seven components Angular checks after ten trigger types, in Default vs OnPush and in zone vs zoneless mode (relabelled Eager vs OnPush in Step 3c), with five preset production bugs and a diagnosis plus fix for each. The sibling page `angular-onpush-change-detection-debugging-real-bug` stays and links its bug stories to the preset scenarios by fragment.
 
 Implementation lives in `frontend/src/app/features/trivia/trivia-detail/angular-change-detection-visualizer/` and follows the event-loop lab pattern (deferred on viewport, crawlable placeholder, qualified-view analytics, completion hand-off). The content rewrite keeps the eight competitor-review evidence sentences verbatim.
 
@@ -41,6 +41,35 @@ Implementation lives in `frontend/src/app/features/trivia/trivia-detail/angular-
 | Plus 6 to 8 weeks | Indexed; at least 150 impressions per 28 days and CTR at or above 2%; "angular change detection strategies" at position 25 or better, "angular onpush vs default" and "angular zoneless change detection" at 30 or better; at least 25% of qualified views interact and at least 10% complete; sibling page impressions do not fall more than 20% |
 
 Second iteration (only if engagement is healthy): a real Default/OnPush mini demo behind the `CdEngine` seam, counting actual renders instead of simulating them.
+
+## Step 3c (current): Angular 22 wave
+
+Content acceptance rule, from this wave on: new pages are added only when the owner asks for one. A requested page either targets a query with no click history yet (a new API, a changed default, a new error code) or lets the reader finish a task on the page (a lab, a copyable test, a fix to paste); pages that only define a term are not added. Background: the 2026-10-13 research addendum in `docs/references/new-site-growth-2026-10.md`.
+
+Angular 22.0.0 (2026-06-03) made OnPush the default change detection strategy, and on 2026-10-13 Search Console showed zero impressions for OnPush, Eager and v22 queries. The wave repositions two existing pages for those queries. Facts were checked on 2026-10-14 against the v22.2.2 source, the v22.0.0 release notes and angular.dev; the copyable test on the OnPush page was run on Angular 21.2 with the v22 default written out.
+
+| Page | Change | Target queries |
+|---|---|---|
+| `angular-change-detection-strategies` | Title and H1 say Eager vs OnPush; new section "Angular 22 made OnPush the default"; lab strategy label Default becomes Eager | eager vs onpush, ChangeDetectionStrategy.Eager |
+| `angular-onpush-change-detection-debugging-real-bug` | Title "Angular OnPush by Default: Debug Stale UI After v22"; post-upgrade checklist and copyable test | angular 22 onpush default, stale UI after the upgrade |
+
+Also in the wave: accuracy fixes on `angular-component-metadata` and `angular-performance-optimization`; Angular 22 notes on the services, dependency injection, lazy loading and routing pages; hub, prep path and guide registry anchors renamed to Eager vs OnPush. No hub cards and no new pages were added.
+
+### Measurement protocol
+
+| Checkpoint | Check |
+|---|---|
+| Deploy day | Live title, description and H1 for both pages; `seo-meta-check` contracts pass; sitemap lastmod; URL Inspection requests for both pages (separate approval) |
+| Plus 14 days | Index status only |
+| Plus 28 days | Both pages indexed with the new titles, at least one in the top 10 for its target query, impressions above zero for Eager and v22 queries; read per page and per query |
+
+Decision rule: if the criteria hold, the same repositioning pattern is a candidate for other existing pages with new-demand queries; if not, review the query choice first.
+
+### Release watch
+
+- Angular now ships one major a year: 22.3 is expected around November 2026 and v23 around June 2027. The deprecated `ChangeDetectionStrategy.Default` alias has no removal version yet.
+- One statement on the OnPush page is pinned to the 22.2 source and needs a recheck on each minor: the Eager migration visits only top-level component classes with an inline metadata object.
+- Four outreach candidates wait for this wave: ngtips, Angular Addicts, Angular Challenges and NG-ZORRO.
 
 ## Step 3b (current): RxJS overlap playground
 

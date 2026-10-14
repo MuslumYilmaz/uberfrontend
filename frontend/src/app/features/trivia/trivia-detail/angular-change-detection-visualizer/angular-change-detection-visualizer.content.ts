@@ -134,7 +134,8 @@ export const CD_SCENARIOS: readonly CdScenario[] = [
     title: 'The list keeps the old users after push()',
     story:
       'UserList is OnPush and renders the users array it receives from AppComponent. A save handler in AppComponent runs users.push(created). The new row never shows up until something unrelated triggers a check.',
-    setup: 'UserList and every UserCard use OnPush; AppComponent, SummaryCard, and LiveCount stay Default.',
+    setup:
+      'UserList and every UserCard use OnPush, which Angular 22 applies to any component without a changeDetection setting; AppComponent, SummaryCard, and LiveCount stay Eager.',
     preset: {
       id: 'push-mutation',
       mode: 'zone',
@@ -151,7 +152,7 @@ export const CD_SCENARIOS: readonly CdScenario[] = [
     title: 'LiveCount freezes while the service keeps counting',
     story:
       'LiveCount is OnPush. A service setTimeout callback assigns total = n on the component. Zone.js runs a pass after the timer, but nothing marked LiveCount, so Angular skips its view and the DOM keeps the old number.',
-    setup: 'LiveCount uses OnPush; every other component stays Default.',
+    setup: 'LiveCount uses OnPush, the Angular 22 default; every other component stays Eager.',
     preset: {
       id: 'timer-in-service',
       mode: 'zone',
@@ -168,7 +169,7 @@ export const CD_SCENARIOS: readonly CdScenario[] = [
     title: 'The summary card shows the old total after save',
     story:
       'SummaryCard is OnPush and subscribes to total$ by hand. The callback assigns stats.total = total and never calls markForCheck(). The HTTP response ends a zone task, Angular runs a pass, and the card stays stale until the next click.',
-    setup: 'SummaryCard uses OnPush; every other component stays Default.',
+    setup: 'SummaryCard uses OnPush, the Angular 22 default; every other component stays Eager.',
     preset: {
       id: 'manual-subscribe',
       mode: 'zone',
@@ -185,7 +186,7 @@ export const CD_SCENARIOS: readonly CdScenario[] = [
     title: 'A signal updates one OnPush card and nothing else',
     story:
       'Every component is OnPush. UserCard 2 reads name() from a signal. Setting the signal refreshes that one view. AppComponent and UserList are traversed on the way down, but their templates are not re-evaluated.',
-    setup: 'All seven components use OnPush.',
+    setup: 'All seven components use OnPush, as in an Angular 22 app where no component sets a strategy.',
     preset: {
       id: 'signal-in-onpush',
       mode: 'zone',
@@ -207,10 +208,10 @@ export const CD_SCENARIOS: readonly CdScenario[] = [
   {
     id: 'zoneless-timer',
     chipLabel: 'Zoneless timer',
-    title: 'Default everywhere, but zoneless skips the timer',
+    title: 'Eager everywhere, but zoneless skips the timer',
     story:
-      'The app runs with provideZonelessChangeDetection() and every component is Default. A service timer assigns a plain field on LiveCount. No signal, event, async pipe, or markForCheck() notified Angular, so no pass runs at all.',
-    setup: 'Zoneless scheduling; all seven components use Default.',
+      'The app runs with provideZonelessChangeDetection() and every component is Eager, the strategy called Default before Angular 22. A service timer assigns a plain field on LiveCount. No signal, event, async pipe, or markForCheck() notified Angular, so no pass runs at all.',
+    setup: 'Zoneless scheduling; all seven components use Eager.',
     preset: {
       id: 'zoneless-timer',
       mode: 'zoneless',
@@ -237,7 +238,7 @@ export function scenarioIdFromFragment(fragment: string | null | undefined): CdS
 }
 
 export const CD_REASON_COPY: Readonly<Record<CdOutcomeReason, string>> = {
-  'default-always-checked': 'checked: Default views are checked on every pass that reaches them',
+  'default-always-checked': 'checked: Eager views are checked on every pass that reaches them',
   'input-reference-changed': 'checked: the input reference changed',
   'marked-dirty-event': 'checked: an event in this subtree marked the view dirty',
   'marked-dirty-mark-for-check': 'checked: markForCheck() marked the view dirty',
@@ -283,7 +284,7 @@ export function diagnosisSentence(diagnosis: CdDiagnosis): string {
     case 'onpush-no-trigger':
       return `${node} is OnPush. Its data changed in a callback Angular does not treat as a trigger for this view: no new input reference, no event here, no async pipe emission, no signal write.`;
     case 'parent-onpush-skipped':
-      return `${node} is Default, but ${parent} is OnPush and was skipped, so change detection never reached ${node}. A Default child cannot be checked if its parent subtree is skipped.`;
+      return `${node} is Eager, but ${parent} is OnPush and was skipped, so change detection never reached ${node}. An Eager child cannot be checked if its parent subtree is skipped.`;
     case 'outside-detect-changes-subtree':
       return `detectChanges() checked only ${root} and its children. ${node} sits outside that subtree, so its stale value stays on screen until a normal pass includes it.`;
     case 'no-tick-scheduled-zoneless':
@@ -361,12 +362,12 @@ export function liveSummary(result: CdRunResult): string {
 }
 
 export const FINAL_TAKEAWAY =
-  'Default: checked on every pass that reaches it. OnPush: checked after a new input reference, an event in its subtree, an async pipe emission, a signal it reads, or markForCheck(). Zoneless: only those notifications schedule a pass at all.';
+  'Eager, formerly Default: checked on every pass that reaches it. OnPush, the Angular 22 default: checked after a new input reference, an event in its subtree, an async pipe emission, a signal it reads, or markForCheck(). Zoneless: only those notifications schedule a pass at all.';
 
 export const CD_RELATED_LINKS: readonly CdRelatedLink[] = [
   {
     id: 'onpush-bug',
-    label: 'Debug the OnPush production bug',
+    label: 'Debug OnPush after the v22 upgrade',
     route: ['/angular', 'trivia', 'angular-onpush-change-detection-debugging-real-bug'],
   },
   {
