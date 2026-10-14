@@ -2,29 +2,29 @@
   "artifacts": {
     "private": {
       "file": "interview-system-design-registry-v1.private.json",
-      "sha256": "5fdfaa591fd87d1cb007f6ed5e6dfa99b96976af330a259da6f5e65f598381ee"
+      "sha256": "14d7ea0f1500b31db5bd42fb623f76e770cb30efb7e398a267bfc62b13f3a06c"
     },
     "public": {
       "file": "interview-system-design-registry-v1.public.json",
-      "sha256": "6c2b78be6a8398d87917ce94ba4bb590f5daf91680510701d2ae1b8d639af73c"
+      "sha256": "d2e4947f58c9d8c35fa5e2d30bd1d7f52414568c78eaae84ef4037b1cb70efbc"
     }
   },
-  "contentHash": "9a6fbbb6afd5dbe7600645a3f669feb8a9a5533976ce2ff0df2fccc1ddac348e",
-  "definitionHash": "dd2aa9b58688daef987d4682ef3e3917686962e0d39ea1f55b01e3d50c6a6173",
+  "contentHash": "aaa95b23baa78a4a846074e50d43395245d86c2e05465d0f2acd8f121ad06499",
+  "definitionHash": "b112357e6ec0d3094674e6ab024176bcd3930cffd776b0a56513995823fff4b9",
   "enabledScenarioCount": 8,
   "finalApproval": null,
-  "registryContentHash": "9a6fbbb6afd5dbe7600645a3f669feb8a9a5533976ce2ff0df2fccc1ddac348e",
+  "registryContentHash": "aaa95b23baa78a4a846074e50d43395245d86c2e05465d0f2acd8f121ad06499",
   "registryId": "interview-system-design-registry-v1",
   "registryVersion": "1.2.0",
   "scenarioCount": 8,
   "scenarioRefs": [
     {
-      "contentHash": "b6512f58e2e283efdf0dfabccbb48ded43dcc6d5413f590680379e1d2e51fa9d",
+      "contentHash": "12d488ca94b935c89f08613492cdb92980851cf8315f59eb1605d8582857e4bb",
       "enabled": true,
       "id": "int-sd-ai-chat-composer-mid-v1",
       "level": "mid",
       "revision": 3,
-      "sourceBundleHash": "0522c064c9a08cd6ab06db7f884cd3bd4f3c5886c21a7430198fddac6d68635d"
+      "sourceBundleHash": "585435667d7a5b673fc30ecac795e50b71a3c9fabc2c88d220502884ecc86d3d"
     },
     {
       "contentHash": "f9a76b65da48d48c1b268203f04992af217fd226c4b98c1eb3045f340db8e272",

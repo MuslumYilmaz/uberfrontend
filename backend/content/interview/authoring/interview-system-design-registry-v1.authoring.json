@@ -4,9 +4,9 @@
   "registryVersion": "1.2.0",
   "status": "candidate",
   "finalApproval": null,
-  "definitionHash": "dd2aa9b58688daef987d4682ef3e3917686962e0d39ea1f55b01e3d50c6a6173",
+  "definitionHash": "b112357e6ec0d3094674e6ab024176bcd3930cffd776b0a56513995823fff4b9",
   "reviewBatch": {
-    "reviewedDefinitionHash": "dd2aa9b58688daef987d4682ef3e3917686962e0d39ea1f55b01e3d50c6a6173",
+    "reviewedDefinitionHash": "b112357e6ec0d3094674e6ab024176bcd3930cffd776b0a56513995823fff4b9",
     "reviewedAt": "2026-08-12",
     "technical": {
       "reviewer": "codex-system-design-technical-v8",
@@ -18,7 +18,8 @@
         "Toast, Autocomplete, and Ranked Feed adaptation now grades accepted post-state instead of requiring a performative change from baseline.",
         "Autocomplete requires input and results UI boundaries; Ranked Feed requires view, normalized entities, and page membership plus explicit removed-anchor recovery.",
         "2026-09-26 source-pin maintenance review: the dashboard requirements source only moves the existing Interview opening callout; all block values and the other five source files are unchanged. Guided prompts, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
-        "2026-10-10 source-pin maintenance review: the dashboard source changes only meta.json seo.title and seo.description and one requirements link label and description; the AI chat source changes only meta.json seo.title and seo.description, drops one sentence from the overlapping-responses callout, and adds a two-item Build it links block to requirements. Candidate prompts, clarifications, requirements, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval."
+        "2026-10-10 source-pin maintenance review: the dashboard source changes only meta.json seo.title and seo.description and one requirements link label and description; the AI chat source changes only meta.json seo.title and seo.description, drops one sentence from the overlapping-responses callout, and adds a two-item Build it links block to requirements. Candidate prompts, clarifications, requirements, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval.",
+        "2026-10-14 source-pin maintenance review: the AI chat composer meta.json adds a Waymo company tag, a companyEvidence record and a public source list pointing at one public interview report; all five section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval."
       ]
     },
     "blind": {
@@ -3043,7 +3044,7 @@
       },
       "private": {
         "sourceContentId": "ai-chat-textarea-design",
-        "expectedSourceBundleHash": "0522c064c9a08cd6ab06db7f884cd3bd4f3c5886c21a7430198fddac6d68635d",
+        "expectedSourceBundleHash": "585435667d7a5b673fc30ecac795e50b71a3c9fabc2c88d220502884ecc86d3d",
         "clarificationAnswers": [
           {
             "clarificationId": "chat-draft-scope",

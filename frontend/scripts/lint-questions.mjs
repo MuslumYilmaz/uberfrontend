@@ -6,6 +6,7 @@ import {
   frontendRoot as projectRoot,
 } from "./content-paths.mjs";
 import { validateOutputQuestion } from "./output-question-validator.mjs";
+import { validateQuestionSources } from "./question-sources-lib.mjs";
 
 const tagRegistryPath = path.join(questionsRoot, "tag-registry.json");
 
@@ -42,6 +43,7 @@ Errors (fail CI):
   - non-kebab-case ids
   - duplicate ids across all question assets
   - invalid output-question contracts
+  - invalid question sources (shape, https URL, date, provenance wording)
   - system-design index/meta mismatches
 
 Warnings (do not fail CI):
@@ -186,6 +188,21 @@ function validateTags({ file, id, tags, canonicalTags, severity }) {
   }
 
   return { ok: !hasUnfixable, fixable: !hasUnfixable, tags: tagList };
+}
+
+function validateSourcesField({ file, id, sources, kind, severity }) {
+  if (sources === undefined) return;
+  if (kind === "trivia") {
+    severity.addError(file, id, "sources are not supported on trivia entries (reference blocks are stripped on trivia pages); move them to a coding, debug or system-design meta entry.");
+    return;
+  }
+  if (kind === "system-design-index") {
+    severity.addError(file, id, "sources belong in the case meta.json, not in system-design/index.json.");
+    return;
+  }
+  for (const message of validateQuestionSources(sources)) {
+    severity.addError(file, id, message);
+  }
 }
 
 function validateDifficulty({ file, id, difficulty, severity }) {
@@ -606,6 +623,7 @@ for (const file of questionFiles) {
       validateDifficulty({ file, id, difficulty: q.difficulty, severity });
 
       const tagCheck = validateTags({ file, id, tags: q.tags, canonicalTags, severity });
+      validateSourcesField({ file, id, sources: q.sources, kind: info.kind, severity });
 
       const importance = q.importance;
       if (importance === undefined) {
@@ -667,6 +685,7 @@ for (const file of questionFiles) {
       validateAccess({ file, id, access: entry.access, severity, required: true });
 
       const tagCheck = validateTags({ file, id, tags: entry.tags, canonicalTags, severity });
+      validateSourcesField({ file, id, sources: entry.sources, kind: "system-design-index", severity });
       if (FIX && tagCheck.fixable && Array.isArray(tagCheck.tags)) {
         const normalized = unique(tagCheck.tags).slice().sort();
         if (!arrayEquals(tagCheck.tags, normalized)) {
@@ -708,6 +727,7 @@ for (const file of questionFiles) {
     }
 
     const tagCheck = validateTags({ file, id, tags: data.tags, canonicalTags, severity });
+    validateSourcesField({ file, id, sources: data.sources, kind: "system-design-meta", severity });
     if (FIX && tagCheck.fixable && Array.isArray(tagCheck.tags)) {
       const normalized = unique(tagCheck.tags).slice().sort();
       if (!arrayEquals(tagCheck.tags, normalized)) {
@@ -893,6 +913,22 @@ for (const [id, { file: indexFile }] of systemDesignIndexById) {
       const metaValue = field === "companies" ? (meta.meta?.[field] || []) : meta.meta?.[field];
       if (JSON.stringify(indexValue) !== JSON.stringify(metaValue)) {
         severity.addError(indexFile, id, `system-design index/meta ${field} mismatch.`);
+      }
+    }
+
+    // When a case lists both company evidence and sources, every evidence URL must be a visible source.
+    const companyEvidence = Array.isArray(meta.meta?.editorial?.companyEvidence)
+      ? meta.meta.editorial.companyEvidence
+      : [];
+    if (companyEvidence.length && Array.isArray(meta.meta?.sources)) {
+      const sourceUrls = new Set(
+        meta.meta.sources.map((source) => (source && typeof source.url === "string" ? source.url.trim() : ""))
+      );
+      for (const item of companyEvidence) {
+        const url = item && typeof item.sourceUrl === "string" ? item.sourceUrl.trim() : "";
+        if (url && !sourceUrls.has(url)) {
+          severity.addError(meta.file, id, `editorial.companyEvidence source is missing from sources: ${url}`);
+        }
       }
     }
   }

@@ -303,6 +303,21 @@ test('seo: llms.txt is served with public discovery links only', async ({ page }
   expect(text).toContain(
     'Public Netflix prep guide with six representative prompts and a broad frontend preparation plan.',
   );
+  expect(text).toContain(
+    '[Waymo frontend interview questions](https://frontendatlas.com/companies/waymo/preview)',
+  );
+  expect(text).toContain(
+    '[ElevenLabs frontend interview questions](https://frontendatlas.com/companies/elevenlabs/preview)',
+  );
+  expect(text).toContain(
+    '[Datadog frontend interview questions](https://frontendatlas.com/companies/datadog/preview)',
+  );
+  expect(text).toContain(
+    '[Intuit frontend interview questions](https://frontendatlas.com/companies/intuit/preview)',
+  );
+  expect(text).toContain(
+    '[ServiceNow frontend interview questions](https://frontendatlas.com/companies/servicenow/preview)',
+  );
 
   ['/dashboard', '/profile', '/admin', '/auth/', '/billing'].forEach((path) => {
     expect(text).not.toContain(path);

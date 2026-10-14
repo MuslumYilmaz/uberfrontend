@@ -1740,7 +1740,18 @@
       "storageKey": "v2:ui:react:react-dynamic-table"
     },
     "solutionAsset": "assets/sb/react/solution/react-dynamic-table-solution.v1.json",
-    "companies": [],
+    "companies": [
+      "datadog"
+    ],
+    "sources": [
+      {
+        "label": "Taro: Datadog senior frontend developer interview, Valbonne, October 2024",
+        "url": "https://www.jointaro.com/interviews/companies/datadog/experiences/senior-frontend-developer-valbonne-october-1-2024-accepted-offer-positive-47d59048/",
+        "publisher": "Taro",
+        "date": "2024-10",
+        "note": "One senior account lists a React page that displays a table of real-time data, sortable by any column. This dynamic table is a practice version of that round, not its wording or data."
+      }
+    ],
     "access": "premium",
     "updatedAt": "2026-01-30",
     "seo": {
@@ -2069,6 +2080,34 @@
     },
     "solutionAsset": "assets/sb/react/solution/react-autocomplete-search-solution.v2.json",
     "access": "free",
+    "companies": [
+      "waymo",
+      "elevenlabs",
+      "intuit"
+    ],
+    "sources": [
+      {
+        "label": "PracHub: Waymo senior frontend engineer interview experience, May 2026",
+        "url": "https://prachub.com/interview-experiences/waymo-senior-frontend-engineer-interview-experience-rejected-30-minutes-after-pushing-on-the-process",
+        "publisher": "PracHub",
+        "date": "2026-05",
+        "note": "One self-reported senior loop. It establishes that an onsite round asked for an autocomplete search bar with debounce; this React starter is a practice version, not the reported wording or stack."
+      },
+      {
+        "label": "Aced: ElevenLabs senior full-stack (frontend-leaning) interview experience, 2026",
+        "url": "https://www.aced.io/experiences/eleven-labs-senior-frontend-engineer-interview-925c04",
+        "publisher": "Aced",
+        "date": "2026-08",
+        "note": "One senior account describes a 90-minute assessment with four questions mixing React tasks and medium algorithm problems. This React starter is a representative timed task, not the reported one."
+      },
+      {
+        "label": "LeetCode Discuss: Intuit senior frontend engineer interview experience, November 2025",
+        "url": "https://leetcode.com/discuss/post/7320927/",
+        "publisher": "LeetCode Discuss",
+        "date": "2025-11",
+        "note": "One senior account describes implementing a typeahead component inside a codebase received the day before, then writing Jest and React Testing Library tests for it. This starter is a practice version of that shape, not the reported codebase."
+      }
+    ],
     "updatedAt": "2026-07-14",
     "seo": {
       "title": "React Autocomplete Interview Question: Debounce + Tests",
@@ -3556,7 +3595,17 @@
     },
     "solutionAsset": "assets/sb/react/solution/react-chat-streaming-ui-solution.v1.json",
     "companies": [
-      "openai"
+      "openai",
+      "intuit"
+    ],
+    "sources": [
+      {
+        "label": "LeetCode Discuss: Intuit senior frontend engineer interview experience, November 2025",
+        "url": "https://leetcode.com/discuss/post/7320927/",
+        "publisher": "LeetCode Discuss",
+        "date": "2025-11",
+        "note": "One senior account describes a user story to call a provided LLM, stream the result to the page, handle errors and add unit tests. This chat UI is a practice version of that shape, not the reported codebase."
+      }
     ],
     "access": "premium",
     "updatedAt": "2026-01-31",

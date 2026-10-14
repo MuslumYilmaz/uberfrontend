@@ -28,6 +28,7 @@
 /angular/coding/angular-todo-list-starter
 /angular/coding/angular-transfer-list
 /angular/debug/ng-debug-counter-change-detection
+/angular/debug/ng-debug-fleet-status-bug-reports
 /angular/interview-questions
 /angular/trivia/angular-appmodule-standalone-changes
 /angular/trivia/angular-change-detection-strategies
@@ -86,13 +87,18 @@
 /companies/amazon/preview
 /companies/apple/preview
 /companies/bytedance/preview
+/companies/datadog/preview
+/companies/elevenlabs/preview
 /companies/google/preview
+/companies/intuit/preview
 /companies/meta/preview
 /companies/microsoft/preview
 /companies/netflix/preview
 /companies/openai/preview
+/companies/servicenow/preview
 /companies/stripe/preview
 /companies/uber/preview
+/companies/waymo/preview
 /css/coding/css-box-model-margin-padding-border
 /css/coding/css-flexbox-navbar
 /css/coding/css-fluid-clamp
@@ -253,6 +259,7 @@
 /javascript/coding/js-escape-html
 /javascript/coding/js-event-emitter-mini
 /javascript/coding/js-fetch-json-timeout
+/javascript/coding/js-filter-tree-render-indented
 /javascript/coding/js-flatten-depth
 /javascript/coding/js-flatten-once
 /javascript/coding/js-format-date-timezone

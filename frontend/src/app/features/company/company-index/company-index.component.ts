@@ -8,6 +8,7 @@ import { SeoService } from '../../../core/services/seo.service';
 import { COMPANY_PRACTICE_DISCLAIMER } from '../../../core/content/public-editorial-facts';
 import { CompanyLogoMarkComponent } from '../../../shared/components/company-logo-mark/company-logo-mark.component';
 import { PrepSignalGridComponent, PrepSignalItem } from '../../../shared/components/prep-signal-grid/prep-signal-grid.component';
+import { AUTHORED_COMPANY_PREVIEWS_TOKEN } from '../../../shared/company-previews/authored-company-previews';
 
 type CompanyHubLink = { label: string; route: string[]; path: string };
 
@@ -27,6 +28,13 @@ export class CompanyIndexComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private destroyRef = inject(DestroyRef);
   private seo = inject(SeoService);
+  private readonly authoredPreviews = inject(AUTHORED_COMPANY_PREVIEWS_TOKEN);
+  /** Registry-driven authored guides, listed after the three hand-written ones. */
+  readonly authoredGuideLinks: CompanyHubLink[] = Object.values(this.authoredPreviews).map((preview) => ({
+    label: preview.indexAnchorLabel,
+    route: ['/companies', preview.slug, 'preview'],
+    path: `/companies/${preview.slug}/preview`,
+  }));
 
   companyPrepOutcomes: PrepSignalItem[] = [
     'Compare interview style differences after your baseline prep is stable.',

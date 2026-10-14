@@ -6,6 +6,9 @@ import { CompanyPreviewResolved } from '../../../core/models/company-public.mode
 import { QuestionService } from '../../../core/services/question.service';
 import { SeoService } from '../../../core/services/seo.service';
 import { CompanyPreviewComponent } from './company-preview.component';
+import type { AuthoredCompanyPreview } from '../../../shared/company-previews/authored-company-preview.model';
+import { AUTHORED_COMPANY_PREVIEWS, AUTHORED_COMPANY_PREVIEWS_TOKEN } from '../../../shared/company-previews/authored-company-previews';
+import { buildAuthoredCompanyPreviewFixture } from '../../../shared/company-previews/authored-company-preview.spec-fixture';
 
 describe('CompanyPreviewComponent', () => {
   let fixture: ComponentFixture<CompanyPreviewComponent>;
@@ -13,7 +16,11 @@ describe('CompanyPreviewComponent', () => {
   let seo: jasmine.SpyObj<SeoService>;
   let routeData: BehaviorSubject<Data>;
 
-  async function createComponent(slug: string, resolved?: CompanyPreviewResolved): Promise<ComponentFixture<CompanyPreviewComponent>> {
+  async function createComponent(
+    slug: string,
+    resolved?: CompanyPreviewResolved,
+    authored: Record<string, AuthoredCompanyPreview> = AUTHORED_COMPANY_PREVIEWS,
+  ): Promise<ComponentFixture<CompanyPreviewComponent>> {
     TestBed.resetTestingModule();
 
     questionService = jasmine.createSpyObj<QuestionService>('QuestionService', [
@@ -24,7 +31,7 @@ describe('CompanyPreviewComponent', () => {
     questionService.loadSystemDesign.and.returnValue(of([] as any));
     routeData = new BehaviorSubject<Data>({ companyPreview: resolved ?? {
       slug,
-      mode: ['google', 'netflix', 'openai'].includes(slug) ? 'editorial' : 'catalog',
+      mode: ['google', 'netflix', 'openai'].includes(slug) || slug in authored ? 'editorial' : 'catalog',
       counts: { all: 0, coding: 0, trivia: 0, system: 0 },
       samples: [],
     } });
@@ -54,6 +61,7 @@ describe('CompanyPreviewComponent', () => {
         },
         { provide: QuestionService, useValue: questionService },
         { provide: SeoService, useValue: seo },
+        { provide: AUTHORED_COMPANY_PREVIEWS_TOKEN, useValue: authored },
       ],
     }).compileComponents();
 
@@ -489,5 +497,77 @@ describe('CompanyPreviewComponent', () => {
     expect(host.querySelector('h1')?.textContent).toBe('Netflix Frontend Interview Questions');
     expect(host.querySelector('fa-question-row')).toBeNull();
     expect(seo.updateTags.calls.mostRecent().args[0]?.canonical).toBe('/companies/netflix/preview');
+  });
+
+  describe('registry-driven authored guides', () => {
+    const acme = buildAuthoredCompanyPreviewFixture();
+    const registry = { acme };
+
+    it('renders the authored guide with prompts, reported-round links, labelled sources and its premium CTA', async () => {
+      await createComponent('acme', undefined, registry);
+      const host: HTMLElement = fixture.nativeElement;
+      const text = host.textContent || '';
+
+      expect(host.querySelector('[data-testid="authored-company-preview"]')).not.toBeNull();
+      expect(host.querySelector('h1')?.textContent?.trim()).toBe('Acme Frontend Interview Questions');
+      expect(host.querySelector('.preview-breadcrumb')?.textContent).toContain('Acme Frontend Interview Questions');
+      expect(text).toContain(acme.trustNote);
+      expect(text).toContain('Prepare for product judgment, not Acme trivia');
+      expect(host.querySelector('#acme-study-first')).not.toBeNull();
+      expect(host.querySelector('#acme-role-lenses')).not.toBeNull();
+      expect(host.querySelector('#acme-walkthrough')).not.toBeNull();
+      expect(host.querySelectorAll('article.company-prompt').length).toBe(2);
+      expect(host.querySelector('article#acme-tree-filter h3')?.textContent?.trim()).toBe('Filter a tree and render it indented');
+
+      const reported = host.querySelector('[data-testid="company-prompt-reported-round"] a') as HTMLAnchorElement;
+      expect(reported.getAttribute('href')).toBe('https://reports.example.com/acme-senior-frontend');
+      expect(reported.getAttribute('rel')).toBe('noopener noreferrer nofollow');
+      expect(host.querySelectorAll('[data-testid="company-prompt-reported-round"]').length).toBe(1);
+
+      const sourceLinks = Array.from(host.querySelectorAll('.company-source-list a')) as HTMLAnchorElement[];
+      expect(sourceLinks.map((link) => link.getAttribute('rel'))).toEqual(['noopener noreferrer nofollow', 'noopener noreferrer']);
+
+      const cta = host.querySelector('.company-guide-cta a') as HTMLAnchorElement;
+      expect(cta.textContent?.trim()).toBe('Unlock the full Acme practice set');
+      expect(cta.getAttribute('href')).toContain('src=company_preview_acme');
+
+      expect(host.querySelector('[data-testid="company-preview-counts"]')).toBeNull();
+      expect(text).not.toContain('Sample FrontendAtlas practice prompts');
+      expect(text).not.toContain('known questions');
+      expect(questionService.loadAllQuestionSummaries).not.toHaveBeenCalled();
+    });
+
+    it('publishes CollectionPage, ItemList and BreadcrumbList metadata for the authored guide', async () => {
+      await createComponent('acme', undefined, registry);
+      const payload = seo.updateTags.calls.mostRecent().args[0] as any;
+      const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
+      const collection = graph.find((entry: any) => entry?.['@type'] === 'CollectionPage');
+      const itemList = graph.find((entry: any) => entry?.['@type'] === 'ItemList');
+      const breadcrumb = graph.find((entry: any) => entry?.['@type'] === 'BreadcrumbList');
+
+      expect(payload.title).toBe(acme.title);
+      expect(payload.description).toBe(acme.description);
+      expect(payload.canonical).toBe('/companies/acme/preview');
+      expect(payload.robots).toBe('index,follow');
+      expect(collection?.url).toBe('https://frontendatlas.com/companies/acme/preview');
+      expect(collection?.headline).toBe(acme.h1);
+      expect(collection?.disambiguatingDescription).toBe(acme.trustNote);
+      expect(collection?.isAccessibleForFree).toBeTrue();
+      expect(collection?.about?.map((item: any) => item.name)).toEqual(['Acme frontend interview preparation', 'Streaming UI']);
+      expect(collection?.mentions?.length).toBe(2);
+      expect(collection?.mainEntity?.['@id']).toBe('https://frontendatlas.com/companies/acme/preview#practice-prompts');
+      expect(itemList?.['@id']).toBe('https://frontendatlas.com/companies/acme/preview#practice-prompts');
+      expect(itemList?.numberOfItems).toBe(2);
+      expect(itemList?.itemListElement?.[0]?.url).toBe('https://frontendatlas.com/companies/acme/preview#acme-tree-filter');
+      expect(breadcrumb?.itemListElement?.[2]?.name).toBe(acme.h1);
+    });
+
+    it('keeps the catalog preview for slugs outside the registry', async () => {
+      await createComponent('amazon', undefined, registry);
+      const host: HTMLElement = fixture.nativeElement;
+      expect(host.querySelector('[data-testid="authored-company-preview"]')).toBeNull();
+      expect(host.querySelector('[data-testid="company-preview-counts"]')).not.toBeNull();
+      expect(host.textContent || '').toContain('Sample FrontendAtlas practice prompts');
+    });
   });
 });

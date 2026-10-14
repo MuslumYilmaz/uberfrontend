@@ -9,6 +9,8 @@ import { COMPANY_PRACTICE_DISCLAIMER } from '../../../core/content/public-editor
 import { Tech } from '../../../core/models/user.model';
 import { SeoService } from '../../../core/services/seo.service';
 import { companyBrandFor } from '../../../shared/company-branding';
+import type { AuthoredCompanyPreview, AuthoredSource } from '../../../shared/company-previews/authored-company-preview.model';
+import { AUTHORED_COMPANY_PREVIEWS_TOKEN } from '../../../shared/company-previews/authored-company-previews';
 import {
   FaQuestionRowComponent,
   FaQuestionRowMetaChip,
@@ -208,6 +210,8 @@ export class CompanyPreviewComponent implements OnInit {
   isOpenAiPreview = false;
   isGooglePreview = false;
   isNetflixPreview = false;
+  /** Set when the slug has a data-driven authored guide in the registry (see shared/company-previews). */
+  authoredPreview: AuthoredCompanyPreview | null = null;
   readonly openAiTitle = OPENAI_PREVIEW_TITLE;
   readonly openAiH1 = OPENAI_PREVIEW_H1;
   readonly openAiTrustNote = OPENAI_TRUST_NOTE;
@@ -237,6 +241,7 @@ export class CompanyPreviewComponent implements OnInit {
     samples: [],
   };
   private readonly destroyRef = inject(DestroyRef);
+  private readonly authoredPreviews = inject(AUTHORED_COMPANY_PREVIEWS_TOKEN);
 
   constructor(
     private route: ActivatedRoute,
@@ -262,6 +267,7 @@ export class CompanyPreviewComponent implements OnInit {
     this.isOpenAiPreview = this.slug === 'openai';
     this.isGooglePreview = this.slug === 'google';
     this.isNetflixPreview = this.slug === 'netflix';
+    this.authoredPreview = this.authoredPreviews[this.slug] ?? null;
     this.data = resolved ?? {
       slug: this.slug,
       mode: 'catalog',
@@ -281,6 +287,11 @@ export class CompanyPreviewComponent implements OnInit {
 
     if (this.isNetflixPreview) {
       this.publishNetflixSeo();
+      return;
+    }
+
+    if (this.authoredPreview) {
+      this.publishAuthoredSeo(this.authoredPreview);
       return;
     }
 
@@ -588,6 +599,90 @@ export class CompanyPreviewComponent implements OnInit {
       description: NETFLIX_PREVIEW_DESCRIPTION,
       robots: 'index,follow',
       canonical: NETFLIX_PREVIEW_CANONICAL_PATH,
+      jsonLd: [collectionPage, itemList, breadcrumb],
+    });
+  }
+
+  breadcrumbLabel(): string {
+    if (this.isOpenAiPreview) return this.openAiH1;
+    if (this.isGooglePreview) return this.googleH1;
+    if (this.isNetflixPreview) return this.netflixH1;
+    if (this.authoredPreview) return this.authoredPreview.h1;
+    return `${this.label} frontend interview questions preview`;
+  }
+
+  sourceRel(source: AuthoredSource): string {
+    return source.kind === 'report' ? 'noopener noreferrer nofollow' : 'noopener noreferrer';
+  }
+
+  private publishAuthoredSeo(preview: AuthoredCompanyPreview): void {
+    const canonicalUrl = this.seo.buildCanonicalUrl(preview.canonicalPath);
+    const dateModified = seoContentDateModified(canonicalUrl);
+    const itemListId = `${canonicalUrl}#practice-prompts`;
+    const itemList = {
+      '@type': 'ItemList',
+      '@id': itemListId,
+      name: preview.prompts.itemListName,
+      description: COMPANY_PRACTICE_DISCLAIMER,
+      numberOfItems: preview.prompts.items.length,
+      itemListElement: preview.prompts.items.map((prompt, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        name: prompt.title,
+        url: `${canonicalUrl}#${prompt.id}`,
+      })),
+    };
+
+    const collectionPage = {
+      '@type': 'CollectionPage',
+      '@id': `${canonicalUrl}#collection`,
+      url: canonicalUrl,
+      name: preview.title,
+      headline: preview.h1,
+      description: preview.description,
+      disambiguatingDescription: preview.trustNote,
+      inLanguage: 'en',
+      ...(dateModified ? { dateModified } : {}),
+      isAccessibleForFree: true,
+      about: preview.about.map((name) => ({ '@type': 'Thing', name })),
+      mentions: preview.resourceLinks.items.map((link) => ({
+        '@type': 'WebPage',
+        name: link.label,
+        url: this.seo.buildCanonicalUrl(link.path),
+      })),
+      mainEntity: { '@id': itemListId },
+    };
+
+    const breadcrumb = {
+      '@type': 'BreadcrumbList',
+      '@id': `${canonicalUrl}#breadcrumb`,
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'FrontendAtlas',
+          item: this.seo.buildCanonicalUrl('/'),
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'Company Frontend Interview Questions',
+          item: this.seo.buildCanonicalUrl('/companies'),
+        },
+        {
+          '@type': 'ListItem',
+          position: 3,
+          name: preview.h1,
+          item: canonicalUrl,
+        },
+      ],
+    };
+
+    this.seo.updateTags({
+      title: preview.title,
+      description: preview.description,
+      robots: 'index,follow',
+      canonical: preview.canonicalPath,
       jsonLd: [collectionPage, itemList, breadcrumb],
     });
   }

@@ -528,6 +528,16 @@ function assertNetflixCompanyPreviewSitemapEntry(entries) {
   }
 }
 
+function assertAuthoredCompanyPreviewSitemapEntries(entries) {
+  for (const slug of ['waymo', 'elevenlabs', 'datadog', 'intuit', 'servicenow']) {
+    const loc = `https://frontendatlas.com/companies/${slug}/preview`;
+    const matches = entries.filter((item) => item.loc === loc);
+    if (matches.length !== 1) {
+      throw new Error(`Sitemap must include exactly one ${slug} company preview loc: ${loc}`);
+    }
+  }
+}
+
 function assertInfiniteScrollSystemDesignSitemapEntry(entries) {
   const loc = 'https://frontendatlas.com/system-design/infinite-scroll-list';
   const matches = entries.filter((item) => item.loc === loc);
@@ -1198,6 +1208,7 @@ assertCssThemeVariablesSitemapEntry(entries);
 assertOpenAiCompanyPreviewSitemapEntry(entries);
 assertGoogleCompanyPreviewSitemapEntry(entries);
 assertNetflixCompanyPreviewSitemapEntry(entries);
+assertAuthoredCompanyPreviewSitemapEntries(entries);
 assertInfiniteScrollSystemDesignSitemapEntry(entries);
 assertInfiniteScrollResearchIsQuarantined(entries);
 assertAngularHttpCancellationLabSitemapEntry(entries);

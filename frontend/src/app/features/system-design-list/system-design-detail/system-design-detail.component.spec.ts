@@ -1176,4 +1176,85 @@ describe('SystemDesignDetailComponent', () => {
     expect(host.textContent).not.toContain('Practice this exact case');
     expect(interviewAvailability.resolve).not.toHaveBeenCalled();
   });
+
+  describe('question sources', () => {
+    const sources = [{
+      label: 'PracHub: Waymo senior frontend interview experience, May 2026',
+      url: 'https://prachub.com/interview-experiences/waymo-senior-frontend-engineer',
+      publisher: 'PracHub',
+      date: '2026-05',
+      note: 'One self-reported senior loop.',
+    }];
+
+    it('lists public interview reports after the sections and cites them in the Article schema', () => {
+      const fixture = TestBed.createComponent(SystemDesignDetailComponent);
+      const component = fixture.componentInstance;
+      component.q.set({ ...toastRadioQuestion(), sources } as any);
+      fixture.detectChanges();
+      const host = fixture.nativeElement as HTMLElement;
+      const block = host.querySelector('[data-testid="question-sources"]') as HTMLElement;
+      expect(block).not.toBeNull();
+      expect(block.textContent).toContain('Public interview reports');
+      expect(block.textContent).toContain('PracHub, May 2026');
+      const link = block.querySelector('a') as HTMLAnchorElement;
+      expect(link.getAttribute('href')).toBe(sources[0].url);
+      expect(link.getAttribute('rel')).toBe('noopener noreferrer nofollow');
+      expect(host.querySelector('[data-testid="question-sources-compact"]')).toBeNull();
+
+      (component as any).updateSeo({ ...toastRadioQuestion(), sources });
+      const payload = seo.updateTags.calls.mostRecent().args[0] as any;
+      const article = payload.jsonLd.find((entry: any) => entry['@type'] === 'Article');
+      expect(article.citation).toEqual([jasmine.objectContaining({ '@type': 'CreativeWork', url: sources[0].url })]);
+    });
+
+    it('renders nothing and adds no citation when a case has no sources', () => {
+      const fixture = TestBed.createComponent(SystemDesignDetailComponent);
+      const component = fixture.componentInstance;
+      component.q.set(toastRadioQuestion() as any);
+      fixture.detectChanges();
+      const host = fixture.nativeElement as HTMLElement;
+      expect(host.querySelector('[data-testid="question-sources"]')).toBeNull();
+      expect(host.querySelector('[data-testid="question-sources-compact"]')).toBeNull();
+      (component as any).updateSeo(toastRadioQuestion());
+      const article = (seo.updateTags.calls.mostRecent().args[0] as any).jsonLd
+        .find((entry: any) => entry['@type'] === 'Article');
+      expect(article.citation).toBeUndefined();
+    });
+
+    it('shows a compact sources line in the locked premium view without leaking the note', () => {
+      const fixture = TestBed.createComponent(SystemDesignDetailComponent);
+      const component = fixture.componentInstance;
+      component.q.set({
+        ...toastRadioQuestion(),
+        id: 'premium-with-sources',
+        access: 'premium',
+        contentSchemaVersion: 2,
+        practice: {
+          targetLevel: 'mid',
+          timeboxMinutes: 15,
+          candidatePrompt: 'Design the toast prompt.',
+          constraints: ['Keep one queue.'],
+          expectedDecisions: ['Queue.', 'Dismiss.', 'Focus.'],
+          prerequisites: ['State'],
+          coreSkills: ['Queues'],
+          guidedMock: false,
+          evaluationSpine: {
+            mustCover: ['One.', 'Two.'],
+            strongSignals: ['One.', 'Two.'],
+            expertStretch: 'Stretch.',
+            redFlag: 'Flag.',
+          },
+        },
+        sources,
+      } as any);
+      fixture.detectChanges();
+      const host = fixture.nativeElement as HTMLElement;
+      expect(component.locked()).toBeTrue();
+      const compact = host.querySelector('[data-testid="question-sources-compact"]') as HTMLElement;
+      expect(compact).not.toBeNull();
+      expect(compact.textContent).toContain('PracHub (May 2026)');
+      expect(host.querySelector('[data-testid="question-sources"]')).toBeNull();
+      expect(host.textContent).not.toContain('One self-reported senior loop.');
+    });
+  });
 });

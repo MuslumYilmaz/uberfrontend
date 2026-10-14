@@ -1,0 +1,18 @@
+{
+  "template": "angular-cli",
+  "openFile": "src/app/app.component.ts",
+  "dependencies": {
+    "@angular/core": "17.1.0",
+    "@angular/common": "17.1.0",
+    "@angular/platform-browser": "17.1.0",
+    "rxjs": "7.8.1",
+    "zone.js": "^0.14.2"
+  },
+  "files": {
+    "src/main.ts": "import { bootstrapApplication } from '@angular/platform-browser';\nimport { AppComponent } from './app/app.component';\nbootstrapApplication(AppComponent);\n",
+    "src/app/app.component.ts": "import { Component } from '@angular/core';\n\ntype VehicleStatus = 'online' | 'offline' | 'maintenance';\ntype StatusFilter = VehicleStatus | 'all';\ntype Vehicle = { id: string; status: VehicleStatus };\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  readonly vehicles: Vehicle[] = [\n    { id: 'WM-104', status: 'online' },\n    { id: 'WM-117', status: 'offline' },\n    { id: 'WM-122', status: 'online' },\n  ];\n  status: StatusFilter = 'all';\n  filtered: Vehicle[] = this.vehicles;\n  showEmpty = false;\n  refreshes = 0;\n\n  setStatus(status: StatusFilter) {\n    this.status = status;\n    this.applyFilter();\n  }\n\n  applyFilter() {\n    const source = this.filtered;\n    this.filtered = this.status === 'all'\n      ? this.vehicles\n      : source.filter((vehicle) => vehicle.status === this.status);\n    if (this.filtered.length === 0) {\n      this.showEmpty = true;\n    }\n  }\n\n  onRetrySubmit(event: Event) {\n    event.preventDefault();\n    this.retry();\n  }\n\n  retry() {\n    this.refreshes += 1;\n  }\n}\n",
+    "src/app/app.component.html": "<h1>Fleet status</h1>\n<div class=\"filters\">\n  <button type=\"button\" data-testid=\"filter-all\" (click)=\"setStatus('all')\">All</button>\n  <button type=\"button\" data-testid=\"filter-online\" (click)=\"setStatus('online')\">Online</button>\n  <button type=\"button\" data-testid=\"filter-offline\" (click)=\"setStatus('offline')\">Offline</button>\n  <button type=\"button\" data-testid=\"filter-maintenance\" (click)=\"setStatus('maintenance')\">Maintenance</button>\n</div>\n@if (showEmpty) {\n  <p class=\"empty\" data-testid=\"empty-state\">No vehicles match this filter.</p>\n}\n<ul class=\"vehicles\">\n  @for (vehicle of filtered; track vehicle.id) {\n    <li data-testid=\"vehicle-row\">{{ vehicle.id }} · {{ vehicle.status }}</li>\n  }\n</ul>\n<form (submit)=\"onRetrySubmit($event)\">\n  <button type=\"submit\" data-testid=\"retry\" (click)=\"retry()\">Retry sync</button>\n</form>\n<p data-testid=\"refresh-count\">Refreshed {{ refreshes }} {{ refreshes === 1 ? 'time' : 'times' }}</p>\n",
+    "src/app/app.component.css": ".filters {\n  display: flex;\n  gap: .5rem;\n  flex-wrap: wrap;\n  margin-bottom: 1rem;\n}\n\nbutton {\n  padding: .5rem 1rem;\n  border-radius: .5rem;\n}\n\n.vehicles {\n  margin: 0 0 1rem;\n  padding-left: 1.25rem;\n}\n\n.empty {\n  color: #8a5a00;\n}\n",
+    "index.html": "<!doctype html><html><head><meta charset=\"utf-8\"><title>UF</title><base href=\"/\"/></head><body><app-root></app-root></body></html>"
+  }
+}

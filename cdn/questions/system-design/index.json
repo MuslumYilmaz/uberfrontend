@@ -142,6 +142,9 @@
       "frontend-architecture",
       "responsive-ui"
     ],
+    "companies": [
+      "datadog"
+    ],
     "type": "system-design",
     "access": "free",
     "publishedAt": "2025-11-22",
@@ -276,6 +279,9 @@
       "state-management",
       "frontend-architecture",
       "system-design"
+    ],
+    "companies": [
+      "datadog"
     ],
     "type": "system-design",
     "access": "premium",
@@ -472,6 +478,9 @@
       "api-calls",
       "storage"
     ],
+    "companies": [
+      "waymo"
+    ],
     "type": "system-design",
     "access": "free",
     "updatedAt": "2026-08-06",
@@ -575,6 +584,9 @@
       "real-time",
       "performance"
     ],
+    "companies": [
+      "elevenlabs"
+    ],
     "type": "system-design",
     "access": "premium",
     "updatedAt": "2026-08-06",
@@ -661,6 +673,9 @@
       "architecture",
       "ux",
       "performance"
+    ],
+    "companies": [
+      "intuit"
     ],
     "type": "system-design",
     "access": "premium",

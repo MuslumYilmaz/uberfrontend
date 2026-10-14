@@ -3,6 +3,8 @@ import { ActivatedRoute, Data, provideRouter } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
 import { SeoService } from '../../../core/services/seo.service';
 import { CompanyIndexComponent } from './company-index.component';
+import { AUTHORED_COMPANY_PREVIEWS_TOKEN } from '../../../shared/company-previews/authored-company-previews';
+import { buildAuthoredCompanyPreviewFixture } from '../../../shared/company-previews/authored-company-preview.spec-fixture';
 
 describe('CompanyIndexComponent', () => {
   let fixture: ComponentFixture<CompanyIndexComponent>;
@@ -165,5 +167,29 @@ describe('CompanyIndexComponent', () => {
     expect(collection?.mainEntity?.description).toBe(
       'Editorial practice groupings, not verified official interview questions or endorsements.',
     );
+  });
+
+  it('lists registry-driven authored guides after the hand-written ones with clean crawlable anchors', async () => {
+    TestBed.resetTestingModule();
+    await TestBed.configureTestingModule({
+      imports: [CompanyIndexComponent],
+      providers: [
+        provideRouter([]),
+        { provide: ActivatedRoute, useValue: { data: routeData } },
+        { provide: SeoService, useValue: seo },
+        { provide: AUTHORED_COMPANY_PREVIEWS_TOKEN, useValue: { acme: buildAuthoredCompanyPreviewFixture() } },
+      ],
+    }).compileComponents();
+    const local = TestBed.createComponent(CompanyIndexComponent);
+    local.detectChanges();
+    await local.whenStable();
+    local.detectChanges();
+    const host: HTMLElement = local.nativeElement;
+    const anchor = host.querySelector<HTMLAnchorElement>('[data-testid="company-index-authored-acme"]');
+    expect(anchor?.getAttribute('href')).toBe('/companies/acme/preview');
+    expect(anchor?.textContent?.trim()).toBe('Acme frontend interview questions');
+    const guidance = host.querySelector('[data-testid="company-index-guidance"]') as HTMLElement;
+    const hrefs = Array.from(guidance.querySelectorAll('a')).map((link) => link.getAttribute('href'));
+    expect(hrefs.indexOf('/companies/acme/preview')).toBeGreaterThan(hrefs.indexOf('/companies/netflix/preview'));
   });
 });

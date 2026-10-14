@@ -401,3 +401,17 @@ test('actual hint edits re-date one exercise, and mapped rules re-date only the 
   assert.ok(covered.length >= 1 && covered.length < ids.length, 'premium Angular exercises stay out of the inventory');
   assert.deepEqual(changes(shared), covered);
 });
+
+test('actual Waymo guide edits re-date only the Waymo preview and the directory that lists it', () => {
+  const file = `${APP}shared/company-previews/waymo-preview-content.ts`;
+  const read = currentReader();
+  const before = buildSeoInventory(read);
+  const original = read.read(file);
+  const modified = original.replace("title: 'Prepare for product judgment, not Waymo trivia'", "title: 'Prepare for product judgment, not Waymo trivia questions'");
+  assert.notEqual(modified, original);
+  const changes = [...buildSeoInventory(currentReader({ [file]: modified }))].filter(([route, entry]) => before.get(route)?.fingerprint !== entry.fingerprint).map(([route]) => route);
+  assert.ok(changes.includes('/companies/waymo/preview'), changes.join(','));
+  for (const route of ['/companies/google/preview', '/companies/netflix/preview', '/companies/openai/preview', '/companies/amazon/preview', '/']) {
+    assert.ok(!changes.includes(route), `${route} must not re-date: ${changes.join(',')}`);
+  }
+});

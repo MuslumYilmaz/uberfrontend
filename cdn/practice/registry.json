@@ -750,6 +750,26 @@
     "assetRef": "questions/angular/trivia.json#angular-onpush-change-detection-debugging-real-bug"
   },
   {
+    "id": "ng-debug-fleet-status-bug-reports",
+    "family": "question",
+    "title": "Fix a fleet status board from three user bug reports",
+    "route": "/angular/debug/ng-debug-fleet-status-bug-reports",
+    "tech": "angular",
+    "difficulty": "intermediate",
+    "summary": "Three user bug reports against one small Angular screen: a filter that narrows the wrong list, an empty state that never clears, and a button that fires twice.",
+    "tags": [
+      "debugging",
+      "components",
+      "state",
+      "event-binding"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 12,
+    "updatedAt": "2026-10-14",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/angular/debug.json#ng-debug-fleet-status-bug-reports"
+  },
+  {
     "id": "angular-input-output",
     "family": "question",
     "title": "How do @Input() and @Output() work in Angular, and what pitfalls do seniors mention in interviews?",
@@ -4162,6 +4182,26 @@
     "updatedAt": "2026-07-14",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/coding.json#js-fetch-json-timeout"
+  },
+  {
+    "id": "js-filter-tree-render-indented",
+    "family": "question",
+    "title": "Filter a Tree by Substring and Render It Indented",
+    "route": "/javascript/coding/js-filter-tree-render-indented",
+    "tech": "javascript",
+    "difficulty": "intermediate",
+    "summary": "Given an n-ary tree of { value, children } nodes and a needle string, drop every node whose value contains the needle together with its whole subtree, then render what remains as text: one line per node, depth-first in sibling order, indented two spaces per level.",
+    "tags": [
+      "tree",
+      "recursion",
+      "strings",
+      "immutability"
+    ],
+    "access": "free",
+    "estimatedMinutes": 18,
+    "updatedAt": "2026-10-14",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/javascript/coding.json#js-filter-tree-render-indented"
   },
   {
     "id": "js-dom-find-node",

@@ -31,13 +31,18 @@ describe('company branding helpers', () => {
       'amazon',
       'apple',
       'bytedance',
+      'datadog',
+      'elevenlabs',
       'google',
+      'intuit',
       'meta',
       'microsoft',
       'netflix',
       'openai',
+      'servicenow',
       'stripe',
       'uber',
+      'waymo',
     ];
 
     expect(currentCompanySlugs.every((slug) => !!COMPANY_BRANDS[slug])).toBeTrue();

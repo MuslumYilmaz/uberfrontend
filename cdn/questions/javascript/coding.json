@@ -275,6 +275,18 @@
     "tests": "import countVowels from './countVowels';\n\ndescribe('countVowels', () => {\n  test('counts lowercase vowels', () => {\n    expect(countVowels('hello')).toBe(2);\n    expect(countVowels('rhythm')).toBe(0);\n  });\n\n  test('counts uppercase vowels', () => {\n    expect(countVowels('AEIOU')).toBe(5);\n  });\n\n  test('counts vowels in mixed case and spaces', () => {\n    expect(countVowels('A quick brown fox')).toBe(5);\n  });\n\n  test('handles empty string', () => {\n    expect(countVowels('')).toBe(0);\n  });\n});\n",
     "testsTs": "import countVowels from './countVowels';\n\ndescribe('countVowels (TypeScript)', () => {\n  it('counts lowercase vowels', () => {\n    expect(countVowels('hello')).toBe(2);\n    expect(countVowels('rhythm')).toBe(0);\n  });\n\n  it('counts uppercase vowels', () => {\n    expect(countVowels('AEIOU')).toBe(5);\n  });\n\n  it('counts vowels in mixed case and spaces', () => {\n    expect(countVowels('A quick brown fox')).toBe(5);\n  });\n\n  it('handles empty string', () => {\n    expect(countVowels('')).toBe(0);\n  });\n});\n",
     "access": "free",
+    "companies": [
+      "datadog"
+    ],
+    "sources": [
+      {
+        "label": "Taro: Datadog senior frontend developer interview, Valbonne, October 2024",
+        "url": "https://www.jointaro.com/interviews/companies/datadog/experiences/senior-frontend-developer-valbonne-october-1-2024-accepted-offer-positive-47d59048/",
+        "publisher": "Taro",
+        "date": "2024-10",
+        "note": "One senior account lists a prompt to count the repeated words in a paragraph. This counting drill is a simpler relative of that prompt, not the reported exercise."
+      }
+    ],
     "updatedAt": "2026-01-30",
     "seo": {
       "title": "Count Vowels in JavaScript Strings",
@@ -556,6 +568,18 @@
     "tests": "import maxChar from './maxChar';\n\ndescribe('maxChar', () => {\n  test('finds the most common letter', () => {\n    expect(maxChar('hello')).toBe('l');\n  });\n\n  test('works with multiple repetitions', () => {\n    expect(maxChar('aabbbcc')).toBe('b');\n    expect(maxChar('abcccccccd')).toBe('c');\n  });\n\n  test('returns first character when tie', () => {\n    expect(maxChar('aabb')).toBe('a');\n  });\n\n  test('returns empty string when input is empty', () => {\n    expect(maxChar('')).toBe('');\n  });\n});\n",
     "testsTs": "import maxChar from './maxChar';\n\ndescribe('maxChar (TypeScript)', () => {\n  it('finds the most common letter', () => {\n    expect(maxChar('hello')).toBe('l');\n  });\n\n  it('works with multiple repetitions', () => {\n    expect(maxChar('aabbbcc')).toBe('b');\n    expect(maxChar('abcccccccd')).toBe('c');\n  });\n\n  it('returns first character when tie', () => {\n    expect(maxChar('aabb')).toBe('a');\n  });\n\n  it('returns empty string when input is empty', () => {\n    expect(maxChar('')).toBe('');\n  });\n});\n",
     "access": "premium",
+    "companies": [
+      "datadog"
+    ],
+    "sources": [
+      {
+        "label": "Taro: Datadog senior frontend developer interview, Valbonne, October 2024",
+        "url": "https://www.jointaro.com/interviews/companies/datadog/experiences/senior-frontend-developer-valbonne-october-1-2024-accepted-offer-positive-47d59048/",
+        "publisher": "Taro",
+        "date": "2024-10",
+        "note": "One senior account lists a prompt to count the repeated words in a paragraph. A most-frequent-character count practises the same frequency-map idea; it is not the reported exercise."
+      }
+    ],
     "updatedAt": "2026-01-30",
     "seo": {
       "title": "Find Most Frequent Character in JavaScript String",
@@ -1448,6 +1472,18 @@
     "tests": "import updateAt from './file';\n\ndescribe('updateAt', () => {\n  test('updates a value immutably', () => {\n    const arr = [1, 2, 3];\n    const out = updateAt(arr, 1, 9);\n    expect(out).toEqual([1, 9, 3]);\n    expect(out === arr).toBe(false);\n    expect(arr).toEqual([1, 2, 3]);\n  });\n\n  test('returns unchanged copy when out of range', () => {\n    const arr = [1, 2];\n    const out = updateAt(arr, 5, 9);\n    expect(out).toEqual([1, 2]);\n    expect(out === arr).toBe(false);\n  });\n\n  test('throws on non-array input', () => {\n    expect(() => updateAt('x', 0, 'y')).toThrow(TypeError);\n  });\n});\n",
     "testsTs": "import updateAt from './file';\n\ndescribe('updateAt (TypeScript)', () => {\n  it('updates a value immutably', () => {\n    const arr = [1, 2, 3];\n    const out = updateAt(arr, 2, 5);\n    expect(out).toEqual([1, 2, 5]);\n    expect(out === arr).toBe(false);\n    expect(arr).toEqual([1, 2, 3]);\n  });\n\n  it('returns unchanged copy when out of range', () => {\n    const arr = [1, 2];\n    const out = updateAt(arr, 5, 9);\n    expect(out).toEqual([1, 2]);\n    expect(out === arr).toBe(false);\n  });\n\n  it('throws on non-array input', () => {\n    expect(() => updateAt('x' as any, 0, 'y' as any)).toThrow(TypeError);\n  });\n});\n",
     "access": "free",
+    "companies": [
+      "datadog"
+    ],
+    "sources": [
+      {
+        "label": "Taro: Datadog senior frontend engineer interview, Paris, September 2025",
+        "url": "https://www.jointaro.com/interviews/companies/datadog/experiences/senior-frontend-engineer-paris-september-1-2025-accepted-offer-positive-2a1ddfe8/",
+        "publisher": "Taro",
+        "date": "2025-09",
+        "note": "One senior account describes live coding that starts simple and adds parts step by step, centred on data and tables. Immutable row updates are a supporting drill for that shape, not the reported exercise."
+      }
+    ],
     "updatedAt": "2026-01-30",
     "seo": {
       "title": "Update Array Item by Index in JavaScript (Immutable)",
@@ -2027,7 +2063,17 @@
     "type": "coding",
     "technology": "javascript",
     "companies": [
-      "google"
+      "google",
+      "intuit"
+    ],
+    "sources": [
+      {
+        "label": "LeetCode Discuss: Intuit SE2 frontend interview experience, October 2023",
+        "url": "https://leetcode.com/discuss/post/4167001/",
+        "publisher": "LeetCode Discuss",
+        "date": "2023-10",
+        "note": "One SE2 account lists writing a currying function in the first technical round. This drill practises that exercise, not its reported wording."
+      }
     ],
     "importance": 3,
     "difficulty": "intermediate",
@@ -2121,7 +2167,17 @@
     "technology": "javascript",
     "companies": [
       "google",
-      "meta"
+      "meta",
+      "intuit"
+    ],
+    "sources": [
+      {
+        "label": "LeetCode Discuss: Intuit SE2 frontend interview experience, October 2023",
+        "url": "https://leetcode.com/discuss/post/4167001/",
+        "publisher": "LeetCode Discuss",
+        "date": "2023-10",
+        "note": "One SE2 account lists writing a memoization function at the end of the first technical round. This drill practises that exercise, not its reported wording."
+      }
     ],
     "importance": 4,
     "difficulty": "intermediate",
@@ -2834,7 +2890,17 @@
     "companies": [
       "amazon",
       "apple",
-      "bytedance"
+      "bytedance",
+      "servicenow"
+    ],
+    "sources": [
+      {
+        "label": "Medium: ServiceNow software engineer (UI) interview experience, 2025",
+        "url": "https://medium.com/@karunakumari000532/my-servicenow-software-engineer-ui-interview-experience-2025-23f315b960dc",
+        "publisher": "Medium",
+        "date": "2025-09",
+        "note": "One UI engineer account lists writing a polyfill for map in the JavaScript fundamentals round. This drill is a practice version of that exercise, not its reported wording."
+      }
     ],
     "technology": "javascript",
     "importance": 4,
@@ -3076,7 +3142,17 @@
     "technology": "javascript",
     "companies": [
       "amazon",
-      "apple"
+      "apple",
+      "datadog"
+    ],
+    "sources": [
+      {
+        "label": "Taro: Datadog senior frontend developer interview, Lisbon, November 2025",
+        "url": "https://www.jointaro.com/interviews/companies/datadog/experiences/senior-frontend-developer-lisbon-lisbon-district-november-23-2025-no-offer-positive-1a88bdda/",
+        "publisher": "Taro",
+        "date": "2025-11",
+        "note": "One senior account describes a standard coding exercise on ordering and filtering. Implementing filter is a supporting drill, not the reported exercise."
+      }
     ],
     "importance": 4,
     "difficulty": "intermediate",
@@ -3247,6 +3323,18 @@
     "tests": "import arrayForEach from './file';\n\ndescribe('arrayForEach', () => {\n  test('iterates in order', () => {\n    const seen = [];\n    arrayForEach([3, 1, 2], (v) => seen.push(v));\n    expect(seen).toEqual([3, 1, 2]);\n  });\n\n  test('binds thisArg', () => {\n    const ctx = { out: '' };\n    arrayForEach(['a', 'b'], function (v) { this.out += v; }, ctx);\n    expect(ctx.out).toBe('ab');\n  });\n\n  test('skips holes (sparse arrays)', () => {\n    // eslint-disable-next-line no-sparse-arrays\n    const a = [1, , 3];\n    const seen = [];\n    arrayForEach(a, (v, i) => seen.push([v, i]));\n    expect(seen).toEqual([[1, 0], [3, 2]]);\n  });\n\n  test('snapshots length (push during iteration not visited)', () => {\n    const arr = [1, 2, 3];\n    const seen = [];\n\n    arrayForEach(arr, (v, i, a) => {\n      seen.push(v);\n      if (i === 0) a.push(999);\n    });\n\n    expect(seen).toEqual([1, 2, 3]);\n  });\n\n  test('skips elements deleted before their turn (hole check)', () => {\n    const arr = [1, 2, 3];\n    const seen = [];\n\n    arrayForEach(arr, (v, i, a) => {\n      if (i === 0) delete a[1];\n      seen.push(v);\n    });\n\n    // index 1 was deleted before iteration reached it => skip it\n    expect(seen).toEqual([1, 3]);\n  });\n});\n",
     "testsTs": "import arrayForEach from './file';\n\ndescribe('arrayForEach (TypeScript)', () => {\n  it('iterates in order', () => {\n    const a = [3, 1, 2];\n    const seen: number[] = [];\n    arrayForEach(a, (v) => { seen.push(v as number); });\n    expect(seen).toEqual([3, 1, 2]);\n  });\n\n  it('binds thisArg', () => {\n    const ctx = { out: '' };\n    arrayForEach(['a', 'b'], function(v) { this.out += v; }, ctx);\n    expect(ctx.out).toBe('ab');\n  });\n\n  it('skips holes (sparse arrays)', () => {\n    // eslint-disable-next-line no-sparse-arrays\n    const a = [1, , 3];\n    const seen: Array<[number, number]> = [];\n    arrayForEach(a, (v, i) => { if (v !== undefined) seen.push([v as number, i]); });\n    expect(seen).toEqual([[1, 0], [3, 2]]);\n  });\n\n  it('snapshots length (push during iteration not visited)', () => {\n    const arr = [1, 2, 3];\n    const seen: number[] = [];\n\n    arrayForEach(arr, (v, i, a) => {\n      seen.push(v as number);\n      if (i === 0) (a as any).push(999);\n    });\n\n    expect(seen).toEqual([1, 2, 3]);\n  });\n\n  it('skips elements deleted before their turn (hole check)', () => {\n    const arr = [1, 2, 3];\n    const seen: number[] = [];\n\n    arrayForEach(arr, (v, i, a) => {\n      if (i === 0) delete (a as any)[1];\n      seen.push(v as number);\n    });\n\n    expect(seen).toEqual([1, 3]);\n  });\n});\n",
     "access": "free",
+    "companies": [
+      "servicenow"
+    ],
+    "sources": [
+      {
+        "label": "Medium: ServiceNow software engineer (UI) interview experience, 2025",
+        "url": "https://medium.com/@karunakumari000532/my-servicenow-software-engineer-ui-interview-experience-2025-23f315b960dc",
+        "publisher": "Medium",
+        "date": "2025-09",
+        "note": "One UI engineer account describes implementing polyfills of built-in methods with attention to edge cases in the deeper JavaScript round. forEach is a representative drill, not the reported method."
+      }
+    ],
     "updatedAt": "2026-01-30",
     "seo": {
       "title": "Implement forEach Utility in JavaScript (Native Behavior)",
@@ -3261,7 +3349,17 @@
     "technology": "javascript",
     "companies": [
       "amazon",
-      "meta"
+      "meta",
+      "datadog"
+    ],
+    "sources": [
+      {
+        "label": "Taro: Datadog senior frontend developer interview, Lisbon, November 2025",
+        "url": "https://www.jointaro.com/interviews/companies/datadog/experiences/senior-frontend-developer-lisbon-lisbon-district-november-23-2025-no-offer-positive-1a88bdda/",
+        "publisher": "Taro",
+        "date": "2025-11",
+        "note": "One senior account describes a standard coding exercise on ordering and filtering. Sorting numbers correctly is a supporting drill, not the reported exercise."
+      }
     ],
     "importance": 4,
     "difficulty": "easy",
@@ -3429,6 +3527,18 @@
     "tests": "import createCounter from './file';\n\ndescribe('createCounter', () => {\n  test('increments sequentially', () => {\n    const counter = createCounter(10);\n    expect(counter()).toBe(10);\n    expect(counter()).toBe(11);\n    expect(counter()).toBe(12);\n  });\n\n  test('works with negative numbers', () => {\n    const counter = createCounter(-2);\n    expect(counter()).toBe(-2);\n    expect(counter()).toBe(-1);\n    expect(counter()).toBe(0);\n  });\n\n  test('separate counters maintain independent state', () => {\n    const c1 = createCounter(0);\n    const c2 = createCounter(100);\n    expect(c1()).toBe(0);\n    expect(c2()).toBe(100);\n    expect(c1()).toBe(1);\n    expect(c2()).toBe(101);\n  });\n});\n",
     "testsTs": "import createCounter from './file';\n\ndescribe('createCounter (TypeScript)', () => {\n  it('increments sequentially', () => {\n    const counter = createCounter(5);\n    expect(counter()).toBe(5);\n    expect(counter()).toBe(6);\n    expect(counter()).toBe(7);\n  });\n\n  it('works with negative numbers', () => {\n    const counter = createCounter(-2);\n    expect(counter()).toBe(-2);\n    expect(counter()).toBe(-1);\n    expect(counter()).toBe(0);\n  });\n\n  it('independent counters maintain separate state', () => {\n    const c1 = createCounter(1);\n    const c2 = createCounter(50);\n    expect(c1()).toBe(1);\n    expect(c2()).toBe(50);\n    expect(c1()).toBe(2);\n    expect(c2()).toBe(51);\n  });\n});\n",
     "access": "free",
+    "companies": [
+      "servicenow"
+    ],
+    "sources": [
+      {
+        "label": "Medium: ServiceNow software engineer (UI) interview experience, 2025",
+        "url": "https://medium.com/@karunakumari000532/my-servicenow-software-engineer-ui-interview-experience-2025-23f315b960dc",
+        "publisher": "Medium",
+        "date": "2025-09",
+        "note": "One UI engineer account describes writing functions that increment and decrement a variable inside loops to show closure and scope handling. This counter is a simpler relative of that exercise, not the reported wording."
+      }
+    ],
     "updatedAt": "2026-01-30",
     "seo": {
       "title": "Create Counter Function in JavaScript (Closure State)",
@@ -3708,6 +3818,18 @@
     "tests": "import promiseAll from './promiseAll';\n\ndescribe('promiseAll', () => {\n  test('resolves array of values in order when all succeed', async () => {\n    const p1 = Promise.resolve(1);\n    const p2 = new Promise(resolve => setTimeout(() => resolve(2), 5));\n    const p3 = 3; // non-promise value\n\n    await expect(promiseAll([p1, p2, p3])).resolves.toEqual([1, 2, 3]);\n  });\n\n  test('resolves immediately for empty array', async () => {\n    await expect(promiseAll([])).resolves.toEqual([]);\n  });\n\n  test('rejects when any promise rejects', async () => {\n    const error = new Error('fail');\n    const p1 = Promise.resolve('ok');\n    const p2 = Promise.reject(error);\n\n    await expect(promiseAll([p1, p2])).rejects.toThrow('fail');\n  });\n\n  test('rejects with TypeError when input is not an array', async () => {\n    // @ts-expect-error runtime guard only\n    await expect(promiseAll(null)).rejects.toThrow(TypeError);\n  });\n});\n",
     "testsTs": "import promiseAll from './promiseAll';\n\ndescribe('promiseAll (TypeScript)', () => {\n  it('resolves array of values in order when all succeed', async () => {\n    const p1 = Promise.resolve(1);\n    const p2 = new Promise<number>(resolve => setTimeout(() => resolve(2), 5));\n    const p3 = 3;\n\n    await expect(promiseAll([p1, p2, p3])).resolves.toEqual([1, 2, 3]);\n  });\n\n  it('resolves immediately for empty array', async () => {\n    await expect(promiseAll<number>([])).resolves.toEqual([]);\n  });\n\n  it('rejects when any promise rejects', async () => {\n    const error = new Error('fail');\n    const p1 = Promise.resolve('ok');\n    const p2 = Promise.reject(error);\n\n    await expect(promiseAll([p1, p2])).rejects.toThrow('fail');\n  });\n\n  it('rejects with TypeError when input is not an array', async () => {\n    // @ts-expect-error runtime guard only\n    await expect(promiseAll(null as any)).rejects.toThrow(TypeError);\n  });\n});\n",
     "access": "premium",
+    "companies": [
+      "waymo"
+    ],
+    "sources": [
+      {
+        "label": "PracHub: Waymo senior frontend engineer interview experience, May 2026",
+        "url": "https://prachub.com/interview-experiences/waymo-senior-frontend-engineer-interview-experience-rejected-30-minutes-after-pushing-on-the-process",
+        "publisher": "PracHub",
+        "date": "2026-05",
+        "note": "The report says a Promise problem in TypeScript was asked and does not say which. Implementing Promise.all is a representative exercise, not the reported question."
+      }
+    ],
     "updatedAt": "2026-07-15",
     "seo": {
       "title": "Implement Promise.all in JavaScript",
@@ -3803,6 +3925,18 @@
     "tests": "import myBind from './file';\n\ndescribe('myBind', () => {\n  test('binds this for normal calls', () => {\n    function getX() { return this.x; }\n    const obj = { x: 42 };\n    const bound = myBind(getX, obj);\n    expect(bound()).toBe(42);\n  });\n\n  test('supports partial application', () => {\n    function add(a, b, c) { return a + b + c; }\n    const add5 = myBind(add, null, 2, 3);\n    expect(add5(10)).toBe(15);\n  });\n\n  test('does not mistake an inherited receiver for a constructor call', () => {\n    function setValue(value) { this.value = value; }\n    const target = {};\n    const bound = myBind(setValue, target);\n    const receiver = Object.create(bound.prototype);\n\n    bound.call(receiver, 'normal-call');\n\n    expect(target.value).toBe('normal-call');\n    expect(receiver.value).toBe(undefined);\n  });\n\n  test('when called with new, ignores thisArg and uses the new instance', () => {\n    function Person(name) { this.name = name; }\n    Person.prototype.say = function() { return this.name; };\n\n    const BoundPerson = myBind(Person, { name: 'SHOULD_NOT_USE' });\n    const p = new BoundPerson('Ada');\n\n    expect(p.name).toBe('Ada');\n    expect(p.say()).toBe('Ada');\n  });\n\n  test('instances created via new boundFn() are instanceof original fn', () => {\n    function Person(name) { this.name = name; }\n    const BoundPerson = myBind(Person, { name: 'X' });\n    const p = new BoundPerson('Ada');\n\n    expect(p instanceof Person).toBe(true);\n    expect(p instanceof BoundPerson).toBe(true);\n  });\n\n  test('constructor return object behavior is preserved', () => {\n    function Factory(name) { this.name = name; return { ok: true, name }; }\n    const BoundFactory = myBind(Factory, { name: 'X' });\n    const res = new BoundFactory('Ada');\n\n    expect(res).toEqual({ ok: true, name: 'Ada' });\n  });\n});\n",
     "testsTs": "import myBind from './file';\n\ndescribe('myBind (TypeScript)', () => {\n  it('binds this for normal calls', () => {\n    function getX(this: any) { return this.x; }\n    const obj = { x: 42 };\n    const bound = myBind(getX as any, obj);\n    expect(bound()).toBe(42);\n  });\n\n  it('supports partial application', () => {\n    function add(a: number, b: number, c: number) { return a + b + c; }\n    const add5 = myBind(add, null, 2, 3);\n    expect(add5(10)).toBe(15);\n  });\n\n  it('does not mistake an inherited receiver for a constructor call', () => {\n    function setValue(this: any, value: string) { this.value = value; }\n    const target: { value?: string } = {};\n    const bound: any = myBind(setValue as any, target);\n    const receiver: { value?: string } = Object.create(bound.prototype);\n\n    bound.call(receiver, 'normal-call');\n\n    expect(target.value).toBe('normal-call');\n    expect(receiver.value).toBe(undefined);\n  });\n\n  it('supports new and preserves prototype chain', () => {\n    function Person(this: any, name: string) { this.name = name; }\n    (Person as any).prototype.say = function() { return this.name; };\n\n    const BoundPerson: any = myBind(Person as any, { name: 'NOPE' });\n    const p = new BoundPerson('Ada');\n\n    expect(p.name).toBe('Ada');\n    expect(p.say()).toBe('Ada');\n    expect(p instanceof (Person as any)).toBe(true);\n    expect(p instanceof BoundPerson).toBe(true);\n  });\n\n\n  it('preserves constructor return object behavior', () => {\n    function Factory(this: any, name: string) {\n      this.name = name;\n      return { ok: true, name } as any;\n    }\n\n    const BoundFactory: any = myBind(Factory as any, { name: 'NOPE' });\n    const res = new BoundFactory('Ada');\n\n    expect(res).toEqual({ ok: true, name: 'Ada' });\n  });\n});\n",
     "access": "free",
+    "companies": [
+      "servicenow"
+    ],
+    "sources": [
+      {
+        "label": "Blind: ServiceNow phone screen for a staff engineer, frontend-leaning, September 2021",
+        "url": "https://www.teamblind.com/post/servicenow-phone-screen-staff-engineer-interview-8msftqw8",
+        "publisher": "Blind",
+        "date": "2021-09",
+        "note": "One reply in this thread describes implementing built-in JavaScript prototype methods by hand as a technical exercise. bind is a representative drill, not the reported method."
+      }
+    ],
     "updatedAt": "2026-07-14",
     "seo": {
       "title": "Implement Function.prototype.bind in JavaScript",
@@ -5900,7 +6034,17 @@
       "traversal"
     ],
     "companies": [
-      "meta"
+      "meta",
+      "servicenow"
+    ],
+    "sources": [
+      {
+        "label": "Blind: ServiceNow phone screen for a staff engineer, frontend-leaning, September 2021",
+        "url": "https://www.teamblind.com/post/servicenow-phone-screen-staff-engineer-interview-8msftqw8",
+        "publisher": "Blind",
+        "date": "2021-09",
+        "note": "One reply in this thread lists implementing a virtual DOM as a technical exercise. Building a DOM renderer from a nested object practises the same shape; it is not the reported exercise."
+      }
     ],
     "description": {
       "summary": "Implement render(node) to convert a JSON-like DOM description into real DOM nodes using createElement/createTextNode. Constraints: handle string/number children, skip null/undefined, map className→class, avoid innerHTML. Complexity: O(n) time, O(h) recursion stack.",
@@ -5982,7 +6126,17 @@
       "closure"
     ],
     "companies": [
-      "meta"
+      "meta",
+      "elevenlabs"
+    ],
+    "sources": [
+      {
+        "label": "Aced: ElevenLabs software engineer interview questions, candidate-sourced, October 2026",
+        "url": "https://www.aced.io/guides/elevenlabs-software-engineer-interview/questions",
+        "publisher": "Aced",
+        "date": "2026-10",
+        "note": "The bank lists an exercise to synchronize audio playback timing with transcript highlighting. This timer-manager drill practises the scheduling control that exercise needs; it is not the reported exercise itself."
+      }
     ],
     "description": {
       "summary": "Build a timer registry with mySetTimeout, myClearTimeout, and myClearAllTimeouts. Return your own numeric ids, store native handles, and clean up on fire. Complexity: O(1) set/clear, O(k) for clearAll.",
@@ -6221,7 +6375,17 @@
       "traversal"
     ],
     "companies": [
-      "meta"
+      "meta",
+      "intuit"
+    ],
+    "sources": [
+      {
+        "label": "LeetCode Discuss: Intuit senior frontend engineer interview experience, November 2025",
+        "url": "https://leetcode.com/discuss/post/7320927/",
+        "publisher": "LeetCode Discuss",
+        "date": "2025-11",
+        "note": "One senior account describes implementing a function that checks whether two DOM trees are identical, node by node. Finding the corresponding node in twin trees practises the same lockstep traversal; it is not the reported exercise."
+      }
     ],
     "description": {
       "summary": "Given two identical DOM trees and a node in tree A, return the corresponding node in tree B. Traverse both trees in sync or compute a path index. Complexity: O(n) time, O(h) stack.",
@@ -6695,6 +6859,18 @@
     "tests": "import promiseAny from './promiseAny';\n\ndescribe('promiseAny', () => {\n  test('resolves on the first fulfillment', async () => {\n    await expect(promiseAny([\n      Promise.reject(new Error('nope')),\n      Promise.resolve('fast'),\n      Promise.resolve('later')\n    ])).resolves.toBe('fast');\n  });\n\n  test('treats an array hole as undefined', async () => {\n    await expect(promiseAny(new Array(1))).resolves.toBe(undefined);\n  });\n\n  test('does not hang when a sparse array also contains a rejection', async () => {\n    const sparse = [];\n    sparse[1] = Promise.reject('rejected');\n    await expect(promiseAny(sparse)).resolves.toBe(undefined);\n  });\n\n  test('rejects empty input with an empty AggregateError', async () => {\n    const error = await promiseAny([]).then(() => null, (reason) => reason);\n    expect(error.name).toBe('AggregateError');\n    expect(error.errors).toEqual([]);\n  });\n\n  test('preserves iteration order when every input rejects', async () => {\n    let rejectFirst;\n    let rejectSecond;\n    const result = promiseAny([\n      new Promise((_, reject) => { rejectFirst = reject; }),\n      new Promise((_, reject) => { rejectSecond = reject; })\n    ]).then(() => null, (reason) => reason);\n\n    rejectSecond('second');\n    rejectFirst('first');\n\n    const error = await result;\n    expect(error.name).toBe('AggregateError');\n    expect(error.errors).toEqual(['first', 'second']);\n  });\n\n  test('accepts non-array synchronous iterables', async () => {\n    const values = new Set([Promise.reject('no'), 'set value']);\n    await expect(promiseAny(values)).resolves.toBe('set value');\n\n    function* generate() {\n      yield Promise.reject('still no');\n      yield 'generator value';\n    }\n    await expect(promiseAny(generate())).resolves.toBe('generator value');\n  });\n\n  test('rejects non-iterable input with TypeError', async () => {\n    await expect(promiseAny(null)).rejects.toThrow(TypeError);\n  });\n});\n",
     "testsTs": "import promiseAny from './promiseAny';\n\ndescribe('promiseAny (TypeScript)', () => {\n  it('treats sparse array holes as fulfilled undefined values', async () => {\n    await expect(promiseAny<undefined>(new Array(1))).resolves.toBe(undefined);\n  });\n\n  it('preserves AggregateError reason order', async () => {\n    const error: any = await promiseAny([\n      Promise.reject('first'),\n      Promise.reject('second')\n    ]).then(() => null, (reason) => reason);\n\n    expect(error.name).toBe('AggregateError');\n    expect(error.errors).toEqual(['first', 'second']);\n  });\n\n  it('accepts Set and generator inputs', async () => {\n    await expect(promiseAny(new Set<string>(['value']))).resolves.toBe('value');\n\n    function* values(): Generator<string | PromiseLike<string>> {\n      yield Promise.reject('no');\n      yield 'yes';\n    }\n    await expect(promiseAny(values())).resolves.toBe('yes');\n  });\n\n  it('rejects empty and non-iterable inputs', async () => {\n    await expect(promiseAny([])).rejects.toMatchObject({ name: 'AggregateError', errors: [] });\n    await expect(promiseAny(null as any)).rejects.toThrow(TypeError);\n  });\n});\n",
     "access": "free",
+    "companies": [
+      "intuit"
+    ],
+    "sources": [
+      {
+        "label": "LeetCode Discuss: Intuit senior frontend engineer interview experience, November 2025",
+        "url": "https://leetcode.com/discuss/post/7320927/",
+        "publisher": "LeetCode Discuss",
+        "date": "2025-11",
+        "note": "One senior account describes explaining Promise.race versus Promise.any and then coding a polyfill for Promise.race. Promise.any is the sibling drill; it is not the reported exercise."
+      }
+    ],
     "updatedAt": "2026-07-14",
     "seo": {
       "title": "Implement Promise.any in JavaScript",
@@ -6781,6 +6957,18 @@
     "tests": "import pollUntil from './pollUntil';\n\nfunction createFakeClock() {\n  let now = 0;\n  let nextId = 1;\n  const timers = new Map();\n\n  return {\n    setTimeout(fn, delay = 0) {\n      const id = nextId++;\n      timers.set(id, { at: now + Math.max(0, Number(delay) || 0), fn });\n      return id;\n    },\n    clearTimeout(id) {\n      timers.delete(id);\n    },\n    count() {\n      return timers.size;\n    },\n    async advance(ms) {\n      const target = now + ms;\n      await Promise.resolve();\n      while (true) {\n        let selectedId;\n        let selected;\n        for (const [id, timer] of timers) {\n          if (timer.at <= target && (!selected || timer.at < selected.at)) {\n            selectedId = id;\n            selected = timer;\n          }\n        }\n        if (!selected) break;\n        now = selected.at;\n        timers.delete(selectedId);\n        selected.fn();\n        await Promise.resolve();\n        await Promise.resolve();\n      }\n      now = target;\n      await Promise.resolve();\n    }\n  };\n}\n\nasync function withFakeTimers(run) {\n  const clock = createFakeClock();\n  const originalSetTimeout = globalThis.setTimeout;\n  const originalClearTimeout = globalThis.clearTimeout;\n  globalThis.setTimeout = clock.setTimeout;\n  globalThis.clearTimeout = clock.clearTimeout;\n  try {\n    await run(clock);\n  } finally {\n    globalThis.setTimeout = originalSetTimeout;\n    globalThis.clearTimeout = originalClearTimeout;\n  }\n}\n\nfunction createSignal() {\n  const listeners = new Set();\n  const signal = {\n    aborted: false,\n    reason: undefined,\n    addEventListener(type, listener) { if (type === 'abort') listeners.add(listener); },\n    removeEventListener(type, listener) { if (type === 'abort') listeners.delete(listener); }\n  };\n  return {\n    signal,\n    listenerCount: () => listeners.size,\n    abort(reason) {\n      if (signal.aborted) return;\n      signal.aborted = true;\n      signal.reason = reason;\n      for (const listener of [...listeners]) listener();\n    }\n  };\n}\n\ndescribe('pollUntil', () => {\n  test('resolves when check becomes truthy', async () => withFakeTimers(async (clock) => {\n    let count = 0;\n    const outcome = pollUntil(() => ++count >= 3 ? 'ready' : false, { interval: 5, timeout: 50 });\n    await clock.advance(10);\n    expect(await outcome).toBe('ready');\n    expect(clock.count()).toBe(0);\n  }));\n\n  test('lets a synchronous truthy first check win when timeout is zero', async () => withFakeTimers(async (clock) => {\n    const outcome = pollUntil(() => 'ready', { timeout: 0 });\n    await clock.advance(0);\n    expect(await outcome).toBe('ready');\n    expect(clock.count()).toBe(0);\n  }));\n\n  test('times out a falsy first check when timeout is zero', async () => withFakeTimers(async (clock) => {\n    const outcome = pollUntil(() => false, { timeout: 0 }).then(() => null, (error) => error);\n    await clock.advance(0);\n    expect((await outcome).message).toBe('Timeout');\n    expect(clock.count()).toBe(0);\n  }));\n\n  test('times out even when check never settles', async () => withFakeTimers(async (clock) => {\n    const outcome = pollUntil(() => new Promise(() => {}), { timeout: 20 }).then(\n      () => null,\n      (error) => error\n    );\n    await clock.advance(20);\n    expect((await outcome).message).toBe('Timeout');\n    expect(clock.count()).toBe(0);\n  }));\n\n  test('does not wait a full interval past the deadline', async () => withFakeTimers(async (clock) => {\n    let calls = 0;\n    const outcome = pollUntil(() => { calls += 1; return false; }, { interval: 100, timeout: 10 }).then(\n      () => null,\n      (error) => error\n    );\n    await clock.advance(10);\n    expect((await outcome).message).toBe('Timeout');\n    expect(calls).toBe(1);\n    expect(clock.count()).toBe(0);\n  }));\n\n  test('does not schedule after abort during an in-flight check', async () => withFakeTimers(async (clock) => {\n    let finishCheck;\n    const control = createSignal();\n    const outcome = pollUntil(() => new Promise((resolve) => { finishCheck = resolve; }), {\n      interval: 10,\n      signal: control.signal\n    }).then(() => null, (error) => error);\n    control.abort();\n    expect((await outcome).name).toBe('AbortError');\n    finishCheck(false);\n    await clock.advance(100);\n    expect(clock.count()).toBe(0);\n    expect(control.listenerCount()).toBe(0);\n  }));\n\n  test('skips check when the signal is already aborted', async () => {\n    let calls = 0;\n    const control = createSignal();\n    control.abort();\n    const outcome = pollUntil(() => { calls += 1; return true; }, { signal: control.signal }).then(\n      () => null,\n      (error) => error\n    );\n    expect((await outcome).name).toBe('AbortError');\n    expect(calls).toBe(0);\n    expect(control.listenerCount()).toBe(0);\n  });\n\n  test('cleans deadline and listener after async rejection', async () => withFakeTimers(async (clock) => {\n    const control = createSignal();\n    const failure = new Error('async');\n    const outcome = pollUntil(() => Promise.reject(failure), { timeout: 50, signal: control.signal }).then(\n      () => null,\n      (error) => error\n    );\n    await clock.advance(0);\n    expect(await outcome).toBe(failure);\n    expect(clock.count()).toBe(0);\n    expect(control.listenerCount()).toBe(0);\n  }));\n\n  test('propagates synchronous throws and asynchronous rejections', async () => {\n    const syncError = new Error('sync');\n    const asyncError = new Error('async');\n    await expect(pollUntil(() => { throw syncError; })).rejects.toBe(syncError);\n    await expect(pollUntil(() => Promise.reject(asyncError))).rejects.toBe(asyncError);\n  });\n\n  test('cleans timers and the abort listener after success', async () => withFakeTimers(async (clock) => {\n    const control = createSignal();\n    await expect(pollUntil(() => 'done', { timeout: 50, signal: control.signal })).resolves.toBe('done');\n    expect(clock.count()).toBe(0);\n    expect(control.listenerCount()).toBe(0);\n  }));\n});\n",
     "testsTs": "import pollUntil from './pollUntil';\n\nfunction createSignal() {\n  const listeners = new Set<() => void>();\n  const signal = {\n    aborted: false,\n    reason: undefined as unknown,\n    addEventListener(type: string, listener: () => void) { if (type === 'abort') listeners.add(listener); },\n    removeEventListener(type: string, listener: () => void) { if (type === 'abort') listeners.delete(listener); }\n  } as unknown as AbortSignal;\n  return {\n    signal,\n    listenerCount: () => listeners.size,\n    abort(reason?: unknown) {\n      if (signal.aborted) return;\n      (signal as any).aborted = true;\n      (signal as any).reason = reason;\n      for (const listener of [...listeners]) listener();\n    }\n  };\n}\n\ndescribe('pollUntil (TypeScript)', () => {\n  it('settles a never-ending check on the independent deadline', async () => {\n    await expect(pollUntil<string>(() => new Promise(() => {}), { timeout: 0 })).rejects.toThrow('Timeout');\n  });\n\n  it('does not retry after aborting an in-flight check', async () => {\n    let finishCheck!: (value: false) => void;\n    const control = createSignal();\n    const outcome = pollUntil(() => new Promise<false>((resolve) => { finishCheck = resolve; }), { signal: control.signal });\n    control.abort();\n    await expect(outcome).rejects.toMatchObject({ name: 'AbortError' });\n    finishCheck(false);\n    await Promise.resolve();\n    expect(control.listenerCount()).toBe(0);\n  });\n\n  it('propagates synchronous throws and asynchronous rejections', async () => {\n    const syncError = new Error('sync');\n    const asyncError = new Error('async');\n    await expect(pollUntil(() => { throw syncError; })).rejects.toBe(syncError);\n    await expect(pollUntil(() => Promise.reject(asyncError))).rejects.toBe(asyncError);\n  });\n});\n",
     "access": "free",
+    "companies": [
+      "elevenlabs"
+    ],
+    "sources": [
+      {
+        "label": "Aced: ElevenLabs software engineer interview questions, candidate-sourced, October 2026",
+        "url": "https://www.aced.io/guides/elevenlabs-software-engineer-interview/questions",
+        "publisher": "Aced",
+        "date": "2026-10",
+        "note": "The bank lists a prompt about managing a voice-dubbing project's progress and feedback. Polling a long-running job until it finishes is a supporting drill for that workflow, not a reported question."
+      }
+    ],
     "updatedAt": "2026-07-14",
     "seo": {
       "title": "Implement pollUntil in JavaScript",
@@ -6960,6 +7148,18 @@
     "tests": "import streamToText from './streamToText';\n\nfunction makeStream(chunks) {\n  let i = 0;\n  let cancelled = false;\n  return {\n    getReader() {\n      return {\n        read() {\n          if (cancelled) return Promise.resolve({ done: true });\n          if (i >= chunks.length) return Promise.resolve({ done: true, value: undefined });\n          return Promise.resolve({ done: false, value: chunks[i++] });\n        },\n        cancel() {\n          cancelled = true;\n        }\n      };\n    }\n  };\n}\n\ndescribe('streamToText', () => {\n  test('concatenates chunks', async () => {\n    const enc = new TextEncoder();\n    const stream = makeStream([enc.encode('Hello '), enc.encode('World')]);\n    await expect(streamToText(stream)).resolves.toBe('Hello World');\n  });\n\n  test('handles multibyte characters across chunks', async () => {\n    const enc = new TextEncoder();\n    const bytes = enc.encode('Hi 🌍');\n    const part1 = bytes.slice(0, 4);\n    const part2 = bytes.slice(4);\n    const stream = makeStream([part1, part2]);\n    await expect(streamToText(stream)).resolves.toBe('Hi 🌍');\n  });\n\n  test('rejects on abort', async () => {\n    const enc = new TextEncoder();\n    const stream = makeStream([enc.encode('data')]);\n    const ac = new AbortController();\n    ac.abort(new Error('Stop'));\n    await expect(streamToText(stream, { signal: ac.signal })).rejects.toMatchObject({\n      name: 'AbortError'\n    });\n  });\n\n  test('releases the reader lock after success and read failure', async () => {\n    let successReleases = 0;\n    await expect(streamToText({\n      getReader: () => ({\n        read: async () => ({ done: true }),\n        releaseLock: () => { successReleases += 1; }\n      })\n    })).resolves.toBe('');\n    expect(successReleases).toBe(1);\n\n    let failureReleases = 0;\n    const failure = new Error('read failed');\n    await expect(streamToText({\n      getReader: () => ({\n        read: async () => { throw failure; },\n        releaseLock: () => { failureReleases += 1; }\n      })\n    })).rejects.toBe(failure);\n    expect(failureReleases).toBe(1);\n  });\n\n  test('releases the reader lock when decoder construction fails', async () => {\n    let releases = 0;\n    await expect(streamToText({\n      getReader: () => ({\n        read: async () => ({ done: true }),\n        releaseLock: () => { releases += 1; }\n      })\n    }, { encoding: 'definitely-not-an-encoding' })).rejects.toThrow();\n    expect(releases).toBe(1);\n  });\n\n  test('cancels and releases for an already-aborted signal', async () => {\n    let cancellations = 0;\n    let releases = 0;\n    const ac = new AbortController();\n    ac.abort(new Error('Stop'));\n\n    await expect(streamToText({\n      getReader: () => ({\n        read: async () => ({ done: true }),\n        cancel: () => { cancellations += 1; },\n        releaseLock: () => { releases += 1; }\n      })\n    }, { signal: ac.signal })).rejects.toMatchObject({ name: 'AbortError' });\n\n    expect(cancellations).toBe(1);\n    expect(releases).toBe(1);\n  });\n\n\n  test('rejects for invalid stream input', async () => {\n    // @ts-expect-error runtime guard\n    await expect(streamToText(null)).rejects.toThrow(TypeError);\n  });\n});\n",
     "testsTs": "import streamToText from './streamToText';\n\nfunction makeStream(chunks: Uint8Array[]) {\n  let i = 0;\n  let cancelled = false;\n  return {\n    getReader() {\n      return {\n        read() {\n          if (cancelled) return Promise.resolve({ done: true });\n          if (i >= chunks.length) return Promise.resolve({ done: true, value: undefined });\n          return Promise.resolve({ done: false, value: chunks[i++] });\n        },\n        cancel() {\n          cancelled = true;\n        }\n      };\n    }\n  };\n}\n\ndescribe('streamToText (TypeScript)', () => {\n  it('concatenates chunks', async () => {\n    const enc = new TextEncoder();\n    const stream = makeStream([enc.encode('Hello '), enc.encode('World')]);\n    await expect(streamToText(stream)).resolves.toBe('Hello World');\n  });\n\n  it('handles multibyte characters across chunks', async () => {\n    const enc = new TextEncoder();\n    const bytes = enc.encode('Hi 🌍');\n    const part1 = bytes.slice(0, 4);\n    const part2 = bytes.slice(4);\n    const stream = makeStream([part1, part2]);\n    await expect(streamToText(stream)).resolves.toBe('Hi 🌍');\n  });\n\n  it('rejects on abort', async () => {\n    const enc = new TextEncoder();\n    const stream = makeStream([enc.encode('data')]);\n    const ac = new AbortController();\n    ac.abort(new Error('Stop'));\n    await expect(streamToText(stream, { signal: ac.signal })).rejects.toMatchObject({\n      name: 'AbortError'\n    });\n  });\n\n  it('releases the reader lock after success and read failure', async () => {\n    let successReleases = 0;\n    await expect(streamToText({\n      getReader: () => ({\n        read: async () => ({ done: true }),\n        releaseLock: () => { successReleases += 1; }\n      })\n    })).resolves.toBe('');\n    expect(successReleases).toBe(1);\n\n    let failureReleases = 0;\n    const failure = new Error('read failed');\n    await expect(streamToText({\n      getReader: () => ({\n        read: async () => { throw failure; },\n        releaseLock: () => { failureReleases += 1; }\n      })\n    })).rejects.toBe(failure);\n    expect(failureReleases).toBe(1);\n  });\n\n  it('releases the reader lock when decoder construction fails', async () => {\n    let releases = 0;\n    await expect(streamToText({\n      getReader: () => ({\n        read: async () => ({ done: true }),\n        releaseLock: () => { releases += 1; }\n      })\n    }, { encoding: 'definitely-not-an-encoding' })).rejects.toThrow();\n    expect(releases).toBe(1);\n  });\n\n  it('cancels and releases for an already-aborted signal', async () => {\n    let cancellations = 0;\n    let releases = 0;\n    const ac = new AbortController();\n    ac.abort(new Error('Stop'));\n\n    await expect(streamToText({\n      getReader: () => ({\n        read: async () => ({ done: true }),\n        cancel: () => { cancellations += 1; },\n        releaseLock: () => { releases += 1; }\n      })\n    }, { signal: ac.signal })).rejects.toMatchObject({ name: 'AbortError' });\n\n    expect(cancellations).toBe(1);\n    expect(releases).toBe(1);\n  });\n\n\n  it('rejects for invalid stream input', async () => {\n    await expect(streamToText(null as any)).rejects.toThrow(TypeError);\n  });\n});\n",
     "access": "free",
+    "companies": [
+      "intuit"
+    ],
+    "sources": [
+      {
+        "label": "LeetCode Discuss: Intuit senior frontend engineer interview experience, November 2025",
+        "url": "https://leetcode.com/discuss/post/7320927/",
+        "publisher": "LeetCode Discuss",
+        "date": "2025-11",
+        "note": "One senior account describes a user story to call a provided LLM and display the generated text, where the interviewer expected Server-Sent Events. Reading a stream to text is a supporting drill, not the reported user story."
+      }
+    ],
     "updatedAt": "2026-07-14",
     "seo": {
       "title": "Convert ReadableStream to Text in JavaScript",
@@ -7777,6 +7977,18 @@
     "tests": "import createDeferred from './createDeferred';\n\ndescribe('createDeferred', () => {\n  test('returns promise, resolve, and reject controls', () => {\n    const d = createDeferred();\n\n    expect(typeof d).toBe('object');\n    expect(typeof d.promise.then).toBe('function');\n    expect(typeof d.resolve).toBe('function');\n    expect(typeof d.reject).toBe('function');\n  });\n\n  test('does not settle before resolve or reject is called', async () => {\n    const d = createDeferred();\n    let settled = false;\n\n    d.promise.finally(() => {\n      settled = true;\n    });\n\n    await Promise.resolve();\n\n    expect(settled).toBe(false);\n\n    d.resolve('ok');\n    await d.promise;\n\n    expect(settled).toBe(true);\n  });\n\n  test('resolves when resolve is called', async () => {\n    const d = createDeferred();\n\n    d.resolve(123);\n\n    await expect(d.promise).resolves.toBe(123);\n  });\n\n  test('rejects with the exact reason when reject is called', async () => {\n    const d = createDeferred();\n    const error = new Error('nope');\n\n    d.reject(error);\n\n    await expect(d.promise).rejects.toBe(error);\n  });\n\n  test('adopts another promise when resolving', async () => {\n    const d = createDeferred();\n\n    d.resolve(Promise.resolve('ok'));\n\n    await expect(d.promise).resolves.toBe('ok');\n  });\n\n  test('only the first settlement wins', async () => {\n    const d = createDeferred();\n\n    d.resolve('first');\n    d.resolve('second');\n    d.reject(new Error('ignored'));\n\n    await expect(d.promise).resolves.toBe('first');\n  });\n\n  test('then callbacks do not run synchronously after resolve', async () => {\n    const d = createDeferred();\n    let value = 'pending';\n\n    d.promise.then((result) => {\n      value = result;\n    });\n\n    d.resolve('done');\n\n    expect(value).toBe('pending');\n\n    await Promise.resolve();\n\n    expect(value).toBe('done');\n  });\n});\n",
     "testsTs": "import createDeferred from './createDeferred';\n\ndescribe('createDeferred (TypeScript)', () => {\n  it('returns promise, resolve, and reject controls', () => {\n    const d = createDeferred<string>();\n\n    expect(typeof d).toBe('object');\n    expect(typeof d.promise.then).toBe('function');\n    expect(typeof d.resolve).toBe('function');\n    expect(typeof d.reject).toBe('function');\n  });\n\n  it('does not settle before resolve or reject is called', async () => {\n    const d = createDeferred<string>();\n    let settled = false;\n\n    d.promise.finally(() => {\n      settled = true;\n    });\n\n    await Promise.resolve();\n\n    expect(settled).toBe(false);\n\n    d.resolve('ok');\n    await d.promise;\n\n    expect(settled).toBe(true);\n  });\n\n  it('resolves when resolve is called', async () => {\n    const d = createDeferred<number>();\n\n    d.resolve(123);\n\n    await expect(d.promise).resolves.toBe(123);\n  });\n\n  it('rejects with the exact reason when reject is called', async () => {\n    const d = createDeferred<number>();\n    const error = new Error('nope');\n\n    d.reject(error);\n\n    await expect(d.promise).rejects.toBe(error);\n  });\n\n  it('adopts another promise when resolving', async () => {\n    const d = createDeferred<string>();\n\n    d.resolve(Promise.resolve('ok'));\n\n    await expect(d.promise).resolves.toBe('ok');\n  });\n\n  it('only the first settlement wins', async () => {\n    const d = createDeferred<string>();\n\n    d.resolve('first');\n    d.resolve('second');\n    d.reject(new Error('ignored'));\n\n    await expect(d.promise).resolves.toBe('first');\n  });\n\n  it('then callbacks do not run synchronously after resolve', async () => {\n    const d = createDeferred<string>();\n    let value = 'pending';\n\n    d.promise.then((result) => {\n      value = result;\n    });\n\n    d.resolve('done');\n\n    expect(value).toBe('pending');\n\n    await Promise.resolve();\n\n    expect(value).toBe('done');\n  });\n});\n",
     "access": "free",
+    "companies": [
+      "waymo"
+    ],
+    "sources": [
+      {
+        "label": "PracHub: Waymo senior frontend engineer interview experience, May 2026",
+        "url": "https://prachub.com/interview-experiences/waymo-senior-frontend-engineer-interview-experience-rejected-30-minutes-after-pushing-on-the-process",
+        "publisher": "PracHub",
+        "date": "2026-05",
+        "note": "The report says a Promise problem in TypeScript was asked and does not say which. This deferred-promise drill is a representative exercise, not the reported question."
+      }
+    ],
     "updatedAt": "2026-07-14",
     "seo": {
       "title": "Implement createDeferred() in JavaScript: Promise Challenge + Tests",
@@ -8136,5 +8348,138 @@
       "description": "Given an href input, return a safe URL value that enforces allowed protocols and rejects potentially dangerous patterns."
     },
     "decisionGraphAsset": "assets/questions/javascript/decision-graphs/js-sanitize-href-url.v1.json"
+  },
+  {
+    "id": "js-filter-tree-render-indented",
+    "title": "Filter a Tree by Substring and Render It Indented",
+    "type": "coding",
+    "importance": 4,
+    "technology": "javascript",
+    "difficulty": "intermediate",
+    "tags": [
+      "tree",
+      "recursion",
+      "strings",
+      "immutability"
+    ],
+    "description": {
+      "summary": "Given an n-ary tree of { value, children } nodes and a needle string, drop every node whose value contains the needle together with its whole subtree, then render what remains as text: one line per node, depth-first in sibling order, indented two spaces per level. A public report of a senior frontend phone screen describes the same filter rendered as a UI tree; this practice version renders text so the tests can check order and indentation exactly. Concepts: tree, recursion, strings, immutability.",
+      "specs": {
+        "practice": [
+          "Pruning subtrees during a depth-first walk instead of filtering after the fact",
+          "Rendering tree depth as indentation without mutating the input",
+          "Defining the contract for a matching root, an empty needle and case sensitivity before coding"
+        ],
+        "expectedBehaviorIntro": "Your renderFilteredTree() implementation should:",
+        "expectedBehavior": [
+          "Return one line per surviving node, in depth-first order with siblings kept in their original order",
+          "Indent each line with two spaces per depth level and join lines with a newline, with no trailing newline",
+          "Drop a node and its entire subtree when node.value includes the needle (case-sensitive)",
+          "Return an empty string when the root itself matches",
+          "Prune nothing when the needle is an empty string",
+          "Leave the input tree unchanged"
+        ]
+      },
+      "arguments": [
+        {
+          "name": "root",
+          "type": "{ value: string; children?: TreeNode[] }",
+          "desc": "The root of an n-ary tree. children may be missing on leaves."
+        },
+        {
+          "name": "needle",
+          "type": "string",
+          "desc": "The substring to prune by. A node whose value contains it disappears with its subtree."
+        }
+      ],
+      "returns": {
+        "type": "string",
+        "desc": "The surviving tree rendered as indented text, or an empty string when the root matches."
+      },
+      "examples": [
+        "// Prune the 'offline' branch and render the rest\\nconst fleet = {\\n  value: 'fleet',\\n  children: [\\n    { value: 'depot-east', children: [{ value: 'van-12' }, { value: 'van-13-offline' }] },\\n    { value: 'depot-west-offline', children: [{ value: 'van-21' }] },\\n  ],\\n};\\nrenderFilteredTree(fleet, 'offline');\\n// => 'fleet\\\\n  depot-east\\\\n    van-12'",
+        "// A matching root removes everything\\nrenderFilteredTree(fleet, 'fleet'); // => ''\\n\\n// An empty needle keeps the whole tree\\nrenderFilteredTree({ value: 'a', children: [{ value: 'b' }] }, ''); // => 'a\\\\n  b'"
+      ]
+    },
+    "starterCode": "export default function renderFilteredTree(root, needle) {\n  // TODO: drop every node whose value contains needle (with its subtree),\n  // then render the rest as indented text, two spaces per depth level.\n  throw new Error('Not implemented');\n}\n",
+    "starterCodeTs": "type TreeNode = { value: string; children?: TreeNode[] };\n\nexport default function renderFilteredTree(root: TreeNode | null | undefined, needle: string): string {\n  // TODO: drop every node whose value contains needle (with its subtree),\n  // then render the rest as indented text, two spaces per depth level.\n  throw new Error('Not implemented');\n}\n",
+    "solutionBlock": {
+      "overview": "Interview answer: decide the contract first. A node is pruned when its value includes the needle, and pruning a node also removes its subtree, so the check belongs at the moment you visit a node, not in a post-processing filter. Walk depth-first, carry the depth with each node, and emit one line per surviving node with two spaces per level. Treat the root like any other node (a matching root yields an empty string) and treat an empty needle as \"keep everything\", because every string includes the empty string. Build a fresh array of lines so the input tree is never mutated.\n\nMental model: a pre-order traversal that skips a subtree whenever the gate fails, plus a depth counter that becomes indentation.",
+      "approaches": [
+        {
+          "title": "Approach 1: Recursive pre-order walk with a prune gate",
+          "prose": "Guard the root first: a missing root or a matching root returns an empty string. Then write a small recursive walk that pushes the current node's line, iterates its children in order, skips any child whose value includes the needle, and recurses with depth + 1. The depth is only used for indentation, so the walk never needs to copy nodes. Time is O(n) over the surviving nodes and memory is O(h) for the call stack plus the output lines.",
+          "codeJs": "export default function renderFilteredTree(root, needle) {\n  if (!root) return '';\n  if (needle && root.value.includes(needle)) return '';\n  const lines = [];\n  const walk = (node, depth) => {\n    lines.push(`${'  '.repeat(depth)}${node.value}`);\n    for (const child of node.children || []) {\n      if (needle && child.value.includes(needle)) continue;\n      walk(child, depth + 1);\n    }\n  };\n  walk(root, 0);\n  return lines.join('\\n');\n}\n",
+          "codeTs": "type TreeNode = { value: string; children?: TreeNode[] };\n\nexport default function renderFilteredTree(root: TreeNode | null | undefined, needle: string): string {\n  if (!root) return '';\n  if (needle && root.value.includes(needle)) return '';\n  const lines: string[] = [];\n  const walk = (node: TreeNode, depth: number): void => {\n    lines.push(`${'  '.repeat(depth)}${node.value}`);\n    for (const child of node.children || []) {\n      if (needle && child.value.includes(needle)) continue;\n      walk(child, depth + 1);\n    }\n  };\n  walk(root, 0);\n  return lines.join('\\n');\n}\n",
+          "decisionGraphKey": "approach1"
+        },
+        {
+          "title": "Approach 2: Explicit stack (no recursion depth limit)",
+          "prose": "Replace the call stack with an explicit stack of { node, depth } frames. Pop a frame, emit its line, then push its children in reverse order so the first child is processed next and sibling order is preserved. Apply the same prune gate while pushing. This handles very deep trees without risking a stack overflow and makes the traversal order visible in code.",
+          "codeJs": "export default function renderFilteredTree(root, needle) {\n  if (!root || (needle && root.value.includes(needle))) return '';\n  const lines = [];\n  const stack = [{ node: root, depth: 0 }];\n  while (stack.length) {\n    const { node, depth } = stack.pop();\n    lines.push(`${'  '.repeat(depth)}${node.value}`);\n    const children = node.children || [];\n    for (let i = children.length - 1; i >= 0; i -= 1) {\n      const child = children[i];\n      if (needle && child.value.includes(needle)) continue;\n      stack.push({ node: child, depth: depth + 1 });\n    }\n  }\n  return lines.join('\\n');\n}\n",
+          "codeTs": "type TreeNode = { value: string; children?: TreeNode[] };\n\nexport default function renderFilteredTree(root: TreeNode | null | undefined, needle: string): string {\n  if (!root || (needle && root.value.includes(needle))) return '';\n  const lines: string[] = [];\n  const stack: Array<{ node: TreeNode; depth: number }> = [{ node: root, depth: 0 }];\n  while (stack.length) {\n    const { node, depth } = stack.pop() as { node: TreeNode; depth: number };\n    lines.push(`${'  '.repeat(depth)}${node.value}`);\n    const children = node.children || [];\n    for (let i = children.length - 1; i >= 0; i -= 1) {\n      const child = children[i];\n      if (needle && child.value.includes(needle)) continue;\n      stack.push({ node: child, depth: depth + 1 });\n    }\n  }\n  return lines.join('\\n');\n}\n",
+          "decisionGraphKey": "approach2"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Filtering `children` after rendering keeps grandchildren of a pruned node alive; prune at visit time.",
+          "`''.includes('')` is true, so an unguarded empty needle prunes the entire tree.",
+          "Pushing children in forward order onto a stack reverses sibling order."
+        ],
+        "edgeCases": [
+          "Root matches → `''`.",
+          "Leaf nodes may omit `children` entirely.",
+          "Needle present in a deep leaf only → that leaf disappears, its ancestors stay.",
+          "Case matters: `'Offline'` does not match `'offline'`."
+        ],
+        "techniques": [
+          "Pre-order depth-first traversal with a pruning gate.",
+          "Carrying depth alongside nodes to derive indentation.",
+          "Converting recursion to an explicit stack."
+        ]
+      },
+      "followUp": [
+        "How would you render the result as nested DOM elements instead of text, and what changes in the traversal?",
+        "What if the needle should match case-insensitively or against several fields?",
+        "How would you keep an ancestor visible when only a descendant matches a positive filter instead of a prune?",
+        "How would you add collapse and expand state to the rendered tree without re-walking it on every toggle?"
+      ],
+      "resources": [
+        {
+          "title": "MDN – String.prototype.includes()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes"
+        },
+        {
+          "title": "MDN – Recursion",
+          "url": "https://developer.mozilla.org/en-US/docs/Glossary/Recursion"
+        },
+        {
+          "title": "MDN – String.prototype.repeat()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/repeat"
+        }
+      ]
+    },
+    "tests": "import renderFilteredTree from './renderFilteredTree';\n\nconst tree = () => ({\n  value: 'fleet',\n  children: [\n    { value: 'depot-east', children: [{ value: 'van-12' }, { value: 'van-13-offline' }] },\n    { value: 'depot-west-offline', children: [{ value: 'van-21' }] },\n    { value: 'dispatch' },\n  ],\n});\n\ndescribe('renderFilteredTree', () => {\n  test('renders the whole tree with two spaces per depth when nothing matches', () => {\n    expect(renderFilteredTree(tree(), 'zzz')).toBe(\n      'fleet\\n  depot-east\\n    van-12\\n    van-13-offline\\n  depot-west-offline\\n    van-21\\n  dispatch',\n    );\n  });\n\n  test('drops every node whose value contains the needle together with its subtree', () => {\n    expect(renderFilteredTree(tree(), 'offline')).toBe('fleet\\n  depot-east\\n    van-12\\n  dispatch');\n  });\n\n  test('returns an empty string when the root matches', () => {\n    expect(renderFilteredTree(tree(), 'fleet')).toBe('');\n  });\n\n  test('an empty needle prunes nothing', () => {\n    expect(renderFilteredTree({ value: 'a', children: [{ value: 'b' }] }, '')).toBe('a\\n  b');\n  });\n\n  test('matching is case-sensitive', () => {\n    const root = { value: 'root', children: [{ value: 'Offline' }, { value: 'offline' }] };\n    expect(renderFilteredTree(root, 'offline')).toBe('root\\n  Offline');\n  });\n\n  test('keeps sibling order and indents deep nesting correctly', () => {\n    const deep = { value: '0', children: [{ value: '1', children: [{ value: '2', children: [{ value: '3-x' }, { value: '3' }] }] }] };\n    expect(renderFilteredTree(deep, 'x')).toBe('0\\n  1\\n    2\\n      3');\n  });\n\n  test('does not mutate the input tree', () => {\n    const input = tree();\n    const snapshot = JSON.stringify(input);\n    renderFilteredTree(input, 'offline');\n    expect(JSON.stringify(input)).toBe(snapshot);\n  });\n\n  test('treats a node without a children array as a leaf', () => {\n    expect(renderFilteredTree({ value: 'solo' }, 'x')).toBe('solo');\n  });\n});\n",
+    "testsTs": "import renderFilteredTree from './renderFilteredTree';\n\ntype TreeNode = { value: string; children?: TreeNode[] };\n\nconst tree = (): TreeNode => ({\n  value: 'fleet',\n  children: [\n    { value: 'depot-east', children: [{ value: 'van-12' }, { value: 'van-13-offline' }] },\n    { value: 'depot-west-offline', children: [{ value: 'van-21' }] },\n    { value: 'dispatch' },\n  ],\n});\n\ndescribe('renderFilteredTree (TypeScript)', () => {\n  it('renders the whole tree with two spaces per depth when nothing matches', () => {\n    expect(renderFilteredTree(tree(), 'zzz')).toBe(\n      'fleet\\n  depot-east\\n    van-12\\n    van-13-offline\\n  depot-west-offline\\n    van-21\\n  dispatch',\n    );\n  });\n\n  it('drops every node whose value contains the needle together with its subtree', () => {\n    expect(renderFilteredTree(tree(), 'offline')).toBe('fleet\\n  depot-east\\n    van-12\\n  dispatch');\n  });\n\n  it('returns an empty string when the root matches', () => {\n    expect(renderFilteredTree(tree(), 'fleet')).toBe('');\n  });\n\n  it('an empty needle prunes nothing', () => {\n    expect(renderFilteredTree({ value: 'a', children: [{ value: 'b' }] }, '')).toBe('a\\n  b');\n  });\n\n  it('matching is case-sensitive', () => {\n    const root: TreeNode = { value: 'root', children: [{ value: 'Offline' }, { value: 'offline' }] };\n    expect(renderFilteredTree(root, 'offline')).toBe('root\\n  Offline');\n  });\n\n  it('keeps sibling order and indents deep nesting correctly', () => {\n    const deep: TreeNode = { value: '0', children: [{ value: '1', children: [{ value: '2', children: [{ value: '3-x' }, { value: '3' }] }] }] };\n    expect(renderFilteredTree(deep, 'x')).toBe('0\\n  1\\n    2\\n      3');\n  });\n\n  it('does not mutate the input tree', () => {\n    const input = tree();\n    const snapshot = JSON.stringify(input);\n    renderFilteredTree(input, 'offline');\n    expect(JSON.stringify(input)).toBe(snapshot);\n  });\n\n  it('treats a node without a children array as a leaf', () => {\n    expect(renderFilteredTree({ value: 'solo' }, 'x')).toBe('solo');\n  });\n});\n",
+    "access": "free",
+    "updatedAt": "2026-10-14",
+    "companies": [
+      "waymo"
+    ],
+    "sources": [
+      {
+        "label": "PracHub: Waymo senior frontend engineer interview experience, May 2026",
+        "url": "https://prachub.com/interview-experiences/waymo-senior-frontend-engineer-interview-experience-rejected-30-minutes-after-pushing-on-the-process",
+        "publisher": "PracHub",
+        "date": "2026-05",
+        "note": "One self-reported senior loop. It establishes that a tree-filter-and-render phone screen was asked once, rendered as UI in the report; this text-rendering version is a practice adaptation, not the exact wording."
+      }
+    ],
+    "seo": {
+      "title": "Filter a Tree by Substring and Render It Indented",
+      "description": "Prune every subtree whose value contains a needle, then render the remaining n-ary tree as indented text in depth-first order. Tests cover order, case and immutability."
+    },
+    "decisionGraphAsset": "assets/questions/javascript/decision-graphs/js-filter-tree-render-indented.v1.json"
   }
 ]

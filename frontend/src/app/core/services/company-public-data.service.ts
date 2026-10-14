@@ -3,6 +3,7 @@ import { Injectable, PLATFORM_ID, TransferState, inject, makeStateKey } from '@a
 import { Observable, defer, forkJoin, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { companyBrandFor } from '../../shared/company-branding';
+import { AUTHORED_COMPANY_SLUGS_TOKEN } from '../../shared/company-previews/authored-company-slugs';
 import { collectCompanyCounts } from '../../shared/company-counts.util';
 import { CompanyIndexResolved, CompanyPreviewQuestion, CompanyPreviewResolved } from '../models/company-public.model';
 import { SystemDesignListItem } from '../models/system-design.model';
@@ -15,7 +16,8 @@ type CompanyCatalog = {
 };
 type CompanyQuestion = MixedQuestionListItem | SystemDesignListItem;
 
-const EDITORIAL_COMPANIES = new Set(['google', 'openai', 'netflix']);
+// Hard-coded template branches; registry-driven authored guides are read from the injected registry.
+const LEGACY_EDITORIAL_COMPANIES = new Set(['google', 'openai', 'netflix']);
 const emptyCounts = () => ({ all: 0, coding: 0, trivia: 0, system: 0 });
 
 @Injectable({ providedIn: 'root' })
@@ -23,6 +25,7 @@ export class CompanyPublicDataService {
   private readonly questions = inject(QuestionService);
   private readonly transferState = inject(TransferState);
   private readonly isServer = isPlatformServer(inject(PLATFORM_ID));
+  private readonly authoredSlugs = inject(AUTHORED_COMPANY_SLUGS_TOKEN);
 
   loadIndex(): Observable<CompanyIndexResolved> {
     return this.resolveWithTransferState('company-public:index', { companies: [] }, () =>
@@ -43,7 +46,7 @@ export class CompanyPublicDataService {
     const slug = rawSlug.trim().toLowerCase();
     const fallback: CompanyPreviewResolved = {
       slug,
-      mode: EDITORIAL_COMPANIES.has(slug) ? 'editorial' : 'catalog',
+      mode: this.isEditorial(slug) ? 'editorial' : 'catalog',
       counts: emptyCounts(),
       samples: [],
     };
@@ -57,6 +60,10 @@ export class CompanyPublicDataService {
         samples: this.buildSamples(slug, catalog),
       }))),
     );
+  }
+
+  private isEditorial(slug: string): boolean {
+    return LEGACY_EDITORIAL_COMPANIES.has(slug) || this.authoredSlugs.includes(slug);
   }
 
   private loadCatalog(): Observable<CompanyCatalog> {

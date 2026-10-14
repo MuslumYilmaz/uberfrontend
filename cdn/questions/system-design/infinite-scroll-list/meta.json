@@ -14,6 +14,9 @@
     "frontend-architecture",
     "responsive-ui"
   ],
+  "companies": [
+    "datadog"
+  ],
   "sections": [
     {
       "key": "R",
@@ -55,6 +58,23 @@
     "uniqueAngle": "Design an infinite-scroll list with cursor pagination, request recovery, bounded DOM rendering, stable scroll anchors, and accessible alternatives.",
     "factCheckedAt": "2026-07-28",
     "reviewedBy": "FrontendAtlas editorial",
-    "companyEvidence": []
-  }
+    "companyEvidence": [
+      {
+        "company": "datadog",
+        "evidenceType": "reported-interview-question",
+        "sourceUrl": "https://www.jointaro.com/interviews/companies/datadog/experiences/senior-frontend-developer-valbonne-october-1-2024-accepted-offer-positive-47d59048/",
+        "sourceTitle": "Datadog senior frontend developer interview, Valbonne, October 2024 (Taro)",
+        "checkedAt": "2026-10-14"
+      }
+    ]
+  },
+  "sources": [
+    {
+      "label": "Taro: Datadog senior frontend developer interview, Valbonne, October 2024",
+      "url": "https://www.jointaro.com/interviews/companies/datadog/experiences/senior-frontend-developer-valbonne-october-1-2024-accepted-offer-positive-47d59048/",
+      "publisher": "Taro",
+      "date": "2024-10",
+      "note": "One senior account lists a design prompt for the frontend architecture to filter and display real-time logs (a Live Tail view). Bounded rendering of a growing list is the part of that prompt this case practises; it is not the reported wording."
+    }
+  ]
 }

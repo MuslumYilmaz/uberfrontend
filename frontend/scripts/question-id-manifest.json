@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-12T06:48:30.604Z",
+  "generatedAt": "2026-10-14T16:27:22.331Z",
   "entries": [
     {
       "tech": "angular",
@@ -162,6 +162,12 @@
       "tech": "angular",
       "kind": "debug",
       "id": "ng-debug-counter-change-detection",
+      "file": "angular/debug.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "debug",
+      "id": "ng-debug-fleet-status-bug-reports",
       "file": "angular/debug.json"
     },
     {
@@ -1032,6 +1038,12 @@
       "tech": "javascript",
       "kind": "coding",
       "id": "js-fetch-json-timeout",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-filter-tree-render-indented",
       "file": "javascript/coding.json"
     },
     {

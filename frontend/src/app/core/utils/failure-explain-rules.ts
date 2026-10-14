@@ -437,6 +437,25 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
     }),
   },
   {
+    ruleId: 'js-filter-tree-render-indented-prune',
+    questionId: 'js-filter-tree-render-indented',
+    priority: 100,
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, ['drops every node', 'root matches', 'case-sensitive', 'empty needle', 'does not mutate']) ||
+      snapshot.failCount >= 2,
+    buildHint: (snapshot) => ({
+      ruleId: 'js-filter-tree-render-indented-prune',
+      title: 'Prune matching subtrees before rendering',
+      why: buildProgressAwareWhy(snapshot, 'A node whose value contains the needle must disappear with its whole subtree; a matching root yields an empty string, and an empty needle prunes nothing.'),
+      actions: [
+        'Check `value.includes(needle)` when you visit a node and skip its children when it matches.',
+        "Return `''` when the root itself matches, and treat an empty needle as keep-everything.",
+        'Keep the comparison case-sensitive and never mutate the input nodes.',
+      ],
+      confidence: 0.86,
+    }),
+  },
+  {
     ruleId: 'js-compact-falsy',
     questionId: 'js-compact',
     priority: 100,
@@ -657,6 +676,23 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
         'Verify empty-array behavior returns 0.',
       ],
       confidence: 0.74,
+    }),
+  },
+  {
+    ruleId: 'js-filter-tree-render-indented-default',
+    questionId: 'js-filter-tree-render-indented',
+    priority: 40,
+    matches: () => true,
+    buildHint: (snapshot) => ({
+      ruleId: 'js-filter-tree-render-indented-default',
+      title: 'Render depth-first with two spaces per level',
+      why: buildProgressAwareWhy(snapshot, 'The output is one line per surviving node in pre-order, indented by depth and joined with newlines.'),
+      actions: [
+        "Indent each line with `'  '.repeat(depth)` and keep siblings in their original order.",
+        "Join the collected lines with `'\\n'` so there is no trailing newline.",
+        'Treat a node without a `children` array as a leaf.',
+      ],
+      confidence: 0.72,
     }),
   },
   {

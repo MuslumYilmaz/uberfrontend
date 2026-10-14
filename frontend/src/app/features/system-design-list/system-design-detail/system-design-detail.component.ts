@@ -13,6 +13,8 @@ import { QuestionService } from '../../../core/services/question.service';
 import { FooterComponent } from '../../../shared/components/footer/footer.component';
 import { GithubStarCtaComponent } from '../../../shared/components/github-star-cta/github-star-cta.component';
 import { LockedPreviewComponent } from '../../../shared/components/locked-preview/locked-preview.component';
+import { QuestionSourcesComponent } from '../../../shared/components/question-sources/question-sources.component';
+import { buildQuestionSourceCitations, normalizeQuestionSources } from '../../../core/utils/question-sources.util';
 import { FaButtonComponent } from '../../../shared/ui/button/fa-button.component';
 import { FaDialogComponent } from '../../../shared/ui/dialog/fa-dialog.component';
 import { SEO_SUPPRESS_TOKEN } from '../../../core/services/seo-context';
@@ -91,6 +93,7 @@ const DEFAULT_DETAIL_GUIDE_SLUGS: readonly SystemDesignGuideSlug[] = [
         ChipModule,
         FooterComponent, GithubStarCtaComponent,
         LockedPreviewComponent,
+        QuestionSourcesComponent,
         FaButtonComponent,
         FaDialogComponent,
     ],
@@ -179,6 +182,8 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
     return isQuestionLockedForTier({ access }, user);
   });
   lockedTitle = computed(() => this.q()?.title ?? 'Premium question');
+  /** Public interview reports behind this case (empty for most cases). */
+  sources = computed(() => normalizeQuestionSources(this.q()?.sources));
   lockedPersonalizationLine = computed(() => {
     const profile = this.onboarding.getProfile();
     if (!profile) return '';
@@ -956,6 +961,7 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
       ],
     };
 
+    const citation = buildQuestionSourceCitations(question.sources);
     const article = {
       '@type': 'Article',
       '@id': canonical,
@@ -978,6 +984,7 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
       isAccessibleForFree: accessibleForFree,
       keywords: keywords.join(', '),
       ...(dateModified ? { dateModified } : {}),
+      ...(citation.length ? { citation } : {}),
     };
 
     const learningResource = this.buildLearningResourceSchema(question, canonical);

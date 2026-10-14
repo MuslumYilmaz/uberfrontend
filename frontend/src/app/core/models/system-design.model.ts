@@ -3,7 +3,9 @@ import {
   Difficulty,
   PremiumPreviewContent,
   QuestionSeo,
+  QuestionSource,
 } from './question.model';
+import { normalizeQuestionSources } from '../utils/question-sources.util';
 
 export type SystemDesignTargetLevel = 'junior' | 'mid' | 'senior';
 export type SystemDesignTimeboxMinutes = 10 | 15 | 20;
@@ -159,6 +161,7 @@ export interface SystemDesignQuestion {
   sections?: SystemDesignSectionReference[];
   radio?: SystemDesignRadioSection[];
   companies?: string[];
+  sources?: QuestionSource[];
   author?: string;
   publishedAt?: string;
   updatedAt?: string;
@@ -219,6 +222,7 @@ export function normalizeSystemDesignQuestion(value: unknown): SystemDesignQuest
     'sections',
     'radio',
     'companies',
+    'sources',
   ]) {
     delete sanitizedRecord[key];
   }
@@ -243,6 +247,9 @@ export function normalizeSystemDesignQuestion(value: unknown): SystemDesignQuest
       : {}),
     ...(Array.isArray(record['companies'])
       ? { companies: toStringArray(record['companies']) }
+      : {}),
+    ...(Array.isArray(record['sources'])
+      ? { sources: normalizeQuestionSources(record['sources']) }
       : {}),
   };
 }

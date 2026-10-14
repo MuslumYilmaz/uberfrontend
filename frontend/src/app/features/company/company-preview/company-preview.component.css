@@ -341,6 +341,20 @@
   color: var(--uf-text-secondary);
 }
 
+.company-prompt__reported {
+  margin: 0 0 12px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: color-mix(in srgb, var(--uf-text-secondary) 88%, transparent);
+  overflow-wrap: anywhere;
+}
+
+.company-prompt__reported a {
+  color: var(--uf-accent-strong);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
 .company-prompt__miss {
   border-top: 1px solid var(--uf-border-subtle);
   padding-top: 10px;
