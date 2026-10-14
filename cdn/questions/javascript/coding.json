@@ -1501,7 +1501,17 @@
       "google",
       "netflix",
       "apple",
-      "meta"
+      "meta",
+      "waymo"
+    ],
+    "sources": [
+      {
+        "label": "PracHub: Waymo senior frontend engineer interview experience, May 2026",
+        "url": "https://prachub.com/interview-experiences/waymo-senior-frontend-engineer-interview-experience-rejected-30-minutes-after-pushing-on-the-process",
+        "publisher": "PracHub",
+        "date": "2026-05",
+        "note": "One self-reported senior loop describes an onsite exercise to build an autocomplete with debouncing. Debounce is the supporting primitive for that exercise, not the reported wording."
+      }
     ],
     "difficulty": "intermediate",
     "tags": [
@@ -7058,6 +7068,18 @@
     "tests": "import fetchJson from './fetchJson';\n\nfunction toAbortError(reason, message = 'Aborted') {\n  if (reason && reason.name === 'AbortError') return reason;\n  const err = new Error(reason && reason.message ? reason.message : message);\n  try { err.name = 'AbortError'; } catch { try { Object.defineProperty(err, 'name', { value: 'AbortError' }); } catch {} }\n  return err;\n}\n\nfunction makeFetch({ delay = 0, ok = true, status = 200, jsonData = {} } = {}) {\n  return function fetchMock(_url, init = {}) {\n    const signal = init.signal;\n    return new Promise((resolve, reject) => {\n      let done = false;\n      let timerId;\n      const finish = () => {\n        if (done) return;\n        done = true;\n        if (signal) signal.removeEventListener('abort', onAbort);\n        resolve({\n          ok,\n          status,\n          json: async () => jsonData\n        });\n      };\n\n      const onAbort = () => {\n        if (done) return;\n        done = true;\n        clearTimeout(timerId);\n        reject(toAbortError(signal && signal.reason));\n      };\n\n      if (signal) {\n        if (signal.aborted) return onAbort();\n        signal.addEventListener('abort', onAbort, { once: true });\n      }\n\n      timerId = setTimeout(finish, delay);\n    });\n  };\n}\n\ndescribe('fetchJson', () => {\n  test('resolves JSON for ok responses', async () => {\n    const fetchFn = makeFetch({ jsonData: { ok: true } });\n    await expect(fetchJson('/ok', { fetchFn, timeoutMs: 100 })).resolves.toEqual({ ok: true });\n  });\n\n  test('throws on non-ok status', async () => {\n    const fetchFn = makeFetch({ ok: false, status: 404 });\n    await expect(fetchJson('/missing', { fetchFn })).rejects.toThrow('HTTP 404');\n  });\n\n  test('aborts on timeout', async () => {\n    const fetchFn = makeFetch({ delay: 50, jsonData: { ok: true } });\n    await expect(fetchJson('/slow', { fetchFn, timeoutMs: 10 })).rejects.toMatchObject({\n      name: 'AbortError',\n      message: 'Timeout'\n    });\n  });\n\n  test('respects external abort signal', async () => {\n    const ac = new AbortController();\n    const fetchFn = makeFetch({ delay: 30, jsonData: { ok: true } });\n    const p = fetchJson('/abort', { fetchFn, signal: ac.signal });\n    setTimeout(() => ac.abort(new Error('Cancelled')), 5);\n    await expect(p).rejects.toMatchObject({ name: 'AbortError' });\n  });\n\n  test('the embedded fetch mock handles an already-aborted signal', async () => {\n    const ac = new AbortController();\n    ac.abort(new Error('Already cancelled'));\n    const fetchFn = makeFetch();\n\n    await expect(fetchFn('/already-aborted', { signal: ac.signal })).rejects.toMatchObject({\n      name: 'AbortError',\n      message: 'Already cancelled'\n    });\n  });\n});\n",
     "testsTs": "import fetchJson from './fetchJson';\n\nfunction toAbortError(reason: any, message: string = 'Aborted'): Error {\n  if (reason && reason.name === 'AbortError') return reason;\n  const err = new Error(reason && reason.message ? reason.message : message);\n  try { (err as any).name = 'AbortError'; } catch { try { Object.defineProperty(err as any, 'name', { value: 'AbortError' }); } catch {} }\n  return err;\n}\n\nfunction makeFetch({ delay = 0, ok = true, status = 200, jsonData = {} } = {}) {\n  return function fetchMock(_url: string, init: any = {}) {\n    const signal: AbortSignal | undefined = init.signal;\n    return new Promise((resolve, reject) => {\n      let done = false;\n      let timerId: ReturnType<typeof setTimeout> | undefined;\n      const finish = () => {\n        if (done) return;\n        done = true;\n        if (signal) signal.removeEventListener('abort', onAbort);\n        resolve({\n          ok,\n          status,\n          json: async () => jsonData\n        });\n      };\n\n      const onAbort = () => {\n        if (done) return;\n        done = true;\n        clearTimeout(timerId);\n        reject(toAbortError(signal && (signal as any).reason));\n      };\n\n      if (signal) {\n        if (signal.aborted) return onAbort();\n        signal.addEventListener('abort', onAbort, { once: true });\n      }\n\n      timerId = setTimeout(finish, delay);\n    });\n  };\n}\n\ndescribe('fetchJson (TypeScript)', () => {\n  it('resolves JSON for ok responses', async () => {\n    const fetchFn = makeFetch({ jsonData: { ok: true } });\n    await expect(fetchJson('/ok', { fetchFn, timeoutMs: 100 })).resolves.toEqual({ ok: true });\n  });\n\n  it('throws on non-ok status', async () => {\n    const fetchFn = makeFetch({ ok: false, status: 404 });\n    await expect(fetchJson('/missing', { fetchFn })).rejects.toThrow('HTTP 404');\n  });\n\n  it('aborts on timeout', async () => {\n    const fetchFn = makeFetch({ delay: 50, jsonData: { ok: true } });\n    await expect(fetchJson('/slow', { fetchFn, timeoutMs: 10 })).rejects.toMatchObject({\n      name: 'AbortError',\n      message: 'Timeout'\n    });\n  });\n\n  it('respects external abort signal', async () => {\n    const ac = new AbortController();\n    const fetchFn = makeFetch({ delay: 30, jsonData: { ok: true } });\n    const p = fetchJson('/abort', { fetchFn, signal: ac.signal });\n    setTimeout(() => ac.abort(new Error('Cancelled')), 5);\n    await expect(p).rejects.toMatchObject({ name: 'AbortError' });\n  });\n\n  it('the embedded fetch mock handles an already-aborted signal', async () => {\n    const ac = new AbortController();\n    ac.abort(new Error('Already cancelled'));\n    const fetchFn = makeFetch();\n\n    await expect(fetchFn('/already-aborted', { signal: ac.signal })).rejects.toMatchObject({\n      name: 'AbortError',\n      message: 'Already cancelled'\n    });\n  });\n});\n",
     "access": "free",
+    "companies": [
+      "waymo"
+    ],
+    "sources": [
+      {
+        "label": "PracHub: Waymo senior frontend engineer interview experience, May 2026",
+        "url": "https://prachub.com/interview-experiences/waymo-senior-frontend-engineer-interview-experience-rejected-30-minutes-after-pushing-on-the-process",
+        "publisher": "PracHub",
+        "date": "2026-05",
+        "note": "One self-reported senior loop describes an onsite autocomplete with debouncing that queries a backend. Fetching with a timeout and abort is a supporting drill for cancelling stale requests, not the reported exercise."
+      }
+    ],
     "updatedAt": "2026-07-14",
     "seo": {
       "title": "Fetch JSON with Timeout in JavaScript",

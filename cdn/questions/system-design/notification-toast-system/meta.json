@@ -14,6 +14,9 @@
     "accessibility",
     "responsive-ui"
   ],
+  "companies": [
+    "servicenow"
+  ],
   "sections": [
     {
       "key": "R",
@@ -55,7 +58,15 @@
     "uniqueAngle": "Design a global toast system with typed commands, stacking, deduplication, lifecycle ownership, persistent actions, responsive placement, and accessible announcements.",
     "factCheckedAt": "2026-08-06",
     "reviewedBy": "FrontendAtlas editorial",
-    "companyEvidence": []
+    "companyEvidence": [
+      {
+        "company": "servicenow",
+        "evidenceType": "reported-interview-question",
+        "sourceUrl": "https://leetcode.com/discuss/post/7711064/",
+        "sourceTitle": "ServiceNow senior frontend developer interview experience, February 2026 (LeetCode Discuss, public preview)",
+        "checkedAt": "2026-10-14"
+      }
+    ]
   },
   "contentSchemaVersion": 2,
   "practice": {
@@ -97,5 +108,21 @@
       "expertStretch": "Route scope, pause/resume, and measured fair overflow.",
       "redFlag": "Each component owns timers or announces again on every render."
     }
-  }
+  },
+  "sources": [
+    {
+      "label": "LeetCode Discuss: ServiceNow senior frontend developer interview experience, February 2026",
+      "url": "https://leetcode.com/discuss/post/7711064/",
+      "publisher": "LeetCode Discuss",
+      "date": "2026-03",
+      "note": "Public search previews of this report list a notification panel design in a senior frontend loop. The full report could not be read by our tools, so only that listing is used. This case practises the shape, not the reported wording."
+    },
+    {
+      "label": "Blind: ServiceNow phone screen for a staff engineer, frontend-leaning, September 2021",
+      "url": "https://www.teamblind.com/post/servicenow-phone-screen-staff-engineer-interview-8msftqw8",
+      "publisher": "Blind",
+      "date": "2021-09",
+      "note": "One reply in this thread describes a round on UI design and data flow. It supports the round type, not the specific feature."
+    }
+  ]
 }

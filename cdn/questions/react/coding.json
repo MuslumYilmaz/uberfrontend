@@ -3323,7 +3323,32 @@
     },
     "solutionAsset": "assets/sb/react/solution/react-nested-comments-solution.v1.json",
     "companies": [
-      "google"
+      "google",
+      "intuit",
+      "servicenow"
+    ],
+    "sources": [
+      {
+        "label": "LeetCode Discuss: Intuit senior frontend engineer interview experience, November 2025",
+        "url": "https://leetcode.com/discuss/post/7320927/",
+        "publisher": "LeetCode Discuss",
+        "date": "2025-11",
+        "note": "One senior account describes implementing a nested comment component inside a codebase received the day before, storing its state in IndexedDB and adding a test for adding a comment. This component is a practice version of that shape, not the reported codebase."
+      },
+      {
+        "label": "LeetCode Discuss: ServiceNow senior frontend developer interview experience, February 2026",
+        "url": "https://leetcode.com/discuss/post/7711064/",
+        "publisher": "LeetCode Discuss",
+        "date": "2026-03",
+        "note": "Public search previews of this report list a nested comments design in a senior frontend loop. The full report could not be read by our tools, so only that listing is used. This component practises the shape, not the reported wording."
+      },
+      {
+        "label": "Blind: ServiceNow phone screen for a staff engineer, frontend-leaning, September 2021",
+        "url": "https://www.teamblind.com/post/servicenow-phone-screen-staff-engineer-interview-8msftqw8",
+        "publisher": "Blind",
+        "date": "2021-09",
+        "note": "One reply in this thread describes a round on UI design and data flow. It supports the round type, not the specific feature."
+      }
     ],
     "access": "premium",
     "updatedAt": "2026-01-30",

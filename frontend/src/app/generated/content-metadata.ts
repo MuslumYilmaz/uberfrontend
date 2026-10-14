@@ -1579,8 +1579,8 @@ export const SHOWCASE_STATS = {
       "system": 0
     },
     "intuit": {
-      "all": 8,
-      "coding": 7,
+      "all": 9,
+      "coding": 8,
       "trivia": 0,
       "system": 1
     },
@@ -1609,10 +1609,10 @@ export const SHOWCASE_STATS = {
       "system": 0
     },
     "servicenow": {
-      "all": 5,
-      "coding": 5,
+      "all": 7,
+      "coding": 6,
       "trivia": 0,
-      "system": 0
+      "system": 1
     },
     "stripe": {
       "all": 1,
@@ -1627,8 +1627,8 @@ export const SHOWCASE_STATS = {
       "system": 0
     },
     "waymo": {
-      "all": 5,
-      "coding": 4,
+      "all": 8,
+      "coding": 7,
       "trivia": 0,
       "system": 1
     }

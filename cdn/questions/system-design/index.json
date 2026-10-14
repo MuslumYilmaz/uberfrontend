@@ -195,6 +195,9 @@
       "accessibility",
       "responsive-ui"
     ],
+    "companies": [
+      "servicenow"
+    ],
     "type": "system-design",
     "access": "free",
     "updatedAt": "2026-08-06",

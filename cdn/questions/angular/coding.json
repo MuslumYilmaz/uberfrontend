@@ -1581,7 +1581,18 @@
       "storageKey": "v1:ui:angular:angular-debounced-search"
     },
     "pressureModeAsset": "assets/questions/pressure-modes/debounced-search.v1.json",
-    "companies": [],
+    "companies": [
+      "waymo"
+    ],
+    "sources": [
+      {
+        "label": "PracHub: Waymo senior frontend engineer interview experience, May 2026",
+        "url": "https://prachub.com/interview-experiences/waymo-senior-frontend-engineer-interview-experience-rejected-30-minutes-after-pushing-on-the-process",
+        "publisher": "PracHub",
+        "date": "2026-05",
+        "note": "One self-reported senior loop describes an onsite exercise to build an autocomplete with debouncing, for a posting that asked for production Angular. This debounced search is a practice version of that shape, not the reported exercise."
+      }
+    ],
     "solutionAsset": "assets/sb/angular/solution/angular-debounced-search-solution.v2.json",
     "access": "premium",
     "updatedAt": "2026-07-15",
