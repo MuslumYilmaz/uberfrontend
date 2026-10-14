@@ -47,6 +47,7 @@ import { CodeStorageService } from '../../../core/services/code-storage.service'
 import { QuestionService } from '../../../core/services/question.service';
 import { MonacoEditorComponent } from '../../../monaco-editor.component';
 import { FooterComponent } from '../../../shared/components/footer/footer.component';
+import { GithubStarCtaComponent } from '../../../shared/components/github-star-cta/github-star-cta.component';
 import { publicQuestionHref } from '../../../core/utils/public-question-link.util';
 import { LockedPreviewComponent } from '../../../shared/components/locked-preview/locked-preview.component';
 import { ConsoleEntry, ConsoleLoggerComponent, TestResult } from '../console-logger/console-logger.component';
@@ -161,7 +162,7 @@ const SEO_DESCRIPTION_MAX_LEN = 240;
     selector: 'app-coding-detail',
     imports: [
         CommonModule, RouterModule,
-        MonacoEditorComponent, ConsoleLoggerComponent, FooterComponent,
+        MonacoEditorComponent, ConsoleLoggerComponent, FooterComponent, GithubStarCtaComponent,
         CodingJsPanelComponent, CodingWebPanelComponent, CodingFrameworkPanelComponent,
         LockedPreviewComponent,
         LoginRequiredDialogComponent,

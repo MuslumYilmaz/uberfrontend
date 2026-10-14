@@ -14,6 +14,7 @@ import { InterviewAvailabilityStore } from '../../core/services/interview-availa
 import { interviewAvailabilityAllowsRole } from '../../core/models/interview.model';
 import { isProActive } from '../../core/utils/entitlements.util';
 import { FeatureAnnouncementsService } from '../../core/services/feature-announcements.service';
+import { GITHUB_REPO_URL } from '../../core/config/project-links';
 
 interface LinkItem {
   key: string;
@@ -47,6 +48,7 @@ type NavItem = LinkItem | GroupItem;
 export class AppSidebarComponent implements OnInit, OnDestroy {
   @Input() collapsed = false;
   @Input() drawerOnly = false;
+  readonly githubRepoUrl = GITHUB_REPO_URL;
 
   private navSub?: Subscription;
   private currentPath = '/';

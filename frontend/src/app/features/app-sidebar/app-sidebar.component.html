@@ -149,6 +149,13 @@
             <button pButton type="button" icon="pi pi-shield" class="p-button-text p-button-icon-only legal-btn"
                 [routerLink]="['/legal']" (click)="closeDrawer()" pTooltip="Legal" tooltipPosition="right" aria-label="Legal">
             </button>
+
+            <!-- GitHub -->
+            <a class="tool-icon-btn tool-icon-btn--link" [href]="githubRepoUrl" target="_blank" rel="noopener noreferrer"
+                (click)="closeDrawer()" pTooltip="Star FrontendAtlas on GitHub" tooltipPosition="right"
+                aria-label="Star FrontendAtlas on GitHub" data-testid="sidebar-github-link">
+                <i class="pi pi-github" aria-hidden="true"></i>
+            </a>
         </div>
 
         <div class="tools-right" *ngIf="!drawerOnly">

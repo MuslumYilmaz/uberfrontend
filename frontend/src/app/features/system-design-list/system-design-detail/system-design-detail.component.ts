@@ -11,6 +11,7 @@ import { BugReportService } from '../../../core/services/bug-report.service';
 import { ChipModule } from 'primeng/chip';
 import { QuestionService } from '../../../core/services/question.service';
 import { FooterComponent } from '../../../shared/components/footer/footer.component';
+import { GithubStarCtaComponent } from '../../../shared/components/github-star-cta/github-star-cta.component';
 import { LockedPreviewComponent } from '../../../shared/components/locked-preview/locked-preview.component';
 import { FaButtonComponent } from '../../../shared/ui/button/fa-button.component';
 import { FaDialogComponent } from '../../../shared/ui/dialog/fa-dialog.component';
@@ -88,7 +89,7 @@ const DEFAULT_DETAIL_GUIDE_SLUGS: readonly SystemDesignGuideSlug[] = [
         CommonModule,
         RouterModule,
         ChipModule,
-        FooterComponent,
+        FooterComponent, GithubStarCtaComponent,
         LockedPreviewComponent,
         FaButtonComponent,
         FaDialogComponent,

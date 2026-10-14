@@ -1,35 +1,58 @@
 # FrontendAtlas
 
-[FrontendAtlas](https://frontendatlas.com) is an independent frontend interview-preparation platform built around repeatable, hands-on practice. It brings coding exercises, concept questions, system-design scenarios, debugging incidents, and engineering tradeoffs into one focused workflow.
+[FrontendAtlas](https://frontendatlas.com) is an independent frontend interview-preparation platform: an in-browser coding workspace, interactive labs, and source-checked questions across JavaScript, HTML/CSS, Angular, React, Vue, and frontend system design. This repository is the complete production codebase behind the site, not a demo extract.
 
-[Live product](https://frontendatlas.com) · [Editorial policy](https://frontendatlas.com/legal/editorial-policy) · [Maintainer](https://www.linkedin.com/in/mslm-yilmaz/)
+[Live product](https://frontendatlas.com) · [Interactive labs](#interactive-labs) · [Architecture](#architecture) · [Local development](#local-development) · [Editorial policy](https://frontendatlas.com/legal/editorial-policy)
 
-## What the product emphasizes
+If the labs or the codebase are useful to you, a star helps other frontend engineers find them.
 
-- A real in-browser coding workspace with runnable examples, previews, and checks.
-- Guided preparation across JavaScript, HTML/CSS, Angular, React, Vue, and frontend system design.
-- Practice formats that go beyond recall: implementation tasks, incident diagnosis, and explicit tradeoff analysis.
-- Content maintenance backed by registries, generators, validation scripts, regression tests, and primary-source checks.
-- Indexable learning surfaces supported by generated metadata, sitemaps, and Angular prerendering.
+## Why this repository is worth a look
 
-The live product is the clearest way to explore the current experience: [frontendatlas.com](https://frontendatlas.com).
+- **A production Angular 21 application.** Server-side rendering with prerendered public routes, signal-based component state, deferred loading for heavy surfaces, and bundle budgets that fail CI instead of warning.
+- **An in-browser coding workspace.** Monaco editors, a web-worker preview builder, framework-aware checks for JavaScript, React, Angular, and Vue challenges, and draft versioning that survives content updates.
+- **Interactive labs instead of static answers.** Six explainers ask you to predict an outcome, run it, and compare. See the [lab table](#interactive-labs) below.
+- **Content treated like code.** Question banks are versioned JSON with registries, generators, lint rules for tags, topics, tracks, and indexability readiness, and regression tests that fail when authored and generated content drift apart.
+- **The unglamorous production parts.** Cookie authentication with CSRF protection, rate limiting, Lemon Squeezy billing with webhook reconciliation, Sentry, and eleven GitHub Actions workflows covering unit, backend, Playwright critical and extended suites, visual regression against reviewed screenshots, an SEO guard, security checks, and production smoke.
+
+## What is inside
+
+Counts from the `cdn/` catalog as of October 2026.
+
+| Content | Count |
+| --- | --- |
+| Practice items: coding challenges, concept questions, debug tasks, system design cases | 456, of which 311 are free |
+| Debugging incidents | 11 |
+| Engineering tradeoff scenarios | 34 |
+| Timed pressure modes | 10 |
+| Interactive labs | 6 |
+
+## Interactive labs
+
+| Lab | What you do |
+| --- | --- |
+| [Angular change detection visualizer](https://frontendatlas.com/angular/trivia/angular-change-detection-strategies) | Watch which components Default and OnPush check on each pass, and what triggers a check under OnPush. |
+| [RxJS flattening operators](https://frontendatlas.com/angular/trivia/rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use) | Compare switchMap, exhaustMap, mergeMap, and concatMap on overlapping requests, on a virtual-time engine built on the real RxJS. |
+| [What actually cancels an Angular HTTP request](https://frontendatlas.com/angular/trivia/angular-http-what-actually-cancels-request) | Six runnable tests show when unsubscribe cancels the request and when server work continues. |
+| [JavaScript event loop visualizer](https://frontendatlas.com/javascript/trivia/js-event-loop) | Predict the output order, then step through the call stack, microtasks, timers, and the render opportunity. |
+| [React stale closures: six pull requests](https://frontendatlas.com/react/trivia/react-stale-state-closures) | Review six pull requests, predict the failure, and reveal the minimal safe diff. |
+| [CSS sticky debugging lab](https://frontendatlas.com/css/trivia/css-position-sticky-not-working) | Diagnose five broken `position: sticky` layouts by inspecting overflow, insets, container height, and flex or grid stretch. |
 
 ## Architecture
 
 | Area | Responsibility |
 | --- | --- |
-| `frontend/` | Angular 17 application using TypeScript and RxJS, shared UI primitives, browser-based coding tools, Karma/Jasmine unit tests, and Playwright end-to-end coverage. |
-| `backend/` | Express 5 API backed by MongoDB/Mongoose, with cookie authentication, progress and interview workflows, billing integrations, rate limiting, and Jest tests. |
-| `cdn/` | Versioned question banks, practice assets, debugging incidents, and tradeoff scenarios consumed by the application and backend catalog logic. |
-| Build and content tooling | Repository scripts generate registries, metadata, data versions, sitemaps, and prerender routes, then validate that generated and authored content remain aligned. |
+| `frontend/` | Angular 21 application with TypeScript, RxJS, and signals; shared UI primitives in `src/app/shared/ui/`; the Monaco-based coding workspace; Karma/Jasmine unit tests; Playwright end-to-end, visual regression, accessibility, and performance-contract suites. |
+| `backend/` | Express 5 API on MongoDB with Mongoose: cookie authentication with CSRF protection, progress and interview workflows, billing integrations, rate limiting, and Jest tests. |
+| `cdn/` | Versioned question banks, sandbox assets for the coding workspace, debugging incidents, and tradeoff scenarios consumed by the application and the backend catalog logic. |
+| Build and content tooling | Repository scripts generate registries, metadata, data versions, sitemaps, and prerender routes, then validate that generated and authored content stay aligned. |
 
-The frontend calls the backend through `/api` in local development. Angular's development server proxies that path to `http://localhost:3001`; the backend keeps persistence and integration credentials server-side.
+Frontend code is layered as `src/app/core/`, `src/app/features/`, `src/app/shared/`, and `src/app/store/`. The frontend calls the backend through `/api`; in local development the Angular dev server proxies that path to `http://localhost:3001`, and the backend keeps persistence and integration credentials server-side.
 
 ## Local development
 
 ### Prerequisites
 
-- Node.js 20 and npm.
+- Node.js 22 and npm (see `.nvmrc`).
 - A local MongoDB instance only if you need authenticated or persisted backend flows.
 - A Chrome-compatible browser for the frontend unit-test runner.
 
@@ -98,7 +121,7 @@ npm run build
 npx ng run frontendatlas:prerender
 ```
 
-Backend lint, content validation and Jest suite:
+Backend lint, content validation, and Jest suite:
 
 ```bash
 cd backend

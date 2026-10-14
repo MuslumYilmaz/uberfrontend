@@ -797,6 +797,10 @@
                   </button>
               </section>
 
+              <section *ngIf="!pressureActive()" class="mt-6" data-nosnippet data-testid="coding-github-cta">
+                  <app-github-star-cta></app-github-star-cta>
+              </section>
+
             </ng-template>
         </section>
 
