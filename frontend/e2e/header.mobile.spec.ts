@@ -152,7 +152,7 @@ test.describe('header mobile layout', () => {
 
       for (const route of APP_ROUTES) {
         await page.goto(route);
-        await expect(page.getByRole('link', { name: 'FrontendAtlas' })).toBeVisible();
+        await expect(page.getByRole('link', { name: 'FrontendAtlas', exact: true })).toBeVisible();
         await expect(page.getByTestId('header-mobile-menu-button')).toBeVisible();
         await closeMobileMenuIfOpen(page);
 
@@ -176,7 +176,7 @@ test.describe('header mobile layout', () => {
       await page.setViewportSize(viewport);
       await page.goto('/pricing');
 
-      await expect(page.getByRole('link', { name: 'FrontendAtlas' })).toBeVisible();
+      await expect(page.getByRole('link', { name: 'FrontendAtlas', exact: true })).toBeVisible();
       await expect(page.getByRole('button', { name: /Interview Prep/i })).toBeVisible();
       await expect(page.getByTestId('header-profile-button')).toBeVisible();
       await expect(page.getByTestId('header-mobile-menu-button')).toBeHidden();

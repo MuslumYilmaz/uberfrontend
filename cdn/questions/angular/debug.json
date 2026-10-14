@@ -98,7 +98,8 @@
                     {
                         "type": "waitForText",
                         "selector": "[data-testid=\"vehicle-row\"]",
-                        "text": "WM-117"
+                        "text": "WM-117",
+                        "match": "contains"
                     },
                     {
                         "type": "click",
@@ -112,7 +113,8 @@
                     {
                         "type": "waitForText",
                         "selector": "[data-testid=\"vehicle-row\"]",
-                        "text": "WM-104"
+                        "text": "WM-104",
+                        "match": "contains"
                     }
                 ]
             },
