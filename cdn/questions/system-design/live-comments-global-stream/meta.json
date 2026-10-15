@@ -80,6 +80,7 @@
     {
       "label": "Taro: Datadog senior frontend developer interview, Valbonne, October 2024",
       "url": "https://www.jointaro.com/interviews/companies/datadog/experiences/senior-frontend-developer-valbonne-october-1-2024-accepted-offer-positive-47d59048/",
+      "company": "datadog",
       "publisher": "Taro",
       "date": "2024-10",
       "note": "One senior account lists a design prompt for a real-time log view, and public Glassdoor previews list a realtime event viewer architecture prompt. Rendering a high-frequency stream is a practice version of that shape, not the reported wording."

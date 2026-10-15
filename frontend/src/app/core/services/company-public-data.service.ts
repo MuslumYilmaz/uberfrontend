@@ -49,15 +49,17 @@ export class CompanyPublicDataService {
       mode: this.isEditorial(slug) ? 'editorial' : 'catalog',
       counts: emptyCounts(),
       samples: [],
+      reports: [],
     };
     // Authored guides are already complete public pages and need no question bank.
     if (fallback.mode === 'editorial' || !slug) return of(fallback);
 
     return this.resolveWithTransferState(`company-public:preview:${slug}`, fallback, () =>
-      this.loadCatalog().pipe(map((catalog) => ({
+      forkJoin({ catalog: this.loadCatalog(), reports: this.questions.loadCompanyReports() }).pipe(map(({ catalog, reports }) => ({
         ...fallback,
         counts: collectCompanyCounts(catalog)[slug] ?? emptyCounts(),
         samples: this.buildSamples(slug, catalog),
+        reports: reports.companies[slug] ?? [],
       }))),
     );
   }

@@ -588,7 +588,9 @@ test.describe('production/SSR public remediation smoke', () => {
     );
     expect(bodyText).toContain('Angular @if control flow');
     expect(bodyText).not.toMatch(/\*ngIf|\*ngFor|\bNgIf\b|\bNgFor\b|\bNgSwitch\b/);
-    await expect(page.locator('[role="tab"]')).toHaveCount(0);
+    // The header prep menu server-renders its own hidden tablist into every page, so count
+    // only tabs inside the routed content: the locked preview must not render the widget's tabs.
+    await expect(page.locator('main [role="tab"]')).toHaveCount(0);
     await expect(page.locator('.locked-shell')).toBeVisible();
   });
 

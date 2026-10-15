@@ -282,6 +282,7 @@
       {
         "label": "Taro: Datadog senior frontend developer interview, Valbonne, October 2024",
         "url": "https://www.jointaro.com/interviews/companies/datadog/experiences/senior-frontend-developer-valbonne-october-1-2024-accepted-offer-positive-47d59048/",
+        "company": "datadog",
         "publisher": "Taro",
         "date": "2024-10",
         "note": "One senior account lists a prompt to count the repeated words in a paragraph. This counting drill is a simpler relative of that prompt, not the reported exercise."
@@ -378,6 +379,19 @@
     "tests": "import flattenOnce from './flattenOnce';\n\ndescribe('flattenOnce', () => {\n  test('flattens a simple nested array', () => {\n    expect(flattenOnce([1, [2, 3], [4, [5]]])).toEqual([1, 2, 3, 4, [5]]);\n  });\n\n  test('returns same array when already flat', () => {\n    expect(flattenOnce([1, 2, 3])).toEqual([1, 2, 3]);\n  });\n\n  test('handles mixed array contents', () => {\n    expect(flattenOnce([[1], 2, [3, [4]], 5])).toEqual([1, 2, 3, [4], 5]);\n  });\n\n  test('returns empty array for empty input', () => {\n    expect(flattenOnce([])).toEqual([]);\n  });\n});\n",
     "testsTs": "import flattenOnce from './flattenOnce';\n\ndescribe('flattenOnce (TypeScript)', () => {\n  it('flattens a simple nested array', () => {\n    expect(flattenOnce([1, [2, 3], [4, [5]]])).toEqual([1, 2, 3, 4, [5]]);\n  });\n\n  it('returns same array when already flat', () => {\n    expect(flattenOnce([1, 2, 3])).toEqual([1, 2, 3]);\n  });\n\n  it('handles mixed array contents', () => {\n    expect(flattenOnce([[1], 2, [3, [4]], 5])).toEqual([1, 2, 3, [4], 5]);\n  });\n\n  it('returns empty array for empty input', () => {\n    expect(flattenOnce([])).toEqual([]);\n  });\n});\n",
     "access": "free",
+    "companies": [
+      "meta"
+    ],
+    "sources": [
+      {
+        "label": "Blind: front end interview questions by company, October 2021",
+        "url": "https://www.teamblind.com/post/Went-through-Frontend-Interviews-recently-here-are-the-kinda-questions-they-ask-dbyQb3ob",
+        "company": "meta",
+        "publisher": "Blind",
+        "date": "2021-10",
+        "note": "A candidate who interviewed at several companies lists flattening an array among the Facebook screening questions. Flattening one level is a representative drill, not the reported depth."
+      }
+    ],
     "updatedAt": "2026-01-30",
     "seo": {
       "title": "Flatten One Array Level in JavaScript",
@@ -480,6 +494,16 @@
     "companies": [
       "apple"
     ],
+    "sources": [
+      {
+        "label": "Taro: Apple front end developer interview, Hyderabad, December 2019",
+        "url": "https://www.jointaro.com/interviews/companies/apple/experiences/front-end-developer-hyderabad-december-24-2019-no-offer-positive-7397b890/",
+        "company": "apple",
+        "publisher": "Taro",
+        "date": "2019-12",
+        "note": "One Apple front end developer account lists concatenating two arrays and finding the unique elements among the coding round questions. This drill practises that exercise, not its reported wording."
+      }
+    ],
     "seo": {
       "title": "Remove Duplicates From an Array in JavaScript",
       "description": "Given an array, return a new array with duplicates removed while preserving first-occurrence order."
@@ -575,6 +599,7 @@
       {
         "label": "Taro: Datadog senior frontend developer interview, Valbonne, October 2024",
         "url": "https://www.jointaro.com/interviews/companies/datadog/experiences/senior-frontend-developer-valbonne-october-1-2024-accepted-offer-positive-47d59048/",
+        "company": "datadog",
         "publisher": "Taro",
         "date": "2024-10",
         "note": "One senior account lists a prompt to count the repeated words in a paragraph. A most-frequent-character count practises the same frequency-map idea; it is not the reported exercise."
@@ -1479,6 +1504,7 @@
       {
         "label": "Taro: Datadog senior frontend engineer interview, Paris, September 2025",
         "url": "https://www.jointaro.com/interviews/companies/datadog/experiences/senior-frontend-engineer-paris-september-1-2025-accepted-offer-positive-2a1ddfe8/",
+        "company": "datadog",
         "publisher": "Taro",
         "date": "2025-09",
         "note": "One senior account describes live coding that starts simple and adds parts step by step, centred on data and tables. Immutable row updates are a supporting drill for that shape, not the reported exercise."
@@ -1508,9 +1534,34 @@
       {
         "label": "PracHub: Waymo senior frontend engineer interview experience, May 2026",
         "url": "https://prachub.com/interview-experiences/waymo-senior-frontend-engineer-interview-experience-rejected-30-minutes-after-pushing-on-the-process",
+        "company": "waymo",
         "publisher": "PracHub",
         "date": "2026-05",
         "note": "One self-reported senior loop describes an onsite exercise to build an autocomplete with debouncing. Debounce is the supporting primitive for that exercise, not the reported wording."
+      },
+      {
+        "label": "LeetCode Discuss: Google front end engineer onsite, Sunnyvale, spring 2019",
+        "url": "https://leetcode.com/discuss/post/342364/",
+        "company": "google",
+        "publisher": "LeetCode Discuss",
+        "date": "2019-07",
+        "note": "One Google onsite account describes an API that takes a function and a duration and runs the function after the interval, still waiting if called before the interval ends. Debounce is the closest primitive; it is not the reported wording."
+      },
+      {
+        "label": "Blind: Google frontend interview questions thread, December 2020",
+        "url": "https://www.teamblind.com/post/google-frontend-interview-questions-thread-yqyqmvon",
+        "company": "google",
+        "publisher": "Blind",
+        "date": "2020-12",
+        "note": "The thread lists a Google prompt to return a version of a function that runs on a timeout. Debounce is a practice version of that shape; the thread is a compiled list, not one loop."
+      },
+      {
+        "label": "Taro: Netflix senior frontend engineer interview, Warsaw, November 2024",
+        "url": "https://www.jointaro.com/interviews/companies/netflix/experiences/senior-frontend-engineer-warsaw-masovia-november-1-2024-no-offer-negative-c999399f/",
+        "company": "netflix",
+        "publisher": "Taro",
+        "date": "2024-11",
+        "note": "One senior Netflix account describes a search-input problem where the interviewer discussed a 200 millisecond debounce. This drill practises that primitive, not the reported exercise."
       }
     ],
     "difficulty": "intermediate",
@@ -1652,6 +1703,24 @@
       "google",
       "netflix",
       "meta"
+    ],
+    "sources": [
+      {
+        "label": "LeetCode Discuss: Google front end phone screen, implement throttle, April 2020",
+        "url": "https://leetcode.com/discuss/post/592667/",
+        "company": "google",
+        "publisher": "LeetCode Discuss",
+        "date": "2020-04",
+        "note": "One self-reported Google phone screen asked for a throttle wrapper that calls an expensive function at most once per interval, with follow-ups on parameters. This drill is a practice version of that exercise, not its reported wording."
+      },
+      {
+        "label": "Blind: Google frontend interview questions thread, December 2020",
+        "url": "https://www.teamblind.com/post/google-frontend-interview-questions-thread-yqyqmvon",
+        "company": "google",
+        "publisher": "Blind",
+        "date": "2020-12",
+        "note": "The thread lists a Google front end prompt to limit a function so it calls the input function at most every 50 milliseconds. Throttle is the matching primitive; the thread is a compiled list, not one loop."
+      }
     ],
     "difficulty": "intermediate",
     "tags": [
@@ -2080,6 +2149,7 @@
       {
         "label": "LeetCode Discuss: Intuit SE2 frontend interview experience, October 2023",
         "url": "https://leetcode.com/discuss/post/4167001/",
+        "company": "intuit",
         "publisher": "LeetCode Discuss",
         "date": "2023-10",
         "note": "One SE2 account lists writing a currying function in the first technical round. This drill practises that exercise, not its reported wording."
@@ -2184,9 +2254,18 @@
       {
         "label": "LeetCode Discuss: Intuit SE2 frontend interview experience, October 2023",
         "url": "https://leetcode.com/discuss/post/4167001/",
+        "company": "intuit",
         "publisher": "LeetCode Discuss",
         "date": "2023-10",
         "note": "One SE2 account lists writing a memoization function at the end of the first technical round. This drill practises that exercise, not its reported wording."
+      },
+      {
+        "label": "Medium: Meta front end engineer interview experience, March 2022",
+        "url": "https://medium.com/@stylus07/meta-interview-experience-cdf53eea63f3",
+        "company": "meta",
+        "publisher": "Medium",
+        "date": "2022-03",
+        "note": "One Meta front end engineer account describes a memoization problem as the second question of the first technical interview. This drill practises that exercise, not its reported wording."
       }
     ],
     "importance": 4,
@@ -2483,7 +2562,18 @@
     "access": "premium",
     "updatedAt": "2026-01-31",
     "companies": [
-      "openai"
+      "openai",
+      "stripe"
+    ],
+    "sources": [
+      {
+        "label": "LeetCode Discuss: Stripe software engineer 2 initial screen, October 2024",
+        "url": "https://leetcode.com/discuss/post/5883632/",
+        "company": "stripe",
+        "publisher": "LeetCode Discuss",
+        "date": "2024-10",
+        "note": "One Stripe software engineer 2 screen account describes timed object manipulation: traversing a JSON object and manipulating the data, shaped like real work. This drill practises that shape; the account does not share the exact questions."
+      }
     ],
     "seo": {
       "title": "Group Array Items by Key in JavaScript",
@@ -2580,7 +2670,18 @@
     "type": "coding",
     "technology": "javascript",
     "companies": [
-      "bytedance"
+      "bytedance",
+      "uber"
+    ],
+    "sources": [
+      {
+        "label": "LeetCode Discuss: Uber senior front end engineer phone screen, August 2022",
+        "url": "https://leetcode.com/discuss/post/2409192/",
+        "company": "uber",
+        "publisher": "LeetCode Discuss",
+        "date": "2022-08",
+        "note": "One senior Uber phone screen asked for mapLimit: map inputs through an asynchronous function with at most a given number of operations in flight, callback style. This drill is the promise-based practice version of that exercise, not its reported wording."
+      }
     ],
     "difficulty": "hard",
     "importance": 4,
@@ -2901,15 +3002,41 @@
       "amazon",
       "apple",
       "bytedance",
-      "servicenow"
+      "servicenow",
+      "meta"
     ],
     "sources": [
       {
         "label": "Medium: ServiceNow software engineer (UI) interview experience, 2025",
         "url": "https://medium.com/@karunakumari000532/my-servicenow-software-engineer-ui-interview-experience-2025-23f315b960dc",
+        "company": "servicenow",
         "publisher": "Medium",
         "date": "2025-09",
         "note": "One UI engineer account lists writing a polyfill for map in the JavaScript fundamentals round. This drill is a practice version of that exercise, not its reported wording."
+      },
+      {
+        "label": "LeetCode Discuss: community list of front end interview questions, July 2020",
+        "url": "https://leetcode.com/discuss/post/742791/",
+        "company": "amazon",
+        "publisher": "LeetCode Discuss",
+        "date": "2020-07",
+        "note": "A community list compiled by one candidate marks implementing custom map, reduce, filter and sort functions as an Amazon phone interview question. The list is secondhand; it cannot establish wording or frequency."
+      },
+      {
+        "label": "Blind: TikTok front end interview experience, September 2024",
+        "url": "https://www.teamblind.com/post/my-tiktok-front-end-interview-experience-any-idea-what-end-result-might-look-like-jfcdhq5r",
+        "company": "bytedance",
+        "publisher": "Blind",
+        "date": "2024-09",
+        "note": "One TikTok front end account describes implementing a JavaScript built-in method in the first technical round. map is a representative drill, not the reported method."
+      },
+      {
+        "label": "Taro: Meta front end developer intern interview, London, December 2021",
+        "url": "https://www.jointaro.com/interviews/companies/meta/experiences/front-end-developer-intern-london-england-december-1-2021-no-offer-positive-4f6ff45b/",
+        "company": "meta",
+        "publisher": "Taro",
+        "date": "2021-12",
+        "note": "One Meta front end intern account lists implementing the JavaScript map function from scratch in the first coding round. This drill practises that exercise, not its reported wording."
       }
     ],
     "technology": "javascript",
@@ -3012,6 +3139,24 @@
       "amazon",
       "apple",
       "bytedance"
+    ],
+    "sources": [
+      {
+        "label": "LeetCode Discuss: community list of front end interview questions, July 2020",
+        "url": "https://leetcode.com/discuss/post/742791/",
+        "company": "amazon",
+        "publisher": "LeetCode Discuss",
+        "date": "2020-07",
+        "note": "A community list compiled by one candidate marks implementing custom map, reduce, filter and sort functions as an Amazon phone interview question. The list is secondhand; it cannot establish wording or frequency."
+      },
+      {
+        "label": "Blind: TikTok front end interview experience, September 2024",
+        "url": "https://www.teamblind.com/post/my-tiktok-front-end-interview-experience-any-idea-what-end-result-might-look-like-jfcdhq5r",
+        "company": "bytedance",
+        "publisher": "Blind",
+        "date": "2024-09",
+        "note": "One TikTok front end account describes implementing a JavaScript built-in method in the first technical round. reduce is a representative drill, not the reported method."
+      }
     ],
     "importance": 4,
     "difficulty": "intermediate",
@@ -3159,9 +3304,18 @@
       {
         "label": "Taro: Datadog senior frontend developer interview, Lisbon, November 2025",
         "url": "https://www.jointaro.com/interviews/companies/datadog/experiences/senior-frontend-developer-lisbon-lisbon-district-november-23-2025-no-offer-positive-1a88bdda/",
+        "company": "datadog",
         "publisher": "Taro",
         "date": "2025-11",
         "note": "One senior account describes a standard coding exercise on ordering and filtering. Implementing filter is a supporting drill, not the reported exercise."
+      },
+      {
+        "label": "LeetCode Discuss: community list of front end interview questions, July 2020",
+        "url": "https://leetcode.com/discuss/post/742791/",
+        "company": "amazon",
+        "publisher": "LeetCode Discuss",
+        "date": "2020-07",
+        "note": "A community list compiled by one candidate marks implementing custom map, reduce, filter and sort functions as an Amazon phone interview question. The list is secondhand; it cannot establish wording or frequency."
       }
     ],
     "importance": 4,
@@ -3340,6 +3494,7 @@
       {
         "label": "Medium: ServiceNow software engineer (UI) interview experience, 2025",
         "url": "https://medium.com/@karunakumari000532/my-servicenow-software-engineer-ui-interview-experience-2025-23f315b960dc",
+        "company": "servicenow",
         "publisher": "Medium",
         "date": "2025-09",
         "note": "One UI engineer account describes implementing polyfills of built-in methods with attention to edge cases in the deeper JavaScript round. forEach is a representative drill, not the reported method."
@@ -3366,9 +3521,18 @@
       {
         "label": "Taro: Datadog senior frontend developer interview, Lisbon, November 2025",
         "url": "https://www.jointaro.com/interviews/companies/datadog/experiences/senior-frontend-developer-lisbon-lisbon-district-november-23-2025-no-offer-positive-1a88bdda/",
+        "company": "datadog",
         "publisher": "Taro",
         "date": "2025-11",
         "note": "One senior account describes a standard coding exercise on ordering and filtering. Sorting numbers correctly is a supporting drill, not the reported exercise."
+      },
+      {
+        "label": "LeetCode Discuss: community list of front end interview questions, July 2020",
+        "url": "https://leetcode.com/discuss/post/742791/",
+        "company": "amazon",
+        "publisher": "LeetCode Discuss",
+        "date": "2020-07",
+        "note": "A community list compiled by one candidate marks implementing a custom sort among the higher-order functions asked in an Amazon phone interview. The list is secondhand; it cannot establish wording or frequency."
       }
     ],
     "importance": 4,
@@ -3544,6 +3708,7 @@
       {
         "label": "Medium: ServiceNow software engineer (UI) interview experience, 2025",
         "url": "https://medium.com/@karunakumari000532/my-servicenow-software-engineer-ui-interview-experience-2025-23f315b960dc",
+        "company": "servicenow",
         "publisher": "Medium",
         "date": "2025-09",
         "note": "One UI engineer account describes writing functions that increment and decrement a variable inside loops to show closure and scope handling. This counter is a simpler relative of that exercise, not the reported wording."
@@ -3829,15 +3994,25 @@
     "testsTs": "import promiseAll from './promiseAll';\n\ndescribe('promiseAll (TypeScript)', () => {\n  it('resolves array of values in order when all succeed', async () => {\n    const p1 = Promise.resolve(1);\n    const p2 = new Promise<number>(resolve => setTimeout(() => resolve(2), 5));\n    const p3 = 3;\n\n    await expect(promiseAll([p1, p2, p3])).resolves.toEqual([1, 2, 3]);\n  });\n\n  it('resolves immediately for empty array', async () => {\n    await expect(promiseAll<number>([])).resolves.toEqual([]);\n  });\n\n  it('rejects when any promise rejects', async () => {\n    const error = new Error('fail');\n    const p1 = Promise.resolve('ok');\n    const p2 = Promise.reject(error);\n\n    await expect(promiseAll([p1, p2])).rejects.toThrow('fail');\n  });\n\n  it('rejects with TypeError when input is not an array', async () => {\n    // @ts-expect-error runtime guard only\n    await expect(promiseAll(null as any)).rejects.toThrow(TypeError);\n  });\n});\n",
     "access": "premium",
     "companies": [
-      "waymo"
+      "waymo",
+      "google"
     ],
     "sources": [
       {
         "label": "PracHub: Waymo senior frontend engineer interview experience, May 2026",
         "url": "https://prachub.com/interview-experiences/waymo-senior-frontend-engineer-interview-experience-rejected-30-minutes-after-pushing-on-the-process",
+        "company": "waymo",
         "publisher": "PracHub",
         "date": "2026-05",
         "note": "The report says a Promise problem in TypeScript was asked and does not say which. Implementing Promise.all is a representative exercise, not the reported question."
+      },
+      {
+        "label": "LeetCode Discuss: Google front end engineer onsite, Sunnyvale, spring 2019",
+        "url": "https://leetcode.com/discuss/post/342364/",
+        "company": "google",
+        "publisher": "LeetCode Discuss",
+        "date": "2019-07",
+        "note": "One Google onsite account describes writing a function that takes a list of callback-style functions and consolidates all their results into one array. Promise.all is the promise-based practice version of that shape, not the reported wording."
       }
     ],
     "updatedAt": "2026-07-15",
@@ -3942,6 +4117,7 @@
       {
         "label": "Blind: ServiceNow phone screen for a staff engineer, frontend-leaning, September 2021",
         "url": "https://www.teamblind.com/post/servicenow-phone-screen-staff-engineer-interview-8msftqw8",
+        "company": "servicenow",
         "publisher": "Blind",
         "date": "2021-09",
         "note": "One reply in this thread describes implementing built-in JavaScript prototype methods by hand as a technical exercise. bind is a representative drill, not the reported method."
@@ -5648,7 +5824,18 @@
     "type": "coding",
     "technology": "javascript",
     "companies": [
-      "bytedance"
+      "bytedance",
+      "stripe"
+    ],
+    "sources": [
+      {
+        "label": "LeetCode Discuss: Stripe software engineer 2 initial screen, October 2024",
+        "url": "https://leetcode.com/discuss/post/5883632/",
+        "company": "stripe",
+        "publisher": "LeetCode Discuss",
+        "date": "2024-10",
+        "note": "One Stripe software engineer 2 screen account describes timed object manipulation: traversing a JSON object and manipulating the data, shaped like real work. This drill practises that shape; the account does not share the exact questions."
+      }
     ],
     "importance": 4,
     "difficulty": "intermediate",
@@ -6051,6 +6238,7 @@
       {
         "label": "Blind: ServiceNow phone screen for a staff engineer, frontend-leaning, September 2021",
         "url": "https://www.teamblind.com/post/servicenow-phone-screen-staff-engineer-interview-8msftqw8",
+        "company": "servicenow",
         "publisher": "Blind",
         "date": "2021-09",
         "note": "One reply in this thread lists implementing a virtual DOM as a technical exercise. Building a DOM renderer from a nested object practises the same shape; it is not the reported exercise."
@@ -6143,9 +6331,26 @@
       {
         "label": "Aced: ElevenLabs software engineer interview questions, candidate-sourced, October 2026",
         "url": "https://www.aced.io/guides/elevenlabs-software-engineer-interview/questions",
+        "company": "elevenlabs",
         "publisher": "Aced",
         "date": "2026-10",
         "note": "The bank lists an exercise to synchronize audio playback timing with transcript highlighting. This timer-manager drill practises the scheduling control that exercise needs; it is not the reported exercise itself."
+      },
+      {
+        "label": "Taro: Meta front end engineer intern interview, United States, January 2022",
+        "url": "https://www.jointaro.com/interviews/companies/meta/experiences/front-end-engineer-intern-united-states-january-1-2022-accepted-offer-positive-2e0f20e4/",
+        "company": "meta",
+        "publisher": "Taro",
+        "date": "2022-01",
+        "note": "One Meta front end intern account describes a coding question to implement your own clearAllTimeout. This timer manager is a practice version of that shape, not the reported wording."
+      },
+      {
+        "label": "Blind: front end interview questions by company, October 2021",
+        "url": "https://www.teamblind.com/post/Went-through-Frontend-Interviews-recently-here-are-the-kinda-questions-they-ask-dbyQb3ob",
+        "company": "meta",
+        "publisher": "Blind",
+        "date": "2021-10",
+        "note": "A candidate who interviewed at several companies lists a timeout clearer among the Facebook screening questions. It supports the shape, not the wording."
       }
     ],
     "description": {
@@ -6235,6 +6440,24 @@
     "companies": [
       "meta"
     ],
+    "sources": [
+      {
+        "label": "Taro: Meta front end engineer intern interview, United States, January 2022",
+        "url": "https://www.jointaro.com/interviews/companies/meta/experiences/front-end-engineer-intern-united-states-january-1-2022-accepted-offer-positive-2e0f20e4/",
+        "company": "meta",
+        "publisher": "Taro",
+        "date": "2022-01",
+        "note": "One Meta front end intern account describes a coding question to implement your own clearAllTimeout. This timer manager is a practice version of that shape, not the reported wording."
+      },
+      {
+        "label": "Blind: front end interview questions by company, October 2021",
+        "url": "https://www.teamblind.com/post/Went-through-Frontend-Interviews-recently-here-are-the-kinda-questions-they-ask-dbyQb3ob",
+        "company": "meta",
+        "publisher": "Blind",
+        "date": "2021-10",
+        "note": "A candidate who interviewed at several companies lists a timeout clearer among the Facebook screening questions. It supports the shape, not the wording."
+      }
+    ],
     "description": {
       "summary": "Solve two independent tasks: implement clearAllTimeouts for a timer registry and render a DOM tree from a nested object. Constraints: do not couple logic, avoid innerHTML. Complexity: clearAll O(k), render O(n) time.",
       "arguments": [],
@@ -6305,6 +6528,16 @@
     ],
     "companies": [
       "meta"
+    ],
+    "sources": [
+      {
+        "label": "Blind: front end interview questions by company, October 2021",
+        "url": "https://www.teamblind.com/post/Went-through-Frontend-Interviews-recently-here-are-the-kinda-questions-they-ask-dbyQb3ob",
+        "company": "meta",
+        "publisher": "Blind",
+        "date": "2021-10",
+        "note": "A candidate who interviewed at several companies describes a Facebook onsite DOM algorithm: traverse the DOM and collect nodes. This drill practises that shape; it is not the reported wording."
+      }
     ],
     "description": {
       "summary": "Implement findNode(root, predicate) to traverse the DOM and return the first matching element. Use DFS/BFS with early exit. Complexity: O(n) time, O(h) recursion stack.",
@@ -6392,9 +6625,18 @@
       {
         "label": "LeetCode Discuss: Intuit senior frontend engineer interview experience, November 2025",
         "url": "https://leetcode.com/discuss/post/7320927/",
+        "company": "intuit",
         "publisher": "LeetCode Discuss",
         "date": "2025-11",
         "note": "One senior account describes implementing a function that checks whether two DOM trees are identical, node by node. Finding the corresponding node in twin trees practises the same lockstep traversal; it is not the reported exercise."
+      },
+      {
+        "label": "Taro: Meta front end developer intern interview, London, December 2021",
+        "url": "https://www.jointaro.com/interviews/companies/meta/experiences/front-end-developer-intern-london-england-december-1-2021-no-offer-positive-4f6ff45b/",
+        "company": "meta",
+        "publisher": "Taro",
+        "date": "2021-12",
+        "note": "One Meta front end intern account describes traversing the DOM tree up from a node and replicating that traversal in another similar tree. Finding the corresponding node in twin trees is a practice version of that exercise."
       }
     ],
     "description": {
@@ -6480,7 +6722,26 @@
       "arrays"
     ],
     "companies": [
-      "meta"
+      "meta",
+      "apple"
+    ],
+    "sources": [
+      {
+        "label": "Taro: Meta front end developer interview, San Francisco, June 2024",
+        "url": "https://www.jointaro.com/interviews/companies/meta/experiences/front-end-developer-san-francisco-ca-june-27-2024-no-offer-positive-07526bae/",
+        "company": "meta",
+        "publisher": "Taro",
+        "date": "2024-06",
+        "note": "One Meta front end developer account describes being asked how to implement a stack or queue in JavaScript. This drill practises that exercise, not its reported wording."
+      },
+      {
+        "label": "Medium: Apple senior frontend developer interview experience, July 2022",
+        "url": "https://srijansinghgulati.medium.com/my-apple-interview-experience-and-why-i-declined-the-offer-5ff442962bd8",
+        "company": "apple",
+        "publisher": "Medium",
+        "date": "2022-07",
+        "note": "One senior Apple front end account lists designing a stack with push, pop and getMin among its coding questions. This stack-and-queue drill practises the underlying structure; the min-stack variant is a follow-up, not the reported wording."
+      }
     ],
     "description": {
       "summary": "Implement Stack (push/pop/peek/size) and Queue (enqueue/dequeue/peek/size). Use a head index or deque to keep queue operations O(1). Complexity: O(1) amortized operations.",
@@ -6876,6 +7137,7 @@
       {
         "label": "LeetCode Discuss: Intuit senior frontend engineer interview experience, November 2025",
         "url": "https://leetcode.com/discuss/post/7320927/",
+        "company": "intuit",
         "publisher": "LeetCode Discuss",
         "date": "2025-11",
         "note": "One senior account describes explaining Promise.race versus Promise.any and then coding a polyfill for Promise.race. Promise.any is the sibling drill; it is not the reported exercise."
@@ -6974,6 +7236,7 @@
       {
         "label": "Aced: ElevenLabs software engineer interview questions, candidate-sourced, October 2026",
         "url": "https://www.aced.io/guides/elevenlabs-software-engineer-interview/questions",
+        "company": "elevenlabs",
         "publisher": "Aced",
         "date": "2026-10",
         "note": "The bank lists a prompt about managing a voice-dubbing project's progress and feedback. Polling a long-running job until it finishes is a supporting drill for that workflow, not a reported question."
@@ -7075,6 +7338,7 @@
       {
         "label": "PracHub: Waymo senior frontend engineer interview experience, May 2026",
         "url": "https://prachub.com/interview-experiences/waymo-senior-frontend-engineer-interview-experience-rejected-30-minutes-after-pushing-on-the-process",
+        "company": "waymo",
         "publisher": "PracHub",
         "date": "2026-05",
         "note": "One self-reported senior loop describes an onsite autocomplete with debouncing that queries a backend. Fetching with a timeout and abort is a supporting drill for cancelling stale requests, not the reported exercise."
@@ -7177,6 +7441,7 @@
       {
         "label": "LeetCode Discuss: Intuit senior frontend engineer interview experience, November 2025",
         "url": "https://leetcode.com/discuss/post/7320927/",
+        "company": "intuit",
         "publisher": "LeetCode Discuss",
         "date": "2025-11",
         "note": "One senior account describes a user story to call a provided LLM and display the generated text, where the interviewer expected Server-Sent Events. Reading a stream to text is a supporting drill, not the reported user story."
@@ -8006,6 +8271,7 @@
       {
         "label": "PracHub: Waymo senior frontend engineer interview experience, May 2026",
         "url": "https://prachub.com/interview-experiences/waymo-senior-frontend-engineer-interview-experience-rejected-30-minutes-after-pushing-on-the-process",
+        "company": "waymo",
         "publisher": "PracHub",
         "date": "2026-05",
         "note": "The report says a Promise problem in TypeScript was asked and does not say which. This deferred-promise drill is a representative exercise, not the reported question."
@@ -8493,6 +8759,7 @@
       {
         "label": "PracHub: Waymo senior frontend engineer interview experience, May 2026",
         "url": "https://prachub.com/interview-experiences/waymo-senior-frontend-engineer-interview-experience-rejected-30-minutes-after-pushing-on-the-process",
+        "company": "waymo",
         "publisher": "PracHub",
         "date": "2026-05",
         "note": "One self-reported senior loop. It establishes that a tree-filter-and-render phone screen was asked once, rendered as UI in the report; this text-rendering version is a practice adaptation, not the exact wording."
@@ -8503,5 +8770,293 @@
       "description": "Prune every subtree whose value contains a needle, then render the remaining n-ary tree as indented text in depth-first order. Tests cover order, case and immutability."
     },
     "decisionGraphAsset": "assets/questions/javascript/decision-graphs/js-filter-tree-render-indented.v1.json"
+  },
+  {
+    "id": "js-retry-with-delay",
+    "title": "Retry a Promise-Returning Function with Delay",
+    "type": "coding",
+    "importance": 4,
+    "technology": "javascript",
+    "difficulty": "intermediate",
+    "tags": [
+      "promises",
+      "async",
+      "timers",
+      "error-handling"
+    ],
+    "description": {
+      "summary": "Implement retryWithDelay(fn, retries, delayMs): call a promise-returning function, and when it fails wait delayMs and try again, up to retries extra attempts. Resolve with the first successful value and reject with the last error once every attempt has failed. Public reports of a Google frontend loop and an Intuit senior frontend loop both describe implementing a retry function with a delay between attempts; this practice version pins the contract down so the tests can check attempt counts and timing. Concepts: promises, async, timers, error-handling.",
+      "specs": {
+        "practice": [
+          "Settling one outer promise from a chain of attempts without resolving or rejecting it twice",
+          "Counting attempts so that retries means extra attempts, not total attempts",
+          "Placing the delay between attempts only, never before the first or after the last"
+        ],
+        "expectedBehaviorIntro": "Your retryWithDelay() implementation should:",
+        "expectedBehavior": [
+          "Return a promise and call fn() immediately for the first attempt",
+          "Resolve with the first value fn resolves with and never call fn again after that",
+          "After a failed attempt, wait delayMs and call fn again while attempts remain",
+          "Make at most retries + 1 attempts, so retries = 0 means a single attempt",
+          "Reject with the error from the last failed attempt",
+          "Treat a synchronous throw inside fn like a rejected promise"
+        ]
+      },
+      "arguments": [
+        {
+          "name": "fn",
+          "type": "() => Promise<T> | T",
+          "desc": "The operation to run. It may resolve, reject or throw synchronously."
+        },
+        {
+          "name": "retries",
+          "type": "number",
+          "desc": "How many extra attempts to make after the first one fails. Defaults to 3."
+        },
+        {
+          "name": "delayMs",
+          "type": "number",
+          "desc": "Milliseconds to wait between attempts. Defaults to 100."
+        }
+      ],
+      "returns": {
+        "type": "Promise<T>",
+        "desc": "Resolves with the first successful value or rejects with the last error."
+      },
+      "examples": [
+        "// Succeeds on the third attempt after two failures\\nlet calls = 0;\\nconst flaky = () => (++calls < 3 ? Promise.reject(new Error('busy')) : Promise.resolve('ok'));\\nawait retryWithDelay(flaky, 3, 50); // => 'ok' after about 100 ms, calls === 3",
+        "// Gives up after retries + 1 attempts and surfaces the last error\\nconst down = () => Promise.reject(new Error('down'));\\nawait retryWithDelay(down, 2, 10); // rejects with Error('down') after 3 attempts\\n\\n// retries = 0 is a single attempt\\nawait retryWithDelay(down, 0, 10); // rejects immediately after 1 attempt"
+      ]
+    },
+    "starterCode": "export default function retryWithDelay(fn, retries = 3, delayMs = 100) {\n  // TODO: call fn, retry after delayMs while attempts remain,\n  // resolve with the first success and reject with the last error.\n  throw new Error('Not implemented');\n}\n",
+    "starterCodeTs": "export default function retryWithDelay<T>(fn: () => Promise<T> | T, retries = 3, delayMs = 100): Promise<T> {\n  // TODO: call fn, retry after delayMs while attempts remain,\n  // resolve with the first success and reject with the last error.\n  throw new Error('Not implemented');\n}\n",
+    "solutionBlock": {
+      "overview": "Interview answer: define the contract before writing code. One attempt happens immediately; each failure is followed by a delay and another attempt while attempts remain; the total number of attempts is retries + 1; the first success resolves the outer promise and the last failure rejects it. Starting each attempt inside Promise.resolve().then(fn) turns a synchronous throw into a rejection, so a single catch handles both failure kinds. Because a promise settles only once, resolving on the first success automatically ignores any later work, and counting attempts left makes the exit test a single comparison.\n\nMental model: a loop over attempts where the loop body is \"run, and on failure sleep then continue\", written either as a recursive function or as an async for loop.",
+      "approaches": [
+        {
+          "title": "Approach 1: Recursive attempt with a closure",
+          "prose": "Wrap the whole thing in one outer Promise and define an inner attempt(attemptsLeft) function. Each attempt starts the operation inside Promise.resolve().then(() => fn()) so synchronous throws become rejections, resolves the outer promise on success, and on failure either rejects (no attempts left) or schedules the next attempt with setTimeout after delayMs. Time is bounded by (retries + 1) attempts plus retries delays; memory is one closure per pending attempt.",
+          "codeJs": "export default function retryWithDelay(fn, retries = 3, delayMs = 100) {\n  return new Promise((resolve, reject) => {\n    const attempt = (attemptsLeft) => {\n      Promise.resolve()\n        .then(() => fn())\n        .then(resolve)\n        .catch((error) => {\n          if (attemptsLeft <= 0) {\n            reject(error);\n            return;\n          }\n          setTimeout(() => attempt(attemptsLeft - 1), delayMs);\n        });\n    };\n    attempt(retries);\n  });\n}\n",
+          "codeTs": "export default function retryWithDelay<T>(fn: () => Promise<T> | T, retries = 3, delayMs = 100): Promise<T> {\n  return new Promise<T>((resolve, reject) => {\n    const attempt = (attemptsLeft: number): void => {\n      Promise.resolve()\n        .then(() => fn())\n        .then(resolve)\n        .catch((error: unknown) => {\n          if (attemptsLeft <= 0) {\n            reject(error);\n            return;\n          }\n          setTimeout(() => attempt(attemptsLeft - 1), delayMs);\n        });\n    };\n    attempt(retries);\n  });\n}\n",
+          "decisionGraphKey": "approach1"
+        },
+        {
+          "title": "Approach 2: async loop with await",
+          "prose": "Loop from attempt 0 to retries. Inside try, return await fn(); the await inside the try block makes both rejections and synchronous throws land in the catch, which records the error and, when more attempts remain, awaits a timer promise before the next iteration. After the loop, throw the last error. Same complexity, fewer moving parts, at the cost of async/await support.",
+          "codeJs": "export default async function retryWithDelay(fn, retries = 3, delayMs = 100) {\n  let lastError;\n  for (let attempt = 0; attempt <= retries; attempt += 1) {\n    try {\n      return await fn();\n    } catch (error) {\n      lastError = error;\n      if (attempt < retries) {\n        await new Promise((resolve) => setTimeout(resolve, delayMs));\n      }\n    }\n  }\n  throw lastError;\n}\n",
+          "codeTs": "export default async function retryWithDelay<T>(fn: () => Promise<T> | T, retries = 3, delayMs = 100): Promise<T> {\n  let lastError: unknown;\n  for (let attempt = 0; attempt <= retries; attempt += 1) {\n    try {\n      return await fn();\n    } catch (error) {\n      lastError = error;\n      if (attempt < retries) {\n        await new Promise<void>((resolve) => setTimeout(resolve, delayMs));\n      }\n    }\n  }\n  throw lastError;\n}\n",
+          "decisionGraphKey": "approach2"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Calling fn() directly and only catching the returned promise misses synchronous throws.",
+          "Counting total attempts instead of extra attempts makes retries = 0 mean zero attempts.",
+          "Delaying before the first attempt or after the final failure adds latency the caller never asked for.",
+          "Resolving and rejecting the same outer promise on different paths is harmless but hides a bug: make sure only one path runs per attempt."
+        ],
+        "edgeCases": [
+          "retries = 0 → one attempt, immediate rejection on failure.",
+          "fn returns a plain value → resolve with it, no retry.",
+          "fn throws synchronously on the first call → counts as a failed attempt.",
+          "delayMs = 0 → attempts still run in separate macrotasks."
+        ],
+        "techniques": [
+          "Normalising sync and async failures with Promise.resolve().then(fn).",
+          "Settle-once semantics of a promise to end a retry loop.",
+          "setTimeout as a delay between asynchronous attempts."
+        ]
+      },
+      "followUp": [
+        "How would you add exponential backoff with jitter, and what should the cap be?",
+        "How would you stop retrying early for errors that cannot succeed on retry, such as a 400 response?",
+        "How would you let the caller cancel pending retries with an AbortSignal?",
+        "How would you test this with fake timers instead of real delays?"
+      ],
+      "resources": [
+        {
+          "title": "MDN – Promise",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
+        },
+        {
+          "title": "MDN – setTimeout()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/Window/setTimeout"
+        },
+        {
+          "title": "MDN – async function",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function"
+        }
+      ]
+    },
+    "tests": "import retryWithDelay from './retryWithDelay';\n\nconst failTimes = (failures, value = 'ok') => {\n  let calls = 0;\n  const fn = () => {\n    calls += 1;\n    return calls <= failures ? Promise.reject(new Error(`fail ${calls}`)) : Promise.resolve(value);\n  };\n  fn.calls = () => calls;\n  return fn;\n};\n\nconst settle = async (promise) => {\n  try {\n    return { value: await promise, error: undefined };\n  } catch (error) {\n    return { value: undefined, error };\n  }\n};\n\ndescribe('retryWithDelay', () => {\n  test('resolves on the first attempt without retrying', async () => {\n    const fn = failTimes(0, 'first');\n    expect(await retryWithDelay(fn, 3, 5)).toBe('first');\n    expect(fn.calls()).toBe(1);\n  });\n\n  test('retries after a failure and resolves with the first successful value', async () => {\n    const fn = failTimes(2, 'third');\n    expect(await retryWithDelay(fn, 3, 5)).toBe('third');\n    expect(fn.calls()).toBe(3);\n  });\n\n  test('rejects with the last error after retries are exhausted', async () => {\n    const fn = failTimes(10);\n    const result = await settle(retryWithDelay(fn, 2, 5));\n    expect(result.error && result.error.message).toBe('fail 3');\n    expect(fn.calls()).toBe(3);\n  });\n\n  test('zero retries means a single attempt', async () => {\n    const fn = failTimes(10);\n    const result = await settle(retryWithDelay(fn, 0, 5));\n    expect(result.error && result.error.message).toBe('fail 1');\n    expect(fn.calls()).toBe(1);\n  });\n\n  test('waits the delay between attempts', async () => {\n    const fn = failTimes(2, 'done');\n    const start = Date.now();\n    await retryWithDelay(fn, 2, 30);\n    expect(Date.now() - start >= 50).toBe(true);\n  });\n\n  test('does not wait before the first attempt', async () => {\n    const fn = failTimes(0, 'now');\n    const start = Date.now();\n    await retryWithDelay(fn, 3, 200);\n    expect(Date.now() - start < 100).toBe(true);\n  });\n\n  test('a synchronous throw counts as a failed attempt', async () => {\n    let calls = 0;\n    const fn = () => {\n      calls += 1;\n      if (calls === 1) throw new Error('sync');\n      return Promise.resolve('recovered');\n    };\n    expect(await retryWithDelay(fn, 1, 5)).toBe('recovered');\n    expect(calls).toBe(2);\n  });\n});\n",
+    "testsTs": "import retryWithDelay from './retryWithDelay';\n\ntype Counted = (() => Promise<string>) & { calls: () => number };\n\nconst failTimes = (failures: number, value = 'ok'): Counted => {\n  let calls = 0;\n  const fn = (() => {\n    calls += 1;\n    return calls <= failures ? Promise.reject(new Error(`fail ${calls}`)) : Promise.resolve(value);\n  }) as Counted;\n  fn.calls = () => calls;\n  return fn;\n};\n\nconst settle = async <T,>(promise: Promise<T>): Promise<{ value?: T; error?: Error }> => {\n  try {\n    return { value: await promise };\n  } catch (error) {\n    return { error: error as Error };\n  }\n};\n\ndescribe('retryWithDelay', () => {\n  test('resolves on the first attempt without retrying', async () => {\n    const fn = failTimes(0, 'first');\n    expect(await retryWithDelay(fn, 3, 5)).toBe('first');\n    expect(fn.calls()).toBe(1);\n  });\n\n  test('retries after a failure and resolves with the first successful value', async () => {\n    const fn = failTimes(2, 'third');\n    expect(await retryWithDelay(fn, 3, 5)).toBe('third');\n    expect(fn.calls()).toBe(3);\n  });\n\n  test('rejects with the last error after retries are exhausted', async () => {\n    const fn = failTimes(10);\n    const result = await settle(retryWithDelay(fn, 2, 5));\n    expect(result.error?.message).toBe('fail 3');\n    expect(fn.calls()).toBe(3);\n  });\n\n  test('zero retries means a single attempt', async () => {\n    const fn = failTimes(10);\n    const result = await settle(retryWithDelay(fn, 0, 5));\n    expect(result.error?.message).toBe('fail 1');\n    expect(fn.calls()).toBe(1);\n  });\n\n  test('waits the delay between attempts', async () => {\n    const fn = failTimes(2, 'done');\n    const start = Date.now();\n    await retryWithDelay(fn, 2, 30);\n    expect(Date.now() - start >= 50).toBe(true);\n  });\n\n  test('does not wait before the first attempt', async () => {\n    const fn = failTimes(0, 'now');\n    const start = Date.now();\n    await retryWithDelay(fn, 3, 200);\n    expect(Date.now() - start < 100).toBe(true);\n  });\n\n  test('a synchronous throw counts as a failed attempt', async () => {\n    let calls = 0;\n    const fn = (): Promise<string> => {\n      calls += 1;\n      if (calls === 1) throw new Error('sync');\n      return Promise.resolve('recovered');\n    };\n    expect(await retryWithDelay(fn, 1, 5)).toBe('recovered');\n    expect(calls).toBe(2);\n  });\n});\n",
+    "access": "free",
+    "updatedAt": "2026-10-15",
+    "companies": [
+      "google",
+      "intuit"
+    ],
+    "sources": [
+      {
+        "label": "LeetCode Discuss: Google L3/L4 frontend interview experience, June 2021",
+        "url": "https://leetcode.com/discuss/post/1274542/",
+        "company": "google",
+        "publisher": "LeetCode Discuss",
+        "date": "2021-06",
+        "note": "One Google L3/L4 frontend account describes a domain round that started with implementing a retry function and moved on to implementing promise methods. This drill is a practice version of that exercise, not its reported wording."
+      },
+      {
+        "label": "LeetCode Discuss: Intuit senior frontend engineer interview experience, November 2025",
+        "url": "https://leetcode.com/discuss/post/7320927/",
+        "company": "intuit",
+        "publisher": "LeetCode Discuss",
+        "date": "2025-11",
+        "note": "One senior Intuit account describes implementing a retry function that takes a promise-returning function and retries it a given number of times with a delay between attempts. This drill practises that exact contract; the wording and tests are ours."
+      }
+    ],
+    "seo": {
+      "title": "Retry a Promise-Returning Function with Delay",
+      "description": "Implement retryWithDelay in JavaScript: retry a failing promise function with a pause between attempts, resolve on success, reject with the last error."
+    },
+    "decisionGraphAsset": "assets/questions/javascript/decision-graphs/js-retry-with-delay.v1.json"
+  },
+  {
+    "id": "js-build-tree-from-flat-list",
+    "title": "Build a Tree from a Flat List of Nodes",
+    "type": "coding",
+    "importance": 3,
+    "technology": "javascript",
+    "difficulty": "intermediate",
+    "tags": [
+      "tree",
+      "data-structures",
+      "immutability",
+      "objects"
+    ],
+    "description": {
+      "summary": "Implement buildTree(items): turn a flat list of { id, parentId, ...fields } records into a forest of nodes where every node carries a children array. Siblings keep their input order, children may appear before their parents in the list, items whose parent is missing become roots, and the input records are never mutated. A public report of a ByteDance front end loop describes exactly this task (\"given a flat array of objects, create a tree out of it\"), and a public preview of an Apple frontend loop mentions nested tabs built from a flat list; this practice version fixes the contract so the tests can check order, orphans and immutability. Concepts: tree, data-structures, immutability, objects.",
+      "specs": {
+        "practice": [
+          "Linking records by id with a map instead of nested searches",
+          "Separating the copy pass from the link pass so order of appearance never matters",
+          "Stating the contract for orphans, leaves and extra fields before coding"
+        ],
+        "expectedBehaviorIntro": "Your buildTree() implementation should:",
+        "expectedBehavior": [
+          "Return an array of root nodes in input order, each with a children array",
+          "Attach every item to the node whose id equals its parentId, keeping siblings in input order",
+          "Attach children correctly even when they appear before their parent in the list",
+          "Treat an item with a null, undefined or unknown parentId as a root",
+          "Give leaves an empty children array and keep every other field of the item",
+          "Leave the input records unchanged; nodes are new objects"
+        ]
+      },
+      "arguments": [
+        {
+          "name": "items",
+          "type": "Array<{ id: string | number; parentId?: string | number | null; [key: string]: unknown }>",
+          "desc": "Flat records in any order. parentId points at another item's id or is empty for roots."
+        }
+      ],
+      "returns": {
+        "type": "TreeNode[]",
+        "desc": "The root nodes; every node is a copy of its record plus a children array."
+      },
+      "examples": [
+        "// Children can come before parents; siblings keep input order\\nbuildTree([\\n  { id: 'a1', parentId: 'a', label: 'A1' },\\n  { id: 'root', parentId: null, label: 'Root' },\\n  { id: 'a', parentId: 'root', label: 'A' },\\n  { id: 'b', parentId: 'root', label: 'B' },\\n]);\\n// => [{ id: 'root', label: 'Root', parentId: null, children: [\\n//      { id: 'a', label: 'A', parentId: 'root', children: [{ id: 'a1', ..., children: [] }] },\\n//      { id: 'b', label: 'B', parentId: 'root', children: [] } ] }]",
+        "// An unknown parent makes the item a root\\nbuildTree([{ id: 'x', parentId: 'missing' }]); // => [{ id: 'x', parentId: 'missing', children: [] }]\\n\\n// Empty input\\nbuildTree([]); // => []"
+      ]
+    },
+    "starterCode": "export default function buildTree(items) {\n  // TODO: copy every item into a node with a children array,\n  // then link each node to its parent by id; items without a parent are roots.\n  throw new Error('Not implemented');\n}\n",
+    "starterCodeTs": "type FlatItem = { id: string | number; parentId?: string | number | null } & Record<string, unknown>;\ntype TreeNode = FlatItem & { children: TreeNode[] };\n\nexport default function buildTree(items: FlatItem[]): TreeNode[] {\n  // TODO: copy every item into a node with a children array,\n  // then link each node to its parent by id; items without a parent are roots.\n  throw new Error('Not implemented');\n}\n",
+    "solutionBlock": {
+      "overview": "Interview answer: do it in two passes. The first pass copies every record into a fresh node with an empty children array and stores it in a Map keyed by id, so lookups are constant time and the input is never touched. The second pass walks the records in input order and pushes each node into its parent's children, or into the roots array when the parent is missing. Because linking happens after every node exists, a child that appears before its parent still attaches, and because the second pass follows input order, siblings and roots keep their original order.\n\nMental model: index first, link second. The alternative, filtering the list for each parent recursively, is shorter to write but quadratic and harder to make order-stable.",
+      "approaches": [
+        {
+          "title": "Approach 1: Two passes with a Map",
+          "prose": "Pass one builds nodes.set(item.id, { ...item, children: [] }) for every record. Pass two iterates the records again, looks up the node and its parent in the map, and pushes the node into parent.children or into roots when there is no parent, the parent is unknown, or the parent is the node itself. Time O(n), memory O(n) for the map and the copies.",
+          "codeJs": "export default function buildTree(items) {\n  const nodes = new Map();\n  for (const item of items) {\n    nodes.set(item.id, { ...item, children: [] });\n  }\n  const roots = [];\n  for (const item of items) {\n    const node = nodes.get(item.id);\n    const parent = item.parentId == null ? undefined : nodes.get(item.parentId);\n    if (parent && parent !== node) {\n      parent.children.push(node);\n    } else {\n      roots.push(node);\n    }\n  }\n  return roots;\n}\n",
+          "codeTs": "type FlatItem = { id: string | number; parentId?: string | number | null } & Record<string, unknown>;\ntype TreeNode = FlatItem & { children: TreeNode[] };\n\nexport default function buildTree(items: FlatItem[]): TreeNode[] {\n  const nodes = new Map<string | number, TreeNode>();\n  for (const item of items) {\n    nodes.set(item.id, { ...item, children: [] });\n  }\n  const roots: TreeNode[] = [];\n  for (const item of items) {\n    const node = nodes.get(item.id) as TreeNode;\n    const parent = item.parentId == null ? undefined : nodes.get(item.parentId);\n    if (parent && parent !== node) {\n      parent.children.push(node);\n    } else {\n      roots.push(node);\n    }\n  }\n  return roots;\n}\n",
+          "decisionGraphKey": "approach1"
+        },
+        {
+          "title": "Approach 2: Recursive filter",
+          "prose": "Define attach(parentId) that filters the records whose parent is parentId and maps each to a node whose children are attach(item.id). Roots are the records whose parentId is empty, unknown, or self-referencing. Simple to read, but each level scans the whole list, so time is O(n²) in the worst case.",
+          "codeJs": "export default function buildTree(items) {\n  const ids = new Set(items.map((item) => item.id));\n  const isRoot = (item) => item.parentId == null || !ids.has(item.parentId) || item.parentId === item.id;\n  const attach = (parentId) =>\n    items\n      .filter((item) => (parentId === undefined ? isRoot(item) : !isRoot(item) && item.parentId === parentId))\n      .map((item) => ({ ...item, children: attach(item.id) }));\n  return attach(undefined);\n}\n",
+          "codeTs": "type FlatItem = { id: string | number; parentId?: string | number | null } & Record<string, unknown>;\ntype TreeNode = FlatItem & { children: TreeNode[] };\n\nexport default function buildTree(items: FlatItem[]): TreeNode[] {\n  const ids = new Set(items.map((item) => item.id));\n  const isRoot = (item: FlatItem) => item.parentId == null || !ids.has(item.parentId) || item.parentId === item.id;\n  const attach = (parentId: string | number | undefined): TreeNode[] =>\n    items\n      .filter((item) => (parentId === undefined ? isRoot(item) : !isRoot(item) && item.parentId === parentId))\n      .map((item) => ({ ...item, children: attach(item.id) }));\n  return attach(undefined);\n}\n",
+          "decisionGraphKey": "approach2"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Linking during the first pass fails for children that appear before their parents.",
+          "Mutating the input records by adding children breaks callers that reuse the list.",
+          "Using an object as the index coerces numeric ids to strings; a Map keeps the id type.",
+          "Dropping orphans silently hides data problems; treating them as roots keeps them visible."
+        ],
+        "edgeCases": [
+          "parentId undefined, null or pointing at an unknown id → root.",
+          "A record whose parentId equals its own id → root, never its own child.",
+          "Duplicate ids → the later record wins in the map; say so if asked.",
+          "Empty list → empty array."
+        ],
+        "techniques": [
+          "Indexing records in a Map before linking them.",
+          "Copying with spread to keep inputs immutable.",
+          "Order-stable iteration over the original list."
+        ]
+      },
+      "followUp": [
+        "How would you detect a cycle such as a → b → a and report it instead of looping?",
+        "How would you render this tree as nested tabs or an accordion without re-walking it on every expand?",
+        "How would you sort siblings by a field while keeping the algorithm linear?",
+        "What changes if ids are numbers in the records but strings in parentId?"
+      ],
+      "resources": [
+        {
+          "title": "MDN – Map",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map"
+        },
+        {
+          "title": "MDN – Spread syntax",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax"
+        },
+        {
+          "title": "MDN – Nullish coalescing and equality",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Equality"
+        }
+      ]
+    },
+    "tests": "import buildTree from './buildTree';\n\nconst flat = () => [\n  { id: 'root', parentId: null, label: 'Root' },\n  { id: 'a', parentId: 'root', label: 'A' },\n  { id: 'a1', parentId: 'a', label: 'A1' },\n  { id: 'b', parentId: 'root', label: 'B' },\n  { id: 'a2', parentId: 'a', label: 'A2' },\n];\n\ndescribe('buildTree', () => {\n  test('nests children under their parents', () => {\n    const [root] = buildTree(flat());\n    expect(root.id).toBe('root');\n    expect(root.children.map((node) => node.id)).toEqual(['a', 'b']);\n    expect(root.children[0].children.map((node) => node.id)).toEqual(['a1', 'a2']);\n  });\n\n  test('keeps siblings in input order', () => {\n    const items = [\n      { id: 'r' },\n      { id: 'c', parentId: 'r' },\n      { id: 'a', parentId: 'r' },\n      { id: 'b', parentId: 'r' },\n    ];\n    expect(buildTree(items)[0].children.map((node) => node.id)).toEqual(['c', 'a', 'b']);\n  });\n\n  test('attaches children that appear before their parents', () => {\n    const items = [\n      { id: 'leaf', parentId: 'branch' },\n      { id: 'branch', parentId: 'trunk' },\n      { id: 'trunk', parentId: null },\n    ];\n    const [trunk] = buildTree(items);\n    expect(trunk.id).toBe('trunk');\n    expect(trunk.children[0].id).toBe('branch');\n    expect(trunk.children[0].children[0].id).toBe('leaf');\n  });\n\n  test('treats an item whose parent is missing as a root', () => {\n    const items = [\n      { id: 'x', parentId: 'ghost' },\n      { id: 'y', parentId: null },\n    ];\n    expect(buildTree(items).map((node) => node.id)).toEqual(['x', 'y']);\n  });\n\n  test('gives every node a children array, including leaves', () => {\n    const [root] = buildTree([{ id: 'root' }, { id: 'leaf', parentId: 'root' }]);\n    expect(Array.isArray(root.children[0].children)).toBe(true);\n    expect(root.children[0].children.length).toBe(0);\n  });\n\n  test('keeps the other fields of each item', () => {\n    const [root] = buildTree(flat());\n    expect(root.label).toBe('Root');\n    expect(root.children[1].label).toBe('B');\n  });\n\n  test('does not mutate the input items', () => {\n    const items = flat();\n    const snapshot = JSON.stringify(items);\n    buildTree(items);\n    expect(JSON.stringify(items)).toBe(snapshot);\n    expect('children' in items[0]).toBe(false);\n  });\n\n  test('returns an empty array for an empty list', () => {\n    expect(buildTree([])).toEqual([]);\n  });\n});\n",
+    "testsTs": "import buildTree from './buildTree';\n\ntype FlatItem = { id: string | number; parentId?: string | number | null; label?: string };\n\nconst flat = (): FlatItem[] => [\n  { id: 'root', parentId: null, label: 'Root' },\n  { id: 'a', parentId: 'root', label: 'A' },\n  { id: 'a1', parentId: 'a', label: 'A1' },\n  { id: 'b', parentId: 'root', label: 'B' },\n  { id: 'a2', parentId: 'a', label: 'A2' },\n];\n\ndescribe('buildTree', () => {\n  test('nests children under their parents', () => {\n    const [root] = buildTree(flat());\n    expect(root.id).toBe('root');\n    expect(root.children.map((node) => node.id)).toEqual(['a', 'b']);\n    expect(root.children[0].children.map((node) => node.id)).toEqual(['a1', 'a2']);\n  });\n\n  test('keeps siblings in input order', () => {\n    const items: FlatItem[] = [\n      { id: 'r' },\n      { id: 'c', parentId: 'r' },\n      { id: 'a', parentId: 'r' },\n      { id: 'b', parentId: 'r' },\n    ];\n    expect(buildTree(items)[0].children.map((node) => node.id)).toEqual(['c', 'a', 'b']);\n  });\n\n  test('attaches children that appear before their parents', () => {\n    const items: FlatItem[] = [\n      { id: 'leaf', parentId: 'branch' },\n      { id: 'branch', parentId: 'trunk' },\n      { id: 'trunk', parentId: null },\n    ];\n    const [trunk] = buildTree(items);\n    expect(trunk.id).toBe('trunk');\n    expect(trunk.children[0].id).toBe('branch');\n    expect(trunk.children[0].children[0].id).toBe('leaf');\n  });\n\n  test('treats an item whose parent is missing as a root', () => {\n    const items: FlatItem[] = [\n      { id: 'x', parentId: 'ghost' },\n      { id: 'y', parentId: null },\n    ];\n    expect(buildTree(items).map((node) => node.id)).toEqual(['x', 'y']);\n  });\n\n  test('gives every node a children array, including leaves', () => {\n    const [root] = buildTree([{ id: 'root' }, { id: 'leaf', parentId: 'root' }]);\n    expect(Array.isArray(root.children[0].children)).toBe(true);\n    expect(root.children[0].children.length).toBe(0);\n  });\n\n  test('keeps the other fields of each item', () => {\n    const [root] = buildTree(flat());\n    expect(root.label).toBe('Root');\n    expect(root.children[1].label).toBe('B');\n  });\n\n  test('does not mutate the input items', () => {\n    const items = flat();\n    const snapshot = JSON.stringify(items);\n    buildTree(items);\n    expect(JSON.stringify(items)).toBe(snapshot);\n    expect('children' in items[0]).toBe(false);\n  });\n\n  test('returns an empty array for an empty list', () => {\n    expect(buildTree([])).toEqual([]);\n  });\n});\n",
+    "access": "free",
+    "updatedAt": "2026-10-15",
+    "companies": [
+      "bytedance",
+      "apple"
+    ],
+    "sources": [
+      {
+        "label": "Blind: ByteDance new grad frontend engineer interview breakdown, January 2023",
+        "url": "https://www.teamblind.com/post/bytedance-new-grad-frontend-engineer-interview-breakdown-vqyvjs1l",
+        "company": "bytedance",
+        "publisher": "Blind",
+        "date": "2023-01",
+        "note": "One ByteDance new grad front end account lists the first technical round's coding task as \"given a flat array of objects, create a tree out of it\". This drill is a practice version of that task; the contract for order, orphans and immutability is ours."
+      },
+      {
+        "label": "LeetCode Discuss: Apple IC3 frontend interview experience, June 2025",
+        "url": "https://leetcode.com/discuss/post/6979238/",
+        "company": "apple",
+        "publisher": "LeetCode Discuss",
+        "date": "2025-07",
+        "note": "Public search previews of this report list a nested-tabs rendering problem in React that required converting a flat list into a tree. The full report could not be read by our tools, so only that listing is used."
+      }
+    ],
+    "seo": {
+      "title": "Build a Tree from a Flat List of Nodes",
+      "description": "Implement buildTree in JavaScript: link flat id and parentId records into nested nodes in two passes, keep sibling order, handle orphans, never mutate input."
+    },
+    "decisionGraphAsset": "assets/questions/javascript/decision-graphs/js-build-tree-from-flat-list.v1.json"
   }
 ]

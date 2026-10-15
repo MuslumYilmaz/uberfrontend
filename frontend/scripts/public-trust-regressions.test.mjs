@@ -196,4 +196,28 @@ for (const unsupportedCompanyClaim of [
   );
 }
 
+// Authored company guides and the shared preview template carry the same provenance limits.
+const authoredPreviewDir = path.join(appRoot, 'shared', 'company-previews');
+const authoredPreviewFiles = (await fs.readdir(authoredPreviewDir))
+  .filter((name) => name.endsWith('-preview-content.ts'))
+  .map((name) => path.join(authoredPreviewDir, name));
+authoredPreviewFiles.push(path.join(appRoot, 'features', 'company', 'company-preview', 'company-preview.component.html'));
+assert.ok(authoredPreviewFiles.length > 1, 'authored company preview modules must exist');
+for (const file of authoredPreviewFiles) {
+  const source = await fs.readFile(file, 'utf8');
+  for (const unsupportedCompanyClaim of [
+    /known questions/i,
+    /candidate reports/i,
+    /How\s+\w+\s+Evaluates/i,
+    /questions used in this company/i,
+    /and counting/i,
+  ]) {
+    assert.doesNotMatch(
+      source,
+      unsupportedCompanyClaim,
+      `${path.relative(appRoot, file)} must not claim unsupported provenance: ${unsupportedCompanyClaim}`,
+    );
+  }
+}
+
 console.log('[public-trust-regressions] legal copy, attribution, milestone, track-count, priority, and company checks passed');

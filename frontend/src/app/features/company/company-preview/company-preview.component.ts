@@ -11,6 +11,9 @@ import { SeoService } from '../../../core/services/seo.service';
 import { companyBrandFor } from '../../../shared/company-branding';
 import type { AuthoredCompanyPreview, AuthoredSource } from '../../../shared/company-previews/authored-company-preview.model';
 import { AUTHORED_COMPANY_PREVIEWS_TOKEN } from '../../../shared/company-previews/authored-company-previews';
+import { COMPANY_OFFICIAL_GUIDES, type CompanyOfficialGuide } from '../../../shared/company-previews/company-official-guides';
+import type { CompanyReportedItem } from '../../../core/models/company-public.model';
+import { CompanyOfficialGuidesComponent } from '../../../shared/components/company-official-guides/company-official-guides.component';
 import {
   FaQuestionRowComponent,
   FaQuestionRowMetaChip,
@@ -199,12 +202,28 @@ const OPENAI_PREP_SEQUENCE: OpenAiPrepDay[] = [
 
 @Component({
     selector: 'app-company-preview',
-    imports: [CommonModule, RouterModule, FaQuestionRowComponent],
+    imports: [CommonModule, RouterModule, FaQuestionRowComponent, CompanyOfficialGuidesComponent],
     templateUrl: './company-preview.component.html',
     styleUrls: ['./company-preview.component.css']
 })
 export class CompanyPreviewComponent implements OnInit {
   readonly companyPracticeDisclaimer = COMPANY_PRACTICE_DISCLAIMER;
+
+  /** Keys of the sample rows that carry a public interview report for this company. */
+  private reportedSampleKeys = new Set<string>();
+
+  isReportedSample(item: CompanyPreviewQuestion): boolean {
+    return this.reportedSampleKeys.has(`${item.kind}:${item.id}`);
+  }
+
+  reportKindLabel(kind: CompanyReportedItem['kind']): string {
+    return kind === 'debug' ? 'Debug' : this.displayKind(kind);
+  }
+
+  /** Preparation pages the company publishes itself; empty for companies without one. */
+  get officialGuides(): readonly CompanyOfficialGuide[] {
+    return COMPANY_OFFICIAL_GUIDES[this.slug] ?? [];
+  }
   slug = '';
   label = '';
   isOpenAiPreview = false;
@@ -274,6 +293,7 @@ export class CompanyPreviewComponent implements OnInit {
       counts: { all: 0, coding: 0, trivia: 0, system: 0 },
       samples: [],
     };
+    this.reportedSampleKeys = new Set((this.data.reports ?? []).map((item) => `${item.kind}:${item.id}`));
 
     if (this.isOpenAiPreview) {
       this.publishOpenAiSeo();
@@ -350,6 +370,14 @@ export class CompanyPreviewComponent implements OnInit {
         label: this.techLabel(item.tech),
         ariaLabel: `Technology: ${this.techLabel(item.tech)}`,
         tone: 'tech',
+      });
+    }
+
+    if (this.isReportedSample(item)) {
+      chips.push({
+        label: 'Public report',
+        ariaLabel: 'Backed by a public interview report',
+        tone: 'neutral',
       });
     }
 

@@ -604,6 +604,16 @@
       "amazon",
       "google"
     ],
+    "sources": [
+      {
+        "label": "LeetCode Discuss: Amazon front end engineer II loop, Seattle, April 2020",
+        "url": "https://leetcode.com/discuss/post/591141/",
+        "company": "amazon",
+        "publisher": "LeetCode Discuss",
+        "date": "2020-04",
+        "note": "One Amazon front end engineer II phone screen asked to implement a carousel component, with follow-ups on state management. This slider is a practice version of that shape, not the reported wording."
+      }
+    ],
     "solutionAsset": "assets/sb/angular/solution/angular-image-slider-solution.v2.json",
     "decisionGraphAsset": "assets/questions/angular/decision-graphs/angular-image-slider-starter.v1.json",
     "access": "premium",
@@ -684,6 +694,16 @@
     },
     "companies": [
       "amazon"
+    ],
+    "sources": [
+      {
+        "label": "LeetCode Discuss: Amazon front end engineer II loop, Seattle, April 2020",
+        "url": "https://leetcode.com/discuss/post/591141/",
+        "company": "amazon",
+        "publisher": "LeetCode Discuss",
+        "date": "2020-04",
+        "note": "One Amazon loop account describes a modal with three language tabs where clicking a tab changes the text. This tabs switcher practises that shape; it is not the reported exercise."
+      }
     ],
     "solutionAsset": "assets/sb/angular/solution/angular-tabs-solution.v2.json",
     "decisionGraphAsset": "assets/questions/angular/decision-graphs/angular-tabs-switcher.v1.json",
@@ -1588,6 +1608,7 @@
       {
         "label": "PracHub: Waymo senior frontend engineer interview experience, May 2026",
         "url": "https://prachub.com/interview-experiences/waymo-senior-frontend-engineer-interview-experience-rejected-30-minutes-after-pushing-on-the-process",
+        "company": "waymo",
         "publisher": "PracHub",
         "date": "2026-05",
         "note": "One self-reported senior loop describes an onsite exercise to build an autocomplete with debouncing, for a posting that asked for production Angular. This debounced search is a practice version of that shape, not the reported exercise."
@@ -1702,6 +1723,24 @@
     },
     "companies": [
       "amazon"
+    ],
+    "sources": [
+      {
+        "label": "LeetCode Discuss: Amazon front end engineer II phone screen, March 2020",
+        "url": "https://leetcode.com/discuss/post/546992/",
+        "company": "amazon",
+        "publisher": "LeetCode Discuss",
+        "date": "2020-03",
+        "note": "One Amazon front end engineer II phone screen asked for a five-star rating widget in vanilla HTML, CSS and JavaScript: grey stars that turn gold on hover or selection, including every lower star. This widget is a practice version of that exercise, not its reported wording."
+      },
+      {
+        "label": "LeetCode Discuss: community list of front end interview questions, July 2020",
+        "url": "https://leetcode.com/discuss/post/742791/",
+        "company": "amazon",
+        "publisher": "LeetCode Discuss",
+        "date": "2020-07",
+        "note": "A community list compiled by one candidate opens with a star rating exercise among front end whiteboard questions. The list is secondhand; it cannot establish wording or frequency."
+      }
     ],
     "solutionAsset": "assets/sb/angular/solution/angular-star-rating-solution.v2.json",
     "decisionGraphAsset": "assets/questions/angular/decision-graphs/angular-star-rating.v1.json",

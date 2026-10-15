@@ -1,29 +1,29 @@
 {
-  "totalQuestions": 490,
-  "premiumPracticeCount": 166,
+  "totalQuestions": 493,
+  "premiumPracticeCount": 167,
   "companyCounts": {
     "airbnb": {
-      "all": 1,
+      "all": 3,
       "coding": 1,
-      "trivia": 0,
+      "trivia": 2,
       "system": 0
     },
     "amazon": {
-      "all": 38,
-      "coding": 15,
+      "all": 42,
+      "coding": 18,
       "trivia": 23,
-      "system": 0
+      "system": 1
     },
     "apple": {
-      "all": 32,
-      "coding": 20,
-      "trivia": 12,
+      "all": 37,
+      "coding": 23,
+      "trivia": 14,
       "system": 0
     },
     "bytedance": {
-      "all": 18,
-      "coding": 7,
-      "trivia": 11,
+      "all": 22,
+      "coding": 8,
+      "trivia": 14,
       "system": 0
     },
     "datadog": {
@@ -39,22 +39,22 @@
       "system": 1
     },
     "google": {
-      "all": 42,
-      "coding": 11,
+      "all": 45,
+      "coding": 14,
       "trivia": 31,
       "system": 0
     },
     "intuit": {
-      "all": 9,
-      "coding": 8,
+      "all": 10,
+      "coding": 9,
       "trivia": 0,
       "system": 1
     },
     "meta": {
-      "all": 48,
-      "coding": 16,
+      "all": 51,
+      "coding": 18,
       "trivia": 32,
-      "system": 0
+      "system": 1
     },
     "microsoft": {
       "all": 16,
@@ -63,16 +63,16 @@
       "system": 0
     },
     "netflix": {
-      "all": 12,
-      "coding": 6,
+      "all": 13,
+      "coding": 7,
       "trivia": 6,
       "system": 0
     },
     "openai": {
-      "all": 8,
+      "all": 9,
       "coding": 3,
       "trivia": 5,
-      "system": 0
+      "system": 1
     },
     "servicenow": {
       "all": 7,
@@ -81,15 +81,15 @@
       "system": 1
     },
     "stripe": {
-      "all": 1,
-      "coding": 0,
+      "all": 3,
+      "coding": 2,
       "trivia": 1,
       "system": 0
     },
     "uber": {
-      "all": 2,
-      "coding": 0,
-      "trivia": 2,
+      "all": 5,
+      "coding": 1,
+      "trivia": 4,
       "system": 0
     },
     "waymo": {

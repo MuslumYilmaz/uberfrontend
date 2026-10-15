@@ -173,7 +173,7 @@ function assertFrameworkCssFormatting() {
       canonicalRoot: path.join(repoRoot, 'cdn', 'sb'),
       mirrorRoot: path.join(repoRoot, 'frontend', 'src', 'assets', 'sb'),
     }),
-    { assets: 196, cssSources: 261, changedAssets: 0, changedCssSources: 0 },
+    { assets: 198, cssSources: 263, changedAssets: 0, changedCssSources: 0 },
     'The full framework CSS corpus must stay canonical and exactly mirrored'
   );
 }
@@ -4913,6 +4913,34 @@ for (const node of autocompleteGraphVariant.nodes) {
   assert.ok(
     autocompleteGraphLines.slice(lineStart - 1, lineEnd).join('\n').includes(snippet),
     `${node.id}: autocomplete anchor range must contain its snippet`
+  );
+}
+
+const countdownQuestion = json('cdn/questions/react/coding.json').find((entry) => entry.id === 'react-countdown-timer');
+assert.ok(countdownQuestion);
+assert.equal(countdownQuestion.decisionGraphAsset, 'assets/questions/react/decision-graphs/react-countdown-timer.v1.json');
+const countdownDecisionGraph = json('cdn/questions/react/decision-graphs/react-countdown-timer.v1.json');
+const countdownGraphVariant = countdownDecisionGraph.variants.approach1;
+assert.equal(countdownDecisionGraph.questionId, 'react-countdown-timer');
+assert.equal(
+  countdownGraphVariant.code,
+  json('cdn/sb/react/solution/react-countdown-timer-solution.v1.json').files['src/App.tsx'],
+  'countdown decision graph must mirror the solution App.tsx'
+);
+assert.match(countdownGraphVariant.code, /window\.setInterval/);
+assert.match(countdownGraphVariant.code, /window\.clearInterval\(id\)/);
+assert.match(countdownGraphVariant.code, /setStatus\('done'\)/);
+const countdownGraphLines = countdownGraphVariant.code.split('\n');
+assert.ok(countdownGraphVariant.nodes.length >= 6, 'countdown decision graph needs the lifecycle nodes');
+for (const node of countdownGraphVariant.nodes) {
+  const { lineStart, lineEnd, snippet } = node.anchor;
+  assert.ok(
+    lineStart >= 1 && lineEnd >= lineStart && lineEnd <= countdownGraphLines.length,
+    `${node.id}: invalid countdown anchor range`
+  );
+  assert.ok(
+    countdownGraphLines.slice(lineStart - 1, lineEnd).join('\n').includes(snippet),
+    `${node.id}: countdown anchor range must contain its snippet`
   );
 }
 

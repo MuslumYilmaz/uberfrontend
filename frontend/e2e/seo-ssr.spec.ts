@@ -2,6 +2,7 @@ import { test, expect, Page, APIRequestContext } from '@playwright/test';
 import { loadSitemapDateMap, schemaDateMatchesSitemap } from '../scripts/seo-sitemap-date-contract.mjs';
 import { parse, serialize, DefaultTreeAdapterMap } from 'parse5';
 import { PRIORITY_LINK_SURFACES, priorityLinksFor, type PriorityLinkSurface } from './priority-links';
+import { PREP_MENU_ROUTES } from './prep-menu';
 
 const WEB_HOST = process.env.PLAYWRIGHT_HOST || '127.0.0.1';
 const WEB_PORT = process.env.PLAYWRIGHT_PORT || '4200';
@@ -871,6 +872,87 @@ const AUTHORED_GUIDE_CASES = [
     reportUrl:
       'https://medium.com/@karunakumari000532/my-servicenow-software-engineer-ui-interview-experience-2025-23f315b960dc',
   },
+  {
+    label: 'Amazon',
+    path: '/companies/amazon/preview',
+    title: 'Amazon Frontend Interview Questions: 7 Prompts + Prep Guide',
+    description:
+      'Prepare for an Amazon front end engineer interview with 7 practice prompts: star rating, carousel, paginated addresses, countdown timer, image service design.',
+    h1: 'Amazon Frontend Interview Questions',
+    kicker: 'Public Amazon prep guide',
+    headings: [
+      'Prepare for product judgment, not Amazon trivia',
+      'What the official page and the public accounts establish, and what you still need to confirm',
+      'Seven Amazon frontend interview practice questions',
+      'Scope the paginated address widget before writing the first line',
+      'A 7-day Amazon frontend interview preparation plan',
+      'Common Amazon frontend interview preparation questions',
+      'Build the underlying skills with free practice',
+      'Sources and evidence limits',
+    ],
+    trustFragment: 'not leaked, confirmed or official Amazon questions',
+    prompts: [
+      { id: 'five-star-rating-vanilla', title: 'Build a five-star rating widget in vanilla HTML, CSS and JavaScript' },
+      { id: 'carousel-with-state-follow-ups', title: 'Implement a carousel component, then defend its state management' },
+      { id: 'language-tabs-modal', title: 'Recreate a modal with language tabs from an image' },
+      { id: 'countdown-timer-in-thirty-minutes', title: 'Design and build a countdown timer in thirty minutes' },
+      { id: 'paginated-address-widget', title: 'Code a paginated widget of seller addresses, five per page' },
+      { id: 'image-service-frontend-design', title: 'Design the frontend of an image service or a restaurant ordering app' },
+      { id: 'file-explorer-from-ascii-sketch', title: 'Build the interface of a file explorer from an ASCII sketch' },
+    ],
+    resources: [
+      '/javascript/coding/js-build-tree-from-flat-list',
+      '/javascript/coding/js-implement-new',
+      '/javascript/coding/js-create-counter',
+      '/javascript/coding/js-sleep',
+      '/react/coding/react-todo-list',
+      '/css/coding/css-forms-pseudoclasses',
+      '/javascript/trivia/js-repaint-reflow',
+      '/system-design/resilient-checkout-payment-flow',
+    ],
+    reportUrl: 'https://leetcode.com/discuss/post/546992/',
+  },
+  {
+    label: 'Meta',
+    path: '/companies/meta/preview',
+    title: 'Meta Frontend Interview Questions: 7 Prompts + Prep Guide',
+    description:
+      'Prepare for a Meta front end engineer interview with 7 practice prompts: map from scratch, clearAllTimeout, memoization, DOM traversal, autocomplete design.',
+    h1: 'Meta Frontend Interview Questions',
+    kicker: 'Public Meta prep guide',
+    headings: [
+      'Prepare for product judgment, not Meta trivia',
+      'What the official pages and the public accounts establish, and what you still need to confirm',
+      'Seven Meta frontend interview practice questions',
+      'Scope clearAllTimeout before writing the first line',
+      'A 7-day Meta frontend interview preparation plan',
+      'Common Meta frontend interview preparation questions',
+      'Build the underlying skills with free practice',
+      'Sources and evidence limits',
+    ],
+    trustFragment: 'not leaked, confirmed or official Meta questions',
+    prompts: [
+      { id: 'implement-map-from-scratch', title: 'Implement Array.prototype.map from scratch' },
+      { id: 'clear-all-timeout', title: 'Implement your own clearAllTimeout' },
+      { id: 'memoize-with-cache-keys', title: 'Write a memoize helper and defend its cache key' },
+      { id: 'twin-dom-tree-node', title: 'Find the corresponding node in a twin DOM tree' },
+      { id: 'traverse-dom-collect-nodes', title: 'Traverse the DOM and collect the nodes that match' },
+      { id: 'stack-and-queue-in-javascript', title: 'Implement a stack and a queue in JavaScript, then clear a short algorithm screen' },
+      { id: 'autocomplete-component-design', title: 'Design an autocomplete component, not the front end of a product' },
+    ],
+    resources: [
+      '/javascript/coding/js-flatten-once',
+      '/javascript/coding/js-array-foreach',
+      '/javascript/coding/js-debounce',
+      '/javascript/coding/js-create-lru-cache',
+      '/javascript/coding/js-create-counter',
+      '/javascript/trivia/js-queue-vs-stack',
+      '/html/trivia/html-dom-tree-structure',
+      '/system-design/infinite-scroll-list',
+    ],
+    reportUrl:
+      'https://www.jointaro.com/interviews/companies/meta/experiences/front-end-developer-intern-london-england-december-1-2021-no-offer-positive-4f6ff45b/',
+  },
 ] as const;
 
 const INFINITE_SCROLL_PATH = '/system-design/infinite-scroll-list';
@@ -1435,6 +1517,18 @@ test.describe('seo-ssr', () => {
           await expect(headerHub).toHaveAccessibleName('Interview Questions');
           await expect(headerHub).toBeVisible();
           await expect(headerHub).not.toHaveAttribute('rel', /nofollow|sponsored|ugc/i);
+          // The prep menu ships every link in initial HTML and only toggles visibility.
+          const prepMenu = rawPage
+            .locator(entry.path === '/' ? 'app-marketing-header' : 'app-header')
+            .locator('nav[aria-label="Interview prep"]');
+          await expect(prepMenu).toHaveCount(1);
+          await expect(prepMenu).toHaveAttribute('hidden', '');
+          await expect(prepMenu).toBeHidden();
+          for (const route of PREP_MENU_ROUTES) {
+            const menuLink = prepMenu.locator(`a[href="${route}"]`);
+            await expect(menuLink, `${entry.path} prep menu links ${route}`).toHaveCount(1);
+            await expect(menuLink).not.toHaveAttribute('rel', /nofollow|sponsored|ugc/i);
+          }
         }
         for (const { target, name } of entry.links) {
           const link = rawPage.locator(entry.content).locator(
@@ -3313,6 +3407,84 @@ test.describe('seo-ssr', () => {
 
     await page.waitForTimeout(300);
     expectNoHydrationOrChunkIssues(runtimeIssues, NETFLIX_PREVIEW_PATH);
+  });
+
+  test('raw Amazon company preview renders the official preparation pages table with follow links', async ({ request }) => {
+    test.setTimeout(120_000);
+    const html = await readRawHtml(request, '/companies/amazon/preview');
+    const caseText = rawVisibleTextPreserveCase(html);
+    expect(caseText).toContain('Official preparation pages from Amazon');
+    expect(caseText).toContain('FrontendAtlas is not affiliated with Amazon');
+    const anchor = html.match(/<a[^>]*href="https:\/\/amazon\.jobs\/content\/en\/how-we-hire\/fee-interview-prep"[^>]*>/)?.[0] ?? '';
+    expect(anchor, 'official link anchor').not.toBe('');
+    expect(anchor).toContain('rel="noopener noreferrer"');
+    expect(anchor).not.toContain('nofollow');
+    expect(anchor).toContain('target="_blank"');
+
+    const apple = await readRawHtml(request, '/companies/apple/preview');
+    expect(rawVisibleTextPreserveCase(apple)).not.toContain('Official preparation pages from');
+  });
+
+  test('raw ByteDance company preview lists sourced items with nofollow report links, and Microsoft shows no block', async ({ request }) => {
+    test.setTimeout(120_000);
+    const html = await readRawHtml(request, '/companies/bytedance/preview');
+    const caseText = rawVisibleTextPreserveCase(html);
+    expect(caseText).toContain('Practice items with public ByteDance interview accounts');
+    expect(html).toMatch(/href="\/javascript\/coding\/js-build-tree-from-flat-list"/);
+    const reportAnchor = html.match(/<a[^>]*href="https:\/\/www\.teamblind\.com\/post\/bytedance-new-grad-frontend-engineer-interview-breakdown-vqyvjs1l"[^>]*>/)?.[0] ?? '';
+    expect(reportAnchor, 'public report anchor').not.toBe('');
+    expect(reportAnchor).toContain('rel="noopener noreferrer nofollow"');
+    // Compare the section markers, not bare names: the inlined component stylesheet mentions the
+    // official-guides file name in its sourceMappingURL comment before any section renders.
+    const reportsAt = html.indexOf('data-testid="company-public-reports"');
+    const guidesAt = html.indexOf('data-testid="company-official-guides"');
+    expect(reportsAt, 'public reports section').toBeGreaterThan(-1);
+    expect(guidesAt, 'official guides section').toBeGreaterThan(-1);
+    expect(reportsAt).toBeLessThan(guidesAt);
+
+    const microsoft = await readRawHtml(request, '/companies/microsoft/preview');
+    expect(rawVisibleTextPreserveCase(microsoft)).not.toContain('Practice items with public');
+  });
+
+  test('ByteDance company preview reflows without horizontal overflow and keeps the public reports block readable', async ({ page }) => {
+    const runtimeIssues = collectClientRuntimeIssues(page);
+    const previewPath = '/companies/bytedance/preview';
+    const viewports = [
+      { width: 360, height: 800 },
+      { width: 390, height: 844 },
+      { width: 834, height: 1112 },
+      { width: 1440, height: 900 },
+    ];
+
+    await page.setViewportSize(viewports[0]);
+    await page.goto(previewPath, { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('[data-testid="company-public-reports"] h2')).toHaveText(
+      'Practice items with public ByteDance interview accounts',
+    );
+
+    for (const viewport of viewports) {
+      await page.setViewportSize(viewport);
+      const layout = await page.evaluate(() => {
+        const preview = document.querySelector<HTMLElement>('[data-testid="company-preview-page"]');
+        const reports = document.querySelector<HTMLElement>('[data-testid="company-public-reports"]');
+        return {
+          documentOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+          previewOverflow: preview ? preview.scrollWidth - preview.clientWidth : Number.POSITIVE_INFINITY,
+          reportsOverflow: reports ? reports.scrollWidth - reports.clientWidth : Number.POSITIVE_INFINITY,
+          reportItems: reports ? reports.querySelectorAll('[data-testid^="company-report-"]').length : 0,
+          h1Count: document.querySelectorAll('h1').length,
+        };
+      });
+
+      expect(layout.documentOverflow, `document overflow at ${viewport.width}px`).toBeLessThanOrEqual(1);
+      expect(layout.previewOverflow, `ByteDance preview overflow at ${viewport.width}px`).toBeLessThanOrEqual(1);
+      expect(layout.reportsOverflow, `public reports overflow at ${viewport.width}px`).toBeLessThanOrEqual(1);
+      expect(layout.reportItems, `public report items at ${viewport.width}px`).toBeGreaterThan(0);
+      expect(layout.h1Count, `single H1 at ${viewport.width}px`).toBe(1);
+    }
+
+    await page.waitForTimeout(300);
+    expectNoHydrationOrChunkIssues(runtimeIssues, previewPath);
   });
 
   for (const guide of AUTHORED_GUIDE_CASES) {

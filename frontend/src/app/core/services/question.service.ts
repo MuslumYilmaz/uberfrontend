@@ -2,6 +2,8 @@
 import { HttpClient } from '@angular/common/http';
 import { isPlatformServer } from '@angular/common';
 import { Injectable, PLATFORM_ID, inject } from '@angular/core';
+import type { CompanyReportsPayload } from '../models/company-public.model';
+import { emptyCompanyReports, normalizeCompanyReports } from '../utils/company-reports.util';
 import { TransferState, makeStateKey } from '@angular/core';
 import { firstValueFrom, forkJoin, from, Observable, of } from 'rxjs';
 import { catchError, finalize, map, shareReplay, switchMap, tap } from 'rxjs/operators';
@@ -186,6 +188,34 @@ export class QuestionService {
         if (useTransferState) this.transferState.set(tsKey, stats);
       }),
       catchError(() => of(this.emptyShowcaseStats())),
+    );
+  }
+
+  /** Public interview report index per company, generated into company-reports.json by gen:data. */
+  loadCompanyReports(options: { transferState?: boolean } = {}): Observable<CompanyReportsPayload> {
+    const useTransferState = options.transferState !== false;
+    if (this.isServer) {
+      return this.loadCompanyReportsFromFs(useTransferState);
+    }
+
+    const tsKey = this.companyReportsStateKey();
+    if (useTransferState && this.transferState.hasKey(tsKey)) {
+      const payload = this.transferState.get(tsKey, emptyCompanyReports());
+      this.transferState.remove(tsKey);
+      return of(normalizeCompanyReports(payload));
+    }
+
+    const { primary, fallback } = this.getAssetUrls('questions/company-reports.json');
+    const source$ = primary !== fallback
+      ? this.http.get<unknown>(primary).pipe(catchError(() => this.http.get<unknown>(fallback)))
+      : this.http.get<unknown>(fallback);
+
+    return source$.pipe(
+      map((raw) => normalizeCompanyReports(raw)),
+      tap((payload) => {
+        if (useTransferState) this.transferState.set(tsKey, payload);
+      }),
+      catchError(() => of(emptyCompanyReports())),
     );
   }
 
@@ -513,6 +543,21 @@ export class QuestionService {
       }),
       catchError(() => of([] as SystemDesignListItem[])),
     );
+  }
+
+  private loadCompanyReportsFromFs(transferState = true): Observable<CompanyReportsPayload> {
+    const key = this.companyReportsStateKey();
+    return this.assetReader.readJson('assets/questions/company-reports.json').pipe(
+      map((raw) => normalizeCompanyReports(raw)),
+      tap((payload) => {
+        if (transferState) this.transferState.set(key, payload);
+      }),
+      catchError(() => of(emptyCompanyReports())),
+    );
+  }
+
+  private companyReportsStateKey() {
+    return makeStateKey<CompanyReportsPayload>('company-reports:v1');
   }
 
   private loadShowcaseStatsFromFs(transferState = true): Observable<ShowcaseStatsPayload> {

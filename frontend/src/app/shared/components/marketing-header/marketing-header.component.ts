@@ -1,32 +1,57 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, ElementRef, HostListener, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DOCUMENT,
+  ElementRef,
+  HostListener,
+  ViewChild,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { filter } from 'rxjs';
+import { PREP_MENU_SECTIONS, isPrepMenuPath } from '../../../core/content/prep-menu';
 import { AnalyticsService } from '../../../core/services/analytics.service';
+import { AppUiStylesService } from '../../../core/services/app-ui-styles.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { ConversionContextService } from '../../../core/services/conversion-context.service';
 import { isProActive } from '../../../core/utils/entitlements.util';
+import {
+  PrepMenuPanelComponent,
+  PrepMenuSelection,
+  prepMenuPanelCenter,
+} from '../prep-menu/prep-menu-panel.component';
 
 type MarketingLink = {
   label: string;
   route: any[];
   destination: string;
   queryParams?: Record<string, string>;
-  activeMatch?: 'question-library' | 'interview-questions' | 'essential-60' | 'path';
+  activeMatch?: 'interview-questions';
 };
+
+type MenuSource = 'desktop' | 'mobile';
+type NavArea = 'primary' | 'utility' | 'mobile_menu' | 'prep_menu';
 
 @Component({
     selector: 'app-marketing-header',
-    imports: [CommonModule, RouterModule],
+    imports: [CommonModule, RouterModule, PrepMenuPanelComponent],
     styleUrls: ['./marketing-header.component.css'],
     templateUrl: './marketing-header.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MarketingHeaderComponent {
+  @ViewChild('menuTrigger') menuTrigger?: ElementRef<HTMLButtonElement>;
+  @ViewChild('mobileMenuTrigger') mobileMenuTrigger?: ElementRef<HTMLButtonElement>;
+
   private readonly hostEl = inject(ElementRef<HTMLElement>);
+  private readonly doc = inject(DOCUMENT);
   private readonly router = inject(Router);
   private readonly analytics = inject(AnalyticsService);
   private readonly conversionContext = inject(ConversionContextService);
+  private readonly appUiStyles = inject(AppUiStylesService);
 
   readonly auth = inject(AuthService);
   readonly isPro = computed(() => isProActive(this.auth.user()));
@@ -34,39 +59,24 @@ export class MarketingHeaderComponent {
   readonly isAuthUiResolved = computed(() => this.auth.authUiState() !== 'pending');
   readonly brandLink = computed(() => this.isAuthenticatedUi() ? ['/dashboard'] : ['/']);
   readonly brandDestination = computed(() => this.isAuthenticatedUi() ? '/dashboard' : '/');
-  readonly mobileMenuOpen = signal(false);
+  readonly menuOpen = signal(false);
+  readonly menuAnchorX = signal<number | null>(null);
+  readonly menuSection = signal<string>(PREP_MENU_SECTIONS[0]?.id ?? '');
   readonly currentUrl = signal(this.router.url);
+  readonly currentPath = computed(() => this.pathOf(this.currentUrl()));
+  readonly isMenuTriggerActive = computed(() => {
+    const path = this.currentPath();
+    return this.menuOpen() || (path !== '/interview-questions' && isPrepMenuPath(path));
+  });
+  private menuSource: MenuSource | null = null;
 
+  // The other prep destinations live in the prep menu, which is rendered in the initial HTML.
   readonly primaryLinks: MarketingLink[] = [
-    {
-      label: 'Prep Guide',
-      route: ['/guides', 'interview-blueprint', 'intro'],
-      destination: '/guides/interview-blueprint/intro',
-      activeMatch: 'path',
-    },
     {
       label: 'Interview Questions',
       route: ['/interview-questions'],
       destination: '/interview-questions',
       activeMatch: 'interview-questions',
-    },
-    {
-      label: 'Essential 60',
-      route: ['/interview-questions', 'essential'],
-      destination: '/interview-questions/essential',
-      activeMatch: 'essential-60',
-    },
-    {
-      label: 'Question Library',
-      route: ['/coding'],
-      destination: '/coding',
-      activeMatch: 'question-library',
-    },
-    {
-      label: 'Study Plans',
-      route: ['/tracks'],
-      destination: '/tracks',
-      activeMatch: 'path',
     },
   ];
 
@@ -118,36 +128,73 @@ export class MarketingHeaderComponent {
       .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
       .subscribe((event) => {
         this.currentUrl.set(event.urlAfterRedirects || event.url);
-        this.mobileMenuOpen.set(false);
+        this.closeMenu();
       });
   }
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
     const target = event.target;
-    if (!(target instanceof Node)) {
-      this.mobileMenuOpen.set(false);
-      return;
-    }
-
-    if (!this.hostEl.nativeElement.contains(target)) {
-      this.mobileMenuOpen.set(false);
+    if (!(target instanceof Node) || !this.hostEl.nativeElement.contains(target)) {
+      this.closeMenu();
     }
   }
 
   @HostListener('document:keydown.escape')
   onEscape() {
-    this.mobileMenuOpen.set(false);
+    this.closeMenu(true);
+  }
+
+  @HostListener('window:resize')
+  onWindowResize() {
+    if (this.menuOpen()) this.syncMenuAnchor();
+  }
+
+  toggleMenu(event: Event | undefined, source: MenuSource) {
+    event?.stopPropagation();
+    if (this.menuOpen()) {
+      this.closeMenu();
+      return;
+    }
+
+    this.menuSource = source;
+    this.preloadMenuIcons();
+    this.menuSection.set(PREP_MENU_SECTIONS[0]?.id ?? '');
+    this.menuOpen.set(true);
+    this.syncMenuAnchor();
+    if (source === 'mobile') this.trackTopNavClick('mobile_menu', 'menu');
+    else this.trackTopNavClick('primary', 'study');
+    this.analytics.track('header_study_opened', {
+      trigger: source === 'mobile' ? 'mobile_menu' : 'button',
+      surface: 'marketing',
+    });
+  }
+
+  // Marketing routes skip the icon font on load; fetch it once the visitor shows intent to open the menu.
+  preloadMenuIcons() {
+    this.appUiStyles.ensureCoreLoaded();
   }
 
   toggleMobileMenu(event?: Event) {
-    event?.stopPropagation();
-    const next = !this.mobileMenuOpen();
-    this.mobileMenuOpen.set(next);
+    this.toggleMenu(event, 'mobile');
+  }
 
-    if (next) {
-      this.trackTopNavClick('mobile_menu', 'menu');
-    }
+  closeMenu(restoreFocus = false) {
+    if (!this.menuOpen()) return;
+    const trigger = restoreFocus ? this.triggerFor(this.menuSource) : null;
+    this.menuOpen.set(false);
+    this.menuAnchorX.set(null);
+    this.menuSource = null;
+    trigger?.focus();
+  }
+
+  onMenuItemSelected(selection: PrepMenuSelection) {
+    this.trackTopNavClick('prep_menu', selection.route, {
+      section: selection.section,
+      item: selection.key,
+      ...(selection.chip ? { chip: selection.chip } : {}),
+    });
+    this.closeMenu();
   }
 
   trackBrandClick() {
@@ -160,7 +207,7 @@ export class MarketingHeaderComponent {
 
   trackPrimaryClick(link: MarketingLink, area: 'primary' | 'mobile_menu' = 'primary') {
     this.trackTopNavClick(area, link.destination);
-    if (area === 'mobile_menu') this.mobileMenuOpen.set(false);
+    if (area === 'mobile_menu') this.closeMenu();
   }
 
   trackUtilityClick(link: MarketingLink, area: 'utility' | 'mobile_menu' = 'utility') {
@@ -178,38 +225,51 @@ export class MarketingHeaderComponent {
   }
 
   isShowcaseLanding(): boolean {
-    const urlTree = this.router.parseUrl(this.currentUrl());
-    const primary = urlTree.root.children['primary'];
-    const path = primary ? `/${primary.segments.map((segment) => segment.path).join('/')}` : '/';
-    return path === '/';
+    return this.currentPath() === '/';
   }
 
   isPrimaryLinkActive(link: MarketingLink): boolean {
-    const urlTree = this.router.parseUrl(this.currentUrl());
-    const primary = urlTree.root.children['primary'];
-    const path = primary ? `/${primary.segments.map((segment) => segment.path).join('/')}` : '/';
-
-    switch (link.activeMatch) {
-      case 'interview-questions':
-        return path === '/interview-questions';
-      case 'question-library':
-        return path === '/coding';
-      case 'essential-60':
-        return path === '/interview-questions/essential';
-      case 'path': {
-        const targetPath = link.destination.split('?')[0];
-        return path === targetPath || path.startsWith(`${targetPath}/`);
-      }
-      default:
-        return false;
-    }
+    return link.activeMatch === 'interview-questions' && this.currentPath() === '/interview-questions';
   }
 
-  private trackTopNavClick(area: 'primary' | 'utility' | 'mobile_menu', destination: string) {
+  private syncMenuAnchor() {
+    const viewportWidth = this.doc.defaultView?.innerWidth ?? 1280;
+    const trigger = this.visibleTrigger();
+    const rect = trigger?.getBoundingClientRect();
+    const triggerCenter = rect && rect.width ? rect.left + rect.width / 2 : null;
+    this.menuAnchorX.set(prepMenuPanelCenter(viewportWidth, triggerCenter));
+  }
+
+  private visibleTrigger(): HTMLButtonElement | null {
+    const candidates = [
+      this.triggerFor(this.menuSource),
+      this.menuTrigger?.nativeElement ?? null,
+      this.mobileMenuTrigger?.nativeElement ?? null,
+    ];
+    return candidates.find((element) => {
+      if (!element) return false;
+      const rect = element.getBoundingClientRect();
+      return rect.width > 0 && rect.height > 0;
+    }) ?? null;
+  }
+
+  private triggerFor(source: MenuSource | null): HTMLButtonElement | null {
+    if (source === 'desktop') return this.menuTrigger?.nativeElement ?? null;
+    if (source === 'mobile') return this.mobileMenuTrigger?.nativeElement ?? null;
+    return null;
+  }
+
+  private pathOf(url: string): string {
+    const primary = this.router.parseUrl(url).root.children['primary'];
+    return primary ? `/${primary.segments.map((segment) => segment.path).join('/')}` : '/';
+  }
+
+  private trackTopNavClick(area: NavArea, destination: string, extra: Record<string, unknown> = {}) {
     this.analytics.track('header_top_nav_clicked', {
       surface: 'marketing',
       area,
       destination,
+      ...extra,
       auth_state: this.authState(),
     });
   }

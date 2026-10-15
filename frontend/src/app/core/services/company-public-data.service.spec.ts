@@ -18,9 +18,10 @@ describe('CompanyPublicDataService', () => {
     authored: Record<string, AuthoredCompanyPreview> = AUTHORED_COMPANY_PREVIEWS,
   ): CompanyPublicDataService {
     TestBed.resetTestingModule();
-    questions = jasmine.createSpyObj<QuestionService>('QuestionService', ['loadAllQuestionSummaries', 'loadSystemDesign']);
+    questions = jasmine.createSpyObj<QuestionService>('QuestionService', ['loadAllQuestionSummaries', 'loadSystemDesign', 'loadCompanyReports']);
     questions.loadAllQuestionSummaries.and.returnValue(of([]));
     questions.loadSystemDesign.and.returnValue(of([]));
+    questions.loadCompanyReports.and.returnValue(of({ schemaVersion: 1, companies: {} }));
     TestBed.configureTestingModule({ providers: [
       { provide: QuestionService, useValue: questions },
       { provide: PLATFORM_ID, useValue: platform },
@@ -33,7 +34,7 @@ describe('CompanyPublicDataService', () => {
   function question(id: string, kind: 'coding' | 'trivia' = 'coding', access: 'free' | 'premium' = 'free'): MixedQuestionListItem {
     return {
       id, title: id, type: kind, technology: 'react', tech: 'react', access,
-      difficulty: 'easy', tags: [], importance: 1, companies: ['amazon'],
+      difficulty: 'easy', tags: [], importance: 1, companies: ['microsoft'],
     };
   }
 
@@ -54,8 +55,8 @@ describe('CompanyPublicDataService', () => {
     coding.complete();
     await pending;
     expect(resolved?.companies).toEqual([
-      { slug: 'amazon', label: 'Amazon', count: 1 },
       { slug: 'bytedance', label: 'ByteDance', count: 1 },
+      { slug: 'microsoft', label: 'Microsoft', count: 1 },
       { slug: 'openai', label: 'OpenAI', count: 1 },
     ]);
     expect(questions.loadAllQuestionSummaries).toHaveBeenCalledWith('coding', { transferState: false });
@@ -75,10 +76,10 @@ describe('CompanyPublicDataService', () => {
     ));
     questions.loadSystemDesign.and.returnValue(of([0, 1, 2].map((i) => ({
       id: `system-${i}`, title: `System ${i}`, type: 'system-design' as const,
-      companies: ['amazon'], access: 'premium' as const, difficulty: 'hard' as const,
+      companies: ['microsoft'], access: 'premium' as const, difficulty: 'hard' as const,
     })) as any));
 
-    const resolved = await firstValueFrom(service.loadPreview(' AMAZON '));
+    const resolved = await firstValueFrom(service.loadPreview(' MICROSOFT '));
     expect(resolved.counts).toEqual({ all: 11, coding: 4, trivia: 4, system: 3 });
     expect(resolved.samples.map((item) => item.id)).toEqual([
       'coding-0', 'coding-1', 'coding-2', 'trivia-0', 'trivia-1', 'trivia-2', 'system-0', 'system-1',
@@ -88,13 +89,13 @@ describe('CompanyPublicDataService', () => {
     expect(serialized).not.toContain('PRIVATE_SOLUTION_SENTINEL');
     expect(serialized).not.toContain('FULL_CATALOG_DESCRIPTION_SENTINEL');
     expect(serialized).not.toContain('coding-3');
-    expect(serialized).toContain('company-public:preview:amazon');
+    expect(serialized).toContain('company-public:preview:microsoft');
 
     const browserService = configure('browser', transferState);
-    expect(await firstValueFrom(browserService.loadPreview('amazon'))).toEqual(resolved);
+    expect(await firstValueFrom(browserService.loadPreview('microsoft'))).toEqual(resolved);
     expect(questions.loadAllQuestionSummaries).not.toHaveBeenCalled();
     expect(questions.loadSystemDesign).not.toHaveBeenCalled();
-    expect(transferState.hasKey(makeStateKey<CompanyPreviewResolved>('company-public:preview:amazon'))).toBeFalse();
+    expect(transferState.hasKey(makeStateKey<CompanyPreviewResolved>('company-public:preview:microsoft'))).toBeFalse();
   });
 
   it('de-duplicates samples and fills sparse kind buckets without exceeding eight', async () => {
@@ -103,7 +104,7 @@ describe('CompanyPublicDataService', () => {
       ? [question('same'), question('same'), ...Array.from({ length: 7 }, (_, i) => question(`extra-${i}`))]
       : [question('concept', 'trivia')],
     ));
-    const resolved = await firstValueFrom(service.loadPreview('amazon'));
+    const resolved = await firstValueFrom(service.loadPreview('microsoft'));
     expect(resolved.samples.map((item) => item.id)).toEqual([
       'same', 'extra-0', 'concept', 'extra-1', 'extra-2', 'extra-3', 'extra-4', 'extra-5',
     ]);
@@ -125,8 +126,8 @@ describe('CompanyPublicDataService', () => {
   it('returns terminal empty data on failure and does not reuse another company state', async () => {
     const transferState = new TransferState();
     const service = configure('browser', transferState);
-    transferState.set(makeStateKey<CompanyPreviewResolved>('company-public:preview:amazon'), {
-      slug: 'amazon', mode: 'catalog', counts: { all: 1, coding: 1, trivia: 0, system: 0 },
+    transferState.set(makeStateKey<CompanyPreviewResolved>('company-public:preview:microsoft'), {
+      slug: 'microsoft', mode: 'catalog', counts: { all: 1, coding: 1, trivia: 0, system: 0 },
       samples: [{ id: 'old', title: 'Old', kind: 'coding', difficulty: 'easy', access: 'free' }],
     });
     questions.loadAllQuestionSummaries.and.returnValue(throwError(() => new Error('Offline')));
@@ -135,7 +136,7 @@ describe('CompanyPublicDataService', () => {
     expect(resolved.slug).toBe('bytedance');
     expect(resolved.counts.all).toBe(0);
     expect(resolved.samples).toEqual([]);
-    expect(transferState.hasKey(makeStateKey('company-public:preview:amazon'))).toBeTrue();
+    expect(transferState.hasKey(makeStateKey('company-public:preview:microsoft'))).toBeTrue();
   });
 
   it('treats registry-driven authored guides as editorial without loading the catalog', async () => {
@@ -146,5 +147,19 @@ describe('CompanyPublicDataService', () => {
     expect(resolved.slug).toBe('acme');
     expect(resolved.samples).toEqual([]);
     expect(questions.loadAllQuestionSummaries).not.toHaveBeenCalled();
+  });
+
+  it('attaches the public report index to catalog previews and leaves authored pages without it', async () => {
+    const service = configure();
+    questions.loadAllQuestionSummaries.and.callFake((kind) => kind === 'coding' ? of([question('react-star-rating')]) : of([]));
+    const reported = {
+      id: 'react-star-rating', kind: 'coding' as const, tech: 'react' as const, title: 'React Star Rating', access: 'premium' as const,
+      route: '/react/coding/react-star-rating',
+      sources: [{ label: 'LeetCode Discuss: Amazon front end engineer II phone screen, March 2020', url: 'https://leetcode.com/discuss/post/546992/', publisher: 'LeetCode Discuss', date: '2020-03' }],
+    };
+    questions.loadCompanyReports.and.returnValue(of({ schemaVersion: 1, companies: { microsoft: [reported] } }));
+    expect((await firstValueFrom(service.loadPreview('microsoft'))).reports).toEqual([reported]);
+    expect((await firstValueFrom(service.loadPreview('google'))).reports).toEqual([]);
+    expect((await firstValueFrom(service.loadPreview('apple'))).reports).toEqual([]);
   });
 });

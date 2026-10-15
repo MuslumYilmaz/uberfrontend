@@ -345,6 +345,41 @@ reference_rules:
       - docs/references/interview-prep-market-research-2026-10.md
     max_docs: 1
 
+  - id: company_sources_review
+    priority: 92
+    keywords:
+      - company sources
+      - official guide
+      - official preparation
+      - interview sources review
+      - untagged questions
+      - found but not tagged
+    paths:
+      - docs/references/company-sources-review-2026-10.md
+      - frontend/src/app/shared/company-previews/company-official-guides.ts
+      - frontend/src/app/shared/components/company-official-guides/
+    load:
+      - docs/references/company-sources-review-2026-10.md
+    max_docs: 1
+
+  - id: company_sources_followup_plan
+    priority: 92
+    keywords:
+      - company follow-up plan
+      - sources follow-up
+      - unsupported tags
+      - authored guide amazon
+      - authored guide meta
+      - new catalog items
+      - promise retry
+      - flat list to tree
+      - countdown timer
+    paths:
+      - docs/references/company-sources-followup-plan-2026-10.md
+    load:
+      - docs/references/company-sources-followup-plan-2026-10.md
+    max_docs: 1
+
   - id: company_pages_plan
     priority: 96
     keywords:
@@ -361,4 +396,25 @@ reference_rules:
       - frontend/src/app/shared/company-previews/
     load:
       - docs/references/company-pages-plan-2026-10.md
+    max_docs: 1
+
+  - id: header_prep_menu_plan
+    priority: 92
+    keywords:
+      - header menu
+      - mega menu
+      - prep menu
+      - dropdown menu
+      - marketing header
+      - app header
+      - top nav
+      - header links
+      - navigation menu
+    paths:
+      - docs/references/header-prep-menu-plan-2026-10.md
+      - frontend/src/app/shared/components/header/
+      - frontend/src/app/shared/components/marketing-header/
+      - frontend/src/app/shared/components/prep-menu/
+    load:
+      - docs/references/header-prep-menu-plan-2026-10.md
     max_docs: 1

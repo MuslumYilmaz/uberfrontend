@@ -621,6 +621,16 @@
       "amazon",
       "google"
     ],
+    "sources": [
+      {
+        "label": "LeetCode Discuss: Amazon front end engineer II loop, Seattle, April 2020",
+        "url": "https://leetcode.com/discuss/post/591141/",
+        "company": "amazon",
+        "publisher": "LeetCode Discuss",
+        "date": "2020-04",
+        "note": "One Amazon front end engineer II phone screen asked to implement a carousel component, with follow-ups on state management. This slider is a practice version of that shape, not the reported wording."
+      }
+    ],
     "access": "premium",
     "updatedAt": "2026-01-30",
     "seo": {
@@ -698,6 +708,16 @@
     "solutionAsset": "assets/sb/react/solution/react-tabs-solution.v1.json",
     "companies": [
       "amazon"
+    ],
+    "sources": [
+      {
+        "label": "LeetCode Discuss: Amazon front end engineer II loop, Seattle, April 2020",
+        "url": "https://leetcode.com/discuss/post/591141/",
+        "company": "amazon",
+        "publisher": "LeetCode Discuss",
+        "date": "2020-04",
+        "note": "One Amazon loop account describes a modal with three language tabs where clicking a tab changes the text. This tabs switcher practises that shape; it is not the reported exercise."
+      }
     ],
     "access": "premium",
     "updatedAt": "2026-01-30",
@@ -931,7 +951,19 @@
     },
     "pressureModeAsset": "assets/questions/pressure-modes/accordion-faq.v1.json",
     "solutionAsset": "assets/sb/react/solution/react-accordion-faq-solution.v1.json",
-    "companies": [],
+    "companies": [
+      "amazon"
+    ],
+    "sources": [
+      {
+        "label": "LeetCode Discuss: community list of front end interview questions, July 2020",
+        "url": "https://leetcode.com/discuss/post/742791/",
+        "company": "amazon",
+        "publisher": "LeetCode Discuss",
+        "date": "2020-07",
+        "note": "A community list compiled by one candidate marks designing an accordion as an Amazon onsite question. The list is secondhand; it cannot establish wording or frequency."
+      }
+    ],
     "access": "premium",
     "updatedAt": "2026-01-30",
     "seo": {
@@ -1038,7 +1070,19 @@
     },
     "solutionAsset": "assets/sb/react/solution/react-pagination-table-solution.v1.json",
     "pressureModeAsset": "assets/questions/pressure-modes/pagination-table.v1.json",
-    "companies": [],
+    "companies": [
+      "amazon"
+    ],
+    "sources": [
+      {
+        "label": "LeetCode Discuss: Amazon virtual onsite front end engineer II, Vancouver, April 2022",
+        "url": "https://leetcode.com/discuss/post/1984996/",
+        "company": "amazon",
+        "publisher": "LeetCode Discuss",
+        "date": "2022-04",
+        "note": "One Amazon front end engineer II account describes coding a paginated widget of seller addresses, five per page with previous and next controls, with the focus on disabling the buttons at the edges. This table is a practice version of that shape, not the reported wording."
+      }
+    ],
     "access": "premium",
     "updatedAt": "2026-01-30",
     "seo": {
@@ -1552,7 +1596,19 @@
     },
     "pressureModeAsset": "assets/questions/pressure-modes/debounced-search.v1.json",
     "solutionAsset": "assets/sb/react/solution/react-debounced-search-solution.v1.json",
-    "companies": [],
+    "companies": [
+      "netflix"
+    ],
+    "sources": [
+      {
+        "label": "Taro: Netflix senior frontend engineer interview, Warsaw, November 2024",
+        "url": "https://www.jointaro.com/interviews/companies/netflix/experiences/senior-frontend-engineer-warsaw-masovia-november-1-2024-no-offer-negative-c999399f/",
+        "company": "netflix",
+        "publisher": "Taro",
+        "date": "2024-11",
+        "note": "One senior Netflix account describes a domain question on filtering results dynamically from a REST API based on the input query, with a 200 millisecond debounce discussed. This debounced search is a practice version of that shape; it is not the reported wording."
+      }
+    ],
     "access": "premium",
     "updatedAt": "2026-01-30",
     "seo": {
@@ -1661,6 +1717,24 @@
     "companies": [
       "amazon"
     ],
+    "sources": [
+      {
+        "label": "LeetCode Discuss: Amazon front end engineer II phone screen, March 2020",
+        "url": "https://leetcode.com/discuss/post/546992/",
+        "company": "amazon",
+        "publisher": "LeetCode Discuss",
+        "date": "2020-03",
+        "note": "One Amazon front end engineer II phone screen asked for a five-star rating widget in vanilla HTML, CSS and JavaScript: grey stars that turn gold on hover or selection, including every lower star. This widget is a practice version of that exercise, not its reported wording."
+      },
+      {
+        "label": "LeetCode Discuss: community list of front end interview questions, July 2020",
+        "url": "https://leetcode.com/discuss/post/742791/",
+        "company": "amazon",
+        "publisher": "LeetCode Discuss",
+        "date": "2020-07",
+        "note": "A community list compiled by one candidate opens with a star rating exercise among front end whiteboard questions. The list is secondhand; it cannot establish wording or frequency."
+      }
+    ],
     "access": "premium",
     "updatedAt": "2026-01-30",
     "seo": {
@@ -1747,6 +1821,7 @@
       {
         "label": "Taro: Datadog senior frontend developer interview, Valbonne, October 2024",
         "url": "https://www.jointaro.com/interviews/companies/datadog/experiences/senior-frontend-developer-valbonne-october-1-2024-accepted-offer-positive-47d59048/",
+        "company": "datadog",
         "publisher": "Taro",
         "date": "2024-10",
         "note": "One senior account lists a React page that displays a table of real-time data, sortable by any column. This dynamic table is a practice version of that round, not its wording or data."
@@ -2083,12 +2158,14 @@
     "companies": [
       "waymo",
       "elevenlabs",
-      "intuit"
+      "intuit",
+      "google"
     ],
     "sources": [
       {
         "label": "PracHub: Waymo senior frontend engineer interview experience, May 2026",
         "url": "https://prachub.com/interview-experiences/waymo-senior-frontend-engineer-interview-experience-rejected-30-minutes-after-pushing-on-the-process",
+        "company": "waymo",
         "publisher": "PracHub",
         "date": "2026-05",
         "note": "One self-reported senior loop. It establishes that an onsite round asked for an autocomplete search bar with debounce; this React starter is a practice version, not the reported wording or stack."
@@ -2096,6 +2173,7 @@
       {
         "label": "Aced: ElevenLabs senior full-stack (frontend-leaning) interview experience, 2026",
         "url": "https://www.aced.io/experiences/eleven-labs-senior-frontend-engineer-interview-925c04",
+        "company": "elevenlabs",
         "publisher": "Aced",
         "date": "2026-08",
         "note": "One senior account describes a 90-minute assessment with four questions mixing React tasks and medium algorithm problems. This React starter is a representative timed task, not the reported one."
@@ -2103,9 +2181,18 @@
       {
         "label": "LeetCode Discuss: Intuit senior frontend engineer interview experience, November 2025",
         "url": "https://leetcode.com/discuss/post/7320927/",
+        "company": "intuit",
         "publisher": "LeetCode Discuss",
         "date": "2025-11",
         "note": "One senior account describes implementing a typeahead component inside a codebase received the day before, then writing Jest and React Testing Library tests for it. This starter is a practice version of that shape, not the reported codebase."
+      },
+      {
+        "label": "LeetCode Discuss: Google L3/L4 frontend interview experience, June 2021",
+        "url": "https://leetcode.com/discuss/post/1274542/",
+        "company": "google",
+        "publisher": "LeetCode Discuss",
+        "date": "2021-06",
+        "note": "One Google L3/L4 frontend account describes a round combining string manipulation with implementing a basic autocomplete. This starter is a practice version of that shape, not the reported wording."
       }
     ],
     "updatedAt": "2026-07-14",
@@ -3331,6 +3418,7 @@
       {
         "label": "LeetCode Discuss: Intuit senior frontend engineer interview experience, November 2025",
         "url": "https://leetcode.com/discuss/post/7320927/",
+        "company": "intuit",
         "publisher": "LeetCode Discuss",
         "date": "2025-11",
         "note": "One senior account describes implementing a nested comment component inside a codebase received the day before, storing its state in IndexedDB and adding a test for adding a comment. This component is a practice version of that shape, not the reported codebase."
@@ -3338,6 +3426,7 @@
       {
         "label": "LeetCode Discuss: ServiceNow senior frontend developer interview experience, February 2026",
         "url": "https://leetcode.com/discuss/post/7711064/",
+        "company": "servicenow",
         "publisher": "LeetCode Discuss",
         "date": "2026-03",
         "note": "Public search previews of this report list a nested comments design in a senior frontend loop. The full report could not be read by our tools, so only that listing is used. This component practises the shape, not the reported wording."
@@ -3345,6 +3434,7 @@
       {
         "label": "Blind: ServiceNow phone screen for a staff engineer, frontend-leaning, September 2021",
         "url": "https://www.teamblind.com/post/servicenow-phone-screen-staff-engineer-interview-8msftqw8",
+        "company": "servicenow",
         "publisher": "Blind",
         "date": "2021-09",
         "note": "One reply in this thread describes a round on UI design and data flow. It supports the round type, not the specific feature."
@@ -3627,9 +3717,18 @@
       {
         "label": "LeetCode Discuss: Intuit senior frontend engineer interview experience, November 2025",
         "url": "https://leetcode.com/discuss/post/7320927/",
+        "company": "intuit",
         "publisher": "LeetCode Discuss",
         "date": "2025-11",
         "note": "One senior account describes a user story to call a provided LLM, stream the result to the page, handle errors and add unit tests. This chat UI is a practice version of that shape, not the reported codebase."
+      },
+      {
+        "label": "Taro: OpenAI senior frontend software engineer interview, United States, May 2024",
+        "url": "https://www.jointaro.com/interviews/companies/openai/experiences/senior-frontend-software-engineer-united-states-may-30-2024-no-offer-negative-32a807aa/",
+        "company": "openai",
+        "publisher": "Taro",
+        "date": "2024-05",
+        "note": "One senior OpenAI account describes a system design prompt summarised as ChatGPT, but in a text area, in the technical screen. This coding exercise is the build-side practice version of that product, not the reported prompt."
       }
     ],
     "access": "premium",
@@ -3938,6 +4037,250 @@
     "seo": {
       "title": "Build Snake Game in React",
       "description": "Create a snake game interface with movement, food collection, scoring, and clear game-over behavior for collisions."
+    }
+  },
+  {
+    "id": "react-countdown-timer",
+    "title": "React Countdown Timer (Start, Pause, Reset)",
+    "type": "coding",
+    "technology": "react",
+    "difficulty": "intermediate",
+    "importance": 3,
+    "tags": [
+      "react",
+      "hooks",
+      "state",
+      "effects",
+      "timers",
+      "components"
+    ],
+    "description": {
+      "summary": "Build a React countdown timer with a seconds input and Start, Pause and Reset controls. The clock shows mm:ss, ticks once per second while running, stops at zero with a Done status, and never leaks an interval when it is paused, reset or unmounted. A public report of an Amazon front end engineer loop describes implementing a countdown timer in a 30-minute round; this practice version fixes the controls and states so the framework tests can check them.",
+      "specs": {
+        "requirements": [
+          "Render the remaining time as mm:ss in an element with the class value.",
+          "Render the current status (Ready, Running, Paused, Done) in an element with the class status.",
+          "Provide Start, Pause and Reset buttons in that order inside .actions.",
+          "Provide a number input with id duration that sets the countdown length in seconds while the timer is not running."
+        ],
+        "expectedBehavior": [
+          "The clock starts at the chosen duration (10 seconds by default) with status Ready.",
+          "Start begins ticking once per second and disables Start; Pause stops ticking, shows Paused and re-enables Start.",
+          "Reset stops ticking and returns the clock to the chosen duration with status Ready.",
+          "Reaching zero shows 00:00 with status Done and disables Start until Reset.",
+          "Changing the duration while not running updates the clock immediately.",
+          "No interval keeps running after Pause, Reset, Done or unmount."
+        ],
+        "implementationNotes": [
+          "Keep three pieces of state: the chosen duration, the remaining seconds and a status of ready, running, paused or done.",
+          "Create the interval inside a useEffect keyed by status and clear it in the cleanup so every stop path shares one code path.",
+          "Decrement with a functional state update so the tick never reads stale state.",
+          "Derive the Done transition from state (status running and remaining zero) instead of inside the tick callback."
+        ],
+        "techFocus": [
+          "useEffect cleanup",
+          "setInterval in React",
+          "Derived disabled state"
+        ],
+        "faq": [
+          {
+            "question": "How do you build a countdown timer in React without leaking intervals?",
+            "answer": "Create the interval inside a useEffect that runs only while the status is running and clear it in the effect cleanup. Pause, reset, completion and unmount all change the status or unmount the component, so the same cleanup stops the timer every time."
+          },
+          {
+            "question": "Why does a React timer tick with a stale value?",
+            "answer": "The interval callback closes over the render it was created in. Use a functional update such as setRemaining(value => value - 1) so each tick reads the latest state instead of the captured one."
+          }
+        ]
+      }
+    },
+    "starterCodeHint": "Implement `start()`, `pause()`, `reset()` and `changeDuration()`, and add a `useEffect` that runs an interval only while `status` is `'running'` and clears it in its cleanup.",
+    "solutionBlock": {
+      "overview": "Three pieces of state drive the component: the chosen duration, the seconds remaining and a status. The interval lives inside a useEffect keyed by status, so it exists only while running and the cleanup clears it whenever the status changes or the component unmounts. Each tick decrements with a functional update, and a second effect flips the status to done when the clock reaches zero. Start, Pause and Reset only change state; they never touch timers directly, which is what keeps the component free of leaked intervals. Performance & pitfalls: a plain setInterval drifts a little over long runs; a timestamp-based clock is the follow-up.",
+      "approaches": [
+        {
+          "title": "Interval effect keyed by status",
+          "prose": "Keep `duration`, `remaining` and `status` in state. A `useEffect([status])` creates `setInterval` only when `status === 'running'` and returns a cleanup that clears it. The tick uses `setRemaining(value => value > 0 ? value - 1 : 0)`. A second effect watches `remaining` and `status` and sets `done` at zero. Handlers: `start` sets running when time remains, `pause` sets paused, `reset` restores the duration and `ready`, and the input handler clamps the number and updates both duration and remaining while not running. Edge cases & testing: rapid Start and Pause clicks are safe because every status change recreates or clears the interval through the same effect.",
+          "codeJs": "import React, { useEffect, useState } from 'react';\nimport './App.css';\n\ntype Status = 'ready' | 'running' | 'paused' | 'done';\n\nconst DEFAULT_SECONDS = 10;\n\nconst STATUS_LABEL: Record<Status, string> = {\n  ready: 'Ready',\n  running: 'Running',\n  paused: 'Paused',\n  done: 'Done',\n};\n\nfunction formatTime(totalSeconds: number): string {\n  const minutes = Math.floor(totalSeconds / 60);\n  const seconds = totalSeconds % 60;\n  return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;\n}\n\nfunction clampSeconds(value: number): number {\n  if (!Number.isFinite(value)) return 1;\n  return Math.max(1, Math.min(5999, Math.floor(value)));\n}\n\nexport default function App() {\n  const [duration, setDuration] = useState(DEFAULT_SECONDS);\n  const [remaining, setRemaining] = useState(DEFAULT_SECONDS);\n  const [status, setStatus] = useState<Status>('ready');\n\n  // One interval per running phase. Creating it inside the effect and clearing it in the\n  // cleanup covers pause, reset, completion and unmount with a single code path.\n  useEffect(() => {\n    if (status !== 'running') return undefined;\n    const id = window.setInterval(() => {\n      setRemaining((value) => (value > 0 ? value - 1 : 0));\n    }, 1000);\n    return () => window.clearInterval(id);\n  }, [status]);\n\n  // Completion is derived from state, so the tick callback never has to know about status.\n  useEffect(() => {\n    if (status === 'running' && remaining === 0) setStatus('done');\n  }, [remaining, status]);\n\n  const start = () => {\n    if (remaining > 0) setStatus('running');\n  };\n\n  const pause = () => {\n    if (status === 'running') setStatus('paused');\n  };\n\n  const reset = () => {\n    setRemaining(duration);\n    setStatus('ready');\n  };\n\n  const changeDuration = (event: React.ChangeEvent<HTMLInputElement>) => {\n    const next = clampSeconds(Number(event.target.value));\n    setDuration(next);\n    if (status !== 'running') {\n      setRemaining(next);\n      setStatus('ready');\n    }\n  };\n\n  return (\n    <main className=\"main\">\n      <section className=\"section\">\n        <h1>Countdown</h1>\n\n        <div className=\"panel\">\n          <label className=\"field\">\n            <span>Seconds</span>\n            <input\n              id=\"duration\"\n              type=\"number\"\n              min={1}\n              max={5999}\n              value={duration}\n              onChange={changeDuration}\n              disabled={status === 'running'}\n            />\n          </label>\n\n          <div className=\"value\" aria-live=\"polite\">{formatTime(remaining)}</div>\n          <p className=\"status\">{STATUS_LABEL[status]}</p>\n\n          <div className=\"actions\">\n            <button onClick={start} disabled={status === 'running' || remaining === 0}>Start</button>\n            <button onClick={pause} disabled={status !== 'running'}>Pause</button>\n            <button onClick={reset} disabled={status === 'ready' && remaining === duration}>Reset</button>\n          </div>\n        </div>\n      </section>\n    </main>\n  );\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Storing the interval id in a ref and clearing it in several handlers duplicates the stop logic; let the effect cleanup own it.",
+          "Reading `remaining` inside the interval callback uses the value from the render that created the interval.",
+          "Calling setStatus('done') inside the tick callback couples the timer to lifecycle rules; derive it from state instead.",
+          "Letting the duration input change while running makes the clock jump; disable it or apply the change on the next reset."
+        ],
+        "edgeCases": [
+          "Start at 00:00 does nothing until Reset.",
+          "Pause while already paused is a no-op.",
+          "Non-numeric or out-of-range input is clamped to 1 to 5999 seconds.",
+          "Unmounting mid-countdown clears the interval through the effect cleanup."
+        ],
+        "techniques": [
+          "useEffect with cleanup for timers",
+          "Functional state updates in interval callbacks",
+          "Derived transitions from state instead of imperative calls"
+        ]
+      }
+    },
+    "frameworkTests": [
+      {
+        "id": "countdown-start-pause-reset",
+        "name": "Start, pause and reset",
+        "steps": [
+          {
+            "type": "expectText",
+            "selector": ".value",
+            "text": "00:10"
+          },
+          {
+            "type": "expectText",
+            "selector": ".status",
+            "text": "Ready"
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".actions button",
+            "index": 1,
+            "disabled": true
+          },
+          {
+            "type": "click",
+            "selector": ".actions button",
+            "index": 0
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".actions button",
+            "index": 0,
+            "disabled": true
+          },
+          {
+            "type": "expectText",
+            "selector": ".status",
+            "text": "Running"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".value",
+            "text": "00:09"
+          },
+          {
+            "type": "click",
+            "selector": ".actions button",
+            "index": 1
+          },
+          {
+            "type": "expectText",
+            "selector": ".status",
+            "text": "Paused"
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".actions button",
+            "index": 0,
+            "disabled": false
+          },
+          {
+            "type": "click",
+            "selector": ".actions button",
+            "index": 2
+          },
+          {
+            "type": "expectText",
+            "selector": ".value",
+            "text": "00:10"
+          },
+          {
+            "type": "expectText",
+            "selector": ".status",
+            "text": "Ready"
+          }
+        ]
+      },
+      {
+        "id": "countdown-runs-to-zero",
+        "name": "Runs to zero and reports Done",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": "#duration",
+            "value": "2"
+          },
+          {
+            "type": "expectText",
+            "selector": ".value",
+            "text": "00:02"
+          },
+          {
+            "type": "click",
+            "selector": ".actions button",
+            "index": 0
+          },
+          {
+            "type": "wait",
+            "durationMs": 2400
+          },
+          {
+            "type": "waitForText",
+            "selector": ".value",
+            "text": "00:00"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".status",
+            "text": "Done"
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".actions button",
+            "index": 0,
+            "disabled": true
+          },
+          {
+            "type": "click",
+            "selector": ".actions button",
+            "index": 2
+          },
+          {
+            "type": "expectText",
+            "selector": ".value",
+            "text": "00:02"
+          },
+          {
+            "type": "expectText",
+            "selector": ".status",
+            "text": "Ready"
+          }
+        ]
+      }
+    ],
+    "sdk": {
+      "asset": "assets/sb/react/question/react-countdown-timer.v1.json",
+      "openFile": "/src/App.tsx",
+      "storageKey": "v2:ui:react:react-countdown-timer"
+    },
+    "solutionAsset": "assets/sb/react/solution/react-countdown-timer-solution.v1.json",
+    "decisionGraphAsset": "assets/questions/react/decision-graphs/react-countdown-timer.v1.json",
+    "companies": [
+      "amazon"
+    ],
+    "sources": [
+      {
+        "label": "LeetCode Discuss: Amazon front end engineer II loop, Seattle, April 2020",
+        "url": "https://leetcode.com/discuss/post/591141/",
+        "company": "amazon",
+        "publisher": "LeetCode Discuss",
+        "date": "2020-04",
+        "note": "One Amazon front end engineer II loop account describes a 30-minute round of CSS questions followed by a countdown timer the candidate could not finish in time. This component is a practice version of that exercise, not its reported wording."
+      }
+    ],
+    "access": "premium",
+    "updatedAt": "2026-10-15",
+    "seo": {
+      "title": "React Countdown Timer with Start, Pause and Reset",
+      "description": "Build a React countdown timer: a seconds input, Start, Pause and Reset controls, one interval owned by a useEffect cleanup and a Done state at zero."
     }
   }
 ]

@@ -347,6 +347,9 @@
       "state-management",
       "frontend-architecture"
     ],
+    "companies": [
+      "meta"
+    ],
     "type": "system-design",
     "access": "premium",
     "updatedAt": "2026-08-06",
@@ -422,6 +425,9 @@
       "upload",
       "validation"
     ],
+    "companies": [
+      "amazon"
+    ],
     "type": "system-design",
     "access": "premium",
     "updatedAt": "2026-08-06",
@@ -482,7 +488,8 @@
       "storage"
     ],
     "companies": [
-      "waymo"
+      "waymo",
+      "openai"
     ],
     "type": "system-design",
     "access": "free",

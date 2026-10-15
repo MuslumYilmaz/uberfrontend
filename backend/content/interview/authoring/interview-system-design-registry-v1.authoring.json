@@ -4,9 +4,9 @@
   "registryVersion": "1.2.0",
   "status": "candidate",
   "finalApproval": null,
-  "definitionHash": "bd045d1cb9c0c6a5a2d2da1e20937dcde19015ed27878065368daf3ae479e8eb",
+  "definitionHash": "8fb6c4e2864e0cb956e9adb64b0e221c97d1fabf74a3c59e14ff1edea0bf47f0",
   "reviewBatch": {
-    "reviewedDefinitionHash": "bd045d1cb9c0c6a5a2d2da1e20937dcde19015ed27878065368daf3ae479e8eb",
+    "reviewedDefinitionHash": "8fb6c4e2864e0cb956e9adb64b0e221c97d1fabf74a3c59e14ff1edea0bf47f0",
     "reviewedAt": "2026-08-12",
     "technical": {
       "reviewer": "codex-system-design-technical-v8",
@@ -20,7 +20,14 @@
         "2026-09-26 source-pin maintenance review: the dashboard requirements source only moves the existing Interview opening callout; all block values and the other five source files are unchanged. Guided prompts, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
         "2026-10-10 source-pin maintenance review: the dashboard source changes only meta.json seo.title and seo.description and one requirements link label and description; the AI chat source changes only meta.json seo.title and seo.description, drops one sentence from the overlapping-responses callout, and adds a two-item Build it links block to requirements. Candidate prompts, clarifications, requirements, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval.",
         "2026-10-14 source-pin maintenance review: the AI chat composer meta.json adds a Waymo company tag, a companyEvidence record and a public source list pointing at one public interview report; all five section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
-        "2026-10-14 source-pin maintenance review: the notification toast meta.json adds a ServiceNow company tag, a companyEvidence record and a public source list pointing at two public interview threads; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval."
+        "2026-10-14 source-pin maintenance review: the notification toast meta.json adds a ServiceNow company tag, a companyEvidence record and a public source list pointing at two public interview threads; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
+        "2026-10-15 source-pin maintenance review: the AI chat composer meta.json adds an OpenAI company tag, a companyEvidence record and one more public source pointing at a public interview report; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
+        "2026-10-15 source-pin maintenance review: the realtime search meta.json adds a Meta company tag, a companyEvidence record and a public source list pointing at one public interview report; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
+        "2026-10-15 source-pin maintenance review: the image upload meta.json adds an Amazon company tag, a companyEvidence record and a public source list pointing at one public interview report; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
+        "2026-10-15 source-pin maintenance review: the int-sd-toast-lifecycle-jr-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
+        "2026-10-15 source-pin maintenance review: the int-sd-autocomplete-race-mid-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
+        "2026-10-15 source-pin maintenance review: the int-sd-ai-chat-composer-mid-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
+        "2026-10-15 source-pin maintenance review: the int-sd-image-upload-lifecycle-jr-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval."
       ]
     },
     "blind": {
@@ -398,7 +405,7 @@
       },
       "private": {
         "sourceContentId": "notification-toast-system",
-        "expectedSourceBundleHash": "e6c034a086fb49a28545adbc5ca5c798e12724b17dd795264a57d95fb57340d2",
+        "expectedSourceBundleHash": "09c1ebfa63eb846060002e4d4f0079e683efc06ced7a094a22e3d612dc7afbbb",
         "clarificationAnswers": [
           {
             "clarificationId": "toast-callers",
@@ -1742,7 +1749,7 @@
       },
       "private": {
         "sourceContentId": "realtime-search-debounce-cache",
-        "expectedSourceBundleHash": "e2c3f9f1ec1f783dfa6fb2efe113364292f2ec8ffb9a29f98b0c43094b234fe2",
+        "expectedSourceBundleHash": "931e5212d916b7ab0e1b086dabc95ca93d6cf356728f5326bc9bb3ac81d71375",
         "clarificationAnswers": [
           {
             "clarificationId": "search-identity",
@@ -3045,7 +3052,7 @@
       },
       "private": {
         "sourceContentId": "ai-chat-textarea-design",
-        "expectedSourceBundleHash": "585435667d7a5b673fc30ecac795e50b71a3c9fabc2c88d220502884ecc86d3d",
+        "expectedSourceBundleHash": "dbd7bd9c503a074a5fdd36ea64b81651f94de2b3fba84c5de7911abf2249830b",
         "clarificationAnswers": [
           {
             "clarificationId": "chat-draft-scope",
@@ -7683,7 +7690,7 @@
       },
       "private": {
         "sourceContentId": "image-upload-preview",
-        "expectedSourceBundleHash": "11d34dacf26a451d6cd1bef95a5855ad8c529e70f6237b4b6869962f50e462f1",
+        "expectedSourceBundleHash": "01d2003028ffd4c667cd85656e1360df2dd848ea0e7b910254926e999da4c6b2",
         "clarificationAnswers": [
           {
             "clarificationId": "upload-file-policy",

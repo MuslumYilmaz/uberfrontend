@@ -11,7 +11,8 @@
     "storage"
   ],
   "companies": [
-    "waymo"
+    "waymo",
+    "openai"
   ],
   "type": "system-design",
   "sections": [
@@ -61,6 +62,13 @@
         "sourceUrl": "https://prachub.com/interview-experiences/waymo-senior-frontend-engineer-interview-experience-rejected-30-minutes-after-pushing-on-the-process",
         "sourceTitle": "Waymo senior frontend engineer interview experience (PracHub, May 2026)",
         "checkedAt": "2026-10-14"
+      },
+      {
+        "company": "openai",
+        "evidenceType": "reported-interview-question",
+        "sourceUrl": "https://www.jointaro.com/interviews/companies/openai/experiences/senior-frontend-software-engineer-united-states-may-30-2024-no-offer-negative-32a807aa/",
+        "sourceTitle": "OpenAI senior frontend software engineer interview, United States, May 2024 (Taro)",
+        "checkedAt": "2026-10-15"
       }
     ]
   },
@@ -109,9 +117,18 @@
     {
       "label": "PracHub: Waymo senior frontend engineer interview experience, May 2026",
       "url": "https://prachub.com/interview-experiences/waymo-senior-frontend-engineer-interview-experience-rejected-30-minutes-after-pushing-on-the-process",
+      "company": "waymo",
       "publisher": "PracHub",
       "date": "2026-05",
       "note": "One self-reported senior loop. It establishes that an onsite round asked for frontend-focused system design of an AI chat application; this composer-and-streaming case is a practice version of that round, not its wording."
+    },
+    {
+      "label": "Taro: OpenAI senior frontend software engineer interview, United States, May 2024",
+      "url": "https://www.jointaro.com/interviews/companies/openai/experiences/senior-frontend-software-engineer-united-states-may-30-2024-no-offer-negative-32a807aa/",
+      "company": "openai",
+      "publisher": "Taro",
+      "date": "2024-05",
+      "note": "One senior OpenAI account describes a system design prompt summarised as ChatGPT, but in a text area, in the technical screen. This case practises that prompt; it is not the reported wording."
     }
   ]
 }

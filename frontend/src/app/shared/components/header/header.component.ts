@@ -7,6 +7,8 @@ import { AnalyticsService } from '../../../core/services/analytics.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { isProActive } from '../../../core/utils/entitlements.util';
 import { PREPARE_GROUPS, PrepareGroup, PrepareItem, TargetName } from '../../prepare/prepare.registry';
+import { PREP_MENU_SECTIONS, isPrepMenuPath } from '../../../core/content/prep-menu';
+import { PrepMenuPanelComponent, PrepMenuSelection, prepMenuPanelCenter } from '../prep-menu/prep-menu-panel.component';
 import { AppSidebarDrawerService } from '../../../core/services/app-sidebar-drawer.service';
 
 type Mode =
@@ -19,38 +21,22 @@ type Mode =
   | 'profile'
   | 'not-found';
 
-type VisibleEntry = {
-  origin: string;
-  item: PrepareItem;
-  link: any[] | null;
-  group?: string;
-  isViewAll?: boolean;
-};
+type VisibleEntry =
+  | { origin: string; kind: 'search'; item: PrepareItem; link: any[]; group?: string }
+  | { origin: 'continue'; kind: 'continue'; link: any[] }
+  | { origin: string; kind: 'prep'; link: any[]; selection: PrepMenuSelection };
 
-type StudyPrimaryActionKey =
-  | 'continue'
-  | 'interview_blueprint'
-  | 'interview_questions'
-  | 'framework_prep'
-  | 'essential_60'
-  | 'question_library'
-  | 'study_plans';
-
-type StudyPrimaryAction = {
-  key: StudyPrimaryActionKey;
+type ContinueAction = {
   title: string;
   subtitle: string;
-  icon: string;
   route: any[];
-  queryParams?: Params;
-  badge?: string | null;
-  emphasis?: 'default' | 'promoted';
-  item?: PrepareItem | null;
+  badge: string | null;
+  item: PrepareItem | null;
 };
 
 @Component({
     selector: 'app-header',
-    imports: [CommonModule, RouterModule],
+    imports: [CommonModule, RouterModule, PrepMenuPanelComponent],
     styleUrls: ['./header.component.css'],
     templateUrl: './header.component.html'
 })
@@ -136,6 +122,8 @@ export class HeaderComponent implements OnInit {
       return false;
     }
 
+    if (isPrepMenuPath(path)) return true;
+
     if (
       path.startsWith('/interview-questions')
       || path.startsWith('/coding')
@@ -153,70 +141,23 @@ export class HeaderComponent implements OnInit {
     return /^\/(javascript|angular|react|vue|html|css)(\/|$)/.test(path);
   });
 
-  readonly studyPrimaryActions = computed<StudyPrimaryAction[]>(() => {
+  readonly prepSection = signal<string>(PREP_MENU_SECTIONS[0]?.id ?? '');
+
+  readonly continueAction = computed<ContinueAction>(() => {
     const recent = this.recentItems()[0] ?? null;
     const recentLink = recent ? this.intentToLink(recent) : null;
-    const continueFallbackIsDashboard = this.auth.isLoggedIn();
-
-    return [
-      {
-        key: 'continue',
-        title: 'Continue where I left off',
-        subtitle: recent
-          ? recent.subtitle
-          : (this.auth.isLoggedIn()
-            ? 'Return to your dashboard or your last interview prep path.'
-            : 'Open the fastest route back into interview prep.'),
-        icon: 'pi-history',
-        route: recentLink ?? (continueFallbackIsDashboard ? ['/dashboard'] : ['/guides', 'interview-blueprint', 'intro']),
-        queryParams: undefined,
-        badge: recent ? 'Recent' : null,
-        item: recent,
-      },
-      {
-        key: 'interview_blueprint',
-        title: 'Frontend interview preparation guide',
-        subtitle: 'Start with the process, round types, scoring signals, and a practical prep sequence.',
-        icon: 'pi-map',
-        route: ['/guides', 'interview-blueprint', 'intro'],
-        emphasis: 'promoted',
-      },
-      {
-        key: 'interview_questions',
-        title: 'Interview Questions',
-        subtitle: 'Browse frontend interview questions by technology and interview format.',
-        icon: 'pi-question-circle',
-        route: ['/interview-questions'],
-      },
-      {
-        key: 'framework_prep',
-        title: 'Framework prep paths',
-        subtitle: 'Choose the JavaScript, React, Angular, or Vue preparation path for stack-specific interviews.',
-        icon: 'pi-compass',
-        route: ['/guides', 'framework-prep'],
-      },
-      {
-        key: 'essential_60',
-        title: 'FrontendAtlas Essential 60',
-        subtitle: 'Open the curated shortlist across JavaScript, UI coding, system design, and concepts.',
-        icon: 'pi-compass',
-        route: ['/interview-questions', 'essential'],
-      },
-      {
-        key: 'question_library',
-        title: 'Question Library',
-        subtitle: 'Open the full Question Library when you want broader coverage, filters, and every practice format.',
-        icon: 'pi-bolt',
-        route: ['/coding'],
-      },
-      {
-        key: 'study_plans',
-        title: 'Study Plans',
-        subtitle: 'Open guided tracks when you want a clearer sequence and less choice load.',
-        icon: 'pi-directions-alt',
-        route: ['/tracks'],
-      },
-    ];
+    const loggedIn = this.auth.isLoggedIn();
+    return {
+      title: 'Continue where I left off',
+      subtitle: recent
+        ? recent.subtitle
+        : (loggedIn
+          ? 'Return to your dashboard or your last interview prep path.'
+          : 'Open the fastest route back into interview prep.'),
+      route: recentLink ?? (loggedIn ? ['/dashboard'] : ['/guides', 'interview-blueprint', 'intro']),
+      badge: recent ? 'Recent' : null,
+      item: recent,
+    };
   });
 
   constructor() {
@@ -263,33 +204,33 @@ export class HeaderComponent implements OnInit {
   );
 
   visibleItems(): VisibleEntry[] {
-    const out: VisibleEntry[] = [];
     if (this.isSearching()) {
+      const out: VisibleEntry[] = [];
       this.searchResults().forEach((it, idx) => {
         const link = this.intentToLink(it);
         if (!link || it.disabled) return;
-        out.push({ origin: `search-${idx}`, item: it, link, group: (it as any)._group });
+        out.push({ origin: `search-${idx}`, kind: 'search', item: it, link, group: it._group });
       });
       return out;
     }
 
-    this.studyPrimaryActions().forEach((action, idx) => {
+    const section = PREP_MENU_SECTIONS.find((entry) => entry.id === this.prepSection()) ?? PREP_MENU_SECTIONS[0];
+    const out: VisibleEntry[] = [{ origin: 'continue', kind: 'continue', link: this.continueAction().route }];
+    for (const item of section?.items ?? []) {
       out.push({
-        origin: `primary-${idx}`,
-        item: action.item ?? {
-          key: `study-${action.key}`,
-          title: action.title,
-          subtitle: action.subtitle,
-          pi: action.icon,
-          intent: 'route',
-          target: { name: 'guides' } as any,
-          badge: action.badge ?? null,
-        },
-        link: action.route,
+        origin: `prep-${item.key}`,
+        kind: 'prep',
+        link: [item.route],
+        selection: { key: item.key, chip: null, section: section.id, route: item.route },
       });
-    });
-
+    }
     return out;
+  }
+
+  highlightKey(): string | null {
+    if (this.isSearching()) return null;
+    const entry = this.visibleItems()[this.activeIndex()];
+    return entry?.kind === 'prep' ? entry.selection.key : null;
   }
 
   rowIndex(origin: string): number {
@@ -330,7 +271,6 @@ export class HeaderComponent implements OnInit {
 
   trackByGroupKey(_: number, g: PrepareGroup) { return g.key; }
   trackByItemKey(_: number, it: PrepareItem) { return it.key; }
-  trackByStudyActionKey(_: number, action: StudyPrimaryAction) { return action.key; }
 
   toggleBrowseAll() {
     this.browseAllOpen.update(v => !v);
@@ -472,6 +412,7 @@ export class HeaderComponent implements OnInit {
     this.profileOpen.set(which === 'profile');
     if (which === 'mega') {
       this.syncMegaAnchor();
+      this.prepSection.set(PREP_MENU_SECTIONS[0]?.id ?? '');
       this.searchTerm = '';
       this.activeIndex.set(-1);
       this.browseAllOpen.set(false);
@@ -554,21 +495,29 @@ export class HeaderComponent implements OnInit {
     this.router.navigate(['/']);
   }
 
-  onStudyPrimaryAction(action: StudyPrimaryAction) {
-    if (action.item) this.pushRecent(action.item);
-
-    if (action.key === 'question_library') {
-      this.analytics.track('header_study_browse_full_library_clicked', {
-        destination: 'question_library',
-        route: this.serializeLink(action.route, action.queryParams),
-      });
+  onPrepItemSelected(selection: PrepMenuSelection) {
+    const params = {
+      route: selection.route,
+      section: selection.section,
+      surface: 'app',
+      ...(selection.chip ? { chip: selection.chip } : {}),
+    };
+    if (selection.key === 'question_library' && !selection.chip) {
+      this.analytics.track('header_study_browse_full_library_clicked', { destination: 'question_library', ...params });
     } else {
-      this.analytics.track('header_study_primary_cta_clicked', {
-        action: action.key,
-        route: this.serializeLink(action.route, action.queryParams),
-      });
+      this.analytics.track('header_study_primary_cta_clicked', { action: selection.key, ...params });
     }
+    this.closeAll();
+  }
 
+  onContinueClick() {
+    const action = this.continueAction();
+    if (action.item) this.pushRecent(action.item);
+    this.analytics.track('header_study_primary_cta_clicked', {
+      action: 'continue',
+      route: this.serializeLink(action.route),
+      surface: 'app',
+    });
     this.closeAll();
   }
 
@@ -609,16 +558,14 @@ export class HeaderComponent implements OnInit {
     const list = this.visibleItems();
     const idx = this.activeIndex();
     if (idx < 0 || idx >= list.length) return;
-    if (!this.isSearching()) {
-      const action = this.studyPrimaryActions()[idx];
-      if (!action) return;
-      this.onStudyPrimaryAction(action);
-      this.router.navigate(action.route, { queryParams: action.queryParams });
-      return;
-    }
     const entry = list[idx];
-    if (!entry.link) return;
-    this.onItemNavigate(entry.item);
+    if (entry.kind === 'search') {
+      this.onItemNavigate(entry.item);
+    } else if (entry.kind === 'continue') {
+      this.onContinueClick();
+    } else {
+      this.onPrepItemSelected(entry.selection);
+    }
     this.router.navigate(entry.link);
   }
 
@@ -648,21 +595,8 @@ export class HeaderComponent implements OnInit {
 
   private syncMegaAnchor(ev?: Event) {
     const viewportWidth = this.doc.defaultView?.innerWidth ?? 1280;
-    const panelWidth = Math.min(viewportWidth * 0.92, 640);
-    const edgePadding = 12;
-    const minCenter = edgePadding + panelWidth / 2;
-    const maxCenter = viewportWidth - edgePadding - panelWidth / 2;
-
-    const desiredCenter =
-      this.readEventCenter(ev) ??
-      this.findVisibleStudyTriggerCenter() ??
-      viewportWidth / 2;
-
-    const clampedCenter = minCenter <= maxCenter
-      ? Math.min(maxCenter, Math.max(minCenter, desiredCenter))
-      : viewportWidth / 2;
-
-    this.megaAnchorX.set(Math.round(clampedCenter));
+    const triggerCenter = this.readEventCenter(ev) ?? this.findVisibleStudyTriggerCenter();
+    this.megaAnchorX.set(prepMenuPanelCenter(viewportWidth, triggerCenter));
   }
 
   private readEventCenter(ev?: Event): number | null {

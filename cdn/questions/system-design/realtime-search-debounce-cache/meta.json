@@ -9,6 +9,9 @@
     "state-management",
     "frontend-architecture"
   ],
+  "companies": [
+    "meta"
+  ],
   "type": "system-design",
   "sections": [
     {
@@ -61,6 +64,24 @@
     "uniqueAngle": "Design real-time search with debounced intent, true request cancellation, stale-result suppression, complete cache keys, predictable UI states, and keyboard access.",
     "factCheckedAt": "2026-08-06",
     "reviewedBy": "FrontendAtlas editorial",
-    "companyEvidence": []
-  }
+    "companyEvidence": [
+      {
+        "company": "meta",
+        "evidenceType": "reported-interview-question",
+        "sourceUrl": "https://www.teamblind.com/post/meta-frontend-system-design-yexyrusi",
+        "sourceTitle": "Meta frontend system design, March 2022 (Blind)",
+        "checkedAt": "2026-10-15"
+      }
+    ]
+  },
+  "sources": [
+    {
+      "label": "Blind: Meta frontend system design, March 2022",
+      "url": "https://www.teamblind.com/post/meta-frontend-system-design-yexyrusi",
+      "company": "meta",
+      "publisher": "Blind",
+      "date": "2022-03",
+      "note": "One L5 Meta front end account describes a system design round that asked for a very specific component such as autocomplete rather than a whole product. This case practises that shape; it is not the reported prompt."
+    }
+  ]
 }

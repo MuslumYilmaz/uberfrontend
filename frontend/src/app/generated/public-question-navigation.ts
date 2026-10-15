@@ -682,6 +682,12 @@ export const PUBLIC_QUESTION_NAVIGATION: readonly PublicQuestionNavigationItem[]
   {
     "tech": "javascript",
     "kind": "coding",
+    "title": "Build a Tree from a Flat List of Nodes",
+    "route": "/javascript/coding/js-build-tree-from-flat-list"
+  },
+  {
+    "tech": "javascript",
+    "kind": "coding",
     "title": "Capitalize Words",
     "route": "/javascript/coding/js-capitalize-words"
   },
@@ -852,6 +858,12 @@ export const PUBLIC_QUESTION_NAVIGATION: readonly PublicQuestionNavigationItem[]
     "kind": "coding",
     "title": "Resolve package.json Exports (Import vs Require)",
     "route": "/javascript/coding/js-resolve-package-exports"
+  },
+  {
+    "tech": "javascript",
+    "kind": "coding",
+    "title": "Retry a Promise-Returning Function with Delay",
+    "route": "/javascript/coding/js-retry-with-delay"
   },
   {
     "tech": "javascript",

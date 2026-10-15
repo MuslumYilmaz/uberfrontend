@@ -270,28 +270,6 @@
   </div>
 </section>
 
-<section class="section section--trust reveal" #observeSection aria-labelledby="trust-title" data-testid="showcase-trust-section" data-showcase-landmark="trust">
-  <div class="shell trust-shell">
-    <div class="trust-copy">
-      <p class="eyebrow">Built for credible practice</p>
-      <h2 id="trust-title">Frontend interview practice that shows its work.</h2>
-      <p class="muted trust-lede">
-        Hands-on coding, runnable examples, regression tests, and transparent editorial updates—inside one focused workflow.
-      </p>
-      <p class="trust-editorial" data-testid="trust-editorial-attribution">
-        <strong>{{ editorialAuthor }}</strong>
-        <span>{{ editorialDescriptor }}</span>
-      </p>
-    </div>
-
-    <div class="trust-proof-strip" aria-label="Editorial verification process">
-      <span class="trust-proof-item" data-testid="trust-proof-item" *ngFor="let item of editorialWorkflow">
-        {{ item }}
-      </span>
-    </div>
-  </div>
-</section>
-
 <section class="section reveal" aria-labelledby="practice-formats-title" data-testid="showcase-landmark-practice" data-showcase-landmark="practice">
   <div class="shell showcase-landmark-head">
     <p class="eyebrow">Practice formats</p>
@@ -450,6 +428,55 @@
     </ng-template>
   </div>
 </div>
+</section>
+
+<section class="section reveal" #observeSection aria-labelledby="pricing-title" data-load="pricing" data-testid="showcase-landmark-pricing" data-showcase-landmark="pricing">
+  <div class="shell">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Pricing</p>
+        <h2 id="pricing-title">Choose the plan that fits your prep.</h2>
+      </div>
+      <p class="muted">All plans unlock the core practice loop — code, preview, test, and review.</p>
+    </div>
+
+    <app-pricing-plans-section
+      [premiumPracticeCount]="premiumPracticeCount"
+      variant="compact"
+      [paymentsEnabled]="pricingPaymentsEnabled"
+      [paymentsConfigReady]="pricingPaymentsConfigReady"
+      [checkoutAvailability]="pricingCheckoutAvailability"
+      [planDetails]="pricingPlanDetails"
+      [offerVersion]="pricingOfferVersion"
+      [checkoutSurface]="pricingCheckoutSurface"
+      [analyticsReady]="pricingPaymentsConfigReady"
+      analyticsSource="showcase_pricing"
+      analyticsSurface="showcase_pricing"
+      [ctaMode]="pricingCtaMode">
+    </app-pricing-plans-section>
+  </div>
+</section>
+
+<section class="section section--trust reveal" #observeSection aria-labelledby="trust-title" data-testid="showcase-trust-section" data-showcase-landmark="trust">
+  <div class="shell trust-shell">
+    <div class="trust-copy">
+      <p class="eyebrow">Built for credible practice</p>
+      <h2 id="trust-title">Frontend interview practice that shows its work.</h2>
+      <p class="muted trust-lede">
+        Hands-on coding, runnable examples, regression tests, and transparent editorial updates—inside one focused workflow.
+      </p>
+      <p class="trust-editorial" data-testid="trust-editorial-attribution">
+        <strong>{{ editorialAuthor }}</strong>
+        <span>{{ editorialDescriptor }}</span>
+      </p>
+    </div>
+
+    <div class="trust-proof-strip" aria-label="Editorial verification process">
+      <span class="trust-proof-item" data-testid="trust-proof-item" *ngFor="let item of editorialWorkflow">
+        {{ item }}
+      </span>
+    </div>
+  </div>
 </section>
 
 <section class="section reveal" aria-labelledby="browse-product-title" data-testid="showcase-landmark-browse" data-showcase-landmark="browse">
@@ -703,33 +730,6 @@
       <span class="text">Open the CV polish tool →</span>
       <span class="demo-banner__arrow" aria-hidden="true">→</span>
     </a>
-  </div>
-</section>
-
-<section class="section reveal" #observeSection aria-labelledby="pricing-title" data-load="pricing" data-testid="showcase-landmark-pricing" data-showcase-landmark="pricing">
-  <div class="shell">
-    <div class="section-head">
-      <div>
-        <p class="eyebrow">Pricing</p>
-        <h2 id="pricing-title">Choose the plan that fits your prep.</h2>
-      </div>
-      <p class="muted">All plans unlock the core practice loop — code, preview, test, and review.</p>
-    </div>
-
-    <app-pricing-plans-section
-      [premiumPracticeCount]="premiumPracticeCount"
-      variant="compact"
-      [paymentsEnabled]="pricingPaymentsEnabled"
-      [paymentsConfigReady]="pricingPaymentsConfigReady"
-      [checkoutAvailability]="pricingCheckoutAvailability"
-      [planDetails]="pricingPlanDetails"
-      [offerVersion]="pricingOfferVersion"
-      [checkoutSurface]="pricingCheckoutSurface"
-      [analyticsReady]="pricingPaymentsConfigReady"
-      analyticsSource="showcase_pricing"
-      analyticsSurface="showcase_pricing"
-      [ctaMode]="pricingCtaMode">
-    </app-pricing-plans-section>
   </div>
 </section>
 

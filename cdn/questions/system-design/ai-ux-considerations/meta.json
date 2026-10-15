@@ -118,6 +118,7 @@
     {
       "label": "Aced: ElevenLabs software engineer interview questions, candidate-sourced, October 2026",
       "url": "https://www.aced.io/guides/elevenlabs-software-engineer-interview/questions",
+      "company": "elevenlabs",
       "publisher": "Aced",
       "date": "2026-10",
       "note": "The bank lists a prompt to design a new interface for an editor managing a voice-dubbing project tracked in a spreadsheet: review progress, manage feedback, collaborate with voice actors. This AI-assisted review flow is a practice version of that design round, not its wording."

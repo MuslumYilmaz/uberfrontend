@@ -3323,6 +3323,26 @@
     "assetRef": "questions/javascript/coding.json#js-dom-renderer"
   },
   {
+    "id": "js-build-tree-from-flat-list",
+    "family": "question",
+    "title": "Build a Tree from a Flat List of Nodes",
+    "route": "/javascript/coding/js-build-tree-from-flat-list",
+    "tech": "javascript",
+    "difficulty": "intermediate",
+    "summary": "fields } records into a forest of nodes where every node carries a children array.",
+    "tags": [
+      "tree",
+      "data-structures",
+      "immutability",
+      "objects"
+    ],
+    "access": "free",
+    "estimatedMinutes": 18,
+    "updatedAt": "2026-10-15",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/javascript/coding.json#js-build-tree-from-flat-list"
+  },
+  {
     "id": "js-foreach-vs-map",
     "family": "question",
     "title": "Can you describe the main difference between Array.forEach() and Array.map() methods and why you would pick one versus the other?",
@@ -5562,6 +5582,26 @@
     "assetRef": "questions/javascript/coding.json#js-resolve-package-exports"
   },
   {
+    "id": "js-retry-with-delay",
+    "family": "question",
+    "title": "Retry a Promise-Returning Function with Delay",
+    "route": "/javascript/coding/js-retry-with-delay",
+    "tech": "javascript",
+    "difficulty": "intermediate",
+    "summary": "Implement retryWithDelay(fn, retries, delayMs): call a promise-returning function, and when it fails wait delayMs and try again, up to retries extra attempts.",
+    "tags": [
+      "promises",
+      "async",
+      "timers",
+      "error-handling"
+    ],
+    "access": "free",
+    "estimatedMinutes": 18,
+    "updatedAt": "2026-10-15",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/javascript/coding.json#js-retry-with-delay"
+  },
+  {
     "id": "js-reverse-string",
     "family": "question",
     "title": "Reverse a String",
@@ -7184,6 +7224,28 @@
     "updatedAt": "2026-02-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/coding.json#react-chessboard-click-highlight"
+  },
+  {
+    "id": "react-countdown-timer",
+    "family": "question",
+    "title": "React Countdown Timer (Start, Pause, Reset)",
+    "route": "/react/coding/react-countdown-timer",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "Build a React countdown timer with a seconds input and Start, Pause and Reset controls.",
+    "tags": [
+      "react",
+      "hooks",
+      "state",
+      "effects",
+      "timers",
+      "components"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 18,
+    "updatedAt": "2026-10-15",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/coding.json#react-countdown-timer"
   },
   {
     "id": "react-counter",
