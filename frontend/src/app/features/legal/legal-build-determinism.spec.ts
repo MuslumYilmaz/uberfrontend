@@ -44,7 +44,7 @@ describe('legal page build determinism', () => {
     expect(laterBuild).toEqual(firstBuild);
     expect(firstBuild.cookies).toContain('Last updated: 2026-03-21');
     expect(firstBuild.terms).toContain('Last updated: 2026-03-21');
-    expect(firstBuild.refund).toContain('Effective date: 2025-12-31');
+    expect(firstBuild.refund).toContain('Effective date: 2026-10-15');
     for (const pageText of Object.values(firstBuild)) {
       expect(pageText).toContain('© FrontendAtlas. All rights reserved.');
     }
