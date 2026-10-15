@@ -206,7 +206,10 @@ async function assertMobileConversionFitsViewport(
   page: import('@playwright/test').Page,
   label: string,
 ): Promise<void> {
-  await page.getByTestId('showcase-trust-section').scrollIntoViewIfNeeded();
+  // The pricing section now sits mid-page right above the trust section, and the sticky CTA
+  // hides while any plan card intersects the viewport. Scroll two sections further down so the
+  // hero and the plan cards are both out of view before measuring the sticky bar.
+  await page.getByTestId('showcase-landmark-cv').scrollIntoViewIfNeeded();
 
   const sticky = page.getByTestId('conversion-mobile-sticky');
   await expect(sticky).toBeVisible();
