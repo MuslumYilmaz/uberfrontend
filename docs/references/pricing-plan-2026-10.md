@@ -141,6 +141,28 @@ Verified: `cd backend && npx jest billing lemonsqueezy` (15 suites, 142 tests, i
 
 Only if B is decided in favour: follow or share for 10% off a first purchase, GitHub excluded, claimed by email and issued as a dated campaign code; no automation and no public task list until volume justifies it.
 
+## Step 9 (proposed 2026-10-15): verified school email unlocks the student price
+
+Decision by the user on 2026-10-15: students should not be handled one by one; a verification email and a verified school address should unlock the discount by themselves. No request has arrived yet, so this is built ahead of demand and replaces the manual link of Step 5 once live.
+
+Facts it rests on: signup creates the account at once and answers `verificationEmailRequired: true` without sending anything; the verification mail, token and `/auth/verify-email` flow already exist and are triggered from the profile page (`backend/routes/auth.js`, `createAndSendVerification`); `emailVerifiedAt` is only required for Gumroad purchases today; Google and GitHub sign-ins arrive verified; mail goes out through nodemailer over SMTP, Gmail by default; campaigns resolve only from a `campaign_id` in the URL (`discount-campaigns.js`); the Lemon Squeezy student discount applies to the first payment only and carries a redemption cap and a term-end expiry.
+
+Design:
+- Signup sends the verification mail at once for every email signup; login and free use are never blocked by it. The profile and a post-signup notice keep the resend button.
+- Eligibility is computed, not stored: `emailVerifiedAt` set and the account email matches the student rule. Rule, in `backend/services/billing/student-eligibility.js`: the domain ends with `.edu`, `.edu.<cc>` or `.ac.<cc>`, or appears in a small committed allowlist for universities without those patterns; a support-set `billing.studentApprovedAt` on the user covers the rest, so "email us from your school address" remains only for unmatched domains. `/auth/me` exposes `studentDiscountEligible`.
+- Campaign entries gain `eligibility: "student"`; `createCheckoutAttempt` applies such an entry when the user is eligible, no explicit campaign was requested, the plan is in the entry and the account has no verified payment yet (first purchase only, matching the Lemon Squeezy "once" duration and the FAQ). The Step 7 `autoApply` design is the same mechanism, so both share one resolver.
+- Pricing page: for an eligible signed-in user one line above the cards, "Student pricing: 40% off the quarterly and annual plans is applied at checkout"; for a signed-in unverified school address, "Verify your school email to unlock student pricing" with the resend action; prices on the cards stay the list prices.
+- FAQ answer changes to the automatic path, with the unmatched-domain fallback.
+- Rotation stays per term: new Lemon Squeezy discount, new campaign entry, same rule.
+- Abuse accepted knowingly: alumni and staff keep school addresses (GreatFrontEnd accepts the same); the redemption cap bounds the cost.
+- Deliverability: Gmail SMTP is kept for now because volume is small; if verification mails bounce or land in spam, a transactional sender with SPF and DKIM on frontendatlas.com becomes the one new service worth adding.
+- Tests: unit tests for the rule (edu, edu.tr, ac.uk, allowlist, non-student, subdomain tricks), integration tests for the auto-applied campaign (eligible, unverified, non-student, second purchase, explicit campaign wins), frontend specs for the pricing line and the signup notice; the trust test keeps banning scarcity copy.
+- Not in scope: double opt-in (creating the account only after confirmation) and any purchase gate on verified email for Lemon Squeezy.
+
+Decisions taken on 2026-10-15 (the user accepted the recommendations): the verification mail goes to every email signup, non-blocking; the discount applies to the first purchase only.
+
+Status (2026-10-15): implemented, committed on 2026-10-15. One correction to the design above: the signup page already requests the verification mail right after the account is created (`signup.component.ts`, `sendVerificationEmail`, with a retry on failure), so no signup change was needed. Built: `backend/services/billing/student-eligibility.js` (domain rule for `.edu`, `.edu.<cc>`, `.ac.<cc>`, an empty reviewed allowlist, and `billing.studentApprovedAt` on the user as the support override), `/auth/me` fields `studentDiscountEligible` and `studentEmailPendingVerification`, campaign entries with `eligibility: "student"` resolved by `resolveEligibilityCampaign` in `discount-campaigns.js`, auto-application in `createCheckoutAttempt` when no explicit campaign was requested and the account has no verified payment or active entitlement (`hasPriorPurchase`), `campaignEligibility` stored on the attempt and returned by the route, the pricing-page line for eligible and pending accounts, the rewritten student FAQ and a changelog line. Explicit `campaign_id` links still work and always win. Tests: `billing.student-eligibility.test.js`, the eligibility block in `billing.discount-campaigns.test.js`, four integration tests in `billing.checkout-start.int.test.js`, a `/me` test in `auth.route.int.test.js`, and the pricing section spec. Verified: backend billing and auth suites (13 suites, 136 tests), eslint, four frontend specs (74 specs), the trust test and the strict design-system lint. Operations: the Vercel `BILLING_DISCOUNT_CAMPAIGNS_JSON` entry must carry `"eligibility":"student"` (set on 2026-10-15, see the Step 5 note) and the term rotation now also rotates that entry. Not verified: a live checkout showing the 40 percent line for a verified school address, which needs a real school account.
+
 ## Status
 
 | Step | Status | Date | Note |
@@ -154,3 +176,4 @@ Only if B is decided in favour: follow or share for 10% off a first purchase, Gi
 | 6 | prepared | 2026-10-15 | env-driven prices and the v3 layout are in code; the switch itself waits on decision A and the Step 1 readout |
 | 7 | open | | waits on decision C |
 | 8 | open | | waits on decision B; recommended no |
+| 9 | done | 2026-10-15 | verified school email or support approval applies the student campaign at checkout on a first purchase; Vercel entry gains eligibility |

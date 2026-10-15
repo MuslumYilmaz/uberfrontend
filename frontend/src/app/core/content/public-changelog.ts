@@ -25,6 +25,7 @@ export const PUBLIC_CHANGELOG_ENTRIES: PublicChangelogEntry[] = [
       'A first Premium purchase on any plan can be refunded in full within 14 days of the order, with no usage test; renewals keep the existing rules.',
       'The pricing page names what Premium contains: a guided solution on every Premium coding question, runnable checks on JavaScript and debugging tasks, front-end system design walkthroughs with official-source checks, and company practice pages that cite public interview reports.',
       'The refund policy and FAQ record that Lemon Squeezy emails a renewal reminder seven days before a subscription renews.',
+      'Students: a verified school email address (.edu, .edu.<country> or .ac.<country>) unlocks 40% off the quarterly and annual plans at checkout on a first purchase, with no code to enter; other schools can ask support to switch it on.',
     ],
     cta: {
       label: 'Compare plans',

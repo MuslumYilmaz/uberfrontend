@@ -1,6 +1,7 @@
 const crypto = require('crypto');
 const { resolveFrontendBase } = require('../../config/urls');
-const { resolveDiscountCampaign } = require('./discount-campaigns');
+const { resolveDiscountCampaign, resolveEligibilityCampaign } = require('./discount-campaigns');
+const { isProEntitlementActive } = require('./entitlements');
 
 const PROVIDERS = new Set(['gumroad', 'lemonsqueezy', 'stripe']);
 const PLAN_IDS = ['monthly', 'quarterly', 'annual', 'lifetime'];
@@ -436,6 +437,17 @@ function buildFinalCheckoutUrl(provider, baseUrl, user, attemptId, attribution =
   return { checkoutUrl: baseUrl, successUrl, cancelUrl };
 }
 
+// First-purchase rule for eligibility campaigns: a verified payment on the
+// account, or an active entitlement granted elsewhere, counts as a prior purchase.
+async function hasPriorPurchase(CheckoutAttempt, user) {
+  if (isProEntitlementActive(user?.entitlements?.pro)) return true;
+  const verified = await CheckoutAttempt.exists({
+    userId: user._id,
+    paymentVerifiedAt: { $type: 'date' },
+  });
+  return Boolean(verified);
+}
+
 async function findReusableCheckoutAttempt(
   CheckoutAttempt,
   {
@@ -496,6 +508,7 @@ async function createCheckoutAttempt(
     landingPath: rawLandingPath,
     referrerHost: rawReferrerHost,
     countryCode: rawCountryCode,
+    studentEligible: rawStudentEligible,
   }
 ) {
   const provider = resolveProvider(rawProvider);
@@ -538,13 +551,20 @@ async function createCheckoutAttempt(
   if (!isValidHostedCheckoutUrl(provider, baseUrl)) {
     throw new CheckoutStartError('INVALID_CHECKOUT_URL', 'Checkout URL invalid', 409);
   }
-  const campaign = resolveDiscountCampaign({
+  let campaign = resolveDiscountCampaign({
     rawCampaignId,
     provider,
     mode,
     planId,
     analyticsSource,
   });
+  let campaignEligibility = null;
+  // Student pricing applies by itself on a first purchase when no explicit
+  // campaign was requested; an explicit campaign always wins.
+  if (!campaign && rawStudentEligible === true && !(await hasPriorPurchase(CheckoutAttempt, user))) {
+    campaign = resolveEligibilityCampaign({ eligibility: 'student', provider, mode, planId });
+    campaignEligibility = campaign ? 'student' : null;
+  }
   const campaignId = campaign?.campaignId || null;
   const providerDiscountId = campaign?.providerDiscountId || null;
 
@@ -576,6 +596,7 @@ async function createCheckoutAttempt(
       checkoutSurface: reusableAttempt.checkoutSurface || checkoutSurface,
       campaignId: reusableAttempt.campaignId || null,
       providerDiscountId: reusableAttempt.providerDiscountId || null,
+      campaignEligibility: reusableAttempt.campaignEligibility || null,
       attemptId: reusableAttempt.attemptId,
       checkoutUrl: reusableAttempt.checkoutUrl,
       successUrl: reusableAttempt.successUrl,
@@ -619,6 +640,7 @@ async function createCheckoutAttempt(
     checkoutSurface,
     campaignId,
     providerDiscountId,
+    campaignEligibility,
     landingPath,
     referrerHost,
     countryCode,
@@ -643,6 +665,7 @@ async function createCheckoutAttempt(
     checkoutSurface,
     campaignId,
     providerDiscountId,
+    campaignEligibility,
     attemptId,
     checkoutUrl,
     successUrl,

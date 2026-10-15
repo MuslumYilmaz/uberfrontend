@@ -871,3 +871,14 @@
 }
 @media (max-width:960px){.pr-grid{grid-template-columns:1fr 1fr}.pr-proof-grid{grid-template-columns:1fr}}
 @media (max-width:640px){.pr-grid{grid-template-columns:1fr}}
+
+.student-pricing-line{
+  margin:12px 0 0;
+  color:var(--uf-text-secondary);
+  font-weight:600;
+  line-height:1.45;
+}
+.student-pricing-line a{
+  margin-left:6px;
+  color:var(--uf-accent);
+}

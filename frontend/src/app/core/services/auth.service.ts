@@ -77,6 +77,8 @@ export interface User {
   username: string;
   email: string;
   emailVerified?: boolean;
+  studentDiscountEligible?: boolean;
+  studentEmailPendingVerification?: boolean;
   pendingEmail?: string | null;
   linkedProviders?: Array<'google' | 'github'>;
   bio?: string;

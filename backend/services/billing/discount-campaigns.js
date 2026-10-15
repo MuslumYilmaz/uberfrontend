@@ -5,6 +5,9 @@ const ANALYTICS_SOURCE_PATTERN = /^[a-z0-9_-]{1,64}$/;
 const PROVIDERS = new Set(['lemonsqueezy']);
 const MODES = new Set(['test', 'live']);
 const PLAN_IDS = new Set(['monthly', 'quarterly', 'annual', 'lifetime']);
+// Eligibility campaigns apply by themselves at checkout when the account
+// qualifies (see checkout-start.js); they need no campaign_id in the URL.
+const ELIGIBILITIES = new Set(['student']);
 const MAX_CAMPAIGNS = 50;
 
 function normalizeCampaignId(raw) {
@@ -31,6 +34,12 @@ function normalizeStringList(raw, normalize, allowed) {
     normalized.push(value);
   }
   return Array.from(new Set(normalized));
+}
+
+function normalizeEligibility(raw) {
+  if (raw === undefined || raw === null || raw === '') return null;
+  const value = String(raw).trim().toLowerCase();
+  return ELIGIBILITIES.has(value) ? value : false;
 }
 
 function normalizeOptionalDate(raw) {
@@ -66,9 +75,11 @@ function normalizeCampaignEntry(raw) {
   );
   const startsAt = normalizeOptionalDate(raw.startsAt);
   const endsAt = normalizeOptionalDate(raw.endsAt);
+  const eligibility = normalizeEligibility(raw.eligibility);
 
   if (
-    !campaignId
+    eligibility === false
+    || !campaignId
     || !PROVIDERS.has(provider)
     || !providerDiscountId
     || !discountCode
@@ -91,6 +102,7 @@ function normalizeCampaignEntry(raw) {
     modes,
     planIds,
     analyticsSources,
+    eligibility,
     startsAt: startsAt.value,
     endsAt: endsAt.value,
   };
@@ -148,9 +160,47 @@ function resolveDiscountCampaign({
   };
 }
 
+// Picks the active eligibility campaign for a provider, mode and plan. The
+// caller decides whether the account qualifies; this only matches the entry.
+function resolveEligibilityCampaign({
+  eligibility,
+  provider,
+  mode,
+  planId,
+  now = new Date(),
+  env = process.env,
+}) {
+  const wanted = normalizeEligibility(eligibility);
+  if (!wanted) return null;
+  const nowMs = new Date(now).getTime();
+  if (!Number.isFinite(nowMs)) return null;
+  const normalizedProvider = String(provider || '').trim().toLowerCase();
+  const normalizedMode = String(mode || '').trim().toLowerCase();
+  const normalizedPlan = String(planId || '').trim().toLowerCase();
+
+  const match = parseCampaignAllowlist(env.BILLING_DISCOUNT_CAMPAIGNS_JSON)
+    .filter((candidate) => candidate.eligibility === wanted
+      && candidate.provider === normalizedProvider
+      && candidate.modes.includes(normalizedMode)
+      && candidate.planIds.includes(normalizedPlan)
+      && (!candidate.startsAt || nowMs >= candidate.startsAt.getTime())
+      && nowMs < candidate.endsAt.getTime())
+    .sort((left, right) => left.campaignId.localeCompare(right.campaignId))[0];
+  if (!match) return null;
+
+  return {
+    campaignId: match.campaignId,
+    providerDiscountId: match.providerDiscountId,
+    discountCode: match.discountCode,
+    eligibility: match.eligibility,
+  };
+}
+
 module.exports = {
   normalizeCampaignId,
   normalizeProviderDiscountId,
   parseCampaignAllowlist,
   resolveDiscountCampaign,
+  resolveEligibilityCampaign,
+  normalizeEligibility,
 };

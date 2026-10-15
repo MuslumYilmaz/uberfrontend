@@ -6,6 +6,7 @@ const User = require('../models/User.js');
 const AuthSession = require('../models/AuthSession');
 const AuthAttemptReceipt = require('../models/AuthAttemptReceipt');
 const EmailVerification = require('../models/EmailVerification');
+const { resolveStudentEligibility } = require('../services/billing/student-eligibility');
 const PasswordReset = require('../models/PasswordReset');
 const OAuthIdentity = require('../models/OAuthIdentity');
 const PendingEntitlement = require('../models/PendingEntitlement');
@@ -908,11 +909,14 @@ async function resolveDuplicateSignupFields({ email, username, initialFields }) 
 
 const pick = (u) => {
     const { entitlements, effectiveProActive } = resolveEntitlements(u);
+    const studentEligibility = resolveStudentEligibility(u);
     return {
         _id: u._id,
         username: u.username,
         email: u.email,
         emailVerified: Boolean(u.emailVerifiedAt),
+        studentDiscountEligible: studentEligibility.eligible,
+        studentEmailPendingVerification: studentEligibility.reason === 'unverified_email',
         pendingEmail: u.pendingEmail || null,
         linkedProviders: Array.from(new Set(
             (Array.isArray(u.providers) ? u.providers : [])
