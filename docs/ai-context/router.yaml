@@ -418,3 +418,31 @@ reference_rules:
     load:
       - docs/references/header-prep-menu-plan-2026-10.md
     max_docs: 1
+
+  - id: pricing_plan
+    priority: 92
+    keywords:
+      - pricing plan
+      - price ladder
+      - plan prices
+      - monthly plan
+      - annual plan
+      - lifetime plan
+      - refund policy
+      - discount campaign
+      - purchasing power parity
+      - ppp pricing
+      - coupon
+      - checkout attempt
+      - billing attribution
+      - renewal reminder
+    paths:
+      - docs/references/pricing-plan-2026-10.md
+      - frontend/src/app/features/pricing/
+      - frontend/src/app/features/billing/
+      - frontend/src/app/features/legal/refund/
+      - backend/services/billing/
+      - backend/models/CheckoutAttempt.js
+    load:
+      - docs/references/pricing-plan-2026-10.md
+    max_docs: 1
