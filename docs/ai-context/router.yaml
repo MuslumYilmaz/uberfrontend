@@ -345,6 +345,23 @@ reference_rules:
       - docs/references/interview-prep-market-research-2026-10.md
     max_docs: 1
 
+  - id: company_sources_review
+    priority: 92
+    keywords:
+      - company sources
+      - official guide
+      - official preparation
+      - interview sources review
+      - untagged questions
+      - found but not tagged
+    paths:
+      - docs/references/company-sources-review-2026-10.md
+      - frontend/src/app/shared/company-previews/company-official-guides.ts
+      - frontend/src/app/shared/components/company-official-guides/
+    load:
+      - docs/references/company-sources-review-2026-10.md
+    max_docs: 1
+
   - id: company_pages_plan
     priority: 96
     keywords:
