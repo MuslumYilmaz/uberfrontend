@@ -232,6 +232,7 @@
 /javascript/coding/js-array-prototype-reduce
 /javascript/coding/js-array-sort
 /javascript/coding/js-arrays-equal
+/javascript/coding/js-build-tree-from-flat-list
 /javascript/coding/js-capitalize-words
 /javascript/coding/js-compact
 /javascript/coding/js-compose
@@ -288,6 +289,7 @@
 /javascript/coding/js-querystring-stringify-2
 /javascript/coding/js-recover-bst-swapped-nodes
 /javascript/coding/js-resolve-package-exports
+/javascript/coding/js-retry-with-delay
 /javascript/coding/js-reverse-string
 /javascript/coding/js-run-with-perf-budget
 /javascript/coding/js-safe-json-parse
@@ -414,6 +416,7 @@
 /react/coding/react-chessboard-click-highlight
 /react/coding/react-chips-input-autocomplete
 /react/coding/react-contact-form-starter
+/react/coding/react-countdown-timer
 /react/coding/react-counter
 /react/coding/react-debounced-search
 /react/coding/react-debug-double-render

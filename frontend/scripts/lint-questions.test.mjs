@@ -62,3 +62,10 @@ test('labels and notes may not claim provenance the site does not have', () => {
     assert.match(validateQuestionSources([{ ...valid(), note: text }], { today }).join('\n'), /must not claim provenance/);
   }
 });
+
+test('company must be a slug and one of the entry companies when the entry list is known', () => {
+  assert.deepEqual(validateQuestionSources([{ ...valid(), company: 'waymo' }], { today }), []);
+  assert.deepEqual(validateQuestionSources([{ ...valid(), company: 'waymo' }], { today, companies: ['waymo', 'intuit'] }), []);
+  assert.match(validateQuestionSources([{ ...valid(), company: 'Waymo Inc' }], { today }).join('\n'), /lowercase company slug/);
+  assert.match(validateQuestionSources([{ ...valid(), company: 'waymo' }], { today, companies: ['intuit'] }).join('\n'), /not one of the entry's companies/);
+});

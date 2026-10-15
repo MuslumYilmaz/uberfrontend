@@ -1,0 +1,115 @@
+{
+  "questionId": "js-retry-with-delay",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "javascript",
+      "code": "export default function retryWithDelay(fn, retries = 3, delayMs = 100) {\n  return new Promise((resolve, reject) => {\n    const attempt = (attemptsLeft) => {\n      Promise.resolve()\n        .then(() => fn())\n        .then(resolve)\n        .catch((error) => {\n          if (attemptsLeft <= 0) {\n            reject(error);\n            return;\n          }\n          setTimeout(() => attempt(attemptsLeft - 1), delayMs);\n        });\n    };\n    attempt(retries);\n  });\n}\n",
+      "nodes": [
+        {
+          "id": "d1-start-inside-a-resolved-promise",
+          "title": "Start each attempt inside a resolved promise",
+          "anchor": {
+            "lineStart": 5,
+            "lineEnd": 5,
+            "snippet": ".then(() => fn())"
+          },
+          "why": "A synchronous throw inside fn becomes a rejection of the chain, so one catch handles both failure kinds.",
+          "alternative": "Call fn() directly inside a try/catch and also attach a catch to the returned promise.",
+          "tradeoff": "One extra microtask per attempt, but a single failure path."
+        },
+        {
+          "id": "d2-resolve-on-first-success",
+          "title": "Resolve the outer promise on the first success",
+          "anchor": {
+            "lineStart": 6,
+            "lineEnd": 6,
+            "snippet": ".then(resolve)"
+          },
+          "why": "A promise settles once, so resolving here ends the retry loop; no later attempt can change the result.",
+          "alternative": "Keep a settled flag and check it before every step.",
+          "tradeoff": "Relies on settle-once semantics instead of extra state."
+        },
+        {
+          "id": "d3-count-attempts-left",
+          "title": "Count attempts left, not attempts made",
+          "anchor": {
+            "lineStart": 8,
+            "lineEnd": 8,
+            "snippet": "if (attemptsLeft <= 0)"
+          },
+          "why": "The exit test is one comparison and retries naturally means extra attempts after the first.",
+          "alternative": "Count attempts made and compare with retries + 1.",
+          "tradeoff": "Either works; counting down reads as retries left."
+        },
+        {
+          "id": "d4-delay-only-between-attempts",
+          "title": "Schedule the next attempt after the delay",
+          "anchor": {
+            "lineStart": 12,
+            "lineEnd": 12,
+            "snippet": "setTimeout(() => attempt(attemptsLeft - 1), delayMs)"
+          },
+          "why": "The pause belongs between attempts only; the first attempt starts immediately and the final failure rejects without waiting.",
+          "alternative": "Await a sleep helper inside an async loop.",
+          "tradeoff": "Callback nesting instead of async/await, but no helper needed."
+        }
+      ]
+    },
+    "approach2": {
+      "language": "javascript",
+      "code": "export default async function retryWithDelay(fn, retries = 3, delayMs = 100) {\n  let lastError;\n  for (let attempt = 0; attempt <= retries; attempt += 1) {\n    try {\n      return await fn();\n    } catch (error) {\n      lastError = error;\n      if (attempt < retries) {\n        await new Promise((resolve) => setTimeout(resolve, delayMs));\n      }\n    }\n  }\n  throw lastError;\n}\n",
+      "nodes": [
+        {
+          "id": "d1-loop-over-retries-plus-one",
+          "title": "Loop retries + 1 times",
+          "anchor": {
+            "lineStart": 3,
+            "lineEnd": 3,
+            "snippet": "for (let attempt = 0; attempt <= retries; attempt += 1)"
+          },
+          "why": "An inclusive upper bound makes the attempt count explicit: one first attempt plus retries extra ones.",
+          "alternative": "Loop while a counter is greater than zero and decrement it.",
+          "tradeoff": "Inclusive bounds are easy to misread; the comment in the contract keeps it honest."
+        },
+        {
+          "id": "d2-await-inside-try",
+          "title": "Await inside the try block",
+          "anchor": {
+            "lineStart": 5,
+            "lineEnd": 5,
+            "snippet": "return await fn();"
+          },
+          "why": "Awaiting inside try means both rejections and synchronous throws land in the catch below.",
+          "alternative": "return fn() without await and attach catch handlers.",
+          "tradeoff": "return await costs one microtask but keeps the control flow linear."
+        },
+        {
+          "id": "d3-delay-only-while-attempts-remain",
+          "title": "Sleep only when another attempt follows",
+          "anchor": {
+            "lineStart": 8,
+            "lineEnd": 8,
+            "snippet": "if (attempt < retries)"
+          },
+          "why": "The last failure should reject immediately instead of sleeping first.",
+          "alternative": "Sleep unconditionally after every failure.",
+          "tradeoff": "One comparison saves a pointless delay at the end."
+        },
+        {
+          "id": "d4-surface-the-last-error",
+          "title": "Throw the last error after the loop",
+          "anchor": {
+            "lineStart": 13,
+            "lineEnd": 13,
+            "snippet": "throw lastError;"
+          },
+          "why": "The caller needs the most recent failure, not the first one.",
+          "alternative": "Collect every error into an AggregateError.",
+          "tradeoff": "A single error matches most callers; AggregateError is a reasonable follow-up."
+        }
+      ]
+    }
+  }
+}

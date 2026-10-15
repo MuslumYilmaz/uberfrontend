@@ -26,9 +26,11 @@ describe('CompanyPreviewComponent', () => {
     questionService = jasmine.createSpyObj<QuestionService>('QuestionService', [
       'loadAllQuestionSummaries',
       'loadSystemDesign',
+      'loadCompanyReports',
     ]);
     questionService.loadAllQuestionSummaries.and.returnValue(of([] as any));
     questionService.loadSystemDesign.and.returnValue(of([] as any));
+    questionService.loadCompanyReports.and.returnValue(of({ schemaVersion: 1, companies: {} } as any));
     routeData = new BehaviorSubject<Data>({ companyPreview: resolved ?? {
       slug,
       mode: ['google', 'netflix', 'openai'].includes(slug) || slug in authored ? 'editorial' : 'catalog',
@@ -446,16 +448,16 @@ describe('CompanyPreviewComponent', () => {
   });
 
   it('renders the official preparation pages table only for companies that publish one', async () => {
-    const amazon = await createComponent('amazon');
-    const amazonHost: HTMLElement = amazon.nativeElement;
-    const table = amazonHost.querySelector('[data-testid="company-official-guides"]');
+    const microsoft = await createComponent('microsoft');
+    const microsoftHost: HTMLElement = microsoft.nativeElement;
+    const table = microsoftHost.querySelector('[data-testid="company-official-guides"]');
     expect(table).not.toBeNull();
-    expect(table?.textContent).toContain('Official preparation pages from Amazon');
+    expect(table?.textContent).toContain('Official preparation pages from Microsoft');
     const links = Array.from(table?.querySelectorAll('tbody a') ?? []) as HTMLAnchorElement[];
-    expect(links.map((link) => link.getAttribute('href'))).toContain('https://amazon.jobs/content/en/how-we-hire/fee-interview-prep');
+    expect(links.map((link) => link.getAttribute('href'))).toContain('https://careers.microsoft.com/v2/global/en/hiring-tips');
     expect(links.every((link) => link.getAttribute('rel') === 'noopener noreferrer')).toBeTrue();
-    const ctaIndex = amazonHost.innerHTML.indexOf('cta-stack');
-    expect(amazonHost.innerHTML.indexOf('company-official-guides')).toBeLessThan(ctaIndex);
+    const ctaIndex = microsoftHost.innerHTML.indexOf('cta-stack');
+    expect(microsoftHost.innerHTML.indexOf('company-official-guides')).toBeLessThan(ctaIndex);
 
     const apple = await createComponent('apple');
     expect((apple.nativeElement as HTMLElement).querySelector('[data-testid="company-official-guides"]')).toBeNull();
@@ -464,8 +466,41 @@ describe('CompanyPreviewComponent', () => {
     expect((google.nativeElement as HTMLElement).querySelector('#google-official-guides')?.textContent).toContain('Official preparation pages from Google');
   });
 
+  it('lists sourced items in a public reports block and marks sourced samples, only when reports exist', async () => {
+    const reportUrl = 'https://www.teamblind.com/post/bytedance-new-grad-frontend-engineer-interview-breakdown-vqyvjs1l';
+    const reported = {
+      id: 'js-build-tree-from-flat-list', kind: 'coding' as const, tech: 'javascript' as const, title: 'Build a Tree from a Flat List of Nodes', access: 'free' as const,
+      route: '/javascript/coding/js-build-tree-from-flat-list',
+      sources: [{ label: 'Blind: ByteDance new grad frontend engineer interview breakdown, January 2023', url: reportUrl, publisher: 'Blind', date: '2023-01' }],
+    };
+    const fixture = await createComponent('bytedance', {
+      slug: 'bytedance', mode: 'catalog', counts: { all: 2, coding: 2, trivia: 0, system: 0 },
+      samples: [
+        { id: 'js-build-tree-from-flat-list', title: 'Build a Tree from a Flat List of Nodes', kind: 'coding', tech: 'javascript', difficulty: 'intermediate', access: 'free' },
+        { id: 'js-lodash-get', title: 'Implement lodash.get', kind: 'coding', tech: 'javascript', difficulty: 'intermediate', access: 'premium' },
+      ],
+      reports: [reported],
+    });
+    const host: HTMLElement = fixture.nativeElement;
+    const block = host.querySelector('[data-testid="company-public-reports"]');
+    expect(block).not.toBeNull();
+    expect(block?.textContent).toContain('Practice items with public ByteDance interview accounts');
+    const titleLink = block?.querySelector('a.reports-item__title') as HTMLAnchorElement | null;
+    expect(titleLink?.getAttribute('href')).toBe('/javascript/coding/js-build-tree-from-flat-list');
+    const reportLink = block?.querySelector(`a[href="${reportUrl}"]`);
+    expect(reportLink?.getAttribute('rel')).toBe('noopener noreferrer nofollow');
+    expect(host.innerHTML.indexOf('company-public-reports')).toBeLessThan(host.innerHTML.indexOf('company-official-guides'));
+    const treeRow = host.querySelector('[data-testid="company-preview-question-js-build-tree-from-flat-list"]');
+    const getRow = host.querySelector('[data-testid="company-preview-question-js-lodash-get"]');
+    expect(treeRow?.textContent).toContain('Public report');
+    expect(getRow?.textContent).not.toContain('Public report');
+
+    const plain = await createComponent('microsoft');
+    expect((plain.nativeElement as HTMLElement).querySelector('[data-testid="company-public-reports"]')).toBeNull();
+  });
+
   it('frames generic company previews as editorial practice groupings', async () => {
-    const fixture = await createComponent('amazon');
+    const fixture = await createComponent('apple');
     const host: HTMLElement = fixture.nativeElement;
     const text = host.textContent || '';
     const payload = seo.updateTags.calls.mostRecent().args[0] as any;
@@ -476,13 +511,13 @@ describe('CompanyPreviewComponent', () => {
     expect(text).toContain('editorial practice prompts');
     expect(text).toContain('Sample FrontendAtlas practice prompts');
     expect(text).not.toContain('known questions');
-    expect(payload.description).toContain('FrontendAtlas editorial Amazon practice grouping');
+    expect(payload.description).toContain('FrontendAtlas editorial Apple practice grouping');
     expect(payload.description).toContain('does not claim official question provenance or endorsement');
   });
 
   it('renders resolved samples immediately and replaces metadata and samples when the company slug changes', async () => {
-    await createComponent('amazon', {
-      slug: 'amazon', mode: 'catalog',
+    await createComponent('microsoft', {
+      slug: 'microsoft', mode: 'catalog',
       counts: { all: 2, coding: 1, trivia: 1, system: 0 },
       samples: [
         { id: 'free-prompt', title: 'Free prompt', kind: 'coding', tech: 'react', difficulty: 'easy', access: 'free' },
@@ -582,7 +617,7 @@ describe('CompanyPreviewComponent', () => {
     });
 
     it('keeps the catalog preview for slugs outside the registry', async () => {
-      await createComponent('amazon', undefined, registry);
+      await createComponent('apple', undefined, registry);
       const host: HTMLElement = fixture.nativeElement;
       expect(host.querySelector('[data-testid="authored-company-preview"]')).toBeNull();
       expect(host.querySelector('[data-testid="company-preview-counts"]')).not.toBeNull();

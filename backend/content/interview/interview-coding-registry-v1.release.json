@@ -2,15 +2,15 @@
   "artifacts": {
     "private": {
       "file": "interview-coding-registry-v1.private.json",
-      "sha256": "cc4ea033c3c9becabeeb1e9d7df1020d66af293c7a05e66d39f454d816c4d179"
+      "sha256": "422f279f423ef43c0c14860f10c36484a1c7971bb529ab32e303866f638635aa"
     },
     "public": {
       "file": "interview-coding-registry-v1.public.json",
-      "sha256": "7f140b68e08b09cc699d1c0f7013f288db60f7e7b77c7794635c2f343e8ec340"
+      "sha256": "e19f14456583ce5682fc9100e5b0d1c83042d8694a9e10738d715c120765b6e5"
     }
   },
-  "contentHash": "c8a98a373e48abad4bb7e6b3e2b27d05b0913af3a5e5196822891b98fecca914",
-  "definitionHash": "178d167f33beceff3aaac7dd746cf882cb856548daa464fbc31b7fbb85ba8167",
+  "contentHash": "467aa2cf2c104a2ce58565cd04cb583cb960db09145f7511ffbb125e4c20fde7",
+  "definitionHash": "98af3c08513e318f3782ce1ef7277805e0725559650967eab7f88899bb957448",
   "enabledVariantCount": 60,
   "finalApproval": {
     "approvedAt": "2026-08-24",
@@ -18,13 +18,15 @@
     "notes": [
       "Project owner approved coding registry v1.1.0 for editorial-gold production use after the release-readiness audit.",
       "2026-10-14 source-pin maintenance: registryContentHash refreshed after the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments source questions gained company tags and public source lists. Public variant content is unchanged apart from contentHash; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release.",
-      "2026-10-15 source-pin maintenance: registryContentHash refreshed after the js-debounce, js-unique-array and the three tabs-switcher source questions gained public source lists. Public variant content is unchanged apart from contentHash; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release."
+      "2026-10-15 source-pin maintenance: registryContentHash refreshed after the js-debounce, js-unique-array and the three tabs-switcher source questions gained public source lists. Public variant content is unchanged apart from contentHash; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release.",
+      "2026-10-15 source-pin maintenance: registryContentHash refreshed after the js-concurrency-map-limit, js-group-by, react-debounced-search and react-pagination-table source questions gained company tags and public source lists. Public variant content is unchanged apart from contentHash; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release.",
+      "2026-10-15 source-pin maintenance: registryContentHash refreshed after the public source lists on the pinned source questions gained a company field. Public variant content is unchanged apart from contentHash; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release."
     ],
-    "registryContentHash": "c8a98a373e48abad4bb7e6b3e2b27d05b0913af3a5e5196822891b98fecca914",
+    "registryContentHash": "467aa2cf2c104a2ce58565cd04cb583cb960db09145f7511ffbb125e4c20fde7",
     "registryVersion": "1.1.0",
     "selectionDefinitionHash": "95ae46b01019649017306384cd4928315a33ccb8d77c50f48306b2ecb5bc4c3e"
   },
-  "registryContentHash": "c8a98a373e48abad4bb7e6b3e2b27d05b0913af3a5e5196822891b98fecca914",
+  "registryContentHash": "467aa2cf2c104a2ce58565cd04cb583cb960db09145f7511ffbb125e4c20fde7",
   "registryId": "frontend-interview-coding-registry-v1",
   "registryVersion": "1.1.0",
   "schemaVersion": "1.0.0",
@@ -51,7 +53,7 @@
       "revision": 1
     },
     {
-      "contentHash": "f1b59efb5bcec269d3061d003562f3c8da4fa3a81cce871c55eea16a0165b856",
+      "contentHash": "444dc8bfc48fa84280bf9f108ff32808606f46b22b1f942ca0c325eb10c59b92",
       "enabled": true,
       "id": "int-code-angular-junior-tabs-switcher-v1",
       "revision": 1
@@ -105,7 +107,7 @@
       "revision": 1
     },
     {
-      "contentHash": "cb6dc081f09de41b70192a0aaae75bcefaf736ac24719b12f69235ee90934c6b",
+      "contentHash": "73c1c71287964c998c581e2128b941481863a6ef2520604951c07f62f1c4e9e4",
       "enabled": true,
       "id": "int-code-angular-senior-debounced-search-v1",
       "revision": 1
@@ -141,7 +143,7 @@
       "revision": 1
     },
     {
-      "contentHash": "69444372a25591a01957d7aedab7999aa4404c1ceaa6c25fdb0fbb262015c944",
+      "contentHash": "4522809a8ff44c0e6132bbf69c7059da6285e257c9c99de5e6b86a078aa368a3",
       "enabled": true,
       "id": "int-code-core-web-junior-unique-array-v1",
       "revision": 1
@@ -153,7 +155,7 @@
       "revision": 1
     },
     {
-      "contentHash": "f5b170e959a8ad88823b092f8ac6f6777d96880409afa9fab197b0cb9e3c0e4d",
+      "contentHash": "94271a0e0bcb12a505cea68c6eabf8410cde449bb7fc265c7c05ce27243559da",
       "enabled": true,
       "id": "int-code-core-web-mid-debounce-v1",
       "revision": 1
@@ -165,13 +167,13 @@
       "revision": 1
     },
     {
-      "contentHash": "cb702533ffe4fb71021750122df6d4b146fa47790f73c0239a9164c07b9159c7",
+      "contentHash": "ce7f36307cc9fc594a85955b538cb3dcea5eab2cdf55b8bfe398d38390e3ef74",
       "enabled": true,
       "id": "int-code-core-web-mid-fetch-timeout-v1",
       "revision": 1
     },
     {
-      "contentHash": "f2685d05968738500a4cd007f9e384656cb33b127efb7183d3ba7ad7ef9a94fd",
+      "contentHash": "063a51557d72361d78daff27c18a3bb59a8e04a0dbcf89a707154fba1a9abef5",
       "enabled": true,
       "id": "int-code-core-web-mid-group-by-v1",
       "revision": 1
@@ -189,7 +191,7 @@
       "revision": 1
     },
     {
-      "contentHash": "a46562a3755178280473a3aba3ca56d411c25b4f2733b4409a199ed6860aeece",
+      "contentHash": "323c8d42182631f984dde10faa9d1ce8086a2145b52cc5ec2ca23aa06bd83351",
       "enabled": true,
       "id": "int-code-core-web-senior-concurrency-map-v1",
       "revision": 1
@@ -231,7 +233,7 @@
       "revision": 1
     },
     {
-      "contentHash": "3c144c499e923ae8d22e6ece1bae63a47d4d83a68a7f25a6f3e77409ead8b693",
+      "contentHash": "ca44eda57c9de30d494d3ce094167b85059dbb2cfc5b237e1948973d80986dd0",
       "enabled": true,
       "id": "int-code-react-junior-tabs-switcher-v1",
       "revision": 1
@@ -255,7 +257,7 @@
       "revision": 1
     },
     {
-      "contentHash": "720b1615c56664129a257e2cb267465990129502ed6ddec8e5781c171a521ea9",
+      "contentHash": "1a8eb5cb671366c35c672498a253ad80f210a8b75010a107c775faf6e38014e9",
       "enabled": true,
       "id": "int-code-react-mid-pagination-v1",
       "revision": 1
@@ -285,13 +287,13 @@
       "revision": 1
     },
     {
-      "contentHash": "db2fe2b668f4ec350e26e24c142dc613008917b921ed03e2275cf294889bdeb8",
+      "contentHash": "c400b94b94687353bfa72c5773d23527a20a7548f3a80eb2df6c4a271502c6bc",
       "enabled": true,
       "id": "int-code-react-senior-debounced-search-v1",
       "revision": 1
     },
     {
-      "contentHash": "5d00058e6caa4952ce1222a9fed1390579b23c33fa48dd0c30407d9490ee86ba",
+      "contentHash": "d28d48e34869935679e5361d8f10131f6fe509fe25c35deaa3f7dce7297f2cc1",
       "enabled": true,
       "id": "int-code-react-senior-nested-comments-v1",
       "revision": 1
@@ -321,7 +323,7 @@
       "revision": 1
     },
     {
-      "contentHash": "939e388363f97c7aab64b94d1c4aa81fc0b2be84b839cdaacde246ef5212f348",
+      "contentHash": "0ab86958f85e94753bca1502f5a6e6b419f80b6580b06dae6454a412333aaa5c",
       "enabled": true,
       "id": "int-code-vue-junior-tabs-switcher-v1",
       "revision": 1

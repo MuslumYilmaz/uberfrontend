@@ -437,6 +437,44 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
     }),
   },
   {
+    ruleId: 'js-retry-with-delay-attempts',
+    questionId: 'js-retry-with-delay',
+    priority: 100,
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, ['last error', 'single attempt', 'synchronous throw', 'first successful', 'without retrying']) ||
+      snapshot.failCount >= 2,
+    buildHint: (snapshot) => ({
+      ruleId: 'js-retry-with-delay-attempts',
+      title: 'Make exactly retries + 1 attempts and surface the last error',
+      why: buildProgressAwareWhy(snapshot, 'The first attempt runs immediately, each failure may be followed by another attempt while attempts remain, and the final failure must reject with its own error.'),
+      actions: [
+        'Start every attempt with `Promise.resolve().then(() => fn())` so a synchronous throw becomes a rejection.',
+        'Resolve the outer promise on the first success and never call `fn` again after that.',
+        'Count attempts so that `retries = 0` means one attempt, and reject with the error from the last failure.',
+      ],
+      confidence: 0.86,
+    }),
+  },
+  {
+    ruleId: 'js-build-tree-from-flat-list-linking',
+    questionId: 'js-build-tree-from-flat-list',
+    priority: 100,
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, ['before their parents', 'parent is missing', 'does not mutate', 'children array', 'input order']) ||
+      snapshot.failCount >= 2,
+    buildHint: (snapshot) => ({
+      ruleId: 'js-build-tree-from-flat-list-linking',
+      title: 'Copy every node into a map first, then link by parentId',
+      why: buildProgressAwareWhy(snapshot, 'Linking only works once every node exists, and copying keeps the input untouched while giving every node a children array.'),
+      actions: [
+        'First pass: `nodes.set(item.id, { ...item, children: [] })` for every record.',
+        'Second pass over the original list: push each node into its parent\'s `children`, or into `roots` when `parentId` is empty or unknown.',
+        'Never add `children` to the input objects; the nodes must be new objects.',
+      ],
+      confidence: 0.86,
+    }),
+  },
+  {
     ruleId: 'js-filter-tree-render-indented-prune',
     questionId: 'js-filter-tree-render-indented',
     priority: 100,
@@ -676,6 +714,40 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
         'Verify empty-array behavior returns 0.',
       ],
       confidence: 0.74,
+    }),
+  },
+  {
+    ruleId: 'js-retry-with-delay-default',
+    questionId: 'js-retry-with-delay',
+    priority: 40,
+    matches: () => true,
+    buildHint: (snapshot) => ({
+      ruleId: 'js-retry-with-delay-default',
+      title: 'Delay only between attempts',
+      why: buildProgressAwareWhy(snapshot, 'The pause belongs between a failure and the next attempt; the first attempt starts at once and the final failure rejects without waiting.'),
+      actions: [
+        'Schedule the next attempt with `setTimeout(..., delayMs)` only when attempts remain.',
+        'Return a promise that settles once: the first success resolves it, the last failure rejects it.',
+        'Keep the attempt counter in a closure or loop variable rather than module state.',
+      ],
+      confidence: 0.72,
+    }),
+  },
+  {
+    ruleId: 'js-build-tree-from-flat-list-default',
+    questionId: 'js-build-tree-from-flat-list',
+    priority: 40,
+    matches: () => true,
+    buildHint: (snapshot) => ({
+      ruleId: 'js-build-tree-from-flat-list-default',
+      title: 'Index first, link second, keep input order',
+      why: buildProgressAwareWhy(snapshot, 'Two passes over the list make order of appearance irrelevant and keep siblings in their original order.'),
+      actions: [
+        'Use a `Map` keyed by `id` so parent lookups are constant time and numeric ids keep their type.',
+        'Iterate the original list in the second pass so roots and siblings keep input order.',
+        'Treat `parentId` that is `null`, `undefined` or unknown as a root.',
+      ],
+      confidence: 0.72,
     }),
   },
   {
@@ -4101,6 +4173,42 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
         'Return `null` for unknown, malformed, cross-origin relative, or ambiguous inputs.',
       ],
       confidence: 0.76,
+    }),
+  },
+  {
+    ruleId: 'react-countdown-timer-interval-lifecycle',
+    questionId: 'react-countdown-timer',
+    priority: 100,
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, ['pause', 'reset', 'zero', 'done']) ||
+      anyFailingErrorIncludes(snapshot, ['interval', 'running', 'paused', 'done']),
+    buildHint: (snapshot) => ({
+      ruleId: 'react-countdown-timer-interval-lifecycle',
+      title: 'Run one interval per running phase and derive completion from state',
+      why: buildProgressAwareWhy(snapshot, 'Pause, reset and completion all work by changing status; the interval effect must follow status and clean up after itself.'),
+      actions: [
+        'Create the interval inside a `useEffect` that depends on `status`, return early unless it is `running`, and clear the interval in the cleanup.',
+        'Tick with `setRemaining((value) => (value > 0 ? value - 1 : 0))` so the callback never reads a stale closure.',
+        'Move to `done` in an effect when `remaining` reaches 0 while running, and let `reset` restore the chosen duration with status `ready`.',
+      ],
+      confidence: 0.86,
+    }),
+  },
+  {
+    ruleId: 'react-countdown-timer-default',
+    questionId: 'react-countdown-timer',
+    priority: 40,
+    matches: () => true,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-countdown-timer-default',
+      title: 'Model the timer as status plus remaining seconds',
+      why: buildProgressAwareWhy(snapshot, 'Most bugs come from managing the interval imperatively in several handlers.'),
+      actions: [
+        'Keep `duration`, `remaining` and a `status` of ready, running, paused or done as state.',
+        'Let the buttons change only `status`; let one effect own the interval.',
+        'Disable Start while running or at zero, Pause unless running, and Reset when nothing changed.',
+      ],
+      confidence: 0.74,
     }),
   },
 ];

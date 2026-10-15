@@ -1256,6 +1256,19 @@
       "title": "CSS Variables Dark Mode Challenge | FrontendAtlas",
       "description": "Practice CSS custom properties with prefers-color-scheme and an equal-specificity :root:where(.theme-dark) override whose later source order wins.",
       "h1IntentLabel": "Theming with CSS Variables"
-    }
+    },
+    "companies": [
+      "apple"
+    ],
+    "sources": [
+      {
+        "label": "Medium: Apple senior frontend developer interview experience, July 2022",
+        "url": "https://srijansinghgulati.medium.com/my-apple-interview-experience-and-why-i-declined-the-offer-5ff442962bd8",
+        "company": "apple",
+        "publisher": "Medium",
+        "date": "2022-07",
+        "note": "One senior Apple front end account lists how you would build a light and dark theme among its questions and answers it with CSS variables swapped per theme. This drill practises that approach, not the reported wording."
+      }
+    ]
   }
 ]

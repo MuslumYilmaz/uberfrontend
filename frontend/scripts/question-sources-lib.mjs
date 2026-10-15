@@ -1,7 +1,8 @@
 // Shared validation for the optional `sources` array on coding, debug and system-design meta entries.
 // Kept outside lint-questions.mjs so it can be unit-tested without running the CLI.
 
-export const QUESTION_SOURCE_KEYS = ["label", "url", "publisher", "date", "note"];
+export const QUESTION_SOURCE_KEYS = ["label", "url", "publisher", "date", "note", "company"];
+export const QUESTION_SOURCE_COMPANY_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 export const MAX_QUESTION_SOURCES = 6;
 export const QUESTION_SOURCE_LABEL_LENGTH = { min: 8, max: 120 };
 export const QUESTION_SOURCE_PUBLISHER_LENGTH = { min: 2, max: 40 };
@@ -49,7 +50,7 @@ export function validateQuestionSourceDate(value, today = new Date()) {
  * Returns a list of error messages for a `sources` value. An empty list means the value is valid.
  * `sources` must be an array of 1..6 objects with exactly the known keys.
  */
-export function validateQuestionSources(sources, { today = new Date() } = {}) {
+export function validateQuestionSources(sources, { today = new Date(), companies = null } = {}) {
   const errors = [];
   if (!Array.isArray(sources)) {
     errors.push("sources must be an array of 1 to 6 entries.");
@@ -104,6 +105,15 @@ export function validateQuestionSources(sources, { today = new Date() } = {}) {
       const note = typeof source.note === "string" ? source.note.trim() : "";
       if (!note || note.length > QUESTION_SOURCE_NOTE_MAX) {
         errors.push(`${where}.note must be a non-empty string of at most ${QUESTION_SOURCE_NOTE_MAX} characters.`);
+      }
+    }
+
+    if (source.company !== undefined) {
+      const company = typeof source.company === "string" ? source.company.trim() : "";
+      if (!QUESTION_SOURCE_COMPANY_RE.test(company)) {
+        errors.push(`${where}.company must be a lowercase company slug.`);
+      } else if (Array.isArray(companies) && !companies.map((value) => String(value).trim().toLowerCase()).includes(company)) {
+        errors.push(`${where}.company (${company}) is not one of the entry's companies.`);
       }
     }
 

@@ -7,6 +7,9 @@
     "upload",
     "validation"
   ],
+  "companies": [
+    "amazon"
+  ],
   "sections": [
     {
       "key": "R",
@@ -57,6 +60,24 @@
     "uniqueAngle": "Design an image upload flow with local validation, object-URL previews, optional preprocessing, real transfer progress, cancellation, retry, and accessible errors.",
     "factCheckedAt": "2026-08-06",
     "reviewedBy": "FrontendAtlas editorial",
-    "companyEvidence": []
-  }
+    "companyEvidence": [
+      {
+        "company": "amazon",
+        "evidenceType": "reported-interview-question",
+        "sourceUrl": "https://leetcode.com/discuss/post/694045/",
+        "sourceTitle": "Amazon virtual onsite front end engineer II offer, June 2020 (LeetCode Discuss)",
+        "checkedAt": "2026-10-15"
+      }
+    ]
+  },
+  "sources": [
+    {
+      "label": "LeetCode Discuss: Amazon virtual onsite front end engineer II offer, June 2020",
+      "url": "https://leetcode.com/discuss/post/694045/",
+      "company": "amazon",
+      "publisher": "LeetCode Discuss",
+      "date": "2020-06",
+      "note": "One Amazon front end engineer II account with an offer describes a system design round that asked to design an image service. This upload-and-preview case practises part of that shape; it is not the reported prompt."
+    }
+  ]
 }

@@ -1,0 +1,115 @@
+{
+  "questionId": "js-build-tree-from-flat-list",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "javascript",
+      "code": "export default function buildTree(items) {\n  const nodes = new Map();\n  for (const item of items) {\n    nodes.set(item.id, { ...item, children: [] });\n  }\n  const roots = [];\n  for (const item of items) {\n    const node = nodes.get(item.id);\n    const parent = item.parentId == null ? undefined : nodes.get(item.parentId);\n    if (parent && parent !== node) {\n      parent.children.push(node);\n    } else {\n      roots.push(node);\n    }\n  }\n  return roots;\n}\n",
+      "nodes": [
+        {
+          "id": "d1-copy-every-record-first",
+          "title": "Copy every record into a fresh node",
+          "anchor": {
+            "lineStart": 4,
+            "lineEnd": 4,
+            "snippet": "{ ...item, children: [] }"
+          },
+          "why": "Copies keep the input immutable and give every node its children array up front, even leaves.",
+          "alternative": "Reuse the input objects and add children in place.",
+          "tradeoff": "One shallow copy per record buys immutability and a uniform node shape."
+        },
+        {
+          "id": "d2-index-by-id-in-a-map",
+          "title": "Index nodes by id in a Map",
+          "anchor": {
+            "lineStart": 4,
+            "lineEnd": 4,
+            "snippet": "nodes.set(item.id"
+          },
+          "why": "A Map gives constant-time parent lookups and preserves the id type, unlike a plain object.",
+          "alternative": "Search the list for the parent on every item.",
+          "tradeoff": "Linear memory for the index instead of quadratic time."
+        },
+        {
+          "id": "d3-link-in-a-second-pass",
+          "title": "Link in a second pass over the input order",
+          "anchor": {
+            "lineStart": 9,
+            "lineEnd": 9,
+            "snippet": "const parent = item.parentId == null ? undefined : nodes.get(item.parentId);"
+          },
+          "why": "Every node exists before linking starts, so a child listed before its parent still attaches, and iterating the list keeps sibling order.",
+          "alternative": "Link during the first pass and patch up late parents.",
+          "tradeoff": "Two passes are simpler than tracking pending children."
+        },
+        {
+          "id": "d4-treat-missing-parents-as-roots",
+          "title": "Treat a missing or self parent as a root",
+          "anchor": {
+            "lineStart": 13,
+            "lineEnd": 13,
+            "snippet": "roots.push(node);"
+          },
+          "why": "An unknown parentId should not drop data silently; surfacing the node as a root keeps it visible.",
+          "alternative": "Throw on orphans or skip them.",
+          "tradeoff": "Lenient by default; a strict mode is a follow-up."
+        }
+      ]
+    },
+    "approach2": {
+      "language": "javascript",
+      "code": "export default function buildTree(items) {\n  const ids = new Set(items.map((item) => item.id));\n  const isRoot = (item) => item.parentId == null || !ids.has(item.parentId) || item.parentId === item.id;\n  const attach = (parentId) =>\n    items\n      .filter((item) => (parentId === undefined ? isRoot(item) : !isRoot(item) && item.parentId === parentId))\n      .map((item) => ({ ...item, children: attach(item.id) }));\n  return attach(undefined);\n}\n",
+      "nodes": [
+        {
+          "id": "d1-collect-known-ids",
+          "title": "Collect the known ids once",
+          "anchor": {
+            "lineStart": 2,
+            "lineEnd": 2,
+            "snippet": "const ids = new Set(items.map((item) => item.id));"
+          },
+          "why": "Orphan detection needs the full id set before any filtering starts.",
+          "alternative": "Call items.some inside the filter for every item.",
+          "tradeoff": "One Set avoids a nested scan for the root test."
+        },
+        {
+          "id": "d2-define-roots-explicitly",
+          "title": "Define what a root is in one predicate",
+          "anchor": {
+            "lineStart": 3,
+            "lineEnd": 3,
+            "snippet": "const isRoot = (item) =>"
+          },
+          "why": "Empty, unknown and self-referencing parents all become roots through a single rule.",
+          "alternative": "Spread the three conditions across the filters.",
+          "tradeoff": "One predicate keeps the root rule readable and testable."
+        },
+        {
+          "id": "d3-recurse-per-parent",
+          "title": "Attach children by recursive filtering",
+          "anchor": {
+            "lineStart": 7,
+            "lineEnd": 7,
+            "snippet": "children: attach(item.id)"
+          },
+          "why": "Each node's children are the records whose parentId equals its id, in input order because filter preserves order.",
+          "alternative": "Build the index map and link in one pass.",
+          "tradeoff": "Readable but each level rescans the list, so O(n²) in the worst case."
+        },
+        {
+          "id": "d4-start-from-the-root-level",
+          "title": "Start the recursion at the root level",
+          "anchor": {
+            "lineStart": 8,
+            "lineEnd": 8,
+            "snippet": "return attach(undefined);"
+          },
+          "why": "Calling attach with no parent collects every root first, so the result is the forest in input order.",
+          "alternative": "Start from a synthetic root node and return its children.",
+          "tradeoff": "No synthetic node to strip afterwards."
+        }
+      ]
+    }
+  }
+}

@@ -362,6 +362,24 @@ reference_rules:
       - docs/references/company-sources-review-2026-10.md
     max_docs: 1
 
+  - id: company_sources_followup_plan
+    priority: 92
+    keywords:
+      - company follow-up plan
+      - sources follow-up
+      - unsupported tags
+      - authored guide amazon
+      - authored guide meta
+      - new catalog items
+      - promise retry
+      - flat list to tree
+      - countdown timer
+    paths:
+      - docs/references/company-sources-followup-plan-2026-10.md
+    load:
+      - docs/references/company-sources-followup-plan-2026-10.md
+    max_docs: 1
+
   - id: company_pages_plan
     priority: 96
     keywords:

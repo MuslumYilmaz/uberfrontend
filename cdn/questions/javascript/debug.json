@@ -152,7 +152,20 @@
         },
         "starterCode": "export default function createDraftAutosave(initialDraft = ''){\n  let draft = initialDraft;\n\n  return {\n    setDraft(nextDraft){\n      draft = nextDraft;\n    },\n    install(register, save){\n      const snapshot = draft;\n      return register(() => save(snapshot));\n    }\n  };\n}\n",
         "tests": "import createDraftAutosave from './js-debug-stale-closure-autosave';\n\ndescribe('createDraftAutosave', () => {\n  test('uses the latest draft when the delayed callback finally runs', () => {\n    const autosave = createDraftAutosave('hel');\n    const saved = [];\n    let flush;\n\n    autosave.install((cb) => {\n      flush = cb;\n      return 'registered';\n    }, (value) => {\n      saved.push(value);\n      return value;\n    });\n\n    autosave.setDraft('hello');\n    flush();\n\n    expect(saved).toEqual(['hello']);\n  });\n\n  test('keeps reading fresh draft values across repeated delayed runs', () => {\n    const autosave = createDraftAutosave('a');\n    const saved = [];\n    let flush;\n\n    autosave.install((cb) => {\n      flush = cb;\n    }, (value) => {\n      saved.push(value);\n      return value;\n    });\n\n    autosave.setDraft('ab');\n    flush();\n    autosave.setDraft('abc');\n    flush();\n\n    expect(saved).toEqual(['ab', 'abc']);\n  });\n\n  test('still works if the draft never changes after install', () => {\n    const autosave = createDraftAutosave('draft one');\n    let flush;\n\n    autosave.install((cb) => {\n      flush = cb;\n    }, (value) => value);\n\n    expect(flush()).toBe('draft one');\n  });\n});\n",
-        "solution": "export default function createDraftAutosave(initialDraft = ''){\n  let draft = initialDraft;\n\n  return {\n    setDraft(nextDraft){\n      draft = nextDraft;\n    },\n    install(register, save){\n      // Read the current draft when the callback runs, not when it is registered.\n      return register(() => save(draft));\n    }\n  };\n}\n"
+        "solution": "export default function createDraftAutosave(initialDraft = ''){\n  let draft = initialDraft;\n\n  return {\n    setDraft(nextDraft){\n      draft = nextDraft;\n    },\n    install(register, save){\n      // Read the current draft when the callback runs, not when it is registered.\n      return register(() => save(draft));\n    }\n  };\n}\n",
+        "companies": [
+            "stripe"
+        ],
+        "sources": [
+            {
+                "label": "Taro: Stripe frontend engineer interview, Barcelona, October 2023",
+                "url": "https://www.jointaro.com/interviews/companies/stripe/experiences/frontend-engineer-barcelona-october-1-2023-no-offer-neutral-ceb407e7/",
+                "company": "stripe",
+                "publisher": "Taro",
+                "date": "2023-10",
+                "note": "One Stripe front end engineer account lists a round on bug finding within an unknown project. This debug exercise practises that shape in a small codebase; it is not the reported bug."
+            }
+        ]
     },
     {
         "id": "js-debug-async-race",
@@ -172,15 +185,25 @@
         "tests": "import fetchWithCache from './js-debug-async-race';\n\ndescribe('fetchWithCache', () => {\n  test('shares one in-flight request for concurrent callers', async () => {\n    let calls = 0;\n    const fetcher = async () => {\n      calls++;\n      await new Promise(r => setTimeout(r, 20));\n      return 'OK';\n    };\n\n    const [a, b, c] = await Promise.all([\n      fetchWithCache('k', fetcher),\n      fetchWithCache('k', fetcher),\n      fetchWithCache('k', fetcher)\n    ]);\n\n    expect(a).toBe('OK');\n    expect(b).toBe('OK');\n    expect(c).toBe('OK');\n    expect(calls).toBe(1);\n  });\n\n  test('uses the cached value on later calls after success', async () => {\n    let calls = 0;\n    const fetcher = async () => {\n      calls++;\n      return 'VAL';\n    };\n\n    await fetchWithCache('x', fetcher);\n    const v2 = await fetchWithCache('x', fetcher);\n\n    expect(v2).toBe('VAL');\n    expect(calls).toBe(1);\n  });\n\n  test('cleans up failed in-flight requests so the next call can retry', async () => {\n    let calls = 0;\n    const fetcher = async () => {\n      calls++;\n      if (calls === 1) throw new Error('boom');\n      return 'RECOVERED';\n    };\n\n    await expect(fetchWithCache('retry-key', fetcher)).rejects.toThrow('boom');\n    await expect(fetchWithCache('retry-key', fetcher)).resolves.toBe('RECOVERED');\n    expect(calls).toBe(2);\n  });\n});\n",
         "solution": "const cache = new Map();\nconst inflight = new Map();\n\nexport default async function fetchWithCache(key, fetcher){\n  if(cache.has(key)) return cache.get(key);\n  if(inflight.has(key)) return inflight.get(key);\n\n  const p = Promise.resolve()\n    .then(() => fetcher())\n    .then(res => {\n      cache.set(key, res);\n      return res;\n    })\n    .finally(() => {\n      inflight.delete(key);\n    });\n\n  inflight.set(key, p);\n  return p;\n}\n",
         "companies": [
-            "elevenlabs"
+            "elevenlabs",
+            "stripe"
         ],
         "sources": [
             {
                 "label": "Aced: ElevenLabs senior full-stack (frontend-leaning) interview experience, 2026",
                 "url": "https://www.aced.io/experiences/eleven-labs-senior-frontend-engineer-interview-925c04",
+                "company": "elevenlabs",
                 "publisher": "Aced",
                 "date": "2026-08",
                 "note": "One senior account describes a live round spent fixing a practical problem together with the interviewer. This async-race fix is a practice version of that round shape, not the reported problem."
+            },
+            {
+                "label": "Taro: Stripe frontend engineer interview, Barcelona, October 2023",
+                "url": "https://www.jointaro.com/interviews/companies/stripe/experiences/frontend-engineer-barcelona-october-1-2023-no-offer-neutral-ceb407e7/",
+                "company": "stripe",
+                "publisher": "Taro",
+                "date": "2023-10",
+                "note": "One Stripe front end engineer account lists a round on bug finding within an unknown project. This debug exercise practises that shape in a small codebase; it is not the reported bug."
             }
         ]
     }

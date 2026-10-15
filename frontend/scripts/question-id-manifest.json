@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-15T06:16:07.054Z",
+  "generatedAt": "2026-10-15T07:55:53.778Z",
   "entries": [
     {
       "tech": "angular",
@@ -881,6 +881,12 @@
     {
       "tech": "javascript",
       "kind": "coding",
+      "id": "js-build-tree-from-flat-list",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
       "id": "js-capitalize-words",
       "file": "javascript/coding.json"
     },
@@ -1212,6 +1218,12 @@
       "tech": "javascript",
       "kind": "coding",
       "id": "js-resolve-package-exports",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-retry-with-delay",
       "file": "javascript/coding.json"
     },
     {
@@ -1902,6 +1914,12 @@
       "tech": "react",
       "kind": "coding",
       "id": "react-contact-form-starter",
+      "file": "react/coding.json"
+    },
+    {
+      "tech": "react",
+      "kind": "coding",
+      "id": "react-countdown-timer",
       "file": "react/coding.json"
     },
     {

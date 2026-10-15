@@ -190,7 +190,7 @@ function validateTags({ file, id, tags, canonicalTags, severity }) {
   return { ok: !hasUnfixable, fixable: !hasUnfixable, tags: tagList };
 }
 
-function validateSourcesField({ file, id, sources, kind, severity }) {
+function validateSourcesField({ file, id, sources, kind, severity, companies }) {
   if (sources === undefined) return;
   if (kind === "trivia") {
     severity.addError(file, id, "sources are not supported on trivia entries (reference blocks are stripped on trivia pages); move them to a coding, debug or system-design meta entry.");
@@ -200,7 +200,7 @@ function validateSourcesField({ file, id, sources, kind, severity }) {
     severity.addError(file, id, "sources belong in the case meta.json, not in system-design/index.json.");
     return;
   }
-  for (const message of validateQuestionSources(sources)) {
+  for (const message of validateQuestionSources(sources, { companies: Array.isArray(companies) ? companies : null })) {
     severity.addError(file, id, message);
   }
 }
@@ -623,7 +623,7 @@ for (const file of questionFiles) {
       validateDifficulty({ file, id, difficulty: q.difficulty, severity });
 
       const tagCheck = validateTags({ file, id, tags: q.tags, canonicalTags, severity });
-      validateSourcesField({ file, id, sources: q.sources, kind: info.kind, severity });
+      validateSourcesField({ file, id, sources: q.sources, kind: info.kind, severity, companies: q.companies });
 
       const importance = q.importance;
       if (importance === undefined) {
@@ -727,7 +727,7 @@ for (const file of questionFiles) {
     }
 
     const tagCheck = validateTags({ file, id, tags: data.tags, canonicalTags, severity });
-    validateSourcesField({ file, id, sources: data.sources, kind: "system-design-meta", severity });
+    validateSourcesField({ file, id, sources: data.sources, kind: "system-design-meta", severity, companies: data.companies });
     if (FIX && tagCheck.fixable && Array.isArray(tagCheck.tags)) {
       const normalized = unique(tagCheck.tags).slice().sort();
       if (!arrayEquals(tagCheck.tags, normalized)) {

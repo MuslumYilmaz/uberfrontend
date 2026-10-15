@@ -362,7 +362,7 @@ const STATIC_ROUTES = [
 ];
 
 function card(item, route) {
-  const fields = ['id', 'slug', 'title', 'description', 'summary', 'difficulty', 'access', 'tags', 'technology', 'tech', 'type', 'importance', 'estimatedMinutes', 'questionFormat', 'discovery', 'companies', 'companyTags'];
+  const fields = ['id', 'slug', 'title', 'description', 'summary', 'difficulty', 'access', 'tags', 'technology', 'tech', 'type', 'importance', 'estimatedMinutes', 'questionFormat', 'discovery', 'companies', 'companyTags', 'sources'];
   const value = { route, ...Object.fromEntries(fields.filter((key) => item[key] !== undefined).map((key) => [key, item[key]])) };
   if (value.description && typeof value.description === 'object') value.description = value.description.summary || value.description.text || '';
   return value;
@@ -554,7 +554,10 @@ export function buildSeoInventory(reader) {
       const extras = ['coding', 'trivia', 'system-design'].flatMap((kind) => matching.filter((record) => record.kind === kind)).slice(0, 8);
       const samples = [...new Map([...primary, ...extras].map((record) => [record.route, record])).values()].slice(0, 8);
       value.parts.push(companyCounts[company] || {}, samples.map(({ entry, route: itemRoute, tech, kind }) => ({ route: itemRoute, tech, kind,
-        title: entry.title, difficulty: entry.difficulty, access: entry.access === 'free' ? 'free' : 'premium' })));
+        title: entry.title, difficulty: entry.difficulty, access: entry.access === 'free' ? 'free' : 'premium' })),
+        matching.flatMap(({ entry, route: itemRoute }) => (Array.isArray(entry.sources) ? entry.sources : [])
+          .filter((source) => source && source.company === company)
+          .map((source) => ({ route: itemRoute, label: source.label, url: source.url, date: source.date }))));
       value.sources.add('cdn/questions/'); value.sources.add(familyFile);
     }
     emit(route, value.parts, value.sources);

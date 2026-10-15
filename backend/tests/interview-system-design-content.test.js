@@ -930,7 +930,7 @@ describe('guided system-design interview content', () => {
 
     expect(result.sourceContentId).toBe('image-upload-preview');
     expect(result.sourceBundleHash).toBe(
-      '11d34dacf26a451d6cd1bef95a5855ad8c529e70f6237b4b6869962f50e462f1'
+      '01d2003028ffd4c667cd85656e1360df2dd848ea0e7b910254926e999da4c6b2'
     );
     expect(result.fixtures).toHaveLength(2);
     expect(new Set(result.fixtures.map((entry) => entry.ownershipOptionId))).toEqual(new Set([

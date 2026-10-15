@@ -297,6 +297,87 @@ const AUTHORED_GUIDE_SMOKE = [
     reportUrl:
       'https://medium.com/@karunakumari000532/my-servicenow-software-engineer-ui-interview-experience-2025-23f315b960dc',
   },
+  {
+    label: 'Amazon',
+    route: '/companies/amazon/preview',
+    title: 'Amazon Frontend Interview Questions: 7 Prompts + Prep Guide',
+    description:
+      'Prepare for an Amazon front end engineer interview with 7 practice prompts: star rating, carousel, paginated addresses, countdown timer, image service design.',
+    h1: 'Amazon Frontend Interview Questions',
+    kicker: 'Public Amazon prep guide',
+    headings: [
+      'Prepare for product judgment, not Amazon trivia',
+      'What the official page and the public accounts establish, and what you still need to confirm',
+      'Seven Amazon frontend interview practice questions',
+      'Scope the paginated address widget before writing the first line',
+      'A 7-day Amazon frontend interview preparation plan',
+      'Common Amazon frontend interview preparation questions',
+      'Build the underlying skills with free practice',
+      'Sources and evidence limits',
+    ],
+    trustFragment: 'not leaked, confirmed or official Amazon questions',
+    prompts: [
+      { id: 'five-star-rating-vanilla', title: 'Build a five-star rating widget in vanilla HTML, CSS and JavaScript' },
+      { id: 'carousel-with-state-follow-ups', title: 'Implement a carousel component, then defend its state management' },
+      { id: 'language-tabs-modal', title: 'Recreate a modal with language tabs from an image' },
+      { id: 'countdown-timer-in-thirty-minutes', title: 'Design and build a countdown timer in thirty minutes' },
+      { id: 'paginated-address-widget', title: 'Code a paginated widget of seller addresses, five per page' },
+      { id: 'image-service-frontend-design', title: 'Design the frontend of an image service or a restaurant ordering app' },
+      { id: 'file-explorer-from-ascii-sketch', title: 'Build the interface of a file explorer from an ASCII sketch' },
+    ],
+    resources: [
+      '/javascript/coding/js-build-tree-from-flat-list',
+      '/javascript/coding/js-implement-new',
+      '/javascript/coding/js-create-counter',
+      '/javascript/coding/js-sleep',
+      '/react/coding/react-todo-list',
+      '/css/coding/css-forms-pseudoclasses',
+      '/javascript/trivia/js-repaint-reflow',
+      '/system-design/resilient-checkout-payment-flow',
+    ],
+    reportUrl: 'https://leetcode.com/discuss/post/546992/',
+  },
+  {
+    label: 'Meta',
+    route: '/companies/meta/preview',
+    title: 'Meta Frontend Interview Questions: 7 Prompts + Prep Guide',
+    description:
+      'Prepare for a Meta front end engineer interview with 7 practice prompts: map from scratch, clearAllTimeout, memoization, DOM traversal, autocomplete design.',
+    h1: 'Meta Frontend Interview Questions',
+    kicker: 'Public Meta prep guide',
+    headings: [
+      'Prepare for product judgment, not Meta trivia',
+      'What the official pages and the public accounts establish, and what you still need to confirm',
+      'Seven Meta frontend interview practice questions',
+      'Scope clearAllTimeout before writing the first line',
+      'A 7-day Meta frontend interview preparation plan',
+      'Common Meta frontend interview preparation questions',
+      'Build the underlying skills with free practice',
+      'Sources and evidence limits',
+    ],
+    trustFragment: 'not leaked, confirmed or official Meta questions',
+    prompts: [
+      { id: 'implement-map-from-scratch', title: 'Implement Array.prototype.map from scratch' },
+      { id: 'clear-all-timeout', title: 'Implement your own clearAllTimeout' },
+      { id: 'memoize-with-cache-keys', title: 'Write a memoize helper and defend its cache key' },
+      { id: 'twin-dom-tree-node', title: 'Find the corresponding node in a twin DOM tree' },
+      { id: 'traverse-dom-collect-nodes', title: 'Traverse the DOM and collect the nodes that match' },
+      { id: 'stack-and-queue-in-javascript', title: 'Implement a stack and a queue in JavaScript, then clear a short algorithm screen' },
+      { id: 'autocomplete-component-design', title: 'Design an autocomplete component, not the front end of a product' },
+    ],
+    resources: [
+      '/javascript/coding/js-flatten-once',
+      '/javascript/coding/js-array-foreach',
+      '/javascript/coding/js-debounce',
+      '/javascript/coding/js-create-lru-cache',
+      '/javascript/coding/js-create-counter',
+      '/javascript/trivia/js-queue-vs-stack',
+      '/html/trivia/html-dom-tree-structure',
+      '/system-design/infinite-scroll-list',
+    ],
+    reportUrl:
+      'https://www.jointaro.com/interviews/companies/meta/experiences/front-end-developer-intern-london-england-december-1-2021-no-offer-positive-4f6ff45b/',
+  },
 ];
 const ANGULAR_HTTP_CANCELLATION_LAB_ROUTE =
   '/angular/trivia/angular-http-what-actually-cancels-request';
@@ -1500,6 +1581,26 @@ try {
       name: 'Apple company preview has no official preparation pages table',
       ok: !leaked,
       detail: leaked ? 'table rendered without data' : 'absent',
+    });
+  }
+
+  {
+    const bytedanceBody = await curlBody(`${base}/companies/bytedance/preview`, { followRedirects: true, userAgent: GOOGLEBOT_USER_AGENT });
+    const bytedanceText = extractVisibleText(bytedanceBody);
+    const hasBlock = bytedanceText.includes(normalizeText('Practice items with public ByteDance interview accounts'));
+    const hasReportLink = bytedanceBody.includes('href="https://www.teamblind.com/post/bytedance-new-grad-frontend-engineer-interview-breakdown-vqyvjs1l"');
+    const hasItemLink = bytedanceBody.includes('href="/javascript/coding/js-build-tree-from-flat-list"');
+    checks.push({
+      name: 'ByteDance company preview renders the public interview reports block with item and report links',
+      ok: hasBlock && hasReportLink && hasItemLink,
+      detail: `block=${hasBlock} reportLink=${hasReportLink} itemLink=${hasItemLink}`,
+    });
+    const microsoftBody = await curlBody(`${base}/companies/microsoft/preview`, { followRedirects: true, userAgent: GOOGLEBOT_USER_AGENT });
+    const leaked = extractVisibleText(microsoftBody).includes(normalizeText('Practice items with public'));
+    checks.push({
+      name: 'Microsoft company preview has no public interview reports block',
+      ok: !leaked,
+      detail: leaked ? 'block rendered without sourced items' : 'absent',
     });
   }
 

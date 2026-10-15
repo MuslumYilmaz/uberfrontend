@@ -816,6 +816,32 @@
       </ng-template>
     </section>
 
+    <section class="reports-card fa-card" *ngIf="data.reports?.length" [attr.aria-labelledby]="slug + '-public-reports'" data-testid="company-public-reports">
+      <div class="sample-head">
+        <p class="preview-kicker">Public interview reports</p>
+        <h2 [attr.id]="slug + '-public-reports'">Practice items with public {{ label }} interview accounts</h2>
+        <p class="sample-summary">
+          Self-reported accounts informed these practice versions. They are not verified official questions or
+          endorsements, and the other items on this page remain editorial practice groupings.
+        </p>
+      </div>
+      <ul class="reports-list">
+        <li class="reports-item" *ngFor="let item of data.reports" [attr.data-testid]="'company-report-' + item.id">
+          <div class="reports-item__head">
+            <span class="preview-chip">{{ reportKindLabel(item.kind) }}</span>
+            <a class="reports-item__title" [routerLink]="item.route">{{ item.title }}</a>
+            <span class="preview-chip preview-chip--lock" *ngIf="item.access === 'premium'">Premium</span>
+          </div>
+          <p class="reports-item__sources">
+            Reported in
+            <ng-container *ngFor="let source of item.sources; let last = last">
+              <a [href]="source.url" target="_blank" rel="noopener noreferrer nofollow">{{ source.label }}</a><ng-container *ngIf="!last">, </ng-container>
+            </ng-container>
+          </p>
+        </li>
+      </ul>
+    </section>
+
     <app-company-official-guides [slug]="slug" [companyLabel]="label" [guides]="officialGuides"></app-company-official-guides>
 
     <section class="cta-stack">

@@ -51,6 +51,14 @@ const publicCopyCases = [
     expected: 'Prepare for product judgment, not ServiceNow trivia',
   },
   {
+    path: '/companies/amazon/preview',
+    expected: 'Prepare for product judgment, not Amazon trivia',
+  },
+  {
+    path: '/companies/meta/preview',
+    expected: 'Prepare for product judgment, not Meta trivia',
+  },
+  {
     path: '/system-design',
     expected: 'Follow this four-step path when you are new to the bank',
   },

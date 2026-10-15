@@ -529,7 +529,7 @@ function assertNetflixCompanyPreviewSitemapEntry(entries) {
 }
 
 function assertAuthoredCompanyPreviewSitemapEntries(entries) {
-  for (const slug of ['waymo', 'elevenlabs', 'datadog', 'intuit', 'servicenow']) {
+  for (const slug of ['waymo', 'elevenlabs', 'datadog', 'intuit', 'servicenow', 'amazon', 'meta']) {
     const loc = `https://frontendatlas.com/companies/${slug}/preview`;
     const matches = entries.filter((item) => item.loc === loc);
     if (matches.length !== 1) {

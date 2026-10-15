@@ -15,7 +15,9 @@
     ],
     "importance": 5,
     "companies": [
-      "meta"
+      "meta",
+      "bytedance",
+      "airbnb"
     ],
     "answer": {
       "blocks": [
@@ -606,7 +608,8 @@
       "google",
       "netflix",
       "apple",
-      "meta"
+      "meta",
+      "airbnb"
     ],
     "answer": {
       "blocks": [
@@ -3722,7 +3725,8 @@
       "google",
       "amazon",
       "meta",
-      "bytedance"
+      "bytedance",
+      "apple"
     ],
     "answer": {
       "blocks": [
@@ -6450,7 +6454,9 @@
       "performance"
     ],
     "importance": 5,
-    "companies": [],
+    "companies": [
+      "bytedance"
+    ],
     "answer": {
       "blocks": [
         {
@@ -7481,7 +7487,8 @@
     "importance": 4,
     "companies": [
       "netflix",
-      "meta"
+      "meta",
+      "apple"
     ],
     "answer": {
       "blocks": [

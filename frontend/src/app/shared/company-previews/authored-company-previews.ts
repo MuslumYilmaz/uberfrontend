@@ -1,8 +1,10 @@
 import { InjectionToken } from '@angular/core';
 import type { AuthoredCompanyPreview } from './authored-company-preview.model';
+import { AMAZON_COMPANY_PREVIEW } from './amazon-preview-content';
 import { DATADOG_COMPANY_PREVIEW } from './datadog-preview-content';
 import { ELEVENLABS_COMPANY_PREVIEW } from './elevenlabs-preview-content';
 import { INTUIT_COMPANY_PREVIEW } from './intuit-preview-content';
+import { META_COMPANY_PREVIEW } from './meta-preview-content';
 import { SERVICENOW_COMPANY_PREVIEW } from './servicenow-preview-content';
 import { WAYMO_COMPANY_PREVIEW } from './waymo-preview-content';
 
@@ -19,6 +21,8 @@ export const AUTHORED_COMPANY_PREVIEWS: Readonly<Record<string, AuthoredCompanyP
   datadog: DATADOG_COMPANY_PREVIEW,
   intuit: INTUIT_COMPANY_PREVIEW,
   servicenow: SERVICENOW_COMPANY_PREVIEW,
+  amazon: AMAZON_COMPANY_PREVIEW,
+  meta: META_COMPANY_PREVIEW,
 };
 
 export type AuthoredCompanyPreviewRegistry = Readonly<Record<string, AuthoredCompanyPreview>>;

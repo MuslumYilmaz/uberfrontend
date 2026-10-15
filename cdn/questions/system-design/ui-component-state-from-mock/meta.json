@@ -77,6 +77,7 @@
     {
       "label": "LeetCode Discuss: Intuit SDE2 frontend interview, Bangalore, October 2021",
       "url": "https://leetcode.com/discuss/post/1618037/",
+      "company": "intuit",
       "publisher": "LeetCode Discuss",
       "date": "2021-12",
       "note": "One SDE2 account describes a craft demo built from a rough design document shared the day before, then extended live with new features. Deriving components and state from a mock practises that first step; it is not the reported app."
@@ -84,6 +85,7 @@
     {
       "label": "LeetCode Discuss: Intuit SE2 frontend interview experience, October 2023",
       "url": "https://leetcode.com/discuss/post/4167001/",
+      "company": "intuit",
       "publisher": "LeetCode Discuss",
       "date": "2023-10",
       "note": "One SE2 account describes a week-long craft task, an event management system presented with slides and code, where the panel asked for an error fallback page and tests that check real conditions."

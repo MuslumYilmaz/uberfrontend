@@ -113,6 +113,7 @@
     {
       "label": "LeetCode Discuss: ServiceNow senior frontend developer interview experience, February 2026",
       "url": "https://leetcode.com/discuss/post/7711064/",
+      "company": "servicenow",
       "publisher": "LeetCode Discuss",
       "date": "2026-03",
       "note": "Public search previews of this report list a notification panel design in a senior frontend loop. The full report could not be read by our tools, so only that listing is used. This case practises the shape, not the reported wording."
@@ -120,6 +121,7 @@
     {
       "label": "Blind: ServiceNow phone screen for a staff engineer, frontend-leaning, September 2021",
       "url": "https://www.teamblind.com/post/servicenow-phone-screen-staff-engineer-interview-8msftqw8",
+      "company": "servicenow",
       "publisher": "Blind",
       "date": "2021-09",
       "note": "One reply in this thread describes a round on UI design and data flow. It supports the round type, not the specific feature."

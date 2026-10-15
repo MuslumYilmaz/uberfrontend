@@ -163,6 +163,7 @@ export type QuestionSource = {
   publisher: string;  // e.g. "PracHub", "Glassdoor"
   date: string;       // YYYY-MM or YYYY-MM-DD
   note?: string;      // what the source can and cannot establish
+  company?: string;   // slug of the company the account concerns; required for the company page report block
 };
 
 export interface Question {

@@ -1,0 +1,109 @@
+{
+  "questionId": "react-countdown-timer",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "typescript",
+      "code": "import React, { useEffect, useState } from 'react';\nimport './App.css';\n\ntype Status = 'ready' | 'running' | 'paused' | 'done';\n\nconst DEFAULT_SECONDS = 10;\n\nconst STATUS_LABEL: Record<Status, string> = {\n  ready: 'Ready',\n  running: 'Running',\n  paused: 'Paused',\n  done: 'Done',\n};\n\nfunction formatTime(totalSeconds: number): string {\n  const minutes = Math.floor(totalSeconds / 60);\n  const seconds = totalSeconds % 60;\n  return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;\n}\n\nfunction clampSeconds(value: number): number {\n  if (!Number.isFinite(value)) return 1;\n  return Math.max(1, Math.min(5999, Math.floor(value)));\n}\n\nexport default function App() {\n  const [duration, setDuration] = useState(DEFAULT_SECONDS);\n  const [remaining, setRemaining] = useState(DEFAULT_SECONDS);\n  const [status, setStatus] = useState<Status>('ready');\n\n  // One interval per running phase. Creating it inside the effect and clearing it in the\n  // cleanup covers pause, reset, completion and unmount with a single code path.\n  useEffect(() => {\n    if (status !== 'running') return undefined;\n    const id = window.setInterval(() => {\n      setRemaining((value) => (value > 0 ? value - 1 : 0));\n    }, 1000);\n    return () => window.clearInterval(id);\n  }, [status]);\n\n  // Completion is derived from state, so the tick callback never has to know about status.\n  useEffect(() => {\n    if (status === 'running' && remaining === 0) setStatus('done');\n  }, [remaining, status]);\n\n  const start = () => {\n    if (remaining > 0) setStatus('running');\n  };\n\n  const pause = () => {\n    if (status === 'running') setStatus('paused');\n  };\n\n  const reset = () => {\n    setRemaining(duration);\n    setStatus('ready');\n  };\n\n  const changeDuration = (event: React.ChangeEvent<HTMLInputElement>) => {\n    const next = clampSeconds(Number(event.target.value));\n    setDuration(next);\n    if (status !== 'running') {\n      setRemaining(next);\n      setStatus('ready');\n    }\n  };\n\n  return (\n    <main className=\"main\">\n      <section className=\"section\">\n        <h1>Countdown</h1>\n\n        <div className=\"panel\">\n          <label className=\"field\">\n            <span>Seconds</span>\n            <input\n              id=\"duration\"\n              type=\"number\"\n              min={1}\n              max={5999}\n              value={duration}\n              onChange={changeDuration}\n              disabled={status === 'running'}\n            />\n          </label>\n\n          <div className=\"value\" aria-live=\"polite\">{formatTime(remaining)}</div>\n          <p className=\"status\">{STATUS_LABEL[status]}</p>\n\n          <div className=\"actions\">\n            <button onClick={start} disabled={status === 'running' || remaining === 0}>Start</button>\n            <button onClick={pause} disabled={status !== 'running'}>Pause</button>\n            <button onClick={reset} disabled={status === 'ready' && remaining === duration}>Reset</button>\n          </div>\n        </div>\n      </section>\n    </main>\n  );\n}\n",
+      "nodes": [
+        {
+          "id": "a1-status-model",
+          "title": "Model the phase as one status value",
+          "anchor": {
+            "lineStart": 29,
+            "lineEnd": 29,
+            "snippet": "const [status, setStatus] = useState<Status>('ready');"
+          },
+          "why": "Start, pause, reset and completion are transitions between four phases. One status value keeps the buttons, the label and the interval in agreement instead of juggling isRunning and isDone flags.",
+          "alternative": "Keep separate isRunning and isPaused booleans.",
+          "tradeoff": "A union type needs a small label map, but impossible combinations such as running and done at once cannot be represented."
+        },
+        {
+          "id": "a2-interval-only-while-running",
+          "title": "Run one interval only while the status is running",
+          "anchor": {
+            "lineStart": 34,
+            "lineEnd": 34,
+            "snippet": "if (status !== 'running') return undefined;"
+          },
+          "why": "The effect depends on status alone, so entering the running phase creates exactly one interval and leaving it clears that interval through the cleanup. Pause, reset, completion and unmount share this single code path.",
+          "alternative": "Start and stop the interval imperatively inside the start and pause handlers with a ref.",
+          "tradeoff": "Handler-managed intervals need manual cleanup on every exit path, which is where leaked timers come from."
+        },
+        {
+          "id": "a3-functional-tick",
+          "title": "Tick with a functional update that stops at zero",
+          "anchor": {
+            "lineStart": 36,
+            "lineEnd": 36,
+            "snippet": "setRemaining((value) => (value > 0 ? value - 1 : 0));"
+          },
+          "why": "The callback runs from inside the interval, where the closed-over remaining value would be stale. A functional update reads the latest value and clamps at zero so the display never shows a negative number.",
+          "alternative": "Read remaining from the closure and list it in the effect dependencies.",
+          "tradeoff": "Depending on remaining would recreate the interval every second and drift the schedule."
+        },
+        {
+          "id": "a4-cleanup-clears-interval",
+          "title": "Clear the interval in the effect cleanup",
+          "anchor": {
+            "lineStart": 38,
+            "lineEnd": 38,
+            "snippet": "return () => window.clearInterval(id);"
+          },
+          "why": "The cleanup runs when status changes or the component unmounts, which covers pause, reset, completion and navigation without extra bookkeeping.",
+          "alternative": "Keep the interval id in a ref and clear it in each handler.",
+          "tradeoff": "Effect-local cleanup is scoped and testable; a ref needs the same clear call in three places."
+        },
+        {
+          "id": "a5-derived-completion",
+          "title": "Derive completion from state",
+          "anchor": {
+            "lineStart": 43,
+            "lineEnd": 43,
+            "snippet": "if (status === 'running' && remaining === 0) setStatus('done');"
+          },
+          "why": "Moving to done when remaining reaches zero while running keeps the tick callback ignorant of status, and the status change stops the interval through the first effect.",
+          "alternative": "Check for zero inside the tick callback and clear the interval there.",
+          "tradeoff": "Reacting to state costs one extra render, but the tick stays a pure decrement."
+        },
+        {
+          "id": "a6-reset-restores-duration",
+          "title": "Reset restores the chosen duration",
+          "anchor": {
+            "lineStart": 55,
+            "lineEnd": 55,
+            "snippet": "setRemaining(duration);"
+          },
+          "why": "Reset returns to the ready phase with the configured duration rather than the default, so a changed duration survives a reset.",
+          "alternative": "Reset to DEFAULT_SECONDS.",
+          "tradeoff": "Keeping duration as state adds one field, but reset and the input stay consistent."
+        },
+        {
+          "id": "a7-duration-change-guard",
+          "title": "Change the duration without touching a running timer",
+          "anchor": {
+            "lineStart": 62,
+            "lineEnd": 62,
+            "snippet": "if (status !== 'running') {"
+          },
+          "why": "The input is disabled while running, and the handler guards anyway so a change only resets the remaining value in the ready, paused or done phases.",
+          "alternative": "Apply the new duration to remaining immediately in every phase.",
+          "tradeoff": "The guard duplicates the disabled attribute, but it keeps keyboard and programmatic changes safe."
+        },
+        {
+          "id": "a8-button-guards",
+          "title": "Disable the controls from the same state",
+          "anchor": {
+            "lineStart": 91,
+            "lineEnd": 91,
+            "snippet": "disabled={status === 'running' || remaining === 0}"
+          },
+          "why": "Start is disabled while running or at zero, Pause only enables while running, and Reset enables once anything changed. The guards come from the same status and remaining values that drive the display, so the buttons can never contradict it.",
+          "alternative": "Enable every button and ignore invalid clicks in the handlers.",
+          "tradeoff": "Disabled states need clear labels, but they communicate the valid actions and keep tests deterministic."
+        }
+      ]
+    }
+  }
+}

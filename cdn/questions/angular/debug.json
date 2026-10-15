@@ -199,6 +199,7 @@
             {
                 "label": "PracHub: Waymo senior frontend engineer interview experience, May 2026",
                 "url": "https://prachub.com/interview-experiences/waymo-senior-frontend-engineer-interview-experience-rejected-30-minutes-after-pushing-on-the-process",
+                "company": "waymo",
                 "publisher": "PracHub",
                 "date": "2026-05",
                 "note": "One self-reported senior loop. It establishes that an onsite round handed the candidate an Angular app plus user bug reports to fix; the three bugs here are practice versions, not the reported ones."

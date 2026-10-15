@@ -159,10 +159,10 @@ test('public directories must contain every free question and exclude premium qu
 });
 
 test('generic company sample/count hydration shells fail and authored previews preserve their contract', (t) => {
-  const route = '/companies/meta/preview', authored = '/companies/google/preview';
+  const route = '/companies/microsoft/preview', authored = '/companies/google/preview';
   const f = fixture(t, ['/', '/companies', route, authored]);
-  const companySamples = new Map([['meta', { count: 2, requiredIds: new Set(['one', 'two']) }]]);
-  const companyCounts = { meta: { all: 2, coding: 2, trivia: 0, system: 0 }, google: { all: 1, coding: 1, trivia: 0, system: 0 } };
+  const companySamples = new Map([['microsoft', { count: 2, requiredIds: new Set(['one', 'two']) }]]);
+  const companyCounts = { microsoft: { all: 2, coding: 2, trivia: 0, system: 0 }, google: { all: 1, coding: 1, trivia: 0, system: 0 } };
   const audit = () => f.audit({ companySamples, companyCounts });
   f.page('/', link('/companies'));
   f.page('/companies', `<section data-testid="company-index-list">${companyLink(route, 2)}${companyLink(authored, 1)}</section>`);
@@ -181,12 +181,12 @@ test('generic company sample/count hydration shells fail and authored previews p
 });
 
 test('company counts deduplicate framework families while preview samples retain each variant', (t) => {
-  const route = '/companies/meta/preview';
+  const route = '/companies/microsoft/preview';
   const f = fixture(t, ['/', '/companies', route]);
   const questionsDir = path.join(f.buildDir, 'catalog');
   for (const [tech, id] of [['react', 'react-counter'], ['angular', 'angular-counter-starter']]) {
     fs.mkdirSync(path.join(questionsDir, tech), { recursive: true });
-    fs.writeFileSync(path.join(questionsDir, tech, 'coding.json'), JSON.stringify([{ id, title: 'Counter', companies: ['meta'] }]));
+    fs.writeFileSync(path.join(questionsDir, tech, 'coding.json'), JSON.stringify([{ id, title: 'Counter', companies: ['microsoft'] }]));
   }
   f.page('/', link('/companies'));
   f.page('/companies', `<section data-testid="company-index-list">${companyLink(route, 1)}</section>`);

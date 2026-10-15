@@ -1,0 +1,1476 @@
+{
+  "schemaVersion": 1,
+  "companies": {
+    "amazon": [
+      {
+        "id": "angular-star-rating",
+        "kind": "coding",
+        "tech": "angular",
+        "title": "Angular Star Rating Widget",
+        "access": "premium",
+        "route": "/angular/coding/angular-star-rating",
+        "sources": [
+          {
+            "label": "LeetCode Discuss: Amazon front end engineer II phone screen, March 2020",
+            "url": "https://leetcode.com/discuss/post/546992/",
+            "publisher": "LeetCode Discuss",
+            "date": "2020-03"
+          },
+          {
+            "label": "LeetCode Discuss: community list of front end interview questions, July 2020",
+            "url": "https://leetcode.com/discuss/post/742791/",
+            "publisher": "LeetCode Discuss",
+            "date": "2020-07"
+          }
+        ]
+      },
+      {
+        "id": "angular-tabs-switcher",
+        "kind": "coding",
+        "tech": "angular",
+        "title": "Angular Tabs / Multi-View Switcher",
+        "access": "premium",
+        "route": "/angular/coding/angular-tabs-switcher",
+        "sources": [
+          {
+            "label": "LeetCode Discuss: Amazon front end engineer II loop, Seattle, April 2020",
+            "url": "https://leetcode.com/discuss/post/591141/",
+            "publisher": "LeetCode Discuss",
+            "date": "2020-04"
+          }
+        ]
+      },
+      {
+        "id": "vue-image-slider",
+        "kind": "coding",
+        "tech": "vue",
+        "title": "Image Slider (Basic Navigation)",
+        "access": "premium",
+        "route": "/vue/coding/vue-image-slider",
+        "sources": [
+          {
+            "label": "LeetCode Discuss: Amazon front end engineer II loop, Seattle, April 2020",
+            "url": "https://leetcode.com/discuss/post/591141/",
+            "publisher": "LeetCode Discuss",
+            "date": "2020-04"
+          }
+        ]
+      },
+      {
+        "id": "react-image-slider",
+        "kind": "coding",
+        "tech": "react",
+        "title": "Image Slider (Dots + Previous/Next)",
+        "access": "premium",
+        "route": "/react/coding/react-image-slider",
+        "sources": [
+          {
+            "label": "LeetCode Discuss: Amazon front end engineer II loop, Seattle, April 2020",
+            "url": "https://leetcode.com/discuss/post/591141/",
+            "publisher": "LeetCode Discuss",
+            "date": "2020-04"
+          }
+        ]
+      },
+      {
+        "id": "angular-image-slider-starter",
+        "kind": "coding",
+        "tech": "angular",
+        "title": "Image Slider (Standalone Component)",
+        "access": "premium",
+        "route": "/angular/coding/angular-image-slider-starter",
+        "sources": [
+          {
+            "label": "LeetCode Discuss: Amazon front end engineer II loop, Seattle, April 2020",
+            "url": "https://leetcode.com/discuss/post/591141/",
+            "publisher": "LeetCode Discuss",
+            "date": "2020-04"
+          }
+        ]
+      },
+      {
+        "id": "js-array-prototype-filter",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Implement Array.prototype.filter",
+        "access": "premium",
+        "route": "/javascript/coding/js-array-prototype-filter",
+        "sources": [
+          {
+            "label": "LeetCode Discuss: community list of front end interview questions, July 2020",
+            "url": "https://leetcode.com/discuss/post/742791/",
+            "publisher": "LeetCode Discuss",
+            "date": "2020-07"
+          }
+        ]
+      },
+      {
+        "id": "js-array-prototype-map",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Implement Array.prototype.map",
+        "access": "premium",
+        "route": "/javascript/coding/js-array-prototype-map",
+        "sources": [
+          {
+            "label": "LeetCode Discuss: community list of front end interview questions, July 2020",
+            "url": "https://leetcode.com/discuss/post/742791/",
+            "publisher": "LeetCode Discuss",
+            "date": "2020-07"
+          }
+        ]
+      },
+      {
+        "id": "js-array-prototype-reduce",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Implement Array.prototype.reduce",
+        "access": "premium",
+        "route": "/javascript/coding/js-array-prototype-reduce",
+        "sources": [
+          {
+            "label": "LeetCode Discuss: community list of front end interview questions, July 2020",
+            "url": "https://leetcode.com/discuss/post/742791/",
+            "publisher": "LeetCode Discuss",
+            "date": "2020-07"
+          }
+        ]
+      },
+      {
+        "id": "react-accordion-faq",
+        "kind": "coding",
+        "tech": "react",
+        "title": "React Accordion / FAQ Component",
+        "access": "premium",
+        "route": "/react/coding/react-accordion-faq",
+        "sources": [
+          {
+            "label": "LeetCode Discuss: community list of front end interview questions, July 2020",
+            "url": "https://leetcode.com/discuss/post/742791/",
+            "publisher": "LeetCode Discuss",
+            "date": "2020-07"
+          }
+        ]
+      },
+      {
+        "id": "react-countdown-timer",
+        "kind": "coding",
+        "tech": "react",
+        "title": "React Countdown Timer (Start, Pause, Reset)",
+        "access": "premium",
+        "route": "/react/coding/react-countdown-timer",
+        "sources": [
+          {
+            "label": "LeetCode Discuss: Amazon front end engineer II loop, Seattle, April 2020",
+            "url": "https://leetcode.com/discuss/post/591141/",
+            "publisher": "LeetCode Discuss",
+            "date": "2020-04"
+          }
+        ]
+      },
+      {
+        "id": "react-pagination-table",
+        "kind": "coding",
+        "tech": "react",
+        "title": "React Paginated Data Table",
+        "access": "premium",
+        "route": "/react/coding/react-pagination-table",
+        "sources": [
+          {
+            "label": "LeetCode Discuss: Amazon virtual onsite front end engineer II, Vancouver, April 2022",
+            "url": "https://leetcode.com/discuss/post/1984996/",
+            "publisher": "LeetCode Discuss",
+            "date": "2022-04"
+          }
+        ]
+      },
+      {
+        "id": "react-star-rating",
+        "kind": "coding",
+        "tech": "react",
+        "title": "React Star Rating Widget",
+        "access": "premium",
+        "route": "/react/coding/react-star-rating",
+        "sources": [
+          {
+            "label": "LeetCode Discuss: Amazon front end engineer II phone screen, March 2020",
+            "url": "https://leetcode.com/discuss/post/546992/",
+            "publisher": "LeetCode Discuss",
+            "date": "2020-03"
+          },
+          {
+            "label": "LeetCode Discuss: community list of front end interview questions, July 2020",
+            "url": "https://leetcode.com/discuss/post/742791/",
+            "publisher": "LeetCode Discuss",
+            "date": "2020-07"
+          }
+        ]
+      },
+      {
+        "id": "react-tabs-switcher",
+        "kind": "coding",
+        "tech": "react",
+        "title": "React Tabs / Multi-View Switcher",
+        "access": "premium",
+        "route": "/react/coding/react-tabs-switcher",
+        "sources": [
+          {
+            "label": "LeetCode Discuss: Amazon front end engineer II loop, Seattle, April 2020",
+            "url": "https://leetcode.com/discuss/post/591141/",
+            "publisher": "LeetCode Discuss",
+            "date": "2020-04"
+          }
+        ]
+      },
+      {
+        "id": "js-array-sort",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Sort Numbers with Array.prototype.sort",
+        "access": "premium",
+        "route": "/javascript/coding/js-array-sort",
+        "sources": [
+          {
+            "label": "LeetCode Discuss: community list of front end interview questions, July 2020",
+            "url": "https://leetcode.com/discuss/post/742791/",
+            "publisher": "LeetCode Discuss",
+            "date": "2020-07"
+          }
+        ]
+      },
+      {
+        "id": "vue-star-rating",
+        "kind": "coding",
+        "tech": "vue",
+        "title": "Vue Star Rating Widget",
+        "access": "premium",
+        "route": "/vue/coding/vue-star-rating",
+        "sources": [
+          {
+            "label": "LeetCode Discuss: Amazon front end engineer II phone screen, March 2020",
+            "url": "https://leetcode.com/discuss/post/546992/",
+            "publisher": "LeetCode Discuss",
+            "date": "2020-03"
+          },
+          {
+            "label": "LeetCode Discuss: community list of front end interview questions, July 2020",
+            "url": "https://leetcode.com/discuss/post/742791/",
+            "publisher": "LeetCode Discuss",
+            "date": "2020-07"
+          }
+        ]
+      },
+      {
+        "id": "vue-tabs-switcher",
+        "kind": "coding",
+        "tech": "vue",
+        "title": "Vue Tabs / Multi-View Switcher",
+        "access": "premium",
+        "route": "/vue/coding/vue-tabs-switcher",
+        "sources": [
+          {
+            "label": "LeetCode Discuss: Amazon front end engineer II loop, Seattle, April 2020",
+            "url": "https://leetcode.com/discuss/post/591141/",
+            "publisher": "LeetCode Discuss",
+            "date": "2020-04"
+          }
+        ]
+      },
+      {
+        "id": "image-upload-preview",
+        "kind": "system-design",
+        "title": "Image Upload & Preview Component",
+        "access": "premium",
+        "route": "/system-design/image-upload-preview",
+        "sources": [
+          {
+            "label": "LeetCode Discuss: Amazon virtual onsite front end engineer II offer, June 2020",
+            "url": "https://leetcode.com/discuss/post/694045/",
+            "publisher": "LeetCode Discuss",
+            "date": "2020-06"
+          }
+        ]
+      }
+    ],
+    "apple": [
+      {
+        "id": "vue-autocomplete-search",
+        "kind": "coding",
+        "tech": "vue",
+        "title": "Autocomplete Search (debounce + keyboard + outside click)",
+        "access": "premium",
+        "route": "/vue/coding/vue-autocomplete-search",
+        "sources": [
+          {
+            "label": "LeetCode Discuss: Apple IC3 frontend interview experience, June 2025",
+            "url": "https://leetcode.com/discuss/post/6979238/",
+            "publisher": "LeetCode Discuss",
+            "date": "2025-07"
+          }
+        ]
+      },
+      {
+        "id": "js-build-tree-from-flat-list",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Build a Tree from a Flat List of Nodes",
+        "access": "free",
+        "route": "/javascript/coding/js-build-tree-from-flat-list",
+        "sources": [
+          {
+            "label": "LeetCode Discuss: Apple IC3 frontend interview experience, June 2025",
+            "url": "https://leetcode.com/discuss/post/6979238/",
+            "publisher": "LeetCode Discuss",
+            "date": "2025-07"
+          }
+        ]
+      },
+      {
+        "id": "js-stack-queue-implementation",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Implement Stack and Queue in JavaScript",
+        "access": "premium",
+        "route": "/javascript/coding/js-stack-queue-implementation",
+        "sources": [
+          {
+            "label": "Medium: Apple senior frontend developer interview experience, July 2022",
+            "url": "https://srijansinghgulati.medium.com/my-apple-interview-experience-and-why-i-declined-the-offer-5ff442962bd8",
+            "publisher": "Medium",
+            "date": "2022-07"
+          }
+        ]
+      },
+      {
+        "id": "js-unique-array",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Remove Duplicates",
+        "access": "premium",
+        "route": "/javascript/coding/js-unique-array",
+        "sources": [
+          {
+            "label": "Taro: Apple front end developer interview, Hyderabad, December 2019",
+            "url": "https://www.jointaro.com/interviews/companies/apple/experiences/front-end-developer-hyderabad-december-24-2019-no-offer-positive-7397b890/",
+            "publisher": "Taro",
+            "date": "2019-12"
+          }
+        ]
+      },
+      {
+        "id": "css-theme-variables-dark-mode",
+        "kind": "coding",
+        "tech": "css",
+        "title": "Theming with CSS Variables: OS Dark Mode + Manual Override",
+        "access": "free",
+        "route": "/css/coding/css-theme-variables-dark-mode",
+        "sources": [
+          {
+            "label": "Medium: Apple senior frontend developer interview experience, July 2022",
+            "url": "https://srijansinghgulati.medium.com/my-apple-interview-experience-and-why-i-declined-the-offer-5ff442962bd8",
+            "publisher": "Medium",
+            "date": "2022-07"
+          }
+        ]
+      }
+    ],
+    "bytedance": [
+      {
+        "id": "js-build-tree-from-flat-list",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Build a Tree from a Flat List of Nodes",
+        "access": "free",
+        "route": "/javascript/coding/js-build-tree-from-flat-list",
+        "sources": [
+          {
+            "label": "Blind: ByteDance new grad frontend engineer interview breakdown, January 2023",
+            "url": "https://www.teamblind.com/post/bytedance-new-grad-frontend-engineer-interview-breakdown-vqyvjs1l",
+            "publisher": "Blind",
+            "date": "2023-01"
+          }
+        ]
+      },
+      {
+        "id": "js-array-prototype-map",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Implement Array.prototype.map",
+        "access": "premium",
+        "route": "/javascript/coding/js-array-prototype-map",
+        "sources": [
+          {
+            "label": "Blind: TikTok front end interview experience, September 2024",
+            "url": "https://www.teamblind.com/post/my-tiktok-front-end-interview-experience-any-idea-what-end-result-might-look-like-jfcdhq5r",
+            "publisher": "Blind",
+            "date": "2024-09"
+          }
+        ]
+      },
+      {
+        "id": "js-array-prototype-reduce",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Implement Array.prototype.reduce",
+        "access": "premium",
+        "route": "/javascript/coding/js-array-prototype-reduce",
+        "sources": [
+          {
+            "label": "Blind: TikTok front end interview experience, September 2024",
+            "url": "https://www.teamblind.com/post/my-tiktok-front-end-interview-experience-any-idea-what-end-result-might-look-like-jfcdhq5r",
+            "publisher": "Blind",
+            "date": "2024-09"
+          }
+        ]
+      }
+    ],
+    "datadog": [
+      {
+        "id": "js-count-vowels",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Count Vowels",
+        "access": "free",
+        "route": "/javascript/coding/js-count-vowels",
+        "sources": [
+          {
+            "label": "Taro: Datadog senior frontend developer interview, Valbonne, October 2024",
+            "url": "https://www.jointaro.com/interviews/companies/datadog/experiences/senior-frontend-developer-valbonne-october-1-2024-accepted-offer-positive-47d59048/",
+            "publisher": "Taro",
+            "date": "2024-10"
+          }
+        ]
+      },
+      {
+        "id": "js-max-char",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Find Maximum Occurring Character",
+        "access": "premium",
+        "route": "/javascript/coding/js-max-char",
+        "sources": [
+          {
+            "label": "Taro: Datadog senior frontend developer interview, Valbonne, October 2024",
+            "url": "https://www.jointaro.com/interviews/companies/datadog/experiences/senior-frontend-developer-valbonne-october-1-2024-accepted-offer-positive-47d59048/",
+            "publisher": "Taro",
+            "date": "2024-10"
+          }
+        ]
+      },
+      {
+        "id": "js-array-prototype-filter",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Implement Array.prototype.filter",
+        "access": "premium",
+        "route": "/javascript/coding/js-array-prototype-filter",
+        "sources": [
+          {
+            "label": "Taro: Datadog senior frontend developer interview, Lisbon, November 2025",
+            "url": "https://www.jointaro.com/interviews/companies/datadog/experiences/senior-frontend-developer-lisbon-lisbon-district-november-23-2025-no-offer-positive-1a88bdda/",
+            "publisher": "Taro",
+            "date": "2025-11"
+          }
+        ]
+      },
+      {
+        "id": "react-dynamic-table",
+        "kind": "coding",
+        "tech": "react",
+        "title": "React Dynamic Table (Rows × Columns)",
+        "access": "premium",
+        "route": "/react/coding/react-dynamic-table",
+        "sources": [
+          {
+            "label": "Taro: Datadog senior frontend developer interview, Valbonne, October 2024",
+            "url": "https://www.jointaro.com/interviews/companies/datadog/experiences/senior-frontend-developer-valbonne-october-1-2024-accepted-offer-positive-47d59048/",
+            "publisher": "Taro",
+            "date": "2024-10"
+          }
+        ]
+      },
+      {
+        "id": "js-array-sort",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Sort Numbers with Array.prototype.sort",
+        "access": "premium",
+        "route": "/javascript/coding/js-array-sort",
+        "sources": [
+          {
+            "label": "Taro: Datadog senior frontend developer interview, Lisbon, November 2025",
+            "url": "https://www.jointaro.com/interviews/companies/datadog/experiences/senior-frontend-developer-lisbon-lisbon-district-november-23-2025-no-offer-positive-1a88bdda/",
+            "publisher": "Taro",
+            "date": "2025-11"
+          }
+        ]
+      },
+      {
+        "id": "js-update-at-index",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Update Array at Index (Immutable)",
+        "access": "free",
+        "route": "/javascript/coding/js-update-at-index",
+        "sources": [
+          {
+            "label": "Taro: Datadog senior frontend engineer interview, Paris, September 2025",
+            "url": "https://www.jointaro.com/interviews/companies/datadog/experiences/senior-frontend-engineer-paris-september-1-2025-accepted-offer-positive-2a1ddfe8/",
+            "publisher": "Taro",
+            "date": "2025-09"
+          }
+        ]
+      },
+      {
+        "id": "infinite-scroll-list",
+        "kind": "system-design",
+        "title": "Infinite Scroll System Design: Frontend Interview Answer",
+        "access": "free",
+        "route": "/system-design/infinite-scroll-list",
+        "sources": [
+          {
+            "label": "Taro: Datadog senior frontend developer interview, Valbonne, October 2024",
+            "url": "https://www.jointaro.com/interviews/companies/datadog/experiences/senior-frontend-developer-valbonne-october-1-2024-accepted-offer-positive-47d59048/",
+            "publisher": "Taro",
+            "date": "2024-10"
+          }
+        ]
+      },
+      {
+        "id": "live-comments-global-stream",
+        "kind": "system-design",
+        "title": "Live Comments for Global Streams (Real-time)",
+        "access": "premium",
+        "route": "/system-design/live-comments-global-stream",
+        "sources": [
+          {
+            "label": "Taro: Datadog senior frontend developer interview, Valbonne, October 2024",
+            "url": "https://www.jointaro.com/interviews/companies/datadog/experiences/senior-frontend-developer-valbonne-october-1-2024-accepted-offer-positive-47d59048/",
+            "publisher": "Taro",
+            "date": "2024-10"
+          }
+        ]
+      }
+    ],
+    "elevenlabs": [
+      {
+        "id": "js-timer-manager",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Custom setTimeout/clearTimeout Timer Manager",
+        "access": "premium",
+        "route": "/javascript/coding/js-timer-manager",
+        "sources": [
+          {
+            "label": "Aced: ElevenLabs software engineer interview questions, candidate-sourced, October 2026",
+            "url": "https://www.aced.io/guides/elevenlabs-software-engineer-interview/questions",
+            "publisher": "Aced",
+            "date": "2026-10"
+          }
+        ]
+      },
+      {
+        "id": "js-poll-until",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Poll Until (with Timeout + Abort)",
+        "access": "free",
+        "route": "/javascript/coding/js-poll-until",
+        "sources": [
+          {
+            "label": "Aced: ElevenLabs software engineer interview questions, candidate-sourced, October 2026",
+            "url": "https://www.aced.io/guides/elevenlabs-software-engineer-interview/questions",
+            "publisher": "Aced",
+            "date": "2026-10"
+          }
+        ]
+      },
+      {
+        "id": "react-autocomplete-search-starter",
+        "kind": "coding",
+        "tech": "react",
+        "title": "React Autocomplete Interview Question",
+        "access": "free",
+        "route": "/react/coding/react-autocomplete-search-starter",
+        "sources": [
+          {
+            "label": "Aced: ElevenLabs senior full-stack (frontend-leaning) interview experience, 2026",
+            "url": "https://www.aced.io/experiences/eleven-labs-senior-frontend-engineer-interview-925c04",
+            "publisher": "Aced",
+            "date": "2026-08"
+          }
+        ]
+      },
+      {
+        "id": "ai-ux-considerations",
+        "kind": "system-design",
+        "title": "Design an AI-Assisted Bulk Edit Review Flow",
+        "access": "premium",
+        "route": "/system-design/ai-ux-considerations",
+        "sources": [
+          {
+            "label": "Aced: ElevenLabs software engineer interview questions, candidate-sourced, October 2026",
+            "url": "https://www.aced.io/guides/elevenlabs-software-engineer-interview/questions",
+            "publisher": "Aced",
+            "date": "2026-10"
+          }
+        ]
+      },
+      {
+        "id": "js-debug-async-race",
+        "kind": "debug",
+        "tech": "javascript",
+        "title": "Fix async race in `fetchWithCache`",
+        "access": "premium",
+        "route": "/javascript/debug/js-debug-async-race",
+        "sources": [
+          {
+            "label": "Aced: ElevenLabs senior full-stack (frontend-leaning) interview experience, 2026",
+            "url": "https://www.aced.io/experiences/eleven-labs-senior-frontend-engineer-interview-925c04",
+            "publisher": "Aced",
+            "date": "2026-08"
+          }
+        ]
+      }
+    ],
+    "google": [
+      {
+        "id": "js-debounce",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Debounce Function",
+        "access": "free",
+        "route": "/javascript/coding/js-debounce",
+        "sources": [
+          {
+            "label": "LeetCode Discuss: Google front end engineer onsite, Sunnyvale, spring 2019",
+            "url": "https://leetcode.com/discuss/post/342364/",
+            "publisher": "LeetCode Discuss",
+            "date": "2019-07"
+          },
+          {
+            "label": "Blind: Google frontend interview questions thread, December 2020",
+            "url": "https://www.teamblind.com/post/google-frontend-interview-questions-thread-yqyqmvon",
+            "publisher": "Blind",
+            "date": "2020-12"
+          }
+        ]
+      },
+      {
+        "id": "js-promise-all",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Implement Promise.all",
+        "access": "premium",
+        "route": "/javascript/coding/js-promise-all",
+        "sources": [
+          {
+            "label": "LeetCode Discuss: Google front end engineer onsite, Sunnyvale, spring 2019",
+            "url": "https://leetcode.com/discuss/post/342364/",
+            "publisher": "LeetCode Discuss",
+            "date": "2019-07"
+          }
+        ]
+      },
+      {
+        "id": "react-autocomplete-search-starter",
+        "kind": "coding",
+        "tech": "react",
+        "title": "React Autocomplete Interview Question",
+        "access": "free",
+        "route": "/react/coding/react-autocomplete-search-starter",
+        "sources": [
+          {
+            "label": "LeetCode Discuss: Google L3/L4 frontend interview experience, June 2021",
+            "url": "https://leetcode.com/discuss/post/1274542/",
+            "publisher": "LeetCode Discuss",
+            "date": "2021-06"
+          }
+        ]
+      },
+      {
+        "id": "js-retry-with-delay",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Retry a Promise-Returning Function with Delay",
+        "access": "free",
+        "route": "/javascript/coding/js-retry-with-delay",
+        "sources": [
+          {
+            "label": "LeetCode Discuss: Google L3/L4 frontend interview experience, June 2021",
+            "url": "https://leetcode.com/discuss/post/1274542/",
+            "publisher": "LeetCode Discuss",
+            "date": "2021-06"
+          }
+        ]
+      },
+      {
+        "id": "js-throttle",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Throttle Function",
+        "access": "premium",
+        "route": "/javascript/coding/js-throttle",
+        "sources": [
+          {
+            "label": "LeetCode Discuss: Google front end phone screen, implement throttle, April 2020",
+            "url": "https://leetcode.com/discuss/post/592667/",
+            "publisher": "LeetCode Discuss",
+            "date": "2020-04"
+          },
+          {
+            "label": "Blind: Google frontend interview questions thread, December 2020",
+            "url": "https://www.teamblind.com/post/google-frontend-interview-questions-thread-yqyqmvon",
+            "publisher": "Blind",
+            "date": "2020-12"
+          }
+        ]
+      }
+    ],
+    "intuit": [
+      {
+        "id": "react-chat-streaming-ui",
+        "kind": "coding",
+        "tech": "react",
+        "title": "Chat UI with Streaming Response",
+        "access": "premium",
+        "route": "/react/coding/react-chat-streaming-ui",
+        "sources": [
+          {
+            "label": "LeetCode Discuss: Intuit senior frontend engineer interview experience, November 2025",
+            "url": "https://leetcode.com/discuss/post/7320927/",
+            "publisher": "LeetCode Discuss",
+            "date": "2025-11"
+          }
+        ]
+      },
+      {
+        "id": "js-curry-function",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Curry Function",
+        "access": "premium",
+        "route": "/javascript/coding/js-curry-function",
+        "sources": [
+          {
+            "label": "LeetCode Discuss: Intuit SE2 frontend interview experience, October 2023",
+            "url": "https://leetcode.com/discuss/post/4167001/",
+            "publisher": "LeetCode Discuss",
+            "date": "2023-10"
+          }
+        ]
+      },
+      {
+        "id": "js-dom-twin-node",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Find the Corresponding Node in Twin DOM Trees",
+        "access": "premium",
+        "route": "/javascript/coding/js-dom-twin-node",
+        "sources": [
+          {
+            "label": "LeetCode Discuss: Intuit senior frontend engineer interview experience, November 2025",
+            "url": "https://leetcode.com/discuss/post/7320927/",
+            "publisher": "LeetCode Discuss",
+            "date": "2025-11"
+          }
+        ]
+      },
+      {
+        "id": "js-memoize-function",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Memoization",
+        "access": "premium",
+        "route": "/javascript/coding/js-memoize-function",
+        "sources": [
+          {
+            "label": "LeetCode Discuss: Intuit SE2 frontend interview experience, October 2023",
+            "url": "https://leetcode.com/discuss/post/4167001/",
+            "publisher": "LeetCode Discuss",
+            "date": "2023-10"
+          }
+        ]
+      },
+      {
+        "id": "js-promise-any",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Promise.any (First Fulfilled)",
+        "access": "free",
+        "route": "/javascript/coding/js-promise-any",
+        "sources": [
+          {
+            "label": "LeetCode Discuss: Intuit senior frontend engineer interview experience, November 2025",
+            "url": "https://leetcode.com/discuss/post/7320927/",
+            "publisher": "LeetCode Discuss",
+            "date": "2025-11"
+          }
+        ]
+      },
+      {
+        "id": "react-autocomplete-search-starter",
+        "kind": "coding",
+        "tech": "react",
+        "title": "React Autocomplete Interview Question",
+        "access": "free",
+        "route": "/react/coding/react-autocomplete-search-starter",
+        "sources": [
+          {
+            "label": "LeetCode Discuss: Intuit senior frontend engineer interview experience, November 2025",
+            "url": "https://leetcode.com/discuss/post/7320927/",
+            "publisher": "LeetCode Discuss",
+            "date": "2025-11"
+          }
+        ]
+      },
+      {
+        "id": "react-nested-comments",
+        "kind": "coding",
+        "tech": "react",
+        "title": "React Nested Comments (Infinite Replies, Single Active Reply Input)",
+        "access": "premium",
+        "route": "/react/coding/react-nested-comments",
+        "sources": [
+          {
+            "label": "LeetCode Discuss: Intuit senior frontend engineer interview experience, November 2025",
+            "url": "https://leetcode.com/discuss/post/7320927/",
+            "publisher": "LeetCode Discuss",
+            "date": "2025-11"
+          }
+        ]
+      },
+      {
+        "id": "js-retry-with-delay",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Retry a Promise-Returning Function with Delay",
+        "access": "free",
+        "route": "/javascript/coding/js-retry-with-delay",
+        "sources": [
+          {
+            "label": "LeetCode Discuss: Intuit senior frontend engineer interview experience, November 2025",
+            "url": "https://leetcode.com/discuss/post/7320927/",
+            "publisher": "LeetCode Discuss",
+            "date": "2025-11"
+          }
+        ]
+      },
+      {
+        "id": "js-stream-to-text",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Stream to Text (ReadableStream -> string)",
+        "access": "free",
+        "route": "/javascript/coding/js-stream-to-text",
+        "sources": [
+          {
+            "label": "LeetCode Discuss: Intuit senior frontend engineer interview experience, November 2025",
+            "url": "https://leetcode.com/discuss/post/7320927/",
+            "publisher": "LeetCode Discuss",
+            "date": "2025-11"
+          }
+        ]
+      },
+      {
+        "id": "ui-component-state-from-mock",
+        "kind": "system-design",
+        "title": "UI Component and State Design From a Mock",
+        "access": "premium",
+        "route": "/system-design/ui-component-state-from-mock",
+        "sources": [
+          {
+            "label": "LeetCode Discuss: Intuit SDE2 frontend interview, Bangalore, October 2021",
+            "url": "https://leetcode.com/discuss/post/1618037/",
+            "publisher": "LeetCode Discuss",
+            "date": "2021-12"
+          },
+          {
+            "label": "LeetCode Discuss: Intuit SE2 frontend interview experience, October 2023",
+            "url": "https://leetcode.com/discuss/post/4167001/",
+            "publisher": "LeetCode Discuss",
+            "date": "2023-10"
+          }
+        ]
+      }
+    ],
+    "meta": [
+      {
+        "id": "js-timer-manager-and-dom-renderer",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Clear All Timers + Render DOM Elements",
+        "access": "premium",
+        "route": "/javascript/coding/js-timer-manager-and-dom-renderer",
+        "sources": [
+          {
+            "label": "Taro: Meta front end engineer intern interview, United States, January 2022",
+            "url": "https://www.jointaro.com/interviews/companies/meta/experiences/front-end-engineer-intern-united-states-january-1-2022-accepted-offer-positive-2e0f20e4/",
+            "publisher": "Taro",
+            "date": "2022-01"
+          },
+          {
+            "label": "Blind: front end interview questions by company, October 2021",
+            "url": "https://www.teamblind.com/post/Went-through-Frontend-Interviews-recently-here-are-the-kinda-questions-they-ask-dbyQb3ob",
+            "publisher": "Blind",
+            "date": "2021-10"
+          }
+        ]
+      },
+      {
+        "id": "js-timer-manager",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Custom setTimeout/clearTimeout Timer Manager",
+        "access": "premium",
+        "route": "/javascript/coding/js-timer-manager",
+        "sources": [
+          {
+            "label": "Taro: Meta front end engineer intern interview, United States, January 2022",
+            "url": "https://www.jointaro.com/interviews/companies/meta/experiences/front-end-engineer-intern-united-states-january-1-2022-accepted-offer-positive-2e0f20e4/",
+            "publisher": "Taro",
+            "date": "2022-01"
+          },
+          {
+            "label": "Blind: front end interview questions by company, October 2021",
+            "url": "https://www.teamblind.com/post/Went-through-Frontend-Interviews-recently-here-are-the-kinda-questions-they-ask-dbyQb3ob",
+            "publisher": "Blind",
+            "date": "2021-10"
+          }
+        ]
+      },
+      {
+        "id": "js-dom-find-node",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Find a Node in a DOM Tree (DFS/BFS)",
+        "access": "premium",
+        "route": "/javascript/coding/js-dom-find-node",
+        "sources": [
+          {
+            "label": "Blind: front end interview questions by company, October 2021",
+            "url": "https://www.teamblind.com/post/Went-through-Frontend-Interviews-recently-here-are-the-kinda-questions-they-ask-dbyQb3ob",
+            "publisher": "Blind",
+            "date": "2021-10"
+          }
+        ]
+      },
+      {
+        "id": "js-dom-twin-node",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Find the Corresponding Node in Twin DOM Trees",
+        "access": "premium",
+        "route": "/javascript/coding/js-dom-twin-node",
+        "sources": [
+          {
+            "label": "Taro: Meta front end developer intern interview, London, December 2021",
+            "url": "https://www.jointaro.com/interviews/companies/meta/experiences/front-end-developer-intern-london-england-december-1-2021-no-offer-positive-4f6ff45b/",
+            "publisher": "Taro",
+            "date": "2021-12"
+          }
+        ]
+      },
+      {
+        "id": "js-flatten-once",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Flatten One Level",
+        "access": "free",
+        "route": "/javascript/coding/js-flatten-once",
+        "sources": [
+          {
+            "label": "Blind: front end interview questions by company, October 2021",
+            "url": "https://www.teamblind.com/post/Went-through-Frontend-Interviews-recently-here-are-the-kinda-questions-they-ask-dbyQb3ob",
+            "publisher": "Blind",
+            "date": "2021-10"
+          }
+        ]
+      },
+      {
+        "id": "js-array-prototype-map",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Implement Array.prototype.map",
+        "access": "premium",
+        "route": "/javascript/coding/js-array-prototype-map",
+        "sources": [
+          {
+            "label": "Taro: Meta front end developer intern interview, London, December 2021",
+            "url": "https://www.jointaro.com/interviews/companies/meta/experiences/front-end-developer-intern-london-england-december-1-2021-no-offer-positive-4f6ff45b/",
+            "publisher": "Taro",
+            "date": "2021-12"
+          }
+        ]
+      },
+      {
+        "id": "js-stack-queue-implementation",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Implement Stack and Queue in JavaScript",
+        "access": "premium",
+        "route": "/javascript/coding/js-stack-queue-implementation",
+        "sources": [
+          {
+            "label": "Taro: Meta front end developer interview, San Francisco, June 2024",
+            "url": "https://www.jointaro.com/interviews/companies/meta/experiences/front-end-developer-san-francisco-ca-june-27-2024-no-offer-positive-07526bae/",
+            "publisher": "Taro",
+            "date": "2024-06"
+          }
+        ]
+      },
+      {
+        "id": "js-memoize-function",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Memoization",
+        "access": "premium",
+        "route": "/javascript/coding/js-memoize-function",
+        "sources": [
+          {
+            "label": "Medium: Meta front end engineer interview experience, March 2022",
+            "url": "https://medium.com/@stylus07/meta-interview-experience-cdf53eea63f3",
+            "publisher": "Medium",
+            "date": "2022-03"
+          }
+        ]
+      },
+      {
+        "id": "realtime-search-debounce-cache",
+        "kind": "system-design",
+        "title": "Real-time Search with Debounce & Caching",
+        "access": "premium",
+        "route": "/system-design/realtime-search-debounce-cache",
+        "sources": [
+          {
+            "label": "Blind: Meta frontend system design, March 2022",
+            "url": "https://www.teamblind.com/post/meta-frontend-system-design-yexyrusi",
+            "publisher": "Blind",
+            "date": "2022-03"
+          }
+        ]
+      }
+    ],
+    "netflix": [
+      {
+        "id": "js-debounce",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Debounce Function",
+        "access": "free",
+        "route": "/javascript/coding/js-debounce",
+        "sources": [
+          {
+            "label": "Taro: Netflix senior frontend engineer interview, Warsaw, November 2024",
+            "url": "https://www.jointaro.com/interviews/companies/netflix/experiences/senior-frontend-engineer-warsaw-masovia-november-1-2024-no-offer-negative-c999399f/",
+            "publisher": "Taro",
+            "date": "2024-11"
+          }
+        ]
+      },
+      {
+        "id": "react-debounced-search",
+        "kind": "coding",
+        "tech": "react",
+        "title": "React Debounced Search with Fake API",
+        "access": "premium",
+        "route": "/react/coding/react-debounced-search",
+        "sources": [
+          {
+            "label": "Taro: Netflix senior frontend engineer interview, Warsaw, November 2024",
+            "url": "https://www.jointaro.com/interviews/companies/netflix/experiences/senior-frontend-engineer-warsaw-masovia-november-1-2024-no-offer-negative-c999399f/",
+            "publisher": "Taro",
+            "date": "2024-11"
+          }
+        ]
+      }
+    ],
+    "openai": [
+      {
+        "id": "react-chat-streaming-ui",
+        "kind": "coding",
+        "tech": "react",
+        "title": "Chat UI with Streaming Response",
+        "access": "premium",
+        "route": "/react/coding/react-chat-streaming-ui",
+        "sources": [
+          {
+            "label": "Taro: OpenAI senior frontend software engineer interview, United States, May 2024",
+            "url": "https://www.jointaro.com/interviews/companies/openai/experiences/senior-frontend-software-engineer-united-states-may-30-2024-no-offer-negative-32a807aa/",
+            "publisher": "Taro",
+            "date": "2024-05"
+          }
+        ]
+      },
+      {
+        "id": "ai-chat-textarea-design",
+        "kind": "system-design",
+        "title": "Design an AI Chat Composer and Streaming Turn",
+        "access": "free",
+        "route": "/system-design/ai-chat-textarea-design",
+        "sources": [
+          {
+            "label": "Taro: OpenAI senior frontend software engineer interview, United States, May 2024",
+            "url": "https://www.jointaro.com/interviews/companies/openai/experiences/senior-frontend-software-engineer-united-states-may-30-2024-no-offer-negative-32a807aa/",
+            "publisher": "Taro",
+            "date": "2024-05"
+          }
+        ]
+      }
+    ],
+    "servicenow": [
+      {
+        "id": "js-dom-renderer",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Build a DOM Renderer from a Nested Object",
+        "access": "premium",
+        "route": "/javascript/coding/js-dom-renderer",
+        "sources": [
+          {
+            "label": "Blind: ServiceNow phone screen for a staff engineer, frontend-leaning, September 2021",
+            "url": "https://www.teamblind.com/post/servicenow-phone-screen-staff-engineer-interview-8msftqw8",
+            "publisher": "Blind",
+            "date": "2021-09"
+          }
+        ]
+      },
+      {
+        "id": "js-create-counter",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Create a Counter Function",
+        "access": "free",
+        "route": "/javascript/coding/js-create-counter",
+        "sources": [
+          {
+            "label": "Medium: ServiceNow software engineer (UI) interview experience, 2025",
+            "url": "https://medium.com/@karunakumari000532/my-servicenow-software-engineer-ui-interview-experience-2025-23f315b960dc",
+            "publisher": "Medium",
+            "date": "2025-09"
+          }
+        ]
+      },
+      {
+        "id": "js-array-prototype-map",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Implement Array.prototype.map",
+        "access": "premium",
+        "route": "/javascript/coding/js-array-prototype-map",
+        "sources": [
+          {
+            "label": "Medium: ServiceNow software engineer (UI) interview experience, 2025",
+            "url": "https://medium.com/@karunakumari000532/my-servicenow-software-engineer-ui-interview-experience-2025-23f315b960dc",
+            "publisher": "Medium",
+            "date": "2025-09"
+          }
+        ]
+      },
+      {
+        "id": "js-array-foreach",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Implement arrayForEach (no prototype mutation)",
+        "access": "free",
+        "route": "/javascript/coding/js-array-foreach",
+        "sources": [
+          {
+            "label": "Medium: ServiceNow software engineer (UI) interview experience, 2025",
+            "url": "https://medium.com/@karunakumari000532/my-servicenow-software-engineer-ui-interview-experience-2025-23f315b960dc",
+            "publisher": "Medium",
+            "date": "2025-09"
+          }
+        ]
+      },
+      {
+        "id": "js-implement-bind",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Implement Function.prototype.bind",
+        "access": "free",
+        "route": "/javascript/coding/js-implement-bind",
+        "sources": [
+          {
+            "label": "Blind: ServiceNow phone screen for a staff engineer, frontend-leaning, September 2021",
+            "url": "https://www.teamblind.com/post/servicenow-phone-screen-staff-engineer-interview-8msftqw8",
+            "publisher": "Blind",
+            "date": "2021-09"
+          }
+        ]
+      },
+      {
+        "id": "react-nested-comments",
+        "kind": "coding",
+        "tech": "react",
+        "title": "React Nested Comments (Infinite Replies, Single Active Reply Input)",
+        "access": "premium",
+        "route": "/react/coding/react-nested-comments",
+        "sources": [
+          {
+            "label": "LeetCode Discuss: ServiceNow senior frontend developer interview experience, February 2026",
+            "url": "https://leetcode.com/discuss/post/7711064/",
+            "publisher": "LeetCode Discuss",
+            "date": "2026-03"
+          },
+          {
+            "label": "Blind: ServiceNow phone screen for a staff engineer, frontend-leaning, September 2021",
+            "url": "https://www.teamblind.com/post/servicenow-phone-screen-staff-engineer-interview-8msftqw8",
+            "publisher": "Blind",
+            "date": "2021-09"
+          }
+        ]
+      },
+      {
+        "id": "notification-toast-system",
+        "kind": "system-design",
+        "title": "Design a Toast Notification System",
+        "access": "free",
+        "route": "/system-design/notification-toast-system",
+        "sources": [
+          {
+            "label": "LeetCode Discuss: ServiceNow senior frontend developer interview experience, February 2026",
+            "url": "https://leetcode.com/discuss/post/7711064/",
+            "publisher": "LeetCode Discuss",
+            "date": "2026-03"
+          },
+          {
+            "label": "Blind: ServiceNow phone screen for a staff engineer, frontend-leaning, September 2021",
+            "url": "https://www.teamblind.com/post/servicenow-phone-screen-staff-engineer-interview-8msftqw8",
+            "publisher": "Blind",
+            "date": "2021-09"
+          }
+        ]
+      }
+    ],
+    "stripe": [
+      {
+        "id": "js-group-by",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Group By",
+        "access": "premium",
+        "route": "/javascript/coding/js-group-by",
+        "sources": [
+          {
+            "label": "LeetCode Discuss: Stripe software engineer 2 initial screen, October 2024",
+            "url": "https://leetcode.com/discuss/post/5883632/",
+            "publisher": "LeetCode Discuss",
+            "date": "2024-10"
+          }
+        ]
+      },
+      {
+        "id": "js-lodash-get",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Implement lodash.get",
+        "access": "premium",
+        "route": "/javascript/coding/js-lodash-get",
+        "sources": [
+          {
+            "label": "LeetCode Discuss: Stripe software engineer 2 initial screen, October 2024",
+            "url": "https://leetcode.com/discuss/post/5883632/",
+            "publisher": "LeetCode Discuss",
+            "date": "2024-10"
+          }
+        ]
+      },
+      {
+        "id": "js-debug-async-race",
+        "kind": "debug",
+        "tech": "javascript",
+        "title": "Fix async race in `fetchWithCache`",
+        "access": "premium",
+        "route": "/javascript/debug/js-debug-async-race",
+        "sources": [
+          {
+            "label": "Taro: Stripe frontend engineer interview, Barcelona, October 2023",
+            "url": "https://www.jointaro.com/interviews/companies/stripe/experiences/frontend-engineer-barcelona-october-1-2023-no-offer-neutral-ceb407e7/",
+            "publisher": "Taro",
+            "date": "2023-10"
+          }
+        ]
+      },
+      {
+        "id": "js-debug-stale-closure-autosave",
+        "kind": "debug",
+        "tech": "javascript",
+        "title": "Fix stale closure in delayed autosave callback",
+        "access": "premium",
+        "route": "/javascript/debug/js-debug-stale-closure-autosave",
+        "sources": [
+          {
+            "label": "Taro: Stripe frontend engineer interview, Barcelona, October 2023",
+            "url": "https://www.jointaro.com/interviews/companies/stripe/experiences/frontend-engineer-barcelona-october-1-2023-no-offer-neutral-ceb407e7/",
+            "publisher": "Taro",
+            "date": "2023-10"
+          }
+        ]
+      }
+    ],
+    "uber": [
+      {
+        "id": "js-concurrency-map-limit",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Concurrency-Limited Map (order-preserving)",
+        "access": "premium",
+        "route": "/javascript/coding/js-concurrency-map-limit",
+        "sources": [
+          {
+            "label": "LeetCode Discuss: Uber senior front end engineer phone screen, August 2022",
+            "url": "https://leetcode.com/discuss/post/2409192/",
+            "publisher": "LeetCode Discuss",
+            "date": "2022-08"
+          }
+        ]
+      }
+    ],
+    "waymo": [
+      {
+        "id": "angular-debounced-search",
+        "kind": "coding",
+        "tech": "angular",
+        "title": "Angular Debounced Search with Fake API (RxJS)",
+        "access": "premium",
+        "route": "/angular/coding/angular-debounced-search",
+        "sources": [
+          {
+            "label": "PracHub: Waymo senior frontend engineer interview experience, May 2026",
+            "url": "https://prachub.com/interview-experiences/waymo-senior-frontend-engineer-interview-experience-rejected-30-minutes-after-pushing-on-the-process",
+            "publisher": "PracHub",
+            "date": "2026-05"
+          }
+        ]
+      },
+      {
+        "id": "js-create-deferred-promise",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Create a Deferred Promise (For Async Tests)",
+        "access": "free",
+        "route": "/javascript/coding/js-create-deferred-promise",
+        "sources": [
+          {
+            "label": "PracHub: Waymo senior frontend engineer interview experience, May 2026",
+            "url": "https://prachub.com/interview-experiences/waymo-senior-frontend-engineer-interview-experience-rejected-30-minutes-after-pushing-on-the-process",
+            "publisher": "PracHub",
+            "date": "2026-05"
+          }
+        ]
+      },
+      {
+        "id": "js-debounce",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Debounce Function",
+        "access": "free",
+        "route": "/javascript/coding/js-debounce",
+        "sources": [
+          {
+            "label": "PracHub: Waymo senior frontend engineer interview experience, May 2026",
+            "url": "https://prachub.com/interview-experiences/waymo-senior-frontend-engineer-interview-experience-rejected-30-minutes-after-pushing-on-the-process",
+            "publisher": "PracHub",
+            "date": "2026-05"
+          }
+        ]
+      },
+      {
+        "id": "js-fetch-json-timeout",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Fetch JSON with Timeout + Abort",
+        "access": "free",
+        "route": "/javascript/coding/js-fetch-json-timeout",
+        "sources": [
+          {
+            "label": "PracHub: Waymo senior frontend engineer interview experience, May 2026",
+            "url": "https://prachub.com/interview-experiences/waymo-senior-frontend-engineer-interview-experience-rejected-30-minutes-after-pushing-on-the-process",
+            "publisher": "PracHub",
+            "date": "2026-05"
+          }
+        ]
+      },
+      {
+        "id": "js-filter-tree-render-indented",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Filter a Tree by Substring and Render It Indented",
+        "access": "free",
+        "route": "/javascript/coding/js-filter-tree-render-indented",
+        "sources": [
+          {
+            "label": "PracHub: Waymo senior frontend engineer interview experience, May 2026",
+            "url": "https://prachub.com/interview-experiences/waymo-senior-frontend-engineer-interview-experience-rejected-30-minutes-after-pushing-on-the-process",
+            "publisher": "PracHub",
+            "date": "2026-05"
+          }
+        ]
+      },
+      {
+        "id": "js-promise-all",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Implement Promise.all",
+        "access": "premium",
+        "route": "/javascript/coding/js-promise-all",
+        "sources": [
+          {
+            "label": "PracHub: Waymo senior frontend engineer interview experience, May 2026",
+            "url": "https://prachub.com/interview-experiences/waymo-senior-frontend-engineer-interview-experience-rejected-30-minutes-after-pushing-on-the-process",
+            "publisher": "PracHub",
+            "date": "2026-05"
+          }
+        ]
+      },
+      {
+        "id": "react-autocomplete-search-starter",
+        "kind": "coding",
+        "tech": "react",
+        "title": "React Autocomplete Interview Question",
+        "access": "free",
+        "route": "/react/coding/react-autocomplete-search-starter",
+        "sources": [
+          {
+            "label": "PracHub: Waymo senior frontend engineer interview experience, May 2026",
+            "url": "https://prachub.com/interview-experiences/waymo-senior-frontend-engineer-interview-experience-rejected-30-minutes-after-pushing-on-the-process",
+            "publisher": "PracHub",
+            "date": "2026-05"
+          }
+        ]
+      },
+      {
+        "id": "ai-chat-textarea-design",
+        "kind": "system-design",
+        "title": "Design an AI Chat Composer and Streaming Turn",
+        "access": "free",
+        "route": "/system-design/ai-chat-textarea-design",
+        "sources": [
+          {
+            "label": "PracHub: Waymo senior frontend engineer interview experience, May 2026",
+            "url": "https://prachub.com/interview-experiences/waymo-senior-frontend-engineer-interview-experience-rejected-30-minutes-after-pushing-on-the-process",
+            "publisher": "PracHub",
+            "date": "2026-05"
+          }
+        ]
+      },
+      {
+        "id": "ng-debug-fleet-status-bug-reports",
+        "kind": "debug",
+        "tech": "angular",
+        "title": "Fix a fleet status board from three user bug reports",
+        "access": "premium",
+        "route": "/angular/debug/ng-debug-fleet-status-bug-reports",
+        "sources": [
+          {
+            "label": "PracHub: Waymo senior frontend engineer interview experience, May 2026",
+            "url": "https://prachub.com/interview-experiences/waymo-senior-frontend-engineer-interview-experience-rejected-30-minutes-after-pushing-on-the-process",
+            "publisher": "PracHub",
+            "date": "2026-05"
+          }
+        ]
+      }
+    ]
+  }
+}

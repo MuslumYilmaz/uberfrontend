@@ -2,6 +2,7 @@ import type { QuestionSource } from '../models/question.model';
 
 const HTTPS_RE = /^https:\/\//i;
 const DATE_RE = /^(\d{4})-(\d{2})(?:-(\d{2}))?$/;
+const COMPANY_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const MONTH_NAMES = [
   'January', 'February', 'March', 'April', 'May', 'June',
   'July', 'August', 'September', 'October', 'November', 'December',
@@ -18,8 +19,9 @@ export function normalizeQuestionSources(value: unknown): QuestionSource[] {
     const publisher = typeof record['publisher'] === 'string' ? record['publisher'].trim() : '';
     const date = typeof record['date'] === 'string' ? record['date'].trim() : '';
     const note = typeof record['note'] === 'string' ? record['note'].trim() : '';
+    const company = typeof record['company'] === 'string' ? record['company'].trim().toLowerCase() : '';
     if (!label || !HTTPS_RE.test(url)) return [];
-    return [{ label, url, publisher, date, ...(note ? { note } : {}) }];
+    return [{ label, url, publisher, date, ...(note ? { note } : {}), ...(COMPANY_RE.test(company) ? { company } : {}) }];
   });
 }
 
