@@ -263,6 +263,30 @@ describe('PricingPlansSectionComponent', () => {
     expect((page.querySelector('.rec-badge')?.textContent || '')).toContain('Recommended — 4–12 week interview sprint');
   });
 
+  it('keeps the server plan order on the first render and applies the mobile order after hydration', async () => {
+    // Prerendered HTML carries the desktop order; the first client render must match it.
+    spyOn(window, 'matchMedia').and.callFake((query: string) => ({
+      matches: query.includes('max-width: 640px'),
+      media: query,
+      onchange: null,
+      addListener: () => undefined,
+      removeListener: () => undefined,
+      addEventListener: () => undefined,
+      removeEventListener: () => undefined,
+      dispatchEvent: () => false,
+    }) as MediaQueryList);
+    component.offerVersion = PRICING_V2_OFFER_VERSION;
+
+    fixture.detectChanges();
+    const cardTitles = () => Array.from(fixture.nativeElement.querySelectorAll('.pr-grid .pr-card .title'))
+      .map((node) => (node as HTMLElement).textContent?.trim());
+    expect(cardTitles()).toEqual(['Monthly', 'Quarterly', 'Annual']);
+
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(cardTitles()).toEqual(['Quarterly', 'Monthly', 'Annual']);
+  });
+
   it('names the premium gate concretely in the baseline offer and the FAQ', () => {
     fixture.detectChanges();
 

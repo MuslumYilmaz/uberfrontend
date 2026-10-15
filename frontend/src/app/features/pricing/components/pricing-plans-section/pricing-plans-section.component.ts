@@ -1065,7 +1065,9 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
   }
 
   ngOnInit(): void {
-    this.syncPrimaryPlanOrder();
+    // The viewport-dependent plan order is applied after the first render (see
+    // ngAfterViewInit): the prerendered HTML carries the server order, and the
+    // first client render must match it for hydration to claim the DOM.
     this.pendingCheckoutIntent = this.ctaMode === 'checkout' ? this.checkoutIntent.load() : null;
     this.maybePrefetchCheckout();
     this.schedulePendingCheckoutAutoContinue();
@@ -1083,6 +1085,11 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
   ngAfterViewInit(): void {
     this.viewInitialized = true;
     this.scheduleAnalyticsObservation();
+    if (typeof window !== 'undefined') {
+      // Runs after hydration has claimed the server DOM and before the next paint,
+      // so a mobile viewport reorders the cards as an ordinary update.
+      queueMicrotask(() => this.syncPrimaryPlanOrder());
+    }
   }
 
   ngOnDestroy(): void {
