@@ -3315,6 +3315,22 @@ test.describe('seo-ssr', () => {
     expectNoHydrationOrChunkIssues(runtimeIssues, NETFLIX_PREVIEW_PATH);
   });
 
+  test('raw Amazon company preview renders the official preparation pages table with follow links', async ({ request }) => {
+    test.setTimeout(120_000);
+    const html = await readRawHtml(request, '/companies/amazon/preview');
+    const caseText = rawVisibleTextPreserveCase(html);
+    expect(caseText).toContain('Official preparation pages from Amazon');
+    expect(caseText).toContain('FrontendAtlas is not affiliated with Amazon');
+    const anchor = html.match(/<a[^>]*href="https:\/\/amazon\.jobs\/content\/en\/how-we-hire\/fee-interview-prep"[^>]*>/)?.[0] ?? '';
+    expect(anchor, 'official link anchor').not.toBe('');
+    expect(anchor).toContain('rel="noopener noreferrer"');
+    expect(anchor).not.toContain('nofollow');
+    expect(anchor).toContain('target="_blank"');
+
+    const apple = await readRawHtml(request, '/companies/apple/preview');
+    expect(rawVisibleTextPreserveCase(apple)).not.toContain('Official preparation pages from');
+  });
+
   for (const guide of AUTHORED_GUIDE_CASES) {
     test(`raw ${guide.label} company preview exposes the authored guide, sourced prompts, schema and crawlable links`, async ({ request }) => {
       test.setTimeout(120_000);

@@ -11,6 +11,8 @@ import { SeoService } from '../../../core/services/seo.service';
 import { companyBrandFor } from '../../../shared/company-branding';
 import type { AuthoredCompanyPreview, AuthoredSource } from '../../../shared/company-previews/authored-company-preview.model';
 import { AUTHORED_COMPANY_PREVIEWS_TOKEN } from '../../../shared/company-previews/authored-company-previews';
+import { COMPANY_OFFICIAL_GUIDES, type CompanyOfficialGuide } from '../../../shared/company-previews/company-official-guides';
+import { CompanyOfficialGuidesComponent } from '../../../shared/components/company-official-guides/company-official-guides.component';
 import {
   FaQuestionRowComponent,
   FaQuestionRowMetaChip,
@@ -199,12 +201,17 @@ const OPENAI_PREP_SEQUENCE: OpenAiPrepDay[] = [
 
 @Component({
     selector: 'app-company-preview',
-    imports: [CommonModule, RouterModule, FaQuestionRowComponent],
+    imports: [CommonModule, RouterModule, FaQuestionRowComponent, CompanyOfficialGuidesComponent],
     templateUrl: './company-preview.component.html',
     styleUrls: ['./company-preview.component.css']
 })
 export class CompanyPreviewComponent implements OnInit {
   readonly companyPracticeDisclaimer = COMPANY_PRACTICE_DISCLAIMER;
+
+  /** Preparation pages the company publishes itself; empty for companies without one. */
+  get officialGuides(): readonly CompanyOfficialGuide[] {
+    return COMPANY_OFFICIAL_GUIDES[this.slug] ?? [];
+  }
   slug = '';
   label = '';
   isOpenAiPreview = false;

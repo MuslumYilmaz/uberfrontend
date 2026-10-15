@@ -445,6 +445,25 @@ describe('CompanyPreviewComponent', () => {
     expect(hrefs).toContain('/pricing?src=company_preview_netflix');
   });
 
+  it('renders the official preparation pages table only for companies that publish one', async () => {
+    const amazon = await createComponent('amazon');
+    const amazonHost: HTMLElement = amazon.nativeElement;
+    const table = amazonHost.querySelector('[data-testid="company-official-guides"]');
+    expect(table).not.toBeNull();
+    expect(table?.textContent).toContain('Official preparation pages from Amazon');
+    const links = Array.from(table?.querySelectorAll('tbody a') ?? []) as HTMLAnchorElement[];
+    expect(links.map((link) => link.getAttribute('href'))).toContain('https://amazon.jobs/content/en/how-we-hire/fee-interview-prep');
+    expect(links.every((link) => link.getAttribute('rel') === 'noopener noreferrer')).toBeTrue();
+    const ctaIndex = amazonHost.innerHTML.indexOf('cta-stack');
+    expect(amazonHost.innerHTML.indexOf('company-official-guides')).toBeLessThan(ctaIndex);
+
+    const apple = await createComponent('apple');
+    expect((apple.nativeElement as HTMLElement).querySelector('[data-testid="company-official-guides"]')).toBeNull();
+
+    const google = await createComponent('google');
+    expect((google.nativeElement as HTMLElement).querySelector('#google-official-guides')?.textContent).toContain('Official preparation pages from Google');
+  });
+
   it('frames generic company previews as editorial practice groupings', async () => {
     const fixture = await createComponent('amazon');
     const host: HTMLElement = fixture.nativeElement;

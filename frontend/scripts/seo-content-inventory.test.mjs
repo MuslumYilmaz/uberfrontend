@@ -402,6 +402,17 @@ test('actual hint edits re-date one exercise, and mapped rules re-date only the 
   assert.deepEqual(changes(shared), covered);
 });
 
+test('actual official guide table edits re-date only the company whose row changed', () => {
+  const file = `${APP}shared/company-previews/company-official-guides.ts`;
+  const read = currentReader();
+  const before = buildSeoInventory(read);
+  const original = read.read(file);
+  const modified = original.replace("label: 'Front End Engineer interview prep',", "label: 'Front End Engineer interview preparation',");
+  assert.notEqual(modified, original);
+  const changes = [...buildSeoInventory(currentReader({ [file]: modified }))].filter(([route, entry]) => before.get(route)?.fingerprint !== entry.fingerprint).map(([route]) => route);
+  assert.deepEqual(changes, ['/companies/amazon/preview']);
+});
+
 test('actual Waymo guide edits re-date only the Waymo preview and the directory that lists it', () => {
   const file = `${APP}shared/company-previews/waymo-preview-content.ts`;
   const read = currentReader();

@@ -130,7 +130,7 @@ function projectNode(node, scope = {}) {
   if (scope.company) {
     const companyPrefix = name.match(/^([A-Z][A-Z0-9]*)_/)?.[1]?.toLowerCase();
     if (companyPrefix && AUTHORED_COMPANY_SET.has(companyPrefix) && companyPrefix !== scope.company) return null;
-    if (ts.isVariableDeclaration(node) && name === 'AUTHORED_COMPANY_PREVIEWS' && ts.isObjectLiteralExpression(node.initializer)) {
+    if (ts.isVariableDeclaration(node) && (name === 'AUTHORED_COMPANY_PREVIEWS' || name === 'COMPANY_OFFICIAL_GUIDES') && ts.isObjectLiteralExpression(node.initializer)) {
       return [name, ...node.initializer.properties.filter((property) => propertyName(property.name) === scope.company).map((property) => projectNode(property, scope))];
     }
   }

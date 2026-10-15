@@ -1468,6 +1468,41 @@ try {
     detail: `item_count=${netflixBreadcrumbItems.length}`,
   });
 
+  const OFFICIAL_GUIDE_SMOKE = [
+    {
+      label: 'Amazon',
+      route: '/companies/amazon/preview',
+      heading: 'Official preparation pages from Amazon',
+      link: 'https://amazon.jobs/content/en/how-we-hire/fee-interview-prep',
+    },
+    {
+      label: 'Google',
+      route: '/companies/google/preview',
+      heading: 'Official preparation pages from Google',
+      link: 'https://www.google.com/about/careers/applications/interview-tips',
+    },
+  ];
+  for (const guide of OFFICIAL_GUIDE_SMOKE) {
+    const body = await curlBody(`${base}${guide.route}`, { followRedirects: true, userAgent: GOOGLEBOT_USER_AGENT });
+    const visibleText = extractVisibleText(body);
+    const hasHeading = visibleText.includes(normalizeText(guide.heading));
+    const hasLink = body.includes(`href="${guide.link}"`);
+    checks.push({
+      name: `${guide.label} company preview renders the official preparation pages table in raw HTML`,
+      ok: hasHeading && hasLink,
+      detail: `heading=${hasHeading} link=${hasLink}`,
+    });
+  }
+  {
+    const body = await curlBody(`${base}/companies/apple/preview`, { followRedirects: true, userAgent: GOOGLEBOT_USER_AGENT });
+    const leaked = extractVisibleText(body).includes(normalizeText('Official preparation pages from'));
+    checks.push({
+      name: 'Apple company preview has no official preparation pages table',
+      ok: !leaked,
+      detail: leaked ? 'table rendered without data' : 'absent',
+    });
+  }
+
   for (const guide of AUTHORED_GUIDE_SMOKE) {
     const guideUrl = `${base}${guide.route}`;
     const guideCanonical = `https://frontendatlas.com${guide.route}`;

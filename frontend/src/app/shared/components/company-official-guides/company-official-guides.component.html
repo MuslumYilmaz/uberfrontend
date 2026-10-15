@@ -1,0 +1,30 @@
+@if (guides.length) {
+  <section class="official-guides" [attr.aria-labelledby]="headingId" data-testid="company-official-guides">
+    <div class="official-guides__head">
+      <p class="official-guides__kicker">Published by {{ companyLabel }}</p>
+      <h2 [attr.id]="headingId">Official preparation pages from {{ companyLabel }}</h2>
+      <p class="official-guides__intro">
+        {{ companyLabel }} publishes these pages itself. They describe the process and expectations in the company's own
+        words; they do not list interview questions, and FrontendAtlas is not affiliated with {{ companyLabel }}.
+      </p>
+    </div>
+    <table class="official-guides__table">
+      <thead>
+        <tr>
+          <th scope="col">Page</th>
+          <th scope="col">What it covers</th>
+          <th scope="col">Checked</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (guide of guides; track guide.url) {
+          <tr>
+            <td data-label="Page"><a [href]="guide.url" target="_blank" rel="noopener noreferrer">{{ guide.label }}</a></td>
+            <td data-label="What it covers">{{ guide.covers }}</td>
+            <td data-label="Checked">{{ formatChecked(guide.checkedAt) }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </section>
+}
