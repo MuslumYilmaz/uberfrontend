@@ -35,6 +35,11 @@ import { FaqSectionComponent } from '../../../../shared/faq-section/faq-section.
 import { FaButtonComponent } from '../../../../shared/ui/button/fa-button.component';
 import { PUBLIC_CHANGELOG_ENTRIES } from '../../../../core/content/public-changelog';
 import { premiumPracticeLabel, resolvePremiumPracticeCount } from '../../../../core/utils/premium-practice-count.util';
+import {
+  PRICING_BASELINE_OFFER_VERSION,
+  PRICING_V2_OFFER_VERSION,
+  isSprintOfferVersion,
+} from '../../../../core/utils/offer-version.util';
 import { SHOWCASE_STATS } from '../../../../generated/content-metadata';
 
 type PricingVariant = 'full' | 'compact';
@@ -54,8 +59,7 @@ type PricingPlan = {
 };
 
 export const PRICING_PAGE_LAYOUT = 'interview_sprint_v1';
-export const PRICING_BASELINE_OFFER_VERSION = 'pricing_baseline_v1';
-export const PRICING_V2_OFFER_VERSION = 'interview_sprint_v2';
+export { PRICING_BASELINE_OFFER_VERSION, PRICING_V2_OFFER_VERSION };
 export const RECOMMENDED_PRICING_PLAN: PlanId = 'quarterly';
 
 @Component({
@@ -68,13 +72,17 @@ export const RECOMMENDED_PRICING_PLAN: PlanId = 'quarterly';
         <p class="pr-kicker">Premium for interview sprints</p>
         <h1>Prepare faster with deeper frontend interview reps</h1>
         <p class="muted" *ngIf="!isOfferV2(); else offerV2HeroCopy">
-          Premium unlocks the full coding and system-design depth behind the free workflow:
-          deeper prompts, guided solutions where available, track/company depth, and saved progress while you prep.
+          Premium unlocks the prompts we stand behind in detail. Every Premium coding question ships with a guided
+          solution. JavaScript and debugging tasks run checks in the browser, and most React, Angular and Vue tasks do
+          too. Front-end system design walkthroughs carry official-source checks, and company practice pages cite a
+          public interview report wherever a prompt is modelled on one.
         </p>
         <ng-template #offerV2HeroCopy>
           <p class="muted">
-            Practice across {{ totalQuestionCount }} questions and {{ premiumPracticeSummary }} with runnable workspaces,
-            behavioral checks, guided solutions, front-end system-design walkthroughs, and official-source checks.
+            Practice across {{ totalQuestionCount }} questions and {{ premiumPracticeSummary }}. Every Premium coding
+            question ships with a guided solution, JavaScript and debugging tasks run checks in the browser, front-end
+            system design walkthroughs carry official-source checks, and company practice pages cite a public interview
+            report wherever a prompt is modelled on one.
           </p>
         </ng-template>
       </header>
@@ -163,7 +171,7 @@ export const RECOMMENDED_PRICING_PLAN: PlanId = 'quarterly';
         <span><i class="pi pi-eye" aria-hidden="true"></i>Free examples available</span>
         <span class="pr-trust-strip__refund">
           <i class="pi pi-replay" aria-hidden="true"></i>
-          <a [routerLink]="['/legal/refund']">Limited-use refund requests are reviewed under the Refund Policy</a>
+          <a [routerLink]="['/legal/refund']">14-day refund on your first purchase, see the Refund Policy</a>
         </span>
       </div>
 
@@ -393,11 +401,12 @@ export const RECOMMENDED_PRICING_PLAN: PlanId = 'quarterly';
           <p class="eyebrow">Product proof</p>
           <h3>What you actually practice</h3>
           <ul class="proof-list">
-            <li><i class="pi pi-book proof-icon" aria-hidden="true"></i> Large question library with UI-first coding and practical scenarios</li>
-            <li><i class="pi pi-desktop proof-icon" aria-hidden="true"></i> UI-focused coding with real prompts and starter files</li>
-            <li><i class="fa-solid fa-flask proof-icon" aria-hidden="true"></i> Runnable workspaces with live preview and behavioral checks across supported tasks</li>
+            <li><i class="pi pi-book proof-icon" aria-hidden="true"></i> {{ totalQuestionCount }} questions across UI coding, JavaScript, concepts, debugging and front-end system design</li>
+            <li><i class="pi pi-desktop proof-icon" aria-hidden="true"></i> A guided solution on every coding question, free or Premium, with starter files to begin from</li>
+            <li><i class="fa-solid fa-flask proof-icon" aria-hidden="true"></i> Runnable checks on every JavaScript and debugging task, and on most React, Angular and Vue tasks</li>
             <li><i class="pi pi-shield proof-icon" aria-hidden="true"></i> Practical constraints: accessibility, performance, state</li>
-            <li><i class="pi pi-sitemap proof-icon" aria-hidden="true"></i> System design reasoning for front-end surfaces</li>
+            <li><i class="pi pi-sitemap proof-icon" aria-hidden="true"></i> Front-end system design walkthroughs with official-source checks</li>
+            <li><i class="pi pi-briefcase proof-icon" aria-hidden="true"></i> Company practice pages that cite a public interview report wherever a prompt is modelled on one</li>
           </ul>
         </div>
         <div class="proof-block">
@@ -428,9 +437,9 @@ export const RECOMMENDED_PRICING_PLAN: PlanId = 'quarterly';
             <p class="eyebrow">Risk reversal</p>
             <h3>Try the free workflow before you decide</h3>
             <p class="muted risk-reversal__copy">
-              Refund requests are reviewed case by case within applicable legal windows and generally require limited
-              Premium usage. Renewal charges and unused subscription time are generally non-refundable; mandatory
-              consumer rights still apply.
+              Your first Premium purchase can be refunded in full within 14 days of the order, with no usage test.
+              Renewal charges and unused subscription time are generally non-refundable; mandatory consumer rights
+              still apply.
             </p>
           </div>
           <div class="risk-reversal__links">
@@ -640,7 +649,7 @@ export class PricingPlansSectionComponent implements OnInit, OnChanges, AfterVie
     {
       label: 'Interview sprint guidance',
       freeValue: 'Public previews and warm-up paths',
-      premiumValue: `${this.premiumPracticeSummary} with guided solutions and track/company depth`,
+      premiumValue: `${this.premiumPracticeSummary}, each coding prompt with a guided solution, plus track and company practice pages`,
     },
     {
       label: 'Continuity',
@@ -685,11 +694,11 @@ export class PricingPlansSectionComponent implements OnInit, OnChanges, AfterVie
     ];
 
   featureCards = [
-    { icon: 'fa-solid fa-book', title: 'Large question library', desc: 'UI-first coding and practical front-end scenarios across the current library.' },
-    { icon: 'fa-solid fa-diagram-project', title: 'Real workflow', desc: 'Code + preview + tests + review signals — designed to feel like real interviews.' },
-    { icon: 'fa-solid fa-file-code', title: 'Starter files included', desc: 'You start from realistic scaffolds, not blank files.' },
+    { icon: 'fa-solid fa-list-check', title: 'Guided solutions', desc: 'Every coding question ends in a guided solution: a clean baseline, the edge cases, and the tradeoffs worth saying out loud.' },
+    { icon: 'fa-solid fa-diagram-project', title: 'Runnable workflow', desc: 'Start from a realistic scaffold, then code, preview and run checks in one workspace, the way a live round feels.' },
+    { icon: 'fa-solid fa-building', title: 'Company practice pages', desc: 'A prompt modelled on a public interview report cites it on the page. Editorial groupings are labelled as such.' },
+    { icon: 'fa-solid fa-sitemap', title: 'System design for UI', desc: 'Front-end system design walkthroughs focused on UI architecture and tradeoffs, with official-source checks.' },
     { icon: 'fa-solid fa-chart-line', title: 'Progress tracking', desc: 'Saved work and tracking for signed-in accounts.' },
-    { icon: 'fa-solid fa-sitemap', title: 'System design for UI', desc: 'Front-end system design walkthroughs focused on UI architecture and tradeoffs.' },
     { icon: 'fa-solid fa-rotate', title: 'Shipped updates', desc: 'The public changelog documents released content and product improvements.' },
   ];
 
@@ -765,12 +774,12 @@ This makes it easy to build a weekly plan: pick a focus → grind a tight set �
         {
           id: 'solutions-and-explanations',
           q: 'Do exercises include solutions and explanations?',
-          a: `Yes — supported question sets include solutions and detailed explanations.<br><br>
-Included solutions focus on what matters in interviews:<br>
+          a: `Yes. Every coding question, free or Premium, includes a guided solution.<br><br>
+Solutions focus on what matters in interviews:<br>
 - a clean baseline implementation<br>
-- edge cases + common mistakes<br>
-- tradeoffs between approaches (when it’s not just “one right answer”)<br><br>
-Some prompts are intentionally open-ended to mirror real interview discussion.`,
+- edge cases and common mistakes<br>
+- tradeoffs between approaches when there is more than one right answer<br><br>
+Concept questions carry worked answers, and system design walkthroughs are the solution itself. Some prompts stay open-ended on purpose to mirror real interview discussion.`,
         },
       ],
     },
@@ -788,10 +797,9 @@ If preview isn’t the right signal (pure logic), the task uses checks/tests ins
         {
           id: 'run-tests',
           q: 'Can I run tests / validate my solution inside the app?',
-          a: `Yes — tasks that can be validated deterministically include checks/tests (common for JS/TS).<br><br>
-This helps you practice like a professional workflow:<br>
-write → run checks → fix edge cases → ship.<br><br>
-HTML/CSS tasks typically rely on live preview first, because visuals are the primary correctness signal.`,
+          a: `Yes. Every JavaScript and debugging task has runnable checks, and most React, Angular and Vue tasks do too.<br><br>
+This mirrors a professional loop: write, run checks, fix edge cases, ship.<br><br>
+HTML and CSS tasks rely on the live preview instead, because visuals are the primary correctness signal.`,
         },
         {
           id: 'save-progress',
@@ -811,27 +819,42 @@ You can also reset any task back to the starter whenever you want to re-practice
         {
           id: 'premium-includes',
           q: 'What’s included in Premium?',
-          a: `Premium is for people who want the fastest path to results.<br><br>
-Typically, it unlocks:<br>
-- Premium question sets and deeper practice content<br>
-- Guided solutions and explanations across supported question sets<br>
-- Ongoing content updates while your plan is active<br><br>
-If you’re practicing consistently, Premium mainly saves you time: less hunting, more reps.`,
+          a: `Premium unlocks the deeper half of the library and the material behind it:<br>
+- the Premium coding prompts, each with a guided solution<br>
+- front-end system design walkthroughs with official-source checks<br>
+- debug scenarios and tradeoff battles<br>
+- company practice pages, with a public interview report cited wherever a prompt is modelled on one<br>
+- content updates while your plan is active<br><br>
+Every paid plan unlocks the same library; only the access period changes.`,
         },
         {
           id: 'cancel-anytime',
           q: 'Can I cancel a subscription anytime?',
           a: `Yes.<br><br>
 Cancel anytime and you keep access until the end of your current billing period.<br>
-No “gotchas” — you’re just stopping the next renewal.`,
+Lemon Squeezy, our payment provider, emails a renewal reminder seven days before a renewal.<br>
+No surprises: cancelling only stops the next renewal.`,
         },
         {
           id: 'refunds',
           q: 'Do you offer refunds?',
-          a: `We handle refunds fairly and consistently, based on the rules in our Refund Policy.<br><br>
-Eligibility depends on factors like purchase type and usage.<br><br>
+          a: `Yes, for a first purchase: ask within 14 days of the order and we refund it in full, with no usage test. One first-purchase refund per account.<br><br>
+Renewal charges and unused subscription time are generally non-refundable, and mandatory consumer rights always apply.<br><br>
 For the exact terms, see <code>/legal/refund</code>.<br>
-If you think you were charged incorrectly or something isn’t working, email <code>support@frontendatlas.com</code> and we’ll help.`,
+To request a refund or report a wrong charge, email <code>support@frontendatlas.com</code> with your order ID.`,
+        },
+        {
+          id: 'employer-reimbursement',
+          q: 'Can my employer reimburse this?',
+          a: `Often, yes. Interview prep usually fits a learning or development budget.<br><br>
+Lemon Squeezy, our payment provider, emails a receipt for every order. You can create a PDF invoice from its My Orders page, or from the billing portal linked in your profile for subscriptions.<br><br>
+If your employer needs anything else, email <code>support@frontendatlas.com</code>.`,
+        },
+        {
+          id: 'student-discount',
+          q: 'Is there a student discount?',
+          a: `Yes: 40% off the quarterly and annual plans while you are enrolled.<br><br>
+Email <code>support@frontendatlas.com</code> from your school address. We reply with a personal pricing link that applies the discount at checkout. Each link covers the current term and is meant for one purchase.`,
         },
       ],
     },
@@ -863,7 +886,8 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
   ];
 
   isOfferV2(): boolean {
-    return this.normalizedOfferVersion() === PRICING_V2_OFFER_VERSION;
+    // v2 and every later sprint version share the layout; see offer-version.util.ts.
+    return isSprintOfferVersion(this.normalizedOfferVersion());
   }
 
   activeProofChips(): string[] {

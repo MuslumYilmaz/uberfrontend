@@ -137,9 +137,12 @@ describe('ShowcasePageComponent', () => {
     );
   });
 
-  it('keeps homepage pricing navigation on baseline and enables shared checkout only for offer v2', async () => {
+  it('renders the prerender sprint defaults first and follows the backend checkout config afterwards', async () => {
     const component = fixture.componentInstance;
-    expect(component.pricingCtaMode).toBe('navigatePricing');
+    // Prerender contract: the sprint layout and default prices render before any config arrives.
+    expect(component.pricingCtaMode).toBe('checkout');
+    expect(component.pricingOfferVersion).toBe('interview_sprint_v2');
+    expect(component.pricingPlanDetails?.monthly?.amountCents).toBe(1200);
 
     billingCheckout.getCheckoutConfig.and.resolveTo({
       configuredProvider: 'lemonsqueezy',

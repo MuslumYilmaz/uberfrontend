@@ -2,7 +2,7 @@
   "name": "frontendatlas",
   "version": "0.0.0",
   "scripts": {
-    "gen:data": "node scripts/sync-app-ui-assets.mjs && node scripts/sync-monaco-assets.mjs && node scripts/gen-sentry-env.mjs && node scripts/gen-deployment-env.mjs && node scripts/sync-tradeoff-battle-access.mjs && node scripts/generate-practice-registry.mjs && node scripts/generate-angular-decision-graphs.mjs && node scripts/gen-showcase-stats.mjs && node scripts/gen-company-reports.mjs && node scripts/gen-content-metadata.mjs && npm run gen:seo && node scripts/gen-data-version.mjs && node scripts/sync-cdn-assets.mjs && node scripts/generate-prerender-routes.mjs && node scripts/prerender-sitemap-diff.mjs",
+    "gen:data": "node scripts/sync-app-ui-assets.mjs && node scripts/sync-monaco-assets.mjs && node scripts/gen-sentry-env.mjs && node scripts/gen-deployment-env.mjs && node scripts/sync-tradeoff-battle-access.mjs && node scripts/generate-practice-registry.mjs && node scripts/generate-angular-decision-graphs.mjs && node scripts/gen-showcase-stats.mjs && node scripts/gen-pricing-defaults.mjs && node scripts/gen-company-reports.mjs && node scripts/gen-content-metadata.mjs && npm run gen:seo && node scripts/gen-data-version.mjs && node scripts/sync-cdn-assets.mjs && node scripts/generate-prerender-routes.mjs && node scripts/prerender-sitemap-diff.mjs",
     "sync:monaco-assets": "node scripts/sync-monaco-assets.mjs",
     "check:monaco-assets": "node scripts/sync-monaco-assets.mjs --check",
     "test:monaco-worker": "node --test scripts/monaco-signature-help-worker.test.mjs",

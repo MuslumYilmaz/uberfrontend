@@ -128,17 +128,18 @@ for (const path of legalRoutes) {
   });
 }
 
-test('refund policy states the support channel and limited-usage review clearly', async ({ page }) => {
+test('refund policy states the support channel and the first-purchase refund clearly', async ({ page }) => {
   await page.goto('/legal/refund');
   const body = page.locator('body');
 
   await expect(body).toContainText('Refund requests: support@frontendatlas.com');
   await expect(body).toContainText(
-    'By limited usage, we mean the paid library has not been substantially consumed. ' +
-      'We assess this case by case based on request timing and available account records.',
+    'Your first Premium purchase on any plan (monthly, quarterly, annual, or lifetime) can be refunded in full ' +
+      'if you ask within 14 days of the order. You do not need to give a reason, and how much of the library you ' +
+      'used does not matter.',
   );
   await expect(body).toContainText('This policy does not limit mandatory consumer rights');
-  await expect(body).toContainText('Effective date: 2025-12-31');
+  await expect(body).toContainText('Effective date: 2026-10-15');
 });
 
 const correctedRouteCases: ReadonlyArray<{

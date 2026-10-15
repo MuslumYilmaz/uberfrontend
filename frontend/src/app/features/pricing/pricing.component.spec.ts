@@ -4,6 +4,7 @@ import { provideRouter } from '@angular/router';
 import { AnalyticsService } from '../../core/services/analytics.service';
 import { AuthService } from '../../core/services/auth.service';
 import { BillingCheckoutService } from '../../core/services/billing-checkout.service';
+import { PRERENDER_PLAN_DETAILS } from '../../generated/pricing-defaults';
 import { PricingComponent } from './pricing.component';
 
 describe('PricingComponent', () => {
@@ -53,12 +54,15 @@ describe('PricingComponent', () => {
     expect(component.paymentsConfigReady).toBeTrue();
     expect(component.paymentsEnabled).toBeFalse();
     expect(component.checkoutAvailability).toBeNull();
+    // The prerender defaults survive a failed config: prices stay visible, checkout stays disabled.
+    expect(component.planDetails).toEqual(PRERENDER_PLAN_DETAILS);
+    expect(component.offerVersion).toBe('interview_sprint_v2');
     expect(analyticsStub.track).toHaveBeenCalledWith('pricing_page_viewed', jasmine.objectContaining({
       src: 'pricing_page',
       surface: 'pricing_page',
       page: 'pricing',
-      page_layout: 'interview_sprint_v1',
-      offer_version: 'pricing_baseline_v1',
+      page_layout: 'interview_sprint_v2',
+      offer_version: 'interview_sprint_v2',
       checkout_surface: 'hosted_new_tab',
       recommended_plan: 'quarterly',
     }));
@@ -84,6 +88,10 @@ describe('PricingComponent', () => {
     expect(component.paymentsConfigReady).toBeFalse();
     expect(monthlyButton.disabled).toBeTrue();
     expect(planGrid.getAttribute('aria-busy')).toBe('true');
+    // Prerender contract: the sprint layout and the default prices render before any config arrives.
+    expect(fixture.nativeElement.querySelectorAll('.pr-grid .pr-card').length).toBe(3);
+    expect(monthlyButton.closest('.pr-card')?.textContent || '').toContain('$12');
+    expect(fixture.nativeElement.querySelector('[data-testid="pricing-lifetime-secondary"]')?.textContent || '').toContain('$199');
 
     resolveConfig({
       enabled: true,
@@ -107,6 +115,9 @@ describe('PricingComponent', () => {
     expect(monthlyButton.disabled).toBeFalse();
     expect(quarterlyButton.disabled).toBeTrue();
     expect(planGrid.hasAttribute('aria-busy')).toBeFalse();
+    // A baseline config from the backend still wins over the prerender default.
+    expect(component.offerVersion).toBe('pricing_baseline_v1');
+    expect(fixture.nativeElement.querySelectorAll('.pr-grid .pr-card').length).toBe(4);
   });
 
   it('activates offer v2 only when the backend config selects it', async () => {

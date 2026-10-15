@@ -15,6 +15,24 @@ export type PublicChangelogEntry = {
 
 export const PUBLIC_CHANGELOG_ENTRIES: PublicChangelogEntry[] = [
   {
+    id: 'first-purchase-refund-and-a-clearer-premium-promise',
+    weekOf: '2026-10-15',
+    title: 'A 14-day first-purchase refund and a clearer Premium promise',
+    summary: 'A first Premium purchase can now be refunded in full within 14 days, and the pricing page states what Premium contains.',
+    category: 'Improved',
+    area: 'Pricing and billing',
+    changes: [
+      'A first Premium purchase on any plan can be refunded in full within 14 days of the order, with no usage test; renewals keep the existing rules.',
+      'The pricing page names what Premium contains: a guided solution on every Premium coding question, runnable checks on JavaScript and debugging tasks, front-end system design walkthroughs with official-source checks, and company practice pages that cite public interview reports.',
+      'The refund policy and FAQ record that Lemon Squeezy emails a renewal reminder seven days before a subscription renews.',
+    ],
+    cta: {
+      label: 'Compare plans',
+      route: '/pricing',
+      queryParams: { src: 'changelog' },
+    },
+  },
+  {
     id: 'clearer-practice-navigation-and-premium-coverage',
     weekOf: '2026-10-01',
     title: 'Clearer practice navigation and Premium coverage',

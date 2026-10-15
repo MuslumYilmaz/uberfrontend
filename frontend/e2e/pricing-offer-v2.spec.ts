@@ -36,9 +36,9 @@ test('pricing offer v2 preserves plan hierarchy and responsive reflow', async ({
   await expect(page.locator('.rec-badge')).toHaveCount(1);
   await expect(page.getByTestId('pricing-lifetime-secondary')).toBeVisible();
   await expect(page.getByTestId('pricing-trust-strip')).toContainText('Taxes included');
-  await expect(page.getByTestId('pricing-trust-strip')).toContainText('Limited-use refund requests are reviewed under the Refund Policy');
-  await expect(page.getByTestId('pricing-trust-strip').getByRole('link', { name: /limited-use refund/i })).toHaveAttribute('href', '/legal/refund');
-  await expect(page.locator('.risk-reversal')).toContainText('generally require limited Premium usage');
+  await expect(page.getByTestId('pricing-trust-strip')).toContainText('14-day refund on your first purchase');
+  await expect(page.getByTestId('pricing-trust-strip').getByRole('link', { name: /14-day refund/i })).toHaveAttribute('href', '/legal/refund');
+  await expect(page.locator('.risk-reversal')).toContainText('refunded in full within 14 days of the order, with no usage test');
   await expect(page.locator('.risk-reversal')).toContainText('Renewal charges and unused subscription time are generally non-refundable');
   await expect(page.locator('input[name*="coupon"], input[name*="promo"]')).toHaveCount(0);
   await expect(page.locator('body')).not.toContainText(/money-back guarantee|where available|expanding/i);

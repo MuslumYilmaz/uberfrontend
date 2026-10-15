@@ -53,6 +53,33 @@ for (const { filePath, text } of publicSource) {
   }
 }
 
+// Sales scarcity is banned in public copy: a campaign ends on its stated date and
+// is never announced as a closing window, and no price is shown as a struck-through
+// or "was" figure (docs/references/pricing-plan-2026-10.md, Step 4).
+const forbiddenScarcityClaims = [
+  /limited[- ]time offer/i,
+  /offer (is )?ending soon/i,
+  /prices? will (rise|increase|go up)/i,
+  /lock in (this|the|your) (early|earlybird|early-bird|launch)/i,
+  /last chance/i,
+  /while (the )?offer lasts/i,
+];
+for (const { filePath, text } of publicSource) {
+  for (const pattern of forbiddenScarcityClaims) {
+    assert.doesNotMatch(text, pattern, `${path.relative(frontendRoot, filePath)} contains scarcity sales copy: ${pattern}`);
+  }
+}
+const pricingSurfaces = publicSource.filter(({ filePath }) => /[\\/]features[\\/](?:pricing|billing)[\\/]/.test(filePath));
+assert.ok(pricingSurfaces.length > 0, 'pricing and billing sources must exist for the struck-price check');
+for (const { filePath, text } of pricingSurfaces) {
+  assert.doesNotMatch(
+    text,
+    /<(?:s|del|strike)\b[^>]*>[^<]*(?:\$|€|£|₺)\s?\d/i,
+    `${path.relative(frontendRoot, filePath)} shows a struck-through price`,
+  );
+  assert.doesNotMatch(text, /\bwas (?:\$|€|£|₺)\s?\d/i, `${path.relative(frontendRoot, filePath)} shows a "was" price`);
+}
+
 const legalFiles = (await sourceFiles(legalRoot)).map((filePath) => ({
   filePath,
   text: publicSource.find((file) => file.filePath === filePath)?.text ?? '',
@@ -220,4 +247,4 @@ for (const file of authoredPreviewFiles) {
   }
 }
 
-console.log('[public-trust-regressions] legal copy, attribution, milestone, track-count, priority, and company checks passed');
+console.log('[public-trust-regressions] legal copy, attribution, scarcity, milestone, track-count, priority, and company checks passed');

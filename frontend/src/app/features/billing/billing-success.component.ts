@@ -4,6 +4,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Subscription, of, timer } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
 import { AnalyticsService } from '../../core/services/analytics.service';
+import { isSprintOfferVersion } from '../../core/utils/offer-version.util';
 import { AuthService, User } from '../../core/services/auth.service';
 import {
   BillingCheckoutService,
@@ -278,7 +279,7 @@ export class BillingSuccessComponent implements OnInit, OnDestroy {
   private finishPolling(attempt?: CheckoutAttemptStatus): void {
     this.clearCheckoutContext();
     this.pollSub?.unsubscribe();
-    if (attempt?.offerVersion === 'interview_sprint_v2') {
+    if (isSprintOfferVersion(attempt?.offerVersion)) {
       this.state.set('ready');
       this.errorMessage.set(null);
       return;
