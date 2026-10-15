@@ -12,6 +12,7 @@ import {
 } from '../utils/payments-provider.util';
 import { apiUrl } from '../utils/api-base';
 import { ExternalWindowReservation } from '../utils/external-window.util';
+import { ConversionContextService } from './conversion-context.service';
 import { GumroadOverlayService } from './gumroad-overlay.service';
 import {
   LemonSqueezyCheckoutContext,
@@ -168,7 +169,8 @@ export class BillingCheckoutService {
   constructor(
     private http: HttpClient,
     private gumroadOverlay: GumroadOverlayService,
-    private lemonSqueezyCheckout: LemonSqueezyCheckoutService
+    private lemonSqueezyCheckout: LemonSqueezyCheckoutService,
+    private conversionContext: ConversionContextService
   ) {
     this.providers = {
       gumroad: {
@@ -284,6 +286,11 @@ export class BillingCheckoutService {
     if (context?.checkoutSurface || config?.checkoutSurface) {
       requestBody['checkoutSurface'] = requestedSurface;
     }
+    // First-touch attribution (landing page and external referrer) is read from
+    // the browser record captured at app start; absent values are simply omitted.
+    const firstTouch = this.conversionContext.resolveFirstTouch();
+    if (firstTouch?.landingPath) requestBody['landingPath'] = firstTouch.landingPath;
+    if (firstTouch?.referrerHost) requestBody['referrerHost'] = firstTouch.referrerHost;
 
     let start: CheckoutStartResponse;
     try {

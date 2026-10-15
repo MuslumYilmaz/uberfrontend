@@ -52,6 +52,7 @@ beforeAll(async () => {
   process.env.BILLING_OFFER_VERSION = 'pricing_baseline_v1';
   process.env.BILLING_CHECKOUT_SURFACE = 'hosted_new_tab';
   process.env.BILLING_DISCOUNT_CAMPAIGNS_JSON = '[]';
+  process.env.BILLING_PLAN_PRICES_JSON = '';
 
   jest.resetModules();
   app = require('../index');
@@ -92,6 +93,7 @@ beforeEach(async () => {
   process.env.BILLING_OFFER_VERSION = 'pricing_baseline_v1';
   process.env.BILLING_CHECKOUT_SURFACE = 'hosted_new_tab';
   process.env.BILLING_DISCOUNT_CAMPAIGNS_JSON = '[]';
+  process.env.BILLING_PLAN_PRICES_JSON = '';
   await User.deleteMany({});
   await CheckoutAttempt.deleteMany({});
 });
@@ -692,5 +694,119 @@ describe('billing checkout start route', () => {
     expect(res.status).toBe(409);
     expect(res.body.code).toBe('EMAIL_VERIFICATION_REQUIRED');
     expect(await CheckoutAttempt.countDocuments({ userId: user._id })).toBe(0);
+  });
+});
+
+describe('checkout start first-touch attribution', () => {
+  test('stores the landing path, referrer host and edge country on the attempt only', async () => {
+    const user = await seedUser({ email: 'attribution@example.com', username: 'attribution_user' });
+
+    const res = await request(app)
+      .post('/api/billing/checkout/start')
+      .set('Authorization', authHeader(user._id))
+      .set('x-vercel-ip-country', 'tr')
+      .send({
+        planId: 'monthly',
+        landingPath: '/companies/waymo?utm_source=newsletter#prompts',
+        referrerHost: 'https://www.Google.com/search?q=waymo',
+      });
+
+    expect(res.status).toBe(200);
+    expect(res.body).not.toHaveProperty('landingPath');
+    expect(res.body).not.toHaveProperty('countryCode');
+    const attempt = await CheckoutAttempt.findOne({ attemptId: res.body.attemptId }).lean();
+    expect(attempt).toEqual(expect.objectContaining({
+      landingPath: '/companies/waymo',
+      referrerHost: 'www.google.com',
+      countryCode: 'TR',
+    }));
+    expect(attempt.checkoutUrl).not.toContain('waymo');
+    expect(attempt.checkoutUrl).not.toContain('google');
+  });
+
+  test('keeps checkout working and stores null when attribution values are malformed or oversized', async () => {
+    const user = await seedUser({ email: 'malformed@example.com', username: 'malformed_user' });
+
+    const res = await request(app)
+      .post('/api/billing/checkout/start')
+      .set('Authorization', authHeader(user._id))
+      .set('x-vercel-ip-country', 'turkey')
+      .send({
+        planId: 'monthly',
+        landingPath: 'javascript:alert(1)',
+        referrerHost: 'x'.repeat(300),
+      });
+
+    expect(res.status).toBe(200);
+    const attempt = await CheckoutAttempt.findOne({ attemptId: res.body.attemptId }).lean();
+    expect(attempt.landingPath).toBeNull();
+    expect(attempt.referrerHost).toBeNull();
+    expect(attempt.countryCode).toBeNull();
+  });
+
+  test('leaves attribution empty when the client sends nothing and no edge header is present', async () => {
+    const user = await seedUser({ email: 'direct@example.com', username: 'direct_user' });
+
+    const res = await request(app)
+      .post('/api/billing/checkout/start')
+      .set('Authorization', authHeader(user._id))
+      .send({ planId: 'monthly' });
+
+    expect(res.status).toBe(200);
+    const attempt = await CheckoutAttempt.findOne({ attemptId: res.body.attemptId }).lean();
+    expect(attempt.landingPath).toBeNull();
+    expect(attempt.referrerHost).toBeNull();
+    expect(attempt.countryCode).toBeNull();
+  });
+
+  test('keeps the first attribution when an active attempt is reused', async () => {
+    const user = await seedUser({ email: 'reuse@example.com', username: 'reuse_user' });
+
+    const first = await request(app)
+      .post('/api/billing/checkout/start')
+      .set('Authorization', authHeader(user._id))
+      .set('x-vercel-ip-country', 'de')
+      .send({ planId: 'monthly', landingPath: '/pricing', referrerHost: 'news.ycombinator.com' });
+    const second = await request(app)
+      .post('/api/billing/checkout/start')
+      .set('Authorization', authHeader(user._id))
+      .send({ planId: 'monthly', landingPath: '/other' });
+
+    expect(first.status).toBe(200);
+    expect(second.status).toBe(200);
+    expect(second.body.attemptId).toBe(first.body.attemptId);
+    expect(second.body.reused).toBe(true);
+    const attempt = await CheckoutAttempt.findOne({ attemptId: first.body.attemptId }).lean();
+    expect(attempt).toEqual(expect.objectContaining({
+      landingPath: '/pricing',
+      referrerHost: 'news.ycombinator.com',
+      countryCode: 'DE',
+    }));
+  });
+});
+
+describe('checkout config plan prices', () => {
+  test('serves overridden plan prices from BILLING_PLAN_PRICES_JSON without touching intervals', async () => {
+    process.env.BILLING_PLAN_PRICES_JSON = '{"quarterly":4900,"annual":9900,"lifetime":17900}';
+
+    const res = await request(app).get('/api/billing/checkout/config');
+
+    expect(res.status).toBe(200);
+    expect(res.body.planDetails).toEqual({
+      monthly: { amountCents: 1200, currency: 'USD', interval: 'month', intervalCount: 1, taxInclusive: true },
+      quarterly: { amountCents: 4900, currency: 'USD', interval: 'month', intervalCount: 3, taxInclusive: true },
+      annual: { amountCents: 9900, currency: 'USD', interval: 'year', intervalCount: 1, taxInclusive: true },
+      lifetime: { amountCents: 17900, currency: 'USD', interval: 'one_time', intervalCount: null, taxInclusive: true },
+    });
+  });
+
+  test('keeps the default prices when the override is malformed', async () => {
+    process.env.BILLING_PLAN_PRICES_JSON = '{"quarterly":0}';
+
+    const res = await request(app).get('/api/billing/checkout/config');
+
+    expect(res.status).toBe(200);
+    expect(res.body.planDetails.quarterly.amountCents).toBe(2900);
+    expect(res.body.planDetails.monthly.amountCents).toBe(1200);
   });
 });

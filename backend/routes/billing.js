@@ -877,6 +877,9 @@ router.post('/checkout/start', requireAuth, async (req, res) => {
         offerVersion: req.body?.offerVersion,
         campaignId: req.body?.campaignId,
         checkoutSurface: req.body?.checkoutSurface,
+        landingPath: req.body?.landingPath,
+        referrerHost: req.body?.referrerHost,
+        countryCode: req.headers['x-vercel-ip-country'],
       });
 
     return res.status(200).json({

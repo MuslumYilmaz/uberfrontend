@@ -32,10 +32,12 @@ describe('BillingCheckoutService', () => {
 
     service = TestBed.inject(BillingCheckoutService);
     httpMock = TestBed.inject(HttpTestingController);
+    localStorage.removeItem('fa:conversion:first-touch:v1');
   });
 
   afterEach(() => {
     httpMock.verify();
+    localStorage.removeItem('fa:conversion:first-touch:v1');
   });
 
   it('starts checkout on the backend and opens the returned hosted url', async () => {
@@ -91,6 +93,54 @@ describe('BillingCheckoutService', () => {
       checkoutSurface: 'hosted_new_tab',
     });
     expect(lemonSqueezyCheckout.open).toHaveBeenCalled();
+  });
+
+  it('sends the stored first touch with the checkout start request', async () => {
+    localStorage.setItem('fa:conversion:first-touch:v1', JSON.stringify({
+      version: 1,
+      landingPath: '/companies/waymo',
+      referrerHost: 'www.google.com',
+      createdAt: Date.now(),
+    }));
+    const configPromise = service.getCheckoutConfig();
+    httpMock.expectOne(apiUrl('/billing/checkout/config')).flush({
+      configuredProvider: 'lemonsqueezy',
+      provider: 'lemonsqueezy',
+      mode: 'test',
+      enabled: true,
+      plans: { monthly: true, quarterly: true, annual: true, lifetime: true },
+    });
+    await configPromise;
+
+    const checkoutPromise = service.checkout('quarterly', {
+      userId: 'user_1',
+      email: 'billing@example.com',
+      username: 'billing_user',
+    }, 'pricing_page');
+    await Promise.resolve();
+
+    const req = httpMock.expectOne(apiUrl('/billing/checkout/start'));
+    expect(req.request.body).toEqual({
+      planId: 'quarterly',
+      analyticsSource: 'pricing_page',
+      analyticsSurface: 'pricing_page',
+      offerVersion: 'pricing_baseline_v1',
+      checkoutSurface: 'hosted_new_tab',
+      landingPath: '/companies/waymo',
+      referrerHost: 'www.google.com',
+    });
+    req.flush({
+      attemptId: 'chk_124',
+      provider: 'lemonsqueezy',
+      planId: 'quarterly',
+      mode: 'test',
+      checkoutUrl: 'https://frontendatlas.lemonsqueezy.com/checkout/buy/test-quarterly?checkout%5Bcustom_data%5D%5Bfa_checkout_attempt_id%5D=chk_124',
+      successUrl: 'http://localhost:4200/billing/success?attempt=chk_124',
+      cancelUrl: 'http://localhost:4200/billing/cancel?attempt=chk_124',
+    });
+
+    const result = await checkoutPromise;
+    expect(result.ok).toBeTrue();
   });
 
   it('preserves backend reuse metadata when an active checkout attempt is reopened', async () => {

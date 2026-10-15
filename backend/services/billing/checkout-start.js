@@ -10,6 +10,10 @@ const REUSABLE_ATTEMPT_STATUSES = new Set(['created', 'webhook_received', 'pendi
 const ANALYTICS_SOURCE_PATTERN = /^[a-z0-9_-]{1,64}$/;
 const ATTRIBUTION_ID_PATTERN = /^[a-zA-Z0-9][a-zA-Z0-9._:-]{0,127}$/;
 const VERSION_PATTERN = /^[a-z0-9][a-z0-9_-]{0,63}$/;
+const LANDING_PATH_PATTERN = /^\/[A-Za-z0-9/_\-.~%]*$/;
+const REFERRER_HOST_PATTERN = /^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)*$/;
+const COUNTRY_CODE_PATTERN = /^[A-Z]{2}$/;
+const FIRST_TOUCH_MAX_LENGTH = 200;
 const CHECKOUT_SURFACES = new Set(['hosted_new_tab', 'overlay']);
 const DEFAULT_OFFER_VERSION = 'pricing_baseline_v1';
 const DEFAULT_CHECKOUT_SURFACE = 'hosted_new_tab';
@@ -39,6 +43,51 @@ const PLAN_CATALOG = Object.freeze({
     intervalCount: null,
   }),
 });
+const PLAN_PRICE_MIN_CENTS = 100;
+const PLAN_PRICE_MAX_CENTS = 1_000_000;
+let planPriceOverrideWarned = false;
+
+// Prices switch without a deploy: BILLING_PLAN_PRICES_JSON holds cents per plan,
+// e.g. {"monthly":2400,"quarterly":4900,"annual":9900,"lifetime":17900}. One
+// invalid entry rejects the whole override, so a typo can never price a plan at
+// zero; the defaults above then apply. Intervals and currency never change here.
+function parsePlanPriceOverrides(raw) {
+  const serialized = String(raw || '').trim();
+  if (!serialized) return { overrides: {}, error: null };
+  let parsed;
+  try {
+    parsed = JSON.parse(serialized);
+  } catch {
+    return { overrides: {}, error: 'invalid_json' };
+  }
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    return { overrides: {}, error: 'not_an_object' };
+  }
+  const overrides = {};
+  for (const [planId, value] of Object.entries(parsed)) {
+    if (!PLANS.has(planId)) return { overrides: {}, error: `unknown_plan:${planId}` };
+    if (!Number.isSafeInteger(value) || value < PLAN_PRICE_MIN_CENTS || value > PLAN_PRICE_MAX_CENTS) {
+      return { overrides: {}, error: `invalid_amount:${planId}` };
+    }
+    overrides[planId] = value;
+  }
+  return { overrides, error: null };
+}
+
+function resolvePlanCatalog(env = process.env) {
+  const { overrides, error } = parsePlanPriceOverrides(env.BILLING_PLAN_PRICES_JSON);
+  if (error && !planPriceOverrideWarned) {
+    planPriceOverrideWarned = true;
+    console.warn(`[billing] BILLING_PLAN_PRICES_JSON ignored (${error}); default plan prices apply`);
+  }
+  return PLAN_IDS.reduce((acc, planId) => {
+    acc[planId] = Object.freeze({
+      ...PLAN_CATALOG[planId],
+      ...(overrides[planId] ? { amountCents: overrides[planId] } : {}),
+    });
+    return acc;
+  }, {});
+}
 
 class CheckoutStartError extends Error {
   constructor(code, message, status = 400) {
@@ -114,9 +163,10 @@ function resolveTaxInclusive() {
 
 function resolvePublicPlanDetails() {
   const taxInclusive = resolveTaxInclusive();
+  const catalog = resolvePlanCatalog();
   return PLAN_IDS.reduce((acc, planId) => {
     acc[planId] = {
-      ...PLAN_CATALOG[planId],
+      ...catalog[planId],
       taxInclusive,
     };
     return acc;
@@ -337,6 +387,36 @@ function buildLemonSqueezyCheckoutUrl(
   return parsed.toString();
 }
 
+// First-touch attribution is analytics only. Malformed or oversized values are
+// stored as null and never block a checkout.
+function normalizeLandingPath(raw) {
+  const value = String(raw || '').trim();
+  if (!value.startsWith('/')) return null;
+  const path = value.split(/[?#]/)[0];
+  if (!path || path.length > FIRST_TOUCH_MAX_LENGTH || !LANDING_PATH_PATTERN.test(path)) return null;
+  return path;
+}
+
+function normalizeReferrerHost(raw) {
+  let value = String(raw || '').trim();
+  if (!value) return null;
+  if (/^[a-z][a-z0-9+.-]*:\/\//i.test(value)) {
+    try {
+      value = new URL(value).hostname;
+    } catch {
+      return null;
+    }
+  }
+  value = value.toLowerCase().replace(/\.$/, '');
+  if (!value || value.length > FIRST_TOUCH_MAX_LENGTH || !REFERRER_HOST_PATTERN.test(value)) return null;
+  return value;
+}
+
+function normalizeCountryCode(raw) {
+  const value = String(raw || '').trim().toUpperCase();
+  return COUNTRY_CODE_PATTERN.test(value) ? value : null;
+}
+
 function buildFinalCheckoutUrl(provider, baseUrl, user, attemptId, attribution = {}) {
   const successUrl = buildRedirectUrl('/billing/success', attemptId);
   const cancelUrl = buildRedirectUrl('/billing/cancel', attemptId);
@@ -413,6 +493,9 @@ async function createCheckoutAttempt(
     offerVersion: rawOfferVersion,
     checkoutSurface: rawCheckoutSurface,
     campaignId: rawCampaignId,
+    landingPath: rawLandingPath,
+    referrerHost: rawReferrerHost,
+    countryCode: rawCountryCode,
   }
 ) {
   const provider = resolveProvider(rawProvider);
@@ -426,6 +509,9 @@ async function createCheckoutAttempt(
   const experimentId = normalizeOptionalAttributionId(rawExperimentId);
   const offerVersion = resolveOfferVersion(rawOfferVersion);
   const checkoutSurface = resolveCheckoutSurface(rawCheckoutSurface);
+  const landingPath = normalizeLandingPath(rawLandingPath);
+  const referrerHost = normalizeReferrerHost(rawReferrerHost);
+  const countryCode = normalizeCountryCode(rawCountryCode);
 
   if (!provider) {
     throw new CheckoutStartError('UNSUPPORTED_PROVIDER', 'Provider not supported', 400);
@@ -533,6 +619,9 @@ async function createCheckoutAttempt(
     checkoutSurface,
     campaignId,
     providerDiscountId,
+    landingPath,
+    referrerHost,
+    countryCode,
     status: 'created',
     checkoutUrl,
     successUrl,
@@ -573,8 +662,13 @@ module.exports = {
   normalizeAnalyticsSource,
   normalizeAnalyticsSurface,
   normalizeOptionalAttributionId,
+  normalizeLandingPath,
+  normalizeReferrerHost,
+  normalizeCountryCode,
   resolveOfferVersion,
   resolveCheckoutSurface,
   resolvePublicPlanDetails,
+  resolvePlanCatalog,
+  parsePlanPriceOverrides,
   PLAN_CATALOG,
 };
