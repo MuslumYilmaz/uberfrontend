@@ -16,6 +16,11 @@
 
     <div class="timeout" *ngIf="state() === 'ready'" data-testid="billing-ready-state">
       <p>Your payment is verified and Premium access has been applied to this account.</p>
+      <p class="muted" data-testid="billing-receipt-note">
+        Lemon Squeezy emails a receipt for every order, and you can create a PDF invoice from its My Orders page or
+        from the billing portal in your profile. If your employer offers a learning budget, interview prep often
+        qualifies.
+      </p>
       <a
         class="btn"
         [routerLink]="['/react', 'coding', 'react-contact-form-starter']"

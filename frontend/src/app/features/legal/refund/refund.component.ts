@@ -48,22 +48,21 @@ import { RouterModule } from '@angular/router';
       </section>
 
       <section>
-        <h2>3. Refund eligibility (what we consider)</h2>
-        <p>A refund may be granted when all of the following are true:</p>
-        <ul>
-          <li>The request is submitted within the applicable legal window (Section 2), where applicable; and</li>
-          <li>
-            The account shows <strong>limited usage</strong> (no substantial consumption of premium content/features); and
-          </li>
-          <li>There is no evidence of fraud, refund abuse, or policy violations.</li>
-        </ul>
+        <h2>3. First-purchase refund (14 days, no usage test)</h2>
         <p>
-          By limited usage, we mean the paid library has not been substantially consumed. We assess this case by
-          case based on request timing and available account records.
+          Your <strong>first Premium purchase</strong> on any plan (monthly, quarterly, annual, or lifetime) can be
+          refunded in full if you ask within <strong>14 days</strong> of the order. You do not need to give a reason,
+          and how much of the library you used does not matter.
         </p>
+        <ul>
+          <li>Ask by email within 14 days of the order date (Section 5).</li>
+          <li>One first-purchase refund per person and per account; duplicate accounts are not eligible.</li>
+          <li>Premium access ends when the refund is issued.</li>
+          <li>Later purchases and renewals follow Section 4; the 14-day first-purchase refund does not apply to them.</li>
+        </ul>
         <p class="muted small">
           This policy does not limit mandatory consumer rights for services that are not as described, faulty,
-          or not fit for purpose.
+          or not fit for purpose. We may decline a refund where we find fraud, refund abuse, or a policy violation.
         </p>
       </section>
 
@@ -71,9 +70,10 @@ import { RouterModule } from '@angular/router';
         <h2>4. Subscriptions &amp; automatic renewals</h2>
         <ul>
           <li>Subscriptions renew automatically unless canceled.</li>
-          <li>You can cancel anytime in your account settings; access typically continues until the period ends.</li>
+          <li>Lemon Squeezy, our payment provider, emails a renewal reminder seven days before the renewal date.</li>
+          <li>You can cancel anytime in your account settings; access continues until the period ends.</li>
           <li>
-            To avoid being charged for the next period, cancel ahead of your renewal date
+            To avoid being charged for the next period, cancel before your renewal date
             (recommended: at least <strong>48 hours</strong> before renewal).
           </li>
           <li>Renewal charges are generally non-refundable.</li>
@@ -182,5 +182,5 @@ import { RouterModule } from '@angular/router';
 })
 export class RefundComponent {
   // Don’t use a “moving” legal date.
-  readonly effectiveDate = '2025-12-31';
+  readonly effectiveDate = '2026-10-15';
 }

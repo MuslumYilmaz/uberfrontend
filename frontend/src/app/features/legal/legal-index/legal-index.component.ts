@@ -59,7 +59,7 @@ import { RouterModule } from '@angular/router';
             <span class="hint">Billing</span>
           </div>
           <h2>Refund Policy</h2>
-          <p>When refunds may be granted, exclusions, and how to request a review.</p>
+          <p>The 14-day first-purchase refund, renewal rules, and how to request one.</p>
         </a>
       </div>
     </section>

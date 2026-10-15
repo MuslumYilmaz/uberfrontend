@@ -28,13 +28,13 @@ import { SEO_SUPPRESS_TOKEN } from '../../core/services/seo-context';
 import { TradeoffBattleService } from '../../core/services/tradeoff-battle.service';
 import { FaqSectionComponent } from '../../shared/faq-section/faq-section.component';
 import {
-  PRICING_BASELINE_OFFER_VERSION,
-  PRICING_V2_OFFER_VERSION,
   PricingCtaMode,
   PricingPlanDetails,
   PricingPlansSectionComponent,
 } from '../pricing/components/pricing-plans-section/pricing-plans-section.component';
 import { ConversionContextService } from '../../core/services/conversion-context.service';
+import { isSprintOfferVersion, PRERENDER_OFFER_VERSION } from '../../core/utils/offer-version.util';
+import { PRERENDER_PLAN_DETAILS } from '../../generated/pricing-defaults';
 import { apiUrl } from '../../core/utils/api-base';
 import { PlanId } from '../../core/utils/payments-provider.util';
 import { SHOWCASE_STATS } from '../../generated/content-metadata';
@@ -620,8 +620,10 @@ You can also reset any task back to the starter whenever you want to re-practice
   pricingPaymentsEnabled = false;
   pricingPaymentsConfigReady = false;
   pricingCheckoutAvailability: Partial<Record<PlanId, boolean>> | null = null;
-  pricingPlanDetails: PricingPlanDetails | null = null;
-  pricingOfferVersion = PRICING_BASELINE_OFFER_VERSION;
+  // Prerender contract, see pricing.component.ts: default prices and the sprint
+  // layout are baked into the static HTML and confirmed by the checkout config.
+  pricingPlanDetails: PricingPlanDetails | null = PRERENDER_PLAN_DETAILS;
+  pricingOfferVersion = PRERENDER_OFFER_VERSION;
   pricingCheckoutSurface: CheckoutSurface = 'hosted_new_tab';
 
   private readonly LP_SRC_PATTERN = /^[a-z0-9_-]{1,64}$/;
@@ -639,7 +641,7 @@ You can also reset any task back to the starter whenever you want to re-practice
   ) { }
 
   get pricingCtaMode(): PricingCtaMode {
-    return this.pricingOfferVersion === PRICING_V2_OFFER_VERSION
+    return isSprintOfferVersion(this.pricingOfferVersion)
       ? 'checkout'
       : 'navigatePricing';
   }
@@ -816,8 +818,8 @@ You can also reset any task back to the starter whenever you want to re-practice
       const config = await this.billingCheckout.getCheckoutConfig();
       this.pricingPaymentsEnabled = config?.enabled ?? false;
       this.pricingCheckoutAvailability = config?.plans ?? null;
-      this.pricingPlanDetails = config?.planDetails ?? null;
-      this.pricingOfferVersion = config?.offerVersion ?? PRICING_BASELINE_OFFER_VERSION;
+      this.pricingPlanDetails = config?.planDetails ?? PRERENDER_PLAN_DETAILS;
+      this.pricingOfferVersion = config?.offerVersion ?? PRERENDER_OFFER_VERSION;
       this.pricingCheckoutSurface = config?.checkoutSurface ?? 'hosted_new_tab';
     } finally {
       this.pricingConfigLoading = false;

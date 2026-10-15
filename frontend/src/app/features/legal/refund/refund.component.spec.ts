@@ -23,11 +23,17 @@ describe('RefundComponent', () => {
 
     expect(copy).toContain('Refund requests: support@frontendatlas.com');
     expect(copy).toContain(
-      'By limited usage, we mean the paid library has not been substantially consumed. ' +
-        'We assess this case by case based on request timing and available account records.',
+      'Your first Premium purchase on any plan (monthly, quarterly, annual, or lifetime) can be refunded in full ' +
+        'if you ask within 14 days of the order. You do not need to give a reason, and how much of the library you ' +
+        'used does not matter.',
     );
+    expect(copy).toContain('One first-purchase refund per person and per account');
+    expect(copy).toContain('Later purchases and renewals follow Section 4');
+    expect(copy).toContain('Lemon Squeezy, our payment provider, emails a renewal reminder seven days before the renewal date.');
+    expect(copy).toContain('Renewal charges are generally non-refundable.');
+    expect(copy).not.toContain('limited usage');
     expect(copy).toContain('This policy does not limit mandatory consumer rights');
-    expect(copy).toContain('Effective date: 2025-12-31');
+    expect(copy).toContain('Effective date: 2026-10-15');
     expect(supportLink).toBeTruthy();
 
     for (const forbidden of [

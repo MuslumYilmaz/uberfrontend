@@ -430,10 +430,11 @@ test.describe('production/SSR public remediation smoke', () => {
     const bodyText = await openHydratedRoute(page, '/legal/refund', 'Refund Policy');
     expect(bodyText).toContain('Refund requests: support@frontendatlas.com');
     expect(bodyText).toContain(
-      'By limited usage, we mean the paid library has not been substantially consumed. We assess this case by case based on request timing and available account records.',
+      'Your first Premium purchase on any plan (monthly, quarterly, annual, or lifetime) can be refunded in full if you ask within 14 days of the order. You do not need to give a reason, and how much of the library you used does not matter.',
     );
+    expect(bodyText).toContain('Lemon Squeezy, our payment provider, emails a renewal reminder seven days before the renewal date.');
     expect(bodyText).toContain('This policy does not limit mandatory consumer rights');
-    expect(bodyText).toContain('Effective date: 2025-12-31');
+    expect(bodyText).toContain('Effective date: 2026-10-15');
   });
 
   test('Editorial Policy describes the actual independent maintenance workflow', async ({ page }) => {

@@ -1,4 +1,4 @@
-const { PLAN_CATALOG } = require('./checkout-start');
+const { PLAN_CATALOG, resolvePlanCatalog } = require('./checkout-start');
 
 const PLAN_IDS = Object.keys(PLAN_CATALOG);
 
@@ -25,8 +25,8 @@ function normalizeProviderInterval(attributes = {}) {
   };
 }
 
-function compareVariant(planId, variantId, payload, mode = null) {
-  const expected = PLAN_CATALOG[planId];
+function compareVariant(planId, variantId, payload, mode = null, env = process.env) {
+  const expected = resolvePlanCatalog(env)[planId];
   const attributes = payload?.data?.attributes || {};
   const actualPrice = Number(attributes.price);
   const actualInterval = normalizeProviderInterval(attributes);
@@ -116,13 +116,13 @@ async function checkLemonSqueezyPriceParity({
         variantId: null,
         ok: false,
         mismatches: ['variant_id_missing'],
-        expected: { ...PLAN_CATALOG[planId] },
+        expected: { ...resolvePlanCatalog(env)[planId] },
         actual: null,
       });
       continue;
     }
     const payload = await fetchVariant({ apiKey: normalizedApiKey, variantId, fetchImpl });
-    results.push(compareVariant(planId, variantId, payload, normalizedMode));
+    results.push(compareVariant(planId, variantId, payload, normalizedMode, env));
   }
 
   return {

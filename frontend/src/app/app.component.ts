@@ -7,6 +7,7 @@ import { BugReportService } from './core/services/bug-report.service';
 import { DailyService } from './core/services/daily.service';
 import { PremiumGateService } from './core/services/premium-gate.service';
 import { AnalyticsService } from './core/services/analytics.service';
+import { ConversionContextService } from './core/services/conversion-context.service';
 import { TelemetryBootstrapService } from './core/services/telemetry-bootstrap.service';
 import { AppUiStylesService } from './core/services/app-ui-styles.service';
 import { AppSidebarDrawerService } from './core/services/app-sidebar-drawer.service';
@@ -46,6 +47,7 @@ export class AppComponent implements OnInit, OnDestroy {
   premiumGate = inject(PremiumGateService);
   premiumGateState = this.premiumGate.dialogState;
   private readonly analytics = inject(AnalyticsService);
+  private readonly conversionContext = inject(ConversionContextService);
   private readonly telemetry = inject(TelemetryBootstrapService);
   private readonly appUiStyles = inject(AppUiStylesService);
   readonly auth = inject(AuthService);
@@ -111,6 +113,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
     if (!this.isBrowser) return;
 
+    this.conversionContext.captureFirstTouch();
     const initialUrl = this.initialUrl();
     this.currentUrl.set(initialUrl);
     this.configureRouteRuntime(initialUrl);

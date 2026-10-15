@@ -212,6 +212,9 @@ describe('BillingSuccessComponent', () => {
     const ready = fixture.nativeElement.querySelector('[data-testid="billing-ready-state"]') as HTMLElement;
     const primary = fixture.nativeElement.querySelector('[data-testid="billing-start-premium"]') as HTMLAnchorElement;
     expect(ready.textContent || '').toContain('Premium access has been applied');
+    const receiptNote = ready.querySelector('[data-testid="billing-receipt-note"]') as HTMLElement;
+    expect(receiptNote.textContent || '').toContain('Lemon Squeezy emails a receipt for every order');
+    expect(receiptNote.textContent || '').toContain('learning budget');
     expect(primary.textContent || '').toContain('Start your first Premium challenge');
     expect(primary.getAttribute('href') || '').toContain('/react/coding/react-contact-form-starter');
     expect(analyticsStub.track).toHaveBeenCalledWith('checkout_verified', jasmine.objectContaining({
@@ -230,6 +233,39 @@ describe('BillingSuccessComponent', () => {
       checkout_surface: 'overlay',
     }));
     expect(analyticsStub.track).not.toHaveBeenCalledWith('purchase', jasmine.anything());
+  }));
+
+  it('keeps a verified interview_sprint_v3 buyer on the success page as well', fakeAsync(() => {
+    billingCheckoutStub.fetchAttemptStatus.and.returnValue(of({
+      attempt: {
+        attemptId: 'chk_success_123',
+        provider: 'lemonsqueezy',
+        planId: 'annual',
+        mode: 'live',
+        state: 'applied',
+        rawStatus: 'applied',
+        entitlementActive: true,
+        accessTierEffective: 'premium',
+        billingEventId: 'live:subscription_created:sub_v3',
+        lastErrorCode: null,
+        lastErrorMessage: null,
+        campaignId: null,
+        offerVersion: 'interview_sprint_v3',
+        checkoutSurface: 'hosted_new_tab',
+        purchase: null,
+      },
+      status: 200,
+    }));
+
+    fixture = TestBed.createComponent(BillingSuccessComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+    tick();
+    fixture.detectChanges();
+
+    expect(component.state()).toBe('ready');
+    expect(router.navigateByUrl).not.toHaveBeenCalled();
+    expect(fixture.nativeElement.querySelector('[data-testid="billing-start-premium"]')).toBeTruthy();
   }));
 
   it('shows a pending-user-match state when the payment cannot be safely linked', fakeAsync(() => {

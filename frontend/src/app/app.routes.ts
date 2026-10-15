@@ -456,7 +456,7 @@ export const routes: Routes = [
     data: {
       seo: {
         title: 'Pricing',
-        description: 'Compare FrontendAtlas plans and unlock the full set of interview questions and guides.',
+        description: 'Compare FrontendAtlas Premium plans: guided solutions on every coding question, runnable checks, system design walkthroughs and company practice pages.',
       },
     },
   },

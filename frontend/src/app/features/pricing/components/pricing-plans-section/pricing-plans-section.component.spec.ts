@@ -221,7 +221,7 @@ describe('PricingPlansSectionComponent', () => {
     expect(badges[0].textContent || '').toContain('Recommended — 4–12 week interview sprint');
     expect(lifetime.textContent || '').toContain('$250');
     expect(page.querySelector('[data-testid="pricing-trust-strip"]')?.textContent || '').toContain('Taxes included');
-    expect(page.querySelector('[data-testid="pricing-trust-strip"]')?.textContent || '').toContain('Limited-use refund requests are reviewed under the Refund Policy');
+    expect(page.querySelector('[data-testid="pricing-trust-strip"]')?.textContent || '').toContain('14-day refund on your first purchase');
     expect(page.querySelector('[data-testid="pricing-trust-strip"] a')?.getAttribute('href') || '').toContain('/legal/refund');
     const productProof = page.querySelector('[data-testid="pricing-product-proof"]') as HTMLElement;
     const productProofImage = productProof.querySelector('img') as HTMLImageElement;
@@ -238,11 +238,85 @@ describe('PricingPlansSectionComponent', () => {
     ]);
     expect(page.textContent || '').toContain(`${SHOWCASE_STATS.totalQuestions} questions`);
     expect(page.textContent || '').toContain(`${SHOWCASE_STATS.premiumPracticeCount} Premium practice prompts`);
-    expect(page.textContent || '').toContain('generally require limited Premium usage');
+    expect(page.textContent || '').toContain('refunded in full within 14 days of the order, with no usage test');
+    expect((page.textContent || '').toLowerCase()).not.toContain('limited premium usage');
     expect(page.textContent || '').toContain('Renewal charges and unused subscription time are generally non-refundable');
     expect((page.textContent || '').toLowerCase()).not.toContain('money-back guarantee');
     expect((page.textContent || '').toLowerCase()).not.toContain('where available');
     expect((page.textContent || '').toLowerCase()).not.toContain('expanding');
+    expect(page.textContent || '').toContain('Every Premium coding question ships with a guided solution');
+    expect(page.textContent || '').toContain('Company practice pages');
+    expect((page.textContent || '').toLowerCase()).not.toContain('large question library');
+  });
+
+  it('renders the sprint layout for interview_sprint_v3 exactly as for v2', () => {
+    component.offerVersion = 'interview_sprint_v3';
+    fixture.detectChanges();
+
+    const page = fixture.nativeElement as HTMLElement;
+    const primaryCtas = Array.from(page.querySelectorAll('.pr-grid .pr-card button'))
+      .map((button) => (button as HTMLElement).dataset['testid']);
+    expect(component.isOfferV2()).toBeTrue();
+    expect(primaryCtas).toEqual(['pricing-cta-monthly', 'pricing-cta-quarterly', 'pricing-cta-annual']);
+    expect(page.querySelector('[data-testid="pricing-lifetime-secondary"]')).toBeTruthy();
+    expect(page.querySelector('[data-testid="pricing-product-proof"]')).toBeTruthy();
+    expect((page.querySelector('.rec-badge')?.textContent || '')).toContain('Recommended — 4–12 week interview sprint');
+  });
+
+  it('keeps the server plan order on the first render and applies the mobile order after hydration', async () => {
+    // Prerendered HTML carries the desktop order; the first client render must match it.
+    spyOn(window, 'matchMedia').and.callFake((query: string) => ({
+      matches: query.includes('max-width: 640px'),
+      media: query,
+      onchange: null,
+      addListener: () => undefined,
+      removeListener: () => undefined,
+      addEventListener: () => undefined,
+      removeEventListener: () => undefined,
+      dispatchEvent: () => false,
+    }) as MediaQueryList);
+    component.offerVersion = PRICING_V2_OFFER_VERSION;
+
+    fixture.detectChanges();
+    const cardTitles = () => Array.from(fixture.nativeElement.querySelectorAll('.pr-grid .pr-card .title'))
+      .map((node) => (node as HTMLElement).textContent?.trim());
+    expect(cardTitles()).toEqual(['Monthly', 'Quarterly', 'Annual']);
+
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(cardTitles()).toEqual(['Quarterly', 'Monthly', 'Annual']);
+  });
+
+  it('names the premium gate concretely in the baseline offer and the FAQ', () => {
+    fixture.detectChanges();
+
+    const page = fixture.nativeElement as HTMLElement;
+    const hero = page.querySelector('.pr-hero') as HTMLElement;
+    expect(hero.textContent || '').toContain('Every Premium coding question ships with a guided solution');
+    expect(hero.textContent || '').toContain('cite a public interview report wherever a prompt is modelled on one');
+    expect((page.textContent || '').toLowerCase()).not.toContain('where available');
+    expect((page.textContent || '').toLowerCase()).not.toContain('large question library');
+    expect(page.textContent || '').toContain('Runnable checks on every JavaScript and debugging task');
+
+    const faqItems = component.faqGroups.flatMap((group) => group.items);
+    const premiumIncludes = faqItems.find((item) => item.id === 'premium-includes');
+    const runTests = faqItems.find((item) => item.id === 'run-tests');
+    const solutions = faqItems.find((item) => item.id === 'solutions-and-explanations');
+    expect(premiumIncludes?.a || '').toContain('each with a guided solution');
+    expect(premiumIncludes?.a || '').not.toContain('Typically');
+    expect(runTests?.a || '').toContain('Every JavaScript and debugging task has runnable checks');
+    expect(solutions?.a || '').toContain('Every coding question, free or Premium, includes a guided solution');
+    for (const item of faqItems) {
+      expect((item.a || '').toLowerCase()).not.toContain('where available');
+      expect((item.a || '').toLowerCase()).not.toContain('supported question sets');
+    }
+
+    const employer = faqItems.find((item) => item.id === 'employer-reimbursement');
+    const student = faqItems.find((item) => item.id === 'student-discount');
+    expect(employer?.a || '').toContain('emails a receipt for every order');
+    expect(employer?.a || '').not.toMatch(/Google|Meta|Amazon|Microsoft/);
+    expect(student?.a || '').toContain('40% off the quarterly and annual plans');
+    expect(student?.a || '').toContain('from your school address');
   });
 
   it('keeps the real workspace proof out of the baseline offer', () => {
