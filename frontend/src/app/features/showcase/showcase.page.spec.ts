@@ -279,15 +279,15 @@ describe('ShowcasePageComponent', () => {
       'hero',
       'demo',
       'preparation',
-      'trust',
       'practice',
+      'pricing',
+      'trust',
       'browse',
       'cv',
-      'pricing',
       'support',
     ]);
     const preparation = landmarks[2];
-    const browse = landmarks[5];
+    const browse = landmarks[6];
     const support = landmarks[8];
     expect(preparation.querySelector('[data-testid="showcase-focus-section"]')).toBeTruthy();
     expect(preparation.querySelector('a[href="/tracks/crash-7d/preview"]')).toBeTruthy();
