@@ -54,28 +54,28 @@ Tests that pin today's headers
 - Unit, `marketing-header.component.spec.ts`: primary order (:55), utility switch (:92), pending neutrality (:131), mobile menu IA (:153), active states (:209), hub before auth (:235), mobile hub navigation (:246), CTA prominence (:269).
 - E2E: the "contextual links remain crawlable and navigable" test in `seo-ssr.spec.ts` requires a visible, followable `/interview-questions` header link with JavaScript disabled on `/` (testid `marketing-header-primary-link`) and `/coding` (testid `header-interview-hub`). `production-public-remediation.prod.spec.ts:301-315` requires neutral auth slots in prerendered headers, and its `openHydratedRoute` (:211-235) fails on NG05 or hydration console output. `auth.spec.ts:157-170` expects exactly two guest utility links (Pricing, Log in). `header.mobile.spec.ts` covers route variants (:134), desktop actions (:173), the 1180px fit (:192) and hub navigation (:224). `ui-visual.spec.ts` screenshots public routes at six widths with the header in view.
 
-## Menu content (draft copy)
+## Menu content
 
-Copy is condensed from each hub's existing subtitle or meta description. The user approves the final wording at the start of Step 1. Titles stay at or under 40 characters and descriptions at or under 90, which keeps the per-page HTML small. Keys reuse today's `header-study-*` keys where the destination is the same, so analytics `action` values stay continuous.
+Copy was revised on 2026-10-15 against each destination's H1 and meta description. Titles double as sitewide anchor text, so they name the destination; established site labels (Frontend interview preparation guide, Interview Questions, Question Library, Study Plans, Essential 60, CV Linter) are kept, and descriptions avoid counts that go stale. Titles stay at or under 40 characters and descriptions at or under 90, which keeps the per-page HTML small. Keys reuse today's `header-study-*` keys where the destination is the same, so analytics `action` values stay continuous.
 
-| Section | Key | Icon | Title | Description (draft) | Route |
+| Section | Key | Icon | Title | Description | Route |
 |---|---|---|---|---|---|
-| Start here | `interview_blueprint` | `pi-map` | Frontend interview preparation guide | Start with the process, round types, scoring signals, and a practical prep sequence. | `/guides/interview-blueprint/intro` |
-| Start here | `plan_30d` | `pi-calendar` | 30-day roadmap | Weekly JavaScript, UI coding, framework, system design and company prep. | `/tracks/foundations-30d/preview` |
-| Start here | `essential_60` | `pi-star` | Essential 60 | Open the curated shortlist across JavaScript, UI coding, system design, and concepts. | `/interview-questions/essential` |
-| Start here | `system_design_blueprint` | `pi-share-alt` | System design blueprint | A 45-minute answer template, checklist and real prompts. | `/guides/system-design-blueprint` |
-| Practice | `interview_questions` | `pi-question-circle` | Interview Questions | Browse frontend interview questions by technology and interview format. | `/interview-questions` |
-| Practice | `question_library` | `pi-bolt` | Question Library | Every practice format, with filters and full coverage. | `/coding` |
-| Practice | `machine_coding` | `pi-th-large` | Machine coding | UI coding rounds: widgets, forms, tables and async flows. | `/machine-coding` |
-| Practice | `system_design` | `pi-sitemap` | System design | Guided questions, worked examples, RADIO drills and rubrics. | `/system-design` |
-| Focused practice | `study_plans` | `pi-directions-alt` | Study Plans | Open guided tracks when you want a clearer sequence and less choice load. | `/tracks` |
-| Focused practice | `companies` | `pi-building` | Company prep | Company-style coding, concept and system design sets. | `/companies` |
-| Focused practice | `focus_areas` | `pi-filter` | Focus areas | Jump to the prep path that matches your goal. | `/focus-areas` |
-| Focused practice | `tradeoffs` | `pi-sliders-h` | Tradeoffs | Defend decisions like SSE vs WebSocket or CSR vs SSR. | `/tradeoffs` |
-| Focused practice | `incidents` | `pi-exclamation-triangle` | Debug incidents | Guided debug scenarios: root cause, fix and regression guard. | `/incidents` |
-| Guides and tools | `framework_prep` | `pi-compass` | Framework prep paths | JavaScript, React, Angular or Vue paths for stack-specific rounds. | `/guides/framework-prep` |
-| Guides and tools | `behavioral` | `pi-comments` | Behavioral guide | Story frameworks and examples for behavioral rounds. | `/guides/behavioral` |
-| Guides and tools | `cv_linter` | `pi-file` | CV linter | ATS-style resume score with section-level fixes. | `/tools/cv` |
+| Start here | `interview_blueprint` | `pi-map` | Frontend interview preparation guide | How the rounds work, what interviewers score and a prep order for your timeline. | `/guides/interview-blueprint/intro` |
+| Start here | `plan_30d` | `pi-calendar` | 30-day interview roadmap | A week-by-week plan across JavaScript, UI coding, frameworks and system design. | `/tracks/foundations-30d/preview` |
+| Start here | `essential_60` | `pi-star` | Essential 60 | A curated shortlist of 60 questions, from JavaScript utilities to system design. | `/interview-questions/essential` |
+| Start here | `system_design_blueprint` | `pi-share-alt` | System design blueprint | A 45-minute answer template with a checklist, worked examples and real prompts. | `/guides/system-design-blueprint` |
+| Practice | `interview_questions` | `pi-question-circle` | Interview Questions | Questions and answers by framework and round: coding, debugging, UI and system design. | `/interview-questions` |
+| Practice | `question_library` | `pi-bolt` | Question Library | Every coding challenge in one place, with in-browser editing, tests and filters. | `/coding` |
+| Practice | `machine_coding` | `pi-th-large` | Machine coding | Build interview-style UI, from widgets and forms to tables and async flows. | `/machine-coding` |
+| Practice | `system_design` | `pi-sitemap` | Frontend system design | Architecture prompts with worked examples, RADIO drills and scoring rubrics. | `/system-design` |
+| Focused practice | `study_plans` | `pi-directions-alt` | Study Plans | Guided 7-day and 30-day tracks with weekly checkpoints. | `/tracks` |
+| Focused practice | `companies` | `pi-building` | Company guides | Company-style practice for Google, Meta, Amazon, OpenAI and more. | `/companies` |
+| Focused practice | `focus_areas` | `pi-filter` | Focus areas | Pick a weak area and jump straight to its prep path. | `/focus-areas` |
+| Focused practice | `tradeoffs` | `pi-sliders-h` | Tradeoff questions | Defend choices like Context vs Redux, SSE vs WebSocket and CSR vs SSR. | `/tradeoffs` |
+| Focused practice | `incidents` | `pi-exclamation-triangle` | Debugging incidents | Trace a production-style bug to its root cause, fix it and guard against regressions. | `/incidents` |
+| Guides and tools | `framework_prep` | `pi-compass` | Framework prep paths | 7, 14 and 30-day paths for JavaScript, React, Angular and Vue interviews. | `/guides/framework-prep` |
+| Guides and tools | `behavioral` | `pi-comments` | Behavioral interview guide | Story frameworks and example answers for behavioral rounds. | `/guides/behavioral` |
+| Guides and tools | `cv_linter` | `pi-file` | CV Linter | An ATS-style resume score with section fixes and keyword gaps. | `/tools/cv` |
 
 Chips on the `interview_questions` card: JavaScript, React, Angular, Vue, HTML, CSS, each linking `/{tech}/interview-questions`.
 
@@ -227,7 +227,7 @@ Accessibility: `e2e/accessibility.smoke.spec.ts` passes, and axe (WCAG 2.0 and 2
 | Step | Status | Date | Notes |
 |---|---|---|---|
 | 0 | Done | 2026-10-14 | This document and the router rule; link-preservation rule and the two exclusions recorded on 2026-10-15 |
-| 1 | Done | 2026-10-15 | Catalog ships the draft copy; the user's copy review is still open. Validator and its tests run in `test:link-equity` |
+| 1 | Done | 2026-10-15 | Catalog, validator and tests in `test:link-equity`; card copy revised the same day |
 | 2 | Done | 2026-10-15 | Panel component and unit tests |
 | 3 | Done | 2026-10-15 | App header on the panel; dead study-panel CSS removed |
 | 4 | Done | 2026-10-15 | Marketing top bar: Interview Prep, Interview Questions, Pricing, Log in, CTA |

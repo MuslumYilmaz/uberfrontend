@@ -316,7 +316,7 @@ describe('HeaderComponent', () => {
     ) as HTMLAnchorElement[];
     expect(startCards.map((link) => (link.textContent || '').trim())).toEqual([
       'Frontend interview preparation guide',
-      '30-day roadmap',
+      '30-day interview roadmap',
       'Essential 60',
       'System design blueprint',
     ]);

@@ -8,28 +8,28 @@
           "key": "interview_blueprint",
           "icon": "pi-map",
           "title": "Frontend interview preparation guide",
-          "description": "Start with the process, round types, scoring signals, and a practical prep sequence.",
+          "description": "How the rounds work, what interviewers score and a prep order for your timeline.",
           "route": "/guides/interview-blueprint/intro"
         },
         {
           "key": "plan_30d",
           "icon": "pi-calendar",
-          "title": "30-day roadmap",
-          "description": "Weekly JavaScript, UI coding, framework, system design and company prep.",
+          "title": "30-day interview roadmap",
+          "description": "A week-by-week plan across JavaScript, UI coding, frameworks and system design.",
           "route": "/tracks/foundations-30d/preview"
         },
         {
           "key": "essential_60",
           "icon": "pi-star",
           "title": "Essential 60",
-          "description": "Open the curated shortlist across JavaScript, UI coding, system design, and concepts.",
+          "description": "A curated shortlist of 60 questions, from JavaScript utilities to system design.",
           "route": "/interview-questions/essential"
         },
         {
           "key": "system_design_blueprint",
           "icon": "pi-share-alt",
           "title": "System design blueprint",
-          "description": "A 45-minute answer template, checklist and real prompts.",
+          "description": "A 45-minute answer template with a checklist, worked examples and real prompts.",
           "route": "/guides/system-design-blueprint"
         }
       ]
@@ -42,7 +42,7 @@
           "key": "interview_questions",
           "icon": "pi-question-circle",
           "title": "Interview Questions",
-          "description": "Browse frontend interview questions by technology and interview format.",
+          "description": "Questions and answers by framework and round: coding, debugging, UI and system design.",
           "route": "/interview-questions",
           "chips": [
             { "key": "javascript", "label": "JavaScript", "route": "/javascript/interview-questions" },
@@ -57,21 +57,21 @@
           "key": "question_library",
           "icon": "pi-bolt",
           "title": "Question Library",
-          "description": "Every practice format, with filters and full coverage.",
+          "description": "Every coding challenge in one place, with in-browser editing, tests and filters.",
           "route": "/coding"
         },
         {
           "key": "machine_coding",
           "icon": "pi-th-large",
           "title": "Machine coding",
-          "description": "UI coding rounds: widgets, forms, tables and async flows.",
+          "description": "Build interview-style UI, from widgets and forms to tables and async flows.",
           "route": "/machine-coding"
         },
         {
           "key": "system_design",
           "icon": "pi-sitemap",
-          "title": "System design",
-          "description": "Guided questions, worked examples, RADIO drills and rubrics.",
+          "title": "Frontend system design",
+          "description": "Architecture prompts with worked examples, RADIO drills and scoring rubrics.",
           "route": "/system-design"
         }
       ]
@@ -84,35 +84,35 @@
           "key": "study_plans",
           "icon": "pi-directions-alt",
           "title": "Study Plans",
-          "description": "Open guided tracks when you want a clearer sequence and less choice load.",
+          "description": "Guided 7-day and 30-day tracks with weekly checkpoints.",
           "route": "/tracks"
         },
         {
           "key": "companies",
           "icon": "pi-building",
-          "title": "Company prep",
-          "description": "Company-style coding, concept and system design sets.",
+          "title": "Company guides",
+          "description": "Company-style practice for Google, Meta, Amazon, OpenAI and more.",
           "route": "/companies"
         },
         {
           "key": "focus_areas",
           "icon": "pi-filter",
           "title": "Focus areas",
-          "description": "Jump to the prep path that matches your goal.",
+          "description": "Pick a weak area and jump straight to its prep path.",
           "route": "/focus-areas"
         },
         {
           "key": "tradeoffs",
           "icon": "pi-sliders-h",
-          "title": "Tradeoffs",
-          "description": "Defend decisions like SSE vs WebSocket or CSR vs SSR.",
+          "title": "Tradeoff questions",
+          "description": "Defend choices like Context vs Redux, SSE vs WebSocket and CSR vs SSR.",
           "route": "/tradeoffs"
         },
         {
           "key": "incidents",
           "icon": "pi-exclamation-triangle",
-          "title": "Debug incidents",
-          "description": "Guided debug scenarios: root cause, fix and regression guard.",
+          "title": "Debugging incidents",
+          "description": "Trace a production-style bug to its root cause, fix it and guard against regressions.",
           "route": "/incidents"
         }
       ]
@@ -125,21 +125,21 @@
           "key": "framework_prep",
           "icon": "pi-compass",
           "title": "Framework prep paths",
-          "description": "JavaScript, React, Angular or Vue paths for stack-specific rounds.",
+          "description": "7, 14 and 30-day paths for JavaScript, React, Angular and Vue interviews.",
           "route": "/guides/framework-prep"
         },
         {
           "key": "behavioral",
           "icon": "pi-comments",
-          "title": "Behavioral guide",
-          "description": "Story frameworks and examples for behavioral rounds.",
+          "title": "Behavioral interview guide",
+          "description": "Story frameworks and example answers for behavioral rounds.",
           "route": "/guides/behavioral"
         },
         {
           "key": "cv_linter",
           "icon": "pi-file",
-          "title": "CV linter",
-          "description": "ATS-style resume score with section-level fixes.",
+          "title": "CV Linter",
+          "description": "An ATS-style resume score with section fixes and keyword gaps.",
           "route": "/tools/cv"
         }
       ]
