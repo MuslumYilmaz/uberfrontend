@@ -2,6 +2,7 @@ import { test, expect, Page, APIRequestContext } from '@playwright/test';
 import { loadSitemapDateMap, schemaDateMatchesSitemap } from '../scripts/seo-sitemap-date-contract.mjs';
 import { parse, serialize, DefaultTreeAdapterMap } from 'parse5';
 import { PRIORITY_LINK_SURFACES, priorityLinksFor, type PriorityLinkSurface } from './priority-links';
+import { PREP_MENU_ROUTES } from './prep-menu';
 
 const WEB_HOST = process.env.PLAYWRIGHT_HOST || '127.0.0.1';
 const WEB_PORT = process.env.PLAYWRIGHT_PORT || '4200';
@@ -1435,6 +1436,18 @@ test.describe('seo-ssr', () => {
           await expect(headerHub).toHaveAccessibleName('Interview Questions');
           await expect(headerHub).toBeVisible();
           await expect(headerHub).not.toHaveAttribute('rel', /nofollow|sponsored|ugc/i);
+          // The prep menu ships every link in initial HTML and only toggles visibility.
+          const prepMenu = rawPage
+            .locator(entry.path === '/' ? 'app-marketing-header' : 'app-header')
+            .locator('nav[aria-label="Interview prep"]');
+          await expect(prepMenu).toHaveCount(1);
+          await expect(prepMenu).toHaveAttribute('hidden', '');
+          await expect(prepMenu).toBeHidden();
+          for (const route of PREP_MENU_ROUTES) {
+            const menuLink = prepMenu.locator(`a[href="${route}"]`);
+            await expect(menuLink, `${entry.path} prep menu links ${route}`).toHaveCount(1);
+            await expect(menuLink).not.toHaveAttribute('rel', /nofollow|sponsored|ugc/i);
+          }
         }
         for (const { target, name } of entry.links) {
           const link = rawPage.locator(entry.content).locator(

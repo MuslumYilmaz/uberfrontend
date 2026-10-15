@@ -1,0 +1,148 @@
+{
+  "sections": [
+    {
+      "id": "start",
+      "label": "Start here",
+      "items": [
+        {
+          "key": "interview_blueprint",
+          "icon": "pi-map",
+          "title": "Frontend interview preparation guide",
+          "description": "Start with the process, round types, scoring signals, and a practical prep sequence.",
+          "route": "/guides/interview-blueprint/intro"
+        },
+        {
+          "key": "plan_30d",
+          "icon": "pi-calendar",
+          "title": "30-day roadmap",
+          "description": "Weekly JavaScript, UI coding, framework, system design and company prep.",
+          "route": "/tracks/foundations-30d/preview"
+        },
+        {
+          "key": "essential_60",
+          "icon": "pi-star",
+          "title": "Essential 60",
+          "description": "Open the curated shortlist across JavaScript, UI coding, system design, and concepts.",
+          "route": "/interview-questions/essential"
+        },
+        {
+          "key": "system_design_blueprint",
+          "icon": "pi-share-alt",
+          "title": "System design blueprint",
+          "description": "A 45-minute answer template, checklist and real prompts.",
+          "route": "/guides/system-design-blueprint"
+        }
+      ]
+    },
+    {
+      "id": "practice",
+      "label": "Practice",
+      "items": [
+        {
+          "key": "interview_questions",
+          "icon": "pi-question-circle",
+          "title": "Interview Questions",
+          "description": "Browse frontend interview questions by technology and interview format.",
+          "route": "/interview-questions",
+          "chips": [
+            { "key": "javascript", "label": "JavaScript", "route": "/javascript/interview-questions" },
+            { "key": "react", "label": "React", "route": "/react/interview-questions" },
+            { "key": "angular", "label": "Angular", "route": "/angular/interview-questions" },
+            { "key": "vue", "label": "Vue", "route": "/vue/interview-questions" },
+            { "key": "html", "label": "HTML", "route": "/html/interview-questions" },
+            { "key": "css", "label": "CSS", "route": "/css/interview-questions" }
+          ]
+        },
+        {
+          "key": "question_library",
+          "icon": "pi-bolt",
+          "title": "Question Library",
+          "description": "Every practice format, with filters and full coverage.",
+          "route": "/coding"
+        },
+        {
+          "key": "machine_coding",
+          "icon": "pi-th-large",
+          "title": "Machine coding",
+          "description": "UI coding rounds: widgets, forms, tables and async flows.",
+          "route": "/machine-coding"
+        },
+        {
+          "key": "system_design",
+          "icon": "pi-sitemap",
+          "title": "System design",
+          "description": "Guided questions, worked examples, RADIO drills and rubrics.",
+          "route": "/system-design"
+        }
+      ]
+    },
+    {
+      "id": "focused",
+      "label": "Focused practice",
+      "items": [
+        {
+          "key": "study_plans",
+          "icon": "pi-directions-alt",
+          "title": "Study Plans",
+          "description": "Open guided tracks when you want a clearer sequence and less choice load.",
+          "route": "/tracks"
+        },
+        {
+          "key": "companies",
+          "icon": "pi-building",
+          "title": "Company prep",
+          "description": "Company-style coding, concept and system design sets.",
+          "route": "/companies"
+        },
+        {
+          "key": "focus_areas",
+          "icon": "pi-filter",
+          "title": "Focus areas",
+          "description": "Jump to the prep path that matches your goal.",
+          "route": "/focus-areas"
+        },
+        {
+          "key": "tradeoffs",
+          "icon": "pi-sliders-h",
+          "title": "Tradeoffs",
+          "description": "Defend decisions like SSE vs WebSocket or CSR vs SSR.",
+          "route": "/tradeoffs"
+        },
+        {
+          "key": "incidents",
+          "icon": "pi-exclamation-triangle",
+          "title": "Debug incidents",
+          "description": "Guided debug scenarios: root cause, fix and regression guard.",
+          "route": "/incidents"
+        }
+      ]
+    },
+    {
+      "id": "guides",
+      "label": "Guides and tools",
+      "items": [
+        {
+          "key": "framework_prep",
+          "icon": "pi-compass",
+          "title": "Framework prep paths",
+          "description": "JavaScript, React, Angular or Vue paths for stack-specific rounds.",
+          "route": "/guides/framework-prep"
+        },
+        {
+          "key": "behavioral",
+          "icon": "pi-comments",
+          "title": "Behavioral guide",
+          "description": "Story frameworks and examples for behavioral rounds.",
+          "route": "/guides/behavioral"
+        },
+        {
+          "key": "cv_linter",
+          "icon": "pi-file",
+          "title": "CV linter",
+          "description": "ATS-style resume score with section-level fixes.",
+          "route": "/tools/cv"
+        }
+      ]
+    }
+  ]
+}

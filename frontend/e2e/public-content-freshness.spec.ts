@@ -36,7 +36,7 @@ test('preparation search has a useful empty state without an unavailable cheat-s
   await expect(page.getByRole('heading', { name: 'Frontend Coding Challenges', exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Interview Prep', exact: true }).click();
   await page.getByRole('textbox', { name: 'Search interview prep' }).fill('cheat');
-  const dialog = page.getByRole('dialog', { name: 'Interview prep', exact: true });
+  const dialog = page.getByRole('navigation', { name: 'Interview prep', exact: true });
   await expect(dialog).not.toContainText('Cheat sheets');
   await expect(dialog).not.toContainText('Soon');
   await expect(dialog).toContainText(/no matches/i);

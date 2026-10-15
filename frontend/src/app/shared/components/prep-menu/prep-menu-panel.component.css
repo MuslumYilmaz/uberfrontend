@@ -1,0 +1,213 @@
+.pm {
+  position: fixed;
+  top: 56px;
+  left: 50%;
+  z-index: 60;
+  transform: translateX(-50%);
+  width: min(92vw, 860px);
+  max-height: calc(100vh - 80px);
+  margin-top: 8px;
+  padding: 14px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  display: grid;
+  gap: 12px;
+  border: 1px solid var(--uf-border-subtle);
+  border-radius: 14px;
+  background: var(--uf-surface-alt);
+  box-shadow: var(--uf-card-shadow-strong);
+  color: var(--uf-text-primary);
+}
+
+/* Author display rules override the UA [hidden] style, so restate it. */
+.pm[hidden],
+.pm-body[hidden],
+.pm-section[hidden] {
+  display: none;
+}
+
+.pm-body {
+  display: grid;
+  grid-template-columns: minmax(150px, 190px) minmax(0, 1fr);
+  gap: 16px;
+}
+
+.pm-tabs {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-right: 12px;
+  border-right: 1px solid var(--uf-border-subtle);
+}
+
+.pm-tab {
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--uf-text-secondary);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: left;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.pm-tab:hover {
+  background: color-mix(in srgb, var(--uf-text-primary) 6%, var(--uf-surface));
+  color: var(--uf-text-primary);
+}
+
+.pm-tab[aria-selected='true'] {
+  background: color-mix(in srgb, var(--uf-accent) 12%, var(--uf-surface));
+  color: var(--uf-text-primary);
+}
+
+.pm-tab:focus-visible,
+.pm-link:focus-visible,
+.pm-chip:focus-visible {
+  outline: none;
+  box-shadow: var(--uf-focus-ring);
+}
+
+.pm-section {
+  display: grid;
+  align-content: start;
+  gap: 6px;
+}
+
+.pm-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr);
+  align-items: start;
+  column-gap: 12px;
+  row-gap: 2px;
+  padding: 10px 12px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+}
+
+.pm-card:hover,
+.pm-card--highlight {
+  border-color: var(--uf-border-subtle);
+  background: color-mix(in srgb, var(--uf-text-primary) 4%, var(--uf-surface));
+}
+
+.pm-card:has(.pm-link[aria-current='page']) {
+  border-color: color-mix(in srgb, var(--uf-accent) 40%, var(--uf-border-subtle));
+  background: color-mix(in srgb, var(--uf-accent) 8%, var(--uf-surface));
+}
+
+/* Scoped under .pm so it outranks the .pi display and line-height rules loaded later. */
+.pm .pm-icon {
+  grid-row: 1 / span 3;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--uf-border-subtle);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--uf-text-primary) 5%, var(--uf-surface));
+  font-size: 15px;
+}
+
+.pm-link,
+.pm-desc,
+.pm-chips {
+  grid-column: 2;
+  min-width: 0;
+}
+
+.pm-link {
+  color: var(--uf-text-primary);
+  font-size: 15px;
+  font-weight: 700;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+/* The title link covers the card; chips sit above that layer. */
+.pm-link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+.pm-desc {
+  margin: 0;
+  color: var(--uf-text-tertiary);
+  font-size: 13px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.pm-chips {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.pm-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 10px;
+  border: 1px solid var(--uf-border-subtle);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--uf-text-primary) 5%, var(--uf-surface));
+  color: var(--uf-text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.pm-chip:hover,
+.pm-chip[aria-current='page'] {
+  border-color: color-mix(in srgb, var(--uf-accent) 40%, var(--uf-border-subtle));
+  background: color-mix(in srgb, var(--uf-accent) 12%, var(--uf-surface));
+  color: var(--uf-text-primary);
+}
+
+@media (max-width: 640px) {
+  .pm {
+    max-height: calc(100vh - 72px);
+    padding: 12px;
+  }
+
+  .pm-body {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .pm-tabs {
+    flex-direction: row;
+    overflow-x: auto;
+    padding: 0 0 8px;
+    border-right: 0;
+    border-bottom: 1px solid var(--uf-border-subtle);
+    scrollbar-width: none;
+  }
+
+  .pm-tab {
+    flex: 0 0 auto;
+    padding: 8px 10px;
+  }
+
+  .pm-card {
+    grid-template-columns: 32px minmax(0, 1fr);
+    column-gap: 10px;
+    padding: 10px;
+  }
+
+  .pm .pm-icon {
+    width: 32px;
+    height: 32px;
+  }
+}

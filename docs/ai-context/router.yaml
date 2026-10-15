@@ -379,3 +379,24 @@ reference_rules:
     load:
       - docs/references/company-pages-plan-2026-10.md
     max_docs: 1
+
+  - id: header_prep_menu_plan
+    priority: 92
+    keywords:
+      - header menu
+      - mega menu
+      - prep menu
+      - dropdown menu
+      - marketing header
+      - app header
+      - top nav
+      - header links
+      - navigation menu
+    paths:
+      - docs/references/header-prep-menu-plan-2026-10.md
+      - frontend/src/app/shared/components/header/
+      - frontend/src/app/shared/components/marketing-header/
+      - frontend/src/app/shared/components/prep-menu/
+    load:
+      - docs/references/header-prep-menu-plan-2026-10.md
+    max_docs: 1

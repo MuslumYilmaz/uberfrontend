@@ -1,0 +1,66 @@
+<nav
+  class="pm"
+  [id]="panelId()"
+  aria-label="Interview prep"
+  [hidden]="!open()"
+  [style.left.px]="anchorX()"
+>
+  <ng-content select="[prepMenuTop]" />
+  <div class="pm-body" [hidden]="searching()">
+    <div class="pm-tabs" role="tablist" aria-label="Interview prep sections">
+      @for (section of sections; track section.id; let index = $index) {
+        <button
+          #tabButton
+          type="button"
+          role="tab"
+          class="pm-tab"
+          [id]="panelId() + '-tab-' + section.id"
+          [attr.aria-selected]="isActive(section)"
+          [attr.aria-controls]="panelId() + '-' + section.id"
+          [attr.tabindex]="isActive(section) ? 0 : -1"
+          [attr.data-testid]="testIdPrefix() + '-tab-' + section.id"
+          (click)="selectSection(section)"
+          (pointerenter)="onTabPointerEnter($event, section)"
+          (keydown)="onTabKeydown($event, index)"
+        >{{ section.label }}</button>
+      }
+    </div>
+    @for (section of sections; track section.id) {
+      <div
+        class="pm-section"
+        role="tabpanel"
+        [id]="panelId() + '-' + section.id"
+        [attr.aria-labelledby]="panelId() + '-tab-' + section.id"
+        [hidden]="!isActive(section)"
+      >
+        @for (item of section.items; track item.key) {
+          <div class="pm-card" [class.pm-card--highlight]="highlightKey() === item.key">
+            <i class="pi pm-icon" [class]="item.icon" aria-hidden="true"></i>
+            <a
+              class="pm-link"
+              [routerLink]="item.route"
+              [attr.aria-current]="isCurrent(item.route) ? 'page' : null"
+              [attr.data-testid]="testIdPrefix() + '-' + item.key"
+              (click)="select(section, item)"
+            >{{ item.title }}</a>
+            <p class="pm-desc">{{ item.description }}</p>
+            @if (item.chips; as chips) {
+              <div class="pm-chips">
+                @for (chip of chips; track chip.key) {
+                  <a
+                    class="pm-chip"
+                    [routerLink]="chip.route"
+                    [attr.aria-current]="isCurrent(chip.route) ? 'page' : null"
+                    [attr.data-testid]="testIdPrefix() + '-chip-' + chip.key"
+                    (click)="select(section, item, chip)"
+                  >{{ chip.label }}</a>
+                }
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
+  </div>
+  <ng-content select="[prepMenuBottom]" />
+</nav>

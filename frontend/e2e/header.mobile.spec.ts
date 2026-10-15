@@ -160,10 +160,10 @@ test.describe('header mobile layout', () => {
         await closeMobileMenuIfOpen(page);
 
         await page.getByTestId('header-mobile-study-button').click();
-        await expect(page.getByRole('dialog', { name: 'Interview prep', exact: true })).toBeVisible();
+        await expect(page.getByRole('navigation', { name: 'Interview prep', exact: true })).toBeVisible();
         await expect(page.getByTestId('header-study-interview_questions')).toHaveAttribute('href', '/interview-questions');
         await page.keyboard.press('Escape');
-        await expect(page.getByRole('dialog', { name: 'Interview prep', exact: true })).toHaveCount(0);
+        await expect(page.getByRole('navigation', { name: 'Interview prep', exact: true })).toHaveCount(0);
 
         await assertNoHorizontalOverflow(page, `${viewport.width}px app route ${route}`);
       }
@@ -230,8 +230,9 @@ test.describe('header mobile layout', () => {
         if (mobile) {
           await expect(page.getByTestId('header-interview-hub')).toBeHidden();
           await page.getByTestId('header-mobile-study-button').click();
+          await page.getByTestId('header-study-tab-practice').click();
           await page.getByTestId('header-study-interview_questions').click();
-          await expect(page.getByRole('dialog', { name: 'Interview prep', exact: true })).toHaveCount(0);
+          await expect(page.getByRole('navigation', { name: 'Interview prep', exact: true })).toHaveCount(0);
         } else {
           await page.getByTestId('header-interview-hub').click();
         }
