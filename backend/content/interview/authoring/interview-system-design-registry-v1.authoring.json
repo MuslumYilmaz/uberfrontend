@@ -4,9 +4,9 @@
   "registryVersion": "1.2.0",
   "status": "candidate",
   "finalApproval": null,
-  "definitionHash": "bd045d1cb9c0c6a5a2d2da1e20937dcde19015ed27878065368daf3ae479e8eb",
+  "definitionHash": "4ba9a8140ec2397b76b1fe23ead44df3d35bdbb0c169fa86269735bce6b6872b",
   "reviewBatch": {
-    "reviewedDefinitionHash": "bd045d1cb9c0c6a5a2d2da1e20937dcde19015ed27878065368daf3ae479e8eb",
+    "reviewedDefinitionHash": "4ba9a8140ec2397b76b1fe23ead44df3d35bdbb0c169fa86269735bce6b6872b",
     "reviewedAt": "2026-08-12",
     "technical": {
       "reviewer": "codex-system-design-technical-v8",
@@ -20,7 +20,8 @@
         "2026-09-26 source-pin maintenance review: the dashboard requirements source only moves the existing Interview opening callout; all block values and the other five source files are unchanged. Guided prompts, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
         "2026-10-10 source-pin maintenance review: the dashboard source changes only meta.json seo.title and seo.description and one requirements link label and description; the AI chat source changes only meta.json seo.title and seo.description, drops one sentence from the overlapping-responses callout, and adds a two-item Build it links block to requirements. Candidate prompts, clarifications, requirements, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval.",
         "2026-10-14 source-pin maintenance review: the AI chat composer meta.json adds a Waymo company tag, a companyEvidence record and a public source list pointing at one public interview report; all five section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
-        "2026-10-14 source-pin maintenance review: the notification toast meta.json adds a ServiceNow company tag, a companyEvidence record and a public source list pointing at two public interview threads; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval."
+        "2026-10-14 source-pin maintenance review: the notification toast meta.json adds a ServiceNow company tag, a companyEvidence record and a public source list pointing at two public interview threads; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
+        "2026-10-15 source-pin maintenance review: the AI chat composer meta.json adds an OpenAI company tag, a companyEvidence record and one more public source pointing at a public interview report; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval."
       ]
     },
     "blind": {
@@ -3045,7 +3046,7 @@
       },
       "private": {
         "sourceContentId": "ai-chat-textarea-design",
-        "expectedSourceBundleHash": "585435667d7a5b673fc30ecac795e50b71a3c9fabc2c88d220502884ecc86d3d",
+        "expectedSourceBundleHash": "06aeea0e131e880976db5c34c42de07e6cfcad8834e71ad9f94101dcea1e5edc",
         "clarificationAnswers": [
           {
             "clarificationId": "chat-draft-scope",

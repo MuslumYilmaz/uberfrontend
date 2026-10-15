@@ -9,16 +9,17 @@
     "approvedBy": "project-owner",
     "approvedAt": "2026-08-24",
     "registryVersion": "1.1.0",
-    "registryContentHash": "9176a4496e56b02b83b4f634a8e1bede3da648c8d792823623c5215ddd5b15e3",
+    "registryContentHash": "c8a98a373e48abad4bb7e6b3e2b27d05b0913af3a5e5196822891b98fecca914",
     "selectionDefinitionHash": "95ae46b01019649017306384cd4928315a33ccb8d77c50f48306b2ecb5bc4c3e",
     "notes": [
       "Project owner approved coding registry v1.1.0 for editorial-gold production use after the release-readiness audit.",
-      "2026-10-14 source-pin maintenance: registryContentHash refreshed after the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments source questions gained company tags and public source lists. Public variant content is unchanged apart from contentHash; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release."
+      "2026-10-14 source-pin maintenance: registryContentHash refreshed after the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments source questions gained company tags and public source lists. Public variant content is unchanged apart from contentHash; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release.",
+      "2026-10-15 source-pin maintenance: registryContentHash refreshed after the js-debounce, js-unique-array and the three tabs-switcher source questions gained public source lists. Public variant content is unchanged apart from contentHash; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release."
     ]
   },
-  "definitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
+  "definitionHash": "178d167f33beceff3aaac7dd746cf882cb856548daa464fbc31b7fbb85ba8167",
   "reviewBatch": {
-    "reviewedDefinitionHash": "304d7051204e477ea10addb5660a30366845923262b7748ab63c4dad74eab436",
+    "reviewedDefinitionHash": "178d167f33beceff3aaac7dd746cf882cb856548daa464fbc31b7fbb85ba8167",
     "reviewedAt": "2026-08-24",
     "technical": {
       "reviewer": "codex-interview-coding-technical-v1",
@@ -28,7 +29,8 @@
         "Every source question, starter asset, and catalog or candidate-authoring pressure scenario is pinned by SHA-256 and revalidated against the current catalog.",
         "Candidate authoring pressure assets remain outside approved runtime source catalogs and are projected only through generated candidate artifacts.",
         "Public requirements are projected without solution, debrief, hint, rubric, remediation, or test implementation fields.",
-        "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
+        "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval.",
+        "2026-10-15 source-pin maintenance review: the js-debounce, js-unique-array, react-tabs-switcher, angular-tabs-switcher and vue-tabs-switcher catalog entries add public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
       ]
     },
     "editorial": {
@@ -527,7 +529,7 @@
       "level": "junior",
       "catalog": "javascript",
       "sourceQuestionId": "js-unique-array",
-      "expectedQuestionHash": "c94c85c6690505144512fe890564862905785bff92a69db7a7d0f20daa0e1a7a",
+      "expectedQuestionHash": "937f3e9d90f1532b024f2b03264ff9e2de44e9a026a2eb95a251660faf71484a",
       "timeLimitSeconds": 1500,
       "roundLimit": 1,
       "runner": "javascript",
@@ -614,7 +616,7 @@
       "level": "mid",
       "catalog": "javascript",
       "sourceQuestionId": "js-debounce",
-      "expectedQuestionHash": "1b75fd04272e58895c34974868db6e05f339cb52fead968545d648ef90970ac0",
+      "expectedQuestionHash": "9eb7f5e3c190723482789ca2ce73977eb5d6f42cd96109297959b453321d0887",
       "timeLimitSeconds": 2100,
       "roundLimit": 1,
       "runner": "javascript",
@@ -1247,7 +1249,7 @@
       "level": "junior",
       "catalog": "react",
       "sourceQuestionId": "react-tabs-switcher",
-      "expectedQuestionHash": "96f7629e68d9cdc7ee06d34511ff38e8c66ba481c611e9d0cd58d3e87f8e724a",
+      "expectedQuestionHash": "8f1b3e74686f6573dc4bdeae282f02d2a76624f31a11aa730b5cc0afca1fdd6a",
       "expectedStarterAssetHash": "01a4038266f136eed3d16aaa38a3f7620c677569978599ccf97b1846d2b8af06",
       "pressureAsset": "authoring://pressure-modes/tabs-switcher.candidate-v1.json",
       "expectedPressureAssetHash": "394b15cf7beeccb466962a789bf8619c9da6ec77abafb0be2b7d72aa92c1ffbf",
@@ -1436,7 +1438,7 @@
       "level": "junior",
       "catalog": "angular",
       "sourceQuestionId": "angular-tabs-switcher",
-      "expectedQuestionHash": "951761383f471eaa8dc3d83201162a873a3bcba5576974e0cfda6d230fbe69ef",
+      "expectedQuestionHash": "2527e47c3beadc0871c635e797bb216349b65a54c1ffc4451b7c5b823e8581d1",
       "expectedStarterAssetHash": "7882af6c4d767948ddc6841dd79ea98ee2ffc9ec27180bf6ca282c40b1ce004c",
       "pressureAsset": "authoring://pressure-modes/tabs-switcher.candidate-v1.json",
       "expectedPressureAssetHash": "394b15cf7beeccb466962a789bf8619c9da6ec77abafb0be2b7d72aa92c1ffbf",
@@ -1625,7 +1627,7 @@
       "level": "junior",
       "catalog": "vue",
       "sourceQuestionId": "vue-tabs-switcher",
-      "expectedQuestionHash": "fb7a8e71d4b0cbc0441142b2d1d58da79e2385dc8e976f75f5984fb947fcee75",
+      "expectedQuestionHash": "558c89aa64191a08c1e6c3a273f78151cac2da227ab3f0a10be1de845babdbe0",
       "expectedStarterAssetHash": "02296de82d23b8f3fd84df18c28ea68a96e76015998688b9312a3967d61954ba",
       "pressureAsset": "authoring://pressure-modes/tabs-switcher.candidate-v1.json",
       "expectedPressureAssetHash": "394b15cf7beeccb466962a789bf8619c9da6ec77abafb0be2b7d72aa92c1ffbf",

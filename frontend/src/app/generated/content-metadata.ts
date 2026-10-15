@@ -1603,10 +1603,10 @@ export const SHOWCASE_STATS = {
       "system": 0
     },
     "openai": {
-      "all": 8,
+      "all": 9,
       "coding": 3,
       "trivia": 5,
-      "system": 0
+      "system": 1
     },
     "servicenow": {
       "all": 7,

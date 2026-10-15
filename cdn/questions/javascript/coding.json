@@ -480,6 +480,15 @@
     "companies": [
       "apple"
     ],
+    "sources": [
+      {
+        "label": "Taro: Apple front end developer interview, Hyderabad, December 2019",
+        "url": "https://www.jointaro.com/interviews/companies/apple/experiences/front-end-developer-hyderabad-december-24-2019-no-offer-positive-7397b890/",
+        "publisher": "Taro",
+        "date": "2019-12",
+        "note": "One Apple front end developer account lists concatenating two arrays and finding the unique elements among the coding round questions. This drill practises that exercise, not its reported wording."
+      }
+    ],
     "seo": {
       "title": "Remove Duplicates From an Array in JavaScript",
       "description": "Given an array, return a new array with duplicates removed while preserving first-occurrence order."
@@ -1511,6 +1520,27 @@
         "publisher": "PracHub",
         "date": "2026-05",
         "note": "One self-reported senior loop describes an onsite exercise to build an autocomplete with debouncing. Debounce is the supporting primitive for that exercise, not the reported wording."
+      },
+      {
+        "label": "LeetCode Discuss: Google front end engineer onsite, Sunnyvale, spring 2019",
+        "url": "https://leetcode.com/discuss/post/342364/",
+        "publisher": "LeetCode Discuss",
+        "date": "2019-07",
+        "note": "One Google onsite account describes an API that takes a function and a duration and runs the function after the interval, still waiting if called before the interval ends. Debounce is the closest primitive; it is not the reported wording."
+      },
+      {
+        "label": "Blind: Google frontend interview questions thread, December 2020",
+        "url": "https://www.teamblind.com/post/google-frontend-interview-questions-thread-yqyqmvon",
+        "publisher": "Blind",
+        "date": "2020-12",
+        "note": "The thread lists a Google prompt to return a version of a function that runs on a timeout. Debounce is a practice version of that shape; the thread is a compiled list, not one loop."
+      },
+      {
+        "label": "Taro: Netflix senior frontend engineer interview, Warsaw, November 2024",
+        "url": "https://www.jointaro.com/interviews/companies/netflix/experiences/senior-frontend-engineer-warsaw-masovia-november-1-2024-no-offer-negative-c999399f/",
+        "publisher": "Taro",
+        "date": "2024-11",
+        "note": "One senior Netflix account describes a search-input problem where the interviewer discussed a 200 millisecond debounce. This drill practises that primitive, not the reported exercise."
       }
     ],
     "difficulty": "intermediate",
@@ -1652,6 +1682,22 @@
       "google",
       "netflix",
       "meta"
+    ],
+    "sources": [
+      {
+        "label": "LeetCode Discuss: Google front end phone screen, implement throttle, April 2020",
+        "url": "https://leetcode.com/discuss/post/592667/",
+        "publisher": "LeetCode Discuss",
+        "date": "2020-04",
+        "note": "One self-reported Google phone screen asked for a throttle wrapper that calls an expensive function at most once per interval, with follow-ups on parameters. This drill is a practice version of that exercise, not its reported wording."
+      },
+      {
+        "label": "Blind: Google frontend interview questions thread, December 2020",
+        "url": "https://www.teamblind.com/post/google-frontend-interview-questions-thread-yqyqmvon",
+        "publisher": "Blind",
+        "date": "2020-12",
+        "note": "The thread lists a Google front end prompt to limit a function so it calls the input function at most every 50 milliseconds. Throttle is the matching primitive; the thread is a compiled list, not one loop."
+      }
     ],
     "difficulty": "intermediate",
     "tags": [
@@ -2187,6 +2233,13 @@
         "publisher": "LeetCode Discuss",
         "date": "2023-10",
         "note": "One SE2 account lists writing a memoization function at the end of the first technical round. This drill practises that exercise, not its reported wording."
+      },
+      {
+        "label": "Medium: Meta front end engineer interview experience, March 2022",
+        "url": "https://medium.com/@stylus07/meta-interview-experience-cdf53eea63f3",
+        "publisher": "Medium",
+        "date": "2022-03",
+        "note": "One Meta front end engineer account describes a memoization problem as the second question of the first technical interview. This drill practises that exercise, not its reported wording."
       }
     ],
     "importance": 4,
@@ -2910,6 +2963,20 @@
         "publisher": "Medium",
         "date": "2025-09",
         "note": "One UI engineer account lists writing a polyfill for map in the JavaScript fundamentals round. This drill is a practice version of that exercise, not its reported wording."
+      },
+      {
+        "label": "LeetCode Discuss: community list of front end interview questions, July 2020",
+        "url": "https://leetcode.com/discuss/post/742791/",
+        "publisher": "LeetCode Discuss",
+        "date": "2020-07",
+        "note": "A community list compiled by one candidate marks implementing custom map, reduce, filter and sort functions as an Amazon phone interview question. The list is secondhand; it cannot establish wording or frequency."
+      },
+      {
+        "label": "Blind: TikTok front end interview experience, September 2024",
+        "url": "https://www.teamblind.com/post/my-tiktok-front-end-interview-experience-any-idea-what-end-result-might-look-like-jfcdhq5r",
+        "publisher": "Blind",
+        "date": "2024-09",
+        "note": "One TikTok front end account describes implementing a JavaScript built-in method in the first technical round. map is a representative drill, not the reported method."
       }
     ],
     "technology": "javascript",
@@ -3012,6 +3079,22 @@
       "amazon",
       "apple",
       "bytedance"
+    ],
+    "sources": [
+      {
+        "label": "LeetCode Discuss: community list of front end interview questions, July 2020",
+        "url": "https://leetcode.com/discuss/post/742791/",
+        "publisher": "LeetCode Discuss",
+        "date": "2020-07",
+        "note": "A community list compiled by one candidate marks implementing custom map, reduce, filter and sort functions as an Amazon phone interview question. The list is secondhand; it cannot establish wording or frequency."
+      },
+      {
+        "label": "Blind: TikTok front end interview experience, September 2024",
+        "url": "https://www.teamblind.com/post/my-tiktok-front-end-interview-experience-any-idea-what-end-result-might-look-like-jfcdhq5r",
+        "publisher": "Blind",
+        "date": "2024-09",
+        "note": "One TikTok front end account describes implementing a JavaScript built-in method in the first technical round. reduce is a representative drill, not the reported method."
+      }
     ],
     "importance": 4,
     "difficulty": "intermediate",
@@ -3162,6 +3245,13 @@
         "publisher": "Taro",
         "date": "2025-11",
         "note": "One senior account describes a standard coding exercise on ordering and filtering. Implementing filter is a supporting drill, not the reported exercise."
+      },
+      {
+        "label": "LeetCode Discuss: community list of front end interview questions, July 2020",
+        "url": "https://leetcode.com/discuss/post/742791/",
+        "publisher": "LeetCode Discuss",
+        "date": "2020-07",
+        "note": "A community list compiled by one candidate marks implementing custom map, reduce, filter and sort functions as an Amazon phone interview question. The list is secondhand; it cannot establish wording or frequency."
       }
     ],
     "importance": 4,
@@ -3369,6 +3459,13 @@
         "publisher": "Taro",
         "date": "2025-11",
         "note": "One senior account describes a standard coding exercise on ordering and filtering. Sorting numbers correctly is a supporting drill, not the reported exercise."
+      },
+      {
+        "label": "LeetCode Discuss: community list of front end interview questions, July 2020",
+        "url": "https://leetcode.com/discuss/post/742791/",
+        "publisher": "LeetCode Discuss",
+        "date": "2020-07",
+        "note": "A community list compiled by one candidate marks implementing a custom sort among the higher-order functions asked in an Amazon phone interview. The list is secondhand; it cannot establish wording or frequency."
       }
     ],
     "importance": 4,
@@ -6146,6 +6243,20 @@
         "publisher": "Aced",
         "date": "2026-10",
         "note": "The bank lists an exercise to synchronize audio playback timing with transcript highlighting. This timer-manager drill practises the scheduling control that exercise needs; it is not the reported exercise itself."
+      },
+      {
+        "label": "Taro: Meta front end engineer intern interview, United States, January 2022",
+        "url": "https://www.jointaro.com/interviews/companies/meta/experiences/front-end-engineer-intern-united-states-january-1-2022-accepted-offer-positive-2e0f20e4/",
+        "publisher": "Taro",
+        "date": "2022-01",
+        "note": "One Meta front end intern account describes a coding question to implement your own clearAllTimeout. This timer manager is a practice version of that shape, not the reported wording."
+      },
+      {
+        "label": "Blind: front end interview questions by company, October 2021",
+        "url": "https://www.teamblind.com/post/Went-through-Frontend-Interviews-recently-here-are-the-kinda-questions-they-ask-dbyQb3ob",
+        "publisher": "Blind",
+        "date": "2021-10",
+        "note": "A candidate who interviewed at several companies lists a timeout clearer among the Facebook screening questions. It supports the shape, not the wording."
       }
     ],
     "description": {
@@ -6235,6 +6346,22 @@
     "companies": [
       "meta"
     ],
+    "sources": [
+      {
+        "label": "Taro: Meta front end engineer intern interview, United States, January 2022",
+        "url": "https://www.jointaro.com/interviews/companies/meta/experiences/front-end-engineer-intern-united-states-january-1-2022-accepted-offer-positive-2e0f20e4/",
+        "publisher": "Taro",
+        "date": "2022-01",
+        "note": "One Meta front end intern account describes a coding question to implement your own clearAllTimeout. This timer manager is a practice version of that shape, not the reported wording."
+      },
+      {
+        "label": "Blind: front end interview questions by company, October 2021",
+        "url": "https://www.teamblind.com/post/Went-through-Frontend-Interviews-recently-here-are-the-kinda-questions-they-ask-dbyQb3ob",
+        "publisher": "Blind",
+        "date": "2021-10",
+        "note": "A candidate who interviewed at several companies lists a timeout clearer among the Facebook screening questions. It supports the shape, not the wording."
+      }
+    ],
     "description": {
       "summary": "Solve two independent tasks: implement clearAllTimeouts for a timer registry and render a DOM tree from a nested object. Constraints: do not couple logic, avoid innerHTML. Complexity: clearAll O(k), render O(n) time.",
       "arguments": [],
@@ -6305,6 +6432,15 @@
     ],
     "companies": [
       "meta"
+    ],
+    "sources": [
+      {
+        "label": "Blind: front end interview questions by company, October 2021",
+        "url": "https://www.teamblind.com/post/Went-through-Frontend-Interviews-recently-here-are-the-kinda-questions-they-ask-dbyQb3ob",
+        "publisher": "Blind",
+        "date": "2021-10",
+        "note": "A candidate who interviewed at several companies describes a Facebook onsite DOM algorithm: traverse the DOM and collect nodes. This drill practises that shape; it is not the reported wording."
+      }
     ],
     "description": {
       "summary": "Implement findNode(root, predicate) to traverse the DOM and return the first matching element. Use DFS/BFS with early exit. Complexity: O(n) time, O(h) recursion stack.",
@@ -6395,6 +6531,13 @@
         "publisher": "LeetCode Discuss",
         "date": "2025-11",
         "note": "One senior account describes implementing a function that checks whether two DOM trees are identical, node by node. Finding the corresponding node in twin trees practises the same lockstep traversal; it is not the reported exercise."
+      },
+      {
+        "label": "Taro: Meta front end developer intern interview, London, December 2021",
+        "url": "https://www.jointaro.com/interviews/companies/meta/experiences/front-end-developer-intern-london-england-december-1-2021-no-offer-positive-4f6ff45b/",
+        "publisher": "Taro",
+        "date": "2021-12",
+        "note": "One Meta front end intern account describes traversing the DOM tree up from a node and replicating that traversal in another similar tree. Finding the corresponding node in twin trees is a practice version of that exercise."
       }
     ],
     "description": {
@@ -6481,6 +6624,15 @@
     ],
     "companies": [
       "meta"
+    ],
+    "sources": [
+      {
+        "label": "Taro: Meta front end developer interview, San Francisco, June 2024",
+        "url": "https://www.jointaro.com/interviews/companies/meta/experiences/front-end-developer-san-francisco-ca-june-27-2024-no-offer-positive-07526bae/",
+        "publisher": "Taro",
+        "date": "2024-06",
+        "note": "One Meta front end developer account describes being asked how to implement a stack or queue in JavaScript. This drill practises that exercise, not its reported wording."
+      }
     ],
     "description": {
       "summary": "Implement Stack (push/pop/peek/size) and Queue (enqueue/dequeue/peek/size). Use a head index or deque to keep queue operations O(1). Complexity: O(1) amortized operations.",

@@ -482,7 +482,8 @@
       "storage"
     ],
     "companies": [
-      "waymo"
+      "waymo",
+      "openai"
     ],
     "type": "system-design",
     "access": "free",
