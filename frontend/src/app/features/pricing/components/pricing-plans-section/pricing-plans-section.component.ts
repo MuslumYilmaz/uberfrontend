@@ -97,6 +97,15 @@ export const RECOMMENDED_PRICING_PLAN: PlanId = 'quarterly';
         </div>
       </div>
 
+      <p
+        class="student-pricing-line"
+        *ngIf="studentPricingNotice() as notice"
+        role="status"
+        data-testid="student-pricing-line">
+        {{ notice.text }}
+        <a *ngIf="notice.link" [routerLink]="notice.link.to">{{ notice.link.label }}</a>
+      </p>
+
       <section
         class="checkout-continuation"
         *ngIf="ctaMode === 'checkout' && pendingCheckoutIntent && canShowPendingCheckoutIntent() && !autoContinuingPendingCheckout"
@@ -853,8 +862,9 @@ If your employer needs anything else, email <code>support@frontendatlas.com</cod
         {
           id: 'student-discount',
           q: 'Is there a student discount?',
-          a: `Yes: 40% off the quarterly and annual plans while you are enrolled.<br><br>
-Email <code>support@frontendatlas.com</code> from your school address. We reply with a personal pricing link that applies the discount at checkout. Each link covers the current term and is meant for one purchase.`,
+          a: `Yes: 40% off the quarterly and annual plans on your first purchase.<br><br>
+Sign up with your school email address, or set it as your account email, and verify it from your profile. The discount is applied at checkout automatically, and the pricing page says so once your address is verified.<br><br>
+If your school address does not end in .edu or .ac, email <code>support@frontendatlas.com</code> from that address and we switch student pricing on for your account.`,
         },
       ],
     },
@@ -1015,6 +1025,24 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
 
   isProUser(): boolean {
     return isProActive(this.auth.user());
+  }
+
+  // Student pricing is decided by the backend (verified school email or a
+  // support approval) and applied at checkout; the page only states it.
+  studentPricingNotice(): { text: string; link?: { to: string[]; label: string } } | null {
+    if (this.variant !== 'full') return null;
+    const user = this.auth.user();
+    if (!user) return null;
+    if (user.studentDiscountEligible) {
+      return { text: 'Student pricing: 40% off the quarterly and annual plans is applied at checkout on your first purchase.' };
+    }
+    if (user.studentEmailPendingVerification) {
+      return {
+        text: 'Verify your school email to unlock student pricing.',
+        link: { to: ['/profile'], label: 'Verify in your profile' },
+      };
+    }
+    return null;
   }
 
   constructor(

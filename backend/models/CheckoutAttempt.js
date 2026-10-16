@@ -18,6 +18,7 @@ const CheckoutAttemptSchema = new mongoose.Schema(
     offerVersion: { type: String, trim: true, maxlength: 64, default: 'pricing_baseline_v1' },
     campaignId: { type: String, trim: true, maxlength: 64, default: null },
     providerDiscountId: { type: String, trim: true, maxlength: 128, default: null },
+    campaignEligibility: { type: String, enum: ['student', null], default: null },
     // First-touch attribution, analytics only: the landing path and external
     // referrer host recorded by the browser, and the country resolved by the
     // edge (x-vercel-ip-country). Never sent to the payment provider.

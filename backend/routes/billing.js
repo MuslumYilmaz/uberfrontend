@@ -2,6 +2,7 @@ const express = require('express');
 const User = require('../models/User');
 const BillingEvent = require('../models/BillingEvent');
 const CheckoutAttempt = require('../models/CheckoutAttempt');
+const { resolveStudentEligibility } = require('../services/billing/student-eligibility');
 const PendingEntitlement = require('../models/PendingEntitlement');
 const { createBillingEventStore } = require('../services/billing/billing-events');
 const {
@@ -864,6 +865,7 @@ router.post('/checkout/start', requireAuth, async (req, res) => {
       offerVersion,
       campaignId,
       providerDiscountId,
+      campaignEligibility,
       checkoutSurface,
       reused,
     } =
@@ -880,6 +882,7 @@ router.post('/checkout/start', requireAuth, async (req, res) => {
         landingPath: req.body?.landingPath,
         referrerHost: req.body?.referrerHost,
         countryCode: req.headers['x-vercel-ip-country'],
+        studentEligible: resolveStudentEligibility(user).eligible,
       });
 
     return res.status(200).json({
@@ -897,6 +900,7 @@ router.post('/checkout/start', requireAuth, async (req, res) => {
       offerVersion,
       campaignId,
       providerDiscountId,
+      campaignEligibility,
       checkoutSurface,
       reused,
     });

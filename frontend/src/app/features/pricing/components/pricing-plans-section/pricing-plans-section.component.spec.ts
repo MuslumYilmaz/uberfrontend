@@ -287,6 +287,27 @@ describe('PricingPlansSectionComponent', () => {
     expect(cardTitles()).toEqual(['Quarterly', 'Monthly', 'Annual']);
   });
 
+  it('states student pricing for an eligible account and asks a pending one to verify', () => {
+    const auth = TestBed.inject(AuthService) as unknown as { user: jasmine.Spy };
+    const baseUser = { _id: 'u1', username: 'student', email: 'ada@university.edu', role: 'user', prefs: {}, createdAt: '2026-01-01T00:00:00Z' };
+
+    auth.user.and.returnValue({ ...baseUser, studentDiscountEligible: true } as any);
+    fixture.detectChanges();
+    let line = fixture.nativeElement.querySelector('[data-testid="student-pricing-line"]') as HTMLElement | null;
+    expect(line?.textContent || '').toContain('Student pricing: 40% off the quarterly and annual plans');
+    expect(line?.querySelector('a')).toBeNull();
+
+    auth.user.and.returnValue({ ...baseUser, studentDiscountEligible: false, studentEmailPendingVerification: true } as any);
+    fixture.detectChanges();
+    line = fixture.nativeElement.querySelector('[data-testid="student-pricing-line"]') as HTMLElement | null;
+    expect(line?.textContent || '').toContain('Verify your school email to unlock student pricing');
+    expect(line?.querySelector('a')?.getAttribute('href')).toBe('/profile');
+
+    auth.user.and.returnValue({ ...baseUser } as any);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('[data-testid="student-pricing-line"]')).toBeNull();
+  });
+
   it('names the premium gate concretely in the baseline offer and the FAQ', () => {
     fixture.detectChanges();
 
@@ -316,7 +337,8 @@ describe('PricingPlansSectionComponent', () => {
     expect(employer?.a || '').toContain('emails a receipt for every order');
     expect(employer?.a || '').not.toMatch(/Google|Meta|Amazon|Microsoft/);
     expect(student?.a || '').toContain('40% off the quarterly and annual plans');
-    expect(student?.a || '').toContain('from your school address');
+    expect(student?.a || '').toContain('verify it from your profile');
+    expect(student?.a || '').toContain('applied at checkout automatically');
   });
 
   it('keeps the real workspace proof out of the baseline offer', () => {

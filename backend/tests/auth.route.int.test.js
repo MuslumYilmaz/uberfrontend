@@ -1648,3 +1648,42 @@ describe('OAuth callbacks', () => {
     expect(lastResponse.body?.error).toBe('Too many OAuth attempts. Please wait and try again.');
   });
 });
+
+describe('GET /api/auth/me student pricing flags', () => {
+  test('marks a school address as pending until verified, then eligible; consumer addresses get neither', async () => {
+    const User = require('../models/User');
+    const student = request.agent(app);
+    const signup = await student.post('/api/auth/signup').send({
+      email: 'ada@university.edu',
+      username: 'ada_student_me',
+      password: 'secret123',
+    });
+    expect(signup.status).toBe(201);
+
+    let me = await student.get('/api/auth/me');
+    expect(me.status).toBe(200);
+    expect(me.body).toEqual(expect.objectContaining({
+      studentDiscountEligible: false,
+      studentEmailPendingVerification: true,
+    }));
+
+    await User.updateOne({ email: 'ada@university.edu' }, { $set: { emailVerifiedAt: new Date() } });
+    me = await student.get('/api/auth/me');
+    expect(me.body).toEqual(expect.objectContaining({
+      studentDiscountEligible: true,
+      studentEmailPendingVerification: false,
+    }));
+
+    const consumer = request.agent(app);
+    await consumer.post('/api/auth/signup').send({
+      email: 'ada@gmail.com',
+      username: 'ada_consumer_me',
+      password: 'secret123',
+    });
+    const consumerMe = await consumer.get('/api/auth/me');
+    expect(consumerMe.body).toEqual(expect.objectContaining({
+      studentDiscountEligible: false,
+      studentEmailPendingVerification: false,
+    }));
+  });
+});

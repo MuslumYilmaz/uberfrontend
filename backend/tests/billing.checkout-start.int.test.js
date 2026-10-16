@@ -810,3 +810,137 @@ describe('checkout config plan prices', () => {
     expect(res.body.planDetails.monthly.amountCents).toBe(1200);
   });
 });
+
+describe('student pricing applied at checkout', () => {
+  const studentEntry = {
+    enabled: true,
+    campaignId: 'student_2026_autumn',
+    provider: 'lemonsqueezy',
+    providerDiscountId: 'discount_456',
+    discountCode: 'STUDENT40',
+    modes: ['test'],
+    planIds: ['quarterly', 'annual'],
+    analyticsSources: ['pricing_page'],
+    eligibility: 'student',
+    startsAt: '2020-01-01T00:00:00.000Z',
+    endsAt: '2099-01-01T00:00:00.000Z',
+  };
+
+  function arm(extraEntries = []) {
+    process.env.BILLING_DISCOUNT_CAMPAIGNS_JSON = JSON.stringify([studentEntry, ...extraEntries]);
+    process.env.LEMONSQUEEZY_QUARTERLY_URL_TEST =
+      'https://frontendatlas.lemonsqueezy.com/checkout/buy/test-quarterly';
+  }
+
+  async function startQuarterly(user, body = {}) {
+    return request(app)
+      .post('/api/billing/checkout/start')
+      .set('Authorization', authHeader(user._id))
+      .send({ planId: 'quarterly', ...body });
+  }
+
+  test('applies the student campaign to a verified school address on a first purchase', async () => {
+    arm();
+    const user = await seedUser({ email: 'ada@university.edu', username: 'ada_student', emailVerifiedAt: new Date() });
+
+    const res = await startQuarterly(user);
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(expect.objectContaining({
+      campaignId: 'student_2026_autumn',
+      providerDiscountId: 'discount_456',
+      campaignEligibility: 'student',
+    }));
+    const checkoutUrl = new URL(res.body.checkoutUrl);
+    expect(checkoutUrl.searchParams.get('checkout[discount_code]')).toBe('STUDENT40');
+    expect(checkoutUrl.searchParams.get('discount')).toBe('0');
+    const attempt = await CheckoutAttempt.findOne({ attemptId: res.body.attemptId }).lean();
+    expect(attempt).toEqual(expect.objectContaining({
+      campaignId: 'student_2026_autumn',
+      campaignEligibility: 'student',
+    }));
+  });
+
+  test('does not apply it to an unverified school address, a non-student address or an unlisted plan', async () => {
+    arm();
+    const unverified = await seedUser({ email: 'unverified@university.edu', username: 'unverified_student', emailVerifiedAt: null });
+    const consumer = await seedUser({ email: 'ada@gmail.com', username: 'consumer_user', emailVerifiedAt: new Date() });
+
+    for (const user of [unverified, consumer]) {
+      const res = await startQuarterly(user);
+      expect(res.status).toBe(200);
+      expect(res.body.campaignId).toBeNull();
+      expect(res.body.campaignEligibility).toBeNull();
+      expect(new URL(res.body.checkoutUrl).searchParams.has('checkout[discount_code]')).toBe(false);
+    }
+
+    const verified = await seedUser({ email: 'monthly@university.edu', username: 'monthly_student', emailVerifiedAt: new Date() });
+    const monthly = await request(app)
+      .post('/api/billing/checkout/start')
+      .set('Authorization', authHeader(verified._id))
+      .send({ planId: 'monthly' });
+    expect(monthly.status).toBe(200);
+    expect(monthly.body.campaignId).toBeNull();
+  });
+
+  test('is a first-purchase discount: a verified payment or an active entitlement switches it off', async () => {
+    arm();
+    const repeat = await seedUser({ email: 'repeat@university.edu', username: 'repeat_student', emailVerifiedAt: new Date() });
+    await CheckoutAttempt.create({
+      attemptId: 'chk_prior_student',
+      userId: repeat._id,
+      provider: 'lemonsqueezy',
+      planId: 'monthly',
+      mode: 'test',
+      status: 'applied',
+      paymentVerifiedAt: new Date('2026-09-01T00:00:00.000Z'),
+      paymentTotalCents: 1200,
+    });
+    const repeatRes = await startQuarterly(repeat);
+    expect(repeatRes.status).toBe(200);
+    expect(repeatRes.body.campaignId).toBeNull();
+
+    const entitled = await seedUser({
+      email: 'entitled@university.edu',
+      username: 'entitled_student',
+      emailVerifiedAt: new Date(),
+      entitlements: {
+        pro: { status: 'active', validUntil: new Date('2099-01-01T00:00:00.000Z') },
+        projects: { status: 'none', validUntil: null },
+      },
+    });
+    const entitledRes = await startQuarterly(entitled);
+    expect(entitledRes.status).toBe(200);
+    expect(entitledRes.body.campaignId).toBeNull();
+  });
+
+  test('honours a support approval and lets an explicit campaign win', async () => {
+    arm([{
+      enabled: true,
+      campaignId: 'partner_autumn',
+      provider: 'lemonsqueezy',
+      providerDiscountId: 'discount_789',
+      discountCode: 'PARTNER20',
+      modes: ['test'],
+      planIds: ['quarterly'],
+      analyticsSources: ['partner_autumn'],
+      startsAt: '2020-01-01T00:00:00.000Z',
+      endsAt: '2099-01-01T00:00:00.000Z',
+    }]);
+    const approved = await seedUser({
+      email: 'approved@gmail.com',
+      username: 'approved_student',
+      emailVerifiedAt: null,
+      billing: { studentApprovedAt: new Date('2026-10-01T00:00:00.000Z') },
+    });
+    const approvedRes = await startQuarterly(approved);
+    expect(approvedRes.status).toBe(200);
+    expect(approvedRes.body).toEqual(expect.objectContaining({ campaignId: 'student_2026_autumn', campaignEligibility: 'student' }));
+
+    const explicit = await seedUser({ email: 'explicit@university.edu', username: 'explicit_student', emailVerifiedAt: new Date() });
+    const explicitRes = await startQuarterly(explicit, { analyticsSource: 'partner_autumn', campaignId: 'partner_autumn' });
+    expect(explicitRes.status).toBe(200);
+    expect(explicitRes.body).toEqual(expect.objectContaining({ campaignId: 'partner_autumn', campaignEligibility: null }));
+    expect(new URL(explicitRes.body.checkoutUrl).searchParams.get('checkout[discount_code]')).toBe('PARTNER20');
+  });
+});

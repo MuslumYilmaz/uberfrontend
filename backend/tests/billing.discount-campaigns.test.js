@@ -79,3 +79,69 @@ describe('server-owned billing discount campaigns', () => {
       .toBeNull();
   });
 });
+
+describe('eligibility campaigns', () => {
+  const { resolveEligibilityCampaign, normalizeEligibility } = require('../services/billing/discount-campaigns');
+  const student = (overrides = {}) => campaign({
+    campaignId: 'student_2026_autumn',
+    providerDiscountId: 'discount_456',
+    discountCode: 'STUDENT40',
+    planIds: ['quarterly', 'annual'],
+    analyticsSources: ['pricing_page'],
+    eligibility: 'student',
+    startsAt: '2026-10-15T00:00:00.000Z',
+    endsAt: '2027-02-01T00:00:00.000Z',
+    ...overrides,
+  });
+
+  test('accepts only known eligibilities and keeps entries without one unchanged', () => {
+    expect(normalizeEligibility('Student')).toBe('student');
+    expect(normalizeEligibility(undefined)).toBeNull();
+    expect(normalizeEligibility('')).toBeNull();
+    expect(normalizeEligibility('staff')).toBe(false);
+    expect(parseCampaignAllowlist(JSON.stringify([student({ eligibility: 'staff' })]))).toEqual([]);
+    expect(parseCampaignAllowlist(JSON.stringify([student()]))[0]).toEqual(
+      expect.objectContaining({ campaignId: 'student_2026_autumn', eligibility: 'student' })
+    );
+    expect(parseCampaignAllowlist(JSON.stringify([campaign()]))[0].eligibility).toBeNull();
+  });
+
+  test('resolves the active student entry by provider, mode and plan without a campaign id', () => {
+    const env = { BILLING_DISCOUNT_CAMPAIGNS_JSON: JSON.stringify([campaign(), student()]) };
+    const input = {
+      eligibility: 'student',
+      provider: 'lemonsqueezy',
+      mode: 'test',
+      planId: 'quarterly',
+      now: new Date('2026-11-01T12:00:00.000Z'),
+      env,
+    };
+
+    expect(resolveEligibilityCampaign(input)).toEqual({
+      campaignId: 'student_2026_autumn',
+      providerDiscountId: 'discount_456',
+      discountCode: 'STUDENT40',
+      eligibility: 'student',
+    });
+    expect(resolveEligibilityCampaign({ ...input, planId: 'monthly' })).toBeNull();
+    expect(resolveEligibilityCampaign({ ...input, mode: 'live' })).toBeNull();
+    expect(resolveEligibilityCampaign({ ...input, provider: 'gumroad' })).toBeNull();
+    expect(resolveEligibilityCampaign({ ...input, now: new Date('2027-02-01T00:00:00.000Z') })).toBeNull();
+    expect(resolveEligibilityCampaign({ ...input, now: new Date('2026-10-14T00:00:00.000Z') })).toBeNull();
+    expect(resolveEligibilityCampaign({ ...input, eligibility: 'staff' })).toBeNull();
+    expect(resolveEligibilityCampaign({ ...input, env: { BILLING_DISCOUNT_CAMPAIGNS_JSON: '[]' } })).toBeNull();
+  });
+
+  test('never returns a plain campaign for an eligibility lookup, and explicit lookups still work', () => {
+    const env = { BILLING_DISCOUNT_CAMPAIGNS_JSON: JSON.stringify([campaign({ planIds: ['quarterly'] })]) };
+    expect(resolveEligibilityCampaign({
+      eligibility: 'student', provider: 'lemonsqueezy', mode: 'test', planId: 'quarterly',
+      now: new Date('2026-08-15T00:00:00.000Z'), env,
+    })).toBeNull();
+    expect(resolveDiscountCampaign({
+      rawCampaignId: 'student_2026_autumn', provider: 'lemonsqueezy', mode: 'test', planId: 'annual',
+      analyticsSource: 'pricing_page', now: new Date('2026-11-01T00:00:00.000Z'),
+      env: { BILLING_DISCOUNT_CAMPAIGNS_JSON: JSON.stringify([student()]) },
+    })).toEqual(expect.objectContaining({ campaignId: 'student_2026_autumn' }));
+  });
+});

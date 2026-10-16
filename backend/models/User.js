@@ -134,6 +134,9 @@ const UserSchema = new mongoose.Schema(
     // billing (future / Stripe-ready)
     billing: {
       stripeCustomerId: String,
+      // Support-set approval for student pricing when the school address does
+      // not match the domain rule (services/billing/student-eligibility.js).
+      studentApprovedAt: Date,
       pro: {
         status: { type: String, enum: ['none', 'lifetime', 'active', 'canceled'], default: 'none' },
         planId: String,
