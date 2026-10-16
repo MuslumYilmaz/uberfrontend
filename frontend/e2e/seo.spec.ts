@@ -1,3 +1,5 @@
+import { readdirSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { test, expect } from './fixtures';
 import { getMonacoModelValue } from './helpers';
 
@@ -288,6 +290,16 @@ test('seo: robots.txt and sitemaps are served', async ({ page }) => {
       }
     });
   });
+});
+
+test('seo: the IndexNow key file is served from the site root', async ({ page }) => {
+  // Bing and the other IndexNow engines fetch /<key>.txt to verify each ping;
+  // a key served below a path would only cover URLs under that path.
+  const [keyFile] = readdirSync(resolve(__dirname, '../src/indexnow')).filter((name) => name.endsWith('.txt'));
+  expect(keyFile).toBeTruthy();
+  const res = await page.request.get(`/${keyFile}`);
+  expect(res.status()).toBe(200);
+  expect((await res.text()).trim()).toBe(keyFile.replace(/\.txt$/, ''));
 });
 
 test('seo: llms.txt is served with public discovery links only', async ({ page }) => {

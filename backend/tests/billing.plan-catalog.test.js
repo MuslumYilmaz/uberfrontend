@@ -7,10 +7,10 @@ const { compareVariant } = require('../services/billing/price-parity');
 
 describe('resolvePlanCatalog', () => {
   const defaults = {
-    monthly: 1200,
-    quarterly: 2900,
-    annual: 7900,
-    lifetime: 19900,
+    monthly: 2400,
+    quarterly: 4900,
+    annual: 9900,
+    lifetime: 17900,
   };
 
   test('returns the default catalog when no override is configured', () => {
@@ -25,18 +25,18 @@ describe('resolvePlanCatalog', () => {
 
   test('applies a full or partial override to amounts only', () => {
     const full = resolvePlanCatalog({
-      BILLING_PLAN_PRICES_JSON: '{"monthly":2400,"quarterly":4900,"annual":9900,"lifetime":17900}',
+      BILLING_PLAN_PRICES_JSON: '{"monthly":2900,"quarterly":5900,"annual":11900,"lifetime":19900}',
     });
-    expect(full.monthly).toEqual({ amountCents: 2400, currency: 'USD', interval: 'month', intervalCount: 1 });
-    expect(full.quarterly).toEqual({ amountCents: 4900, currency: 'USD', interval: 'month', intervalCount: 3 });
-    expect(full.annual).toEqual({ amountCents: 9900, currency: 'USD', interval: 'year', intervalCount: 1 });
-    expect(full.lifetime).toEqual({ amountCents: 17900, currency: 'USD', interval: 'one_time', intervalCount: null });
+    expect(full.monthly).toEqual({ amountCents: 2900, currency: 'USD', interval: 'month', intervalCount: 1 });
+    expect(full.quarterly).toEqual({ amountCents: 5900, currency: 'USD', interval: 'month', intervalCount: 3 });
+    expect(full.annual).toEqual({ amountCents: 11900, currency: 'USD', interval: 'year', intervalCount: 1 });
+    expect(full.lifetime).toEqual({ amountCents: 19900, currency: 'USD', interval: 'one_time', intervalCount: null });
 
-    const partial = resolvePlanCatalog({ BILLING_PLAN_PRICES_JSON: '{"annual":9900}' });
-    expect(partial.annual.amountCents).toBe(9900);
-    expect(partial.monthly.amountCents).toBe(1200);
-    expect(partial.quarterly.amountCents).toBe(2900);
-    expect(partial.lifetime.amountCents).toBe(19900);
+    const partial = resolvePlanCatalog({ BILLING_PLAN_PRICES_JSON: '{"annual":11900}' });
+    expect(partial.annual.amountCents).toBe(11900);
+    expect(partial.monthly.amountCents).toBe(2400);
+    expect(partial.quarterly.amountCents).toBe(4900);
+    expect(partial.lifetime.amountCents).toBe(17900);
   });
 
   test('rejects the whole override when any entry is invalid', () => {
@@ -71,11 +71,11 @@ describe('resolvePlanCatalog', () => {
 
 describe('price parity with overridden prices', () => {
   test('compares the provider variant against the overridden amount', () => {
-    const env = { BILLING_PLAN_PRICES_JSON: '{"quarterly":4900}' };
-    const payload = { data: { attributes: { price: 4900, interval: 'month', interval_count: 3 } } };
+    const env = { BILLING_PLAN_PRICES_JSON: '{"quarterly":5900}' };
+    const payload = { data: { attributes: { price: 5900, interval: 'month', interval_count: 3 } } };
 
-    expect(compareVariant('quarterly', 'v49', payload, null, env)).toEqual(
-      expect.objectContaining({ ok: true, expected: expect.objectContaining({ amountCents: 4900 }) })
+    expect(compareVariant('quarterly', 'v59', payload, null, env)).toEqual(
+      expect.objectContaining({ ok: true, expected: expect.objectContaining({ amountCents: 5900 }) })
     );
     expect(compareVariant('quarterly', 'v49', payload, null, {})).toEqual(
       expect.objectContaining({ ok: false, mismatches: ['amount_mismatch'] })

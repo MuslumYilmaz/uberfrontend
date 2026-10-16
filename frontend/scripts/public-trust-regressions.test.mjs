@@ -55,7 +55,10 @@ for (const { filePath, text } of publicSource) {
 
 // Sales scarcity is banned in public copy: a campaign ends on its stated date and
 // is never announced as a closing window, and no price is shown as a struck-through
-// or "was" figure (docs/references/pricing-plan-2026-10.md, Step 4).
+// or "was" figure (docs/references/pricing-plan-2026-10.md, Step 4). The one
+// exception, added with Step 7 on 2026-10-16: the live list price struck through
+// next to a regional price, marked data-list-price and rendered only when the
+// backend published regional pricing for the visitor's country.
 const forbiddenScarcityClaims = [
   /limited[- ]time offer/i,
   /offer (is )?ending soon/i,
@@ -72,10 +75,17 @@ for (const { filePath, text } of publicSource) {
 const pricingSurfaces = publicSource.filter(({ filePath }) => /[\\/]features[\\/](?:pricing|billing)[\\/]/.test(filePath));
 assert.ok(pricingSurfaces.length > 0, 'pricing and billing sources must exist for the struck-price check');
 for (const { filePath, text } of pricingSurfaces) {
+  for (const tag of text.match(/<(?:s|del|strike)\b[^>]*>/gi) || []) {
+    assert.match(
+      tag,
+      /\bdata-list-price\b/,
+      `${path.relative(frontendRoot, filePath)} shows a struck-through price outside the regional block: ${tag}`,
+    );
+  }
   assert.doesNotMatch(
     text,
     /<(?:s|del|strike)\b[^>]*>[^<]*(?:\$|€|£|₺)\s?\d/i,
-    `${path.relative(frontendRoot, filePath)} shows a struck-through price`,
+    `${path.relative(frontendRoot, filePath)} hard-codes a struck-through price`,
   );
   assert.doesNotMatch(text, /\bwas (?:\$|€|£|₺)\s?\d/i, `${path.relative(frontendRoot, filePath)} shows a "was" price`);
 }

@@ -9,7 +9,7 @@ import {
   PricingPlansSectionComponent,
 } from './components/pricing-plans-section/pricing-plans-section.component';
 import { AnalyticsService } from '../../core/services/analytics.service';
-import { BillingCheckoutService, CheckoutSurface } from '../../core/services/billing-checkout.service';
+import { BillingCheckoutService, CheckoutSurface, RegionalPricing } from '../../core/services/billing-checkout.service';
 import { ConversionContextService } from '../../core/services/conversion-context.service';
 import { isSprintOfferVersion, PRERENDER_OFFER_VERSION } from '../../core/utils/offer-version.util';
 import { PRERENDER_PLAN_DETAILS } from '../../generated/pricing-defaults';
@@ -29,6 +29,7 @@ import { ConversionStickyCtaComponent } from '../../shared/components/conversion
         [checkoutAvailability]="checkoutAvailability"
         [planDetails]="planDetails"
         [offerVersion]="offerVersion"
+        [regionalPricing]="regionalPricing"
         [checkoutSurface]="checkoutSurface"
         [analyticsReady]="paymentsConfigReady"
         [analyticsSource]="analyticsSource"
@@ -48,6 +49,8 @@ export class PricingComponent implements OnInit {
   // config replaces both; buttons stay disabled until it arrives.
   planDetails: PricingPlanDetails | null = PRERENDER_PLAN_DETAILS;
   offerVersion = PRERENDER_OFFER_VERSION;
+  // Regional prices arrive with the config; the prerender carries list prices.
+  regionalPricing: RegionalPricing | null = null;
   checkoutSurface: CheckoutSurface = 'hosted_new_tab';
   analyticsSource = 'pricing_page';
   private pageViewTracked = false;
@@ -84,6 +87,7 @@ export class PricingComponent implements OnInit {
     this.checkoutAvailability = config?.plans ?? null;
     this.planDetails = config?.planDetails ?? PRERENDER_PLAN_DETAILS;
     this.offerVersion = config?.offerVersion ?? PRERENDER_OFFER_VERSION;
+    this.regionalPricing = config?.pricing?.regional ?? null;
     this.checkoutSurface = config?.checkoutSurface ?? 'hosted_new_tab';
     this.paymentsConfigReady = true;
     this.trackPricingPageViewed();

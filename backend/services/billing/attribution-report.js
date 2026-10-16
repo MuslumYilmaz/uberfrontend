@@ -14,6 +14,7 @@ const DIMENSIONS = Object.freeze([
   { id: 'byAnalyticsSource', label: 'By analytics source', key: (keys) => keys.analyticsSource, sort: 'paid', limited: true },
   { id: 'byLandingPath', label: 'By landing path', key: (keys) => keys.landingPath, sort: 'paid', limited: true },
   { id: 'byCountry', label: 'By country', key: (keys) => keys.countryCode, sort: 'paid', limited: true },
+  { id: 'byPriceReason', label: 'By price reason', key: (keys) => keys.priceReason, sort: 'paid', limited: false },
 ]);
 
 function toMs(value) {
@@ -104,6 +105,7 @@ function buildAttributionReport({ attempts = [], terminalEvents = [], now = new 
       analyticsSource: labelOf(attempt.analyticsSource, 'unknown'),
       landingPath: labelOf(attempt.landingPath, 'unknown'),
       countryCode: labelOf(attempt.countryCode, 'unknown'),
+      priceReason: labelOf(attempt.priceReason, 'list'),
     };
 
     const targets = [totals];

@@ -44,6 +44,23 @@ describe('LemonSqueezyCheckoutService', () => {
     expect(document.querySelector('script[data-fa-lemon-squeezy]')).toBeNull();
   });
 
+  it('accepts a signed custom checkout link from the store host and rejects one from elsewhere', async () => {
+    const redirect = jasmine.createSpy('checkoutRedirect');
+    (window as any).__faCheckoutRedirect = redirect;
+    const customUrl = 'https://frontendatlas.lemonsqueezy.com/checkout/custom/ac470bd4-7c41-474d-b6cd-0f296f5be02a?signature=sig';
+
+    expect(await service.open(customUrl, { checkoutSurface: 'hosted_new_tab' }, { kind: 'hook' })).toBe('new-tab');
+    expect(redirect).toHaveBeenCalledWith(customUrl);
+
+    redirect.calls.reset();
+    expect(await service.open(
+      'https://attacker.example/checkout/custom/abc?signature=sig',
+      { checkoutSurface: 'hosted_new_tab' },
+      { kind: 'hook' },
+    )).toBe('new-tab');
+    expect(redirect).not.toHaveBeenCalled();
+  });
+
   it('opens a selected checkout with Lemon.js and releases an unnecessary popup reservation', async () => {
     const open = jasmine.createSpy('LemonSqueezy.Url.Open');
     const setup = jasmine.createSpy('LemonSqueezy.Setup');

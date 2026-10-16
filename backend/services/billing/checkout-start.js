@@ -2,6 +2,14 @@ const crypto = require('crypto');
 const { resolveFrontendBase } = require('../../config/urls');
 const { resolveDiscountCampaign, resolveEligibilityCampaign } = require('./discount-campaigns');
 const { isProEntitlementActive } = require('./entitlements');
+const { resolveCheckoutPricing, resolvePublicPricingRules, STUDENT_PRICE_PLAN_IDS } = require('./checkout-pricing');
+const { resolveLemonSqueezyApiKey } = require('./providers/lemonsqueezy-orders');
+const {
+  canCreateCustomCheckout,
+  createLemonSqueezyCustomCheckout,
+  resolveLemonSqueezyStoreId,
+  resolveLemonSqueezyVariantId,
+} = require('./providers/lemonsqueezy-checkouts');
 
 const PROVIDERS = new Set(['gumroad', 'lemonsqueezy', 'stripe']);
 const PLAN_IDS = ['monthly', 'quarterly', 'annual', 'lifetime'];
@@ -20,25 +28,25 @@ const DEFAULT_OFFER_VERSION = 'pricing_baseline_v1';
 const DEFAULT_CHECKOUT_SURFACE = 'hosted_new_tab';
 const PLAN_CATALOG = Object.freeze({
   monthly: Object.freeze({
-    amountCents: 1200,
+    amountCents: 2400,
     currency: 'USD',
     interval: 'month',
     intervalCount: 1,
   }),
   quarterly: Object.freeze({
-    amountCents: 2900,
+    amountCents: 4900,
     currency: 'USD',
     interval: 'month',
     intervalCount: 3,
   }),
   annual: Object.freeze({
-    amountCents: 7900,
+    amountCents: 9900,
     currency: 'USD',
     interval: 'year',
     intervalCount: 1,
   }),
   lifetime: Object.freeze({
-    amountCents: 19900,
+    amountCents: 17900,
     currency: 'USD',
     interval: 'one_time',
     intervalCount: null,
@@ -49,7 +57,7 @@ const PLAN_PRICE_MAX_CENTS = 1_000_000;
 let planPriceOverrideWarned = false;
 
 // Prices switch without a deploy: BILLING_PLAN_PRICES_JSON holds cents per plan,
-// e.g. {"monthly":2400,"quarterly":4900,"annual":9900,"lifetime":17900}. One
+// e.g. {"monthly":2900,"quarterly":5900,"annual":11900,"lifetime":19900}. One
 // invalid entry rejects the whole override, so a typo can never price a plan at
 // zero; the defaults above then apply. Intervals and currency never change here.
 function parsePlanPriceOverrides(raw) {
@@ -262,7 +270,7 @@ function resolveCheckoutUrl(provider, planId, mode) {
   return normalizeUrlCandidate(process.env[`STRIPE_${planId.toUpperCase()}_URL`]);
 }
 
-function resolveCheckoutConfig(rawProvider) {
+function resolveCheckoutConfig(rawProvider, { countryCode } = {}) {
   const configuredProvider = resolveProvider(rawProvider);
   const mode = resolveMode();
   const provider = configuredProvider && !PROVIDER_UNAVAILABLE.has(configuredProvider)
@@ -275,15 +283,24 @@ function resolveCheckoutConfig(rawProvider) {
     return acc;
   }, {});
 
+  const planDetails = resolvePublicPlanDetails();
+  const enabled = Object.values(plans).some(Boolean);
+  // Regional prices are published only when every available plan can be
+  // charged at that price through a custom checkout.
+  const customCheckoutAvailable = enabled
+    && provider === 'lemonsqueezy'
+    && PLAN_IDS.every((planId) => !plans[planId] || canCreateCustomCheckout({ planId, mode }));
+
   return {
     configuredProvider,
     provider,
     mode,
-    enabled: Object.values(plans).some(Boolean),
+    enabled,
     plans,
-    planDetails: resolvePublicPlanDetails(),
+    planDetails,
     offerVersion: resolveOfferVersion(),
     checkoutSurface: resolveCheckoutSurface(),
+    pricing: resolvePublicPricingRules({ countryCode, planDetails, customCheckoutAvailable }),
   };
 }
 
@@ -296,7 +313,9 @@ function isValidHostedCheckoutUrl(provider, url) {
     const hostname = parsed.hostname.toLowerCase();
     if (provider === 'lemonsqueezy') {
       const providerHost = hostname === 'lemonsqueezy.com' || hostname.endsWith('.lemonsqueezy.com');
-      return providerHost && /\/checkout\/buy\/[^/]+/.test(parsed.pathname);
+      // Buy links are the configured hosted checkouts; /checkout/custom/ links
+      // come back from the Create checkout API for regional and student prices.
+      return providerHost && /\/checkout\/(?:buy|custom)\/[^/]+/.test(parsed.pathname);
     }
     if (provider === 'gumroad') {
       return hostname === 'gumroad.com' || hostname.endsWith('.gumroad.com');
@@ -418,6 +437,29 @@ function normalizeCountryCode(raw) {
   return COUNTRY_CODE_PATTERN.test(value) ? value : null;
 }
 
+// Custom data for an API-created checkout: the same keys the buy link carries,
+// plus the reason the price differs from the list price.
+function buildLemonSqueezyApiCustomData({
+  user,
+  attemptId,
+  analyticsSessionId,
+  experimentId,
+  offerVersion,
+  checkoutSurface,
+  priceReason,
+}) {
+  return {
+    fa_user_id: String(user._id),
+    fa_checkout_attempt_id: attemptId,
+    fa_analytics_session_id: analyticsSessionId,
+    fa_experiment_id: experimentId,
+    fa_offer_version: offerVersion,
+    fa_checkout_surface: checkoutSurface,
+    fa_price_reason: priceReason,
+    fa_frontend_origin: resolveFrontendBase() || null,
+  };
+}
+
 function buildFinalCheckoutUrl(provider, baseUrl, user, attemptId, attribution = {}) {
   const successUrl = buildRedirectUrl('/billing/success', attemptId);
   const cancelUrl = buildRedirectUrl('/billing/cancel', attemptId);
@@ -463,6 +505,8 @@ async function findReusableCheckoutAttempt(
     checkoutSurface,
     campaignId,
     providerDiscountId,
+    priceReason = null,
+    priceChargedCents = null,
   }
 ) {
   const threshold = new Date(Date.now() - resolveAttemptReuseWindowMs());
@@ -484,6 +528,8 @@ async function findReusableCheckoutAttempt(
     checkoutSurface,
     campaignId,
     providerDiscountId,
+    priceReason,
+    priceChargedCents,
     $or: attributionFilters,
     status: { $in: Array.from(REUSABLE_ATTEMPT_STATUSES) },
     startedAt: { $gte: threshold },
@@ -559,11 +605,40 @@ async function createCheckoutAttempt(
     analyticsSource,
   });
   let campaignEligibility = null;
-  // Student pricing applies by itself on a first purchase when no explicit
-  // campaign was requested; an explicit campaign always wins.
-  if (!campaign && rawStudentEligible === true && !(await hasPriorPurchase(CheckoutAttempt, user))) {
-    campaign = resolveEligibilityCampaign({ eligibility: 'student', provider, mode, planId });
-    campaignEligibility = campaign ? 'student' : null;
+  // Regional and student prices apply by themselves when no explicit campaign
+  // was requested; an explicit campaign always wins. The customer gets the
+  // better of the two prices, never both, and the price is charged through a
+  // custom checkout. While custom checkouts are not configured, a verified
+  // student falls back to the allowlisted student code instead of silently
+  // paying the list price.
+  const listAmountCents = resolvePlanCatalog()[planId].amountCents;
+  let pricing = {
+    reason: null,
+    multiplier: 1,
+    listAmountCents,
+    amountCents: listAmountCents,
+    countryCode: null,
+  };
+  let customCheckout = false;
+  if (!campaign && provider === 'lemonsqueezy') {
+    const studentEligible = rawStudentEligible === true;
+    const firstPurchase = studentEligible && STUDENT_PRICE_PLAN_IDS.includes(planId)
+      ? !(await hasPriorPurchase(CheckoutAttempt, user))
+      : false;
+    const resolved = resolveCheckoutPricing({
+      planId,
+      listAmountCents,
+      countryCode,
+      studentEligible,
+      firstPurchase,
+    });
+    if (resolved.reason && canCreateCustomCheckout({ planId, mode })) {
+      pricing = resolved;
+      customCheckout = true;
+    } else if (studentEligible && firstPurchase) {
+      campaign = resolveEligibilityCampaign({ eligibility: 'student', provider, mode, planId });
+      campaignEligibility = campaign ? 'student' : null;
+    }
   }
   const campaignId = campaign?.campaignId || null;
   const providerDiscountId = campaign?.providerDiscountId || null;
@@ -581,6 +656,8 @@ async function createCheckoutAttempt(
     checkoutSurface,
     campaignId,
     providerDiscountId,
+    priceReason: pricing.reason,
+    priceChargedCents: customCheckout ? pricing.amountCents : null,
   });
   if (reusableAttempt?.attemptId && isValidHostedCheckoutUrl(provider, reusableAttempt.checkoutUrl)) {
     return {
@@ -597,6 +674,13 @@ async function createCheckoutAttempt(
       campaignId: reusableAttempt.campaignId || null,
       providerDiscountId: reusableAttempt.providerDiscountId || null,
       campaignEligibility: reusableAttempt.campaignEligibility || null,
+      pricing: {
+        reason: reusableAttempt.priceReason || null,
+        multiplier: reusableAttempt.priceMultiplier ?? 1,
+        listAmountCents: reusableAttempt.priceListCents ?? listAmountCents,
+        amountCents: reusableAttempt.priceChargedCents ?? listAmountCents,
+        countryCode: reusableAttempt.priceReason === 'regional' ? reusableAttempt.countryCode || null : null,
+      },
       attemptId: reusableAttempt.attemptId,
       checkoutUrl: reusableAttempt.checkoutUrl,
       successUrl: reusableAttempt.successUrl,
@@ -606,21 +690,62 @@ async function createCheckoutAttempt(
   }
 
   const attemptId = `chk_${crypto.randomBytes(10).toString('hex')}`;
-  const { checkoutUrl, successUrl, cancelUrl } = buildFinalCheckoutUrl(
-    provider,
-    baseUrl,
-    user,
-    attemptId,
-    {
-      analyticsSessionId,
-      experimentId,
-      offerVersion,
-      checkoutSurface,
-      campaignId,
-      providerDiscountId,
-      discountCode: campaign?.discountCode || null,
+  let checkoutUrl;
+  let successUrl;
+  let cancelUrl;
+  let providerCheckoutId = null;
+  if (customCheckout) {
+    successUrl = buildRedirectUrl('/billing/success', attemptId);
+    cancelUrl = buildRedirectUrl('/billing/cancel', attemptId);
+    const created = await createLemonSqueezyCustomCheckout({
+      apiKey: resolveLemonSqueezyApiKey(mode),
+      storeId: resolveLemonSqueezyStoreId(),
+      variantId: resolveLemonSqueezyVariantId(planId, mode),
+      mode,
+      customPriceCents: pricing.amountCents,
+      email: user.email,
+      name: user.username,
+      customData: buildLemonSqueezyApiCustomData({
+        user,
+        attemptId,
+        analyticsSessionId,
+        experimentId,
+        offerVersion,
+        checkoutSurface,
+        priceReason: pricing.reason,
+      }),
+      redirectUrl: successUrl,
+      embed: checkoutSurface === 'overlay',
+    });
+    if (!created.ok) {
+      // The page promised this price, so the checkout fails closed and the
+      // customer retries instead of being charged the list price.
+      console.warn(`[billing] custom checkout unavailable (${created.reason}) plan=${planId} reason=${pricing.reason}`);
+      throw new CheckoutStartError(
+        'CUSTOM_CHECKOUT_UNAVAILABLE',
+        'Checkout is unavailable right now. Please try again in a moment.',
+        503
+      );
     }
-  );
+    checkoutUrl = created.url;
+    providerCheckoutId = created.checkoutId || null;
+  } else {
+    ({ checkoutUrl, successUrl, cancelUrl } = buildFinalCheckoutUrl(
+      provider,
+      baseUrl,
+      user,
+      attemptId,
+      {
+        analyticsSessionId,
+        experimentId,
+        offerVersion,
+        checkoutSurface,
+        campaignId,
+        providerDiscountId,
+        discountCode: campaign?.discountCode || null,
+      }
+    ));
+  }
 
   if (!isValidHostedCheckoutUrl(provider, checkoutUrl)) {
     throw new CheckoutStartError('INVALID_CHECKOUT_URL', 'Checkout URL invalid', 409);
@@ -641,6 +766,11 @@ async function createCheckoutAttempt(
     campaignId,
     providerDiscountId,
     campaignEligibility,
+    priceReason: pricing.reason,
+    priceMultiplier: customCheckout ? pricing.multiplier : null,
+    priceListCents: customCheckout ? pricing.listAmountCents : null,
+    priceChargedCents: customCheckout ? pricing.amountCents : null,
+    providerCheckoutId,
     landingPath,
     referrerHost,
     countryCode,
@@ -666,6 +796,7 @@ async function createCheckoutAttempt(
     campaignId,
     providerDiscountId,
     campaignEligibility,
+    pricing,
     attemptId,
     checkoutUrl,
     successUrl,

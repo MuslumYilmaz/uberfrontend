@@ -93,6 +93,7 @@ export type CheckoutStartResponse = {
   providerDiscountId?: string | null;
   offerVersion?: CheckoutOfferVersion;
   checkoutSurface?: CheckoutSurface;
+  pricing?: CheckoutPricing | null;
   reused?: boolean;
 };
 
@@ -145,6 +146,29 @@ export type CheckoutAttemptStatusResult = {
   code?: string;
 };
 
+// Regional prices (docs/references/pricing-plan-2026-10.md, Step 7): the backend
+// resolves the visitor's country and publishes the prices it will charge through
+// a custom checkout. The pricing page shows them with the list price struck.
+export type RegionalPricing = {
+  countryCode: string;
+  countryName: string;
+  multiplier: number;
+  prices: Partial<Record<PlanId, number>>;
+};
+
+export type CheckoutPricingRules = {
+  student: { multiplier: number; planIds: PlanId[] } | null;
+  regional: RegionalPricing | null;
+};
+
+export type CheckoutPricing = {
+  reason: 'regional' | 'student' | null;
+  multiplier: number;
+  listAmountCents: number;
+  amountCents: number;
+  countryCode: string | null;
+};
+
 export type CheckoutConfig = {
   configuredProvider: string | null;
   provider: PaymentsProvider | null;
@@ -154,6 +178,7 @@ export type CheckoutConfig = {
   planDetails: Partial<Record<PlanId, CheckoutPlanDetail>>;
   offerVersion: CheckoutOfferVersion;
   checkoutSurface: CheckoutSurface;
+  pricing?: CheckoutPricingRules | null;
 };
 
 type CheckoutConfigResponse = CheckoutConfig;
@@ -427,7 +452,40 @@ function normalizeCheckoutConfig(value: CheckoutConfigResponse | null | undefine
     planDetails: normalizePlanDetails(value.planDetails),
     offerVersion: normalizeOfferVersion(value.offerVersion, 'pricing_baseline_v1') || 'pricing_baseline_v1',
     checkoutSurface: normalizeCheckoutSurface(value.checkoutSurface),
+    pricing: normalizePricingRules(value.pricing),
   };
+}
+
+const PLAN_ID_LIST = ['monthly', 'quarterly', 'annual', 'lifetime'] as const;
+
+// The pricing rules are display data; anything malformed is dropped rather
+// than shown, and the backend remains the only place that sets a price.
+function normalizePricingRules(value: CheckoutPricingRules | null | undefined): CheckoutPricingRules | null {
+  if (!value || typeof value !== 'object') return null;
+  const studentMultiplier = Number(value.student?.multiplier);
+  const studentPlanIds = Array.isArray(value.student?.planIds)
+    ? value.student!.planIds.filter((planId): planId is PlanId => (PLAN_ID_LIST as readonly string[]).includes(String(planId)))
+    : [];
+  const student = Number.isFinite(studentMultiplier) && studentMultiplier > 0 && studentMultiplier < 1 && studentPlanIds.length
+    ? { multiplier: studentMultiplier, planIds: studentPlanIds }
+    : null;
+  return { student, regional: normalizeRegionalPricing(value.regional) };
+}
+
+function normalizeRegionalPricing(value: RegionalPricing | null | undefined): RegionalPricing | null {
+  if (!value || typeof value !== 'object') return null;
+  const countryCode = String(value.countryCode || '').trim().toUpperCase();
+  const multiplier = Number(value.multiplier);
+  if (!/^[A-Z]{2}$/.test(countryCode)) return null;
+  if (!Number.isFinite(multiplier) || multiplier <= 0 || multiplier >= 1) return null;
+  const prices: Partial<Record<PlanId, number>> = {};
+  for (const planId of PLAN_ID_LIST) {
+    const amount = Number(value.prices?.[planId]);
+    if (Number.isInteger(amount) && amount > 0) prices[planId] = amount;
+  }
+  if (!Object.keys(prices).length) return null;
+  const countryName = String(value.countryName || '').trim().slice(0, 64) || countryCode;
+  return { countryCode, countryName, multiplier, prices };
 }
 
 function normalizePlanDetails(
@@ -479,9 +537,11 @@ function normalizeOptionalAttributionId(value: unknown): string | null {
 function isLemonSqueezyBuyUrl(value: string): boolean {
   try {
     const parsed = new URL(value);
+    // Buy links are the configured hosted checkouts; signed /checkout/custom/
+    // links come from the backend for regional and student prices.
     return parsed.protocol === 'https:'
       && parsed.hostname === 'frontendatlas.lemonsqueezy.com'
-      && /^\/checkout\/buy\/[^/]+/.test(parsed.pathname);
+      && /^\/checkout\/(?:buy|custom)\/[^/]+/.test(parsed.pathname);
   } catch {
     return false;
   }

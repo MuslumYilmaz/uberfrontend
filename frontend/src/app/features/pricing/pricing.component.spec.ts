@@ -56,13 +56,14 @@ describe('PricingComponent', () => {
     expect(component.checkoutAvailability).toBeNull();
     // The prerender defaults survive a failed config: prices stay visible, checkout stays disabled.
     expect(component.planDetails).toEqual(PRERENDER_PLAN_DETAILS);
-    expect(component.offerVersion).toBe('interview_sprint_v2');
+    expect(component.regionalPricing).toBeNull();
+    expect(component.offerVersion).toBe('interview_sprint_v3');
     expect(analyticsStub.track).toHaveBeenCalledWith('pricing_page_viewed', jasmine.objectContaining({
       src: 'pricing_page',
       surface: 'pricing_page',
       page: 'pricing',
-      page_layout: 'interview_sprint_v2',
-      offer_version: 'interview_sprint_v2',
+      page_layout: 'interview_sprint_v3',
+      offer_version: 'interview_sprint_v3',
       checkout_surface: 'hosted_new_tab',
       recommended_plan: 'quarterly',
     }));
@@ -90,8 +91,8 @@ describe('PricingComponent', () => {
     expect(planGrid.getAttribute('aria-busy')).toBe('true');
     // Prerender contract: the sprint layout and the default prices render before any config arrives.
     expect(fixture.nativeElement.querySelectorAll('.pr-grid .pr-card').length).toBe(3);
-    expect(monthlyButton.closest('.pr-card')?.textContent || '').toContain('$12');
-    expect(fixture.nativeElement.querySelector('[data-testid="pricing-lifetime-secondary"]')?.textContent || '').toContain('$199');
+    expect(monthlyButton.closest('.pr-card')?.textContent || '').toContain('$24');
+    expect(fixture.nativeElement.querySelector('[data-testid="pricing-lifetime-secondary"]')?.textContent || '').toContain('$179');
 
     resolveConfig({
       enabled: true,
@@ -135,6 +136,10 @@ describe('PricingComponent', () => {
       },
       offerVersion: 'interview_sprint_v2',
       checkoutSurface: 'overlay',
+      pricing: {
+        student: { multiplier: 0.6, planIds: ['annual'] },
+        regional: { countryCode: 'TR', countryName: 'Türkiye', multiplier: 0.5, prices: { monthly: 600, quarterly: 1450, annual: 3950, lifetime: 9950 } },
+      },
     });
     fixture = TestBed.createComponent(PricingComponent);
     component = fixture.componentInstance;
@@ -145,6 +150,9 @@ describe('PricingComponent', () => {
 
     expect(component.offerVersion).toBe('interview_sprint_v2');
     expect(component.checkoutSurface).toBe('overlay');
+    expect(component.regionalPricing).toEqual(jasmine.objectContaining({ countryCode: 'TR', multiplier: 0.5 }));
+    expect(fixture.nativeElement.querySelector('[data-testid="pricing-regional-line"]')?.textContent || '').toContain('Prices for Türkiye');
+    expect(fixture.nativeElement.querySelector('.pr-card--quarterly s[data-list-price]')?.textContent?.trim()).toBe('$9.67');
     expect(fixture.nativeElement.querySelectorAll('.pr-grid .pr-card').length).toBe(3);
     expect(fixture.nativeElement.querySelector('[data-testid="pricing-lifetime-secondary"]')).toBeTruthy();
     expect(analyticsStub.track).toHaveBeenCalledWith('pricing_page_viewed', jasmine.objectContaining({
