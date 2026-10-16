@@ -394,15 +394,18 @@ test.describe('production/SSR public remediation smoke', () => {
 
   test('pricing preserves the three exact Premium evidence links', async ({ page }) => {
     await openHydratedRoute(page, '/pricing', 'Prepare faster with deeper frontend interview reps');
-    const section = page.locator('.unlock-preview');
-    await expect(section).toContainText('Premium unlock preview');
+    const table = page.locator('.plan-compare');
+    await expect(table).toContainText('Free vs Premium');
 
-    const hrefs = await section.locator('a.unlock-preview__link').evaluateAll((links) =>
+    const tableHrefs = await table.locator('a.plan-compare__preview').evaluateAll((links) =>
       links.map((link) => link.getAttribute('href')),
     );
-    expect(hrefs).toEqual([...PRICING_PREVIEW_PATHS]);
+    expect(tableHrefs).toEqual([PRICING_PREVIEW_PATHS[0], PRICING_PREVIEW_PATHS[1]]);
+    await expect(
+      page.getByTestId('pricing-product-proof').locator(`a[href="${PRICING_PREVIEW_PATHS[2]}?src=pricing_product_proof"]`),
+    ).toHaveCount(1);
     for (const path of PRICING_PREVIEW_PATHS) {
-      await expect(section.locator(`a[href="${path}"]`)).toHaveCount(1);
+      await expect(page.locator(`main a[href^="${path}"]`)).toHaveCount(1);
     }
   });
 

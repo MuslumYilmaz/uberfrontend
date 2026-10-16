@@ -3,7 +3,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpErrorResponse } from '@angular/common/http';
 import { provideRouter, Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
-import { PUBLIC_CHANGELOG_ENTRIES } from '../../../../core/content/public-changelog';
 import { AnalyticsService } from '../../../../core/services/analytics.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { BillingCheckoutService } from '../../../../core/services/billing-checkout.service';
@@ -238,9 +237,10 @@ describe('PricingPlansSectionComponent', () => {
     ]);
     expect(page.textContent || '').toContain(`${SHOWCASE_STATS.totalQuestions} questions`);
     expect(page.textContent || '').toContain(`${SHOWCASE_STATS.premiumPracticeCount} Premium practice prompts`);
-    expect(page.textContent || '').toContain('refunded in full within 14 days of the order, with no usage test');
+    const refundsFaq = component.faqGroups.flatMap((group) => group.items).find((item) => item.id === 'refunds');
+    expect(refundsFaq?.a || '').toContain('ask within 14 days of the order and we refund it in full, with no usage test');
+    expect(refundsFaq?.a || '').toContain('Renewal charges and unused subscription time are generally non-refundable');
     expect((page.textContent || '').toLowerCase()).not.toContain('limited premium usage');
-    expect(page.textContent || '').toContain('Renewal charges and unused subscription time are generally non-refundable');
     expect((page.textContent || '').toLowerCase()).not.toContain('money-back guarantee');
     expect((page.textContent || '').toLowerCase()).not.toContain('where available');
     expect((page.textContent || '').toLowerCase()).not.toContain('expanding');
@@ -314,10 +314,10 @@ describe('PricingPlansSectionComponent', () => {
     const page = fixture.nativeElement as HTMLElement;
     const hero = page.querySelector('.pr-hero') as HTMLElement;
     expect(hero.textContent || '').toContain('Every Premium coding question ships with a guided solution');
-    expect(hero.textContent || '').toContain('cite a public interview report wherever a prompt is modelled on one');
+    expect((page.querySelector('.plan-compare')?.textContent || '')).toContain('wherever a prompt is modelled on one');
     expect((page.textContent || '').toLowerCase()).not.toContain('where available');
     expect((page.textContent || '').toLowerCase()).not.toContain('large question library');
-    expect(page.textContent || '').toContain('Runnable checks on every JavaScript and debugging task');
+    expect((page.querySelector('.plan-compare')?.textContent || '')).toContain('JavaScript and debugging tasks, and most React, Angular and Vue tasks');
 
     const faqItems = component.faqGroups.flatMap((group) => group.items);
     const premiumIncludes = faqItems.find((item) => item.id === 'premium-includes');
@@ -397,36 +397,33 @@ describe('PricingPlansSectionComponent', () => {
     expect(page.querySelector('.included-box.plan-unlock')).toBeNull();
   });
 
-  it('renders curated premium unlock preview cards with internal preview links', () => {
+  it('links the locked coding prompt and walkthrough from the comparison table and drops the explanatory blocks', () => {
     fixture.detectChanges();
 
     const page: HTMLElement = fixture.nativeElement;
-    const cards = Array.from(page.querySelectorAll('.unlock-preview__card')) as HTMLElement[];
-    const links = Array.from(page.querySelectorAll('.unlock-preview__link')) as HTMLAnchorElement[];
-
-    expect(cards.length).toBe(3);
-    expect(page.textContent || '').toContain('Premium unlock preview');
-    expect(page.textContent || '').toContain('Contact Form (Component + HTTP)');
-    expect(page.textContent || '').toContain('Multi-step Form with Autosave');
-    expect(page.textContent || '').toContain('Guided implementation review');
-    expect(links.map((link) => link.getAttribute('href'))).toEqual([
+    const previewLinks = Array.from(page.querySelectorAll('.plan-compare a.plan-compare__preview')) as HTMLAnchorElement[];
+    expect(previewLinks.map((link) => link.getAttribute('href'))).toEqual([
       '/react/coding/react-contact-form-starter',
       '/system-design/multi-step-form-autosave',
-      '/javascript/coding/js-throttle',
     ]);
+    for (const removed of ['.unlock-preview', '.value-anchor', '.free-explorer', '.pr-features', '.pr-proof-grid', '.risk-reversal', '.weekly-changelog']) {
+      expect(page.querySelector(removed)).withContext(removed).toBeNull();
+    }
+    expect(page.querySelector('[data-testid="pricing-discounts-line"]')?.textContent || '').toContain('Students get 40% off the quarterly and annual plans');
+    expect(page.querySelectorAll('main a, a').length).toBeLessThanOrEqual(12);
   });
 
-  it('places Free Explorer after the plan cards', () => {
+  it('places the Free vs Premium table after the plan cards', () => {
     fixture.detectChanges();
 
     const page: HTMLElement = fixture.nativeElement;
     const planGrid = page.querySelector('.pr-grid') as HTMLElement;
-    const freeExplorer = page.querySelector('.free-explorer') as HTMLElement;
+    const table = page.querySelector('.plan-compare') as HTMLElement;
 
-    expect(planGrid.compareDocumentPosition(freeExplorer) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(planGrid.compareDocumentPosition(table) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
-  it('tracks pricing plan and value anchor visibility in the no-observer fallback', () => {
+  it('tracks pricing plan visibility in the no-observer fallback', () => {
     const analytics = TestBed.inject(AnalyticsService) as jasmine.SpyObj<AnalyticsService>;
     const win = window as any;
     const originalObserver = win.IntersectionObserver;
@@ -443,16 +440,8 @@ describe('PricingPlansSectionComponent', () => {
       recommended_plan: 'quarterly',
       plan_count: 4,
     }));
-    expect(analytics.track).toHaveBeenCalledWith('pricing_unlock_preview_seen', jasmine.objectContaining({
-      page_layout: 'interview_sprint_v1',
-      recommended_plan: 'quarterly',
-      card_count: 3,
-    }));
-    expect(analytics.track).toHaveBeenCalledWith('pricing_value_anchor_seen', jasmine.objectContaining({
-      page_layout: 'interview_sprint_v1',
-      recommended_plan: 'quarterly',
-      anchor: 'why_upgrade_now',
-    }));
+    expect(analytics.track).not.toHaveBeenCalledWith('pricing_unlock_preview_seen', jasmine.anything());
+    expect(analytics.track).not.toHaveBeenCalledWith('pricing_value_anchor_seen', jasmine.anything());
   });
 
   it('tracks free path clicks with pricing context', () => {
@@ -471,7 +460,7 @@ describe('PricingPlansSectionComponent', () => {
   it('tracks premium unlock preview clicks with pricing context', () => {
     const analytics = TestBed.inject(AnalyticsService) as jasmine.SpyObj<AnalyticsService>;
 
-    component.trackUnlockPreviewClick(component.unlockPreviewCards[0]);
+    component.trackUnlockPreviewClick({ previewType: 'coding_depth', destination: '/react/coding/react-contact-form-starter' });
 
     expect(analytics.track).toHaveBeenCalledWith('pricing_unlock_preview_clicked', jasmine.objectContaining({
       preview_type: 'coding_depth',
@@ -866,22 +855,13 @@ describe('PricingPlansSectionComponent', () => {
     );
   });
 
-  it('renders structured product updates with direct changelog anchors', () => {
+  it('links the changelog once instead of previewing entries', () => {
     fixture.detectChanges();
 
     const page: HTMLElement = fixture.nativeElement;
-    const text = page.textContent || '';
-    const items = Array.from(page.querySelectorAll('.weekly-changelog__item')) as HTMLAnchorElement[];
-    const firstBullets = items[0]?.querySelectorAll('.weekly-changelog__bullets li') || [];
-    const latest = PUBLIC_CHANGELOG_ENTRIES[0];
-
-    expect(text).toContain('Product updates');
-    expect(text).not.toContain('What changed this week');
-    expect(items.length).toBe(3);
-    expect(items[0].getAttribute('href') || '').toContain(`/changelog#${latest.id}`);
-    expect(items[0].textContent || '').toContain(latest.category);
-    expect(items[0].textContent || '').toContain(latest.area);
-    expect(items[0].textContent || '').toContain(latest.summary);
-    expect(firstBullets.length).toBe(2);
+    expect(page.querySelectorAll('.weekly-changelog__item').length).toBe(0);
+    const line = page.querySelector('[data-testid="pricing-updates-line"]') as HTMLElement;
+    expect(line.textContent || '').toContain('published in the');
+    expect(line.querySelector('a')?.getAttribute('href')).toBe('/changelog');
   });
 });

@@ -33,7 +33,6 @@ import { isProActive } from '../../../../core/utils/entitlements.util';
 import { LoginRequiredDialogComponent } from '../../../../shared/components/login-required-dialog/login-required-dialog.component';
 import { FaqSectionComponent } from '../../../../shared/faq-section/faq-section.component';
 import { FaButtonComponent } from '../../../../shared/ui/button/fa-button.component';
-import { PUBLIC_CHANGELOG_ENTRIES } from '../../../../core/content/public-changelog';
 import { premiumPracticeLabel, resolvePremiumPracticeCount } from '../../../../core/utils/premium-practice-count.util';
 import {
   PRICING_BASELINE_OFFER_VERSION,
@@ -72,17 +71,14 @@ export const RECOMMENDED_PRICING_PLAN: PlanId = 'quarterly';
         <p class="pr-kicker">Premium for interview sprints</p>
         <h1>Prepare faster with deeper frontend interview reps</h1>
         <p class="muted" *ngIf="!isOfferV2(); else offerV2HeroCopy">
-          Premium unlocks the prompts we stand behind in detail. Every Premium coding question ships with a guided
-          solution. JavaScript and debugging tasks run checks in the browser, and most React, Angular and Vue tasks do
-          too. Front-end system design walkthroughs carry official-source checks, and company practice pages cite a
-          public interview report wherever a prompt is modelled on one.
+          Every Premium coding question ships with a guided solution; JavaScript and debugging tasks run checks in the
+          browser, and most React, Angular and Vue tasks do too.
         </p>
         <ng-template #offerV2HeroCopy>
           <p class="muted">
             Practice across {{ totalQuestionCount }} questions and {{ premiumPracticeSummary }}. Every Premium coding
-            question ships with a guided solution, JavaScript and debugging tasks run checks in the browser, front-end
-            system design walkthroughs carry official-source checks, and company practice pages cite a public interview
-            report wherever a prompt is modelled on one.
+            question ships with a guided solution; JavaScript and debugging tasks run checks in the browser, and most
+            React, Angular and Vue tasks do too.
           </p>
         </ng-template>
       </header>
@@ -104,6 +100,14 @@ export const RECOMMENDED_PRICING_PLAN: PlanId = 'quarterly';
         data-testid="student-pricing-line">
         {{ notice.text }}
         <a *ngIf="notice.link" [routerLink]="notice.link.to">{{ notice.link.label }}</a>
+      </p>
+
+      <p
+        class="student-pricing-line"
+        *ngIf="variant === 'full' && !studentPricingNotice()"
+        data-testid="pricing-discounts-line">
+        Students get 40% off the quarterly and annual plans with a verified school email. Employers often reimburse
+        interview prep, and every order comes with a receipt and an invoice.
       </p>
 
       <section
@@ -258,7 +262,8 @@ export const RECOMMENDED_PRICING_PLAN: PlanId = 'quarterly';
           <h2 id="pricing-product-proof-title">See the practice workflow in action</h2>
           <p>
             Read the prompt, edit working code, inspect the live preview, and run behavioral checks
-            from one workspace. Open the free React Counter challenge to try it yourself.
+            from one workspace. Open the free React Counter challenge to try it; no card is needed until you
+            choose a plan.
           </p>
           <div class="product-proof__actions" aria-label="Product preview links">
             <a
@@ -290,85 +295,9 @@ export const RECOMMENDED_PRICING_PLAN: PlanId = 'quarterly';
         </div>
       </figure>
 
-      <section class="unlock-preview" *ngIf="variant === 'full'" #unlockPreviewRef>
-        <div class="unlock-preview__head">
-          <p class="eyebrow">Premium unlock preview</p>
-          <h2>See what Premium adds after the free workflow</h2>
-        </div>
-        <div class="unlock-preview__grid">
-          <article class="unlock-preview__card" *ngFor="let item of unlockPreviewCards">
-            <div class="unlock-preview__icon" aria-hidden="true">
-              <i [class]="item.icon"></i>
-            </div>
-            <div class="unlock-preview__body">
-              <p class="unlock-preview__eyebrow">{{ item.label }}</p>
-              <h3>{{ item.title }}</h3>
-              <p>{{ item.desc }}</p>
-              <ul>
-                <li *ngFor="let bullet of item.bullets">{{ bullet }}</li>
-              </ul>
-            </div>
-            <a
-              class="unlock-preview__link"
-              [routerLink]="item.route"
-              (click)="trackUnlockPreviewClick(item)">
-              View preview
-            </a>
-          </article>
-        </div>
-      </section>
-
-      <section class="value-anchor" *ngIf="variant === 'full'" #valueAnchorRef>
-        <div class="value-anchor__head">
-          <p class="eyebrow">Why upgrade now?</p>
-          <h2>Use Free Explorer to sample. Use Premium when the interview clock is running.</h2>
-          <p class="muted">
-            If you are just browsing, stay free. If you have interviews coming up,
-            Premium reduces hunting and setup time so more of your session becomes practice.
-          </p>
-        </div>
-        <div class="value-anchor__grid">
-          <article *ngFor="let item of valueAnchors">
-            <h3>{{ item.title }}</h3>
-            <p>{{ item.desc }}</p>
-          </article>
-        </div>
-      </section>
-
-      <ng-container *ngIf="variant === 'full'">
-        <ng-container [ngTemplateOutlet]="riskReversalBlock"></ng-container>
-      </ng-container>
-
-      <section class="free-explorer" *ngIf="variant === 'full'">
-        <div class="free-explorer__head">
-          <p class="eyebrow">Free Explorer</p>
-          <h2>Not ready to pay? Run a free challenge first</h2>
-        </div>
-        <ul class="free-explorer__list">
-          <li>Open a free challenge and run tests or preview before upgrading.</li>
-          <li>Browse the free library and premium previews to judge fit.</li>
-          <li>No card required until you choose a Premium plan.</li>
-        </ul>
-        <div class="free-explorer__actions">
-          <a
-            class="link-btn link-btn--primary"
-            [routerLink]="['/react', 'coding', 'react-counter']"
-            [queryParams]="{ src: 'pricing_free_explorer' }"
-            (click)="trackFreePathClick('free_challenge', '/react/coding/react-counter')">
-            Try free challenge
-          </a>
-          <a
-            class="link-btn"
-            [routerLink]="['/coding']"
-            (click)="trackFreePathClick('browse_library', '/coding')">
-            Browse free library
-          </a>
-        </div>
-      </section>
-
       <section class="plan-compare" *ngIf="variant === 'full'">
         <h2 class="pr-section-title">Free vs Premium</h2>
-        <p class="muted pr-section-subtitle">Use Premium for focused depth; keep Free Explorer for sampling and warm-ups.</p>
+        <p class="muted pr-section-subtitle">What each side of the paywall contains today, with a locked example you can open.</p>
         <table>
           <thead>
             <tr>
@@ -381,56 +310,20 @@ export const RECOMMENDED_PRICING_PLAN: PlanId = 'quarterly';
             <tr *ngFor="let row of comparisonRows">
               <th scope="row">{{ row.label }}</th>
               <td>{{ row.freeValue }}</td>
-              <td>{{ row.premiumValue }}</td>
+              <td>
+                {{ row.premiumValue }}
+                <a
+                  *ngIf="row.link"
+                  class="plan-compare__preview"
+                  [routerLink]="row.link.to"
+                  (click)="trackUnlockPreviewClick({ previewType: row.link.previewType, destination: row.link.to })">
+                  {{ row.link.label }}
+                </a>
+              </td>
             </tr>
           </tbody>
         </table>
       </section>
-
-      <section class="pr-features" *ngIf="variant === 'full'">
-        <h2 class="pr-section-title">What you get in FrontendAtlas</h2>
-        <p class="muted pr-section-subtitle">
-          Practice with the same constraints you’ll face in real interviews: UI, state, performance, and review.
-        </p>
-
-
-        <div class="feature-grid">
-          <article class="feature" *ngFor="let f of featureCards">
-            <div class="feature-ico" aria-hidden="true">
-              <i [class]="f.icon"></i>
-            </div>
-            <h3 class="feature-title">{{ f.title }}</h3>
-            <p class="feature-desc">{{ f.desc }}</p>
-          </article>
-        </div>
-      </section>
-
-      <div class="pr-proof-grid" *ngIf="variant === 'full'">
-        <div class="proof-block">
-          <p class="eyebrow">Product proof</p>
-          <h3>What you actually practice</h3>
-          <ul class="proof-list">
-            <li><i class="pi pi-book proof-icon" aria-hidden="true"></i> {{ totalQuestionCount }} questions across UI coding, JavaScript, concepts, debugging and front-end system design</li>
-            <li><i class="pi pi-desktop proof-icon" aria-hidden="true"></i> A guided solution on every coding question, free or Premium, with starter files to begin from</li>
-            <li><i class="fa-solid fa-flask proof-icon" aria-hidden="true"></i> Runnable checks on every JavaScript and debugging task, and on most React, Angular and Vue tasks</li>
-            <li><i class="pi pi-shield proof-icon" aria-hidden="true"></i> Practical constraints: accessibility, performance, state</li>
-            <li><i class="pi pi-sitemap proof-icon" aria-hidden="true"></i> Front-end system design walkthroughs with official-source checks</li>
-            <li><i class="pi pi-briefcase proof-icon" aria-hidden="true"></i> Company practice pages that cite a public interview report wherever a prompt is modelled on one</li>
-          </ul>
-        </div>
-        <div class="proof-block">
-          <p class="eyebrow">Roadmap</p>
-          <h3>Where we’re heading</h3>
-          <ul class="proof-list roadmap">
-            <li><span class="status available">Available</span> Current coding + trivia library</li>
-            <li><span class="status available">Available</span> Progress tracking for signed-in accounts</li>
-            <li><span class="status in-progress">In progress</span> More front-end system design walkthroughs</li>
-            <li><span class="status in-progress">In progress</span> Deeper stats and streak views</li>
-            <li><span class="status planned">Planned</span> Adaptive practice sets and reminders</li>
-            <li><span class="status planned">Planned</span> Team-ready sharing and review flows</li>
-          </ul>
-        </div>
-      </div>
 
       <section class="pr-faq" *ngIf="variant === 'full'">
         <app-faq-section
@@ -440,71 +333,10 @@ export const RECOMMENDED_PRICING_PLAN: PlanId = 'quarterly';
         </app-faq-section>
       </section>
 
-      <ng-template #riskReversalBlock>
-        <section class="risk-reversal">
-          <div class="risk-reversal__head">
-            <p class="eyebrow">Risk reversal</p>
-            <h3>Try the free workflow before you decide</h3>
-            <p class="muted risk-reversal__copy">
-              Your first Premium purchase can be refunded in full within 14 days of the order, with no usage test.
-              Renewal charges and unused subscription time are generally non-refundable; mandatory consumer rights
-              still apply.
-            </p>
-          </div>
-          <div class="risk-reversal__links">
-            <a class="risk-link" [routerLink]="['/legal/refund']">
-              <i class="pi pi-replay" aria-hidden="true"></i>
-              <span>Refund policy</span>
-            </a>
-            <a class="risk-link" [routerLink]="['/legal/editorial-policy']">
-              <i class="pi pi-file-edit" aria-hidden="true"></i>
-              <span>Editorial policy</span>
-            </a>
-            <a class="risk-link" [routerLink]="['/changelog']" (click)="trackChangelogClick('risk_reversal')">
-              <i class="pi pi-history" aria-hidden="true"></i>
-              <span>Public changelog</span>
-            </a>
-          </div>
-        </section>
-      </ng-template>
-
-      <section class="weekly-changelog" *ngIf="variant === 'full'">
-        <div class="weekly-changelog__head">
-          <p class="eyebrow">Build in public</p>
-          <h3>Product updates</h3>
-          <p class="muted">Explore product improvements and their publication dates.</p>
-        </div>
-        <ul class="weekly-changelog__list">
-          <li *ngFor="let entry of changelogPreview">
-            <a
-              class="weekly-changelog__item"
-              [routerLink]="['/changelog']"
-              [fragment]="entry.id"
-              (click)="trackChangelogClick('pricing_changelog_preview_' + entry.id)"
-            >
-              <div class="weekly-changelog__row">
-                <strong>{{ entry.title }}</strong>
-                <span>{{ formatWeek(entry.weekOf) }}</span>
-              </div>
-              <div class="weekly-changelog__meta">
-                <span>{{ entry.category }}</span>
-                <span>{{ entry.area }}</span>
-              </div>
-              <p>{{ entry.summary }}</p>
-              <ul class="weekly-changelog__bullets">
-                <li *ngFor="let item of previewChanges(entry)">{{ item }}</li>
-              </ul>
-            </a>
-          </li>
-        </ul>
-        <a
-          class="weekly-changelog__link"
-          [routerLink]="['/changelog']"
-          [queryParams]="{ src: analyticsSource + '_weekly_changelog' }"
-          (click)="trackChangelogClick('pricing_changelog_block')">
-          View full changelog
-        </a>
-      </section>
+      <p class="pricing-updates-line" *ngIf="variant === 'full'" data-testid="pricing-updates-line">
+        Product updates and content changes are published in the
+        <a [routerLink]="['/changelog']" (click)="trackChangelogClick('pricing_changelog_link')">changelog</a>.
+      </p>
     </section>
 
       <app-login-required-dialog
@@ -528,7 +360,7 @@ export class PricingPlansSectionComponent implements OnInit, OnChanges, AfterVie
   private catalogPremiumPracticeCount?: number | null;
   @Input() set premiumPracticeCount(value: number | null | undefined) {
     this.catalogPremiumPracticeCount = value;
-    this.comparisonRows[1].premiumValue = `${this.premiumPracticeSummary} with guided solutions and track/company depth`;
+    this.comparisonRows[0].premiumValue = `${this.premiumPracticeSummary}: coding, system design, debug scenarios and tradeoff battles`;
   }
   @Input() variant: PricingVariant = 'full';
   @Input() paymentsEnabled = false;
@@ -538,7 +370,6 @@ export class PricingPlansSectionComponent implements OnInit, OnChanges, AfterVie
   @Input() ctaLabel?: string;
   @Input() analyticsSource = 'pricing';
   @Input() analyticsSurface = 'pricing_page';
-  @Input() riskReversalPlacement: 'top' | 'after_plans' = 'after_plans';
   @Input() checkoutAvailability: Partial<Record<PlanId, boolean>> | null = null;
   @Input() planDetails: PricingPlanDetails | null = null;
   @Input() offerVersion = PRICING_BASELINE_OFFER_VERSION;
@@ -546,8 +377,6 @@ export class PricingPlansSectionComponent implements OnInit, OnChanges, AfterVie
   @Input() campaignId?: string | null;
 
   @ViewChild('planCardsRef') private planCardsRef?: ElementRef<HTMLElement>;
-  @ViewChild('unlockPreviewRef') private unlockPreviewRef?: ElementRef<HTMLElement>;
-  @ViewChild('valueAnchorRef') private valueAnchorRef?: ElementRef<HTMLElement>;
 
   private checkoutLoading: PlanId | null = null;
   loginRequiredOpen = false;
@@ -576,11 +405,7 @@ export class PricingPlansSectionComponent implements OnInit, OnChanges, AfterVie
   private checkoutPrefetchRequested = false;
   private useMobilePrimaryPlanOrder = false;
   autoContinuingPendingCheckout = false;
-  private readonly observedTargets = new WeakMap<Element, 'plan_cards' | 'unlock_preview' | 'value_anchor'>();
   private planCardsSeenTracked = false;
-  private unlockPreviewSeenTracked = false;
-  private valueAnchorSeenTracked = false;
-  changelogPreview = PUBLIC_CHANGELOG_ENTRIES.slice(0, 3);
   recommendedPlan = RECOMMENDED_PRICING_PLAN;
   readonly totalQuestionCount = SHOWCASE_STATS.totalQuestions;
 
@@ -592,78 +417,43 @@ export class PricingPlansSectionComponent implements OnInit, OnChanges, AfterVie
     return [this.premiumPracticeSummary, 'coding + system design + reasoning practice', 'guided solution depth'];
   }
 
-  unlockPreviewCards: Array<{
-    previewType: string;
+  comparisonRows: Array<{
     label: string;
-    title: string;
-    desc: string;
-    bullets: string[];
-    icon: string;
-    route: any[];
-    destination: string;
+    freeValue: string;
+    premiumValue: string;
+    link?: { to: string; label: string; previewType: string };
   }> = [
-      {
-        previewType: 'coding_depth',
-        label: 'Coding depth',
-        title: 'Contact Form (Component + HTTP)',
-        desc: 'Practice a realistic React form with validation and async submit behavior.',
-        bullets: ['Controlled inputs and submit states', 'Preview the locked prompt before buying'],
-        icon: 'fa-solid fa-code',
-        route: ['/', 'react', 'coding', 'react-contact-form-starter'],
-        destination: '/react/coding/react-contact-form-starter',
-      },
-      {
-        previewType: 'system_design_depth',
-        label: 'System design depth',
-        title: 'Multi-step Form with Autosave',
-        desc: 'Work through UI architecture, persistence, validation, and recovery tradeoffs.',
-        bullets: ['Front-end system design scenario', 'Structured constraints and review angles'],
-        icon: 'fa-solid fa-sitemap',
-        route: ['/', 'system-design', 'multi-step-form-autosave'],
-        destination: '/system-design/multi-step-form-autosave',
-      },
-      {
-        previewType: 'solution_depth',
-        label: 'Solution depth',
-        title: 'Throttle Function',
-        desc: 'Compare the included Throttle Function solution against edge cases and implementation tradeoffs.',
-        bullets: ['Implementation pitfalls and edge cases', 'Guided implementation review'],
-        icon: 'fa-solid fa-list-check',
-        route: ['/', 'javascript', 'coding', 'js-throttle'],
-        destination: '/javascript/coding/js-throttle',
-      },
-    ];
-
-  valueAnchors = [
     {
-      title: 'More targeted reps',
-      desc: 'Premium unlocks deeper coding and system-design prompts when you need more than warm-ups.',
+      label: 'Prompts',
+      freeValue: 'Free coding, concept and front-end system design prompts across the library',
+      premiumValue: `${this.premiumPracticeSummary}: coding, system design, debug scenarios and tradeoff battles`,
+      link: { to: '/react/coding/react-contact-form-starter', label: 'See a locked coding prompt', previewType: 'coding_depth' },
     },
     {
-      title: 'Less setup time',
-      desc: 'Use the browser workflow to code, preview, test, and review instead of assembling practice from scattered tabs.',
+      label: 'Guided solutions',
+      freeValue: 'On every free coding question',
+      premiumValue: 'On every Premium coding question',
     },
     {
-      title: 'Keep sprint momentum',
-      desc: 'Save progress, return to the next prompt, and keep your prep loop moving across sessions.',
-    },
-  ];
-
-  comparisonRows: Array<{ label: string; freeValue: string; premiumValue: string }> = [
-    {
-      label: 'Practice depth',
-      freeValue: 'Selected free coding, trivia, and system design prompts',
-      premiumValue: 'Premium coding, system design, debug scenarios, and tradeoff battles',
+      label: 'Runnable checks',
+      freeValue: 'JavaScript and debugging tasks',
+      premiumValue: 'JavaScript and debugging tasks, and most React, Angular and Vue tasks',
     },
     {
-      label: 'Interview sprint guidance',
-      freeValue: 'Public previews and warm-up paths',
-      premiumValue: `${this.premiumPracticeSummary}, each coding prompt with a guided solution, plus track and company practice pages`,
+      label: 'Front-end system design',
+      freeValue: 'Free walkthroughs',
+      premiumValue: 'Every walkthrough, with official-source checks',
+      link: { to: '/system-design/multi-step-form-autosave', label: 'See a locked walkthrough', previewType: 'system_design_depth' },
     },
     {
-      label: 'Continuity',
-      freeValue: 'Local drafts and free browsing',
-      premiumValue: 'Account-backed progress while using the full Premium library',
+      label: 'Company practice pages',
+      freeValue: 'Every company page, with a public interview report cited wherever a prompt is modelled on one',
+      premiumValue: 'The Premium prompts inside them',
+    },
+    {
+      label: 'Progress',
+      freeValue: 'Local drafts',
+      premiumValue: 'Account-backed progress across the Premium library',
     },
   ];
 
@@ -702,125 +492,7 @@ export class PricingPlansSectionComponent implements OnInit, OnChanges, AfterVie
       },
     ];
 
-  featureCards = [
-    { icon: 'fa-solid fa-list-check', title: 'Guided solutions', desc: 'Every coding question ends in a guided solution: a clean baseline, the edge cases, and the tradeoffs worth saying out loud.' },
-    { icon: 'fa-solid fa-diagram-project', title: 'Runnable workflow', desc: 'Start from a realistic scaffold, then code, preview and run checks in one workspace, the way a live round feels.' },
-    { icon: 'fa-solid fa-building', title: 'Company practice pages', desc: 'A prompt modelled on a public interview report cites it on the page. Editorial groupings are labelled as such.' },
-    { icon: 'fa-solid fa-sitemap', title: 'System design for UI', desc: 'Front-end system design walkthroughs focused on UI architecture and tradeoffs, with official-source checks.' },
-    { icon: 'fa-solid fa-chart-line', title: 'Progress tracking', desc: 'Saved work and tracking for signed-in accounts.' },
-    { icon: 'fa-solid fa-rotate', title: 'Shipped updates', desc: 'The public changelog documents released content and product improvements.' },
-  ];
-
   faqGroups = [
-    {
-      id: 'getting-started',
-      title: 'Getting Started',
-      items: [
-        {
-          id: 'what-is-frontendatlas',
-          q: 'What is FrontendAtlas?',
-          a: `FrontendAtlas is built to make you <strong>interview-ready faster</strong> by turning prep into <strong>repeatable practice loops</strong>.<br><br>
-What you do here:<br>
-- Solve realistic coding tasks with starter code + fast feedback (preview/tests)<br>
-- Learn core concepts in a way you can actually explain in interviews<br>
-- Practice front-end system design by making tradeoffs, not memorizing buzzwords<br><br>
-If you want “less reading, more doing” — this is the workflow.`,
-        },
-        {
-          id: 'install-anything',
-          q: 'Do I need to install anything, or is it all in the browser?',
-          a: `It’s all in the browser — <strong>no setup tax</strong>.<br><br>
-Open the app → pick a task → code immediately.<br>
-No local project, no dependency hell, no “works on my machine”.<br><br>
-Desktop/laptop is recommended so you can use the editor/preview layout efficiently.`,
-        },
-        {
-          id: 'supported-browsers-devices',
-          q: 'Which browsers/devices are supported?',
-          a: `Best experience on modern desktop browsers:<br>
-- Chrome / Edge (top pick for speed + compatibility)<br>
-- Safari<br>
-- Firefox<br><br>
-Mobile/tablet works for reading and browsing, but serious practice is designed for desktop (editor + preview + checks).`,
-        },
-      ],
-    },
-    {
-      id: 'content-learning',
-      title: 'Content & Learning',
-      items: [
-        {
-          id: 'exercise-types',
-          q: 'What kinds of exercises are included (coding tasks vs concepts)?',
-          a: `You’ll practice the three things interviews actually test:<br><br>
-<strong>1) Coding tasks</strong><br>
-Build/modify real UI and logic with starter code, then validate with preview/tests.<br><br>
-<strong>2) Concept questions</strong><br>
-Short prompts that force clean mental models (the kind you can explain under pressure).<br><br>
-<strong>3) Front-end system design</strong><br>
-Architecture prompts focused on constraints + tradeoffs (how seniors think).`,
-        },
-        {
-          id: 'tech-coverage',
-          q: 'Which technologies are covered (JS/TS, HTML/CSS, React/Angular/Vue)?',
-          a: `Coverage is designed to match real job requirements:<br>
-- JavaScript / TypeScript fundamentals (async, closures, DOM, performance, etc.)<br>
-- HTML / CSS (layout, responsive UI, practical accessibility basics)<br>
-- React / Angular / Vue (component patterns, state, rendering, performance)<br>
-- Front-End System Design track (architecture and tradeoffs)<br><br>
-So you can prep for “framework interview” <em>and</em> “real-world frontend” at the same time.`,
-        },
-        {
-          id: 'difficulty-and-tags',
-          q: 'How are difficulty levels and tags organized?',
-          a: `Everything is structured to reduce decision fatigue and keep you consistent.<br><br>
-You can filter/sort by:<br>
-- Technology (JS/TS, HTML/CSS, React, Angular, Vue, System Design)<br>
-- Difficulty (ramp up without getting stuck or bored)<br>
-- Tags (the exact skill being tested: event delegation, memoization, layout, state, etc.)<br><br>
-This makes it easy to build a weekly plan: pick a focus → grind a tight set → level up.`,
-        },
-        {
-          id: 'solutions-and-explanations',
-          q: 'Do exercises include solutions and explanations?',
-          a: `Yes. Every coding question, free or Premium, includes a guided solution.<br><br>
-Solutions focus on what matters in interviews:<br>
-- a clean baseline implementation<br>
-- edge cases and common mistakes<br>
-- tradeoffs between approaches when there is more than one right answer<br><br>
-Concept questions carry worked answers, and system design walkthroughs are the solution itself. Some prompts stay open-ended on purpose to mirror real interview discussion.`,
-        },
-      ],
-    },
-    {
-      id: 'coding-experience',
-      title: 'Coding Experience',
-      items: [
-        {
-          id: 'live-preview',
-          q: 'Do tasks have a live preview (rendered output) while I code?',
-          a: `Yes — many tasks have live preview so you can iterate fast and see what you’re building immediately.<br><br>
-This is ideal for HTML/CSS and UI work where “correct” is visual.<br><br>
-If preview isn’t the right signal (pure logic), the task uses checks/tests instead — so you still get clear pass/fail feedback.`,
-        },
-        {
-          id: 'run-tests',
-          q: 'Can I run tests / validate my solution inside the app?',
-          a: `Yes. Every JavaScript and debugging task has runnable checks, and most React, Angular and Vue tasks do too.<br><br>
-This mirrors a professional loop: write, run checks, fix edge cases, ship.<br><br>
-HTML and CSS tasks rely on the live preview instead, because visuals are the primary correctness signal.`,
-        },
-        {
-          id: 'save-progress',
-          q: 'Does FrontendAtlas save my code and progress between sessions?',
-          a: `Yes — your work is saved locally in your browser so you don’t lose progress mid-practice.<br><br>
-Why this matters:<br>
-- You can do short sessions (even 15–30 min) and continue later<br>
-- Your drafts stay private on your device by default<br><br>
-You can also reset any task back to the starter whenever you want to re-practice from scratch.`,
-        },
-      ],
-    },
     {
       id: 'plans-billing',
       title: 'Plans & Billing',
@@ -866,21 +538,6 @@ If your employer needs anything else, email <code>support@frontendatlas.com</cod
 Sign up with your school email address, or set it as your account email, and verify it from your profile. The discount is applied at checkout automatically, and the pricing page says so once your address is verified.<br><br>
 If your school address does not end in .edu or .ac, email <code>support@frontendatlas.com</code> from that address and we switch student pricing on for your account.`,
         },
-      ],
-    },
-    {
-      id: 'support',
-      title: 'Support',
-      items: [
-        {
-          id: 'report-bug',
-          q: 'How do I report a bug or get help?',
-          a: `Email <code>support@frontendatlas.com</code> with:<br>
-- steps to reproduce (what you clicked / expected / got)<br>
-- browser + OS version<br>
-- the page URL or question id<br><br>
-A screenshot or short screen recording speeds up fixes a lot.`,
-        },
         {
           id: 'payment-declined',
           q: 'Checkout failed / payment was declined — what should I try first?',
@@ -890,6 +547,29 @@ A screenshot or short screen recording speeds up fixes a lot.`,
 - Disable VPN/ad blockers that can break checkout flows<br>
 - Make sure your bank allows online/international payments<br><br>
 If it still fails: email <code>support@frontendatlas.com</code> with the time of the attempt + your account email.`,
+        },
+      ],
+    },
+    {
+      id: 'what-you-practice',
+      title: 'What you practice',
+      items: [
+        {
+          id: 'solutions-and-explanations',
+          q: 'Do exercises include solutions and explanations?',
+          a: `Yes. Every coding question, free or Premium, includes a guided solution.<br><br>
+Solutions focus on what matters in interviews:<br>
+- a clean baseline implementation<br>
+- edge cases and common mistakes<br>
+- tradeoffs between approaches when there is more than one right answer<br><br>
+Concept questions carry worked answers, and system design walkthroughs are the solution itself. Some prompts stay open-ended on purpose to mirror real interview discussion.`,
+        },
+        {
+          id: 'run-tests',
+          q: 'Can I run tests / validate my solution inside the app?',
+          a: `Yes. Every JavaScript and debugging task has runnable checks, and most React, Angular and Vue tasks do too.<br><br>
+This mirrors a professional loop: write, run checks, fix edge cases, ship.<br><br>
+HTML and CSS tasks rely on the live preview instead, because visuals are the primary correctness signal.`,
         },
       ],
     },
@@ -1064,10 +744,6 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
     });
   }
 
-  previewChanges(entry: { changes: string[] }): string[] {
-    return Array.isArray(entry.changes) ? entry.changes.slice(0, 2) : [];
-  }
-
   trackChangelogClick(location: string): void {
     this.analytics.track('changelog_link_clicked', {
       src: this.normalizedSource(),
@@ -1214,46 +890,20 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
   }
 
   private observePricingVisibility(): void {
-    const targets: Array<{ element?: Element; key: 'plan_cards' | 'unlock_preview' | 'value_anchor' }> = [
-      { element: this.planCardsRef?.nativeElement, key: 'plan_cards' },
-      { element: this.unlockPreviewRef?.nativeElement, key: 'unlock_preview' },
-      { element: this.valueAnchorRef?.nativeElement, key: 'value_anchor' },
-    ];
-    const visibleTargets = targets.filter((target): target is { element: Element; key: 'plan_cards' | 'unlock_preview' | 'value_anchor' } => !!target.element);
-    if (!visibleTargets.length) return;
-
+    const element = this.planCardsRef?.nativeElement;
+    if (!element) return;
     if (typeof window.IntersectionObserver !== 'function') {
-      for (const target of visibleTargets) {
-        if (target.key === 'plan_cards') this.trackPlanCardsSeen();
-        if (target.key === 'unlock_preview') this.trackUnlockPreviewSeen();
-        if (target.key === 'value_anchor') this.trackValueAnchorSeen();
-      }
+      this.trackPlanCardsSeen();
       return;
     }
-
     this.visibilityObserver = new IntersectionObserver((entries) => {
       for (const entry of entries) {
         if (!entry.isIntersecting) continue;
-        const key = this.observedTargets.get(entry.target);
-        if (key === 'plan_cards') {
-          this.trackPlanCardsSeen();
-          this.visibilityObserver?.unobserve(entry.target);
-        }
-        if (key === 'unlock_preview') {
-          this.trackUnlockPreviewSeen();
-          this.visibilityObserver?.unobserve(entry.target);
-        }
-        if (key === 'value_anchor') {
-          this.trackValueAnchorSeen();
-          this.visibilityObserver?.unobserve(entry.target);
-        }
+        this.trackPlanCardsSeen();
+        this.visibilityObserver?.unobserve(entry.target);
       }
     }, { threshold: 0.25 });
-
-    for (const target of visibleTargets) {
-      this.observedTargets.set(target.element, target.key);
-      this.visibilityObserver.observe(target.element);
-    }
+    this.visibilityObserver.observe(element);
   }
 
   private trackPlanCardsSeen(): void {
@@ -1263,24 +913,6 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
       ...this.pricingAnalyticsBase(),
       plan_count: this.activePrimaryPlans().length,
       lifetime_secondary: this.isOfferV2(),
-    });
-  }
-
-  private trackUnlockPreviewSeen(): void {
-    if (this.unlockPreviewSeenTracked) return;
-    this.unlockPreviewSeenTracked = true;
-    this.analytics.track('pricing_unlock_preview_seen', {
-      ...this.pricingAnalyticsBase(),
-      card_count: this.unlockPreviewCards.length,
-    });
-  }
-
-  private trackValueAnchorSeen(): void {
-    if (this.valueAnchorSeenTracked) return;
-    this.valueAnchorSeenTracked = true;
-    this.analytics.track('pricing_value_anchor_seen', {
-      ...this.pricingAnalyticsBase(),
-      anchor: 'why_upgrade_now',
     });
   }
 
@@ -1382,7 +1014,6 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
       offer_version: this.normalizedOfferVersion(),
       checkout_surface: this.normalizedCheckoutSurface(),
       recommended_plan: RECOMMENDED_PRICING_PLAN,
-      risk_reversal_variant: this.riskReversalPlacement,
     };
   }
 

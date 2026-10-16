@@ -882,3 +882,18 @@
   margin-left:6px;
   color:var(--uf-accent);
 }
+
+.plan-compare__preview{
+  display:inline-block;
+  margin-left:6px;
+  color:var(--uf-accent);
+  font-weight:600;
+}
+.pricing-updates-line{
+  margin:16px 0 0;
+  color:var(--uf-text-secondary);
+  line-height:1.5;
+}
+.pricing-updates-line a{
+  color:var(--uf-accent);
+}
