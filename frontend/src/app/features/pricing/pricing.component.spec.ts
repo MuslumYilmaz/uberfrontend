@@ -56,6 +56,7 @@ describe('PricingComponent', () => {
     expect(component.checkoutAvailability).toBeNull();
     // The prerender defaults survive a failed config: prices stay visible, checkout stays disabled.
     expect(component.planDetails).toEqual(PRERENDER_PLAN_DETAILS);
+    expect(component.regionalPricing).toBeNull();
     expect(component.offerVersion).toBe('interview_sprint_v2');
     expect(analyticsStub.track).toHaveBeenCalledWith('pricing_page_viewed', jasmine.objectContaining({
       src: 'pricing_page',
@@ -135,6 +136,10 @@ describe('PricingComponent', () => {
       },
       offerVersion: 'interview_sprint_v2',
       checkoutSurface: 'overlay',
+      pricing: {
+        student: { multiplier: 0.6, planIds: ['annual'] },
+        regional: { countryCode: 'TR', countryName: 'Türkiye', multiplier: 0.5, prices: { monthly: 600, quarterly: 1450, annual: 3950, lifetime: 9950 } },
+      },
     });
     fixture = TestBed.createComponent(PricingComponent);
     component = fixture.componentInstance;
@@ -145,6 +150,9 @@ describe('PricingComponent', () => {
 
     expect(component.offerVersion).toBe('interview_sprint_v2');
     expect(component.checkoutSurface).toBe('overlay');
+    expect(component.regionalPricing).toEqual(jasmine.objectContaining({ countryCode: 'TR', multiplier: 0.5 }));
+    expect(fixture.nativeElement.querySelector('[data-testid="pricing-regional-line"]')?.textContent || '').toContain('Prices for Türkiye');
+    expect(fixture.nativeElement.querySelector('.pr-card--quarterly s[data-list-price]')?.textContent?.trim()).toBe('$9.67');
     expect(fixture.nativeElement.querySelectorAll('.pr-grid .pr-card').length).toBe(3);
     expect(fixture.nativeElement.querySelector('[data-testid="pricing-lifetime-secondary"]')).toBeTruthy();
     expect(analyticsStub.track).toHaveBeenCalledWith('pricing_page_viewed', jasmine.objectContaining({

@@ -77,6 +77,8 @@ export class AppComponent implements OnInit, OnDestroy {
     /^\/admin(?:\/|$)/,
     /^\/$/,
     /^\/showcase\/?$/,
+    // The pricing page reads as a marketing page at full width; the drawer stays reachable from the header.
+    /^\/pricing\/?$/,
   ];
 
   // strip query/hash before testing

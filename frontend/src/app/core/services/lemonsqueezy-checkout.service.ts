@@ -57,7 +57,7 @@ export class LemonSqueezyCheckoutService {
       const parsed = new URL(value);
       return parsed.protocol === 'https:'
         && parsed.hostname === 'frontendatlas.lemonsqueezy.com'
-        && /^\/checkout\/buy\/[^/]+/.test(parsed.pathname);
+        && /^\/checkout\/(?:buy|custom)\/[^/]+/.test(parsed.pathname);
     } catch {
       return false;
     }
@@ -287,6 +287,9 @@ export class LemonSqueezyCheckoutService {
 
   private withEmbedMode(url: string): string {
     const parsed = new URL(url);
+    // A signed custom checkout already carries its embed option from the
+    // backend; its query string is left untouched.
+    if (/^\/checkout\/custom\//.test(parsed.pathname)) return parsed.toString();
     parsed.searchParams.set('embed', '1');
     return parsed.toString();
   }

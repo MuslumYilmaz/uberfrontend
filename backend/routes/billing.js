@@ -866,6 +866,7 @@ router.post('/checkout/start', requireAuth, async (req, res) => {
       campaignId,
       providerDiscountId,
       campaignEligibility,
+      pricing,
       checkoutSurface,
       reused,
     } =
@@ -901,6 +902,7 @@ router.post('/checkout/start', requireAuth, async (req, res) => {
       campaignId,
       providerDiscountId,
       campaignEligibility,
+      pricing,
       checkoutSurface,
       reused,
     });
@@ -913,9 +915,13 @@ router.post('/checkout/start', requireAuth, async (req, res) => {
   }
 });
 
-router.get('/checkout/config', async (_req, res) => {
+router.get('/checkout/config', async (req, res) => {
   try {
-    return res.status(200).json(resolveCheckoutConfig());
+    // Regional prices depend on the edge country, so the response varies on it.
+    res.set('Vary', 'x-vercel-ip-country');
+    return res.status(200).json(resolveCheckoutConfig(undefined, {
+      countryCode: req.headers['x-vercel-ip-country'],
+    }));
   } catch (err) {
     console.error('[billing] checkout/config error:', err);
     return res.status(500).json({

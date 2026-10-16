@@ -146,6 +146,7 @@ describe('billing checkout start route', () => {
       },
       offerVersion: 'pricing_baseline_v1',
       checkoutSurface: 'hosted_new_tab',
+      pricing: { student: { multiplier: 0.6, planIds: ['annual'] }, regional: null },
     });
   });
 
@@ -169,6 +170,7 @@ describe('billing checkout start route', () => {
       planDetails: expect.any(Object),
       offerVersion: 'pricing_baseline_v1',
       checkoutSurface: 'hosted_new_tab',
+      pricing: { student: { multiplier: 0.6, planIds: ['annual'] }, regional: null },
     });
   });
 
@@ -198,6 +200,7 @@ describe('billing checkout start route', () => {
       planDetails: expect.any(Object),
       offerVersion: 'pricing_baseline_v1',
       checkoutSurface: 'hosted_new_tab',
+      pricing: { student: { multiplier: 0.6, planIds: ['annual'] }, regional: null },
     });
 
     const user = await seedUser({ email: 'live-checkout@example.com', username: 'live_checkout_user' });
@@ -812,6 +815,8 @@ describe('checkout config plan prices', () => {
 });
 
 describe('student pricing applied at checkout', () => {
+  // Without a custom-checkout configuration the student price falls back to the
+  // allowlisted student code; the plan rule (annual only) still applies.
   const studentEntry = {
     enabled: true,
     campaignId: 'student_2026_autumn',
@@ -830,20 +835,28 @@ describe('student pricing applied at checkout', () => {
     process.env.BILLING_DISCOUNT_CAMPAIGNS_JSON = JSON.stringify([studentEntry, ...extraEntries]);
     process.env.LEMONSQUEEZY_QUARTERLY_URL_TEST =
       'https://frontendatlas.lemonsqueezy.com/checkout/buy/test-quarterly';
+    process.env.LEMONSQUEEZY_ANNUAL_URL_TEST =
+      'https://frontendatlas.lemonsqueezy.com/checkout/buy/test-annual';
   }
 
-  async function startQuarterly(user, body = {}) {
+  afterEach(() => {
+    process.env.BILLING_DISCOUNT_CAMPAIGNS_JSON = '[]';
+    process.env.LEMONSQUEEZY_QUARTERLY_URL_TEST = '';
+    process.env.LEMONSQUEEZY_ANNUAL_URL_TEST = '';
+  });
+
+  async function start(user, planId, body = {}) {
     return request(app)
       .post('/api/billing/checkout/start')
       .set('Authorization', authHeader(user._id))
-      .send({ planId: 'quarterly', ...body });
+      .send({ planId, ...body });
   }
 
-  test('applies the student campaign to a verified school address on a first purchase', async () => {
+  test('applies the student code to the annual plan for a verified school address on a first purchase', async () => {
     arm();
     const user = await seedUser({ email: 'ada@university.edu', username: 'ada_student', emailVerifiedAt: new Date() });
 
-    const res = await startQuarterly(user);
+    const res = await start(user, 'annual');
 
     expect(res.status).toBe(200);
     expect(res.body).toEqual(expect.objectContaining({
@@ -851,6 +864,7 @@ describe('student pricing applied at checkout', () => {
       providerDiscountId: 'discount_456',
       campaignEligibility: 'student',
     }));
+    expect(res.body.pricing).toEqual(expect.objectContaining({ reason: null, amountCents: 7900 }));
     const checkoutUrl = new URL(res.body.checkoutUrl);
     expect(checkoutUrl.searchParams.get('checkout[discount_code]')).toBe('STUDENT40');
     expect(checkoutUrl.searchParams.get('discount')).toBe('0');
@@ -858,29 +872,32 @@ describe('student pricing applied at checkout', () => {
     expect(attempt).toEqual(expect.objectContaining({
       campaignId: 'student_2026_autumn',
       campaignEligibility: 'student',
+      priceReason: null,
     }));
   });
 
-  test('does not apply it to an unverified school address, a non-student address or an unlisted plan', async () => {
+  test('is annual only: the quarterly plan gets no student price even when the code entry lists it', async () => {
+    arm();
+    const user = await seedUser({ email: 'quarterly@university.edu', username: 'quarterly_student', emailVerifiedAt: new Date() });
+    const res = await start(user, 'quarterly');
+    expect(res.status).toBe(200);
+    expect(res.body.campaignId).toBeNull();
+    expect(res.body.campaignEligibility).toBeNull();
+    expect(new URL(res.body.checkoutUrl).searchParams.has('checkout[discount_code]')).toBe(false);
+  });
+
+  test('does not apply it to an unverified school address or a non-student address', async () => {
     arm();
     const unverified = await seedUser({ email: 'unverified@university.edu', username: 'unverified_student', emailVerifiedAt: null });
     const consumer = await seedUser({ email: 'ada@gmail.com', username: 'consumer_user', emailVerifiedAt: new Date() });
 
     for (const user of [unverified, consumer]) {
-      const res = await startQuarterly(user);
+      const res = await start(user, 'annual');
       expect(res.status).toBe(200);
       expect(res.body.campaignId).toBeNull();
       expect(res.body.campaignEligibility).toBeNull();
       expect(new URL(res.body.checkoutUrl).searchParams.has('checkout[discount_code]')).toBe(false);
     }
-
-    const verified = await seedUser({ email: 'monthly@university.edu', username: 'monthly_student', emailVerifiedAt: new Date() });
-    const monthly = await request(app)
-      .post('/api/billing/checkout/start')
-      .set('Authorization', authHeader(verified._id))
-      .send({ planId: 'monthly' });
-    expect(monthly.status).toBe(200);
-    expect(monthly.body.campaignId).toBeNull();
   });
 
   test('is a first-purchase discount: a verified payment or an active entitlement switches it off', async () => {
@@ -896,7 +913,7 @@ describe('student pricing applied at checkout', () => {
       paymentVerifiedAt: new Date('2026-09-01T00:00:00.000Z'),
       paymentTotalCents: 1200,
     });
-    const repeatRes = await startQuarterly(repeat);
+    const repeatRes = await start(repeat, 'annual');
     expect(repeatRes.status).toBe(200);
     expect(repeatRes.body.campaignId).toBeNull();
 
@@ -909,7 +926,7 @@ describe('student pricing applied at checkout', () => {
         projects: { status: 'none', validUntil: null },
       },
     });
-    const entitledRes = await startQuarterly(entitled);
+    const entitledRes = await start(entitled, 'annual');
     expect(entitledRes.status).toBe(200);
     expect(entitledRes.body.campaignId).toBeNull();
   });
@@ -922,7 +939,7 @@ describe('student pricing applied at checkout', () => {
       providerDiscountId: 'discount_789',
       discountCode: 'PARTNER20',
       modes: ['test'],
-      planIds: ['quarterly'],
+      planIds: ['annual'],
       analyticsSources: ['partner_autumn'],
       startsAt: '2020-01-01T00:00:00.000Z',
       endsAt: '2099-01-01T00:00:00.000Z',
@@ -933,14 +950,198 @@ describe('student pricing applied at checkout', () => {
       emailVerifiedAt: null,
       billing: { studentApprovedAt: new Date('2026-10-01T00:00:00.000Z') },
     });
-    const approvedRes = await startQuarterly(approved);
+    const approvedRes = await start(approved, 'annual');
     expect(approvedRes.status).toBe(200);
     expect(approvedRes.body).toEqual(expect.objectContaining({ campaignId: 'student_2026_autumn', campaignEligibility: 'student' }));
 
     const explicit = await seedUser({ email: 'explicit@university.edu', username: 'explicit_student', emailVerifiedAt: new Date() });
-    const explicitRes = await startQuarterly(explicit, { analyticsSource: 'partner_autumn', campaignId: 'partner_autumn' });
+    const explicitRes = await start(explicit, 'annual', { analyticsSource: 'partner_autumn', campaignId: 'partner_autumn' });
     expect(explicitRes.status).toBe(200);
     expect(explicitRes.body).toEqual(expect.objectContaining({ campaignId: 'partner_autumn', campaignEligibility: null }));
     expect(new URL(explicitRes.body.checkoutUrl).searchParams.get('checkout[discount_code]')).toBe('PARTNER20');
+  });
+});
+
+describe('regional and student prices through a custom checkout', () => {
+  const CUSTOM_URL = 'https://frontendatlas.lemonsqueezy.com/checkout/custom/ac470bd4-7c41-474d-b6cd-0f296f5be02a?signature=sig';
+  const originalFetch = global.fetch;
+  // The local .env may carry an unscoped LEMONSQUEEZY_API_KEY; keep it out of the assertions.
+  const savedKeys = {};
+  let createdCheckouts;
+
+  function respondWithCheckout(request) {
+    const body = JSON.parse(request.body);
+    createdCheckouts.push(body);
+    return {
+      ok: true,
+      status: 201,
+      json: async () => ({
+        data: {
+          id: `ls_${createdCheckouts.length}`,
+          attributes: { url: CUSTOM_URL, custom_price: body.data.attributes.custom_price },
+        },
+      }),
+    };
+  }
+
+  beforeEach(() => {
+    createdCheckouts = [];
+    savedKeys.unscoped = process.env.LEMONSQUEEZY_API_KEY;
+    delete process.env.LEMONSQUEEZY_API_KEY;
+    process.env.LEMONSQUEEZY_API_KEY_TEST = 'key_test';
+    process.env.LEMONSQUEEZY_STORE_ID = '12345';
+    process.env.LEMONSQUEEZY_MONTHLY_VARIANT_ID_TEST = '111';
+    process.env.LEMONSQUEEZY_QUARTERLY_VARIANT_ID_TEST = '222';
+    process.env.LEMONSQUEEZY_ANNUAL_VARIANT_ID_TEST = '444';
+    process.env.LEMONSQUEEZY_LIFETIME_VARIANT_ID_TEST = '333';
+    process.env.LEMONSQUEEZY_QUARTERLY_URL_TEST = 'https://frontendatlas.lemonsqueezy.com/checkout/buy/test-quarterly';
+    process.env.LEMONSQUEEZY_ANNUAL_URL_TEST = 'https://frontendatlas.lemonsqueezy.com/checkout/buy/test-annual';
+    process.env.LEMONSQUEEZY_LIFETIME_URL_TEST = 'https://frontendatlas.lemonsqueezy.com/checkout/buy/test-lifetime';
+    process.env.BILLING_REGIONAL_PRICING_JSON = '{"TR":0.5}';
+    global.fetch = jest.fn(async (_url, init) => respondWithCheckout(init));
+  });
+
+  afterEach(() => {
+    global.fetch = originalFetch;
+    delete process.env.LEMONSQUEEZY_API_KEY_TEST;
+    if (savedKeys.unscoped === undefined) delete process.env.LEMONSQUEEZY_API_KEY;
+    else process.env.LEMONSQUEEZY_API_KEY = savedKeys.unscoped;
+    delete process.env.LEMONSQUEEZY_STORE_ID;
+    for (const plan of ['MONTHLY', 'QUARTERLY', 'ANNUAL', 'LIFETIME']) delete process.env[`LEMONSQUEEZY_${plan}_VARIANT_ID_TEST`];
+    process.env.LEMONSQUEEZY_QUARTERLY_URL_TEST = '';
+    process.env.LEMONSQUEEZY_ANNUAL_URL_TEST = '';
+    process.env.LEMONSQUEEZY_LIFETIME_URL_TEST = '';
+    process.env.BILLING_REGIONAL_PRICING_JSON = '';
+    process.env.BILLING_DISCOUNT_CAMPAIGNS_JSON = '[]';
+  });
+
+  async function start(user, planId, headers = {}) {
+    let req = request(app)
+      .post('/api/billing/checkout/start')
+      .set('Authorization', authHeader(user._id));
+    for (const [name, value] of Object.entries(headers)) req = req.set(name, value);
+    return req.send({ planId });
+  }
+
+  test('publishes the regional block in the config only for a listed country and a configured custom checkout', async () => {
+    const turkey = await request(app).get('/api/billing/checkout/config').set('x-vercel-ip-country', 'tr');
+    expect(turkey.status).toBe(200);
+    expect(turkey.headers.vary).toContain('x-vercel-ip-country');
+    expect(turkey.body.pricing).toEqual({
+      student: { multiplier: 0.6, planIds: ['annual'] },
+      regional: expect.objectContaining({
+        countryCode: 'TR',
+        multiplier: 0.5,
+        prices: { monthly: 600, quarterly: 1450, annual: 3950, lifetime: 9950 },
+      }),
+    });
+    expect(typeof turkey.body.pricing.regional.countryName).toBe('string');
+
+    const elsewhere = await request(app).get('/api/billing/checkout/config').set('x-vercel-ip-country', 'DE');
+    expect(elsewhere.body.pricing.regional).toBeNull();
+    const noHeader = await request(app).get('/api/billing/checkout/config');
+    expect(noHeader.body.pricing.regional).toBeNull();
+
+    delete process.env.LEMONSQUEEZY_API_KEY_TEST;
+    const unconfigured = await request(app).get('/api/billing/checkout/config').set('x-vercel-ip-country', 'TR');
+    expect(unconfigured.body.pricing.regional).toBeNull();
+    expect(unconfigured.body.pricing.student).toEqual({ multiplier: 0.6, planIds: ['annual'] });
+  });
+
+  test('creates a custom checkout at the regional price with the attempt in its custom data', async () => {
+    const user = await seedUser({ email: 'regional@example.com', username: 'regional_user' });
+
+    const res = await start(user, 'monthly', { 'x-vercel-ip-country': 'TR' });
+
+    expect(res.status).toBe(200);
+    expect(res.body.checkoutUrl).toBe(CUSTOM_URL);
+    expect(res.body.pricing).toEqual({ reason: 'regional', multiplier: 0.5, listAmountCents: 1200, amountCents: 600, countryCode: 'TR' });
+    expect(res.body.campaignId).toBeNull();
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+    const [apiUrl, init] = global.fetch.mock.calls[0];
+    expect(apiUrl).toBe('https://api.lemonsqueezy.com/v1/checkouts');
+    expect(init.headers.Authorization).toBe('Bearer key_test');
+    const body = createdCheckouts[0].data;
+    expect(body.attributes.custom_price).toBe(600);
+    expect(body.attributes.test_mode).toBe(true);
+    expect(body.attributes.checkout_options).toEqual({ discount: false, embed: false });
+    expect(body.attributes.checkout_data.email).toBe(user.email);
+    expect(body.attributes.checkout_data.custom).toEqual(expect.objectContaining({
+      fa_user_id: String(user._id),
+      fa_checkout_attempt_id: res.body.attemptId,
+      fa_price_reason: 'regional',
+      fa_frontend_origin: 'http://localhost:4200',
+    }));
+    expect(body.attributes.product_options).toEqual({
+      enabled_variants: [111],
+      redirect_url: res.body.successUrl,
+    });
+    expect(body.relationships).toEqual({
+      store: { data: { type: 'stores', id: '12345' } },
+      variant: { data: { type: 'variants', id: '111' } },
+    });
+
+    const attempt = await CheckoutAttempt.findOne({ attemptId: res.body.attemptId }).lean();
+    expect(attempt).toEqual(expect.objectContaining({
+      countryCode: 'TR',
+      priceReason: 'regional',
+      priceMultiplier: 0.5,
+      priceListCents: 1200,
+      priceChargedCents: 600,
+      providerCheckoutId: 'ls_1',
+      checkoutUrl: CUSTOM_URL,
+    }));
+  });
+
+  test('charges a verified student 40% off the annual plan, the better of the two prices, and nothing on other plans', async () => {
+    const student = await seedUser({ email: 'ada@university.edu', username: 'custom_student', emailVerifiedAt: new Date() });
+
+    const annual = await start(student, 'annual');
+    expect(annual.status).toBe(200);
+    expect(annual.body.pricing).toEqual({ reason: 'student', multiplier: 0.6, listAmountCents: 7900, amountCents: 4740, countryCode: null });
+    expect(annual.body.campaignId).toBeNull();
+    expect(createdCheckouts[0].data.attributes.custom_price).toBe(4740);
+    expect(createdCheckouts[0].data.attributes.checkout_data.custom.fa_price_reason).toBe('student');
+
+    const inTurkey = await seedUser({ email: 'tr@university.edu', username: 'turkish_student', emailVerifiedAt: new Date() });
+    const regional = await start(inTurkey, 'annual', { 'x-vercel-ip-country': 'TR' });
+    expect(regional.body.pricing).toEqual(expect.objectContaining({ reason: 'regional', amountCents: 3950 }));
+
+    const quarterly = await start(student, 'quarterly');
+    expect(quarterly.status).toBe(200);
+    expect(quarterly.body.pricing).toEqual(expect.objectContaining({ reason: null, amountCents: 2900 }));
+    expect(new URL(quarterly.body.checkoutUrl).pathname).toContain('/checkout/buy/');
+    expect(global.fetch).toHaveBeenCalledTimes(2);
+  });
+
+  test('reuses a recent custom checkout for the same price instead of creating another', async () => {
+    const user = await seedUser({ email: 'reuse-regional@example.com', username: 'reuse_regional' });
+    const first = await start(user, 'annual', { 'x-vercel-ip-country': 'TR' });
+    const second = await start(user, 'annual', { 'x-vercel-ip-country': 'TR' });
+    expect(second.body.reused).toBe(true);
+    expect(second.body.attemptId).toBe(first.body.attemptId);
+    expect(second.body.pricing).toEqual(first.body.pricing);
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+  });
+
+  test('fails closed when the provider cannot create the checkout, so nobody is charged the list price by surprise', async () => {
+    global.fetch = jest.fn(async () => ({ ok: false, status: 500, json: async () => ({}) }));
+    const user = await seedUser({ email: 'outage@example.com', username: 'outage_user' });
+
+    const res = await start(user, 'monthly', { 'x-vercel-ip-country': 'TR' });
+
+    expect(res.status).toBe(503);
+    expect(res.body.code).toBe('CUSTOM_CHECKOUT_UNAVAILABLE');
+    expect(await CheckoutAttempt.countDocuments({ userId: user._id })).toBe(0);
+    expect(global.fetch).toHaveBeenCalledTimes(2);
+  });
+
+  test('keeps the list price and the buy link for a country without a regional price', async () => {
+    const user = await seedUser({ email: 'list@example.com', username: 'list_user' });
+    const res = await start(user, 'monthly', { 'x-vercel-ip-country': 'US' });
+    expect(res.status).toBe(200);
+    expect(res.body.pricing).toEqual({ reason: null, multiplier: 1, listAmountCents: 1200, amountCents: 1200, countryCode: null });
+    expect(new URL(res.body.checkoutUrl).pathname).toContain('/checkout/buy/');
+    expect(global.fetch).not.toHaveBeenCalled();
   });
 });

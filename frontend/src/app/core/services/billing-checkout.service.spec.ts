@@ -445,6 +445,7 @@ describe('BillingCheckoutService', () => {
       },
       offerVersion: 'interview_sprint_v2',
       checkoutSurface: 'overlay',
+      pricing: null,
     });
 
     await expectAsync(configPromise).toBeResolvedTo({
@@ -471,7 +472,64 @@ describe('BillingCheckoutService', () => {
       },
       offerVersion: 'interview_sprint_v2',
       checkoutSurface: 'overlay',
+      pricing: null,
     });
+  });
+
+  it('carries validated pricing rules through the checkout configuration and drops malformed ones', async () => {
+    const configPromise = service.getCheckoutConfig();
+    httpMock.expectOne(apiUrl('/billing/checkout/config')).flush({
+      configuredProvider: 'lemonsqueezy',
+      provider: 'lemonsqueezy',
+      mode: 'live',
+      enabled: true,
+      plans: { monthly: true, quarterly: true, annual: true, lifetime: true },
+      pricing: {
+        student: { multiplier: 0.6, planIds: ['annual', 'bogus'] },
+        regional: {
+          countryCode: 'tr',
+          countryName: 'Türkiye',
+          multiplier: 0.5,
+          prices: { monthly: 600, quarterly: 1450, annual: 3950, lifetime: 9950, bogus: 1, extra: -5 },
+        },
+      },
+    });
+
+    const config = await configPromise;
+    expect(config?.pricing).toEqual({
+      student: { multiplier: 0.6, planIds: ['annual'] },
+      regional: {
+        countryCode: 'TR',
+        countryName: 'Türkiye',
+        multiplier: 0.5,
+        prices: { monthly: 600, quarterly: 1450, annual: 3950, lifetime: 9950 },
+      },
+    });
+
+    const malformedPromise = service.getCheckoutConfig(true);
+    httpMock.expectOne(apiUrl('/billing/checkout/config')).flush({
+      configuredProvider: 'lemonsqueezy',
+      provider: 'lemonsqueezy',
+      mode: 'live',
+      enabled: true,
+      plans: { monthly: true, quarterly: true, annual: true, lifetime: true },
+      pricing: {
+        student: { multiplier: 1.4, planIds: ['annual'] },
+        regional: { countryCode: 'TUR', countryName: 'Nowhere', multiplier: 0.5, prices: { monthly: 600 } },
+      },
+    });
+    const malformed = await malformedPromise;
+    expect(malformed?.pricing).toEqual({ student: null, regional: null });
+
+    const absentPromise = service.getCheckoutConfig(true);
+    httpMock.expectOne(apiUrl('/billing/checkout/config')).flush({
+      configuredProvider: 'lemonsqueezy',
+      provider: 'lemonsqueezy',
+      mode: 'live',
+      enabled: true,
+      plans: { monthly: true, quarterly: true, annual: true, lifetime: true },
+    });
+    expect((await absentPromise)?.pricing).toBeNull();
   });
 
   it('preserves a reserved configured provider while exposing no runtime checkout provider', async () => {
@@ -487,6 +545,7 @@ describe('BillingCheckoutService', () => {
       planDetails: {},
       offerVersion: 'pricing_baseline_v1',
       checkoutSurface: 'hosted_new_tab',
+      pricing: null,
     });
 
     await expectAsync(configPromise).toBeResolvedTo({
@@ -498,6 +557,7 @@ describe('BillingCheckoutService', () => {
       planDetails: {},
       offerVersion: 'pricing_baseline_v1',
       checkoutSurface: 'hosted_new_tab',
+      pricing: null,
     });
   });
 

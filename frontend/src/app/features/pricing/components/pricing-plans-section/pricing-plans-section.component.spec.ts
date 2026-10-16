@@ -217,7 +217,8 @@ describe('PricingPlansSectionComponent', () => {
     expect(primaryCards[1].textContent || '').toContain('Save 20%');
     expect(primaryCards[2].textContent || '').toContain('Save 40%');
     expect(badges.length).toBe(1);
-    expect(badges[0].textContent || '').toContain('Recommended — 4–12 week interview sprint');
+    expect((badges[0].textContent || '').trim()).toBe('Recommended');
+    expect(primaryCards[1].textContent || '').toContain('Built for a complete 4–12 week interview sprint');
     expect(lifetime.textContent || '').toContain('$250');
     expect(page.querySelector('[data-testid="pricing-trust-strip"]')?.textContent || '').toContain('Taxes included');
     expect(page.querySelector('[data-testid="pricing-trust-strip"]')?.textContent || '').toContain('14-day refund on your first purchase');
@@ -260,7 +261,7 @@ describe('PricingPlansSectionComponent', () => {
     expect(primaryCtas).toEqual(['pricing-cta-monthly', 'pricing-cta-quarterly', 'pricing-cta-annual']);
     expect(page.querySelector('[data-testid="pricing-lifetime-secondary"]')).toBeTruthy();
     expect(page.querySelector('[data-testid="pricing-product-proof"]')).toBeTruthy();
-    expect((page.querySelector('.rec-badge')?.textContent || '')).toContain('Recommended — 4–12 week interview sprint');
+    expect((page.querySelector('.rec-badge')?.textContent || '').trim()).toBe('Recommended');
   });
 
   it('keeps the server plan order on the first render and applies the mobile order after hydration', async () => {
@@ -287,25 +288,145 @@ describe('PricingPlansSectionComponent', () => {
     expect(cardTitles()).toEqual(['Quarterly', 'Monthly', 'Annual']);
   });
 
-  it('states student pricing for an eligible account and asks a pending one to verify', () => {
+  it('states student pricing per account state inside the discounts block', () => {
     const auth = TestBed.inject(AuthService) as unknown as { user: jasmine.Spy };
+    const analytics = TestBed.inject(AnalyticsService) as jasmine.SpyObj<AnalyticsService>;
     const baseUser = { _id: 'u1', username: 'student', email: 'ada@university.edu', role: 'user', prefs: {}, createdAt: '2026-01-01T00:00:00Z' };
+    const page = fixture.nativeElement as HTMLElement;
+    const notice = () => page.querySelector('[data-testid="student-pricing-line"]') as HTMLElement | null;
+    const action = () => page.querySelector('[data-testid="pricing-student-action"]') as HTMLAnchorElement | null;
+
+    // Guest (also the prerendered state): the discount is named and signup is the next step.
+    fixture.detectChanges();
+    const block = page.querySelector('[data-testid="pricing-discounts"]') as HTMLElement;
+    expect(block.textContent || '').toContain('40% off');
+    expect(block.textContent || '').toContain('verified .edu or .ac school email');
+    expect(block.textContent || '').toContain('Often covered by a learning budget');
+    expect(notice()).toBeNull();
+    expect(action()?.getAttribute('href')).toBe('/auth/signup?src=pricing_student_discount');
+    expect(page.querySelector('[data-testid="pricing-discounts-line"]')).toBeNull();
 
     auth.user.and.returnValue({ ...baseUser, studentDiscountEligible: true } as any);
     fixture.detectChanges();
-    let line = fixture.nativeElement.querySelector('[data-testid="student-pricing-line"]') as HTMLElement | null;
-    expect(line?.textContent || '').toContain('Student pricing: 40% off the quarterly and annual plans');
-    expect(line?.querySelector('a')).toBeNull();
+    expect(notice()?.textContent || '').toContain('40% off the annual plan is applied at checkout on your first purchase');
+    expect(notice()?.querySelector('a')).toBeNull();
+    expect(action()).toBeNull();
+    expect(block.textContent || '').toContain('The annual plan on your first purchase');
+    expect(block.textContent || '').not.toContain('quarterly and annual');
+
+    // A regional price at or below the student price replaces it; the notice says so.
+    component.regionalPricing = { countryCode: 'TR', countryName: 'Türkiye', multiplier: 0.5, prices: { annual: 3950 } };
+    fixture.detectChanges();
+    expect(notice()?.textContent || '').toContain('regional price shown here is lower than the student price');
+    component.regionalPricing = null;
 
     auth.user.and.returnValue({ ...baseUser, studentDiscountEligible: false, studentEmailPendingVerification: true } as any);
     fixture.detectChanges();
-    line = fixture.nativeElement.querySelector('[data-testid="student-pricing-line"]') as HTMLElement | null;
-    expect(line?.textContent || '').toContain('Verify your school email to unlock student pricing');
-    expect(line?.querySelector('a')?.getAttribute('href')).toBe('/profile');
+    expect(notice()?.textContent || '').toContain('Verify your school email to unlock student pricing');
+    expect(notice()?.querySelector('a')?.getAttribute('href')).toBe('/profile');
+    expect(action()).toBeNull();
 
     auth.user.and.returnValue({ ...baseUser } as any);
     fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector('[data-testid="student-pricing-line"]')).toBeNull();
+    expect(notice()).toBeNull();
+    expect(action()?.getAttribute('href')).toBe('/profile');
+
+    component.trackStudentDiscountClick('/profile');
+    expect(analytics.track).toHaveBeenCalledWith('pricing_student_discount_clicked', jasmine.objectContaining({
+      destination: '/profile',
+      auth_state: 'logged_in_free',
+      recommended_plan: 'quarterly',
+    }));
+  });
+
+  it('shows the regional price with the list price struck through and a banner when the config publishes it', async () => {
+    const auth = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
+    const billingCheckout = TestBed.inject(BillingCheckoutService) as jasmine.SpyObj<BillingCheckoutService>;
+    const analytics = TestBed.inject(AnalyticsService) as jasmine.SpyObj<AnalyticsService>;
+    component.offerVersion = PRICING_V2_OFFER_VERSION;
+    component.regionalPricing = {
+      countryCode: 'TR',
+      countryName: 'Türkiye',
+      multiplier: 0.5,
+      prices: { monthly: 600, quarterly: 1450, annual: 3950, lifetime: 9950 },
+    };
+    fixture.detectChanges();
+
+    const page: HTMLElement = fixture.nativeElement;
+    const text = (selector: string) => (page.querySelector(selector)?.textContent || '').replace(/\s+/g, ' ').trim();
+    expect(text('[data-testid="pricing-regional-line"]')).toBe(
+      'Prices for Türkiye: 50% off the list price, applied automatically at checkout.',
+    );
+    expect(text('.pr-card--monthly s[data-list-price]')).toBe('$12');
+    expect(text('.pr-card--monthly')).toContain('$6 / month');
+    expect(text('.pr-card--quarterly s[data-list-price]')).toBe('$9.67');
+    expect(text('.pr-card--quarterly')).toContain('$4.83 / month');
+    expect(text('.pr-card--quarterly')).toContain('$14.50 billed every 3 months');
+    expect(text('.pr-card--quarterly')).toContain('Save 19%');
+    expect(text('.pr-card--annual s[data-list-price]')).toBe('$6.58');
+    expect(text('.pr-card--annual')).toContain('$3.29 / month');
+    expect(text('.pr-card--annual')).toContain('$39.50 billed yearly');
+    expect(text('.pr-card--annual')).toContain('Save 45%');
+    expect(text('[data-testid="pricing-lifetime-secondary"] s[data-list-price]')).toBe('$199');
+    expect(text('[data-testid="pricing-lifetime-secondary"]')).toContain('$99.50');
+
+    // begin_checkout reports the amount the checkout charges.
+    auth.user.and.returnValue({ _id: 'regional_user', username: 'regional_user', email: 'regional@example.com' } as any);
+    billingCheckout.checkout.and.resolveTo({
+      ok: true,
+      provider: 'lemonsqueezy',
+      mode: 'new-tab',
+      checkoutMode: 'live',
+      url: 'https://frontendatlas.lemonsqueezy.com/checkout/custom/abc?signature=sig',
+      attemptId: 'chk_regional',
+      reused: false,
+    });
+    component.paymentsEnabled = true;
+    component.paymentsConfigReady = true;
+    component.checkoutAvailability = { monthly: true, quarterly: true, annual: true, lifetime: true };
+    await component.onCta('quarterly');
+    expect(analytics.track).toHaveBeenCalledWith('begin_checkout', jasmine.objectContaining({ plan_id: 'quarterly', value: 14.5 }));
+
+    component.regionalPricing = null;
+    fixture.detectChanges();
+    expect(page.querySelector('[data-testid="pricing-regional-line"]')).toBeNull();
+    expect(page.querySelector('s[data-list-price]')).toBeNull();
+    expect(text('.pr-card--quarterly')).toContain('$9.67 / month');
+  });
+
+  it('leads with the monthly equivalent on the full sprint page and keeps the compact section on plan totals', () => {
+    component.offerVersion = PRICING_V2_OFFER_VERSION;
+    fixture.detectChanges();
+
+    const page: HTMLElement = fixture.nativeElement;
+    const cardText = (plan: string) => (page.querySelector(`.pr-card--${plan}`)?.textContent || '').replace(/\s+/g, ' ');
+    const cta = (plan: string) => page.querySelector(`[data-testid="pricing-cta-${plan}"]`) as HTMLButtonElement;
+    expect(cardText('monthly')).toContain('$12 / month');
+    expect(cardText('monthly')).toContain('Billed monthly');
+    expect(cardText('quarterly')).toContain('$9.67 / month');
+    expect(cardText('quarterly')).toContain('$29 billed every 3 months');
+    expect(cardText('annual')).toContain('$6.58 / month');
+    expect(cardText('annual')).toContain('$79 billed yearly');
+    expect(cta('quarterly').classList.contains('btn--outline')).toBeFalse();
+    expect(cta('monthly').classList.contains('btn--outline')).toBeTrue();
+    expect(cta('annual').classList.contains('btn--outline')).toBeTrue();
+    expect(page.querySelector('.pr-wrap--full')).toBeTruthy();
+
+    // The homepage section is untouched by the full-page presentation.
+    component.variant = 'compact';
+    fixture.detectChanges();
+    expect(cardText('quarterly')).toContain('$29 / 3 months');
+    expect(cardText('quarterly')).toContain('$9.67/mo billed every 3 months');
+    expect(cardText('annual')).toContain('$79 / year');
+    expect(cardText('annual')).toContain('$6.58/mo billed yearly');
+    expect(page.querySelector('.btn--outline')).toBeNull();
+    expect(page.querySelector('.rec-badge')?.textContent || '').toContain('Recommended — 4–12 week interview sprint');
+    expect(cardText('quarterly')).toContain('Built for a complete interview sprint');
+    expect(page.querySelector('.pr-wrap--compact')).toBeTruthy();
+    expect(page.querySelector('.pr-wrap--full')).toBeNull();
+    expect(page.querySelector('.pr-hero')).toBeNull();
+    expect(page.querySelector('[data-testid="pricing-discounts"]')).toBeNull();
+    expect(page.querySelector('.plan-compare')).toBeNull();
   });
 
   it('names the premium gate concretely in the baseline offer and the FAQ', () => {
@@ -336,7 +457,9 @@ describe('PricingPlansSectionComponent', () => {
     const student = faqItems.find((item) => item.id === 'student-discount');
     expect(employer?.a || '').toContain('emails a receipt for every order');
     expect(employer?.a || '').not.toMatch(/Google|Meta|Amazon|Microsoft/);
-    expect(student?.a || '').toContain('40% off the quarterly and annual plans');
+    expect(student?.a || '').toContain('40% off the annual plan');
+    expect(student?.a || '').not.toContain('quarterly and annual');
+    expect(student?.a || '').toContain('never combined with a regional price');
     expect(student?.a || '').toContain('verify it from your profile');
     expect(student?.a || '').toContain('applied at checkout automatically');
   });
@@ -384,17 +507,22 @@ describe('PricingPlansSectionComponent', () => {
     expect(planCardsText.toLowerCase()).not.toContain('planned');
   });
 
-  it('renders a compact same-premium strip without the old pre-plan bullet list', () => {
+  it('moves the library facts into the hero chips on the full page and keeps the strip on the compact section', () => {
     fixture.detectChanges();
 
     const page: HTMLElement = fixture.nativeElement;
-    const strip = page.querySelector('.plan-unlock-strip') as HTMLElement;
+    expect(page.querySelector('.plan-unlock-strip')).toBeNull();
+    expect(page.querySelectorAll('.pr-hero .pr-proof-chips span').length).toBe(3);
+    expect(page.querySelector('.included-box.plan-unlock')).toBeNull();
 
+    component.variant = 'compact';
+    fixture.detectChanges();
+    const strip = page.querySelector('.plan-unlock-strip') as HTMLElement;
     expect(strip.textContent || '').toContain('Same Premium library. Choose the timeline that fits your prep.');
     expect(strip.textContent || '').not.toContain('Recommended sprint: Quarterly, $29 / 3 months.');
     expect(strip.querySelectorAll('.pr-proof-chips span').length).toBe(3);
     expect(strip.querySelector('ul')).toBeNull();
-    expect(page.querySelector('.included-box.plan-unlock')).toBeNull();
+    expect(page.querySelector('.pr-hero')).toBeNull();
   });
 
   it('links the locked coding prompt and walkthrough from the comparison table and drops the explanatory blocks', () => {
@@ -409,7 +537,7 @@ describe('PricingPlansSectionComponent', () => {
     for (const removed of ['.unlock-preview', '.value-anchor', '.free-explorer', '.pr-features', '.pr-proof-grid', '.risk-reversal', '.weekly-changelog']) {
       expect(page.querySelector(removed)).withContext(removed).toBeNull();
     }
-    expect(page.querySelector('[data-testid="pricing-discounts-line"]')?.textContent || '').toContain('Students get 40% off the quarterly and annual plans');
+    expect(page.querySelector('[data-testid="pricing-discounts"]')?.textContent || '').toContain('40% off');
     expect(page.querySelectorAll('main a, a').length).toBeLessThanOrEqual(12);
   });
 

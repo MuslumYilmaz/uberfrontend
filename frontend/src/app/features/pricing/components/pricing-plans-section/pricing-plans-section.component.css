@@ -897,3 +897,281 @@
 .pricing-updates-line a{
   color:var(--uf-accent);
 }
+
+/* Full pricing page (variant="full"): marketing-scale hierarchy. Every rule is
+   scoped to .pr-wrap--full so the compact homepage section keeps the shared
+   defaults above unchanged. */
+.pr-wrap--full{max-width:1160px;margin:24px auto 56px}
+.pr-wrap--full .pr-kicker{color:var(--uf-text-tertiary);margin-bottom:10px}
+.pr-wrap--full .pr-hero h1{
+  margin:0 0 14px;
+  max-width:26ch;
+  font-size:clamp(32px,4.2vw,46px);
+  font-weight:var(--uf-heading-weight);
+  line-height:1.08;
+  letter-spacing:-0.025em;
+}
+.pr-hero__lede{
+  margin:0;
+  max-width:68ch;
+  color:var(--uf-text-secondary);
+  font-size:var(--uf-reading-size);
+  line-height:1.55;
+}
+.pr-hero__chips{margin-top:16px}
+.pr-wrap--full .pr-proof-chips span{
+  min-height:30px;
+  padding:0 12px;
+  color:var(--uf-text-secondary);
+  font-weight:700;
+}
+.pr-wrap--full .pr-grid{margin-top:36px;gap:18px}
+.pr-wrap--full .pr-card{padding:26px 22px 22px;gap:12px;border-radius:18px}
+.pr-wrap--full .title{margin:0;font-size:18px}
+.pr-wrap--full .plan-summary{min-height:40px;color:var(--uf-text-secondary);font-size:14px;font-weight:600}
+.pr-wrap--full .price{
+  margin:6px 0 0;
+  display:flex;
+  align-items:baseline;
+  flex-wrap:wrap;
+  font-size:44px;
+  line-height:1;
+  letter-spacing:-0.03em;
+}
+.pr-wrap--full .price span{font-size:14px;font-weight:600;color:var(--uf-text-secondary)}
+.pr-wrap--full .billing-note{margin:0;color:var(--uf-text-secondary);font-size:13px;font-weight:600}
+.pr-wrap--full .plan-savings{
+  padding:5px 10px;
+  font-size:12px;
+  border-color:color-mix(in srgb,var(--uf-accent) 60%,var(--uf-border-subtle));
+  background:color-mix(in srgb,var(--uf-accent) 18%,var(--uf-surface));
+}
+.pr-wrap--full .features{gap:8px;align-content:start;color:color-mix(in srgb,var(--uf-text-secondary) 94%,transparent);font-size:14px}
+.pr-wrap--full .rec-badge{
+  padding:6px 14px;
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+}
+.pr-wrap--full .pr-rec{
+  border-color:color-mix(in srgb,var(--uf-accent) 78%,var(--uf-border-subtle));
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb,var(--uf-accent) 18%,var(--uf-surface)) 0%,
+      color-mix(in srgb,var(--uf-accent) 6%,var(--uf-surface)) 58%,
+      var(--uf-surface) 100%
+    ),
+    var(--uf-surface);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb,var(--uf-accent) 38%,transparent),
+    0 24px 60px rgba(0,0,0,.42),
+    0 0 56px color-mix(in srgb,var(--uf-accent) 16%,transparent);
+}
+.pr-wrap--full .btn{
+  min-height:48px;
+  padding:12px 16px;
+  border-radius:12px;
+  font-size:15px;
+  font-weight:800;
+}
+.pr-wrap--full .btn--outline{
+  background:color-mix(in srgb,var(--uf-surface) 80%,var(--uf-surface-alt));
+  color:var(--uf-text-primary);
+  border-color:color-mix(in srgb,var(--uf-accent) 46%,var(--uf-border-subtle));
+  box-shadow:none;
+}
+.pr-wrap--full .btn--outline:not(:disabled):hover{
+  border-color:color-mix(in srgb,var(--uf-accent) 80%,var(--uf-border-subtle));
+  background:color-mix(in srgb,var(--uf-accent) 12%,var(--uf-surface));
+}
+.pr-wrap--full .pr-trust-strip{margin-top:18px;padding:13px 16px;gap:10px 20px;color:var(--uf-text-secondary);font-size:13px}
+.pr-wrap--full .pr-trust-strip i{font-size:12px}
+.pr-discounts{margin-top:18px;display:grid;gap:12px}
+.pr-discounts__title{
+  margin:0;
+  color:var(--uf-text-tertiary);
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+}
+.pr-discounts__grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.pr-discount{
+  padding:20px 22px;
+  border-radius:18px;
+  border:1px solid color-mix(in srgb,var(--uf-accent) 34%,var(--uf-border-subtle));
+  background:
+    radial-gradient(circle at 100% 0%,color-mix(in srgb,var(--uf-accent) 16%,transparent),transparent 42%),
+    color-mix(in srgb,var(--uf-surface) 94%,var(--uf-text-primary) 6%);
+  box-shadow:var(--uf-card-shadow);
+  display:grid;
+  align-content:start;
+  gap:8px;
+}
+.pr-discount__eyebrow{
+  margin:0;
+  color:var(--uf-text-tertiary);
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+}
+.pr-discount__figure{
+  margin:0;
+  color:var(--uf-text-primary);
+  font-size:38px;
+  font-weight:800;
+  line-height:1;
+  letter-spacing:-0.03em;
+}
+.pr-discount__figure--text{font-size:22px;font-weight:700;line-height:1.2;letter-spacing:-0.02em}
+.pr-discount__copy{margin:0;max-width:52ch;color:var(--uf-text-secondary);font-size:14px;line-height:1.5}
+.pr-discount .student-pricing-line{margin:2px 0 0;font-size:14px}
+.pr-discount__action{
+  width:max-content;
+  max-width:100%;
+  margin-top:4px;
+  min-height:38px;
+  padding:0 14px;
+  border-radius:999px;
+  border:1px solid color-mix(in srgb,var(--uf-accent) 52%,var(--uf-border-subtle));
+  background:color-mix(in srgb,var(--uf-accent) 12%,var(--uf-surface));
+  color:var(--uf-text-primary);
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  text-decoration:none;
+  font-size:13px;
+  font-weight:800;
+}
+.pr-discount__action::after{content:'→';font-size:13px;opacity:.85}
+.pr-discount__action:hover{
+  color:var(--uf-text-primary);
+  border-color:color-mix(in srgb,var(--uf-accent) 84%,var(--uf-border-subtle));
+  background:color-mix(in srgb,var(--uf-accent) 20%,var(--uf-surface));
+}
+.pr-wrap--full .lifetime-offer{margin-top:18px;padding:18px 22px}
+.pr-wrap--full .lifetime-offer__copy h3{font-size:20px}
+.pr-wrap--full .lifetime-offer__price{font-size:28px}
+.pr-wrap--full .lifetime-offer__price span{font-size:13px}
+.pr-wrap--full .product-proof{margin-top:24px;padding:22px}
+.pr-wrap--full .product-proof__copy h2{font-size:28px}
+.pr-wrap--full .product-proof__copy > p:not(.eyebrow){font-size:15px}
+.pr-wrap--full .pr-section-title{margin:32px 0 10px;font-size:28px;font-weight:var(--uf-heading-weight)}
+.pr-wrap--full .plan-compare{margin-top:24px;padding-top:6px}
+.pr-wrap--full .plan-compare > .pr-section-title{margin-top:16px}
+.pr-wrap--full .plan-compare > .pr-section-subtitle{font-size:15px}
+.pr-wrap--full .plan-compare th,
+.pr-wrap--full .plan-compare td{padding:14px 16px;vertical-align:top}
+.pr-wrap--full .plan-compare tbody th{font-size:14px}
+.pr-wrap--full .plan-compare tbody td{color:var(--uf-text-secondary);font-size:14px;font-weight:500;line-height:1.5}
+.pr-wrap--full .plan-compare__premium{color:var(--uf-text-primary)}
+.plan-compare__check{margin-right:8px;color:var(--uf-accent);font-size:12px}
+.pr-wrap--full .plan-compare__preview{
+  display:flex;
+  width:max-content;
+  max-width:100%;
+  align-items:center;
+  margin:8px 0 0;
+  min-height:28px;
+  padding:0 10px;
+  border-radius:999px;
+  border:1px solid color-mix(in srgb,var(--uf-accent) 48%,var(--uf-border-subtle));
+  background:color-mix(in srgb,var(--uf-accent) 10%,var(--uf-surface));
+  color:var(--uf-text-primary);
+  font-size:12px;
+  font-weight:800;
+  text-decoration:none;
+}
+.pr-wrap--full .plan-compare__preview:hover{
+  border-color:color-mix(in srgb,var(--uf-accent) 80%,var(--uf-border-subtle));
+  background:color-mix(in srgb,var(--uf-accent) 18%,var(--uf-surface));
+}
+.pr-wrap--full .pr-faq{margin-top:28px}
+.pr-faq__title{margin-bottom:14px}
+.pr-wrap--full .pricing-updates-line{margin-top:20px;font-size:14px}
+@media (min-width:961px){
+  .pr-wrap--full .pr-rec{transform:translateY(-10px)}
+  .pr-wrap--full .pr-rec .price{font-size:48px}
+}
+@media (max-width:960px){
+  .pr-wrap--full .pr-hero h1{max-width:none}
+  .pr-discounts__grid{grid-template-columns:1fr}
+}
+/* Tablet keeps the three sprint cards side by side instead of a 2 + 1 split. */
+@media (min-width:641px) and (max-width:960px){
+  .pr-wrap--full .pr-grid--v2{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+  .pr-wrap--full .pr-grid--v2 .pr-card{padding:22px 16px 18px}
+  .pr-wrap--full .pr-grid--v2 .price{font-size:36px}
+  .pr-wrap--full .pr-grid--v2 .plan-summary{min-height:0}
+}
+@media (max-width:640px){
+  .pr-wrap--full{margin-top:12px}
+  .pr-wrap--full .pr-hero h1{font-size:32px}
+  .pr-hero__lede{font-size:15px}
+  /* One scrollable row of facts keeps the first plan card within the first screen and a half. */
+  .pr-hero__chips{flex-wrap:nowrap;overflow-x:auto;margin:14px -20px 0;padding:0 20px 4px;scrollbar-width:none}
+  .pr-hero__chips::-webkit-scrollbar{display:none}
+  .pr-hero__chips span{flex:0 0 auto;white-space:nowrap}
+  .pr-wrap--full .pr-grid{margin-top:30px;gap:16px}
+  .pr-wrap--full .price{font-size:40px}
+  .pr-discount{padding:18px}
+  .pr-discount__figure{font-size:34px}
+  .pr-discount__action{width:100%;justify-content:center}
+  /* The comparison stacks per row so the Premium column is never off-screen. */
+  .pr-wrap--full .plan-compare table,
+  .pr-wrap--full .plan-compare tbody{display:block;min-width:0;width:100%}
+  .pr-wrap--full .plan-compare thead{display:none}
+  .pr-wrap--full .plan-compare tbody tr{
+    display:grid;
+    gap:8px;
+    padding:14px 16px;
+    border-bottom:1px solid color-mix(in srgb,var(--uf-border-subtle) 70%,transparent);
+  }
+  .pr-wrap--full .plan-compare tbody tr:last-child{border-bottom:0}
+  .pr-wrap--full .plan-compare tbody th,
+  .pr-wrap--full .plan-compare tbody td{display:block;padding:0;border:0}
+  .pr-wrap--full .plan-compare tbody th{font-size:15px}
+  .pr-wrap--full .plan-compare tbody td::before{
+    content:attr(data-label);
+    display:block;
+    margin-bottom:2px;
+    color:var(--uf-text-tertiary);
+    font-size:11px;
+    font-weight:800;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+  }
+  .plan-compare__check{display:none}
+}
+
+/* Regional pricing (Step 7): banner above the cards and the list price struck
+   through next to the regional price. Rendered only when the backend published
+   prices for the visitor's country. */
+.pr-regional-line{
+  margin:20px 0 -14px;
+  padding:11px 14px;
+  border-radius:12px;
+  border:1px solid color-mix(in srgb,var(--uf-accent) 55%,var(--uf-border-subtle));
+  background:color-mix(in srgb,var(--uf-accent) 12%,var(--uf-surface));
+  color:var(--uf-text-primary);
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-size:14px;
+  font-weight:700;
+  line-height:1.4;
+}
+.pr-regional-line i{color:var(--uf-accent);font-size:14px;flex:0 0 auto}
+.price-list{
+  margin-right:8px;
+  color:var(--uf-text-secondary);
+  font-size:.5em;
+  font-weight:600;
+  letter-spacing:0;
+  text-decoration-thickness:2px;
+  text-decoration-color:color-mix(in srgb,var(--uf-text-secondary) 70%,transparent);
+}
+.lifetime-offer__price .price-list{font-size:16px;margin-right:6px}

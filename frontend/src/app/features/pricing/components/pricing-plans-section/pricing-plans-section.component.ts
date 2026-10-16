@@ -19,6 +19,7 @@ import {
   BillingCheckoutService,
   CheckoutPlanDetail,
   CheckoutSurface,
+  RegionalPricing,
 } from '../../../../core/services/billing-checkout.service';
 import { CheckoutIntent, CheckoutIntentService } from '../../../../core/services/checkout-intent.service';
 import { ConversionContextService } from '../../../../core/services/conversion-context.service';
@@ -60,30 +61,35 @@ type PricingPlan = {
 export const PRICING_PAGE_LAYOUT = 'interview_sprint_v1';
 export { PRICING_BASELINE_OFFER_VERSION, PRICING_V2_OFFER_VERSION };
 export const RECOMMENDED_PRICING_PLAN: PlanId = 'quarterly';
+// Mirrors backend/services/billing/checkout-pricing.js: 40% off the annual plan
+// on a first purchase, never combined with a regional price.
+const STUDENT_PRICE_MULTIPLIER = 0.6;
 
 @Component({
     selector: 'app-pricing-plans-section',
     imports: [CommonModule, RouterModule, FaqSectionComponent, LoginRequiredDialogComponent, FaButtonComponent],
     styleUrls: ['./pricing-plans-section.component.css'],
     template: `
-    <section class="pr-wrap" [class.pr-wrap--compact]="variant === 'compact'">
+    <section class="pr-wrap" [class.pr-wrap--compact]="variant === 'compact'" [class.pr-wrap--full]="variant === 'full'">
       <header class="pr-hero" *ngIf="variant === 'full'">
         <p class="pr-kicker">Premium for interview sprints</p>
         <h1>Prepare faster with deeper frontend interview reps</h1>
-        <p class="muted" *ngIf="!isOfferV2(); else offerV2HeroCopy">
+        <p class="pr-hero__lede" *ngIf="!isOfferV2(); else offerV2HeroCopy">
           Every Premium coding question ships with a guided solution; JavaScript and debugging tasks run checks in the
           browser, and most React, Angular and Vue tasks do too.
         </p>
         <ng-template #offerV2HeroCopy>
-          <p class="muted">
-            Practice across {{ totalQuestionCount }} questions and {{ premiumPracticeSummary }}. Every Premium coding
-            question ships with a guided solution; JavaScript and debugging tasks run checks in the browser, and most
-            React, Angular and Vue tasks do too.
+          <p class="pr-hero__lede">
+            Every plan unlocks the same Premium library; only the access period changes. Every Premium coding question
+            ships with a guided solution, and JavaScript and debugging tasks run checks in the browser.
           </p>
         </ng-template>
+        <div class="pr-proof-chips pr-hero__chips" aria-label="Premium highlights">
+          <span *ngFor="let chip of activeProofChips()">{{ chip }}</span>
+        </div>
       </header>
 
-      <div class="plan-unlock-strip">
+      <div class="plan-unlock-strip" *ngIf="variant === 'compact'">
         <div class="plan-unlock-strip__copy">
           <p>Same Premium library. Choose the timeline that fits your prep.</p>
           <span *ngIf="isOfferV2()">Every paid plan unlocks the same practice depth; only the access period changes.</span>
@@ -92,23 +98,6 @@ export const RECOMMENDED_PRICING_PLAN: PlanId = 'quarterly';
           <span *ngFor="let chip of activeProofChips()">{{ chip }}</span>
         </div>
       </div>
-
-      <p
-        class="student-pricing-line"
-        *ngIf="studentPricingNotice() as notice"
-        role="status"
-        data-testid="student-pricing-line">
-        {{ notice.text }}
-        <a *ngIf="notice.link" [routerLink]="notice.link.to">{{ notice.link.label }}</a>
-      </p>
-
-      <p
-        class="student-pricing-line"
-        *ngIf="variant === 'full' && !studentPricingNotice()"
-        data-testid="pricing-discounts-line">
-        Students get 40% off the quarterly and annual plans with a verified school email. Employers often reimburse
-        interview prep, and every order comes with a receipt and an invoice.
-      </p>
 
       <section
         class="checkout-continuation"
@@ -129,6 +118,15 @@ export const RECOMMENDED_PRICING_PLAN: PlanId = 'quarterly';
           </button>
         </div>
       </section>
+
+      <p
+        class="pr-regional-line"
+        *ngIf="regionalPricing as regional"
+        role="status"
+        data-testid="pricing-regional-line">
+        <i class="pi pi-globe" aria-hidden="true"></i>
+        <span>Prices for {{ regional.countryName }}: {{ regionalPercentOff() }}% off the list price, applied automatically at checkout.</span>
+      </p>
 
       <div
         class="pr-grid"
@@ -153,15 +151,17 @@ export const RECOMMENDED_PRICING_PLAN: PlanId = 'quarterly';
           <h3 class="title">{{ plan.title }}</h3>
           <p class="plan-summary">{{ summaryFor(plan) }}</p>
           <div class="price">
-            {{ displayPrice(plan.id) }}<span>{{ priceSuffix(plan.id) }}</span>
+            <s class="price-list" data-list-price *ngIf="listPriceHeadline(plan.id) as listPrice">{{ listPrice }}</s>
+            {{ priceHeadline(plan.id) }}<span>{{ priceHeadlineSuffix(plan.id) }}</span>
           </div>
-          <p class="billing-note">{{ billingNote(plan.id) }}</p>
+          <p class="billing-note">{{ priceDetail(plan.id) }}</p>
           <p class="plan-savings" *ngIf="savingsLabel(plan.id)">{{ savingsLabel(plan.id) }}</p>
           <ul class="features">
             <li *ngFor="let feat of plan.features">{{ feat }}</li>
           </ul>
           <button
             class="btn"
+            [class.btn--outline]="isOutlineCta(plan.id)"
             type="button"
             (click)="onCta(plan.id)"
             [disabled]="isCheckoutDisabled(plan.id)"
@@ -189,6 +189,52 @@ export const RECOMMENDED_PRICING_PLAN: PlanId = 'quarterly';
       </div>
 
       <section
+        class="pr-discounts"
+        *ngIf="variant === 'full'"
+        data-testid="pricing-discounts"
+        aria-labelledby="pricing-discounts-title">
+        <h2 id="pricing-discounts-title" class="pr-discounts__title">Discounts and reimbursement</h2>
+        <div class="pr-discounts__grid">
+          <article class="pr-discount pr-discount--student">
+            <p class="pr-discount__eyebrow">Students</p>
+            <p class="pr-discount__figure">40% off</p>
+            <p class="pr-discount__copy">
+              The annual plan on your first purchase, with a verified .edu or .ac school email. Never combined with a
+              regional price: you get the better of the two.
+            </p>
+            <p
+              class="student-pricing-line"
+              *ngIf="studentPricingNotice() as notice"
+              role="status"
+              data-testid="student-pricing-line">
+              {{ notice.text }}
+              <a
+                *ngIf="notice.link"
+                [routerLink]="notice.link.to"
+                (click)="trackStudentDiscountClick('/profile')">{{ notice.link.label }}</a>
+            </p>
+            <a
+              *ngIf="studentDiscountAction() as action"
+              class="pr-discount__action"
+              data-testid="pricing-student-action"
+              [routerLink]="action.to"
+              [queryParams]="action.queryParams"
+              (click)="trackStudentDiscountClick(action.destination)">
+              {{ action.label }}
+            </a>
+          </article>
+          <article class="pr-discount pr-discount--employer">
+            <p class="pr-discount__eyebrow">Employers</p>
+            <p class="pr-discount__figure pr-discount__figure--text">Often covered by a learning budget</p>
+            <p class="pr-discount__copy">
+              Every order comes with an emailed receipt, and a PDF invoice is available from your orders page or the
+              billing portal in your profile.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section
         class="lifetime-offer"
         *ngIf="isOfferV2()"
         data-testid="pricing-lifetime-secondary"
@@ -199,7 +245,10 @@ export const RECOMMENDED_PRICING_PLAN: PlanId = 'quarterly';
           <p>Keep Premium access for long-term interview refreshers without another renewal.</p>
         </div>
         <div class="lifetime-offer__action">
-          <p class="lifetime-offer__price">{{ displayPrice('lifetime') }} <span>{{ priceSuffix('lifetime') }}</span></p>
+          <p class="lifetime-offer__price">
+            <s class="price-list" data-list-price *ngIf="listPriceHeadline('lifetime') as listPrice">{{ listPrice }}</s>
+            {{ displayPrice('lifetime') }} <span>{{ priceSuffix('lifetime') }}</span>
+          </p>
           <button
             class="btn btn--secondary"
             type="button"
@@ -309,9 +358,10 @@ export const RECOMMENDED_PRICING_PLAN: PlanId = 'quarterly';
           <tbody>
             <tr *ngFor="let row of comparisonRows">
               <th scope="row">{{ row.label }}</th>
-              <td>{{ row.freeValue }}</td>
-              <td>
-                {{ row.premiumValue }}
+              <td data-label="Free Explorer">{{ row.freeValue }}</td>
+              <td class="plan-compare__premium" data-label="Premium">
+                <i class="pi pi-check plan-compare__check" aria-hidden="true"></i>
+                <span>{{ row.premiumValue }}</span>
                 <a
                   *ngIf="row.link"
                   class="plan-compare__preview"
@@ -325,9 +375,9 @@ export const RECOMMENDED_PRICING_PLAN: PlanId = 'quarterly';
         </table>
       </section>
 
-      <section class="pr-faq" *ngIf="variant === 'full'">
+      <section class="pr-faq" *ngIf="variant === 'full'" aria-labelledby="pricing-faq-title">
+        <h2 id="pricing-faq-title" class="pr-section-title pr-faq__title">Frequently asked questions</h2>
         <app-faq-section
-          title="FAQ"
           [groups]="faqGroups"
           [singleOpen]="false">
         </app-faq-section>
@@ -373,6 +423,7 @@ export class PricingPlansSectionComponent implements OnInit, OnChanges, AfterVie
   @Input() checkoutAvailability: Partial<Record<PlanId, boolean>> | null = null;
   @Input() planDetails: PricingPlanDetails | null = null;
   @Input() offerVersion = PRICING_BASELINE_OFFER_VERSION;
+  @Input() regionalPricing: RegionalPricing | null = null;
   @Input() checkoutSurface: CheckoutSurface = 'hosted_new_tab';
   @Input() campaignId?: string | null;
 
@@ -534,8 +585,9 @@ If your employer needs anything else, email <code>support@frontendatlas.com</cod
         {
           id: 'student-discount',
           q: 'Is there a student discount?',
-          a: `Yes: 40% off the quarterly and annual plans on your first purchase.<br><br>
-Sign up with your school email address, or set it as your account email, and verify it from your profile. The discount is applied at checkout automatically, and the pricing page says so once your address is verified.<br><br>
+          a: `Yes: 40% off the annual plan on your first purchase.<br><br>
+Sign up with your school email address, or set it as your account email, and verify it from your profile. The price is applied at checkout automatically, and the pricing page says so once your address is verified.<br><br>
+Student pricing is never combined with a regional price; you get the better of the two.<br><br>
 If your school address does not end in .edu or .ac, email <code>support@frontendatlas.com</code> from that address and we switch student pricing on for your account.`,
         },
         {
@@ -611,16 +663,18 @@ HTML and CSS tasks rely on the live preview instead, because visuals are the pri
 
   badgeFor(plan: PricingPlan): string {
     if (!this.isOfferV2()) return plan.badge;
-    return plan.id === RECOMMENDED_PRICING_PLAN
-      ? 'Recommended — 4–12 week interview sprint'
-      : '';
+    if (plan.id !== RECOMMENDED_PRICING_PLAN) return '';
+    // The full page states the sprint length in the card summary, so its badge stays one word.
+    return this.variant === 'full' ? 'Recommended' : 'Recommended — 4–12 week interview sprint';
   }
 
   summaryFor(plan: PricingPlan): string {
     if (!this.isOfferV2()) return plan.summary;
     const summaries: Record<PlanId, string> = {
       monthly: 'A flexible month of focused practice',
-      quarterly: 'Built for a complete interview sprint',
+      quarterly: this.variant === 'full'
+        ? 'Built for a complete 4–12 week interview sprint'
+        : 'Built for a complete interview sprint',
       annual: 'Lowest monthly cost for ongoing practice',
       lifetime: 'Long-term access with one payment',
     };
@@ -650,14 +704,74 @@ HTML and CSS tasks rely on the live preview instead, because visuals are the pri
     if (!detail) return 'Checkout unavailable';
     if (detail.interval === 'one_time') return 'One-time payment';
     if (detail.interval === 'month' && detail.intervalCount === 1) return 'Billed monthly';
-    const months = detail.interval === 'year'
-      ? 12 * Math.max(1, Number(detail.intervalCount) || 1)
-      : Math.max(1, Number(detail.intervalCount) || 1);
+    const months = this.billingMonths(detail);
     const perMonth = this.formatMoney(detail.amountCents / months, detail.currency, true);
     if (detail.interval === 'year' && detail.intervalCount === 1) {
       return `${perMonth}/mo billed yearly`;
     }
     return `${perMonth}/mo billed every ${months} months`;
+  }
+
+  // The full sprint page leads with the monthly equivalent so the three cards
+  // compare in one unit, with the billed total on the next line. The compact
+  // homepage section keeps the plan total as its headline.
+  usesPerMonthHeadline(planId: PlanId): boolean {
+    return this.variant === 'full' && this.isOfferV2() && (planId === 'quarterly' || planId === 'annual');
+  }
+
+  priceHeadline(planId: PlanId): string {
+    if (!this.usesPerMonthHeadline(planId)) return this.displayPrice(planId);
+    const detail = this.planDetailForDisplay(planId);
+    if (!detail) return '—';
+    return this.formatMoney(detail.amountCents / this.billingMonths(detail), detail.currency, false);
+  }
+
+  priceHeadlineSuffix(planId: PlanId): string {
+    if (!this.usesPerMonthHeadline(planId)) return this.priceSuffix(planId);
+    return this.planDetailForDisplay(planId) ? ' / month' : '';
+  }
+
+  priceDetail(planId: PlanId): string {
+    if (!this.usesPerMonthHeadline(planId)) return this.billingNote(planId);
+    const detail = this.planDetailForDisplay(planId);
+    if (!detail) return 'Checkout unavailable';
+    const total = this.formatMoney(detail.amountCents, detail.currency, false);
+    if (detail.interval === 'year' && detail.intervalCount === 1) return `${total} billed yearly`;
+    return `${total} billed every ${this.billingMonths(detail)} months`;
+  }
+
+  // Only the recommended card carries the filled button on the full page.
+  isOutlineCta(planId: PlanId): boolean {
+    return this.variant === 'full' && this.isOfferV2() && planId !== this.recommendedPlan;
+  }
+
+  // Regional pricing: the backend publishes the country's prices with the
+  // checkout config and charges them through a custom checkout. The cards show
+  // the list price struck through next to the regional one; that struck figure
+  // is the live list price, the one exception to the no-struck-prices rule.
+  private regionalAmount(planId: PlanId): number | null {
+    const amount = this.regionalPricing?.prices?.[planId];
+    return typeof amount === 'number' && Number.isSafeInteger(amount) && amount > 0 ? amount : null;
+  }
+
+  regionalPercentOff(): number {
+    const multiplier = Number(this.regionalPricing?.multiplier);
+    return Number.isFinite(multiplier) ? Math.round((1 - multiplier) * 100) : 0;
+  }
+
+  listPriceHeadline(planId: PlanId): string | null {
+    const list = this.configuredPlanDetail(planId);
+    if (!list || this.regionalAmount(planId) === null) return null;
+    if (this.usesPerMonthHeadline(planId)) {
+      return this.formatMoney(list.amountCents / this.billingMonths(list), list.currency, false);
+    }
+    return this.formatMoney(list.amountCents, list.currency, false);
+  }
+
+  private billingMonths(detail: PricingPlanDetail): number {
+    return detail.interval === 'year'
+      ? 12 * Math.max(1, Number(detail.intervalCount) || 1)
+      : Math.max(1, Number(detail.intervalCount) || 1);
   }
 
   savingsLabel(planId: PlanId): string | null {
@@ -714,7 +828,10 @@ HTML and CSS tasks rely on the live preview instead, because visuals are the pri
     const user = this.auth.user();
     if (!user) return null;
     if (user.studentDiscountEligible) {
-      return { text: 'Student pricing: 40% off the quarterly and annual plans is applied at checkout on your first purchase.' };
+      if (this.regionalPricing && Number(this.regionalPricing.multiplier) <= STUDENT_PRICE_MULTIPLIER) {
+        return { text: 'Your school email is verified. The regional price shown here is lower than the student price, so it applies instead.' };
+      }
+      return { text: 'Your school email is verified: 40% off the annual plan is applied at checkout on your first purchase.' };
     }
     if (user.studentEmailPendingVerification) {
       return {
@@ -723,6 +840,36 @@ HTML and CSS tasks rely on the live preview instead, because visuals are the pri
       };
     }
     return null;
+  }
+
+  // A guest signs up with the school address; a signed-in account adds it in
+  // the profile. Eligible and pending accounts are covered by studentPricingNotice().
+  studentDiscountAction(): {
+    to: string[];
+    label: string;
+    destination: string;
+    queryParams?: Record<string, string>;
+  } | null {
+    if (this.variant !== 'full' || this.studentPricingNotice()) return null;
+    const user = this.auth.user();
+    if (!user) {
+      return {
+        to: ['/auth/signup'],
+        queryParams: { src: 'pricing_student_discount' },
+        destination: '/auth/signup',
+        label: 'Sign up with your school email',
+      };
+    }
+    if (isProActive(user)) return null;
+    return { to: ['/profile'], destination: '/profile', label: 'Set your school email in your profile' };
+  }
+
+  trackStudentDiscountClick(destination: string): void {
+    this.analytics.track('pricing_student_discount_clicked', {
+      ...this.pricingAnalyticsBase(),
+      destination,
+      auth_state: this.analyticsAuthState(),
+    });
   }
 
   constructor(
@@ -987,7 +1134,10 @@ HTML and CSS tasks rely on the live preview instead, because visuals are the pri
   }
 
   private planDetailForDisplay(planId: PlanId): PricingPlanDetail | null {
-    return this.configuredPlanDetail(planId);
+    const detail = this.configuredPlanDetail(planId);
+    if (!detail) return null;
+    const regionalAmount = this.regionalAmount(planId);
+    return regionalAmount === null ? detail : { ...detail, amountCents: regionalAmount };
   }
 
   private formatMoney(amountCents: number, currency: string, forceCents: boolean): string {
@@ -1105,7 +1255,8 @@ HTML and CSS tasks rely on the live preview instead, because visuals are the pri
     surface = this.normalizedSurface(),
     offerCampaignId?: string,
   ) {
-    const detail = this.configuredPlanDetail(planId);
+    // The analytics value is the amount the checkout charges, regional or list.
+    const detail = this.planDetailForDisplay(planId);
     if (!detail) return;
     const value = detail.amountCents / 100;
     this.analytics.track('begin_checkout', {

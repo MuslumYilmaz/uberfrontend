@@ -19,6 +19,13 @@ const CheckoutAttemptSchema = new mongoose.Schema(
     campaignId: { type: String, trim: true, maxlength: 64, default: null },
     providerDiscountId: { type: String, trim: true, maxlength: 128, default: null },
     campaignEligibility: { type: String, enum: ['student', null], default: null },
+    // The price actually charged when it differs from the list price (regional
+    // or student custom checkout). Null means the variant list price.
+    priceReason: { type: String, enum: ['regional', 'student', null], default: null },
+    priceMultiplier: { type: Number, min: 0, max: 1, default: null },
+    priceListCents: { type: Number, min: 0, default: null },
+    priceChargedCents: { type: Number, min: 0, default: null },
+    providerCheckoutId: { type: String, trim: true, maxlength: 128, default: null },
     // First-touch attribution, analytics only: the landing path and external
     // referrer host recorded by the browser, and the country resolved by the
     // edge (x-vercel-ip-country). Never sent to the payment provider.
