@@ -31,6 +31,11 @@
               "src/robots.txt",
               "src/llms.txt",
               {
+                "glob": "*.txt",
+                "input": "src/indexnow",
+                "output": "/"
+              },
+              {
                 "glob": "sitemap*.xml",
                 "input": ".angular/seo/sitemaps",
                 "output": "/"
@@ -215,6 +220,11 @@
               "src/favicon.ico",
               "src/robots.txt",
               "src/llms.txt",
+              {
+                "glob": "*.txt",
+                "input": "src/indexnow",
+                "output": "/"
+              },
               {
                 "glob": "sitemap*.xml",
                 "input": ".angular/seo/sitemaps",

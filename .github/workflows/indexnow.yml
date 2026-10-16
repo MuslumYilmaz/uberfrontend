@@ -1,0 +1,61 @@
+name: IndexNow
+
+on:
+  deployment_status:
+  workflow_dispatch:
+    inputs:
+      scope:
+        description: Submit the recently changed sitemap URLs, or every URL (first run, key rotation).
+        required: true
+        default: recent
+        type: choice
+        options:
+          - recent
+          - all
+      days:
+        description: With "recent", submit URLs whose sitemap lastmod falls within this many days.
+        required: false
+        default: '2'
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  indexnow:
+    name: IndexNow
+    # Runs after every successful production deployment of the site. It reads the
+    # live sitemap and pings api.indexnow.org with the URLs whose lastmod changed,
+    # so Bing, Yandex and the other IndexNow engines recrawl them. Google does not
+    # take part; its recrawl requests stay in Search Console. Vercel reports one
+    # deployment per project (frontendatlas = CDN, frontendatlas-be = API,
+    # frontendatlas-fe = the site); only the site's deployment changes the sitemap,
+    # so the other two would resubmit the same URLs.
+    if: >-
+      github.event_name == 'workflow_dispatch'
+      || (github.event.deployment_status.state == 'success'
+          && startsWith(github.event.deployment.environment, 'Production')
+          && endsWith(github.event.deployment.environment, 'frontendatlas-fe'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+
+      - name: Setup Node
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
+        with:
+          node-version-file: .nvmrc
+
+      - name: Submit changed URLs to IndexNow
+        working-directory: frontend
+        env:
+          SCOPE: ${{ github.event.inputs.scope || 'recent' }}
+          DAYS: ${{ github.event.inputs.days || '2' }}
+        run: |
+          if [ "$SCOPE" = "all" ]; then
+            node scripts/indexnow-submit.mjs --all
+          else
+            node scripts/indexnow-submit.mjs --days "$DAYS"
+          fi
