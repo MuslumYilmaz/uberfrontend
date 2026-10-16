@@ -881,6 +881,9 @@
 .student-pricing-line a{
   margin-left:6px;
   color:var(--uf-accent);
+  text-decoration:underline;
+  text-underline-offset:3px;
+  text-decoration-thickness:1.5px;
 }
 
 .plan-compare__preview{
@@ -894,8 +897,12 @@
   color:var(--uf-text-secondary);
   line-height:1.5;
 }
+/* Inline links stay underlined: gold on grey body text is a 1:1 colour difference (axe link-in-text-block). */
 .pricing-updates-line a{
   color:var(--uf-accent);
+  text-decoration:underline;
+  text-underline-offset:3px;
+  text-decoration-thickness:1.5px;
 }
 
 /* Full pricing page (variant="full"): marketing-scale hierarchy. Every rule is

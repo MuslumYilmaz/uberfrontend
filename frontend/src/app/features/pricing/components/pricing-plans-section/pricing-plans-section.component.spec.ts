@@ -991,5 +991,7 @@ describe('PricingPlansSectionComponent', () => {
     const line = page.querySelector('[data-testid="pricing-updates-line"]') as HTMLElement;
     expect(line.textContent || '').toContain('published in the');
     expect(line.querySelector('a')?.getAttribute('href')).toBe('/changelog');
+    // An inline gold link on grey text needs an underline to pass axe's link-in-text-block rule.
+    expect(getComputedStyle(line.querySelector('a') as HTMLElement).textDecorationLine).toContain('underline');
   });
 });
