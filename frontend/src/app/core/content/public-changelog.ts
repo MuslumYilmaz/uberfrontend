@@ -15,6 +15,25 @@ export type PublicChangelogEntry = {
 
 export const PUBLIC_CHANGELOG_ENTRIES: PublicChangelogEntry[] = [
   {
+    id: 'new-plan-prices-regional-prices-and-annual-student-pricing',
+    weekOf: '2026-10-16',
+    title: 'New plan prices, regional prices and a redesigned pricing page',
+    summary: 'Plan prices change, 53 countries get a regional price applied automatically at checkout, and the pricing page is rebuilt around one recommended plan.',
+    category: 'Improved',
+    area: 'Pricing and billing',
+    changes: [
+      'Plan prices are now $24 a month, $49 a quarter, $99 a year and $179 once for lifetime access. Existing subscribers keep the price they signed up at; the recommended plan stays the quarterly sprint, and the 14-day first-purchase refund applies to the new prices.',
+      'Regional prices: in 53 countries the pricing page shows the list price next to the price for your country, and checkout charges that price automatically. Nothing to enter.',
+      'Student pricing is 40% off the annual plan on a first purchase with a verified school email, applied automatically. It is never combined with a regional price; you get the better of the two.',
+      'The pricing page is rebuilt: the monthly equivalent leads on the sprint plans, one recommended plan, a discounts block, and a comparison that stays readable on phones.',
+    ],
+    cta: {
+      label: 'Compare plans',
+      route: '/pricing',
+      queryParams: { src: 'changelog' },
+    },
+  },
+  {
     id: 'first-purchase-refund-and-a-clearer-premium-promise',
     weekOf: '2026-10-15',
     title: 'A 14-day first-purchase refund and a clearer Premium promise',

@@ -28,25 +28,25 @@ const DEFAULT_OFFER_VERSION = 'pricing_baseline_v1';
 const DEFAULT_CHECKOUT_SURFACE = 'hosted_new_tab';
 const PLAN_CATALOG = Object.freeze({
   monthly: Object.freeze({
-    amountCents: 1200,
+    amountCents: 2400,
     currency: 'USD',
     interval: 'month',
     intervalCount: 1,
   }),
   quarterly: Object.freeze({
-    amountCents: 2900,
+    amountCents: 4900,
     currency: 'USD',
     interval: 'month',
     intervalCount: 3,
   }),
   annual: Object.freeze({
-    amountCents: 7900,
+    amountCents: 9900,
     currency: 'USD',
     interval: 'year',
     intervalCount: 1,
   }),
   lifetime: Object.freeze({
-    amountCents: 19900,
+    amountCents: 17900,
     currency: 'USD',
     interval: 'one_time',
     intervalCount: null,
@@ -57,7 +57,7 @@ const PLAN_PRICE_MAX_CENTS = 1_000_000;
 let planPriceOverrideWarned = false;
 
 // Prices switch without a deploy: BILLING_PLAN_PRICES_JSON holds cents per plan,
-// e.g. {"monthly":2400,"quarterly":4900,"annual":9900,"lifetime":17900}. One
+// e.g. {"monthly":2900,"quarterly":5900,"annual":11900,"lifetime":19900}. One
 // invalid entry rejects the whole override, so a typo can never price a plan at
 // zero; the defaults above then apply. Intervals and currency never change here.
 function parsePlanPriceOverrides(raw) {

@@ -141,8 +141,8 @@ describe('ShowcasePageComponent', () => {
     const component = fixture.componentInstance;
     // Prerender contract: the sprint layout and default prices render before any config arrives.
     expect(component.pricingCtaMode).toBe('checkout');
-    expect(component.pricingOfferVersion).toBe('interview_sprint_v2');
-    expect(component.pricingPlanDetails?.monthly?.amountCents).toBe(1200);
+    expect(component.pricingOfferVersion).toBe('interview_sprint_v3');
+    expect(component.pricingPlanDetails?.monthly?.amountCents).toBe(2400);
 
     billingCheckout.getCheckoutConfig.and.resolveTo({
       configuredProvider: 'lemonsqueezy',

@@ -10,28 +10,28 @@ export type PrerenderPlanDetail = {
 
 export const PRERENDER_PLAN_DETAILS: Record<'monthly' | 'quarterly' | 'annual' | 'lifetime', PrerenderPlanDetail> = {
   "monthly": {
-    "amountCents": 1200,
+    "amountCents": 2400,
     "currency": "USD",
     "interval": "month",
     "intervalCount": 1,
     "taxInclusive": true
   },
   "quarterly": {
-    "amountCents": 2900,
+    "amountCents": 4900,
     "currency": "USD",
     "interval": "month",
     "intervalCount": 3,
     "taxInclusive": true
   },
   "annual": {
-    "amountCents": 7900,
+    "amountCents": 9900,
     "currency": "USD",
     "interval": "year",
     "intervalCount": 1,
     "taxInclusive": true
   },
   "lifetime": {
-    "amountCents": 19900,
+    "amountCents": 17900,
     "currency": "USD",
     "interval": "one_time",
     "intervalCount": null,

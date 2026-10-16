@@ -6,17 +6,17 @@ const {
 
 describe('LemonSqueezy price parity', () => {
   test('matches recurring and one-time variant contracts', () => {
-    expect(compareVariant('quarterly', '29', {
-      data: { attributes: { price: 2900, interval: 'month', interval_count: 3, status: 'published' } },
+    expect(compareVariant('quarterly', '49', {
+      data: { attributes: { price: 4900, interval: 'month', interval_count: 3, status: 'published' } },
     })).toEqual(expect.objectContaining({ ok: true, mismatches: [] }));
-    expect(compareVariant('lifetime', '199', {
-      data: { attributes: { price: 19900, interval: null, interval_count: null, status: 'published' } },
+    expect(compareVariant('lifetime', '179', {
+      data: { attributes: { price: 17900, interval: null, interval_count: null, status: 'published' } },
     })).toEqual(expect.objectContaining({ ok: true, mismatches: [] }));
   });
 
   test('reports amount and billing interval drift', () => {
-    const result = compareVariant('annual', '79', {
-      data: { attributes: { price: 9900, interval: 'month', interval_count: 12 } },
+    const result = compareVariant('annual', '99', {
+      data: { attributes: { price: 11900, interval: 'month', interval_count: 12 } },
     });
 
     expect(result.ok).toBe(false);
@@ -28,10 +28,10 @@ describe('LemonSqueezy price parity', () => {
   });
 
   test('fails closed when a scoped API key returns a variant from the other mode', () => {
-    const result = compareVariant('monthly', '12', {
+    const result = compareVariant('monthly', '24', {
       data: {
         attributes: {
-          price: 1200,
+          price: 2400,
           interval: 'month',
           interval_count: 1,
           test_mode: true,
@@ -47,7 +47,7 @@ describe('LemonSqueezy price parity', () => {
     const fetchImpl = jest.fn().mockResolvedValue({
       ok: true,
       json: async () => ({
-        data: { attributes: { price: 1200, interval: 'month', interval_count: 1 } },
+        data: { attributes: { price: 2400, interval: 'month', interval_count: 1 } },
       }),
     });
     const report = await checkLemonSqueezyPriceParity({

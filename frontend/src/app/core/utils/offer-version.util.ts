@@ -7,7 +7,7 @@ export const PRICING_V3_OFFER_VERSION = 'interview_sprint_v3';
  * so the static page must render it too; the checkout config replaces it after
  * hydration and only an unreachable config leaves this default in place.
  */
-export const PRERENDER_OFFER_VERSION = PRICING_V2_OFFER_VERSION;
+export const PRERENDER_OFFER_VERSION = PRICING_V3_OFFER_VERSION;
 
 const SPRINT_OFFER_PATTERN = /^interview_sprint_v(?:[2-9]|[1-9]\d+)$/;
 

@@ -116,28 +116,28 @@ describe('billing checkout start route', () => {
       },
       planDetails: {
         monthly: {
-          amountCents: 1200,
+          amountCents: 2400,
           currency: 'USD',
           interval: 'month',
           intervalCount: 1,
           taxInclusive: true,
         },
         quarterly: {
-          amountCents: 2900,
+          amountCents: 4900,
           currency: 'USD',
           interval: 'month',
           intervalCount: 3,
           taxInclusive: true,
         },
         annual: {
-          amountCents: 7900,
+          amountCents: 9900,
           currency: 'USD',
           interval: 'year',
           intervalCount: 1,
           taxInclusive: true,
         },
         lifetime: {
-          amountCents: 19900,
+          amountCents: 17900,
           currency: 'USD',
           interval: 'one_time',
           intervalCount: null,
@@ -790,16 +790,16 @@ describe('checkout start first-touch attribution', () => {
 
 describe('checkout config plan prices', () => {
   test('serves overridden plan prices from BILLING_PLAN_PRICES_JSON without touching intervals', async () => {
-    process.env.BILLING_PLAN_PRICES_JSON = '{"quarterly":4900,"annual":9900,"lifetime":17900}';
+    process.env.BILLING_PLAN_PRICES_JSON = '{"quarterly":5900,"annual":11900,"lifetime":19900}';
 
     const res = await request(app).get('/api/billing/checkout/config');
 
     expect(res.status).toBe(200);
     expect(res.body.planDetails).toEqual({
-      monthly: { amountCents: 1200, currency: 'USD', interval: 'month', intervalCount: 1, taxInclusive: true },
-      quarterly: { amountCents: 4900, currency: 'USD', interval: 'month', intervalCount: 3, taxInclusive: true },
-      annual: { amountCents: 9900, currency: 'USD', interval: 'year', intervalCount: 1, taxInclusive: true },
-      lifetime: { amountCents: 17900, currency: 'USD', interval: 'one_time', intervalCount: null, taxInclusive: true },
+      monthly: { amountCents: 2400, currency: 'USD', interval: 'month', intervalCount: 1, taxInclusive: true },
+      quarterly: { amountCents: 5900, currency: 'USD', interval: 'month', intervalCount: 3, taxInclusive: true },
+      annual: { amountCents: 11900, currency: 'USD', interval: 'year', intervalCount: 1, taxInclusive: true },
+      lifetime: { amountCents: 19900, currency: 'USD', interval: 'one_time', intervalCount: null, taxInclusive: true },
     });
   });
 
@@ -809,8 +809,8 @@ describe('checkout config plan prices', () => {
     const res = await request(app).get('/api/billing/checkout/config');
 
     expect(res.status).toBe(200);
-    expect(res.body.planDetails.quarterly.amountCents).toBe(2900);
-    expect(res.body.planDetails.monthly.amountCents).toBe(1200);
+    expect(res.body.planDetails.quarterly.amountCents).toBe(4900);
+    expect(res.body.planDetails.monthly.amountCents).toBe(2400);
   });
 });
 
@@ -864,7 +864,7 @@ describe('student pricing applied at checkout', () => {
       providerDiscountId: 'discount_456',
       campaignEligibility: 'student',
     }));
-    expect(res.body.pricing).toEqual(expect.objectContaining({ reason: null, amountCents: 7900 }));
+    expect(res.body.pricing).toEqual(expect.objectContaining({ reason: null, amountCents: 9900 }));
     const checkoutUrl = new URL(res.body.checkoutUrl);
     expect(checkoutUrl.searchParams.get('checkout[discount_code]')).toBe('STUDENT40');
     expect(checkoutUrl.searchParams.get('discount')).toBe('0');
@@ -1032,7 +1032,7 @@ describe('regional and student prices through a custom checkout', () => {
       regional: expect.objectContaining({
         countryCode: 'TR',
         multiplier: 0.5,
-        prices: { monthly: 600, quarterly: 1450, annual: 3950, lifetime: 9950 },
+        prices: { monthly: 1200, quarterly: 2450, annual: 4950, lifetime: 8950 },
       }),
     });
     expect(typeof turkey.body.pricing.regional.countryName).toBe('string');
@@ -1055,14 +1055,14 @@ describe('regional and student prices through a custom checkout', () => {
 
     expect(res.status).toBe(200);
     expect(res.body.checkoutUrl).toBe(CUSTOM_URL);
-    expect(res.body.pricing).toEqual({ reason: 'regional', multiplier: 0.5, listAmountCents: 1200, amountCents: 600, countryCode: 'TR' });
+    expect(res.body.pricing).toEqual({ reason: 'regional', multiplier: 0.5, listAmountCents: 2400, amountCents: 1200, countryCode: 'TR' });
     expect(res.body.campaignId).toBeNull();
     expect(global.fetch).toHaveBeenCalledTimes(1);
     const [apiUrl, init] = global.fetch.mock.calls[0];
     expect(apiUrl).toBe('https://api.lemonsqueezy.com/v1/checkouts');
     expect(init.headers.Authorization).toBe('Bearer key_test');
     const body = createdCheckouts[0].data;
-    expect(body.attributes.custom_price).toBe(600);
+    expect(body.attributes.custom_price).toBe(1200);
     expect(body.attributes.test_mode).toBe(true);
     expect(body.attributes.checkout_options).toEqual({ discount: false, embed: false });
     expect(body.attributes.checkout_data.email).toBe(user.email);
@@ -1086,8 +1086,8 @@ describe('regional and student prices through a custom checkout', () => {
       countryCode: 'TR',
       priceReason: 'regional',
       priceMultiplier: 0.5,
-      priceListCents: 1200,
-      priceChargedCents: 600,
+      priceListCents: 2400,
+      priceChargedCents: 1200,
       providerCheckoutId: 'ls_1',
       checkoutUrl: CUSTOM_URL,
     }));
@@ -1098,18 +1098,18 @@ describe('regional and student prices through a custom checkout', () => {
 
     const annual = await start(student, 'annual');
     expect(annual.status).toBe(200);
-    expect(annual.body.pricing).toEqual({ reason: 'student', multiplier: 0.6, listAmountCents: 7900, amountCents: 4740, countryCode: null });
+    expect(annual.body.pricing).toEqual({ reason: 'student', multiplier: 0.6, listAmountCents: 9900, amountCents: 5940, countryCode: null });
     expect(annual.body.campaignId).toBeNull();
-    expect(createdCheckouts[0].data.attributes.custom_price).toBe(4740);
+    expect(createdCheckouts[0].data.attributes.custom_price).toBe(5940);
     expect(createdCheckouts[0].data.attributes.checkout_data.custom.fa_price_reason).toBe('student');
 
     const inTurkey = await seedUser({ email: 'tr@university.edu', username: 'turkish_student', emailVerifiedAt: new Date() });
     const regional = await start(inTurkey, 'annual', { 'x-vercel-ip-country': 'TR' });
-    expect(regional.body.pricing).toEqual(expect.objectContaining({ reason: 'regional', amountCents: 3950 }));
+    expect(regional.body.pricing).toEqual(expect.objectContaining({ reason: 'regional', amountCents: 4950 }));
 
     const quarterly = await start(student, 'quarterly');
     expect(quarterly.status).toBe(200);
-    expect(quarterly.body.pricing).toEqual(expect.objectContaining({ reason: null, amountCents: 2900 }));
+    expect(quarterly.body.pricing).toEqual(expect.objectContaining({ reason: null, amountCents: 4900 }));
     expect(new URL(quarterly.body.checkoutUrl).pathname).toContain('/checkout/buy/');
     expect(global.fetch).toHaveBeenCalledTimes(2);
   });
@@ -1140,7 +1140,7 @@ describe('regional and student prices through a custom checkout', () => {
     const user = await seedUser({ email: 'list@example.com', username: 'list_user' });
     const res = await start(user, 'monthly', { 'x-vercel-ip-country': 'US' });
     expect(res.status).toBe(200);
-    expect(res.body.pricing).toEqual({ reason: null, multiplier: 1, listAmountCents: 1200, amountCents: 1200, countryCode: null });
+    expect(res.body.pricing).toEqual({ reason: null, multiplier: 1, listAmountCents: 2400, amountCents: 2400, countryCode: null });
     expect(new URL(res.body.checkoutUrl).pathname).toContain('/checkout/buy/');
     expect(global.fetch).not.toHaveBeenCalled();
   });
