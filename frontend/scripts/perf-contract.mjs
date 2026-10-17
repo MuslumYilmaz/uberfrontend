@@ -21,6 +21,11 @@ const noWrite = process.argv.includes('--no-write');
 // 99,949,880). They fail the Playwright Critical job in --strict mode, so a
 // regression has to raise them deliberately in the same change.
 //
+// 2026-10-17: prerender total re-measured at 104,489,918 bytes over 606 pages
+// after the site footer (1,751,296 bytes across 392 pages) and five new company
+// and coding routes (811,044 bytes); no page grew on its own, so the total
+// threshold moved from 104,000,000 to 109,000,000.
+//
 // "Eager JS" is the static import closure of the module scripts in index.html,
 // i.e. everything the browser must load before the app boots. The modulepreload
 // hints are not used as a budget: Angular only emits hints for the first ten
@@ -31,7 +36,7 @@ const THRESHOLDS = {
   initialBytes: 1_400_000,
   eagerJsBytes: 1_260_000,
   codingHtmlBytes: 620_000,
-  totalHtmlBytes: 104_000_000,
+  totalHtmlBytes: 109_000_000,
   sentryLazyChunkBytes: 260_000,
   showcaseLazyHeavyBytes: 620_000,
 };

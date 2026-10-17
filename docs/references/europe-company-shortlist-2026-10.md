@@ -361,9 +361,15 @@ Verified: authored-companies, sitemap and public-trust tests; a clean build with
 
 Baseline on 2026-10-17: no Search Console impressions for queries containing revolut, spotify, zalando or booking. After the deploy, request indexing for `/companies/revolut/preview`, `/companies/spotify/preview` and `/react/coding/react-fetch-list-states` first (quota about nine per day), then `/companies/zalando/preview` and `/companies/booking-com/preview`. Four to six weeks after the deploy, read GSC per page and per query (`query=*revolut`, `query=*spotify`, page filters for the two guides): impressions, average position, the queries that appear, and clicks; compare with the tag-only Zalando and Booking.com pages. Decide on authored guides for Booking.com and Zalando from that readout.
 
+Committed on 2026-10-17 as eeec96db and pushed to origin/dev with the other sessions' footer and guide-fix commits (pre-push hook green). PR #233 (dev to main) then failed Playwright Critical.
+
+## CI correction: the total-HTML budget is a gate (2026-10-17)
+
+The "residual" warning recorded above was not soft in CI: Playwright Critical runs `perf:contract --strict`, which fails on any threshold warning, and PR #233 stopped at 104,489,918 bytes against 104,000,000. Breakdown on the eeec96db build (606 pages): the site footer added 1,751,296 bytes across 392 pages and the five new routes added 811,044 bytes; no page grew on its own, and the build before both was about 101.9 MB. Following the rule in `perf-contract.mjs` (thresholds a few percent above the measured build, raised deliberately with a dated note), `totalHtmlBytes` moved to 109,000,000. Local `npm run perf:contract:strict` passes. Headroom to watch: `/coding` HTML is 615,266 bytes against a 620,000 threshold.
+
 ## Open items
 
-- The user decides whether to commit the Spotify guide.
+- Merge PR #233 once its checks pass; deploy follows main.
 - Push and deploy are the user's call; the GSC indexing requests and the measurement clock start with the deploy.
 - The Glassdoor browser read if the site permission is granted.
 - Glassdoor through the signed-in browser needs the extension's site permission for glassdoor.com; worth doing for Spotify (Web Engineer page, 8 to 10 reviews) and Zalando (Senior Frontend page) before writing.
