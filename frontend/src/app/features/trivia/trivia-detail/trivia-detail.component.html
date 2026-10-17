@@ -1029,6 +1029,8 @@
                 </div>
             </div>
         </ng-template>
+        <!-- The content panel owns vertical scrolling, so the site footer lives inside it. -->
+        <app-site-footer [embedded]="true"></app-site-footer>
     </main>
 
     <!-- Sidebar -->

@@ -20,7 +20,6 @@ import { take } from 'rxjs/operators';
 import { IncidentService } from '../../core/services/incident.service';
 import { Tech } from '../../core/models/user.model';
 import { AnalyticsService } from '../../core/services/analytics.service';
-import { GITHUB_REPO_URL } from '../../core/config/project-links';
 import { BillingCheckoutService, CheckoutSurface } from '../../core/services/billing-checkout.service';
 import { ExperimentService } from '../../core/services/experiment.service';
 import { QuestionService, ShowcaseStatsPayload } from '../../core/services/question.service';
@@ -929,17 +928,6 @@ You can also reset any task back to the starter whenever you want to re-practice
       src: 'showcase_hero',
       surface: 'showcase_hero',
       destination: '/auth/signup',
-    });
-  }
-
-  readonly githubRepoUrl = GITHUB_REPO_URL;
-
-  onGithubClick(): void {
-    this.analytics.track('lp_conversion_link_clicked', {
-      action: 'open_github',
-      src: 'showcase_final_cta',
-      surface: 'showcase_final_cta',
-      destination: this.githubRepoUrl,
     });
   }
 

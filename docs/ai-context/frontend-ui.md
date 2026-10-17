@@ -19,6 +19,8 @@ Load this for Angular UI, styling, shared-ui, and design-system work.
 - Give grid and flex children `min-width: 0` where content must shrink. Prefer responsive reflow and readable line lengths over squeezing content into a fixed row.
 - Let prose wrap at normal word boundaries. Keep short labels and CTAs intact as flex/grid items; do not use `word-break: break-all` or `overflow-wrap: anywhere` to conceal layout problems.
 - Never restructure projected or authored DOM during server rendering (wrapping tables, inserting buttons). Hydration walks the prerendered DOM expecting the template structure; a mismatch mis-binds nodes or crashes with a null node in `hasSkipHydrationAttrOnRElement`. Author wrappers such as `.table-scroll` in the template, keep attribute-only tweaks (heading ids) on the server, and run DOM enhancers in the browser after hydration via `afterNextRender`. `ngSkipHydration` is not a fix for this.
+- The site footer (`shared/components/footer/site-footer.component.*`, links in `core/content/site-footer.json`) renders from the app shell on every public page and must stay static: no auth-dependent branches, no query-string links, no `/guides` or `/html-css/interview-questions`. Trivia detail embeds it inside its own scroll panel; coding workspaces and private routes carry none. `npm run seo:site-footer` audits the prerendered pages.
+
 ## Path triggers
 - `frontend/src/app/shared/ui/**`
 - `frontend/src/app/shared/components/**`

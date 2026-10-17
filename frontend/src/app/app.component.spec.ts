@@ -65,6 +65,9 @@ describe('AppComponent', () => {
             { path: 'interview-questions', component: DummyDashboardComponent },
             { path: 'interview-questions/essential', component: DummyDashboardComponent },
             { path: 'admin/users', component: DummyDashboardComponent },
+            { path: 'javascript/trivia/:slug', component: DummyDashboardComponent },
+            { path: 'javascript/coding/:slug', component: DummyDashboardComponent },
+            { path: 'system-design/:id', component: DummyDashboardComponent },
         ]),
         ],
     providers: [
@@ -184,6 +187,44 @@ describe('AppComponent', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('.sidebar')?.classList.contains('is-collapsed')).toBeFalse();
     expect(compiled.querySelector('[data-testid="prep-roadmap-switcher"]')?.classList.contains('prep-switcher--compact')).toBeFalse();
+  });
+
+  it('renders the site footer on public pages but not on workspace or private routes', async () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement as HTMLElement;
+    const router = TestBed.inject(Router);
+
+    // Marketing shell: the homepage ends with the footer.
+    expect(compiled.querySelector('app-site-footer footer')).not.toBeNull();
+
+    // Regular shell: the footer sits in the main column, after <main>, so it is a landmark of its own.
+    await fixture.ngZone!.run(() => router.navigateByUrl('/interview-questions'));
+    fixture.detectChanges();
+    const footerInColumn = compiled.querySelector('.app-layout .main-col > main.main + app-site-footer footer');
+    expect(footerInColumn).not.toBeNull();
+    expect(footerInColumn!.classList.contains('site-footer--with-bar')).toBeFalse();
+
+    // System-design detail scrolls under the fixed practice bar, so the footer reserves space for it.
+    await fixture.ngZone!.run(() => router.navigateByUrl('/system-design/news-feed'));
+    fixture.detectChanges();
+    const footerAboveBar = compiled.querySelector('app-site-footer footer');
+    expect(footerAboveBar).not.toBeNull();
+    expect(footerAboveBar!.classList.contains('site-footer--with-bar')).toBeTrue();
+
+    // Trivia detail owns its vertical scrolling and embeds the footer itself; the shell stays out.
+    await fixture.ngZone!.run(() => router.navigateByUrl('/javascript/trivia/js-event-loop'));
+    fixture.detectChanges();
+    expect(compiled.querySelector('app-site-footer')).toBeNull();
+
+    // Coding workspaces and private app routes keep their own chrome.
+    await fixture.ngZone!.run(() => router.navigateByUrl('/javascript/coding/js-throttle'));
+    fixture.detectChanges();
+    expect(compiled.querySelector('app-site-footer')).toBeNull();
+
+    await fixture.ngZone!.run(() => router.navigateByUrl('/dashboard'));
+    fixture.detectChanges();
+    expect(compiled.querySelector('app-site-footer')).toBeNull();
   });
 
   it('uses the focused shell while an interview session is active', async () => {

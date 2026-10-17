@@ -13,6 +13,7 @@ import { AppUiStylesService } from './core/services/app-ui-styles.service';
 import { AppSidebarDrawerService } from './core/services/app-sidebar-drawer.service';
 import { AuthService } from './core/services/auth.service';
 import { isMarketingPath, normalizePathname } from './core/utils/marketing-route.util';
+import { hasPracticeBar, shellRendersSiteFooter } from './core/content/site-footer';
 import { AppSidebarComponent } from './features/app-sidebar/app-sidebar.component';
 import { BugReportDialogComponent } from './shared/components/bug-report-dialog/bug-report-dialog.component';
 import { PremiumRequiredDialogComponent } from './shared/components/premium-required-dialog/premium-required-dialog.component';
@@ -20,6 +21,7 @@ import { HeaderComponent } from './shared/components/header/header.component';
 import { MarketingHeaderComponent } from './shared/components/marketing-header/marketing-header.component';
 import { PrepRoadmapSwitcherComponent } from './shared/components/prep-roadmap/prep-roadmap-switcher.component';
 import { AchievementToastComponent } from './shared/components/achievement-toast/achievement-toast.component';
+import { SiteFooterComponent } from './shared/components/footer/site-footer.component';
 
 @Component({
     selector: 'app-root',
@@ -34,6 +36,7 @@ import { AchievementToastComponent } from './shared/components/achievement-toast
         PremiumRequiredDialogComponent,
         PrepRoadmapSwitcherComponent,
         AchievementToastComponent,
+        SiteFooterComponent,
     ],
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss']
@@ -98,6 +101,13 @@ export class AppComponent implements OnInit, OnDestroy {
     this.HIDE_SIDEBAR_PATTERNS.some(rx => rx.test(this.pathOnly()))
   );
   showSidebar = computed(() => !this.hideSidebar());
+
+  // --- SITE FOOTER on public pages ---
+  // Route-only decisions (see core/content/site-footer.json), so the server and
+  // the browser render the same footer and hydration has nothing to reconcile.
+  // Trivia detail embeds the footer in its own scroll panel instead.
+  showSiteFooter = computed(() => shellRendersSiteFooter(this.pathOnly()));
+  footerAbovePracticeBar = computed(() => hasPracticeBar(this.pathOnly()));
 
   // --- daily set + rollover ---
   private daily = inject(DailyService);

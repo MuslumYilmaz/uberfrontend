@@ -1977,7 +1977,9 @@ describe('TriviaDetailComponent', () => {
     expect(
       fixture.nativeElement.querySelector('a[href="https://blog.angular.dev/announcing-angular-v22-c52bb83a4664"]')
     ).toBeTruthy();
-    expect(fixture.nativeElement.querySelector('a[href="/legal/editorial-policy"]')).toBeNull();
+    // The sources block must not link the editorial policy; the site footer below the article does.
+    expect(fixture.nativeElement.querySelector('.main-stack a[href="/legal/editorial-policy"]')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.site-footer a[href="/legal/editorial-policy"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/guides/framework-prep/angular-prep-path"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/angular/coding/angular-contact-form-starter"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('a[href="/angular/coding/angular-multi-step-form-starter"]')).toBeTruthy();

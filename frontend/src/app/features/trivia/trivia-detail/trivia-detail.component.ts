@@ -28,6 +28,7 @@ import { buildLockedPreviewForTrivia, LockedPreviewData } from '../../../core/ut
 import { isTriviaReferenceOnlyBlock } from '../../../core/utils/trivia-search-intent.util';
 import { publicQuestionHref } from '../../../core/utils/public-question-link.util';
 import { FooterComponent } from '../../../shared/components/footer/footer.component';
+import { SiteFooterComponent } from '../../../shared/components/footer/site-footer.component';
 import { GithubStarCtaComponent } from '../../../shared/components/github-star-cta/github-star-cta.component';
 import { SeoService } from '../../../core/services/seo.service';
 import { UserProgressService } from '../../../core/services/user-progress.service';
@@ -616,7 +617,7 @@ function buildTagRegex(tag: string): RegExp {
         ButtonModule,
         DialogModule,
         LoginRequiredDialogComponent,
-        FooterComponent, GithubStarCtaComponent,
+        FooterComponent, GithubStarCtaComponent, SiteFooterComponent,
         LockedPreviewComponent,
         PrismHighlightDirective,
         SafeHtmlPipe,

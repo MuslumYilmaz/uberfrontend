@@ -1,0 +1,67 @@
+{
+  "groups": [
+    {
+      "id": "practice",
+      "title": "Practice",
+      "links": [
+        { "label": "Question library", "route": "/coding" },
+        { "label": "Interview questions", "route": "/interview-questions" },
+        { "label": "Frontend system design", "route": "/system-design" },
+        { "label": "Study plans", "route": "/tracks" },
+        { "label": "Company guides", "route": "/companies" }
+      ]
+    },
+    {
+      "id": "guides",
+      "title": "Guides",
+      "links": [
+        { "label": "Interview playbook", "route": "/guides/interview-blueprint" },
+        { "label": "Framework prep paths", "route": "/guides/framework-prep" },
+        { "label": "System design blueprint", "route": "/guides/system-design-blueprint" },
+        { "label": "Behavioral interview guide", "route": "/guides/behavioral" },
+        { "label": "CV Linter", "route": "/tools/cv" }
+      ]
+    },
+    {
+      "id": "frontendatlas",
+      "title": "FrontendAtlas",
+      "links": [
+        { "label": "Pricing", "route": "/pricing" },
+        { "label": "Changelog", "route": "/changelog" },
+        { "label": "Editorial policy", "route": "/legal/editorial-policy" },
+        { "label": "GitHub", "href": "https://github.com/MuslumYilmaz/uberfrontend", "external": true },
+        { "label": "Support", "href": "mailto:support@frontendatlas.com" }
+      ]
+    }
+  ],
+  "legal": [
+    { "label": "Legal", "route": "/legal" },
+    { "label": "Terms", "route": "/legal/terms" },
+    { "label": "Privacy", "route": "/legal/privacy" },
+    { "label": "Cookies", "route": "/legal/cookies" },
+    { "label": "Refund policy", "route": "/legal/refund" }
+  ],
+  "visibility": {
+    "hiddenRoutePatterns": [
+      "^/auth(?:/|$)",
+      "^/admin(?:/|$)",
+      "^/dashboard(?:/|$)",
+      "^/profile(?:/|$)",
+      "^/billing(?:/|$)",
+      "^/onboarding(?:/|$)",
+      "^/verify-email(?:/|$)",
+      "^/interview(?:/|$)",
+      "^/courses(?:/|$)",
+      "^/coding/[^/]+/?$",
+      "^/(?:javascript|angular|react|vue|html|css)/(?:coding|debug)/[^/]+/?$",
+      "^/machine-coding/[^/]+/?$"
+    ],
+    "embeddedRoutePatterns": [
+      "^/(?:javascript|angular|react|vue|html|css)/trivia/[^/]+/?$"
+    ],
+    "practiceBarRoutePatterns": [
+      "^/system-design/[^/]+/?$"
+    ]
+  },
+  "deniedRoutes": ["/guides", "/html-css/interview-questions"]
+}
