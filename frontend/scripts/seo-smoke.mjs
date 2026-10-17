@@ -418,6 +418,49 @@ const AUTHORED_GUIDE_SMOKE = [
     reportUrl:
       'https://www.jointaro.com/interviews/companies/revolut/experiences/frontend-developer-warsaw-masovia-april-1-2025-no-offer-neutral-71032bb4/',
   },
+  {
+    label: 'Spotify',
+    route: '/companies/spotify/preview',
+    title: 'Spotify Frontend Interview Questions: 7 Prompts + Prep Guide',
+    description:
+      'Prepare for a Spotify web engineer interview with 7 frontend practice prompts: a fetch-to-DOM form, carousel, traffic light, event loop, system design.',
+    h1: 'Spotify Frontend Interview Questions',
+    kicker: 'Public Spotify prep guide',
+    headings: [
+      'Prepare for product judgment, not Spotify trivia',
+      'What the public accounts and the official pages establish, and what you still need to confirm',
+      'Seven Spotify frontend interview practice questions',
+      'Scope the fetch-to-DOM search form before writing the first line',
+      'A 7-day Spotify frontend interview preparation plan',
+      'Common Spotify frontend interview preparation questions',
+      'Build the underlying skills with free practice',
+      'Sources and evidence limits',
+    ],
+    trustFragment: 'not leaked, confirmed or official Spotify questions',
+    prompts: [
+      { id: 'search-form-fetch-render-dom', title: 'Build a search form that fetches from an API and renders the results into the DOM, without a framework' },
+      { id: 'image-carousel-html-css-js', title: 'Build an image carousel with HTML, CSS and JavaScript' },
+      { id: 'traffic-light-html-css-js', title: 'Build a traffic light with plain HTML, CSS and JavaScript' },
+      { id: 'event-loop-output-order', title: 'Predict the output order of code that mixes setTimeout and promise chains' },
+      { id: 'closure-call-limit', title: 'Write a closure that limits how many times a function can run' },
+      { id: 'system-design-full-stack', title: 'Design a product end to end in the system-design round, backend included' },
+      { id: 'algorithms-round', title: 'Clear the data structures and algorithms round' },
+    ],
+    resources: [
+      '/javascript/coding/js-take-latest',
+      '/react/coding/react-fetch-list-states',
+      '/javascript/trivia/js-event-loop-nested-microtask-output',
+      '/javascript/coding/js-once',
+      '/javascript/trivia/js-closures',
+      '/javascript/trivia/js-event-delegation',
+      '/javascript/trivia/js-memoization',
+      '/css/trivia/css-box-model',
+      '/guides/system-design-blueprint/architecture',
+      '/guides/behavioral/stories',
+    ],
+    reportUrl:
+      'https://www.teamblind.com/post/weak-system-design-interview-for-spotify-chances-of-no-hire-00wjs6rg',
+  },
 ];
 const ANGULAR_HTTP_CANCELLATION_LAB_ROUTE =
   '/angular/trivia/angular-http-what-actually-cancels-request';

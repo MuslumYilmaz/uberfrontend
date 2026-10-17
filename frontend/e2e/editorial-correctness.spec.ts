@@ -63,6 +63,10 @@ const publicCopyCases = [
     expected: 'Prepare for product judgment, not Revolut trivia',
   },
   {
+    path: '/companies/spotify/preview',
+    expected: 'Prepare for product judgment, not Spotify trivia',
+  },
+  {
     path: '/system-design',
     expected: 'Follow this four-step path when you are new to the bank',
   },

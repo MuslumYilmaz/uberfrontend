@@ -343,10 +343,28 @@ The user chose to write authored guides one company at a time, Revolut first, wi
 
 Verified: authored-companies, sitemap and company-reports node tests, public-trust regressions, Karma (1732 specs), `test:content-regressions`, a clean build with `seo:smoke` (every Revolut check passes; `dateModified` stays empty until the content is committed), `seo:link-equity`, `seo:links` (0 hard 404s), `seo:meta-check` (no Revolut warning; title 60 characters, description 152), `perf:contract` (exit 0, same 104 MB total-HTML warning), and Playwright against the prerendered build: 58 tests including the raw Revolut HTML test, the Revolut reflow test at target widths, the editorial copy check and the llms.txt check. Screenshots of `/companies` (all four new logos load) and of the Revolut guide at 390 px (no horizontal overflow) were inspected.
 
+Committed on 2026-10-17 as 5945c6b2 on dev; not pushed.
+
+## Authored Spotify guide (2026-10-17)
+
+The user chose Spotify next, then a measurement pause. Done in the working tree:
+
+- `frontend/src/app/shared/company-previews/spotify-preview-content.ts`: seven prompts (a search form that fetches from an API and renders into the DOM without a framework, an image carousel, a traffic light, event-loop output order, a closure that limits calls, a full-stack system-design round, the algorithms round), a walkthrough, a seven-day plan, five FAQs, ten free practice links and ten sources. Role lenses come from the open Lever postings (Subscriptions internal tools for Premium offers, Platform Groove planning tool, Stockholm internationalisation platform across more than 180 markets).
+- Re-read before writing: the three Blind web threads and the Stockholm thread, both Life at Spotify pages, the Lever feed (82 postings; one senior web engineer in London, senior full-stack engineers in London, Stockholm and New York), and both Medium posts through their feeds. Glassdoor-restricted searches confirmed the previews for the output-order question, the closure call limit (glassdoor.co.in) and the traffic light.
+- Corrections against the research agent: the "JavaScript, DOM, CSS fundamentals deep-dive" phrase is the candidate's own description, not attributed to the recruiter; the image-carousel example was relayed by another candidate, not by the person who joined; the "Twitter-like" and "Instagram profile page" system-design prompts could not be confirmed and were left out.
+- Prompts based only on Glassdoor previews (traffic light, output order, closure limit) carry no `reportedRound` link; the prompt intro says so and the Glassdoor page is listed under the sources with the unreadable-report note.
+- Wiring as for Revolut: registry, slug list, `authored-companies.mjs`, sitemap test, smoke and SSR rows generated from the module, editorial case, `llms.txt` and its spec.
+
+Verified: authored-companies, sitemap and public-trust tests; a clean build with `seo:smoke` (every Spotify check passes), `seo:link-equity`, `seo:links` (0 hard 404s), `seo:meta-check` (no Spotify or Revolut warning; title 60, description 151) and `perf:contract` (exit 0, same total-HTML warning); 16 Playwright tests against the prerendered output covering the raw HTML and reflow tests for Spotify and Revolut, the company editorial cases and llms.txt; screenshots of the Spotify guide at 1366 px and 390 px inspected (no horizontal overflow).
+
+## Measurement plan
+
+Baseline on 2026-10-17: no Search Console impressions for queries containing revolut, spotify, zalando or booking. After the deploy, request indexing for `/companies/revolut/preview`, `/companies/spotify/preview` and `/react/coding/react-fetch-list-states` first (quota about nine per day), then `/companies/zalando/preview` and `/companies/booking-com/preview`. Four to six weeks after the deploy, read GSC per page and per query (`query=*revolut`, `query=*spotify`, page filters for the two guides): impressions, average position, the queries that appear, and clicks; compare with the tag-only Zalando and Booking.com pages. Decide on authored guides for Booking.com and Zalando from that readout.
+
 ## Open items
 
-- The user decides whether to commit the Revolut guide and the logos, and which company is next (data above: Spotify has the most Trends interest but US-centred sources; Booking.com has the richest tasks; Zalando has the weakest demand).
-- Push and deploy are the user's call; GSC indexing requests for `/companies/revolut/preview`, the other three company pages and `/react/coding/react-fetch-list-states` wait for the deploy (quota about nine per day).
+- The user decides whether to commit the Spotify guide.
+- Push and deploy are the user's call; the GSC indexing requests and the measurement clock start with the deploy.
 - The Glassdoor browser read if the site permission is granted.
 - Glassdoor through the signed-in browser needs the extension's site permission for glassdoor.com; worth doing for Spotify (Web Engineer page, 8 to 10 reviews) and Zalando (Senior Frontend page) before writing.
 - Verify demand with Google Trends and Search Console (queries that already mention these companies) before committing to the fourth company.

@@ -4,6 +4,6 @@
 // frontend/src/app/shared/company-previews/authored-company-previews.ts and the content-free list in
 // authored-company-slugs.ts (both kept in sync by authored-companies.test.mjs).
 export const LEGACY_AUTHORED_COMPANIES = ['google', 'openai', 'netflix'];
-export const REGISTRY_AUTHORED_COMPANIES = ['waymo', 'elevenlabs', 'datadog', 'intuit', 'servicenow', 'amazon', 'meta', 'revolut'];
+export const REGISTRY_AUTHORED_COMPANIES = ['waymo', 'elevenlabs', 'datadog', 'intuit', 'servicenow', 'amazon', 'meta', 'revolut', 'spotify'];
 export const AUTHORED_COMPANIES = [...LEGACY_AUTHORED_COMPANIES, ...REGISTRY_AUTHORED_COMPANIES];
 export const AUTHORED_COMPANY_SET = new Set(AUTHORED_COMPANIES);
