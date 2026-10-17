@@ -6836,28 +6836,30 @@ function onInput(value) {
         </article>
 
         <h3>Frequency snapshot</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Frequency</th>
-              <th>Topics</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>High</td>
-              <td>Execution model, scope/closures/hoisting, this binding, data manipulation, debounce/throttle</td>
-            </tr>
-            <tr>
-              <td>Medium</td>
-              <td>Types/coercion, prototypes/inheritance, functional patterns</td>
-            </tr>
-            <tr>
-              <td>Role-dependent</td>
-              <td>DOM events and delegation (especially frequent in frontend-focused loops)</td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="table-scroll" tabindex="0" role="region" aria-label="Scrollable table">
+          <table>
+            <thead>
+              <tr>
+                <th>Frequency</th>
+                <th>Topics</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>High</td>
+                <td>Execution model, scope/closures/hoisting, this binding, data manipulation, debounce/throttle</td>
+              </tr>
+              <tr>
+                <td>Medium</td>
+                <td>Types/coercion, prototypes/inheritance, functional patterns</td>
+              </tr>
+              <tr>
+                <td>Role-dependent</td>
+                <td>DOM events and delegation (especially frequent in frontend-focused loops)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
           </section>
 
           <section class="jp-section jp-section--3">
@@ -6866,42 +6868,44 @@ function onInput(value) {
           Trivia rounds are short pressure tests, not definition contests. Interviewers use them to check whether your
           runtime model is stable enough to debug real code, and whether you can explain that model without rambling.
         </p>
-        <table>
-          <thead>
-            <tr>
-              <th>Cluster</th>
-              <th>What interviewers are probing</th>
-              <th>Strong answer signal</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Event loop + async</td>
-              <td>Execution order reasoning</td>
-              <td>You narrate queues, not vibes</td>
-            </tr>
-            <tr>
-              <td>Closures + scope + TDZ</td>
-              <td>Binding model accuracy</td>
-              <td>You explain references over time</td>
-            </tr>
-            <tr>
-              <td>this + bind/apply/call</td>
-              <td>Invocation-context clarity</td>
-              <td>You resolve by call-site rules</td>
-            </tr>
-            <tr>
-              <td>Promise composition</td>
-              <td>Async failure semantics</td>
-              <td>You distinguish all/allSettled/race/any</td>
-            </tr>
-            <tr>
-              <td>DOM events + delegation</td>
-              <td>Browser-level fluency</td>
-              <td>You can explain target/currentTarget trade-offs</td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="table-scroll" tabindex="0" role="region" aria-label="Scrollable table">
+          <table>
+            <thead>
+              <tr>
+                <th>Cluster</th>
+                <th>What interviewers are probing</th>
+                <th>Strong answer signal</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Event loop + async</td>
+                <td>Execution order reasoning</td>
+                <td>You narrate queues, not vibes</td>
+              </tr>
+              <tr>
+                <td>Closures + scope + TDZ</td>
+                <td>Binding model accuracy</td>
+                <td>You explain references over time</td>
+              </tr>
+              <tr>
+                <td>this + bind/apply/call</td>
+                <td>Invocation-context clarity</td>
+                <td>You resolve by call-site rules</td>
+              </tr>
+              <tr>
+                <td>Promise composition</td>
+                <td>Async failure semantics</td>
+                <td>You distinguish all/allSettled/race/any</td>
+              </tr>
+              <tr>
+                <td>DOM events + delegation</td>
+                <td>Browser-level fluency</td>
+                <td>You can explain target/currentTarget trade-offs</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
         <p><strong>Universal 60-second answer frame</strong></p>
         <ol>
           <li>Name the runtime rule in one sentence.</li>
@@ -7327,28 +7331,30 @@ function onInput(value) {
         </ul>
 
         <h3>Frequency snapshot</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Frequency</th>
-              <th>Patterns</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>High</td>
-              <td>Debounce/throttle, Promise composition, array helpers, flatten, deep clone/equal</td>
-            </tr>
-            <tr>
-              <td>Medium</td>
-              <td>Event emitter, classnames normalization, DOM traversal utilities</td>
-            </tr>
-            <tr>
-              <td>Senior-leaning</td>
-              <td>Async UI race control with explicit state transition guards</td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="table-scroll" tabindex="0" role="region" aria-label="Scrollable table">
+          <table>
+            <thead>
+              <tr>
+                <th>Frequency</th>
+                <th>Patterns</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>High</td>
+                <td>Debounce/throttle, Promise composition, array helpers, flatten, deep clone/equal</td>
+              </tr>
+              <tr>
+                <td>Medium</td>
+                <td>Event emitter, classnames normalization, DOM traversal utilities</td>
+              </tr>
+              <tr>
+                <td>Senior-leaning</td>
+                <td>Async UI race control with explicit state transition guards</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
           </section>
 
           <section class="jp-section jp-section--5">
@@ -7999,20 +8005,22 @@ function onInput(value) {
 
           <h3>Frequency snapshot</h3>
           <div class="fp-table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Frequency</th>
-                  <th>Topics</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let row of topicsSection.frequencyRows">
-                  <td>{{ row.frequency }}</td>
-                  <td>{{ row.topics }}</td>
-                </tr>
-              </tbody>
-            </table>
+            <div class="table-scroll" tabindex="0" role="region" aria-label="Scrollable table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Frequency</th>
+                    <th>Topics</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let row of topicsSection.frequencyRows">
+                    <td>{{ row.frequency }}</td>
+                    <td>{{ row.topics }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
           <p>{{ topicsSection.closing }}</p>
         </ng-container>

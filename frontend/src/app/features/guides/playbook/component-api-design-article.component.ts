@@ -664,31 +664,33 @@ interface ApiSurfaceTradeoffExample {
       small enough to implement.
     </p>
     <div class="table-wrap">
-      <table>
-        <thead>
-          <tr><th>Prompt</th><th>Weak API smell</th><th>Stronger API move</th><th>Interview signal</th></tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Button icon</td>
-            <td><code>iconName</code>, <code>iconSize</code>, <code>iconColor</code>, <code>onIconHover</code>.</td>
-            <td>Accept <code>icon</code>, <code>renderIcon</code>, or a named slot so the caller owns custom icon behavior.</td>
-            <td>You avoid prop explosion and let composition handle flexible content.</td>
-          </tr>
-          <tr>
-            <td>Modal actions</td>
-            <td><code>primaryText</code>, <code>secondaryText</code>, <code>danger</code>, and many footer booleans.</td>
-            <td>Expose header/body/footer slots plus <code>open/defaultOpen/onOpenChange</code> for state ownership.</td>
-            <td>You separate structure from state and keep destructive flows controllable.</td>
-          </tr>
-          <tr>
-            <td>Data Table columns</td>
-            <td>Hardcoded field names, hidden sort rules, and one-off formatting props.</td>
-            <td>Use column descriptors with accessors, headers, fallback renderers, and stable row keys.</td>
-            <td>You make the API reusable without turning it into a generic grid library.</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-scroll" tabindex="0" role="region" aria-label="Scrollable table">
+        <table>
+          <thead>
+            <tr><th>Prompt</th><th>Weak API smell</th><th>Stronger API move</th><th>Interview signal</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Button icon</td>
+              <td><code>iconName</code>, <code>iconSize</code>, <code>iconColor</code>, <code>onIconHover</code>.</td>
+              <td>Accept <code>icon</code>, <code>renderIcon</code>, or a named slot so the caller owns custom icon behavior.</td>
+              <td>You avoid prop explosion and let composition handle flexible content.</td>
+            </tr>
+            <tr>
+              <td>Modal actions</td>
+              <td><code>primaryText</code>, <code>secondaryText</code>, <code>danger</code>, and many footer booleans.</td>
+              <td>Expose header/body/footer slots plus <code>open/defaultOpen/onOpenChange</code> for state ownership.</td>
+              <td>You separate structure from state and keep destructive flows controllable.</td>
+            </tr>
+            <tr>
+              <td>Data Table columns</td>
+              <td>Hardcoded field names, hidden sort rules, and one-off formatting props.</td>
+              <td>Use column descriptors with accessors, headers, fallback renderers, and stable row keys.</td>
+              <td>You make the API reusable without turning it into a generic grid library.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
     <h2 id="typescript-api-guardrails">TypeScript API guardrails</h2>
@@ -698,43 +700,45 @@ interface ApiSurfaceTradeoffExample {
       behavior, accessibility, and trade-offs.
     </p>
     <div class="table-wrap">
-      <table>
-        <thead>
-          <tr><th>Guardrail</th><th>Use it when</th><th>Example shape</th><th>Interview caution</th></tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Mirror native props</td>
-            <td>A component wraps a real DOM element like button, input, or anchor.</td>
-            <td><code>ComponentPropsWithoutRef&lt;'button'&gt;</code> plus your own variants.</td>
-            <td>Omit conflicting props before adding custom names like <code>size</code> or <code>variant</code>.</td>
-          </tr>
-          <tr>
-            <td>Controlled/uncontrolled union</td>
-            <td>The component supports both parent-owned and local state.</td>
-            <td><code>&#123; value; onValueChange &#125; | &#123; defaultValue? &#125;</code>.</td>
-            <td>Explain the contract; do not spend the whole round perfecting utility types.</td>
-          </tr>
-          <tr>
-            <td>Mutually exclusive props</td>
-            <td>Two props should not be valid together.</td>
-            <td><code>&#123; href: string; onClick?: never &#125; | &#123; onClick: () =&gt; void; href?: never &#125;</code>.</td>
-            <td>Use this for important invalid states, not for every minor visual option.</td>
-          </tr>
-          <tr>
-            <td>Discriminated unions</td>
-            <td>Variants have different required payloads.</td>
-            <td><code>&#123; type: 'link'; href &#125; | &#123; type: 'button'; onClick &#125;</code>.</td>
-            <td>Name the runtime behavior each branch changes.</td>
-          </tr>
-          <tr>
-            <td>Ref forwarding</td>
-            <td>Consumers need focus, measurement, forms, popovers, or composition.</td>
-            <td><code>forwardRef&lt;HTMLButtonElement, ButtonProps&gt;</code>.</td>
-            <td>Mention it as an integration point, then return to the core prompt.</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-scroll" tabindex="0" role="region" aria-label="Scrollable table">
+        <table>
+          <thead>
+            <tr><th>Guardrail</th><th>Use it when</th><th>Example shape</th><th>Interview caution</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Mirror native props</td>
+              <td>A component wraps a real DOM element like button, input, or anchor.</td>
+              <td><code>ComponentPropsWithoutRef&lt;'button'&gt;</code> plus your own variants.</td>
+              <td>Omit conflicting props before adding custom names like <code>size</code> or <code>variant</code>.</td>
+            </tr>
+            <tr>
+              <td>Controlled/uncontrolled union</td>
+              <td>The component supports both parent-owned and local state.</td>
+              <td><code>&#123; value; onValueChange &#125; | &#123; defaultValue? &#125;</code>.</td>
+              <td>Explain the contract; do not spend the whole round perfecting utility types.</td>
+            </tr>
+            <tr>
+              <td>Mutually exclusive props</td>
+              <td>Two props should not be valid together.</td>
+              <td><code>&#123; href: string; onClick?: never &#125; | &#123; onClick: () =&gt; void; href?: never &#125;</code>.</td>
+              <td>Use this for important invalid states, not for every minor visual option.</td>
+            </tr>
+            <tr>
+              <td>Discriminated unions</td>
+              <td>Variants have different required payloads.</td>
+              <td><code>&#123; type: 'link'; href &#125; | &#123; type: 'button'; onClick &#125;</code>.</td>
+              <td>Name the runtime behavior each branch changes.</td>
+            </tr>
+            <tr>
+              <td>Ref forwarding</td>
+              <td>Consumers need focus, measurement, forms, popovers, or composition.</td>
+              <td><code>forwardRef&lt;HTMLButtonElement, ButtonProps&gt;</code>.</td>
+              <td>Mention it as an integration point, then return to the core prompt.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
     <h2 id="library-patterns-interviewers-recognize">Library patterns interviewers recognize</h2>
@@ -747,63 +751,65 @@ interface ApiSurfaceTradeoffExample {
       the prompt, consumer, and timebox instead of copying a full library surface.
     </p>
     <div class="table-wrap">
-      <table>
-        <thead>
-          <tr><th>Pattern</th><th>What it solves</th><th>Risk</th><th>Interview takeaway</th></tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>
-              <a href="https://react.dev/learn/sharing-state-between-components#controlled-and-uncontrolled-components" target="_blank" rel="noopener noreferrer">
-                React controlled/uncontrolled
-              </a>
-            </td>
-            <td>Lets the caller choose parent-owned state or simple local state.</td>
-            <td>Supporting both can double edge cases if naming is inconsistent.</td>
-            <td>Use <code>value/defaultValue/onValueChange</code> and state who owns the source of truth.</td>
-          </tr>
-          <tr>
-            <td>
-              <a href="https://www.radix-ui.com/primitives/docs/guides/composition" target="_blank" rel="noopener noreferrer">
-                Radix <code>asChild</code>
-              </a>
-            </td>
-            <td>Composes primitive behavior onto a caller-provided element.</td>
-            <td>The child must spread props, forward refs, and remain accessible.</td>
-            <td>Great follow-up for design systems, not the first API for a small interview MVP.</td>
-          </tr>
-          <tr>
-            <td>
-              <a href="https://mui.com/material-ui/customization/overriding-component-structure/" target="_blank" rel="noopener noreferrer">
-                MUI <code>slotProps</code>
-              </a>
-            </td>
-            <td>Gives targeted control over internal elements without many top-level props.</td>
-            <td>Can expose too much internal structure too early.</td>
-            <td>Use when consumers need stable subpart customization.</td>
-          </tr>
-          <tr>
-            <td>
-              <a href="https://react-spectrum.adobe.com/react-aria/hooks.html" target="_blank" rel="noopener noreferrer">
-                React Aria hooks
-              </a>
-            </td>
-            <td>Encodes accessibility behavior while you own rendering.</td>
-            <td>Still requires correct labels, relationships, and state wiring.</td>
-            <td>Separate behavior contracts from visual composition.</td>
-          </tr>
-          <tr>
-            <td>
-              <a href="https://headlessui.com/react/menu#using-render-props" target="_blank" rel="noopener noreferrer">
-                Headless UI render props
-              </a>
-            </td>
-            <td>Exposes state like active, selected, open, or disabled to custom markup.</td>
-            <td>Render props can get noisy when simple children would be enough.</td>
-            <td>Use when visual control matters more than fixed markup.</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-scroll" tabindex="0" role="region" aria-label="Scrollable table">
+        <table>
+          <thead>
+            <tr><th>Pattern</th><th>What it solves</th><th>Risk</th><th>Interview takeaway</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <a href="https://react.dev/learn/sharing-state-between-components#controlled-and-uncontrolled-components" target="_blank" rel="noopener noreferrer">
+                  React controlled/uncontrolled
+                </a>
+              </td>
+              <td>Lets the caller choose parent-owned state or simple local state.</td>
+              <td>Supporting both can double edge cases if naming is inconsistent.</td>
+              <td>Use <code>value/defaultValue/onValueChange</code> and state who owns the source of truth.</td>
+            </tr>
+            <tr>
+              <td>
+                <a href="https://www.radix-ui.com/primitives/docs/guides/composition" target="_blank" rel="noopener noreferrer">
+                  Radix <code>asChild</code>
+                </a>
+              </td>
+              <td>Composes primitive behavior onto a caller-provided element.</td>
+              <td>The child must spread props, forward refs, and remain accessible.</td>
+              <td>Great follow-up for design systems, not the first API for a small interview MVP.</td>
+            </tr>
+            <tr>
+              <td>
+                <a href="https://mui.com/material-ui/customization/overriding-component-structure/" target="_blank" rel="noopener noreferrer">
+                  MUI <code>slotProps</code>
+                </a>
+              </td>
+              <td>Gives targeted control over internal elements without many top-level props.</td>
+              <td>Can expose too much internal structure too early.</td>
+              <td>Use when consumers need stable subpart customization.</td>
+            </tr>
+            <tr>
+              <td>
+                <a href="https://react-spectrum.adobe.com/react-aria/hooks.html" target="_blank" rel="noopener noreferrer">
+                  React Aria hooks
+                </a>
+              </td>
+              <td>Encodes accessibility behavior while you own rendering.</td>
+              <td>Still requires correct labels, relationships, and state wiring.</td>
+              <td>Separate behavior contracts from visual composition.</td>
+            </tr>
+            <tr>
+              <td>
+                <a href="https://headlessui.com/react/menu#using-render-props" target="_blank" rel="noopener noreferrer">
+                  Headless UI render props
+                </a>
+              </td>
+              <td>Exposes state like active, selected, open, or disabled to custom markup.</td>
+              <td>Render props can get noisy when simple children would be enough.</td>
+              <td>Use when visual control matters more than fixed markup.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
     <h2 id="worked-examples">Worked examples: API contracts interviewers can score</h2>
@@ -876,18 +882,20 @@ type SelectEvent&lt;T&gt; = &#123;
       <li>Use the final minutes to explain trade-offs and skipped escape hatches.</li>
     </ul>
     <div class="table-wrap">
-      <table>
-        <thead>
-          <tr><th>Time</th><th>Move</th><th>Signal</th></tr>
-        </thead>
-        <tbody>
-          <tr><td>0-5 min</td><td>Clarify consumers, data shape, ownership, keyboard expectations, and required customization.</td><td>You design for the caller, not just the demo.</td></tr>
-          <tr><td>5-12 min</td><td>Define contract: props, events, slots, state ownership, accessibility labels, and styling surface.</td><td>Your API is explainable before implementation.</td></tr>
-          <tr><td>12-30 min</td><td>Ship MVP behavior with the smallest API that supports the prompt.</td><td>You can implement without over-designing.</td></tr>
-          <tr><td>30-45 min</td><td>Add a11y/keyboard, event payloads, controlled mode, disabled/error/loading states.</td><td>You know frontend correctness lives in contracts.</td></tr>
-          <tr><td>45-60 min</td><td>Explain trade-offs, name follow-ups, and identify what you intentionally did not expose.</td><td>You can reason like a component owner.</td></tr>
-        </tbody>
-      </table>
+      <div class="table-scroll" tabindex="0" role="region" aria-label="Scrollable table">
+        <table>
+          <thead>
+            <tr><th>Time</th><th>Move</th><th>Signal</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>0-5 min</td><td>Clarify consumers, data shape, ownership, keyboard expectations, and required customization.</td><td>You design for the caller, not just the demo.</td></tr>
+            <tr><td>5-12 min</td><td>Define contract: props, events, slots, state ownership, accessibility labels, and styling surface.</td><td>Your API is explainable before implementation.</td></tr>
+            <tr><td>12-30 min</td><td>Ship MVP behavior with the smallest API that supports the prompt.</td><td>You can implement without over-designing.</td></tr>
+            <tr><td>30-45 min</td><td>Add a11y/keyboard, event payloads, controlled mode, disabled/error/loading states.</td><td>You know frontend correctness lives in contracts.</td></tr>
+            <tr><td>45-60 min</td><td>Explain trade-offs, name follow-ups, and identify what you intentionally did not expose.</td><td>You can reason like a component owner.</td></tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
     <h2 id="what-interviewers-score">What interviewers score</h2>
@@ -907,16 +915,18 @@ type SelectEvent&lt;T&gt; = &#123;
       <li>Skip theme engines, virtualization, global config, and library-grade APIs unless asked.</li>
     </ul>
     <div class="table-wrap">
-      <table>
-        <thead>
-          <tr><th>Priority</th><th>Do this</th><th>Avoid spending time on</th></tr>
-        </thead>
-        <tbody>
-          <tr><td><strong>Prioritize</strong></td><td>Clear contract, state ownership, event payload, a11y, styling surface, and a dry run.</td><td>Inventing a generic component library before the prompt works.</td></tr>
-          <tr><td><strong>Know lightly</strong></td><td>Compound components, slot props, render hooks, refs, and escape hatches as follow-ups.</td><td>Over-abstracted state reducers in the first implementation pass.</td></tr>
-          <tr><td><strong>Skip unless asked</strong></td><td>Theme engines, polymorphic components, portals, virtualization, and global config systems.</td><td>Excessive escape hatches that make the API harder to explain.</td></tr>
-        </tbody>
-      </table>
+      <div class="table-scroll" tabindex="0" role="region" aria-label="Scrollable table">
+        <table>
+          <thead>
+            <tr><th>Priority</th><th>Do this</th><th>Avoid spending time on</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Prioritize</strong></td><td>Clear contract, state ownership, event payload, a11y, styling surface, and a dry run.</td><td>Inventing a generic component library before the prompt works.</td></tr>
+            <tr><td><strong>Know lightly</strong></td><td>Compound components, slot props, render hooks, refs, and escape hatches as follow-ups.</td><td>Over-abstracted state reducers in the first implementation pass.</td></tr>
+            <tr><td><strong>Skip unless asked</strong></td><td>Theme engines, polymorphic components, portals, virtualization, and global config systems.</td><td>Excessive escape hatches that make the API harder to explain.</td></tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
     <h2 id="choose-your-next-practice-format">Choose your next practice format</h2>

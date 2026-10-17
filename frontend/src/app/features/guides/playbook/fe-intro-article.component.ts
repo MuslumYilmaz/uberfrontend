@@ -17,9 +17,6 @@ import { PUBLIC_EDITORIAL_FACTS } from '../../../core/content/public-editorial-f
 
 @Component({
     imports: [GuideShellComponent, RouterModule],
-    // GuideShell wraps projected tables during SSR. Recreate this subtree so
-    // Angular attaches router links to the authored DOM instead of those wrappers.
-    host: { ngSkipHydration: 'true' },
     styles: [`
     /* Inline links */
     a {
@@ -387,52 +384,54 @@ import { PUBLIC_EDITORIAL_FACTS } from '../../../core/content/public-editorial-f
       up over and over. Here’s a cheat sheet of where to focus your energy:
     </p>
 
-    <table>
-      <thead>
-        <tr>
-          <th>Area</th>
-          <th>Core Topics</th>
-          <th>Why it matters</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><strong>JavaScript</strong></td>
-          <td>Closures, async/await, promises, this binding, prototypes</td>
-          <td>Shows you can reason about async code and avoid hidden bugs.</td>
-        </tr>
-        <tr>
-          <td><strong>Browser</strong></td>
-          <td>Event loop, rendering pipeline, repaint/reflow, local/session storage</td>
-          <td>Core to debugging performance issues and explaining “why the page feels slow.”</td>
-        </tr>
-        <tr>
-          <td><strong>CSS & Layout</strong></td>
-          <td>Flexbox, Grid, stacking context, positioning, responsive units</td>
-          <td>Nearly every UI task involves layout — fluency here = speed in interviews.</td>
-        </tr>
-        <tr>
-          <td><strong>DOM & APIs</strong></td>
-          <td>querySelector, event delegation, classList, fetch, IntersectionObserver</td>
-          <td>Most practical tasks require manipulating the DOM without frameworks.</td>
-        </tr>
-        <tr>
-          <td><strong>Accessibility</strong></td>
-          <td>Keyboard navigation, ARIA roles, focus management, color contrast</td>
-          <td>Interviewers notice instantly if you ignore accessibility — it’s a correctness issue.</td>
-        </tr>
-        <tr>
-          <td><strong>System Design (FE)</strong></td>
-          <td>State management, component APIs, caching, code splitting, error/loading states</td>
-          <td>Critical for senior roles — separates mid-level from senior candidates.</td>
-        </tr>
-        <tr>
-          <td><strong>Testing</strong></td>
-          <td>Unit vs integration, mocking APIs, snapshot tests</td>
-          <td>Signals maturity: you think beyond “happy path” coding.</td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="table-scroll" tabindex="0" role="region" aria-label="Scrollable table">
+      <table>
+        <thead>
+          <tr>
+            <th>Area</th>
+            <th>Core Topics</th>
+            <th>Why it matters</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>JavaScript</strong></td>
+            <td>Closures, async/await, promises, this binding, prototypes</td>
+            <td>Shows you can reason about async code and avoid hidden bugs.</td>
+          </tr>
+          <tr>
+            <td><strong>Browser</strong></td>
+            <td>Event loop, rendering pipeline, repaint/reflow, local/session storage</td>
+            <td>Core to debugging performance issues and explaining “why the page feels slow.”</td>
+          </tr>
+          <tr>
+            <td><strong>CSS & Layout</strong></td>
+            <td>Flexbox, Grid, stacking context, positioning, responsive units</td>
+            <td>Nearly every UI task involves layout — fluency here = speed in interviews.</td>
+          </tr>
+          <tr>
+            <td><strong>DOM & APIs</strong></td>
+            <td>querySelector, event delegation, classList, fetch, IntersectionObserver</td>
+            <td>Most practical tasks require manipulating the DOM without frameworks.</td>
+          </tr>
+          <tr>
+            <td><strong>Accessibility</strong></td>
+            <td>Keyboard navigation, ARIA roles, focus management, color contrast</td>
+            <td>Interviewers notice instantly if you ignore accessibility — it’s a correctness issue.</td>
+          </tr>
+          <tr>
+            <td><strong>System Design (FE)</strong></td>
+            <td>State management, component APIs, caching, code splitting, error/loading states</td>
+            <td>Critical for senior roles — separates mid-level from senior candidates.</td>
+          </tr>
+          <tr>
+            <td><strong>Testing</strong></td>
+            <td>Unit vs integration, mocking APIs, snapshot tests</td>
+            <td>Signals maturity: you think beyond “happy path” coding.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
 <p>
   📌 Use this table as a <strong>study checklist</strong>: tick off one row at a time, and you’ll
@@ -447,74 +446,78 @@ import { PUBLIC_EDITORIAL_FACTS } from '../../../core/content/public-editorial-f
       Browse the <a routerLink="/interview-questions">frontend interview questions</a>
       by topic, then use the categories below to choose your next practice session.
     </p>
-    <table>
-      <thead>
-        <tr>
-          <th>Question category</th>
-          <th>Examples</th>
-          <th>Best practice format</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><strong><a routerLink="/javascript/interview-questions">JavaScript utilities</a></strong></td>
-          <td><code>debounce</code>, <code>throttle</code>, <code>memoize</code>, event emitters</td>
-          <td>Write from memory, explain edge cases, then test async behavior.</td>
-        </tr>
-        <tr>
-          <td><strong>UI components</strong></td>
-          <td>Modal, tabs, accordion, autocomplete, virtual list</td>
-          <td>Ship an MVP first, then add keyboard navigation, empty state, and loading state.</td>
-        </tr>
-        <tr>
-          <td><strong><a routerLink="/html-css/interview-questions">Browser and CSS</a></strong></td>
-          <td>Rendering pipeline, stacking context, event loop, responsive layout</td>
-          <td>Explain the mental model, then connect it to a real debugging scenario.</td>
-        </tr>
-        <tr>
-          <td><strong>Frontend system design</strong></td>
-          <td>News feed, chat UI, dashboard, notifications, design system architecture</td>
-          <td>Clarify requirements, choose state boundaries, define APIs, and discuss trade-offs.</td>
-        </tr>
-        <tr>
-          <td><strong>Behavioral and collaboration</strong></td>
-          <td>Conflict, missed deadline, accessibility trade-off, performance regression</td>
-          <td>Prepare STAR stories with concrete metrics and frontend-specific decisions.</td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="table-scroll" tabindex="0" role="region" aria-label="Scrollable table">
+      <table>
+        <thead>
+          <tr>
+            <th>Question category</th>
+            <th>Examples</th>
+            <th>Best practice format</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong><a routerLink="/javascript/interview-questions">JavaScript utilities</a></strong></td>
+            <td><code>debounce</code>, <code>throttle</code>, <code>memoize</code>, event emitters</td>
+            <td>Write from memory, explain edge cases, then test async behavior.</td>
+          </tr>
+          <tr>
+            <td><strong>UI components</strong></td>
+            <td>Modal, tabs, accordion, autocomplete, virtual list</td>
+            <td>Ship an MVP first, then add keyboard navigation, empty state, and loading state.</td>
+          </tr>
+          <tr>
+            <td><strong><a routerLink="/html-css/interview-questions">Browser and CSS</a></strong></td>
+            <td>Rendering pipeline, stacking context, event loop, responsive layout</td>
+            <td>Explain the mental model, then connect it to a real debugging scenario.</td>
+          </tr>
+          <tr>
+            <td><strong>Frontend system design</strong></td>
+            <td>News feed, chat UI, dashboard, notifications, design system architecture</td>
+            <td>Clarify requirements, choose state boundaries, define APIs, and discuss trade-offs.</td>
+          </tr>
+          <tr>
+            <td><strong>Behavioral and collaboration</strong></td>
+            <td>Conflict, missed deadline, accessibility trade-off, performance regression</td>
+            <td>Prepare STAR stories with concrete metrics and frontend-specific decisions.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
     <h2>Prep paths by level</h2>
     <p>
       The same frontend interview preparation guide should not send every candidate
       through the same sequence. Use your level to decide what gets most of your reps.
     </p>
-    <table>
-      <thead>
-        <tr>
-          <th>Level</th>
-          <th>Primary focus</th>
-          <th>Do not skip</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><strong>Junior</strong></td>
-          <td>JavaScript fundamentals, DOM, CSS layout, and simple UI tasks.</td>
-          <td>Verbal explanations. Practice saying why your solution works.</td>
-        </tr>
-        <tr>
-          <td><strong>Mid-level</strong></td>
-          <td>Timed coding, component API decisions, async state, and testing trade-offs.</td>
-          <td>Edge cases: loading, empty, error, accessibility, and cancellation.</td>
-        </tr>
-        <tr>
-          <td><strong>Senior</strong></td>
-          <td>Frontend system design, architecture, performance, reliability, and team impact stories.</td>
-          <td>Scope control. Senior loops punish candidates who overbuild before clarifying constraints.</td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="table-scroll" tabindex="0" role="region" aria-label="Scrollable table">
+      <table>
+        <thead>
+          <tr>
+            <th>Level</th>
+            <th>Primary focus</th>
+            <th>Do not skip</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Junior</strong></td>
+            <td>JavaScript fundamentals, DOM, CSS layout, and simple UI tasks.</td>
+            <td>Verbal explanations. Practice saying why your solution works.</td>
+          </tr>
+          <tr>
+            <td><strong>Mid-level</strong></td>
+            <td>Timed coding, component API decisions, async state, and testing trade-offs.</td>
+            <td>Edge cases: loading, empty, error, accessibility, and cancellation.</td>
+          </tr>
+          <tr>
+            <td><strong>Senior</strong></td>
+            <td>Frontend system design, architecture, performance, reliability, and team impact stories.</td>
+            <td>Scope control. Senior loops punish candidates who overbuild before clarifying constraints.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
     <!-- Section 6 -->
     <h2>Resume preparation</h2>
@@ -587,42 +590,44 @@ import { PUBLIC_EDITORIAL_FACTS } from '../../../core/content/public-editorial-f
       across the question types that actually show up in frontend loops.
     </p>
 
-    <table>
-      <thead>
-        <tr>
-          <th>Days</th>
-          <th>Focus</th>
-          <th>Daily reps</th>
-          <th>Why it matters</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><strong>1-7</strong></td>
-          <td>JS + Browser fundamentals</td>
-          <td>Do 3 quick quiz cards + 1 small JS utility each day</td>
-          <td>Sharp recall of event loop, async/await, DOM quirks means less panic when you see trivia or debugging prompts.</td>
-        </tr>
-        <tr>
-          <td><strong>8-15</strong></td>
-          <td>UI components</td>
-          <td>Build 1 component/day (modal, dropdown, autocomplete) with keyboard support</td>
-          <td>Most companies test if you can ship usable UI fast. By the end of this week you’ll have a toolkit of reusable patterns in your muscle memory.</td>
-        </tr>
-        <tr>
-          <td><strong>16-23</strong></td>
-          <td>System design (FE)</td>
-          <td>Take 1 design prompt → sketch a diagram → write a 5–6 line summary</td>
-          <td>Prevents blank stares in senior interviews. Practicing diagrams trains you to explain data flow, state, and trade-offs under time pressure.</td>
-        </tr>
-        <tr>
-          <td><strong>24-30</strong></td>
-          <td>Mocks, behavioral, and review</td>
-          <td>Do 2 x 45-min practice interviews + write retro notes</td>
-          <td>Builds interview stamina. Reviewing your mistakes here saves you from repeating them in the real loop.</td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="table-scroll" tabindex="0" role="region" aria-label="Scrollable table">
+      <table>
+        <thead>
+          <tr>
+            <th>Days</th>
+            <th>Focus</th>
+            <th>Daily reps</th>
+            <th>Why it matters</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>1-7</strong></td>
+            <td>JS + Browser fundamentals</td>
+            <td>Do 3 quick quiz cards + 1 small JS utility each day</td>
+            <td>Sharp recall of event loop, async/await, DOM quirks means less panic when you see trivia or debugging prompts.</td>
+          </tr>
+          <tr>
+            <td><strong>8-15</strong></td>
+            <td>UI components</td>
+            <td>Build 1 component/day (modal, dropdown, autocomplete) with keyboard support</td>
+            <td>Most companies test if you can ship usable UI fast. By the end of this week you’ll have a toolkit of reusable patterns in your muscle memory.</td>
+          </tr>
+          <tr>
+            <td><strong>16-23</strong></td>
+            <td>System design (FE)</td>
+            <td>Take 1 design prompt → sketch a diagram → write a 5–6 line summary</td>
+            <td>Prevents blank stares in senior interviews. Practicing diagrams trains you to explain data flow, state, and trade-offs under time pressure.</td>
+          </tr>
+          <tr>
+            <td><strong>24-30</strong></td>
+            <td>Mocks, behavioral, and review</td>
+            <td>Do 2 x 45-min practice interviews + write retro notes</td>
+            <td>Builds interview stamina. Reviewing your mistakes here saves you from repeating them in the real loop.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
 <p>
   Pro tip: Don’t cram. Even 30-45 minutes a day beats a single 6-hour binge.

@@ -1306,8 +1306,10 @@ function collectClientRuntimeIssues(page: Page): string[] {
 }
 
 function expectNoHydrationOrChunkIssues(issues: string[], path: string): void {
+  // A production hydration mismatch surfaces as a plain TypeError from
+  // hasSkipHydrationAttrOnRElement, not as an NG05xx message, so match it too.
   const relevant = issues.filter((message) =>
-    /NG05|hydration|hydrate|chunkloaderror|dynamically imported module|loading chunk|module script failed/i.test(message),
+    /NG05|hydration|hydrate|hasAttribute|cannot read properties of null|chunkloaderror|dynamically imported module|loading chunk|module script failed/i.test(message),
   );
   expect(relevant, `hydration/chunk runtime issues on ${path}`).toEqual([]);
 }

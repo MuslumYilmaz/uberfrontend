@@ -141,60 +141,62 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       </ul>
 
       <h2>Pitfalls by RADIO Step</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Step</th>
-            <th>Common pitfall</th>
-            <th>Repair move</th>
-            <th>Deep dive</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Requirements</td>
-            <td>Solving before scope</td>
-            <td>Define user, v1, non-goals, metrics, accessibility baseline, and failure states.</td>
-            <td><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'radio-requirements']">Requirements guide</a></td>
-          </tr>
-          <tr>
-            <td>Architecture</td>
-            <td>Generic boxes or buzzword choices</td>
-            <td>Choose rendering and module boundaries from constraints.</td>
-            <td><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'architecture']">Architecture guide</a></td>
-          </tr>
-          <tr>
-            <td>Data</td>
-            <td>Mixed state ownership</td>
-            <td>Separate server state, UI state, URL state, cache keys, and mutations.</td>
-            <td><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'state-data']">State and data guide</a></td>
-          </tr>
-          <tr>
-            <td>Interface</td>
-            <td>Hand-wavy contracts and missing UI states</td>
-            <td>Make component, API, loading, error, stale, and accessibility behavior explicit.</td>
-            <td><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'ux']">Interface guide</a></td>
-          </tr>
-          <tr>
-            <td>Optimizations</td>
-            <td>Random performance tactics</td>
-            <td>Diagnose bottlenecks, set budgets, call out trade-offs, and validate impact.</td>
-            <td><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'performance']">Performance guide</a></td>
-          </tr>
-          <tr>
-            <td>Evaluation</td>
-            <td>No clear strong-hire signal</td>
-            <td>Map your answer to rubric axes and repair the weakest signal.</td>
-            <td><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'evaluation']">Rubric and scorecard</a></td>
-          </tr>
-          <tr>
-            <td>Final pass</td>
-            <td>Ending without a risk summary</td>
-            <td>Close with scope, architecture choice, biggest trade-off, and validation plan.</td>
-            <td><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'checklist']">Frontend system design interview checklist</a></td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-scroll" tabindex="0" role="region" aria-label="Scrollable table">
+        <table>
+          <thead>
+            <tr>
+              <th>Step</th>
+              <th>Common pitfall</th>
+              <th>Repair move</th>
+              <th>Deep dive</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Requirements</td>
+              <td>Solving before scope</td>
+              <td>Define user, v1, non-goals, metrics, accessibility baseline, and failure states.</td>
+              <td><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'radio-requirements']">Requirements guide</a></td>
+            </tr>
+            <tr>
+              <td>Architecture</td>
+              <td>Generic boxes or buzzword choices</td>
+              <td>Choose rendering and module boundaries from constraints.</td>
+              <td><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'architecture']">Architecture guide</a></td>
+            </tr>
+            <tr>
+              <td>Data</td>
+              <td>Mixed state ownership</td>
+              <td>Separate server state, UI state, URL state, cache keys, and mutations.</td>
+              <td><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'state-data']">State and data guide</a></td>
+            </tr>
+            <tr>
+              <td>Interface</td>
+              <td>Hand-wavy contracts and missing UI states</td>
+              <td>Make component, API, loading, error, stale, and accessibility behavior explicit.</td>
+              <td><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'ux']">Interface guide</a></td>
+            </tr>
+            <tr>
+              <td>Optimizations</td>
+              <td>Random performance tactics</td>
+              <td>Diagnose bottlenecks, set budgets, call out trade-offs, and validate impact.</td>
+              <td><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'performance']">Performance guide</a></td>
+            </tr>
+            <tr>
+              <td>Evaluation</td>
+              <td>No clear strong-hire signal</td>
+              <td>Map your answer to rubric axes and repair the weakest signal.</td>
+              <td><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'evaluation']">Rubric and scorecard</a></td>
+            </tr>
+            <tr>
+              <td>Final pass</td>
+              <td>Ending without a risk summary</td>
+              <td>Close with scope, architecture choice, biggest trade-off, and validation plan.</td>
+              <td><a [routerLink]="['/', 'guides', 'system-design-blueprint', 'checklist']">Frontend system design interview checklist</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       <h2>Scenario-Specific Pitfalls</h2>
       <ul>

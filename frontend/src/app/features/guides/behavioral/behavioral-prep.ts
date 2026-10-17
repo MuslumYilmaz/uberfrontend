@@ -34,60 +34,62 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       </p>
 
       <h2>7-day frontend behavioral interview prep plan</h2>
-      <table class="table-auto border border-neutral-700 mt-3 w-full">
-        <thead>
-          <tr>
-            <th class="px-2 py-1 text-left">Day</th>
-            <th class="px-2 py-1 text-left">Focus</th>
-            <th class="px-2 py-1 text-left">Output</th>
-            <th class="px-2 py-1 text-left">Frontend angle</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>1</td>
-            <td>Collect stories</td>
-            <td>List 10 raw moments before polishing them.</td>
-            <td>Pull from launches, regressions, incidents, accessibility, API alignment, and mentoring.</td>
-          </tr>
-          <tr>
-            <td>2</td>
-            <td>Map signals</td>
-            <td>Tag each story with two primary signals and one follow-up risk.</td>
-            <td>Use ownership, communication, collaboration, judgment, growth, and leadership/seniority.</td>
-          </tr>
-          <tr>
-            <td>3</td>
-            <td>Write STAR(R)</td>
-            <td>Create short notes for Situation, Task, Action, Result, and Reflection.</td>
-            <td>Keep the action section specific to your frontend decisions and trade-offs.</td>
-          </tr>
-          <tr>
-            <td>4</td>
-            <td>Quantify impact</td>
-            <td>Add numbers, scope, user impact, or risk reduction to each strong story.</td>
-            <td>Use LCP, conversion, incident duration, defect rate, review time, or accessibility coverage.</td>
-          </tr>
-          <tr>
-            <td>5</td>
-            <td>Practice follow-ups</td>
-            <td>Answer the uncomfortable second question for each story.</td>
-            <td>Prepare for "what would you do differently?" and "what was your exact role?"</td>
-          </tr>
-          <tr>
-            <td>6</td>
-            <td>Prepare final questions</td>
-            <td>Write 3 questions that reveal team quality and role expectations.</td>
-            <td>Ask about release risk, design-engineering trade-offs, accessibility, and success metrics.</td>
-          </tr>
-          <tr>
-            <td>7</td>
-            <td>Night-before tune-up</td>
-            <td>Pick four stories, say them once, and stop editing.</td>
-            <td>Bring concise notes, not a memorized script.</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-scroll" tabindex="0" role="region" aria-label="Scrollable table">
+        <table class="table-auto border border-neutral-700 mt-3 w-full">
+          <thead>
+            <tr>
+              <th class="px-2 py-1 text-left">Day</th>
+              <th class="px-2 py-1 text-left">Focus</th>
+              <th class="px-2 py-1 text-left">Output</th>
+              <th class="px-2 py-1 text-left">Frontend angle</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Collect stories</td>
+              <td>List 10 raw moments before polishing them.</td>
+              <td>Pull from launches, regressions, incidents, accessibility, API alignment, and mentoring.</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>Map signals</td>
+              <td>Tag each story with two primary signals and one follow-up risk.</td>
+              <td>Use ownership, communication, collaboration, judgment, growth, and leadership/seniority.</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>Write STAR(R)</td>
+              <td>Create short notes for Situation, Task, Action, Result, and Reflection.</td>
+              <td>Keep the action section specific to your frontend decisions and trade-offs.</td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>Quantify impact</td>
+              <td>Add numbers, scope, user impact, or risk reduction to each strong story.</td>
+              <td>Use LCP, conversion, incident duration, defect rate, review time, or accessibility coverage.</td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td>Practice follow-ups</td>
+              <td>Answer the uncomfortable second question for each story.</td>
+              <td>Prepare for "what would you do differently?" and "what was your exact role?"</td>
+            </tr>
+            <tr>
+              <td>6</td>
+              <td>Prepare final questions</td>
+              <td>Write 3 questions that reveal team quality and role expectations.</td>
+              <td>Ask about release risk, design-engineering trade-offs, accessibility, and success metrics.</td>
+            </tr>
+            <tr>
+              <td>7</td>
+              <td>Night-before tune-up</td>
+              <td>Pick four stories, say them once, and stop editing.</td>
+              <td>Bring concise notes, not a memorized script.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       <h2>Build a frontend story bank</h2>
       <p>
@@ -95,103 +97,107 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         become STAR stories for frontend engineers across different prompts without sounding rehearsed. Aim for
         7 to 10 stories, then choose the strongest 4 or 5 for the role.
       </p>
-      <table class="table-auto border border-neutral-700 mt-3 w-full">
-        <thead>
-          <tr>
-            <th class="px-2 py-1 text-left">Story type</th>
-            <th class="px-2 py-1 text-left">Signals it can prove</th>
-            <th class="px-2 py-1 text-left">What to capture</th>
-            <th class="px-2 py-1 text-left">Follow-up risk</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Performance regression</td>
-            <td>Ownership, judgment, communication</td>
-            <td>Metric before/after, diagnosis path, rollout, and prevention.</td>
-            <td>Can you explain the trade-off without hiding behind tooling?</td>
-          </tr>
-          <tr>
-            <td>Accessibility blocker</td>
-            <td>Judgment, collaboration, user focus</td>
-            <td>User impact, standard, design constraint, and implementation path.</td>
-            <td>Did you partner or just veto the design?</td>
-          </tr>
-          <tr>
-            <td>API contract conflict</td>
-            <td>Communication, ownership, release planning</td>
-            <td>Schema issue, loading/error states, fallback, and backend alignment.</td>
-            <td>Did you clarify the contract early enough?</td>
-          </tr>
-          <tr>
-            <td>Design or product disagreement</td>
-            <td>Collaboration, judgment, influence</td>
-            <td>Options, evidence, decision owner, and user-facing outcome.</td>
-            <td>Can you show respect for product goals?</td>
-          </tr>
-          <tr>
-            <td>Production rollback</td>
-            <td>Ownership, growth, risk thinking</td>
-            <td>Blast radius, communication, rollback path, and new guardrail.</td>
-            <td>Did the same class of issue become less likely?</td>
-          </tr>
-          <tr>
-            <td>Ambiguous scope</td>
-            <td>Seniority, communication, ownership</td>
-            <td>Unknowns, thin first release, milestones, and success criteria.</td>
-            <td>Did you make ambiguity smaller for the team?</td>
-          </tr>
-          <tr>
-            <td>Mentoring or review process</td>
-            <td>Leadership, growth, leverage</td>
-            <td>Who improved, what changed, and how the team reused it.</td>
-            <td>Did you create leverage or just help once?</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-scroll" tabindex="0" role="region" aria-label="Scrollable table">
+        <table class="table-auto border border-neutral-700 mt-3 w-full">
+          <thead>
+            <tr>
+              <th class="px-2 py-1 text-left">Story type</th>
+              <th class="px-2 py-1 text-left">Signals it can prove</th>
+              <th class="px-2 py-1 text-left">What to capture</th>
+              <th class="px-2 py-1 text-left">Follow-up risk</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Performance regression</td>
+              <td>Ownership, judgment, communication</td>
+              <td>Metric before/after, diagnosis path, rollout, and prevention.</td>
+              <td>Can you explain the trade-off without hiding behind tooling?</td>
+            </tr>
+            <tr>
+              <td>Accessibility blocker</td>
+              <td>Judgment, collaboration, user focus</td>
+              <td>User impact, standard, design constraint, and implementation path.</td>
+              <td>Did you partner or just veto the design?</td>
+            </tr>
+            <tr>
+              <td>API contract conflict</td>
+              <td>Communication, ownership, release planning</td>
+              <td>Schema issue, loading/error states, fallback, and backend alignment.</td>
+              <td>Did you clarify the contract early enough?</td>
+            </tr>
+            <tr>
+              <td>Design or product disagreement</td>
+              <td>Collaboration, judgment, influence</td>
+              <td>Options, evidence, decision owner, and user-facing outcome.</td>
+              <td>Can you show respect for product goals?</td>
+            </tr>
+            <tr>
+              <td>Production rollback</td>
+              <td>Ownership, growth, risk thinking</td>
+              <td>Blast radius, communication, rollback path, and new guardrail.</td>
+              <td>Did the same class of issue become less likely?</td>
+            </tr>
+            <tr>
+              <td>Ambiguous scope</td>
+              <td>Seniority, communication, ownership</td>
+              <td>Unknowns, thin first release, milestones, and success criteria.</td>
+              <td>Did you make ambiguity smaller for the team?</td>
+            </tr>
+            <tr>
+              <td>Mentoring or review process</td>
+              <td>Leadership, growth, leverage</td>
+              <td>Who improved, what changed, and how the team reused it.</td>
+              <td>Did you create leverage or just help once?</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       <h2>Map prompts to stories</h2>
-      <table class="table-auto border border-neutral-700 mt-3 w-full">
-        <thead>
-          <tr>
-            <th class="px-2 py-1 text-left">Prompt</th>
-            <th class="px-2 py-1 text-left">Best story type</th>
-            <th class="px-2 py-1 text-left">Signal to make obvious</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Tell me about a conflict.</td>
-            <td>Design disagreement or API contract conflict</td>
-            <td>You disagreed clearly, preserved trust, and got to an executable decision.</td>
-          </tr>
-          <tr>
-            <td>Tell me about a failure.</td>
-            <td>Production rollback or missed regression</td>
-            <td>You owned the miss, reduced damage, and changed the system afterward.</td>
-          </tr>
-          <tr>
-            <td>Tell me about ambiguity.</td>
-            <td>Ambiguous PM/design scope</td>
-            <td>You turned unknowns into a scoped release and measurable result.</td>
-          </tr>
-          <tr>
-            <td>Tell me about leadership.</td>
-            <td>Mentoring or review process</td>
-            <td>You helped others make better decisions without becoming the bottleneck.</td>
-          </tr>
-          <tr>
-            <td>Tell me about feedback.</td>
-            <td>Review feedback or missed quality bar</td>
-            <td>You changed behavior, not just wording.</td>
-          </tr>
-          <tr>
-            <td>Tell me about a tight deadline.</td>
-            <td>Feature flag, phased release, or launch risk story</td>
-            <td>You protected the right quality bar while making delivery trade-offs explicit.</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-scroll" tabindex="0" role="region" aria-label="Scrollable table">
+        <table class="table-auto border border-neutral-700 mt-3 w-full">
+          <thead>
+            <tr>
+              <th class="px-2 py-1 text-left">Prompt</th>
+              <th class="px-2 py-1 text-left">Best story type</th>
+              <th class="px-2 py-1 text-left">Signal to make obvious</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Tell me about a conflict.</td>
+              <td>Design disagreement or API contract conflict</td>
+              <td>You disagreed clearly, preserved trust, and got to an executable decision.</td>
+            </tr>
+            <tr>
+              <td>Tell me about a failure.</td>
+              <td>Production rollback or missed regression</td>
+              <td>You owned the miss, reduced damage, and changed the system afterward.</td>
+            </tr>
+            <tr>
+              <td>Tell me about ambiguity.</td>
+              <td>Ambiguous PM/design scope</td>
+              <td>You turned unknowns into a scoped release and measurable result.</td>
+            </tr>
+            <tr>
+              <td>Tell me about leadership.</td>
+              <td>Mentoring or review process</td>
+              <td>You helped others make better decisions without becoming the bottleneck.</td>
+            </tr>
+            <tr>
+              <td>Tell me about feedback.</td>
+              <td>Review feedback or missed quality bar</td>
+              <td>You changed behavior, not just wording.</td>
+            </tr>
+            <tr>
+              <td>Tell me about a tight deadline.</td>
+              <td>Feature flag, phased release, or launch risk story</td>
+              <td>You protected the right quality bar while making delivery trade-offs explicit.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       <h2>Write STAR(R) notes without scripting</h2>
       <p>
@@ -211,26 +217,28 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       </p>
 
       <h2>Weak vs strong prep notes</h2>
-      <table class="table-auto border border-neutral-700 mt-3 w-full">
-        <thead>
-          <tr>
-            <th class="px-2 py-1 text-left">Weak note</th>
-            <th class="px-2 py-1 text-left">Interview-ready note</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>
-              "The app was slow, so I optimized it and worked with design. The page got faster and everyone was happy."
-            </td>
-            <td>
-              "Checkout LCP regressed to 6.4s after a reviews widget launch. I owned the investigation, compared bundle
-              and render cost, split non-critical content behind lazy loading, aligned design on above-the-fold priority,
-              and added a bundle budget. LCP returned under 2.8s and the release checklist caught the next regression."
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-scroll" tabindex="0" role="region" aria-label="Scrollable table">
+        <table class="table-auto border border-neutral-700 mt-3 w-full">
+          <thead>
+            <tr>
+              <th class="px-2 py-1 text-left">Weak note</th>
+              <th class="px-2 py-1 text-left">Interview-ready note</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                "The app was slow, so I optimized it and worked with design. The page got faster and everyone was happy."
+              </td>
+              <td>
+                "Checkout LCP regressed to 6.4s after a reviews widget launch. I owned the investigation, compared bundle
+                and render cost, split non-critical content behind lazy loading, aligned design on above-the-fold priority,
+                and added a bundle budget. LCP returned under 2.8s and the release checklist caught the next regression."
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       <h2>Practice follow-ups and mock loops</h2>
       <p>
@@ -250,37 +258,39 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         Senior frontend behavioral interview preparation needs broader proof than a clean task story. Prepare examples
         where you reduced cross-functional risk, changed a team habit, or created a repeatable quality bar.
       </p>
-      <table class="table-auto border border-neutral-700 mt-3 w-full">
-        <thead>
-          <tr>
-            <th class="px-2 py-1 text-left">Level</th>
-            <th class="px-2 py-1 text-left">Story scope</th>
-            <th class="px-2 py-1 text-left">Prep focus</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Junior</td>
-            <td>Task-level ownership and clear learning.</td>
-            <td>Explain context, ask for help well, and show review feedback changed your habits.</td>
-          </tr>
-          <tr>
-            <td>Mid</td>
-            <td>Feature-level ownership across frontend, design, backend, QA, and release.</td>
-            <td>Show trade-offs, communication, and measurable delivery outcomes.</td>
-          </tr>
-          <tr>
-            <td>Senior</td>
-            <td>Project or team-level risk with cross-functional influence.</td>
-            <td>Prepare examples around ambiguity, mentoring, incident prevention, and better systems.</td>
-          </tr>
-          <tr>
-            <td>Staff</td>
-            <td>Org-level leverage across multiple teams or standards.</td>
-            <td>Show repeatable systems, alignment, and durable improvements beyond one launch.</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-scroll" tabindex="0" role="region" aria-label="Scrollable table">
+        <table class="table-auto border border-neutral-700 mt-3 w-full">
+          <thead>
+            <tr>
+              <th class="px-2 py-1 text-left">Level</th>
+              <th class="px-2 py-1 text-left">Story scope</th>
+              <th class="px-2 py-1 text-left">Prep focus</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Junior</td>
+              <td>Task-level ownership and clear learning.</td>
+              <td>Explain context, ask for help well, and show review feedback changed your habits.</td>
+            </tr>
+            <tr>
+              <td>Mid</td>
+              <td>Feature-level ownership across frontend, design, backend, QA, and release.</td>
+              <td>Show trade-offs, communication, and measurable delivery outcomes.</td>
+            </tr>
+            <tr>
+              <td>Senior</td>
+              <td>Project or team-level risk with cross-functional influence.</td>
+              <td>Prepare examples around ambiguity, mentoring, incident prevention, and better systems.</td>
+            </tr>
+            <tr>
+              <td>Staff</td>
+              <td>Org-level leverage across multiple teams or standards.</td>
+              <td>Show repeatable systems, alignment, and durable improvements beyond one launch.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       <h2>Prepare final questions</h2>
       <p>

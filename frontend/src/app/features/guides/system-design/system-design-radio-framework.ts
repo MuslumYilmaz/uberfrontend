@@ -495,48 +495,50 @@ I would ship the simple path first, instrument the risky flow, and use metrics t
       <p>
         Each RADIO step has a purpose, a visible output, and a signal the interviewer can score.
       </p>
-      <table>
-        <thead>
-          <tr>
-            <th>RADIO step</th>
-            <th>Purpose</th>
-            <th>Typical output</th>
-            <th>Interviewer signal</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>Requirements</strong></td>
-            <td>Lock user, flow, constraints, non-goals, and success metrics.</td>
-            <td>Scope box, NFR list, assumptions, and priority order.</td>
-            <td>You prevent the answer from solving the wrong problem.</td>
-          </tr>
-          <tr>
-            <td><strong>Architecture</strong></td>
-            <td>Show the frontend system shape and delivery path.</td>
-            <td>Client architecture, rendering choice, data flow, and failure path.</td>
-            <td>You connect product needs to technical boundaries.</td>
-          </tr>
-          <tr>
-            <td><strong>Data</strong></td>
-            <td>Define truth, ownership, cache behavior, and consistency rules.</td>
-            <td>Entities, state split, cache keys, invalidation, and stale-state rules.</td>
-            <td>You understand where frontend complexity and race conditions live.</td>
-          </tr>
-          <tr>
-            <td><strong>Interface</strong></td>
-            <td>Turn the design into component, API, event, and accessibility contracts.</td>
-            <td>Component tree, API/interface contract, state map, keyboard and error behavior.</td>
-            <td>You can make architecture implementable for real users.</td>
-          </tr>
-          <tr>
-            <td><strong>Optimizations</strong></td>
-            <td>Prioritize the riskiest production constraints and measurable trade-offs.</td>
-            <td>Performance budget, observability plan, security baseline, and trade-off backlog.</td>
-            <td>You can defend production readiness instead of listing random improvements.</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-scroll" tabindex="0" role="region" aria-label="Scrollable table">
+        <table>
+          <thead>
+            <tr>
+              <th>RADIO step</th>
+              <th>Purpose</th>
+              <th>Typical output</th>
+              <th>Interviewer signal</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Requirements</strong></td>
+              <td>Lock user, flow, constraints, non-goals, and success metrics.</td>
+              <td>Scope box, NFR list, assumptions, and priority order.</td>
+              <td>You prevent the answer from solving the wrong problem.</td>
+            </tr>
+            <tr>
+              <td><strong>Architecture</strong></td>
+              <td>Show the frontend system shape and delivery path.</td>
+              <td>Client architecture, rendering choice, data flow, and failure path.</td>
+              <td>You connect product needs to technical boundaries.</td>
+            </tr>
+            <tr>
+              <td><strong>Data</strong></td>
+              <td>Define truth, ownership, cache behavior, and consistency rules.</td>
+              <td>Entities, state split, cache keys, invalidation, and stale-state rules.</td>
+              <td>You understand where frontend complexity and race conditions live.</td>
+            </tr>
+            <tr>
+              <td><strong>Interface</strong></td>
+              <td>Turn the design into component, API, event, and accessibility contracts.</td>
+              <td>Component tree, API/interface contract, state map, keyboard and error behavior.</td>
+              <td>You can make architecture implementable for real users.</td>
+            </tr>
+            <tr>
+              <td><strong>Optimizations</strong></td>
+              <td>Prioritize the riskiest production constraints and measurable trade-offs.</td>
+              <td>Performance budget, observability plan, security baseline, and trade-off backlog.</td>
+              <td>You can defend production readiness instead of listing random improvements.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       <h2>What each RADIO step proves to the interviewer</h2>
       <ul class="mini-checklist">
@@ -642,42 +644,44 @@ I would ship the simple path first, instrument the risky flow, and use metrics t
         what crosses the network, what crosses component boundaries, what crosses realtime channels, and how
         errors become user-visible states.
       </p>
-      <table>
-        <thead>
-          <tr>
-            <th>Interface type</th>
-            <th>What to define</th>
-            <th>Why it matters</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>Server-client API contracts</strong></td>
-            <td>Request shape, response shape, pagination, auth, errors, retries, and rate limits.</td>
-            <td>Prevents hand-wavy backend dependency and makes loading, stale, and failure states concrete.</td>
-          </tr>
-          <tr>
-            <td><strong>Client-client events/callbacks</strong></td>
-            <td>Cross-component events, callbacks, store actions, analytics events, and cancellation behavior.</td>
-            <td>Keeps ownership clear when multiple surfaces react to one user intent.</td>
-          </tr>
-          <tr>
-            <td><strong>Component props/events</strong></td>
-            <td>Controlled vs uncontrolled props, emitted events, state ownership, validation, and disabled states.</td>
-            <td>Turns architecture into reusable UI contracts that a team can implement.</td>
-          </tr>
-          <tr>
-            <td><strong>Realtime event schema</strong></td>
-            <td>Event name, payload, ordering, dedupe key, reconnect behavior, and optimistic rollback rules.</td>
-            <td>Prevents realtime UI from drifting out of sync under retries, reconnects, or duplicate events.</td>
-          </tr>
-          <tr>
-            <td><strong>Error taxonomy and UI state mapping</strong></td>
-            <td>Validation, auth, rate limit, timeout, partial failure, stale data, empty result, and retry states.</td>
-            <td>Shows that the interface works outside the happy path and remains understandable to users.</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-scroll" tabindex="0" role="region" aria-label="Scrollable table">
+        <table>
+          <thead>
+            <tr>
+              <th>Interface type</th>
+              <th>What to define</th>
+              <th>Why it matters</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Server-client API contracts</strong></td>
+              <td>Request shape, response shape, pagination, auth, errors, retries, and rate limits.</td>
+              <td>Prevents hand-wavy backend dependency and makes loading, stale, and failure states concrete.</td>
+            </tr>
+            <tr>
+              <td><strong>Client-client events/callbacks</strong></td>
+              <td>Cross-component events, callbacks, store actions, analytics events, and cancellation behavior.</td>
+              <td>Keeps ownership clear when multiple surfaces react to one user intent.</td>
+            </tr>
+            <tr>
+              <td><strong>Component props/events</strong></td>
+              <td>Controlled vs uncontrolled props, emitted events, state ownership, validation, and disabled states.</td>
+              <td>Turns architecture into reusable UI contracts that a team can implement.</td>
+            </tr>
+            <tr>
+              <td><strong>Realtime event schema</strong></td>
+              <td>Event name, payload, ordering, dedupe key, reconnect behavior, and optimistic rollback rules.</td>
+              <td>Prevents realtime UI from drifting out of sync under retries, reconnects, or duplicate events.</td>
+            </tr>
+            <tr>
+              <td><strong>Error taxonomy and UI state mapping</strong></td>
+              <td>Validation, auth, rate limit, timeout, partial failure, stale data, empty result, and retry states.</td>
+              <td>Shows that the interface works outside the happy path and remains understandable to users.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       <h2>RADIO Cheat Sheet</h2>
       <div class="radio-steps">
@@ -883,104 +887,108 @@ I would ship the simple path first, instrument the risky flow, and use metrics t
       </div>
 
       <h2 id="45-minute-interview-timeline">45-minute interview timeline</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Time range</th>
-            <th>RADIO step</th>
-            <th>Output artifact</th>
-            <th>What to say out loud</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>0:00-0:06</td>
-            <td><strong>R - Requirements</strong></td>
-            <td>Scope box, must-have list, NFR priorities</td>
-            <td>I will lock the core flow, non-goals, and success metrics before architecture.</td>
-          </tr>
-          <tr>
-            <td>0:06-0:15</td>
-            <td><strong>A - Architecture</strong></td>
-            <td>Client architecture, rendering choice, critical request flow</td>
-            <td>The browser, CDN, app shell, BFF/API, and state layer are the boxes I will draw first.</td>
-          </tr>
-          <tr>
-            <td>0:15-0:20</td>
-            <td><strong>D - Data model</strong></td>
-            <td>Entities, server truth, client state, cache keys</td>
-            <td>I will separate server-originated data from client-only UI state.</td>
-          </tr>
-          <tr>
-            <td>0:20-0:27</td>
-            <td><strong>I - Interface</strong></td>
-            <td>Component ownership, API contract, interaction states</td>
-            <td>Now I will define component responsibility, API shape, and accessibility behavior.</td>
-          </tr>
-          <tr>
-            <td>0:27-0:42</td>
-            <td><strong>O - Optimizations/deep dive</strong></td>
-            <td>Perf budget, stale-state plan, observability, security trade-offs</td>
-            <td>I will spend the most time on the riskiest frontend constraints and measurable trade-offs.</td>
-          </tr>
-          <tr>
-            <td>0:42-0:45</td>
-            <td><strong>Recap</strong></td>
-            <td>Decision summary + next steps</td>
-            <td>The final trade-off is what I would ship first and what I would validate next.</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-scroll" tabindex="0" role="region" aria-label="Scrollable table">
+        <table>
+          <thead>
+            <tr>
+              <th>Time range</th>
+              <th>RADIO step</th>
+              <th>Output artifact</th>
+              <th>What to say out loud</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>0:00-0:06</td>
+              <td><strong>R - Requirements</strong></td>
+              <td>Scope box, must-have list, NFR priorities</td>
+              <td>I will lock the core flow, non-goals, and success metrics before architecture.</td>
+            </tr>
+            <tr>
+              <td>0:06-0:15</td>
+              <td><strong>A - Architecture</strong></td>
+              <td>Client architecture, rendering choice, critical request flow</td>
+              <td>The browser, CDN, app shell, BFF/API, and state layer are the boxes I will draw first.</td>
+            </tr>
+            <tr>
+              <td>0:15-0:20</td>
+              <td><strong>D - Data model</strong></td>
+              <td>Entities, server truth, client state, cache keys</td>
+              <td>I will separate server-originated data from client-only UI state.</td>
+            </tr>
+            <tr>
+              <td>0:20-0:27</td>
+              <td><strong>I - Interface</strong></td>
+              <td>Component ownership, API contract, interaction states</td>
+              <td>Now I will define component responsibility, API shape, and accessibility behavior.</td>
+            </tr>
+            <tr>
+              <td>0:27-0:42</td>
+              <td><strong>O - Optimizations/deep dive</strong></td>
+              <td>Perf budget, stale-state plan, observability, security trade-offs</td>
+              <td>I will spend the most time on the riskiest frontend constraints and measurable trade-offs.</td>
+            </tr>
+            <tr>
+              <td>0:42-0:45</td>
+              <td><strong>Recap</strong></td>
+              <td>Decision summary + next steps</td>
+              <td>The final trade-off is what I would ship first and what I would validate next.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       <h2>60-minute interview timeline</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Time range</th>
-            <th>RADIO step</th>
-            <th>Output artifact</th>
-            <th>What to say out loud</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>0:00-0:08</td>
-            <td><strong>R - Requirements</strong></td>
-            <td>Scope box, user flows, NFRs, explicit non-goals</td>
-            <td>I will use RADIO, but I will adapt depth based on what the interviewer cares about.</td>
-          </tr>
-          <tr>
-            <td>0:08-0:20</td>
-            <td><strong>A - Architecture</strong></td>
-            <td>Primary architecture, one alternative, rendering matrix</td>
-            <td>I will compare the simple path with the scalable path before choosing.</td>
-          </tr>
-          <tr>
-            <td>0:20-0:26</td>
-            <td><strong>D - Data model</strong></td>
-            <td>Entity model, cache policy, URL/client state split</td>
-            <td>These are the data contracts that prevent stale or inconsistent UI.</td>
-          </tr>
-          <tr>
-            <td>0:26-0:35</td>
-            <td><strong>I - Interface</strong></td>
-            <td>Component tree, API/interface contract, a11y state map</td>
-            <td>This is where I will define responsibility boundaries and the interaction contract.</td>
-          </tr>
-          <tr>
-            <td>0:35-0:56</td>
-            <td><strong>O - Optimizations/deep dive</strong></td>
-            <td>Performance budget, resilience plan, telemetry, security, rollout risks</td>
-            <td>I will go deep on the bottleneck most likely to fail the user experience.</td>
-          </tr>
-          <tr>
-            <td>0:56-1:00</td>
-            <td><strong>Recap</strong></td>
-            <td>Risks, trade-offs, iteration plan</td>
-            <td>Given more time, I would validate with load, accessibility, and real-user metrics.</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-scroll" tabindex="0" role="region" aria-label="Scrollable table">
+        <table>
+          <thead>
+            <tr>
+              <th>Time range</th>
+              <th>RADIO step</th>
+              <th>Output artifact</th>
+              <th>What to say out loud</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>0:00-0:08</td>
+              <td><strong>R - Requirements</strong></td>
+              <td>Scope box, user flows, NFRs, explicit non-goals</td>
+              <td>I will use RADIO, but I will adapt depth based on what the interviewer cares about.</td>
+            </tr>
+            <tr>
+              <td>0:08-0:20</td>
+              <td><strong>A - Architecture</strong></td>
+              <td>Primary architecture, one alternative, rendering matrix</td>
+              <td>I will compare the simple path with the scalable path before choosing.</td>
+            </tr>
+            <tr>
+              <td>0:20-0:26</td>
+              <td><strong>D - Data model</strong></td>
+              <td>Entity model, cache policy, URL/client state split</td>
+              <td>These are the data contracts that prevent stale or inconsistent UI.</td>
+            </tr>
+            <tr>
+              <td>0:26-0:35</td>
+              <td><strong>I - Interface</strong></td>
+              <td>Component tree, API/interface contract, a11y state map</td>
+              <td>This is where I will define responsibility boundaries and the interaction contract.</td>
+            </tr>
+            <tr>
+              <td>0:35-0:56</td>
+              <td><strong>O - Optimizations/deep dive</strong></td>
+              <td>Performance budget, resilience plan, telemetry, security, rollout risks</td>
+              <td>I will go deep on the bottleneck most likely to fail the user experience.</td>
+            </tr>
+            <tr>
+              <td>0:56-1:00</td>
+              <td><strong>Recap</strong></td>
+              <td>Risks, trade-offs, iteration plan</td>
+              <td>Given more time, I would validate with load, accessibility, and real-user metrics.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       <h2 id="candidate-script">Candidate script</h2>
       <ol class="script-cues">
@@ -1000,48 +1008,50 @@ I would ship the simple path first, instrument the risky flow, and use metrics t
         <a [routerLink]="['/', 'guides', 'system-design-blueprint', 'checklist']">frontend system design interview checklist</a>
         to catch final-review gaps before you stop.
       </p>
-      <table>
-        <thead>
-          <tr>
-            <th>Step</th>
-            <th>Artifact</th>
-            <th>Interviewer signal</th>
-            <th>Common miss</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>R</strong></td>
-            <td>Scope box, NFRs, success metrics, non-goals</td>
-            <td>You avoid solving the wrong problem.</td>
-            <td>Jumping into components before clarifying the core flow.</td>
-          </tr>
-          <tr>
-            <td><strong>A</strong></td>
-            <td>Client architecture, rendering matrix, request flow</td>
-            <td>You can map product requirements to frontend architecture.</td>
-            <td>Drawing backend infrastructure while ignoring client boundaries.</td>
-          </tr>
-          <tr>
-            <td><strong>D</strong></td>
-            <td>Entities, state ownership, cache keys, invalidation rules</td>
-            <td>You understand server data, client state, and stale UI risk.</td>
-            <td>Mixing domain data, view state, and derived state.</td>
-          </tr>
-          <tr>
-            <td><strong>I</strong></td>
-            <td>Component responsibility, API/interface contract, UI states, a11y behavior</td>
-            <td>You can turn architecture into an implementable UI contract.</td>
-            <td>Skipping keyboard, focus, loading, empty, and error states.</td>
-          </tr>
-          <tr>
-            <td><strong>O</strong></td>
-            <td>Perf budget, observability, security baseline, trade-off backlog</td>
-            <td>You can defend production readiness with measurable priorities.</td>
-            <td>Listing optimizations without measurement or user impact.</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-scroll" tabindex="0" role="region" aria-label="Scrollable table">
+        <table>
+          <thead>
+            <tr>
+              <th>Step</th>
+              <th>Artifact</th>
+              <th>Interviewer signal</th>
+              <th>Common miss</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>R</strong></td>
+              <td>Scope box, NFRs, success metrics, non-goals</td>
+              <td>You avoid solving the wrong problem.</td>
+              <td>Jumping into components before clarifying the core flow.</td>
+            </tr>
+            <tr>
+              <td><strong>A</strong></td>
+              <td>Client architecture, rendering matrix, request flow</td>
+              <td>You can map product requirements to frontend architecture.</td>
+              <td>Drawing backend infrastructure while ignoring client boundaries.</td>
+            </tr>
+            <tr>
+              <td><strong>D</strong></td>
+              <td>Entities, state ownership, cache keys, invalidation rules</td>
+              <td>You understand server data, client state, and stale UI risk.</td>
+              <td>Mixing domain data, view state, and derived state.</td>
+            </tr>
+            <tr>
+              <td><strong>I</strong></td>
+              <td>Component responsibility, API/interface contract, UI states, a11y behavior</td>
+              <td>You can turn architecture into an implementable UI contract.</td>
+              <td>Skipping keyboard, focus, loading, empty, and error states.</td>
+            </tr>
+            <tr>
+              <td><strong>O</strong></td>
+              <td>Perf budget, observability, security baseline, trade-off backlog</td>
+              <td>You can defend production readiness with measurable priorities.</td>
+              <td>Listing optimizations without measurement or user impact.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       <h2 id="example-answer-autocomplete-with-radio">Example: Answer autocomplete with RADIO</h2>
       <p>
@@ -1117,82 +1127,86 @@ I would ship the simple path first, instrument the risky flow, and use metrics t
       </div>
 
       <h2 id="common-follow-up-patterns">Common follow-up patterns</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Follow-up</th>
-            <th>Answer pattern</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>What if scope doubles halfway through?</td>
-            <td>Restate the new must-have, keep the original core flow stable, and explicitly move one lower-value feature to phase two.</td>
-          </tr>
-          <tr>
-            <td>What if the API is slow or unreliable?</td>
-            <td>Add timeout, retry, stale-cache fallback, clear error UI, and telemetry for latency/error rate before changing the whole architecture.</td>
-          </tr>
-          <tr>
-            <td>What changes on mobile?</td>
-            <td>Prioritize interaction latency, smaller payloads, touch targets, viewport-safe layouts, and reduced background work.</td>
-          </tr>
-          <tr>
-            <td>How do you prove accessibility?</td>
-            <td>Name roles, keyboard paths, focus transitions, announcements, and the manual or automated checks you would run.</td>
-          </tr>
-          <tr>
-            <td>How do you prevent stale data?</td>
-            <td>Define cache keys, invalidation triggers, latest-intent guards, optimistic rollback rules, and visible stale/error states.</td>
-          </tr>
-          <tr>
-            <td>What is your performance budget?</td>
-            <td>Pick user-facing metrics first: LCP/INP/CLS, interaction latency, API p95, long tasks, bundle KB, and memory pressure.</td>
-          </tr>
-          <tr>
-            <td>What security belongs in frontend design?</td>
-            <td>Cover auth boundary, CSRF/XSS risks, output escaping, safe URL handling, rate-limit UX, and never exposing secrets client-side.</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-scroll" tabindex="0" role="region" aria-label="Scrollable table">
+        <table>
+          <thead>
+            <tr>
+              <th>Follow-up</th>
+              <th>Answer pattern</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>What if scope doubles halfway through?</td>
+              <td>Restate the new must-have, keep the original core flow stable, and explicitly move one lower-value feature to phase two.</td>
+            </tr>
+            <tr>
+              <td>What if the API is slow or unreliable?</td>
+              <td>Add timeout, retry, stale-cache fallback, clear error UI, and telemetry for latency/error rate before changing the whole architecture.</td>
+            </tr>
+            <tr>
+              <td>What changes on mobile?</td>
+              <td>Prioritize interaction latency, smaller payloads, touch targets, viewport-safe layouts, and reduced background work.</td>
+            </tr>
+            <tr>
+              <td>How do you prove accessibility?</td>
+              <td>Name roles, keyboard paths, focus transitions, announcements, and the manual or automated checks you would run.</td>
+            </tr>
+            <tr>
+              <td>How do you prevent stale data?</td>
+              <td>Define cache keys, invalidation triggers, latest-intent guards, optimistic rollback rules, and visible stale/error states.</td>
+            </tr>
+            <tr>
+              <td>What is your performance budget?</td>
+              <td>Pick user-facing metrics first: LCP/INP/CLS, interaction latency, API p95, long tasks, bundle KB, and memory pressure.</td>
+            </tr>
+            <tr>
+              <td>What security belongs in frontend design?</td>
+              <td>Cover auth boundary, CSRF/XSS risks, output escaping, safe URL handling, rate-limit UX, and never exposing secrets client-side.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       <h2>What good vs weak answers sound like</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Step</th>
-            <th>Weak answer</th>
-            <th>Strong answer</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>R</strong></td>
-            <td>I will build all the features and make it scalable.</td>
-            <td>I will optimize the primary flow first, list must-haves/non-goals, and set latency, accessibility, and reliability targets.</td>
-          </tr>
-          <tr>
-            <td><strong>A</strong></td>
-            <td>I will use React and a backend API.</td>
-            <td>I will draw the app shell, routing/rendering choice, state boundary, API/BFF boundary, and failure paths.</td>
-          </tr>
-          <tr>
-            <td><strong>D</strong></td>
-            <td>The backend stores the data and the frontend shows it.</td>
-            <td>I will define entities, server truth, client-only state, derived state, cache keys, TTLs, and invalidation triggers.</td>
-          </tr>
-          <tr>
-            <td><strong>I</strong></td>
-            <td>I will make components and pass props.</td>
-            <td>I will define component ownership, public APIs/events, loading/empty/error states, focus behavior, and announcements.</td>
-          </tr>
-          <tr>
-            <td><strong>O</strong></td>
-            <td>I will optimize performance and add monitoring.</td>
-            <td>I will pick the riskiest bottleneck, set a budget, choose two high-impact optimizations, and instrument the flow.</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-scroll" tabindex="0" role="region" aria-label="Scrollable table">
+        <table>
+          <thead>
+            <tr>
+              <th>Step</th>
+              <th>Weak answer</th>
+              <th>Strong answer</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>R</strong></td>
+              <td>I will build all the features and make it scalable.</td>
+              <td>I will optimize the primary flow first, list must-haves/non-goals, and set latency, accessibility, and reliability targets.</td>
+            </tr>
+            <tr>
+              <td><strong>A</strong></td>
+              <td>I will use React and a backend API.</td>
+              <td>I will draw the app shell, routing/rendering choice, state boundary, API/BFF boundary, and failure paths.</td>
+            </tr>
+            <tr>
+              <td><strong>D</strong></td>
+              <td>The backend stores the data and the frontend shows it.</td>
+              <td>I will define entities, server truth, client-only state, derived state, cache keys, TTLs, and invalidation triggers.</td>
+            </tr>
+            <tr>
+              <td><strong>I</strong></td>
+              <td>I will make components and pass props.</td>
+              <td>I will define component ownership, public APIs/events, loading/empty/error states, focus behavior, and announcements.</td>
+            </tr>
+            <tr>
+              <td><strong>O</strong></td>
+              <td>I will optimize performance and add monitoring.</td>
+              <td>I will pick the riskiest bottleneck, set a budget, choose two high-impact optimizations, and instrument the flow.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       <h2>RADIO Framework FAQ</h2>
       <h3>What does RADIO stand for in frontend system design?</h3>
@@ -1242,36 +1256,38 @@ I would ship the simple path first, instrument the risky flow, and use metrics t
       </ul>
 
       <h2>Self-check</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Check</th>
-            <th>Answer</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Is every RADIO step actionable?</td>
-            <td>Yes. Each step has explicit goals, questions, and timeboxed actions.</td>
-          </tr>
-          <tr>
-            <td>Are artifacts included for each step?</td>
-            <td>Yes. Every step has concrete interview artifacts to draw/write.</td>
-          </tr>
-          <tr>
-            <td>Does it work for a frontend-heavy problem?</td>
-            <td>Yes. It includes rendering strategy, UI states, a11y, caching, and perf budgets.</td>
-          </tr>
-          <tr>
-            <td>Does it avoid vague advice?</td>
-            <td>Yes. It uses script cues, templates, and decision-level trade-offs.</td>
-          </tr>
-          <tr>
-            <td>Does it include both 45 and 60 minute timelines?</td>
-            <td>Yes. Both timelines are included with outputs and speaking cues.</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-scroll" tabindex="0" role="region" aria-label="Scrollable table">
+        <table>
+          <thead>
+            <tr>
+              <th>Check</th>
+              <th>Answer</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Is every RADIO step actionable?</td>
+              <td>Yes. Each step has explicit goals, questions, and timeboxed actions.</td>
+            </tr>
+            <tr>
+              <td>Are artifacts included for each step?</td>
+              <td>Yes. Every step has concrete interview artifacts to draw/write.</td>
+            </tr>
+            <tr>
+              <td>Does it work for a frontend-heavy problem?</td>
+              <td>Yes. It includes rendering strategy, UI states, a11y, caching, and perf budgets.</td>
+            </tr>
+            <tr>
+              <td>Does it avoid vague advice?</td>
+              <td>Yes. It uses script cues, templates, and decision-level trade-offs.</td>
+            </tr>
+            <tr>
+              <td>Does it include both 45 and 60 minute timelines?</td>
+              <td>Yes. Both timelines are included with outputs and speaking cues.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </fa-guide-shell>
   `
 })

@@ -18,7 +18,7 @@ Load this for Angular UI, styling, shared-ui, and design-system work.
 - Treat spacing and text wrapping as user-trust requirements. Verify user-facing changes at 360/390px mobile, 834px tablet, and 1366/1440px desktop widths.
 - Give grid and flex children `min-width: 0` where content must shrink. Prefer responsive reflow and readable line lengths over squeezing content into a fixed row.
 - Let prose wrap at normal word boundaries. Keep short labels and CTAs intact as flex/grid items; do not use `word-break: break-all` or `overflow-wrap: anywhere` to conceal layout problems.
-
+- Never restructure projected or authored DOM during server rendering (wrapping tables, inserting buttons). Hydration walks the prerendered DOM expecting the template structure; a mismatch mis-binds nodes or crashes with a null node in `hasSkipHydrationAttrOnRElement`. Author wrappers such as `.table-scroll` in the template, keep attribute-only tweaks (heading ids) on the server, and run DOM enhancers in the browser after hydration via `afterNextRender`. `ngSkipHydration` is not a fix for this.
 ## Path triggers
 - `frontend/src/app/shared/ui/**`
 - `frontend/src/app/shared/components/**`

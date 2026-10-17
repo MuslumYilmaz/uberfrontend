@@ -38,42 +38,44 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       </p>
 
       <h2>Frontend behavioral interview stage map</h2>
-      <table class="table-auto border border-neutral-700 mt-3 w-full">
-        <thead>
-          <tr>
-            <th class="px-2 py-1 text-left">Stage</th>
-            <th class="px-2 py-1 text-left">What they are checking</th>
-            <th class="px-2 py-1 text-left">Frontend evidence to prepare</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Recruiter screen</td>
-            <td>Motivation, communication, role fit, compensation and logistics.</td>
-            <td>A concise reason for this role, one frontend impact headline, and clear expectations.</td>
-          </tr>
-          <tr>
-            <td>Hiring manager screen</td>
-            <td>Ownership level, scope, collaboration habits, and whether your stories match the role.</td>
-            <td>Performance, accessibility, incident, and cross-functional stories with measurable outcomes.</td>
-          </tr>
-          <tr>
-            <td>Onsite behavioral round</td>
-            <td>Past behavior under pressure: conflict, ambiguity, failure, judgment, and growth.</td>
-            <td>STAR(R) stories that show trade-offs, stakeholder alignment, and what changed afterward.</td>
-          </tr>
-          <tr>
-            <td>Cross-functional round</td>
-            <td>How you work with product, design, QA, backend, data, and support partners.</td>
-            <td>API contract negotiation, ambiguous PM scope, design disagreement, or launch coordination.</td>
-          </tr>
-          <tr>
-            <td>Debrief / hiring committee</td>
-            <td>Whether notes reduce risk or introduce concerns about leveling, trust, or repeatability.</td>
-            <td>Specific examples that are easy for interviewers to quote: action, trade-off, result, reflection.</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-scroll" tabindex="0" role="region" aria-label="Scrollable table">
+        <table class="table-auto border border-neutral-700 mt-3 w-full">
+          <thead>
+            <tr>
+              <th class="px-2 py-1 text-left">Stage</th>
+              <th class="px-2 py-1 text-left">What they are checking</th>
+              <th class="px-2 py-1 text-left">Frontend evidence to prepare</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Recruiter screen</td>
+              <td>Motivation, communication, role fit, compensation and logistics.</td>
+              <td>A concise reason for this role, one frontend impact headline, and clear expectations.</td>
+            </tr>
+            <tr>
+              <td>Hiring manager screen</td>
+              <td>Ownership level, scope, collaboration habits, and whether your stories match the role.</td>
+              <td>Performance, accessibility, incident, and cross-functional stories with measurable outcomes.</td>
+            </tr>
+            <tr>
+              <td>Onsite behavioral round</td>
+              <td>Past behavior under pressure: conflict, ambiguity, failure, judgment, and growth.</td>
+              <td>STAR(R) stories that show trade-offs, stakeholder alignment, and what changed afterward.</td>
+            </tr>
+            <tr>
+              <td>Cross-functional round</td>
+              <td>How you work with product, design, QA, backend, data, and support partners.</td>
+              <td>API contract negotiation, ambiguous PM scope, design disagreement, or launch coordination.</td>
+            </tr>
+            <tr>
+              <td>Debrief / hiring committee</td>
+              <td>Whether notes reduce risk or introduce concerns about leveling, trust, or repeatability.</td>
+              <td>Specific examples that are easy for interviewers to quote: action, trade-off, result, reflection.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       <h2>What happens in a frontend behavioral onsite interview?</h2>
       <p>
@@ -109,37 +111,39 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       </div>
 
       <h2>What do frontend behavioral interviewers look for?</h2>
-      <table class="table-auto border border-neutral-700 mt-3 w-full">
-        <thead>
-          <tr>
-            <th class="px-2 py-1 text-left">Company goal</th>
-            <th class="px-2 py-1 text-left">Behavioral signal</th>
-            <th class="px-2 py-1 text-left">What to demonstrate</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Shipping predictably</td>
-            <td>Ownership and risk thinking</td>
-            <td>Surfacing blockers early, breaking work down, using feature flags, and managing rollback paths.</td>
-          </tr>
-          <tr>
-            <td>Healthy collaboration</td>
-            <td>Communication and empathy</td>
-            <td>Aligning with design, PM, backend, QA, and support without hiding trade-offs.</td>
-          </tr>
-          <tr>
-            <td>Maintaining quality</td>
-            <td>Judgment</td>
-            <td>Balancing performance, accessibility, UX polish, test coverage, and delivery pressure.</td>
-          </tr>
-          <tr>
-            <td>Growing the team</td>
-            <td>Leadership potential</td>
-            <td>Mentoring, improving review habits, documenting decisions, and making repeated work easier.</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-scroll" tabindex="0" role="region" aria-label="Scrollable table">
+        <table class="table-auto border border-neutral-700 mt-3 w-full">
+          <thead>
+            <tr>
+              <th class="px-2 py-1 text-left">Company goal</th>
+              <th class="px-2 py-1 text-left">Behavioral signal</th>
+              <th class="px-2 py-1 text-left">What to demonstrate</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Shipping predictably</td>
+              <td>Ownership and risk thinking</td>
+              <td>Surfacing blockers early, breaking work down, using feature flags, and managing rollback paths.</td>
+            </tr>
+            <tr>
+              <td>Healthy collaboration</td>
+              <td>Communication and empathy</td>
+              <td>Aligning with design, PM, backend, QA, and support without hiding trade-offs.</td>
+            </tr>
+            <tr>
+              <td>Maintaining quality</td>
+              <td>Judgment</td>
+              <td>Balancing performance, accessibility, UX polish, test coverage, and delivery pressure.</td>
+            </tr>
+            <tr>
+              <td>Growing the team</td>
+              <td>Leadership potential</td>
+              <td>Mentoring, improving review habits, documenting decisions, and making repeated work easier.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       <h2>Senior frontend engineer behavioral interview signals</h2>
       <p>
@@ -154,48 +158,50 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       </ul>
 
       <h2>Pass, mixed, and fail signals</h2>
-      <table class="table-auto border border-neutral-700 mt-3 w-full">
-        <thead>
-          <tr>
-            <th class="px-2 py-1 text-left">Signal</th>
-            <th class="px-2 py-1 text-left">Fail</th>
-            <th class="px-2 py-1 text-left">Mixed</th>
-            <th class="px-2 py-1 text-left">Pass</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Ownership</td>
-            <td>Waited for direction, blamed constraints, or could not name the outcome.</td>
-            <td>Did the assigned work but only owned the narrow task.</td>
-            <td>Clarified scope, surfaced risk, drove follow-through, and improved the next release.</td>
-          </tr>
-          <tr>
-            <td>Communication</td>
-            <td>Rambled, used unclear context, or surprised stakeholders late.</td>
-            <td>Communicated status but not trade-offs or decisions.</td>
-            <td>Made options visible, aligned stakeholders, and kept the story concise.</td>
-          </tr>
-          <tr>
-            <td>Judgment</td>
-            <td>Optimized the wrong thing or ignored user, accessibility, or reliability impact.</td>
-            <td>Named trade-offs but did not explain why one option won.</td>
-            <td>Connected the decision to users, constraints, risks, and measurable impact.</td>
-          </tr>
-          <tr>
-            <td>Collaboration</td>
-            <td>Framed partners as blockers or avoided conflict.</td>
-            <td>Resolved the issue but left the process unchanged.</td>
-            <td>Created shared context, preserved trust, and made future collaboration easier.</td>
-          </tr>
-          <tr>
-            <td>Growth</td>
-            <td>No reflection, repeated the same mistake, or could not accept feedback.</td>
-            <td>Learned personally but did not change a habit or system.</td>
-            <td>Changed behavior, added guardrails, and helped others avoid the same failure.</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-scroll" tabindex="0" role="region" aria-label="Scrollable table">
+        <table class="table-auto border border-neutral-700 mt-3 w-full">
+          <thead>
+            <tr>
+              <th class="px-2 py-1 text-left">Signal</th>
+              <th class="px-2 py-1 text-left">Fail</th>
+              <th class="px-2 py-1 text-left">Mixed</th>
+              <th class="px-2 py-1 text-left">Pass</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Ownership</td>
+              <td>Waited for direction, blamed constraints, or could not name the outcome.</td>
+              <td>Did the assigned work but only owned the narrow task.</td>
+              <td>Clarified scope, surfaced risk, drove follow-through, and improved the next release.</td>
+            </tr>
+            <tr>
+              <td>Communication</td>
+              <td>Rambled, used unclear context, or surprised stakeholders late.</td>
+              <td>Communicated status but not trade-offs or decisions.</td>
+              <td>Made options visible, aligned stakeholders, and kept the story concise.</td>
+            </tr>
+            <tr>
+              <td>Judgment</td>
+              <td>Optimized the wrong thing or ignored user, accessibility, or reliability impact.</td>
+              <td>Named trade-offs but did not explain why one option won.</td>
+              <td>Connected the decision to users, constraints, risks, and measurable impact.</td>
+            </tr>
+            <tr>
+              <td>Collaboration</td>
+              <td>Framed partners as blockers or avoided conflict.</td>
+              <td>Resolved the issue but left the process unchanged.</td>
+              <td>Created shared context, preserved trust, and made future collaboration easier.</td>
+            </tr>
+            <tr>
+              <td>Growth</td>
+              <td>No reflection, repeated the same mistake, or could not accept feedback.</td>
+              <td>Learned personally but did not change a habit or system.</td>
+              <td>Changed behavior, added guardrails, and helped others avoid the same failure.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       <h2>Frontend proof points by stage</h2>
       <ul>
