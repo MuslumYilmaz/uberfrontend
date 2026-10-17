@@ -695,6 +695,9 @@
     "technology": "html",
     "difficulty": "intermediate",
     "importance": 4,
+    "companies": [
+      "booking-com"
+    ],
     "tags": [
       "html",
       "forms",

@@ -10,7 +10,9 @@
     "frontend-architecture"
   ],
   "companies": [
-    "meta"
+    "meta",
+    "zalando",
+    "booking-com"
   ],
   "type": "system-design",
   "sections": [
@@ -71,6 +73,20 @@
         "sourceUrl": "https://www.teamblind.com/post/meta-frontend-system-design-yexyrusi",
         "sourceTitle": "Meta frontend system design, March 2022 (Blind)",
         "checkedAt": "2026-10-15"
+      },
+      {
+        "company": "zalando",
+        "evidenceType": "reported-interview-question",
+        "sourceUrl": "https://leetcode.com/discuss/interview-experience/5501338/",
+        "sourceTitle": "Zalando senior frontend engineer interview, Berlin, July 2024 (LeetCode Discuss)",
+        "checkedAt": "2026-10-17"
+      },
+      {
+        "company": "booking-com",
+        "evidenceType": "reported-interview-question",
+        "sourceUrl": "https://enginebogie.com/interview/experience/booking-com-frontend-engineer/84",
+        "sourceTitle": "Booking.com frontend engineer machine-coding round, May 2023 (enginebogie)",
+        "checkedAt": "2026-10-17"
       }
     ]
   },
@@ -82,6 +98,22 @@
       "publisher": "Blind",
       "date": "2022-03",
       "note": "One L5 Meta front end account describes a system design round that asked for a very specific component such as autocomplete rather than a whole product. This case practises that shape; it is not the reported prompt."
+    },
+    {
+      "label": "LeetCode Discuss: Zalando senior frontend engineer interview, Berlin, July 2024",
+      "url": "https://leetcode.com/discuss/interview-experience/5501338/",
+      "company": "zalando",
+      "publisher": "LeetCode Discuss",
+      "date": "2024-07",
+      "note": "One senior account describes a Codility search-box take-home followed by the question 'how can you optimise the application further?'. This case practises the design side of that discussion; it is not the reported prompt."
+    },
+    {
+      "label": "enginebogie: Booking.com frontend engineer machine-coding round, May 2023",
+      "url": "https://enginebogie.com/interview/experience/booking-com-frontend-engineer/84",
+      "company": "booking-com",
+      "publisher": "enginebogie",
+      "date": "2023-05",
+      "note": "One account lists debounce or throttle, caching, keyboard navigation and error states as the expectations of a 60-minute typeahead round. This case practises the design side of those expectations; it is not the reported prompt."
     }
   ]
 }

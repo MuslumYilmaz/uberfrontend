@@ -374,6 +374,131 @@
         ]
       }
     ],
+    "booking-com": [
+      {
+        "id": "vue-autocomplete-search",
+        "kind": "coding",
+        "tech": "vue",
+        "title": "Autocomplete Search (debounce + keyboard + outside click)",
+        "access": "premium",
+        "route": "/vue/coding/vue-autocomplete-search",
+        "sources": [
+          {
+            "label": "Code360: Booking.com frontend engineer interview experience, April 2023",
+            "url": "https://www.naukri.com/code360/interview-experiences/booking-com/interview-experience-frontend-engineer-apr-2023-exp-0-2-years",
+            "publisher": "Code360",
+            "date": "2023-04"
+          },
+          {
+            "label": "enginebogie: Booking.com frontend engineer machine-coding round, May 2023",
+            "url": "https://enginebogie.com/interview/experience/booking-com-frontend-engineer/84",
+            "publisher": "enginebogie",
+            "date": "2023-05"
+          }
+        ]
+      },
+      {
+        "id": "angular-autocomplete-search-starter",
+        "kind": "coding",
+        "tech": "angular",
+        "title": "Autocomplete Search Bar (Standalone Component)",
+        "access": "premium",
+        "route": "/angular/coding/angular-autocomplete-search-starter",
+        "sources": [
+          {
+            "label": "Code360: Booking.com frontend engineer interview experience, April 2023",
+            "url": "https://www.naukri.com/code360/interview-experiences/booking-com/interview-experience-frontend-engineer-apr-2023-exp-0-2-years",
+            "publisher": "Code360",
+            "date": "2023-04"
+          },
+          {
+            "label": "enginebogie: Booking.com frontend engineer machine-coding round, May 2023",
+            "url": "https://enginebogie.com/interview/experience/booking-com-frontend-engineer/84",
+            "publisher": "enginebogie",
+            "date": "2023-05"
+          }
+        ]
+      },
+      {
+        "id": "js-debounce",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Debounce Function",
+        "access": "free",
+        "route": "/javascript/coding/js-debounce",
+        "sources": [
+          {
+            "label": "enginebogie: Booking.com frontend engineer machine-coding round, May 2023",
+            "url": "https://enginebogie.com/interview/experience/booking-com-frontend-engineer/84",
+            "publisher": "enginebogie",
+            "date": "2023-05"
+          }
+        ]
+      },
+      {
+        "id": "react-autocomplete-search-starter",
+        "kind": "coding",
+        "tech": "react",
+        "title": "React Autocomplete Interview Question",
+        "access": "free",
+        "route": "/react/coding/react-autocomplete-search-starter",
+        "sources": [
+          {
+            "label": "Code360: Booking.com frontend engineer interview experience, April 2023",
+            "url": "https://www.naukri.com/code360/interview-experiences/booking-com/interview-experience-frontend-engineer-apr-2023-exp-0-2-years",
+            "publisher": "Code360",
+            "date": "2023-04"
+          }
+        ]
+      },
+      {
+        "id": "react-debounced-search",
+        "kind": "coding",
+        "tech": "react",
+        "title": "React Debounced Search with Fake API",
+        "access": "premium",
+        "route": "/react/coding/react-debounced-search",
+        "sources": [
+          {
+            "label": "Taro: Booking.com senior full stack engineer interview, Amsterdam, July 2023",
+            "url": "https://www.jointaro.com/interviews/companies/bookingcom/experiences/senior-full-stack-engineer-amsterdam-july-1-2023-no-offer-negative-cb57c4dd/",
+            "publisher": "Taro",
+            "date": "2023-07"
+          }
+        ]
+      },
+      {
+        "id": "js-throttle",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Throttle Function",
+        "access": "premium",
+        "route": "/javascript/coding/js-throttle",
+        "sources": [
+          {
+            "label": "enginebogie: Booking.com frontend engineer machine-coding round, May 2023",
+            "url": "https://enginebogie.com/interview/experience/booking-com-frontend-engineer/84",
+            "publisher": "enginebogie",
+            "date": "2023-05"
+          }
+        ]
+      },
+      {
+        "id": "realtime-search-debounce-cache",
+        "kind": "system-design",
+        "title": "Real-time Search with Debounce & Caching",
+        "access": "premium",
+        "route": "/system-design/realtime-search-debounce-cache",
+        "sources": [
+          {
+            "label": "enginebogie: Booking.com frontend engineer machine-coding round, May 2023",
+            "url": "https://enginebogie.com/interview/experience/booking-com-frontend-engineer/84",
+            "publisher": "enginebogie",
+            "date": "2023-05"
+          }
+        ]
+      }
+    ],
     "bytedance": [
       {
         "id": "js-build-tree-from-flat-list",
@@ -1118,6 +1243,52 @@
         ]
       }
     ],
+    "revolut": [
+      {
+        "id": "react-debounced-search",
+        "kind": "coding",
+        "tech": "react",
+        "title": "React Debounced Search with Fake API",
+        "access": "premium",
+        "route": "/react/coding/react-debounced-search",
+        "sources": [
+          {
+            "label": "Taro: Revolut frontend developer interview, April 2025",
+            "url": "https://www.jointaro.com/interviews/companies/revolut/experiences/frontend-developer-warsaw-masovia-april-1-2025-no-offer-neutral-71032bb4/",
+            "publisher": "Taro",
+            "date": "2025-04"
+          },
+          {
+            "label": "Taro: Revolut frontend engineer interview, May 2025",
+            "url": "https://www.jointaro.com/interviews/companies/revolut/experiences/frontend-engineer-barcelona-may-1-2025-no-offer-neutral-3c58f9b9/",
+            "publisher": "Taro",
+            "date": "2025-05"
+          }
+        ]
+      },
+      {
+        "id": "react-fetch-list-states",
+        "kind": "coding",
+        "tech": "react",
+        "title": "React Fetch and Render a List with Loading, Error and Empty States",
+        "access": "free",
+        "route": "/react/coding/react-fetch-list-states",
+        "sources": [
+          {
+            "label": "Taro: Revolut frontend developer interview, April 2025",
+            "url": "https://www.jointaro.com/interviews/companies/revolut/experiences/frontend-developer-warsaw-masovia-april-1-2025-no-offer-neutral-71032bb4/",
+            "publisher": "Taro",
+            "date": "2025-04"
+          },
+          {
+            "label": "Taro: Revolut frontend engineer interview, May 2025",
+            "url": "https://www.jointaro.com/interviews/companies/revolut/experiences/frontend-engineer-barcelona-may-1-2025-no-offer-neutral-3c58f9b9/",
+            "publisher": "Taro",
+            "date": "2025-05"
+          }
+        ]
+      }
+    ],
     "servicenow": [
       {
         "id": "js-dom-renderer",
@@ -1239,6 +1410,40 @@
             "url": "https://www.teamblind.com/post/servicenow-phone-screen-staff-engineer-interview-8msftqw8",
             "publisher": "Blind",
             "date": "2021-09"
+          }
+        ]
+      }
+    ],
+    "spotify": [
+      {
+        "id": "react-image-slider",
+        "kind": "coding",
+        "tech": "react",
+        "title": "Image Slider (Dots + Previous/Next)",
+        "access": "premium",
+        "route": "/react/coding/react-image-slider",
+        "sources": [
+          {
+            "label": "Blind: Spotify web engineer interview thread, October 2021",
+            "url": "https://www.teamblind.com/post/Spotify-Web-Engineer-Interview-hNTex8N7",
+            "publisher": "Blind",
+            "date": "2021-10"
+          }
+        ]
+      },
+      {
+        "id": "react-debounced-search",
+        "kind": "coding",
+        "tech": "react",
+        "title": "React Debounced Search with Fake API",
+        "access": "premium",
+        "route": "/react/coding/react-debounced-search",
+        "sources": [
+          {
+            "label": "Blind: Spotify web engineer final round, April 2022",
+            "url": "https://www.teamblind.com/post/weak-system-design-interview-for-spotify-chances-of-no-hire-00wjs6rg",
+            "publisher": "Blind",
+            "date": "2022-04"
           }
         ]
       }
@@ -1468,6 +1673,55 @@
             "url": "https://prachub.com/interview-experiences/waymo-senior-frontend-engineer-interview-experience-rejected-30-minutes-after-pushing-on-the-process",
             "publisher": "PracHub",
             "date": "2026-05"
+          }
+        ]
+      }
+    ],
+    "zalando": [
+      {
+        "id": "js-debounce",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Debounce Function",
+        "access": "free",
+        "route": "/javascript/coding/js-debounce",
+        "sources": [
+          {
+            "label": "LeetCode Discuss: Zalando senior frontend engineer interview, Berlin, July 2024",
+            "url": "https://leetcode.com/discuss/interview-experience/5501338/",
+            "publisher": "LeetCode Discuss",
+            "date": "2024-07"
+          }
+        ]
+      },
+      {
+        "id": "react-autocomplete-search-starter",
+        "kind": "coding",
+        "tech": "react",
+        "title": "React Autocomplete Interview Question",
+        "access": "free",
+        "route": "/react/coding/react-autocomplete-search-starter",
+        "sources": [
+          {
+            "label": "LeetCode Discuss: Zalando senior frontend engineer interview, Berlin, July 2024",
+            "url": "https://leetcode.com/discuss/interview-experience/5501338/",
+            "publisher": "LeetCode Discuss",
+            "date": "2024-07"
+          }
+        ]
+      },
+      {
+        "id": "realtime-search-debounce-cache",
+        "kind": "system-design",
+        "title": "Real-time Search with Debounce & Caching",
+        "access": "premium",
+        "route": "/system-design/realtime-search-debounce-cache",
+        "sources": [
+          {
+            "label": "LeetCode Discuss: Zalando senior frontend engineer interview, Berlin, July 2024",
+            "url": "https://leetcode.com/discuss/interview-experience/5501338/",
+            "publisher": "LeetCode Discuss",
+            "date": "2024-07"
           }
         ]
       }

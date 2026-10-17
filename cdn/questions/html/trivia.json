@@ -793,7 +793,9 @@
       "structure"
     ],
     "importance": 5,
-    "companies": [],
+    "companies": [
+      "zalando"
+    ],
     "answer": {
       "blocks": [
         {
@@ -2797,6 +2799,9 @@
     "technology": "html",
     "difficulty": "hard",
     "importance": 4,
+    "companies": [
+      "zalando"
+    ],
     "description": "Browsers parse HTML progressively, build the DOM and CSSOM, then layout and paint what users see. Under the hood, synchronous scripts and render-blocking CSS can pause this pipeline and create hard-to-debug performance issues.",
     "seo": {
       "title": "HTML parsing and rendering: DOM, CSSOM, and render-blocking debugging",
@@ -2915,6 +2920,9 @@
     "technology": "html",
     "difficulty": "intermediate",
     "importance": 5,
+    "companies": [
+      "zalando"
+    ],
     "description": "ARIA roles describe element purpose for assistive technologies. They improve accessibility when native semantics aren't available, but should not replace proper HTML tags. The common mistake is treating ARIA like a shortcut: roles can label a custom widget, but they do not add keyboard support, focus management, or state updates for you.",
     "seo": {
       "title": "ARIA Roles in HTML: When They Help and When They Hurt",
@@ -3294,7 +3302,8 @@
     ],
     "importance": 4,
     "companies": [
-      "meta"
+      "meta",
+      "revolut"
     ],
     "answer": {
       "blocks": [

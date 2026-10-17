@@ -348,7 +348,9 @@
       "frontend-architecture"
     ],
     "companies": [
-      "meta"
+      "meta",
+      "zalando",
+      "booking-com"
     ],
     "type": "system-design",
     "access": "premium",

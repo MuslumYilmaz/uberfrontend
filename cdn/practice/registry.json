@@ -7335,6 +7335,30 @@
     "assetRef": "questions/react/coding.json#react-dynamic-table"
   },
   {
+    "id": "react-fetch-list-states",
+    "family": "question",
+    "title": "React Fetch and Render a List with Loading, Error and Empty States",
+    "route": "/react/coding/react-fetch-list-states",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "Build a React component that loads a team list from a fake API and renders every request state: loading, success, empty, and error with a Retry button.",
+    "tags": [
+      "react",
+      "typescript",
+      "state",
+      "effects",
+      "async",
+      "api-calls",
+      "error-handling",
+      "loading-states"
+    ],
+    "access": "free",
+    "estimatedMinutes": 18,
+    "updatedAt": "2026-10-17",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/coding.json#react-fetch-list-states"
+  },
+  {
     "id": "react-filterable-user-list",
     "family": "question",
     "title": "React Filterable / Searchable User List",

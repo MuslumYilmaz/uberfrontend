@@ -1,0 +1,121 @@
+{
+  "questionId": "react-fetch-list-states",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "typescript",
+      "code": "import React, { useEffect, useState } from 'react';\nimport './App.css';\n\nexport interface TeamMember {\n  id: number;\n  name: string;\n  role: string;\n}\n\nexport type SourceMode = 'ok' | 'empty' | 'flaky';\n\ntype RequestState =\n  | { status: 'loading' }\n  | { status: 'success'; members: TeamMember[] }\n  | { status: 'empty' }\n  | { status: 'error'; message: string };\n\nconst TEAM: TeamMember[] = [\n  { id: 1, name: 'Alice Johnson', role: 'Frontend engineer' },\n  { id: 2, name: 'Bob Smith', role: 'Product designer' },\n  { id: 3, name: 'Charlie Kim', role: 'Backend engineer' },\n  { id: 4, name: 'Diana Lopez', role: 'Engineering manager' },\n  { id: 5, name: 'Ethan Brown', role: 'QA engineer' },\n  { id: 6, name: 'Fiona Patel', role: 'Data analyst' }\n];\n\nlet flakyRequests = 0;\n\n// Fake API: responds after 400ms.\n// - 'ok' resolves with the whole team\n// - 'empty' resolves with an empty list\n// - 'flaky' rejects every odd request, so the first request fails and a retry succeeds\nexport function fetchTeam(mode: SourceMode): Promise<TeamMember[]> {\n  return new Promise((resolve, reject) => {\n    window.setTimeout(() => {\n      if (mode === 'empty') {\n        resolve([]);\n        return;\n      }\n\n      if (mode === 'flaky') {\n        flakyRequests += 1;\n        if (flakyRequests % 2 === 1) {\n          reject(new Error('Network timeout'));\n          return;\n        }\n      }\n\n      resolve(TEAM.map((member) => ({ ...member })));\n    }, 400);\n  });\n}\n\nfunction toErrorMessage(error: unknown): string {\n  return error instanceof Error && error.message ? error.message : 'Unknown error';\n}\n\nexport default function App() {\n  const [mode, setMode] = useState<SourceMode>('ok');\n  const [attempt, setAttempt] = useState(0);\n  const [request, setRequest] = useState<RequestState>({ status: 'loading' });\n\n  useEffect(() => {\n    let cancelled = false;\n    setRequest({ status: 'loading' });\n\n    fetchTeam(mode)\n      .then((members) => {\n        if (cancelled) return;\n        setRequest(members.length ? { status: 'success', members } : { status: 'empty' });\n      })\n      .catch((error: unknown) => {\n        if (cancelled) return;\n        setRequest({ status: 'error', message: toErrorMessage(error) });\n      });\n\n    return () => {\n      cancelled = true;\n    };\n  }, [mode, attempt]);\n\n  function handleModeChange(event: React.ChangeEvent<HTMLSelectElement>) {\n    setMode(event.target.value as SourceMode);\n  }\n\n  function handleRetry() {\n    setAttempt((current) => current + 1);\n  }\n\n  return (\n    <main className=\"main\">\n      <section className=\"card\">\n        <header className=\"header\">\n          <h1 className=\"title\">Team Directory (Solution)</h1>\n          <p className=\"subtitle\">Load the team from a fake API and render every request state.</p>\n        </header>\n\n        <div className=\"field\">\n          <label className=\"label\" htmlFor=\"mode-select\">Data source</label>\n          <select id=\"mode-select\" className=\"mode\" value={mode} onChange={handleModeChange}>\n            <option value=\"ok\">Team (6 members)</option>\n            <option value=\"empty\">Empty team</option>\n            <option value=\"flaky\">Flaky network</option>\n          </select>\n        </div>\n\n        <div className=\"status-row\">\n          {request.status === 'loading' && <span className=\"status status--loading\">Loading team…</span>}\n          {request.status === 'success' && (\n            <span className=\"status status--muted\">{request.members.length} members</span>\n          )}\n          {request.status === 'empty' && <span className=\"status status--muted\">0 members</span>}\n          {request.status === 'error' && (\n            <span className=\"status status--error\" role=\"alert\">\n              Could not load the team: {request.message}\n            </span>\n          )}\n        </div>\n\n        {request.status === 'error' && (\n          <button type=\"button\" className=\"retry\" onClick={handleRetry}>\n            Retry\n          </button>\n        )}\n\n        {request.status === 'success' && (\n          <ul className=\"results\">\n            {request.members.map((member) => (\n              <li key={member.id} className=\"user-row\">\n                <div className=\"user-name\">{member.name}</div>\n                <div className=\"user-role\">{member.role}</div>\n              </li>\n            ))}\n          </ul>\n        )}\n\n        {request.status === 'empty' && <p className=\"empty\">No team members yet.</p>}\n      </section>\n    </main>\n  );\n}\n",
+      "nodes": [
+        {
+          "id": "a1-status-union",
+          "title": "Model the request as one status union",
+          "anchor": {
+            "lineStart": 12,
+            "lineEnd": 12,
+            "snippet": "type RequestState ="
+          },
+          "why": "A discriminated union makes impossible combinations such as loading and error at the same time unrepresentable, and TypeScript narrows `request.members` or `request.message` inside each branch.",
+          "alternative": "Keep `isLoading`, `error` and `members` as three separate state values.",
+          "tradeoff": "The union needs a type up front, but every render branch and every test then reads from a single source of truth."
+        },
+        {
+          "id": "a2-loading-first",
+          "title": "Reset to loading at the start of every request",
+          "anchor": {
+            "lineStart": 65,
+            "lineEnd": 65,
+            "snippet": "setRequest({ status: 'loading' });"
+          },
+          "why": "Switching the data source must show the loading line immediately; without this reset the rows from the previous source stay visible while the new request is in flight.",
+          "alternative": "Keep the previous rows and show a small spinner next to them.",
+          "tradeoff": "A full reset flashes the list on every switch, but it never shows data that belongs to another source."
+        },
+        {
+          "id": "a3-cancelled-flag",
+          "title": "Ignore stale responses with a cleanup flag",
+          "anchor": {
+            "lineStart": 64,
+            "lineEnd": 64,
+            "snippet": "let cancelled = false;"
+          },
+          "why": "When the mode changes before the previous request resolves, the cleanup flips `cancelled` so the old `.then` and `.catch` return without touching state.",
+          "alternative": "Pass an `AbortController` signal into the fetch and abort it in the cleanup.",
+          "tradeoff": "The flag cannot stop the network call, but the fake API takes no signal and the flag still prevents the stale update."
+        },
+        {
+          "id": "a4-empty-vs-success",
+          "title": "Map an empty list to its own state",
+          "anchor": {
+            "lineStart": 70,
+            "lineEnd": 70,
+            "snippet": "setRequest(members.length ? { status: 'success', members } : { status: 'empty' });"
+          },
+          "why": "An empty response is a successful request with nothing to show; giving it a dedicated status keeps the empty copy out of the success branch.",
+          "alternative": "Store the empty array as success and check `members.length` in the JSX.",
+          "tradeoff": "One more status to render, but the component never mixes list rendering with empty-state copy."
+        },
+        {
+          "id": "a5-error-message",
+          "title": "Normalise unknown errors before rendering",
+          "anchor": {
+            "lineStart": 54,
+            "lineEnd": 54,
+            "snippet": "function toErrorMessage(error: unknown): string {"
+          },
+          "why": "A rejection is typed `unknown`; the `instanceof Error` check turns it into a readable string and avoids rendering `undefined`.",
+          "alternative": "Render `String(error)` directly.",
+          "tradeoff": "The helper is a few extra lines, but it keeps the error branch typed and readable."
+        },
+        {
+          "id": "a6-effect-dependencies",
+          "title": "Run the request from the mode and the retry counter",
+          "anchor": {
+            "lineStart": 80,
+            "lineEnd": 80,
+            "snippet": "}, [mode, attempt]);"
+          },
+          "why": "Both a source change and a retry should run the same request path; listing both in the dependency array keeps one fetch implementation.",
+          "alternative": "Call `fetchTeam` from the select handler and again from the Retry handler.",
+          "tradeoff": "Handlers that fetch duplicate the state transitions and are easy to drift; the effect centralises them."
+        },
+        {
+          "id": "a7-retry-counter",
+          "title": "Retry by bumping a counter",
+          "anchor": {
+            "lineStart": 87,
+            "lineEnd": 87,
+            "snippet": "setAttempt((current) => current + 1);"
+          },
+          "why": "Incrementing `attempt` changes a dependency, so the effect re-runs with the current mode and the loading reset, cleanup and mapping all apply again.",
+          "alternative": "Toggle a boolean or set the request back to loading from the click handler.",
+          "tradeoff": "A counter always changes, while a boolean toggled twice can skip a re-run."
+        },
+        {
+          "id": "a8-retry-only-on-error",
+          "title": "Show Retry only in the error branch",
+          "anchor": {
+            "lineStart": 121,
+            "lineEnd": 121,
+            "snippet": "<button type=\"button\" className=\"retry\" onClick={handleRetry}>"
+          },
+          "why": "The button is part of the error state; rendering it from `request.status` keeps it out of the loading, empty and success branches without extra flags.",
+          "alternative": "Always render the button and disable it outside the error state.",
+          "tradeoff": "A conditional button changes the layout on error, but the tests and the user only see it when it can do something."
+        },
+        {
+          "id": "a9-keyed-rows",
+          "title": "Key rows by the member id",
+          "anchor": {
+            "lineStart": 129,
+            "lineEnd": 129,
+            "snippet": "<li key={member.id} className=\"user-row\">"
+          },
+          "why": "Stable keys let React reconcile the list correctly when a retry replaces the members array.",
+          "alternative": "Use the array index as the key.",
+          "tradeoff": "Index keys work for a static list but break ordering and focus when items move."
+        }
+      ]
+    }
+  }
+}

@@ -205,6 +205,48 @@ const ANGULAR_MODERN_TEMPLATE_HINT_RULES = ANGULAR_MODERN_TEMPLATE_QUESTION_IDS.
 const QUESTION_HINT_RULES: QuestionHintRule[] = [
   ...ANGULAR_MODERN_TEMPLATE_HINT_RULES,
   {
+    ruleId: 'react-fetch-list-states-request-union',
+    questionId: 'react-fetch-list-states',
+    priority: 100,
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, ['empty state', 'retry recovers', 'loading state']) ||
+      snapshot.failCount >= 2,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-fetch-list-states-request-union',
+      title: 'Drive every branch from one request status',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The empty, error and loading checks each expect exactly one status to be rendered, so parallel booleans or a missing reset leave the previous branch on screen.',
+      ),
+      actions: [
+        "Hold the request in one union: `{ status: 'loading' } | { status: 'success'; members } | { status: 'empty' } | { status: 'error'; message }`.",
+        "Set `{ status: 'loading' }` at the top of the effect and map an empty list to `empty`, a non-empty list to `success` and a rejection to `error`.",
+        'Render the Retry button only on `error` and make it bump a counter that the effect depends on.',
+      ],
+      confidence: 0.86,
+    }),
+  },
+  {
+    ruleId: 'react-fetch-list-states-default',
+    questionId: 'react-fetch-list-states',
+    priority: 40,
+    matches: () => true,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-fetch-list-states-default',
+      title: 'Fetch in an effect and ignore stale responses',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The rows appear only after `fetchTeam(mode)` resolves inside an effect that re-runs when the mode or the retry counter changes.',
+      ),
+      actions: [
+        'Call `fetchTeam(mode)` inside `useEffect` with `[mode, attempt]` as dependencies.',
+        'Flip a `cancelled` flag in the cleanup and return early in `.then` and `.catch` when it is set.',
+        'Render one `.user-row` per member with `member.id` as the key.',
+      ],
+      confidence: 0.72,
+    }),
+  },
+  {
     ruleId: 'css-flexbox-navbar-responsive-layout',
     questionId: 'css-flexbox-navbar',
     priority: 100,

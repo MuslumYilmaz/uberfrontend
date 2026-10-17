@@ -380,7 +380,8 @@
     "testsTs": "import flattenOnce from './flattenOnce';\n\ndescribe('flattenOnce (TypeScript)', () => {\n  it('flattens a simple nested array', () => {\n    expect(flattenOnce([1, [2, 3], [4, [5]]])).toEqual([1, 2, 3, 4, [5]]);\n  });\n\n  it('returns same array when already flat', () => {\n    expect(flattenOnce([1, 2, 3])).toEqual([1, 2, 3]);\n  });\n\n  it('handles mixed array contents', () => {\n    expect(flattenOnce([[1], 2, [3, [4]], 5])).toEqual([1, 2, 3, [4], 5]);\n  });\n\n  it('returns empty array for empty input', () => {\n    expect(flattenOnce([])).toEqual([]);\n  });\n});\n",
     "access": "free",
     "companies": [
-      "meta"
+      "meta",
+      "booking-com"
     ],
     "sources": [
       {
@@ -492,7 +493,8 @@
     "access": "premium",
     "updatedAt": "2026-01-31",
     "companies": [
-      "apple"
+      "apple",
+      "spotify"
     ],
     "sources": [
       {
@@ -1322,6 +1324,9 @@
     },
     "tests": "import once from './file';\n\ndescribe('once', () => {\n  test('calls the function only once', () => {\n    let calls = 0;\n    const fn = once(() => { calls += 1; return calls; });\n    expect(fn()).toBe(1);\n    expect(fn()).toBe(1);\n    expect(calls).toBe(1);\n  });\n\n  test('returns the first result on later calls', () => {\n    const add = once((a, b) => a + b);\n    expect(add(1, 2)).toBe(3);\n    expect(add(5, 6)).toBe(3);\n  });\n\n  test('preserves this context', () => {\n    const obj = { x: 2, get: once(function (n) { return this.x + n; }) };\n    expect(obj.get(3)).toBe(5);\n  });\n});\n",
     "testsTs": "import once from './file';\n\ndescribe('once (TypeScript)', () => {\n  it('calls the function only once', () => {\n    let calls = 0;\n    const fn = once(() => { calls += 1; return calls; });\n    expect(fn()).toBe(1);\n    expect(fn()).toBe(1);\n    expect(calls).toBe(1);\n  });\n\n  it('returns the first result on later calls', () => {\n    const add = once((a: number, b: number) => a + b);\n    expect(add(1, 2)).toBe(3);\n    expect(add(5, 6)).toBe(3);\n  });\n\n  it('preserves this context', () => {\n    const obj = { x: 2, get: once(function (this: { x: number }, n: number) { return this.x + n; }) };\n    expect(obj.get(3)).toBe(5);\n  });\n});\n",
+    "companies": [
+      "spotify"
+    ],
     "access": "free",
     "updatedAt": "2026-01-30",
     "seo": {
@@ -1528,7 +1533,9 @@
       "netflix",
       "apple",
       "meta",
-      "waymo"
+      "waymo",
+      "zalando",
+      "booking-com"
     ],
     "sources": [
       {
@@ -1562,6 +1569,22 @@
         "publisher": "Taro",
         "date": "2024-11",
         "note": "One senior Netflix account describes a search-input problem where the interviewer discussed a 200 millisecond debounce. This drill practises that primitive, not the reported exercise."
+      },
+      {
+        "label": "LeetCode Discuss: Zalando senior frontend engineer interview, Berlin, July 2024",
+        "url": "https://leetcode.com/discuss/interview-experience/5501338/",
+        "company": "zalando",
+        "publisher": "LeetCode Discuss",
+        "date": "2024-07",
+        "note": "One senior account lists the solution-discussion question 'can you write your own debouncing method?' after a search-box take-home. This exercise is that utility in isolation; the reported round asked for it inside a larger discussion."
+      },
+      {
+        "label": "enginebogie: Booking.com frontend engineer machine-coding round, May 2023",
+        "url": "https://enginebogie.com/interview/experience/booking-com-frontend-engineer/84",
+        "company": "booking-com",
+        "publisher": "enginebogie",
+        "date": "2023-05",
+        "note": "One account lists debounce or throttle as a required part of a 60-minute typeahead machine-coding round. This exercise practises the utility on its own; the reported round asked for it inside a larger component."
       }
     ],
     "difficulty": "intermediate",
@@ -1702,7 +1725,8 @@
     "companies": [
       "google",
       "netflix",
-      "meta"
+      "meta",
+      "booking-com"
     ],
     "sources": [
       {
@@ -1720,6 +1744,14 @@
         "publisher": "Blind",
         "date": "2020-12",
         "note": "The thread lists a Google front end prompt to limit a function so it calls the input function at most every 50 milliseconds. Throttle is the matching primitive; the thread is a compiled list, not one loop."
+      },
+      {
+        "label": "enginebogie: Booking.com frontend engineer machine-coding round, May 2023",
+        "url": "https://enginebogie.com/interview/experience/booking-com-frontend-engineer/84",
+        "company": "booking-com",
+        "publisher": "enginebogie",
+        "date": "2023-05",
+        "note": "One account lists debounce or throttle as a required part of a 60-minute typeahead machine-coding round. This exercise practises the throttle utility on its own; the reported round asked for it inside a larger component."
       }
     ],
     "difficulty": "intermediate",
@@ -2248,7 +2280,8 @@
     "companies": [
       "google",
       "meta",
-      "intuit"
+      "intuit",
+      "zalando"
     ],
     "sources": [
       {
@@ -2563,7 +2596,8 @@
     "updatedAt": "2026-01-31",
     "companies": [
       "openai",
-      "stripe"
+      "stripe",
+      "booking-com"
     ],
     "sources": [
       {

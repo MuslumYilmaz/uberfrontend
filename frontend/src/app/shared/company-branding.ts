@@ -108,6 +108,27 @@ export const COMPANY_BRANDS: Record<string, CompanyBrand> = {
     logoUrl: `${COMPANY_LOGO_BASE}/stripe.svg`,
     monogram: 'S',
   },
+  // European companies tagged on 2026-10-17; monograms until logos are added.
+  'booking-com': {
+    slug: 'booking-com',
+    label: 'Booking.com',
+    monogram: 'B',
+  },
+  revolut: {
+    slug: 'revolut',
+    label: 'Revolut',
+    monogram: 'R',
+  },
+  spotify: {
+    slug: 'spotify',
+    label: 'Spotify',
+    monogram: 'S',
+  },
+  zalando: {
+    slug: 'zalando',
+    label: 'Zalando',
+    monogram: 'Z',
+  },
 };
 
 const COMPANY_ALIASES: Record<string, string> = {

@@ -250,7 +250,8 @@
     },
     "solutionAsset": "assets/sb/react/solution/react-contact-form-solution.v1.json",
     "companies": [
-      "netflix"
+      "netflix",
+      "booking-com"
     ],
     "access": "premium",
     "updatedAt": "2026-07-15",
@@ -619,7 +620,8 @@
     "solutionAsset": "assets/sb/react/solution/react-image-slider-solution.v1.json",
     "companies": [
       "amazon",
-      "google"
+      "google",
+      "spotify"
     ],
     "sources": [
       {
@@ -629,6 +631,14 @@
         "publisher": "LeetCode Discuss",
         "date": "2020-04",
         "note": "One Amazon front end engineer II phone screen asked to implement a carousel component, with follow-ups on state management. This slider is a practice version of that shape, not the reported wording."
+      },
+      {
+        "label": "Blind: Spotify web engineer interview thread, October 2021",
+        "url": "https://www.teamblind.com/post/Spotify-Web-Engineer-Interview-hNTex8N7",
+        "company": "spotify",
+        "publisher": "Blind",
+        "date": "2021-10",
+        "note": "One web engineer thread describes the practical round as applying HTML, CSS and JavaScript to a feature such as an image carousel. This React slider is a practice version of that exercise; the reported round was framework-free."
       }
     ],
     "access": "premium",
@@ -1470,7 +1480,9 @@
     },
     "pressureModeAsset": "assets/questions/pressure-modes/shopping-cart.v1.json",
     "solutionAsset": "assets/sb/react/solution/react-shopping-cart-solution.v1.json",
-    "companies": [],
+    "companies": [
+      "zalando"
+    ],
     "access": "premium",
     "updatedAt": "2026-01-30",
     "seo": {
@@ -1597,7 +1609,10 @@
     "pressureModeAsset": "assets/questions/pressure-modes/debounced-search.v1.json",
     "solutionAsset": "assets/sb/react/solution/react-debounced-search-solution.v1.json",
     "companies": [
-      "netflix"
+      "netflix",
+      "revolut",
+      "spotify",
+      "booking-com"
     ],
     "sources": [
       {
@@ -1607,6 +1622,38 @@
         "publisher": "Taro",
         "date": "2024-11",
         "note": "One senior Netflix account describes a domain question on filtering results dynamically from a REST API based on the input query, with a 200 millisecond debounce discussed. This debounced search is a practice version of that shape; it is not the reported wording."
+      },
+      {
+        "label": "Taro: Revolut frontend developer interview, April 2025",
+        "url": "https://www.jointaro.com/interviews/companies/revolut/experiences/frontend-developer-warsaw-masovia-april-1-2025-no-offer-neutral-71032bb4/",
+        "company": "revolut",
+        "publisher": "Taro",
+        "date": "2025-04",
+        "note": "One mid-level account describes a one-hour TypeScript live-coding task: fetch data from a source and render it with a loading state, error handling and types. This debounced search is a practice version of that shape, not the reported wording."
+      },
+      {
+        "label": "Taro: Revolut frontend engineer interview, May 2025",
+        "url": "https://www.jointaro.com/interviews/companies/revolut/experiences/frontend-engineer-barcelona-may-1-2025-no-offer-neutral-3c58f9b9/",
+        "company": "revolut",
+        "publisher": "Taro",
+        "date": "2025-05",
+        "note": "One account describes a pairing session that used a service API with authentication to display data in a React component, followed by a frontend system-design round. This search component practises the fetch-and-render part; it is not the reported exercise."
+      },
+      {
+        "label": "Blind: Spotify web engineer final round, April 2022",
+        "url": "https://www.teamblind.com/post/weak-system-design-interview-for-spotify-chances-of-no-hire-00wjs6rg",
+        "company": "spotify",
+        "publisher": "Blind",
+        "date": "2022-04",
+        "note": "One web engineer account with an offer describes the practical round as building a form, fetching from the Spotify API based on the input and rendering the results into the DOM. This React search is a practice version of that shape; the reported round was framework-free."
+      },
+      {
+        "label": "Taro: Booking.com senior full stack engineer interview, Amsterdam, July 2023",
+        "url": "https://www.jointaro.com/interviews/companies/bookingcom/experiences/senior-full-stack-engineer-amsterdam-july-1-2023-no-offer-negative-cb57c4dd/",
+        "company": "booking-com",
+        "publisher": "Taro",
+        "date": "2023-07",
+        "note": "One senior account describes the frontend round as a GET call to an API followed by building components to display the data. This debounced search is a practice version of that fetch-and-render shape; it is not the reported exercise."
       }
     ],
     "access": "premium",
@@ -2159,7 +2206,9 @@
       "waymo",
       "elevenlabs",
       "intuit",
-      "google"
+      "google",
+      "zalando",
+      "booking-com"
     ],
     "sources": [
       {
@@ -2193,6 +2242,22 @@
         "publisher": "LeetCode Discuss",
         "date": "2021-06",
         "note": "One Google L3/L4 frontend account describes a round combining string manipulation with implementing a basic autocomplete. This starter is a practice version of that shape, not the reported wording."
+      },
+      {
+        "label": "LeetCode Discuss: Zalando senior frontend engineer interview, Berlin, July 2024",
+        "url": "https://leetcode.com/discuss/interview-experience/5501338/",
+        "company": "zalando",
+        "publisher": "LeetCode Discuss",
+        "date": "2024-07",
+        "note": "One senior account describes a three-hour Codility take-home: a React and Node application with a search box showing an auto-suggestion list on every keystroke, followed by a solution discussion. This starter is a practice version of that take-home, not its reported wording."
+      },
+      {
+        "label": "Code360: Booking.com frontend engineer interview experience, April 2023",
+        "url": "https://www.naukri.com/code360/interview-experiences/booking-com/interview-experience-frontend-engineer-apr-2023-exp-0-2-years",
+        "company": "booking-com",
+        "publisher": "Code360",
+        "date": "2023-04",
+        "note": "One account describes a 40-minute round with three engineers: create an autocomplete text box in vanilla JavaScript, HTML and CSS, covering edge cases and must-haves versus nice-to-haves. This starter is a practice version in React; the reported round was framework-free."
       }
     ],
     "updatedAt": "2026-07-14",
@@ -4281,6 +4346,224 @@
     "seo": {
       "title": "React Countdown Timer with Start, Pause and Reset",
       "description": "Build a React countdown timer: a seconds input, Start, Pause and Reset controls, one interval owned by a useEffect cleanup and a Done state at zero."
+    }
+  },
+  {
+    "id": "react-fetch-list-states",
+    "title": "React Fetch and Render a List with Loading, Error and Empty States",
+    "type": "coding",
+    "technology": "react",
+    "difficulty": "intermediate",
+    "importance": 5,
+    "tags": [
+      "react",
+      "typescript",
+      "state",
+      "effects",
+      "async",
+      "api-calls",
+      "error-handling",
+      "loading-states"
+    ],
+    "description": {
+      "summary": "Build a React component that loads a team list from a fake API and renders every request state: loading, success, empty, and error with a Retry button. Model the request as one status union in TypeScript, re-run the request when the data source or the retry counter changes, and ignore responses that arrive after the source has changed. Concepts: react, state, effects. React focus: useEffect data fetching with cleanup, discriminated-union state, and conditional rendering from a single status.",
+      "specs": {
+        "requirements": [
+          "Render a data-source select (`.mode`) with the options ok, empty and flaky, and keep the chosen mode in state.",
+          "Call the provided `fetchTeam(mode)` fake API on mount and whenever the mode changes.",
+          "Hold the request in one TypeScript union: loading, success with the members, empty, or error with a message.",
+          "Show `Loading team…` while a request is in flight.",
+          "Render one `.user-row` per member with the name and role on success.",
+          "Show `No team members yet.` when the API returns an empty list.",
+          "Show a readable error line and a `.retry` button when the API rejects; Retry runs the request again with the current mode.",
+          "Ignore a response that arrives after the mode has changed again."
+        ],
+        "expectedBehavior": [
+          "On first render the loading state is visible, then six rows appear.",
+          "Choosing Empty team shows the empty state and no rows.",
+          "Choosing Flaky network shows the error line with a Retry button; clicking Retry loads the six rows.",
+          "Switching the source immediately shows the loading state and never shows rows from the previous source.",
+          "No `any` types: the fake API response, the request union and the select handler are typed."
+        ],
+        "implementationNotes": [
+          "Use a discriminated union such as `{ status: 'loading' } | { status: 'success'; members: TeamMember[] } | { status: 'empty' } | { status: 'error'; message: string }` instead of parallel booleans.",
+          "Put the request in a `useEffect` that depends on `mode` and a retry counter; set the loading state at the top of the effect.",
+          "Use a `cancelled` flag in the effect cleanup so a stale response cannot overwrite a newer state.",
+          "Convert unknown errors to a message with an `instanceof Error` check."
+        ],
+        "techFocus": [
+          "React useEffect data fetching",
+          "Discriminated-union state in TypeScript",
+          "Effect cleanup and stale responses",
+          "Loading, empty and error states",
+          "Retry through a dependency change"
+        ]
+      }
+    },
+    "solutionBlock": {
+      "overview": "Keep `mode`, a retry `attempt` counter and one `request` union in state. A `useEffect` that depends on `[mode, attempt]` sets `{ status: 'loading' }`, calls `fetchTeam(mode)` and maps the result: a non-empty list becomes `success`, an empty list becomes `empty`, a rejection becomes `error` with a readable message. The cleanup flips a `cancelled` flag so a response from a previous mode is ignored.\n\nRender from the status alone: one status line, rows only on success, the empty paragraph only on empty, and the Retry button only on error. Retry increments `attempt`, which re-runs the effect without duplicating the fetch logic.\n\n**Test cases**\n- Initial render shows the loading line and then six `.user-row` items.\n- Empty team shows `No team members yet.` and no rows.\n- Flaky network shows the error line and a Retry button; Retry loads the rows.\n- Switching the source shows the loading line first and never leaks rows from the previous source. Key concepts: react, state, effects.",
+      "approaches": [
+        {
+          "title": "One status union driven by a mode-and-attempt effect",
+          "prose": "Keep three pieces of state: `mode` from the select, an `attempt` counter for Retry, and `request`, a discriminated union with `loading`, `success`, `empty` and `error` members.\n\nIn a `useEffect` that depends on `[mode, attempt]`:\n\n1. Set `request` to `{ status: 'loading' }` so the previous rows disappear immediately.\n2. Call `fetchTeam(mode)`. On success, store `{ status: 'success', members }` when the list has items and `{ status: 'empty' }` otherwise. On rejection, store `{ status: 'error', message }` after normalising the unknown error.\n3. Return a cleanup that sets a `cancelled` flag; both handlers return early when it is set, so a slow response from the previous mode never overwrites the newer state.\n\nThe JSX switches on `request.status`: one status line, the Retry button only on error, the list only on success, the empty paragraph only on empty. Retry increments `attempt`, which re-runs the same effect.",
+          "codeJs": "import React, { useEffect, useState } from 'react';\nimport './App.css';\n\nexport interface TeamMember {\n  id: number;\n  name: string;\n  role: string;\n}\n\nexport type SourceMode = 'ok' | 'empty' | 'flaky';\n\ntype RequestState =\n  | { status: 'loading' }\n  | { status: 'success'; members: TeamMember[] }\n  | { status: 'empty' }\n  | { status: 'error'; message: string };\n\nconst TEAM: TeamMember[] = [\n  { id: 1, name: 'Alice Johnson', role: 'Frontend engineer' },\n  { id: 2, name: 'Bob Smith', role: 'Product designer' },\n  { id: 3, name: 'Charlie Kim', role: 'Backend engineer' },\n  { id: 4, name: 'Diana Lopez', role: 'Engineering manager' },\n  { id: 5, name: 'Ethan Brown', role: 'QA engineer' },\n  { id: 6, name: 'Fiona Patel', role: 'Data analyst' }\n];\n\nlet flakyRequests = 0;\n\n// Fake API: responds after 400ms.\n// - 'ok' resolves with the whole team\n// - 'empty' resolves with an empty list\n// - 'flaky' rejects every odd request, so the first request fails and a retry succeeds\nexport function fetchTeam(mode: SourceMode): Promise<TeamMember[]> {\n  return new Promise((resolve, reject) => {\n    window.setTimeout(() => {\n      if (mode === 'empty') {\n        resolve([]);\n        return;\n      }\n\n      if (mode === 'flaky') {\n        flakyRequests += 1;\n        if (flakyRequests % 2 === 1) {\n          reject(new Error('Network timeout'));\n          return;\n        }\n      }\n\n      resolve(TEAM.map((member) => ({ ...member })));\n    }, 400);\n  });\n}\n\nfunction toErrorMessage(error: unknown): string {\n  return error instanceof Error && error.message ? error.message : 'Unknown error';\n}\n\nexport default function App() {\n  const [mode, setMode] = useState<SourceMode>('ok');\n  const [attempt, setAttempt] = useState(0);\n  const [request, setRequest] = useState<RequestState>({ status: 'loading' });\n\n  useEffect(() => {\n    let cancelled = false;\n    setRequest({ status: 'loading' });\n\n    fetchTeam(mode)\n      .then((members) => {\n        if (cancelled) return;\n        setRequest(members.length ? { status: 'success', members } : { status: 'empty' });\n      })\n      .catch((error: unknown) => {\n        if (cancelled) return;\n        setRequest({ status: 'error', message: toErrorMessage(error) });\n      });\n\n    return () => {\n      cancelled = true;\n    };\n  }, [mode, attempt]);\n\n  function handleModeChange(event: React.ChangeEvent<HTMLSelectElement>) {\n    setMode(event.target.value as SourceMode);\n  }\n\n  function handleRetry() {\n    setAttempt((current) => current + 1);\n  }\n\n  return (\n    <main className=\"main\">\n      <section className=\"card\">\n        <header className=\"header\">\n          <h1 className=\"title\">Team Directory (Solution)</h1>\n          <p className=\"subtitle\">Load the team from a fake API and render every request state.</p>\n        </header>\n\n        <div className=\"field\">\n          <label className=\"label\" htmlFor=\"mode-select\">Data source</label>\n          <select id=\"mode-select\" className=\"mode\" value={mode} onChange={handleModeChange}>\n            <option value=\"ok\">Team (6 members)</option>\n            <option value=\"empty\">Empty team</option>\n            <option value=\"flaky\">Flaky network</option>\n          </select>\n        </div>\n\n        <div className=\"status-row\">\n          {request.status === 'loading' && <span className=\"status status--loading\">Loading team…</span>}\n          {request.status === 'success' && (\n            <span className=\"status status--muted\">{request.members.length} members</span>\n          )}\n          {request.status === 'empty' && <span className=\"status status--muted\">0 members</span>}\n          {request.status === 'error' && (\n            <span className=\"status status--error\" role=\"alert\">\n              Could not load the team: {request.message}\n            </span>\n          )}\n        </div>\n\n        {request.status === 'error' && (\n          <button type=\"button\" className=\"retry\" onClick={handleRetry}>\n            Retry\n          </button>\n        )}\n\n        {request.status === 'success' && (\n          <ul className=\"results\">\n            {request.members.map((member) => (\n              <li key={member.id} className=\"user-row\">\n                <div className=\"user-name\">{member.name}</div>\n                <div className=\"user-role\">{member.role}</div>\n              </li>\n            ))}\n          </ul>\n        )}\n\n        {request.status === 'empty' && <p className=\"empty\">No team members yet.</p>}\n      </section>\n    </main>\n  );\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Tracking isLoading, error and members as separate booleans, which allows impossible combinations such as loading and error at once.",
+          "Forgetting to reset to the loading state at the start of a new request, so rows from the previous source stay visible.",
+          "Letting a slow response from the previous mode overwrite the newer state because the effect has no cleanup guard.",
+          "Implementing Retry by calling the fake API from the click handler, which duplicates the state transitions already written in the effect.",
+          "Rendering `error.message` without checking that the rejection is an `Error` instance."
+        ],
+        "techniques": [
+          "Discriminated unions for request state in TypeScript.",
+          "useEffect with a cancelled flag in the cleanup.",
+          "Retry through a counter in the dependency array.",
+          "Conditional rendering keyed on a single status value."
+        ]
+      }
+    },
+    "frameworkTests": [
+      {
+        "id": "fetch-list-initial-load",
+        "name": "Initial load renders the six team members",
+        "steps": [
+          {
+            "type": "waitForCount",
+            "selector": ".user-row",
+            "count": 6,
+            "timeoutMs": 2500
+          },
+          {
+            "type": "expectText",
+            "selector": ".user-row",
+            "text": "Alice",
+            "match": "contains"
+          }
+        ]
+      },
+      {
+        "id": "fetch-list-empty-state",
+        "name": "Empty response shows the empty state",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".mode",
+            "value": "empty"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".empty",
+            "text": "No team members",
+            "match": "contains",
+            "timeoutMs": 2500
+          },
+          {
+            "type": "expectCount",
+            "selector": ".user-row",
+            "count": 0
+          }
+        ]
+      },
+      {
+        "id": "fetch-list-loading-state",
+        "name": "Switching the source shows a loading state first",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".mode",
+            "value": "empty"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".empty",
+            "text": "No team members",
+            "match": "contains",
+            "timeoutMs": 2500
+          },
+          {
+            "type": "setValue",
+            "selector": ".mode",
+            "value": "ok"
+          },
+          {
+            "type": "expectText",
+            "selector": ".status--loading",
+            "text": "Loading",
+            "match": "contains"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".user-row",
+            "count": 6,
+            "timeoutMs": 2500
+          }
+        ]
+      },
+      {
+        "id": "fetch-list-error-retry",
+        "name": "Failed request shows an error and Retry recovers",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".mode",
+            "value": "flaky"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".status--error",
+            "text": "Could not load",
+            "match": "contains",
+            "timeoutMs": 2500
+          },
+          {
+            "type": "click",
+            "selector": ".retry"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".user-row",
+            "count": 6,
+            "timeoutMs": 2500
+          }
+        ]
+      }
+    ],
+    "sdk": {
+      "asset": "assets/sb/react/question/react-fetch-list-states.v1.json",
+      "openFile": "/src/App.tsx",
+      "storageKey": "v2:ui:react:react-fetch-list-states"
+    },
+    "solutionAsset": "assets/sb/react/solution/react-fetch-list-states-solution.v1.json",
+    "decisionGraphAsset": "assets/questions/react/decision-graphs/react-fetch-list-states.v1.json",
+    "companies": [
+      "revolut"
+    ],
+    "sources": [
+      {
+        "label": "Taro: Revolut frontend developer interview, April 2025",
+        "url": "https://www.jointaro.com/interviews/companies/revolut/experiences/frontend-developer-warsaw-masovia-april-1-2025-no-offer-neutral-71032bb4/",
+        "company": "revolut",
+        "publisher": "Taro",
+        "date": "2025-04",
+        "note": "One mid-level account describes a one-hour TypeScript live-coding task: fetch data from a source and render it with a loading state, error handling and types; the feedback named loading-state handling. This exercise is modelled on that round, not copied from it."
+      },
+      {
+        "label": "Taro: Revolut frontend engineer interview, May 2025",
+        "url": "https://www.jointaro.com/interviews/companies/revolut/experiences/frontend-engineer-barcelona-may-1-2025-no-offer-neutral-3c58f9b9/",
+        "company": "revolut",
+        "publisher": "Taro",
+        "date": "2025-05",
+        "note": "One account describes a pairing session that used a service API with authentication to display data in a React component. This exercise practises the same fetch-and-render loop against a fake API; it is not the reported task."
+      }
+    ],
+    "access": "free",
+    "updatedAt": "2026-10-17",
+    "seo": {
+      "title": "Fetch and Render a List in React",
+      "description": "Load a list from a fake API in React with TypeScript and render loading, error with Retry, empty and success states without stale updates."
     }
   }
 ]
