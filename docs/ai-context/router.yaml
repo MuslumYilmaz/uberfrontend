@@ -398,6 +398,25 @@ reference_rules:
       - docs/references/company-pages-plan-2026-10.md
     max_docs: 1
 
+  - id: europe_company_shortlist
+    priority: 93
+    keywords:
+      - europe companies
+      - european company pages
+      - company shortlist
+      - regional companies
+      - revolut
+      - booking.com
+      - adyen
+      - spotify
+      - zalando
+      - wise
+    paths:
+      - docs/references/europe-company-shortlist-2026-10.md
+    load:
+      - docs/references/europe-company-shortlist-2026-10.md
+    max_docs: 1
+
   - id: header_prep_menu_plan
     priority: 92
     keywords:

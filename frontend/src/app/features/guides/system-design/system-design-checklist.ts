@@ -31,109 +31,113 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       </p>
 
       <h2>10-Minute Final Review Runbook</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Time</th>
-            <th>Review area</th>
-            <th>What to confirm out loud</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>1 min</td>
-            <td>Scope and success metrics</td>
-            <td>Primary user, v1 flow, non-goals, success metric, and the constraint that changes the design.</td>
-          </tr>
-          <tr>
-            <td>2 min</td>
-            <td>Architecture and rendering</td>
-            <td>Route shape, rendering choice, ownership boundary, and why this is not over-built for v1.</td>
-          </tr>
-          <tr>
-            <td>2 min</td>
-            <td>State, data, and API contracts</td>
-            <td>Server state, UI state, URL state, cache keys, mutations, API shape, and component contracts.</td>
-          </tr>
-          <tr>
-            <td>2 min</td>
-            <td>UI states, accessibility, and performance</td>
-            <td>Loading, empty, error, stale, partial states, focus behavior, and the top performance budget.</td>
-          </tr>
-          <tr>
-            <td>2 min</td>
-            <td>Trade-offs, risks, and validation</td>
-            <td>Biggest trade-off, rollback or rollout trigger, observability, and how you know the design works.</td>
-          </tr>
-          <tr>
-            <td>1 min</td>
-            <td>Closing script</td>
-            <td>Summarize the selected path, risk, validation plan, and what you would deepen next.</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-scroll" tabindex="0" role="region" aria-label="Scrollable table">
+        <table>
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Review area</th>
+              <th>What to confirm out loud</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1 min</td>
+              <td>Scope and success metrics</td>
+              <td>Primary user, v1 flow, non-goals, success metric, and the constraint that changes the design.</td>
+            </tr>
+            <tr>
+              <td>2 min</td>
+              <td>Architecture and rendering</td>
+              <td>Route shape, rendering choice, ownership boundary, and why this is not over-built for v1.</td>
+            </tr>
+            <tr>
+              <td>2 min</td>
+              <td>State, data, and API contracts</td>
+              <td>Server state, UI state, URL state, cache keys, mutations, API shape, and component contracts.</td>
+            </tr>
+            <tr>
+              <td>2 min</td>
+              <td>UI states, accessibility, and performance</td>
+              <td>Loading, empty, error, stale, partial states, focus behavior, and the top performance budget.</td>
+            </tr>
+            <tr>
+              <td>2 min</td>
+              <td>Trade-offs, risks, and validation</td>
+              <td>Biggest trade-off, rollback or rollout trigger, observability, and how you know the design works.</td>
+            </tr>
+            <tr>
+              <td>1 min</td>
+              <td>Closing script</td>
+              <td>Summarize the selected path, risk, validation plan, and what you would deepen next.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       <h2>Pass / Warn / Fail Checklist</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Axis</th>
-            <th>Pass</th>
-            <th>Warn</th>
-            <th>Fail</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Requirements and non-goals</td>
-            <td>User, v1 scope, non-goals, scale, constraints, and success metric are explicit.</td>
-            <td>Scope is mostly clear, but success metric or non-goals are vague.</td>
-            <td>You started drawing before the problem was shaped.</td>
-          </tr>
-          <tr>
-            <td>Rendering and architecture choice</td>
-            <td>SSR, SSG, CSR, hybrid, or microfrontend choice is tied to product constraints.</td>
-            <td>The architecture works, but the rendering trade-off is not justified.</td>
-            <td>You named tools or boxes without explaining why they fit.</td>
-          </tr>
-          <tr>
-            <td>State ownership and cache invalidation</td>
-            <td>Server state, local UI state, URL state, cache keys, freshness, and invalidation are separated.</td>
-            <td>State types are named, but stale data or writes are under-specified.</td>
-            <td>Everything goes into one vague global store.</td>
-          </tr>
-          <tr>
-            <td>API and component contracts</td>
-            <td>API response shape, component responsibility, props/events, auth, pagination, and errors are clear.</td>
-            <td>Components are named, but contracts or transitions are incomplete.</td>
-            <td>The diagram has no testable interface boundaries.</td>
-          </tr>
-          <tr>
-            <td>Loading, empty, error, stale, partial states</td>
-            <td>Each user-visible state has a UI behavior and recovery path.</td>
-            <td>Happy path and errors are covered, but stale or partial behavior is missing.</td>
-            <td>The answer assumes everything succeeds.</td>
-          </tr>
-          <tr>
-            <td>Accessibility and responsive behavior</td>
-            <td>Focus, keyboard, labels, announcements, reduced motion, and responsive constraints are covered where relevant.</td>
-            <td>Accessibility is mentioned, but not tied to the interaction.</td>
-            <td>The answer only describes visual layout.</td>
-          </tr>
-          <tr>
-            <td>Performance, reliability, and observability</td>
-            <td>Top bottleneck, budget, Core Web Vitals or route metric, degraded UX, logging, and alert signal are named.</td>
-            <td>Performance tactics are listed, but measurement or reliability is vague.</td>
-            <td>Optimizations are random and unvalidated.</td>
-          </tr>
-          <tr>
-            <td>Trade-offs, rollout, and closing summary</td>
-            <td>Alternatives, chosen trade-off, rollout risk, rollback trigger, and final summary are clear.</td>
-            <td>Trade-offs are mentioned, but the close does not tie the answer together.</td>
-            <td>The answer ends abruptly or sounds like every choice is pure upside.</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-scroll" tabindex="0" role="region" aria-label="Scrollable table">
+        <table>
+          <thead>
+            <tr>
+              <th>Axis</th>
+              <th>Pass</th>
+              <th>Warn</th>
+              <th>Fail</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Requirements and non-goals</td>
+              <td>User, v1 scope, non-goals, scale, constraints, and success metric are explicit.</td>
+              <td>Scope is mostly clear, but success metric or non-goals are vague.</td>
+              <td>You started drawing before the problem was shaped.</td>
+            </tr>
+            <tr>
+              <td>Rendering and architecture choice</td>
+              <td>SSR, SSG, CSR, hybrid, or microfrontend choice is tied to product constraints.</td>
+              <td>The architecture works, but the rendering trade-off is not justified.</td>
+              <td>You named tools or boxes without explaining why they fit.</td>
+            </tr>
+            <tr>
+              <td>State ownership and cache invalidation</td>
+              <td>Server state, local UI state, URL state, cache keys, freshness, and invalidation are separated.</td>
+              <td>State types are named, but stale data or writes are under-specified.</td>
+              <td>Everything goes into one vague global store.</td>
+            </tr>
+            <tr>
+              <td>API and component contracts</td>
+              <td>API response shape, component responsibility, props/events, auth, pagination, and errors are clear.</td>
+              <td>Components are named, but contracts or transitions are incomplete.</td>
+              <td>The diagram has no testable interface boundaries.</td>
+            </tr>
+            <tr>
+              <td>Loading, empty, error, stale, partial states</td>
+              <td>Each user-visible state has a UI behavior and recovery path.</td>
+              <td>Happy path and errors are covered, but stale or partial behavior is missing.</td>
+              <td>The answer assumes everything succeeds.</td>
+            </tr>
+            <tr>
+              <td>Accessibility and responsive behavior</td>
+              <td>Focus, keyboard, labels, announcements, reduced motion, and responsive constraints are covered where relevant.</td>
+              <td>Accessibility is mentioned, but not tied to the interaction.</td>
+              <td>The answer only describes visual layout.</td>
+            </tr>
+            <tr>
+              <td>Performance, reliability, and observability</td>
+              <td>Top bottleneck, budget, Core Web Vitals or route metric, degraded UX, logging, and alert signal are named.</td>
+              <td>Performance tactics are listed, but measurement or reliability is vague.</td>
+              <td>Optimizations are random and unvalidated.</td>
+            </tr>
+            <tr>
+              <td>Trade-offs, rollout, and closing summary</td>
+              <td>Alternatives, chosen trade-off, rollout risk, rollback trigger, and final summary are clear.</td>
+              <td>Trade-offs are mentioned, but the close does not tie the answer together.</td>
+              <td>The answer ends abruptly or sounds like every choice is pure upside.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       <h2>Final Checks by Area</h2>
       <h3>Rendering and architecture</h3>

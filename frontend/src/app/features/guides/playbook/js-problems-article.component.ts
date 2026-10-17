@@ -457,32 +457,34 @@ inputs.forEach((input, index) =&gt; &#123;
       <a [routerLink]="['/javascript','trivia','js-microtasks-vs-macrotasks']">/javascript/trivia/js-microtasks-vs-macrotasks</a>.
     </p>
     <div class="mini-table">
-      <table>
-        <thead>
-          <tr>
-            <th>Queue</th>
-            <th>Interview wording</th>
-            <th>Common miss</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Sync stack</td>
-            <td>Run top-level code first.</td>
-            <td>Jumping to timers before finishing normal function calls.</td>
-          </tr>
-          <tr>
-            <td>Microtasks</td>
-            <td>Promise callbacks and await continuations run before timers.</td>
-            <td>Treating <code>await</code> as if it blocks the whole thread.</td>
-          </tr>
-          <tr>
-            <td>Macrotasks</td>
-            <td>Timers run in a later task after microtasks drain.</td>
-            <td>Assuming <code>setTimeout(..., 0)</code> means immediate execution.</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-scroll" tabindex="0" role="region" aria-label="Scrollable table">
+        <table>
+          <thead>
+            <tr>
+              <th>Queue</th>
+              <th>Interview wording</th>
+              <th>Common miss</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Sync stack</td>
+              <td>Run top-level code first.</td>
+              <td>Jumping to timers before finishing normal function calls.</td>
+            </tr>
+            <tr>
+              <td>Microtasks</td>
+              <td>Promise callbacks and await continuations run before timers.</td>
+              <td>Treating <code>await</code> as if it blocks the whole thread.</td>
+            </tr>
+            <tr>
+              <td>Macrotasks</td>
+              <td>Timers run in a later task after microtasks drain.</td>
+              <td>Assuming <code>setTimeout(..., 0)</code> means immediate execution.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
     <div class="code-wrap">
       <pre><code>console.log('sync');

@@ -953,6 +953,89 @@ const AUTHORED_GUIDE_CASES = [
     reportUrl:
       'https://www.jointaro.com/interviews/companies/meta/experiences/front-end-developer-intern-london-england-december-1-2021-no-offer-positive-4f6ff45b/',
   },
+  {
+    label: 'Revolut',
+    path: '/companies/revolut/preview',
+    title: 'Revolut Frontend Interview Questions: 5 Prompts + Prep Guide',
+    description:
+      'Prepare for a Revolut frontend interview with 5 practice prompts: a one-hour TypeScript fetch-and-render task, HackerRank, theory checks, system design.',
+    h1: 'Revolut Frontend Interview Questions',
+    kicker: 'Public Revolut prep guide',
+    headings: [
+      'Prepare for product judgment, not Revolut trivia',
+      'What the public accounts establish, and what you still need to confirm',
+      'Five Revolut frontend interview practice questions',
+      'Scope the one-hour fetch-and-render task before the first line',
+      'A 7-day Revolut frontend interview preparation plan',
+      'Common Revolut frontend interview preparation questions',
+      'Build the underlying skills with free practice',
+      'Sources and evidence limits',
+    ],
+    trustFragment: 'not leaked, confirmed or official Revolut questions',
+    prompts: [
+      { id: 'fetch-and-render-in-one-hour', title: 'Fetch data and render it in one hour, in TypeScript, with every request state' },
+      { id: 'authenticated-api-pairing', title: 'Display data from an authenticated API in a React component, pairing with the interviewer' },
+      { id: 'hackerrank-screen-three-tasks', title: 'Clear the HackerRank screen: three JavaScript tasks in 85 minutes' },
+      { id: 'recruiter-theory-check', title: 'Answer the recruiter-run theory check: reconciliation, microtasks versus macrotasks, the DOM tree' },
+      { id: 'frontend-system-design-api-contracts', title: 'Design a product feature end to end: the frontend, its API contracts and the services behind them' },
+    ],
+    resources: [
+      '/react/coding/react-fetch-list-states',
+      '/javascript/coding/js-fetch-json-timeout',
+      '/javascript/coding/js-debounce',
+      '/javascript/trivia/js-microtasks-vs-macrotasks',
+      '/react/trivia/react-diffing-algorithm',
+      '/html/trivia/html-dom-tree-structure',
+      '/system-design/resilient-checkout-payment-flow',
+      '/guides/interview-blueprint/dsa-for-fe',
+      '/guides/behavioral/stories',
+    ],
+    reportUrl:
+      'https://www.jointaro.com/interviews/companies/revolut/experiences/frontend-developer-warsaw-masovia-april-1-2025-no-offer-neutral-71032bb4/',
+  },
+  {
+    label: 'Spotify',
+    path: '/companies/spotify/preview',
+    title: 'Spotify Frontend Interview Questions: 7 Prompts + Prep Guide',
+    description:
+      'Prepare for a Spotify web engineer interview with 7 frontend practice prompts: a fetch-to-DOM form, carousel, traffic light, event loop, system design.',
+    h1: 'Spotify Frontend Interview Questions',
+    kicker: 'Public Spotify prep guide',
+    headings: [
+      'Prepare for product judgment, not Spotify trivia',
+      'What the public accounts and the official pages establish, and what you still need to confirm',
+      'Seven Spotify frontend interview practice questions',
+      'Scope the fetch-to-DOM search form before writing the first line',
+      'A 7-day Spotify frontend interview preparation plan',
+      'Common Spotify frontend interview preparation questions',
+      'Build the underlying skills with free practice',
+      'Sources and evidence limits',
+    ],
+    trustFragment: 'not leaked, confirmed or official Spotify questions',
+    prompts: [
+      { id: 'search-form-fetch-render-dom', title: 'Build a search form that fetches from an API and renders the results into the DOM, without a framework' },
+      { id: 'image-carousel-html-css-js', title: 'Build an image carousel with HTML, CSS and JavaScript' },
+      { id: 'traffic-light-html-css-js', title: 'Build a traffic light with plain HTML, CSS and JavaScript' },
+      { id: 'event-loop-output-order', title: 'Predict the output order of code that mixes setTimeout and promise chains' },
+      { id: 'closure-call-limit', title: 'Write a closure that limits how many times a function can run' },
+      { id: 'system-design-full-stack', title: 'Design a product end to end in the system-design round, backend included' },
+      { id: 'algorithms-round', title: 'Clear the data structures and algorithms round' },
+    ],
+    resources: [
+      '/javascript/coding/js-take-latest',
+      '/react/coding/react-fetch-list-states',
+      '/javascript/trivia/js-event-loop-nested-microtask-output',
+      '/javascript/coding/js-once',
+      '/javascript/trivia/js-closures',
+      '/javascript/trivia/js-event-delegation',
+      '/javascript/trivia/js-memoization',
+      '/css/trivia/css-box-model',
+      '/guides/system-design-blueprint/architecture',
+      '/guides/behavioral/stories',
+    ],
+    reportUrl:
+      'https://www.teamblind.com/post/weak-system-design-interview-for-spotify-chances-of-no-hire-00wjs6rg',
+  },
 ] as const;
 
 const INFINITE_SCROLL_PATH = '/system-design/infinite-scroll-list';
@@ -1306,8 +1389,10 @@ function collectClientRuntimeIssues(page: Page): string[] {
 }
 
 function expectNoHydrationOrChunkIssues(issues: string[], path: string): void {
+  // A production hydration mismatch surfaces as a plain TypeError from
+  // hasSkipHydrationAttrOnRElement, not as an NG05xx message, so match it too.
   const relevant = issues.filter((message) =>
-    /NG05|hydration|hydrate|chunkloaderror|dynamically imported module|loading chunk|module script failed/i.test(message),
+    /NG05|hydration|hydrate|hasAttribute|cannot read properties of null|chunkloaderror|dynamically imported module|loading chunk|module script failed/i.test(message),
   );
   expect(relevant, `hydration/chunk runtime issues on ${path}`).toEqual([]);
 }

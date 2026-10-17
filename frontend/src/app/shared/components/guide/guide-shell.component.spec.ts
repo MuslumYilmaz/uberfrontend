@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ApplicationRef, Component, PLATFORM_ID } from '@angular/core';
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { provideRouter, RouterModule } from '@angular/router';
@@ -23,6 +23,12 @@ import { GuideShellComponent } from './guide-shell.component';
       <p><a href="https://example.com/external">External link</a></p>
       <h2>Another Section</h2>
       <p>More guide body text to keep the shell realistic.</p>
+      <div class="table-scroll" tabindex="0" role="region" aria-label="Scrollable table">
+        <table><thead><tr><th>Area</th></tr></thead><tbody><tr><td>Authored wrapper</td></tr></tbody></table>
+      </div>
+      <table><thead><tr><th>Bare</th></tr></thead><tbody><tr><td>Runtime wrapper</td></tr></tbody></table>
+      <pre><code>const answer = 42;</code></pre>
+      <div class="code-wrap"><pre><code>const authored = true;</code></pre></div>
     </fa-guide-shell>
   `
 })
@@ -218,6 +224,70 @@ describe('GuideShellComponent', () => {
     dispatchTrackedClick(externalLink);
 
     expect(trackCalls('guide_internal_link_clicked').length).toBe(0);
+  });
+
+  it('wraps projected tables and code blocks once, in the browser, after render', () => {
+    TestBed.inject(ApplicationRef).tick();
+    const content = fixture.nativeElement.querySelector('fa-guide-shell .content') as HTMLElement;
+
+    const tables = Array.from(content.querySelectorAll('table'));
+    expect(tables.length).toBe(2);
+    for (const table of tables) {
+      const wrap = table.parentElement as HTMLElement;
+      expect(wrap.classList.contains('table-scroll')).toBeTrue();
+      expect(wrap.getAttribute('role')).toBe('region');
+      expect(wrap.getAttribute('tabindex')).toBe('0');
+      expect(wrap.getAttribute('aria-label')).toBe('Scrollable table');
+    }
+    expect(content.querySelectorAll('.table-scroll').length).toBe(2);
+    expect(content.querySelectorAll('.table-scroll > .table-scroll').length).toBe(0);
+    // One wrapper per code block, whether the template authored it or not, and one Copy button each.
+    expect(content.querySelectorAll('pre > code').length).toBe(2);
+    expect(content.querySelectorAll('.code-wrap').length).toBe(2);
+    expect(content.querySelectorAll('.code-wrap > .code-wrap').length).toBe(0);
+    expect(content.querySelectorAll('.code-wrap > .code-copy').length).toBe(2);
+    for (const pre of Array.from(content.querySelectorAll('pre'))) {
+      expect(pre.parentElement?.classList.contains('code-wrap')).toBeTrue();
+      expect(pre.parentElement?.querySelectorAll(':scope > .code-copy').length).toBe(1);
+    }
+
+    // Re-running the enhancers (a second render, a client navigation) is a no-op.
+    const shell = shellInstance() as any;
+    shell.enhanceTables(content);
+    shell.enhanceCodeBlocks(content);
+    expect(content.querySelectorAll('.table-scroll').length).toBe(2);
+    expect(content.querySelectorAll('.code-wrap').length).toBe(2);
+    expect(content.querySelectorAll('.code-copy').length).toBe(2);
+  });
+
+  it('only assigns heading ids during server rendering so hydration sees the authored DOM', async () => {
+    fixture.destroy();
+    TestBed.resetTestingModule();
+    await TestBed.configureTestingModule({
+      imports: [TestGuideShellHostComponent],
+      providers: [
+        provideRouter([]),
+        { provide: AnalyticsService, useValue: analytics },
+        { provide: PLATFORM_ID, useValue: 'server' },
+      ],
+    }).compileComponents();
+    const serverFixture = TestBed.createComponent(TestGuideShellHostComponent);
+    serverFixture.detectChanges();
+    TestBed.inject(ApplicationRef).tick();
+    const content = serverFixture.nativeElement.querySelector('fa-guide-shell .content') as HTMLElement;
+
+    const headings = Array.from(content.querySelectorAll('h2')) as HTMLHeadingElement[];
+    expect(headings.length).toBe(2);
+    expect(headings.every((heading) => heading.id.length > 0)).toBeTrue();
+
+    // Only the authored wrappers exist; the bare table and the bare code block keep their template structure.
+    expect(content.querySelectorAll('.table-scroll').length).toBe(1);
+    const bareTables = Array.from(content.querySelectorAll('table'))
+      .filter((table) => !table.parentElement?.classList.contains('table-scroll'));
+    expect(bareTables.length).toBe(1);
+    expect(content.querySelectorAll('.code-wrap').length).toBe(1);
+    expect(content.querySelectorAll('.code-copy').length).toBe(0);
+    serverFixture.destroy();
   });
 
   it('renders readerPromise when supplied and falls back when absent', () => {

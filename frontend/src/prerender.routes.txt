@@ -86,6 +86,7 @@
 /companies/airbnb/preview
 /companies/amazon/preview
 /companies/apple/preview
+/companies/booking-com/preview
 /companies/bytedance/preview
 /companies/datadog/preview
 /companies/elevenlabs/preview
@@ -95,10 +96,13 @@
 /companies/microsoft/preview
 /companies/netflix/preview
 /companies/openai/preview
+/companies/revolut/preview
 /companies/servicenow/preview
+/companies/spotify/preview
 /companies/stripe/preview
 /companies/uber/preview
 /companies/waymo/preview
+/companies/zalando/preview
 /css/coding/css-box-model-margin-padding-border
 /css/coding/css-flexbox-navbar
 /css/coding/css-fluid-clamp
@@ -422,6 +426,7 @@
 /react/coding/react-debug-double-render
 /react/coding/react-dynamic-counter-buttons
 /react/coding/react-dynamic-table
+/react/coding/react-fetch-list-states
 /react/coding/react-filterable-user-list
 /react/coding/react-image-slider
 /react/coding/react-like-button

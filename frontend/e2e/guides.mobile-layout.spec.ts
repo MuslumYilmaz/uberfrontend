@@ -69,6 +69,25 @@ async function assertGuideShellMobileLayout(page: import('@playwright/test').Pag
   await stabilize(page);
   await assertElementFitsWidth(main, `${route} .main`);
   await assertDocumentNoOverflow(page, route);
+  await assertHydratedEnhancements(page, route);
+}
+
+// The guide shell wraps tables and code blocks in the browser only. A wrapper
+// authored twice (server and client) or a table left bare means the server DOM
+// and the hydrated DOM disagree, which is the hydration crash seen in prod.
+async function assertHydratedEnhancements(page: import('@playwright/test').Page, route: string) {
+  const counts = await page.evaluate(() => ({
+    bareTables: Array.from(document.querySelectorAll('fa-guide-shell .content table'))
+      .filter((table) => !table.parentElement?.classList.contains('table-scroll')).length,
+    nestedTableWrappers: document.querySelectorAll('fa-guide-shell .table-scroll > .table-scroll').length,
+    nestedCodeWrappers: document.querySelectorAll('fa-guide-shell .code-wrap > .code-wrap').length,
+    preBlocks: document.querySelectorAll('fa-guide-shell .content pre > code').length,
+    copyButtons: document.querySelectorAll('fa-guide-shell .content .code-copy').length,
+  }));
+  expect(counts.bareTables, `${route} has tables without a scroll wrapper`).toBe(0);
+  expect(counts.nestedTableWrappers, `${route} wraps a table twice`).toBe(0);
+  expect(counts.nestedCodeWrappers, `${route} wraps a code block twice`).toBe(0);
+  expect(counts.copyButtons, `${route} copy buttons do not match code blocks`).toBe(counts.preBlocks);
 }
 
 async function measureMainGutters(page: import('@playwright/test').Page) {

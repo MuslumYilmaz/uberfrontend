@@ -1533,7 +1533,7 @@ export const TAG_REGISTRY = {
 };
 
 export const SHOWCASE_STATS = {
-  "totalQuestions": 493,
+  "totalQuestions": 494,
   "premiumPracticeCount": 167,
   "companyCounts": {
     "airbnb": {
@@ -1553,6 +1553,12 @@ export const SHOWCASE_STATS = {
       "coding": 23,
       "trivia": 14,
       "system": 0
+    },
+    "booking-com": {
+      "all": 14,
+      "coding": 8,
+      "trivia": 5,
+      "system": 1
     },
     "bytedance": {
       "all": 22,
@@ -1608,11 +1614,23 @@ export const SHOWCASE_STATS = {
       "trivia": 5,
       "system": 1
     },
+    "revolut": {
+      "all": 6,
+      "coding": 2,
+      "trivia": 4,
+      "system": 0
+    },
     "servicenow": {
       "all": 7,
       "coding": 6,
       "trivia": 0,
       "system": 1
+    },
+    "spotify": {
+      "all": 13,
+      "coding": 4,
+      "trivia": 9,
+      "system": 0
     },
     "stripe": {
       "all": 3,
@@ -1630,6 +1648,12 @@ export const SHOWCASE_STATS = {
       "all": 8,
       "coding": 7,
       "trivia": 0,
+      "system": 1
+    },
+    "zalando": {
+      "all": 20,
+      "coding": 4,
+      "trivia": 15,
       "system": 1
     }
   }

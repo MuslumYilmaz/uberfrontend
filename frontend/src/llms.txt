@@ -76,6 +76,7 @@
 - [Airbnb interview preview](https://frontendatlas.com/companies/airbnb/preview): Airbnb frontend interview practice preview.
 - [Amazon frontend interview questions](https://frontendatlas.com/companies/amazon/preview): Public Amazon prep guide with seven practice prompts modelled on Amazon's own preparation page and public front end engineer interview accounts from 2020 to 2025.
 - [Apple interview preview](https://frontendatlas.com/companies/apple/preview): Apple frontend interview practice preview.
+- [Booking.com interview preview](https://frontendatlas.com/companies/booking-com/preview): Booking.com frontend interview practice preview.
 - [ByteDance interview preview](https://frontendatlas.com/companies/bytedance/preview): ByteDance frontend interview practice preview.
 - [Datadog frontend interview questions](https://frontendatlas.com/companies/datadog/preview): Public Datadog prep guide with five practice prompts modelled on public senior frontend interview accounts.
 - [ElevenLabs frontend interview questions](https://frontendatlas.com/companies/elevenlabs/preview): Public ElevenLabs prep guide with five practice prompts modelled on candidate-sourced reports.
@@ -85,10 +86,13 @@
 - [Microsoft interview preview](https://frontendatlas.com/companies/microsoft/preview): Microsoft frontend interview practice preview.
 - [Netflix frontend interview questions](https://frontendatlas.com/companies/netflix/preview): Public Netflix prep guide with six representative prompts and a broad frontend preparation plan.
 - [OpenAI interview preview](https://frontendatlas.com/companies/openai/preview): OpenAI frontend interview practice preview.
+- [Revolut frontend interview questions](https://frontendatlas.com/companies/revolut/preview): Public Revolut prep guide with five practice prompts modelled on public frontend interview accounts from 2024 and 2025 and Revolut's own web-engineering post.
 - [ServiceNow frontend interview questions](https://frontendatlas.com/companies/servicenow/preview): Public ServiceNow prep guide with five practice prompts modelled on public frontend interview accounts from 2021 to 2025.
+- [Spotify frontend interview questions](https://frontendatlas.com/companies/spotify/preview): Public Spotify prep guide with seven practice prompts modelled on public web engineer interview accounts from 2021 and 2022 and the official Life at Spotify hiring pages.
 - [Stripe interview preview](https://frontendatlas.com/companies/stripe/preview): Stripe frontend interview practice preview.
 - [Uber interview preview](https://frontendatlas.com/companies/uber/preview): Uber frontend interview practice preview.
 - [Waymo frontend interview questions](https://frontendatlas.com/companies/waymo/preview): Public Waymo prep guide with five practice prompts modelled on a public 2026 interview report.
+- [Zalando interview preview](https://frontendatlas.com/companies/zalando/preview): Zalando frontend interview practice preview.
 
 ## Policies and Discovery
 

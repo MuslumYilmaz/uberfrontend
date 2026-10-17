@@ -5,7 +5,9 @@ import { DATADOG_COMPANY_PREVIEW } from './datadog-preview-content';
 import { ELEVENLABS_COMPANY_PREVIEW } from './elevenlabs-preview-content';
 import { INTUIT_COMPANY_PREVIEW } from './intuit-preview-content';
 import { META_COMPANY_PREVIEW } from './meta-preview-content';
+import { REVOLUT_COMPANY_PREVIEW } from './revolut-preview-content';
 import { SERVICENOW_COMPANY_PREVIEW } from './servicenow-preview-content';
+import { SPOTIFY_COMPANY_PREVIEW } from './spotify-preview-content';
 import { WAYMO_COMPANY_PREVIEW } from './waymo-preview-content';
 
 /**
@@ -23,6 +25,8 @@ export const AUTHORED_COMPANY_PREVIEWS: Readonly<Record<string, AuthoredCompanyP
   servicenow: SERVICENOW_COMPANY_PREVIEW,
   amazon: AMAZON_COMPANY_PREVIEW,
   meta: META_COMPANY_PREVIEW,
+  revolut: REVOLUT_COMPANY_PREVIEW,
+  spotify: SPOTIFY_COMPANY_PREVIEW,
 };
 
 export type AuthoredCompanyPreviewRegistry = Readonly<Record<string, AuthoredCompanyPreview>>;

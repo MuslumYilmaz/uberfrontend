@@ -98,79 +98,83 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       </p>
 
       <h2>Reusable STAR(R) answer template</h2>
-      <table class="table-auto border border-neutral-700 mt-4 w-full">
-        <thead>
-          <tr>
-            <th class="px-2 py-1 text-left">Step</th>
-            <th class="px-2 py-1 text-left">What to cover</th>
-            <th class="px-2 py-1 text-left">Frontend signal</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>S - Situation</strong></td>
-            <td>Context in one sentence: product, users, constraint, and urgency.</td>
-            <td>Anchor the story in a real UI, platform, or delivery problem.</td>
-          </tr>
-          <tr>
-            <td><strong>T - Task</strong></td>
-            <td>Your responsibility and the success metric.</td>
-            <td>Clarify scope: owner, contributor, reviewer, incident lead, or cross-team coordinator.</td>
-          </tr>
-          <tr>
-            <td><strong>A - Action</strong></td>
-            <td>Three to five actions: decisions, trade-offs, collaboration, and validation.</td>
-            <td>Show the technical lever: a11y checks, perf telemetry, feature flags, API alignment, test plan.</td>
-          </tr>
-          <tr>
-            <td><strong>R - Result</strong></td>
-            <td>Outcome with numbers and what changed next.</td>
-            <td>Use measurable impact: faster load, fewer errors, safer rollout, better conversion, fewer tickets.</td>
-          </tr>
-          <tr>
-            <td><strong>R - Reflection</strong></td>
-            <td>One thing you would repeat and one thing you changed afterward.</td>
-            <td>Shows seniority: you improved the process, not just the feature.</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-scroll" tabindex="0" role="region" aria-label="Scrollable table">
+        <table class="table-auto border border-neutral-700 mt-4 w-full">
+          <thead>
+            <tr>
+              <th class="px-2 py-1 text-left">Step</th>
+              <th class="px-2 py-1 text-left">What to cover</th>
+              <th class="px-2 py-1 text-left">Frontend signal</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>S - Situation</strong></td>
+              <td>Context in one sentence: product, users, constraint, and urgency.</td>
+              <td>Anchor the story in a real UI, platform, or delivery problem.</td>
+            </tr>
+            <tr>
+              <td><strong>T - Task</strong></td>
+              <td>Your responsibility and the success metric.</td>
+              <td>Clarify scope: owner, contributor, reviewer, incident lead, or cross-team coordinator.</td>
+            </tr>
+            <tr>
+              <td><strong>A - Action</strong></td>
+              <td>Three to five actions: decisions, trade-offs, collaboration, and validation.</td>
+              <td>Show the technical lever: a11y checks, perf telemetry, feature flags, API alignment, test plan.</td>
+            </tr>
+            <tr>
+              <td><strong>R - Result</strong></td>
+              <td>Outcome with numbers and what changed next.</td>
+              <td>Use measurable impact: faster load, fewer errors, safer rollout, better conversion, fewer tickets.</td>
+            </tr>
+            <tr>
+              <td><strong>R - Reflection</strong></td>
+              <td>One thing you would repeat and one thing you changed afterward.</td>
+              <td>Shows seniority: you improved the process, not just the feature.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       <h2>Weak vs strong answer example</h2>
       <p>
         Prompt: <strong>Tell me about a time you disagreed with design or product on a frontend decision.</strong>
       </p>
-      <table class="table-auto border border-neutral-700 mt-4 w-full">
-        <thead>
-          <tr>
-            <th class="px-2 py-1 text-left">Version</th>
-            <th class="px-2 py-1 text-left">Answer shape</th>
-            <th class="px-2 py-1 text-left">What the interviewer hears</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>Weak</strong></td>
-            <td>"Design wanted something that was not accessible, so I pushed back and we fixed it."</td>
-            <td>Correct instinct, but vague. No context, no trade-off, no collaboration, no evidence.</td>
-          </tr>
-          <tr>
-            <td><strong>Good</strong></td>
-            <td>"A modal design missed focus trapping and keyboard escape. I explained the issue, paired with design, and shipped an accessible variant."</td>
-            <td>Clear frontend signal and teamwork, but still light on constraints, alternatives, and result.</td>
-          </tr>
-          <tr>
-            <td><strong>Strong</strong></td>
-            <td>
-              "On checkout, the proposed promo modal looked clean but trapped screen-reader users behind the overlay.
-              I owned the frontend implementation, so I brought a keyboard demo, offered two options, and recommended the
-              lower-risk pattern that reused our dialog primitive. We shipped on time, closed four a11y findings, and added
-              a checklist item to design review. I should have flagged it one review earlier, so I now ask for keyboard flow
-              during first design pass."
-            </td>
-            <td>Specific, measurable, collaborative, trade-off aware, and reflective.</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-scroll" tabindex="0" role="region" aria-label="Scrollable table">
+        <table class="table-auto border border-neutral-700 mt-4 w-full">
+          <thead>
+            <tr>
+              <th class="px-2 py-1 text-left">Version</th>
+              <th class="px-2 py-1 text-left">Answer shape</th>
+              <th class="px-2 py-1 text-left">What the interviewer hears</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Weak</strong></td>
+              <td>"Design wanted something that was not accessible, so I pushed back and we fixed it."</td>
+              <td>Correct instinct, but vague. No context, no trade-off, no collaboration, no evidence.</td>
+            </tr>
+            <tr>
+              <td><strong>Good</strong></td>
+              <td>"A modal design missed focus trapping and keyboard escape. I explained the issue, paired with design, and shipped an accessible variant."</td>
+              <td>Clear frontend signal and teamwork, but still light on constraints, alternatives, and result.</td>
+            </tr>
+            <tr>
+              <td><strong>Strong</strong></td>
+              <td>
+                "On checkout, the proposed promo modal looked clean but trapped screen-reader users behind the overlay.
+                I owned the frontend implementation, so I brought a keyboard demo, offered two options, and recommended the
+                lower-risk pattern that reused our dialog primitive. We shipped on time, closed four a11y findings, and added
+                a checklist item to design review. I should have flagged it one review earlier, so I now ask for keyboard flow
+                during first design pass."
+              </td>
+              <td>Specific, measurable, collaborative, trade-off aware, and reflective.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       <h2>Frontend behavioral story examples</h2>
       <div class="grid grid-cols-1 gap-4 mt-2">
@@ -221,48 +225,50 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       </div>
 
       <h2>Rubric: weak, good, strong</h2>
-      <table class="table-auto border border-neutral-700 mt-4 w-full">
-        <thead>
-          <tr>
-            <th class="px-2 py-1 text-left">Signal</th>
-            <th class="px-2 py-1 text-left">Weak</th>
-            <th class="px-2 py-1 text-left">Good</th>
-            <th class="px-2 py-1 text-left">Strong</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>Clarity</strong></td>
-            <td>Long setup, unclear role.</td>
-            <td>Clear STAR with basic context.</td>
-            <td>60-90 second story with role, constraint, and decision point obvious.</td>
-          </tr>
-          <tr>
-            <td><strong>Impact</strong></td>
-            <td>"It went well."</td>
-            <td>Names outcome but little evidence.</td>
-            <td>Uses metrics, user effect, risk reduction, or team velocity change.</td>
-          </tr>
-          <tr>
-            <td><strong>Judgment</strong></td>
-            <td>Only says what happened.</td>
-            <td>Mentions one trade-off.</td>
-            <td>Compares options, names risk, and explains why the chosen path fit the moment.</td>
-          </tr>
-          <tr>
-            <td><strong>Collaboration</strong></td>
-            <td>Blames another team.</td>
-            <td>Shows coordination.</td>
-            <td>Shows influence, shared ownership, and how disagreement became alignment.</td>
-          </tr>
-          <tr>
-            <td><strong>Growth</strong></td>
-            <td>No reflection.</td>
-            <td>Names a lesson.</td>
-            <td>Shows a behavior or process changed after the story.</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-scroll" tabindex="0" role="region" aria-label="Scrollable table">
+        <table class="table-auto border border-neutral-700 mt-4 w-full">
+          <thead>
+            <tr>
+              <th class="px-2 py-1 text-left">Signal</th>
+              <th class="px-2 py-1 text-left">Weak</th>
+              <th class="px-2 py-1 text-left">Good</th>
+              <th class="px-2 py-1 text-left">Strong</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Clarity</strong></td>
+              <td>Long setup, unclear role.</td>
+              <td>Clear STAR with basic context.</td>
+              <td>60-90 second story with role, constraint, and decision point obvious.</td>
+            </tr>
+            <tr>
+              <td><strong>Impact</strong></td>
+              <td>"It went well."</td>
+              <td>Names outcome but little evidence.</td>
+              <td>Uses metrics, user effect, risk reduction, or team velocity change.</td>
+            </tr>
+            <tr>
+              <td><strong>Judgment</strong></td>
+              <td>Only says what happened.</td>
+              <td>Mentions one trade-off.</td>
+              <td>Compares options, names risk, and explains why the chosen path fit the moment.</td>
+            </tr>
+            <tr>
+              <td><strong>Collaboration</strong></td>
+              <td>Blames another team.</td>
+              <td>Shows coordination.</td>
+              <td>Shows influence, shared ownership, and how disagreement became alignment.</td>
+            </tr>
+            <tr>
+              <td><strong>Growth</strong></td>
+              <td>No reflection.</td>
+              <td>Names a lesson.</td>
+              <td>Shows a behavior or process changed after the story.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       <h2>Common pitfalls and fixes</h2>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">

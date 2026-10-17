@@ -435,7 +435,8 @@
     ],
     "updatedAt": "2026-01-31",
     "companies": [
-      "apple"
+      "apple",
+      "zalando"
     ],
     "seo": {
       "title": "Functional vs class components in React: what is the difference?",
@@ -3593,7 +3594,8 @@
     ],
     "updatedAt": "2026-10-12",
     "companies": [
-      "apple"
+      "apple",
+      "revolut"
     ],
     "seo": {
       "title": "Why React Remounts Instead of Updating: Keys and Type",

@@ -744,7 +744,9 @@
     "companies": [
       "amazon",
       "google",
-      "meta"
+      "meta",
+      "spotify",
+      "booking-com"
     ],
     "difficulty": "intermediate",
     "importance": 5,
@@ -866,6 +868,9 @@
     "technology": "css",
     "difficulty": "intermediate",
     "importance": 4,
+    "companies": [
+      "zalando"
+    ],
     "description": "Pseudo-classes and pseudo-elements extend CSS selectors to style elements based on state or to create virtual elements that do not exist directly in the DOM. They enable powerful interactions, dynamic states, and content generation without additional markup.",
     "answer": {
       "blocks": [
@@ -980,7 +985,8 @@
     "companies": [
       "amazon",
       "google",
-      "uber"
+      "uber",
+      "booking-com"
     ],
     "difficulty": "intermediate",
     "importance": 5,
@@ -1726,6 +1732,9 @@
     "technology": "css",
     "difficulty": "intermediate",
     "importance": 4,
+    "companies": [
+      "zalando"
+    ],
     "description": "Making an element responsive means it adapts fluidly to different screen sizes, container widths, and user settings. Core techniques include fluid sizing, flexible media, modern layout systems (flexbox/grid), media and container queries, responsive typography, and intrinsic sizing utilities like aspect-ratio. Includes the media query breakpoint strategy, user-preference queries like prefers-reduced-motion and prefers-color-scheme, and the pitfalls of viewport-only thinking.",
     "answer": {
       "blocks": [
@@ -2288,7 +2297,9 @@
     "companies": [
       "google",
       "meta",
-      "bytedance"
+      "bytedance",
+      "zalando",
+      "spotify"
     ]
   },
   {

@@ -7,7 +7,7 @@ import { InjectionToken } from '@angular/core';
  * AUTHORED_COMPANY_PREVIEWS must match this list; authored-company-previews.spec.ts and
  * scripts/authored-companies.test.mjs enforce that.
  */
-export const AUTHORED_COMPANY_SLUGS: readonly string[] = ['waymo', 'elevenlabs', 'datadog', 'intuit', 'servicenow', 'amazon', 'meta'];
+export const AUTHORED_COMPANY_SLUGS: readonly string[] = ['waymo', 'elevenlabs', 'datadog', 'intuit', 'servicenow', 'amazon', 'meta', 'revolut', 'spotify'];
 
 /** Injectable so specs can provide fixture slugs without touching the real list. */
 export const AUTHORED_COMPANY_SLUGS_TOKEN = new InjectionToken<readonly string[]>('AUTHORED_COMPANY_SLUGS', {

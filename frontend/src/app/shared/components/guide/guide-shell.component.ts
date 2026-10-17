@@ -3,6 +3,7 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
+  Injector,
   Input,
   NgZone,
   OnDestroy,
@@ -10,6 +11,7 @@ import {
   Renderer2,
   ViewChild,
   ViewEncapsulation,
+  afterNextRender,
   inject,
   signal,
 } from '@angular/core';
@@ -804,6 +806,7 @@ export class GuideShellComponent implements AfterViewInit, OnDestroy {
   private mo?: MutationObserver;
   private imgListeners: Array<() => void> = [];
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  private readonly injector = inject(Injector);
   private readonly ngZone = inject(NgZone);
   readonly fallbackReaderPromise = FALLBACK_READER_PROMISE;
   private readonly analytics = inject(AnalyticsService, { optional: true });
@@ -820,10 +823,23 @@ export class GuideShellComponent implements AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {
     const el = this.contentRef.nativeElement;
 
+    // Heading ids are attribute-only changes: safe during server rendering and
+    // required so the prerendered table of contents has working anchors.
     this.buildToc(el);
-    this.enhanceCodeBlocks(el);
-    this.enhanceTables(el);
     if (!this.isBrowser) return;
+
+    // Wrapping tables and code blocks restructures the projected article DOM.
+    // Done during server rendering, that made the prerendered HTML differ from
+    // the article templates, so hydration bound template nodes to the wrong
+    // elements (router links on wrappers, lost wrappers) or crashed with a null
+    // node in hasSkipHydrationAttrOnRElement. The enhancers therefore run in
+    // the browser only, after hydration has claimed the server DOM; templates
+    // author the `.table-scroll` wrapper so no-JS HTML keeps the scroll region.
+    afterNextRender(() => {
+      this.enhanceCodeBlocks(el);
+      this.enhanceTables(el);
+      this.buildRanges();
+    }, { injector: this.injector });
 
     this.guidePath = this.readGuidePathMeta();
     this.buildRanges();          // compute ranges once content is laid out
@@ -1131,10 +1147,16 @@ export class GuideShellComponent implements AfterViewInit, OnDestroy {
       const pre = code.parentElement as HTMLElement;
       if (!pre) continue;
 
-      const wrap = this.r.createElement('div');
-      this.r.addClass(wrap, 'code-wrap');
-      pre.replaceWith(wrap);
-      this.r.appendChild(wrap, pre);
+      // Reuse a wrapper the template authored; never nest a second one. Each
+      // wrapper gets exactly one Copy button, so re-running is a no-op.
+      let wrap = pre.parentElement as HTMLElement | null;
+      if (!wrap?.classList.contains('code-wrap')) {
+        wrap = this.r.createElement('div') as HTMLElement;
+        this.r.addClass(wrap, 'code-wrap');
+        pre.replaceWith(wrap);
+        this.r.appendChild(wrap, pre);
+      }
+      if (wrap.querySelector(':scope > .code-copy')) continue;
 
       const btn = this.r.createElement('button');
       this.r.addClass(btn, 'code-copy');

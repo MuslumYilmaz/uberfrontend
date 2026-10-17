@@ -1456,6 +1456,12 @@ export const PUBLIC_QUESTION_NAVIGATION: readonly PublicQuestionNavigationItem[]
   {
     "tech": "react",
     "kind": "coding",
+    "title": "React Fetch and Render a List with Loading, Error and Empty States",
+    "route": "/react/coding/react-fetch-list-states"
+  },
+  {
+    "tech": "react",
+    "kind": "coding",
     "title": "Todo List (Component with Local State)",
     "route": "/react/coding/react-todo-list"
   },

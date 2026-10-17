@@ -108,6 +108,30 @@ export const COMPANY_BRANDS: Record<string, CompanyBrand> = {
     logoUrl: `${COMPANY_LOGO_BASE}/stripe.svg`,
     monogram: 'S',
   },
+  'booking-com': {
+    slug: 'booking-com',
+    label: 'Booking.com',
+    logoUrl: `${COMPANY_LOGO_BASE}/booking-com.svg`,
+    monogram: 'B',
+  },
+  revolut: {
+    slug: 'revolut',
+    label: 'Revolut',
+    logoUrl: `${COMPANY_LOGO_BASE}/revolut.svg`,
+    monogram: 'R',
+  },
+  spotify: {
+    slug: 'spotify',
+    label: 'Spotify',
+    logoUrl: `${COMPANY_LOGO_BASE}/spotify.svg`,
+    monogram: 'S',
+  },
+  zalando: {
+    slug: 'zalando',
+    label: 'Zalando',
+    logoUrl: `${COMPANY_LOGO_BASE}/zalando.svg`,
+    monogram: 'Z',
+  },
 };
 
 const COMPANY_ALIASES: Record<string, string> = {

@@ -1,0 +1,44 @@
+<footer
+  class="site-footer"
+  [class.site-footer--with-bar]="withPracticeBar"
+  [class.site-footer--embedded]="embedded"
+  data-testid="site-footer"
+  data-nosnippet
+>
+  <div class="site-footer__inner">
+    <nav class="site-footer__groups" aria-label="Site">
+      @for (group of groups; track group.id) {
+        <div class="site-footer__group" role="group" [attr.aria-labelledby]="'site-footer-' + group.id">
+          <p class="site-footer__title" [id]="'site-footer-' + group.id">{{ group.title }}</p>
+          <ul class="site-footer__list">
+            @for (link of group.links; track link.label) {
+              <li>
+                @if (link.route) {
+                  <a class="site-footer__link" [routerLink]="link.route" (click)="trackClick(link, group.id)">{{ link.label }}</a>
+                } @else {
+                  <a
+                    class="site-footer__link"
+                    [href]="link.href"
+                    [attr.target]="link.external ? '_blank' : null"
+                    [attr.rel]="link.external ? 'noopener noreferrer' : null"
+                    (click)="trackClick(link, group.id)"
+                  >{{ link.label }}</a>
+                }
+              </li>
+            }
+          </ul>
+        </div>
+      }
+    </nav>
+    <div class="site-footer__legal">
+      <span class="site-footer__copyright">© FrontendAtlas</span>
+      <ul class="site-footer__legal-list" aria-label="Legal">
+        @for (link of legal; track link.route) {
+          <li>
+            <a class="site-footer__link site-footer__link--legal" [routerLink]="link.route" (click)="trackClick(link, 'legal')">{{ link.label }}</a>
+          </li>
+        }
+      </ul>
+    </div>
+  </div>
+</footer>

@@ -8,6 +8,7 @@
       <app-prep-roadmap-switcher [compact]="isGuestStarterRoute()" [currentUrl]="currentUrl()"></app-prep-roadmap-switcher>
       <router-outlet></router-outlet>
     </main>
+    <app-site-footer *ngIf="showSiteFooter()" [withPracticeBar]="footerAbovePracticeBar()"></app-site-footer>
     <app-sidebar *ngIf="showAppHeader() && sidebarDrawerOpen()" [drawerOnly]="true"></app-sidebar>
   </ng-container>
 
@@ -17,10 +18,13 @@
       @defer (when showSidebar()) {
         <app-sidebar [collapsed]="isGuestStarterRoute()"></app-sidebar>
       }
-      <main class="main">
-        <app-prep-roadmap-switcher [compact]="isGuestStarterRoute()" [currentUrl]="currentUrl()"></app-prep-roadmap-switcher>
-        <router-outlet></router-outlet>
-      </main>
+      <div class="main-col">
+        <main class="main">
+          <app-prep-roadmap-switcher [compact]="isGuestStarterRoute()" [currentUrl]="currentUrl()"></app-prep-roadmap-switcher>
+          <router-outlet></router-outlet>
+        </main>
+        <app-site-footer *ngIf="showSiteFooter()" [withPracticeBar]="footerAbovePracticeBar()"></app-site-footer>
+      </div>
     </div>
   </ng-template>
 

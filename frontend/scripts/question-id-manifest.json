@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-15T07:55:53.778Z",
+  "generatedAt": "2026-10-17T06:55:13.532Z",
   "entries": [
     {
       "tech": "angular",
@@ -1950,6 +1950,12 @@
       "tech": "react",
       "kind": "coding",
       "id": "react-dynamic-table",
+      "file": "react/coding.json"
+    },
+    {
+      "tech": "react",
+      "kind": "coding",
+      "id": "react-fetch-list-states",
       "file": "react/coding.json"
     },
     {

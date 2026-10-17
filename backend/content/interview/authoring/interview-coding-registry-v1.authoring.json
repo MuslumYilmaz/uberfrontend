@@ -9,19 +9,20 @@
     "approvedBy": "project-owner",
     "approvedAt": "2026-08-24",
     "registryVersion": "1.1.0",
-    "registryContentHash": "467aa2cf2c104a2ce58565cd04cb583cb960db09145f7511ffbb125e4c20fde7",
+    "registryContentHash": "e70910fba7402a5221be9e16e4cd0640615c16db05d2cf63c97a4ecc855e5e9a",
     "selectionDefinitionHash": "95ae46b01019649017306384cd4928315a33ccb8d77c50f48306b2ecb5bc4c3e",
     "notes": [
       "Project owner approved coding registry v1.1.0 for editorial-gold production use after the release-readiness audit.",
       "2026-10-14 source-pin maintenance: registryContentHash refreshed after the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments source questions gained company tags and public source lists. Public variant content is unchanged apart from contentHash; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release.",
       "2026-10-15 source-pin maintenance: registryContentHash refreshed after the js-debounce, js-unique-array and the three tabs-switcher source questions gained public source lists. Public variant content is unchanged apart from contentHash; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release.",
       "2026-10-15 source-pin maintenance: registryContentHash refreshed after the js-concurrency-map-limit, js-group-by, react-debounced-search and react-pagination-table source questions gained company tags and public source lists. Public variant content is unchanged apart from contentHash; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release.",
-      "2026-10-15 source-pin maintenance: registryContentHash refreshed after the public source lists on the pinned source questions gained a company field. Public variant content is unchanged apart from contentHash; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release."
+      "2026-10-15 source-pin maintenance: registryContentHash refreshed after the public source lists on the pinned source questions gained a company field. Public variant content is unchanged apart from contentHash; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release.",
+      "2026-10-17 source-pin maintenance: registryContentHash refreshed after the js-debounce, js-group-by, js-once, js-unique-array, react-contact-form-starter, react-debounced-search and react-shopping-cart source questions gained company tags and public source lists for the European company pages. Public variant content is unchanged apart from contentHash; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release."
     ]
   },
-  "definitionHash": "98af3c08513e318f3782ce1ef7277805e0725559650967eab7f88899bb957448",
+  "definitionHash": "f6688700f0ec88034a14298a162949ab1093baa3887474d6767e5d1b7dfb291d",
   "reviewBatch": {
-    "reviewedDefinitionHash": "98af3c08513e318f3782ce1ef7277805e0725559650967eab7f88899bb957448",
+    "reviewedDefinitionHash": "f6688700f0ec88034a14298a162949ab1093baa3887474d6767e5d1b7dfb291d",
     "reviewedAt": "2026-08-24",
     "technical": {
       "reviewer": "codex-interview-coding-technical-v1",
@@ -34,7 +35,8 @@
         "2026-10-14 source-pin maintenance review: the js-debounce, js-fetch-json-timeout, angular-debounced-search and react-nested-comments catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval.",
         "2026-10-15 source-pin maintenance review: the js-debounce, js-unique-array, react-tabs-switcher, angular-tabs-switcher and vue-tabs-switcher catalog entries add public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval.",
         "2026-10-15 source-pin maintenance review: the js-concurrency-map-limit, js-group-by, react-debounced-search and react-pagination-table catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval.",
-        "2026-10-15 source-pin maintenance review: the public source lists on angular-debounced-search, angular-tabs-switcher, js-concurrency-map-limit, js-debounce, js-fetch-json-timeout, js-group-by, js-unique-array, react-debounced-search, react-nested-comments, react-pagination-table, react-tabs-switcher, vue-tabs-switcher gain a company field naming the company each account concerns; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
+        "2026-10-15 source-pin maintenance review: the public source lists on angular-debounced-search, angular-tabs-switcher, js-concurrency-map-limit, js-debounce, js-fetch-json-timeout, js-group-by, js-unique-array, react-debounced-search, react-nested-comments, react-pagination-table, react-tabs-switcher, vue-tabs-switcher gain a company field naming the company each account concerns; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval.",
+        "2026-10-17 source-pin maintenance review: the js-debounce, js-group-by, js-once, js-unique-array, react-contact-form-starter, react-debounced-search and react-shopping-cart catalog entries gain company tags and, where a public interview account was read in full, public source lists for Revolut, Zalando, Spotify and Booking.com; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
       ]
     },
     "editorial": {
@@ -533,7 +535,7 @@
       "level": "junior",
       "catalog": "javascript",
       "sourceQuestionId": "js-unique-array",
-      "expectedQuestionHash": "baea8f0430d09a3dae47b8d1f37c797311ece58f51162f6d70bd6a20968e6b06",
+      "expectedQuestionHash": "3bcebb379ce8820ac8d67fdf641a03ba8b2c9ba71c09571191428a439c307721",
       "timeLimitSeconds": 1500,
       "roundLimit": 1,
       "runner": "javascript",
@@ -578,7 +580,7 @@
       "level": "junior",
       "catalog": "javascript",
       "sourceQuestionId": "js-once",
-      "expectedQuestionHash": "d79903ab8a75d2fd5102679e18d013606618e45501e346f948e6751570f464e4",
+      "expectedQuestionHash": "030f034139cb7c587de284f90f0265670e6119d2aa16e4e224729a37725a6409",
       "timeLimitSeconds": 1500,
       "roundLimit": 1,
       "runner": "javascript",
@@ -620,7 +622,7 @@
       "level": "mid",
       "catalog": "javascript",
       "sourceQuestionId": "js-debounce",
-      "expectedQuestionHash": "94bd7cdd67081ee5a8c9d7450b06d7910727be5869dc69c4e725cd3c0497a41b",
+      "expectedQuestionHash": "7f52f6dbfc2bbc3330a69ac3d9ee6f922d068fad1edcc7a3c167e0eb8169e1f4",
       "timeLimitSeconds": 2100,
       "roundLimit": 1,
       "runner": "javascript",
@@ -705,7 +707,7 @@
       "level": "mid",
       "catalog": "javascript",
       "sourceQuestionId": "js-group-by",
-      "expectedQuestionHash": "6f664a72a2e1d399ae05534cb716de7ff61140ec46584ad17a95ffa0fee232f7",
+      "expectedQuestionHash": "4041cb2391c6cbbdc5c132922ba7322ed05e83fb69a8cac77c32551540fd4ab6",
       "timeLimitSeconds": 2100,
       "roundLimit": 1,
       "runner": "javascript",
@@ -953,7 +955,7 @@
       "level": "mid",
       "catalog": "react",
       "sourceQuestionId": "react-shopping-cart",
-      "expectedQuestionHash": "6e2e1a02e569d4bc7d33bddf88f18c38d9a7c78ee66f33bb191050f53223cdae",
+      "expectedQuestionHash": "edc24739e99f2dede1c9b43155e1741a7e5b8dad47fff34b7e9fa369114c26d4",
       "expectedStarterAssetHash": "445d3d215c8f2442ef3828df88ea675b5bd3fb68559492559d8af22040e5482f",
       "expectedPressureAssetHash": "22c4a913853a5ad9bb1ab688b27b7ca89d0316bdc5642a86d884a76279c80238",
       "timeLimitSeconds": 2100,
@@ -973,7 +975,7 @@
       "level": "senior",
       "catalog": "react",
       "sourceQuestionId": "react-debounced-search",
-      "expectedQuestionHash": "1d6ab2a6342e16648b94bc8142413d5625b9bae29db311c33764af33472ff9a6",
+      "expectedQuestionHash": "1900a01fea30c1f5a41cbea408f4a6347b8c5db295191887819bed87840705fe",
       "expectedStarterAssetHash": "9cc55b69ec9e100916051df2661a7c8b5786e8a12cf88ff0b1e9dc405af97bff",
       "expectedPressureAssetHash": "059c690882468d40432598a815947da6eba101de556a4925f7b4148d204971e2",
       "timeLimitSeconds": 2700,
@@ -1379,7 +1381,7 @@
       "level": "senior",
       "catalog": "react",
       "sourceQuestionId": "react-contact-form-starter",
-      "expectedQuestionHash": "6c85745541132772d4edfb12a255bf202aa0427922e9df6aecedb752c22810f1",
+      "expectedQuestionHash": "dd746abb2905c13fe01bba4f919cbbca7195bd51304d061525897bc5a9a9254e",
       "expectedStarterAssetHash": "68670443e960dd93e46b4669757e47c00e14bea81b6169827788142c06bab1e2",
       "pressureAsset": "authoring://pressure-modes/contact-form.candidate-v1.json",
       "expectedPressureAssetHash": "e82913dafddab162854829b6da1a7bcb2d80ede2dc5be38d5959195783074ccf",

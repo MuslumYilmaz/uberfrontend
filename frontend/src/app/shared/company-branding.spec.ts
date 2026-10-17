@@ -30,6 +30,7 @@ describe('company branding helpers', () => {
       'airbnb',
       'amazon',
       'apple',
+      'booking-com',
       'bytedance',
       'datadog',
       'elevenlabs',
@@ -39,10 +40,13 @@ describe('company branding helpers', () => {
       'microsoft',
       'netflix',
       'openai',
+      'revolut',
       'servicenow',
+      'spotify',
       'stripe',
       'uber',
       'waymo',
+      'zalando',
     ];
 
     expect(currentCompanySlugs.every((slug) => !!COMPANY_BRANDS[slug])).toBeTrue();

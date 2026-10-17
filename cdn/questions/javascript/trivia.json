@@ -17,7 +17,10 @@
     "companies": [
       "meta",
       "bytedance",
-      "airbnb"
+      "airbnb",
+      "revolut",
+      "zalando",
+      "spotify"
     ],
     "answer": {
       "blocks": [
@@ -193,7 +196,9 @@
       "timers"
     ],
     "importance": 5,
-    "companies": [],
+    "companies": [
+      "spotify"
+    ],
     "outputChallenge": {
       "language": "javascript",
       "runtime": "browser",
@@ -609,7 +614,9 @@
       "netflix",
       "apple",
       "meta",
-      "airbnb"
+      "airbnb",
+      "spotify",
+      "booking-com"
     ],
     "answer": {
       "blocks": [
@@ -717,7 +724,8 @@
       "amazon",
       "google",
       "apple",
-      "meta"
+      "meta",
+      "spotify"
     ],
     "answer": {
       "blocks": [
@@ -877,7 +885,8 @@
       "google",
       "meta",
       "amazon",
-      "microsoft"
+      "microsoft",
+      "booking-com"
     ],
     "answer": {
       "blocks": [
@@ -1507,7 +1516,8 @@
     "companies": [
       "bytedance",
       "meta",
-      "google"
+      "google",
+      "booking-com"
     ],
     "answer": {
       "blocks": [
@@ -3025,7 +3035,8 @@
     "companies": [
       "google",
       "meta",
-      "apple"
+      "apple",
+      "spotify"
     ],
     "answer": {
       "blocks": [
@@ -3726,7 +3737,8 @@
       "amazon",
       "meta",
       "bytedance",
-      "apple"
+      "apple",
+      "zalando"
     ],
     "answer": {
       "blocks": [
@@ -3968,7 +3980,8 @@
     "companies": [
       "google",
       "netflix",
-      "apple"
+      "apple",
+      "zalando"
     ],
     "answer": {
       "blocks": [
@@ -5890,7 +5903,9 @@
       "async"
     ],
     "importance": 4,
-    "companies": [],
+    "companies": [
+      "zalando"
+    ],
     "answer": {
       "blocks": [
         {
@@ -6331,7 +6346,9 @@
       "cache"
     ],
     "importance": 4,
-    "companies": [],
+    "companies": [
+      "spotify"
+    ],
     "answer": {
       "blocks": [
         {
@@ -6455,7 +6472,10 @@
     ],
     "importance": 5,
     "companies": [
-      "bytedance"
+      "bytedance",
+      "revolut",
+      "zalando",
+      "spotify"
     ],
     "answer": {
       "blocks": [
@@ -8298,7 +8318,8 @@
     "importance": 5,
     "companies": [
       "bytedance",
-      "apple"
+      "apple",
+      "zalando"
     ],
     "answer": {
       "blocks": [
@@ -10222,7 +10243,9 @@
       "user-input"
     ],
     "importance": 5,
-    "companies": [],
+    "companies": [
+      "zalando"
+    ],
     "answer": {
       "blocks": [
         {
@@ -11027,7 +11050,9 @@
       "performance"
     ],
     "importance": 4,
-    "companies": [],
+    "companies": [
+      "zalando"
+    ],
     "answer": {
       "blocks": [
         {

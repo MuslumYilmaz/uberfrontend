@@ -1964,7 +1964,8 @@
     },
     "solutionAsset": "assets/sb/vue/solution/vue-autocomplete-search-solution.v1.json",
     "companies": [
-      "apple"
+      "apple",
+      "booking-com"
     ],
     "sources": [
       {
@@ -1974,6 +1975,22 @@
         "publisher": "LeetCode Discuss",
         "date": "2025-07",
         "note": "Public search previews of this report list building an autocomplete search bar in TypeScript with Vue or React. The full report could not be read by our tools, so only that listing is used. This component practises the shape, not the reported wording."
+      },
+      {
+        "label": "Code360: Booking.com frontend engineer interview experience, April 2023",
+        "url": "https://www.naukri.com/code360/interview-experiences/booking-com/interview-experience-frontend-engineer-apr-2023-exp-0-2-years",
+        "company": "booking-com",
+        "publisher": "Code360",
+        "date": "2023-04",
+        "note": "One account describes a 40-minute round with three engineers: create an autocomplete text box in vanilla JavaScript, HTML and CSS, covering edge cases and must-haves versus nice-to-haves. This starter is a practice version in Vue; the reported round was framework-free."
+      },
+      {
+        "label": "enginebogie: Booking.com frontend engineer machine-coding round, May 2023",
+        "url": "https://enginebogie.com/interview/experience/booking-com-frontend-engineer/84",
+        "company": "booking-com",
+        "publisher": "enginebogie",
+        "date": "2023-05",
+        "note": "One account describes a 60-minute machine-coding round: a typeahead with API calls, a live dropdown, highlighted matches, debounce or throttle, caching, keyboard navigation and error states. This starter is a practice version of that round in Vue, not its reported wording."
       }
     ],
     "access": "premium",
