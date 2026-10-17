@@ -1,5 +1,5 @@
 {
-  "definitionHash": "8fb6c4e2864e0cb956e9adb64b0e221c97d1fabf74a3c59e14ff1edea0bf47f0",
+  "definitionHash": "f8b5f1d8ef10644bfaa21923c229be4e3c54e058c9a1ed3a30b05d2cd3723882",
   "finalApproval": null,
   "registryId": "interview-system-design-registry-v1",
   "registryVersion": "1.2.0",
@@ -74,7 +74,7 @@
           "status": "passed"
         },
         "contentHash": "88725588802c4299c9b46bd7e6f478f9faadc54e03fb87825b1b11298b9b01b3",
-        "definitionHash": "8fb6c4e2864e0cb956e9adb64b0e221c97d1fabf74a3c59e14ff1edea0bf47f0",
+        "definitionHash": "f8b5f1d8ef10644bfaa21923c229be4e3c54e058c9a1ed3a30b05d2cd3723882",
         "editorial": {
           "notes": [
             "Checkout guided language matches the resilient checkout static story and links to resilient-checkout-payment-flow without exposing authoring notes.",
@@ -104,7 +104,8 @@
             "2026-10-15 source-pin maintenance review: the int-sd-toast-lifecycle-jr-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
             "2026-10-15 source-pin maintenance review: the int-sd-autocomplete-race-mid-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
             "2026-10-15 source-pin maintenance review: the int-sd-ai-chat-composer-mid-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
-            "2026-10-15 source-pin maintenance review: the int-sd-image-upload-lifecycle-jr-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval."
+            "2026-10-15 source-pin maintenance review: the int-sd-image-upload-lifecycle-jr-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
+            "2026-10-17 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the zalando and booking-com company tags, two public interview-report sources and the matching editorial.companyEvidence entries; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin for int-sd-autocomplete-race-mid-v1. This is not a new release approval."
           ],
           "reviewer": "codex-system-design-technical-v8",
           "reviewerType": "ai",
@@ -1490,7 +1491,7 @@
           "clarificationId": "search-navigation"
         }
       ],
-      "contentHash": "e84a524f1076541df276f3914394b4bb8a100620093bed9d5586a160061df39e",
+      "contentHash": "2936115e55878693b776fc8622d7e68af36237752780aa0f106b0f37ac4fe5e2",
       "id": "int-sd-autocomplete-race-mid-v1",
       "provenance": {
         "authoredAt": "2026-07-29",
@@ -1525,8 +1526,8 @@
           "reviewerType": "ai",
           "status": "passed"
         },
-        "contentHash": "e84a524f1076541df276f3914394b4bb8a100620093bed9d5586a160061df39e",
-        "definitionHash": "8fb6c4e2864e0cb956e9adb64b0e221c97d1fabf74a3c59e14ff1edea0bf47f0",
+        "contentHash": "2936115e55878693b776fc8622d7e68af36237752780aa0f106b0f37ac4fe5e2",
+        "definitionHash": "f8b5f1d8ef10644bfaa21923c229be4e3c54e058c9a1ed3a30b05d2cd3723882",
         "editorial": {
           "notes": [
             "Checkout guided language matches the resilient checkout static story and links to resilient-checkout-payment-flow without exposing authoring notes.",
@@ -1556,7 +1557,8 @@
             "2026-10-15 source-pin maintenance review: the int-sd-toast-lifecycle-jr-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
             "2026-10-15 source-pin maintenance review: the int-sd-autocomplete-race-mid-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
             "2026-10-15 source-pin maintenance review: the int-sd-ai-chat-composer-mid-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
-            "2026-10-15 source-pin maintenance review: the int-sd-image-upload-lifecycle-jr-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval."
+            "2026-10-15 source-pin maintenance review: the int-sd-image-upload-lifecycle-jr-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
+            "2026-10-17 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the zalando and booking-com company tags, two public interview-report sources and the matching editorial.companyEvidence entries; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin for int-sd-autocomplete-race-mid-v1. This is not a new release approval."
           ],
           "reviewer": "codex-system-design-technical-v8",
           "reviewerType": "ai",
@@ -1859,11 +1861,11 @@
         ]
       },
       "sourceEvidence": {
-        "bundleHash": "931e5212d916b7ab0e1b086dabc95ca93d6cf356728f5326bc9bb3ac81d71375",
+        "bundleHash": "3d90f44b370ced59b02a3da135413b905bbc8209b2b784cdee89bfc52875db34",
         "files": [
           {
             "file": "cdn/questions/system-design/realtime-search-debounce-cache/meta.json",
-            "sha256": "d3b04aa4cefafc27eeea025109e7c43c7db11d4c9a59e783b37a6eed5e9cdf81"
+            "sha256": "1c28a32d3eefda2d42c4286a37d7de9d7783cf768fce95891f88c10bc4c1a0f3"
           },
           {
             "file": "cdn/questions/system-design/realtime-search-debounce-cache/requirements.json",
@@ -2688,7 +2690,7 @@
           "status": "passed"
         },
         "contentHash": "e75229a1aca9b1c3ff92b5a6d2d244baa40e2ddafbdff41d107514a58073452e",
-        "definitionHash": "8fb6c4e2864e0cb956e9adb64b0e221c97d1fabf74a3c59e14ff1edea0bf47f0",
+        "definitionHash": "f8b5f1d8ef10644bfaa21923c229be4e3c54e058c9a1ed3a30b05d2cd3723882",
         "editorial": {
           "notes": [
             "Checkout guided language matches the resilient checkout static story and links to resilient-checkout-payment-flow without exposing authoring notes.",
@@ -2718,7 +2720,8 @@
             "2026-10-15 source-pin maintenance review: the int-sd-toast-lifecycle-jr-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
             "2026-10-15 source-pin maintenance review: the int-sd-autocomplete-race-mid-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
             "2026-10-15 source-pin maintenance review: the int-sd-ai-chat-composer-mid-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
-            "2026-10-15 source-pin maintenance review: the int-sd-image-upload-lifecycle-jr-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval."
+            "2026-10-15 source-pin maintenance review: the int-sd-image-upload-lifecycle-jr-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
+            "2026-10-17 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the zalando and booking-com company tags, two public interview-report sources and the matching editorial.companyEvidence entries; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin for int-sd-autocomplete-race-mid-v1. This is not a new release approval."
           ],
           "reviewer": "codex-system-design-technical-v8",
           "reviewerType": "ai",
@@ -4302,7 +4305,7 @@
           "status": "passed"
         },
         "contentHash": "5bd681d66f6274df90633235cba5278bc151694882cf1d041c2b1c873c9b66d8",
-        "definitionHash": "8fb6c4e2864e0cb956e9adb64b0e221c97d1fabf74a3c59e14ff1edea0bf47f0",
+        "definitionHash": "f8b5f1d8ef10644bfaa21923c229be4e3c54e058c9a1ed3a30b05d2cd3723882",
         "editorial": {
           "notes": [
             "Checkout guided language matches the resilient checkout static story and links to resilient-checkout-payment-flow without exposing authoring notes.",
@@ -4332,7 +4335,8 @@
             "2026-10-15 source-pin maintenance review: the int-sd-toast-lifecycle-jr-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
             "2026-10-15 source-pin maintenance review: the int-sd-autocomplete-race-mid-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
             "2026-10-15 source-pin maintenance review: the int-sd-ai-chat-composer-mid-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
-            "2026-10-15 source-pin maintenance review: the int-sd-image-upload-lifecycle-jr-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval."
+            "2026-10-15 source-pin maintenance review: the int-sd-image-upload-lifecycle-jr-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
+            "2026-10-17 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the zalando and booking-com company tags, two public interview-report sources and the matching editorial.companyEvidence entries; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin for int-sd-autocomplete-race-mid-v1. This is not a new release approval."
           ],
           "reviewer": "codex-system-design-technical-v8",
           "reviewerType": "ai",
@@ -5716,7 +5720,7 @@
           "status": "passed"
         },
         "contentHash": "2ace4a59c71200a9634e02bd9bd1461606c5d12968f4ca7ee3964e41ad801b7d",
-        "definitionHash": "8fb6c4e2864e0cb956e9adb64b0e221c97d1fabf74a3c59e14ff1edea0bf47f0",
+        "definitionHash": "f8b5f1d8ef10644bfaa21923c229be4e3c54e058c9a1ed3a30b05d2cd3723882",
         "editorial": {
           "notes": [
             "Checkout guided language matches the resilient checkout static story and links to resilient-checkout-payment-flow without exposing authoring notes.",
@@ -5746,7 +5750,8 @@
             "2026-10-15 source-pin maintenance review: the int-sd-toast-lifecycle-jr-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
             "2026-10-15 source-pin maintenance review: the int-sd-autocomplete-race-mid-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
             "2026-10-15 source-pin maintenance review: the int-sd-ai-chat-composer-mid-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
-            "2026-10-15 source-pin maintenance review: the int-sd-image-upload-lifecycle-jr-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval."
+            "2026-10-15 source-pin maintenance review: the int-sd-image-upload-lifecycle-jr-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
+            "2026-10-17 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the zalando and booking-com company tags, two public interview-report sources and the matching editorial.companyEvidence entries; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin for int-sd-autocomplete-race-mid-v1. This is not a new release approval."
           ],
           "reviewer": "codex-system-design-technical-v8",
           "reviewerType": "ai",
@@ -7499,7 +7504,7 @@
           "status": "passed"
         },
         "contentHash": "051cfb98717b613151e42dc73ecead253abe6edfc92d7883ca41252645a807c8",
-        "definitionHash": "8fb6c4e2864e0cb956e9adb64b0e221c97d1fabf74a3c59e14ff1edea0bf47f0",
+        "definitionHash": "f8b5f1d8ef10644bfaa21923c229be4e3c54e058c9a1ed3a30b05d2cd3723882",
         "editorial": {
           "notes": [
             "Checkout guided language matches the resilient checkout static story and links to resilient-checkout-payment-flow without exposing authoring notes.",
@@ -7529,7 +7534,8 @@
             "2026-10-15 source-pin maintenance review: the int-sd-toast-lifecycle-jr-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
             "2026-10-15 source-pin maintenance review: the int-sd-autocomplete-race-mid-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
             "2026-10-15 source-pin maintenance review: the int-sd-ai-chat-composer-mid-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
-            "2026-10-15 source-pin maintenance review: the int-sd-image-upload-lifecycle-jr-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval."
+            "2026-10-15 source-pin maintenance review: the int-sd-image-upload-lifecycle-jr-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
+            "2026-10-17 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the zalando and booking-com company tags, two public interview-report sources and the matching editorial.companyEvidence entries; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin for int-sd-autocomplete-race-mid-v1. This is not a new release approval."
           ],
           "reviewer": "codex-system-design-technical-v8",
           "reviewerType": "ai",
@@ -9192,7 +9198,7 @@
           "status": "passed"
         },
         "contentHash": "f54fd3cc3c54b89715b99c6b3f9fe620984b0c55594c999ba8bbb83cdfbd46e5",
-        "definitionHash": "8fb6c4e2864e0cb956e9adb64b0e221c97d1fabf74a3c59e14ff1edea0bf47f0",
+        "definitionHash": "f8b5f1d8ef10644bfaa21923c229be4e3c54e058c9a1ed3a30b05d2cd3723882",
         "editorial": {
           "notes": [
             "Checkout guided language matches the resilient checkout static story and links to resilient-checkout-payment-flow without exposing authoring notes.",
@@ -9222,7 +9228,8 @@
             "2026-10-15 source-pin maintenance review: the int-sd-toast-lifecycle-jr-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
             "2026-10-15 source-pin maintenance review: the int-sd-autocomplete-race-mid-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
             "2026-10-15 source-pin maintenance review: the int-sd-ai-chat-composer-mid-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
-            "2026-10-15 source-pin maintenance review: the int-sd-image-upload-lifecycle-jr-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval."
+            "2026-10-15 source-pin maintenance review: the int-sd-image-upload-lifecycle-jr-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
+            "2026-10-17 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the zalando and booking-com company tags, two public interview-report sources and the matching editorial.companyEvidence entries; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin for int-sd-autocomplete-race-mid-v1. This is not a new release approval."
           ],
           "reviewer": "codex-system-design-technical-v8",
           "reviewerType": "ai",
@@ -10356,7 +10363,7 @@
           "status": "passed"
         },
         "contentHash": "c85817e11c42482db36feeeaa71a0929282060afd2f6a9930c210970b1c3f2bb",
-        "definitionHash": "8fb6c4e2864e0cb956e9adb64b0e221c97d1fabf74a3c59e14ff1edea0bf47f0",
+        "definitionHash": "f8b5f1d8ef10644bfaa21923c229be4e3c54e058c9a1ed3a30b05d2cd3723882",
         "editorial": {
           "notes": [
             "Checkout guided language matches the resilient checkout static story and links to resilient-checkout-payment-flow without exposing authoring notes.",
@@ -10386,7 +10393,8 @@
             "2026-10-15 source-pin maintenance review: the int-sd-toast-lifecycle-jr-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
             "2026-10-15 source-pin maintenance review: the int-sd-autocomplete-race-mid-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
             "2026-10-15 source-pin maintenance review: the int-sd-ai-chat-composer-mid-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
-            "2026-10-15 source-pin maintenance review: the int-sd-image-upload-lifecycle-jr-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval."
+            "2026-10-15 source-pin maintenance review: the int-sd-image-upload-lifecycle-jr-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
+            "2026-10-17 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the zalando and booking-com company tags, two public interview-report sources and the matching editorial.companyEvidence entries; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin for int-sd-autocomplete-race-mid-v1. This is not a new release approval."
           ],
           "reviewer": "codex-system-design-technical-v8",
           "reviewerType": "ai",
