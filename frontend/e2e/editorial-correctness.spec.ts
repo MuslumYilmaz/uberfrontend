@@ -59,6 +59,10 @@ const publicCopyCases = [
     expected: 'Prepare for product judgment, not Meta trivia',
   },
   {
+    path: '/companies/revolut/preview',
+    expected: 'Prepare for product judgment, not Revolut trivia',
+  },
+  {
     path: '/system-design',
     expected: 'Follow this four-step path when you are new to the bank',
   },

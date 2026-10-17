@@ -317,13 +317,37 @@ Verified: `lint:questions`, `lint:tags`, `lint:indexability-readiness` (0 warnin
 
 Not verified: Playwright e2e (`seo.spec.ts` llms.txt check, `seo-ssr.spec.ts`), which the pre-push hook runs; the sandbox framework tests inside a real browser SDK session (the four tests were reasoned against the runner's `setValue`, `waitForText`, `waitForCount` and `click` semantics, not executed). Residual: `perf:contract` now warns that total prerender HTML is 104.56 MB against a 104 MB soft threshold (each new page adds about 175 KB); the pre-existing initial-bundle warning (1.27 MB against the 900 kB warning budget, 1.3 MB error cap) is unchanged in kind, with four brand entries added to the eager `company-branding.ts`.
 
+Committed on 2026-10-17 as 03c272e0 (content, frontend, generated files) and 6ee8e729 (backend re-pin) on dev; not pushed.
+
+## Demand check with Google Trends and Search Console (2026-10-17)
+
+Google Trends, worldwide, read from the chart's data table:
+
+| Term set | Window | Revolut | Spotify | Booking.com | Zalando | Adyen |
+|---|---|---|---|---|---|---|
+| `<company> interview` | past 12 months | 18 | 51 | 16 | 4 | 3 |
+| `<company> frontend` | past 5 years | 3 | 11 | 1 | 0 | 0 |
+
+Values are relative to the highest point in each comparison, not volumes. `<company> interview` covers every role and is driven by brand size; `spotify frontend` probably includes "Spotify clone" project searches, so the frontend row overstates Spotify. The frontend series show interest only from 2025 onwards. Combined with the autocomplete proxy (Revolut 7 suggestions, Spotify 2, Zalando 2, Booking.com 1), Revolut and Spotify carry the clearest frontend-interview demand, Booking.com is weaker on the frontend phrasing, and Zalando is the weakest of the four.
+
+Search Console, sc-domain:frontendatlas.com, 2025-06-18 to 2026-10-16, query contains filter (`query=*<name>`): revolut, zalando, spotify, booking, adyen and waymo all 0 impressions; netflix 8 impressions over four queries (`netflix front end`, `netflix frontend framework`, `netflix frontend interview`, `netflix frontend`), which confirms the filter works. All `/companies` pages together: 18 clicks and 1,280 impressions over the period; OpenAI 11 clicks and 259 impressions (average position 15.5), Netflix 3 and 266, ElevenLabs 3 and 14, Intuit 1 and 8, Google 0 and 266, Amazon 0 and 186, the `/companies` index 0 and 108, Apple 0 and 94, Microsoft 0 and 37, Uber 0 and 13, ByteDance 0 and 9, Stripe 0 and 8, Airbnb 0 and 7, Waymo 0 and 2; Datadog, ServiceNow and Meta are not listed yet. Company pages are a small search channel today: their value is conversion and the differentiator, not traffic, and a new page should be judged on its own queries after four to six weeks.
+
+## Authored Revolut guide and logos (2026-10-17)
+
+The user chose to write authored guides one company at a time, Revolut first, with a review before the next one. Done in the working tree, not committed:
+
+- `frontend/src/app/shared/company-previews/revolut-preview-content.ts`: five prompts (one-hour TypeScript fetch-and-render, authenticated-API pairing, the three-task HackerRank screen, the HR theory check, frontend system design with API contracts), a walkthrough, a seven-day plan, five FAQs, nine free practice links and eight sources. Every claim was re-read on the source before writing: the four Taro reports, the Blind thread, the 2017 home-task README, the Revolut Tech post through the feed, and the Bar Raiser video through YouTube oEmbed (channel Revolut).
+- Removed during that check: the Blind "failed at the bar raiser" reply, which concerns Amazon ("Amazon style LP"), not Revolut; the Glassdoor "production-ready code without clear requirements" preview, which a search could not confirm; the 2020 "5 Tips for your Live Coding Interview" post, which could not be found; and the claim that two Taro accounts mirror Glassdoor reviews, which cannot be checked on Glassdoor. Labels for those two Taro accounts carry no city.
+- Registry wiring: `authored-company-previews.ts`, `authored-company-slugs.ts`, `scripts/authored-companies.mjs`, `scripts/sitemap.test.mjs`, a Revolut row in `scripts/seo-smoke.mjs` and `e2e/seo-ssr.spec.ts` generated from the content module, `e2e/editorial-correctness.spec.ts`, the `llms.txt` line and its `e2e/seo.spec.ts` assertion. House style: no apostrophes or possessives in the content module.
+- Logos: Simple Icons 16.35.0 marks for Revolut, Zalando, Spotify and Booking.com (`bookingdotcom`), normalised to the repo format (`viewBox 0 0 24 24`, one `path fill="#000"`), saved as `frontend/src/assets/images/company-logos/{revolut,zalando,spotify,booking-com}.svg` and referenced from `COMPANY_BRANDS`.
+
+Verified: authored-companies, sitemap and company-reports node tests, public-trust regressions, Karma (1732 specs), `test:content-regressions`, a clean build with `seo:smoke` (every Revolut check passes; `dateModified` stays empty until the content is committed), `seo:link-equity`, `seo:links` (0 hard 404s), `seo:meta-check` (no Revolut warning; title 60 characters, description 152), `perf:contract` (exit 0, same 104 MB total-HTML warning), and Playwright against the prerendered build: 58 tests including the raw Revolut HTML test, the Revolut reflow test at target widths, the editorial copy check and the llms.txt check. Screenshots of `/companies` (all four new logos load) and of the Revolut guide at 390 px (no horizontal overflow) were inspected.
+
 ## Open items
 
-- Commit split proposal: content plus frontend plus generated files in one commit, the backend re-pin in a second, as the precedent did.
-- Logos for the four brands (monograms today).
-- Authored previews (Waymo, Amazon, Meta style) for any of the four: separate yes/no.
-- Google Trends and Search Console demand check; the Glassdoor browser read if the site permission is granted.
-- After deploy: GSC indexing requests for the four company pages and the new coding page (quota about nine per day).
+- The user decides whether to commit the Revolut guide and the logos, and which company is next (data above: Spotify has the most Trends interest but US-centred sources; Booking.com has the richest tasks; Zalando has the weakest demand).
+- Push and deploy are the user's call; GSC indexing requests for `/companies/revolut/preview`, the other three company pages and `/react/coding/react-fetch-list-states` wait for the deploy (quota about nine per day).
+- The Glassdoor browser read if the site permission is granted.
 - Glassdoor through the signed-in browser needs the extension's site permission for glassdoor.com; worth doing for Spotify (Web Engineer page, 8 to 10 reviews) and Zalando (Senior Frontend page) before writing.
 - Verify demand with Google Trends and Search Console (queries that already mention these companies) before committing to the fourth company.
 - Write pages only after a separate yes/no; the pipeline is in `docs/references/company-pages-plan-2026-10.md` (registry entry plus `<slug>-preview-content.ts`, `sources` on each tagged question, hard-coded slug lists in `company-public-data.service.ts`, `seo-content-inventory.mjs`, `seo-date-parity.mjs`, `audit-internal-link-equity.mjs`, `company-index.component.html`, `frontend/src/llms.txt`, `seo-smoke.mjs`).

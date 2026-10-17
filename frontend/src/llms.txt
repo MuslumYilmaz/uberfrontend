@@ -86,7 +86,7 @@
 - [Microsoft interview preview](https://frontendatlas.com/companies/microsoft/preview): Microsoft frontend interview practice preview.
 - [Netflix frontend interview questions](https://frontendatlas.com/companies/netflix/preview): Public Netflix prep guide with six representative prompts and a broad frontend preparation plan.
 - [OpenAI interview preview](https://frontendatlas.com/companies/openai/preview): OpenAI frontend interview practice preview.
-- [Revolut interview preview](https://frontendatlas.com/companies/revolut/preview): Revolut frontend interview practice preview.
+- [Revolut frontend interview questions](https://frontendatlas.com/companies/revolut/preview): Public Revolut prep guide with five practice prompts modelled on public frontend interview accounts from 2024 and 2025 and Revolut's own web-engineering post.
 - [ServiceNow frontend interview questions](https://frontendatlas.com/companies/servicenow/preview): Public ServiceNow prep guide with five practice prompts modelled on public frontend interview accounts from 2021 to 2025.
 - [Spotify interview preview](https://frontendatlas.com/companies/spotify/preview): Spotify frontend interview practice preview.
 - [Stripe interview preview](https://frontendatlas.com/companies/stripe/preview): Stripe frontend interview practice preview.
