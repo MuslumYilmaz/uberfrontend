@@ -23,6 +23,17 @@
   color: var(--uf-text-primary);
 }
 
+.locked-preview-rich__cta {
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.locked-preview-rich__cta:empty {
+  display: none;
+}
+
 .locked-preview-rich__text {
   margin: 0;
   font-size: 13px;

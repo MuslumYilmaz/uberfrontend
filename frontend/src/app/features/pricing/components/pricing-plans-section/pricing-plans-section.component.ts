@@ -712,11 +712,11 @@ HTML and CSS tasks rely on the live preview instead, because visuals are the pri
     return `${perMonth}/mo billed every ${months} months`;
   }
 
-  // The full sprint page leads with the monthly equivalent so the three cards
-  // compare in one unit, with the billed total on the next line. The compact
-  // homepage section keeps the plan total as its headline.
+  // Sprint offers lead with the monthly equivalent so the three cards compare
+  // in one unit, with the billed total on the next line. The homepage section
+  // uses the same framing as /pricing so a visitor never sees two price formats.
   usesPerMonthHeadline(planId: PlanId): boolean {
-    return this.variant === 'full' && this.isOfferV2() && (planId === 'quarterly' || planId === 'annual');
+    return this.isOfferV2() && (planId === 'quarterly' || planId === 'annual');
   }
 
   priceHeadline(planId: PlanId): string {

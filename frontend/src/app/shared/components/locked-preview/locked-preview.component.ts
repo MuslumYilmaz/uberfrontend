@@ -23,6 +23,8 @@ import { LockedPreviewData, LockedPreviewLink } from '../../../core/utils/locked
       <section class="locked-preview-rich__section">
         <h2 class="locked-preview-rich__title">What Premium unlocks</h2>
         <p class="locked-preview-rich__text" data-testid="premium-preview-unlock">{{ data.unlockDescription }}</p>
+        <!-- The page's primary pricing action, so it sits on the first screen next to what it unlocks. -->
+        <div class="locked-preview-rich__cta"><ng-content select="[lockedPreviewCta]"></ng-content></div>
       </section>
 
       <section class="locked-preview-rich__section locked-preview-rich__section--secondary" *ngIf="freeRelated().length">

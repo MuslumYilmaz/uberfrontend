@@ -285,7 +285,9 @@
           Guided tradeoff battle
           <ng-container *ngIf="updatedLabel(current.meta.updatedAt) as updated"> · Updated {{ updated }}</ng-container>
         </div>
-        <app-locked-preview *ngIf="lockedPreview()" [data]="lockedPreview()!"></app-locked-preview>
+        <app-locked-preview *ngIf="lockedPreview()" [data]="lockedPreview()!">
+            <button lockedPreviewCta faButton variant="primary" type="button" data-testid="locked-preview-pricing-cta" (click)="goToPricingFromLocked()">View pricing</button>
+        </app-locked-preview>
         <div class="locked-paths" *ngIf="lockedPaths().length">
           <a
             class="locked-paths__item"

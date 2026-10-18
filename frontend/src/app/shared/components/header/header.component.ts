@@ -4,6 +4,7 @@ import { NavigationEnd, Params, Router, RouterModule } from '@angular/router';
 import { filter, startWith } from 'rxjs';
 import { defaultPrefs, Tech } from '../../../core/models/user.model';
 import { AnalyticsService } from '../../../core/services/analytics.service';
+import { ConversionContextService } from '../../../core/services/conversion-context.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { isProActive } from '../../../core/utils/entitlements.util';
 import { PREPARE_GROUPS, PrepareGroup, PrepareItem, TargetName } from '../../prepare/prepare.registry';
@@ -50,6 +51,7 @@ export class HeaderComponent implements OnInit {
   private hostEl = inject(ElementRef<HTMLElement>);
   private drawerState = inject(AppSidebarDrawerService);
   private analytics = inject(AnalyticsService);
+  private readonly conversionContext = inject(ConversionContextService);
 
   // route state
   mode = signal<Mode>('dashboard');
@@ -535,6 +537,14 @@ export class HeaderComponent implements OnInit {
 
   onInterviewQuestionsClick() {
     this.trackTopNavClick('primary', '/interview-questions');
+    this.closeAll();
+  }
+
+  // Signed-out visitors get a plain Pricing link next to the account menu, as on
+  // the homepage header; signed-in users already have Upgrade or Manage subscription.
+  onPricingClick() {
+    this.conversionContext.rememberPricingContext('app_header', 'app_header_utility');
+    this.trackTopNavClick('utility', '/pricing');
     this.closeAll();
   }
 

@@ -131,3 +131,39 @@ test('regional pricing shows the list price struck through next to the regional 
   await page.setViewportSize({ width: 390, height: 900 });
   await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
 });
+
+test('the homepage pricing section shows the same regional prices as /pricing', async ({ page }) => {
+  await page.route(/\/api\/billing\/checkout\/config(?:\?.*)?$/, async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json; charset=utf-8',
+      body: JSON.stringify({
+        ...V2_CHECKOUT_CONFIG,
+        pricing: {
+          student: { multiplier: 0.6, planIds: ['annual'] },
+          regional: {
+            countryCode: 'TR',
+            countryName: 'Türkiye',
+            multiplier: 0.5,
+            prices: { monthly: 600, quarterly: 1450, annual: 3950, lifetime: 9950 },
+          },
+        },
+      }),
+    });
+  });
+
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+  const section = page.locator('app-pricing-plans-section');
+  // The homepage loads the checkout config when the section comes into view.
+  await section.scrollIntoViewIfNeeded();
+
+  await expect(section.getByTestId('pricing-regional-line')).toContainText('Prices for Türkiye: 50% off the list price');
+  await expect(section.locator('.pr-card--quarterly s[data-list-price]')).toHaveText('$9.67');
+  await expect(section.locator('.pr-card--quarterly .price')).toContainText('$4.83');
+  await expect(section.locator('.pr-card--quarterly .billing-note')).toContainText('$14.50 billed every 3 months');
+  await expect(section.locator('.pr-card--monthly s[data-list-price]')).toHaveText('$12');
+
+  await page.setViewportSize({ width: 390, height: 900 });
+  await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
+});

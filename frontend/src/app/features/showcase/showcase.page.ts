@@ -20,7 +20,7 @@ import { take } from 'rxjs/operators';
 import { IncidentService } from '../../core/services/incident.service';
 import { Tech } from '../../core/models/user.model';
 import { AnalyticsService } from '../../core/services/analytics.service';
-import { BillingCheckoutService, CheckoutSurface } from '../../core/services/billing-checkout.service';
+import { BillingCheckoutService, CheckoutSurface, RegionalPricing } from '../../core/services/billing-checkout.service';
 import { ExperimentService } from '../../core/services/experiment.service';
 import { QuestionService, ShowcaseStatsPayload } from '../../core/services/question.service';
 import { SEO_SUPPRESS_TOKEN } from '../../core/services/seo-context';
@@ -624,6 +624,9 @@ You can also reset any task back to the starter whenever you want to re-practice
   pricingPlanDetails: PricingPlanDetails | null = PRERENDER_PLAN_DETAILS;
   pricingOfferVersion = PRERENDER_OFFER_VERSION;
   pricingCheckoutSurface: CheckoutSurface = 'hosted_new_tab';
+  // The visitor's regional prices, as on /pricing: the homepage buttons open a
+  // checkout that charges them, so the cards must show them too.
+  pricingRegionalPricing: RegionalPricing | null = null;
 
   private readonly LP_SRC_PATTERN = /^[a-z0-9_-]{1,64}$/;
   private reasoningPreviewLoaded = false;
@@ -820,6 +823,7 @@ You can also reset any task back to the starter whenever you want to re-practice
       this.pricingPlanDetails = config?.planDetails ?? PRERENDER_PLAN_DETAILS;
       this.pricingOfferVersion = config?.offerVersion ?? PRERENDER_OFFER_VERSION;
       this.pricingCheckoutSurface = config?.checkoutSurface ?? 'hosted_new_tab';
+      this.pricingRegionalPricing = config?.pricing?.regional ?? null;
     } finally {
       this.pricingConfigLoading = false;
       this.pricingPaymentsConfigReady = true;

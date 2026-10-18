@@ -313,6 +313,8 @@ test.describe('production/SSR public remediation smoke', () => {
     expect(appHeader).toContain('data-testid="header-auth-pending"');
     expect(appHeader).not.toContain('data-testid="header-profile-button"');
     expect(appHeader).not.toContain('class="fah-cta');
+    // The guest Pricing link depends on auth too; the site footer carries the crawlable link.
+    expect(appHeader).not.toContain('data-testid="header-pricing-link"');
   });
 
   test('app header hydrates from its neutral auth slot without a mismatch', async ({ page }) => {
@@ -320,6 +322,9 @@ test.describe('production/SSR public remediation smoke', () => {
 
     await expect(page.getByTestId('header-auth-pending')).toHaveCount(0);
     await expect(page.getByTestId('header-profile-button')).toBeVisible();
+    // Signed-out visitors on desktop get a plain Pricing link next to the account menu.
+    await expect(page.getByTestId('header-pricing-link')).toBeVisible();
+    await expect(page.getByTestId('header-pricing-link')).toHaveAttribute('href', '/pricing');
   });
 
   test('homepage renders honest traction, counts, and canonical editorial attribution', async ({ page }) => {
@@ -541,6 +546,13 @@ test.describe('production/SSR public remediation smoke', () => {
       await expect(preview.getByRole('heading', { name: 'Challenge summary' })).toBeVisible();
       await expect(preview.getByRole('heading', { name: "What you'll practice" })).toBeVisible();
       await expect(preview.getByRole('heading', { name: 'What Premium unlocks' })).toBeVisible();
+      // The primary pricing action sits inside the unlock box, ahead of the free links and sources.
+      const unlockCta = preview.getByTestId('locked-preview-pricing-cta');
+      await expect(unlockCta).toBeVisible();
+      await expect(unlockCta).toHaveText('View pricing');
+      const ctaTop = (await unlockCta.boundingBox())!.y;
+      const closingRowTop = (await page.locator('.locked-actions').first().boundingBox())!.y;
+      expect(ctaTop, `${previewCase.path} shows View pricing before the closing action row`).toBeLessThan(closingRowTop);
 
       const summary = normalizeText(await page.getByTestId('premium-preview-summary').innerText());
       expect(summary.length, `summary length for ${previewCase.path}`).toBeGreaterThan(80);
