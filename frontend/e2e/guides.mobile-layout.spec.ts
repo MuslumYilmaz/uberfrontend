@@ -123,13 +123,16 @@ test.describe('guide mobile layout guardrail', () => {
     consoleErrorAllowlist: ['\\/api\\/auth\\/me'],
   });
 
-  test('guide detail routes stay mobile friendly', async ({ page }) => {
-    await page.setViewportSize(MOBILE_VIEWPORT);
-
-    for (const route of guideShellRoutes) {
+  // One test per route: a single loop over every guide needed about two seconds
+  // per route on CI runners and crossed the 60 s test budget on the last routes.
+  // Separate tests each get their own budget, spread across workers
+  // (fullyParallel) and name the failing route in the report.
+  for (const route of guideShellRoutes) {
+    test(`guide detail stays mobile friendly: ${route}`, async ({ page }) => {
+      await page.setViewportSize(MOBILE_VIEWPORT);
       await assertGuideShellMobileLayout(page, route);
-    }
-  });
+    });
+  }
 
   test('guide detail tablet keeps comfortable width and gutters', async ({ page }) => {
     await page.setViewportSize(TABLET_VIEWPORT);
