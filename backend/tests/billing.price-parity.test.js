@@ -14,6 +14,29 @@ describe('LemonSqueezy price parity', () => {
     })).toEqual(expect.objectContaining({ ok: true, mismatches: [] }));
   });
 
+  test('treats a single-payment variant as one-time even when it still reports an interval', () => {
+    // Shape returned by the live lifetime variant on 2026-10-16.
+    const lifetime = compareVariant('lifetime', '1247629', {
+      data: { attributes: { price: 17900, interval: 'month', interval_count: 1, is_subscription: false, status: 'published' } },
+    });
+    expect(lifetime).toEqual(expect.objectContaining({ ok: true, mismatches: [] }));
+    expect(lifetime.actual).toEqual(expect.objectContaining({ interval: 'one_time', intervalCount: null }));
+
+    // A subscription variant keeps the interval check.
+    const annual = compareVariant('annual', '99', {
+      data: { attributes: { price: 9900, interval: 'month', interval_count: 1, is_subscription: true } },
+    });
+    expect(annual.ok).toBe(false);
+    expect(annual.mismatches).toEqual(['interval_mismatch']);
+
+    // A recurring plan whose variant was switched to a single payment is reported.
+    const quarterly = compareVariant('quarterly', '49', {
+      data: { attributes: { price: 4900, interval: 'month', interval_count: 3, is_subscription: false } },
+    });
+    expect(quarterly.ok).toBe(false);
+    expect(quarterly.mismatches).toEqual(['interval_mismatch', 'interval_count_mismatch']);
+  });
+
   test('reports amount and billing interval drift', () => {
     const result = compareVariant('annual', '99', {
       data: { attributes: { price: 11900, interval: 'month', interval_count: 12 } },

@@ -16,6 +16,10 @@ function resolveVariantId(planId, mode, env = process.env) {
 }
 
 function normalizeProviderInterval(attributes = {}) {
+  // A single-payment variant can still report an interval: the live lifetime
+  // variant answers `interval: month, interval_count: 1` with
+  // `is_subscription: false`. The subscription flag decides when present.
+  if (attributes.is_subscription === false) return { interval: 'one_time', intervalCount: null };
   const interval = String(attributes.interval || '').trim().toLowerCase();
   if (!interval) return { interval: 'one_time', intervalCount: null };
   const intervalCount = Number(attributes.interval_count);
