@@ -67,6 +67,16 @@
         </div>
 
         <ng-template #desktopAuthResolved>
+          <a
+            *ngIf="auth.authUiState() === 'signed_out'"
+            class="fah-navlink fah-pricing-link"
+            data-testid="header-pricing-link"
+            routerLink="/pricing"
+            routerLinkActive="fah-navlink--active"
+            (click)="onPricingClick()"
+          >
+            Pricing
+          </a>
           <div class="fah-profile fah-profile-right">
             <button
               type="button"

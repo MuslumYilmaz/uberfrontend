@@ -394,7 +394,33 @@ describe('PricingPlansSectionComponent', () => {
     expect(text('.pr-card--quarterly')).toContain('$9.67 / month');
   });
 
-  it('leads with the monthly equivalent on the full sprint page and keeps the compact section on plan totals', () => {
+  it('shows the regional price on the compact homepage section too, so the card matches the checkout', () => {
+    component.offerVersion = PRICING_V2_OFFER_VERSION;
+    component.variant = 'compact';
+    component.regionalPricing = {
+      countryCode: 'TR',
+      countryName: 'Türkiye',
+      multiplier: 0.5,
+      prices: { monthly: 600, quarterly: 1450, annual: 3950, lifetime: 9950 },
+    };
+    fixture.detectChanges();
+
+    const page: HTMLElement = fixture.nativeElement;
+    const text = (selector: string) => (page.querySelector(selector)?.textContent || '').replace(/\s+/g, ' ').trim();
+    expect(page.querySelector('.pr-wrap--compact')).toBeTruthy();
+    expect(text('[data-testid="pricing-regional-line"]')).toBe(
+      'Prices for Türkiye: 50% off the list price, applied automatically at checkout.',
+    );
+    expect(text('.pr-card--monthly s[data-list-price]')).toBe('$12');
+    expect(text('.pr-card--monthly')).toContain('$6 / month');
+    expect(text('.pr-card--quarterly s[data-list-price]')).toBe('$9.67');
+    expect(text('.pr-card--quarterly')).toContain('$4.83 / month');
+    expect(text('.pr-card--quarterly')).toContain('$14.50 billed every 3 months');
+    expect(text('.pr-card--annual s[data-list-price]')).toBe('$6.58');
+    expect(text('.pr-card--annual')).toContain('$39.50 billed yearly');
+  });
+
+  it('leads with the monthly equivalent on the full sprint page and on the compact homepage section', () => {
     component.offerVersion = PRICING_V2_OFFER_VERSION;
     fixture.detectChanges();
 
@@ -412,13 +438,14 @@ describe('PricingPlansSectionComponent', () => {
     expect(cta('annual').classList.contains('btn--outline')).toBeTrue();
     expect(page.querySelector('.pr-wrap--full')).toBeTruthy();
 
-    // The homepage section is untouched by the full-page presentation.
+    // The homepage section uses the same price framing as /pricing and keeps its own layout.
     component.variant = 'compact';
     fixture.detectChanges();
-    expect(cardText('quarterly')).toContain('$29 / 3 months');
-    expect(cardText('quarterly')).toContain('$9.67/mo billed every 3 months');
-    expect(cardText('annual')).toContain('$79 / year');
-    expect(cardText('annual')).toContain('$6.58/mo billed yearly');
+    expect(cardText('monthly')).toContain('$12 / month');
+    expect(cardText('quarterly')).toContain('$9.67 / month');
+    expect(cardText('quarterly')).toContain('$29 billed every 3 months');
+    expect(cardText('annual')).toContain('$6.58 / month');
+    expect(cardText('annual')).toContain('$79 billed yearly');
     expect(page.querySelector('.btn--outline')).toBeNull();
     expect(page.querySelector('.rec-badge')?.textContent || '').toContain('Recommended — 4–12 week interview sprint');
     expect(cardText('quarterly')).toContain('Built for a complete interview sprint');

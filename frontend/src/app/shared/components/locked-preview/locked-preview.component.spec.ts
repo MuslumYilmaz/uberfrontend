@@ -1,3 +1,4 @@
+import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { LockedPreviewData } from '../../../core/utils/locked-preview.util';
@@ -84,11 +85,54 @@ const authoredCases: Array<{
   },
 ];
 
+@Component({
+  imports: [LockedPreviewComponent],
+  template: `
+    <app-locked-preview [data]="data">
+      <button lockedPreviewCta type="button" data-testid="host-cta">View pricing</button>
+    </app-locked-preview>
+  `,
+})
+class LockedPreviewCtaHostComponent {
+  data: LockedPreviewData = {
+    what: 'Summary.',
+    learningGoals: ['First outcome.'],
+    unlockDescription: CODING_UNLOCK,
+    constraints: [],
+    snippet: { title: 'Not displayed', lines: [] },
+    pitfalls: [],
+    related: [{ title: 'Free item', to: ['/free'], premium: false }],
+  };
+}
+
 describe('LockedPreviewComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [LockedPreviewComponent, RouterTestingModule],
+      imports: [LockedPreviewComponent, RouterTestingModule, LockedPreviewCtaHostComponent],
     }).compileComponents();
+  });
+
+  it('places the page pricing action inside "What Premium unlocks", ahead of the free links', () => {
+    const fixture = TestBed.createComponent(LockedPreviewCtaHostComponent);
+    fixture.detectChanges();
+    const host = fixture.nativeElement as HTMLElement;
+
+    const cta = host.querySelector('[data-testid="host-cta"]') as HTMLElement;
+    const unlockSection = host.querySelector('[data-testid="premium-preview-unlock"]')!.closest('section')!;
+    expect(cta).toBeTruthy();
+    expect(unlockSection.contains(cta)).toBeTrue();
+    expect(cta.closest('.locked-preview-rich__cta')).toBeTruthy();
+    const freeLinks = host.querySelector('.locked-preview-rich__links')!;
+    expect(cta.compareDocumentPosition(freeLinks) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
+  it('leaves the action slot empty when the page projects no action', () => {
+    const fixture = TestBed.createComponent(LockedPreviewComponent);
+    fixture.componentInstance.data = new LockedPreviewCtaHostComponent().data;
+    fixture.detectChanges();
+    const slot = (fixture.nativeElement as HTMLElement).querySelector('.locked-preview-rich__cta') as HTMLElement;
+    expect(slot.children.length).toBe(0);
+    expect(getComputedStyle(slot).display).toBe('none');
   });
 
   for (const authored of authoredCases) {

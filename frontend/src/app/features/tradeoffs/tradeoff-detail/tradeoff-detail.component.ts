@@ -16,6 +16,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { BugReportService } from '../../../core/services/bug-report.service';
 import { buildLockedPreviewForTradeoff, LockedPreviewData } from '../../../core/utils/locked-preview.util';
 import { LockedPreviewComponent } from '../../../shared/components/locked-preview/locked-preview.component';
+import { FaButtonComponent } from '../../../shared/ui/button/fa-button.component';
 import { LoginRequiredDialogComponent } from '../../../shared/components/login-required-dialog/login-required-dialog.component';
 import { frameworkFromTech, freeChallengeForFramework } from '../../../core/utils/onboarding-personalization.util';
 import { isProActive } from '../../../core/utils/entitlements.util';
@@ -37,7 +38,7 @@ function updatedLabel(value: string | null | undefined): string | null {
 
 @Component({
     selector: 'app-tradeoff-detail',
-    imports: [CommonModule, RouterModule, LockedPreviewComponent, LoginRequiredDialogComponent],
+    imports: [CommonModule, RouterModule, LockedPreviewComponent, LoginRequiredDialogComponent, FaButtonComponent],
     templateUrl: './tradeoff-detail.component.html',
     styleUrls: ['./tradeoff-detail.component.css']
 })

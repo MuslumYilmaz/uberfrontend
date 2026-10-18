@@ -47,6 +47,7 @@ import { LifecycleMilestoneId, LifecyclePromptService } from '../../../core/serv
 import { DialogModule } from 'primeng/dialog';
 import { LoginRequiredDialogComponent } from '../../../shared/components/login-required-dialog/login-required-dialog.component';
 import { LockedPreviewComponent } from '../../../shared/components/locked-preview/locked-preview.component';
+import { FaButtonComponent } from '../../../shared/ui/button/fa-button.component';
 import { SafeHtmlPipe } from '../../../core/pipes/safe-html.pipe';
 import { FaGlyphComponent } from '../../../shared/ui/icon/fa-glyph.component';
 import {
@@ -619,6 +620,7 @@ function buildTagRegex(tag: string): RegExp {
         LoginRequiredDialogComponent,
         FooterComponent, GithubStarCtaComponent, SiteFooterComponent,
         LockedPreviewComponent,
+        FaButtonComponent,
         PrismHighlightDirective,
         SafeHtmlPipe,
         FaGlyphComponent,

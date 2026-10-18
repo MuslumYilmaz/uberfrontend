@@ -5,6 +5,7 @@ import { of } from 'rxjs';
 import { AnalyticsService } from '../../../core/services/analytics.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { AppSidebarDrawerService } from '../../../core/services/app-sidebar-drawer.service';
+import { ConversionContextService } from '../../../core/services/conversion-context.service';
 import { PREP_MENU_ROUTES, PREP_MENU_SECTIONS } from '../../../core/content/prep-menu';
 import { HeaderComponent } from './header.component';
 
@@ -245,6 +246,37 @@ describe('HeaderComponent', () => {
 
     expect(guestCta.textContent || '').toContain('Start prep');
     expect(guestCta.getAttribute('href') || '').toContain('/guides/interview-blueprint/intro');
+  });
+
+  it('shows signed-out visitors a Pricing link that records the header as the pricing source', async () => {
+    const fixture = await createComponent({ isLoggedIn: false, authUiState: 'pending' });
+    // Pending covers prerendered HTML and the first paint: no link, so signed-in users never see it flash.
+    expect(query(fixture, 'header-pricing-link')).toBeNull();
+
+    authUiState.set('signed_out');
+    fixture.detectChanges();
+    const link = query<HTMLAnchorElement>(fixture, 'header-pricing-link');
+    expect(link).toBeTruthy();
+    expect(link.textContent?.trim()).toBe('Pricing');
+    expect(link.getAttribute('href')).toBe('/pricing');
+    // The guest CTA stays on the prep guide; pricing is an extra text link, not a second button.
+    expect((fixture.nativeElement.querySelector('.fah-cta') as HTMLAnchorElement).textContent || '').toContain('Start prep');
+
+    const remember = spyOn(TestBed.inject(ConversionContextService), 'rememberPricingContext').and.callThrough();
+    link.addEventListener('click', (event) => event.preventDefault(), { once: true });
+    link.click();
+    expect(remember).toHaveBeenCalledWith('app_header', 'app_header_utility');
+    expect(analytics.track).toHaveBeenCalledWith('header_top_nav_clicked', jasmine.objectContaining({
+      surface: 'app',
+      area: 'utility',
+      destination: '/pricing',
+      auth_state: 'guest',
+    }));
+
+    authUiState.set('authenticated');
+    loggedIn.set(true);
+    fixture.detectChanges();
+    expect(query(fixture, 'header-pricing-link')).toBeNull();
   });
 
   it('keeps the logged-in free header CTA on pricing', async () => {

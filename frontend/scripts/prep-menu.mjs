@@ -17,8 +17,9 @@ export const PREP_MENU_ICONS = Object.freeze([
 
 // `/guides` canonicalizes to `/guides/interview-blueprint`, so a link to it fails the alias rule in
 // audit-internal-link-equity.mjs. CSS detail pages must never link the combined HTML/CSS hub
-// (audit-tech-hub-internal-links.mjs), which a sitewide menu would do. Pricing stays an auth-gated
-// top-bar link outside the menu.
+// (audit-tech-hub-internal-links.mjs), which a sitewide menu would do. Pricing stays a top-bar link
+// outside the menu: signed-out visitors get a Pricing link next to the account menu once auth
+// resolves, signed-in users get Upgrade, and the site footer carries the crawlable link.
 export const PREP_MENU_DENIED_ROUTES = Object.freeze(['/guides', '/html-css/interview-questions', '/pricing']);
 export const PREP_MENU_EXEMPT_CRITICAL_HUBS = Object.freeze(['/html-css/interview-questions']);
 

@@ -245,7 +245,10 @@ test.describe('tradeoff hydrated analysis', () => {
   test('premium guest rendering does not expose analysis after JavaScript', async ({ page }) => {
     await openBattle(page, premiumScenarios[0]);
     await expect(page.locator('#tradeoff-analysis')).toHaveCount(0);
-    await expect(page.getByRole('button', { name: 'View pricing', exact: true })).toBeVisible();
+    // The primary pricing action sits in the preview's "What Premium unlocks" box;
+    // the closing action row repeats it under the upgrade copy.
+    await expect(page.getByTestId('locked-preview-pricing-cta')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'View pricing', exact: true })).toHaveCount(2);
     await expect(page.locator('app-tradeoff-detail')).not.toContainText(premiumScenarios[0].strongAnswer.summary);
   });
 

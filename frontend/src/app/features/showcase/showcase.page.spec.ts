@@ -158,8 +158,18 @@ describe('ShowcasePageComponent', () => {
       },
       offerVersion: 'interview_sprint_v2',
       checkoutSurface: 'overlay',
-    });
+      pricing: {
+        student: { multiplier: 0.6, planIds: ['annual'] },
+        regional: {
+          countryCode: 'TR',
+          countryName: 'Türkiye',
+          multiplier: 0.5,
+          prices: { monthly: 600, quarterly: 1450, annual: 3950, lifetime: 9950 },
+        },
+      },
+    } as any);
     Object.defineProperty(component, 'isBrowser', { value: true });
+    expect(component.pricingRegionalPricing).toBeNull();
 
     await (component as any).loadPricingConfig();
 
@@ -167,6 +177,9 @@ describe('ShowcasePageComponent', () => {
     expect(component.pricingOfferVersion).toBe('interview_sprint_v2');
     expect(component.pricingCheckoutSurface).toBe('overlay');
     expect(component.pricingPlanDetails?.quarterly?.amountCents).toBe(2900);
+    // The homepage cards show the same regional prices the checkout charges.
+    expect(component.pricingRegionalPricing?.countryCode).toBe('TR');
+    expect(component.pricingRegionalPricing?.prices?.quarterly).toBe(1450);
   });
 
   it('posts the trimmed contact message and clears the form after a successful send', async () => {

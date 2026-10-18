@@ -1027,7 +1027,9 @@
         By {{ authorLabel(question()) }}
         <ng-container *ngIf="updatedLabel(question()) as updated"> · Updated {{ updated }}</ng-container>
       </div>
-      <app-locked-preview *ngIf="lockedPreview()" [data]="lockedPreview()!"></app-locked-preview>
+      <app-locked-preview *ngIf="lockedPreview()" [data]="lockedPreview()!">
+          <button lockedPreviewCta faButton variant="primary" type="button" data-testid="locked-preview-pricing-cta" (click)="goToPricing()">View pricing</button>
+      </app-locked-preview>
       <app-question-sources [sources]="sources()" variant="compact"></app-question-sources>
       <p class="locked-persona" *ngIf="lockedPersonalizationLine">{{ lockedPersonalizationLine }}</p>
       <p class="locked-copy">
