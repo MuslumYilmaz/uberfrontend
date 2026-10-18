@@ -165,9 +165,9 @@
             </nav>
 
             <div class="detail-title-row">
-              <h1 *ngIf="!demoMode; else demoTitle" class="text-xl font-bold" data-testid="question-title">{{ questionHeading() }}</h1>
+              <h1 *ngIf="!demoMode; else demoTitle" class="text-xl font-bold" data-testid="question-title"><fa-inline-code [text]="questionHeading()"></fa-inline-code></h1>
               <ng-template #demoTitle>
-                <h2 class="text-xl font-bold" data-testid="question-title">{{ questionHeading() }}</h2>
+                <h2 class="text-xl font-bold" data-testid="question-title"><fa-inline-code [text]="questionHeading()"></fa-inline-code></h2>
               </ng-template>
               <span class="detail-solved" *ngIf="uiSolved()" aria-label="Solved">
                 <app-fa-glyph class="detail-solved__icon" icon="pi pi-check"></app-fa-glyph>
@@ -729,7 +729,7 @@
                   <div *ngIf="similarOpen()" class="mt-1 rounded border border-white/10 overflow-hidden">
                     <a *ngFor="let f of followUpItems()" [routerLink]="f.to"
                       class="flex items-center justify-between px-4 py-3 border-b border-white/5 hover:bg-white/5">
-                      <span class="truncate">{{ f.title }}</span>
+                      <span class="truncate">{{ f.title | stripInlineMarkup }}</span>
                       <span class="text-yellow-300 text-sm ml-4 capitalize">{{ f.label || f.difficulty || '—' }}</span>
                     </a>
                   </div>
@@ -1022,7 +1022,7 @@
   <div class="locked-shell">
     <div class="locked-card">
       <div class="locked-pill">Premium</div>
-      <h1 class="locked-title">{{ lockedTitle() }}</h1>
+      <h1 class="locked-title"><fa-inline-code [text]="lockedTitle()"></fa-inline-code></h1>
       <div class="locked-meta">
         By {{ authorLabel(question()) }}
         <ng-container *ngIf="updatedLabel(question()) as updated"> · Updated {{ updated }}</ng-container>

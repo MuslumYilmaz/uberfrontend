@@ -201,7 +201,7 @@
                 [routerLink]="question.route"
                 data-testid="dashboard-prep-gap-question"
               >
-                <span class="prep-gap-question__title">{{ question.title }}</span>
+                <span class="prep-gap-question__title">{{ question.title | stripInlineMarkup }}</span>
                 <span class="prep-gap-question__meta">
                   <span
                     *ngIf="questionFeedbackLabel(question) as feedbackLabel"

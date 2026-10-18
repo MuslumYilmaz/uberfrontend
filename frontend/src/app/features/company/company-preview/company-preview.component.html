@@ -829,7 +829,7 @@
         <li class="reports-item" *ngFor="let item of data.reports" [attr.data-testid]="'company-report-' + item.id">
           <div class="reports-item__head">
             <span class="preview-chip">{{ reportKindLabel(item.kind) }}</span>
-            <a class="reports-item__title" [routerLink]="item.route">{{ item.title }}</a>
+            <a class="reports-item__title" [routerLink]="item.route">{{ item.title | stripInlineMarkup }}</a>
             <span class="preview-chip preview-chip--lock" *ngIf="item.access === 'premium'">Premium</span>
           </div>
           <p class="reports-item__sources">

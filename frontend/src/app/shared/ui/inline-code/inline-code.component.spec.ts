@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { InlineCodeComponent } from './inline-code.component';
+import { InlineCodeComponent, stripInlineMarkup } from './inline-code.component';
 
 describe('InlineCodeComponent', () => {
   it('formats multiple single-backtick spans while preserving literal HTML, regex and whitespace', () => {
@@ -35,5 +35,15 @@ it('renders paired ** as strong while keeping ** inside code and unpaired marker
     expect(Array.from(element.querySelectorAll('strong')).map((node) => node.textContent)).toEqual(['right to left']);
     expect(Array.from(element.querySelectorAll('code')).map((node) => node.textContent)).toEqual(['a ** b']);
     expect(element.textContent).toBe('Apply right to left; a ** b stays code; 2 ** 3 is **eight');
+  });
+
+  it('strips only the markup the component renders, so titles that name HTML tags keep them', () => {
+    expect(stripInlineMarkup('Fix async race in `fetchWithCache`')).toBe('Fix async race in fetchWithCache');
+    expect(stripInlineMarkup('What is the difference between <div> and <span>?'))
+      .toBe('What is the difference between <div> and <span>?');
+    expect(stripInlineMarkup('Apply **right to left**; `a ** b` stays code; 2 ** 3 is **eight'))
+      .toBe('Apply right to left; a ** b stays code; 2 ** 3 is **eight');
+    expect(stripInlineMarkup('Keep ``double`` and `unmatched')).toBe('Keep ``double`` and `unmatched');
+    expect(stripInlineMarkup(null)).toBe('');
   });
 });

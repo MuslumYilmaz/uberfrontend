@@ -36,6 +36,7 @@ import {
   FaQuestionRowVariant,
 } from '../../../shared/ui/question-row/fa-question-row.component';
 import { FaSpinnerComponent } from '../../../shared/ui/spinner/fa-spinner.component';
+import { StripInlineMarkupPipe } from '../../../shared/ui/inline-code/strip-inline-markup.pipe';
 import { PriorityLinksComponent } from '../../../shared/components/priority-links/priority-links.component';
 import { CODING_PRIORITY_LINK_GROUPS } from '../../../core/content/priority-links';
 import { normalizeEditorialPlainText } from '../../../core/utils/locked-preview.util';
@@ -280,6 +281,7 @@ function inferCategory(q: any): CategoryKey {
         FaCardComponent,
         FaSpinnerComponent,
         FaQuestionRowComponent,
+        StripInlineMarkupPipe,
         PriorityLinksComponent,
     ],
     templateUrl: './coding-list.component.html',

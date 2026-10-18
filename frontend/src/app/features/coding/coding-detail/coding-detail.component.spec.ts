@@ -3165,6 +3165,47 @@ describe('CodingDetailComponent', () => {
     expect(starterCssText).not.toContain('box-shadow: 0 1px 2px rgba');
   });
 
+  it('renders backtick titles as code in the H1 and keeps the breadcrumb and its JSON-LD plain text', async () => {
+    const base = makeCssThemeVariablesQuestion();
+    const question = {
+      ...base,
+      title: 'Theme panels with `var()` tokens',
+      seo: { title: base.seo.title, description: base.seo.description },
+    };
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    component.questionId = question.id;
+    component.questionTech = 'css';
+    component.disablePersistence = true;
+    component.hideFooterBar = true;
+
+    questionService.loadQuestions.and.returnValue(of([question] as any));
+    spyOn(component as any, 'resolveSolutionAsset').and.resolveTo({ files: {}, initialPath: '' });
+
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const host = fixture.nativeElement as HTMLElement;
+    const title = host.querySelector('[data-testid="question-title"]') as HTMLElement;
+    const breadcrumb = host.querySelector('[data-testid="coding-breadcrumb"]') as HTMLElement;
+
+    expect(title.querySelector('code')?.textContent).toBe('var()');
+    expect(title.textContent || '').not.toContain('`');
+    expect(breadcrumb.textContent || '').toContain('Theme panels with var() tokens');
+    expect(breadcrumb.textContent || '').not.toContain('`');
+
+    component.tech = 'css';
+    component.kind = 'coding';
+    (component as any).updateSeoForQuestion(question);
+
+    const payload = seo.updateTags.calls.mostRecent().args[0] as any;
+    const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
+    const names = graph.find((entry: any) => entry?.['@type'] === 'BreadcrumbList')
+      ?.itemListElement?.map((item: any) => item.name) || [];
+    expect(names[names.length - 1]).toBe('Theme panels with var() tokens');
+  });
+
   describe('question sources', () => {
     const sources = [{
       label: 'PracHub: Waymo senior frontend interview experience, May 2026',

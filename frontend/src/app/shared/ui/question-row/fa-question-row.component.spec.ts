@@ -72,6 +72,18 @@ describe('FaQuestionRowComponent', () => {
     );
   });
 
+  it('shows backtick titles as plain text without extra markup per row', async () => {
+    const fixture = await createComponent();
+    fixture.componentRef.setInput('title', 'Implement the `new` Operator');
+    fixture.detectChanges();
+
+    const title = (fixture.nativeElement as HTMLElement).querySelector(
+      '[data-testid="question-row-title-question-card-demo"]',
+    ) as HTMLElement;
+    expect(title.children.length).toBe(0);
+    expect((title.textContent || '').trim()).toBe('Implement the new Operator');
+  });
+
   it('renders read-only rows without a chevron when no route is provided', async () => {
     await TestBed.configureTestingModule({
       imports: [FaQuestionRowComponent],

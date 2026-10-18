@@ -25,6 +25,7 @@ import { FaButtonComponent } from '../../shared/ui/button/fa-button.component';
 import { FaCardComponent } from '../../shared/ui/card/fa-card.component';
 import { FaDialogComponent } from '../../shared/ui/dialog/fa-dialog.component';
 import { FaGlyphComponent } from '../../shared/ui/icon/fa-glyph.component';
+import { StripInlineMarkupPipe } from '../../shared/ui/inline-code/strip-inline-markup.pipe';
 
 type DailyChallengeTech = 'auto' | 'javascript' | 'react' | 'angular' | 'vue' | 'html' | 'css';
 type DashboardMode = 'guest' | 'novice' | 'established';
@@ -63,7 +64,7 @@ type DashboardLink = {
 
 @Component({
     selector: 'app-dashboard',
-    imports: [CommonModule, RouterModule, OfflineBannerComponent, FaButtonComponent, FaCardComponent, FaDialogComponent, FaGlyphComponent],
+    imports: [CommonModule, RouterModule, OfflineBannerComponent, FaButtonComponent, FaCardComponent, FaDialogComponent, FaGlyphComponent, StripInlineMarkupPipe],
     templateUrl: './dashboard.component.html',
     styleUrls: ['./dashboard.component.css'],
     changeDetection: ChangeDetectionStrategy.OnPush

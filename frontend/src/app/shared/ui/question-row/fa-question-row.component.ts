@@ -6,6 +6,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { CompanySignalComponent } from '../../components/company-signal/company-signal.component';
 import { FaCardComponent } from '../card/fa-card.component';
 import { FaGlyphComponent } from '../icon/fa-glyph.component';
+import { StripInlineMarkupPipe } from '../inline-code/strip-inline-markup.pipe';
 
 export type FaQuestionRowMetaTone =
   | 'difficulty'
@@ -40,6 +41,7 @@ export type FaQuestionRowVariant = {
         CompanySignalComponent,
         FaCardComponent,
         FaGlyphComponent,
+        StripInlineMarkupPipe,
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
@@ -87,7 +89,7 @@ export type FaQuestionRowVariant = {
               class="fa-question-row__title fa-card-title"
               [attr.data-testid]="testId ? 'question-row-title-' + testId : null"
             >
-              {{ title }}
+              {{ title | stripInlineMarkup }}
             </div>
             <span
               class="fa-question-row__solved-mark"

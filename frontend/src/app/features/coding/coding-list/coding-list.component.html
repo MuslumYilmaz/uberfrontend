@@ -310,7 +310,7 @@
               [routerLink]="item.route"
               [attr.data-testid]="'coding-discovery-link-' + item.id"
             >
-              <span class="fa-discovery-link__title">{{ item.title }}</span>
+              <span class="fa-discovery-link__title">{{ item.title | stripInlineMarkup }}</span>
               <span class="fa-discovery-link__meta">
                 {{ techLabel(item.tech) }} · {{ item.difficulty | titlecase }} · Free to start
               </span>
