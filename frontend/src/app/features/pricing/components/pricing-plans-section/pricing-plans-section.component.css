@@ -1154,31 +1154,44 @@
   .plan-compare__check{display:none}
 }
 
-/* Regional pricing (Step 7): banner above the cards and the list price struck
-   through next to the regional price. Rendered only when the backend published
-   prices for the visitor's country. */
+/* Regional pricing (Step 7, moved to the top on 2026-10-18): a badge that leads
+   the section above the headline, and on every card the list price struck
+   through next to that card's own discount. Rendered only when the backend
+   published prices for the visitor's country. */
 .pr-regional-line{
-  margin:20px 0 -14px;
-  padding:11px 14px;
-  border-radius:12px;
+  margin:0 0 16px;
+  padding:7px 14px;
+  border-radius:18px;
   border:1px solid color-mix(in srgb,var(--uf-accent) 55%,var(--uf-border-subtle));
   background:color-mix(in srgb,var(--uf-accent) 12%,var(--uf-surface));
   color:var(--uf-text-primary);
   display:flex;
+  width:fit-content;
+  max-width:100%;
   align-items:center;
-  gap:10px;
-  font-size:14px;
+  gap:8px;
+  font-size:13px;
   font-weight:700;
   line-height:1.4;
 }
-.pr-regional-line i{color:var(--uf-accent);font-size:14px;flex:0 0 auto}
-.price-list{
-  margin-right:8px;
+.pr-regional-line i{color:var(--uf-accent);font-size:13px;flex:0 0 auto}
+.price-list-row{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:baseline;
+  gap:8px;
+  margin:6px 0 0;
+  font-size:14px;
+  font-weight:600;
   color:var(--uf-text-secondary);
-  font-size:.5em;
+}
+.price-list{
+  color:var(--uf-text-secondary);
   font-weight:600;
   letter-spacing:0;
   text-decoration-thickness:2px;
   text-decoration-color:color-mix(in srgb,var(--uf-text-secondary) 70%,transparent);
 }
-.lifetime-offer__price .price-list{font-size:16px;margin-right:6px}
+.price-off{color:var(--uf-accent);font-weight:800}
+.pr-wrap--full .price-list-row{font-size:15px}
+.lifetime-offer__action .price-list-row{margin:0 0 2px}

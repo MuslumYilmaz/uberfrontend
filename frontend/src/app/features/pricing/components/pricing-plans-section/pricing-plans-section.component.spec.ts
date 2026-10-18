@@ -369,6 +369,14 @@ describe('PricingPlansSectionComponent', () => {
     expect(text('.pr-card--annual')).toContain('Save 45%');
     expect(text('[data-testid="pricing-lifetime-secondary"] s[data-list-price]')).toBe('$199');
     expect(text('[data-testid="pricing-lifetime-secondary"]')).toContain('$99.50');
+    // Every card names its own discount next to the struck list price.
+    for (const card of ['.pr-card--monthly', '.pr-card--quarterly', '.pr-card--annual', '[data-testid="pricing-lifetime-secondary"]']) {
+      expect(text(`${card} .price-off`)).withContext(card).toBe('50% off');
+    }
+    // The regional badge leads the page, above the headline.
+    const regionalLine = page.querySelector('[data-testid="pricing-regional-line"]')!;
+    expect(page.querySelector('.pr-wrap')!.firstElementChild).toBe(regionalLine);
+    expect(regionalLine.compareDocumentPosition(page.querySelector('.pr-hero h1')!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
 
     // begin_checkout reports the amount the checkout charges.
     auth.user.and.returnValue({ _id: 'regional_user', username: 'regional_user', email: 'regional@example.com' } as any);
@@ -418,6 +426,41 @@ describe('PricingPlansSectionComponent', () => {
     expect(text('.pr-card--quarterly')).toContain('$14.50 billed every 3 months');
     expect(text('.pr-card--annual s[data-list-price]')).toBe('$6.58');
     expect(text('.pr-card--annual')).toContain('$39.50 billed yearly');
+    expect(text('.pr-card--quarterly .price-off')).toBe('50% off');
+    expect(page.querySelector('.pr-wrap')!.firstElementChild).toBe(page.querySelector('[data-testid="pricing-regional-line"]'));
+  });
+
+  it('derives the badge and every card discount from the visitor country, not a fixed 50%', () => {
+    component.offerVersion = PRICING_V2_OFFER_VERSION;
+    component.regionalPricing = {
+      countryCode: 'PL',
+      countryName: 'Poland',
+      multiplier: 0.65,
+      prices: { monthly: 780, quarterly: 1885, annual: 5135, lifetime: 12935 },
+    };
+    fixture.detectChanges();
+
+    const page: HTMLElement = fixture.nativeElement;
+    const text = (selector: string) => (page.querySelector(selector)?.textContent || '').replace(/\s+/g, ' ').trim();
+    expect(text('[data-testid="pricing-regional-line"]')).toBe(
+      'Prices for Poland: 35% off the list price, applied automatically at checkout.',
+    );
+    for (const card of ['.pr-card--monthly', '.pr-card--quarterly', '.pr-card--annual', '[data-testid="pricing-lifetime-secondary"]']) {
+      expect(text(`${card} .price-off`)).withContext(card).toBe('35% off');
+    }
+    expect(text('.pr-card--monthly')).toContain('$7.80 / month');
+    expect(component.listPercentOff('monthly')).toBe(35);
+
+    // A card whose regional price is not below the list price shows no struck price and no discount.
+    component.regionalPricing = { ...component.regionalPricing!, prices: { monthly: 1200, quarterly: 1885, annual: 5135, lifetime: 12935 } };
+    fixture.detectChanges();
+    expect(component.listPercentOff('monthly')).toBeNull();
+    expect(page.querySelector('.pr-card--monthly .price-off')).toBeNull();
+
+    component.regionalPricing = null;
+    fixture.detectChanges();
+    expect(page.querySelector('.price-off')).toBeNull();
+    expect(page.querySelector('[data-testid="pricing-list-price-row"]')).toBeNull();
   });
 
   it('leads with the monthly equivalent on the full sprint page and on the compact homepage section', () => {
@@ -500,8 +543,8 @@ describe('PricingPlansSectionComponent', () => {
   it('derives the approved quarterly and annual savings from backend metadata', () => {
     component.offerVersion = PRICING_V2_OFFER_VERSION;
 
-    expect(component.savingsLabel('quarterly')).toBe('Save 19%');
-    expect(component.savingsLabel('annual')).toBe('Save 45%');
+    expect(component.savingsLabel('quarterly')).toBe('Save 19% vs monthly');
+    expect(component.savingsLabel('annual')).toBe('Save 45% vs monthly');
     expect(component.savingsLabel('monthly')).toBeNull();
     expect(component.savingsLabel('lifetime')).toBeNull();
   });

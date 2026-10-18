@@ -120,6 +120,12 @@ test('regional pricing shows the list price struck through next to the regional 
   await page.goto('/pricing');
 
   await expect(page.getByTestId('pricing-regional-line')).toContainText('Prices for Türkiye: 50% off the list price, applied automatically at checkout.');
+  // The badge leads the page above the headline, and each card names its own discount.
+  const badgeBox = await page.getByTestId('pricing-regional-line').boundingBox();
+  const headlineBox = await page.locator('.pr-hero h1').boundingBox();
+  expect(badgeBox!.y).toBeLessThan(headlineBox!.y);
+  await expect(page.locator('.pr-card--quarterly .price-off')).toHaveText('50% off');
+  await expect(page.locator('[data-testid="pricing-lifetime-secondary"] .price-off')).toHaveText('50% off');
   await expect(page.locator('.pr-card--quarterly s[data-list-price]')).toHaveText('$9.67');
   await expect(page.locator('.pr-card--quarterly .price')).toContainText('$4.83');
   await expect(page.locator('.pr-card--quarterly .billing-note')).toContainText('$14.50 billed every 3 months');
@@ -163,6 +169,7 @@ test('the homepage pricing section shows the same regional prices as /pricing', 
   await expect(section.locator('.pr-card--quarterly .price')).toContainText('$4.83');
   await expect(section.locator('.pr-card--quarterly .billing-note')).toContainText('$14.50 billed every 3 months');
   await expect(section.locator('.pr-card--monthly s[data-list-price]')).toHaveText('$12');
+  await expect(section.locator('.pr-card--monthly .price-off')).toHaveText('50% off');
 
   await page.setViewportSize({ width: 390, height: 900 });
   await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);

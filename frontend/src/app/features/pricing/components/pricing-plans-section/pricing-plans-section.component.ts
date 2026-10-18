@@ -71,6 +71,16 @@ const STUDENT_PRICE_MULTIPLIER = 0.6;
     styleUrls: ['./pricing-plans-section.component.css'],
     template: `
     <section class="pr-wrap" [class.pr-wrap--compact]="variant === 'compact'" [class.pr-wrap--full]="variant === 'full'">
+      <!-- Regional pricing leads the section, above the headline, so the visitor reads every price below with it. -->
+      <p
+        class="pr-regional-line"
+        *ngIf="regionalPricing as regional"
+        role="status"
+        data-testid="pricing-regional-line">
+        <i class="pi pi-globe" aria-hidden="true"></i>
+        <span>Prices for {{ regional.countryName }}: {{ regionalPercentOff() }}% off the list price, applied automatically at checkout.</span>
+      </p>
+
       <header class="pr-hero" *ngIf="variant === 'full'">
         <p class="pr-kicker">Premium for interview sprints</p>
         <h1>Prepare faster with deeper frontend interview reps</h1>
@@ -119,15 +129,6 @@ const STUDENT_PRICE_MULTIPLIER = 0.6;
         </div>
       </section>
 
-      <p
-        class="pr-regional-line"
-        *ngIf="regionalPricing as regional"
-        role="status"
-        data-testid="pricing-regional-line">
-        <i class="pi pi-globe" aria-hidden="true"></i>
-        <span>Prices for {{ regional.countryName }}: {{ regionalPercentOff() }}% off the list price, applied automatically at checkout.</span>
-      </p>
-
       <div
         class="pr-grid"
         [class.pr-grid--v2]="isOfferV2()"
@@ -150,8 +151,11 @@ const STUDENT_PRICE_MULTIPLIER = 0.6;
           </div>
           <h3 class="title">{{ plan.title }}</h3>
           <p class="plan-summary">{{ summaryFor(plan) }}</p>
+          <p class="price-list-row" *ngIf="listPriceHeadline(plan.id) as listPrice" data-testid="pricing-list-price-row">
+            <s class="price-list" data-list-price>{{ listPrice }}</s>
+            <span class="price-off" *ngIf="listPercentOff(plan.id) as off">{{ off }}% off</span>
+          </p>
           <div class="price">
-            <s class="price-list" data-list-price *ngIf="listPriceHeadline(plan.id) as listPrice">{{ listPrice }}</s>
             {{ priceHeadline(plan.id) }}<span>{{ priceHeadlineSuffix(plan.id) }}</span>
           </div>
           <p class="billing-note">{{ priceDetail(plan.id) }}</p>
@@ -245,8 +249,11 @@ const STUDENT_PRICE_MULTIPLIER = 0.6;
           <p>Keep Premium access for long-term interview refreshers without another renewal.</p>
         </div>
         <div class="lifetime-offer__action">
+          <p class="price-list-row" *ngIf="listPriceHeadline('lifetime') as listPrice" data-testid="pricing-list-price-row">
+            <s class="price-list" data-list-price>{{ listPrice }}</s>
+            <span class="price-off" *ngIf="listPercentOff('lifetime') as off">{{ off }}% off</span>
+          </p>
           <p class="lifetime-offer__price">
-            <s class="price-list" data-list-price *ngIf="listPriceHeadline('lifetime') as listPrice">{{ listPrice }}</s>
             {{ displayPrice('lifetime') }} <span>{{ priceSuffix('lifetime') }}</span>
           </p>
           <button
@@ -768,6 +775,17 @@ HTML and CSS tasks rely on the live preview instead, because visuals are the pri
     return this.formatMoney(list.amountCents, list.currency, false);
   }
 
+  // The discount the card shows, computed from its own list and regional
+  // amounts: the country's rate is never hard-coded, and per-plan rounding of
+  // the regional prices stays visible as it is charged.
+  listPercentOff(planId: PlanId): number | null {
+    const list = this.configuredPlanDetail(planId);
+    const regional = this.regionalAmount(planId);
+    if (!list || regional === null || regional >= list.amountCents) return null;
+    const percent = Math.round((1 - regional / list.amountCents) * 100);
+    return percent > 0 ? percent : null;
+  }
+
   private billingMonths(detail: PricingPlanDetail): number {
     return detail.interval === 'year'
       ? 12 * Math.max(1, Number(detail.intervalCount) || 1)
@@ -781,7 +799,7 @@ HTML and CSS tasks rely on the live preview instead, because visuals are the pri
     if (!monthly || !detail || monthly.currency !== detail.currency || monthly.amountCents <= 0) return null;
     const comparisonMonths = planId === 'quarterly' ? 3 : 12;
     const percentage = Math.round((1 - (detail.amountCents / (monthly.amountCents * comparisonMonths))) * 100);
-    return percentage > 0 ? `Save ${percentage}%` : null;
+    return percentage > 0 ? `Save ${percentage}% vs monthly` : null;
   }
 
   planNote(_planId: PlanId): string | null {
