@@ -915,9 +915,29 @@ Totals:
        - the premium preview corpus, now 50 JS pages;
        - 371 Karma specs, 101 backend Jest tests, and assist-sync at commit time;
        - a clean guard run: `/coding` 636,442 of 640,000 bytes and `totalHtmlBytes` 107,172,097. The page is `noindex` without solution code.
-   - Remaining from the plan: #8 file explorer (premium React, tagged `walmart`; W41 2017 and a 2021 Bengaluru Glassdoor snippet ask for an expandable folder tree in React).
-     - The low-priority list is about 15 optional candidates; almost none exist in the catalog.
-     - #8 adds one more `/coding` row, about 3 KB, which puts `/coding` at roughly 639.5 KB of 640 KB. Step 8 follows right after.
+   - #8: done as e7246ce6, premium, tagged `walmart` without a source (`react-file-explorer`).
+     - Both reports are Glassdoor: W41 from 2017, and a 2021 Bengaluru review asking for an expandable folder tree in React. Glassdoor is never cited, so the Walmart preview does not list the item.
+     - Scope: an unsorted project tree rendered as an ARIA tree.
+       - Folders come first and names sort ignoring case; an empty folder stays a folder.
+       - One file can be selected, and its path is shown.
+       - A roving tab stop moves with ArrowUp, ArrowDown, Home and End. ArrowRight opens and then enters; ArrowLeft closes and then climbs; Enter toggles a folder or selects a file.
+       - Collapse all keeps the tab stop on a visible item.
+     - Eight DOM checks, including `expectFocused`. In React 18 and jsdom the starter fails 8 of 8, the solution passes 8 of 8, and eleven single-rule mutations are all caught. Strict TS reports 0 errors.
+     - Verified:
+       - framework regressions, with the corpus pin at 210 assets and 275 CSS sources;
+       - the premium preview corpus, now 31 React pages;
+       - 351 Karma specs, 101 backend Jest tests, and assist-sync at commit time;
+       - a clean guard run.
+   - **Step 7 is complete: all 13 planned items are in.** The low-priority list remains optional, about 15 candidates, almost none of them in the catalog.
+   - Budget after #8:
+     - `/coding` is 639,517 of 640,000 bytes, 483 bytes of headroom. It compresses to 49,245 bytes with gzip and 36,586 with brotli.
+     - `totalHtmlBytes` is 107,282,132 of 109,000,000.
+     - Breakdown of the 152 `/coding` rows (`fa-question-row`, average 3,145 bytes, 74.8% of the page):
+       - the chevron glyph, 597 bytes per row (90,744 in total);
+       - `_ngcontent` attributes, 92,410 bytes;
+       - empty Angular comment nodes, 53,368 bytes;
+       - meta chips, 185,498 bytes.
+     - The row component is shared by `/coding`, company previews, track detail and the essential questions page.
 8. **Last step: budget review.** The user asked on 2026-10-19 to leave the budget until the end.
    - Re-measure `codingHtmlBytes` and `totalHtmlBytes` on a clean build. After #3 they were 627,204 of 640,000 and 105,674,047 of 109,000,000.
    - If the numbers are over, choose between a dated threshold change in `perf-contract.mjs` and trimming the `/coding` row markup.
