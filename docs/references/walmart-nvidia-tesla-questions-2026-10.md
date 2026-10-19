@@ -883,7 +883,24 @@ Totals:
        - a clean guard run: 432 sitemap pages, 617 routes, 0 orphans, 0 hard 404s, `totalHtmlBytes` 106,923,760.
      - The page prerenders `noindex,follow` with only the preview and the Taro source; the protected sections are absent from the HTML.
      - The Tesla preview and `/system-design` link to it.
-   - Next is #11, messaging (`messaging-chat-frontend`, tagged `walmart`).
+   - #11 messaging: done as 78bdc105, premium, tagged `walmart`, as a V2 system design (`messaging-inbox-frontend`).
+     - The id is not the planned `messaging-chat-frontend`: the list page files any id or title containing "chat" under AI product workflows.
+     - W18 was re-read on 2026-10-19. The Walmart-badged reply names "design linkedin chat" and accessibility, so the item is a practice version of that shape with no product named, and its source note says it is not a reported prompt.
+     - Scope:
+       - server sequence numbers order threads, and device time only formats labels;
+       - one clientMessageId survives retries, reconnects and the socket echo;
+       - catch-up runs by inbox cursor, with a resync for expired cursors;
+       - read positions are server state shared across devices;
+       - the thread is a named ARIA log that summarizes bursts without moving focus.
+     - Senior level with a 20-minute timebox, the first senior V2 item. 1,968 visible words.
+     - GreatFrontEnd's premium Messenger question was checked. Its visible scope covers optimistic sending, offline queuing, delivery states and reconnect catch-up; group chat and multi-tab are only follow-ups, and no accessibility guidance is visible. The draft's competitor fields reflect this.
+     - Verified:
+       - the same lint, draft, regression, Karma (213) and backend (382) checks as #10;
+       - a clean guard run: 432 sitemap pages, 618 routes, 0 orphans, 0 hard 404s, `totalHtmlBytes` 107,061,003.
+     - The page prerenders `noindex,follow` without the protected sections. The Walmart preview and `/system-design` link to it.
+   - **Wave 5 is complete.**
+     - Next is step 7, on demand: #13 `JSON.stringify` and #8 file explorer, both premium coding items.
+     - Then step 8, the budget review: `/coding` is 633,373 of 640,000 bytes and `totalHtmlBytes` is 107,061,003 of 109,000,000.
 7. **On demand:** #13 `JSON.stringify`, #8 file explorer, and the low-priority list.
 8. **Last step: budget review.** The user asked on 2026-10-19 to leave the budget until the end.
    - Re-measure `codingHtmlBytes` and `totalHtmlBytes` on a clean build. After #3 they were 627,204 of 640,000 and 105,674,047 of 109,000,000.
