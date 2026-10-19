@@ -1533,7 +1533,7 @@ export const TAG_REGISTRY = {
 };
 
 export const SHOWCASE_STATS = {
-  "totalQuestions": 502,
+  "totalQuestions": 503,
   "premiumPracticeCount": 171,
   "companyCounts": {
     "airbnb": {
@@ -1651,9 +1651,9 @@ export const SHOWCASE_STATS = {
       "system": 0
     },
     "walmart": {
-      "all": 39,
+      "all": 40,
       "coding": 9,
-      "trivia": 30,
+      "trivia": 31,
       "system": 0
     },
     "waymo": {

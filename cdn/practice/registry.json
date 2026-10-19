@@ -7156,6 +7156,28 @@
     "assetRef": "questions/react/trivia.json#react-ssr-hydration"
   },
   {
+    "id": "react-code-splitting-module-federation",
+    "family": "question",
+    "title": "How do you code split a React app, and when do you need module federation instead?",
+    "route": "/react/trivia/react-code-splitting-module-federation",
+    "tech": "react",
+    "difficulty": "hard",
+    "summary": "lazy with a Suspense boundary renders that chunk as a component, with a fallback while it loads.",
+    "tags": [
+      "react",
+      "lazy-loading",
+      "performance",
+      "frontend-architecture",
+      "build",
+      "modules"
+    ],
+    "access": "free",
+    "estimatedMinutes": 7,
+    "updatedAt": "2026-10-19",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/trivia.json#react-code-splitting-module-federation"
+  },
+  {
     "id": "react-jsx-transform-and-why-not-required",
     "family": "question",
     "title": "How does JSX get transformed, and why doesn’t React require it?",

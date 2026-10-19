@@ -1528,6 +1528,12 @@ export const PUBLIC_QUESTION_NAVIGATION: readonly PublicQuestionNavigationItem[]
   {
     "tech": "react",
     "kind": "trivia",
+    "title": "How do you code split a React app, and when do you need module federation instead?",
+    "route": "/react/trivia/react-code-splitting-module-federation"
+  },
+  {
+    "tech": "react",
+    "kind": "trivia",
     "title": "How does JSX get transformed, and why doesn’t React require it?",
     "route": "/react/trivia/react-jsx-transform-and-why-not-required"
   },

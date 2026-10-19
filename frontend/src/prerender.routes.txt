@@ -454,6 +454,7 @@
 /react/coding/react-use-effect-once
 /react/interview-questions
 /react/trivia/react-18-whats-new
+/react/trivia/react-code-splitting-module-federation
 /react/trivia/react-concurrent-rendering
 /react/trivia/react-conditional-rendering
 /react/trivia/react-context-performance-issues

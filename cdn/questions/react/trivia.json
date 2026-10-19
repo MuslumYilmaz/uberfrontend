@@ -6020,5 +6020,190 @@
       "correctOptionId": "render-branch-on-window",
       "rereadPrompt": "Close. Re-read the hydration rule: the first client render must match the server HTML, so environment checks belong in an effect or behind a Suspense boundary, not in the render output."
     }
+  },
+  {
+    "id": "react-code-splitting-module-federation",
+    "title": "How do you code split a React app, and when do you need module federation instead?",
+    "technology": "react",
+    "companies": [
+      "walmart"
+    ],
+    "difficulty": "hard",
+    "importance": 4,
+    "description": "Code splitting loads less JavaScript up front: a dynamic import() becomes a separate chunk that the browser fetches only when it is needed, and React.lazy with a Suspense boundary renders that chunk as a component, with a fallback while it loads. Split routes first, then heavy components that most users never open, and preload chunks on intent so splitting does not add waits. Module federation solves a different problem: separately built and deployed apps load each other's modules at runtime and share one copy of React. Use it when teams must release independently, not to make a single app smaller.",
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>The scenario to explain</strong><br><br>A shopping app ships one 1.8 MB JavaScript bundle. It contains the storefront every visitor needs, plus an admin dashboard, a charting library and a rich-text editor that only a few users ever open. Mobile users wait for all of it before the first interaction works. The interviewer asks how you would split it, then adds a twist: two other teams want to ship the cart and the account pages on their own release schedules. The first question is about code splitting. The second is about module federation, and treating them as one tool is the common mistake."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Code splitting in one paragraph</strong><br><br>A static import puts a module in the same bundle as its importer. A dynamic <code>import()</code> is a split point: the bundler (webpack, Vite, Rollup or esbuild) emits the module and its dependencies as a separate chunk and returns a promise that resolves when the chunk has loaded. <code>React.lazy</code> turns that promise into a component, and the nearest Suspense boundary shows its fallback until the code arrives. React calls the loader once, on the first render, and caches both the promise and the loaded component."
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "import { lazy, Suspense } from 'react';\nimport { Routes, Route } from 'react-router';\n\n// Declare lazy components at module top level, never inside a component:\n// a new lazy() on every render remounts the subtree and resets its state\nconst Storefront = lazy(() => import('./routes/Storefront'));\nconst AdminDashboard = lazy(() => import('./routes/AdminDashboard'));\n\n// React.lazy needs a default export, so map a named export to default\nconst SalesChart = lazy(() =>\n  import('./charts').then((module) => ({ default: module.SalesChart }))\n);\n\nexport function App() {\n  return (\n    <Suspense fallback={<PageSkeleton />}>\n      <Routes>\n        <Route path=\"/\" element={<Storefront />} />\n        <Route path=\"/admin\" element={<AdminDashboard />} />\n      </Routes>\n    </Suspense>\n  );\n}\n\nexport function SalesPanel() {\n  return (\n    <Suspense fallback={<ChartPlaceholder height={320} />}>\n      <SalesChart />\n    </Suspense>\n  );\n}"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Split here",
+            "Why it pays",
+            "Watch out for"
+          ],
+          "rows": [
+            [
+              "Routes",
+              "Each page's code is needed only on that page; the biggest and safest win",
+              "Keep the app shell and the landing route in the main bundle"
+            ],
+            [
+              "Heavy, rarely opened UI",
+              "Editors, charts, maps, admin tools and modals stay out of the first load",
+              "Reserve the space so the fallback does not shift the layout"
+            ],
+            [
+              "Below-the-fold sections",
+              "Their code can wait until the section nears the viewport",
+              "Start loading early enough that users never see the fallback"
+            ],
+            [
+              "Libraries used by one action",
+              "A PDF or spreadsheet export library can load inside the click handler",
+              "Show progress, because that first click now includes a download"
+            ],
+            [
+              "Tiny components",
+              "Almost nothing: each chunk is one more request and one more loading state",
+              "Over-splitting creates waterfalls and flicker"
+            ]
+          ],
+          "caption": "Split where large code is not needed for the first screen",
+          "stackOnMobile": true
+        },
+        {
+          "type": "text",
+          "text": "<strong>Production pitfall: waterfalls and fallback flashes</strong><br><br>A lazy chunk starts downloading only when React first tries to render it. If that chunk renders another lazy component, the second request waits for the first one: a waterfall. Start the import early on intent instead, such as hover, focus or the route a user is likely to open next; the browser loads each module once, so the later render reuses the download. Navigations need one more fix. When an update inside <code>startTransition</code> suspends, React keeps the current screen instead of replacing already visible content with the fallback, and Suspense-enabled routers are expected to wrap navigations in transitions."
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "import { lazy, Suspense, useState } from 'react';\n\nconst loadEditor = () => import('./RichTextEditor');\nconst RichTextEditor = lazy(loadEditor);\n\n// Warm the chunk on intent; if this fails, the render path retries\n// and reports the error through the nearest error boundary\nconst preloadEditor = () => {\n  loadEditor().catch(() => {});\n};\n\nfunction ReplyBox() {\n  const [open, setOpen] = useState(false);\n\n  return (\n    <>\n      <button onMouseEnter={preloadEditor} onFocus={preloadEditor} onClick={() => setOpen(true)}>\n        Write a reply\n      </button>\n      {open && (\n        <Suspense fallback={<EditorPlaceholder />}>\n          <RichTextEditor />\n        </Suspense>\n      )}\n    </>\n  );\n}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Production pitfall: chunks that disappear after a deploy</strong><br><br>Chunk file names carry content hashes. A user who opened the app before a deploy still runs the old main bundle, and that bundle asks for the old hashes. If the host has already removed the previous deploy's files, the request fails with a ChunkLoadError in webpack or \"Failed to fetch dynamically imported module\" in Vite builds, and <code>React.lazy</code> throws that error to the nearest error boundary. Wrap lazy areas in an error boundary with a reload action, keep the previous deploy's assets available for a while, and serve the HTML with <code>Cache-Control: no-cache</code> so new visits always get the new file names. Vite also fires a <code>vite:preloadError</code> event on <code>window</code> for this case."
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "import { Component, Suspense } from 'react';\n\nclass ChunkErrorBoundary extends Component {\n  state = { failed: false };\n\n  static getDerivedStateFromError() {\n    return { failed: true };\n  }\n\n  render() {\n    if (!this.state.failed) return this.props.children;\n    return (\n      <div role=\"alert\">\n        <p>This part of the page could not load. A new version may be available.</p>\n        <button onClick={() => window.location.reload()}>Reload</button>\n      </div>\n    );\n  }\n}\n\nexport function AdminArea() {\n  return (\n    <ChunkErrorBoundary>\n      <Suspense fallback={<PageSkeleton />}>\n        <AdminDashboard />\n      </Suspense>\n    </ChunkErrorBoundary>\n  );\n}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Module federation solves a different problem</strong><br><br>Code splitting divides one build. Module federation connects several builds at runtime. Each remote app builds and deploys on its own and publishes a small container entry, conventionally <code>remoteEntry.js</code>, that exposes chosen modules. A host lists the remotes it consumes and imports their modules like local ones, but the code is fetched from the remote's own deployment when it is needed. Shared dependencies are negotiated at runtime, so the host and every remote can use one copy of React. Webpack 5 ships this as <code>ModuleFederationPlugin</code>, and Module Federation 2.0 extends the same model with a runtime, manifests and type hints for webpack and Rspack."
+        },
+        {
+          "type": "code",
+          "language": "js",
+          "code": "// cart team: webpack.config.js (a remote)\nconst { ModuleFederationPlugin } = require('webpack').container;\n\nmodule.exports = {\n  // ...\n  plugins: [\n    new ModuleFederationPlugin({\n      name: 'cart',\n      filename: 'remoteEntry.js',\n      exposes: { './CartPage': './src/CartPage' },\n      shared: {\n        react: { singleton: true, requiredVersion: '^19.0.0' },\n        'react-dom': { singleton: true, requiredVersion: '^19.0.0' },\n      },\n    }),\n  ],\n};\n\n// shell team: the host plugin entry\nnew ModuleFederationPlugin({\n  name: 'shell',\n  remotes: { cart: 'cart@https://cart.example.com/remoteEntry.js' },\n  shared: {\n    react: { singleton: true, requiredVersion: '^19.0.0' },\n    'react-dom': { singleton: true, requiredVersion: '^19.0.0' },\n  },\n});\n\n// shell app code: the module loads at runtime from the cart team's deploy\nconst CartPage = lazy(() => import('cart/CartPage'));"
+        },
+        {
+          "type": "text",
+          "text": "<strong>The bootstrap boundary</strong><br><br>A federated host usually moves its startup code behind one dynamic import: the entry file contains only <code>import('./bootstrap')</code>, and <code>bootstrap.js</code> renders the app. That async boundary gives webpack time to load the remote entries and agree on shared versions before any component code runs. Without it, the app fails at startup with \"Shared module is not available for eager consumption\". Marking a shared module as eager also removes the error, but then that module is always downloaded with the initial chunk."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Question",
+            "Code splitting",
+            "Module federation"
+          ],
+          "rows": [
+            [
+              "Problem it solves",
+              "Too much JavaScript on the first load",
+              "Independent builds and deploys for parts of one product"
+            ],
+            [
+              "Builds and deploys",
+              "One build, one deploy, many chunks",
+              "Several builds, each deployed on its own schedule"
+            ],
+            [
+              "Shared libraries",
+              "The bundler deduplicates them inside one build",
+              "Negotiated at runtime through shared, singleton and requiredVersion"
+            ],
+            [
+              "Typical failure",
+              "A chunk from the previous deploy is gone",
+              "A remote is down or ships an incompatible version"
+            ],
+            [
+              "Who needs it",
+              "Almost every large single-page app",
+              "Organizations where several teams own one user-facing product"
+            ]
+          ],
+          "caption": "The same lazy loading on the surface, different problems underneath",
+          "stackOnMobile": true
+        },
+        {
+          "type": "text",
+          "text": "<strong>Trade-offs of module federation</strong><br><br>Independent deploys come with runtime coupling. A broken or slow remote now breaks a region of the host in production, so wrap every remote in an error boundary with a fallback. Version skew becomes a runtime problem: a singleton keeps one copy of React, but a remote built against an incompatible version only gets a console warning unless <code>strictVersion</code> is set. Two copies of React, from a missing singleton or a wrong shared config, break hooks with React's Invalid hook call warning. Local development, integration tests and type sharing all get harder. If one team owns the whole app, versioned packages or a monorepo with code splitting give most of the benefit without the runtime risk."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Follow-up questions</strong><br><br><em>Does React.lazy work with named exports?</em> Not directly. The promise must resolve to a module whose default export is a component, so map the named export to default, as in the chart example.<br><br><em>How is this different from tree shaking?</em> Tree shaking removes exports that nothing imports, at build time. Code splitting keeps code that is used but delays loading it. The two work together.<br><br><em>Does it work with server rendering?</em> Yes, with React 18's streaming renderers: lazy components inside Suspense render on the server, and the client needs their chunks before it can hydrate those boundaries. Frameworks such as Next.js split by route automatically.<br><br><em>How do you know it worked?</em> Compare a bundle report (webpack-bundle-analyzer or rollup-plugin-visualizer) before and after, check the Coverage panel in Chrome DevTools for unused JavaScript on the first route, and watch LCP and INP in field data."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Interview framing</strong><br><br>Say it like this:<br><em>\"Code splitting is about loading less up front. Every dynamic import becomes a chunk, React.lazy renders it behind a Suspense fallback, and I split routes first, then heavy components most users never open. I preload on intent so splits don't add waits, make navigations transitions so fallbacks don't flash, and wrap lazy areas in error boundaries because chunks can vanish after a deploy. Module federation is a different tool: separately deployed apps load each other's modules at runtime and share one React. I'd use it only when several teams need independent releases, and I'd isolate each remote behind an error boundary.\"</em>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Summary</strong><br><br>Code splitting divides one build so the first screen downloads only what it needs: dynamic import() makes the chunks, React.lazy and Suspense render them, and preloading, transitions and error boundaries keep the experience smooth. Module federation composes separately built and deployed apps at runtime with shared dependencies. Choose it for team independence, not bundle size, and plan for its runtime failure modes."
+        }
+      ]
+    },
+    "access": "free",
+    "type": "trivia",
+    "tags": [
+      "react",
+      "lazy-loading",
+      "performance",
+      "frontend-architecture",
+      "build",
+      "modules"
+    ],
+    "publishedAt": "2026-10-19",
+    "updatedAt": "2026-10-19",
+    "seo": {
+      "title": "Code Splitting vs Module Federation: React Interview",
+      "description": "React code splitting with React.lazy and Suspense, the waterfall and stale-chunk pitfalls, and when module federation fits instead: an interview answer."
+    },
+    "incidentCard": {
+      "title": "Lazy Chunk Load Failure Root Cause Check",
+      "scenario": "Right after a deploy, users who already had the app open click Settings and get a blank panel. The console shows \"Failed to fetch dynamically imported module: https://app.example.com/assets/Settings-8f3a1c.js\" and the server returns 404 for that file. New visitors are fine. What is the most likely root cause?",
+      "options": [
+        {
+          "id": "stale-chunk-after-deploy",
+          "label": "The open tab still runs the previous main bundle, which requests chunk names from the old build that the new deploy removed; catch it in an error boundary with a reload and keep old assets for a while."
+        },
+        {
+          "id": "lazy-needs-named-export",
+          "label": "React.lazy only resolves named exports, so the default-exported Settings component never loads."
+        },
+        {
+          "id": "suspense-fallback-timeout",
+          "label": "Suspense unmounts a lazy component when its fallback has been visible for more than a few seconds."
+        }
+      ],
+      "correctOptionId": "stale-chunk-after-deploy",
+      "rereadPrompt": "Close. Re-read why the chunk request fails only for users who loaded the app before the deploy: their old bundle asks for hashed files that no longer exist."
+    }
   }
 ]

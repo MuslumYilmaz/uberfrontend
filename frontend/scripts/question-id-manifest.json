@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-19T12:16:35.286Z",
+  "generatedAt": "2026-10-19T12:37:01.924Z",
   "entries": [
     {
       "tech": "angular",
@@ -2100,6 +2100,12 @@
       "tech": "react",
       "kind": "trivia",
       "id": "react-18-whats-new",
+      "file": "react/trivia.json"
+    },
+    {
+      "tech": "react",
+      "kind": "trivia",
+      "id": "react-code-splitting-module-federation",
       "file": "react/trivia.json"
     },
     {
