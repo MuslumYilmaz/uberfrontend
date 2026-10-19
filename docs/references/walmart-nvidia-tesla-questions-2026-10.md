@@ -832,7 +832,25 @@ Totals:
      - The Walmart preview links only coding prompts, so trivia tags appear only in its counts (30 trivia).
    - `/coding` is unchanged at 633,373 bytes. `totalHtmlBytes` is 106,489,053 of 109,000,000.
    - PR #237 merged `dev` up to c4ed6d87 into `main` on 2026-10-19, so the Walmart and Tesla previews go live with that deploy. fa606ab4 and later are still local.
-   - Next is #12, code splitting and module federation.
+     - The production deploy finished at 15:28. Both previews return 200 to Googlebot, are `index,follow` and appear in the live sitemap.
+     - The IndexNow run after the deploy sent 118 changed URLs to Bing and Yandex.
+     - The Google "Request indexing" step for the two previews is left to the user, because Claude in Chrome was not connected in this session.
+   - #12: done as 91efc1bb, free, tagged `walmart`.
+     - `react-code-splitting-module-federation`, from W12 (memoization, code splitting and lazy loading in an optimisation round) and W10 (module federation), both re-read on 2026-10-19.
+     - It separates splitting one build from composing separately deployed builds. Topics:
+       - `React.lazy` rules: declare at the top level, map named exports to a default export;
+       - preloading on intent, and transitions against fallback flashes;
+       - stale chunks after a deploy, with an error boundary;
+       - remotes and shared singletons, and the bootstrap boundary behind the eager consumption error;
+       - the runtime coupling trade-off.
+     - Facts were checked against react.dev (`lazy`, `Suspense`, the invalid hook call page), the webpack Module Federation concept and plugin pages, the webpack code splitting guide, the Vite build guide and module-federation.io.
+     - The competitor review uses GreatFrontEnd, react.dev and webpack: 4 wins and 5 ties, no losses.
+     - Checks and results:
+       - React answer positions are now 13/13/13;
+       - clean guard: 432 sitemap pages, 616 routes, 0 orphans, 0 hard 404s;
+       - `totalHtmlBytes` is 106,788,088 of 109,000,000;
+       - the page has 40 inbound internal links.
+   - **Wave 4 is complete.** Next is Wave 5: #10 car rental (Tesla) and #11 messaging (Walmart) system designs.
 6. **Wave 5, system design (L, L).**
    - #10 car rental, tagged `tesla`.
    - #11 messaging, tagged `walmart`.
