@@ -3506,6 +3506,26 @@
     "assetRef": "questions/javascript/coding.json#js-timer-manager-and-dom-renderer"
   },
   {
+    "id": "js-color-contrast-ratio",
+    "family": "question",
+    "title": "Color Contrast Ratio (WCAG)",
+    "route": "/javascript/coding/js-color-contrast-ratio",
+    "tech": "javascript",
+    "difficulty": "easy",
+    "summary": "Implement contrastRatio(foreground, background): return the WCAG 2 contrast ratio between two hex colors (#rgb or #rrggbb), from 1 for identical colors up to 21 for black on white. 05.",
+    "tags": [
+      "accessibility",
+      "color",
+      "math",
+      "validation"
+    ],
+    "access": "free",
+    "estimatedMinutes": 18,
+    "updatedAt": "2026-10-19",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/javascript/coding.json#js-color-contrast-ratio"
+  },
+  {
     "id": "js-compose",
     "family": "question",
     "title": "Compose Function",

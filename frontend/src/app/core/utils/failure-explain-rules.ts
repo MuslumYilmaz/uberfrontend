@@ -536,6 +536,25 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
     }),
   },
   {
+    ruleId: 'js-color-contrast-ratio-formula',
+    questionId: 'js-color-contrast-ratio',
+    priority: 100,
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, ['published values', 'green above red', 'linear segment', 'near miss', 'maximum, 21', 'argument order']) ||
+      snapshot.failCount >= 2,
+    buildHint: (snapshot) => ({
+      ruleId: 'js-color-contrast-ratio-formula',
+      title: 'Linearize, weight, then divide lighter by darker',
+      why: buildProgressAwareWhy(snapshot, 'Contrast is computed on linear light, not on the stored 0 to 255 values, and the lighter luminance always goes on top, so the ratio runs from 1 to 21.'),
+      actions: [
+        'Divide each channel by 255, then use `c / 12.92` up to 0.04045 and `((c + 0.055) / 1.055) ** 2.4` above it.',
+        'Weight the linear channels with 0.2126, 0.7152 and 0.0722 to get the relative luminance.',
+        'Return `(lighter + 0.05) / (darker + 0.05)` without rounding it.',
+      ],
+      confidence: 0.86,
+    }),
+  },
+  {
     ruleId: 'js-filter-tree-render-indented-prune',
     questionId: 'js-filter-tree-render-indented',
     priority: 100,
@@ -824,6 +843,23 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
         'Throw a `TypeError` before the loop when the input is not a string.',
         'Treat the empty string as valid: nothing was opened, so nothing is left open.',
         'Avoid recursion; thousands of nested brackets must still work.',
+      ],
+      confidence: 0.72,
+    }),
+  },
+  {
+    ruleId: 'js-color-contrast-ratio-default',
+    questionId: 'js-color-contrast-ratio',
+    priority: 40,
+    matches: () => true,
+    buildHint: (snapshot) => ({
+      ruleId: 'js-color-contrast-ratio-default',
+      title: 'Validate the hex string before the math',
+      why: buildProgressAwareWhy(snapshot, 'Every later step assumes three clean channels, so anything that is not #rgb or #rrggbb has to be rejected first.'),
+      actions: [
+        'Test the shape with `/^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i` and throw a `TypeError` otherwise.',
+        'Expand `#abc` to `#aabbcc` before parsing the pairs.',
+        'Leave rounding to the UI; a pass or fail comparison needs the raw ratio.',
       ],
       confidence: 0.72,
     }),

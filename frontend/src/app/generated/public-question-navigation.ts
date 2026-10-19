@@ -718,6 +718,12 @@ export const PUBLIC_QUESTION_NAVIGATION: readonly PublicQuestionNavigationItem[]
   {
     "tech": "javascript",
     "kind": "coding",
+    "title": "Color Contrast Ratio (WCAG)",
+    "route": "/javascript/coding/js-color-contrast-ratio"
+  },
+  {
+    "tech": "javascript",
+    "kind": "coding",
     "title": "Count Vowels",
     "route": "/javascript/coding/js-count-vowels"
   },

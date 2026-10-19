@@ -9302,5 +9302,140 @@
       "description": "Implement isValidParentheses in JavaScript with a stack of expected closers: nested and mixed brackets, wrong-order closers, empty input and non-bracket text."
     },
     "decisionGraphAsset": "assets/questions/javascript/decision-graphs/js-valid-parentheses.v1.json"
+  },
+  {
+    "id": "js-color-contrast-ratio",
+    "title": "Color Contrast Ratio (WCAG)",
+    "type": "coding",
+    "technology": "javascript",
+    "companies": [
+      "tesla"
+    ],
+    "sources": [
+      {
+        "label": "Taro: Tesla front end developer interview, Los Angeles, 2022",
+        "url": "https://www.jointaro.com/interviews/companies/tesla/experiences/front-end-developer-los-angeles-ca-january-1-2022-no-offer-negative-eadce28f/",
+        "company": "tesla",
+        "publisher": "Taro",
+        "date": "2022-01",
+        "note": "The virtual onsite in this self-reported loop lists \"Calculate the contrast between certain colors\" among its tasks. This drill is a practice version of that task; the hex input format and the error rule are ours."
+      }
+    ],
+    "importance": 2,
+    "difficulty": "easy",
+    "tags": [
+      "accessibility",
+      "color",
+      "math",
+      "validation"
+    ],
+    "description": {
+      "summary": "Implement contrastRatio(foreground, background): return the WCAG 2 contrast ratio between two hex colors (#rgb or #rrggbb), from 1 for identical colors up to 21 for black on white. Convert each sRGB channel to linear light, compute relative luminance with the weights 0.2126, 0.7152 and 0.0722, and divide the lighter luminance plus 0.05 by the darker luminance plus 0.05. A public interview report of a Tesla front end developer loop (Los Angeles, January 2022) lists \"Calculate the contrast between certain colors\" among the onsite tasks; this practice version fixes the input format and the error rule so the tests can check the math. Concepts: accessibility, color, math, validation.",
+      "specs": {
+        "practice": [
+          "Turning a published accessibility formula into small, testable functions",
+          "Parsing and validating hex colors, including the three-digit shorthand",
+          "Keeping full precision when a threshold decides pass or fail"
+        ],
+        "expectedBehaviorIntro": "Your contrastRatio() implementation should:",
+        "expectedBehavior": [
+          "Accept #rgb and #rrggbb strings in any letter case",
+          "Convert each channel to linear light with the 0.04045 threshold before weighting it",
+          "Return (lighter + 0.05) / (darker + 0.05), so the order of the arguments does not matter",
+          "Return 21 for black on white and 1 for any color against itself",
+          "Return the unrounded ratio so a value just under 4.5 never rounds up to a pass",
+          "Throw a TypeError when either argument is not a valid hex color string"
+        ]
+      },
+      "arguments": [
+        {
+          "name": "foreground",
+          "type": "string",
+          "desc": "A hex color, #rgb or #rrggbb."
+        },
+        {
+          "name": "background",
+          "type": "string",
+          "desc": "A hex color, #rgb or #rrggbb."
+        }
+      ],
+      "returns": {
+        "type": "number",
+        "desc": "The contrast ratio, from 1 to 21, unrounded."
+      },
+      "examples": [
+        "contrastRatio('#000000', '#ffffff'); // => 21\ncontrastRatio('#767676', '#ffffff'); // => about 4.54, passes AA for normal text\ncontrastRatio('#777777', '#ffffff'); // => about 4.48, fails AA (never round up)",
+        "contrastRatio('#fff', '#2563eb'); // => about 5.17\ncontrastRatio('#2563eb', '#fff'); // => the same value\ncontrastRatio('red', '#fff'); // throws TypeError"
+      ]
+    },
+    "starterCode": "export default function contrastRatio(foreground, background) {\n  // TODO: parse both hex colors (#rgb or #rrggbb) into 0-255 channels,\n  // convert every channel to linear light, weight the channels into a\n  // relative luminance, then return (lighter + 0.05) / (darker + 0.05).\n  throw new Error('Not implemented');\n}\n",
+    "starterCodeTs": "export default function contrastRatio(foreground: string, background: string): number {\n  // TODO: parse both hex colors (#rgb or #rrggbb) into 0-255 channels,\n  // convert every channel to linear light, weight the channels into a\n  // relative luminance, then return (lighter + 0.05) / (darker + 0.05).\n  throw new Error('Not implemented');\n}\n",
+    "solutionBlock": {
+      "overview": "Interview answer: split the formula into three small functions. parseHex validates the string and returns three channel values from 0 to 255. toLinear undoes the sRGB gamma curve: divide by 255, then use c / 12.92 at or below 0.04045 and ((c + 0.055) / 1.055) ** 2.4 above it. relativeLuminance weights the linear channels 0.2126, 0.7152 and 0.0722, because the eye is most sensitive to green. The ratio is (lighter + 0.05) / (darker + 0.05) and runs from 1 to 21. Compare that raw number with the WCAG thresholds: 4.5 for normal text, 3 for large text and 7 for AAA. Rounding first can turn a failing 4.48 into a passing 4.5.\n\nMental model: decode the gamma, weight the channels, then compare the lighter color with the darker one.",
+      "approaches": [
+        {
+          "title": "Approach 1: Small functions for parse, linearize and luminance",
+          "prose": "contrastRatio computes both luminances, puts the lighter one in the numerator with Math.max and Math.min, and returns the unrounded ratio. relativeLuminance maps the parsed channels through toLinear and applies the weights. parseHex checks the shape with one regular expression, doubles each shorthand digit, and parses the three pairs. Every helper is easy to test on its own.",
+          "codeJs": "export default function contrastRatio(foreground, background) {\n  const l1 = relativeLuminance(foreground);\n  const l2 = relativeLuminance(background);\n  const lighter = Math.max(l1, l2);\n  const darker = Math.min(l1, l2);\n  return (lighter + 0.05) / (darker + 0.05);\n}\n\nfunction relativeLuminance(hex) {\n  const [r, g, b] = parseHex(hex).map(toLinear);\n  return 0.2126 * r + 0.7152 * g + 0.0722 * b;\n}\n\nfunction toLinear(channel) {\n  const c = channel / 255;\n  return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;\n}\n\nfunction parseHex(hex) {\n  if (typeof hex !== 'string' || !/^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i.test(hex)) {\n    throw new TypeError(`Invalid hex color: ${String(hex)}`);\n  }\n  const digits = hex.length === 4 ? [...hex.slice(1)].map((d) => d + d).join('') : hex.slice(1);\n  return [0, 2, 4].map((i) => parseInt(digits.slice(i, i + 2), 16));\n}\n",
+          "codeTs": "export default function contrastRatio(foreground: string, background: string): number {\n  const l1 = relativeLuminance(foreground);\n  const l2 = relativeLuminance(background);\n  const lighter = Math.max(l1, l2);\n  const darker = Math.min(l1, l2);\n  return (lighter + 0.05) / (darker + 0.05);\n}\n\nfunction relativeLuminance(hex: string): number {\n  const [r, g, b] = parseHex(hex).map(toLinear);\n  return 0.2126 * r + 0.7152 * g + 0.0722 * b;\n}\n\nfunction toLinear(channel: number): number {\n  const c = channel / 255;\n  return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;\n}\n\nfunction parseHex(hex: string): [number, number, number] {\n  if (typeof hex !== 'string' || !/^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i.test(hex)) {\n    throw new TypeError(`Invalid hex color: ${String(hex)}`);\n  }\n  const digits = hex.length === 4 ? [...hex.slice(1)].map((d) => d + d).join('') : hex.slice(1);\n  return [0, 2, 4].map((i) => parseInt(digits.slice(i, i + 2), 16)) as [number, number, number];\n}\n",
+          "decisionGraphKey": "approach1"
+        },
+        {
+          "title": "Approach 2: Lookup table for the channel curve",
+          "prose": "When a design-token linter compares hundreds of pairs, the channel curve can be computed once for the 256 possible values. Parse the six digits as one integer, read red, green and blue with bit shifts, and look each one up in the table. The math and the results are identical to approach 1; only the cost per call drops.",
+          "codeJs": "const LINEAR = Array.from({ length: 256 }, (_, value) => {\n  const c = value / 255;\n  return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;\n});\n\nexport default function contrastRatio(foreground, background) {\n  const [lighter, darker] = [luminance(foreground), luminance(background)].sort((a, b) => b - a);\n  return (lighter + 0.05) / (darker + 0.05);\n}\n\nfunction luminance(hex) {\n  if (typeof hex !== 'string' || !/^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i.test(hex)) {\n    throw new TypeError(`Invalid hex color: ${String(hex)}`);\n  }\n  const full = hex.length === 4 ? hex.replace(/[0-9a-f]/gi, (d) => d + d) : hex;\n  const value = parseInt(full.slice(1), 16);\n  return 0.2126 * LINEAR[(value >> 16) & 255] + 0.7152 * LINEAR[(value >> 8) & 255] + 0.0722 * LINEAR[value & 255];\n}\n",
+          "codeTs": "const LINEAR: number[] = Array.from({ length: 256 }, (_, value) => {\n  const c = value / 255;\n  return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;\n});\n\nexport default function contrastRatio(foreground: string, background: string): number {\n  const [lighter, darker] = [luminance(foreground), luminance(background)].sort((a, b) => b - a);\n  return (lighter + 0.05) / (darker + 0.05);\n}\n\nfunction luminance(hex: string): number {\n  if (typeof hex !== 'string' || !/^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i.test(hex)) {\n    throw new TypeError(`Invalid hex color: ${String(hex)}`);\n  }\n  const full = hex.length === 4 ? hex.replace(/[0-9a-f]/gi, (d) => d + d) : hex;\n  const value = parseInt(full.slice(1), 16);\n  return 0.2126 * LINEAR[(value >> 16) & 255] + 0.7152 * LINEAR[(value >> 8) & 255] + 0.0722 * LINEAR[value & 255];\n}\n",
+          "decisionGraphKey": "approach2"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Weighting the 0 to 255 values directly skips the gamma curve and gives wrong ratios for mid tones.",
+          "Always dividing the first argument by the second returns values below 1 when the order flips.",
+          "Rounding before comparing with 4.5 lets #777777 on white pass, although its ratio is about 4.48.",
+          "Expanding #abc as #abcabc instead of #aabbcc."
+        ],
+        "edgeCases": [
+          "Identical colors → 1.",
+          "Black and white in either order → 21.",
+          "Shorthand or uppercase hex → the same result as the long lowercase form.",
+          "Color names, a missing #, or 5 or 7 digits → TypeError."
+        ],
+        "techniques": [
+          "Translating a published formula into named helper functions.",
+          "Validating with a regular expression before parsing.",
+          "Lookup tables for repeated per-channel math."
+        ]
+      },
+      "followUp": [
+        "How would you support rgb() and hsl() strings, or 8-digit hex with alpha?",
+        "How would you blend a semi-transparent foreground over its background before measuring?",
+        "Which thresholds apply to large text and to UI components, and how would you report AA and AAA together?",
+        "How does the APCA method in the WCAG 3 drafts differ from this ratio?"
+      ],
+      "resources": [
+        {
+          "title": "W3C – Understanding SC 1.4.3 Contrast (Minimum)",
+          "url": "https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html"
+        },
+        {
+          "title": "W3C – WCAG 2.2 definition of relative luminance",
+          "url": "https://www.w3.org/TR/WCAG22/#dfn-relative-luminance"
+        },
+        {
+          "title": "MDN – parseInt()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/parseInt"
+        }
+      ]
+    },
+    "tests": "import contrastRatio from './contrastRatio';\n\nconst round2 = (value) => Math.round(value * 100) / 100;\n\ndescribe('contrastRatio', () => {\n  test('black on white is the maximum, 21', () => {\n    expect(round2(contrastRatio('#000000', '#ffffff'))).toBe(21);\n  });\n\n  test('a color against itself is the minimum, 1', () => {\n    expect(contrastRatio('#777777', '#777777')).toBe(1);\n    expect(contrastRatio('#2563eb', '#2563eb')).toBe(1);\n  });\n\n  test('argument order does not matter', () => {\n    expect(round2(contrastRatio('#ffffff', '#000000'))).toBe(21);\n    expect(contrastRatio('#2563eb', '#ffffff')).toBe(contrastRatio('#ffffff', '#2563eb'));\n  });\n\n  test('matches published values for grays on white', () => {\n    expect(round2(contrastRatio('#767676', '#ffffff'))).toBe(4.54);\n    expect(round2(contrastRatio('#777777', '#ffffff'))).toBe(4.48);\n    expect(round2(contrastRatio('#595959', '#ffffff'))).toBe(7);\n  });\n\n  test('weights green above red and red above blue', () => {\n    expect(round2(contrastRatio('#00ff00', '#ffffff'))).toBe(1.37);\n    expect(round2(contrastRatio('#ff0000', '#ffffff'))).toBe(4);\n    expect(round2(contrastRatio('#0000ff', '#ffffff'))).toBe(8.59);\n  });\n\n  test('uses the linear segment for very dark channels', () => {\n    expect(round2(contrastRatio('#0a0a0a', '#ffffff'))).toBe(19.8);\n    expect(round2(contrastRatio('#0a0a0a', '#000000'))).toBe(1.06);\n  });\n\n  test('accepts the three-digit shorthand and any letter case', () => {\n    expect(round2(contrastRatio('#000', '#FFF'))).toBe(21);\n    expect(contrastRatio('#abc', '#ffffff')).toBe(contrastRatio('#AABBCC', '#ffffff'));\n  });\n\n  test('keeps full precision so a near miss does not round up to 4.5', () => {\n    const ratio = contrastRatio('#777777', '#ffffff');\n    expect(ratio < 4.5).toBe(true);\n    expect(ratio > 4.47).toBe(true);\n  });\n\n  test('throws a TypeError for values that are not hex colors', () => {\n    expect(() => contrastRatio('red', '#ffffff')).toThrow(TypeError);\n    expect(() => contrastRatio('#12', '#ffffff')).toThrow(TypeError);\n    expect(() => contrastRatio('#ggg', '#ffffff')).toThrow(TypeError);\n    expect(() => contrastRatio('#fffffff', '#000000')).toThrow(TypeError);\n    expect(() => contrastRatio('ffffff', '#000000')).toThrow(TypeError);\n    expect(() => contrastRatio(null, '#ffffff')).toThrow(TypeError);\n    expect(() => contrastRatio('#ffffff', 123)).toThrow(TypeError);\n  });\n});\n",
+    "testsTs": "import contrastRatio from './contrastRatio';\n\nconst round2 = (value: number) => Math.round(value * 100) / 100;\n\ndescribe('contrastRatio', () => {\n  test('black on white is the maximum, 21', () => {\n    expect(round2(contrastRatio('#000000', '#ffffff'))).toBe(21);\n  });\n\n  test('a color against itself is the minimum, 1', () => {\n    expect(contrastRatio('#777777', '#777777')).toBe(1);\n    expect(contrastRatio('#2563eb', '#2563eb')).toBe(1);\n  });\n\n  test('argument order does not matter', () => {\n    expect(round2(contrastRatio('#ffffff', '#000000'))).toBe(21);\n    expect(contrastRatio('#2563eb', '#ffffff')).toBe(contrastRatio('#ffffff', '#2563eb'));\n  });\n\n  test('matches published values for grays on white', () => {\n    expect(round2(contrastRatio('#767676', '#ffffff'))).toBe(4.54);\n    expect(round2(contrastRatio('#777777', '#ffffff'))).toBe(4.48);\n    expect(round2(contrastRatio('#595959', '#ffffff'))).toBe(7);\n  });\n\n  test('weights green above red and red above blue', () => {\n    expect(round2(contrastRatio('#00ff00', '#ffffff'))).toBe(1.37);\n    expect(round2(contrastRatio('#ff0000', '#ffffff'))).toBe(4);\n    expect(round2(contrastRatio('#0000ff', '#ffffff'))).toBe(8.59);\n  });\n\n  test('uses the linear segment for very dark channels', () => {\n    expect(round2(contrastRatio('#0a0a0a', '#ffffff'))).toBe(19.8);\n    expect(round2(contrastRatio('#0a0a0a', '#000000'))).toBe(1.06);\n  });\n\n  test('accepts the three-digit shorthand and any letter case', () => {\n    expect(round2(contrastRatio('#000', '#FFF'))).toBe(21);\n    expect(contrastRatio('#abc', '#ffffff')).toBe(contrastRatio('#AABBCC', '#ffffff'));\n  });\n\n  test('keeps full precision so a near miss does not round up to 4.5', () => {\n    const ratio = contrastRatio('#777777', '#ffffff');\n    expect(ratio < 4.5).toBe(true);\n    expect(ratio > 4.47).toBe(true);\n  });\n\n  test('throws a TypeError for values that are not hex colors', () => {\n    expect(() => contrastRatio('red', '#ffffff')).toThrow(TypeError);\n    expect(() => contrastRatio('#12', '#ffffff')).toThrow(TypeError);\n    expect(() => contrastRatio('#ggg', '#ffffff')).toThrow(TypeError);\n    expect(() => contrastRatio('#fffffff', '#000000')).toThrow(TypeError);\n    expect(() => contrastRatio('ffffff', '#000000')).toThrow(TypeError);\n    expect(() => contrastRatio(null as unknown as string, '#ffffff')).toThrow(TypeError);\n    expect(() => contrastRatio('#ffffff', 123 as unknown as string)).toThrow(TypeError);\n  });\n});\n",
+    "access": "free",
+    "updatedAt": "2026-10-19",
+    "seo": {
+      "title": "Color Contrast Ratio in JavaScript: WCAG Formula + Tests",
+      "description": "Implement contrastRatio in JavaScript: parse #rgb and #rrggbb colors, linearize sRGB channels, compute WCAG relative luminance and return a 1 to 21 ratio."
+    },
+    "decisionGraphAsset": "assets/questions/javascript/decision-graphs/js-color-contrast-ratio.v1.json"
   }
 ]

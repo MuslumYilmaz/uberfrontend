@@ -240,6 +240,7 @@
 /javascript/coding/js-arrays-equal
 /javascript/coding/js-build-tree-from-flat-list
 /javascript/coding/js-capitalize-words
+/javascript/coding/js-color-contrast-ratio
 /javascript/coding/js-compact
 /javascript/coding/js-compose
 /javascript/coding/js-concurrency-map-limit
