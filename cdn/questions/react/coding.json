@@ -5541,5 +5541,395 @@
       "title": "Implement useMemo and a Context Data Provider in React",
       "description": "Write useMemo from scratch with a ref and Object.is, then a React context provider that shares one API request with loading, error and reload states."
     }
+  },
+  {
+    "id": "react-battery-site-layout",
+    "title": "Battery Site Layout Planner (Take-Home Style)",
+    "type": "coding",
+    "technology": "react",
+    "difficulty": "hard",
+    "importance": 4,
+    "tags": [
+      "react",
+      "state",
+      "forms",
+      "algorithms",
+      "layout",
+      "typescript"
+    ],
+    "description": {
+      "summary": "Build a planner for an industrial battery site: the user picks how many of four battery sizes to install, the planner adds transformers automatically, totals the budget, net energy and land size, and lays the devices out in rows that never exceed 100 ft. Public repositories show this take-home at Tesla Energy: a candidate published the UI evaluation brief, and at least 22 independent repositories build it between 2023 and 2026. This practice version is modelled on that reported take-home, with our own device catalog and wording, and fixes the layout rule so the tests can check it. Concepts: react, state, forms, algorithms, layout.",
+      "specs": {
+        "requirements": [
+          "Work in `src/App.tsx`; keep `BATTERIES`, `TRANSFORMER` and the constants as given.",
+          "A valid quantity is a whole number from 0 to `MAX_QUANTITY` (50). An invalid one counts as 0 and shows `<p className=\"qty-error\">Use a whole number from 0 to 50.</p>`.",
+          "Add one transformer for every two batteries, rounded up, and show `Transformers: N`.",
+          "Show the budget as `$` with thousands separators, the net energy in MWh (transformers subtract energy), and the land as `W ft × D ft`.",
+          "Pack the devices into rows: largest first, each device into the first row that still has room, never wider than `SITE_WIDTH_FT` (100 ft).",
+          "Render one `.layout-row` per row with `data-width` set to its width in feet, and one `.layout-device` per device with `data-device` set to its id.",
+          "The land is the widest row times the number of rows times `ROW_DEPTH_FT` (10 ft). Reset sets every quantity back to 0."
+        ],
+        "expectedBehavior": [
+          "With nothing chosen the budget is `$0`, the net energy `0 MWh` and the layout is empty.",
+          "One Battery XL gives `$134,000`, `3.95 MWh`, `Transformers: 1` and `50 ft × 10 ft`.",
+          "Three Battery XL give two rows of 100 ft and 40 ft and `100 ft × 20 ft`.",
+          "Twelve Battery S give six transformers, rows of 100 ft and 80 ft, `$198,000` and `10.5 MWh`.",
+          "An invalid quantity such as `-1` or `1.5` shows the error and does not change the totals.",
+          "Reset returns every quantity to 0 and empties the layout."
+        ],
+        "implementationNotes": [
+          "Keep the raw input strings in state and derive everything else in one `useMemo`; never store totals in state.",
+          "Write the rules as small pure functions (`parseQuantity`, `transformersFor`, `packRows`) so they are easy to test and explain.",
+          "`BATTERIES` is listed smallest first, so pack from a copy sorted largest first; placing each device into the first row with room is first-fit decreasing.",
+          "Extensions such as saving and resuming a plan, or an export, are discussed in the follow-ups and are not checked."
+        ],
+        "techFocus": [
+          "Derived state from raw form input",
+          "Validation without blocking typing",
+          "First-fit decreasing row packing",
+          "Formatting money and units",
+          "Take-home scoping and trade-offs"
+        ]
+      }
+    },
+    "solutionBlock": {
+      "overview": "Keep only the raw quantity strings in state. One `useMemo` derives the rest:\n\n1. Validate each quantity with `parseQuantity`: a whole number from 0 to 50, or `null`. Invalid ones count as 0, and the planner shows one error line.\n2. Expand the counts into a device list and add `transformersFor(batteries)` transformers, which is `Math.ceil(batteries / 2)`.\n3. Sum the cost and the net energy; transformers subtract 0.25 MWh each.\n4. `packRows` sorts a copy largest first and puts each device into the first row with room, starting a new row when none fits. The land is the widest row times rows × 10 ft.\n\nRows render with `data-width`, so the 100 ft rule is visible to the tests and to a reviewer.\n\n**Test cases**\n- Zero state, then one Battery XL: `$134,000`, `3.95 MWh`, one transformer, `50 ft × 10 ft`.\n- 3 batteries need 2 transformers; 4 batteries still need 2.\n- Three Battery XL pack into rows of 100 ft and 40 ft.\n- Twelve Battery S and six transformers pack into rows of 100 ft and 80 ft.\n- One Battery L and two Battery XL pack into rows of 100 ft and 30 ft; packing in catalog order would give 90 ft and 40 ft.\n- Invalid input shows the error; Reset clears everything.",
+      "approaches": [
+        {
+          "title": "Raw input in state, pure rules, one derived site object",
+          "prose": "1. `parseQuantity(raw)` trims, accepts only digits, and caps the value at `MAX_QUANTITY`; anything else returns `null`.\n2. `transformersFor(count)` returns `Math.ceil(count / 2)`.\n3. `packRows(devices)` copies and sorts by width descending, then for each device finds the first row whose width plus the device still fits in 100 ft, or opens a new row.\n4. In `App`, a `useMemo` over `quantities` builds the device list, adds the transformers, sums cost and energy, packs the rows, and computes width and depth.\n5. The JSX renders the inputs, the error line when any quantity is invalid, the summary with formatted values, and the rows with `data-width` and one block per device. Reset writes `EMPTY_QUANTITIES` back to state.",
+          "codeJs": "import React, { useMemo, useState } from 'react';\nimport './App.css';\n\n// Practice version of a reported take-home. The catalog, names and numbers are ours.\nexport type BatteryId = 'xl' | 'l' | 'm' | 's';\n\nexport interface Device {\n  id: BatteryId | 'transformer';\n  name: string;\n  widthFt: number;\n  energyMwh: number;\n  costUsd: number;\n}\n\nexport type Battery = Device & { id: BatteryId };\n\nexport const BATTERIES: Battery[] = [\n  { id: 's', name: 'Battery S', widthFt: 10, energyMwh: 1, costUsd: 12000 },\n  { id: 'm', name: 'Battery M', widthFt: 20, energyMwh: 2, costUsd: 48000 },\n  { id: 'l', name: 'Battery L', widthFt: 30, energyMwh: 3, costUsd: 82000 },\n  { id: 'xl', name: 'Battery XL', widthFt: 40, energyMwh: 4.2, costUsd: 125000 }\n];\n\n// A transformer is added automatically: one for every two batteries, rounded up.\nexport const TRANSFORMER: Device = { id: 'transformer', name: 'Transformer', widthFt: 10, energyMwh: -0.25, costUsd: 9000 };\n\nexport const SITE_WIDTH_FT = 100;\nexport const ROW_DEPTH_FT = 10;\nexport const MAX_QUANTITY = 50;\n\ntype Quantities = Record<BatteryId, string>;\n\nconst EMPTY_QUANTITIES: Quantities = { xl: '0', l: '0', m: '0', s: '0' };\n\nfunction formatUsd(value: number): string {\n  return '$' + value.toLocaleString('en-US');\n}\n\nfunction formatMwh(value: number): string {\n  return `${Number(value.toFixed(2))} MWh`;\n}\n\nfunction parseQuantity(raw: string): number | null {\n  const text = raw.trim();\n  if (!/^\\d+$/.test(text)) return null;\n  const value = Number(text);\n  return value <= MAX_QUANTITY ? value : null;\n}\n\nexport function transformersFor(batteryCount: number): number {\n  return Math.ceil(batteryCount / 2);\n}\n\ntype Row = { widthFt: number; devices: Device[] };\n\nexport function packRows(devices: Device[], maxWidthFt: number = SITE_WIDTH_FT): Row[] {\n  const largestFirst = [...devices].sort((a, b) => b.widthFt - a.widthFt);\n  const rows: Row[] = [];\n  for (const device of largestFirst) {\n    const row = rows.find((candidate) => candidate.widthFt + device.widthFt <= maxWidthFt);\n    if (row) {\n      row.widthFt += device.widthFt;\n      row.devices.push(device);\n    } else {\n      rows.push({ widthFt: device.widthFt, devices: [device] });\n    }\n  }\n  return rows;\n}\n\nexport default function App() {\n  const [quantities, setQuantities] = useState<Quantities>(EMPTY_QUANTITIES);\n\n  const site = useMemo(() => {\n    const invalid = BATTERIES.filter((battery) => parseQuantity(quantities[battery.id]) === null).map((battery) => battery.id);\n    const devices: Device[] = [];\n    for (const battery of BATTERIES) {\n      const count = parseQuantity(quantities[battery.id]) ?? 0;\n      for (let i = 0; i < count; i += 1) devices.push(battery);\n    }\n    const transformers = transformersFor(devices.length);\n    for (let i = 0; i < transformers; i += 1) devices.push(TRANSFORMER);\n\n    const costUsd = devices.reduce((sum, device) => sum + device.costUsd, 0);\n    const energyMwh = devices.reduce((sum, device) => sum + device.energyMwh, 0);\n    const rows = packRows(devices);\n    const widthFt = rows.reduce((widest, row) => Math.max(widest, row.widthFt), 0);\n    const depthFt = rows.length * ROW_DEPTH_FT;\n    return { invalid, transformers, costUsd, energyMwh, rows, widthFt, depthFt };\n  }, [quantities]);\n\n  return (\n    <main className=\"main\">\n      <section className=\"card\">\n        <header className=\"header\">\n          <h1 className=\"title\">Battery Site Planner (Solution)</h1>\n          <p className=\"subtitle\">Choose the batteries; the planner adds transformers, totals the site and lays it out.</p>\n        </header>\n\n        <section className=\"panel\" aria-labelledby=\"devices-title\">\n          <h2 className=\"panel-title\" id=\"devices-title\">Batteries</h2>\n          {BATTERIES.map((battery) => (\n            <label key={battery.id} className=\"qty-field\">\n              <span className=\"qty-name\">{battery.name}</span>\n              <span className=\"qty-meta\">{battery.widthFt} ft · {battery.energyMwh} MWh · {formatUsd(battery.costUsd)}</span>\n              <input\n                className=\"qty-input\"\n                data-device={battery.id}\n                type=\"number\"\n                min={0}\n                max={MAX_QUANTITY}\n                step={1}\n                value={quantities[battery.id]}\n                onChange={(event: React.ChangeEvent<HTMLInputElement>) =>\n                  setQuantities((current) => ({ ...current, [battery.id]: event.target.value }))\n                }\n              />\n            </label>\n          ))}\n          {site.invalid.length > 0 && (\n            <p className=\"qty-error\" role=\"alert\">Use a whole number from 0 to {MAX_QUANTITY}.</p>\n          )}\n          <button type=\"button\" className=\"reset\" onClick={() => setQuantities(EMPTY_QUANTITIES)}>Reset</button>\n        </section>\n\n        <section className=\"panel\" aria-labelledby=\"summary-title\">\n          <h2 className=\"panel-title\" id=\"summary-title\">Site summary</h2>\n          <dl className=\"summary\">\n            <dt>Budget</dt>\n            <dd className=\"total-cost\">{formatUsd(site.costUsd)}</dd>\n            <dt>Net energy</dt>\n            <dd className=\"total-energy\">{formatMwh(site.energyMwh)}</dd>\n            <dt>Land</dt>\n            <dd className=\"land-size\">{site.widthFt} ft × {site.depthFt} ft</dd>\n          </dl>\n          <p className=\"transformer-count\">Transformers: {site.transformers}</p>\n        </section>\n\n        <section className=\"panel\" aria-labelledby=\"layout-title\">\n          <h2 className=\"panel-title\" id=\"layout-title\">Layout (100 ft wide)</h2>\n          <div className=\"layout\">\n            {site.rows.map((row, rowIndex) => (\n              <div key={rowIndex} className=\"layout-row\" data-width={row.widthFt}>\n                {row.devices.map((device, deviceIndex) => (\n                  <div\n                    key={deviceIndex}\n                    className=\"layout-device\"\n                    data-device={device.id}\n                    style={{ width: `${(device.widthFt / SITE_WIDTH_FT) * 100}%` }}\n                    title={device.name}\n                  >\n                    {device.id === 'transformer' ? 'T' : device.id.toUpperCase()}\n                  </div>\n                ))}\n              </div>\n            ))}\n          </div>\n        </section>\n      </section>\n    </main>\n  );\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Storing totals or rows in state next to the quantities, so they drift when one update is missed.",
+          "Rounding transformers down: three batteries need two transformers, not one.",
+          "Packing in catalog order: one Battery L and two Battery XL then need rows of 90 ft and 40 ft instead of 100 ft and 30 ft.",
+          "Parsing input with `parseInt`, which turns `1.5` into 1 and `-1` into a negative count.",
+          "Summing decimals without formatting, so `3.9500000000000006 MWh` reaches the screen."
+        ],
+        "techniques": [
+          "Derived state with a single useMemo.",
+          "Pure helper functions for business rules.",
+          "First-fit decreasing bin packing.",
+          "Intl-based money formatting with toLocaleString."
+        ]
+      }
+    },
+    "frameworkTests": [
+      {
+        "id": "site-totals-follow-quantities",
+        "name": "Totals start at zero and follow the quantities",
+        "steps": [
+          {
+            "type": "expectText",
+            "selector": ".total-cost",
+            "text": "$0"
+          },
+          {
+            "type": "expectText",
+            "selector": ".total-energy",
+            "text": "0 MWh"
+          },
+          {
+            "type": "setValue",
+            "selector": ".qty-input[data-device=\"xl\"]",
+            "value": "1"
+          },
+          {
+            "type": "expectText",
+            "selector": ".total-cost",
+            "text": "$134,000"
+          },
+          {
+            "type": "expectText",
+            "selector": ".total-energy",
+            "text": "3.95 MWh"
+          },
+          {
+            "type": "expectText",
+            "selector": ".transformer-count",
+            "text": "Transformers: 1"
+          },
+          {
+            "type": "expectText",
+            "selector": ".land-size",
+            "text": "50 ft × 10 ft"
+          }
+        ]
+      },
+      {
+        "id": "site-transformer-rule",
+        "name": "One transformer for every two batteries, rounded up",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".qty-input[data-device=\"xl\"]",
+            "value": "2"
+          },
+          {
+            "type": "setValue",
+            "selector": ".qty-input[data-device=\"l\"]",
+            "value": "1"
+          },
+          {
+            "type": "expectText",
+            "selector": ".transformer-count",
+            "text": "Transformers: 2"
+          },
+          {
+            "type": "setValue",
+            "selector": ".qty-input[data-device=\"m\"]",
+            "value": "1"
+          },
+          {
+            "type": "expectText",
+            "selector": ".transformer-count",
+            "text": "Transformers: 2"
+          }
+        ]
+      },
+      {
+        "id": "site-rows-fit-width",
+        "name": "Rows are packed largest first and never exceed 100 ft",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".qty-input[data-device=\"xl\"]",
+            "value": "3"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".layout-row",
+            "count": 2
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".layout-row",
+            "index": 0,
+            "attribute": "data-width",
+            "expected": "100"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".layout-row",
+            "index": 1,
+            "attribute": "data-width",
+            "expected": "40"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".layout-device",
+            "count": 5
+          },
+          {
+            "type": "expectText",
+            "selector": ".land-size",
+            "text": "100 ft × 20 ft"
+          }
+        ]
+      },
+      {
+        "id": "site-small-devices",
+        "name": "Small devices fill rows of 100 ft and the totals include transformers",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".qty-input[data-device=\"s\"]",
+            "value": "12"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".layout-row",
+            "count": 2
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".layout-row",
+            "index": 1,
+            "attribute": "data-width",
+            "expected": "80"
+          },
+          {
+            "type": "expectText",
+            "selector": ".land-size",
+            "text": "100 ft × 20 ft"
+          },
+          {
+            "type": "expectText",
+            "selector": ".total-cost",
+            "text": "$198,000"
+          },
+          {
+            "type": "expectText",
+            "selector": ".total-energy",
+            "text": "10.5 MWh"
+          }
+        ]
+      },
+      {
+        "id": "site-largest-first",
+        "name": "Largest devices are placed first, so small ones fill the gaps",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".qty-input[data-device=\"l\"]",
+            "value": "1"
+          },
+          {
+            "type": "setValue",
+            "selector": ".qty-input[data-device=\"xl\"]",
+            "value": "2"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".layout-row",
+            "count": 2
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".layout-row",
+            "index": 0,
+            "attribute": "data-width",
+            "expected": "100"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".layout-row",
+            "index": 1,
+            "attribute": "data-width",
+            "expected": "30"
+          }
+        ]
+      },
+      {
+        "id": "site-invalid-quantity",
+        "name": "Invalid quantities show an error and count as zero",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".qty-input[data-device=\"xl\"]",
+            "value": "-1"
+          },
+          {
+            "type": "expectText",
+            "selector": ".qty-error",
+            "text": "whole number",
+            "match": "contains"
+          },
+          {
+            "type": "expectText",
+            "selector": ".total-cost",
+            "text": "$0"
+          },
+          {
+            "type": "setValue",
+            "selector": ".qty-input[data-device=\"xl\"]",
+            "value": "1.5"
+          },
+          {
+            "type": "expectText",
+            "selector": ".qty-error",
+            "text": "whole number",
+            "match": "contains"
+          },
+          {
+            "type": "setValue",
+            "selector": ".qty-input[data-device=\"xl\"]",
+            "value": "2"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".qty-error",
+            "count": 0
+          },
+          {
+            "type": "expectText",
+            "selector": ".total-cost",
+            "text": "$259,000"
+          }
+        ]
+      },
+      {
+        "id": "site-reset",
+        "name": "Reset clears every quantity and the layout",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".qty-input[data-device=\"xl\"]",
+            "value": "2"
+          },
+          {
+            "type": "setValue",
+            "selector": ".qty-input[data-device=\"s\"]",
+            "value": "3"
+          },
+          {
+            "type": "click",
+            "selector": ".reset"
+          },
+          {
+            "type": "expectText",
+            "selector": ".total-cost",
+            "text": "$0"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".layout-device",
+            "count": 0
+          },
+          {
+            "type": "expectValue",
+            "selector": ".qty-input[data-device=\"xl\"]",
+            "value": "0"
+          }
+        ]
+      }
+    ],
+    "sdk": {
+      "asset": "assets/sb/react/question/react-battery-site-layout.v1.json",
+      "openFile": "/src/App.tsx",
+      "storageKey": "v2:ui:react:react-battery-site-layout"
+    },
+    "solutionAsset": "assets/sb/react/solution/react-battery-site-layout-solution.v1.json",
+    "decisionGraphAsset": "assets/questions/react/decision-graphs/react-battery-site-layout.v1.json",
+    "companies": [
+      "tesla"
+    ],
+    "sources": [
+      {
+        "label": "GitHub: repository with the Tesla Energy UI evaluation brief, 2026",
+        "url": "https://github.com/HarryXiong24/tesla-energy-service-demo-project",
+        "company": "tesla",
+        "publisher": "GitHub",
+        "date": "2026-02",
+        "note": "A repository built for the take-home includes the brief PDF: a site layout tool for industrial batteries with budget, land size and energy totals, one transformer per two batteries and a 100 ft width limit. This practice version uses its own catalog and wording."
+      },
+      {
+        "label": "GitHub: Tesla Energy Sales Engineering take-home submission, 2024",
+        "url": "https://github.com/jasssse/tesla-takehome",
+        "company": "tesla",
+        "publisher": "GitHub",
+        "date": "2024-09",
+        "note": "The README calls it a take-home for a full-stack position with Tesla Energy Sales Engineering: a battery site preview with a sample layout and space, energy and cost estimates. At least 22 public repositories build the same brief."
+      }
+    ],
+    "premiumPreview": {
+      "summary": "Build a take-home style planner for an industrial battery site: totals, automatic transformers and a row layout that never exceeds 100 ft. The behavior checks pin down the business rules a reviewer would test.",
+      "learningOutcomes": [
+        "Derive every total from raw form input instead of storing it.",
+        "Turn written business rules into small pure functions.",
+        "Pack devices into fixed-width rows with a largest-first strategy.",
+        "Scope a take-home so the required behavior is solid before extras."
+      ],
+      "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+    },
+    "access": "premium",
+    "updatedAt": "2026-10-19",
+    "seo": {
+      "title": "Battery Site Layout Planner in React: Take-Home Practice",
+      "description": "Build a take-home style React planner: battery quantities, automatic transformers, budget and energy totals, and rows packed largest first within 100 ft."
+    }
   }
 ]

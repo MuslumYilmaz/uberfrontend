@@ -1516,6 +1516,28 @@
     ],
     "tesla": [
       {
+        "id": "react-battery-site-layout",
+        "kind": "coding",
+        "tech": "react",
+        "title": "Battery Site Layout Planner (Take-Home Style)",
+        "access": "premium",
+        "route": "/react/coding/react-battery-site-layout",
+        "sources": [
+          {
+            "label": "GitHub: repository with the Tesla Energy UI evaluation brief, 2026",
+            "url": "https://github.com/HarryXiong24/tesla-energy-service-demo-project",
+            "publisher": "GitHub",
+            "date": "2026-02"
+          },
+          {
+            "label": "GitHub: Tesla Energy Sales Engineering take-home submission, 2024",
+            "url": "https://github.com/jasssse/tesla-takehome",
+            "publisher": "GitHub",
+            "date": "2024-09"
+          }
+        ]
+      },
+      {
         "id": "js-color-contrast-ratio",
         "kind": "coding",
         "tech": "javascript",

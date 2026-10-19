@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-19T11:22:58.285Z",
+  "generatedAt": "2026-10-19T11:40:47.948Z",
   "entries": [
     {
       "tech": "angular",
@@ -1902,6 +1902,12 @@
       "tech": "react",
       "kind": "coding",
       "id": "react-autocomplete-search-starter",
+      "file": "react/coding.json"
+    },
+    {
+      "tech": "react",
+      "kind": "coding",
+      "id": "react-battery-site-layout",
       "file": "react/coding.json"
     },
     {

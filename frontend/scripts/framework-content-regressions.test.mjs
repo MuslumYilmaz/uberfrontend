@@ -173,7 +173,7 @@ function assertFrameworkCssFormatting() {
       canonicalRoot: path.join(repoRoot, 'cdn', 'sb'),
       mirrorRoot: path.join(repoRoot, 'frontend', 'src', 'assets', 'sb'),
     }),
-    { assets: 206, cssSources: 271, changedAssets: 0, changedCssSources: 0 },
+    { assets: 208, cssSources: 273, changedAssets: 0, changedCssSources: 0 },
     'The full framework CSS corpus must stay canonical and exactly mirrored'
   );
 }
@@ -4980,6 +4980,28 @@ for (const node of memoContextVariant.nodes) {
   const { lineStart, lineEnd, snippet } = node.anchor;
   assert.ok(lineStart >= 1 && lineEnd >= lineStart && lineEnd <= memoContextLines.length, `${node.id}: invalid memo-context anchor range`);
   assert.ok(memoContextLines.slice(lineStart - 1, lineEnd).join('\n').includes(snippet), `${node.id}: memo-context anchor range must contain its snippet`);
+}
+
+const batteryQuestion = json('cdn/questions/react/coding.json').find((entry) => entry.id === 'react-battery-site-layout');
+assert.ok(batteryQuestion);
+assert.equal(batteryQuestion.access, 'premium');
+const batteryStarter = json('cdn/sb/react/question/react-battery-site-layout.v1.json').files['src/App.tsx'];
+const batterySolution = json('cdn/sb/react/solution/react-battery-site-layout-solution.v1.json').files['src/App.tsx'];
+const batteryCatalog = (source) => source.slice(source.indexOf('export const BATTERIES'), source.indexOf('type Quantities'));
+assert.equal(batteryCatalog(batteryStarter), batteryCatalog(batterySolution), 'the starter and the solution share one device catalog');
+assert.ok(batteryStarter.indexOf("id: 's'") < batteryStarter.indexOf("id: 'xl'"), 'the catalog stays smallest first so the largest-first rule is observable');
+assert.doesNotMatch(batteryStarter + batterySolution, /Megapack|Powerpack/, 'the practice catalog uses its own device names');
+assert.match(batterySolution, /Math\.ceil\(batteryCount \/ 2\)/);
+assert.match(batterySolution, /\.sort\(\(a, b\) => b\.widthFt - a\.widthFt\)/);
+const batteryGraph = json('cdn/questions/react/decision-graphs/react-battery-site-layout.v1.json');
+const batteryVariant = batteryGraph.variants.approach1;
+assert.equal(batteryGraph.questionId, 'react-battery-site-layout');
+assert.equal(batteryVariant.code, batterySolution, 'battery site decision graph must mirror the solution App.tsx');
+const batteryLines = batteryVariant.code.split('\n');
+for (const node of batteryVariant.nodes) {
+  const { lineStart, lineEnd, snippet } = node.anchor;
+  assert.ok(lineStart >= 1 && lineEnd >= lineStart && lineEnd <= batteryLines.length, `${node.id}: invalid battery anchor range`);
+  assert.ok(batteryLines.slice(lineStart - 1, lineEnd).join('\n').includes(snippet), `${node.id}: battery anchor range must contain its snippet`);
 }
 
 const countdownQuestion = json('cdn/questions/react/coding.json').find((entry) => entry.id === 'react-countdown-timer');

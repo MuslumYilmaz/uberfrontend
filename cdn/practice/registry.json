@@ -6877,6 +6877,28 @@
     "assetRef": "questions/javascript/trivia.json#js-this-keyword"
   },
   {
+    "id": "react-battery-site-layout",
+    "family": "question",
+    "title": "Battery Site Layout Planner (Take-Home Style)",
+    "route": "/react/coding/react-battery-site-layout",
+    "tech": "react",
+    "difficulty": "hard",
+    "summary": "Build a take-home style planner for an industrial battery site: totals, automatic transformers and a row layout that never exceeds 100 ft. The behavior checks pin down the business rules a reviewer would test.",
+    "tags": [
+      "react",
+      "state",
+      "forms",
+      "algorithms",
+      "layout",
+      "typescript"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 18,
+    "updatedAt": "2026-10-19",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/coding.json#react-battery-site-layout"
+  },
+  {
     "id": "react-render-nothing-return-value",
     "family": "question",
     "title": "Can a React component return undefined?",

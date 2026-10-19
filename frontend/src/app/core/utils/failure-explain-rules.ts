@@ -373,6 +373,48 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
     }),
   },
   {
+    ruleId: 'react-battery-site-layout-rules',
+    questionId: 'react-battery-site-layout',
+    priority: 100,
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, ['follow the quantities', 'one transformer', 'never exceed 100', 'small devices', 'largest devices', 'invalid quantities', 'reset clears']) ||
+      snapshot.failCount >= 2,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-battery-site-layout-rules',
+      title: 'Derive the whole site from the raw quantities',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'Every number on screen comes from the same device list: validated batteries plus one transformer per two batteries, rounded up.',
+      ),
+      actions: [
+        'Parse each quantity as a whole number from 0 to 50 and count invalid input as 0 while showing `.qty-error`.',
+        'Add `Math.ceil(batteries / 2)` transformers, then sum the cost and the net energy over all devices.',
+        'Sort a copy largest first and put each device into the first row with room, never above 100 ft; render `data-width` on each row.',
+      ],
+      confidence: 0.86,
+    }),
+  },
+  {
+    ruleId: 'react-battery-site-layout-default',
+    questionId: 'react-battery-site-layout',
+    priority: 40,
+    matches: () => true,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-battery-site-layout-default',
+      title: 'Keep only the input in state',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'Totals, rows and the land size stay correct when one `useMemo` recomputes them from the quantity strings on every change.',
+      ),
+      actions: [
+        'Hold the raw input strings in state; never store totals or rows next to them.',
+        'Format money with `toLocaleString(\'en-US\')` and energy with `Number(value.toFixed(2))`.',
+        'Make Reset write the empty quantities back to state.',
+      ],
+      confidence: 0.72,
+    }),
+  },
+  {
     ruleId: 'css-flexbox-navbar-responsive-layout',
     questionId: 'css-flexbox-navbar',
     priority: 100,
