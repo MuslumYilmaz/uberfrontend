@@ -786,7 +786,14 @@ Totals:
    - #7 `useMemo` and Context from scratch: done as 91f24493, premium, tagged `walmart`.
      - Five DOM tests. The starter fails 5 of 5 and the solution passes 5 of 5. Removing the catch fails only the error test; fetching in every consumer fails the three context tests.
    - **Wave 2 is complete.**
-   - Next is Wave 3 (#2), which first needs the format decision: a large React coding item, or a new take-home format.
+   - The user chose a large React coding item for #2 and asked for a push. Pushed to `origin/dev` as `65168db8..c4ed6d87`; the pre-push critical E2E run passed 95 of 95.
+
+   **Wave 3 status (2026-10-19).**
+   - #2 Battery site layout planner: done as fa606ab4, premium, tagged `tesla`, built as a large React coding item.
+     - Our own catalog, names, numbers and wording; no Tesla brief text and no Tesla product names.
+     - Seven DOM tests with expected values from an independent re-implementation. The catalog is listed smallest first, so the largest-first rule is observable: removing the sort fails only that test.
+   - `/coding` is now 633,423 bytes.
+   - Next is Wave 4, the trivia pair #4 and #5.
 
 4. **Wave 3, flagship (XL).** #2 battery site-layout take-home, tagged `tesla`.
    - First decide whether it is a large React coding item or a new take-home format: a longer brief, several test groups for totals, the 100 ft layout rule and persistence, plus a README-style deliverable.
