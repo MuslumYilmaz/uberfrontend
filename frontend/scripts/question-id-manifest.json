@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-19T11:01:44.641Z",
+  "generatedAt": "2026-10-19T11:22:58.285Z",
   "entries": [
     {
       "tech": "angular",
@@ -1986,6 +1986,12 @@
       "tech": "react",
       "kind": "coding",
       "id": "react-image-slider",
+      "file": "react/coding.json"
+    },
+    {
+      "tech": "react",
+      "kind": "coding",
+      "id": "react-implement-usememo-context",
       "file": "react/coding.json"
     },
     {

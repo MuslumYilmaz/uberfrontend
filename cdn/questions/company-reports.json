@@ -1734,6 +1734,22 @@
         ]
       },
       {
+        "id": "react-implement-usememo-context",
+        "kind": "coding",
+        "tech": "react",
+        "title": "Implement useMemo and a Context Data Provider",
+        "access": "premium",
+        "route": "/react/coding/react-implement-usememo-context",
+        "sources": [
+          {
+            "label": "Medium: Walmart Global Tech Software Engineer 3 UI interview, November 2024",
+            "url": "https://medium.com/@phalgun99/my-interview-experience-at-walmart-global-tech-for-the-software-engineer-3-ui-position-9751c81988ee",
+            "publisher": "Medium",
+            "date": "2024-11"
+          }
+        ]
+      },
+      {
         "id": "react-accordion-faq",
         "kind": "coding",
         "tech": "react",

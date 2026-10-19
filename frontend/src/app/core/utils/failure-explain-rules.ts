@@ -331,6 +331,48 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
     }),
   },
   {
+    ruleId: 'react-implement-usememo-context-parts',
+    questionId: 'react-implement-usememo-context',
+    priority: 100,
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, ['computes once', 'recomputes only', 'loads the users once', 'reload shows loading', 'failed load']) ||
+      snapshot.failCount >= 2,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-implement-usememo-context-parts',
+      title: 'Cache in a ref, and let the provider own the request',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The memo checks count factory calls and the context checks count requests, so recomputing on every render or fetching in every consumer both show up.',
+      ),
+      actions: [
+        'Keep `{ deps, value }` in `useRef` and call the factory only when nothing is cached or a dependency changed by `Object.is`.',
+        'Call `fetchUsers()` in one `useEffect` inside `UsersProvider` that depends on an `attempt` counter, and let `reload` bump it.',
+        'Set `loading` at the start of each load, store `success` or `error`, and drop stale responses with a `cancelled` flag.',
+      ],
+      confidence: 0.86,
+    }),
+  },
+  {
+    ruleId: 'react-implement-usememo-context-default',
+    questionId: 'react-implement-usememo-context',
+    priority: 40,
+    matches: () => true,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-implement-usememo-context-default',
+      title: 'Compare dependencies like React does and keep the context value stable',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'React compares dependencies with `Object.is` and recomputes when the dependency count changes; consumers re-render whenever the context value identity changes.',
+      ),
+      actions: [
+        'Write `sameDeps(previous, next)`: same length and `Object.is` for every pair.',
+        'Wrap `reload` in `useCallback` and memoize `{ state, reload }` with `useMemoized`.',
+        'Throw a clear error in `useUsers` when it runs outside `UsersProvider`.',
+      ],
+      confidence: 0.72,
+    }),
+  },
+  {
     ruleId: 'css-flexbox-navbar-responsive-layout',
     questionId: 'css-flexbox-navbar',
     priority: 100,

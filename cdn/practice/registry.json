@@ -7175,6 +7175,28 @@
     "assetRef": "questions/react/coding.json#react-image-slider"
   },
   {
+    "id": "react-implement-usememo-context",
+    "family": "question",
+    "title": "Implement useMemo and a Context Data Provider",
+    "route": "/react/coding/react-implement-usememo-context",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "Implement useMemo yourself, then build a context that serves one API request to several components with loading, error and reload states. The behavior checks count computations and requests so shortcuts show up.",
+    "tags": [
+      "react",
+      "hooks",
+      "memoization",
+      "context",
+      "async",
+      "typescript"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 18,
+    "updatedAt": "2026-10-19",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/coding.json#react-implement-usememo-context"
+  },
+  {
     "id": "react-chips-input-autocomplete",
     "family": "question",
     "title": "Invite Chips Input (Tags + Autocomplete)",

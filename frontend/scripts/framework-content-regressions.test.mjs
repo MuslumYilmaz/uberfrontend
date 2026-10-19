@@ -173,7 +173,7 @@ function assertFrameworkCssFormatting() {
       canonicalRoot: path.join(repoRoot, 'cdn', 'sb'),
       mirrorRoot: path.join(repoRoot, 'frontend', 'src', 'assets', 'sb'),
     }),
-    { assets: 204, cssSources: 269, changedAssets: 0, changedCssSources: 0 },
+    { assets: 206, cssSources: 271, changedAssets: 0, changedCssSources: 0 },
     'The full framework CSS corpus must stay canonical and exactly mirrored'
   );
 }
@@ -4959,6 +4959,27 @@ for (const node of selectVariant.nodes) {
   const { lineStart, lineEnd, snippet } = node.anchor;
   assert.ok(lineStart >= 1 && lineEnd >= lineStart && lineEnd <= selectLines.length, `${node.id}: invalid Select anchor range`);
   assert.ok(selectLines.slice(lineStart - 1, lineEnd).join('\n').includes(snippet), `${node.id}: Select anchor range must contain its snippet`);
+}
+
+const memoContextQuestion = json('cdn/questions/react/coding.json').find((entry) => entry.id === 'react-implement-usememo-context');
+assert.ok(memoContextQuestion);
+assert.equal(memoContextQuestion.access, 'premium');
+const memoContextStarter = json('cdn/sb/react/question/react-implement-usememo-context.v1.json').files['src/App.tsx'];
+const memoContextSolution = json('cdn/sb/react/solution/react-implement-usememo-context-solution.v1.json').files['src/App.tsx'];
+const memoContextDemo = (source) => source.slice(source.indexOf('function UserSummary()'));
+assert.equal(memoContextDemo(memoContextStarter), memoContextDemo(memoContextSolution), 'the demo components must be identical in the starter and the solution');
+assert.doesNotMatch(memoContextSolution.replace(/^\/\/.*$/gm, ''), /useMemo\(/, 'the solution implements memoization without useMemo');
+assert.match(memoContextSolution, /Object\.is\(dep, next\[index\]\)/);
+assert.match(memoContextSolution, /useMemoized\(\(\) => \(\{ state, reload \}\), \[state, reload\]\)/);
+const memoContextGraph = json('cdn/questions/react/decision-graphs/react-implement-usememo-context.v1.json');
+const memoContextVariant = memoContextGraph.variants.approach1;
+assert.equal(memoContextGraph.questionId, 'react-implement-usememo-context');
+assert.equal(memoContextVariant.code, memoContextSolution, 'useMemo and Context decision graph must mirror the solution App.tsx');
+const memoContextLines = memoContextVariant.code.split('\n');
+for (const node of memoContextVariant.nodes) {
+  const { lineStart, lineEnd, snippet } = node.anchor;
+  assert.ok(lineStart >= 1 && lineEnd >= lineStart && lineEnd <= memoContextLines.length, `${node.id}: invalid memo-context anchor range`);
+  assert.ok(memoContextLines.slice(lineStart - 1, lineEnd).join('\n').includes(snippet), `${node.id}: memo-context anchor range must contain its snippet`);
 }
 
 const countdownQuestion = json('cdn/questions/react/coding.json').find((entry) => entry.id === 'react-countdown-timer');

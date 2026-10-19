@@ -5262,5 +5262,284 @@
       "title": "React Select With Compound Components: Single and Multi",
       "description": "Build a compound Select in React with TypeScript: single and multi-select modes, custom option content, listbox ARIA, disabled options and Escape to close."
     }
+  },
+  {
+    "id": "react-implement-usememo-context",
+    "title": "Implement useMemo and a Context Data Provider",
+    "type": "coding",
+    "technology": "react",
+    "difficulty": "intermediate",
+    "importance": 4,
+    "tags": [
+      "react",
+      "hooks",
+      "memoization",
+      "context",
+      "async",
+      "typescript"
+    ],
+    "description": {
+      "summary": "Implement useMemo yourself, then build a context that serves API results to several components. Part 1: write useMemoized(factory, deps) without React's useMemo; it must return the cached value while the dependencies stay the same and recompute when one changes. Part 2: write UsersProvider and useUsers so three consumers share one request, see loading and error states, and reload together. A public interview report of a Walmart Global Tech Software Engineer 3 UI loop (November 2024) lists this exact sequence: implement useMemo, implement the Context API, then extend it to handle API results. Concepts: react, hooks, memoization, context, async.",
+      "specs": {
+        "requirements": [
+          "Work in `src/App.tsx`. Keep the demo components (`App`, `UserSummary`, `UserList`, `UsersToolbar`) and the fake API as they are.",
+          "Part 1: implement `useMemoized(factory, deps)` without `useMemo`. Call `factory` on the first render, return the cached value while every dependency is the same by `Object.is`, and call `factory` again when a dependency or the number of dependencies changes.",
+          "Part 2: implement `UsersProvider` so it calls `fetchUsers()` once on mount, keeps a `UsersState` and provides `{ state, reload }` through `UsersContext`.",
+          "`reload` loads again: the state goes back to `loading`, then to `success` or `error`; a rejection becomes `{ status: 'error', message }`.",
+          "Ignore a response that arrives after a newer load started, and memoize the context value with `useMemoized`.",
+          "`useUsers()` returns the context value and throws a clear error outside `UsersProvider`."
+        ],
+        "expectedBehavior": [
+          "The first render shows `Computed 1 time`; clicking Re-render twice keeps it at `Computed 1 time`.",
+          "Typing `an` shows Banana, Mango and Orange and `Computed 2 times`; another Re-render keeps it at 2.",
+          "After the first load, the summary shows `3 users`, the list shows three rows and the toolbar shows `Requests: 1`.",
+          "Reload shows `Loading users…`, then three rows and `Requests: 2`.",
+          "After Fail next request and Reload, the summary shows the error and no rows; the next Reload recovers with `Requests: 3`."
+        ],
+        "implementationNotes": [
+          "Keep `{ deps, value }` in a `useRef`; compare dependencies in a small `sameDeps` helper.",
+          "Load in one `useEffect` inside the provider that depends on an `attempt` counter; `reload` bumps the counter.",
+          "Use a `cancelled` flag in the effect cleanup, and a `.catch` that stores the message.",
+          "Use `useCallback` for `reload` so the memoized context value stays stable between unrelated renders."
+        ],
+        "techFocus": [
+          "How useMemo caches values",
+          "Dependency comparison with Object.is",
+          "Context providers for shared API state",
+          "Loading, error and reload in one provider",
+          "Stable context values"
+        ]
+      }
+    },
+    "solutionBlock": {
+      "overview": "Part 1: keep `{ deps, value }` in a ref. On each render, compare the new dependencies with the cached ones by length and `Object.is`. If they differ, or nothing is cached yet, call the factory and store the result. Otherwise return the cached value. The factory runs during render, the same way React's own `useMemo` behaves.\n\nPart 2: the provider owns the request. One effect depends on an `attempt` counter. It sets `loading`, calls `fetchUsers()` and maps the result to `success`, or a rejection to `error`. A `cancelled` flag drops responses from an older load. `reload` bumps the counter through a stable `useCallback`. The provider memoizes `{ state, reload }` with `useMemoized`, so unrelated renders keep the same context value. `useUsers` throws outside the provider.\n\n**Test cases**\n- Re-render keeps `Computed 1 time`; typing `an` recomputes once.\n- Three consumers share one request: `Requests: 1`.\n- Reload shows loading and ends with `Requests: 2`.\n- A failed load shows the error; the next reload recovers.",
+      "approaches": [
+        {
+          "title": "A ref-backed memo hook and a provider that owns the request",
+          "prose": "1. `sameDeps(previous, next)` returns true only when both arrays have the same length and every pair is `Object.is` equal.\n2. `useMemoized` keeps `{ deps, value }` in a `useRef`. On the first render, or when `sameDeps` fails, it calls the factory and stores the new pair. It always returns the cached value.\n3. `UsersProvider` keeps `state` (a `UsersState` union) and an `attempt` counter. One `useEffect` with `[attempt]` sets `loading`, calls `fetchUsers()`, stores `success` or `error`, and flips `cancelled` in its cleanup.\n4. `reload` is `useCallback(() => setAttempt((count) => count + 1), [])`. The context value is `useMemoized(() => ({ state, reload }), [state, reload])`.\n5. `useUsers` reads the context and throws `useUsers must be used inside <UsersProvider>` when it is missing.",
+          "codeJs": "import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';\nimport './App.css';\n\n// The preview passes useState, useEffect, useMemo, useRef, useReducer, useContext,\n// createContext and useCallback in as globals. This exercise asks you not to use useMemo.\n\nexport interface User {\n  id: number;\n  name: string;\n  team: string;\n}\n\nconst USERS: User[] = [\n  { id: 1, name: 'Asha Rao', team: 'Checkout' },\n  { id: 2, name: 'Ben Ortiz', team: 'Search' },\n  { id: 3, name: 'Chen Wei', team: 'Payments' }\n];\n\nlet requests = 0;\nlet failNext = false;\n\n// Fake users API. Treat it as given.\n// - resolves the three users after 300ms\n// - rejects once after failNextRequest() is called\nexport function fetchUsers(): Promise<User[]> {\n  requests += 1;\n  const shouldFail = failNext;\n  failNext = false;\n  return new Promise((resolve, reject) => {\n    window.setTimeout(() => {\n      if (shouldFail) {\n        reject(new Error('Users service unavailable'));\n        return;\n      }\n      resolve(USERS.map((user) => ({ ...user })));\n    }, 300);\n  });\n}\n\nexport function failNextRequest(): void {\n  failNext = true;\n}\n\nexport function requestCount(): number {\n  return requests;\n}\n\nexport type UsersState =\n  | { status: 'loading' }\n  | { status: 'success'; users: User[] }\n  | { status: 'error'; message: string };\n\nexport type UsersContextValue = {\n  state: UsersState;\n  reload: () => void;\n};\n\nfunction sameDeps(previous: readonly unknown[], next: readonly unknown[]): boolean {\n  return previous.length === next.length && previous.every((dep, index) => Object.is(dep, next[index]));\n}\n\nfunction useMemoized<T>(factory: () => T, deps: readonly unknown[]): T {\n  const cache = useRef<{ deps: readonly unknown[]; value: T } | null>(null);\n  if (cache.current === null || !sameDeps(cache.current.deps, deps)) {\n    cache.current = { deps, value: factory() };\n  }\n  return cache.current.value;\n}\n\nconst UsersContext = createContext<UsersContextValue | null>(null);\n\nfunction UsersProvider({ children }: { children: React.ReactNode }) {\n  const [state, setState] = useState<UsersState>({ status: 'loading' });\n  const [attempt, setAttempt] = useState(0);\n\n  useEffect(() => {\n    let cancelled = false;\n    setState({ status: 'loading' });\n\n    fetchUsers()\n      .then((users) => {\n        if (cancelled) return;\n        setState({ status: 'success', users });\n      })\n      .catch((error: unknown) => {\n        if (cancelled) return;\n        setState({ status: 'error', message: error instanceof Error ? error.message : 'Unknown error' });\n      });\n\n    return () => {\n      cancelled = true;\n    };\n  }, [attempt]);\n\n  const reload = useCallback(() => setAttempt((count) => count + 1), []);\n  const value = useMemoized(() => ({ state, reload }), [state, reload]);\n\n  return <UsersContext.Provider value={value}>{children}</UsersContext.Provider>;\n}\n\nfunction useUsers(): UsersContextValue {\n  const context = useContext(UsersContext);\n  if (!context) {\n    throw new Error('useUsers must be used inside <UsersProvider>');\n  }\n  return context;\n}\n\nfunction UserSummary() {\n  const { state } = useUsers();\n  if (state.status === 'loading') return <p className=\"status status--loading\">Loading users…</p>;\n  if (state.status === 'error') {\n    return <p className=\"status status--error\" role=\"alert\">Could not load users: {state.message}</p>;\n  }\n  return <p className=\"user-count\">{state.users.length} users</p>;\n}\n\nfunction UserList() {\n  const { state } = useUsers();\n  if (state.status !== 'success') return null;\n  return (\n    <ul className=\"user-list\">\n      {state.users.map((user) => (\n        <li key={user.id} className=\"user-row\">\n          <span className=\"user-name\">{user.name}</span>\n          <span className=\"user-team\">{user.team}</span>\n        </li>\n      ))}\n    </ul>\n  );\n}\n\nfunction UsersToolbar() {\n  const { reload } = useUsers();\n  return (\n    <div className=\"toolbar\">\n      <button type=\"button\" className=\"reload\" onClick={reload}>Reload</button>\n      <button type=\"button\" className=\"fail-next\" onClick={failNextRequest}>Fail next request</button>\n      <span className=\"request-count\">Requests: {requestCount()}</span>\n    </div>\n  );\n}\n\nconst FRUITS = ['Apple', 'Banana', 'Mango', 'Orange', 'Grape', 'Melon'];\nlet computations = 0;\n\nexport default function App() {\n  const [query, setQuery] = useState('');\n  const [renders, setRenders] = useState(0);\n  const visible = useMemoized(() => {\n    computations += 1;\n    const needle = query.trim().toLowerCase();\n    return FRUITS.filter((fruit) => fruit.toLowerCase().includes(needle));\n  }, [query]);\n\n  return (\n    <main className=\"main\">\n      <section className=\"card\">\n        <header className=\"header\">\n          <h1 className=\"title\">useMemo and Context from scratch</h1>\n          <p className=\"subtitle\">Part 1 memoizes a filter without useMemo. Part 2 serves API results through context.</p>\n        </header>\n\n        <section className=\"panel\">\n          <h2 className=\"panel-title\">Part 1: useMemoized</h2>\n          <input\n            className=\"filter\"\n            value={query}\n            placeholder=\"Filter fruits\"\n            onChange={(event: React.ChangeEvent<HTMLInputElement>) => setQuery(event.target.value)}\n          />\n          <div className=\"toolbar\">\n            <button type=\"button\" className=\"bump\" onClick={() => setRenders((count) => count + 1)}>\n              Re-render ({renders})\n            </button>\n            <span className=\"compute-count\">Computed {computations} {computations === 1 ? 'time' : 'times'}</span>\n          </div>\n          <ul className=\"fruit-list\">\n            {visible.map((fruit) => (\n              <li key={fruit} className=\"fruit-row\">{fruit}</li>\n            ))}\n          </ul>\n        </section>\n\n        <section className=\"panel\">\n          <h2 className=\"panel-title\">Part 2: context with API results</h2>\n          <UsersProvider>\n            <UserSummary />\n            <UserList />\n            <UsersToolbar />\n          </UsersProvider>\n        </section>\n      </section>\n    </main>\n  );\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Comparing dependencies with `===`, so a NaN dependency recomputes on every render.",
+          "Storing the memoized value in state, which triggers an extra render every time it refreshes.",
+          "Fetching inside `useUsers`, so every consumer starts its own request.",
+          "Recreating `{ state, reload }` on every provider render, which re-renders every consumer even when nothing changed.",
+          "Forgetting the `.catch`, which leaves every consumer on the loading state after a rejection."
+        ],
+        "techniques": [
+          "Ref-based caching with dependency comparison.",
+          "Object.is equality, the rule React uses for dependencies.",
+          "A provider that owns one request for many consumers.",
+          "A retry counter in the effect dependencies."
+        ]
+      }
+    },
+    "frameworkTests": [
+      {
+        "id": "memo-reuses-value",
+        "name": "useMemoized computes once and reuses the value on unrelated renders",
+        "steps": [
+          {
+            "type": "expectText",
+            "selector": ".compute-count",
+            "text": "Computed 1 time"
+          },
+          {
+            "type": "click",
+            "selector": ".bump"
+          },
+          {
+            "type": "click",
+            "selector": ".bump"
+          },
+          {
+            "type": "expectText",
+            "selector": ".bump",
+            "text": "Re-render (2)",
+            "match": "contains"
+          },
+          {
+            "type": "expectText",
+            "selector": ".compute-count",
+            "text": "Computed 1 time"
+          }
+        ]
+      },
+      {
+        "id": "memo-recomputes-on-deps",
+        "name": "useMemoized recomputes only when a dependency changes",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".filter",
+            "value": "an"
+          },
+          {
+            "type": "expectText",
+            "selector": ".compute-count",
+            "text": "Computed 2 times"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".fruit-row",
+            "count": 3
+          },
+          {
+            "type": "click",
+            "selector": ".bump"
+          },
+          {
+            "type": "expectText",
+            "selector": ".compute-count",
+            "text": "Computed 2 times"
+          }
+        ]
+      },
+      {
+        "id": "context-one-request",
+        "name": "The provider loads the users once for every consumer",
+        "steps": [
+          {
+            "type": "waitForCount",
+            "selector": ".user-row",
+            "count": 3,
+            "timeoutMs": 2500
+          },
+          {
+            "type": "expectText",
+            "selector": ".user-count",
+            "text": "3 users"
+          },
+          {
+            "type": "expectText",
+            "selector": ".request-count",
+            "text": "Requests: 1"
+          }
+        ]
+      },
+      {
+        "id": "context-reload",
+        "name": "Reload shows loading, fetches once more and updates every consumer",
+        "steps": [
+          {
+            "type": "waitForCount",
+            "selector": ".user-row",
+            "count": 3,
+            "timeoutMs": 2500
+          },
+          {
+            "type": "click",
+            "selector": ".reload"
+          },
+          {
+            "type": "expectText",
+            "selector": ".status--loading",
+            "text": "Loading users",
+            "match": "contains"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".user-row",
+            "count": 3,
+            "timeoutMs": 2500
+          },
+          {
+            "type": "expectText",
+            "selector": ".request-count",
+            "text": "Requests: 2"
+          }
+        ]
+      },
+      {
+        "id": "context-error-recovers",
+        "name": "A failed load shows the error and the next reload recovers",
+        "steps": [
+          {
+            "type": "waitForCount",
+            "selector": ".user-row",
+            "count": 3,
+            "timeoutMs": 2500
+          },
+          {
+            "type": "click",
+            "selector": ".fail-next"
+          },
+          {
+            "type": "click",
+            "selector": ".reload"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".status--error",
+            "text": "Users service unavailable",
+            "match": "contains",
+            "timeoutMs": 2500
+          },
+          {
+            "type": "expectCount",
+            "selector": ".user-row",
+            "count": 0
+          },
+          {
+            "type": "click",
+            "selector": ".reload"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".user-row",
+            "count": 3,
+            "timeoutMs": 2500
+          },
+          {
+            "type": "expectText",
+            "selector": ".request-count",
+            "text": "Requests: 3"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".status--error",
+            "count": 0
+          }
+        ]
+      }
+    ],
+    "sdk": {
+      "asset": "assets/sb/react/question/react-implement-usememo-context.v1.json",
+      "openFile": "/src/App.tsx",
+      "storageKey": "v2:ui:react:react-implement-usememo-context"
+    },
+    "solutionAsset": "assets/sb/react/solution/react-implement-usememo-context-solution.v1.json",
+    "decisionGraphAsset": "assets/questions/react/decision-graphs/react-implement-usememo-context.v1.json",
+    "companies": [
+      "walmart"
+    ],
+    "sources": [
+      {
+        "label": "Medium: Walmart Global Tech Software Engineer 3 UI interview, November 2024",
+        "url": "https://medium.com/@phalgun99/my-interview-experience-at-walmart-global-tech-for-the-software-engineer-3-ui-position-9751c81988ee",
+        "company": "walmart",
+        "publisher": "Medium",
+        "date": "2024-11",
+        "note": "The JavaScript and React round asked the candidate to implement useMemo, then to implement the Context API and extend it to handle API results. This item practises all three steps."
+      }
+    ],
+    "premiumPreview": {
+      "summary": "Implement useMemo yourself, then build a context that serves one API request to several components with loading, error and reload states. The behavior checks count computations and requests so shortcuts show up.",
+      "learningOutcomes": [
+        "Explain how a memo hook decides when to recompute.",
+        "Compare dependencies the way React does, including the edge cases of Object.is.",
+        "Share one request between many consumers through a provider.",
+        "Keep a context value stable so unrelated renders stay cheap."
+      ],
+      "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+    },
+    "access": "premium",
+    "updatedAt": "2026-10-19",
+    "seo": {
+      "title": "Implement useMemo and a Context Data Provider in React",
+      "description": "Write useMemo from scratch with a ref and Object.is, then a React context provider that shares one API request with loading, error and reload states."
+    }
   }
 ]

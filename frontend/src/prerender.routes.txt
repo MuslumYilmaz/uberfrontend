@@ -434,6 +434,7 @@
 /react/coding/react-fetch-list-states
 /react/coding/react-filterable-user-list
 /react/coding/react-image-slider
+/react/coding/react-implement-usememo-context
 /react/coding/react-like-button
 /react/coding/react-multi-step-signup
 /react/coding/react-nested-checkboxes
