@@ -1,5 +1,5 @@
 {
-  "totalQuestions": 494,
+  "totalQuestions": 495,
   "premiumPracticeCount": 167,
   "companyCounts": {
     "airbnb": {
@@ -117,8 +117,8 @@
       "system": 0
     },
     "walmart": {
-      "all": 33,
-      "coding": 5,
+      "all": 34,
+      "coding": 6,
       "trivia": 28,
       "system": 0
     },

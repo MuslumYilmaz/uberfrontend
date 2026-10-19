@@ -9156,5 +9156,151 @@
       "description": "Implement buildTree in JavaScript: link flat id and parentId records into nested nodes in two passes, keep sibling order, handle orphans, never mutate input."
     },
     "decisionGraphAsset": "assets/questions/javascript/decision-graphs/js-build-tree-from-flat-list.v1.json"
+  },
+  {
+    "id": "js-valid-parentheses",
+    "title": "Valid Parentheses (Balanced Brackets)",
+    "type": "coding",
+    "technology": "javascript",
+    "companies": [
+      "walmart"
+    ],
+    "sources": [
+      {
+        "label": "Taro: Walmart front end developer interview, India, October 2020",
+        "url": "https://www.jointaro.com/interviews/companies/walmart/experiences/front-end-developer-india-october-19-2020-no-offer-neutral-93bed894/",
+        "company": "walmart",
+        "publisher": "Taro",
+        "date": "2020-10",
+        "note": "This self-reported front end developer loop lists Valid Parentheses next to let, var and const. This drill is a practice version of that problem; the rule for non-bracket characters is ours."
+      },
+      {
+        "label": "Hashnode: frontend interview experience at Walmart, SDE 3 UI, January 2024",
+        "url": "https://jaynil-gaglani.hashnode.dev/frontend-interview-experience-at-walmart",
+        "company": "walmart",
+        "publisher": "Hashnode",
+        "date": "2024-01",
+        "note": "The DSA round of this self-reported SDE 3 UI loop had three easy-medium problems; the second was Valid Parentheses."
+      },
+      {
+        "label": "Medium: Walmart Global Tech Software Engineer 3 UI interview, November 2024",
+        "url": "https://medium.com/@phalgun99/my-interview-experience-at-walmart-global-tech-for-the-software-engineer-3-ui-position-9751c81988ee",
+        "company": "walmart",
+        "publisher": "Medium",
+        "date": "2024-11",
+        "note": "The DSA round of this self-reported Software Engineer 3 UI loop asked First Missing Positive and then Valid Parentheses."
+      }
+    ],
+    "importance": 3,
+    "difficulty": "easy",
+    "tags": [
+      "strings",
+      "data-structures",
+      "algorithms",
+      "validation"
+    ],
+    "description": {
+      "summary": "Implement isValidParentheses(s): return true when every (, [ and { in the string is closed by the matching bracket in the right order, and false otherwise. Characters that are not brackets are ignored, an empty string is valid, and input that is not a string throws a TypeError. Three public interview reports of Walmart frontend and UI loops (October 2020, January 2024 and November 2024) list Valid Parentheses in a coding or DSA round; this practice version adds the rule for non-bracket characters so the same check works on code snippets. Concepts: strings, data-structures, algorithms, validation.",
+      "specs": {
+        "practice": [
+          "Matching every opener to its closer with a stack of expected closers",
+          "Failing fast on the first closer that does not match",
+          "Stating the contract for empty input, other characters and non-strings before coding"
+        ],
+        "expectedBehaviorIntro": "Your isValidParentheses() implementation should:",
+        "expectedBehavior": [
+          "Return true when every opener is closed by the same kind of bracket in the right order",
+          "Return false for a closer of the wrong kind, such as \"(]\", or a wrong closing order, such as \"([)]\"",
+          "Return false when an opener is never closed or a closer arrives with nothing open",
+          "Treat an empty string as valid",
+          "Ignore every character that is not one of ( ) [ ] { }",
+          "Throw a TypeError when the input is not a string"
+        ]
+      },
+      "arguments": [
+        {
+          "name": "s",
+          "type": "string",
+          "desc": "The text to check. Only ( ) [ ] { } count; every other character is ignored."
+        }
+      ],
+      "returns": {
+        "type": "boolean",
+        "desc": "true when the brackets are balanced and properly nested, otherwise false."
+      },
+      "examples": [
+        "isValidParentheses('()[]{}'); // => true\nisValidParentheses('{[()]}'); // => true\nisValidParentheses('([)]'); // => false (closed in the wrong order)",
+        "isValidParentheses('fn(a[0], { b: 1 })'); // => true (other characters are ignored)\nisValidParentheses('('); // => false (never closed)\nisValidParentheses(''); // => true"
+      ]
+    },
+    "starterCode": "export default function isValidParentheses(s) {\n  // TODO: walk the string once and remember which closer each opener needs.\n  // When a closer arrives, it must match the most recent unmatched opener.\n  // Ignore every character that is not a bracket.\n  throw new Error('Not implemented');\n}\n",
+    "starterCodeTs": "export default function isValidParentheses(s: string): boolean {\n  // TODO: walk the string once and remember which closer each opener needs.\n  // When a closer arrives, it must match the most recent unmatched opener.\n  // Ignore every character that is not a bracket.\n  throw new Error('Not implemented');\n}\n",
+    "solutionBlock": {
+      "overview": "Interview answer: scan the string once and keep a stack of the closers you still expect. Each opener pushes the closer it needs; each closer pops the top of the stack and must equal it. A mismatch, or a closer that finds the stack empty, means the string is invalid, and the string is valid only when the stack is empty at the end. Other characters are skipped. Time O(n), memory O(n) in the worst case of all openers.\n\nMental model: the most recent unmatched opener must close first, which is exactly last in, first out. Counting each bracket kind is the common wrong answer: it accepts \"([)]\".",
+      "approaches": [
+        {
+          "title": "Approach 1: Stack of expected closers",
+          "prose": "Check the type first. Then loop over the characters: for (, [ or { push the matching closer; for ), ] or } pop and compare, returning false on a mismatch (popping an empty array gives undefined, which never matches). Skip everything else. Return expected.length === 0 so unclosed openers fail. One pass, no recursion, so thousands of nested brackets are fine.",
+          "codeJs": "export default function isValidParentheses(s) {\n  if (typeof s !== 'string') {\n    throw new TypeError('isValidParentheses expects a string');\n  }\n  const closerFor = { '(': ')', '[': ']', '{': '}' };\n  const expected = [];\n  for (const ch of s) {\n    if (ch === '(' || ch === '[' || ch === '{') {\n      expected.push(closerFor[ch]);\n    } else if (ch === ')' || ch === ']' || ch === '}') {\n      if (expected.pop() !== ch) {\n        return false;\n      }\n    }\n  }\n  return expected.length === 0;\n}\n",
+          "codeTs": "export default function isValidParentheses(s: string): boolean {\n  if (typeof s !== 'string') {\n    throw new TypeError('isValidParentheses expects a string');\n  }\n  const closerFor: Record<string, string> = { '(': ')', '[': ']', '{': '}' };\n  const expected: string[] = [];\n  for (const ch of s) {\n    if (ch === '(' || ch === '[' || ch === '{') {\n      expected.push(closerFor[ch]);\n    } else if (ch === ')' || ch === ']' || ch === '}') {\n      if (expected.pop() !== ch) {\n        return false;\n      }\n    }\n  }\n  return expected.length === 0;\n}\n",
+          "decisionGraphKey": "approach1"
+        },
+        {
+          "title": "Approach 2: Remove adjacent pairs until nothing changes",
+          "prose": "Strip every non-bracket character, then repeatedly delete (), [] and {} until a pass changes nothing. The string was valid exactly when nothing is left. It is short and easy to reason about, but every pass rescans the string, so deeply nested input costs O(n²) time.",
+          "codeJs": "export default function isValidParentheses(s) {\n  if (typeof s !== 'string') {\n    throw new TypeError('isValidParentheses expects a string');\n  }\n  let rest = s.replace(/[^()[\\]{}]/g, '');\n  let before;\n  do {\n    before = rest;\n    rest = rest.replace(/\\(\\)|\\[\\]|\\{\\}/g, '');\n  } while (rest !== before);\n  return rest === '';\n}\n",
+          "codeTs": "export default function isValidParentheses(s: string): boolean {\n  if (typeof s !== 'string') {\n    throw new TypeError('isValidParentheses expects a string');\n  }\n  let rest = s.replace(/[^()[\\]{}]/g, '');\n  let before: string;\n  do {\n    before = rest;\n    rest = rest.replace(/\\(\\)|\\[\\]|\\{\\}/g, '');\n  } while (rest !== before);\n  return rest === '';\n}\n",
+          "decisionGraphKey": "approach2"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Counting openers and closers per kind accepts \"([)]\", which closes in the wrong order.",
+          "Forgetting the final empty-stack check accepts \"(\" and \"(()\".",
+          "Calling a stack method on an empty stack without handling it: pop() returns undefined, so compare instead of assuming a value.",
+          "Recursing per nesting level can overflow the call stack on long inputs; a loop cannot."
+        ],
+        "edgeCases": [
+          "Empty string → true.",
+          "Only non-bracket characters → true.",
+          "A closer first, such as \")(\" → false at the first character.",
+          "Non-string input → TypeError before the loop."
+        ],
+        "techniques": [
+          "Using an array as a stack with push and pop.",
+          "Mapping each opener to the closer it expects.",
+          "Single-pass validation with an early return."
+        ]
+      },
+      "followUp": [
+        "How would you report the index of the first unmatched bracket instead of a boolean?",
+        "How would you ignore brackets inside string literals or comments in a code snippet?",
+        "How would you support angle brackets or custom pairs passed in as a map?",
+        "What changes if the input is a stream that arrives in chunks?"
+      ],
+      "resources": [
+        {
+          "title": "MDN – Array.prototype.push()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/push"
+        },
+        {
+          "title": "MDN – Array.prototype.pop()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/pop"
+        },
+        {
+          "title": "MDN – for...of",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for...of"
+        }
+      ]
+    },
+    "tests": "import isValidParentheses from './isValidParentheses';\n\ndescribe('isValidParentheses', () => {\n  test('accepts a single pair of each kind', () => {\n    expect(isValidParentheses('()')).toBe(true);\n    expect(isValidParentheses('[]')).toBe(true);\n    expect(isValidParentheses('{}')).toBe(true);\n  });\n\n  test('accepts sequential and nested pairs', () => {\n    expect(isValidParentheses('()[]{}')).toBe(true);\n    expect(isValidParentheses('{[()]}')).toBe(true);\n    expect(isValidParentheses('([]{})[{()}]')).toBe(true);\n  });\n\n  test('rejects a closer of the wrong kind', () => {\n    expect(isValidParentheses('(]')).toBe(false);\n    expect(isValidParentheses('{)')).toBe(false);\n  });\n\n  test('rejects pairs that close in the wrong order', () => {\n    expect(isValidParentheses('([)]')).toBe(false);\n    expect(isValidParentheses('{[}]')).toBe(false);\n  });\n\n  test('rejects openers that are never closed', () => {\n    expect(isValidParentheses('(')).toBe(false);\n    expect(isValidParentheses('(()')).toBe(false);\n    expect(isValidParentheses('{[')).toBe(false);\n  });\n\n  test('rejects a closer with nothing open', () => {\n    expect(isValidParentheses(')')).toBe(false);\n    expect(isValidParentheses('())')).toBe(false);\n    expect(isValidParentheses('}{')).toBe(false);\n  });\n\n  test('treats an empty string as valid', () => {\n    expect(isValidParentheses('')).toBe(true);\n  });\n\n  test('ignores characters that are not brackets', () => {\n    expect(isValidParentheses('fn(a[0], { b: 1 })')).toBe(true);\n    expect(isValidParentheses('no brackets at all')).toBe(true);\n    expect(isValidParentheses('<div>(x)</div>')).toBe(true);\n    expect(isValidParentheses('a(b]c')).toBe(false);\n  });\n\n  test('handles long and deeply nested input without recursion', () => {\n    const deep = '('.repeat(5000) + ')'.repeat(5000);\n    expect(isValidParentheses(deep)).toBe(true);\n    expect(isValidParentheses(deep.slice(1))).toBe(false);\n    expect(isValidParentheses('()'.repeat(10000))).toBe(true);\n  });\n\n  test('throws a TypeError for input that is not a string', () => {\n    expect(() => isValidParentheses(null)).toThrow(TypeError);\n    expect(() => isValidParentheses(undefined)).toThrow(TypeError);\n    expect(() => isValidParentheses(42)).toThrow(TypeError);\n    expect(() => isValidParentheses(['(', ')'])).toThrow(TypeError);\n  });\n});\n",
+    "testsTs": "import isValidParentheses from './isValidParentheses';\n\ndescribe('isValidParentheses', () => {\n  test('accepts a single pair of each kind', () => {\n    expect(isValidParentheses('()')).toBe(true);\n    expect(isValidParentheses('[]')).toBe(true);\n    expect(isValidParentheses('{}')).toBe(true);\n  });\n\n  test('accepts sequential and nested pairs', () => {\n    expect(isValidParentheses('()[]{}')).toBe(true);\n    expect(isValidParentheses('{[()]}')).toBe(true);\n    expect(isValidParentheses('([]{})[{()}]')).toBe(true);\n  });\n\n  test('rejects a closer of the wrong kind', () => {\n    expect(isValidParentheses('(]')).toBe(false);\n    expect(isValidParentheses('{)')).toBe(false);\n  });\n\n  test('rejects pairs that close in the wrong order', () => {\n    expect(isValidParentheses('([)]')).toBe(false);\n    expect(isValidParentheses('{[}]')).toBe(false);\n  });\n\n  test('rejects openers that are never closed', () => {\n    expect(isValidParentheses('(')).toBe(false);\n    expect(isValidParentheses('(()')).toBe(false);\n    expect(isValidParentheses('{[')).toBe(false);\n  });\n\n  test('rejects a closer with nothing open', () => {\n    expect(isValidParentheses(')')).toBe(false);\n    expect(isValidParentheses('())')).toBe(false);\n    expect(isValidParentheses('}{')).toBe(false);\n  });\n\n  test('treats an empty string as valid', () => {\n    expect(isValidParentheses('')).toBe(true);\n  });\n\n  test('ignores characters that are not brackets', () => {\n    expect(isValidParentheses('fn(a[0], { b: 1 })')).toBe(true);\n    expect(isValidParentheses('no brackets at all')).toBe(true);\n    expect(isValidParentheses('<div>(x)</div>')).toBe(true);\n    expect(isValidParentheses('a(b]c')).toBe(false);\n  });\n\n  test('handles long and deeply nested input without recursion', () => {\n    const deep = '('.repeat(5000) + ')'.repeat(5000);\n    expect(isValidParentheses(deep)).toBe(true);\n    expect(isValidParentheses(deep.slice(1))).toBe(false);\n    expect(isValidParentheses('()'.repeat(10000))).toBe(true);\n  });\n\n  test('throws a TypeError for input that is not a string', () => {\n    expect(() => isValidParentheses(null as unknown as string)).toThrow(TypeError);\n    expect(() => isValidParentheses(undefined as unknown as string)).toThrow(TypeError);\n    expect(() => isValidParentheses(42 as unknown as string)).toThrow(TypeError);\n    expect(() => isValidParentheses(['(', ')'] as unknown as string)).toThrow(TypeError);\n  });\n});\n",
+    "access": "free",
+    "updatedAt": "2026-10-19",
+    "seo": {
+      "title": "Valid Parentheses in JavaScript: Balanced Bracket Checker",
+      "description": "Implement isValidParentheses in JavaScript with a stack of expected closers: nested and mixed brackets, wrong-order closers, empty input and non-bracket text."
+    },
+    "decisionGraphAsset": "assets/questions/javascript/decision-graphs/js-valid-parentheses.v1.json"
   }
 ]

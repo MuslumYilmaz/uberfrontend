@@ -928,6 +928,12 @@ export const PUBLIC_QUESTION_NAVIGATION: readonly PublicQuestionNavigationItem[]
   {
     "tech": "javascript",
     "kind": "coding",
+    "title": "Valid Parentheses (Balanced Brackets)",
+    "route": "/javascript/coding/js-valid-parentheses"
+  },
+  {
+    "tech": "javascript",
+    "kind": "coding",
     "title": "Validate Username (Rules + Edge Cases)",
     "route": "/javascript/coding/js-validate-username"
   },

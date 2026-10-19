@@ -517,6 +517,25 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
     }),
   },
   {
+    ruleId: 'js-valid-parentheses-stack',
+    questionId: 'js-valid-parentheses',
+    priority: 100,
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, ['wrong kind', 'wrong order', 'never closed', 'nothing open', 'not brackets', 'not a string']) ||
+      snapshot.failCount >= 2,
+    buildHint: (snapshot) => ({
+      ruleId: 'js-valid-parentheses-stack',
+      title: 'Keep a stack of the closers you still expect',
+      why: buildProgressAwareWhy(snapshot, 'The most recent unmatched opener has to close first, which is last in, first out. Counting each bracket kind cannot see the order, so it accepts "([)]".'),
+      actions: [
+        'Push `)`, `]` or `}` when you read `(`, `[` or `{`.',
+        'On a closer, pop and compare: a different value, or `undefined` from an empty stack, means the string is invalid.',
+        'Skip every other character, and return `true` only when the stack is empty at the end.',
+      ],
+      confidence: 0.86,
+    }),
+  },
+  {
     ruleId: 'js-filter-tree-render-indented-prune',
     questionId: 'js-filter-tree-render-indented',
     priority: 100,
@@ -788,6 +807,23 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
         'Use a `Map` keyed by `id` so parent lookups are constant time and numeric ids keep their type.',
         'Iterate the original list in the second pass so roots and siblings keep input order.',
         'Treat `parentId` that is `null`, `undefined` or unknown as a root.',
+      ],
+      confidence: 0.72,
+    }),
+  },
+  {
+    ruleId: 'js-valid-parentheses-default',
+    questionId: 'js-valid-parentheses',
+    priority: 40,
+    matches: () => true,
+    buildHint: (snapshot) => ({
+      ruleId: 'js-valid-parentheses-default',
+      title: 'One pass, one stack, empty at the end',
+      why: buildProgressAwareWhy(snapshot, 'A single loop with a stack handles nesting, wrong-order closers and stray closers, and a loop never overflows on deep input.'),
+      actions: [
+        'Throw a `TypeError` before the loop when the input is not a string.',
+        'Treat the empty string as valid: nothing was opened, so nothing is left open.',
+        'Avoid recursion; thousands of nested brackets must still work.',
       ],
       confidence: 0.72,
     }),

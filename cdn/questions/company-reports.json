@@ -1726,6 +1726,34 @@
             "date": "2022-11"
           }
         ]
+      },
+      {
+        "id": "js-valid-parentheses",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Valid Parentheses (Balanced Brackets)",
+        "access": "free",
+        "route": "/javascript/coding/js-valid-parentheses",
+        "sources": [
+          {
+            "label": "Taro: Walmart front end developer interview, India, October 2020",
+            "url": "https://www.jointaro.com/interviews/companies/walmart/experiences/front-end-developer-india-october-19-2020-no-offer-neutral-93bed894/",
+            "publisher": "Taro",
+            "date": "2020-10"
+          },
+          {
+            "label": "Hashnode: frontend interview experience at Walmart, SDE 3 UI, January 2024",
+            "url": "https://jaynil-gaglani.hashnode.dev/frontend-interview-experience-at-walmart",
+            "publisher": "Hashnode",
+            "date": "2024-01"
+          },
+          {
+            "label": "Medium: Walmart Global Tech Software Engineer 3 UI interview, November 2024",
+            "url": "https://medium.com/@phalgun99/my-interview-experience-at-walmart-global-tech-for-the-software-engineer-3-ui-position-9751c81988ee",
+            "publisher": "Medium",
+            "date": "2024-11"
+          }
+        ]
       }
     ],
     "waymo": [

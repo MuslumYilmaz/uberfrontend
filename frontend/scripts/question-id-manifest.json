@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-17T06:55:13.532Z",
+  "generatedAt": "2026-10-19T08:37:24.440Z",
   "entries": [
     {
       "tech": "angular",
@@ -1362,6 +1362,12 @@
       "tech": "javascript",
       "kind": "coding",
       "id": "js-valid-anagram",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-valid-parentheses",
       "file": "javascript/coding.json"
     },
     {

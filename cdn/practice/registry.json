@@ -6150,6 +6150,26 @@
     "assetRef": "questions/javascript/coding.json#js-valid-anagram"
   },
   {
+    "id": "js-valid-parentheses",
+    "family": "question",
+    "title": "Valid Parentheses (Balanced Brackets)",
+    "route": "/javascript/coding/js-valid-parentheses",
+    "tech": "javascript",
+    "difficulty": "easy",
+    "summary": "Implement isValidParentheses(s): return true when every (, [ and { in the string is closed by the matching bracket in the right order, and false otherwise.",
+    "tags": [
+      "strings",
+      "data-structures",
+      "algorithms",
+      "validation"
+    ],
+    "access": "free",
+    "estimatedMinutes": 18,
+    "updatedAt": "2026-10-19",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/javascript/coding.json#js-valid-parentheses"
+  },
+  {
     "id": "js-validate-username",
     "family": "question",
     "title": "Validate Username (Rules + Edge Cases)",

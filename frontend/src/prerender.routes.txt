@@ -319,6 +319,7 @@
 /javascript/coding/js-unique-array
 /javascript/coding/js-update-at-index
 /javascript/coding/js-valid-anagram
+/javascript/coding/js-valid-parentheses
 /javascript/coding/js-validate-username
 /javascript/debug/js-debug-async-race
 /javascript/debug/js-debug-lost-this-binding

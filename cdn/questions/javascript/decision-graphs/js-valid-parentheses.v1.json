@@ -1,0 +1,115 @@
+{
+  "questionId": "js-valid-parentheses",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "javascript",
+      "code": "export default function isValidParentheses(s) {\n  if (typeof s !== 'string') {\n    throw new TypeError('isValidParentheses expects a string');\n  }\n  const closerFor = { '(': ')', '[': ']', '{': '}' };\n  const expected = [];\n  for (const ch of s) {\n    if (ch === '(' || ch === '[' || ch === '{') {\n      expected.push(closerFor[ch]);\n    } else if (ch === ')' || ch === ']' || ch === '}') {\n      if (expected.pop() !== ch) {\n        return false;\n      }\n    }\n  }\n  return expected.length === 0;\n}\n",
+      "nodes": [
+        {
+          "id": "d1-reject-non-strings-first",
+          "title": "Reject input that is not a string",
+          "anchor": {
+            "lineStart": 2,
+            "lineEnd": 2,
+            "snippet": "typeof s !== 'string'"
+          },
+          "why": "The contract says strings only, so a clear TypeError beats a confusing result for null or an array.",
+          "alternative": "Coerce the input with String(s) and keep going.",
+          "tradeoff": "Strict input checking surfaces caller bugs early; coercion would hide them."
+        },
+        {
+          "id": "d2-push-the-expected-closer",
+          "title": "Push the closer each opener expects",
+          "anchor": {
+            "lineStart": 9,
+            "lineEnd": 9,
+            "snippet": "expected.push(closerFor[ch]);"
+          },
+          "why": "Storing the closer, not the opener, turns the later check into a single equality test.",
+          "alternative": "Push the opener and look up its partner when a closer arrives.",
+          "tradeoff": "One lookup at push time instead of one at pop time; the stack reads as a list of promises."
+        },
+        {
+          "id": "d3-fail-on-the-first-mismatch",
+          "title": "Fail on the first closer that does not match",
+          "anchor": {
+            "lineStart": 11,
+            "lineEnd": 11,
+            "snippet": "if (expected.pop() !== ch) {"
+          },
+          "why": "The most recent unmatched opener must close first; an empty stack pops undefined, so a stray closer fails the same way.",
+          "alternative": "Count each bracket kind separately.",
+          "tradeoff": "Counters miss order errors such as \"([)]\"; the stack catches them in one pass."
+        },
+        {
+          "id": "d4-valid-only-when-nothing-is-open",
+          "title": "Valid only when nothing is left open",
+          "anchor": {
+            "lineStart": 16,
+            "lineEnd": 16,
+            "snippet": "return expected.length === 0;"
+          },
+          "why": "Reaching the end with pending closers means some opener was never closed.",
+          "alternative": "Return true as soon as the loop finishes without a mismatch.",
+          "tradeoff": "One final length check covers \"(\" and \"(()\" without extra cases."
+        }
+      ]
+    },
+    "approach2": {
+      "language": "javascript",
+      "code": "export default function isValidParentheses(s) {\n  if (typeof s !== 'string') {\n    throw new TypeError('isValidParentheses expects a string');\n  }\n  let rest = s.replace(/[^()[\\]{}]/g, '');\n  let before;\n  do {\n    before = rest;\n    rest = rest.replace(/\\(\\)|\\[\\]|\\{\\}/g, '');\n  } while (rest !== before);\n  return rest === '';\n}\n",
+      "nodes": [
+        {
+          "id": "d1-drop-non-bracket-characters",
+          "title": "Drop every character that is not a bracket",
+          "anchor": {
+            "lineStart": 5,
+            "lineEnd": 5,
+            "snippet": "s.replace(/[^()[\\]{}]/g, '')"
+          },
+          "why": "Pair removal only works when brackets sit next to each other, so other text has to go first.",
+          "alternative": "Skip non-bracket characters while scanning.",
+          "tradeoff": "One extra pass over the input keeps the removal loop simple."
+        },
+        {
+          "id": "d2-remove-adjacent-pairs",
+          "title": "Remove adjacent matching pairs",
+          "anchor": {
+            "lineStart": 9,
+            "lineEnd": 9,
+            "snippet": "rest.replace(/\\(\\)|\\[\\]|\\{\\}/g, '')"
+          },
+          "why": "A valid string always contains at least one adjacent pair, and removing it leaves a valid string.",
+          "alternative": "Keep a stack of expected closers.",
+          "tradeoff": "Easy to explain, but each pass rescans the string, so deep nesting costs O(n²)."
+        },
+        {
+          "id": "d3-stop-when-a-pass-changes-nothing",
+          "title": "Stop when a pass removes nothing",
+          "anchor": {
+            "lineStart": 10,
+            "lineEnd": 10,
+            "snippet": "} while (rest !== before);"
+          },
+          "why": "If no pair was removed, no further pass can remove one either.",
+          "alternative": "Loop a fixed number of times based on the length.",
+          "tradeoff": "The fixed-point check ends as early as possible without guessing an iteration count."
+        },
+        {
+          "id": "d4-valid-only-when-the-string-empties",
+          "title": "Valid only when nothing is left",
+          "anchor": {
+            "lineStart": 11,
+            "lineEnd": 11,
+            "snippet": "return rest === '';"
+          },
+          "why": "Any bracket that survives every pass has no partner in the right position.",
+          "alternative": "Compare the counts of openers and closers.",
+          "tradeoff": "Equal counts are not enough for \"([)]\"; an empty remainder is."
+        }
+      ]
+    }
+  }
+}
