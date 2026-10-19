@@ -8537,6 +8537,32 @@
     "assetRef": "questions/system-design/cross-device-preferences-sync/meta.json"
   },
   {
+    "id": "car-rental-booking-frontend",
+    "family": "question",
+    "title": "Design a Car Rental Booking Frontend",
+    "route": "/system-design/car-rental-booking-frontend",
+    "tech": "system-design",
+    "difficulty": "intermediate",
+    "summary": "Design a car rental booking frontend where server offers own price and rental days, pickup times stay in the branch zone, and expiring vehicle holds recover without losing customer input.",
+    "tags": [
+      "search",
+      "state-management",
+      "date-time",
+      "time-zones",
+      "timers",
+      "concurrency",
+      "api-calls",
+      "error-handling",
+      "accessibility",
+      "frontend-architecture"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 15,
+    "updatedAt": "2026-10-19",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/system-design/car-rental-booking-frontend/meta.json"
+  },
+  {
     "id": "resilient-checkout-payment-flow",
     "family": "question",
     "title": "Design a Resilient Checkout and Payment Flow",

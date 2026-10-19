@@ -1,6 +1,144 @@
 {
   "version": 1,
   "questions": {
+    "car-rental-booking-frontend": {
+      "assertions": [
+        {
+          "id": "server-owns-rental-price",
+          "target": "all",
+          "require": [
+            "(?:server|rental backend).{0,120}(?:price|fees|total)",
+            "rentalDays",
+            "Display totals exactly as returned"
+          ]
+        },
+        {
+          "id": "branch-local-time",
+          "target": "all",
+          "require": [
+            "branch'?s IANA zone|branch zone",
+            "LocalDateTime",
+            "timeZone"
+          ],
+          "forbid": [
+            "getTimezoneOffset"
+          ]
+        },
+        {
+          "id": "idempotent-hold",
+          "target": "all",
+          "require": [
+            "idempotencyKey|Idempotency-Key",
+            "same key",
+            "new key.{0,60}terminal"
+          ]
+        },
+        {
+          "id": "server-timed-expiry",
+          "target": "visible",
+          "require": [
+            "serverNow",
+            "expiresAt",
+            "Keep holding",
+            "extension"
+          ]
+        },
+        {
+          "id": "conflicts-preserve-input",
+          "target": "visible",
+          "require": [
+            "price-changed",
+            "sold-out",
+            "keeps? (?:extras and driver details|every entered field)|carry over"
+          ]
+        },
+        {
+          "id": "receipt-from-confirmed-reservation",
+          "target": "visible",
+          "require": [
+            "receipt renders only from the confirmed reservation"
+          ]
+        },
+        {
+          "id": "accessible-countdown",
+          "target": "visible",
+          "sections": [
+            "interfaces"
+          ],
+          "require": [
+            "live region",
+            "keyboard",
+            "focus",
+            "without the map"
+          ]
+        }
+      ],
+      "symbols": [
+        {
+          "group": "car-rental-booking-frontend-contract",
+          "name": "LocalDateTime",
+          "requiredMembers": [
+            "date",
+            "time",
+            "timeZone"
+          ]
+        },
+        {
+          "group": "car-rental-booking-frontend-contract",
+          "name": "VehicleOffer",
+          "requiredMembers": [
+            "offerId",
+            "searchId",
+            "rentalDays",
+            "totalMinor",
+            "expiresAt"
+          ]
+        },
+        {
+          "group": "car-rental-booking-frontend-contract",
+          "name": "VehicleHold",
+          "requiredMembers": [
+            "holdId",
+            "offerId",
+            "idempotencyKey",
+            "expiresAt",
+            "extensionsLeft",
+            "status"
+          ]
+        },
+        {
+          "group": "car-rental-booking-frontend-contract",
+          "name": "BookingStep",
+          "requiredLiterals": [
+            "hold-expired",
+            "price-changed",
+            "sold-out",
+            "confirmed"
+          ]
+        },
+        {
+          "group": "car-rental-booking-frontend-contract",
+          "name": "HoldResult",
+          "requiredLiterals": [
+            "held",
+            "price-changed",
+            "sold-out"
+          ]
+        },
+        {
+          "group": "car-rental-booking-frontend-contract",
+          "name": "RentalGateway",
+          "requiredMembers": [
+            "searchAvailability",
+            "createHold",
+            "extendHold",
+            "releaseHold",
+            "confirmReservation",
+            "getReservation"
+          ]
+        }
+      ]
+    },
     "resilient-checkout-payment-flow": {
       "assertions": [
         {

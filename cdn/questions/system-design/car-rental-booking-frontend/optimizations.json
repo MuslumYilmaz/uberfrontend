@@ -1,0 +1,148 @@
+{
+  "key": "O",
+  "title": "Optimizations",
+  "blocks": [
+    {
+      "type": "table",
+      "title": "Booking failure playbook",
+      "columns": [
+        "Failure",
+        "Recovery",
+        "What stays true"
+      ],
+      "rows": [
+        [
+          "Search request fails",
+          "Keep criteria, show retry and abort older requests",
+          "Results match the visible criteria"
+        ],
+        [
+          "Offers expire while the tab is hidden",
+          "When the tab is visible again, rerun the search and mark changed prices",
+          "No hold starts from an expired offer"
+        ],
+        [
+          "Hold response is lost",
+          "Retry createHold with the same key",
+          "One Reserve intent produces at most one hold"
+        ],
+        [
+          "Class sells out",
+          "Show alternatives from the conflict response",
+          "Extras and driver details carry over"
+        ],
+        [
+          "Price changes",
+          "Show old and new totals and ask for a new choice",
+          "Nobody confirms a price they have not seen"
+        ],
+        [
+          "Hold expires",
+          "Move to hold-expired and Reserve again with a new key",
+          "Entered details remain intact"
+        ],
+        [
+          "Reservation response is lost",
+          "Retry with the same key, then read the reservation",
+          "No duplicate reservation"
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Device clocks and expiry timers"
+    },
+    {
+      "type": "text",
+      "text": "Device clocks drift, so countdowns use expiresAt minus serverNow and re-base when a hidden tab becomes visible. The client timer is only a display: the server decides whether a hold is live, and confirming with an expired hold returns a conflict that the page handles like any other expiry."
+    },
+    {
+      "type": "steps",
+      "title": "Scenario walkthrough: the last compact SUV",
+      "steps": [
+        {
+          "title": "Two customers, one class",
+          "text": "Two customers view the same airport branch and see a compact SUV offer from the same availability snapshot."
+        },
+        {
+          "title": "First Reserve wins",
+          "text": "The first createHold succeeds. The second returns sold-out with a midsize alternative at a server price."
+        },
+        {
+          "title": "Details survive",
+          "text": "The second page keeps the child seat and driver details, announces the change, and moves focus to the alternatives list."
+        },
+        {
+          "title": "No phantom booking",
+          "text": "If the first hold expires, the class returns to the server pool, and the second customer sees it only after a fresh search."
+        }
+      ]
+    },
+    {
+      "type": "image",
+      "src": "questions/system-design/car-rental-booking-frontend/rental-hold-lifecycle.svg",
+      "alt": "Vehicle hold lifecycle from offer to active hold, warning and extension, expiry, a new Reserve with a fresh key, and the held, price-changed or sold-out outcomes.",
+      "caption": "Hold lifecycle: the server clock decides expiry, and every outcome keeps the customer's details.",
+      "width": 960,
+      "height": 460,
+      "fallbackText": "Text fallback: An offer becomes an active hold. A warning can extend it. An expired hold needs a new Reserve with a new key, which returns held, price-changed with both totals, or sold-out with alternatives."
+    },
+    {
+      "type": "heading",
+      "text": "Testing and measurement for bookings"
+    },
+    {
+      "type": "checklist",
+      "title": "Booking tests that protect customers",
+      "items": [
+        "Double-click Reserve; assert one idempotency key and one hold.",
+        "Lose the hold response; assert the retry reaches the same hold.",
+        "Expire a hold during driver details; assert input survives and Reserve uses a new key.",
+        "Return price-changed; assert both totals appear before any confirmation.",
+        "Search from a device in another zone; assert branch-local times in the URL, the UI and the request.",
+        "Run keyboard and screen-reader passes over date entry, the results count, the hold warning and alternatives."
+      ]
+    },
+    {
+      "type": "text",
+      "text": "Measure hold expiry, price-changed and sold-out conflicts, search-to-hold and hold-to-reservation conversion, segmented by branch, device class and network. Tune caching and warning timing from those numbers rather than from fixed guesses."
+    },
+    {
+      "type": "links",
+      "title": "Technical references",
+      "items": [
+        {
+          "label": "WCAG 2.2 Understanding Timing Adjustable",
+          "href": "https://www.w3.org/WAI/WCAG22/Understanding/timing-adjustable",
+          "description": "Warn before a time limit ends and allow an extension where possible."
+        },
+        {
+          "label": "MDN Intl.DateTimeFormat constructor",
+          "href": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat",
+          "description": "The timeZone option formats wall-clock times in the branch zone."
+        },
+        {
+          "label": "MDN AbortController",
+          "href": "https://developer.mozilla.org/en-US/docs/Web/API/AbortController",
+          "description": "Cancels superseded availability requests."
+        },
+        {
+          "label": "MDN Page Visibility API",
+          "href": "https://developer.mozilla.org/en-US/docs/Web/API/Page_Visibility_API",
+          "description": "Signals when a hidden tab returns and offers need a check."
+        },
+        {
+          "label": "IETF Idempotency-Key HTTP header draft",
+          "href": "https://datatracker.ietf.org/doc/draft-ietf-httpapi-idempotency-key-header/",
+          "description": "A stable key lets a retried POST reach the same hold."
+        },
+        {
+          "label": "MDN 409 Conflict",
+          "href": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/409",
+          "description": "Reports a request that conflicts with current server state."
+        }
+      ],
+      "editorialRole": "references"
+    }
+  ]
+}
