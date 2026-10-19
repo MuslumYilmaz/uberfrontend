@@ -277,6 +277,7 @@
 /javascript/coding/js-implement-instanceof
 /javascript/coding/js-implement-new
 /javascript/coding/js-is-object-empty
+/javascript/coding/js-json-stringify
 /javascript/coding/js-lodash-get
 /javascript/coding/js-max-char
 /javascript/coding/js-maze-path

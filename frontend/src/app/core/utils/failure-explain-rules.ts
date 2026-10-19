@@ -723,6 +723,25 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
     }),
   },
   {
+    ruleId: 'js-json-stringify-rules',
+    questionId: 'js-json-stringify',
+    priority: 100,
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, ['NaN and the infinities', 'values without a JSON form', 'toJSON', 'shared references', 'lone surrogates', 'control characters']) ||
+      snapshot.failCount >= 2,
+    buildHint: (snapshot) => ({
+      ruleId: 'js-json-stringify-rules',
+      title: 'Let each container decide what undefined means',
+      why: buildProgressAwareWhy(snapshot, 'A value with no JSON form serializes to undefined: arrays write null in its place, objects drop the property, and the top level returns undefined.'),
+      actions: [
+        "Call `value.toJSON(key)` first when it exists, with `''` as the key for the root.",
+        "Return `'null'` for `NaN` and the infinities, and `undefined` for functions, symbols and `undefined`.",
+        'Detect cycles with the ancestors on the current branch and pop each container when you leave it.',
+      ],
+      confidence: 0.84,
+    }),
+  },
+  {
     ruleId: 'js-filter-tree-render-indented-prune',
     questionId: 'js-filter-tree-render-indented',
     priority: 100,
@@ -1028,6 +1047,23 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
         'Test the shape with `/^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i` and throw a `TypeError` otherwise.',
         'Expand `#abc` to `#aabbcc` before parsing the pairs.',
         'Leave rounding to the UI; a pass or fail comparison needs the raw ratio.',
+      ],
+      confidence: 0.72,
+    }),
+  },
+  {
+    ruleId: 'js-json-stringify-default',
+    questionId: 'js-json-stringify',
+    priority: 40,
+    matches: () => true,
+    buildHint: (snapshot) => ({
+      ruleId: 'js-json-stringify-default',
+      title: 'Normalize the value, then dispatch on its type',
+      why: buildProgressAwareWhy(snapshot, 'Every value goes through the same steps: toJSON, unwrap boxed primitives, then one branch per type.'),
+      actions: [
+        "Read values as `holder[key]` and start from `{ '': value }` so the root behaves like any child.",
+        'Unwrap `Number`, `String` and `Boolean` objects before the type switch.',
+        'Throw a `TypeError` for BigInt values and for a container that is already among its ancestors.',
       ],
       confidence: 0.72,
     }),

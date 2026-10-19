@@ -4836,6 +4836,28 @@
     "assetRef": "questions/javascript/coding.json#js-implement-bind"
   },
   {
+    "id": "js-json-stringify",
+    "family": "question",
+    "title": "Implement JSON.stringify",
+    "route": "/javascript/coding/js-json-stringify",
+    "tech": "javascript",
+    "difficulty": "intermediate",
+    "summary": "Implement JSON.stringify from scratch so its output matches the built-in method for primitives, strings, arrays, objects, toJSON methods and the values JSON cannot represent.",
+    "tags": [
+      "polyfills",
+      "recursion",
+      "strings",
+      "objects",
+      "edge-cases",
+      "error-handling"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 18,
+    "updatedAt": "2026-10-19",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/javascript/coding.json#js-json-stringify"
+  },
+  {
     "id": "js-lodash-get",
     "family": "question",
     "title": "Implement lodash.get",
