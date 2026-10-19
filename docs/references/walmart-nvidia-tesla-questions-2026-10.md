@@ -803,6 +803,36 @@ Totals:
    - Then #12 code splitting and module federation.
 
    These can move earlier if a wave stalls, because they are independent.
+
+   **Wave 4 status (2026-10-19).**
+   - #4 and #5: done as fbb038f6, one free trivia pair tagged `walmart`.
+     - `react-state-management-redux`: where each kind of state belongs, Context versus an external store, the `useSelector` reference-equality trap with a `createSelector` fix, server data in a query cache, and Redux Toolkit as the current default.
+     - `react-ssr-hydration`: the W10 scenario in our own words: a server-rendered top of the page and a client-only section below the fold. Covers parse and hydration order, two client-only patterns, mismatch causes, streaming and selective hydration, metrics, and SSR versus Server Components.
+   - Facts were checked against:
+     - the Redux FAQ and style guide;
+     - the React-Redux hooks page and the v8 release notes;
+     - the RTK overview;
+     - react.dev (`hydrateRoot`, `Suspense`, `renderToPipeableStream`);
+     - the React 19 release post;
+     - the React 18 SSR architecture discussion.
+   - Two claims were left out on purpose: React no longer replays most early events, and `use(browser())` is still canary-only.
+   - Each item has a competitor review in `content-reviews/trivia/react/`: GreatFrontEnd, a canonical page and a tutorial.
+     - Verdicts start from a tie: 4 wins and 5 ties per item, no losses.
+     - Two of the three competitors stay below the 2/3 threshold, so `nextActions` lists the improvements.
+   - Verified:
+     - editorial quality and indexability lints at 0 warnings;
+     - no new competitive-readiness errors (68 on the dev baseline);
+     - incident balance 12/13/13;
+     - lint:questions:check, lint:tags, lint:topics and lint:tracks;
+     - test:content-regressions;
+     - 253 Karma specs and 318 backend Jest tests;
+     - the incident route serves and grades both new cards;
+     - a clean `verify:seo-prerender-guard` run: 431 sitemap pages, 0 orphans, 0 hard 404s.
+   - Both pages prerender as `index,follow` canonical pages with Article JSON-LD and 39 inbound internal links each.
+     - The Walmart preview links only coding prompts, so trivia tags appear only in its counts (30 trivia).
+   - `/coding` is unchanged at 633,373 bytes. `totalHtmlBytes` is 106,489,053 of 109,000,000.
+   - PR #237 merged `dev` up to c4ed6d87 into `main` on 2026-10-19, so the Walmart and Tesla previews go live with that deploy. fa606ab4 and later are still local.
+   - Next is #12, code splitting and module federation.
 6. **Wave 5, system design (L, L).**
    - #10 car rental, tagged `tesla`.
    - #11 messaging, tagged `walmart`.
