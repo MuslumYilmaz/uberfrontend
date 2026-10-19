@@ -20,7 +20,8 @@
       "airbnb",
       "revolut",
       "zalando",
-      "spotify"
+      "spotify",
+      "walmart"
     ],
     "answer": {
       "blocks": [
@@ -616,7 +617,8 @@
       "meta",
       "airbnb",
       "spotify",
-      "booking-com"
+      "booking-com",
+      "walmart"
     ],
     "answer": {
       "blocks": [
@@ -886,7 +888,8 @@
       "meta",
       "amazon",
       "microsoft",
-      "booking-com"
+      "booking-com",
+      "walmart"
     ],
     "answer": {
       "blocks": [
@@ -1044,7 +1047,8 @@
       "google",
       "amazon",
       "microsoft",
-      "uber"
+      "uber",
+      "walmart"
     ],
     "answer": {
       "blocks": [
@@ -3036,7 +3040,8 @@
       "google",
       "meta",
       "apple",
-      "spotify"
+      "spotify",
+      "walmart"
     ],
     "answer": {
       "blocks": [
@@ -3341,7 +3346,8 @@
     "importance": 4,
     "companies": [
       "apple",
-      "meta"
+      "meta",
+      "walmart"
     ],
     "answer": {
       "blocks": [
@@ -4758,7 +4764,8 @@
     "companies": [
       "google",
       "meta",
-      "amazon"
+      "amazon",
+      "walmart"
     ],
     "answer": {
       "blocks": [
@@ -5086,7 +5093,8 @@
     ],
     "importance": 3,
     "companies": [
-      "google"
+      "google",
+      "walmart"
     ],
     "answer": {
       "blocks": [
@@ -5904,7 +5912,8 @@
     ],
     "importance": 4,
     "companies": [
-      "zalando"
+      "zalando",
+      "walmart"
     ],
     "answer": {
       "blocks": [
@@ -7812,7 +7821,8 @@
     ],
     "importance": 4,
     "companies": [
-      "netflix"
+      "netflix",
+      "walmart"
     ],
     "answer": {
       "blocks": [
@@ -8319,7 +8329,8 @@
     "companies": [
       "bytedance",
       "apple",
-      "zalando"
+      "zalando",
+      "walmart"
     ],
     "answer": {
       "blocks": [
@@ -9051,7 +9062,8 @@
     "title": "SSE vs WebSocket in JavaScript: which real-time transport should you choose?",
     "technology": "javascript",
     "companies": [
-      "openai"
+      "openai",
+      "walmart"
     ],
     "difficulty": "intermediate",
     "importance": 4,
@@ -10244,7 +10256,8 @@
     ],
     "importance": 5,
     "companies": [
-      "zalando"
+      "zalando",
+      "walmart"
     ],
     "answer": {
       "blocks": [

@@ -1532,6 +1532,88 @@
         ]
       }
     ],
+    "walmart": [
+      {
+        "id": "js-add-two-promises",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Add Two Promises",
+        "access": "premium",
+        "route": "/javascript/coding/js-add-two-promises",
+        "sources": [
+          {
+            "label": "LeetCode Discuss: front end developer interview journey with a Walmart loop, 2022",
+            "url": "https://leetcode.com/discuss/post/2774667/",
+            "publisher": "LeetCode Discuss",
+            "date": "2022-11"
+          }
+        ]
+      },
+      {
+        "id": "js-curry-function",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Curry Function",
+        "access": "premium",
+        "route": "/javascript/coding/js-curry-function",
+        "sources": [
+          {
+            "label": "LeetCode Discuss: Walmart Global Tech India SDE III loop, Chennai, 2021",
+            "url": "https://leetcode.com/discuss/post/1436043/",
+            "publisher": "LeetCode Discuss",
+            "date": "2021-08"
+          }
+        ]
+      },
+      {
+        "id": "js-stack-queue-implementation",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Implement Stack and Queue in JavaScript",
+        "access": "premium",
+        "route": "/javascript/coding/js-stack-queue-implementation",
+        "sources": [
+          {
+            "label": "Code360: Walmart SDE-2 interview experience, Bengaluru, March 2021",
+            "url": "https://www.naukri.com/code360/interview-experiences/walmart/walmart-interview-experience-mar-2021-exp-0-2-years",
+            "publisher": "Naukri Code360",
+            "date": "2021-03"
+          }
+        ]
+      },
+      {
+        "id": "react-accordion-faq",
+        "kind": "coding",
+        "tech": "react",
+        "title": "React Accordion / FAQ Component",
+        "access": "premium",
+        "route": "/react/coding/react-accordion-faq",
+        "sources": [
+          {
+            "label": "LeetCode Discuss: front end developer interview journey with a Walmart loop, 2022",
+            "url": "https://leetcode.com/discuss/post/2774667/",
+            "publisher": "LeetCode Discuss",
+            "date": "2022-11"
+          }
+        ]
+      },
+      {
+        "id": "js-valid-anagram",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Valid Anagram",
+        "access": "premium",
+        "route": "/javascript/coding/js-valid-anagram",
+        "sources": [
+          {
+            "label": "LeetCode Discuss: front end developer interview journey with a Walmart loop, 2022",
+            "url": "https://leetcode.com/discuss/post/2774667/",
+            "publisher": "LeetCode Discuss",
+            "date": "2022-11"
+          }
+        ]
+      }
+    ],
     "waymo": [
       {
         "id": "angular-debounced-search",

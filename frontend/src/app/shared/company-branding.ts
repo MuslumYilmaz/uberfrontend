@@ -132,6 +132,12 @@ export const COMPANY_BRANDS: Record<string, CompanyBrand> = {
     logoUrl: `${COMPANY_LOGO_BASE}/zalando.svg`,
     monogram: 'Z',
   },
+  // Tagged on 2026-10-19 from public interview reports; monogram until a logo is added.
+  walmart: {
+    slug: 'walmart',
+    label: 'Walmart',
+    monogram: 'W',
+  },
 };
 
 const COMPANY_ALIASES: Record<string, string> = {

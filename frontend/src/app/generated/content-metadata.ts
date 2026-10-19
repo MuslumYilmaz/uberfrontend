@@ -1644,6 +1644,12 @@ export const SHOWCASE_STATS = {
       "trivia": 4,
       "system": 0
     },
+    "walmart": {
+      "all": 33,
+      "coding": 5,
+      "trivia": 28,
+      "system": 0
+    },
     "waymo": {
       "all": 8,
       "coding": 7,

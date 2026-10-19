@@ -746,7 +746,8 @@
       "google",
       "meta",
       "spotify",
-      "booking-com"
+      "booking-com",
+      "walmart"
     ],
     "difficulty": "intermediate",
     "importance": 5,
@@ -986,7 +987,8 @@
       "amazon",
       "google",
       "uber",
-      "booking-com"
+      "booking-com",
+      "walmart"
     ],
     "difficulty": "intermediate",
     "importance": 5,
@@ -1259,6 +1261,9 @@
     "technology": "css",
     "difficulty": "intermediate",
     "importance": 5,
+    "companies": [
+      "walmart"
+    ],
     "description": "display:flex is a layout system, not a centering spell. Explain main vs cross axis, direct-child constraints, and common production bugs around shrinking, overflow, and unexpected stretching.",
     "answer": {
       "blocks": [
@@ -1383,6 +1388,9 @@
     "technology": "css",
     "difficulty": "intermediate",
     "importance": 4,
+    "companies": [
+      "walmart"
+    ],
     "description": "z-index bugs are usually stacking-context bugs. Explain layering, positioned elements, transforms or opacity, and why huge numbers fail when the wrong element owns the stacking context.",
     "answer": {
       "blocks": [
@@ -1733,7 +1741,8 @@
     "difficulty": "intermediate",
     "importance": 4,
     "companies": [
-      "zalando"
+      "zalando",
+      "walmart"
     ],
     "description": "Making an element responsive means it adapts fluidly to different screen sizes, container widths, and user settings. Core techniques include fluid sizing, flexible media, modern layout systems (flexbox/grid), media and container queries, responsive typography, and intrinsic sizing utilities like aspect-ratio. Includes the media query breakpoint strategy, user-preference queries like prefers-reduced-motion and prefers-color-scheme, and the pitfalls of viewport-only thinking.",
     "answer": {

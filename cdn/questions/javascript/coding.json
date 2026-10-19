@@ -2175,7 +2175,8 @@
     "technology": "javascript",
     "companies": [
       "google",
-      "intuit"
+      "intuit",
+      "walmart"
     ],
     "sources": [
       {
@@ -2185,6 +2186,14 @@
         "publisher": "LeetCode Discuss",
         "date": "2023-10",
         "note": "One SE2 account lists writing a currying function in the first technical round. This drill practises that exercise, not its reported wording."
+      },
+      {
+        "label": "LeetCode Discuss: Walmart Global Tech India SDE III loop, Chennai, 2021",
+        "url": "https://leetcode.com/discuss/post/1436043/",
+        "company": "walmart",
+        "publisher": "LeetCode Discuss",
+        "date": "2021-08",
+        "note": "The JavaScript and DSA round asked for one function that supports both sum(a, b, c) and sum(a)(b)(c) with any number of arguments. This curry item practises the fixed-arity form; the open-ended form also needs a terminating call or valueOf."
       }
     ],
     "importance": 3,
@@ -3846,7 +3855,18 @@
     "type": "coding",
     "technology": "javascript",
     "companies": [
-      "google"
+      "google",
+      "walmart"
+    ],
+    "sources": [
+      {
+        "label": "LeetCode Discuss: front end developer interview journey with a Walmart loop, 2022",
+        "url": "https://leetcode.com/discuss/post/2774667/",
+        "company": "walmart",
+        "publisher": "LeetCode Discuss",
+        "date": "2022-11",
+        "note": "The Walmart second round in this self-reported multi-company account lists \"add two numbers using promise\" next to hoisting, closures and callback hell. This item is a practice version of that task."
+      }
     ],
     "importance": 3,
     "difficulty": "intermediate",
@@ -6107,7 +6127,18 @@
     "type": "coding",
     "technology": "javascript",
     "companies": [
-      "apple"
+      "apple",
+      "walmart"
+    ],
+    "sources": [
+      {
+        "label": "LeetCode Discuss: front end developer interview journey with a Walmart loop, 2022",
+        "url": "https://leetcode.com/discuss/post/2774667/",
+        "company": "walmart",
+        "publisher": "LeetCode Discuss",
+        "date": "2022-11",
+        "note": "The Walmart first round in this self-reported account lists Valid Anagram, Number of Islands and Best Time to Buy and Sell Stock as the problems asked."
+      }
     ],
     "importance": 2,
     "difficulty": "easy",
@@ -6757,7 +6788,8 @@
     ],
     "companies": [
       "meta",
-      "apple"
+      "apple",
+      "walmart"
     ],
     "sources": [
       {
@@ -6775,6 +6807,14 @@
         "publisher": "Medium",
         "date": "2022-07",
         "note": "One senior Apple front end account lists designing a stack with push, pop and getMin among its coding questions. This stack-and-queue drill practises the underlying structure; the min-stack variant is a follow-up, not the reported wording."
+      },
+      {
+        "label": "Code360: Walmart SDE-2 interview experience, Bengaluru, March 2021",
+        "url": "https://www.naukri.com/code360/interview-experiences/walmart/walmart-interview-experience-mar-2021-exp-0-2-years",
+        "company": "walmart",
+        "publisher": "Naukri Code360",
+        "date": "2021-03",
+        "note": "The DSA round of this self-reported loop lists \"Implement a Queue\" and a circular linked-list deletion; a later round covered React, CSS and HTML theory."
       }
     ],
     "description": {

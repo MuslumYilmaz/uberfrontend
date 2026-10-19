@@ -45,6 +45,7 @@ describe('company branding helpers', () => {
       'spotify',
       'stripe',
       'uber',
+      'walmart',
       'waymo',
       'zalando',
     ];

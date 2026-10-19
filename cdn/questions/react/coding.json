@@ -962,7 +962,8 @@
     "pressureModeAsset": "assets/questions/pressure-modes/accordion-faq.v1.json",
     "solutionAsset": "assets/sb/react/solution/react-accordion-faq-solution.v1.json",
     "companies": [
-      "amazon"
+      "amazon",
+      "walmart"
     ],
     "sources": [
       {
@@ -972,6 +973,14 @@
         "publisher": "LeetCode Discuss",
         "date": "2020-07",
         "note": "A community list compiled by one candidate marks designing an accordion as an Amazon onsite question. The list is secondhand; it cannot establish wording or frequency."
+      },
+      {
+        "label": "LeetCode Discuss: front end developer interview journey with a Walmart loop, 2022",
+        "url": "https://leetcode.com/discuss/post/2774667/",
+        "company": "walmart",
+        "publisher": "LeetCode Discuss",
+        "date": "2022-11",
+        "note": "The Walmart second round asked for an accordion in vanilla JavaScript only, with no React questions. This React item practises the same widget inside a framework."
       }
     ],
     "access": "premium",

@@ -2481,7 +2481,8 @@
     "title": "useEffect() in React: syncing with the outside world (timing, dependencies, cleanup)",
     "technology": "react",
     "companies": [
-      "bytedance"
+      "bytedance",
+      "walmart"
     ],
     "difficulty": "intermediate",
     "importance": 5,
@@ -3330,6 +3331,9 @@
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 4,
+    "companies": [
+      "walmart"
+    ],
     "description": "useMemo caches a computed value, useCallback a function reference. Explain when they prevent real work, when the dependency comparison and retained memory cost more than they save, and the pitfalls (stale closures, non-memoized children) that make memoization a no-op.",
     "seo": {
       "title": "useMemo vs useCallback: When Memoizing Hurts",
@@ -3595,7 +3599,8 @@
     "updatedAt": "2026-10-12",
     "companies": [
       "apple",
-      "revolut"
+      "revolut",
+      "walmart"
     ],
     "seo": {
       "title": "Why React Remounts Instead of Updating: Keys and Type",
@@ -4742,6 +4747,9 @@
     "technology": "react",
     "difficulty": "hard",
     "importance": 4,
+    "companies": [
+      "walmart"
+    ],
     "description": "Explain why Context updates can trigger re-renders across many consumers (especially when the Provider value identity changes), common pitfalls (inline objects/functions), and practical fixes: memoizing Provider values, splitting contexts, narrowing provider scope, memoizing consumers, and using selector-based patterns when needed.",
     "answer": {
       "blocks": [
@@ -4909,6 +4917,9 @@
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 4,
+    "companies": [
+      "walmart"
+    ],
     "description": "Error Boundaries isolate render-time crashes only. Explain why errors in event handlers, async callbacks, server-side rendering, and the boundary itself slip past them, what to do for each case, and how fallback UI plus monitoring fit together.",
     "answer": {
       "blocks": [
@@ -5447,7 +5458,8 @@
     "technology": "react",
     "companies": [
       "bytedance",
-      "apple"
+      "apple",
+      "walmart"
     ],
     "difficulty": "intermediate",
     "importance": 3,

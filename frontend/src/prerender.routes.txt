@@ -101,6 +101,7 @@
 /companies/spotify/preview
 /companies/stripe/preview
 /companies/uber/preview
+/companies/walmart/preview
 /companies/waymo/preview
 /companies/zalando/preview
 /css/coding/css-box-model-margin-padding-border
