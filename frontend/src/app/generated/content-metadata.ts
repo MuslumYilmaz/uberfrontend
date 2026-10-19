@@ -1638,6 +1638,12 @@ export const SHOWCASE_STATS = {
       "trivia": 1,
       "system": 0
     },
+    "tesla": {
+      "all": 17,
+      "coding": 8,
+      "trivia": 9,
+      "system": 0
+    },
     "uber": {
       "all": 5,
       "coding": 1,

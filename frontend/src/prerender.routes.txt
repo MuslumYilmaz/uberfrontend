@@ -100,6 +100,7 @@
 /companies/servicenow/preview
 /companies/spotify/preview
 /companies/stripe/preview
+/companies/tesla/preview
 /companies/uber/preview
 /companies/walmart/preview
 /companies/waymo/preview

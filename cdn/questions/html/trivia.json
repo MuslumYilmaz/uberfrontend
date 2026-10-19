@@ -796,7 +796,8 @@
     ],
     "importance": 5,
     "companies": [
-      "zalando"
+      "zalando",
+      "tesla"
     ],
     "answer": {
       "blocks": [
@@ -3177,7 +3178,8 @@
     ],
     "importance": 5,
     "companies": [
-      "apple"
+      "apple",
+      "tesla"
     ],
     "answer": {
       "blocks": [

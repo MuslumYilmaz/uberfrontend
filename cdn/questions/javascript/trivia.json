@@ -3611,7 +3611,9 @@
       "web-apis"
     ],
     "importance": 4,
-    "companies": [],
+    "companies": [
+      "tesla"
+    ],
     "answer": {
       "blocks": [
         {
@@ -6982,7 +6984,9 @@
       "state"
     ],
     "importance": 4,
-    "companies": [],
+    "companies": [
+      "tesla"
+    ],
     "answer": {
       "blocks": [
         {

@@ -2217,7 +2217,8 @@
       "intuit",
       "google",
       "zalando",
-      "booking-com"
+      "booking-com",
+      "tesla"
     ],
     "sources": [
       {
@@ -3284,7 +3285,18 @@
     },
     "solutionAsset": "assets/sb/react/solution/react-like-button-solution.v2.json",
     "companies": [
-      "amazon"
+      "amazon",
+      "tesla"
+    ],
+    "sources": [
+      {
+        "label": "Taro: Tesla frontend developer interview, San Francisco, 2021",
+        "url": "https://www.jointaro.com/interviews/companies/tesla/experiences/frontend-developer-san-francisco-ca-january-1-2021-no-offer-positive-8db5ee50/",
+        "company": "tesla",
+        "publisher": "Taro",
+        "date": "2021-01",
+        "note": "The three-hour online assessment in this self-reported loop had an HTML and CSS task, a React like button and a string puzzle. This item practises the like button."
+      }
     ],
     "access": "premium",
     "updatedAt": "2026-01-30",
@@ -4548,7 +4560,8 @@
     "solutionAsset": "assets/sb/react/solution/react-fetch-list-states-solution.v1.json",
     "decisionGraphAsset": "assets/questions/react/decision-graphs/react-fetch-list-states.v1.json",
     "companies": [
-      "revolut"
+      "revolut",
+      "tesla"
     ],
     "sources": [
       {
@@ -4566,6 +4579,14 @@
         "publisher": "Taro",
         "date": "2025-05",
         "note": "One account describes a pairing session that used a service API with authentication to display data in a React component. This exercise practises the same fetch-and-render loop against a fake API; it is not the reported task."
+      },
+      {
+        "label": "Taro: Tesla front end developer interview, Los Angeles, 2022",
+        "url": "https://www.jointaro.com/interviews/companies/tesla/experiences/front-end-developer-los-angeles-ca-january-1-2022-no-offer-negative-eadce28f/",
+        "company": "tesla",
+        "publisher": "Taro",
+        "date": "2022-01",
+        "note": "The virtual onsite asked to fetch photos and render them with theme contexts through React Context. This item practises the fetch-and-render part with loading, error and empty states."
       }
     ],
     "access": "free",
