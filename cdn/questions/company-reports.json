@@ -1696,6 +1696,28 @@
         ]
       },
       {
+        "id": "react-debug-api-misuse",
+        "kind": "coding",
+        "tech": "react",
+        "title": "Debug: Product Search That Misuses Its API",
+        "access": "premium",
+        "route": "/react/coding/react-debug-api-misuse",
+        "sources": [
+          {
+            "label": "LeetCode Discuss: Walmart frontend engineer interview invitation, May 2026",
+            "url": "https://leetcode.com/discuss/post/8288813/",
+            "publisher": "LeetCode Discuss",
+            "date": "2026-05"
+          },
+          {
+            "label": "Blind: Walmart SWE3 interview advice thread, October 2023",
+            "url": "https://www.teamblind.com/post/Have-an-interview-with-walmart-SWE3-2-4-YOEneed-advice-0JOeTkW6",
+            "publisher": "Blind",
+            "date": "2023-10"
+          }
+        ]
+      },
+      {
         "id": "js-stack-queue-implementation",
         "kind": "coding",
         "tech": "javascript",

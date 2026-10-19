@@ -427,6 +427,7 @@
 /react/coding/react-countdown-timer
 /react/coding/react-counter
 /react/coding/react-debounced-search
+/react/coding/react-debug-api-misuse
 /react/coding/react-debug-double-render
 /react/coding/react-dynamic-counter-buttons
 /react/coding/react-dynamic-table

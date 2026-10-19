@@ -6985,6 +6985,28 @@
     "assetRef": "questions/react/coding.json#react-debug-double-render"
   },
   {
+    "id": "react-debug-api-misuse",
+    "family": "question",
+    "title": "Debug: Product Search That Misuses Its API",
+    "route": "/react/coding/react-debug-api-misuse",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "Debug a product search page that misuses its search API, then add a small feature. Each of four user reports points to a different mistake in how the component calls and reads the API.",
+    "tags": [
+      "react",
+      "debugging",
+      "effects",
+      "async",
+      "api-calls",
+      "error-handling"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 18,
+    "updatedAt": "2026-10-19",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/coding.json#react-debug-api-misuse"
+  },
+  {
     "id": "react-functional-vs-class-components",
     "family": "question",
     "title": "Functional vs class components in React: what actually differs?",

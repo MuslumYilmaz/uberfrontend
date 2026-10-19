@@ -4595,5 +4595,307 @@
       "title": "Fetch and Render a List in React",
       "description": "Load a list from a fake API in React with TypeScript and render loading, error with Retry, empty and success states without stale updates."
     }
+  },
+  {
+    "id": "react-debug-api-misuse",
+    "title": "Debug: Product Search That Misuses Its API",
+    "type": "coding",
+    "technology": "react",
+    "difficulty": "intermediate",
+    "importance": 4,
+    "tags": [
+      "react",
+      "debugging",
+      "effects",
+      "async",
+      "api-calls",
+      "error-handling"
+    ],
+    "description": {
+      "summary": "Debug a React product search page that misuses its search API, then add one small feature. Four user reports arrived: \"The page says no products match before I type anything.\" \"Typing a new query does not change the results.\" \"When I type quickly, the results sometimes jump back to an older search.\" \"When the search service is down, the page says Searching… forever.\" Find the root cause of each report in src/App.tsx, fix all four, and add the count line the product team asked for. Public interview reports describe this round at Walmart: an assessment section that asks candidates to debug a React or Angular app (2026), and a loop with a React debug session (2023). Concepts: react, debugging, effects, async, api-calls.",
+      "specs": {
+        "requirements": [
+          "Work in `src/App.tsx`; treat `searchProducts` and the catalog as given.",
+          "Read the API response as it is typed: `{ items, total }`.",
+          "Search again whenever the query changes, starting with the empty query on mount.",
+          "Ignore a response that arrives after the query has changed again.",
+          "On a rejected request, replace the loading line with a readable `.status--error` line and keep the page usable for the next search.",
+          "Feature: on success, render `<span className=\"count\">Showing X of Y products</span>`, where Y is `total` from the API.",
+          "Keep the class names `.search`, `.status--loading`, `.result-row`, `.results` and `.empty`."
+        ],
+        "expectedBehavior": [
+          "On first render the loading line is visible, then five `.result-row` items appear with `Showing 5 of 12 products`.",
+          "Typing `lamp` shows three rows and `Showing 3 of 3 products`.",
+          "Typing `l` and then `lamp` quickly ends with the three lamp rows, even after the slow `l` response arrives.",
+          "Typing `error` shows `Search failed: Search service unavailable` and no loading line; typing `desk` afterwards shows one row and no error.",
+          "A query without matches, such as `zzz`, shows `No products match \"zzz\".` with no rows and no count line."
+        ],
+        "implementationNotes": [
+          "Replace the `any` in the `.then` callback with `SearchResponse`; TypeScript then points at the field the component reads.",
+          "Add `query` to the effect dependencies and set the loading state at the top of the effect.",
+          "Use a `cancelled` flag in the effect cleanup so only the latest request can update state.",
+          "Add a `.catch` that stores the error message; one status union keeps loading, error and success from overlapping."
+        ],
+        "techFocus": [
+          "Debugging useEffect data fetching",
+          "Stale responses and effect cleanup",
+          "Typing API responses instead of any",
+          "Error states for rejected promises",
+          "A small feature on top of a fix"
+        ]
+      }
+    },
+    "solutionBlock": {
+      "overview": "Root causes, one per report:\n\n1. The component reads `data.results`, but the API resolves `{ items, total }`; the `any` annotation hid the mismatch, so every search looked empty.\n2. The effect has an empty dependency array, so it runs once and typing never searches again.\n3. Nothing stops a slow response for an older query from overwriting newer results.\n4. There is no `.catch`, so a rejection leaves `loading` true forever.\n\nThe fix keeps one `search` union (loading, success with `items` and `total`, error with a message), runs the request in an effect that depends on `[query]`, resets to loading at the top of the effect, flips a `cancelled` flag in the cleanup, and maps a rejection to the error state. The new count line reads `total` from the same success state.\n\n**Test cases**\n- Initial render shows five rows and `Showing 5 of 12 products`.\n- `lamp` shows three rows; `l` then `lamp` still ends with three rows after the slow response.\n- `error` shows the error line, and the next search clears it.\n- `zzz` shows the empty state without rows or a count line.",
+      "approaches": [
+        {
+          "title": "Type the response, depend on the query, guard the request and catch the rejection",
+          "prose": "Start from the reports, not the code: each one maps to a single line.\n\n1. Type the `.then` callback as `SearchResponse`. TypeScript immediately rejects `data.results`; read `data.items` and `data.total` instead.\n2. Replace the parallel `results` and `loading` state with one `SearchState` union, so loading, success and error cannot overlap.\n3. Depend on `[query]` and set `{ status: 'loading' }` at the top of the effect.\n4. Declare `let cancelled = false`, return early in both handlers when it is set, and flip it in the cleanup. A slow `l` response now lands after its effect was cleaned up and is ignored.\n5. Add `.catch` and store the message, so the error line replaces the loading line and the next search resets it.\n6. Render the count line and rows only on success with `total > 0`, and the empty state only when a finished search returns `total === 0`.",
+          "codeJs": "import React, { useEffect, useState } from 'react';\nimport './App.css';\n\nexport interface Product {\n  id: number;\n  name: string;\n  category: string;\n}\n\nexport interface SearchResponse {\n  items: Product[];\n  total: number;\n}\n\nexport const PAGE_SIZE = 5;\n\nconst CATALOG: Product[] = [\n  { id: 1, name: 'Desk Lamp', category: 'Lighting' },\n  { id: 2, name: 'Floor Lamp', category: 'Lighting' },\n  { id: 3, name: 'Lamp Shade', category: 'Lighting' },\n  { id: 4, name: 'Laptop Stand', category: 'Office' },\n  { id: 5, name: 'Label Maker', category: 'Office' },\n  { id: 6, name: 'Ladder Shelf', category: 'Furniture' },\n  { id: 7, name: 'Lounge Chair', category: 'Furniture' },\n  { id: 8, name: 'Linen Curtain', category: 'Textiles' },\n  { id: 9, name: 'Wall Clock', category: 'Decor' },\n  { id: 10, name: 'Table Runner', category: 'Textiles' },\n  { id: 11, name: 'Bookend Pair', category: 'Decor' },\n  { id: 12, name: 'Cable Tray', category: 'Office' }\n];\n\n// Fake search API. Treat it as given: the bugs are in App below.\n// - resolves { items: the first PAGE_SIZE matches, total: the number of all matches }\n// - one-letter queries answer slowly (600ms) and longer ones quickly (150ms),\n//   so fast typing produces responses that arrive out of order\n// - the query \"error\" rejects, like a search service that is down\nexport function searchProducts(query: string): Promise<SearchResponse> {\n  const q = query.trim().toLowerCase();\n  const delay = q.length === 1 ? 600 : 150;\n  return new Promise((resolve, reject) => {\n    window.setTimeout(() => {\n      if (q === 'error') {\n        reject(new Error('Search service unavailable'));\n        return;\n      }\n      const matches = CATALOG.filter((product) => product.name.toLowerCase().includes(q));\n      resolve({ items: matches.slice(0, PAGE_SIZE), total: matches.length });\n    }, delay);\n  });\n}\n\ntype SearchState =\n  | { status: 'loading' }\n  | { status: 'success'; items: Product[]; total: number }\n  | { status: 'error'; message: string };\n\nfunction toErrorMessage(error: unknown): string {\n  return error instanceof Error && error.message ? error.message : 'Unknown error';\n}\n\nexport default function App() {\n  const [query, setQuery] = useState('');\n  const [search, setSearch] = useState<SearchState>({ status: 'loading' });\n\n  useEffect(() => {\n    let cancelled = false;\n    setSearch({ status: 'loading' });\n\n    searchProducts(query)\n      .then((data: SearchResponse) => {\n        if (cancelled) return;\n        setSearch({ status: 'success', items: data.items, total: data.total });\n      })\n      .catch((error: unknown) => {\n        if (cancelled) return;\n        setSearch({ status: 'error', message: toErrorMessage(error) });\n      });\n\n    return () => {\n      cancelled = true;\n    };\n  }, [query]);\n\n  return (\n    <main className=\"main\">\n      <section className=\"card\">\n        <header className=\"header\">\n          <h1 className=\"title\">Product Search (Solution)</h1>\n          <p className=\"subtitle\">Every search shows its own results, its own error and the total from the API.</p>\n        </header>\n\n        <div className=\"field\">\n          <label className=\"label\" htmlFor=\"product-search\">Search products</label>\n          <input\n            id=\"product-search\"\n            className=\"search\"\n            type=\"search\"\n            value={query}\n            placeholder=\"Try lamp, desk or error\"\n            onChange={(event: React.ChangeEvent<HTMLInputElement>) => setQuery(event.target.value)}\n          />\n        </div>\n\n        <div className=\"status-row\">\n          {search.status === 'loading' && <span className=\"status status--loading\">Searching…</span>}\n          {search.status === 'error' && (\n            <span className=\"status status--error\" role=\"alert\">Search failed: {search.message}</span>\n          )}\n          {search.status === 'success' && search.total > 0 && (\n            <span className=\"count\">Showing {search.items.length} of {search.total} products</span>\n          )}\n        </div>\n\n        {search.status === 'success' && search.total === 0 && (\n          <p className=\"empty\">No products match &quot;{query}&quot;.</p>\n        )}\n\n        {search.status === 'success' && search.total > 0 && (\n          <ul className=\"results\">\n            {search.items.map((product) => (\n              <li key={product.id} className=\"result-row\">\n                <div className=\"result-name\">{product.name}</div>\n                <div className=\"result-category\">{product.category}</div>\n              </li>\n            ))}\n          </ul>\n        )}\n      </section>\n    </main>\n  );\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Silencing the type error with `any` instead of typing the response, which is how `data.results` slipped in.",
+          "Adding `query` to the dependencies but not guarding the request, which trades the stale-results bug for a race.",
+          "Setting `loading` to false only in `.then`, so a rejection leaves the loading line on screen.",
+          "Showing the empty message whenever the list is empty, including while the first search is still loading.",
+          "Treating debounce as the fix for the race: it hides the race during fast typing, but a slow network still reorders responses."
+        ],
+        "techniques": [
+          "Typing API responses at the boundary instead of using any.",
+          "useEffect with a cancelled flag in the cleanup.",
+          "A discriminated union for request state.",
+          "Reading every visible number from the latest successful response."
+        ]
+      }
+    },
+    "frameworkTests": [
+      {
+        "id": "api-misuse-first-page",
+        "name": "Initial load lists the first page of products",
+        "steps": [
+          {
+            "type": "waitForCount",
+            "selector": ".result-row",
+            "count": 5,
+            "timeoutMs": 2500
+          },
+          {
+            "type": "expectText",
+            "selector": ".result-row",
+            "text": "Desk Lamp",
+            "match": "contains"
+          }
+        ]
+      },
+      {
+        "id": "api-misuse-refetch-on-type",
+        "name": "Typing a query refetches and shows the matches",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".search",
+            "value": "lamp"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".result-row",
+            "count": 3,
+            "timeoutMs": 2500
+          },
+          {
+            "type": "expectText",
+            "selector": ".results",
+            "text": "Floor Lamp",
+            "match": "contains"
+          }
+        ]
+      },
+      {
+        "id": "api-misuse-stale-response",
+        "name": "A slow response for an older query never replaces newer results",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".search",
+            "value": "l"
+          },
+          {
+            "type": "setValue",
+            "selector": ".search",
+            "value": "lamp"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".result-row",
+            "count": 3,
+            "timeoutMs": 2500
+          },
+          {
+            "type": "wait",
+            "durationMs": 900
+          },
+          {
+            "type": "expectCount",
+            "selector": ".result-row",
+            "count": 3
+          },
+          {
+            "type": "expectNoText",
+            "selector": ".results",
+            "text": "Laptop Stand",
+            "match": "contains"
+          }
+        ]
+      },
+      {
+        "id": "api-misuse-failed-request",
+        "name": "A failed request shows an error and the next search recovers",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".search",
+            "value": "error"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".status--error",
+            "text": "Search service unavailable",
+            "match": "contains",
+            "timeoutMs": 2500
+          },
+          {
+            "type": "expectCount",
+            "selector": ".status--loading",
+            "count": 0
+          },
+          {
+            "type": "expectCount",
+            "selector": ".result-row",
+            "count": 0
+          },
+          {
+            "type": "setValue",
+            "selector": ".search",
+            "value": "desk"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".result-row",
+            "count": 1,
+            "timeoutMs": 2500
+          },
+          {
+            "type": "expectCount",
+            "selector": ".status--error",
+            "count": 0
+          }
+        ]
+      },
+      {
+        "id": "api-misuse-count-line",
+        "name": "The count line reports the total from the API",
+        "steps": [
+          {
+            "type": "waitForText",
+            "selector": ".count",
+            "text": "Showing 5 of 12 products",
+            "match": "contains",
+            "timeoutMs": 2500
+          },
+          {
+            "type": "setValue",
+            "selector": ".search",
+            "value": "lamp"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".count",
+            "text": "Showing 3 of 3 products",
+            "match": "contains",
+            "timeoutMs": 2500
+          }
+        ]
+      },
+      {
+        "id": "api-misuse-no-matches",
+        "name": "A query without matches replaces the rows with the empty state",
+        "steps": [
+          {
+            "type": "waitForCount",
+            "selector": ".result-row",
+            "count": 5,
+            "timeoutMs": 2500
+          },
+          {
+            "type": "setValue",
+            "selector": ".search",
+            "value": "zzz"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".empty",
+            "text": "No products match \"zzz\"",
+            "match": "contains",
+            "timeoutMs": 2500
+          },
+          {
+            "type": "expectCount",
+            "selector": ".result-row",
+            "count": 0
+          },
+          {
+            "type": "expectCount",
+            "selector": ".count",
+            "count": 0
+          }
+        ]
+      }
+    ],
+    "sdk": {
+      "asset": "assets/sb/react/question/react-debug-api-misuse.v1.json",
+      "openFile": "/src/App.tsx",
+      "storageKey": "v2:ui:react:react-debug-api-misuse"
+    },
+    "solutionAsset": "assets/sb/react/solution/react-debug-api-misuse-solution.v1.json",
+    "decisionGraphAsset": "assets/questions/react/decision-graphs/react-debug-api-misuse.v1.json",
+    "companies": [
+      "walmart"
+    ],
+    "sources": [
+      {
+        "label": "LeetCode Discuss: Walmart frontend engineer interview invitation, May 2026",
+        "url": "https://leetcode.com/discuss/post/8288813/",
+        "company": "walmart",
+        "publisher": "LeetCode Discuss",
+        "date": "2026-05",
+        "note": "The post quotes the HackerRank Frontend Engineering Assessment email: a language-agnostic coding problem, then debugging a React or Angular app with AI assistance allowed. This item practises that debugging section."
+      },
+      {
+        "label": "Blind: Walmart SWE3 interview advice thread, October 2023",
+        "url": "https://www.teamblind.com/post/Have-an-interview-with-walmart-SWE3-2-4-YOEneed-advice-0JOeTkW6",
+        "company": "walmart",
+        "publisher": "Blind",
+        "date": "2023-10",
+        "note": "A Walmart-badged reply describes the loop it went through: code with React, a debug session, system design and a hiring manager talk. The debug session is the round this item practises."
+      }
+    ],
+    "premiumPreview": {
+      "summary": "Debug a product search page that misuses its search API, then add a small feature. Each of four user reports points to a different mistake in how the component calls and reads the API.",
+      "learningOutcomes": [
+        "Trace a wrong-results report back to a mismatched response field.",
+        "Make an effect search again when its input changes.",
+        "Stop a slow response from overwriting newer results.",
+        "Turn a rejected request into a clear error state that the next search clears."
+      ],
+      "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+    },
+    "access": "premium",
+    "updatedAt": "2026-10-19",
+    "seo": {
+      "title": "Debug a React Search That Misuses Its API",
+      "description": "Fix four API bugs in a React product search: a wrong response field, a missing effect dependency, stale responses and a missing catch, then add a count."
+    }
   }
 ]

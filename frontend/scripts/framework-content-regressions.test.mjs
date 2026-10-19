@@ -173,7 +173,7 @@ function assertFrameworkCssFormatting() {
       canonicalRoot: path.join(repoRoot, 'cdn', 'sb'),
       mirrorRoot: path.join(repoRoot, 'frontend', 'src', 'assets', 'sb'),
     }),
-    { assets: 200, cssSources: 265, changedAssets: 0, changedCssSources: 0 },
+    { assets: 202, cssSources: 267, changedAssets: 0, changedCssSources: 0 },
     'The full framework CSS corpus must stay canonical and exactly mirrored'
   );
 }
@@ -4914,6 +4914,29 @@ for (const node of autocompleteGraphVariant.nodes) {
     autocompleteGraphLines.slice(lineStart - 1, lineEnd).join('\n').includes(snippet),
     `${node.id}: autocomplete anchor range must contain its snippet`
   );
+}
+
+const apiMisuseQuestion = json('cdn/questions/react/coding.json').find((entry) => entry.id === 'react-debug-api-misuse');
+assert.ok(apiMisuseQuestion);
+assert.equal(apiMisuseQuestion.access, 'premium');
+assert.equal(apiMisuseQuestion.decisionGraphAsset, 'assets/questions/react/decision-graphs/react-debug-api-misuse.v1.json');
+const apiMisuseStarter = json('cdn/sb/react/question/react-debug-api-misuse.v1.json').files['src/App.tsx'];
+const apiMisuseSolution = json('cdn/sb/react/solution/react-debug-api-misuse-solution.v1.json').files['src/App.tsx'];
+assert.match(apiMisuseStarter, /data\.results/, 'the starter keeps the wrong response field');
+assert.match(apiMisuseStarter, /\}, \[\]\);/, 'the starter keeps the empty dependency array');
+assert.doesNotMatch(apiMisuseStarter, /\.catch\(/, 'the starter keeps the missing catch');
+assert.match(apiMisuseSolution, /\}, \[query\]\);/);
+assert.match(apiMisuseSolution, /cancelled = true;/);
+assert.match(apiMisuseSolution, /\.catch\(\(error: unknown\) =>/);
+const apiMisuseGraph = json('cdn/questions/react/decision-graphs/react-debug-api-misuse.v1.json');
+const apiMisuseVariant = apiMisuseGraph.variants.approach1;
+assert.equal(apiMisuseGraph.questionId, 'react-debug-api-misuse');
+assert.equal(apiMisuseVariant.code, apiMisuseSolution, 'API misuse decision graph must mirror the solution App.tsx');
+const apiMisuseLines = apiMisuseVariant.code.split('\n');
+for (const node of apiMisuseVariant.nodes) {
+  const { lineStart, lineEnd, snippet } = node.anchor;
+  assert.ok(lineStart >= 1 && lineEnd >= lineStart && lineEnd <= apiMisuseLines.length, `${node.id}: invalid API misuse anchor range`);
+  assert.ok(apiMisuseLines.slice(lineStart - 1, lineEnd).join('\n').includes(snippet), `${node.id}: API misuse anchor range must contain its snippet`);
 }
 
 const countdownQuestion = json('cdn/questions/react/coding.json').find((entry) => entry.id === 'react-countdown-timer');

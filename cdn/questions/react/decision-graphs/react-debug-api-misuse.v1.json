@@ -1,0 +1,109 @@
+{
+  "questionId": "react-debug-api-misuse",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "typescript",
+      "code": "import React, { useEffect, useState } from 'react';\nimport './App.css';\n\nexport interface Product {\n  id: number;\n  name: string;\n  category: string;\n}\n\nexport interface SearchResponse {\n  items: Product[];\n  total: number;\n}\n\nexport const PAGE_SIZE = 5;\n\nconst CATALOG: Product[] = [\n  { id: 1, name: 'Desk Lamp', category: 'Lighting' },\n  { id: 2, name: 'Floor Lamp', category: 'Lighting' },\n  { id: 3, name: 'Lamp Shade', category: 'Lighting' },\n  { id: 4, name: 'Laptop Stand', category: 'Office' },\n  { id: 5, name: 'Label Maker', category: 'Office' },\n  { id: 6, name: 'Ladder Shelf', category: 'Furniture' },\n  { id: 7, name: 'Lounge Chair', category: 'Furniture' },\n  { id: 8, name: 'Linen Curtain', category: 'Textiles' },\n  { id: 9, name: 'Wall Clock', category: 'Decor' },\n  { id: 10, name: 'Table Runner', category: 'Textiles' },\n  { id: 11, name: 'Bookend Pair', category: 'Decor' },\n  { id: 12, name: 'Cable Tray', category: 'Office' }\n];\n\n// Fake search API. Treat it as given: the bugs are in App below.\n// - resolves { items: the first PAGE_SIZE matches, total: the number of all matches }\n// - one-letter queries answer slowly (600ms) and longer ones quickly (150ms),\n//   so fast typing produces responses that arrive out of order\n// - the query \"error\" rejects, like a search service that is down\nexport function searchProducts(query: string): Promise<SearchResponse> {\n  const q = query.trim().toLowerCase();\n  const delay = q.length === 1 ? 600 : 150;\n  return new Promise((resolve, reject) => {\n    window.setTimeout(() => {\n      if (q === 'error') {\n        reject(new Error('Search service unavailable'));\n        return;\n      }\n      const matches = CATALOG.filter((product) => product.name.toLowerCase().includes(q));\n      resolve({ items: matches.slice(0, PAGE_SIZE), total: matches.length });\n    }, delay);\n  });\n}\n\ntype SearchState =\n  | { status: 'loading' }\n  | { status: 'success'; items: Product[]; total: number }\n  | { status: 'error'; message: string };\n\nfunction toErrorMessage(error: unknown): string {\n  return error instanceof Error && error.message ? error.message : 'Unknown error';\n}\n\nexport default function App() {\n  const [query, setQuery] = useState('');\n  const [search, setSearch] = useState<SearchState>({ status: 'loading' });\n\n  useEffect(() => {\n    let cancelled = false;\n    setSearch({ status: 'loading' });\n\n    searchProducts(query)\n      .then((data: SearchResponse) => {\n        if (cancelled) return;\n        setSearch({ status: 'success', items: data.items, total: data.total });\n      })\n      .catch((error: unknown) => {\n        if (cancelled) return;\n        setSearch({ status: 'error', message: toErrorMessage(error) });\n      });\n\n    return () => {\n      cancelled = true;\n    };\n  }, [query]);\n\n  return (\n    <main className=\"main\">\n      <section className=\"card\">\n        <header className=\"header\">\n          <h1 className=\"title\">Product Search (Solution)</h1>\n          <p className=\"subtitle\">Every search shows its own results, its own error and the total from the API.</p>\n        </header>\n\n        <div className=\"field\">\n          <label className=\"label\" htmlFor=\"product-search\">Search products</label>\n          <input\n            id=\"product-search\"\n            className=\"search\"\n            type=\"search\"\n            value={query}\n            placeholder=\"Try lamp, desk or error\"\n            onChange={(event: React.ChangeEvent<HTMLInputElement>) => setQuery(event.target.value)}\n          />\n        </div>\n\n        <div className=\"status-row\">\n          {search.status === 'loading' && <span className=\"status status--loading\">Searching…</span>}\n          {search.status === 'error' && (\n            <span className=\"status status--error\" role=\"alert\">Search failed: {search.message}</span>\n          )}\n          {search.status === 'success' && search.total > 0 && (\n            <span className=\"count\">Showing {search.items.length} of {search.total} products</span>\n          )}\n        </div>\n\n        {search.status === 'success' && search.total === 0 && (\n          <p className=\"empty\">No products match &quot;{query}&quot;.</p>\n        )}\n\n        {search.status === 'success' && search.total > 0 && (\n          <ul className=\"results\">\n            {search.items.map((product) => (\n              <li key={product.id} className=\"result-row\">\n                <div className=\"result-name\">{product.name}</div>\n                <div className=\"result-category\">{product.category}</div>\n              </li>\n            ))}\n          </ul>\n        )}\n      </section>\n    </main>\n  );\n}\n",
+      "nodes": [
+        {
+          "id": "a1-read-the-real-fields",
+          "title": "Read the fields the API actually returns",
+          "anchor": {
+            "lineStart": 72,
+            "lineEnd": 72,
+            "snippet": "setSearch({ status: 'success', items: data.items, total: data.total });"
+          },
+          "why": "The API resolves { items, total }. The starter read data.results, and the any annotation hid the mismatch, so every search looked empty.",
+          "alternative": "Keep any and add data.results ?? data.items as a fallback.",
+          "tradeoff": "Typing the callback as SearchResponse lets the compiler catch the next shape change instead of the user."
+        },
+        {
+          "id": "a2-one-status-union",
+          "title": "Model the search as one status union",
+          "anchor": {
+            "lineStart": 52,
+            "lineEnd": 52,
+            "snippet": "type SearchState ="
+          },
+          "why": "Loading, success with items and total, and error with a message can never overlap, so the page cannot show rows and an error at once.",
+          "alternative": "Keep results, loading and error as three separate states.",
+          "tradeoff": "A union costs one type up front and removes every impossible combination from the render."
+        },
+        {
+          "id": "a3-depend-on-the-query",
+          "title": "Search again whenever the query changes",
+          "anchor": {
+            "lineStart": 82,
+            "lineEnd": 82,
+            "snippet": "}, [query]);"
+          },
+          "why": "With an empty dependency array the effect ran only on mount, so typing never triggered a new search.",
+          "alternative": "Call searchProducts from the onChange handler.",
+          "tradeoff": "The effect keeps one code path for the first search and every later one."
+        },
+        {
+          "id": "a4-reset-to-loading",
+          "title": "Reset to loading at the start of every search",
+          "anchor": {
+            "lineStart": 67,
+            "lineEnd": 67,
+            "snippet": "setSearch({ status: 'loading' });"
+          },
+          "why": "Old rows and old errors disappear immediately, so the user never reads results for a query they already changed.",
+          "alternative": "Keep the previous results visible while the next search runs.",
+          "tradeoff": "Clearing is simpler and honest; keeping stale rows needs an explicit stale label."
+        },
+        {
+          "id": "a5-ignore-older-responses",
+          "title": "Ignore responses from an older query",
+          "anchor": {
+            "lineStart": 80,
+            "lineEnd": 80,
+            "snippet": "cancelled = true;"
+          },
+          "why": "A one-letter query answers after a longer one, so without the guard the older response overwrote the newer results.",
+          "alternative": "Debounce the input.",
+          "tradeoff": "Debouncing reduces requests but cannot stop a slow network from reordering them; the guard can."
+        },
+        {
+          "id": "a6-catch-the-rejection",
+          "title": "Turn a rejection into an error state",
+          "anchor": {
+            "lineStart": 74,
+            "lineEnd": 74,
+            "snippet": ".catch((error: unknown) => {"
+          },
+          "why": "Without a catch the promise rejection left the loading line on screen forever and logged an unhandled rejection.",
+          "alternative": "Wrap the call in try and catch inside an async function.",
+          "tradeoff": "Both work; the catch keeps the same cancelled check as the success path."
+        },
+        {
+          "id": "a7-count-from-total",
+          "title": "Read the count from the total the API returns",
+          "anchor": {
+            "lineStart": 110,
+            "lineEnd": 110,
+            "snippet": "Showing {search.items.length} of {search.total} products"
+          },
+          "why": "The page shows at most five items, so only total can say how many products match.",
+          "alternative": "Count the rendered rows.",
+          "tradeoff": "Counting rows would always print five for broad queries; total is the real number."
+        },
+        {
+          "id": "a8-empty-only-after-a-search",
+          "title": "Show the empty state only after a search returns nothing",
+          "anchor": {
+            "lineStart": 114,
+            "lineEnd": 114,
+            "snippet": "search.status === 'success' && search.total === 0"
+          },
+          "why": "The starter showed the empty message whenever the list was empty, including during loading and after the wrong-field bug.",
+          "alternative": "Show the empty message whenever there are no rows.",
+          "tradeoff": "Tying it to a finished search with total 0 keeps the message truthful."
+        }
+      ]
+    }
+  }
+}

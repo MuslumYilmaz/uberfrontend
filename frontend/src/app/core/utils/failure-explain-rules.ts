@@ -247,6 +247,48 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
     }),
   },
   {
+    ruleId: 'react-debug-api-misuse-root-causes',
+    questionId: 'react-debug-api-misuse',
+    priority: 100,
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, ['first page', 'refetches', 'older query', 'failed request', 'count line', 'without matches']) ||
+      snapshot.failCount >= 2,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-debug-api-misuse-root-causes',
+      title: 'Check how the component reads, repeats and guards the API call',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'Each failing check maps to one misuse: the response field, the effect dependencies, the missing stale-response guard, or the missing catch.',
+      ),
+      actions: [
+        'Type the `.then` callback as `SearchResponse` and read `items` and `total` instead of `results`.',
+        'Depend on `[query]`, set the loading state at the top of the effect, and flip a `cancelled` flag in the cleanup.',
+        'Add a `.catch` that stores the error message so the loading line disappears and the next search clears it.',
+      ],
+      confidence: 0.86,
+    }),
+  },
+  {
+    ruleId: 'react-debug-api-misuse-default',
+    questionId: 'react-debug-api-misuse',
+    priority: 40,
+    matches: () => true,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-debug-api-misuse-default',
+      title: 'Drive every branch from the latest search result',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'Rows, the count line, the empty state and the error line should all come from the state that the latest request produced.',
+      ),
+      actions: [
+        'Keep one status union: loading, success with `items` and `total`, and error with a message.',
+        'Render the rows and the count line only on success with `total > 0`, and the empty state only when `total === 0`.',
+        'Read the count from `total`; the page shows at most five items.',
+      ],
+      confidence: 0.72,
+    }),
+  },
+  {
     ruleId: 'css-flexbox-navbar-responsive-layout',
     questionId: 'css-flexbox-navbar',
     priority: 100,

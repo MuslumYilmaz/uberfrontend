@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-19T09:02:15.503Z",
+  "generatedAt": "2026-10-19T09:24:05.396Z",
   "entries": [
     {
       "tech": "angular",
@@ -1944,6 +1944,12 @@
       "tech": "react",
       "kind": "coding",
       "id": "react-debounced-search",
+      "file": "react/coding.json"
+    },
+    {
+      "tech": "react",
+      "kind": "coding",
+      "id": "react-debug-api-misuse",
       "file": "react/coding.json"
     },
     {
