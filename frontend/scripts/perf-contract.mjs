@@ -26,6 +26,12 @@ const noWrite = process.argv.includes('--no-write');
 // and coding routes (811,044 bytes); no page grew on its own, so the total
 // threshold moved from 104,000,000 to 109,000,000.
 //
+// 2026-10-19: /coding HTML re-measured at 615,132 bytes after the Walmart and
+// Tesla company tags. That is 4,868 bytes under the 620,000 cap. The approved
+// Walmart, NVIDIA and Tesla plan adds about ten coding and debug items at
+// roughly 2 KB of /coding row markup each, so the threshold moved from 620,000
+// to 640,000. No existing row grew; the increase pays for new list rows only.
+//
 // "Eager JS" is the static import closure of the module scripts in index.html,
 // i.e. everything the browser must load before the app boots. The modulepreload
 // hints are not used as a budget: Angular only emits hints for the first ten
@@ -35,7 +41,7 @@ const noWrite = process.argv.includes('--no-write');
 const THRESHOLDS = {
   initialBytes: 1_400_000,
   eagerJsBytes: 1_260_000,
-  codingHtmlBytes: 620_000,
+  codingHtmlBytes: 640_000,
   totalHtmlBytes: 109_000_000,
   sentryLazyChunkBytes: 260_000,
   showcaseLazyHeavyBytes: 620_000,
