@@ -746,6 +746,18 @@ Totals:
    - **Coding tags carry sources; trivia tags carry none.** A coding item gets a source only from a report read in full. Trivia cannot carry sources.
    - **Full source list on `react-autocomplete-search-starter`.** It already has six sources, the maximum, so its Tesla tag has no source.
    - **No Angular tags for Walmart.** The Angular detail (lifecycle, services, component communication) appears only in the Roundz republication W14. The original LeetCode post W37 says only "Angular standard questions".
+   **Phase 1 status (2026-10-19): done, not pushed.**
+   - b8e35e82, Walmart: 33 entries tagged; 5 coding items with sources, 28 trivia.
+   - 426f3799, Tesla: 17 entries tagged; 7 coding items with sources, 1 coding item without (it already had the maximum of six), 9 trivia.
+   - Verified on a clean build:
+     - lint:questions:check, lint:tags, indexability readiness, company Karma specs;
+     - backend interview content check and validation, with no pin drift;
+     - backend catalog and interview Jest subsets, 137 of 137;
+     - `verify:seo-prerender-guard`: build, meta check, links, link equity with 427 sitemap pages and 0 orphans, smoke;
+     - `perf:contract:strict`.
+   - Both previews prerender as indexable canonical pages (`/companies/walmart/preview`, `/companies/tesla/preview`).
+   - **Budget warning for Wave 1.** `codingHtmlBytes` is 615,132 against the 620,000 cap, which leaves 4,868 bytes of headroom. `totalHtmlBytes` is 105,098,574 against 109,000,000. A new coding item will probably cross the `/coding` cap, so decide first between a dated threshold change and trimming the row markup.
+
 2. **Wave 1, free entries (S, S).**
    - #6 Valid Parentheses, tagged `walmart`.
    - #9 Colour contrast ratio, tagged `tesla`.
