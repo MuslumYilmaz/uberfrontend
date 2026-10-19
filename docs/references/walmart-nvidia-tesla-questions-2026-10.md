@@ -943,6 +943,25 @@ Totals:
    - If the numbers are over, choose between a dated threshold change in `perf-contract.mjs` and trimming the `/coding` row markup.
    - Locally, `perf:contract` only warns when a threshold is crossed. The CI Playwright Critical job runs `--strict`, so once any threshold is crossed, this step has to come before the next push.
 
+   **Step 8 status (2026-10-19): done as 78e0f8d3.** The user chose "fix the icon, then a small threshold raise".
+   - First attempt: migrating `app-fa-glyph` to `@switch` kept the per-case anchors. The new component spec caught it with 27 comments.
+   - Change: the icons now come from one data table rendered by three `@for` loops (paths, circles, rects).
+   - Visual check, done in a canvas at 16, 24, 64 and 128 px:
+     - converting circles and rects to path data changed anti-aliasing visibly, so that was rejected;
+     - grouping native shapes by element type matched 98 of 108 renders exactly, and the other 10 differ by at most 3 of 255 on a few pixels.
+   - Clean build results:
+     - `/coding` dropped from 639,517 to 610,119 bytes;
+     - the prerender total dropped from 107,282,132 to 103,873,950, about 3.4 MB;
+     - eager JS dropped slightly, from 1,218,263 to 1,215,349.
+   - The `/coding` threshold moved from 640,000 to 660,000 with a dated note, leaving room for about 15 rows. The total stays at 109,000,000.
+   - Verified:
+     - the full Karma suite, 1,745 of 1,745;
+     - `perf:contract:strict`;
+     - a clean guard run: 432 sitemap pages, 0 orphans, 0 hard 404s.
+   - Local `ui-visual` run: 14 of 94 darwin checks fail on baseline drift, not on the icons.
+     - The diff images mark text only: the header Pricing link missing from older references, and counts, new system design cards and dates from today's items.
+     - The UI Regression workflow runs only on pull requests and manual dispatch, so the next dev-to-main PR needs a Linux reference refresh through `update_baselines`. The darwin set should be refreshed then too.
+
 **Measurement checkpoints**
 - After Wave 2:
   - attempts and sign-ups that start from the two free entries;
