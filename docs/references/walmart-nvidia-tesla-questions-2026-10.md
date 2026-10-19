@@ -780,7 +780,10 @@ Totals:
      - Six DOM framework tests. Checked in React 18 and jsdom: the starter fails 6 of 6, the solution passes 6 of 6, and removing the guard or the catch fails only the matching test.
      - The premium page renders `noindex` with its preview and sources and no solution code.
    - `/coding` is now 624,099 bytes, leaving about five rows of headroom.
-   - Next is #3 Select compound API, after the user's review of #1.
+   - #3 Select compound API: done as 1e555e50, premium, tagged `walmart`.
+     - Seven DOM tests, checked in a jsdom harness that mirrors the preview runtime, where only some hooks are globals. The starter fails 7 of 7 and the solution passes 7 of 7. Removing registration, the disabled guard or the multi-mode open state fails only the matching tests.
+   - The user asked to set the budget aside until the last step; see step 8.
+   - Next is #7 `useMemo` and Context from scratch, after the user's review of #3.
 
 4. **Wave 3, flagship (XL).** #2 battery site-layout take-home, tagged `tesla`.
    - First decide whether it is a large React coding item or a new take-home format: a longer brief, several test groups for totals, the 100 ft layout rule and persistence, plus a README-style deliverable.
@@ -796,6 +799,10 @@ Totals:
 
    Each must pass the system design editorial lint (`editorial.companyEvidence` mirrors `companies`).
 7. **On demand:** #13 `JSON.stringify`, #8 file explorer, and the low-priority list.
+8. **Last step: budget review.** The user asked on 2026-10-19 to leave the budget until the end.
+   - Re-measure `codingHtmlBytes` and `totalHtmlBytes` on a clean build. After #3 they were 627,204 of 640,000 and 105,674,047 of 109,000,000.
+   - If the numbers are over, choose between a dated threshold change in `perf-contract.mjs` and trimming the `/coding` row markup.
+   - Locally, `perf:contract` only warns when a threshold is crossed. The CI Playwright Critical job runs `--strict`, so once any threshold is crossed, this step has to come before the next push.
 
 **Measurement checkpoints**
 - After Wave 2:
