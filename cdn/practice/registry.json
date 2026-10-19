@@ -7051,6 +7051,28 @@
     "assetRef": "questions/react/coding.json#react-debug-api-misuse"
   },
   {
+    "id": "react-file-explorer",
+    "family": "question",
+    "title": "File Explorer Tree with Keyboard Navigation",
+    "route": "/react/coding/react-file-explorer",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "Build a file explorer tree that sorts folders first, opens and closes folders, selects files, and works fully from the keyboard as an accessible tree widget.",
+    "tags": [
+      "react",
+      "recursion",
+      "tree",
+      "accessibility",
+      "keyboard",
+      "aria"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 18,
+    "updatedAt": "2026-10-19",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/coding.json#react-file-explorer"
+  },
+  {
     "id": "react-functional-vs-class-components",
     "family": "question",
     "title": "Functional vs class components in React: what actually differs?",

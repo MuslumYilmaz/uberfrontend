@@ -395,6 +395,28 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
     }),
   },
   {
+    ruleId: 'react-file-explorer-tree',
+    questionId: 'react-file-explorer',
+    priority: 100,
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, ['folders first', 'aria-expanded', 'empty folder', 'only that file', 'one tab stop', 'enters a folder', 'Enter toggles', 'Collapse all']) ||
+      snapshot.failCount >= 2,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-file-explorer-tree',
+      title: 'Render the visible tree and move one tab stop through it',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'Folders are nodes with a children array, every level sorts folders first, and the keyboard walks a flat list of the items that are on screen.',
+      ),
+      actions: [
+        'Check `node.children !== undefined` for folders and sort with `localeCompare` and `sensitivity: \'base\'`.',
+        'Write `role="treeitem"`, `aria-level`, `data-path`, `aria-expanded` on folders and `aria-selected` on files.',
+        'Give exactly one item `tabIndex` 0 and move it with focus; if a collapse hides it, use the nearest visible ancestor.',
+      ],
+      confidence: 0.84,
+    }),
+  },
+  {
     ruleId: 'react-battery-site-layout-default',
     questionId: 'react-battery-site-layout',
     priority: 40,
@@ -410,6 +432,26 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
         'Hold the raw input strings in state; never store totals or rows next to them.',
         'Format money with `toLocaleString(\'en-US\')` and energy with `Number(value.toFixed(2))`.',
         'Make Reset write the empty quantities back to state.',
+      ],
+      confidence: 0.72,
+    }),
+  },
+  {
+    ruleId: 'react-file-explorer-default',
+    questionId: 'react-file-explorer',
+    priority: 40,
+    matches: () => true,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-file-explorer-default',
+      title: 'Keep open folders in a set and derive the rest',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The open folder ids, the selected path and the active id are the only state; rows, levels and the tab stop all follow from them.',
+      ),
+      actions: [
+        'Store open folders in a `Set` of ids and render children inside `role="group"` only when a folder is open.',
+        'Handle clicks on the `.row`, not on the list item, so nested items do not toggle their ancestors.',
+        'Use one `onKeyDown` on the tree and find the item with `event.target.closest(\'[role="treeitem"]\')`.',
       ],
       confidence: 0.72,
     }),

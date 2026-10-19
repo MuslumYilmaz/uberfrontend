@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-19T13:43:38.676Z",
+  "generatedAt": "2026-10-19T17:35:07.016Z",
   "entries": [
     {
       "tech": "angular",
@@ -1986,6 +1986,12 @@
       "tech": "react",
       "kind": "coding",
       "id": "react-fetch-list-states",
+      "file": "react/coding.json"
+    },
+    {
+      "tech": "react",
+      "kind": "coding",
+      "id": "react-file-explorer",
       "file": "react/coding.json"
     },
     {

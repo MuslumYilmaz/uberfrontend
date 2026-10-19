@@ -5931,5 +5931,491 @@
       "title": "Battery Site Layout Planner in React: Take-Home Practice",
       "description": "Build a take-home style React planner: battery quantities, automatic transformers, budget and energy totals, and rows packed largest first within 100 ft."
     }
+  },
+  {
+    "id": "react-file-explorer",
+    "title": "File Explorer Tree with Keyboard Navigation",
+    "type": "coding",
+    "technology": "react",
+    "difficulty": "intermediate",
+    "importance": 4,
+    "tags": [
+      "react",
+      "recursion",
+      "tree",
+      "accessibility",
+      "keyboard",
+      "aria"
+    ],
+    "description": {
+      "summary": "Build a file explorer that renders a nested folder tree from data, sorted with folders first, where folders open and close and files can be selected. Then make it a real tree widget: ARIA tree roles and states, one tab stop that follows focus, and arrow-key navigation that opens folders, enters them and climbs back to the parent. An empty folder is still a folder, and Collapse all must never strand the tab stop inside a closed folder. Concepts: recursion, accessibility, keyboard navigation, state management.",
+      "specs": {
+        "requirements": [
+          "Work in `src/App.tsx`. Keep `FILES` and the `FileNode` type as they are; a node with a `children` array is a folder, even when the array is empty.",
+          "Render the tree with `role=\"tree\"` on the list and `role=\"treeitem\"` on every node, with `aria-level` and a `data-path` holding the slash-separated path, for example `src/components/Button.tsx`.",
+          "Sort every level: folders first, then files, both by name ignoring case.",
+          "Folders start closed. Clicking a folder's `.row` toggles it and its `aria-expanded`; an open folder renders its children inside `role=\"group\"`, and an empty one shows `Empty folder`. Files have no `aria-expanded`.",
+          "Clicking a file's `.row` selects it: that file gets `aria-selected=\"true\"`, every other file `aria-selected=\"false\"`, and `.selection` shows `Selected: <path>`.",
+          "Exactly one treeitem has `tabIndex` 0 and it follows focus. ArrowDown, ArrowUp, Home and End move focus through the visible items; ArrowRight opens a closed folder or moves into an open one; ArrowLeft closes an open folder or moves to the parent; Enter toggles a folder or selects a file.",
+          "Collapse all closes every folder; if the active item disappears, its nearest visible ancestor takes the tab stop."
+        ],
+        "expectedBehavior": [
+          "The first level reads `public`, `src`, `package.json`, `README.md`.",
+          "Opening `src` shows `components`, `styles`, `App.tsx`, `index.tsx`.",
+          "Opening `src/styles` shows `Empty folder`.",
+          "Selecting `src/components/Button.tsx` and then `package.json` leaves only `package.json` selected.",
+          "From `public`, ArrowDown focuses `src`, End focuses `README.md`, Home returns to `public`.",
+          "After Collapse all with `src/components/Tree.tsx` active, `src` holds the only `tabIndex` 0."
+        ],
+        "implementationNotes": [
+          "Keep the open folders in a `Set` of ids and derive a flat list of visible items for keyboard movement.",
+          "Put one `onKeyDown` on the tree and read the item from `event.target.closest('[role=\"treeitem\"]')`.",
+          "Keep element refs in a `Map` and call `focus()` when the tab stop moves.",
+          "Derive the tab stop during render: the active item if it is visible, otherwise its nearest visible ancestor."
+        ],
+        "techFocus": [
+          "Recursive rendering of nested data",
+          "Sorting with folders first",
+          "ARIA tree view roles and states",
+          "Roving tabindex and focus management",
+          "Keyboard navigation over a visible-items list"
+        ]
+      }
+    },
+    "solutionBlock": {
+      "overview": "Keep three pieces of state: the set of open folder ids, the selected file path and the active item id. Derive everything else during render. A recursive `renderNodes` sorts each level, writes the ARIA roles and states, and renders children only for open folders. A flat `visible` list of what is on screen powers the keyboard: ArrowDown and ArrowUp step through it, Home and End jump to its ends, ArrowRight opens a folder and then enters it, and ArrowLeft closes it and then climbs to the parent. The tab stop is derived too: the active item when it is visible, otherwise its nearest visible ancestor, so Collapse all can never hide it.\n\n**Test cases**\n- Folders first, then files, ignoring case.\n- Toggling `src` and an empty `src/styles`.\n- One selected file at a time.\n- Arrow keys, Home and End with one tab stop.\n- Right and Left arrows, Enter, and Collapse all keeping a visible tab stop.",
+      "approaches": [
+        {
+          "title": "Recursive render, flat visible list and a derived tab stop",
+          "prose": "1. `isFolder` checks for a `children` array, and `sortNodes` puts folders first and compares names with `localeCompare` and `sensitivity: 'base'`.\n2. `visibleItems` flattens the sorted tree, descending only into open folders, and records each item's path, level and parent.\n3. `tabStopId` walks from the active id up `PARENT_OF` until it finds a visible item.\n4. `focusItem` sets the active id and focuses the element from the ref map.\n5. One `onKeyDown` on the tree maps ArrowDown, ArrowUp, Home, End, ArrowRight, ArrowLeft and Enter onto the visible list and calls `preventDefault` for the keys it handles.\n6. `renderNodes` writes `role`, `aria-level`, `aria-expanded` on folders, `aria-selected` on files and `tabIndex`, and renders `role=\"group\"` only for open folders.",
+          "codeJs": "import React, { useCallback, useMemo, useRef, useState } from 'react';\nimport './App.css';\n\n// The preview passes useState, useEffect, useMemo, useRef, useReducer, useContext,\n// createContext and useCallback in as globals; write anything else as React.x.\n\nexport type FileNode = {\n  id: string;\n  name: string;\n  children?: FileNode[];\n};\n\n// The project tree as the API returns it: unsorted. Treat it as given.\n// A node with a children array is a folder, even when the array is empty.\nexport const FILES: FileNode[] = [\n  { id: 'readme', name: 'README.md' },\n  {\n    id: 'src',\n    name: 'src',\n    children: [\n      { id: 'index-tsx', name: 'index.tsx' },\n      { id: 'styles', name: 'styles', children: [] },\n      { id: 'app-tsx', name: 'App.tsx' },\n      {\n        id: 'components',\n        name: 'components',\n        children: [\n          { id: 'tree-tsx', name: 'Tree.tsx' },\n          { id: 'button-tsx', name: 'Button.tsx' },\n        ],\n      },\n    ],\n  },\n  { id: 'package-json', name: 'package.json' },\n  {\n    id: 'public',\n    name: 'public',\n    children: [\n      { id: 'index-html', name: 'index.html' },\n      { id: 'favicon', name: 'favicon.ico' },\n    ],\n  },\n];\n\ntype VisibleItem = {\n  node: FileNode;\n  path: string;\n  level: number;\n  parentId: string | null;\n};\n\nconst isFolder = (node: FileNode): boolean => node.children !== undefined;\n\nfunction sortNodes(nodes: FileNode[]): FileNode[] {\n  return [...nodes].sort((a, b) => {\n    if (isFolder(a) !== isFolder(b)) return isFolder(a) ? -1 : 1;\n    return a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });\n  });\n}\n\nfunction buildParentMap(nodes: FileNode[], parentId: string | null, map: Map<string, string | null>) {\n  for (const node of nodes) {\n    map.set(node.id, parentId);\n    if (node.children) buildParentMap(node.children, node.id, map);\n  }\n  return map;\n}\n\nconst PARENT_OF = buildParentMap(FILES, null, new Map<string, string | null>());\n\nfunction visibleItems(nodes: FileNode[], expanded: Set<string>, parent: VisibleItem | null): VisibleItem[] {\n  return sortNodes(nodes).flatMap((node) => {\n    const item: VisibleItem = {\n      node,\n      path: parent ? `${parent.path}/${node.name}` : node.name,\n      level: parent ? parent.level + 1 : 1,\n      parentId: parent ? parent.node.id : null,\n    };\n    const open = isFolder(node) && expanded.has(node.id);\n    return open ? [item, ...visibleItems(node.children ?? [], expanded, item)] : [item];\n  });\n}\n\nexport default function App() {\n  const [expanded, setExpanded] = useState<Set<string>>(() => new Set());\n  const [selectedPath, setSelectedPath] = useState<string | null>(null);\n  const [activeId, setActiveId] = useState<string>(() => sortNodes(FILES)[0].id);\n  const itemRefs = useRef(new Map<string, HTMLLIElement>());\n\n  const visible = useMemo(() => visibleItems(FILES, expanded, null), [expanded]);\n\n  // The tab stop must stay visible: if the active item sits inside a collapsed\n  // folder, the nearest visible ancestor takes over.\n  const tabStopId = useMemo(() => {\n    const visibleIds = new Set(visible.map((item) => item.node.id));\n    let id: string | null = activeId;\n    while (id !== null && !visibleIds.has(id)) id = PARENT_OF.get(id) ?? null;\n    return id ?? visible[0].node.id;\n  }, [visible, activeId]);\n\n  const focusItem = useCallback((id: string) => {\n    setActiveId(id);\n    itemRefs.current.get(id)?.focus();\n  }, []);\n\n  const toggle = useCallback((id: string) => {\n    setExpanded((current) => {\n      const next = new Set(current);\n      if (next.has(id)) next.delete(id);\n      else next.add(id);\n      return next;\n    });\n  }, []);\n\n  const activate = (item: VisibleItem) => {\n    if (isFolder(item.node)) toggle(item.node.id);\n    else setSelectedPath(item.path);\n  };\n\n  const onKeyDown = (event: React.KeyboardEvent<HTMLUListElement>) => {\n    const target = (event.target as HTMLElement).closest('[role=\"treeitem\"]');\n    const index = visible.findIndex((item) => item.node.id === target?.getAttribute('data-id'));\n    if (index < 0) return;\n    const item = visible[index];\n    const open = isFolder(item.node) && expanded.has(item.node.id);\n    const next = visible[index + 1];\n\n    switch (event.key) {\n      case 'ArrowDown':\n        if (next) focusItem(next.node.id);\n        break;\n      case 'ArrowUp':\n        if (index > 0) focusItem(visible[index - 1].node.id);\n        break;\n      case 'Home':\n        focusItem(visible[0].node.id);\n        break;\n      case 'End':\n        focusItem(visible[visible.length - 1].node.id);\n        break;\n      case 'ArrowRight':\n        if (isFolder(item.node) && !open) toggle(item.node.id);\n        else if (open && next && next.parentId === item.node.id) focusItem(next.node.id);\n        break;\n      case 'ArrowLeft':\n        if (open) toggle(item.node.id);\n        else if (item.parentId) focusItem(item.parentId);\n        break;\n      case 'Enter':\n        activate(item);\n        break;\n      default:\n        return;\n    }\n    event.preventDefault();\n  };\n\n  const renderNodes = (nodes: FileNode[], parent: VisibleItem | null): React.ReactNode =>\n    sortNodes(nodes).map((node) => {\n      const item: VisibleItem = {\n        node,\n        path: parent ? `${parent.path}/${node.name}` : node.name,\n        level: parent ? parent.level + 1 : 1,\n        parentId: parent ? parent.node.id : null,\n      };\n      const folder = isFolder(node);\n      const open = folder && expanded.has(node.id);\n      return (\n        <li\n          key={node.id}\n          role=\"treeitem\"\n          data-id={node.id}\n          data-path={item.path}\n          aria-level={item.level}\n          aria-expanded={folder ? open : undefined}\n          aria-selected={folder ? undefined : selectedPath === item.path}\n          tabIndex={tabStopId === node.id ? 0 : -1}\n          className={folder ? 'item item--folder' : 'item item--file'}\n          ref={(element) => {\n            if (element) itemRefs.current.set(node.id, element);\n            else itemRefs.current.delete(node.id);\n          }}\n          onFocus={(event) => {\n            if (event.target === event.currentTarget) setActiveId(node.id);\n          }}\n        >\n          <span\n            className=\"row\"\n            style={{ paddingLeft: `${(item.level - 1) * 18 + 10}px` }}\n            onClick={() => {\n              focusItem(node.id);\n              activate(item);\n            }}\n          >\n            <span className=\"icon\" aria-hidden=\"true\">{folder ? (open ? '▾' : '▸') : '•'}</span>\n            <span className=\"name\">{node.name}</span>\n          </span>\n          {open && (\n            <ul role=\"group\">\n              {node.children && node.children.length > 0 ? (\n                renderNodes(node.children, item)\n              ) : (\n                <li role=\"none\" className=\"empty\" style={{ paddingLeft: `${item.level * 18 + 10}px` }}>\n                  Empty folder\n                </li>\n              )}\n            </ul>\n          )}\n        </li>\n      );\n    });\n\n  return (\n    <main className=\"main\">\n      <section className=\"card\">\n        <header className=\"header\">\n          <h1 className=\"title\">Project files</h1>\n          <p className=\"subtitle\">Arrow keys move, Right opens, Left closes, Enter selects.</p>\n        </header>\n        <div className=\"toolbar\">\n          <button type=\"button\" className=\"collapse-all\" onClick={() => setExpanded(new Set())}>\n            Collapse all\n          </button>\n          <p className=\"selection\" aria-live=\"polite\">\n            {selectedPath ? `Selected: ${selectedPath}` : 'Nothing selected'}\n          </p>\n        </div>\n        <ul role=\"tree\" aria-label=\"Project files\" className=\"tree\" onKeyDown={onKeyDown}>\n          {renderNodes(FILES, null)}\n        </ul>\n      </section>\n    </main>\n  );\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Treating a folder with an empty children array as a file.",
+          "Sorting with plain string comparison, which puts README.md above package.json.",
+          "Putting the click handler on the list item, so a click on a file also toggles every ancestor folder.",
+          "Keeping the tab stop on an item that a collapse removed, so Tab skips the whole tree.",
+          "Setting aria-expanded on files, which screen readers announce as collapsed folders."
+        ],
+        "techniques": [
+          "Recursive rendering with a derived flat list for navigation.",
+          "Roving tabindex with element refs.",
+          "Deriving focus state during render instead of syncing it in handlers."
+        ]
+      }
+    },
+    "frameworkTests": [
+      {
+        "id": "explorer-sorts-folders-first",
+        "name": "Shows folders first, then files, each sorted by name ignoring case",
+        "steps": [
+          {
+            "type": "expectCount",
+            "selector": "[role=\"treeitem\"]",
+            "count": 4
+          },
+          {
+            "type": "expectText",
+            "selector": "[aria-level=\"1\"] > .row .name",
+            "index": 0,
+            "text": "public"
+          },
+          {
+            "type": "expectText",
+            "selector": "[aria-level=\"1\"] > .row .name",
+            "index": 1,
+            "text": "src"
+          },
+          {
+            "type": "expectText",
+            "selector": "[aria-level=\"1\"] > .row .name",
+            "index": 2,
+            "text": "package.json"
+          },
+          {
+            "type": "expectText",
+            "selector": "[aria-level=\"1\"] > .row .name",
+            "index": 3,
+            "text": "README.md"
+          }
+        ]
+      },
+      {
+        "id": "explorer-folder-toggles",
+        "name": "Folders open and close, and files never carry aria-expanded",
+        "steps": [
+          {
+            "type": "click",
+            "selector": "[data-path=\"src\"] > .row"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": "[data-path=\"src\"]",
+            "attribute": "aria-expanded",
+            "expected": "true"
+          },
+          {
+            "type": "expectText",
+            "selector": "[data-path=\"src\"] > [role=\"group\"] > [role=\"treeitem\"] > .row .name",
+            "index": 0,
+            "text": "components"
+          },
+          {
+            "type": "expectText",
+            "selector": "[data-path=\"src\"] > [role=\"group\"] > [role=\"treeitem\"] > .row .name",
+            "index": 1,
+            "text": "styles"
+          },
+          {
+            "type": "expectText",
+            "selector": "[data-path=\"src\"] > [role=\"group\"] > [role=\"treeitem\"] > .row .name",
+            "index": 2,
+            "text": "App.tsx"
+          },
+          {
+            "type": "expectText",
+            "selector": "[data-path=\"src\"] > [role=\"group\"] > [role=\"treeitem\"] > .row .name",
+            "index": 3,
+            "text": "index.tsx"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": "[data-path=\"src/App.tsx\"]",
+            "attribute": "aria-expanded",
+            "expected": false
+          },
+          {
+            "type": "click",
+            "selector": "[data-path=\"src\"] > .row"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": "[data-path=\"src\"]",
+            "attribute": "aria-expanded",
+            "expected": "false"
+          },
+          {
+            "type": "expectCount",
+            "selector": "[data-path^=\"src/\"]",
+            "count": 0
+          }
+        ]
+      },
+      {
+        "id": "explorer-empty-folder",
+        "name": "An empty folder is still a folder and says it is empty",
+        "steps": [
+          {
+            "type": "click",
+            "selector": "[data-path=\"src\"] > .row"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": "[data-path=\"src/styles\"]",
+            "attribute": "aria-expanded",
+            "expected": "false"
+          },
+          {
+            "type": "click",
+            "selector": "[data-path=\"src/styles\"] > .row"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": "[data-path=\"src/styles\"]",
+            "attribute": "aria-expanded",
+            "expected": "true"
+          },
+          {
+            "type": "expectText",
+            "selector": "[data-path=\"src/styles\"] .empty",
+            "text": "Empty folder"
+          }
+        ]
+      },
+      {
+        "id": "explorer-selects-one-file",
+        "name": "Selecting a file marks only that file and shows its path",
+        "steps": [
+          {
+            "type": "expectText",
+            "selector": ".selection",
+            "text": "Nothing selected"
+          },
+          {
+            "type": "click",
+            "selector": "[data-path=\"src\"] > .row"
+          },
+          {
+            "type": "click",
+            "selector": "[data-path=\"src/components\"] > .row"
+          },
+          {
+            "type": "click",
+            "selector": "[data-path=\"src/components/Button.tsx\"] > .row"
+          },
+          {
+            "type": "expectText",
+            "selector": ".selection",
+            "text": "Selected: src/components/Button.tsx"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": "[data-path=\"src/components/Button.tsx\"]",
+            "attribute": "aria-selected",
+            "expected": "true"
+          },
+          {
+            "type": "click",
+            "selector": "[data-path=\"package.json\"] > .row"
+          },
+          {
+            "type": "expectText",
+            "selector": ".selection",
+            "text": "Selected: package.json"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": "[data-path=\"package.json\"]",
+            "attribute": "aria-selected",
+            "expected": "true"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": "[data-path=\"src/components/Button.tsx\"]",
+            "attribute": "aria-selected",
+            "expected": "false"
+          }
+        ]
+      },
+      {
+        "id": "explorer-arrow-navigation",
+        "name": "ArrowDown, ArrowUp, Home and End move focus with one tab stop",
+        "steps": [
+          {
+            "type": "expectAttribute",
+            "selector": "[data-path=\"public\"]",
+            "attribute": "tabindex",
+            "expected": "0"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": "[data-path=\"src\"]",
+            "attribute": "tabindex",
+            "expected": "-1"
+          },
+          {
+            "type": "key",
+            "selector": "[data-path=\"public\"]",
+            "key": "ArrowDown"
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-path=\"src\"]"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": "[data-path=\"src\"]",
+            "attribute": "tabindex",
+            "expected": "0"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": "[data-path=\"public\"]",
+            "attribute": "tabindex",
+            "expected": "-1"
+          },
+          {
+            "type": "key",
+            "selector": "[data-path=\"src\"]",
+            "key": "End"
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-path=\"README.md\"]"
+          },
+          {
+            "type": "key",
+            "selector": "[data-path=\"README.md\"]",
+            "key": "Home"
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-path=\"public\"]"
+          },
+          {
+            "type": "key",
+            "selector": "[data-path=\"public\"]",
+            "key": "ArrowUp"
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-path=\"public\"]"
+          },
+          {
+            "type": "expectCount",
+            "selector": "[role=\"treeitem\"][tabindex=\"0\"]",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "id": "explorer-right-left",
+        "name": "ArrowRight opens then enters a folder; ArrowLeft returns to the parent then closes it",
+        "steps": [
+          {
+            "type": "key",
+            "selector": "[data-path=\"src\"]",
+            "key": "ArrowRight"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": "[data-path=\"src\"]",
+            "attribute": "aria-expanded",
+            "expected": "true"
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-path=\"src\"]"
+          },
+          {
+            "type": "key",
+            "selector": "[data-path=\"src\"]",
+            "key": "ArrowRight"
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-path=\"src/components\"]"
+          },
+          {
+            "type": "key",
+            "selector": "[data-path=\"src/components\"]",
+            "key": "ArrowLeft"
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-path=\"src\"]"
+          },
+          {
+            "type": "key",
+            "selector": "[data-path=\"src\"]",
+            "key": "ArrowLeft"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": "[data-path=\"src\"]",
+            "attribute": "aria-expanded",
+            "expected": "false"
+          }
+        ]
+      },
+      {
+        "id": "explorer-enter-activates",
+        "name": "Enter toggles a folder and selects a file",
+        "steps": [
+          {
+            "type": "key",
+            "selector": "[data-path=\"public\"]",
+            "key": "Enter"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": "[data-path=\"public\"]",
+            "attribute": "aria-expanded",
+            "expected": "true"
+          },
+          {
+            "type": "key",
+            "selector": "[data-path=\"public\"]",
+            "key": "ArrowDown"
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-path=\"public/favicon.ico\"]"
+          },
+          {
+            "type": "key",
+            "selector": "[data-path=\"public/index.html\"]",
+            "key": "Enter"
+          },
+          {
+            "type": "expectText",
+            "selector": ".selection",
+            "text": "Selected: public/index.html"
+          }
+        ]
+      },
+      {
+        "id": "explorer-collapse-all-tab-stop",
+        "name": "Collapse all keeps the tab stop on a visible item",
+        "steps": [
+          {
+            "type": "click",
+            "selector": "[data-path=\"src\"] > .row"
+          },
+          {
+            "type": "click",
+            "selector": "[data-path=\"src/components\"] > .row"
+          },
+          {
+            "type": "click",
+            "selector": "[data-path=\"src/components/Tree.tsx\"] > .row"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": "[data-path=\"src/components/Tree.tsx\"]",
+            "attribute": "tabindex",
+            "expected": "0"
+          },
+          {
+            "type": "click",
+            "selector": ".collapse-all"
+          },
+          {
+            "type": "expectCount",
+            "selector": "[data-path^=\"src/\"]",
+            "count": 0
+          },
+          {
+            "type": "expectCount",
+            "selector": "[role=\"treeitem\"][tabindex=\"0\"]",
+            "count": 1
+          },
+          {
+            "type": "expectAttribute",
+            "selector": "[data-path=\"src\"]",
+            "attribute": "tabindex",
+            "expected": "0"
+          }
+        ]
+      }
+    ],
+    "sdk": {
+      "asset": "assets/sb/react/question/react-file-explorer.v1.json",
+      "openFile": "/src/App.tsx",
+      "storageKey": "v2:ui:react:react-file-explorer"
+    },
+    "solutionAsset": "assets/sb/react/solution/react-file-explorer-solution.v1.json",
+    "decisionGraphAsset": "assets/questions/react/decision-graphs/react-file-explorer.v1.json",
+    "companies": [
+      "walmart"
+    ],
+    "premiumPreview": {
+      "summary": "Build a file explorer tree that sorts folders first, opens and closes folders, selects files, and works fully from the keyboard as an accessible tree widget.",
+      "learningOutcomes": [
+        "Render nested folder data recursively with folders sorted above files.",
+        "Apply tree roles and the expanded and selected states to the right items.",
+        "Move one tab stop with arrow keys, Home and End using a list of visible items.",
+        "Keep focus on a visible item when folders collapse."
+      ],
+      "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+    },
+    "access": "premium",
+    "updatedAt": "2026-10-19",
+    "seo": {
+      "title": "React File Explorer Tree with Keyboard Navigation",
+      "description": "Build a React file explorer: recursive folder tree, folders-first sorting, expand and collapse, selection, ARIA tree roles and arrow-key navigation."
+    }
   }
 ]
