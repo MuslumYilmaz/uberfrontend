@@ -783,7 +783,10 @@ Totals:
    - #3 Select compound API: done as 1e555e50, premium, tagged `walmart`.
      - Seven DOM tests, checked in a jsdom harness that mirrors the preview runtime, where only some hooks are globals. The starter fails 7 of 7 and the solution passes 7 of 7. Removing registration, the disabled guard or the multi-mode open state fails only the matching tests.
    - The user asked to set the budget aside until the last step; see step 8.
-   - Next is #7 `useMemo` and Context from scratch, after the user's review of #3.
+   - #7 `useMemo` and Context from scratch: done as 91f24493, premium, tagged `walmart`.
+     - Five DOM tests. The starter fails 5 of 5 and the solution passes 5 of 5. Removing the catch fails only the error test; fetching in every consumer fails the three context tests.
+   - **Wave 2 is complete.**
+   - Next is Wave 3 (#2), which first needs the format decision: a large React coding item, or a new take-home format.
 
 4. **Wave 3, flagship (XL).** #2 battery site-layout take-home, tagged `tesla`.
    - First decide whether it is a large React coding item or a new take-home format: a longer brief, several test groups for totals, the 100 ft layout rule and persistence, plus a README-style deliverable.
