@@ -5766,7 +5766,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Context is not a smaller Redux</strong><br><br>Context only transports a value down the tree. The state itself still lives in a <code>useState</code> or <code>useReducer</code> above the provider. Context has no selectors: when the provider value changes by reference, every component that reads that context re-renders, whatever field it uses. That is fine for a theme or a locale. It hurts for values that change on every keystroke or every websocket message. Redux, Zustand and similar stores let each component subscribe to a slice and skip the render when that slice did not change. So the real Context-versus-Redux question is about update frequency and the number of subscribers, not about app size."
+          "text": "<strong>Context is not a smaller Redux</strong><br><br>Context only transports a value down the tree. The state itself still lives in a <code>useState</code> or <code>useReducer</code> above the provider. Context has no selectors: when the provider value changes by reference, every component that reads that context re-renders, whatever field it uses. That is fine for a theme or a locale. It hurts for values that change on every keystroke or every WebSocket message. Redux, Zustand and similar stores let each component subscribe to a slice and skip the render when that slice did not change. So the real Context-versus-Redux question is about update frequency and the number of subscribers, not about app size."
         },
         {
           "type": "text",
