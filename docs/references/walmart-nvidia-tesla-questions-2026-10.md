@@ -767,7 +767,9 @@ Totals:
    - #6 Valid Parentheses: done as 09c8b058, free, tagged `walmart`. Its three sources are read in full and quote-checked.
    - The `/coding` threshold moved to 640,000 in b3f3a985, as approved.
    - One new row measured 2,991 bytes: `/coding` went from 615,132 to 618,123. That leaves 21,877 bytes, about seven more coding or debug rows. The plan has seven left (#1, #2, #3, #7, #8, #9, #13), so expect one more dated threshold change near the end.
-   - #9 Colour contrast ratio waits for the user's review of #6.
+   - #9 Colour contrast ratio: done as d7046267, free, tagged `tesla`. Its one source is the Taro Los Angeles report, quote-checked.
+   - `/coding` is now 621,120 bytes: 2,997 bytes for this row, and above the old 620,000 cap, so the raise was needed. The remaining headroom is 18,880 bytes, about six rows, and exactly six coding or debug items are left (#1, #2, #3, #7, #8, #13).
+   - Wave 1 is complete. Pushing to `dev` and opening the PR wait for the user's go-ahead.
 
 3. **Wave 2, premium on existing formats (M, L, M).**
    - #1 React debug, tagged `walmart` and `nvidia` if the user wants an NVIDIA tag.
