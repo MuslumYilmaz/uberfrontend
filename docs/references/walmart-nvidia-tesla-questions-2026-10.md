@@ -775,6 +775,13 @@ Totals:
    - #1 React debug, tagged `walmart` and `nvidia` if the user wants an NVIDIA tag.
    - #3 Select compound API, tagged `walmart`.
    - #7 `useMemo` and Context from scratch, tagged `walmart`.
+   **Wave 2 status (2026-10-19).**
+   - #1 React debug: done as f725f0da, premium, tagged `walmart`; NVIDIA stays untagged while its page is on hold.
+     - Six DOM framework tests. Checked in React 18 and jsdom: the starter fails 6 of 6, the solution passes 6 of 6, and removing the guard or the catch fails only the matching test.
+     - The premium page renders `noindex` with its preview and sources and no solution code.
+   - `/coding` is now 624,099 bytes, leaving about five rows of headroom.
+   - Next is #3 Select compound API, after the user's review of #1.
+
 4. **Wave 3, flagship (XL).** #2 battery site-layout take-home, tagged `tesla`.
    - First decide whether it is a large React coding item or a new take-home format: a longer brief, several test groups for totals, the 100 ft layout rule and persistence, plus a README-style deliverable.
    - The brief is written in our own words, as a practice version modelled on a reported take-home. The candidate-published PDF is never copied.
