@@ -763,6 +763,12 @@ Totals:
    - #9 Colour contrast ratio, tagged `tesla`.
 
    Both are small and prove the pipeline end to end.
+   **Wave 1 status (2026-10-19).**
+   - #6 Valid Parentheses: done as 09c8b058, free, tagged `walmart`. Its three sources are read in full and quote-checked.
+   - The `/coding` threshold moved to 640,000 in b3f3a985, as approved.
+   - One new row measured 2,991 bytes: `/coding` went from 615,132 to 618,123. That leaves 21,877 bytes, about seven more coding or debug rows. The plan has seven left (#1, #2, #3, #7, #8, #9, #13), so expect one more dated threshold change near the end.
+   - #9 Colour contrast ratio waits for the user's review of #6.
+
 3. **Wave 2, premium on existing formats (M, L, M).**
    - #1 React debug, tagged `walmart` and `nvidia` if the user wants an NVIDIA tag.
    - #3 Select compound API, tagged `walmart`.
