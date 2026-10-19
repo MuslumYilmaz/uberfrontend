@@ -4897,5 +4897,370 @@
       "title": "Debug a React Search That Misuses Its API",
       "description": "Fix four API bugs in a React product search: a wrong response field, a missing effect dependency, stale responses and a missing catch, then add a count."
     }
+  },
+  {
+    "id": "react-select-compound-api",
+    "title": "Select With Compound Components (Single + Multi)",
+    "type": "coding",
+    "technology": "react",
+    "difficulty": "hard",
+    "importance": 4,
+    "tags": [
+      "react",
+      "components",
+      "composition",
+      "context",
+      "accessibility",
+      "typescript"
+    ],
+    "description": {
+      "summary": "Design and build a compound Select component: one API that works as a single-select or a multi-select and lets each option render custom content. The demo App already uses the API (Select, Select.Trigger, Select.Options and Select.Option); implement the four parts so the demo works. A public interview report of a Walmart Global Tech SDE 3 UI loop (January 2024) describes this prompt: design a dropdown API that can be single-select or multi-select and supports custom children, at the level of its high-level API; the candidate answered with compound components. This practice version makes that API runnable and checks it with behavior tests. Concepts: react, components, composition, context, accessibility.",
+      "specs": {
+        "requirements": [
+          "Work in `src/App.tsx`. Keep the demo `App` as it is and implement `SelectRoot`, `SelectTrigger`, `SelectOptions` and `SelectOption`.",
+          "Share state between the parts through React context; the root owns the open state, and the value stays controlled through `value` and `onChange`.",
+          "Single mode: choosing an option calls `onChange(value)` and closes the list. Multi mode (`multiple`): choosing toggles the value in the array and keeps the list open.",
+          "The trigger is a button with `aria-haspopup=\"listbox\"`, `aria-expanded` and `aria-controls`; it shows the selected labels joined by commas, or the placeholder.",
+          "The list is a `role=\"listbox\"` element that is `hidden` while closed and has `aria-multiselectable=\"true\"` in multi mode.",
+          "Each option is `role=\"option\"` with `aria-selected`; a `disabled` option has `aria-disabled=\"true\"` and cannot be chosen.",
+          "Options render their children when given and their `label` otherwise; clicking anywhere inside an option chooses it.",
+          "Escape closes the open list."
+        ],
+        "expectedBehavior": [
+          "Opening the fruit select and choosing Banana shows `Fruit: banana`, closes the list and puts Banana in the trigger.",
+          "Choosing Apple and then Dragon fruit leaves exactly one selected option.",
+          "Clicking Cherry, which is disabled, changes nothing and keeps the list open.",
+          "In the toppings select, Honey toggles on and Nuts toggles off while the list stays open.",
+          "The toppings trigger shows Nuts on first render, from the initial value, and `Nuts, Granola` after choosing Granola.",
+          "Escape closes the list and hides the listbox again."
+        ],
+        "implementationNotes": [
+          "Type the props as a union of single and multi props so `value` and `onChange` match the mode at compile time.",
+          "Let options register their labels with the root, so the trigger can show labels for values chosen before the list was ever opened.",
+          "Keep the listbox mounted and toggle `hidden`, so registration works and `aria-controls` always points at a real element.",
+          "The preview passes `useState`, `useEffect`, `useMemo`, `useRef`, `useReducer`, `useContext`, `createContext` and `useCallback` in as globals; reach other hooks through `React`, for example `React.useLayoutEffect`."
+        ],
+        "techFocus": [
+          "Compound components with context",
+          "Controlled single and multi value APIs",
+          "Discriminated union props in TypeScript",
+          "Listbox and option ARIA",
+          "Registering children with a parent"
+        ]
+      }
+    },
+    "solutionBlock": {
+      "overview": "The root owns two pieces of state, `open` and a `labels` map, and derives `selected` from the controlled `value`: an array in multi mode, a zero- or one-item array in single mode. It provides one context with that state and three actions: `toggleOpen`, `choose` and `registerOption`.\n\n`choose` toggles the value in multi mode and replaces it and closes the list in single mode. Each option registers its `label` in a layout effect, so the trigger can show `Nuts` before the list was ever opened. The listbox stays mounted and toggles `hidden`, which keeps registration working and `aria-controls` valid. A keydown handler on the root closes the list on Escape.\n\n**Test cases**\n- Banana closes the single list and appears in the trigger; Dragon fruit replaces Apple.\n- Cherry is disabled and changes nothing.\n- Toppings toggle while the list stays open, and the trigger lists their labels.\n- A click on custom content inside an option chooses it.\n- Escape closes the list.",
+      "approaches": [
+        {
+          "title": "Compound parts over one context, with option registration",
+          "prose": "1. Model the public API first: a union of single and multi props, and `Option` props with `value`, `label`, `disabled` and optional children.\n2. In `SelectRoot`, keep `open` and a `labels` map in state and derive `selected` from `value`. Build the context value with `toggleOpen`, `choose` and `registerOption`, and render a visible label with an id for `aria-labelledby`.\n3. `SelectTrigger` reads the context, joins the labels of the selected values or shows the placeholder, and sets `aria-expanded` and `aria-controls`.\n4. `SelectOptions` renders the listbox with `hidden={!open}` and `aria-multiselectable` in multi mode.\n5. `SelectOption` registers its label in `React.useLayoutEffect`, sets `aria-selected` and `aria-disabled`, and calls `choose` on click unless it is disabled. A click on any child bubbles to the option.\n6. A root `onKeyDown` closes the list on Escape. A `useSelectContext` helper throws a clear error when a part is rendered outside `Select`.",
+          "codeJs": "import React, { createContext, useCallback, useContext, useRef, useState } from 'react';\nimport './App.css';\n\n// The preview passes useState, useEffect, useMemo, useRef, useReducer, useContext,\n// createContext and useCallback in as globals. Reach any other hook through React,\n// for example React.useLayoutEffect.\n\ntype CommonSelectProps = {\n  label: string;\n  placeholder?: string;\n  className?: string;\n  children: React.ReactNode;\n};\n\ntype SingleSelectProps = CommonSelectProps & {\n  multiple?: false;\n  value: string | null;\n  onChange: (value: string | null) => void;\n};\n\ntype MultiSelectProps = CommonSelectProps & {\n  multiple: true;\n  value: string[];\n  onChange: (value: string[]) => void;\n};\n\nexport type SelectProps = SingleSelectProps | MultiSelectProps;\n\ntype SelectOptionProps = {\n  value: string;\n  label: string;\n  disabled?: boolean;\n  children?: React.ReactNode;\n};\n\ntype SelectContextValue = {\n  open: boolean;\n  multiple: boolean;\n  placeholder: string;\n  selected: string[];\n  labels: Map<string, string>;\n  labelId: string;\n  valueId: string;\n  listboxId: string;\n  toggleOpen: () => void;\n  choose: (value: string) => void;\n  registerOption: (value: string, label: string) => () => void;\n};\n\nconst SelectContext = createContext<SelectContextValue | null>(null);\n\nfunction useSelectContext(part: string): SelectContextValue {\n  const context = useContext(SelectContext);\n  if (!context) {\n    throw new Error(`<Select.${part}> must be rendered inside <Select>`);\n  }\n  return context;\n}\n\nlet nextSelectId = 0;\n\nfunction SelectRoot(props: SelectProps) {\n  const { label, placeholder = 'Select…', className, children } = props;\n  const [open, setOpen] = useState(false);\n  const [labels, setLabels] = useState<Map<string, string>>(() => new Map());\n  const idRef = useRef('');\n  if (!idRef.current) {\n    nextSelectId += 1;\n    idRef.current = `select-${nextSelectId}`;\n  }\n\n  const selected = props.multiple ? props.value : props.value === null ? [] : [props.value];\n\n  function choose(value: string) {\n    if (props.multiple) {\n      const next = props.value.includes(value)\n        ? props.value.filter((item) => item !== value)\n        : [...props.value, value];\n      props.onChange(next);\n      return;\n    }\n    props.onChange(value);\n    setOpen(false);\n  }\n\n  const registerOption = useCallback((value: string, optionLabel: string) => {\n    setLabels((current) => {\n      if (current.get(value) === optionLabel) return current;\n      const next = new Map(current);\n      next.set(value, optionLabel);\n      return next;\n    });\n    return () => {\n      setLabels((current) => {\n        if (!current.has(value)) return current;\n        const next = new Map(current);\n        next.delete(value);\n        return next;\n      });\n    };\n  }, []);\n\n  const context: SelectContextValue = {\n    open,\n    multiple: Boolean(props.multiple),\n    placeholder,\n    selected,\n    labels,\n    labelId: `${idRef.current}-label`,\n    valueId: `${idRef.current}-value`,\n    listboxId: `${idRef.current}-listbox`,\n    toggleOpen: () => setOpen((current) => !current),\n    choose,\n    registerOption\n  };\n\n  return (\n    <SelectContext.Provider value={context}>\n      <div\n        className={['select', className].filter(Boolean).join(' ')}\n        onKeyDown={(event: React.KeyboardEvent<HTMLDivElement>) => {\n          if (event.key === 'Escape') setOpen(false);\n        }}\n      >\n        <span className=\"select__label\" id={context.labelId}>{label}</span>\n        {children}\n      </div>\n    </SelectContext.Provider>\n  );\n}\n\nfunction SelectTrigger() {\n  const { open, selected, labels, placeholder, labelId, valueId, listboxId, toggleOpen } = useSelectContext('Trigger');\n  const text = selected.length ? selected.map((value) => labels.get(value) ?? value).join(', ') : placeholder;\n  return (\n    <button\n      type=\"button\"\n      className=\"select__trigger\"\n      aria-haspopup=\"listbox\"\n      aria-expanded={open}\n      aria-controls={listboxId}\n      aria-labelledby={`${labelId} ${valueId}`}\n      onClick={toggleOpen}\n    >\n      <span className=\"select__value\" id={valueId}>{text}</span>\n    </button>\n  );\n}\n\nfunction SelectOptions({ children }: { children: React.ReactNode }) {\n  const { open, multiple, labelId, listboxId } = useSelectContext('Options');\n  return (\n    <ul\n      id={listboxId}\n      className=\"select__options\"\n      role=\"listbox\"\n      aria-labelledby={labelId}\n      aria-multiselectable={multiple || undefined}\n      hidden={!open}\n    >\n      {children}\n    </ul>\n  );\n}\n\nfunction SelectOption({ value, label, disabled = false, children }: SelectOptionProps) {\n  const { selected, choose, registerOption } = useSelectContext('Option');\n  React.useLayoutEffect(() => registerOption(value, label), [registerOption, value, label]);\n  const isSelected = selected.includes(value);\n  return (\n    <li\n      className=\"select__option\"\n      role=\"option\"\n      aria-selected={isSelected}\n      aria-disabled={disabled || undefined}\n      onClick={() => {\n        if (!disabled) choose(value);\n      }}\n    >\n      {children ?? label}\n    </li>\n  );\n}\n\nexport const Select = Object.assign(SelectRoot, {\n  Trigger: SelectTrigger,\n  Options: SelectOptions,\n  Option: SelectOption\n});\n\nconst TOPPINGS = [\n  { value: 'nuts', label: 'Nuts', icon: 'N' },\n  { value: 'honey', label: 'Honey', icon: 'H' },\n  { value: 'granola', label: 'Granola', icon: 'G' },\n  { value: 'yogurt', label: 'Yogurt', icon: 'Y' }\n];\n\nexport default function App() {\n  const [fruit, setFruit] = useState<string | null>(null);\n  const [toppings, setToppings] = useState<string[]>(['nuts']);\n\n  return (\n    <main className=\"main\">\n      <section className=\"card\">\n        <header className=\"header\">\n          <h1 className=\"title\">Select</h1>\n          <p className=\"subtitle\">One compound API for single and multi-select, with custom option content.</p>\n        </header>\n\n        <Select className=\"fruit-select\" label=\"Fruit\" placeholder=\"Choose a fruit\" value={fruit} onChange={setFruit}>\n          <Select.Trigger />\n          <Select.Options>\n            <Select.Option value=\"apple\" label=\"Apple\" />\n            <Select.Option value=\"banana\" label=\"Banana\">\n              <span className=\"option-title\">Banana</span>\n              <span className=\"option-note\">Ripe today</span>\n            </Select.Option>\n            <Select.Option value=\"cherry\" label=\"Cherry\" disabled />\n            <Select.Option value=\"dragon\" label=\"Dragon fruit\" />\n          </Select.Options>\n        </Select>\n        <p className=\"single-value\">Fruit: {fruit ?? 'none'}</p>\n\n        <Select className=\"toppings-select\" label=\"Toppings\" placeholder=\"Add toppings\" multiple value={toppings} onChange={setToppings}>\n          <Select.Trigger />\n          <Select.Options>\n            {TOPPINGS.map((topping) => (\n              <Select.Option key={topping.value} value={topping.value} label={topping.label}>\n                <span className=\"option-icon\" aria-hidden=\"true\">{topping.icon}</span>\n                <span className=\"option-title\">{topping.label}</span>\n              </Select.Option>\n            ))}\n          </Select.Options>\n        </Select>\n        <p className=\"multi-value\">Toppings: {toppings.length ? toppings.join(', ') : 'none'}</p>\n      </section>\n    </main>\n  );\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Typing `value` as `string | string[]` without the `multiple` discriminant, so callers can pass an array to a single select.",
+          "Copying the controlled value into internal state, which drifts from the parent after the first change.",
+          "Rendering the listbox only while open, so labels for initial values are unknown and the trigger shows raw values.",
+          "Registering options during render instead of in an effect, which writes state while React is rendering.",
+          "Closing the list after every choice in multi mode, which forces a reopen for each extra value."
+        ],
+        "techniques": [
+          "Compound components that share one context.",
+          "Discriminated union props for single and multi modes.",
+          "Child registration through a stable callback and a layout effect.",
+          "The ARIA listbox pattern with aria-selected, aria-disabled and aria-multiselectable."
+        ]
+      }
+    },
+    "frameworkTests": [
+      {
+        "id": "select-single-choice-closes",
+        "name": "Single select opens from the trigger and closes after a choice",
+        "steps": [
+          {
+            "type": "click",
+            "selector": ".fruit-select .select__trigger"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".fruit-select .select__trigger",
+            "attribute": "aria-expanded",
+            "expected": "true"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".fruit-select .select__options",
+            "attribute": "hidden",
+            "expected": false
+          },
+          {
+            "type": "click",
+            "selector": ".fruit-select .select__option",
+            "index": 1
+          },
+          {
+            "type": "expectText",
+            "selector": ".single-value",
+            "text": "Fruit: banana"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".fruit-select .select__trigger",
+            "attribute": "aria-expanded",
+            "expected": "false"
+          },
+          {
+            "type": "expectText",
+            "selector": ".fruit-select .select__trigger",
+            "text": "Banana",
+            "match": "contains"
+          }
+        ]
+      },
+      {
+        "id": "select-single-replaces",
+        "name": "Choosing another option replaces the single value",
+        "steps": [
+          {
+            "type": "click",
+            "selector": ".fruit-select .select__trigger"
+          },
+          {
+            "type": "click",
+            "selector": ".fruit-select .select__option",
+            "index": 0
+          },
+          {
+            "type": "click",
+            "selector": ".fruit-select .select__trigger"
+          },
+          {
+            "type": "click",
+            "selector": ".fruit-select .select__option",
+            "index": 3
+          },
+          {
+            "type": "expectText",
+            "selector": ".single-value",
+            "text": "Fruit: dragon"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".fruit-select .select__option[aria-selected=\"true\"]",
+            "count": 1
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".fruit-select .select__option",
+            "index": 3,
+            "attribute": "aria-selected",
+            "expected": "true"
+          }
+        ]
+      },
+      {
+        "id": "select-disabled-option",
+        "name": "A disabled option cannot be chosen",
+        "steps": [
+          {
+            "type": "click",
+            "selector": ".fruit-select .select__trigger"
+          },
+          {
+            "type": "click",
+            "selector": ".fruit-select .select__option",
+            "index": 2
+          },
+          {
+            "type": "expectText",
+            "selector": ".single-value",
+            "text": "Fruit: none"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".fruit-select .select__option",
+            "index": 2,
+            "attribute": "aria-disabled",
+            "expected": "true"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".fruit-select .select__trigger",
+            "attribute": "aria-expanded",
+            "expected": "true"
+          }
+        ]
+      },
+      {
+        "id": "select-multi-toggles",
+        "name": "Multi select toggles values and stays open",
+        "steps": [
+          {
+            "type": "click",
+            "selector": ".toppings-select .select__trigger"
+          },
+          {
+            "type": "click",
+            "selector": ".toppings-select .select__option",
+            "index": 1
+          },
+          {
+            "type": "expectText",
+            "selector": ".multi-value",
+            "text": "Toppings: nuts, honey"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".toppings-select .select__trigger",
+            "attribute": "aria-expanded",
+            "expected": "true"
+          },
+          {
+            "type": "click",
+            "selector": ".toppings-select .select__option",
+            "index": 0
+          },
+          {
+            "type": "expectText",
+            "selector": ".multi-value",
+            "text": "Toppings: honey"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".toppings-select .select__options",
+            "attribute": "aria-multiselectable",
+            "expected": "true"
+          }
+        ]
+      },
+      {
+        "id": "select-trigger-labels",
+        "name": "The trigger shows the placeholder or the selected labels",
+        "steps": [
+          {
+            "type": "expectText",
+            "selector": ".fruit-select .select__trigger",
+            "text": "Choose a fruit",
+            "match": "contains"
+          },
+          {
+            "type": "expectText",
+            "selector": ".toppings-select .select__trigger",
+            "text": "Nuts",
+            "match": "contains"
+          },
+          {
+            "type": "click",
+            "selector": ".toppings-select .select__trigger"
+          },
+          {
+            "type": "click",
+            "selector": ".toppings-select .select__option",
+            "index": 2
+          },
+          {
+            "type": "expectText",
+            "selector": ".toppings-select .select__trigger",
+            "text": "Nuts, Granola",
+            "match": "contains"
+          }
+        ]
+      },
+      {
+        "id": "select-custom-content",
+        "name": "Clicking custom content inside an option chooses that option",
+        "steps": [
+          {
+            "type": "click",
+            "selector": ".fruit-select .select__trigger"
+          },
+          {
+            "type": "expectText",
+            "selector": ".fruit-select .option-note",
+            "text": "Ripe today"
+          },
+          {
+            "type": "click",
+            "selector": ".fruit-select .option-note"
+          },
+          {
+            "type": "expectText",
+            "selector": ".single-value",
+            "text": "Fruit: banana"
+          }
+        ]
+      },
+      {
+        "id": "select-escape-closes",
+        "name": "Escape closes the open list",
+        "steps": [
+          {
+            "type": "click",
+            "selector": ".fruit-select .select__trigger"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".fruit-select .select__trigger",
+            "attribute": "aria-expanded",
+            "expected": "true"
+          },
+          {
+            "type": "key",
+            "selector": ".fruit-select .select__trigger",
+            "key": "Escape"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".fruit-select .select__trigger",
+            "attribute": "aria-expanded",
+            "expected": "false"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".fruit-select .select__options",
+            "attribute": "hidden",
+            "expected": true
+          }
+        ]
+      }
+    ],
+    "sdk": {
+      "asset": "assets/sb/react/question/react-select-compound-api.v1.json",
+      "openFile": "/src/App.tsx",
+      "storageKey": "v2:ui:react:react-select-compound-api"
+    },
+    "solutionAsset": "assets/sb/react/solution/react-select-compound-api-solution.v1.json",
+    "decisionGraphAsset": "assets/questions/react/decision-graphs/react-select-compound-api.v1.json",
+    "companies": [
+      "walmart"
+    ],
+    "sources": [
+      {
+        "label": "Hashnode: frontend interview experience at Walmart, SDE 3 UI, January 2024",
+        "url": "https://jaynil-gaglani.hashnode.dev/frontend-interview-experience-at-walmart",
+        "company": "walmart",
+        "publisher": "Hashnode",
+        "date": "2024-01",
+        "note": "The JavaScript and React round asked for a dropdown component API that works as single-select or multi-select and supports custom children; the candidate answered with compound components. This item makes that API runnable."
+      }
+    ],
+    "premiumPreview": {
+      "summary": "Design and build one Select API that works as a single-select or a multi-select and lets every option render custom content. The behavior checks cover selection, disabled options, keyboard closing and the labels the trigger shows.",
+      "learningOutcomes": [
+        "Split a widget into parts that share state through context.",
+        "Keep the value controlled while the component owns its open state.",
+        "Type single and multi modes so a wrong value shape cannot compile.",
+        "Expose the listbox pattern to assistive technology with the right roles and states."
+      ],
+      "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+    },
+    "access": "premium",
+    "updatedAt": "2026-10-19",
+    "seo": {
+      "title": "React Select With Compound Components: Single and Multi",
+      "description": "Build a compound Select in React with TypeScript: single and multi-select modes, custom option content, listbox ARIA, disabled options and Escape to close."
+    }
   }
 ]

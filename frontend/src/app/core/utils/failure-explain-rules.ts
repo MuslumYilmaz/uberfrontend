@@ -289,6 +289,48 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
     }),
   },
   {
+    ruleId: 'react-select-compound-api-parts',
+    questionId: 'react-select-compound-api',
+    priority: 100,
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, ['closes after a choice', 'replaces the single value', 'disabled option', 'toggles values', 'selected labels', 'custom content', 'escape closes']) ||
+      snapshot.failCount >= 2,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-select-compound-api-parts',
+      title: 'Let the root own open state and give every part the same context',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'Each check reads a different part, but all of them depend on one shared state: the open flag, the selected values and the labels options register.',
+      ),
+      actions: [
+        'Provide `open`, `selected`, `labels`, `toggleOpen`, `choose` and `registerOption` from `SelectRoot` through context.',
+        'In `choose`, toggle the value in multi mode and replace it and close the list in single mode; skip disabled options.',
+        'Register each option label in `React.useLayoutEffect`, keep the listbox mounted with `hidden={!open}`, and close on Escape in the root `onKeyDown`.',
+      ],
+      confidence: 0.86,
+    }),
+  },
+  {
+    ruleId: 'react-select-compound-api-default',
+    questionId: 'react-select-compound-api',
+    priority: 40,
+    matches: () => true,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-select-compound-api-default',
+      title: 'Keep the value controlled and the ARIA states in sync',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The parent owns the value, so the parts should derive what they show from `value` and mirror it in `aria-selected`, `aria-expanded` and `aria-multiselectable`.',
+      ),
+      actions: [
+        'Normalize the value to an array: `multiple ? value : value === null ? [] : [value]`.',
+        'Set `aria-expanded` on the trigger, `aria-selected` and `aria-disabled` on options, and `aria-multiselectable` on the listbox in multi mode.',
+        'Show the selected labels joined by commas in the trigger, or the placeholder when nothing is selected.',
+      ],
+      confidence: 0.72,
+    }),
+  },
+  {
     ruleId: 'css-flexbox-navbar-responsive-layout',
     questionId: 'css-flexbox-navbar',
     priority: 100,

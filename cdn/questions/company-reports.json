@@ -1750,6 +1750,22 @@
         ]
       },
       {
+        "id": "react-select-compound-api",
+        "kind": "coding",
+        "tech": "react",
+        "title": "Select With Compound Components (Single + Multi)",
+        "access": "premium",
+        "route": "/react/coding/react-select-compound-api",
+        "sources": [
+          {
+            "label": "Hashnode: frontend interview experience at Walmart, SDE 3 UI, January 2024",
+            "url": "https://jaynil-gaglani.hashnode.dev/frontend-interview-experience-at-walmart",
+            "publisher": "Hashnode",
+            "date": "2024-01"
+          }
+        ]
+      },
+      {
         "id": "js-valid-anagram",
         "kind": "coding",
         "tech": "javascript",

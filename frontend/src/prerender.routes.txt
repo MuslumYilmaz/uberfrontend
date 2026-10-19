@@ -440,6 +440,7 @@
 /react/coding/react-nested-comments
 /react/coding/react-pagination-table
 /react/coding/react-progress-bar-thresholds
+/react/coding/react-select-compound-api
 /react/coding/react-shopping-cart
 /react/coding/react-snake-game
 /react/coding/react-star-rating

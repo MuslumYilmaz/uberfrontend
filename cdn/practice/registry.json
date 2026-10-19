@@ -7676,6 +7676,28 @@
     "assetRef": "questions/react/coding.json#react-transfer-list"
   },
   {
+    "id": "react-select-compound-api",
+    "family": "question",
+    "title": "Select With Compound Components (Single + Multi)",
+    "route": "/react/coding/react-select-compound-api",
+    "tech": "react",
+    "difficulty": "hard",
+    "summary": "Design and build one Select API that works as a single-select or a multi-select and lets every option render custom content.",
+    "tags": [
+      "react",
+      "components",
+      "composition",
+      "context",
+      "accessibility",
+      "typescript"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 18,
+    "updatedAt": "2026-10-19",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/coding.json#react-select-compound-api"
+  },
+  {
     "id": "react-use-effect-once",
     "family": "question",
     "title": "StrictMode-safe Effect Setup and Cleanup",

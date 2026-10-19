@@ -173,7 +173,7 @@ function assertFrameworkCssFormatting() {
       canonicalRoot: path.join(repoRoot, 'cdn', 'sb'),
       mirrorRoot: path.join(repoRoot, 'frontend', 'src', 'assets', 'sb'),
     }),
-    { assets: 202, cssSources: 267, changedAssets: 0, changedCssSources: 0 },
+    { assets: 204, cssSources: 269, changedAssets: 0, changedCssSources: 0 },
     'The full framework CSS corpus must stay canonical and exactly mirrored'
   );
 }
@@ -4937,6 +4937,28 @@ for (const node of apiMisuseVariant.nodes) {
   const { lineStart, lineEnd, snippet } = node.anchor;
   assert.ok(lineStart >= 1 && lineEnd >= lineStart && lineEnd <= apiMisuseLines.length, `${node.id}: invalid API misuse anchor range`);
   assert.ok(apiMisuseLines.slice(lineStart - 1, lineEnd).join('\n').includes(snippet), `${node.id}: API misuse anchor range must contain its snippet`);
+}
+
+const selectQuestion = json('cdn/questions/react/coding.json').find((entry) => entry.id === 'react-select-compound-api');
+assert.ok(selectQuestion);
+assert.equal(selectQuestion.access, 'premium');
+const selectStarter = json('cdn/sb/react/question/react-select-compound-api.v1.json').files['src/App.tsx'];
+const selectSolution = json('cdn/sb/react/solution/react-select-compound-api-solution.v1.json').files['src/App.tsx'];
+const selectDemo = (source) => source.slice(source.indexOf('const TOPPINGS = ['));
+assert.equal(selectDemo(selectStarter), selectDemo(selectSolution), 'the Select demo App must be identical in the starter and the solution');
+assert.doesNotMatch(selectStarter.replace(/^\/\/.*$/gm, ''), /useLayoutEffect\(/, 'the starter leaves option registration to the candidate');
+assert.match(selectSolution, /React\.useLayoutEffect\(/, 'the preview only passes some hooks as globals, so the solution reaches useLayoutEffect through React');
+assert.doesNotMatch(selectSolution, /import \{[^}]*useLayoutEffect/, 'useLayoutEffect is not a preview global');
+assert.match(selectSolution, /hidden=\{!open\}/);
+const selectGraph = json('cdn/questions/react/decision-graphs/react-select-compound-api.v1.json');
+const selectVariant = selectGraph.variants.approach1;
+assert.equal(selectGraph.questionId, 'react-select-compound-api');
+assert.equal(selectVariant.code, selectSolution, 'Select decision graph must mirror the solution App.tsx');
+const selectLines = selectVariant.code.split('\n');
+for (const node of selectVariant.nodes) {
+  const { lineStart, lineEnd, snippet } = node.anchor;
+  assert.ok(lineStart >= 1 && lineEnd >= lineStart && lineEnd <= selectLines.length, `${node.id}: invalid Select anchor range`);
+  assert.ok(selectLines.slice(lineStart - 1, lineEnd).join('\n').includes(snippet), `${node.id}: Select anchor range must contain its snippet`);
 }
 
 const countdownQuestion = json('cdn/questions/react/coding.json').find((entry) => entry.id === 'react-countdown-timer');
