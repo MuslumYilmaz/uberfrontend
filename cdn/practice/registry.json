@@ -7134,6 +7134,28 @@
     "assetRef": "questions/react/trivia.json#react-fragments-dom-and-reconciliation"
   },
   {
+    "id": "react-ssr-hydration",
+    "family": "question",
+    "title": "How do SSR and hydration work in React? Server-rendered above the fold, client-only below",
+    "route": "/react/trivia/react-ssr-hydration",
+    "tech": "react",
+    "difficulty": "hard",
+    "summary": "With SSR the server sends finished HTML, so the browser can paint the above-the-fold content before any JavaScript runs.",
+    "tags": [
+      "react",
+      "rendering",
+      "performance",
+      "script-loading",
+      "streaming",
+      "seo"
+    ],
+    "access": "free",
+    "estimatedMinutes": 7,
+    "updatedAt": "2026-10-19",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/trivia.json#react-ssr-hydration"
+  },
+  {
     "id": "react-jsx-transform-and-why-not-required",
     "family": "question",
     "title": "How does JSX get transformed, and why doesn’t React require it?",
@@ -7973,6 +7995,28 @@
     "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-18-whats-new"
+  },
+  {
+    "id": "react-state-management-redux",
+    "family": "question",
+    "title": "When does a React app need Redux? Local state vs Context vs external stores",
+    "route": "/react/trivia/react-state-management-redux",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "Redux is an external store with one-way data flow: components dispatch actions that describe what happened, pure reducers compute the next state, and each component re-renders only when the slice it selects changes.",
+    "tags": [
+      "react",
+      "state-management",
+      "global-state",
+      "context",
+      "selectors",
+      "performance"
+    ],
+    "access": "free",
+    "estimatedMinutes": 7,
+    "updatedAt": "2026-10-19",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/trivia.json#react-state-management-redux"
   },
   {
     "id": "react-hooks-youve-used",

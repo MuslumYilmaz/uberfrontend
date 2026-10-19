@@ -478,7 +478,9 @@
 /react/trivia/react-render-nothing-return-value
 /react/trivia/react-render-props-vs-hocs
 /react/trivia/react-rerender-decision-and-render
+/react/trivia/react-ssr-hydration
 /react/trivia/react-stale-state-closures
+/react/trivia/react-state-management-redux
 /react/trivia/react-strictmode-double-invoke-effects
 /react/trivia/react-useeffect-purpose
 /react/trivia/react-useeffect-vs-uselayouteffect

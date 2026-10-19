@@ -1,0 +1,143 @@
+{
+  "contentId": "react-state-management-redux",
+  "tech": "react",
+  "query": "when to use redux vs context react interview question",
+  "reviewedAt": "2026-10-19",
+  "reviewedBy": "Claude AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "How do you decide between using React state, context, and external state managers?",
+      "url": "https://www.greatfrontend.com/questions/quiz/how-do-you-decide-between-using-react-state-context-and-external-state-managers",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd answers the same interview decision between local state, Context and external stores, including Redux Toolkit and server-state tools.",
+      "verdicts": {
+        "realWorldUseCases": "tie",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "A broad, current decision guide with a quick table and a separate server-state section.",
+        "Short working snippets for useState, useReducer, Context, Redux Toolkit, Zustand and TanStack Query, plus React 19 Context syntax."
+      ],
+      "theirGaps": [
+        "Nothing on useSelector reference equality, unstable selector results or memoized selectors.",
+        "Form state is a single table row and URL state is not covered."
+      ],
+      "ourEvidence": {
+        "followUpConfusion": [
+          "A selector that builds a new array or object therefore re-renders its component after every action anywhere in the app",
+          "React-Redux has subscribed through React's useSyncExternalStore hook since version 8"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "They tie each tool to realistic situations (theme, locale, feature flags, many unrelated consumers, server caches); our dashboard and product-grid cases are more concrete but not enough to call a win."
+        ],
+        "actionableExamples": [
+          "They show working code for six approaches, including Zustand and TanStack Query; we show fewer tools but add a before-and-after selector fix, so examples stay tied."
+        ],
+        "followUpConfusion": [
+          "They explain Context re-renders and server state well, but skip the === comparison in useSelector, the dev-mode stability warning and concurrent-safe subscriptions."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Add one production case where Redux was the wrong home, such as a modal open flag dispatched through the store, and show which components re-rendered."
+        ],
+        "actionableExamples": [
+          "Add a short Zustand store with a selector next to the Redux Toolkit slice, so the Zustand-or-Redux follow-up has code."
+        ]
+      }
+    },
+    {
+      "label": "Redux FAQ: When should I use Redux?",
+      "url": "https://redux.js.org/faq/general",
+      "category": "canonical_docs",
+      "selectionReason": "The Redux maintainers' own answer to when Redux is worth it is the canonical source for this interview question.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "Authoritative caution that not every app needs Redux, with the conditions where it helps most."
+      ],
+      "theirGaps": [
+        "No concrete app scenario, no code and no guidance on where non-Redux state should live."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "The provider builds a new value object on every keystroke, so every consumer re-renders"
+        ],
+        "actionableExamples": [
+          "Lift it to the closest common parent and pass props",
+          "createSelector returns the same array until state.products.items changes"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The FAQ lists general conditions (state needed in many places, frequent updates, complex logic, larger teams, tracing changes) without a concrete app scenario."
+        ],
+        "actionableExamples": [
+          "The FAQ answer has no code and no worked example."
+        ],
+        "followUpConfusion": [
+          "It answers the main confusion directly: not all apps need Redux, with quotes from Pete Hunt and Dan Abramov; we add selector and Context follow-ups, but the core caution is the same."
+        ]
+      },
+      "nextActions": {
+        "followUpConfusion": [
+          "Add the follow-up on combining Redux with a query cache, using RTK Query as the answer, since the FAQ only says other tools exist."
+        ]
+      },
+      "winReason": "The FAQ is the authoritative caution against Redux by default, but it stays at general conditions; our page turns them into a kind-of-state table, a production re-render case and runnable patterns."
+    },
+    {
+      "label": "Why React Context is Not a \"State Management\" Tool (and Why It Doesn't Replace Redux)",
+      "url": "https://blog.isquaredsoftware.com/2021/01/context-redux-differences/",
+      "category": "tutorial_reference",
+      "selectionReason": "The Redux maintainer's long-form explanation is the strongest tutorial on the Context-versus-Redux confusion this question tests.",
+      "verdicts": {
+        "realWorldUseCases": "tie",
+        "actionableExamples": "ours",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "The most thorough treatment of Context as a transport mechanism and of what Redux adds.",
+        "A detailed use-case summary for Context, useReducer, both together, and Redux."
+      ],
+      "theirGaps": [
+        "Its only code blocks show a Context provider and consumer.",
+        "Written in 2021: no selector identity, no Redux Toolkit code and RTK Query described as upcoming."
+      ],
+      "ourEvidence": {
+        "actionableExamples": [
+          "The query cache owns fetching, caching, deduplication and refetching"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "It lists many real Redux and Context use cases (traceability, middleware, replayable bug reports, sharing logic across UI layers), as broad as ours."
+        ],
+        "actionableExamples": [
+          "Its code shows only a Context provider and consumer; there is no Redux, selector or server-cache code."
+        ],
+        "followUpConfusion": [
+          "It covers the Context-versus-Redux misconceptions, including Context plus useReducer as a Redux replacement, in more depth; we cover different follow-ups, so this stays tied."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Add a concrete warning sign that Context has outgrown its job, such as several state contexts that re-render the same consumers."
+        ],
+        "followUpConfusion": [
+          "Expand the Context plus useReducer point into its own follow-up that lists what it lacks: selective subscriptions, middleware and DevTools."
+        ]
+      }
+    }
+  ]
+}
