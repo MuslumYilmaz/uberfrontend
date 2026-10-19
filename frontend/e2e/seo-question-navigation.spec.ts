@@ -6,6 +6,12 @@ const DASHBOARD = '/system-design/dashboard-widgets-draggable-resizable';
 const DASHBOARD_TITLE = 'Drag-and-Drop Dashboard System Design: Grid, Resize, Persist';
 const DASHBOARD_HEADLINE = 'Drag-and-Drop Dashboard Frontend System Design';
 const CANONICAL = 'https://frontendatlas.com';
+// Each path's next practice item must be public: a premium neighbor renders the
+// footer Next as a button, not a link. js-array-foreach stopped qualifying once a
+// premium item sorted right after it, so the JavaScript coding sample sits inside
+// a run of free importance-4 items instead.
+const FOOTER_PATHS = ['/system-design/offline-email-client', '/javascript/trivia/js-event-loop',
+  '/javascript/coding/js-sanitize-href-url', '/javascript/debug/js-debug-async-race'];
 
 test.use({ consoleErrorAllowlist: ['\\/api\\/auth\\/me'] });
 
@@ -42,8 +48,7 @@ test('dashboard short answer and public footer links are available without JavaS
     await expect(page).toHaveTitle(DASHBOARD_TITLE);
     expect((await article(page)).url).toBe(CANONICAL + DASHBOARD);
 
-    for (const path of ['/system-design/offline-email-client', '/javascript/trivia/js-event-loop',
-      '/javascript/coding/js-array-foreach', '/javascript/debug/js-debug-async-race']) {
+    for (const path of FOOTER_PATHS) {
       await page.goto(path);
       const next = page.locator('a[data-testid="footer-next"]');
       await expect(next).toBeVisible();
@@ -85,8 +90,7 @@ test('dashboard metadata survives hydration and hash navigation, then clears on 
   expect((await article(page)).url).toBe(CANONICAL + '/system-design/infinite-scroll-list');
 });
 
-for (const path of ['/system-design/offline-email-client', '/javascript/trivia/js-event-loop',
-  '/javascript/coding/js-array-foreach', '/javascript/debug/js-debug-async-race']) {
+for (const path of FOOTER_PATHS) {
   test(`footer supports native new tabs and one keyboard navigation: ${path}`, async ({ page, context }) => {
     await page.goto(path);
     const next = page.locator('a[data-testid="footer-next"]');
