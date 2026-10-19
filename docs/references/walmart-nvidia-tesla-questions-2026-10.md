@@ -856,6 +856,34 @@ Totals:
    - #11 messaging, tagged `walmart`.
 
    Each must pass the system design editorial lint (`editorial.companyEvidence` mirrors `companies`).
+
+   **Wave 5 status (2026-10-19).**
+   - Fix first: 8facb413 changes "websocket" to "WebSocket" in `react-state-management-redux`.
+     - The lowercase spelling came in with fbb038f6. `lint:text` is part of the pre-push content chain and fails on it.
+   - #10 car rental: done as 5cdbca59, premium, tagged `tesla`, as a V2 system design (`car-rental-booking-frontend`).
+     - T4 was re-read on 2026-10-19. It says only that the third round was "the design of a car rental company", so the item is a practice version, and its source note says it is not the reported prompt.
+     - Scope:
+       - the server owns price lines, rental days and fees;
+       - times stay in the branch time zone from URL to request;
+       - holds are idempotent commands with a server-timed countdown that warns and extends where policy allows (WCAG 2.2.1 Timing Adjustable);
+       - price-changed and sold-out conflicts keep the entered details;
+       - the receipt renders only from the confirmed reservation.
+     - Ships:
+       - the five RADIO sections, 2,026 visible words;
+       - two local SVG diagrams;
+       - a typechecked contract group across Data and Interfaces, and an HTTP conflict example;
+       - the converted draft, the semantic contract, and a pilot expectation plus item invariants in the regression test.
+     - `guidedMock` is false. The item is not added to the backend mock interview registry, which holds 8 of the 23 designs.
+     - Verified:
+       - system design quality and spelling;
+       - `lint:text`, content drafts and shipped-draft parity;
+       - `lint:questions:check`;
+       - `test:content-regressions`, where the premium preview corpus now has 17 system designs;
+       - 217 Karma specs and 382 backend Jest tests;
+       - a clean guard run: 432 sitemap pages, 617 routes, 0 orphans, 0 hard 404s, `totalHtmlBytes` 106,923,760.
+     - The page prerenders `noindex,follow` with only the preview and the Taro source; the protected sections are absent from the HTML.
+     - The Tesla preview and `/system-design` link to it.
+   - Next is #11, messaging (`messaging-chat-frontend`, tagged `walmart`).
 7. **On demand:** #13 `JSON.stringify`, #8 file explorer, and the low-priority list.
 8. **Last step: budget review.** The user asked on 2026-10-19 to leave the budget until the end.
    - Re-measure `codingHtmlBytes` and `totalHtmlBytes` on a clean build. After #3 they were 627,204 of 640,000 and 105,674,047 of 109,000,000.
