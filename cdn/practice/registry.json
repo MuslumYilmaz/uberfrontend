@@ -8563,6 +8563,32 @@
     "assetRef": "questions/system-design/car-rental-booking-frontend/meta.json"
   },
   {
+    "id": "messaging-inbox-frontend",
+    "family": "question",
+    "title": "Design a Real-Time Messaging Inbox",
+    "route": "/system-design/messaging-inbox-frontend",
+    "tech": "system-design",
+    "difficulty": "hard",
+    "summary": "Design a real-time messaging inbox where server sequence numbers order every thread, optimistic sends never duplicate, and reconnects catch up without gaps.",
+    "tags": [
+      "real-time",
+      "state-management",
+      "concurrency",
+      "pagination",
+      "virtualization",
+      "api-calls",
+      "error-handling",
+      "accessibility",
+      "aria",
+      "frontend-architecture"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 20,
+    "updatedAt": "2026-10-19",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/system-design/messaging-inbox-frontend/meta.json"
+  },
+  {
     "id": "resilient-checkout-payment-flow",
     "family": "question",
     "title": "Design a Resilient Checkout and Payment Flow",

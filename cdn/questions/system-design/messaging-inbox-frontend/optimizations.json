@@ -1,0 +1,148 @@
+{
+  "key": "O",
+  "title": "Optimizations",
+  "blocks": [
+    {
+      "type": "table",
+      "title": "Messaging failure playbook",
+      "columns": [
+        "Failure",
+        "Recovery",
+        "What stays true"
+      ],
+      "rows": [
+        [
+          "Send times out",
+          "Retry with the same clientMessageId and backoff, showing retrying",
+          "One server message per clientMessageId"
+        ],
+        [
+          "Send is rejected",
+          "Mark it failed with a reason and a keyboard-reachable retry",
+          "The typed text is never lost"
+        ],
+        [
+          "Socket closes",
+          "Reconnect with backoff, then fetch events after the cursor",
+          "Missed messages arrive in order"
+        ],
+        [
+          "Cursor expired",
+          "Resync the inbox and the open thread from the REST endpoints",
+          "History has no silent gaps"
+        ],
+        [
+          "Event arrives twice",
+          "Ignore sequences that are already applied",
+          "Duplicates never render"
+        ],
+        [
+          "Sequence gap detected",
+          "Load the missing range before showing newer messages",
+          "No reply appears without its context"
+        ],
+        [
+          "Read positions race",
+          "Keep the highest lastReadSequence from server events",
+          "Read markers only move forward"
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Scroll anchoring in long threads"
+    },
+    {
+      "type": "text",
+      "text": "Opening a thread jumps to the first unread message under a labelled separator. New messages append without scrolling when the reader is above the bottom, and a pill offers the jump instead. Older pages load above the visible message and keep it in place by anchoring to its id. Window very long histories with measured row heights once profiling shows the DOM cost."
+    },
+    {
+      "type": "steps",
+      "title": "Scenario walkthrough: a busy group while scrolled up",
+      "steps": [
+        {
+          "title": "Reader scrolls back",
+          "text": "Ana reads older messages in a twelve-person group while new ones keep arriving."
+        },
+        {
+          "title": "Burst arrives",
+          "text": "Nine messages land within a few seconds. The thread appends them below the viewport without moving Ana's reading position."
+        },
+        {
+          "title": "One calm announcement",
+          "text": "The log region announces nine new messages once, and a pill labelled with the count offers a jump to the latest."
+        },
+        {
+          "title": "Read only what was seen",
+          "text": "Ana's read position advances only as messages become visible, so the badge on her phone keeps counting the rest."
+        }
+      ]
+    },
+    {
+      "type": "image",
+      "src": "questions/system-design/messaging-inbox-frontend/messaging-reconnect-catchup.svg",
+      "alt": "Reconnect timeline where a pending reply waits offline, catch-up returns two sequenced events, and the thread inserts one message and confirms the pending reply.",
+      "caption": "Catch-up: events after the inbox cursor fill the gap in order, and the pending reply is confirmed by its client id.",
+      "width": 960,
+      "height": 460,
+      "fallbackText": "Text fallback: The socket closes at cursor 1203 while reply cm_17 is pending. After reconnecting, events 1204 and 1205 return messages 483 and 484. The thread inserts 483 and confirms cm_17 as 484; an expired cursor triggers a resync."
+    },
+    {
+      "type": "heading",
+      "text": "Testing and measurement for messaging"
+    },
+    {
+      "type": "checklist",
+      "title": "Messaging tests that protect conversations",
+      "items": [
+        "Time out a send and retry; assert one server message and one bubble.",
+        "Close the socket mid-burst; assert catch-up fills every sequence in order.",
+        "Expire the cursor; assert a resync rebuilds the inbox without duplicates.",
+        "Deliver an event twice; assert the thread ignores the repeat.",
+        "Read on another device; assert the web badge clears from the server event.",
+        "Run screen-reader and keyboard passes over inbox rows, the log region, failed sends and the new-messages pill."
+      ]
+    },
+    {
+      "type": "text",
+      "text": "Track send-to-confirm latency, retry and failure rates, catch-up size after reconnects, resync frequency and time to the first message on open, split by device class and connection type. Adjust backoff and history page size from that data, not from intuition."
+    },
+    {
+      "type": "links",
+      "title": "Technical references",
+      "items": [
+        {
+          "label": "MDN WebSockets API",
+          "href": "https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API",
+          "description": "Two-way events between the browser and the server."
+        },
+        {
+          "label": "MDN ARIA log role",
+          "href": "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Roles/log_role",
+          "description": "A polite live region for chat logs and messaging history."
+        },
+        {
+          "label": "MDN Intersection Observer API",
+          "href": "https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API",
+          "description": "Reports which messages became visible for read positions."
+        },
+        {
+          "label": "MDN Page Visibility API",
+          "href": "https://developer.mozilla.org/en-US/docs/Web/API/Page_Visibility_API",
+          "description": "Holds read updates while the tab is hidden."
+        },
+        {
+          "label": "WAI-ARIA APG keyboard interface practices",
+          "href": "https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/",
+          "description": "Focus movement and arrow-key navigation inside composite widgets."
+        },
+        {
+          "label": "IETF Idempotency-Key HTTP header draft",
+          "href": "https://datatracker.ietf.org/doc/draft-ietf-httpapi-idempotency-key-header/",
+          "description": "Retried POST requests converge on one server result."
+        }
+      ],
+      "editorialRole": "references"
+    }
+  ]
+}

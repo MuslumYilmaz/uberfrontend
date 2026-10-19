@@ -1,0 +1,79 @@
+{
+  "key": "A",
+  "title": "Architecture",
+  "blocks": [
+    {
+      "type": "table",
+      "title": "Who owns each part of messaging",
+      "columns": [
+        "Owner",
+        "Keeps",
+        "Never decides"
+      ],
+      "rows": [
+        [
+          "Inbox store",
+          "Conversation summaries, activity order and unread counts",
+          "Message order inside a thread"
+        ],
+        [
+          "Thread store",
+          "Confirmed messages by sequence, the older-page cursor and the read marker",
+          "Whether a pending send was accepted"
+        ],
+        [
+          "Outbox",
+          "Pending sends with clientMessageId, attempts and errors",
+          "A server sequence for any message"
+        ],
+        [
+          "Realtime channel",
+          "One socket, the inbox cursor and reconnect backoff",
+          "Truth after a gap; it asks the server for missed events"
+        ]
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "success",
+      "title": "Sequence-ordered messaging model",
+      "text": "MessagingGateway loads conversations and history, and RealtimeChannel delivers ServerEvent records that carry an inbox cursor and a per-conversation sequence. The outbox sends each draft with a clientMessageId; the thread store merges server messages by sequence and replaces pending entries by clientMessageId. Read positions, unread counts and history come from the server, while typing and presence stay short-lived hints.",
+      "editorialRole": "canonical-model"
+    },
+    {
+      "type": "steps",
+      "title": "Worked example: a reply sent during a reconnect",
+      "steps": [
+        {
+          "title": "Compose",
+          "text": "Ana writes in conversation cv_9 while the socket is live at inbox cursor 1203 and thread sequence 482. The outbox creates clientMessageId cm_17 and shows the reply as sending after the last confirmed message."
+        },
+        {
+          "title": "Lose the network",
+          "text": "The connection fails during the POST. The request times out, the channel reports offline, and the bubble moves to retrying rather than failed, because the outcome is unknown."
+        },
+        {
+          "title": "Reconnect",
+          "text": "The channel reconnects with backoff and asks for events after cursor 1203. The server returns message 483 from Ben and message 484, which carries cm_17 because the first POST had arrived."
+        },
+        {
+          "title": "Reconcile",
+          "text": "The thread inserts 483 above the pending bubble, then matches 484 to cm_17 and replaces it. The outbox clears its retry because the id is confirmed, so no second copy reaches Ben."
+        },
+        {
+          "title": "Read",
+          "text": "The thread is visible, so Ana's client sends read position 484. Ben's phone receives read.updated and shows that Ana has seen his message, without any client clock involved."
+        }
+      ]
+    },
+    {
+      "type": "image",
+      "src": "questions/system-design/messaging-inbox-frontend/messaging-sequence-flow.svg",
+      "alt": "Messaging flow where the composer sends with a client message id, the server assigns a sequence, and realtime events update the thread and inbox stores.",
+      "caption": "Authority flow: the outbox carries intent, while order, read positions and history come back from the messaging backend.",
+      "width": 960,
+      "height": 540,
+      "fallbackText": "Text fallback: The outbox posts a message with its clientMessageId. The backend assigns a sequence and emits events with an inbox cursor. The thread store orders by sequence, the inbox store updates counts, and read positions return as events."
+    }
+  ]
+}

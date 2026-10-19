@@ -1,0 +1,57 @@
+{
+  "key": "D",
+  "title": "Data",
+  "blocks": [
+    {
+      "type": "text",
+      "text": "Confirmed messages, pending sends and ephemeral signals live in separate structures. Message is the server record; a pending send has the same shape with a null sequence. ConversationSummary drives the inbox, and ThreadState keeps the older-page cursor and the member's read marker."
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "code": "type SendState = 'sending' | 'retrying' | 'failed' | 'confirmed';\n\ninterface Message {\n  conversationId: string;\n  clientMessageId: string;\n  messageId: string | null;\n  sequence: number | null;\n  senderId: string;\n  body: string;\n  sentAt: string | null;\n  sendState: SendState;\n}\n\ninterface ConversationSummary {\n  conversationId: string;\n  title: string;\n  participantIds: string[];\n  lastSequence: number;\n  unreadCount: number;\n  preview: string;\n  updatedAt: string;\n}\n\ninterface ThreadState {\n  conversationId: string;\n  confirmed: Message[];\n  pending: Message[];\n  oldestSequence: number | null;\n  hasOlder: boolean;\n  readMarkerSequence: number;\n}\n\ninterface TypingSignal {\n  conversationId: string;\n  userId: string;\n  expiresAt: string;\n}\n\ntype ConnectionState = 'connecting' | 'live' | 'catching-up' | 'offline' | 'resyncing';\n\ninterface InboxState {\n  conversations: Record<string, ConversationSummary>;\n  orderedIds: string[];\n  threads: Record<string, ThreadState>;\n  typing: TypingSignal[];\n  inboxCursor: number;\n  connection: ConnectionState;\n}",
+      "validation": {
+        "kind": "contract",
+        "level": "typecheck",
+        "group": "messaging-inbox-frontend-contract"
+      }
+    },
+    {
+      "type": "table",
+      "title": "Messaging identity rules",
+      "columns": [
+        "Identity",
+        "Created by",
+        "Used for"
+      ],
+      "rows": [
+        [
+          "clientMessageId",
+          "Composer, before the first attempt",
+          "Retry deduplication and replacing the optimistic bubble"
+        ],
+        [
+          "messageId",
+          "Server on acceptance",
+          "Edits, deletes and links to one message"
+        ],
+        [
+          "sequence",
+          "Server, per conversation",
+          "Thread order, gap detection and read positions"
+        ],
+        [
+          "inboxCursor",
+          "Server, per member",
+          "Catch-up across every conversation after a reconnect"
+        ]
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "info",
+      "title": "Signals that never persist",
+      "text": "Typing and presence signals expire quickly and stay out of storage. Drafts persist per conversation in the browser only until they are sent. Message bodies render as text, with links detected and escaped, so a crafted message cannot inject markup into another member's inbox."
+    }
+  ]
+}

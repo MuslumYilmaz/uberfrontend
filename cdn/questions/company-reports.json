@@ -1861,6 +1861,21 @@
             "date": "2024-11"
           }
         ]
+      },
+      {
+        "id": "messaging-inbox-frontend",
+        "kind": "system-design",
+        "title": "Design a Real-Time Messaging Inbox",
+        "access": "premium",
+        "route": "/system-design/messaging-inbox-frontend",
+        "sources": [
+          {
+            "label": "Blind: Walmart interview for frontend software engineer III, January 2022",
+            "url": "https://www.teamblind.com/post/Walmart-Interview-for-Frontend-software-engineer-III-TQhXf1X5",
+            "publisher": "Blind",
+            "date": "2022-01"
+          }
+        ]
       }
     ],
     "waymo": [

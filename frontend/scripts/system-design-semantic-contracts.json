@@ -1,6 +1,123 @@
 {
   "version": 1,
   "questions": {
+    "messaging-inbox-frontend": {
+      "assertions": [
+        {
+          "id": "server-sequence-orders-threads",
+          "target": "all",
+          "require": [
+            "Threads sort by sequence",
+            "device clocks?|sender's or the reader's clock",
+            "sequence"
+          ]
+        },
+        {
+          "id": "client-message-id-dedupe",
+          "target": "all",
+          "require": [
+            "clientMessageId",
+            "reuses it for every retry|same clientMessageId",
+            "replaces the optimistic bubble"
+          ]
+        },
+        {
+          "id": "cursor-catch-up",
+          "target": "all",
+          "require": [
+            "inbox cursor|inboxCursor",
+            "events after",
+            "resync"
+          ]
+        },
+        {
+          "id": "server-owned-read-state",
+          "target": "all",
+          "require": [
+            "Read positions are server state",
+            "lastReadSequence"
+          ]
+        },
+        {
+          "id": "accessible-log",
+          "target": "visible",
+          "require": [
+            "ARIA log role",
+            "polite",
+            "focus",
+            "summar"
+          ]
+        },
+        {
+          "id": "ephemeral-signals",
+          "target": "visible",
+          "require": [
+            "typing",
+            "expire",
+            "never store|stay out of storage"
+          ]
+        }
+      ],
+      "symbols": [
+        {
+          "group": "messaging-inbox-frontend-contract",
+          "name": "Message",
+          "requiredMembers": [
+            "clientMessageId",
+            "messageId",
+            "sequence",
+            "sendState"
+          ]
+        },
+        {
+          "group": "messaging-inbox-frontend-contract",
+          "name": "SendState",
+          "requiredLiterals": [
+            "sending",
+            "retrying",
+            "failed",
+            "confirmed"
+          ]
+        },
+        {
+          "group": "messaging-inbox-frontend-contract",
+          "name": "ServerEvent",
+          "requiredLiterals": [
+            "message.created",
+            "read.updated",
+            "conversation.updated"
+          ]
+        },
+        {
+          "group": "messaging-inbox-frontend-contract",
+          "name": "CatchUpResult",
+          "requiredLiterals": [
+            "events",
+            "resync-required"
+          ]
+        },
+        {
+          "group": "messaging-inbox-frontend-contract",
+          "name": "MessagingGateway",
+          "requiredMembers": [
+            "listConversations",
+            "loadOlder",
+            "sendMessage",
+            "markRead",
+            "eventsAfter"
+          ]
+        },
+        {
+          "group": "messaging-inbox-frontend-contract",
+          "name": "RealtimeChannel",
+          "requiredMembers": [
+            "connect",
+            "sendTyping",
+            "close"
+          ]
+        }
+      ]
+    },
     "car-rental-booking-frontend": {
       "assertions": [
         {

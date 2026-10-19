@@ -1,5 +1,74 @@
 [
   {
+    "id": "messaging-inbox-frontend",
+    "title": "Design a Real-Time Messaging Inbox",
+    "description": "Design a person-to-person messaging inbox with server-ordered threads, optimistic sends that never duplicate, reconnect catch-up, cross-device read state, and an accessible message log.",
+    "discovery": {
+      "teaser": "A reply sent during a dropped connection must appear exactly once, in server order, on every device, while screen readers hear new messages without losing focus.",
+      "guideLabel": "Trace message order and catch-up"
+    },
+    "tags": [
+      "real-time",
+      "state-management",
+      "concurrency",
+      "pagination",
+      "virtualization",
+      "api-calls",
+      "error-handling",
+      "accessibility",
+      "aria",
+      "frontend-architecture"
+    ],
+    "companies": [
+      "walmart"
+    ],
+    "type": "system-design",
+    "access": "premium",
+    "publishedAt": "2026-10-19",
+    "updatedAt": "2026-10-19",
+    "difficulty": "hard",
+    "contentSchemaVersion": 2,
+    "practice": {
+      "targetLevel": "senior",
+      "timeboxMinutes": 20,
+      "candidatePrompt": "Design the messaging inbox for a professional network. Members see conversations with unread counts and open threads that update in real time. Messages sent during a dropped connection must not duplicate or reorder, read state must sync across devices, and old history loads on demand. Assign authority among the composer, local thread, realtime channel and server log. Explain ordering, optimistic sends, reconnect catch-up and an accessible message log.",
+      "constraints": [
+        "The server assigns message order.",
+        "Retries reuse one client id.",
+        "Read state belongs to the member, not the tab."
+      ],
+      "expectedDecisions": [
+        "Separate the server message log, the optimistic outbox, thread view state and ephemeral typing signals.",
+        "Reconcile sends and reconnects through clientMessageId, per-conversation sequence and an inbox cursor.",
+        "Announce and navigate messages accessibly without flooding screen readers or stealing focus."
+      ],
+      "prerequisites": [
+        "WebSocket basics",
+        "Cursor pagination",
+        "ARIA live regions"
+      ],
+      "coreSkills": [
+        "Ordering and deduplication",
+        "Reconnect recovery",
+        "Cross-device read state",
+        "Accessible live content"
+      ],
+      "guidedMock": false,
+      "evaluationSpine": {
+        "mustCover": [
+          "Server sequence numbers order threads; device clocks never do.",
+          "One clientMessageId survives every retry and reconnect."
+        ],
+        "strongSignals": [
+          "Reconnect replays events after the last cursor or resyncs.",
+          "The thread is a polite log that summarizes bursts."
+        ],
+        "expertStretch": "Sharing one connection across tabs with edits and deletes.",
+        "redFlag": "Device time orders messages or retries mint new ids."
+      }
+    }
+  },
+  {
     "id": "car-rental-booking-frontend",
     "title": "Design a Car Rental Booking Frontend",
     "description": "Design a car rental booking flow with shareable searches, server-priced offers, branch-local pickup times, expiring vehicle holds, sold-out recovery, and accessible countdowns.",

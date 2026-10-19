@@ -1,0 +1,71 @@
+{
+  "key": "I",
+  "title": "Interfaces",
+  "blocks": [
+    {
+      "type": "text",
+      "text": "MessagingGateway covers inbox pages, older history, sending, read positions and catch-up, while RealtimeChannel owns the socket. Every event carries the member's inbox cursor, so a reconnect can ask for exactly what it missed."
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "code": "type ServerEvent =\n  | { type: 'message.created'; inboxCursor: number; conversationId: string; message: Message }\n  | { type: 'read.updated'; inboxCursor: number; conversationId: string; userId: string; lastReadSequence: number }\n  | { type: 'conversation.updated'; inboxCursor: number; summary: ConversationSummary };\n\ntype CatchUpResult =\n  | { kind: 'events'; events: ServerEvent[]; inboxCursor: number }\n  | { kind: 'resync-required' };\n\ninterface MessagingGateway {\n  listConversations(input: { cursor: string | null; signal: AbortSignal }): Promise<{ items: ConversationSummary[]; nextCursor: string | null }>;\n  loadOlder(input: { conversationId: string; beforeSequence: number; limit: number; signal: AbortSignal }): Promise<{ messages: Message[]; hasOlder: boolean }>;\n  sendMessage(input: { conversationId: string; clientMessageId: string; body: string; signal: AbortSignal }): Promise<Message>;\n  markRead(input: { conversationId: string; lastReadSequence: number }): Promise<void>;\n  eventsAfter(input: { inboxCursor: number; signal: AbortSignal }): Promise<CatchUpResult>;\n}\n\ninterface RealtimeChannel {\n  connect(handlers: { onEvent(event: ServerEvent): void; onState(state: ConnectionState): void }): void;\n  sendTyping(conversationId: string): void;\n  close(): void;\n}",
+      "validation": {
+        "kind": "contract",
+        "level": "typecheck",
+        "group": "messaging-inbox-frontend-contract"
+      }
+    },
+    {
+      "type": "code",
+      "language": "http",
+      "code": "GET /api/inbox/events?after=1203 HTTP/1.1\nAccept: application/json\n\nHTTP/1.1 200 OK\nContent-Type: application/json\n\n{\"kind\": \"events\", \"inboxCursor\": 1205, \"events\": [{\"type\": \"message.created\", \"inboxCursor\": 1204, \"conversationId\": \"cv_9\", \"message\": {\"sequence\": 483, \"clientMessageId\": \"cm_31\", \"senderId\": \"u_ben\"}}, {\"type\": \"message.created\", \"inboxCursor\": 1205, \"conversationId\": \"cv_9\", \"message\": {\"sequence\": 484, \"clientMessageId\": \"cm_17\", \"senderId\": \"u_ana\"}}]}",
+      "validation": {
+        "kind": "protocol",
+        "protocol": "http"
+      }
+    },
+    {
+      "type": "table",
+      "title": "Messaging API semantics",
+      "columns": [
+        "Operation",
+        "Identity sent",
+        "Client behavior"
+      ],
+      "rows": [
+        [
+          "GET conversations",
+          "Page cursor",
+          "Merge pages by conversationId and keep the server activity order"
+        ],
+        [
+          "GET older messages",
+          "conversationId and beforeSequence",
+          "Prepend while keeping the reader's scroll anchor"
+        ],
+        [
+          "POST message",
+          "conversationId and clientMessageId",
+          "Retry with the same id; the response or the echo confirms it"
+        ],
+        [
+          "POST read position",
+          "conversationId and lastReadSequence",
+          "Send only when the thread is visible and the position moves forward"
+        ],
+        [
+          "GET events after cursor",
+          "inboxCursor",
+          "Apply in cursor order; on resync-required reload the inbox and the open thread"
+        ]
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "info",
+      "title": "Accessible thread and inbox",
+      "text": "The thread uses the ARIA log role with the conversation name as its label, so new messages are announced politely without stealing focus. Bursts become one summary, the member's own sends are not read back, and the typing indicator stays silent. Inbox rows expose the name, unread count and preview in their accessible name, arrow keys move between rows, and opening one moves focus to the thread heading."
+    }
+  ]
+}

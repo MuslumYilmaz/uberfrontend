@@ -84,6 +84,7 @@ const pilotExpectations = {
   'ai-ux-considerations': { targetLevel: 'mid', timeboxMinutes: 15, guidedMock: false },
   'resilient-checkout-payment-flow': { targetLevel: 'mid', timeboxMinutes: 15, guidedMock: true },
   'car-rental-booking-frontend': { targetLevel: 'mid', timeboxMinutes: 15, guidedMock: false },
+  'messaging-inbox-frontend': { targetLevel: 'senior', timeboxMinutes: 20, guidedMock: false },
 };
 
 for (const [id, expected] of Object.entries(pilotExpectations)) {
@@ -527,6 +528,42 @@ assert.doesNotMatch(
   rentalContractCode,
   /\b(?:dailyRate|ratePerDay|unitRate)\b/,
   'Car rental contracts must not let the browser price an offer',
+);
+
+const messaging = bundleText('messaging-inbox-frontend');
+const messagingContractCode = ['data', 'interfaces']
+  .flatMap((section) => read('messaging-inbox-frontend', section).blocks)
+  .filter((block) => block.type === 'code' && block.language === 'typescript')
+  .map((block) => block.code)
+  .join('\n');
+assert.match(messaging, /Threads sort by sequence/i, 'Messaging threads must use server order');
+assert.match(messaging, /Device clocks only format time labels/i);
+assert.match(messaging, /reuses it for every retry/i, 'A retried send must keep its clientMessageId');
+assert.match(messaging, /replaces the optimistic bubble/i);
+assert.match(messaging, /expired cursor triggers a resync/i, 'Catch-up needs a resync path');
+assert.match(messaging, /Read positions are server state/i);
+assert.match(messaging, /ARIA log role/i);
+for (const contract of [
+  'Message',
+  'ConversationSummary',
+  'ThreadState',
+  'InboxState',
+  'ServerEvent',
+  'CatchUpResult',
+  'MessagingGateway',
+  'RealtimeChannel',
+]) {
+  assert.match(
+    messagingContractCode,
+    new RegExp(`(?:interface|type)\\s+${contract}\\b`),
+    `Messaging must define ${contract}`,
+  );
+}
+assert.match(messagingContractCode, /interface Message\s*\{[\s\S]*?clientMessageId[\s\S]*?sequence: number \| null/);
+assert.doesNotMatch(
+  messagingContractCode,
+  /\b(?:clientTimestamp|localSentAt|deviceTime)\b/,
+  'Messaging contracts must not order messages by device time',
 );
 
 const autosave = bundleText('multi-step-form-autosave');

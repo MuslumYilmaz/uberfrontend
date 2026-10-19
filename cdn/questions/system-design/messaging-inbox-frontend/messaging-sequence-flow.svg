@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" role="img" aria-labelledby="title desc">
+  <title id="title">Messaging order and read state flow</title>
+  <desc id="desc">The composer posts a message with its client message id. The messaging backend assigns a sequence and emits events with an inbox cursor, which update the thread store and other devices. The thread store posts read positions, and read events update unread counts in the inbox store.</desc>
+  <rect width="960" height="540" rx="24" fill="#f7f9fc"/>
+  <text x="48" y="56" font-family="Arial, sans-serif" font-size="26" font-weight="700" fill="#172033">The server orders messages; the browser reconciles</text>
+  <g font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#172033" text-anchor="middle">
+    <text x="160" y="104">Browser</text>
+    <text x="540" y="104">Messaging backend</text>
+    <text x="824" y="104">Other devices</text>
+  </g>
+  <g fill="#ffffff" stroke="#9aa7bc" stroke-width="2">
+    <rect x="40" y="130" width="240" height="70" rx="14"/>
+    <rect x="40" y="250" width="240" height="70" rx="14"/>
+    <rect x="40" y="370" width="240" height="70" rx="14"/>
+    <rect x="420" y="130" width="240" height="70" rx="14"/>
+    <rect x="420" y="250" width="240" height="70" rx="14"/>
+    <rect x="420" y="370" width="240" height="70" rx="14"/>
+    <rect x="736" y="250" width="176" height="70" rx="14"/>
+  </g>
+  <g font-family="Arial, sans-serif" fill="#172033">
+    <text x="58" y="160" font-size="16" font-weight="700">Composer and outbox</text>
+    <text x="58" y="184" font-size="13" fill="#526078">clientMessageId cm_17</text>
+    <text x="58" y="280" font-size="16" font-weight="700">Thread store</text>
+    <text x="58" y="304" font-size="13" fill="#526078">ordered by sequence</text>
+    <text x="58" y="400" font-size="16" font-weight="700">Inbox store</text>
+    <text x="58" y="424" font-size="13" fill="#526078">server unread counts</text>
+    <text x="438" y="160" font-size="16" font-weight="700">Message log</text>
+    <text x="438" y="184" font-size="13" fill="#526078">assigns sequence 484</text>
+    <text x="438" y="280" font-size="16" font-weight="700">Event stream</text>
+    <text x="438" y="304" font-size="13" fill="#526078">inboxCursor 1205</text>
+    <text x="438" y="400" font-size="16" font-weight="700">Read positions</text>
+    <text x="438" y="424" font-size="13" fill="#526078">lastReadSequence per member</text>
+    <text x="752" y="280" font-size="16" font-weight="700">Phone, tabs</text>
+    <text x="752" y="304" font-size="13" fill="#526078">same events</text>
+  </g>
+  <g stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M280 165H420" stroke="#315ee8"/>
+    <path d="m408 155 12 10-12 10" stroke="#315ee8"/>
+    <path d="M540 200V250" stroke="#7950b8"/>
+    <path d="m530 238 10 12 10-12" stroke="#7950b8"/>
+    <path d="M420 285H280" stroke="#268455"/>
+    <path d="m292 275-12 10 12 10" stroke="#268455"/>
+    <path d="M280 305 420 388" stroke="#315ee8"/>
+    <path d="m404 389 16-1-8-14" stroke="#315ee8"/>
+    <path d="M420 420H280" stroke="#268455"/>
+    <path d="m292 410-12 10 12 10" stroke="#268455"/>
+    <path d="M660 285H736" stroke="#9aa7bc" stroke-dasharray="6 6"/>
+  </g>
+  <g font-family="Arial, sans-serif" font-size="13" fill="#526078" text-anchor="middle">
+    <text x="350" y="153">POST message</text>
+    <text x="350" y="273">events + cursor</text>
+    <text x="318" y="352">POST read</text>
+    <text x="350" y="446">read.updated</text>
+    <text x="590" y="230">sequence</text>
+  </g>
+  <text x="48" y="500" font-family="Arial, sans-serif" font-size="14" fill="#526078">Order, history and read state come from the server; the browser reconciles by client id and sequence.</text>
+</svg>

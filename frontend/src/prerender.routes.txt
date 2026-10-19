@@ -507,6 +507,7 @@
 /system-design/infinite-scroll-list
 /system-design/live-chart-high-frequency-updates
 /system-design/live-comments-global-stream
+/system-design/messaging-inbox-frontend
 /system-design/model-training-progress-dashboard
 /system-design/multi-step-form-autosave
 /system-design/netflix-scale-expansion
