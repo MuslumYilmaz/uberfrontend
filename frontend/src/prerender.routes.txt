@@ -100,7 +100,9 @@
 /companies/servicenow/preview
 /companies/spotify/preview
 /companies/stripe/preview
+/companies/tesla/preview
 /companies/uber/preview
+/companies/walmart/preview
 /companies/waymo/preview
 /companies/zalando/preview
 /css/coding/css-box-model-margin-padding-border
@@ -238,6 +240,7 @@
 /javascript/coding/js-arrays-equal
 /javascript/coding/js-build-tree-from-flat-list
 /javascript/coding/js-capitalize-words
+/javascript/coding/js-color-contrast-ratio
 /javascript/coding/js-compact
 /javascript/coding/js-compose
 /javascript/coding/js-concurrency-map-limit
@@ -317,6 +320,7 @@
 /javascript/coding/js-unique-array
 /javascript/coding/js-update-at-index
 /javascript/coding/js-valid-anagram
+/javascript/coding/js-valid-parentheses
 /javascript/coding/js-validate-username
 /javascript/debug/js-debug-async-race
 /javascript/debug/js-debug-lost-this-binding
@@ -423,18 +427,21 @@
 /react/coding/react-countdown-timer
 /react/coding/react-counter
 /react/coding/react-debounced-search
+/react/coding/react-debug-api-misuse
 /react/coding/react-debug-double-render
 /react/coding/react-dynamic-counter-buttons
 /react/coding/react-dynamic-table
 /react/coding/react-fetch-list-states
 /react/coding/react-filterable-user-list
 /react/coding/react-image-slider
+/react/coding/react-implement-usememo-context
 /react/coding/react-like-button
 /react/coding/react-multi-step-signup
 /react/coding/react-nested-checkboxes
 /react/coding/react-nested-comments
 /react/coding/react-pagination-table
 /react/coding/react-progress-bar-thresholds
+/react/coding/react-select-compound-api
 /react/coding/react-shopping-cart
 /react/coding/react-snake-game
 /react/coding/react-star-rating

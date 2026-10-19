@@ -455,7 +455,7 @@ export const routes: Routes = [
       import('./features/pricing/pricing.component').then((m) => m.PricingComponent),
     data: {
       seo: {
-        title: 'Pricing',
+        title: 'FrontendAtlas Pricing: Premium Interview Prep Plans',
         description: 'Compare FrontendAtlas Premium plans: guided solutions on every coding question, runnable checks, system design walkthroughs and company practice pages.',
       },
     },

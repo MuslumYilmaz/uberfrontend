@@ -88,7 +88,8 @@ import {
 import { FaButtonComponent } from '../../../shared/ui/button/fa-button.component';
 import { FaDialogComponent } from '../../../shared/ui/dialog/fa-dialog.component';
 import { FaGlyphComponent } from '../../../shared/ui/icon/fa-glyph.component';
-import { InlineCodeComponent } from '../../../shared/ui/inline-code/inline-code.component';
+import { InlineCodeComponent, stripInlineMarkup } from '../../../shared/ui/inline-code/inline-code.component';
+import { StripInlineMarkupPipe } from '../../../shared/ui/inline-code/strip-inline-markup.pipe';
 import { SafeHtmlPipe } from '../../../core/pipes/safe-html.pipe';
 import { CodingFrameworkPanelComponent, FrameworkCheckRunEvent } from './coding-framework-panel/coding-framework-panel';
 import { CodingJsPanelComponent, JsLang } from './coding-js-panel/coding-js-panel.component';
@@ -173,6 +174,7 @@ const SEO_DESCRIPTION_MAX_LEN = 240;
         FaDialogComponent,
         FaGlyphComponent,
         InlineCodeComponent,
+        StripInlineMarkupPipe,
         SafeHtmlPipe,
     ],
     templateUrl: './coding-detail.component.html',
@@ -3449,10 +3451,11 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   }
 
   questionBreadcrumbLabel(q: Question | null = this.question()): string {
-    const explicit = String(q?.seo?.h1IntentLabel || '').trim();
+    const explicit = stripInlineMarkup(String(q?.seo?.h1IntentLabel || '')).trim();
     if (explicit) return explicit;
 
-    const heading = String(q?.seo?.h1 || q?.title || '').trim();
+    // Titles may mark code with backticks; the breadcrumb and its JSON-LD name stay plain text.
+    const heading = stripInlineMarkup(String(q?.seo?.h1 || q?.title || '')).trim();
     return heading.split(':')[0]?.trim() || heading;
   }
 

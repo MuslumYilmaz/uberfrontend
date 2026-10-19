@@ -1324,6 +1324,9 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 5,
+    "companies": [
+      "tesla"
+    ],
     "description": "Angular data binding is mostly explicit one-way flow in one direction at a time: component state into the DOM, events back into the component, and two-way syntax only as sugar. The real production edge is debugging property-vs-attribute mistakes, binding behavior under OnPush or signals, and why the wrong binding target can create a stale UI even when the template “looks correct.”",
     "answer": {
       "blocks": [
@@ -2864,6 +2867,9 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 5,
+    "companies": [
+      "tesla"
+    ],
     "description": "Angular dependency injection (DI) is the framework mechanism that creates and supplies dependencies (services/config/values) to classes (components, directives, pipes, other services) based on providers. Instead of constructing dependencies manually, you register providers and Angular resolves them through a hierarchical injector tree. The senior follow-up is the real scope bug where a lower provider creates a second instance, plus knowing provider shapes and modifiers like Optional, Self, and SkipSelf.",
     "answer": {
       "blocks": [
@@ -3610,6 +3616,9 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 5,
+    "companies": [
+      "tesla"
+    ],
     "description": "Angular lifecycle hooks are framework callbacks on components/directives that run at specific moments (creation, input changes, content/view init + checks, destruction). Interviewers care less about memorizing names and more about choosing the correct hook for inputs, DOM/ViewChild, content projection, change-detection edge cases, and cleanup. Framework focus: Angular templates + standalone components, @Input/@Output, and RxJS/async pipe patterns.",
     "answer": {
       "blocks": [
@@ -4586,6 +4595,9 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 5,
+    "companies": [
+      "tesla"
+    ],
     "description": "Angular has two change detection strategies. OnPush, the default since Angular 22, checks a component only when its input reference changes, an event fires inside its subtree, an async pipe emits, a signal it reads changes, or code calls markForCheck(). Eager, called Default before v22, checks a component on every change detection pass that reaches it. Most production stale-UI bugs are OnPush components whose data changed without one of those triggers: an object mutated in place, a field assigned inside a manual subscribe(), or a timer in a zoneless app that notified nobody. Run each bug in the visualizer below and watch which of the seven components Angular checks, skips, or only traverses.",
     "answer": {
       "blocks": [

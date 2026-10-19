@@ -417,6 +417,22 @@ reference_rules:
       - docs/references/europe-company-shortlist-2026-10.md
     max_docs: 1
 
+  - id: walmart_nvidia_tesla_questions
+    priority: 93
+    keywords:
+      - walmart
+      - walmart global tech
+      - nvidia
+      - tesla
+      - tesla energy take-home
+      - reported frontend questions
+      - demand gap companies
+    paths:
+      - docs/references/walmart-nvidia-tesla-questions-2026-10.md
+    load:
+      - docs/references/walmart-nvidia-tesla-questions-2026-10.md
+    max_docs: 1
+
   - id: header_prep_menu_plan
     priority: 92
     keywords:

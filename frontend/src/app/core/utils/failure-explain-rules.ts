@@ -247,6 +247,132 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
     }),
   },
   {
+    ruleId: 'react-debug-api-misuse-root-causes',
+    questionId: 'react-debug-api-misuse',
+    priority: 100,
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, ['first page', 'refetches', 'older query', 'failed request', 'count line', 'without matches']) ||
+      snapshot.failCount >= 2,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-debug-api-misuse-root-causes',
+      title: 'Check how the component reads, repeats and guards the API call',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'Each failing check maps to one misuse: the response field, the effect dependencies, the missing stale-response guard, or the missing catch.',
+      ),
+      actions: [
+        'Type the `.then` callback as `SearchResponse` and read `items` and `total` instead of `results`.',
+        'Depend on `[query]`, set the loading state at the top of the effect, and flip a `cancelled` flag in the cleanup.',
+        'Add a `.catch` that stores the error message so the loading line disappears and the next search clears it.',
+      ],
+      confidence: 0.86,
+    }),
+  },
+  {
+    ruleId: 'react-debug-api-misuse-default',
+    questionId: 'react-debug-api-misuse',
+    priority: 40,
+    matches: () => true,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-debug-api-misuse-default',
+      title: 'Drive every branch from the latest search result',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'Rows, the count line, the empty state and the error line should all come from the state that the latest request produced.',
+      ),
+      actions: [
+        'Keep one status union: loading, success with `items` and `total`, and error with a message.',
+        'Render the rows and the count line only on success with `total > 0`, and the empty state only when `total === 0`.',
+        'Read the count from `total`; the page shows at most five items.',
+      ],
+      confidence: 0.72,
+    }),
+  },
+  {
+    ruleId: 'react-select-compound-api-parts',
+    questionId: 'react-select-compound-api',
+    priority: 100,
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, ['closes after a choice', 'replaces the single value', 'disabled option', 'toggles values', 'selected labels', 'custom content', 'escape closes']) ||
+      snapshot.failCount >= 2,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-select-compound-api-parts',
+      title: 'Let the root own open state and give every part the same context',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'Each check reads a different part, but all of them depend on one shared state: the open flag, the selected values and the labels options register.',
+      ),
+      actions: [
+        'Provide `open`, `selected`, `labels`, `toggleOpen`, `choose` and `registerOption` from `SelectRoot` through context.',
+        'In `choose`, toggle the value in multi mode and replace it and close the list in single mode; skip disabled options.',
+        'Register each option label in `React.useLayoutEffect`, keep the listbox mounted with `hidden={!open}`, and close on Escape in the root `onKeyDown`.',
+      ],
+      confidence: 0.86,
+    }),
+  },
+  {
+    ruleId: 'react-select-compound-api-default',
+    questionId: 'react-select-compound-api',
+    priority: 40,
+    matches: () => true,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-select-compound-api-default',
+      title: 'Keep the value controlled and the ARIA states in sync',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The parent owns the value, so the parts should derive what they show from `value` and mirror it in `aria-selected`, `aria-expanded` and `aria-multiselectable`.',
+      ),
+      actions: [
+        'Normalize the value to an array: `multiple ? value : value === null ? [] : [value]`.',
+        'Set `aria-expanded` on the trigger, `aria-selected` and `aria-disabled` on options, and `aria-multiselectable` on the listbox in multi mode.',
+        'Show the selected labels joined by commas in the trigger, or the placeholder when nothing is selected.',
+      ],
+      confidence: 0.72,
+    }),
+  },
+  {
+    ruleId: 'react-implement-usememo-context-parts',
+    questionId: 'react-implement-usememo-context',
+    priority: 100,
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, ['computes once', 'recomputes only', 'loads the users once', 'reload shows loading', 'failed load']) ||
+      snapshot.failCount >= 2,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-implement-usememo-context-parts',
+      title: 'Cache in a ref, and let the provider own the request',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The memo checks count factory calls and the context checks count requests, so recomputing on every render or fetching in every consumer both show up.',
+      ),
+      actions: [
+        'Keep `{ deps, value }` in `useRef` and call the factory only when nothing is cached or a dependency changed by `Object.is`.',
+        'Call `fetchUsers()` in one `useEffect` inside `UsersProvider` that depends on an `attempt` counter, and let `reload` bump it.',
+        'Set `loading` at the start of each load, store `success` or `error`, and drop stale responses with a `cancelled` flag.',
+      ],
+      confidence: 0.86,
+    }),
+  },
+  {
+    ruleId: 'react-implement-usememo-context-default',
+    questionId: 'react-implement-usememo-context',
+    priority: 40,
+    matches: () => true,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-implement-usememo-context-default',
+      title: 'Compare dependencies like React does and keep the context value stable',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'React compares dependencies with `Object.is` and recomputes when the dependency count changes; consumers re-render whenever the context value identity changes.',
+      ),
+      actions: [
+        'Write `sameDeps(previous, next)`: same length and `Object.is` for every pair.',
+        'Wrap `reload` in `useCallback` and memoize `{ state, reload }` with `useMemoized`.',
+        'Throw a clear error in `useUsers` when it runs outside `UsersProvider`.',
+      ],
+      confidence: 0.72,
+    }),
+  },
+  {
     ruleId: 'css-flexbox-navbar-responsive-layout',
     questionId: 'css-flexbox-navbar',
     priority: 100,
@@ -512,6 +638,44 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
         'First pass: `nodes.set(item.id, { ...item, children: [] })` for every record.',
         'Second pass over the original list: push each node into its parent\'s `children`, or into `roots` when `parentId` is empty or unknown.',
         'Never add `children` to the input objects; the nodes must be new objects.',
+      ],
+      confidence: 0.86,
+    }),
+  },
+  {
+    ruleId: 'js-valid-parentheses-stack',
+    questionId: 'js-valid-parentheses',
+    priority: 100,
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, ['wrong kind', 'wrong order', 'never closed', 'nothing open', 'not brackets', 'not a string']) ||
+      snapshot.failCount >= 2,
+    buildHint: (snapshot) => ({
+      ruleId: 'js-valid-parentheses-stack',
+      title: 'Keep a stack of the closers you still expect',
+      why: buildProgressAwareWhy(snapshot, 'The most recent unmatched opener has to close first, which is last in, first out. Counting each bracket kind cannot see the order, so it accepts "([)]".'),
+      actions: [
+        'Push `)`, `]` or `}` when you read `(`, `[` or `{`.',
+        'On a closer, pop and compare: a different value, or `undefined` from an empty stack, means the string is invalid.',
+        'Skip every other character, and return `true` only when the stack is empty at the end.',
+      ],
+      confidence: 0.86,
+    }),
+  },
+  {
+    ruleId: 'js-color-contrast-ratio-formula',
+    questionId: 'js-color-contrast-ratio',
+    priority: 100,
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, ['published values', 'green above red', 'linear segment', 'near miss', 'maximum, 21', 'argument order']) ||
+      snapshot.failCount >= 2,
+    buildHint: (snapshot) => ({
+      ruleId: 'js-color-contrast-ratio-formula',
+      title: 'Linearize, weight, then divide lighter by darker',
+      why: buildProgressAwareWhy(snapshot, 'Contrast is computed on linear light, not on the stored 0 to 255 values, and the lighter luminance always goes on top, so the ratio runs from 1 to 21.'),
+      actions: [
+        'Divide each channel by 255, then use `c / 12.92` up to 0.04045 and `((c + 0.055) / 1.055) ** 2.4` above it.',
+        'Weight the linear channels with 0.2126, 0.7152 and 0.0722 to get the relative luminance.',
+        'Return `(lighter + 0.05) / (darker + 0.05)` without rounding it.',
       ],
       confidence: 0.86,
     }),
@@ -788,6 +952,40 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
         'Use a `Map` keyed by `id` so parent lookups are constant time and numeric ids keep their type.',
         'Iterate the original list in the second pass so roots and siblings keep input order.',
         'Treat `parentId` that is `null`, `undefined` or unknown as a root.',
+      ],
+      confidence: 0.72,
+    }),
+  },
+  {
+    ruleId: 'js-valid-parentheses-default',
+    questionId: 'js-valid-parentheses',
+    priority: 40,
+    matches: () => true,
+    buildHint: (snapshot) => ({
+      ruleId: 'js-valid-parentheses-default',
+      title: 'One pass, one stack, empty at the end',
+      why: buildProgressAwareWhy(snapshot, 'A single loop with a stack handles nesting, wrong-order closers and stray closers, and a loop never overflows on deep input.'),
+      actions: [
+        'Throw a `TypeError` before the loop when the input is not a string.',
+        'Treat the empty string as valid: nothing was opened, so nothing is left open.',
+        'Avoid recursion; thousands of nested brackets must still work.',
+      ],
+      confidence: 0.72,
+    }),
+  },
+  {
+    ruleId: 'js-color-contrast-ratio-default',
+    questionId: 'js-color-contrast-ratio',
+    priority: 40,
+    matches: () => true,
+    buildHint: (snapshot) => ({
+      ruleId: 'js-color-contrast-ratio-default',
+      title: 'Validate the hex string before the math',
+      why: buildProgressAwareWhy(snapshot, 'Every later step assumes three clean channels, so anything that is not #rgb or #rrggbb has to be rejected first.'),
+      actions: [
+        'Test the shape with `/^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i` and throw a `TypeError` otherwise.',
+        'Expand `#abc` to `#aabbcc` before parsing the pairs.',
+        'Leave rounding to the UI; a pass or fail comparison needs the raw ratio.',
       ],
       confidence: 0.72,
     }),

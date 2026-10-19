@@ -1162,6 +1162,19 @@
     },
     "tests": "import shallowClone from './file';\n\ndescribe('shallowClone', () => {\n  test('clones arrays shallowly', () => {\n    const nested = { x: 2 };\n    const arr = [1, nested];\n    const copy = shallowClone(arr);\n\n    expect(copy).toEqual(arr);\n    expect(copy === arr).toBe(false);\n    expect(copy[1]).toBe(nested);\n  });\n\n  test('clones objects shallowly', () => {\n    const nested = { c: 2 };\n    const obj = { a: 1, b: nested };\n    const copy = shallowClone(obj);\n\n    expect(copy).toEqual(obj);\n    expect(copy === obj).toBe(false);\n    expect(copy.b).toBe(nested);\n  });\n\n  test('returns a different array reference', () => {\n    const arr = [1, 2, 3];\n    const copy = shallowClone(arr);\n\n    expect(copy).toEqual(arr);\n    expect(copy === arr).toBe(false);\n  });\n\n  test('returns a different object reference', () => {\n    const obj = { a: 1, b: 2 };\n    const copy = shallowClone(obj);\n\n    expect(copy).toEqual(obj);\n    expect(copy === obj).toBe(false);\n  });\n\n  test('preserves nested object references', () => {\n    const nested = { count: 1 };\n    const obj = { nested };\n    const copy = shallowClone(obj);\n\n    expect(copy === obj).toBe(false);\n    expect(copy.nested).toBe(nested);\n    expect(copy.nested).toBe(obj.nested);\n  });\n\n  test('preserves nested array references', () => {\n    const nested = [1, 2];\n    const obj = { nested };\n    const copy = shallowClone(obj);\n\n    expect(copy === obj).toBe(false);\n    expect(copy.nested).toBe(nested);\n    expect(copy.nested).toBe(obj.nested);\n  });\n\n  test('top-level mutation on the clone does not mutate the original', () => {\n    const obj = { a: 1, nested: { count: 1 } };\n    const copy = shallowClone(obj);\n\n    copy.a = 99;\n\n    expect(obj.a).toBe(1);\n    expect(copy.a).toBe(99);\n  });\n\n  test('nested mutation through the clone is visible through the original', () => {\n    const obj = { nested: { count: 1 } };\n    const copy = shallowClone(obj);\n\n    copy.nested.count = 2;\n\n    expect(obj.nested.count).toBe(2);\n  });\n\n  test('handles empty arrays and objects', () => {\n    const arr = [];\n    const obj = {};\n\n    const arrCopy = shallowClone(arr);\n    const objCopy = shallowClone(obj);\n\n    expect(arrCopy).toEqual([]);\n    expect(arrCopy === arr).toBe(false);\n    expect(objCopy).toEqual({});\n    expect(objCopy === obj).toBe(false);\n  });\n\n  test('throws TypeError for null and primitives', () => {\n    expect(() => shallowClone(null)).toThrow(TypeError);\n    expect(() => shallowClone(42)).toThrow(TypeError);\n    expect(() => shallowClone('x')).toThrow(TypeError);\n    expect(() => shallowClone(true)).toThrow(TypeError);\n    expect(() => shallowClone(undefined)).toThrow(TypeError);\n  });\n\n  test('does not mutate the original container while cloning', () => {\n    const arr = [1, { count: 1 }];\n    const obj = { a: 1, nested: { count: 1 } };\n    const arrBefore = arr.slice();\n    const objKeysBefore = Object.keys(obj);\n\n    shallowClone(arr);\n    shallowClone(obj);\n\n    expect(arr).toEqual(arrBefore);\n    expect(Object.keys(obj)).toEqual(objKeysBefore);\n    expect(obj).toEqual({ a: 1, nested: { count: 1 } });\n  });\n\n  test('copies own enumerable symbol properties', () => {\n    const key = Symbol('id');\n    const obj = { a: 1, [key]: 123 };\n\n    const copy = shallowClone(obj);\n\n    expect(copy[key]).toBe(123);\n  });\n\n  test('preserves sparse array shape and custom enumerable properties', () => {\n    const key = Symbol('meta');\n    const arr = new Array(4);\n    arr[1] = 'value';\n    arr.extra = 7;\n    arr[key] = 9;\n\n    const copy = shallowClone(arr);\n\n    expect(copy.length).toBe(4);\n    expect(0 in copy).toBe(false);\n    expect(1 in copy).toBe(true);\n    expect(2 in copy).toBe(false);\n    expect(3 in copy).toBe(false);\n    expect(copy.extra).toBe(7);\n    expect(copy[key]).toBe(9);\n  });\n\n  test('does not copy prototype properties', () => {\n    const proto = { inherited: true };\n    const obj = Object.create(proto);\n    obj.own = true;\n\n    const copy = shallowClone(obj);\n\n    expect(copy.own).toBe(true);\n    expect(copy.inherited).toBe(undefined);\n    expect('inherited' in copy).toBe(false);\n  });\n});\n",
     "testsTs": "import shallowClone from './file';\n\ndescribe('shallowClone (TypeScript)', () => {\n  it('clones arrays shallowly', () => {\n    const nested = { x: 2 };\n    const arr = [1, nested];\n    const copy = shallowClone(arr);\n\n    expect(copy).toEqual(arr);\n    expect(copy === arr).toBe(false);\n    expect(copy[1]).toBe(nested);\n  });\n\n  it('clones objects shallowly', () => {\n    const nested = { c: 2 };\n    const obj = { a: 1, b: nested };\n    const copy = shallowClone(obj);\n\n    expect(copy).toEqual(obj);\n    expect(copy === obj).toBe(false);\n    expect(copy.b).toBe(nested);\n  });\n\n  it('returns a different array reference', () => {\n    const arr = [1, 2, 3];\n    const copy = shallowClone(arr);\n\n    expect(copy).toEqual(arr);\n    expect(copy === arr).toBe(false);\n  });\n\n  it('returns a different object reference', () => {\n    const obj = { a: 1, b: 2 };\n    const copy = shallowClone(obj);\n\n    expect(copy).toEqual(obj);\n    expect(copy === obj).toBe(false);\n  });\n\n  it('preserves nested object references', () => {\n    const nested = { count: 1 };\n    const obj = { nested };\n    const copy = shallowClone(obj);\n\n    expect(copy === obj).toBe(false);\n    expect(copy.nested).toBe(nested);\n    expect(copy.nested).toBe(obj.nested);\n  });\n\n  it('preserves nested array references', () => {\n    const nested = [1, 2];\n    const obj = { nested };\n    const copy = shallowClone(obj);\n\n    expect(copy === obj).toBe(false);\n    expect(copy.nested).toBe(nested);\n    expect(copy.nested).toBe(obj.nested);\n  });\n\n  it('top-level mutation on the clone does not mutate the original', () => {\n    const obj = { a: 1, nested: { count: 1 } };\n    const copy = shallowClone(obj);\n\n    copy.a = 99;\n\n    expect(obj.a).toBe(1);\n    expect(copy.a).toBe(99);\n  });\n\n  it('nested mutation through the clone is visible through the original', () => {\n    const obj = { nested: { count: 1 } };\n    const copy = shallowClone(obj);\n\n    copy.nested.count = 2;\n\n    expect(obj.nested.count).toBe(2);\n  });\n\n  it('handles empty arrays and objects', () => {\n    const arr: unknown[] = [];\n    const obj: Record<string, unknown> = {};\n\n    const arrCopy = shallowClone(arr);\n    const objCopy = shallowClone(obj);\n\n    expect(arrCopy).toEqual([]);\n    expect(arrCopy === arr).toBe(false);\n    expect(objCopy).toEqual({});\n    expect(objCopy === obj).toBe(false);\n  });\n\n  it('throws TypeError for null and primitives', () => {\n    expect(() => shallowClone(null as any)).toThrow(TypeError);\n    expect(() => shallowClone(42 as any)).toThrow(TypeError);\n    expect(() => shallowClone('x' as any)).toThrow(TypeError);\n    expect(() => shallowClone(true as any)).toThrow(TypeError);\n    expect(() => shallowClone(undefined as any)).toThrow(TypeError);\n  });\n\n  it('does not mutate the original container while cloning', () => {\n    const arr = [1, { count: 1 }];\n    const obj = { a: 1, nested: { count: 1 } };\n    const arrBefore = arr.slice();\n    const objKeysBefore = Object.keys(obj);\n\n    shallowClone(arr);\n    shallowClone(obj);\n\n    expect(arr).toEqual(arrBefore);\n    expect(Object.keys(obj)).toEqual(objKeysBefore);\n    expect(obj).toEqual({ a: 1, nested: { count: 1 } });\n  });\n\n  it('copies own enumerable symbol properties', () => {\n    const key = Symbol('id');\n    const obj = { a: 1, [key]: 123 };\n\n    const copy = shallowClone(obj);\n\n    expect(copy[key]).toBe(123);\n  });\n\n  it('preserves sparse array shape and custom enumerable properties', () => {\n    const key = Symbol('meta');\n    const arr = new Array(4) as Array<string | undefined> & { extra?: number; [key]: number };\n    arr[1] = 'value';\n    arr.extra = 7;\n    arr[key] = 9;\n\n    const copy = shallowClone(arr);\n\n    expect(copy.length).toBe(4);\n    expect(0 in copy).toBe(false);\n    expect(1 in copy).toBe(true);\n    expect(2 in copy).toBe(false);\n    expect(3 in copy).toBe(false);\n    expect(copy.extra).toBe(7);\n    expect(copy[key]).toBe(9);\n  });\n\n  it('does not copy prototype properties', () => {\n    const proto = { inherited: true };\n    const obj = Object.create(proto) as { own?: boolean; inherited?: boolean };\n    obj.own = true;\n\n    const copy = shallowClone(obj);\n\n    expect(copy.own).toBe(true);\n    expect(copy.inherited).toBe(undefined);\n    expect('inherited' in copy).toBe(false);\n  });\n});\n",
+    "companies": [
+      "tesla"
+    ],
+    "sources": [
+      {
+        "label": "GitHub: repository with a file labelled TeslaRound1, 2025",
+        "url": "https://github.com/poornasaiv/Tesla_Interview_Coding",
+        "company": "tesla",
+        "publisher": "GitHub",
+        "date": "2025-08",
+        "note": "The repository says it holds solutions to questions asked in a Tesla interview. Exercise 1 of its TeslaRound1 file copies a nested employee object shallowly and deeply."
+      }
+    ],
     "access": "free",
     "updatedAt": "2026-07-14",
     "seo": {
@@ -1859,7 +1872,18 @@
     "importance": 4,
     "technology": "javascript",
     "companies": [
-      "google"
+      "google",
+      "tesla"
+    ],
+    "sources": [
+      {
+        "label": "GitHub: repository with a file labelled TeslaRound1, 2025",
+        "url": "https://github.com/poornasaiv/Tesla_Interview_Coding",
+        "company": "tesla",
+        "publisher": "GitHub",
+        "date": "2025-08",
+        "note": "The repository says it holds solutions to questions asked in a Tesla interview. Exercise 1 of its TeslaRound1 file copies a nested employee object shallowly and deeply."
+      }
     ],
     "difficulty": "hard",
     "tags": [
@@ -2175,7 +2199,8 @@
     "technology": "javascript",
     "companies": [
       "google",
-      "intuit"
+      "intuit",
+      "walmart"
     ],
     "sources": [
       {
@@ -2185,6 +2210,14 @@
         "publisher": "LeetCode Discuss",
         "date": "2023-10",
         "note": "One SE2 account lists writing a currying function in the first technical round. This drill practises that exercise, not its reported wording."
+      },
+      {
+        "label": "LeetCode Discuss: Walmart Global Tech India SDE III loop, Chennai, 2021",
+        "url": "https://leetcode.com/discuss/post/1436043/",
+        "company": "walmart",
+        "publisher": "LeetCode Discuss",
+        "date": "2021-08",
+        "note": "The JavaScript and DSA round asked for one function that supports both sum(a, b, c) and sum(a)(b)(c) with any number of arguments. This curry item practises the fixed-arity form; the open-ended form also needs a terminating call or valueOf."
       }
     ],
     "importance": 3,
@@ -3846,7 +3879,18 @@
     "type": "coding",
     "technology": "javascript",
     "companies": [
-      "google"
+      "google",
+      "walmart"
+    ],
+    "sources": [
+      {
+        "label": "LeetCode Discuss: front end developer interview journey with a Walmart loop, 2022",
+        "url": "https://leetcode.com/discuss/post/2774667/",
+        "company": "walmart",
+        "publisher": "LeetCode Discuss",
+        "date": "2022-11",
+        "note": "The Walmart second round in this self-reported multi-company account lists \"add two numbers using promise\" next to hoisting, closures and callback hell. This item is a practice version of that task."
+      }
     ],
     "importance": 3,
     "difficulty": "intermediate",
@@ -6107,7 +6151,18 @@
     "type": "coding",
     "technology": "javascript",
     "companies": [
-      "apple"
+      "apple",
+      "walmart"
+    ],
+    "sources": [
+      {
+        "label": "LeetCode Discuss: front end developer interview journey with a Walmart loop, 2022",
+        "url": "https://leetcode.com/discuss/post/2774667/",
+        "company": "walmart",
+        "publisher": "LeetCode Discuss",
+        "date": "2022-11",
+        "note": "The Walmart first round in this self-reported account lists Valid Anagram, Number of Islands and Best Time to Buy and Sell Stock as the problems asked."
+      }
     ],
     "importance": 2,
     "difficulty": "easy",
@@ -6757,7 +6812,8 @@
     ],
     "companies": [
       "meta",
-      "apple"
+      "apple",
+      "walmart"
     ],
     "sources": [
       {
@@ -6775,6 +6831,14 @@
         "publisher": "Medium",
         "date": "2022-07",
         "note": "One senior Apple front end account lists designing a stack with push, pop and getMin among its coding questions. This stack-and-queue drill practises the underlying structure; the min-stack variant is a follow-up, not the reported wording."
+      },
+      {
+        "label": "Code360: Walmart SDE-2 interview experience, Bengaluru, March 2021",
+        "url": "https://www.naukri.com/code360/interview-experiences/walmart/walmart-interview-experience-mar-2021-exp-0-2-years",
+        "company": "walmart",
+        "publisher": "Naukri Code360",
+        "date": "2021-03",
+        "note": "The DSA round of this self-reported loop lists \"Implement a Queue\" and a circular linked-list deletion; a later round covered React, CSS and HTML theory."
       }
     ],
     "description": {
@@ -9092,5 +9156,286 @@
       "description": "Implement buildTree in JavaScript: link flat id and parentId records into nested nodes in two passes, keep sibling order, handle orphans, never mutate input."
     },
     "decisionGraphAsset": "assets/questions/javascript/decision-graphs/js-build-tree-from-flat-list.v1.json"
+  },
+  {
+    "id": "js-valid-parentheses",
+    "title": "Valid Parentheses (Balanced Brackets)",
+    "type": "coding",
+    "technology": "javascript",
+    "companies": [
+      "walmart"
+    ],
+    "sources": [
+      {
+        "label": "Taro: Walmart front end developer interview, India, October 2020",
+        "url": "https://www.jointaro.com/interviews/companies/walmart/experiences/front-end-developer-india-october-19-2020-no-offer-neutral-93bed894/",
+        "company": "walmart",
+        "publisher": "Taro",
+        "date": "2020-10",
+        "note": "This self-reported front end developer loop lists Valid Parentheses next to let, var and const. This drill is a practice version of that problem; the rule for non-bracket characters is ours."
+      },
+      {
+        "label": "Hashnode: frontend interview experience at Walmart, SDE 3 UI, January 2024",
+        "url": "https://jaynil-gaglani.hashnode.dev/frontend-interview-experience-at-walmart",
+        "company": "walmart",
+        "publisher": "Hashnode",
+        "date": "2024-01",
+        "note": "The DSA round of this self-reported SDE 3 UI loop had three easy-medium problems; the second was Valid Parentheses."
+      },
+      {
+        "label": "Medium: Walmart Global Tech Software Engineer 3 UI interview, November 2024",
+        "url": "https://medium.com/@phalgun99/my-interview-experience-at-walmart-global-tech-for-the-software-engineer-3-ui-position-9751c81988ee",
+        "company": "walmart",
+        "publisher": "Medium",
+        "date": "2024-11",
+        "note": "The DSA round of this self-reported Software Engineer 3 UI loop asked First Missing Positive and then Valid Parentheses."
+      }
+    ],
+    "importance": 3,
+    "difficulty": "easy",
+    "tags": [
+      "strings",
+      "data-structures",
+      "algorithms",
+      "validation"
+    ],
+    "description": {
+      "summary": "Implement isValidParentheses(s): return true when every (, [ and { in the string is closed by the matching bracket in the right order, and false otherwise. Characters that are not brackets are ignored, an empty string is valid, and input that is not a string throws a TypeError. Three public interview reports of Walmart frontend and UI loops (October 2020, January 2024 and November 2024) list Valid Parentheses in a coding or DSA round; this practice version adds the rule for non-bracket characters so the same check works on code snippets. Concepts: strings, data-structures, algorithms, validation.",
+      "specs": {
+        "practice": [
+          "Matching every opener to its closer with a stack of expected closers",
+          "Failing fast on the first closer that does not match",
+          "Stating the contract for empty input, other characters and non-strings before coding"
+        ],
+        "expectedBehaviorIntro": "Your isValidParentheses() implementation should:",
+        "expectedBehavior": [
+          "Return true when every opener is closed by the same kind of bracket in the right order",
+          "Return false for a closer of the wrong kind, such as \"(]\", or a wrong closing order, such as \"([)]\"",
+          "Return false when an opener is never closed or a closer arrives with nothing open",
+          "Treat an empty string as valid",
+          "Ignore every character that is not one of ( ) [ ] { }",
+          "Throw a TypeError when the input is not a string"
+        ]
+      },
+      "arguments": [
+        {
+          "name": "s",
+          "type": "string",
+          "desc": "The text to check. Only ( ) [ ] { } count; every other character is ignored."
+        }
+      ],
+      "returns": {
+        "type": "boolean",
+        "desc": "true when the brackets are balanced and properly nested, otherwise false."
+      },
+      "examples": [
+        "isValidParentheses('()[]{}'); // => true\nisValidParentheses('{[()]}'); // => true\nisValidParentheses('([)]'); // => false (closed in the wrong order)",
+        "isValidParentheses('fn(a[0], { b: 1 })'); // => true (other characters are ignored)\nisValidParentheses('('); // => false (never closed)\nisValidParentheses(''); // => true"
+      ]
+    },
+    "starterCode": "export default function isValidParentheses(s) {\n  // TODO: walk the string once and remember which closer each opener needs.\n  // When a closer arrives, it must match the most recent unmatched opener.\n  // Ignore every character that is not a bracket.\n  throw new Error('Not implemented');\n}\n",
+    "starterCodeTs": "export default function isValidParentheses(s: string): boolean {\n  // TODO: walk the string once and remember which closer each opener needs.\n  // When a closer arrives, it must match the most recent unmatched opener.\n  // Ignore every character that is not a bracket.\n  throw new Error('Not implemented');\n}\n",
+    "solutionBlock": {
+      "overview": "Interview answer: scan the string once and keep a stack of the closers you still expect. Each opener pushes the closer it needs; each closer pops the top of the stack and must equal it. A mismatch, or a closer that finds the stack empty, means the string is invalid, and the string is valid only when the stack is empty at the end. Other characters are skipped. Time O(n), memory O(n) in the worst case of all openers.\n\nMental model: the most recent unmatched opener must close first, which is exactly last in, first out. Counting each bracket kind is the common wrong answer: it accepts \"([)]\".",
+      "approaches": [
+        {
+          "title": "Approach 1: Stack of expected closers",
+          "prose": "Check the type first. Then loop over the characters: for (, [ or { push the matching closer; for ), ] or } pop and compare, returning false on a mismatch (popping an empty array gives undefined, which never matches). Skip everything else. Return expected.length === 0 so unclosed openers fail. One pass, no recursion, so thousands of nested brackets are fine.",
+          "codeJs": "export default function isValidParentheses(s) {\n  if (typeof s !== 'string') {\n    throw new TypeError('isValidParentheses expects a string');\n  }\n  const closerFor = { '(': ')', '[': ']', '{': '}' };\n  const expected = [];\n  for (const ch of s) {\n    if (ch === '(' || ch === '[' || ch === '{') {\n      expected.push(closerFor[ch]);\n    } else if (ch === ')' || ch === ']' || ch === '}') {\n      if (expected.pop() !== ch) {\n        return false;\n      }\n    }\n  }\n  return expected.length === 0;\n}\n",
+          "codeTs": "export default function isValidParentheses(s: string): boolean {\n  if (typeof s !== 'string') {\n    throw new TypeError('isValidParentheses expects a string');\n  }\n  const closerFor: Record<string, string> = { '(': ')', '[': ']', '{': '}' };\n  const expected: string[] = [];\n  for (const ch of s) {\n    if (ch === '(' || ch === '[' || ch === '{') {\n      expected.push(closerFor[ch]);\n    } else if (ch === ')' || ch === ']' || ch === '}') {\n      if (expected.pop() !== ch) {\n        return false;\n      }\n    }\n  }\n  return expected.length === 0;\n}\n",
+          "decisionGraphKey": "approach1"
+        },
+        {
+          "title": "Approach 2: Remove adjacent pairs until nothing changes",
+          "prose": "Strip every non-bracket character, then repeatedly delete (), [] and {} until a pass changes nothing. The string was valid exactly when nothing is left. It is short and easy to reason about, but every pass rescans the string, so deeply nested input costs O(n²) time.",
+          "codeJs": "export default function isValidParentheses(s) {\n  if (typeof s !== 'string') {\n    throw new TypeError('isValidParentheses expects a string');\n  }\n  let rest = s.replace(/[^()[\\]{}]/g, '');\n  let before;\n  do {\n    before = rest;\n    rest = rest.replace(/\\(\\)|\\[\\]|\\{\\}/g, '');\n  } while (rest !== before);\n  return rest === '';\n}\n",
+          "codeTs": "export default function isValidParentheses(s: string): boolean {\n  if (typeof s !== 'string') {\n    throw new TypeError('isValidParentheses expects a string');\n  }\n  let rest = s.replace(/[^()[\\]{}]/g, '');\n  let before: string;\n  do {\n    before = rest;\n    rest = rest.replace(/\\(\\)|\\[\\]|\\{\\}/g, '');\n  } while (rest !== before);\n  return rest === '';\n}\n",
+          "decisionGraphKey": "approach2"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Counting openers and closers per kind accepts \"([)]\", which closes in the wrong order.",
+          "Forgetting the final empty-stack check accepts \"(\" and \"(()\".",
+          "Calling a stack method on an empty stack without handling it: pop() returns undefined, so compare instead of assuming a value.",
+          "Recursing per nesting level can overflow the call stack on long inputs; a loop cannot."
+        ],
+        "edgeCases": [
+          "Empty string → true.",
+          "Only non-bracket characters → true.",
+          "A closer first, such as \")(\" → false at the first character.",
+          "Non-string input → TypeError before the loop."
+        ],
+        "techniques": [
+          "Using an array as a stack with push and pop.",
+          "Mapping each opener to the closer it expects.",
+          "Single-pass validation with an early return."
+        ]
+      },
+      "followUp": [
+        "How would you report the index of the first unmatched bracket instead of a boolean?",
+        "How would you ignore brackets inside string literals or comments in a code snippet?",
+        "How would you support angle brackets or custom pairs passed in as a map?",
+        "What changes if the input is a stream that arrives in chunks?"
+      ],
+      "resources": [
+        {
+          "title": "MDN – Array.prototype.push()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/push"
+        },
+        {
+          "title": "MDN – Array.prototype.pop()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/pop"
+        },
+        {
+          "title": "MDN – for...of",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for...of"
+        }
+      ]
+    },
+    "tests": "import isValidParentheses from './isValidParentheses';\n\ndescribe('isValidParentheses', () => {\n  test('accepts a single pair of each kind', () => {\n    expect(isValidParentheses('()')).toBe(true);\n    expect(isValidParentheses('[]')).toBe(true);\n    expect(isValidParentheses('{}')).toBe(true);\n  });\n\n  test('accepts sequential and nested pairs', () => {\n    expect(isValidParentheses('()[]{}')).toBe(true);\n    expect(isValidParentheses('{[()]}')).toBe(true);\n    expect(isValidParentheses('([]{})[{()}]')).toBe(true);\n  });\n\n  test('rejects a closer of the wrong kind', () => {\n    expect(isValidParentheses('(]')).toBe(false);\n    expect(isValidParentheses('{)')).toBe(false);\n  });\n\n  test('rejects pairs that close in the wrong order', () => {\n    expect(isValidParentheses('([)]')).toBe(false);\n    expect(isValidParentheses('{[}]')).toBe(false);\n  });\n\n  test('rejects openers that are never closed', () => {\n    expect(isValidParentheses('(')).toBe(false);\n    expect(isValidParentheses('(()')).toBe(false);\n    expect(isValidParentheses('{[')).toBe(false);\n  });\n\n  test('rejects a closer with nothing open', () => {\n    expect(isValidParentheses(')')).toBe(false);\n    expect(isValidParentheses('())')).toBe(false);\n    expect(isValidParentheses('}{')).toBe(false);\n  });\n\n  test('treats an empty string as valid', () => {\n    expect(isValidParentheses('')).toBe(true);\n  });\n\n  test('ignores characters that are not brackets', () => {\n    expect(isValidParentheses('fn(a[0], { b: 1 })')).toBe(true);\n    expect(isValidParentheses('no brackets at all')).toBe(true);\n    expect(isValidParentheses('<div>(x)</div>')).toBe(true);\n    expect(isValidParentheses('a(b]c')).toBe(false);\n  });\n\n  test('handles long and deeply nested input without recursion', () => {\n    const deep = '('.repeat(5000) + ')'.repeat(5000);\n    expect(isValidParentheses(deep)).toBe(true);\n    expect(isValidParentheses(deep.slice(1))).toBe(false);\n    expect(isValidParentheses('()'.repeat(10000))).toBe(true);\n  });\n\n  test('throws a TypeError for input that is not a string', () => {\n    expect(() => isValidParentheses(null)).toThrow(TypeError);\n    expect(() => isValidParentheses(undefined)).toThrow(TypeError);\n    expect(() => isValidParentheses(42)).toThrow(TypeError);\n    expect(() => isValidParentheses(['(', ')'])).toThrow(TypeError);\n  });\n});\n",
+    "testsTs": "import isValidParentheses from './isValidParentheses';\n\ndescribe('isValidParentheses', () => {\n  test('accepts a single pair of each kind', () => {\n    expect(isValidParentheses('()')).toBe(true);\n    expect(isValidParentheses('[]')).toBe(true);\n    expect(isValidParentheses('{}')).toBe(true);\n  });\n\n  test('accepts sequential and nested pairs', () => {\n    expect(isValidParentheses('()[]{}')).toBe(true);\n    expect(isValidParentheses('{[()]}')).toBe(true);\n    expect(isValidParentheses('([]{})[{()}]')).toBe(true);\n  });\n\n  test('rejects a closer of the wrong kind', () => {\n    expect(isValidParentheses('(]')).toBe(false);\n    expect(isValidParentheses('{)')).toBe(false);\n  });\n\n  test('rejects pairs that close in the wrong order', () => {\n    expect(isValidParentheses('([)]')).toBe(false);\n    expect(isValidParentheses('{[}]')).toBe(false);\n  });\n\n  test('rejects openers that are never closed', () => {\n    expect(isValidParentheses('(')).toBe(false);\n    expect(isValidParentheses('(()')).toBe(false);\n    expect(isValidParentheses('{[')).toBe(false);\n  });\n\n  test('rejects a closer with nothing open', () => {\n    expect(isValidParentheses(')')).toBe(false);\n    expect(isValidParentheses('())')).toBe(false);\n    expect(isValidParentheses('}{')).toBe(false);\n  });\n\n  test('treats an empty string as valid', () => {\n    expect(isValidParentheses('')).toBe(true);\n  });\n\n  test('ignores characters that are not brackets', () => {\n    expect(isValidParentheses('fn(a[0], { b: 1 })')).toBe(true);\n    expect(isValidParentheses('no brackets at all')).toBe(true);\n    expect(isValidParentheses('<div>(x)</div>')).toBe(true);\n    expect(isValidParentheses('a(b]c')).toBe(false);\n  });\n\n  test('handles long and deeply nested input without recursion', () => {\n    const deep = '('.repeat(5000) + ')'.repeat(5000);\n    expect(isValidParentheses(deep)).toBe(true);\n    expect(isValidParentheses(deep.slice(1))).toBe(false);\n    expect(isValidParentheses('()'.repeat(10000))).toBe(true);\n  });\n\n  test('throws a TypeError for input that is not a string', () => {\n    expect(() => isValidParentheses(null as unknown as string)).toThrow(TypeError);\n    expect(() => isValidParentheses(undefined as unknown as string)).toThrow(TypeError);\n    expect(() => isValidParentheses(42 as unknown as string)).toThrow(TypeError);\n    expect(() => isValidParentheses(['(', ')'] as unknown as string)).toThrow(TypeError);\n  });\n});\n",
+    "access": "free",
+    "updatedAt": "2026-10-19",
+    "seo": {
+      "title": "Valid Parentheses in JavaScript: Balanced Bracket Checker",
+      "description": "Implement isValidParentheses in JavaScript with a stack of expected closers: nested and mixed brackets, wrong-order closers, empty input and non-bracket text."
+    },
+    "decisionGraphAsset": "assets/questions/javascript/decision-graphs/js-valid-parentheses.v1.json"
+  },
+  {
+    "id": "js-color-contrast-ratio",
+    "title": "Color Contrast Ratio (WCAG)",
+    "type": "coding",
+    "technology": "javascript",
+    "companies": [
+      "tesla"
+    ],
+    "sources": [
+      {
+        "label": "Taro: Tesla front end developer interview, Los Angeles, 2022",
+        "url": "https://www.jointaro.com/interviews/companies/tesla/experiences/front-end-developer-los-angeles-ca-january-1-2022-no-offer-negative-eadce28f/",
+        "company": "tesla",
+        "publisher": "Taro",
+        "date": "2022-01",
+        "note": "The virtual onsite in this self-reported loop lists \"Calculate the contrast between certain colors\" among its tasks. This drill is a practice version of that task; the hex input format and the error rule are ours."
+      }
+    ],
+    "importance": 2,
+    "difficulty": "easy",
+    "tags": [
+      "accessibility",
+      "color",
+      "math",
+      "validation"
+    ],
+    "description": {
+      "summary": "Implement contrastRatio(foreground, background): return the WCAG 2 contrast ratio between two hex colors (#rgb or #rrggbb), from 1 for identical colors up to 21 for black on white. Convert each sRGB channel to linear light, compute relative luminance with the weights 0.2126, 0.7152 and 0.0722, and divide the lighter luminance plus 0.05 by the darker luminance plus 0.05. A public interview report of a Tesla front end developer loop (Los Angeles, January 2022) lists \"Calculate the contrast between certain colors\" among the onsite tasks; this practice version fixes the input format and the error rule so the tests can check the math. Concepts: accessibility, color, math, validation.",
+      "specs": {
+        "practice": [
+          "Turning a published accessibility formula into small, testable functions",
+          "Parsing and validating hex colors, including the three-digit shorthand",
+          "Keeping full precision when a threshold decides pass or fail"
+        ],
+        "expectedBehaviorIntro": "Your contrastRatio() implementation should:",
+        "expectedBehavior": [
+          "Accept #rgb and #rrggbb strings in any letter case",
+          "Convert each channel to linear light with the 0.04045 threshold before weighting it",
+          "Return (lighter + 0.05) / (darker + 0.05), so the order of the arguments does not matter",
+          "Return 21 for black on white and 1 for any color against itself",
+          "Return the unrounded ratio so a value just under 4.5 never rounds up to a pass",
+          "Throw a TypeError when either argument is not a valid hex color string"
+        ]
+      },
+      "arguments": [
+        {
+          "name": "foreground",
+          "type": "string",
+          "desc": "A hex color, #rgb or #rrggbb."
+        },
+        {
+          "name": "background",
+          "type": "string",
+          "desc": "A hex color, #rgb or #rrggbb."
+        }
+      ],
+      "returns": {
+        "type": "number",
+        "desc": "The contrast ratio, from 1 to 21, unrounded."
+      },
+      "examples": [
+        "contrastRatio('#000000', '#ffffff'); // => 21\ncontrastRatio('#767676', '#ffffff'); // => about 4.54, passes AA for normal text\ncontrastRatio('#777777', '#ffffff'); // => about 4.48, fails AA (never round up)",
+        "contrastRatio('#fff', '#2563eb'); // => about 5.17\ncontrastRatio('#2563eb', '#fff'); // => the same value\ncontrastRatio('red', '#fff'); // throws TypeError"
+      ]
+    },
+    "starterCode": "export default function contrastRatio(foreground, background) {\n  // TODO: parse both hex colors (#rgb or #rrggbb) into 0-255 channels,\n  // convert every channel to linear light, weight the channels into a\n  // relative luminance, then return (lighter + 0.05) / (darker + 0.05).\n  throw new Error('Not implemented');\n}\n",
+    "starterCodeTs": "export default function contrastRatio(foreground: string, background: string): number {\n  // TODO: parse both hex colors (#rgb or #rrggbb) into 0-255 channels,\n  // convert every channel to linear light, weight the channels into a\n  // relative luminance, then return (lighter + 0.05) / (darker + 0.05).\n  throw new Error('Not implemented');\n}\n",
+    "solutionBlock": {
+      "overview": "Interview answer: split the formula into three small functions. parseHex validates the string and returns three channel values from 0 to 255. toLinear undoes the sRGB gamma curve: divide by 255, then use c / 12.92 at or below 0.04045 and ((c + 0.055) / 1.055) ** 2.4 above it. relativeLuminance weights the linear channels 0.2126, 0.7152 and 0.0722, because the eye is most sensitive to green. The ratio is (lighter + 0.05) / (darker + 0.05) and runs from 1 to 21. Compare that raw number with the WCAG thresholds: 4.5 for normal text, 3 for large text and 7 for AAA. Rounding first can turn a failing 4.48 into a passing 4.5.\n\nMental model: decode the gamma, weight the channels, then compare the lighter color with the darker one.",
+      "approaches": [
+        {
+          "title": "Approach 1: Small functions for parse, linearize and luminance",
+          "prose": "contrastRatio computes both luminances, puts the lighter one in the numerator with Math.max and Math.min, and returns the unrounded ratio. relativeLuminance maps the parsed channels through toLinear and applies the weights. parseHex checks the shape with one regular expression, doubles each shorthand digit, and parses the three pairs. Every helper is easy to test on its own.",
+          "codeJs": "export default function contrastRatio(foreground, background) {\n  const l1 = relativeLuminance(foreground);\n  const l2 = relativeLuminance(background);\n  const lighter = Math.max(l1, l2);\n  const darker = Math.min(l1, l2);\n  return (lighter + 0.05) / (darker + 0.05);\n}\n\nfunction relativeLuminance(hex) {\n  const [r, g, b] = parseHex(hex).map(toLinear);\n  return 0.2126 * r + 0.7152 * g + 0.0722 * b;\n}\n\nfunction toLinear(channel) {\n  const c = channel / 255;\n  return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;\n}\n\nfunction parseHex(hex) {\n  if (typeof hex !== 'string' || !/^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i.test(hex)) {\n    throw new TypeError(`Invalid hex color: ${String(hex)}`);\n  }\n  const digits = hex.length === 4 ? [...hex.slice(1)].map((d) => d + d).join('') : hex.slice(1);\n  return [0, 2, 4].map((i) => parseInt(digits.slice(i, i + 2), 16));\n}\n",
+          "codeTs": "export default function contrastRatio(foreground: string, background: string): number {\n  const l1 = relativeLuminance(foreground);\n  const l2 = relativeLuminance(background);\n  const lighter = Math.max(l1, l2);\n  const darker = Math.min(l1, l2);\n  return (lighter + 0.05) / (darker + 0.05);\n}\n\nfunction relativeLuminance(hex: string): number {\n  const [r, g, b] = parseHex(hex).map(toLinear);\n  return 0.2126 * r + 0.7152 * g + 0.0722 * b;\n}\n\nfunction toLinear(channel: number): number {\n  const c = channel / 255;\n  return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;\n}\n\nfunction parseHex(hex: string): [number, number, number] {\n  if (typeof hex !== 'string' || !/^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i.test(hex)) {\n    throw new TypeError(`Invalid hex color: ${String(hex)}`);\n  }\n  const digits = hex.length === 4 ? [...hex.slice(1)].map((d) => d + d).join('') : hex.slice(1);\n  return [0, 2, 4].map((i) => parseInt(digits.slice(i, i + 2), 16)) as [number, number, number];\n}\n",
+          "decisionGraphKey": "approach1"
+        },
+        {
+          "title": "Approach 2: Lookup table for the channel curve",
+          "prose": "When a design-token linter compares hundreds of pairs, the channel curve can be computed once for the 256 possible values. Parse the six digits as one integer, read red, green and blue with bit shifts, and look each one up in the table. The math and the results are identical to approach 1; only the cost per call drops.",
+          "codeJs": "const LINEAR = Array.from({ length: 256 }, (_, value) => {\n  const c = value / 255;\n  return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;\n});\n\nexport default function contrastRatio(foreground, background) {\n  const [lighter, darker] = [luminance(foreground), luminance(background)].sort((a, b) => b - a);\n  return (lighter + 0.05) / (darker + 0.05);\n}\n\nfunction luminance(hex) {\n  if (typeof hex !== 'string' || !/^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i.test(hex)) {\n    throw new TypeError(`Invalid hex color: ${String(hex)}`);\n  }\n  const full = hex.length === 4 ? hex.replace(/[0-9a-f]/gi, (d) => d + d) : hex;\n  const value = parseInt(full.slice(1), 16);\n  return 0.2126 * LINEAR[(value >> 16) & 255] + 0.7152 * LINEAR[(value >> 8) & 255] + 0.0722 * LINEAR[value & 255];\n}\n",
+          "codeTs": "const LINEAR: number[] = Array.from({ length: 256 }, (_, value) => {\n  const c = value / 255;\n  return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;\n});\n\nexport default function contrastRatio(foreground: string, background: string): number {\n  const [lighter, darker] = [luminance(foreground), luminance(background)].sort((a, b) => b - a);\n  return (lighter + 0.05) / (darker + 0.05);\n}\n\nfunction luminance(hex: string): number {\n  if (typeof hex !== 'string' || !/^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i.test(hex)) {\n    throw new TypeError(`Invalid hex color: ${String(hex)}`);\n  }\n  const full = hex.length === 4 ? hex.replace(/[0-9a-f]/gi, (d) => d + d) : hex;\n  const value = parseInt(full.slice(1), 16);\n  return 0.2126 * LINEAR[(value >> 16) & 255] + 0.7152 * LINEAR[(value >> 8) & 255] + 0.0722 * LINEAR[value & 255];\n}\n",
+          "decisionGraphKey": "approach2"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Weighting the 0 to 255 values directly skips the gamma curve and gives wrong ratios for mid tones.",
+          "Always dividing the first argument by the second returns values below 1 when the order flips.",
+          "Rounding before comparing with 4.5 lets #777777 on white pass, although its ratio is about 4.48.",
+          "Expanding #abc as #abcabc instead of #aabbcc."
+        ],
+        "edgeCases": [
+          "Identical colors → 1.",
+          "Black and white in either order → 21.",
+          "Shorthand or uppercase hex → the same result as the long lowercase form.",
+          "Color names, a missing #, or 5 or 7 digits → TypeError."
+        ],
+        "techniques": [
+          "Translating a published formula into named helper functions.",
+          "Validating with a regular expression before parsing.",
+          "Lookup tables for repeated per-channel math."
+        ]
+      },
+      "followUp": [
+        "How would you support rgb() and hsl() strings, or 8-digit hex with alpha?",
+        "How would you blend a semi-transparent foreground over its background before measuring?",
+        "Which thresholds apply to large text and to UI components, and how would you report AA and AAA together?",
+        "How does the APCA method in the WCAG 3 drafts differ from this ratio?"
+      ],
+      "resources": [
+        {
+          "title": "W3C – Understanding SC 1.4.3 Contrast (Minimum)",
+          "url": "https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html"
+        },
+        {
+          "title": "W3C – WCAG 2.2 definition of relative luminance",
+          "url": "https://www.w3.org/TR/WCAG22/#dfn-relative-luminance"
+        },
+        {
+          "title": "MDN – parseInt()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/parseInt"
+        }
+      ]
+    },
+    "tests": "import contrastRatio from './contrastRatio';\n\nconst round2 = (value) => Math.round(value * 100) / 100;\n\ndescribe('contrastRatio', () => {\n  test('black on white is the maximum, 21', () => {\n    expect(round2(contrastRatio('#000000', '#ffffff'))).toBe(21);\n  });\n\n  test('a color against itself is the minimum, 1', () => {\n    expect(contrastRatio('#777777', '#777777')).toBe(1);\n    expect(contrastRatio('#2563eb', '#2563eb')).toBe(1);\n  });\n\n  test('argument order does not matter', () => {\n    expect(round2(contrastRatio('#ffffff', '#000000'))).toBe(21);\n    expect(contrastRatio('#2563eb', '#ffffff')).toBe(contrastRatio('#ffffff', '#2563eb'));\n  });\n\n  test('matches published values for grays on white', () => {\n    expect(round2(contrastRatio('#767676', '#ffffff'))).toBe(4.54);\n    expect(round2(contrastRatio('#777777', '#ffffff'))).toBe(4.48);\n    expect(round2(contrastRatio('#595959', '#ffffff'))).toBe(7);\n  });\n\n  test('weights green above red and red above blue', () => {\n    expect(round2(contrastRatio('#00ff00', '#ffffff'))).toBe(1.37);\n    expect(round2(contrastRatio('#ff0000', '#ffffff'))).toBe(4);\n    expect(round2(contrastRatio('#0000ff', '#ffffff'))).toBe(8.59);\n  });\n\n  test('uses the linear segment for very dark channels', () => {\n    expect(round2(contrastRatio('#0a0a0a', '#ffffff'))).toBe(19.8);\n    expect(round2(contrastRatio('#0a0a0a', '#000000'))).toBe(1.06);\n  });\n\n  test('accepts the three-digit shorthand and any letter case', () => {\n    expect(round2(contrastRatio('#000', '#FFF'))).toBe(21);\n    expect(contrastRatio('#abc', '#ffffff')).toBe(contrastRatio('#AABBCC', '#ffffff'));\n  });\n\n  test('keeps full precision so a near miss does not round up to 4.5', () => {\n    const ratio = contrastRatio('#777777', '#ffffff');\n    expect(ratio < 4.5).toBe(true);\n    expect(ratio > 4.47).toBe(true);\n  });\n\n  test('throws a TypeError for values that are not hex colors', () => {\n    expect(() => contrastRatio('red', '#ffffff')).toThrow(TypeError);\n    expect(() => contrastRatio('#12', '#ffffff')).toThrow(TypeError);\n    expect(() => contrastRatio('#ggg', '#ffffff')).toThrow(TypeError);\n    expect(() => contrastRatio('#fffffff', '#000000')).toThrow(TypeError);\n    expect(() => contrastRatio('ffffff', '#000000')).toThrow(TypeError);\n    expect(() => contrastRatio(null, '#ffffff')).toThrow(TypeError);\n    expect(() => contrastRatio('#ffffff', 123)).toThrow(TypeError);\n  });\n});\n",
+    "testsTs": "import contrastRatio from './contrastRatio';\n\nconst round2 = (value: number) => Math.round(value * 100) / 100;\n\ndescribe('contrastRatio', () => {\n  test('black on white is the maximum, 21', () => {\n    expect(round2(contrastRatio('#000000', '#ffffff'))).toBe(21);\n  });\n\n  test('a color against itself is the minimum, 1', () => {\n    expect(contrastRatio('#777777', '#777777')).toBe(1);\n    expect(contrastRatio('#2563eb', '#2563eb')).toBe(1);\n  });\n\n  test('argument order does not matter', () => {\n    expect(round2(contrastRatio('#ffffff', '#000000'))).toBe(21);\n    expect(contrastRatio('#2563eb', '#ffffff')).toBe(contrastRatio('#ffffff', '#2563eb'));\n  });\n\n  test('matches published values for grays on white', () => {\n    expect(round2(contrastRatio('#767676', '#ffffff'))).toBe(4.54);\n    expect(round2(contrastRatio('#777777', '#ffffff'))).toBe(4.48);\n    expect(round2(contrastRatio('#595959', '#ffffff'))).toBe(7);\n  });\n\n  test('weights green above red and red above blue', () => {\n    expect(round2(contrastRatio('#00ff00', '#ffffff'))).toBe(1.37);\n    expect(round2(contrastRatio('#ff0000', '#ffffff'))).toBe(4);\n    expect(round2(contrastRatio('#0000ff', '#ffffff'))).toBe(8.59);\n  });\n\n  test('uses the linear segment for very dark channels', () => {\n    expect(round2(contrastRatio('#0a0a0a', '#ffffff'))).toBe(19.8);\n    expect(round2(contrastRatio('#0a0a0a', '#000000'))).toBe(1.06);\n  });\n\n  test('accepts the three-digit shorthand and any letter case', () => {\n    expect(round2(contrastRatio('#000', '#FFF'))).toBe(21);\n    expect(contrastRatio('#abc', '#ffffff')).toBe(contrastRatio('#AABBCC', '#ffffff'));\n  });\n\n  test('keeps full precision so a near miss does not round up to 4.5', () => {\n    const ratio = contrastRatio('#777777', '#ffffff');\n    expect(ratio < 4.5).toBe(true);\n    expect(ratio > 4.47).toBe(true);\n  });\n\n  test('throws a TypeError for values that are not hex colors', () => {\n    expect(() => contrastRatio('red', '#ffffff')).toThrow(TypeError);\n    expect(() => contrastRatio('#12', '#ffffff')).toThrow(TypeError);\n    expect(() => contrastRatio('#ggg', '#ffffff')).toThrow(TypeError);\n    expect(() => contrastRatio('#fffffff', '#000000')).toThrow(TypeError);\n    expect(() => contrastRatio('ffffff', '#000000')).toThrow(TypeError);\n    expect(() => contrastRatio(null as unknown as string, '#ffffff')).toThrow(TypeError);\n    expect(() => contrastRatio('#ffffff', 123 as unknown as string)).toThrow(TypeError);\n  });\n});\n",
+    "access": "free",
+    "updatedAt": "2026-10-19",
+    "seo": {
+      "title": "Color Contrast Ratio in JavaScript: WCAG Formula + Tests",
+      "description": "Implement contrastRatio in JavaScript: parse #rgb and #rrggbb colors, linearize sRGB channels, compute WCAG relative luminance and return a 1 to 21 ratio."
+    },
+    "decisionGraphAsset": "assets/questions/javascript/decision-graphs/js-color-contrast-ratio.v1.json"
   }
 ]

@@ -962,7 +962,8 @@
     "pressureModeAsset": "assets/questions/pressure-modes/accordion-faq.v1.json",
     "solutionAsset": "assets/sb/react/solution/react-accordion-faq-solution.v1.json",
     "companies": [
-      "amazon"
+      "amazon",
+      "walmart"
     ],
     "sources": [
       {
@@ -972,6 +973,14 @@
         "publisher": "LeetCode Discuss",
         "date": "2020-07",
         "note": "A community list compiled by one candidate marks designing an accordion as an Amazon onsite question. The list is secondhand; it cannot establish wording or frequency."
+      },
+      {
+        "label": "LeetCode Discuss: front end developer interview journey with a Walmart loop, 2022",
+        "url": "https://leetcode.com/discuss/post/2774667/",
+        "company": "walmart",
+        "publisher": "LeetCode Discuss",
+        "date": "2022-11",
+        "note": "The Walmart second round asked for an accordion in vanilla JavaScript only, with no React questions. This React item practises the same widget inside a framework."
       }
     ],
     "access": "premium",
@@ -2208,7 +2217,8 @@
       "intuit",
       "google",
       "zalando",
-      "booking-com"
+      "booking-com",
+      "tesla"
     ],
     "sources": [
       {
@@ -3275,7 +3285,18 @@
     },
     "solutionAsset": "assets/sb/react/solution/react-like-button-solution.v2.json",
     "companies": [
-      "amazon"
+      "amazon",
+      "tesla"
+    ],
+    "sources": [
+      {
+        "label": "Taro: Tesla frontend developer interview, San Francisco, 2021",
+        "url": "https://www.jointaro.com/interviews/companies/tesla/experiences/frontend-developer-san-francisco-ca-january-1-2021-no-offer-positive-8db5ee50/",
+        "company": "tesla",
+        "publisher": "Taro",
+        "date": "2021-01",
+        "note": "The three-hour online assessment in this self-reported loop had an HTML and CSS task, a React like button and a string puzzle. This item practises the like button."
+      }
     ],
     "access": "premium",
     "updatedAt": "2026-01-30",
@@ -4539,7 +4560,8 @@
     "solutionAsset": "assets/sb/react/solution/react-fetch-list-states-solution.v1.json",
     "decisionGraphAsset": "assets/questions/react/decision-graphs/react-fetch-list-states.v1.json",
     "companies": [
-      "revolut"
+      "revolut",
+      "tesla"
     ],
     "sources": [
       {
@@ -4557,6 +4579,14 @@
         "publisher": "Taro",
         "date": "2025-05",
         "note": "One account describes a pairing session that used a service API with authentication to display data in a React component. This exercise practises the same fetch-and-render loop against a fake API; it is not the reported task."
+      },
+      {
+        "label": "Taro: Tesla front end developer interview, Los Angeles, 2022",
+        "url": "https://www.jointaro.com/interviews/companies/tesla/experiences/front-end-developer-los-angeles-ca-january-1-2022-no-offer-negative-eadce28f/",
+        "company": "tesla",
+        "publisher": "Taro",
+        "date": "2022-01",
+        "note": "The virtual onsite asked to fetch photos and render them with theme contexts through React Context. This item practises the fetch-and-render part with loading, error and empty states."
       }
     ],
     "access": "free",
@@ -4564,6 +4594,952 @@
     "seo": {
       "title": "Fetch and Render a List in React",
       "description": "Load a list from a fake API in React with TypeScript and render loading, error with Retry, empty and success states without stale updates."
+    }
+  },
+  {
+    "id": "react-debug-api-misuse",
+    "title": "Debug: Product Search That Misuses Its API",
+    "type": "coding",
+    "technology": "react",
+    "difficulty": "intermediate",
+    "importance": 4,
+    "tags": [
+      "react",
+      "debugging",
+      "effects",
+      "async",
+      "api-calls",
+      "error-handling"
+    ],
+    "description": {
+      "summary": "Debug a React product search page that misuses its search API, then add one small feature. Four user reports arrived: \"The page says no products match before I type anything.\" \"Typing a new query does not change the results.\" \"When I type quickly, the results sometimes jump back to an older search.\" \"When the search service is down, the page says Searching… forever.\" Find the root cause of each report in src/App.tsx, fix all four, and add the count line the product team asked for. Public interview reports describe this round at Walmart: an assessment section that asks candidates to debug a React or Angular app (2026), and a loop with a React debug session (2023). Concepts: react, debugging, effects, async, api-calls.",
+      "specs": {
+        "requirements": [
+          "Work in `src/App.tsx`; treat `searchProducts` and the catalog as given.",
+          "Read the API response as it is typed: `{ items, total }`.",
+          "Search again whenever the query changes, starting with the empty query on mount.",
+          "Ignore a response that arrives after the query has changed again.",
+          "On a rejected request, replace the loading line with a readable `.status--error` line and keep the page usable for the next search.",
+          "Feature: on success, render `<span className=\"count\">Showing X of Y products</span>`, where Y is `total` from the API.",
+          "Keep the class names `.search`, `.status--loading`, `.result-row`, `.results` and `.empty`."
+        ],
+        "expectedBehavior": [
+          "On first render the loading line is visible, then five `.result-row` items appear with `Showing 5 of 12 products`.",
+          "Typing `lamp` shows three rows and `Showing 3 of 3 products`.",
+          "Typing `l` and then `lamp` quickly ends with the three lamp rows, even after the slow `l` response arrives.",
+          "Typing `error` shows `Search failed: Search service unavailable` and no loading line; typing `desk` afterwards shows one row and no error.",
+          "A query without matches, such as `zzz`, shows `No products match \"zzz\".` with no rows and no count line."
+        ],
+        "implementationNotes": [
+          "Replace the `any` in the `.then` callback with `SearchResponse`; TypeScript then points at the field the component reads.",
+          "Add `query` to the effect dependencies and set the loading state at the top of the effect.",
+          "Use a `cancelled` flag in the effect cleanup so only the latest request can update state.",
+          "Add a `.catch` that stores the error message; one status union keeps loading, error and success from overlapping."
+        ],
+        "techFocus": [
+          "Debugging useEffect data fetching",
+          "Stale responses and effect cleanup",
+          "Typing API responses instead of any",
+          "Error states for rejected promises",
+          "A small feature on top of a fix"
+        ]
+      }
+    },
+    "solutionBlock": {
+      "overview": "Root causes, one per report:\n\n1. The component reads `data.results`, but the API resolves `{ items, total }`; the `any` annotation hid the mismatch, so every search looked empty.\n2. The effect has an empty dependency array, so it runs once and typing never searches again.\n3. Nothing stops a slow response for an older query from overwriting newer results.\n4. There is no `.catch`, so a rejection leaves `loading` true forever.\n\nThe fix keeps one `search` union (loading, success with `items` and `total`, error with a message), runs the request in an effect that depends on `[query]`, resets to loading at the top of the effect, flips a `cancelled` flag in the cleanup, and maps a rejection to the error state. The new count line reads `total` from the same success state.\n\n**Test cases**\n- Initial render shows five rows and `Showing 5 of 12 products`.\n- `lamp` shows three rows; `l` then `lamp` still ends with three rows after the slow response.\n- `error` shows the error line, and the next search clears it.\n- `zzz` shows the empty state without rows or a count line.",
+      "approaches": [
+        {
+          "title": "Type the response, depend on the query, guard the request and catch the rejection",
+          "prose": "Start from the reports, not the code: each one maps to a single line.\n\n1. Type the `.then` callback as `SearchResponse`. TypeScript immediately rejects `data.results`; read `data.items` and `data.total` instead.\n2. Replace the parallel `results` and `loading` state with one `SearchState` union, so loading, success and error cannot overlap.\n3. Depend on `[query]` and set `{ status: 'loading' }` at the top of the effect.\n4. Declare `let cancelled = false`, return early in both handlers when it is set, and flip it in the cleanup. A slow `l` response now lands after its effect was cleaned up and is ignored.\n5. Add `.catch` and store the message, so the error line replaces the loading line and the next search resets it.\n6. Render the count line and rows only on success with `total > 0`, and the empty state only when a finished search returns `total === 0`.",
+          "codeJs": "import React, { useEffect, useState } from 'react';\nimport './App.css';\n\nexport interface Product {\n  id: number;\n  name: string;\n  category: string;\n}\n\nexport interface SearchResponse {\n  items: Product[];\n  total: number;\n}\n\nexport const PAGE_SIZE = 5;\n\nconst CATALOG: Product[] = [\n  { id: 1, name: 'Desk Lamp', category: 'Lighting' },\n  { id: 2, name: 'Floor Lamp', category: 'Lighting' },\n  { id: 3, name: 'Lamp Shade', category: 'Lighting' },\n  { id: 4, name: 'Laptop Stand', category: 'Office' },\n  { id: 5, name: 'Label Maker', category: 'Office' },\n  { id: 6, name: 'Ladder Shelf', category: 'Furniture' },\n  { id: 7, name: 'Lounge Chair', category: 'Furniture' },\n  { id: 8, name: 'Linen Curtain', category: 'Textiles' },\n  { id: 9, name: 'Wall Clock', category: 'Decor' },\n  { id: 10, name: 'Table Runner', category: 'Textiles' },\n  { id: 11, name: 'Bookend Pair', category: 'Decor' },\n  { id: 12, name: 'Cable Tray', category: 'Office' }\n];\n\n// Fake search API. Treat it as given: the bugs are in App below.\n// - resolves { items: the first PAGE_SIZE matches, total: the number of all matches }\n// - one-letter queries answer slowly (600ms) and longer ones quickly (150ms),\n//   so fast typing produces responses that arrive out of order\n// - the query \"error\" rejects, like a search service that is down\nexport function searchProducts(query: string): Promise<SearchResponse> {\n  const q = query.trim().toLowerCase();\n  const delay = q.length === 1 ? 600 : 150;\n  return new Promise((resolve, reject) => {\n    window.setTimeout(() => {\n      if (q === 'error') {\n        reject(new Error('Search service unavailable'));\n        return;\n      }\n      const matches = CATALOG.filter((product) => product.name.toLowerCase().includes(q));\n      resolve({ items: matches.slice(0, PAGE_SIZE), total: matches.length });\n    }, delay);\n  });\n}\n\ntype SearchState =\n  | { status: 'loading' }\n  | { status: 'success'; items: Product[]; total: number }\n  | { status: 'error'; message: string };\n\nfunction toErrorMessage(error: unknown): string {\n  return error instanceof Error && error.message ? error.message : 'Unknown error';\n}\n\nexport default function App() {\n  const [query, setQuery] = useState('');\n  const [search, setSearch] = useState<SearchState>({ status: 'loading' });\n\n  useEffect(() => {\n    let cancelled = false;\n    setSearch({ status: 'loading' });\n\n    searchProducts(query)\n      .then((data: SearchResponse) => {\n        if (cancelled) return;\n        setSearch({ status: 'success', items: data.items, total: data.total });\n      })\n      .catch((error: unknown) => {\n        if (cancelled) return;\n        setSearch({ status: 'error', message: toErrorMessage(error) });\n      });\n\n    return () => {\n      cancelled = true;\n    };\n  }, [query]);\n\n  return (\n    <main className=\"main\">\n      <section className=\"card\">\n        <header className=\"header\">\n          <h1 className=\"title\">Product Search (Solution)</h1>\n          <p className=\"subtitle\">Every search shows its own results, its own error and the total from the API.</p>\n        </header>\n\n        <div className=\"field\">\n          <label className=\"label\" htmlFor=\"product-search\">Search products</label>\n          <input\n            id=\"product-search\"\n            className=\"search\"\n            type=\"search\"\n            value={query}\n            placeholder=\"Try lamp, desk or error\"\n            onChange={(event: React.ChangeEvent<HTMLInputElement>) => setQuery(event.target.value)}\n          />\n        </div>\n\n        <div className=\"status-row\">\n          {search.status === 'loading' && <span className=\"status status--loading\">Searching…</span>}\n          {search.status === 'error' && (\n            <span className=\"status status--error\" role=\"alert\">Search failed: {search.message}</span>\n          )}\n          {search.status === 'success' && search.total > 0 && (\n            <span className=\"count\">Showing {search.items.length} of {search.total} products</span>\n          )}\n        </div>\n\n        {search.status === 'success' && search.total === 0 && (\n          <p className=\"empty\">No products match &quot;{query}&quot;.</p>\n        )}\n\n        {search.status === 'success' && search.total > 0 && (\n          <ul className=\"results\">\n            {search.items.map((product) => (\n              <li key={product.id} className=\"result-row\">\n                <div className=\"result-name\">{product.name}</div>\n                <div className=\"result-category\">{product.category}</div>\n              </li>\n            ))}\n          </ul>\n        )}\n      </section>\n    </main>\n  );\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Silencing the type error with `any` instead of typing the response, which is how `data.results` slipped in.",
+          "Adding `query` to the dependencies but not guarding the request, which trades the stale-results bug for a race.",
+          "Setting `loading` to false only in `.then`, so a rejection leaves the loading line on screen.",
+          "Showing the empty message whenever the list is empty, including while the first search is still loading.",
+          "Treating debounce as the fix for the race: it hides the race during fast typing, but a slow network still reorders responses."
+        ],
+        "techniques": [
+          "Typing API responses at the boundary instead of using any.",
+          "useEffect with a cancelled flag in the cleanup.",
+          "A discriminated union for request state.",
+          "Reading every visible number from the latest successful response."
+        ]
+      }
+    },
+    "frameworkTests": [
+      {
+        "id": "api-misuse-first-page",
+        "name": "Initial load lists the first page of products",
+        "steps": [
+          {
+            "type": "waitForCount",
+            "selector": ".result-row",
+            "count": 5,
+            "timeoutMs": 2500
+          },
+          {
+            "type": "expectText",
+            "selector": ".result-row",
+            "text": "Desk Lamp",
+            "match": "contains"
+          }
+        ]
+      },
+      {
+        "id": "api-misuse-refetch-on-type",
+        "name": "Typing a query refetches and shows the matches",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".search",
+            "value": "lamp"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".result-row",
+            "count": 3,
+            "timeoutMs": 2500
+          },
+          {
+            "type": "expectText",
+            "selector": ".results",
+            "text": "Floor Lamp",
+            "match": "contains"
+          }
+        ]
+      },
+      {
+        "id": "api-misuse-stale-response",
+        "name": "A slow response for an older query never replaces newer results",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".search",
+            "value": "l"
+          },
+          {
+            "type": "setValue",
+            "selector": ".search",
+            "value": "lamp"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".result-row",
+            "count": 3,
+            "timeoutMs": 2500
+          },
+          {
+            "type": "wait",
+            "durationMs": 900
+          },
+          {
+            "type": "expectCount",
+            "selector": ".result-row",
+            "count": 3
+          },
+          {
+            "type": "expectNoText",
+            "selector": ".results",
+            "text": "Laptop Stand",
+            "match": "contains"
+          }
+        ]
+      },
+      {
+        "id": "api-misuse-failed-request",
+        "name": "A failed request shows an error and the next search recovers",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".search",
+            "value": "error"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".status--error",
+            "text": "Search service unavailable",
+            "match": "contains",
+            "timeoutMs": 2500
+          },
+          {
+            "type": "expectCount",
+            "selector": ".status--loading",
+            "count": 0
+          },
+          {
+            "type": "expectCount",
+            "selector": ".result-row",
+            "count": 0
+          },
+          {
+            "type": "setValue",
+            "selector": ".search",
+            "value": "desk"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".result-row",
+            "count": 1,
+            "timeoutMs": 2500
+          },
+          {
+            "type": "expectCount",
+            "selector": ".status--error",
+            "count": 0
+          }
+        ]
+      },
+      {
+        "id": "api-misuse-count-line",
+        "name": "The count line reports the total from the API",
+        "steps": [
+          {
+            "type": "waitForText",
+            "selector": ".count",
+            "text": "Showing 5 of 12 products",
+            "match": "contains",
+            "timeoutMs": 2500
+          },
+          {
+            "type": "setValue",
+            "selector": ".search",
+            "value": "lamp"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".count",
+            "text": "Showing 3 of 3 products",
+            "match": "contains",
+            "timeoutMs": 2500
+          }
+        ]
+      },
+      {
+        "id": "api-misuse-no-matches",
+        "name": "A query without matches replaces the rows with the empty state",
+        "steps": [
+          {
+            "type": "waitForCount",
+            "selector": ".result-row",
+            "count": 5,
+            "timeoutMs": 2500
+          },
+          {
+            "type": "setValue",
+            "selector": ".search",
+            "value": "zzz"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".empty",
+            "text": "No products match \"zzz\"",
+            "match": "contains",
+            "timeoutMs": 2500
+          },
+          {
+            "type": "expectCount",
+            "selector": ".result-row",
+            "count": 0
+          },
+          {
+            "type": "expectCount",
+            "selector": ".count",
+            "count": 0
+          }
+        ]
+      }
+    ],
+    "sdk": {
+      "asset": "assets/sb/react/question/react-debug-api-misuse.v1.json",
+      "openFile": "/src/App.tsx",
+      "storageKey": "v2:ui:react:react-debug-api-misuse"
+    },
+    "solutionAsset": "assets/sb/react/solution/react-debug-api-misuse-solution.v1.json",
+    "decisionGraphAsset": "assets/questions/react/decision-graphs/react-debug-api-misuse.v1.json",
+    "companies": [
+      "walmart"
+    ],
+    "sources": [
+      {
+        "label": "LeetCode Discuss: Walmart frontend engineer interview invitation, May 2026",
+        "url": "https://leetcode.com/discuss/post/8288813/",
+        "company": "walmart",
+        "publisher": "LeetCode Discuss",
+        "date": "2026-05",
+        "note": "The post quotes the HackerRank Frontend Engineering Assessment email: a language-agnostic coding problem, then debugging a React or Angular app with AI assistance allowed. This item practises that debugging section."
+      },
+      {
+        "label": "Blind: Walmart SWE3 interview advice thread, October 2023",
+        "url": "https://www.teamblind.com/post/Have-an-interview-with-walmart-SWE3-2-4-YOEneed-advice-0JOeTkW6",
+        "company": "walmart",
+        "publisher": "Blind",
+        "date": "2023-10",
+        "note": "A Walmart-badged reply describes the loop it went through: code with React, a debug session, system design and a hiring manager talk. The debug session is the round this item practises."
+      }
+    ],
+    "premiumPreview": {
+      "summary": "Debug a product search page that misuses its search API, then add a small feature. Each of four user reports points to a different mistake in how the component calls and reads the API.",
+      "learningOutcomes": [
+        "Trace a wrong-results report back to a mismatched response field.",
+        "Make an effect search again when its input changes.",
+        "Stop a slow response from overwriting newer results.",
+        "Turn a rejected request into a clear error state that the next search clears."
+      ],
+      "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+    },
+    "access": "premium",
+    "updatedAt": "2026-10-19",
+    "seo": {
+      "title": "Debug a React Search That Misuses Its API",
+      "description": "Fix four API bugs in a React product search: a wrong response field, a missing effect dependency, stale responses and a missing catch, then add a count."
+    }
+  },
+  {
+    "id": "react-select-compound-api",
+    "title": "Select With Compound Components (Single + Multi)",
+    "type": "coding",
+    "technology": "react",
+    "difficulty": "hard",
+    "importance": 4,
+    "tags": [
+      "react",
+      "components",
+      "composition",
+      "context",
+      "accessibility",
+      "typescript"
+    ],
+    "description": {
+      "summary": "Design and build a compound Select component: one API that works as a single-select or a multi-select and lets each option render custom content. The demo App already uses the API (Select, Select.Trigger, Select.Options and Select.Option); implement the four parts so the demo works. A public interview report of a Walmart Global Tech SDE 3 UI loop (January 2024) describes this prompt: design a dropdown API that can be single-select or multi-select and supports custom children, at the level of its high-level API; the candidate answered with compound components. This practice version makes that API runnable and checks it with behavior tests. Concepts: react, components, composition, context, accessibility.",
+      "specs": {
+        "requirements": [
+          "Work in `src/App.tsx`. Keep the demo `App` as it is and implement `SelectRoot`, `SelectTrigger`, `SelectOptions` and `SelectOption`.",
+          "Share state between the parts through React context; the root owns the open state, and the value stays controlled through `value` and `onChange`.",
+          "Single mode: choosing an option calls `onChange(value)` and closes the list. Multi mode (`multiple`): choosing toggles the value in the array and keeps the list open.",
+          "The trigger is a button with `aria-haspopup=\"listbox\"`, `aria-expanded` and `aria-controls`; it shows the selected labels joined by commas, or the placeholder.",
+          "The list is a `role=\"listbox\"` element that is `hidden` while closed and has `aria-multiselectable=\"true\"` in multi mode.",
+          "Each option is `role=\"option\"` with `aria-selected`; a `disabled` option has `aria-disabled=\"true\"` and cannot be chosen.",
+          "Options render their children when given and their `label` otherwise; clicking anywhere inside an option chooses it.",
+          "Escape closes the open list."
+        ],
+        "expectedBehavior": [
+          "Opening the fruit select and choosing Banana shows `Fruit: banana`, closes the list and puts Banana in the trigger.",
+          "Choosing Apple and then Dragon fruit leaves exactly one selected option.",
+          "Clicking Cherry, which is disabled, changes nothing and keeps the list open.",
+          "In the toppings select, Honey toggles on and Nuts toggles off while the list stays open.",
+          "The toppings trigger shows Nuts on first render, from the initial value, and `Nuts, Granola` after choosing Granola.",
+          "Escape closes the list and hides the listbox again."
+        ],
+        "implementationNotes": [
+          "Type the props as a union of single and multi props so `value` and `onChange` match the mode at compile time.",
+          "Let options register their labels with the root, so the trigger can show labels for values chosen before the list was ever opened.",
+          "Keep the listbox mounted and toggle `hidden`, so registration works and `aria-controls` always points at a real element.",
+          "The preview passes `useState`, `useEffect`, `useMemo`, `useRef`, `useReducer`, `useContext`, `createContext` and `useCallback` in as globals; reach other hooks through `React`, for example `React.useLayoutEffect`."
+        ],
+        "techFocus": [
+          "Compound components with context",
+          "Controlled single and multi value APIs",
+          "Discriminated union props in TypeScript",
+          "Listbox and option ARIA",
+          "Registering children with a parent"
+        ]
+      }
+    },
+    "solutionBlock": {
+      "overview": "The root owns two pieces of state, `open` and a `labels` map, and derives `selected` from the controlled `value`: an array in multi mode, a zero- or one-item array in single mode. It provides one context with that state and three actions: `toggleOpen`, `choose` and `registerOption`.\n\n`choose` toggles the value in multi mode and replaces it and closes the list in single mode. Each option registers its `label` in a layout effect, so the trigger can show `Nuts` before the list was ever opened. The listbox stays mounted and toggles `hidden`, which keeps registration working and `aria-controls` valid. A keydown handler on the root closes the list on Escape.\n\n**Test cases**\n- Banana closes the single list and appears in the trigger; Dragon fruit replaces Apple.\n- Cherry is disabled and changes nothing.\n- Toppings toggle while the list stays open, and the trigger lists their labels.\n- A click on custom content inside an option chooses it.\n- Escape closes the list.",
+      "approaches": [
+        {
+          "title": "Compound parts over one context, with option registration",
+          "prose": "1. Model the public API first: a union of single and multi props, and `Option` props with `value`, `label`, `disabled` and optional children.\n2. In `SelectRoot`, keep `open` and a `labels` map in state and derive `selected` from `value`. Build the context value with `toggleOpen`, `choose` and `registerOption`, and render a visible label with an id for `aria-labelledby`.\n3. `SelectTrigger` reads the context, joins the labels of the selected values or shows the placeholder, and sets `aria-expanded` and `aria-controls`.\n4. `SelectOptions` renders the listbox with `hidden={!open}` and `aria-multiselectable` in multi mode.\n5. `SelectOption` registers its label in `React.useLayoutEffect`, sets `aria-selected` and `aria-disabled`, and calls `choose` on click unless it is disabled. A click on any child bubbles to the option.\n6. A root `onKeyDown` closes the list on Escape. A `useSelectContext` helper throws a clear error when a part is rendered outside `Select`.",
+          "codeJs": "import React, { createContext, useCallback, useContext, useRef, useState } from 'react';\nimport './App.css';\n\n// The preview passes useState, useEffect, useMemo, useRef, useReducer, useContext,\n// createContext and useCallback in as globals. Reach any other hook through React,\n// for example React.useLayoutEffect.\n\ntype CommonSelectProps = {\n  label: string;\n  placeholder?: string;\n  className?: string;\n  children: React.ReactNode;\n};\n\ntype SingleSelectProps = CommonSelectProps & {\n  multiple?: false;\n  value: string | null;\n  onChange: (value: string | null) => void;\n};\n\ntype MultiSelectProps = CommonSelectProps & {\n  multiple: true;\n  value: string[];\n  onChange: (value: string[]) => void;\n};\n\nexport type SelectProps = SingleSelectProps | MultiSelectProps;\n\ntype SelectOptionProps = {\n  value: string;\n  label: string;\n  disabled?: boolean;\n  children?: React.ReactNode;\n};\n\ntype SelectContextValue = {\n  open: boolean;\n  multiple: boolean;\n  placeholder: string;\n  selected: string[];\n  labels: Map<string, string>;\n  labelId: string;\n  valueId: string;\n  listboxId: string;\n  toggleOpen: () => void;\n  choose: (value: string) => void;\n  registerOption: (value: string, label: string) => () => void;\n};\n\nconst SelectContext = createContext<SelectContextValue | null>(null);\n\nfunction useSelectContext(part: string): SelectContextValue {\n  const context = useContext(SelectContext);\n  if (!context) {\n    throw new Error(`<Select.${part}> must be rendered inside <Select>`);\n  }\n  return context;\n}\n\nlet nextSelectId = 0;\n\nfunction SelectRoot(props: SelectProps) {\n  const { label, placeholder = 'Select…', className, children } = props;\n  const [open, setOpen] = useState(false);\n  const [labels, setLabels] = useState<Map<string, string>>(() => new Map());\n  const idRef = useRef('');\n  if (!idRef.current) {\n    nextSelectId += 1;\n    idRef.current = `select-${nextSelectId}`;\n  }\n\n  const selected = props.multiple ? props.value : props.value === null ? [] : [props.value];\n\n  function choose(value: string) {\n    if (props.multiple) {\n      const next = props.value.includes(value)\n        ? props.value.filter((item) => item !== value)\n        : [...props.value, value];\n      props.onChange(next);\n      return;\n    }\n    props.onChange(value);\n    setOpen(false);\n  }\n\n  const registerOption = useCallback((value: string, optionLabel: string) => {\n    setLabels((current) => {\n      if (current.get(value) === optionLabel) return current;\n      const next = new Map(current);\n      next.set(value, optionLabel);\n      return next;\n    });\n    return () => {\n      setLabels((current) => {\n        if (!current.has(value)) return current;\n        const next = new Map(current);\n        next.delete(value);\n        return next;\n      });\n    };\n  }, []);\n\n  const context: SelectContextValue = {\n    open,\n    multiple: Boolean(props.multiple),\n    placeholder,\n    selected,\n    labels,\n    labelId: `${idRef.current}-label`,\n    valueId: `${idRef.current}-value`,\n    listboxId: `${idRef.current}-listbox`,\n    toggleOpen: () => setOpen((current) => !current),\n    choose,\n    registerOption\n  };\n\n  return (\n    <SelectContext.Provider value={context}>\n      <div\n        className={['select', className].filter(Boolean).join(' ')}\n        onKeyDown={(event: React.KeyboardEvent<HTMLDivElement>) => {\n          if (event.key === 'Escape') setOpen(false);\n        }}\n      >\n        <span className=\"select__label\" id={context.labelId}>{label}</span>\n        {children}\n      </div>\n    </SelectContext.Provider>\n  );\n}\n\nfunction SelectTrigger() {\n  const { open, selected, labels, placeholder, labelId, valueId, listboxId, toggleOpen } = useSelectContext('Trigger');\n  const text = selected.length ? selected.map((value) => labels.get(value) ?? value).join(', ') : placeholder;\n  return (\n    <button\n      type=\"button\"\n      className=\"select__trigger\"\n      aria-haspopup=\"listbox\"\n      aria-expanded={open}\n      aria-controls={listboxId}\n      aria-labelledby={`${labelId} ${valueId}`}\n      onClick={toggleOpen}\n    >\n      <span className=\"select__value\" id={valueId}>{text}</span>\n    </button>\n  );\n}\n\nfunction SelectOptions({ children }: { children: React.ReactNode }) {\n  const { open, multiple, labelId, listboxId } = useSelectContext('Options');\n  return (\n    <ul\n      id={listboxId}\n      className=\"select__options\"\n      role=\"listbox\"\n      aria-labelledby={labelId}\n      aria-multiselectable={multiple || undefined}\n      hidden={!open}\n    >\n      {children}\n    </ul>\n  );\n}\n\nfunction SelectOption({ value, label, disabled = false, children }: SelectOptionProps) {\n  const { selected, choose, registerOption } = useSelectContext('Option');\n  React.useLayoutEffect(() => registerOption(value, label), [registerOption, value, label]);\n  const isSelected = selected.includes(value);\n  return (\n    <li\n      className=\"select__option\"\n      role=\"option\"\n      aria-selected={isSelected}\n      aria-disabled={disabled || undefined}\n      onClick={() => {\n        if (!disabled) choose(value);\n      }}\n    >\n      {children ?? label}\n    </li>\n  );\n}\n\nexport const Select = Object.assign(SelectRoot, {\n  Trigger: SelectTrigger,\n  Options: SelectOptions,\n  Option: SelectOption\n});\n\nconst TOPPINGS = [\n  { value: 'nuts', label: 'Nuts', icon: 'N' },\n  { value: 'honey', label: 'Honey', icon: 'H' },\n  { value: 'granola', label: 'Granola', icon: 'G' },\n  { value: 'yogurt', label: 'Yogurt', icon: 'Y' }\n];\n\nexport default function App() {\n  const [fruit, setFruit] = useState<string | null>(null);\n  const [toppings, setToppings] = useState<string[]>(['nuts']);\n\n  return (\n    <main className=\"main\">\n      <section className=\"card\">\n        <header className=\"header\">\n          <h1 className=\"title\">Select</h1>\n          <p className=\"subtitle\">One compound API for single and multi-select, with custom option content.</p>\n        </header>\n\n        <Select className=\"fruit-select\" label=\"Fruit\" placeholder=\"Choose a fruit\" value={fruit} onChange={setFruit}>\n          <Select.Trigger />\n          <Select.Options>\n            <Select.Option value=\"apple\" label=\"Apple\" />\n            <Select.Option value=\"banana\" label=\"Banana\">\n              <span className=\"option-title\">Banana</span>\n              <span className=\"option-note\">Ripe today</span>\n            </Select.Option>\n            <Select.Option value=\"cherry\" label=\"Cherry\" disabled />\n            <Select.Option value=\"dragon\" label=\"Dragon fruit\" />\n          </Select.Options>\n        </Select>\n        <p className=\"single-value\">Fruit: {fruit ?? 'none'}</p>\n\n        <Select className=\"toppings-select\" label=\"Toppings\" placeholder=\"Add toppings\" multiple value={toppings} onChange={setToppings}>\n          <Select.Trigger />\n          <Select.Options>\n            {TOPPINGS.map((topping) => (\n              <Select.Option key={topping.value} value={topping.value} label={topping.label}>\n                <span className=\"option-icon\" aria-hidden=\"true\">{topping.icon}</span>\n                <span className=\"option-title\">{topping.label}</span>\n              </Select.Option>\n            ))}\n          </Select.Options>\n        </Select>\n        <p className=\"multi-value\">Toppings: {toppings.length ? toppings.join(', ') : 'none'}</p>\n      </section>\n    </main>\n  );\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Typing `value` as `string | string[]` without the `multiple` discriminant, so callers can pass an array to a single select.",
+          "Copying the controlled value into internal state, which drifts from the parent after the first change.",
+          "Rendering the listbox only while open, so labels for initial values are unknown and the trigger shows raw values.",
+          "Registering options during render instead of in an effect, which writes state while React is rendering.",
+          "Closing the list after every choice in multi mode, which forces a reopen for each extra value."
+        ],
+        "techniques": [
+          "Compound components that share one context.",
+          "Discriminated union props for single and multi modes.",
+          "Child registration through a stable callback and a layout effect.",
+          "The ARIA listbox pattern with aria-selected, aria-disabled and aria-multiselectable."
+        ]
+      }
+    },
+    "frameworkTests": [
+      {
+        "id": "select-single-choice-closes",
+        "name": "Single select opens from the trigger and closes after a choice",
+        "steps": [
+          {
+            "type": "click",
+            "selector": ".fruit-select .select__trigger"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".fruit-select .select__trigger",
+            "attribute": "aria-expanded",
+            "expected": "true"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".fruit-select .select__options",
+            "attribute": "hidden",
+            "expected": false
+          },
+          {
+            "type": "click",
+            "selector": ".fruit-select .select__option",
+            "index": 1
+          },
+          {
+            "type": "expectText",
+            "selector": ".single-value",
+            "text": "Fruit: banana"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".fruit-select .select__trigger",
+            "attribute": "aria-expanded",
+            "expected": "false"
+          },
+          {
+            "type": "expectText",
+            "selector": ".fruit-select .select__trigger",
+            "text": "Banana",
+            "match": "contains"
+          }
+        ]
+      },
+      {
+        "id": "select-single-replaces",
+        "name": "Choosing another option replaces the single value",
+        "steps": [
+          {
+            "type": "click",
+            "selector": ".fruit-select .select__trigger"
+          },
+          {
+            "type": "click",
+            "selector": ".fruit-select .select__option",
+            "index": 0
+          },
+          {
+            "type": "click",
+            "selector": ".fruit-select .select__trigger"
+          },
+          {
+            "type": "click",
+            "selector": ".fruit-select .select__option",
+            "index": 3
+          },
+          {
+            "type": "expectText",
+            "selector": ".single-value",
+            "text": "Fruit: dragon"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".fruit-select .select__option[aria-selected=\"true\"]",
+            "count": 1
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".fruit-select .select__option",
+            "index": 3,
+            "attribute": "aria-selected",
+            "expected": "true"
+          }
+        ]
+      },
+      {
+        "id": "select-disabled-option",
+        "name": "A disabled option cannot be chosen",
+        "steps": [
+          {
+            "type": "click",
+            "selector": ".fruit-select .select__trigger"
+          },
+          {
+            "type": "click",
+            "selector": ".fruit-select .select__option",
+            "index": 2
+          },
+          {
+            "type": "expectText",
+            "selector": ".single-value",
+            "text": "Fruit: none"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".fruit-select .select__option",
+            "index": 2,
+            "attribute": "aria-disabled",
+            "expected": "true"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".fruit-select .select__trigger",
+            "attribute": "aria-expanded",
+            "expected": "true"
+          }
+        ]
+      },
+      {
+        "id": "select-multi-toggles",
+        "name": "Multi select toggles values and stays open",
+        "steps": [
+          {
+            "type": "click",
+            "selector": ".toppings-select .select__trigger"
+          },
+          {
+            "type": "click",
+            "selector": ".toppings-select .select__option",
+            "index": 1
+          },
+          {
+            "type": "expectText",
+            "selector": ".multi-value",
+            "text": "Toppings: nuts, honey"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".toppings-select .select__trigger",
+            "attribute": "aria-expanded",
+            "expected": "true"
+          },
+          {
+            "type": "click",
+            "selector": ".toppings-select .select__option",
+            "index": 0
+          },
+          {
+            "type": "expectText",
+            "selector": ".multi-value",
+            "text": "Toppings: honey"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".toppings-select .select__options",
+            "attribute": "aria-multiselectable",
+            "expected": "true"
+          }
+        ]
+      },
+      {
+        "id": "select-trigger-labels",
+        "name": "The trigger shows the placeholder or the selected labels",
+        "steps": [
+          {
+            "type": "expectText",
+            "selector": ".fruit-select .select__trigger",
+            "text": "Choose a fruit",
+            "match": "contains"
+          },
+          {
+            "type": "expectText",
+            "selector": ".toppings-select .select__trigger",
+            "text": "Nuts",
+            "match": "contains"
+          },
+          {
+            "type": "click",
+            "selector": ".toppings-select .select__trigger"
+          },
+          {
+            "type": "click",
+            "selector": ".toppings-select .select__option",
+            "index": 2
+          },
+          {
+            "type": "expectText",
+            "selector": ".toppings-select .select__trigger",
+            "text": "Nuts, Granola",
+            "match": "contains"
+          }
+        ]
+      },
+      {
+        "id": "select-custom-content",
+        "name": "Clicking custom content inside an option chooses that option",
+        "steps": [
+          {
+            "type": "click",
+            "selector": ".fruit-select .select__trigger"
+          },
+          {
+            "type": "expectText",
+            "selector": ".fruit-select .option-note",
+            "text": "Ripe today"
+          },
+          {
+            "type": "click",
+            "selector": ".fruit-select .option-note"
+          },
+          {
+            "type": "expectText",
+            "selector": ".single-value",
+            "text": "Fruit: banana"
+          }
+        ]
+      },
+      {
+        "id": "select-escape-closes",
+        "name": "Escape closes the open list",
+        "steps": [
+          {
+            "type": "click",
+            "selector": ".fruit-select .select__trigger"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".fruit-select .select__trigger",
+            "attribute": "aria-expanded",
+            "expected": "true"
+          },
+          {
+            "type": "key",
+            "selector": ".fruit-select .select__trigger",
+            "key": "Escape"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".fruit-select .select__trigger",
+            "attribute": "aria-expanded",
+            "expected": "false"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".fruit-select .select__options",
+            "attribute": "hidden",
+            "expected": true
+          }
+        ]
+      }
+    ],
+    "sdk": {
+      "asset": "assets/sb/react/question/react-select-compound-api.v1.json",
+      "openFile": "/src/App.tsx",
+      "storageKey": "v2:ui:react:react-select-compound-api"
+    },
+    "solutionAsset": "assets/sb/react/solution/react-select-compound-api-solution.v1.json",
+    "decisionGraphAsset": "assets/questions/react/decision-graphs/react-select-compound-api.v1.json",
+    "companies": [
+      "walmart"
+    ],
+    "sources": [
+      {
+        "label": "Hashnode: frontend interview experience at Walmart, SDE 3 UI, January 2024",
+        "url": "https://jaynil-gaglani.hashnode.dev/frontend-interview-experience-at-walmart",
+        "company": "walmart",
+        "publisher": "Hashnode",
+        "date": "2024-01",
+        "note": "The JavaScript and React round asked for a dropdown component API that works as single-select or multi-select and supports custom children; the candidate answered with compound components. This item makes that API runnable."
+      }
+    ],
+    "premiumPreview": {
+      "summary": "Design and build one Select API that works as a single-select or a multi-select and lets every option render custom content. The behavior checks cover selection, disabled options, keyboard closing and the labels the trigger shows.",
+      "learningOutcomes": [
+        "Split a widget into parts that share state through context.",
+        "Keep the value controlled while the component owns its open state.",
+        "Type single and multi modes so a wrong value shape cannot compile.",
+        "Expose the listbox pattern to assistive technology with the right roles and states."
+      ],
+      "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+    },
+    "access": "premium",
+    "updatedAt": "2026-10-19",
+    "seo": {
+      "title": "React Select With Compound Components: Single and Multi",
+      "description": "Build a compound Select in React with TypeScript: single and multi-select modes, custom option content, listbox ARIA, disabled options and Escape to close."
+    }
+  },
+  {
+    "id": "react-implement-usememo-context",
+    "title": "Implement useMemo and a Context Data Provider",
+    "type": "coding",
+    "technology": "react",
+    "difficulty": "intermediate",
+    "importance": 4,
+    "tags": [
+      "react",
+      "hooks",
+      "memoization",
+      "context",
+      "async",
+      "typescript"
+    ],
+    "description": {
+      "summary": "Implement useMemo yourself, then build a context that serves API results to several components. Part 1: write useMemoized(factory, deps) without React's useMemo; it must return the cached value while the dependencies stay the same and recompute when one changes. Part 2: write UsersProvider and useUsers so three consumers share one request, see loading and error states, and reload together. A public interview report of a Walmart Global Tech Software Engineer 3 UI loop (November 2024) lists this exact sequence: implement useMemo, implement the Context API, then extend it to handle API results. Concepts: react, hooks, memoization, context, async.",
+      "specs": {
+        "requirements": [
+          "Work in `src/App.tsx`. Keep the demo components (`App`, `UserSummary`, `UserList`, `UsersToolbar`) and the fake API as they are.",
+          "Part 1: implement `useMemoized(factory, deps)` without `useMemo`. Call `factory` on the first render, return the cached value while every dependency is the same by `Object.is`, and call `factory` again when a dependency or the number of dependencies changes.",
+          "Part 2: implement `UsersProvider` so it calls `fetchUsers()` once on mount, keeps a `UsersState` and provides `{ state, reload }` through `UsersContext`.",
+          "`reload` loads again: the state goes back to `loading`, then to `success` or `error`; a rejection becomes `{ status: 'error', message }`.",
+          "Ignore a response that arrives after a newer load started, and memoize the context value with `useMemoized`.",
+          "`useUsers()` returns the context value and throws a clear error outside `UsersProvider`."
+        ],
+        "expectedBehavior": [
+          "The first render shows `Computed 1 time`; clicking Re-render twice keeps it at `Computed 1 time`.",
+          "Typing `an` shows Banana, Mango and Orange and `Computed 2 times`; another Re-render keeps it at 2.",
+          "After the first load, the summary shows `3 users`, the list shows three rows and the toolbar shows `Requests: 1`.",
+          "Reload shows `Loading users…`, then three rows and `Requests: 2`.",
+          "After Fail next request and Reload, the summary shows the error and no rows; the next Reload recovers with `Requests: 3`."
+        ],
+        "implementationNotes": [
+          "Keep `{ deps, value }` in a `useRef`; compare dependencies in a small `sameDeps` helper.",
+          "Load in one `useEffect` inside the provider that depends on an `attempt` counter; `reload` bumps the counter.",
+          "Use a `cancelled` flag in the effect cleanup, and a `.catch` that stores the message.",
+          "Use `useCallback` for `reload` so the memoized context value stays stable between unrelated renders."
+        ],
+        "techFocus": [
+          "How useMemo caches values",
+          "Dependency comparison with Object.is",
+          "Context providers for shared API state",
+          "Loading, error and reload in one provider",
+          "Stable context values"
+        ]
+      }
+    },
+    "solutionBlock": {
+      "overview": "Part 1: keep `{ deps, value }` in a ref. On each render, compare the new dependencies with the cached ones by length and `Object.is`. If they differ, or nothing is cached yet, call the factory and store the result. Otherwise return the cached value. The factory runs during render, the same way React's own `useMemo` behaves.\n\nPart 2: the provider owns the request. One effect depends on an `attempt` counter. It sets `loading`, calls `fetchUsers()` and maps the result to `success`, or a rejection to `error`. A `cancelled` flag drops responses from an older load. `reload` bumps the counter through a stable `useCallback`. The provider memoizes `{ state, reload }` with `useMemoized`, so unrelated renders keep the same context value. `useUsers` throws outside the provider.\n\n**Test cases**\n- Re-render keeps `Computed 1 time`; typing `an` recomputes once.\n- Three consumers share one request: `Requests: 1`.\n- Reload shows loading and ends with `Requests: 2`.\n- A failed load shows the error; the next reload recovers.",
+      "approaches": [
+        {
+          "title": "A ref-backed memo hook and a provider that owns the request",
+          "prose": "1. `sameDeps(previous, next)` returns true only when both arrays have the same length and every pair is `Object.is` equal.\n2. `useMemoized` keeps `{ deps, value }` in a `useRef`. On the first render, or when `sameDeps` fails, it calls the factory and stores the new pair. It always returns the cached value.\n3. `UsersProvider` keeps `state` (a `UsersState` union) and an `attempt` counter. One `useEffect` with `[attempt]` sets `loading`, calls `fetchUsers()`, stores `success` or `error`, and flips `cancelled` in its cleanup.\n4. `reload` is `useCallback(() => setAttempt((count) => count + 1), [])`. The context value is `useMemoized(() => ({ state, reload }), [state, reload])`.\n5. `useUsers` reads the context and throws `useUsers must be used inside <UsersProvider>` when it is missing.",
+          "codeJs": "import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';\nimport './App.css';\n\n// The preview passes useState, useEffect, useMemo, useRef, useReducer, useContext,\n// createContext and useCallback in as globals. This exercise asks you not to use useMemo.\n\nexport interface User {\n  id: number;\n  name: string;\n  team: string;\n}\n\nconst USERS: User[] = [\n  { id: 1, name: 'Asha Rao', team: 'Checkout' },\n  { id: 2, name: 'Ben Ortiz', team: 'Search' },\n  { id: 3, name: 'Chen Wei', team: 'Payments' }\n];\n\nlet requests = 0;\nlet failNext = false;\n\n// Fake users API. Treat it as given.\n// - resolves the three users after 300ms\n// - rejects once after failNextRequest() is called\nexport function fetchUsers(): Promise<User[]> {\n  requests += 1;\n  const shouldFail = failNext;\n  failNext = false;\n  return new Promise((resolve, reject) => {\n    window.setTimeout(() => {\n      if (shouldFail) {\n        reject(new Error('Users service unavailable'));\n        return;\n      }\n      resolve(USERS.map((user) => ({ ...user })));\n    }, 300);\n  });\n}\n\nexport function failNextRequest(): void {\n  failNext = true;\n}\n\nexport function requestCount(): number {\n  return requests;\n}\n\nexport type UsersState =\n  | { status: 'loading' }\n  | { status: 'success'; users: User[] }\n  | { status: 'error'; message: string };\n\nexport type UsersContextValue = {\n  state: UsersState;\n  reload: () => void;\n};\n\nfunction sameDeps(previous: readonly unknown[], next: readonly unknown[]): boolean {\n  return previous.length === next.length && previous.every((dep, index) => Object.is(dep, next[index]));\n}\n\nfunction useMemoized<T>(factory: () => T, deps: readonly unknown[]): T {\n  const cache = useRef<{ deps: readonly unknown[]; value: T } | null>(null);\n  if (cache.current === null || !sameDeps(cache.current.deps, deps)) {\n    cache.current = { deps, value: factory() };\n  }\n  return cache.current.value;\n}\n\nconst UsersContext = createContext<UsersContextValue | null>(null);\n\nfunction UsersProvider({ children }: { children: React.ReactNode }) {\n  const [state, setState] = useState<UsersState>({ status: 'loading' });\n  const [attempt, setAttempt] = useState(0);\n\n  useEffect(() => {\n    let cancelled = false;\n    setState({ status: 'loading' });\n\n    fetchUsers()\n      .then((users) => {\n        if (cancelled) return;\n        setState({ status: 'success', users });\n      })\n      .catch((error: unknown) => {\n        if (cancelled) return;\n        setState({ status: 'error', message: error instanceof Error ? error.message : 'Unknown error' });\n      });\n\n    return () => {\n      cancelled = true;\n    };\n  }, [attempt]);\n\n  const reload = useCallback(() => setAttempt((count) => count + 1), []);\n  const value = useMemoized(() => ({ state, reload }), [state, reload]);\n\n  return <UsersContext.Provider value={value}>{children}</UsersContext.Provider>;\n}\n\nfunction useUsers(): UsersContextValue {\n  const context = useContext(UsersContext);\n  if (!context) {\n    throw new Error('useUsers must be used inside <UsersProvider>');\n  }\n  return context;\n}\n\nfunction UserSummary() {\n  const { state } = useUsers();\n  if (state.status === 'loading') return <p className=\"status status--loading\">Loading users…</p>;\n  if (state.status === 'error') {\n    return <p className=\"status status--error\" role=\"alert\">Could not load users: {state.message}</p>;\n  }\n  return <p className=\"user-count\">{state.users.length} users</p>;\n}\n\nfunction UserList() {\n  const { state } = useUsers();\n  if (state.status !== 'success') return null;\n  return (\n    <ul className=\"user-list\">\n      {state.users.map((user) => (\n        <li key={user.id} className=\"user-row\">\n          <span className=\"user-name\">{user.name}</span>\n          <span className=\"user-team\">{user.team}</span>\n        </li>\n      ))}\n    </ul>\n  );\n}\n\nfunction UsersToolbar() {\n  const { reload } = useUsers();\n  return (\n    <div className=\"toolbar\">\n      <button type=\"button\" className=\"reload\" onClick={reload}>Reload</button>\n      <button type=\"button\" className=\"fail-next\" onClick={failNextRequest}>Fail next request</button>\n      <span className=\"request-count\">Requests: {requestCount()}</span>\n    </div>\n  );\n}\n\nconst FRUITS = ['Apple', 'Banana', 'Mango', 'Orange', 'Grape', 'Melon'];\nlet computations = 0;\n\nexport default function App() {\n  const [query, setQuery] = useState('');\n  const [renders, setRenders] = useState(0);\n  const visible = useMemoized(() => {\n    computations += 1;\n    const needle = query.trim().toLowerCase();\n    return FRUITS.filter((fruit) => fruit.toLowerCase().includes(needle));\n  }, [query]);\n\n  return (\n    <main className=\"main\">\n      <section className=\"card\">\n        <header className=\"header\">\n          <h1 className=\"title\">useMemo and Context from scratch</h1>\n          <p className=\"subtitle\">Part 1 memoizes a filter without useMemo. Part 2 serves API results through context.</p>\n        </header>\n\n        <section className=\"panel\">\n          <h2 className=\"panel-title\">Part 1: useMemoized</h2>\n          <input\n            className=\"filter\"\n            value={query}\n            placeholder=\"Filter fruits\"\n            onChange={(event: React.ChangeEvent<HTMLInputElement>) => setQuery(event.target.value)}\n          />\n          <div className=\"toolbar\">\n            <button type=\"button\" className=\"bump\" onClick={() => setRenders((count) => count + 1)}>\n              Re-render ({renders})\n            </button>\n            <span className=\"compute-count\">Computed {computations} {computations === 1 ? 'time' : 'times'}</span>\n          </div>\n          <ul className=\"fruit-list\">\n            {visible.map((fruit) => (\n              <li key={fruit} className=\"fruit-row\">{fruit}</li>\n            ))}\n          </ul>\n        </section>\n\n        <section className=\"panel\">\n          <h2 className=\"panel-title\">Part 2: context with API results</h2>\n          <UsersProvider>\n            <UserSummary />\n            <UserList />\n            <UsersToolbar />\n          </UsersProvider>\n        </section>\n      </section>\n    </main>\n  );\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Comparing dependencies with `===`, so a NaN dependency recomputes on every render.",
+          "Storing the memoized value in state, which triggers an extra render every time it refreshes.",
+          "Fetching inside `useUsers`, so every consumer starts its own request.",
+          "Recreating `{ state, reload }` on every provider render, which re-renders every consumer even when nothing changed.",
+          "Forgetting the `.catch`, which leaves every consumer on the loading state after a rejection."
+        ],
+        "techniques": [
+          "Ref-based caching with dependency comparison.",
+          "Object.is equality, the rule React uses for dependencies.",
+          "A provider that owns one request for many consumers.",
+          "A retry counter in the effect dependencies."
+        ]
+      }
+    },
+    "frameworkTests": [
+      {
+        "id": "memo-reuses-value",
+        "name": "useMemoized computes once and reuses the value on unrelated renders",
+        "steps": [
+          {
+            "type": "expectText",
+            "selector": ".compute-count",
+            "text": "Computed 1 time"
+          },
+          {
+            "type": "click",
+            "selector": ".bump"
+          },
+          {
+            "type": "click",
+            "selector": ".bump"
+          },
+          {
+            "type": "expectText",
+            "selector": ".bump",
+            "text": "Re-render (2)",
+            "match": "contains"
+          },
+          {
+            "type": "expectText",
+            "selector": ".compute-count",
+            "text": "Computed 1 time"
+          }
+        ]
+      },
+      {
+        "id": "memo-recomputes-on-deps",
+        "name": "useMemoized recomputes only when a dependency changes",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".filter",
+            "value": "an"
+          },
+          {
+            "type": "expectText",
+            "selector": ".compute-count",
+            "text": "Computed 2 times"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".fruit-row",
+            "count": 3
+          },
+          {
+            "type": "click",
+            "selector": ".bump"
+          },
+          {
+            "type": "expectText",
+            "selector": ".compute-count",
+            "text": "Computed 2 times"
+          }
+        ]
+      },
+      {
+        "id": "context-one-request",
+        "name": "The provider loads the users once for every consumer",
+        "steps": [
+          {
+            "type": "waitForCount",
+            "selector": ".user-row",
+            "count": 3,
+            "timeoutMs": 2500
+          },
+          {
+            "type": "expectText",
+            "selector": ".user-count",
+            "text": "3 users"
+          },
+          {
+            "type": "expectText",
+            "selector": ".request-count",
+            "text": "Requests: 1"
+          }
+        ]
+      },
+      {
+        "id": "context-reload",
+        "name": "Reload shows loading, fetches once more and updates every consumer",
+        "steps": [
+          {
+            "type": "waitForCount",
+            "selector": ".user-row",
+            "count": 3,
+            "timeoutMs": 2500
+          },
+          {
+            "type": "click",
+            "selector": ".reload"
+          },
+          {
+            "type": "expectText",
+            "selector": ".status--loading",
+            "text": "Loading users",
+            "match": "contains"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".user-row",
+            "count": 3,
+            "timeoutMs": 2500
+          },
+          {
+            "type": "expectText",
+            "selector": ".request-count",
+            "text": "Requests: 2"
+          }
+        ]
+      },
+      {
+        "id": "context-error-recovers",
+        "name": "A failed load shows the error and the next reload recovers",
+        "steps": [
+          {
+            "type": "waitForCount",
+            "selector": ".user-row",
+            "count": 3,
+            "timeoutMs": 2500
+          },
+          {
+            "type": "click",
+            "selector": ".fail-next"
+          },
+          {
+            "type": "click",
+            "selector": ".reload"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".status--error",
+            "text": "Users service unavailable",
+            "match": "contains",
+            "timeoutMs": 2500
+          },
+          {
+            "type": "expectCount",
+            "selector": ".user-row",
+            "count": 0
+          },
+          {
+            "type": "click",
+            "selector": ".reload"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".user-row",
+            "count": 3,
+            "timeoutMs": 2500
+          },
+          {
+            "type": "expectText",
+            "selector": ".request-count",
+            "text": "Requests: 3"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".status--error",
+            "count": 0
+          }
+        ]
+      }
+    ],
+    "sdk": {
+      "asset": "assets/sb/react/question/react-implement-usememo-context.v1.json",
+      "openFile": "/src/App.tsx",
+      "storageKey": "v2:ui:react:react-implement-usememo-context"
+    },
+    "solutionAsset": "assets/sb/react/solution/react-implement-usememo-context-solution.v1.json",
+    "decisionGraphAsset": "assets/questions/react/decision-graphs/react-implement-usememo-context.v1.json",
+    "companies": [
+      "walmart"
+    ],
+    "sources": [
+      {
+        "label": "Medium: Walmart Global Tech Software Engineer 3 UI interview, November 2024",
+        "url": "https://medium.com/@phalgun99/my-interview-experience-at-walmart-global-tech-for-the-software-engineer-3-ui-position-9751c81988ee",
+        "company": "walmart",
+        "publisher": "Medium",
+        "date": "2024-11",
+        "note": "The JavaScript and React round asked the candidate to implement useMemo, then to implement the Context API and extend it to handle API results. This item practises all three steps."
+      }
+    ],
+    "premiumPreview": {
+      "summary": "Implement useMemo yourself, then build a context that serves one API request to several components with loading, error and reload states. The behavior checks count computations and requests so shortcuts show up.",
+      "learningOutcomes": [
+        "Explain how a memo hook decides when to recompute.",
+        "Compare dependencies the way React does, including the edge cases of Object.is.",
+        "Share one request between many consumers through a provider.",
+        "Keep a context value stable so unrelated renders stay cheap."
+      ],
+      "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+    },
+    "access": "premium",
+    "updatedAt": "2026-10-19",
+    "seo": {
+      "title": "Implement useMemo and a Context Data Provider in React",
+      "description": "Write useMemo from scratch with a ref and Object.is, then a React context provider that shares one API request with loading, error and reload states."
     }
   }
 ]

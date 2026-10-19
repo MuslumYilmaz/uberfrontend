@@ -143,7 +143,9 @@
       "syntax"
     ],
     "importance": 3,
-    "companies": [],
+    "companies": [
+      "walmart"
+    ],
     "answer": {
       "blocks": [
         {
@@ -794,7 +796,8 @@
     ],
     "importance": 5,
     "companies": [
-      "zalando"
+      "zalando",
+      "tesla"
     ],
     "answer": {
       "blocks": [
@@ -943,6 +946,9 @@
     "technology": "html",
     "difficulty": "easy",
     "importance": 4,
+    "companies": [
+      "walmart"
+    ],
     "description": "Block-level elements start on a new line and take up the full width available, while inline elements stay within a line without breaking the flow of text. They play different roles in structuring and styling HTML documents. Choosing the right display affects layout, accessibility semantics, and performance; test with nested content.",
     "seo": {
       "title": "Block vs inline elements in HTML: what is the difference?",
@@ -1890,6 +1896,9 @@
     "technology": "html",
     "difficulty": "easy",
     "importance": 4,
+    "companies": [
+      "walmart"
+    ],
     "description": "id vs class is not just selector syntax: it affects fragment links, CSS specificity, JS hooks, and the common mistake of duplicating ids across reusable UI.",
     "seo": {
       "title": "HTML id vs class: specificity, DOM hooks, and common mistakes",
@@ -3042,6 +3051,9 @@
     "technology": "html",
     "difficulty": "intermediate",
     "importance": 2,
+    "companies": [
+      "walmart"
+    ],
     "description": "Shadow DOM creates an encapsulated subtree for a component so styles and markup do not leak in or out. That isolation is useful, but the real pitfall is forgetting about theming, testing, focus behavior, and accessibility when the component stops behaving like regular DOM.",
     "seo": {
       "title": "Shadow DOM explained: encapsulation, theming, and web-component pitfalls",
@@ -3166,7 +3178,8 @@
     ],
     "importance": 5,
     "companies": [
-      "apple"
+      "apple",
+      "tesla"
     ],
     "answer": {
       "blocks": [

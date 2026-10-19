@@ -1514,6 +1514,136 @@
         ]
       }
     ],
+    "tesla": [
+      {
+        "id": "js-color-contrast-ratio",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Color Contrast Ratio (WCAG)",
+        "access": "free",
+        "route": "/javascript/coding/js-color-contrast-ratio",
+        "sources": [
+          {
+            "label": "Taro: Tesla front end developer interview, Los Angeles, 2022",
+            "url": "https://www.jointaro.com/interviews/companies/tesla/experiences/front-end-developer-los-angeles-ca-january-1-2022-no-offer-negative-eadce28f/",
+            "publisher": "Taro",
+            "date": "2022-01"
+          }
+        ]
+      },
+      {
+        "id": "js-deep-clone",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Deep Clone",
+        "access": "premium",
+        "route": "/javascript/coding/js-deep-clone",
+        "sources": [
+          {
+            "label": "GitHub: repository with a file labelled TeslaRound1, 2025",
+            "url": "https://github.com/poornasaiv/Tesla_Interview_Coding",
+            "publisher": "GitHub",
+            "date": "2025-08"
+          }
+        ]
+      },
+      {
+        "id": "html-forms-validation-required",
+        "kind": "coding",
+        "tech": "html",
+        "title": "Forms: Validation and Required Fields",
+        "access": "free",
+        "route": "/html/coding/html-forms-validation-required",
+        "sources": [
+          {
+            "label": "Taro: Tesla front end developer interview, Los Angeles, 2022",
+            "url": "https://www.jointaro.com/interviews/companies/tesla/experiences/front-end-developer-los-angeles-ca-january-1-2022-no-offer-negative-eadce28f/",
+            "publisher": "Taro",
+            "date": "2022-01"
+          }
+        ]
+      },
+      {
+        "id": "css-positioning-badge",
+        "kind": "coding",
+        "tech": "css",
+        "title": "Positioning: Relative/Absolute Badge",
+        "access": "free",
+        "route": "/css/coding/css-positioning-badge",
+        "sources": [
+          {
+            "label": "Taro: Tesla front end developer interview, Los Angeles, 2022",
+            "url": "https://www.jointaro.com/interviews/companies/tesla/experiences/front-end-developer-los-angeles-ca-january-1-2022-no-offer-negative-eadce28f/",
+            "publisher": "Taro",
+            "date": "2022-01"
+          }
+        ]
+      },
+      {
+        "id": "react-fetch-list-states",
+        "kind": "coding",
+        "tech": "react",
+        "title": "React Fetch and Render a List with Loading, Error and Empty States",
+        "access": "free",
+        "route": "/react/coding/react-fetch-list-states",
+        "sources": [
+          {
+            "label": "Taro: Tesla front end developer interview, Los Angeles, 2022",
+            "url": "https://www.jointaro.com/interviews/companies/tesla/experiences/front-end-developer-los-angeles-ca-january-1-2022-no-offer-negative-eadce28f/",
+            "publisher": "Taro",
+            "date": "2022-01"
+          }
+        ]
+      },
+      {
+        "id": "react-like-button",
+        "kind": "coding",
+        "tech": "react",
+        "title": "React Like Button (Toggle + Counter)",
+        "access": "premium",
+        "route": "/react/coding/react-like-button",
+        "sources": [
+          {
+            "label": "Taro: Tesla frontend developer interview, San Francisco, 2021",
+            "url": "https://www.jointaro.com/interviews/companies/tesla/experiences/frontend-developer-san-francisco-ca-january-1-2021-no-offer-positive-8db5ee50/",
+            "publisher": "Taro",
+            "date": "2021-01"
+          }
+        ]
+      },
+      {
+        "id": "html-semantic-layout",
+        "kind": "coding",
+        "tech": "html",
+        "title": "Semantic Page Layout",
+        "access": "free",
+        "route": "/html/coding/html-semantic-layout",
+        "sources": [
+          {
+            "label": "Taro: Tesla front end developer interview, Los Angeles, 2022",
+            "url": "https://www.jointaro.com/interviews/companies/tesla/experiences/front-end-developer-los-angeles-ca-january-1-2022-no-offer-negative-eadce28f/",
+            "publisher": "Taro",
+            "date": "2022-01"
+          }
+        ]
+      },
+      {
+        "id": "js-shallow-clone",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Shallow Clone (Object or Array)",
+        "access": "free",
+        "route": "/javascript/coding/js-shallow-clone",
+        "sources": [
+          {
+            "label": "GitHub: repository with a file labelled TeslaRound1, 2025",
+            "url": "https://github.com/poornasaiv/Tesla_Interview_Coding",
+            "publisher": "GitHub",
+            "date": "2025-08"
+          }
+        ]
+      }
+    ],
     "uber": [
       {
         "id": "js-concurrency-map-limit",
@@ -1528,6 +1658,170 @@
             "url": "https://leetcode.com/discuss/post/2409192/",
             "publisher": "LeetCode Discuss",
             "date": "2022-08"
+          }
+        ]
+      }
+    ],
+    "walmart": [
+      {
+        "id": "js-add-two-promises",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Add Two Promises",
+        "access": "premium",
+        "route": "/javascript/coding/js-add-two-promises",
+        "sources": [
+          {
+            "label": "LeetCode Discuss: front end developer interview journey with a Walmart loop, 2022",
+            "url": "https://leetcode.com/discuss/post/2774667/",
+            "publisher": "LeetCode Discuss",
+            "date": "2022-11"
+          }
+        ]
+      },
+      {
+        "id": "js-curry-function",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Curry Function",
+        "access": "premium",
+        "route": "/javascript/coding/js-curry-function",
+        "sources": [
+          {
+            "label": "LeetCode Discuss: Walmart Global Tech India SDE III loop, Chennai, 2021",
+            "url": "https://leetcode.com/discuss/post/1436043/",
+            "publisher": "LeetCode Discuss",
+            "date": "2021-08"
+          }
+        ]
+      },
+      {
+        "id": "react-debug-api-misuse",
+        "kind": "coding",
+        "tech": "react",
+        "title": "Debug: Product Search That Misuses Its API",
+        "access": "premium",
+        "route": "/react/coding/react-debug-api-misuse",
+        "sources": [
+          {
+            "label": "LeetCode Discuss: Walmart frontend engineer interview invitation, May 2026",
+            "url": "https://leetcode.com/discuss/post/8288813/",
+            "publisher": "LeetCode Discuss",
+            "date": "2026-05"
+          },
+          {
+            "label": "Blind: Walmart SWE3 interview advice thread, October 2023",
+            "url": "https://www.teamblind.com/post/Have-an-interview-with-walmart-SWE3-2-4-YOEneed-advice-0JOeTkW6",
+            "publisher": "Blind",
+            "date": "2023-10"
+          }
+        ]
+      },
+      {
+        "id": "js-stack-queue-implementation",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Implement Stack and Queue in JavaScript",
+        "access": "premium",
+        "route": "/javascript/coding/js-stack-queue-implementation",
+        "sources": [
+          {
+            "label": "Code360: Walmart SDE-2 interview experience, Bengaluru, March 2021",
+            "url": "https://www.naukri.com/code360/interview-experiences/walmart/walmart-interview-experience-mar-2021-exp-0-2-years",
+            "publisher": "Naukri Code360",
+            "date": "2021-03"
+          }
+        ]
+      },
+      {
+        "id": "react-implement-usememo-context",
+        "kind": "coding",
+        "tech": "react",
+        "title": "Implement useMemo and a Context Data Provider",
+        "access": "premium",
+        "route": "/react/coding/react-implement-usememo-context",
+        "sources": [
+          {
+            "label": "Medium: Walmart Global Tech Software Engineer 3 UI interview, November 2024",
+            "url": "https://medium.com/@phalgun99/my-interview-experience-at-walmart-global-tech-for-the-software-engineer-3-ui-position-9751c81988ee",
+            "publisher": "Medium",
+            "date": "2024-11"
+          }
+        ]
+      },
+      {
+        "id": "react-accordion-faq",
+        "kind": "coding",
+        "tech": "react",
+        "title": "React Accordion / FAQ Component",
+        "access": "premium",
+        "route": "/react/coding/react-accordion-faq",
+        "sources": [
+          {
+            "label": "LeetCode Discuss: front end developer interview journey with a Walmart loop, 2022",
+            "url": "https://leetcode.com/discuss/post/2774667/",
+            "publisher": "LeetCode Discuss",
+            "date": "2022-11"
+          }
+        ]
+      },
+      {
+        "id": "react-select-compound-api",
+        "kind": "coding",
+        "tech": "react",
+        "title": "Select With Compound Components (Single + Multi)",
+        "access": "premium",
+        "route": "/react/coding/react-select-compound-api",
+        "sources": [
+          {
+            "label": "Hashnode: frontend interview experience at Walmart, SDE 3 UI, January 2024",
+            "url": "https://jaynil-gaglani.hashnode.dev/frontend-interview-experience-at-walmart",
+            "publisher": "Hashnode",
+            "date": "2024-01"
+          }
+        ]
+      },
+      {
+        "id": "js-valid-anagram",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Valid Anagram",
+        "access": "premium",
+        "route": "/javascript/coding/js-valid-anagram",
+        "sources": [
+          {
+            "label": "LeetCode Discuss: front end developer interview journey with a Walmart loop, 2022",
+            "url": "https://leetcode.com/discuss/post/2774667/",
+            "publisher": "LeetCode Discuss",
+            "date": "2022-11"
+          }
+        ]
+      },
+      {
+        "id": "js-valid-parentheses",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Valid Parentheses (Balanced Brackets)",
+        "access": "free",
+        "route": "/javascript/coding/js-valid-parentheses",
+        "sources": [
+          {
+            "label": "Taro: Walmart front end developer interview, India, October 2020",
+            "url": "https://www.jointaro.com/interviews/companies/walmart/experiences/front-end-developer-india-october-19-2020-no-offer-neutral-93bed894/",
+            "publisher": "Taro",
+            "date": "2020-10"
+          },
+          {
+            "label": "Hashnode: frontend interview experience at Walmart, SDE 3 UI, January 2024",
+            "url": "https://jaynil-gaglani.hashnode.dev/frontend-interview-experience-at-walmart",
+            "publisher": "Hashnode",
+            "date": "2024-01"
+          },
+          {
+            "label": "Medium: Walmart Global Tech Software Engineer 3 UI interview, November 2024",
+            "url": "https://medium.com/@phalgun99/my-interview-experience-at-walmart-global-tech-for-the-software-engineer-3-ui-position-9751c81988ee",
+            "publisher": "Medium",
+            "date": "2024-11"
           }
         ]
       }

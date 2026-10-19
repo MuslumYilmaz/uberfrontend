@@ -7,4 +7,5 @@ export * from './question-row/fa-question-row.component';
 export * from './select/fa-select.component';
 export * from './spinner/fa-spinner.component';
 export * from './inline-code/inline-code.component';
+export * from './inline-code/strip-inline-markup.pipe';
 export * from './split-pane/split-pane.component';

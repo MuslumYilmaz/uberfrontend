@@ -3506,6 +3506,26 @@
     "assetRef": "questions/javascript/coding.json#js-timer-manager-and-dom-renderer"
   },
   {
+    "id": "js-color-contrast-ratio",
+    "family": "question",
+    "title": "Color Contrast Ratio (WCAG)",
+    "route": "/javascript/coding/js-color-contrast-ratio",
+    "tech": "javascript",
+    "difficulty": "easy",
+    "summary": "Implement contrastRatio(foreground, background): return the WCAG 2 contrast ratio between two hex colors (#rgb or #rrggbb), from 1 for identical colors up to 21 for black on white. 05.",
+    "tags": [
+      "accessibility",
+      "color",
+      "math",
+      "validation"
+    ],
+    "access": "free",
+    "estimatedMinutes": 18,
+    "updatedAt": "2026-10-19",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/javascript/coding.json#js-color-contrast-ratio"
+  },
+  {
     "id": "js-compose",
     "family": "question",
     "title": "Compose Function",
@@ -6150,6 +6170,26 @@
     "assetRef": "questions/javascript/coding.json#js-valid-anagram"
   },
   {
+    "id": "js-valid-parentheses",
+    "family": "question",
+    "title": "Valid Parentheses (Balanced Brackets)",
+    "route": "/javascript/coding/js-valid-parentheses",
+    "tech": "javascript",
+    "difficulty": "easy",
+    "summary": "Implement isValidParentheses(s): return true when every (, [ and { in the string is closed by the matching bracket in the right order, and false otherwise.",
+    "tags": [
+      "strings",
+      "data-structures",
+      "algorithms",
+      "validation"
+    ],
+    "access": "free",
+    "estimatedMinutes": 18,
+    "updatedAt": "2026-10-19",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/javascript/coding.json#js-valid-parentheses"
+  },
+  {
     "id": "js-validate-username",
     "family": "question",
     "title": "Validate Username (Rules + Edge Cases)",
@@ -6945,6 +6985,28 @@
     "assetRef": "questions/react/coding.json#react-debug-double-render"
   },
   {
+    "id": "react-debug-api-misuse",
+    "family": "question",
+    "title": "Debug: Product Search That Misuses Its API",
+    "route": "/react/coding/react-debug-api-misuse",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "Debug a product search page that misuses its search API, then add a small feature. Each of four user reports points to a different mistake in how the component calls and reads the API.",
+    "tags": [
+      "react",
+      "debugging",
+      "effects",
+      "async",
+      "api-calls",
+      "error-handling"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 18,
+    "updatedAt": "2026-10-19",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/coding.json#react-debug-api-misuse"
+  },
+  {
     "id": "react-functional-vs-class-components",
     "family": "question",
     "title": "Functional vs class components in React: what actually differs?",
@@ -7111,6 +7173,28 @@
     "updatedAt": "2026-01-30",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/coding.json#react-image-slider"
+  },
+  {
+    "id": "react-implement-usememo-context",
+    "family": "question",
+    "title": "Implement useMemo and a Context Data Provider",
+    "route": "/react/coding/react-implement-usememo-context",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "Implement useMemo yourself, then build a context that serves one API request to several components with loading, error and reload states. The behavior checks count computations and requests so shortcuts show up.",
+    "tags": [
+      "react",
+      "hooks",
+      "memoization",
+      "context",
+      "async",
+      "typescript"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 18,
+    "updatedAt": "2026-10-19",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/coding.json#react-implement-usememo-context"
   },
   {
     "id": "react-chips-input-autocomplete",
@@ -7612,6 +7696,28 @@
     "updatedAt": "2026-01-30",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/coding.json#react-transfer-list"
+  },
+  {
+    "id": "react-select-compound-api",
+    "family": "question",
+    "title": "Select With Compound Components (Single + Multi)",
+    "route": "/react/coding/react-select-compound-api",
+    "tech": "react",
+    "difficulty": "hard",
+    "summary": "Design and build one Select API that works as a single-select or a multi-select and lets every option render custom content.",
+    "tags": [
+      "react",
+      "components",
+      "composition",
+      "context",
+      "accessibility",
+      "typescript"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 18,
+    "updatedAt": "2026-10-19",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/coding.json#react-select-compound-api"
   },
   {
     "id": "react-use-effect-once",

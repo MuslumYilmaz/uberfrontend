@@ -1873,7 +1873,7 @@
       <ul class="iq-list" *ngIf="previewRows('coding').length; else emptyCoding">
         <li *ngFor="let q of previewRows('coding')">
           <a class="iq-item" [routerLink]="q.link" [attr.aria-label]="questionAriaLabel(q)">
-            <div class="iq-item__title">{{ q.title }}</div>
+            <div class="iq-item__title">{{ q.title | stripInlineMarkup }}</div>
             <div class="iq-item__meta">
               <span class="iq-item__chip iq-item__chip--priority" [attr.data-priority]="q.priority">{{ priorityLabel(q) }}</span>
               <span class="iq-item__chip">{{ q.difficulty | titlecase }}</span>
@@ -1925,7 +1925,7 @@
       <ul class="iq-list" *ngIf="previewRows('trivia').length; else emptyTrivia">
         <li *ngFor="let q of previewRows('trivia')">
           <a class="iq-item" [routerLink]="q.link" [attr.aria-label]="questionAriaLabel(q)">
-            <div class="iq-item__title">{{ q.title }}</div>
+            <div class="iq-item__title">{{ q.title | stripInlineMarkup }}</div>
             <div class="iq-item__meta">
               <span class="iq-item__chip iq-item__chip--priority" [attr.data-priority]="q.priority">{{ priorityLabel(q) }}</span>
               <span class="iq-item__chip">{{ q.difficulty | titlecase }}</span>
@@ -2302,7 +2302,7 @@
           <h3 [id]="'iq-directory-' + group.kind">{{ group.label }}</h3>
           <ul>
             <li *ngFor="let question of group.questions">
-              <a [routerLink]="question.route">{{ question.title }}</a>
+              <a [routerLink]="question.route">{{ question.title | stripInlineMarkup }}</a>
             </li>
           </ul>
         </section>

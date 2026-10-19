@@ -16,6 +16,8 @@ import { SeoService, type SeoMeta } from '../../core/services/seo.service';
 import { Tech } from '../../core/models/user.model';
 import { PUBLIC_QUESTION_NAVIGATION, PublicQuestionNavigationItem } from '../../generated/public-question-navigation';
 import { PrepRoadmapComponent, type PrepRoadmapItem } from '../../shared/components/prep-roadmap/prep-roadmap.component';
+import { stripInlineMarkup } from '../../shared/ui/inline-code/inline-code.component';
+import { StripInlineMarkupPipe } from '../../shared/ui/inline-code/strip-inline-markup.pipe';
 
 type InterviewQuestionsLandingConfig = {
   keyword: string;
@@ -5405,7 +5407,7 @@ const DIFFICULTY_RANK: Record<string, number> = {
 
 @Component({
     selector: 'app-interview-questions-landing',
-    imports: [CommonModule, RouterModule, PrepRoadmapComponent],
+    imports: [CommonModule, RouterModule, PrepRoadmapComponent, StripInlineMarkupPipe],
     templateUrl: './interview-questions-landing.component.html',
     styleUrls: ['./interview-questions-landing.component.css']
 })
@@ -6282,7 +6284,7 @@ export class InterviewQuestionsLandingComponent implements OnInit {
   }
 
   questionAriaLabel(row: QuestionSummaryRow): string {
-    return `${this.questionCtaLabel(row)}: ${row.title}`;
+    return `${this.questionCtaLabel(row)}: ${stripInlineMarkup(row.title)}`;
   }
 
   viewAllTarget(kind: Kind): { route: any[]; queryParams?: Record<string, string | number | boolean> } {

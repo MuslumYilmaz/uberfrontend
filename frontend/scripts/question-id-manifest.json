@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-17T06:55:13.532Z",
+  "generatedAt": "2026-10-19T11:22:58.285Z",
   "entries": [
     {
       "tech": "angular",
@@ -893,6 +893,12 @@
     {
       "tech": "javascript",
       "kind": "coding",
+      "id": "js-color-contrast-ratio",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
       "id": "js-compact",
       "file": "javascript/coding.json"
     },
@@ -1362,6 +1368,12 @@
       "tech": "javascript",
       "kind": "coding",
       "id": "js-valid-anagram",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-valid-parentheses",
       "file": "javascript/coding.json"
     },
     {
@@ -1937,6 +1949,12 @@
     {
       "tech": "react",
       "kind": "coding",
+      "id": "react-debug-api-misuse",
+      "file": "react/coding.json"
+    },
+    {
+      "tech": "react",
+      "kind": "coding",
       "id": "react-debug-double-render",
       "file": "react/coding.json"
     },
@@ -1973,6 +1991,12 @@
     {
       "tech": "react",
       "kind": "coding",
+      "id": "react-implement-usememo-context",
+      "file": "react/coding.json"
+    },
+    {
+      "tech": "react",
+      "kind": "coding",
       "id": "react-like-button",
       "file": "react/coding.json"
     },
@@ -2004,6 +2028,12 @@
       "tech": "react",
       "kind": "coding",
       "id": "react-progress-bar-thresholds",
+      "file": "react/coding.json"
+    },
+    {
+      "tech": "react",
+      "kind": "coding",
+      "id": "react-select-compound-api",
       "file": "react/coding.json"
     },
     {

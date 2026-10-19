@@ -18,6 +18,7 @@ import {
   FaQuestionRowComponent,
   FaQuestionRowMetaChip,
 } from '../../../shared/ui/question-row/fa-question-row.component';
+import { StripInlineMarkupPipe } from '../../../shared/ui/inline-code/strip-inline-markup.pipe';
 import {
   GOOGLE_PRACTICE_PROMPTS,
   GOOGLE_PREP_SEQUENCE,
@@ -202,7 +203,7 @@ const OPENAI_PREP_SEQUENCE: OpenAiPrepDay[] = [
 
 @Component({
     selector: 'app-company-preview',
-    imports: [CommonModule, RouterModule, FaQuestionRowComponent, CompanyOfficialGuidesComponent],
+    imports: [CommonModule, RouterModule, FaQuestionRowComponent, CompanyOfficialGuidesComponent, StripInlineMarkupPipe],
     templateUrl: './company-preview.component.html',
     styleUrls: ['./company-preview.component.css']
 })

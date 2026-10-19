@@ -1,0 +1,127 @@
+{
+  "questionId": "js-color-contrast-ratio",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "javascript",
+      "code": "export default function contrastRatio(foreground, background) {\n  const l1 = relativeLuminance(foreground);\n  const l2 = relativeLuminance(background);\n  const lighter = Math.max(l1, l2);\n  const darker = Math.min(l1, l2);\n  return (lighter + 0.05) / (darker + 0.05);\n}\n\nfunction relativeLuminance(hex) {\n  const [r, g, b] = parseHex(hex).map(toLinear);\n  return 0.2126 * r + 0.7152 * g + 0.0722 * b;\n}\n\nfunction toLinear(channel) {\n  const c = channel / 255;\n  return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;\n}\n\nfunction parseHex(hex) {\n  if (typeof hex !== 'string' || !/^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i.test(hex)) {\n    throw new TypeError(`Invalid hex color: ${String(hex)}`);\n  }\n  const digits = hex.length === 4 ? [...hex.slice(1)].map((d) => d + d).join('') : hex.slice(1);\n  return [0, 2, 4].map((i) => parseInt(digits.slice(i, i + 2), 16));\n}\n",
+      "nodes": [
+        {
+          "id": "d1-validate-before-parsing",
+          "title": "Validate the hex string before parsing it",
+          "anchor": {
+            "lineStart": 20,
+            "lineEnd": 20,
+            "snippet": "!/^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i.test(hex)"
+          },
+          "why": "parseInt silently accepts partial input such as 'ff' from '#ffzz', so the shape has to be checked first.",
+          "alternative": "Parse first and check for NaN afterwards.",
+          "tradeoff": "One regular expression rejects names, missing # and wrong lengths in a single place."
+        },
+        {
+          "id": "d2-expand-the-shorthand",
+          "title": "Expand #abc to #aabbcc",
+          "anchor": {
+            "lineStart": 23,
+            "lineEnd": 23,
+            "snippet": "[...hex.slice(1)].map((d) => d + d).join('')"
+          },
+          "why": "CSS defines each shorthand digit as doubled, so #abc and #aabbcc must give identical results.",
+          "alternative": "Scale the single digits by 17 instead of doubling the characters.",
+          "tradeoff": "Doubling the characters keeps one parsing path for both forms."
+        },
+        {
+          "id": "d3-linearize-each-channel",
+          "title": "Undo the sRGB curve for each channel",
+          "anchor": {
+            "lineStart": 16,
+            "lineEnd": 16,
+            "snippet": "c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4"
+          },
+          "why": "Stored sRGB values are gamma encoded; luminance has to be computed on linear light.",
+          "alternative": "Weight the 0-255 values directly.",
+          "tradeoff": "Skipping the curve is cheaper but gives wrong ratios for every mid tone."
+        },
+        {
+          "id": "d4-weight-by-perceived-brightness",
+          "title": "Weight green, red and blue differently",
+          "anchor": {
+            "lineStart": 11,
+            "lineEnd": 11,
+            "snippet": "0.2126 * r + 0.7152 * g + 0.0722 * b"
+          },
+          "why": "The eye is most sensitive to green and least to blue, which is why pure blue on white still has a high ratio.",
+          "alternative": "Average the three channels.",
+          "tradeoff": "An average is simpler but disagrees with the WCAG definition and every checker."
+        },
+        {
+          "id": "d5-lighter-over-darker-unrounded",
+          "title": "Divide lighter by darker and keep full precision",
+          "anchor": {
+            "lineStart": 6,
+            "lineEnd": 6,
+            "snippet": "return (lighter + 0.05) / (darker + 0.05);"
+          },
+          "why": "Ordering by luminance makes the result symmetric, and the unrounded value keeps 4.48 below the 4.5 threshold.",
+          "alternative": "Round to one decimal for display inside the function.",
+          "tradeoff": "Rounding belongs in the UI; the comparison needs the raw number."
+        }
+      ]
+    },
+    "approach2": {
+      "language": "javascript",
+      "code": "const LINEAR = Array.from({ length: 256 }, (_, value) => {\n  const c = value / 255;\n  return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;\n});\n\nexport default function contrastRatio(foreground, background) {\n  const [lighter, darker] = [luminance(foreground), luminance(background)].sort((a, b) => b - a);\n  return (lighter + 0.05) / (darker + 0.05);\n}\n\nfunction luminance(hex) {\n  if (typeof hex !== 'string' || !/^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i.test(hex)) {\n    throw new TypeError(`Invalid hex color: ${String(hex)}`);\n  }\n  const full = hex.length === 4 ? hex.replace(/[0-9a-f]/gi, (d) => d + d) : hex;\n  const value = parseInt(full.slice(1), 16);\n  return 0.2126 * LINEAR[(value >> 16) & 255] + 0.7152 * LINEAR[(value >> 8) & 255] + 0.0722 * LINEAR[value & 255];\n}\n",
+      "nodes": [
+        {
+          "id": "d1-precompute-the-curve",
+          "title": "Precompute the curve for all 256 channel values",
+          "anchor": {
+            "lineStart": 1,
+            "lineEnd": 1,
+            "snippet": "const LINEAR = Array.from({ length: 256 }"
+          },
+          "why": "A linter that checks hundreds of token pairs repeats the same 256 power calculations; a table does each once.",
+          "alternative": "Call Math.pow on every channel of every color.",
+          "tradeoff": "256 numbers of memory for constant-time lookups."
+        },
+        {
+          "id": "d2-read-channels-with-bit-shifts",
+          "title": "Read the channels with bit shifts",
+          "anchor": {
+            "lineStart": 17,
+            "lineEnd": 17,
+            "snippet": "LINEAR[(value >> 16) & 255]"
+          },
+          "why": "One parseInt over six digits gives a 24-bit integer whose bytes are red, green and blue.",
+          "alternative": "Slice the string three times and parse each pair.",
+          "tradeoff": "Shifts avoid three substrings per color but are harder to read for juniors."
+        },
+        {
+          "id": "d3-sort-the-two-luminances",
+          "title": "Sort the two luminances so the lighter comes first",
+          "anchor": {
+            "lineStart": 7,
+            "lineEnd": 7,
+            "snippet": ".sort((a, b) => b - a)"
+          },
+          "why": "Sorting two numbers descending is a compact way to make the ratio symmetric.",
+          "alternative": "Call Math.max and Math.min.",
+          "tradeoff": "Same result; max and min avoid allocating an array."
+        },
+        {
+          "id": "d4-same-formula-cheaper-per-pair",
+          "title": "Same formula, cheaper per pair",
+          "anchor": {
+            "lineStart": 8,
+            "lineEnd": 8,
+            "snippet": "return (lighter + 0.05) / (darker + 0.05);"
+          },
+          "why": "The output is identical to approach 1, so tests and thresholds do not change.",
+          "alternative": "Cache whole colors in a Map keyed by the hex string.",
+          "tradeoff": "A per-channel table is bounded at 256 entries; a color cache grows with the palette."
+        }
+      ]
+    }
+  }
+}
