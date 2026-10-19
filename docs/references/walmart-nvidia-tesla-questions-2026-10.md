@@ -902,6 +902,22 @@ Totals:
      - Next is step 7, on demand: #13 `JSON.stringify` and #8 file explorer, both premium coding items.
      - Then step 8, the budget review: `/coding` is 633,373 of 640,000 bytes and `totalHtmlBytes` is 107,061,003 of 109,000,000.
 7. **On demand:** #13 `JSON.stringify`, #8 file explorer, and the low-priority list.
+
+   **Step 7 status (2026-10-19).**
+   - Pushed `origin/dev` `c4ed6d87..f61dd50e` (waves 3-5, 11 commits). The pre-push critical E2E passed 95 of 95, Chromium only; local WebKit is missing and the override is on.
+   - #13: done as fefc88cf, premium, tagged `tesla` without a source (`js-json-stringify`).
+     - A2 cannot be read in full, and a search found no readable Tesla report.
+     - The Tesla preview lists only sourced items from `company-reports.json`, so this tag shows only in counts and filters, as with `react-autocomplete-search-starter`.
+     - Scope: `jsonStringify(value)` matches the built-in for primitives, non-finite numbers, string escapes including lone surrogates, arrays and objects, `toJSON` with the key, boxed primitives, a top-level `undefined`, and TypeErrors for BigInt and cycles. Shared references stay valid.
+     - Thirteen tests. The starter fails all 13, and both approaches pass in JS and TS with a strict type-check. Ten single-rule mutations each fail only their own test.
+     - Verified:
+       - the catalog solution execution, now 94 JS solutions and 502 checks;
+       - the premium preview corpus, now 50 JS pages;
+       - 371 Karma specs, 101 backend Jest tests, and assist-sync at commit time;
+       - a clean guard run: `/coding` 636,442 of 640,000 bytes and `totalHtmlBytes` 107,172,097. The page is `noindex` without solution code.
+   - Remaining from the plan: #8 file explorer (premium React, tagged `walmart`; W41 2017 and a 2021 Bengaluru Glassdoor snippet ask for an expandable folder tree in React).
+     - The low-priority list is about 15 optional candidates; almost none exist in the catalog.
+     - #8 adds one more `/coding` row, about 3 KB, which puts `/coding` at roughly 639.5 KB of 640 KB. Step 8 follows right after.
 8. **Last step: budget review.** The user asked on 2026-10-19 to leave the budget until the end.
    - Re-measure `codingHtmlBytes` and `totalHtmlBytes` on a clean build. After #3 they were 627,204 of 640,000 and 105,674,047 of 109,000,000.
    - If the numbers are over, choose between a dated threshold change in `perf-contract.mjs` and trimming the `/coding` row markup.
