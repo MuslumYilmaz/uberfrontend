@@ -1,6 +1,6 @@
 /**
  * Preparation pages that companies publish themselves. Rendered as a table on every company preview that has
- * rows; companies without a published page (Apple, Stripe and the registry companies) render nothing.
+ * rows; companies without a published page (Apple, for example) render nothing.
  * Keep `covers` to what the page actually says; these are official pages, so links keep the default rel.
  */
 export type CompanyOfficialGuide = {
@@ -12,6 +12,7 @@ export type CompanyOfficialGuide = {
 };
 
 const CHECKED = '2026-10-15';
+const CHECKED_OCT_20 = '2026-10-20';
 
 export const COMPANY_OFFICIAL_GUIDES: Readonly<Record<string, readonly CompanyOfficialGuide[]>> = {
   amazon: [
@@ -78,6 +79,13 @@ export const COMPANY_OFFICIAL_GUIDES: Readonly<Record<string, readonly CompanyOf
         'A 60-minute conversation with an engineer that assesses technical and behavioural skills, with a downloadable initial interview guide written by Meta\'s front-end engineers.',
       checkedAt: CHECKED,
     },
+    {
+      label: 'Preparing for your full loop Front End Engineer interview',
+      url: 'https://www.metacareers.com/FEE-prep-onsite/',
+      covers:
+        'At least three conversations with engineers, with a downloadable full-loop guide: 4 to 6 interviews covering JavaScript coding without dynamic programming, a 45-minute UI architecture and design interview without code, and a 45-minute behavioural session.',
+      checkedAt: CHECKED_OCT_20,
+    },
   ],
   microsoft: [
     {
@@ -137,8 +145,9 @@ export const COMPANY_OFFICIAL_GUIDES: Readonly<Record<string, readonly CompanyOf
     {
       label: 'Interview tips (TikTok early careers)',
       url: 'https://careers.tiktok.com/m/campus/interview-tips',
-      covers: 'The same early-careers guidance published on the TikTok careers site.',
-      checkedAt: CHECKED,
+      covers:
+        'The same early-careers guidance as the ByteDance page, plus a note that some roles and regions invite candidates to an assessment that can take a few hours, sometimes alongside other candidates.',
+      checkedAt: CHECKED_OCT_20,
     },
   ],
   netflix: [
@@ -170,6 +179,105 @@ export const COMPANY_OFFICIAL_GUIDES: Readonly<Record<string, readonly CompanyOf
       covers:
         'What the interview process can involve (a test, a video or an event), meeting multiple members of the team, response times and the recruiting-scam warning.',
       checkedAt: CHECKED,
+    },
+  ],
+  datadog: [
+    {
+      label: 'Candidate experience',
+      url: 'https://careers.datadoghq.com/candidate-experience/',
+      covers:
+        'The hiring steps: an initial screen with a recruiter and/or the hiring manager, interviews that may run in several rounds or panels with one step expected in person, a take-home project and an executive interview for some roles, then selection.',
+      checkedAt: CHECKED_OCT_20,
+    },
+    {
+      label: 'AI guidelines for interviews',
+      url: 'https://careers.datadoghq.com/candidate-experience/interviewing-at-datadog-ai-guidelines/',
+      covers: 'AI-assisted coding interviews for certain roles, announced in advance; otherwise no AI tools during live coding interviews.',
+      checkedAt: CHECKED_OCT_20,
+    },
+  ],
+  elevenlabs: [
+    {
+      label: 'Careers FAQ',
+      url: 'https://elevenlabs.io/careers',
+      covers:
+        'Most processes include a pre-screen, virtual interviews (sometimes with a take-home or case study), a hiring manager conversation and a final round with a founder or Bar Raiser.',
+      checkedAt: CHECKED_OCT_20,
+    },
+  ],
+  stripe: [
+    {
+      label: 'Careers FAQ',
+      url: 'https://stripe.com/careers',
+      covers: 'Most processes include a recruiter screen, a technical or skills-based assessment and a series of interviews with the team the candidate would join.',
+      checkedAt: CHECKED_OCT_20,
+    },
+  ],
+  intuit: [
+    {
+      label: 'Hiring process',
+      url: 'https://www.intuit.com/careers/hiring-process/',
+      covers:
+        'An interview day that starts with set-up and a craft demonstration (engineers get 90 minutes to prepare a technical question they then present), followed by assessor, team member and manager interviews, with the length and panel size of each.',
+      checkedAt: CHECKED_OCT_20,
+    },
+  ],
+  waymo: [
+    {
+      label: 'How we hire',
+      url: 'https://careers.withwaymo.com/how-we-hire',
+      covers:
+        'A first conversation with a sourcer or recruiter, one or two behavioural or technical phone or video interviews, then a virtual onsite with up to five interviewers of about 45 minutes each; AI tools are not allowed unless the instructions say so.',
+      checkedAt: CHECKED_OCT_20,
+    },
+  ],
+  servicenow: [
+    {
+      label: 'How we hire',
+      url: 'https://careers.servicenow.com/how-we-hire/',
+      covers:
+        'Three steps (application, interview, decision); interview rounds vary by position and may include a technical coding assessment or a presentation, followed by a debrief and a final decision.',
+      checkedAt: '2026-10-07',
+    },
+  ],
+  spotify: [
+    {
+      label: 'Start your journey',
+      url: 'https://www.lifeatspotify.com/start-your-journey',
+      covers:
+        'A video or telephone interview with a recruiter, a second interview with one or two team members, and a final round with several team members, where one interviewer leads and the others shadow.',
+      checkedAt: CHECKED_OCT_20,
+    },
+    {
+      label: 'Interview FAQ',
+      url: 'https://www.lifeatspotify.com/start-your-journey/faq',
+      covers: 'Practical questions about the process, including the tools used for technical interviews (CoderPad and Mural).',
+      checkedAt: CHECKED_OCT_20,
+    },
+  ],
+  'booking-com': [
+    {
+      label: 'Start your journey',
+      url: 'https://careers.booking.com/start-your-journey/',
+      covers:
+        'The steps from application to feedback: a call with a sourcer or recruiter, several interview rounds with the manager, teammates and colleagues that depend on department and seniority, technical tests and coding interviews for some technical roles, and feedback within a week.',
+      checkedAt: CHECKED_OCT_20,
+    },
+  ],
+  zalando: [
+    {
+      label: 'How we hire (Tech)',
+      url: 'https://jobs.zalando.com/en/how-we-hire',
+      covers:
+        'A 30-minute call with a Talent Acquisition Partner, a case study such as a coding exercise, a 45–60 minute conversation with the hiring manager or team lead, and final interviews (3–5 interviews of 45–60 minutes each).',
+      checkedAt: CHECKED_OCT_20,
+    },
+    {
+      label: 'Technical interviews for software engineers',
+      url: 'https://jobs.zalando.com/en/blog/technical-interview-for-software-engineers',
+      covers:
+        'A 2023 article on the engineering loop: a talent acquisition call, a hiring manager interview, a coding interview, a system design and architecture interview and a general tech interview, over two to three weeks.',
+      checkedAt: CHECKED_OCT_20,
     },
   ],
 };

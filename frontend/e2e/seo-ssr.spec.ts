@@ -743,7 +743,7 @@ const AUTHORED_GUIDE_CASES = [
       { id: 'audio-transcript-sync', title: 'Synchronise audio playback with transcript highlighting' },
       { id: 'dubbing-review-interface', title: 'Design a review and collaboration interface for a voice-dubbing project' },
       { id: 'fix-a-practical-react-problem', title: 'Fix a practical React problem live with the interviewer' },
-      { id: 'timed-assessment-react-and-algorithms', title: 'Clear a timed assessment that mixes React tasks with medium algorithms' },
+      { id: 'timed-assessment-react-and-algorithms', title: 'Clear a 90-minute technical assessment before the first call' },
       { id: 'streaming-audio-and-text-ui', title: 'Stream generated audio and text to the screen without losing control' },
     ],
     resources: [
