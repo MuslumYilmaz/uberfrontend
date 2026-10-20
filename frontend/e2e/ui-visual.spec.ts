@@ -209,6 +209,10 @@ test.describe('UI visual regression', () => {
         await page.getByRole('button', { name: index < 4 ? 'Next' : 'Review answers', exact: true }).last().click();
       }
       await expect(page.getByTestId('submit-mcq')).toBeVisible();
+      // At 360px "Return to questions" renders under the pointer that clicked
+      // "Review answers", so its hover style landed in some references and not
+      // others. Park the pointer to capture the resting state every time.
+      await page.mouse.move(0, 0);
       await capture(page, `interview-review-${width}`);
       await page.getByTestId('submit-mcq').click();
       await expect(page.getByTestId('start-coding')).toBeVisible();
