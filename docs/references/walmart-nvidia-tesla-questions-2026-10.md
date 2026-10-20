@@ -71,11 +71,12 @@ Source ids (W, N, T and the others) are local to this document. Each "Reported q
   - No editorial guide.
 
 **Loop, India (SDE 3 / UI).**
-- The common shape is four rounds [W10, W11; same order in W35 and W42]:
-  - DSA, 60 minutes;
-  - JavaScript, React and web fundamentals, 60 minutes;
-  - hiring manager, 60 minutes;
-  - HR, 30 minutes.
+- The common shape is three 60-minute rounds in this order [W10, W11; same order without durations in W35]:
+  - DSA;
+  - JavaScript, React and web fundamentals;
+  - hiring manager.
+- Only W11 adds a fourth step: a 30-minute HR call about two weeks after the hiring-manager round. W10 had no HR round.
+- Neither W10 nor W11 names India; the SDE 3 title and W11's "expected CTC" point there. None of the three mentions an assessment or a system design round. (Corrected 2026-10-20 after a full re-read; the earlier text merged W11's HR call into every account.)
 - Some SDE-2 frontend roles open with an assessment [W2, W33, W34]. One 2024-10 assessment had three sections: 20 multiple-choice questions on HTML, CSS and JavaScript; 2 easy coding questions in JavaScript only; 10 multiple-choice questions on React or Angular, the candidate's choice [W34].
 - One 60-minute online round mixed a two-pointer problem with frontend concepts and output prediction [W9].
 - A Chennai full-stack SDE III loop had five rounds [W37, interview 2021-01, posted 2021-08; W14 republishes it]:
@@ -92,7 +93,7 @@ Source ids (W, N, T and the others) are local to this document. Each "Reported q
   - HR.
 
 **Loop, US.**
-- **Karat screen:** about ten minutes of one-line role questions, then 45 minutes of coding [W7, W21].
+- **Karat screen:** about ten minutes of short or one-line answers, then coding: 45 minutes of coding challenges in W7, two coding questions in W21 (a Walmart-badged commenter's account).
 - **HackerRank:**
   - a one-hour frontend screen in Sunnyvale [W23];
   - two React code challenges [W6];
@@ -104,6 +105,7 @@ Source ids (W, N, T and the others) are local to this document. Each "Reported q
   - DSA, high-level system design, a UI/JavaScript technical round and a managerial round [W24];
   - "Code with react, debug session, System design and talk with hiring manager" [W25].
 - **Team-dependent:** a Staff Frontend AdTech candidate was sent a backend-only interview guide [W22].
+- **Locations and voices (re-read 2026-10-20):** W19, W24 and W25 give no location. W21, W24 and W25 describe a Walmart-badged commenter's loop, not the poster's. W19, W20, W22, W23 and W31 record what a recruiter said before the interview.
 
 ### Reported questions: Walmart
 
@@ -399,7 +401,7 @@ Teams named:
 - FrontendAtlas does not appear.
 
 **Loop**
-- **Recruiter call** first.
+- **Recruiter or HR call** first [T4, T1; T9 for an intern]. In T5 a brief introductory call came after the OA.
 - **Online assessment, often Codility:**
   - "2 hrs, 5 questions" [T5, 2022-01];
   - for a frontend SWE [B4, 2023-01];
@@ -416,14 +418,14 @@ Teams named:
 - **Take-homes are team-specific** [B14]:
   - Energy site layout [H1, H2];
   - Creative Technology gear shifter [H3, H4];
-  - a React take-home [B2];
+  - a take-home that a later screen discussed with React questions [B2; the post does not say the take-home was a React build];
   - a take-home followed by a three-hour panel with a frontend engineer, a UX designer, a backend engineer, a PM and the hiring manager [G7].
 - **Onsites, three to five rounds of about 45 minutes:**
-  - 2 of 3 coding rounds frontend-focused, plus DSA, PM and hiring manager [B1, 2020-06, Chicago];
+  - a recruiter's plan before the onsite: 60-minute HM, 30-minute PM and two 45-minute engineer rounds; two of three coding rounds frontend-focused, the third DSA [B1, 2020-06, Chicago];
   - algorithm, system design (shared component, API), React, behavioural [T6, 2020-12, Fremont];
   - Angular, TypeScript/JavaScript, system design [T4, 2024-01, Fremont];
   - full-stack Autopilot new grad: a 45-minute frontend round (a React component styled with CSS), behavioural, Python backend, DSA, closing behavioural [L1, 2022-10];
-  - SDE-1: five 45-minute interviews, including a web quiz on cookies and CSS declarations [C1, 2020-11].
+  - SDE-1: five 45-minute interviews, including a web quiz on cookies and CSS declarations [C1, 2020-11]; a general SDE-1 loop in Fremont, not a frontend role.
 - **Interns:**
   - one team-dependent round [T7];
   - a React round, then a system design final [T9];
@@ -518,7 +520,7 @@ Teams named:
 
 | id | URL | publisher, date | role, location | access | content |
 |---|---|---|---|---|---|
-| T1 | https://www.jointaro.com/interviews/companies/tesla/experiences/frontend-developer-october-15-2025-no-offer-positive-3c909dee/ | Taro (Glassdoor mirror RVW100676086), 2025-10 | Frontend Developer, Amsterdam | F | React live coding; search bar |
+| T1 | https://www.jointaro.com/interviews/companies/tesla/experiences/frontend-developer-october-15-2025-no-offer-positive-3c909dee/ | Taro (Glassdoor mirror RVW100676086), 2025-10 | Frontend Developer; Taro shows no location (Amsterdam comes from the Glassdoor mirror) | F | HR call, then React live coding; search bar |
 | T2 | https://www.jointaro.com/interviews/companies/tesla/experiences/frontend-developer-san-francisco-ca-january-1-2021-no-offer-positive-8db5ee50/ | Taro (Glassdoor mirror RVW41771461), 2021-01 | Frontend Developer, San Francisco | F | Three-hour assessment; like button; video round |
 | T3 | https://www.jointaro.com/interviews/companies/tesla/experiences/front-end-developer-united-states-november-17-2025-no-offer-positive-868af7da/ | Taro, 2025-11 | Front End Developer, US | F | Deque card game; data extraction and mock UI |
 | T4 | https://www.jointaro.com/interviews/companies/tesla/experiences/front-end-developer-fremont-ca-january-1-2024-no-offer-neutral-9e5d4e3f/ | Taro, 2024-01 | Front End Developer, Fremont | F, re-checked | Angular, TS/JS, car-rental design |
@@ -594,6 +596,8 @@ The coordinating session checked eight items against their sources:
 It also read eight LeetCode posts in full for the first time: 8288813 [W31], 2105625 [W32], 6156237 [W33], 5988869 [W34], 5331800 [W35], 1436043 [W37], 2774667 [W55] and 7185262. The last one corrected an earlier snippet-based item (see the Walmart misattributions).
 
 Every quoted phrase was found on its page.
+
+2026-10-20: for the interview process tables, every source the tables cite was re-read in full: 16 Walmart, 21 Tesla and 13 Amazon sources, plus a second check of the key quotes by the coordinating session. The corrections are folded into the loop notes above: the Walmart HR call (W11 only), the Karat coding length (W7), commenter accounts (W21, W24, W25), the Tesla recruiter plan (B1), the SDE-1 loop (C1) and the T1 location.
 
 ## Open items
 

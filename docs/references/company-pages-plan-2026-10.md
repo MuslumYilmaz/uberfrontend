@@ -152,6 +152,22 @@ Candidates and their sources are in section 4 of the market research document: E
 - New UI: `app-company-official-guides` renders a table of the company's own preparation pages (data in `shared/company-previews/company-official-guides.ts`, scoped per company in the SEO inventory like the registry literal). It sits before the premium CTA in all five template branches and renders nothing for companies without rows. Covered by a component spec, a company preview spec, two smoke checks and one SSR e2e test.
 - Lesson: parallel shell calls lose their working directory; run generators and validators with absolute paths or `npm --prefix`.
 
+### Interview process tables pilot (2026-10-20)
+
+- **What:** `app-company-interview-process` renders a "Reported interview process" table per company. Data lives in `shared/company-previews/company-interview-processes.ts`.
+  - Each stage has a format, who it applies to, an evidence label ("Official page", "N public reports, years", "One public report") and an optional free practice link.
+  - Report links are `nofollow`; official links are followed.
+  - The table switches to cards when its own width is under 960px (container query), because the sidebar makes viewport breakpoints unreliable: at 1024px a viewport rule left 136px cells.
+- **Pilot:**
+  - Amazon: experienced FEE plus students and new graduates, from the official FEE and student pages and 8 accounts. It sits below the source note in the authored guide.
+  - Walmart: SDE 3 (UI), India SDE-2 and frontend roles, SWE III and senior roles. 15 accounts; no official page cited.
+  - Tesla: frontend roles and internships, 15 accounts.
+  - Walmart and Tesla show the table directly below the hero.
+- **Sources:** every cited source was re-read in full and the key quotes checked again. The data spec bans Glassdoor, 1point3acres, Prepfully, Dataford and GitHub hosts, absolute wording ("always", "never") and sources dated after the check.
+- **Amazon guide correction:** four sentences said every session opened with Leadership Principles questions and that the algorithm problems were solved in JavaScript. Two accounts had a round that opened with coding, and the 2024 account used Python, so the wording now says "most" and "usually".
+- **SEO dating:** `COMPANY_INTERVIEW_PROCESSES` is scoped per company like the official guides. Company-prefixed constants of catalog companies (Walmart, Tesla) are filtered too, so a later edit re-dates only that company. The wiring in the shared preview template and component still re-dates every company preview once, as the official guides table did.
+- **Measure:** GSC queries containing "process", "rounds" or "loop" for the three pages, 4 to 6 weeks after deploy, before extending the table to more companies.
+
 ## Hooks and CI
 
 Pre-commit (`.githooks/pre-commit:43` → `frontend/scripts/run-pre-commit-checks.mjs`): `lint:questions:hook` when cdn/questions or pipeline scripts are staged (:176); `generate-seo-content-dates.mjs --staged` for `frontend/src/app/**` or `cdn/**` (:184); `validate-coding-assist-sync.mjs --staged-files` for coding.json, decision graphs or failure-explain files (:189); `lint:design-system:strict` for app html/css or `shared/**/*.ts` (:197); targeted `ng test` for up to 12 matching specs (:205). Trap: the hook skips `gen-data-version.mjs --check`, so run `npm run lint:questions:check` before pushing. Pre-push (`.githooks/pre-push`): backend `generate:interview-content:check` and `validate:interview-content` when coding.json, system-design/, cdn/sb/ or backend/content/interview/ change (:182-193), then assist sync, the three registry lints, `verify:unit-and-content:prepush`, `verify:seo-prerender-guard`, critical e2e.
@@ -183,4 +199,5 @@ CI: Frontend Unit Verify (lint-questions, data-version, Karma, sitemap and quest
 | 7 ServiceNow | done: content-only (5 tagged items with sources, content module, registry and slug entries, brand, llms, table rows); verified together with Step 6 (7 ServiceNow smoke checks in the same guard run); uncommitted | 2026-10-14 |
 | 8 Pinned items and logos | done: 5 pinned items tagged with sources, coding and system design registries re-pinned with approval and artifact pins refreshed, runtime gate test updated, three logos added; backend Jest 1015/1015, guard green with a clean dist (112 smoke checks), seo-ssr + editorial-correctness 108/108, seo + routing-and-access 26/26; committed as a62f4ad4 and 00f9db1d | 2026-10-14 |
 | 9 Sources and official pages for existing companies | in progress: 22 items sourced, OpenAI tag on the AI chat case, official pages table on nine company pages, review document; lints, 29 Karma specs, inventory and content tests green; guard and e2e pending | 2026-10-15 |
+| Interview process tables pilot | built for Amazon, Walmart and Tesla: component, registry, inventory scoping, specs and SSR e2e; Amazon guide wording corrected; committed as a243dbd8 and f3de4efd, not pushed, waiting for review | 2026-10-20 |
 | 10+ Remaining candidates | Celonis skipped (no readable frontend report), Perplexity deferred (report login-locked), Scale AI skipped (no completed-round report); next candidates need a new research round. Follow-up work on the eleven pre-existing pages is planned in `company-sources-followup-plan-2026-10.md` (not started). | |
