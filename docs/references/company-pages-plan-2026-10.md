@@ -167,6 +167,12 @@ Candidates and their sources are in section 4 of the market research document: E
 - **Amazon guide correction:** four sentences said every session opened with Leadership Principles questions and that the algorithm problems were solved in JavaScript. Two accounts had a round that opened with coding, and the 2024 account used Python, so the wording now says "most" and "usually".
 - **SEO dating:** `COMPANY_INTERVIEW_PROCESSES` is scoped per company like the official guides. Company-prefixed constants of catalog companies (Walmart, Tesla) are filtered too, so a later edit re-dates only that company. The wiring in the shared preview template and component still re-dates every company preview once, as the official guides table did.
 - **Measure:** GSC queries containing "process", "rounds" or "loop" for the three pages, 4 to 6 weeks after deploy, before extending the table to more companies.
+- **Extension (2026-10-20, approved the same day):**
+  - The research for the other 19 company pages is in `company-interview-processes-2026-10.md`.
+  - Tables were added for 14 more companies: Google, Meta, Microsoft, Apple, Uber, Stripe, ByteDance/TikTok, Booking.com, Datadog, Intuit, ServiceNow (India only), Revolut, Spotify and Zalando. Netflix, Airbnb, OpenAI, ElevenLabs and Waymo wait.
+  - Google's template branch now renders the table after its process note.
+  - The inventory maps hyphenated slugs to constant prefixes (`BOOKINGCOM_`).
+  - The same work fixed unsupported claims in the Revolut, Intuit, ServiceNow, ElevenLabs and Datadog guides, and added nine companies' official process pages to the official guides table.
 
 ## Hooks and CI
 
@@ -200,4 +206,5 @@ CI: Frontend Unit Verify (lint-questions, data-version, Karma, sitemap and quest
 | 8 Pinned items and logos | done: 5 pinned items tagged with sources, coding and system design registries re-pinned with approval and artifact pins refreshed, runtime gate test updated, three logos added; backend Jest 1015/1015, guard green with a clean dist (112 smoke checks), seo-ssr + editorial-correctness 108/108, seo + routing-and-access 26/26; committed as a62f4ad4 and 00f9db1d | 2026-10-14 |
 | 9 Sources and official pages for existing companies | in progress: 22 items sourced, OpenAI tag on the AI chat case, official pages table on nine company pages, review document; lints, 29 Karma specs, inventory and content tests green; guard and e2e pending | 2026-10-15 |
 | Interview process tables pilot | built for Amazon, Walmart and Tesla: component, registry, inventory scoping, specs and SSR e2e; Amazon guide wording corrected; committed as a243dbd8 and f3de4efd, not pushed, waiting for review | 2026-10-20 |
+| Interview process tables, extension | 14 more companies, guide corrections and official pages; see the extension note above | 2026-10-20 |
 | 10+ Remaining candidates | Celonis skipped (no readable frontend report), Perplexity deferred (report login-locked), Scale AI skipped (no completed-round report); next candidates need a new research round. Follow-up work on the eleven pre-existing pages is planned in `company-sources-followup-plan-2026-10.md` (not started). | |
