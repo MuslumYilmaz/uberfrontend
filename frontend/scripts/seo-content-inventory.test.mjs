@@ -413,6 +413,30 @@ test('actual official guide table edits re-date only the company whose row chang
   assert.deepEqual(changes, ['/companies/amazon/preview']);
 });
 
+test('actual interview process edits re-date only the company whose stages or sources changed', () => {
+  const file = `${APP}shared/company-previews/company-interview-processes.ts`;
+  const read = currentReader();
+  const before = buildSeoInventory(read);
+  const original = read.read(file);
+  const changes = (text) => [...buildSeoInventory(currentReader({ [file]: text }))]
+    .filter(([route, entry]) => before.get(route)?.fingerprint !== entry.fingerprint).map(([route]) => route);
+  const edits = [
+    // A stage inside the registry literal.
+    ["format: '60 minutes on two or three easy-to-medium problems.',", "format: '60 minutes on two or three problems.',", '/companies/walmart/preview'],
+    // Source constants outside the literal: catalog companies (Walmart, Tesla) as well as authored ones.
+    ["'https://www.teamblind.com/post/tesla-frontend-onsite-bvg7rws6', '2020-06'", "'https://www.teamblind.com/post/tesla-frontend-onsite-bvg7rws6', '2020-07'", '/companies/tesla/preview'],
+    ["label: 'Amazon FEE prep page',", "label: 'Amazon Front End Engineer prep page',", '/companies/amazon/preview'],
+    // Hyphenated slugs: BOOKINGCOM_ constants belong to /companies/booking-com/preview.
+    ["'https://enginebogie.com/interview/experience/booking-com-frontend-engineer/84', '2023-05'", "'https://enginebogie.com/interview/experience/booking-com-frontend-engineer/84', '2023-06'", '/companies/booking-com/preview'],
+    ["const UBER_ROLE = 'Frontend engineers, L3 to L5A';", "const UBER_ROLE = 'Frontend engineers, L3 to L5B';", '/companies/uber/preview'],
+  ];
+  for (const [from, to, route] of edits) {
+    const modified = original.replace(from, to);
+    assert.notEqual(modified, original, from);
+    assert.deepEqual(changes(modified), [route]);
+  }
+});
+
 test('actual Waymo guide edits re-date only the Waymo preview and the directory that lists it', () => {
   const file = `${APP}shared/company-previews/waymo-preview-content.ts`;
   const read = currentReader();

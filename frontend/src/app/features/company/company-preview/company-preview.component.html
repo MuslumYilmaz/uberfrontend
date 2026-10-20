@@ -206,6 +206,8 @@
       </p>
     </aside>
 
+    <app-company-interview-process *ngIf="interviewProcess as process" [slug]="slug" [companyLabel]="label" [process]="process"></app-company-interview-process>
+
     <section class="company-guide-section" aria-labelledby="google-practice-prompts">
       <div class="company-guide-section__head">
         <p class="preview-kicker">Representative practice prompts</p>
@@ -599,6 +601,8 @@
       <p *ngFor="let paragraph of preview.sourceBoundary.paragraphs">{{ paragraph }}</p>
     </aside>
 
+    <app-company-interview-process *ngIf="interviewProcess as process" [slug]="slug" [companyLabel]="label" [process]="process"></app-company-interview-process>
+
     <section class="company-guide-section" *ngIf="preview.roleLenses as lenses" [attr.aria-labelledby]="preview.slug + '-role-lenses'">
       <div class="company-guide-section__head">
         <p class="preview-kicker">{{ lenses.kicker }}</p>
@@ -771,6 +775,8 @@
   </header>
 
   <ng-container>
+    <app-company-interview-process *ngIf="interviewProcess as process" [slug]="slug" [companyLabel]="label" [process]="process"></app-company-interview-process>
+
     <section class="proof-grid">
       <article class="proof-card">
         <h2>What you can do now for free</h2>

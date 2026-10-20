@@ -12,8 +12,13 @@ import { companyBrandFor } from '../../../shared/company-branding';
 import type { AuthoredCompanyPreview, AuthoredSource } from '../../../shared/company-previews/authored-company-preview.model';
 import { AUTHORED_COMPANY_PREVIEWS_TOKEN } from '../../../shared/company-previews/authored-company-previews';
 import { COMPANY_OFFICIAL_GUIDES, type CompanyOfficialGuide } from '../../../shared/company-previews/company-official-guides';
+import {
+  COMPANY_INTERVIEW_PROCESSES,
+  type CompanyInterviewProcess,
+} from '../../../shared/company-previews/company-interview-processes';
 import type { CompanyReportedItem } from '../../../core/models/company-public.model';
 import { CompanyOfficialGuidesComponent } from '../../../shared/components/company-official-guides/company-official-guides.component';
+import { CompanyInterviewProcessComponent } from '../../../shared/components/company-interview-process/company-interview-process.component';
 import {
   FaQuestionRowComponent,
   FaQuestionRowMetaChip,
@@ -203,7 +208,14 @@ const OPENAI_PREP_SEQUENCE: OpenAiPrepDay[] = [
 
 @Component({
     selector: 'app-company-preview',
-    imports: [CommonModule, RouterModule, FaQuestionRowComponent, CompanyOfficialGuidesComponent, StripInlineMarkupPipe],
+    imports: [
+      CommonModule,
+      RouterModule,
+      FaQuestionRowComponent,
+      CompanyOfficialGuidesComponent,
+      CompanyInterviewProcessComponent,
+      StripInlineMarkupPipe,
+    ],
     templateUrl: './company-preview.component.html',
     styleUrls: ['./company-preview.component.css']
 })
@@ -224,6 +236,10 @@ export class CompanyPreviewComponent implements OnInit {
   /** Preparation pages the company publishes itself; empty for companies without one. */
   get officialGuides(): readonly CompanyOfficialGuide[] {
     return COMPANY_OFFICIAL_GUIDES[this.slug] ?? [];
+  }
+
+  get interviewProcess(): CompanyInterviewProcess | null {
+    return COMPANY_INTERVIEW_PROCESSES[this.slug] ?? null;
   }
   slug = '';
   label = '';

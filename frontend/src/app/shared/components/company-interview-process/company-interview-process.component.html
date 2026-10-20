@@ -1,0 +1,55 @@
+@if (process; as data) {
+  <section class="interview-process" [attr.aria-labelledby]="headingId" data-testid="company-interview-process">
+    <div class="interview-process__head">
+      <p class="interview-process__kicker">Reported interview process</p>
+      <h2 [attr.id]="headingId">{{ heading(data) }}</h2>
+      <p class="interview-process__summary">{{ data.summary }}</p>
+      <p class="interview-process__caveat">{{ data.caveat }} Sources last checked {{ formatMonth(data.checkedAt) }}.</p>
+    </div>
+
+    @for (variant of data.variants; track variant.title; let i = $index) {
+      <div class="interview-process__variant" data-testid="company-interview-process-variant">
+        <h3 [attr.id]="variantId(i)">{{ variant.title }}</h3>
+        @if (variant.note) {
+          <p class="interview-process__note">{{ variant.note }}</p>
+        }
+        <table class="interview-process__table" [attr.aria-labelledby]="variantId(i)">
+          <thead>
+            <tr>
+              <th scope="col">Stage</th>
+              <th scope="col">What happens</th>
+              <th scope="col">Who</th>
+              <th scope="col">Evidence</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (stage of variant.stages; track $index) {
+              <tr>
+                <th scope="row" data-label="Stage">{{ stage.stage }}</th>
+                <td data-label="What happens">
+                  {{ stage.format }}
+                  @if (stage.practice; as practice) {
+                    <span class="interview-process__practice">
+                      Practice: <a [routerLink]="practice.path">{{ practice.label }}</a>
+                    </span>
+                  }
+                </td>
+                <td data-label="Who">{{ stage.appliesTo }}</td>
+                <td data-label="Evidence">
+                  <span class="interview-process__strength">{{ evidenceLabel(stage) }}</span>
+                  <ul class="interview-process__sources">
+                    @for (source of stage.sources; track source.url) {
+                      <li>
+                        <a [href]="source.url" target="_blank" [attr.rel]="rel(source)">{{ sourceText(source) }}</a>
+                      </li>
+                    }
+                  </ul>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+}

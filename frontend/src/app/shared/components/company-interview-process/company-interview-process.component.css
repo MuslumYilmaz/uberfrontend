@@ -1,0 +1,203 @@
+/* The table needs about 960px of its own width; the sidebar makes viewport widths a poor proxy. */
+.interview-process {
+  container: interview-process / inline-size;
+  display: grid;
+  gap: var(--uf-space-4);
+  padding: 20px;
+  border: 1px solid color-mix(in srgb, var(--uf-border-subtle) 80%, transparent);
+  border-radius: var(--uf-radius-12);
+  background: color-mix(in srgb, var(--uf-surface) 86%, transparent);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.interview-process__head {
+  display: grid;
+  gap: var(--uf-space-1);
+}
+
+.interview-process__kicker {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--uf-text-secondary) 88%, transparent);
+}
+
+.interview-process h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  line-height: 1.3;
+  color: var(--uf-text-primary);
+}
+
+.interview-process__summary,
+.interview-process__caveat,
+.interview-process__note {
+  margin: 0;
+  max-width: 72ch;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.interview-process__summary {
+  color: var(--uf-text-primary);
+}
+
+.interview-process__caveat,
+.interview-process__note {
+  color: color-mix(in srgb, var(--uf-text-secondary) 92%, transparent);
+}
+
+.interview-process__variant {
+  display: grid;
+  gap: var(--uf-space-2);
+  min-width: 0;
+}
+
+.interview-process h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--uf-text-primary);
+}
+
+.interview-process__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.interview-process__table th,
+.interview-process__table td {
+  padding: 10px 12px;
+  text-align: left;
+  vertical-align: top;
+  border-top: 1px solid color-mix(in srgb, var(--uf-border-subtle) 70%, transparent);
+}
+
+.interview-process__table thead th {
+  border-top: 0;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--uf-text-secondary) 88%, transparent);
+}
+
+.interview-process__table tbody th {
+  width: 11rem;
+  font-weight: 600;
+  color: var(--uf-text-primary);
+}
+
+.interview-process__table td:nth-child(3) {
+  width: 11rem;
+  color: color-mix(in srgb, var(--uf-text-secondary) 92%, transparent);
+}
+
+.interview-process__table td:last-child {
+  width: 15rem;
+}
+
+.interview-process__practice {
+  display: block;
+  margin-top: 4px;
+  font-size: 13px;
+  color: color-mix(in srgb, var(--uf-text-secondary) 92%, transparent);
+}
+
+.interview-process__strength {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: color-mix(in srgb, var(--uf-text-secondary) 88%, transparent);
+}
+
+.interview-process__sources {
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.interview-process__sources li {
+  display: inline;
+}
+
+.interview-process__sources a {
+  white-space: nowrap;
+}
+
+.interview-process__sources li:not(:last-child)::after {
+  content: ' · ';
+  color: color-mix(in srgb, var(--uf-text-secondary) 70%, transparent);
+}
+
+.interview-process a {
+  color: var(--uf-text-primary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@media (max-width: 760px) {
+  .interview-process {
+    padding: 16px;
+  }
+}
+
+@container interview-process (max-width: 959px) {
+  .interview-process__table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+
+  .interview-process__table,
+  .interview-process__table tbody,
+  .interview-process__table tr,
+  .interview-process__table th,
+  .interview-process__table td {
+    display: block;
+    width: 100%;
+  }
+
+  .interview-process__table tr {
+    padding: 10px 0;
+    border-top: 1px solid color-mix(in srgb, var(--uf-border-subtle) 70%, transparent);
+  }
+
+  .interview-process__table tbody th,
+  .interview-process__table td,
+  .interview-process__table td:nth-child(3),
+  .interview-process__table td:last-child {
+    width: 100%;
+    padding: 4px 0;
+    border-top: 0;
+    min-width: 0;
+  }
+
+  .interview-process__table tbody th {
+    font-size: 15px;
+  }
+
+  .interview-process__table td {
+    max-width: 72ch;
+  }
+
+  .interview-process__table td::before {
+    content: attr(data-label);
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--uf-text-secondary) 80%, transparent);
+  }
+}

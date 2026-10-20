@@ -110,6 +110,9 @@ function dateOnly(node) {
   return false;
 }
 
+// Object literals keyed by company slug: a company page keeps only its own entry.
+const COMPANY_SCOPED_REGISTRIES = new Set(['AUTHORED_COMPANY_PREVIEWS', 'COMPANY_OFFICIAL_GUIDES', 'COMPANY_INTERVIEW_PROCESSES']);
+
 function projectNode(node, scope = {}) {
   if (!node) return null;
   if (dateOnly(node)) return null;
@@ -129,8 +132,11 @@ function projectNode(node, scope = {}) {
   if (OMIT.has(name) || DATE_NAME.test(name)) return null;
   if (scope.company) {
     const companyPrefix = name.match(/^([A-Z][A-Z0-9]*)_/)?.[1]?.toLowerCase();
-    if (companyPrefix && AUTHORED_COMPANY_SET.has(companyPrefix) && companyPrefix !== scope.company) return null;
-    if (ts.isVariableDeclaration(node) && (name === 'AUTHORED_COMPANY_PREVIEWS' || name === 'COMPANY_OFFICIAL_GUIDES') && ts.isObjectLiteralExpression(node.initializer)) {
+    // Catalog companies (Walmart, Tesla) have company-prefixed constants too, so every tagged company counts.
+    // Constant names drop the hyphens of a slug: BOOKINGCOM_ belongs to booking-com.
+    const knownPrefix = companyPrefix && (AUTHORED_COMPANY_SET.has(companyPrefix) || scope.companyPrefixes?.has(companyPrefix));
+    if (knownPrefix && companyPrefix !== scope.company.replace(/-/g, '')) return null;
+    if (ts.isVariableDeclaration(node) && COMPANY_SCOPED_REGISTRIES.has(name) && ts.isObjectLiteralExpression(node.initializer)) {
       return [name, ...node.initializer.properties.filter((property) => propertyName(property.name) === scope.company).map((property) => projectNode(property, scope))];
     }
   }
@@ -392,7 +398,10 @@ export function buildSeoInventory(reader) {
     const parts = [descriptor.data];
     const sources = new Set([ROUTES]);
     const scope = { route };
-    if (route.startsWith('/companies/')) scope.company = route.split('/')[2];
+    if (route.startsWith('/companies/')) {
+      scope.company = route.split('/')[2];
+      scope.companyPrefixes = new Set([...companies].map((slug) => slug.replace(/-/g, '')));
+    }
     if (route.startsWith('/tracks/')) scope.slug = route.split('/')[2];
     if (/^(?:\/(?:javascript|react|angular|vue|html|css|html-css))?\/interview-questions$/.test(route)) scope.hub = route === '/interview-questions' ? 'master' : route.split('/')[1] === 'html-css' ? 'htmlCss' : route.split('/')[1];
     if (!tsContent(reader, descriptor.component, parts, sources, new Set(), null, scope)) return null;

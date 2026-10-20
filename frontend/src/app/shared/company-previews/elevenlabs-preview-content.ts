@@ -42,7 +42,7 @@ export const ELEVENLABS_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     title: 'Prepare for product judgment, not ElevenLabs trivia',
     paragraphs: [
       'The public accounts reward engineers who can make a media interface truthful under time: a highlight that follows playback without drifting, a review screen that keeps an editor and voice actors in sync, a fix that addresses the cause of a bug rather than its symptom. Each prompt below starts with the clarifying questions a strong candidate asks, then the behaviours a strong answer covers, then the miss that usually ends the round.',
-      'The senior account describes a timed assessment of four questions in about 90 minutes, mixing React tasks with medium algorithm problems, followed by a live session fixing a practical problem with the interviewer. Practice both shapes with a clock running, and narrate your decisions while you type.',
+      'The senior account describes a 90-minute technical assessment sent before the recruiter screen, followed by a live session fixing a practical problem with the interviewer; it does not list the assessment questions. Practice both shapes with a clock running, and narrate your decisions while you type.',
     ],
   },
   sourceBoundary: {
@@ -153,9 +153,9 @@ export const ELEVENLABS_COMPANY_PREVIEW: AuthoredCompanyPreview = {
       },
       {
         id: 'timed-assessment-react-and-algorithms',
-        title: 'Clear a timed assessment that mixes React tasks with medium algorithms',
+        title: 'Clear a 90-minute technical assessment before the first call',
         statement:
-          'Four questions in about ninety minutes: React tasks alongside medium algorithm problems such as reversing a linked list or finding the longest substring without repeating characters. Allocate time, ship working code and move on.',
+          'One account describes a 90-minute technical assessment that arrives before the recruiter screen, without listing its questions. Practise a timed mix of frontend tasks and medium algorithm problems: allocate time, ship working code and move on.',
         whatThisMeasures:
           'Time allocation under a clock, clean React fundamentals without a framework crutch, and the ability to produce correct, tested code for mid-level algorithm problems.',
         clarifyFirst: [
@@ -229,7 +229,7 @@ export const ELEVENLABS_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     title: 'Common ElevenLabs frontend interview preparation questions',
     items: [
       { question: 'Are these the real ElevenLabs questions?', answer: 'No. They are FrontendAtlas practice versions modelled on prompts listed in a candidate-sourced bank and on one senior interview account. The wording, the data and the test cases are ours.' },
-      { question: 'How long is the assessment?', answer: 'One public account describes about ninety minutes for four questions mixing React tasks with medium algorithm problems. One account cannot establish the current format; confirm it with the recruiter.' },
+      { question: 'How long is the assessment?', answer: 'One public account describes a 90-minute technical assessment that came before the recruiter screen; it does not say how many questions it had or what they covered. One account cannot establish the current format; confirm it with the recruiter.' },
       { question: 'Do I need audio engineering knowledge?', answer: 'The public prompts are about interface behaviour around audio: synchronising a highlight with playback and reviewing dubbing work. Comfort with media elements, timing and streaming matters more than signal processing.' },
       { question: 'Is the loop React-specific?', answer: 'The public account mentions React tasks and the senior role was titled full-stack, frontend-leaning. Prepare the same contracts in your own framework first, then once in React.' },
     ],
@@ -255,7 +255,7 @@ export const ELEVENLABS_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     intro: 'These links support the public context used by the guide. Their notes state what each source can and cannot establish about preparation.',
     items: [
       { label: ELEVENLABS_BANK_LABEL, url: ELEVENLABS_BANK_URL, note: 'A question bank marked as updated by ElevenLabs candidates. It establishes that the audio-transcript synchronisation exercise and the voice-dubbing review prompt were listed; it cannot establish wording, frequency or which role each belongs to.', kind: 'report' },
-      { label: ELEVENLABS_EXPERIENCE_LABEL, url: ELEVENLABS_EXPERIENCE_URL, note: 'One self-reported senior account: recruiter screen, a 90-minute four-question assessment mixing React tasks and medium algorithms, then a live practical fix. It cannot establish the current format or the loops of other teams.', kind: 'report' },
+      { label: ELEVENLABS_EXPERIENCE_LABEL, url: ELEVENLABS_EXPERIENCE_URL, note: 'One self-reported senior account: a 90-minute technical assessment, then a recruiter screen, then a live round fixing a practical problem with the interviewer. It cannot establish the current format or the loops of other teams.', kind: 'report' },
       { label: 'ElevenLabs careers', url: 'https://elevenlabs.io/careers', note: 'Official roles and teams for product context only, not evidence of interview content or format.', kind: 'official' },
     ],
   },

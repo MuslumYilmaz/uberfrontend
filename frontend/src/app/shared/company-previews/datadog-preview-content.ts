@@ -2,8 +2,7 @@ import type { AuthoredCompanyPreview } from '../../shared/company-previews/autho
 
 /**
  * Datadog frontend interview guide. Every prompt is a FrontendAtlas practice version modelled on public,
- * self-reported senior frontend accounts (three on Taro from 2024 and 2025, plus the public previews of
- * Glassdoor reports). Nothing here is a leaked, confirmed or official Datadog question, and a handful of
+ * self-reported frontend accounts (four on Taro from 2024 and 2025). Nothing here is a leaked, confirmed or official Datadog question, and a handful of
  * accounts cannot establish a fixed loop.
  */
 const DATADOG_VALBONNE_URL =
@@ -15,7 +14,9 @@ const DATADOG_PARIS_LABEL = 'Public report: Datadog senior frontend engineer loo
 const DATADOG_LISBON_URL =
   'https://www.jointaro.com/interviews/companies/datadog/experiences/senior-frontend-developer-lisbon-lisbon-district-november-23-2025-no-offer-positive-1a88bdda/';
 const DATADOG_LISBON_LABEL = 'Public report: Datadog senior frontend developer loop, Lisbon, November 2025';
-const DATADOG_GLASSDOOR_URL = 'https://www.glassdoor.com/Interview/Datadog-Interview-E762009-RVW98401006.htm';
+const DATADOG_LISBON_2024_URL =
+  'https://www.jointaro.com/interviews/companies/datadog/experiences/software-engineer-front-end-lisbon-lisbon-district-june-1-2024-no-offer-negative-945bab75/';
+const DATADOG_LISBON_2024_LABEL = 'Public report: Datadog software engineer (front end) interview, Lisbon, 2024';
 
 export const DATADOG_PREVIEW_TITLE = 'Datadog Frontend Interview Questions: 5 Prompts + Prep Guide';
 export const DATADOG_PREVIEW_H1 = 'Datadog Frontend Interview Questions';
@@ -53,7 +54,7 @@ export const DATADOG_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     kicker: 'Source boundary · checked October 2026',
     title: 'What the public accounts establish, and what you still need to confirm',
     paragraphs: [
-      'Three self-reported senior frontend loops on Taro inform this guide. Valbonne, October 2024: two algorithm exercises, a practical React session, a harder algorithm round, frontend architecture on a whiteboard tool, an experience and values interview, and team matching; its listed prompts include counting repeated words, matching a pattern without regular expressions, a sortable real-time table and a Live Tail log view. Paris, September 2025: a medium algorithm screen, incremental live coding on data and tables, frontend and API design, behavioural questions. Lisbon, November 2025: an ordering-and-filtering exercise and an onsite discussion of how to build a feature or fix a major bug. Public previews of Glassdoor reports from Paris and Lisbon add a recurring prompt to sketch the architecture of a realtime event viewer; their full text could not be read by our tools.',
+      'Three self-reported senior frontend loops on Taro inform this guide. Valbonne, October 2024: two algorithm exercises, a practical React session, a harder algorithm round, frontend architecture on a whiteboard tool, an experience and values interview, and team matching; its listed prompts include counting repeated words, matching a pattern without regular expressions, a sortable real-time table and a Live Tail log view. Paris, September 2025: a medium algorithm screen, incremental live coding on data and tables, frontend and API design, behavioural questions. Lisbon, November 2025: an ordering-and-filtering exercise and an onsite discussion of how to build a feature or fix a major bug. A shorter 2024 Lisbon account adds a prompt to sketch the architecture of a real-time event viewer.',
       'Together they establish that these round types occurred between 2021 and 2025; they do not establish exact wording, the current format, or how every office interviews. Confirm the exercise types, the allowed tools and the timing with the recruiter. Datadog publishes its roles on its careers site; use that for product context, not as evidence of interview content.',
     ],
   },
@@ -262,8 +263,8 @@ export const DATADOG_COMPANY_PREVIEW: AuthoredCompanyPreview = {
       { label: DATADOG_VALBONNE_LABEL, url: DATADOG_VALBONNE_URL, note: 'One self-reported senior loop with an offer. It lists the sortable real-time table, the Live Tail log view, two algorithm prompts and the behavioural themes; it cannot establish exact wording or the current format.', kind: 'report' },
       { label: DATADOG_PARIS_LABEL, url: DATADOG_PARIS_URL, note: 'One self-reported senior loop with an offer. It establishes the incremental live coding shape and the data-and-tables focus; it names no exact prompt.', kind: 'report' },
       { label: DATADOG_LISBON_LABEL, url: DATADOG_LISBON_URL, note: 'One self-reported senior loop without an offer. It establishes the ordering-and-filtering exercise and the feature-or-bug walkthrough; it names no exact prompt.', kind: 'report' },
-      { label: 'Glassdoor: Datadog frontend interview reports, Paris and Lisbon', url: DATADOG_GLASSDOOR_URL, note: 'Public previews list a recurring prompt to sketch the architecture of a realtime event viewer. The full reports could not be read by our tools, so nothing else from them is used.', kind: 'report' },
-      { label: 'Datadog careers', url: 'https://careers.datadoghq.com/', note: 'Official roles and offices for product context only, not evidence of interview content or format.', kind: 'official' },
+      { label: DATADOG_LISBON_2024_LABEL, url: DATADOG_LISBON_2024_URL, note: 'One self-reported account without an offer. It lists the prompt to sketch the architecture of a real-time event viewer; nothing else from it is used.', kind: 'report' },
+      { label: 'Datadog: Candidate experience', url: 'https://careers.datadoghq.com/candidate-experience/', note: 'Official description of the hiring steps: an initial screen, interviews in rounds or panels with one step expected in person, a take-home project and an executive interview for some roles. It does not describe frontend questions.', kind: 'official' },
     ],
   },
   cta: {
