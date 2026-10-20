@@ -206,6 +206,8 @@
       </p>
     </aside>
 
+    <app-company-interview-process *ngIf="interviewProcess as process" [slug]="slug" [companyLabel]="label" [process]="process"></app-company-interview-process>
+
     <section class="company-guide-section" aria-labelledby="google-practice-prompts">
       <div class="company-guide-section__head">
         <p class="preview-kicker">Representative practice prompts</p>

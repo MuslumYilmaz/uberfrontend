@@ -426,6 +426,9 @@ test('actual interview process edits re-date only the company whose stages or so
     // Source constants outside the literal: catalog companies (Walmart, Tesla) as well as authored ones.
     ["'https://www.teamblind.com/post/tesla-frontend-onsite-bvg7rws6', '2020-06'", "'https://www.teamblind.com/post/tesla-frontend-onsite-bvg7rws6', '2020-07'", '/companies/tesla/preview'],
     ["label: 'Amazon FEE prep page',", "label: 'Amazon Front End Engineer prep page',", '/companies/amazon/preview'],
+    // Hyphenated slugs: BOOKINGCOM_ constants belong to /companies/booking-com/preview.
+    ["'https://enginebogie.com/interview/experience/booking-com-frontend-engineer/84', '2023-05'", "'https://enginebogie.com/interview/experience/booking-com-frontend-engineer/84', '2023-06'", '/companies/booking-com/preview'],
+    ["const UBER_ROLE = 'Frontend engineers, L3 to L5A';", "const UBER_ROLE = 'Frontend engineers, L3 to L5B';", '/companies/uber/preview'],
   ];
   for (const [from, to, route] of edits) {
     const modified = original.replace(from, to);

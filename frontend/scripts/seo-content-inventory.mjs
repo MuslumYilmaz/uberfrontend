@@ -133,8 +133,9 @@ function projectNode(node, scope = {}) {
   if (scope.company) {
     const companyPrefix = name.match(/^([A-Z][A-Z0-9]*)_/)?.[1]?.toLowerCase();
     // Catalog companies (Walmart, Tesla) have company-prefixed constants too, so every tagged company counts.
+    // Constant names drop the hyphens of a slug: BOOKINGCOM_ belongs to booking-com.
     const knownPrefix = companyPrefix && (AUTHORED_COMPANY_SET.has(companyPrefix) || scope.companyPrefixes?.has(companyPrefix));
-    if (knownPrefix && companyPrefix !== scope.company) return null;
+    if (knownPrefix && companyPrefix !== scope.company.replace(/-/g, '')) return null;
     if (ts.isVariableDeclaration(node) && COMPANY_SCOPED_REGISTRIES.has(name) && ts.isObjectLiteralExpression(node.initializer)) {
       return [name, ...node.initializer.properties.filter((property) => propertyName(property.name) === scope.company).map((property) => projectNode(property, scope))];
     }
@@ -399,7 +400,7 @@ export function buildSeoInventory(reader) {
     const scope = { route };
     if (route.startsWith('/companies/')) {
       scope.company = route.split('/')[2];
-      scope.companyPrefixes = companies;
+      scope.companyPrefixes = new Set([...companies].map((slug) => slug.replace(/-/g, '')));
     }
     if (route.startsWith('/tracks/')) scope.slug = route.split('/')[2];
     if (/^(?:\/(?:javascript|react|angular|vue|html|css|html-css))?\/interview-questions$/.test(route)) scope.hub = route === '/interview-questions' ? 'master' : route.split('/')[1] === 'html-css' ? 'htmlCss' : route.split('/')[1];

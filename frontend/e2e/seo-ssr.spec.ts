@@ -3602,7 +3602,62 @@ test.describe('seo-ssr', () => {
       reportUrl: 'https://www.teamblind.com/post/onsite-experience-8-companies-in-the-past-6-months-0-offers-1niasf5x',
       practicePath: '/javascript/coding/js-color-contrast-ratio',
     },
+    {
+      // Google keeps its own template branch: the table follows the time-sensitive process note.
+      path: '/companies/google/preview',
+      heading: 'Google frontend interview process',
+      tables: 1,
+      after: 'id="google-process-note"',
+      before: 'id="google-practice-prompts"',
+      officialUrl: 'https://www.google.com/about/careers/applications/how-we-hire/',
+      reportUrl: 'https://www.teamblind.com/post/Google-L5-interview-experience-uyV7evLt',
+      practicePath: '/javascript/coding/js-debounce',
+    },
+    {
+      path: '/companies/meta/preview',
+      heading: 'Meta Front End Engineer interview process',
+      tables: 2,
+      after: 'id="meta-published-context"',
+      before: 'id="meta-practice-prompts"',
+      officialUrl: 'https://www.metacareers.com/FEE-prep-onsite/',
+      reportUrl: 'https://www.teamblind.com/post/meta-frontend-system-design-yexyrusi',
+      practicePath: '/javascript/coding/js-flatten-once',
+    },
+    {
+      path: '/companies/microsoft/preview',
+      heading: 'Microsoft frontend interview process',
+      tables: 2,
+      after: '<h1',
+      before: '>What you can do now for free</h2>',
+      officialUrl: 'https://careers.microsoft.com/v2/global/en/hiring-tips',
+      reportUrl: 'https://leetcode.com/discuss/interview-experience/5456468/',
+      practicePath: '/javascript/trivia/js-event-loop',
+    },
   ];
+
+  // Every company with a sourced table; Airbnb, Netflix, OpenAI, ElevenLabs and Waymo wait for more accounts.
+  const COMPANIES_WITH_PROCESS_TABLES = [
+    'amazon', 'apple', 'booking-com', 'bytedance', 'datadog', 'google', 'intuit', 'meta', 'microsoft',
+    'revolut', 'servicenow', 'spotify', 'stripe', 'tesla', 'uber', 'walmart', 'zalando',
+  ];
+
+  test('raw company previews render a sourced process table only where research supports one', async ({ request }) => {
+    test.setTimeout(180_000);
+    for (const slug of COMPANIES_WITH_PROCESS_TABLES) {
+      const html = await readRawHtml(request, `/companies/${slug}/preview`);
+      const sectionAt = html.indexOf('data-testid="company-interview-process"');
+      expect(sectionAt, `${slug} interview process section`).toBeGreaterThan(-1);
+      const section = html.slice(sectionAt, html.indexOf('</section>', sectionAt));
+      expect(section.match(/<table\b/g)?.length ?? 0, `${slug} tables`).toBeGreaterThan(0);
+      const reportAnchors = section.match(/<a[^>]*rel="noopener noreferrer nofollow"[^>]*>/g) ?? [];
+      expect(reportAnchors.length, `${slug} nofollow report links`).toBeGreaterThan(0);
+      expect(section, `${slug} banned sources`).not.toMatch(/glassdoor|1point3acres|github\.com|prepfully|dataford/i);
+    }
+    for (const slug of ['airbnb', 'netflix', 'openai', 'elevenlabs', 'waymo']) {
+      const html = await readRawHtml(request, `/companies/${slug}/preview`);
+      expect(html, `${slug} has no process table yet`).not.toContain('data-testid="company-interview-process"');
+    }
+  });
 
   test('raw Amazon, Walmart and Tesla previews render the sourced interview process tables', async ({ request }) => {
     test.setTimeout(120_000);
@@ -3631,8 +3686,8 @@ test.describe('seo-ssr', () => {
       expect(section).not.toMatch(/glassdoor|1point3acres|github\.com/i);
     }
 
-    const microsoft = await readRawHtml(request, '/companies/microsoft/preview');
-    expect(microsoft).not.toContain('data-testid="company-interview-process"');
+    const airbnb = await readRawHtml(request, '/companies/airbnb/preview');
+    expect(airbnb).not.toContain('data-testid="company-interview-process"');
   });
 
   test('interview process tables switch to cards in narrow containers and keep readable cells', async ({ page }) => {

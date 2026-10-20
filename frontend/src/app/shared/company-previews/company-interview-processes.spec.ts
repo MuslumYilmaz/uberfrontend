@@ -8,8 +8,11 @@ const ABSOLUTE_WORDS = /\b(always|never|guaranteed|every candidate)\b/i;
 describe('company interview processes', () => {
   const entries = Object.entries(COMPANY_INTERVIEW_PROCESSES);
 
-  it('covers the pilot companies with known company slugs', () => {
-    expect(entries.map(([slug]) => slug).sort()).toEqual(['amazon', 'tesla', 'walmart']);
+  it('covers the companies with enough sourced evidence, using known company slugs', () => {
+    expect(entries.map(([slug]) => slug).sort()).toEqual([
+      'amazon', 'apple', 'booking-com', 'bytedance', 'datadog', 'google', 'intuit', 'meta', 'microsoft',
+      'revolut', 'servicenow', 'spotify', 'stripe', 'tesla', 'uber', 'walmart', 'zalando',
+    ]);
     for (const [slug] of entries) {
       expect(COMPANY_BRANDS[slug]).withContext(slug).toBeDefined();
     }
