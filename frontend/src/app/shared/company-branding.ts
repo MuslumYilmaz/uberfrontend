@@ -20,6 +20,7 @@ export const COMPANY_BRANDS: Record<string, CompanyBrand> = {
     logoUrl: `${COMPANY_LOGO_BASE}/google.svg`,
     monogram: 'G',
   },
+  // No openly licensed Waymo mark exists, so Waymo keeps its monogram.
   waymo: {
     slug: 'waymo',
     label: 'Waymo',
@@ -43,6 +44,7 @@ export const COMPANY_BRANDS: Record<string, CompanyBrand> = {
     logoUrl: `${COMPANY_LOGO_BASE}/intuit.svg`,
     monogram: 'I',
   },
+  // Simple Icons lists ServiceNow as permission required, so it keeps its monogram.
   servicenow: {
     slug: 'servicenow',
     label: 'ServiceNow',
@@ -132,7 +134,8 @@ export const COMPANY_BRANDS: Record<string, CompanyBrand> = {
     logoUrl: `${COMPANY_LOGO_BASE}/zalando.svg`,
     monogram: 'Z',
   },
-  // Tagged on 2026-10-19 from public interview reports; monograms until logos are added.
+  // Walmart's brand center forbids using its logos without written consent, and
+  // Simple Icons dropped the mark, so Walmart keeps its monogram.
   walmart: {
     slug: 'walmart',
     label: 'Walmart',
@@ -141,6 +144,7 @@ export const COMPANY_BRANDS: Record<string, CompanyBrand> = {
   tesla: {
     slug: 'tesla',
     label: 'Tesla',
+    logoUrl: `${COMPANY_LOGO_BASE}/tesla.svg`,
     monogram: 'T',
   },
 };
