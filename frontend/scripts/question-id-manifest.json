@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-19T11:22:58.285Z",
+  "generatedAt": "2026-10-19T17:35:07.016Z",
   "entries": [
     {
       "tech": "angular",
@@ -1115,6 +1115,12 @@
     {
       "tech": "javascript",
       "kind": "coding",
+      "id": "js-json-stringify",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
       "id": "js-lodash-get",
       "file": "javascript/coding.json"
     },
@@ -1907,6 +1913,12 @@
     {
       "tech": "react",
       "kind": "coding",
+      "id": "react-battery-site-layout",
+      "file": "react/coding.json"
+    },
+    {
+      "tech": "react",
+      "kind": "coding",
       "id": "react-chat-streaming-ui",
       "file": "react/coding.json"
     },
@@ -1974,6 +1986,12 @@
       "tech": "react",
       "kind": "coding",
       "id": "react-fetch-list-states",
+      "file": "react/coding.json"
+    },
+    {
+      "tech": "react",
+      "kind": "coding",
+      "id": "react-file-explorer",
       "file": "react/coding.json"
     },
     {
@@ -2094,6 +2112,12 @@
       "tech": "react",
       "kind": "trivia",
       "id": "react-18-whats-new",
+      "file": "react/trivia.json"
+    },
+    {
+      "tech": "react",
+      "kind": "trivia",
+      "id": "react-code-splitting-module-federation",
       "file": "react/trivia.json"
     },
     {
@@ -2243,7 +2267,19 @@
     {
       "tech": "react",
       "kind": "trivia",
+      "id": "react-ssr-hydration",
+      "file": "react/trivia.json"
+    },
+    {
+      "tech": "react",
+      "kind": "trivia",
       "id": "react-stale-state-closures",
+      "file": "react/trivia.json"
+    },
+    {
+      "tech": "react",
+      "kind": "trivia",
+      "id": "react-state-management-redux",
       "file": "react/trivia.json"
     },
     {

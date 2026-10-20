@@ -786,7 +786,14 @@ Totals:
    - #7 `useMemo` and Context from scratch: done as 91f24493, premium, tagged `walmart`.
      - Five DOM tests. The starter fails 5 of 5 and the solution passes 5 of 5. Removing the catch fails only the error test; fetching in every consumer fails the three context tests.
    - **Wave 2 is complete.**
-   - Next is Wave 3 (#2), which first needs the format decision: a large React coding item, or a new take-home format.
+   - The user chose a large React coding item for #2 and asked for a push. Pushed to `origin/dev` as `65168db8..c4ed6d87`; the pre-push critical E2E run passed 95 of 95.
+
+   **Wave 3 status (2026-10-19).**
+   - #2 Battery site layout planner: done as fa606ab4, premium, tagged `tesla`, built as a large React coding item.
+     - Our own catalog, names, numbers and wording; no Tesla brief text and no Tesla product names.
+     - Seven DOM tests with expected values from an independent re-implementation. The catalog is listed smallest first, so the largest-first rule is observable: removing the sort fails only that test.
+   - `/coding` is now 633,423 bytes.
+   - Next is Wave 4, the trivia pair #4 and #5.
 
 4. **Wave 3, flagship (XL).** #2 battery site-layout take-home, tagged `tesla`.
    - First decide whether it is a large React coding item or a new take-home format: a longer brief, several test groups for totals, the 100 ft layout rule and persistence, plus a README-style deliverable.
@@ -796,16 +803,164 @@ Totals:
    - Then #12 code splitting and module federation.
 
    These can move earlier if a wave stalls, because they are independent.
+
+   **Wave 4 status (2026-10-19).**
+   - #4 and #5: done as fbb038f6, one free trivia pair tagged `walmart`.
+     - `react-state-management-redux`: where each kind of state belongs, Context versus an external store, the `useSelector` reference-equality trap with a `createSelector` fix, server data in a query cache, and Redux Toolkit as the current default.
+     - `react-ssr-hydration`: the W10 scenario in our own words: a server-rendered top of the page and a client-only section below the fold. Covers parse and hydration order, two client-only patterns, mismatch causes, streaming and selective hydration, metrics, and SSR versus Server Components.
+   - Facts were checked against:
+     - the Redux FAQ and style guide;
+     - the React-Redux hooks page and the v8 release notes;
+     - the RTK overview;
+     - react.dev (`hydrateRoot`, `Suspense`, `renderToPipeableStream`);
+     - the React 19 release post;
+     - the React 18 SSR architecture discussion.
+   - Two claims were left out on purpose: React no longer replays most early events, and `use(browser())` is still canary-only.
+   - Each item has a competitor review in `content-reviews/trivia/react/`: GreatFrontEnd, a canonical page and a tutorial.
+     - Verdicts start from a tie: 4 wins and 5 ties per item, no losses.
+     - Two of the three competitors stay below the 2/3 threshold, so `nextActions` lists the improvements.
+   - Verified:
+     - editorial quality and indexability lints at 0 warnings;
+     - no new competitive-readiness errors (68 on the dev baseline);
+     - incident balance 12/13/13;
+     - lint:questions:check, lint:tags, lint:topics and lint:tracks;
+     - test:content-regressions;
+     - 253 Karma specs and 318 backend Jest tests;
+     - the incident route serves and grades both new cards;
+     - a clean `verify:seo-prerender-guard` run: 431 sitemap pages, 0 orphans, 0 hard 404s.
+   - Both pages prerender as `index,follow` canonical pages with Article JSON-LD and 39 inbound internal links each.
+     - The Walmart preview links only coding prompts, so trivia tags appear only in its counts (30 trivia).
+   - `/coding` is unchanged at 633,373 bytes. `totalHtmlBytes` is 106,489,053 of 109,000,000.
+   - PR #237 merged `dev` up to c4ed6d87 into `main` on 2026-10-19, so the Walmart and Tesla previews go live with that deploy. fa606ab4 and later are still local.
+     - The production deploy finished at 15:28. Both previews return 200 to Googlebot, are `index,follow` and appear in the live sitemap.
+     - The IndexNow run after the deploy sent 118 changed URLs to Bing and Yandex.
+     - The Google "Request indexing" step for the two previews is left to the user, because Claude in Chrome was not connected in this session.
+   - #12: done as 91efc1bb, free, tagged `walmart`.
+     - `react-code-splitting-module-federation`, from W12 (memoization, code splitting and lazy loading in an optimisation round) and W10 (module federation), both re-read on 2026-10-19.
+     - It separates splitting one build from composing separately deployed builds. Topics:
+       - `React.lazy` rules: declare at the top level, map named exports to a default export;
+       - preloading on intent, and transitions against fallback flashes;
+       - stale chunks after a deploy, with an error boundary;
+       - remotes and shared singletons, and the bootstrap boundary behind the eager consumption error;
+       - the runtime coupling trade-off.
+     - Facts were checked against react.dev (`lazy`, `Suspense`, the invalid hook call page), the webpack Module Federation concept and plugin pages, the webpack code splitting guide, the Vite build guide and module-federation.io.
+     - The competitor review uses GreatFrontEnd, react.dev and webpack: 4 wins and 5 ties, no losses.
+     - Checks and results:
+       - React answer positions are now 13/13/13;
+       - clean guard: 432 sitemap pages, 616 routes, 0 orphans, 0 hard 404s;
+       - `totalHtmlBytes` is 106,788,088 of 109,000,000;
+       - the page has 40 inbound internal links.
+   - **Wave 4 is complete.** Next is Wave 5: #10 car rental (Tesla) and #11 messaging (Walmart) system designs.
 6. **Wave 5, system design (L, L).**
    - #10 car rental, tagged `tesla`.
    - #11 messaging, tagged `walmart`.
 
    Each must pass the system design editorial lint (`editorial.companyEvidence` mirrors `companies`).
+
+   **Wave 5 status (2026-10-19).**
+   - Fix first: 8facb413 changes "websocket" to "WebSocket" in `react-state-management-redux`.
+     - The lowercase spelling came in with fbb038f6. `lint:text` is part of the pre-push content chain and fails on it.
+   - #10 car rental: done as 5cdbca59, premium, tagged `tesla`, as a V2 system design (`car-rental-booking-frontend`).
+     - T4 was re-read on 2026-10-19. It says only that the third round was "the design of a car rental company", so the item is a practice version, and its source note says it is not the reported prompt.
+     - Scope:
+       - the server owns price lines, rental days and fees;
+       - times stay in the branch time zone from URL to request;
+       - holds are idempotent commands with a server-timed countdown that warns and extends where policy allows (WCAG 2.2.1 Timing Adjustable);
+       - price-changed and sold-out conflicts keep the entered details;
+       - the receipt renders only from the confirmed reservation.
+     - Ships:
+       - the five RADIO sections, 2,026 visible words;
+       - two local SVG diagrams;
+       - a typechecked contract group across Data and Interfaces, and an HTTP conflict example;
+       - the converted draft, the semantic contract, and a pilot expectation plus item invariants in the regression test.
+     - `guidedMock` is false. The item is not added to the backend mock interview registry, which holds 8 of the 23 designs.
+     - Verified:
+       - system design quality and spelling;
+       - `lint:text`, content drafts and shipped-draft parity;
+       - `lint:questions:check`;
+       - `test:content-regressions`, where the premium preview corpus now has 17 system designs;
+       - 217 Karma specs and 382 backend Jest tests;
+       - a clean guard run: 432 sitemap pages, 617 routes, 0 orphans, 0 hard 404s, `totalHtmlBytes` 106,923,760.
+     - The page prerenders `noindex,follow` with only the preview and the Taro source; the protected sections are absent from the HTML.
+     - The Tesla preview and `/system-design` link to it.
+   - #11 messaging: done as 78bdc105, premium, tagged `walmart`, as a V2 system design (`messaging-inbox-frontend`).
+     - The id is not the planned `messaging-chat-frontend`: the list page files any id or title containing "chat" under AI product workflows.
+     - W18 was re-read on 2026-10-19. The Walmart-badged reply names "design linkedin chat" and accessibility, so the item is a practice version of that shape with no product named, and its source note says it is not a reported prompt.
+     - Scope:
+       - server sequence numbers order threads, and device time only formats labels;
+       - one clientMessageId survives retries, reconnects and the socket echo;
+       - catch-up runs by inbox cursor, with a resync for expired cursors;
+       - read positions are server state shared across devices;
+       - the thread is a named ARIA log that summarizes bursts without moving focus.
+     - Senior level with a 20-minute timebox, the first senior V2 item. 1,968 visible words.
+     - GreatFrontEnd's premium Messenger question was checked. Its visible scope covers optimistic sending, offline queuing, delivery states and reconnect catch-up; group chat and multi-tab are only follow-ups, and no accessibility guidance is visible. The draft's competitor fields reflect this.
+     - Verified:
+       - the same lint, draft, regression, Karma (213) and backend (382) checks as #10;
+       - a clean guard run: 432 sitemap pages, 618 routes, 0 orphans, 0 hard 404s, `totalHtmlBytes` 107,061,003.
+     - The page prerenders `noindex,follow` without the protected sections. The Walmart preview and `/system-design` link to it.
+   - **Wave 5 is complete.**
+     - Next is step 7, on demand: #13 `JSON.stringify` and #8 file explorer, both premium coding items.
+     - Then step 8, the budget review: `/coding` is 633,373 of 640,000 bytes and `totalHtmlBytes` is 107,061,003 of 109,000,000.
 7. **On demand:** #13 `JSON.stringify`, #8 file explorer, and the low-priority list.
+
+   **Step 7 status (2026-10-19).**
+   - Pushed `origin/dev` `c4ed6d87..f61dd50e` (waves 3-5, 11 commits). The pre-push critical E2E passed 95 of 95, Chromium only; local WebKit is missing and the override is on.
+   - #13: done as fefc88cf, premium, tagged `tesla` without a source (`js-json-stringify`).
+     - A2 cannot be read in full, and a search found no readable Tesla report.
+     - The Tesla preview lists only sourced items from `company-reports.json`, so this tag shows only in counts and filters, as with `react-autocomplete-search-starter`.
+     - Scope: `jsonStringify(value)` matches the built-in for primitives, non-finite numbers, string escapes including lone surrogates, arrays and objects, `toJSON` with the key, boxed primitives, a top-level `undefined`, and TypeErrors for BigInt and cycles. Shared references stay valid.
+     - Thirteen tests. The starter fails all 13, and both approaches pass in JS and TS with a strict type-check. Ten single-rule mutations each fail only their own test.
+     - Verified:
+       - the catalog solution execution, now 94 JS solutions and 502 checks;
+       - the premium preview corpus, now 50 JS pages;
+       - 371 Karma specs, 101 backend Jest tests, and assist-sync at commit time;
+       - a clean guard run: `/coding` 636,442 of 640,000 bytes and `totalHtmlBytes` 107,172,097. The page is `noindex` without solution code.
+   - #8: done as e7246ce6, premium, tagged `walmart` without a source (`react-file-explorer`).
+     - Both reports are Glassdoor: W41 from 2017, and a 2021 Bengaluru review asking for an expandable folder tree in React. Glassdoor is never cited, so the Walmart preview does not list the item.
+     - Scope: an unsorted project tree rendered as an ARIA tree.
+       - Folders come first and names sort ignoring case; an empty folder stays a folder.
+       - One file can be selected, and its path is shown.
+       - A roving tab stop moves with ArrowUp, ArrowDown, Home and End. ArrowRight opens and then enters; ArrowLeft closes and then climbs; Enter toggles a folder or selects a file.
+       - Collapse all keeps the tab stop on a visible item.
+     - Eight DOM checks, including `expectFocused`. In React 18 and jsdom the starter fails 8 of 8, the solution passes 8 of 8, and eleven single-rule mutations are all caught. Strict TS reports 0 errors.
+     - Verified:
+       - framework regressions, with the corpus pin at 210 assets and 275 CSS sources;
+       - the premium preview corpus, now 31 React pages;
+       - 351 Karma specs, 101 backend Jest tests, and assist-sync at commit time;
+       - a clean guard run.
+   - **Step 7 is complete: all 13 planned items are in.** The low-priority list remains optional, about 15 candidates, almost none of them in the catalog.
+   - Budget after #8:
+     - `/coding` is 639,517 of 640,000 bytes, 483 bytes of headroom. It compresses to 49,245 bytes with gzip and 36,586 with brotli.
+     - `totalHtmlBytes` is 107,282,132 of 109,000,000.
+     - Breakdown of the 152 `/coding` rows (`fa-question-row`, average 3,145 bytes, 74.8% of the page):
+       - the chevron glyph, 597 bytes per row (90,744 in total);
+       - `_ngcontent` attributes, 92,410 bytes;
+       - empty Angular comment nodes, 53,368 bytes;
+       - meta chips, 185,498 bytes.
+     - The row component is shared by `/coding`, company previews, track detail and the essential questions page.
 8. **Last step: budget review.** The user asked on 2026-10-19 to leave the budget until the end.
    - Re-measure `codingHtmlBytes` and `totalHtmlBytes` on a clean build. After #3 they were 627,204 of 640,000 and 105,674,047 of 109,000,000.
    - If the numbers are over, choose between a dated threshold change in `perf-contract.mjs` and trimming the `/coding` row markup.
    - Locally, `perf:contract` only warns when a threshold is crossed. The CI Playwright Critical job runs `--strict`, so once any threshold is crossed, this step has to come before the next push.
+
+   **Step 8 status (2026-10-19): done as 78e0f8d3.** The user chose "fix the icon, then a small threshold raise".
+   - First attempt: migrating `app-fa-glyph` to `@switch` kept the per-case anchors. The new component spec caught it with 27 comments.
+   - Change: the icons now come from one data table rendered by three `@for` loops (paths, circles, rects).
+   - Visual check, done in a canvas at 16, 24, 64 and 128 px:
+     - converting circles and rects to path data changed anti-aliasing visibly, so that was rejected;
+     - grouping native shapes by element type matched 98 of 108 renders exactly, and the other 10 differ by at most 3 of 255 on a few pixels.
+   - Clean build results:
+     - `/coding` dropped from 639,517 to 610,119 bytes;
+     - the prerender total dropped from 107,282,132 to 103,873,950, about 3.4 MB;
+     - eager JS dropped slightly, from 1,218,263 to 1,215,349.
+   - The `/coding` threshold moved from 640,000 to 660,000 with a dated note, leaving room for about 15 rows. The total stays at 109,000,000.
+   - Verified:
+     - the full Karma suite, 1,745 of 1,745;
+     - `perf:contract:strict`;
+     - a clean guard run: 432 sitemap pages, 0 orphans, 0 hard 404s.
+   - Local `ui-visual` run: 14 of 94 darwin checks fail on baseline drift, not on the icons.
+     - The diff images mark text only: the header Pricing link missing from older references, and counts, new system design cards and dates from today's items.
+     - The UI Regression workflow runs only on pull requests and manual dispatch, so the next dev-to-main PR needs a Linux reference refresh through `update_baselines`. The darwin set should be refreshed then too.
 
 **Measurement checkpoints**
 - After Wave 2:

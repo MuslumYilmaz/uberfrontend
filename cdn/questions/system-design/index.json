@@ -1,5 +1,142 @@
 [
   {
+    "id": "messaging-inbox-frontend",
+    "title": "Design a Real-Time Messaging Inbox",
+    "description": "Design a person-to-person messaging inbox with server-ordered threads, optimistic sends that never duplicate, reconnect catch-up, cross-device read state, and an accessible message log.",
+    "discovery": {
+      "teaser": "A reply sent during a dropped connection must appear exactly once, in server order, on every device, while screen readers hear new messages without losing focus.",
+      "guideLabel": "Trace message order and catch-up"
+    },
+    "tags": [
+      "real-time",
+      "state-management",
+      "concurrency",
+      "pagination",
+      "virtualization",
+      "api-calls",
+      "error-handling",
+      "accessibility",
+      "aria",
+      "frontend-architecture"
+    ],
+    "companies": [
+      "walmart"
+    ],
+    "type": "system-design",
+    "access": "premium",
+    "publishedAt": "2026-10-19",
+    "updatedAt": "2026-10-19",
+    "difficulty": "hard",
+    "contentSchemaVersion": 2,
+    "practice": {
+      "targetLevel": "senior",
+      "timeboxMinutes": 20,
+      "candidatePrompt": "Design the messaging inbox for a professional network. Members see conversations with unread counts and open threads that update in real time. Messages sent during a dropped connection must not duplicate or reorder, read state must sync across devices, and old history loads on demand. Assign authority among the composer, local thread, realtime channel and server log. Explain ordering, optimistic sends, reconnect catch-up and an accessible message log.",
+      "constraints": [
+        "The server assigns message order.",
+        "Retries reuse one client id.",
+        "Read state belongs to the member, not the tab."
+      ],
+      "expectedDecisions": [
+        "Separate the server message log, the optimistic outbox, thread view state and ephemeral typing signals.",
+        "Reconcile sends and reconnects through clientMessageId, per-conversation sequence and an inbox cursor.",
+        "Announce and navigate messages accessibly without flooding screen readers or stealing focus."
+      ],
+      "prerequisites": [
+        "WebSocket basics",
+        "Cursor pagination",
+        "ARIA live regions"
+      ],
+      "coreSkills": [
+        "Ordering and deduplication",
+        "Reconnect recovery",
+        "Cross-device read state",
+        "Accessible live content"
+      ],
+      "guidedMock": false,
+      "evaluationSpine": {
+        "mustCover": [
+          "Server sequence numbers order threads; device clocks never do.",
+          "One clientMessageId survives every retry and reconnect."
+        ],
+        "strongSignals": [
+          "Reconnect replays events after the last cursor or resyncs.",
+          "The thread is a polite log that summarizes bursts."
+        ],
+        "expertStretch": "Sharing one connection across tabs with edits and deletes.",
+        "redFlag": "Device time orders messages or retries mint new ids."
+      }
+    }
+  },
+  {
+    "id": "car-rental-booking-frontend",
+    "title": "Design a Car Rental Booking Frontend",
+    "description": "Design a car rental booking flow with shareable searches, server-priced offers, branch-local pickup times, expiring vehicle holds, sold-out recovery, and accessible countdowns.",
+    "discovery": {
+      "teaser": "Pickup times live in the branch time zone, holds expire on the server clock, and a sold-out class must never erase what the customer already entered.",
+      "guideLabel": "Trace a vehicle hold"
+    },
+    "tags": [
+      "search",
+      "state-management",
+      "date-time",
+      "time-zones",
+      "timers",
+      "concurrency",
+      "api-calls",
+      "error-handling",
+      "accessibility",
+      "frontend-architecture"
+    ],
+    "companies": [
+      "tesla"
+    ],
+    "type": "system-design",
+    "access": "premium",
+    "publishedAt": "2026-10-19",
+    "updatedAt": "2026-10-19",
+    "difficulty": "intermediate",
+    "contentSchemaVersion": 2,
+    "practice": {
+      "targetLevel": "mid",
+      "timeboxMinutes": 15,
+      "candidatePrompt": "Design the booking frontend for a car rental company. Customers search by pickup and return branch, local times and driver age, compare vehicle classes, add extras and confirm. Prices change, classes sell out and holds expire while they decide. Assign authority among URL state, the booking draft, server offers and holds. Explain how branch-local time, hold expiry, conflicts and accessible timers keep bookings honest.",
+      "constraints": [
+        "Server offers set every price and fee.",
+        "Times stay branch-local.",
+        "Holds expire on the server clock."
+      ],
+      "expectedDecisions": [
+        "Separate URL search criteria, cached offers, the booking draft, holds and the reservation.",
+        "Make hold creation and confirmation idempotent commands with server-issued expiry.",
+        "Recover from expiry, price changes and sold-out results without losing customer input."
+      ],
+      "prerequisites": [
+        "URL and form state",
+        "Intl time zones"
+      ],
+      "coreSkills": [
+        "Authority boundaries",
+        "Time-zone correctness",
+        "Hold lifecycle design",
+        "Accessible timers"
+      ],
+      "guidedMock": false,
+      "evaluationSpine": {
+        "mustCover": [
+          "Server offers own price lines, rental days and fees.",
+          "The pickup branch time zone travels from URL to request."
+        ],
+        "strongSignals": [
+          "Countdowns follow serverNow, warn early and extend when allowed.",
+          "Conflicts keep extras and driver details for the next offer."
+        ],
+        "expertStretch": "Modifying a reservation across a daylight-saving change.",
+        "redFlag": "Device time zone or browser rate math decides the price."
+      }
+    }
+  },
+  {
     "id": "resilient-checkout-payment-flow",
     "title": "Design a Resilient Checkout and Payment Flow",
     "description": "Design a browser checkout that preserves quote authority, retries one payment intent safely, recovers status, protects card data, and handles multiple tabs.",

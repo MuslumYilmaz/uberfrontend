@@ -5691,5 +5691,519 @@
       "correctOptionId": "transition-non-urgent-results",
       "rereadPrompt": "Almost there. In React 18, transitions are for non-urgent work so urgent input can stay fast."
     }
+  },
+  {
+    "id": "react-state-management-redux",
+    "title": "When does a React app need Redux? Local state vs Context vs external stores",
+    "technology": "react",
+    "companies": [
+      "walmart"
+    ],
+    "difficulty": "intermediate",
+    "importance": 4,
+    "description": "Redux is an external store with one-way data flow: components dispatch actions that describe what happened, pure reducers compute the next state, and each component re-renders only when the slice it selects changes. Most React state does not need it. Keep UI state local, lift it when siblings share it, use Context for values that rarely change, and give server data to a query cache. Reach for Redux Toolkit when many distant components share frequently changing client state with complex update rules, or when the team needs to trace every change.",
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>The decision to explain</strong><br><br>A dashboard keeps the signed-in user, the cart, the search box text and the fetched product list in one Context. The provider builds a new value object on every keystroke, so every consumer re-renders, including the header and the cart badge that never read the query. Someone proposes moving everything to Redux. A strong answer does not start with a library. It sorts the state by kind: the query is local UI state, the products are server data, the cart is shared client state, and the user is an app-wide value that rarely changes. Each kind has a cheaper home than a global store, and only what is left justifies Redux."
+        },
+        {
+          "type": "text",
+          "text": "<strong>How Redux works</strong><br><br>Redux keeps client state in one store outside the component tree. Components never change it directly. They dispatch an action, a plain object that describes what happened, such as <code>{ type: 'cart/itemAdded', payload: 'sku-42' }</code>, and a pure reducer computes the next state from the current state and that action. After every dispatch, React-Redux re-runs each subscribed component's selector and re-renders only the components whose selected value changed by reference. Side effects such as requests live in middleware (thunks or listeners), never in reducers. The payoff is predictability: every change has a named cause that you can log, replay and inspect in Redux DevTools."
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "import { configureStore, createSlice } from '@reduxjs/toolkit';\nimport { Provider, useDispatch, useSelector } from 'react-redux';\n\nconst cartSlice = createSlice({\n  name: 'cart',\n  initialState: { quantities: {} },\n  reducers: {\n    itemAdded(state, action) {\n      const id = action.payload;\n      // Immer turns this mutable-looking code into an immutable update\n      state.quantities[id] = (state.quantities[id] ?? 0) + 1;\n    },\n  },\n});\n\nconst { itemAdded } = cartSlice.actions;\nconst store = configureStore({ reducer: { cart: cartSlice.reducer } });\n\nfunction CartBadge() {\n  // Selects a number, so it re-renders only when the count changes\n  const count = useSelector((state) =>\n    Object.values(state.cart.quantities).reduce((sum, n) => sum + n, 0)\n  );\n  return <span aria-label={`${count} items in cart`}>{count}</span>;\n}\n\nfunction AddToCart({ id }) {\n  const dispatch = useDispatch();\n  return <button onClick={() => dispatch(itemAdded(id))}>Add to cart</button>;\n}\n\nexport function App() {\n  return (\n    <Provider store={store}>\n      <CartBadge />\n      <AddToCart id=\"sku-42\" />\n    </Provider>\n  );\n}"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Kind of state",
+            "Example",
+            "Cheapest correct home"
+          ],
+          "rows": [
+            [
+              "Local UI state",
+              "Input text, open or closed, active tab",
+              "`useState` or `useReducer` in the component that owns it"
+            ],
+            [
+              "Shared by nearby components",
+              "A filter used by a list and its toolbar",
+              "Lift it to the closest common parent and pass props"
+            ],
+            [
+              "App-wide, rarely changing",
+              "Theme, locale, signed-in user, feature flags",
+              "Context with a memoized value"
+            ],
+            [
+              "Server data",
+              "Products, profile, search results",
+              "A query cache: TanStack Query, SWR or RTK Query"
+            ],
+            [
+              "URL state",
+              "Page number, sort order, selected filters",
+              "Router search params, so links, reloads and the back button keep it"
+            ],
+            [
+              "Form state",
+              "Field values, touched flags, errors",
+              "Local state or a form library; the Redux style guide advises keeping most form state out of Redux"
+            ],
+            [
+              "Shared client state that changes often and has complex rules",
+              "Cart, multi-step editor, undo history, collaborative document state",
+              "An external store: Redux Toolkit, or a lighter store such as Zustand"
+            ]
+          ],
+          "caption": "Sort state by kind before you pick a library",
+          "stackOnMobile": true
+        },
+        {
+          "type": "text",
+          "text": "<strong>Context is not a smaller Redux</strong><br><br>Context only transports a value down the tree. The state itself still lives in a <code>useState</code> or <code>useReducer</code> above the provider. Context has no selectors: when the provider value changes by reference, every component that reads that context re-renders, whatever field it uses. That is fine for a theme or a locale. It hurts for values that change on every keystroke or every WebSocket message. Redux, Zustand and similar stores let each component subscribe to a slice and skip the render when that slice did not change. So the real Context-versus-Redux question is about update frequency and the number of subscribers, not about app size."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Production pitfall: selectors that return new references</strong><br><br><code>useSelector</code> runs your selector after every dispatched action and compares the result with <code>===</code>. A selector that builds a new array or object therefore re-renders its component after every action anywhere in the app, even in unrelated slices. In development, React-Redux runs a selector twice on its first call and warns in the console when the two results differ, which is often the first hint of this bug."
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "import { createSelector } from '@reduxjs/toolkit';\nimport { useSelector } from 'react-redux';\n\n// ❌ filter() returns a new array on every call, so this grid\n// re-renders after every action dispatched anywhere in the app\nfunction InStockGridSlow() {\n  const items = useSelector((state) =>\n    state.products.items.filter((product) => product.inStock)\n  );\n  return <ProductGrid items={items} />;\n}\n\n// ✅ createSelector returns the same array until state.products.items changes\nconst selectInStock = createSelector(\n  [(state) => state.products.items],\n  (items) => items.filter((product) => product.inStock)\n);\n\nfunction InStockGrid() {\n  const items = useSelector(selectInStock);\n  return <ProductGrid items={items} />;\n}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Server data is not global client state</strong><br><br>Much of what teams used to put in Redux is a copy of server data plus hand-written loading, error and staleness flags. A query cache does that job better: it caches by key, deduplicates requests, refetches stale data and exposes loading and error states. Redux Toolkit includes RTK Query for this, and TanStack Query and SWR do the same without a store. Once server data moves out, the remaining global client state is often small enough for Context or a light store."
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "import { useQuery } from '@tanstack/react-query';\n\n// The query cache owns fetching, caching, deduplication and refetching,\n// so no products slice, status flag or error field is needed\nfunction ProductList() {\n  const { data, isPending, isError } = useQuery({\n    queryKey: ['products'],\n    queryFn: async () => {\n      const response = await fetch('/api/products');\n      if (!response.ok) throw new Error(`HTTP ${response.status}`);\n      return response.json();\n    },\n  });\n\n  if (isPending) return <p>Loading products…</p>;\n  if (isError) return <p role=\"alert\">Products could not load.</p>;\n  return <ProductGrid items={data} />;\n}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>When Redux Toolkit is the right call</strong><br><br>• Many components far apart in the tree read and update the same client state.<br>• That state changes often, and the update rules are complex enough to want pure, testable reducers.<br>• Several people work on the codebase and need one predictable pattern for changes.<br>• You need to see when and why state changed: action logs, time-travel debugging in Redux DevTools, or replaying the actions behind a bug report.<br><br>If none of these apply, Redux adds indirection (actions, reducers, selectors, a provider) without paying for it. The Redux FAQ itself says that not every app needs Redux."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Modern Redux means Redux Toolkit</strong><br><br>Redux Toolkit is the officially recommended way to write Redux. <code>configureStore</code> adds the thunk middleware, connects Redux DevTools and, in development, checks for accidental mutations and non-serializable values. <code>createSlice</code> generates the action creators and lets reducers use Immer's mutable-looking syntax while still producing immutable updates. Hand-written switch reducers, action type constants and the legacy <code>createStore</code> setup are the old style. They were replaced because they needed a lot of boilerplate and made accidental mutations easy to ship."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Common mistakes</strong><br><br>• Putting everything in the store, including input text and open or closed flags, so every keystroke goes through global code.<br>• Selecting the whole state, or building new objects and arrays inside selectors.<br>• Storing derived values such as a filtered list or a cart total instead of deriving them in selectors.<br>• Keeping non-serializable values such as promises, class instances or DOM nodes in state; the Redux style guide lists this as an essential rule.<br>• Copying server responses into slices and maintaining cache flags by hand.<br>• Treating Context plus <code>useReducer</code> as a drop-in Redux replacement for high-frequency updates."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Follow-up questions</strong><br><br><em>Why must reducers be pure and updates immutable?</em> React-Redux detects changes by reference: a new reference means the value changed. Pure reducers are also easy to test, and they make replaying actions in DevTools possible.<br><br><em>Zustand or Redux Toolkit?</em> Both are external stores with selector-based subscriptions, and both can connect to Redux DevTools. Zustand has less ceremony. Redux Toolkit adds a fixed action-and-reducer structure, middleware and RTK Query. Choose by how much structure the team wants.<br><br><em>How does a store stay consistent during concurrent rendering?</em> React-Redux has subscribed through React's <code>useSyncExternalStore</code> hook since version 8. A hand-rolled store read from a ref during render can show different values to components rendered in the same pass."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Interview framing</strong><br><br>Say it like this:<br><em>\"Redux is an external store with one-way data flow: components dispatch actions, pure reducers compute the next state, and each component re-renders only when the slice it selects changes. I don't start with it. I keep UI state local, lift it when siblings share it, use Context for values that rarely change and put server data in a query cache. I add Redux Toolkit when many distant components share frequently changing client state with complex update rules, or when the team needs to trace every change.\"</em>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Summary</strong><br><br>Redux is a predictable external store, not a default. Decide where state lives by its kind: local, lifted, Context, query cache, URL or form state. Use Redux Toolkit for shared client state that changes often and has complex rules, and keep selectors returning stable values, or the store will cause the re-renders it was meant to prevent."
+        }
+      ]
+    },
+    "access": "free",
+    "type": "trivia",
+    "tags": [
+      "react",
+      "state-management",
+      "global-state",
+      "context",
+      "selectors",
+      "performance"
+    ],
+    "publishedAt": "2026-10-19",
+    "updatedAt": "2026-10-19",
+    "seo": {
+      "title": "Redux vs Context vs useState: React Interview Answer",
+      "description": "When a React app needs Redux: local state, Context, query caches and Redux Toolkit compared, plus the useSelector re-render trap interviewers probe."
+    },
+    "incidentCard": {
+      "title": "Redux Selector Re-render Root Cause Check",
+      "scenario": "After a move to Redux Toolkit, a product grid re-renders whenever anything in the app dispatches an action, including a clock tick in an unrelated slice. The grid reads its data with useSelector(state => state.products.items.filter(p => p.inStock)). What is the most likely root cause?",
+      "options": [
+        {
+          "id": "provider-rerenders-tree",
+          "label": "The Redux Provider re-renders the whole tree on every dispatch, so every connected component re-renders whatever it selects."
+        },
+        {
+          "id": "selector-returns-new-array",
+          "label": "The selector builds a new array on every call and useSelector compares results by reference, so every dispatch looks like a change; memoize it with createSelector."
+        },
+        {
+          "id": "immer-copies-whole-state",
+          "label": "Immer deep-copies the entire state on every action, so every slice gets a new reference."
+        }
+      ],
+      "correctOptionId": "selector-returns-new-array",
+      "rereadPrompt": "Close. Re-read how useSelector decides to re-render: it re-runs the selector after every action and compares with ===, so a fresh array always counts as a change."
+    }
+  },
+  {
+    "id": "react-ssr-hydration",
+    "title": "How do SSR and hydration work in React? Server-rendered above the fold, client-only below",
+    "technology": "react",
+    "companies": [
+      "walmart"
+    ],
+    "difficulty": "hard",
+    "importance": 4,
+    "description": "With SSR the server sends finished HTML, so the browser can paint the above-the-fold content before any JavaScript runs. Hydration comes later: when the bundle has downloaded and executed, hydrateRoot renders the same tree in the browser, adopts the existing DOM instead of recreating it and attaches event handlers. Until then the page is visible but not interactive. The client-only section below the fold must render the same placeholder on the server and in the first client render, then swap in the real component after hydration; any other difference is a hydration mismatch.",
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>The scenario to explain</strong><br><br>A product page renders its hero image, title, price and buy button on the server. The reviews carousel below the fold is a client-only React component. The interviewer asks what the browser does from the first byte to the first working click. Two timelines run in parallel and are easy to merge by mistake: HTML parsing and painting, which SSR speeds up, and JavaScript download, execution and hydration, which decide when the page responds to input."
+        },
+        {
+          "type": "text",
+          "text": "<strong>What happens, in order</strong><br><br>1) The server renders the React tree to HTML and streams it to the browser.<br>2) The browser parses the HTML as it arrives and builds the DOM. Stylesheets in the head block rendering until they load, and a classic script without <code>defer</code> or <code>async</code> blocks the parser.<br>3) First paint: the hero, title and price are visible, usually before any JavaScript has run. This is what SSR buys: earlier FCP and LCP, and content that crawlers can read.<br>4) The bundle downloads in parallel. Deferred and module scripts run after parsing finishes; async scripts run as soon as they arrive. React's streaming renderer emits its bootstrap scripts as async.<br>5) <code>hydrateRoot</code> renders the same component tree in the browser, matches it against the existing DOM, reuses those nodes and attaches event handlers. If the output matches, no DOM is recreated.<br>6) Effects run, and client-only content can mount.<br><br>Between steps 3 and 5 the buy button is on screen but has no React click handler yet. Only native behavior works in that window: links navigate and forms submit."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Step",
+            "Runs where",
+            "What the user gets",
+            "What it costs"
+          ],
+          "rows": [
+            [
+              "Server render",
+              "Server, per request (or at build time for static pages)",
+              "Complete HTML: early paint and crawlable content",
+              "Server work before the first byte"
+            ],
+            [
+              "Hydration",
+              "Browser, after the bundle executes",
+              "Event handlers and React state on the existing DOM",
+              "Downloading, parsing and running the same components again"
+            ],
+            [
+              "Client-only render",
+              "Browser only",
+              "Content that needs `window`, layout or the user's data",
+              "Nothing until JavaScript runs; a layout shift unless space is reserved"
+            ]
+          ],
+          "caption": "SSR makes content visible early; hydration makes it interactive"
+        },
+        {
+          "type": "text",
+          "text": "<strong>The rule behind the below-the-fold part</strong><br><br>The first client render must produce the same markup as the server. A component that checks <code>typeof window</code> during render and returns different output on each side breaks that rule, even though it looks like a clean way to say client-only. There are two correct patterns."
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "import { Suspense, useEffect, useState } from 'react';\n\n// Pattern 1: same placeholder on both sides, real component after hydration\nfunction ReviewsSection() {\n  const [hydrated, setHydrated] = useState(false);\n  useEffect(() => {\n    setHydrated(true); // effects never run on the server\n  }, []);\n\n  return hydrated\n    ? <ReviewsCarousel />\n    : <div className=\"reviews-placeholder\" style={{ minHeight: 480 }} />;\n}\n\n// Pattern 2: a Suspense boundary keeps it out of the server HTML\n// (needs a streaming API: renderToPipeableStream or renderToReadableStream)\nfunction ClientOnlyReviews() {\n  if (typeof window === 'undefined') {\n    throw new Error('ClientOnlyReviews renders only in the browser');\n  }\n  return <ReviewsCarousel />;\n}\n\nfunction ReviewsArea() {\n  return (\n    <Suspense fallback={<div className=\"reviews-placeholder\" style={{ minHeight: 480 }} />}>\n      <ClientOnlyReviews />\n    </Suspense>\n  );\n}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Trade-offs between the two patterns</strong><br><br>Pattern 1 renders that component twice, once to match the server and once more right after hydration, which adds a little hydration work. Pattern 2 relies on a documented React behavior: when a component throws on the server inside a Suspense boundary, React puts the fallback into the HTML and retries the component in the browser. It needs a streaming server API, and the thrown error still reaches the server's <code>onError</code> and the client's <code>onRecoverableError</code>, so filter that expected message out of error monitoring. In both patterns, give the placeholder the final height. Without it, the carousel pushes the footer down when it mounts, and that layout shift counts against CLS. Because the section is below the fold, you can also wait to download its code until it nears the viewport; that is a code-splitting decision layered on top, not part of hydration."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Production pitfall: hydration mismatches</strong><br><br>React 19 reports a mismatch as one error with a diff: \"Hydration failed because the server rendered HTML didn't match the client. As a result this tree will be regenerated on the client.\" Regenerated means React discards the server HTML for that part of the tree, up to the nearest Suspense boundary or the whole root if there is none, and renders it again in the browser. That throws away the SSR benefit there and can show as a flash. React recovers from many of these errors, but its docs warn that in the worst case event handlers can end up attached to the wrong elements, so treat every mismatch as a bug."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Cause",
+            "Example",
+            "Fix"
+          ],
+          "rows": [
+            [
+              "Server/client branch in render",
+              "`typeof window !== 'undefined' ? <Carousel /> : null`",
+              "Same first render on both sides; switch in an effect or behind a Suspense boundary"
+            ],
+            [
+              "Values that change on every call",
+              "`Date.now()`, `Math.random()`, ids from a counter",
+              "Compute once on the server and pass it as data; use `useId` for element ids"
+            ],
+            [
+              "Locale and time zone",
+              "`toLocaleString()` on a UTC server for a user in another time zone",
+              "Format with an explicit locale and time zone, or format on the client after hydration"
+            ],
+            [
+              "Data that changed between server and client",
+              "The client refetches and renders newer data during hydration",
+              "Send the data snapshot the server used with the HTML and hydrate from it"
+            ],
+            [
+              "Invalid HTML nesting",
+              "A <div> inside a <p>: the parser closes the <p> early",
+              "Fix the markup; the browser repairs invalid nesting before React compares"
+            ],
+            [
+              "Browser extensions",
+              "Injected nodes or attributes",
+              "React 19 skips unexpected tags in head and body; injected attributes can still warn"
+            ]
+          ],
+          "caption": "The usual causes, matching the list in React's error message",
+          "stackOnMobile": true
+        },
+        {
+          "type": "text",
+          "text": "<strong>suppressHydrationWarning is a narrow escape hatch</strong><br><br>For one unavoidable difference, such as a timestamp inside a single element, <code>suppressHydrationWarning={true}</code> silences the warning. It works one level deep, and React does not patch the text, so the server value stays on screen until the next render. It is not a fix for a render branch on <code>typeof window</code>."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Streaming and selective hydration (React 18+)</strong><br><br>With <code>renderToPipeableStream</code> or <code>renderToReadableStream</code>, the part of the page outside every Suspense boundary is the shell, and React sends it first. Each boundary streams in later with an inline script that swaps out its fallback, and the HTML is revealed before the bundle loads. Boundaries also hydrate independently: React does not have to hydrate the whole page in one pass, and when the user interacts with a boundary that has not hydrated yet, React gives that boundary priority. On the product page, wrapping the reviews in Suspense lets the hero and the buy button hydrate without waiting for the reviews code or data."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Metrics to mention</strong><br><br>SSR mainly improves FCP and LCP, because the content arrives as HTML. It can raise TTFB, because the server renders before it responds; streaming and caching anonymous HTML at the edge offset that. Hydration costs main-thread time, so a large bundle shows up as long tasks and slower responses to the first interactions, which hurts INP. Personalized HTML is harder to cache, which is one more reason to keep user-specific sections client-only."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Follow-up: is this the same as Server Components?</strong><br><br>No. SSR renders client components to HTML and then hydrates them, so their code still ships to the browser. React Server Components run only on the server and send no component code to the client; only the client components inside them hydrate. The two are used together, not instead of each other."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Interview framing</strong><br><br>Say it like this:<br><em>\"The server sends HTML, so the browser paints the above-the-fold part before JavaScript runs. When the bundle executes, hydrateRoot renders the same tree, reuses the DOM and attaches handlers; until then the page is visible but not interactive. The client-only section renders the same placeholder on the server and in the first client render, with its final height reserved, and swaps in after hydration or through a Suspense boundary. Any difference in that first render is a hydration mismatch, and React regenerates that part of the tree on the client.\"</em>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Summary</strong><br><br>SSR makes content visible early; hydration makes it interactive by adopting the server DOM. Keep the first client render identical to the server HTML, mount client-only sections after hydration or behind a Suspense boundary with their space reserved, and use streaming and Suspense so slow sections neither block the shell nor delay hydration of the parts users click first."
+        }
+      ]
+    },
+    "access": "free",
+    "type": "trivia",
+    "tags": [
+      "react",
+      "rendering",
+      "performance",
+      "script-loading",
+      "streaming",
+      "seo"
+    ],
+    "publishedAt": "2026-10-19",
+    "updatedAt": "2026-10-19",
+    "seo": {
+      "title": "React SSR and Hydration: Interview Answer, Pitfalls",
+      "description": "React SSR and hydration when the top of the page is server-rendered and the rest is client-only: parse order, mismatches and Suspense, interview-ready."
+    },
+    "incidentCard": {
+      "title": "Hydration Mismatch Root Cause Check",
+      "scenario": "A product page is server-rendered. Below the fold, ReviewsWidget returns <ReviewsCarousel /> when typeof window !== 'undefined' and null otherwise. In production the console shows \"Hydration failed because the server rendered HTML didn't match the client\", and the section flashes. What is the most likely root cause?",
+      "options": [
+        {
+          "id": "late-stylesheet-mismatch",
+          "label": "The stylesheet finished loading after hydration started, and React counts late CSS as a mismatch."
+        },
+        {
+          "id": "suspense-required-for-ssr",
+          "label": "Every server-rendered component must sit inside a Suspense boundary, or hydration fails."
+        },
+        {
+          "id": "render-branch-on-window",
+          "label": "The component branches on window during render, so the first client render differs from the server HTML; render the same placeholder first and mount the carousel after hydration."
+        }
+      ],
+      "correctOptionId": "render-branch-on-window",
+      "rereadPrompt": "Close. Re-read the hydration rule: the first client render must match the server HTML, so environment checks belong in an effect or behind a Suspense boundary, not in the render output."
+    }
+  },
+  {
+    "id": "react-code-splitting-module-federation",
+    "title": "How do you code split a React app, and when do you need module federation instead?",
+    "technology": "react",
+    "companies": [
+      "walmart"
+    ],
+    "difficulty": "hard",
+    "importance": 4,
+    "description": "Code splitting loads less JavaScript up front: a dynamic import() becomes a separate chunk that the browser fetches only when it is needed, and React.lazy with a Suspense boundary renders that chunk as a component, with a fallback while it loads. Split routes first, then heavy components that most users never open, and preload chunks on intent so splitting does not add waits. Module federation solves a different problem: separately built and deployed apps load each other's modules at runtime and share one copy of React. Use it when teams must release independently, not to make a single app smaller.",
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>The scenario to explain</strong><br><br>A shopping app ships one 1.8 MB JavaScript bundle. It contains the storefront every visitor needs, plus an admin dashboard, a charting library and a rich-text editor that only a few users ever open. Mobile users wait for all of it before the first interaction works. The interviewer asks how you would split it, then adds a twist: two other teams want to ship the cart and the account pages on their own release schedules. The first question is about code splitting. The second is about module federation, and treating them as one tool is the common mistake."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Code splitting in one paragraph</strong><br><br>A static import puts a module in the same bundle as its importer. A dynamic <code>import()</code> is a split point: the bundler (webpack, Vite, Rollup or esbuild) emits the module and its dependencies as a separate chunk and returns a promise that resolves when the chunk has loaded. <code>React.lazy</code> turns that promise into a component, and the nearest Suspense boundary shows its fallback until the code arrives. React calls the loader once, on the first render, and caches both the promise and the loaded component."
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "import { lazy, Suspense } from 'react';\nimport { Routes, Route } from 'react-router';\n\n// Declare lazy components at module top level, never inside a component:\n// a new lazy() on every render remounts the subtree and resets its state\nconst Storefront = lazy(() => import('./routes/Storefront'));\nconst AdminDashboard = lazy(() => import('./routes/AdminDashboard'));\n\n// React.lazy needs a default export, so map a named export to default\nconst SalesChart = lazy(() =>\n  import('./charts').then((module) => ({ default: module.SalesChart }))\n);\n\nexport function App() {\n  return (\n    <Suspense fallback={<PageSkeleton />}>\n      <Routes>\n        <Route path=\"/\" element={<Storefront />} />\n        <Route path=\"/admin\" element={<AdminDashboard />} />\n      </Routes>\n    </Suspense>\n  );\n}\n\nexport function SalesPanel() {\n  return (\n    <Suspense fallback={<ChartPlaceholder height={320} />}>\n      <SalesChart />\n    </Suspense>\n  );\n}"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Split here",
+            "Why it pays",
+            "Watch out for"
+          ],
+          "rows": [
+            [
+              "Routes",
+              "Each page's code is needed only on that page; the biggest and safest win",
+              "Keep the app shell and the landing route in the main bundle"
+            ],
+            [
+              "Heavy, rarely opened UI",
+              "Editors, charts, maps, admin tools and modals stay out of the first load",
+              "Reserve the space so the fallback does not shift the layout"
+            ],
+            [
+              "Below-the-fold sections",
+              "Their code can wait until the section nears the viewport",
+              "Start loading early enough that users never see the fallback"
+            ],
+            [
+              "Libraries used by one action",
+              "A PDF or spreadsheet export library can load inside the click handler",
+              "Show progress, because that first click now includes a download"
+            ],
+            [
+              "Tiny components",
+              "Almost nothing: each chunk is one more request and one more loading state",
+              "Over-splitting creates waterfalls and flicker"
+            ]
+          ],
+          "caption": "Split where large code is not needed for the first screen",
+          "stackOnMobile": true
+        },
+        {
+          "type": "text",
+          "text": "<strong>Production pitfall: waterfalls and fallback flashes</strong><br><br>A lazy chunk starts downloading only when React first tries to render it. If that chunk renders another lazy component, the second request waits for the first one: a waterfall. Start the import early on intent instead, such as hover, focus or the route a user is likely to open next; the browser loads each module once, so the later render reuses the download. Navigations need one more fix. When an update inside <code>startTransition</code> suspends, React keeps the current screen instead of replacing already visible content with the fallback, and Suspense-enabled routers are expected to wrap navigations in transitions."
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "import { lazy, Suspense, useState } from 'react';\n\nconst loadEditor = () => import('./RichTextEditor');\nconst RichTextEditor = lazy(loadEditor);\n\n// Warm the chunk on intent; if this fails, the render path retries\n// and reports the error through the nearest error boundary\nconst preloadEditor = () => {\n  loadEditor().catch(() => {});\n};\n\nfunction ReplyBox() {\n  const [open, setOpen] = useState(false);\n\n  return (\n    <>\n      <button onMouseEnter={preloadEditor} onFocus={preloadEditor} onClick={() => setOpen(true)}>\n        Write a reply\n      </button>\n      {open && (\n        <Suspense fallback={<EditorPlaceholder />}>\n          <RichTextEditor />\n        </Suspense>\n      )}\n    </>\n  );\n}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Production pitfall: chunks that disappear after a deploy</strong><br><br>Chunk file names carry content hashes. A user who opened the app before a deploy still runs the old main bundle, and that bundle asks for the old hashes. If the host has already removed the previous deploy's files, the request fails with a ChunkLoadError in webpack or \"Failed to fetch dynamically imported module\" in Vite builds, and <code>React.lazy</code> throws that error to the nearest error boundary. Wrap lazy areas in an error boundary with a reload action, keep the previous deploy's assets available for a while, and serve the HTML with <code>Cache-Control: no-cache</code> so new visits always get the new file names. Vite also fires a <code>vite:preloadError</code> event on <code>window</code> for this case."
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "import { Component, Suspense } from 'react';\n\nclass ChunkErrorBoundary extends Component {\n  state = { failed: false };\n\n  static getDerivedStateFromError() {\n    return { failed: true };\n  }\n\n  render() {\n    if (!this.state.failed) return this.props.children;\n    return (\n      <div role=\"alert\">\n        <p>This part of the page could not load. A new version may be available.</p>\n        <button onClick={() => window.location.reload()}>Reload</button>\n      </div>\n    );\n  }\n}\n\nexport function AdminArea() {\n  return (\n    <ChunkErrorBoundary>\n      <Suspense fallback={<PageSkeleton />}>\n        <AdminDashboard />\n      </Suspense>\n    </ChunkErrorBoundary>\n  );\n}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Module federation solves a different problem</strong><br><br>Code splitting divides one build. Module federation connects several builds at runtime. Each remote app builds and deploys on its own and publishes a small container entry, conventionally <code>remoteEntry.js</code>, that exposes chosen modules. A host lists the remotes it consumes and imports their modules like local ones, but the code is fetched from the remote's own deployment when it is needed. Shared dependencies are negotiated at runtime, so the host and every remote can use one copy of React. Webpack 5 ships this as <code>ModuleFederationPlugin</code>, and Module Federation 2.0 extends the same model with a runtime, manifests and type hints for webpack and Rspack."
+        },
+        {
+          "type": "code",
+          "language": "js",
+          "code": "// cart team: webpack.config.js (a remote)\nconst { ModuleFederationPlugin } = require('webpack').container;\n\nmodule.exports = {\n  // ...\n  plugins: [\n    new ModuleFederationPlugin({\n      name: 'cart',\n      filename: 'remoteEntry.js',\n      exposes: { './CartPage': './src/CartPage' },\n      shared: {\n        react: { singleton: true, requiredVersion: '^19.0.0' },\n        'react-dom': { singleton: true, requiredVersion: '^19.0.0' },\n      },\n    }),\n  ],\n};\n\n// shell team: the host plugin entry\nnew ModuleFederationPlugin({\n  name: 'shell',\n  remotes: { cart: 'cart@https://cart.example.com/remoteEntry.js' },\n  shared: {\n    react: { singleton: true, requiredVersion: '^19.0.0' },\n    'react-dom': { singleton: true, requiredVersion: '^19.0.0' },\n  },\n});\n\n// shell app code: the module loads at runtime from the cart team's deploy\nconst CartPage = lazy(() => import('cart/CartPage'));"
+        },
+        {
+          "type": "text",
+          "text": "<strong>The bootstrap boundary</strong><br><br>A federated host usually moves its startup code behind one dynamic import: the entry file contains only <code>import('./bootstrap')</code>, and <code>bootstrap.js</code> renders the app. That async boundary gives webpack time to load the remote entries and agree on shared versions before any component code runs. Without it, the app fails at startup with \"Shared module is not available for eager consumption\". Marking a shared module as eager also removes the error, but then that module is always downloaded with the initial chunk."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Question",
+            "Code splitting",
+            "Module federation"
+          ],
+          "rows": [
+            [
+              "Problem it solves",
+              "Too much JavaScript on the first load",
+              "Independent builds and deploys for parts of one product"
+            ],
+            [
+              "Builds and deploys",
+              "One build, one deploy, many chunks",
+              "Several builds, each deployed on its own schedule"
+            ],
+            [
+              "Shared libraries",
+              "The bundler deduplicates them inside one build",
+              "Negotiated at runtime through shared, singleton and requiredVersion"
+            ],
+            [
+              "Typical failure",
+              "A chunk from the previous deploy is gone",
+              "A remote is down or ships an incompatible version"
+            ],
+            [
+              "Who needs it",
+              "Almost every large single-page app",
+              "Organizations where several teams own one user-facing product"
+            ]
+          ],
+          "caption": "The same lazy loading on the surface, different problems underneath",
+          "stackOnMobile": true
+        },
+        {
+          "type": "text",
+          "text": "<strong>Trade-offs of module federation</strong><br><br>Independent deploys come with runtime coupling. A broken or slow remote now breaks a region of the host in production, so wrap every remote in an error boundary with a fallback. Version skew becomes a runtime problem: a singleton keeps one copy of React, but a remote built against an incompatible version only gets a console warning unless <code>strictVersion</code> is set. Two copies of React, from a missing singleton or a wrong shared config, break hooks with React's Invalid hook call warning. Local development, integration tests and type sharing all get harder. If one team owns the whole app, versioned packages or a monorepo with code splitting give most of the benefit without the runtime risk."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Follow-up questions</strong><br><br><em>Does React.lazy work with named exports?</em> Not directly. The promise must resolve to a module whose default export is a component, so map the named export to default, as in the chart example.<br><br><em>How is this different from tree shaking?</em> Tree shaking removes exports that nothing imports, at build time. Code splitting keeps code that is used but delays loading it. The two work together.<br><br><em>Does it work with server rendering?</em> Yes, with React 18's streaming renderers: lazy components inside Suspense render on the server, and the client needs their chunks before it can hydrate those boundaries. Frameworks such as Next.js split by route automatically.<br><br><em>How do you know it worked?</em> Compare a bundle report (webpack-bundle-analyzer or rollup-plugin-visualizer) before and after, check the Coverage panel in Chrome DevTools for unused JavaScript on the first route, and watch LCP and INP in field data."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Interview framing</strong><br><br>Say it like this:<br><em>\"Code splitting is about loading less up front. Every dynamic import becomes a chunk, React.lazy renders it behind a Suspense fallback, and I split routes first, then heavy components most users never open. I preload on intent so splits don't add waits, make navigations transitions so fallbacks don't flash, and wrap lazy areas in error boundaries because chunks can vanish after a deploy. Module federation is a different tool: separately deployed apps load each other's modules at runtime and share one React. I'd use it only when several teams need independent releases, and I'd isolate each remote behind an error boundary.\"</em>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Summary</strong><br><br>Code splitting divides one build so the first screen downloads only what it needs: dynamic import() makes the chunks, React.lazy and Suspense render them, and preloading, transitions and error boundaries keep the experience smooth. Module federation composes separately built and deployed apps at runtime with shared dependencies. Choose it for team independence, not bundle size, and plan for its runtime failure modes."
+        }
+      ]
+    },
+    "access": "free",
+    "type": "trivia",
+    "tags": [
+      "react",
+      "lazy-loading",
+      "performance",
+      "frontend-architecture",
+      "build",
+      "modules"
+    ],
+    "publishedAt": "2026-10-19",
+    "updatedAt": "2026-10-19",
+    "seo": {
+      "title": "Code Splitting vs Module Federation: React Interview",
+      "description": "React code splitting with React.lazy and Suspense, the waterfall and stale-chunk pitfalls, and when module federation fits instead: an interview answer."
+    },
+    "incidentCard": {
+      "title": "Lazy Chunk Load Failure Root Cause Check",
+      "scenario": "Right after a deploy, users who already had the app open click Settings and get a blank panel. The console shows \"Failed to fetch dynamically imported module: https://app.example.com/assets/Settings-8f3a1c.js\" and the server returns 404 for that file. New visitors are fine. What is the most likely root cause?",
+      "options": [
+        {
+          "id": "stale-chunk-after-deploy",
+          "label": "The open tab still runs the previous main bundle, which requests chunk names from the old build that the new deploy removed; catch it in an error boundary with a reload and keep old assets for a while."
+        },
+        {
+          "id": "lazy-needs-named-export",
+          "label": "React.lazy only resolves named exports, so the default-exported Settings component never loads."
+        },
+        {
+          "id": "suspense-fallback-timeout",
+          "label": "Suspense unmounts a lazy component when its fallback has been visible for more than a few seconds."
+        }
+      ],
+      "correctOptionId": "stale-chunk-after-deploy",
+      "rereadPrompt": "Close. Re-read why the chunk request fails only for users who loaded the app before the deploy: their old bundle asks for hashed files that no longer exist."
+    }
   }
 ]

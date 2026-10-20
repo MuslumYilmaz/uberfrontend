@@ -1,0 +1,130 @@
+{
+  "id": "car-rental-booking-frontend",
+  "title": "Design a Car Rental Booking Frontend",
+  "description": "Design a car rental booking flow with shareable searches, server-priced offers, branch-local pickup times, expiring vehicle holds, sold-out recovery, and accessible countdowns.",
+  "tags": [
+    "search",
+    "state-management",
+    "date-time",
+    "time-zones",
+    "timers",
+    "concurrency",
+    "api-calls",
+    "error-handling",
+    "accessibility",
+    "frontend-architecture"
+  ],
+  "companies": [
+    "tesla"
+  ],
+  "type": "system-design",
+  "sections": [
+    {
+      "key": "R",
+      "title": "Requirements",
+      "file": "requirements.json"
+    },
+    {
+      "key": "A",
+      "title": "Architecture",
+      "file": "architecture.json"
+    },
+    {
+      "key": "D",
+      "title": "Data",
+      "file": "data.json"
+    },
+    {
+      "key": "I",
+      "title": "Interfaces",
+      "file": "interfaces.json"
+    },
+    {
+      "key": "O",
+      "title": "Optimizations",
+      "file": "optimizations.json"
+    }
+  ],
+  "updatedAt": "2026-10-19",
+  "seo": {
+    "title": "Car Rental Booking Frontend System Design",
+    "description": "Design a car rental booking frontend: server-priced offers, branch-local pickup times, expiring vehicle holds, sold-out recovery and accessible countdowns."
+  },
+  "premiumPreview": {
+    "summary": "Design a car rental booking frontend where server offers own price and rental days, pickup times stay in the branch zone, and expiring vehicle holds recover without losing customer input.",
+    "learningOutcomes": [
+      "Separate shareable search criteria, cached offers, the booking draft and server-owned holds.",
+      "Keep pickup and return times in the branch time zone from the URL to the request.",
+      "Run an expiring vehicle hold on the server clock with an accessible warning and extension.",
+      "Recover from price changes, sold-out classes and lost responses without duplicate holds."
+    ],
+    "unlockDescription": "Premium unlocks the expiring-hold worked example, the typed rental contracts, the hold and reservation API semantics, and the sold-out recovery walkthrough."
+  },
+  "editorial": {
+    "draftSource": "content-drafts/system-design/car-rental-booking-frontend.md",
+    "primaryKeyword": "car rental booking frontend system design",
+    "searchIntent": "Prepare a frontend system design answer for a car rental booking flow.",
+    "readerPromise": "The reader can explain server-owned pricing, branch-local time, idempotent vehicle holds, expiry and conflict recovery, and accessible countdowns for a rental booking.",
+    "uniqueAngle": "Follow one rental from a branch-local search through an expiring vehicle hold, a price change and a sold-out conflict to a confirmed reservation, with the server owning price and time policy.",
+    "factCheckedAt": "2026-10-19",
+    "reviewedBy": "FrontendAtlas editorial",
+    "companyEvidence": [
+      {
+        "company": "tesla",
+        "evidenceType": "reported-interview-question",
+        "sourceUrl": "https://www.jointaro.com/interviews/companies/tesla/experiences/front-end-developer-fremont-ca-january-1-2024-no-offer-neutral-9e5d4e3f/",
+        "sourceTitle": "Tesla front end developer interview, Fremont, January 2024 (Taro)",
+        "checkedAt": "2026-10-19"
+      }
+    ]
+  },
+  "sources": [
+    {
+      "label": "Taro: Tesla front end developer interview, Fremont, January 2024",
+      "url": "https://www.jointaro.com/interviews/companies/tesla/experiences/front-end-developer-fremont-ca-january-1-2024-no-offer-neutral-9e5d4e3f/",
+      "company": "tesla",
+      "publisher": "Taro",
+      "date": "2024-01",
+      "note": "One front end developer account from Fremont lists a third round on the system design of a car rental company. This booking flow practises a frontend version of that round; it is not the reported prompt."
+    }
+  ],
+  "contentSchemaVersion": 2,
+  "practice": {
+    "targetLevel": "mid",
+    "timeboxMinutes": 15,
+    "candidatePrompt": "Design the booking frontend for a car rental company. Customers search by pickup and return branch, local times and driver age, compare vehicle classes, add extras and confirm. Prices change, classes sell out and holds expire while they decide. Assign authority among URL state, the booking draft, server offers and holds. Explain how branch-local time, hold expiry, conflicts and accessible timers keep bookings honest.",
+    "constraints": [
+      "Server offers set every price and fee.",
+      "Times stay branch-local.",
+      "Holds expire on the server clock."
+    ],
+    "expectedDecisions": [
+      "Separate URL search criteria, cached offers, the booking draft, holds and the reservation.",
+      "Make hold creation and confirmation idempotent commands with server-issued expiry.",
+      "Recover from expiry, price changes and sold-out results without losing customer input."
+    ],
+    "prerequisites": [
+      "URL and form state",
+      "Intl time zones"
+    ],
+    "coreSkills": [
+      "Authority boundaries",
+      "Time-zone correctness",
+      "Hold lifecycle design",
+      "Accessible timers"
+    ],
+    "guidedMock": false,
+    "evaluationSpine": {
+      "mustCover": [
+        "Server offers own price lines, rental days and fees.",
+        "The pickup branch time zone travels from URL to request."
+      ],
+      "strongSignals": [
+        "Countdowns follow serverNow, warn early and extend when allowed.",
+        "Conflicts keep extras and driver details for the next offer."
+      ],
+      "expertStretch": "Modifying a reservation across a daylight-saving change.",
+      "redFlag": "Device time zone or browser rate math decides the price."
+    }
+  }
+}

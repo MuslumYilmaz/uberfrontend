@@ -1,0 +1,151 @@
+{
+  "questionId": "js-json-stringify",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "javascript",
+      "code": "const ESCAPES = new Map([\n  ['\"', '\\\\\"'],\n  ['\\\\', '\\\\\\\\'],\n  ['\\b', '\\\\b'],\n  ['\\f', '\\\\f'],\n  ['\\n', '\\\\n'],\n  ['\\r', '\\\\r'],\n  ['\\t', '\\\\t'],\n]);\n\nexport default function jsonStringify(value) {\n  return serializeProperty({ '': value }, '', []);\n}\n\nfunction serializeProperty(holder, key, stack) {\n  let value = holder[key];\n  const kind = typeof value;\n  if (value !== null && (kind === 'object' || kind === 'function' || kind === 'bigint') && typeof value.toJSON === 'function') {\n    value = value.toJSON(key);\n  }\n  if (value instanceof Number) value = Number(value);\n  else if (value instanceof String) value = String(value);\n  else if (value instanceof Boolean) value = value.valueOf();\n\n  if (value === null) return 'null';\n  switch (typeof value) {\n    case 'boolean':\n      return value ? 'true' : 'false';\n    case 'number':\n      return Number.isFinite(value) ? String(value) : 'null';\n    case 'string':\n      return quote(value);\n    case 'bigint':\n      throw new TypeError('Do not know how to serialize a BigInt');\n    case 'object':\n      return Array.isArray(value) ? serializeArray(value, stack) : serializeObject(value, stack);\n    default:\n      return undefined;\n  }\n}\n\nfunction serializeArray(array, stack) {\n  enter(array, stack);\n  const parts = [];\n  for (let index = 0; index < array.length; index += 1) {\n    const item = serializeProperty(array, String(index), stack);\n    parts.push(item === undefined ? 'null' : item);\n  }\n  stack.pop();\n  return `[${parts.join(',')}]`;\n}\n\nfunction serializeObject(object, stack) {\n  enter(object, stack);\n  const parts = [];\n  for (const key of Object.keys(object)) {\n    const item = serializeProperty(object, key, stack);\n    if (item !== undefined) parts.push(`${quote(key)}:${item}`);\n  }\n  stack.pop();\n  return `{${parts.join(',')}}`;\n}\n\nfunction enter(value, stack) {\n  if (stack.includes(value)) throw new TypeError('Converting circular structure to JSON');\n  stack.push(value);\n}\n\nfunction quote(text) {\n  let result = '\"';\n  for (let index = 0; index < text.length; index += 1) {\n    const char = text[index];\n    const code = text.charCodeAt(index);\n    const next = text.charCodeAt(index + 1);\n    if (ESCAPES.has(char)) {\n      result += ESCAPES.get(char);\n    } else if (code < 0x20) {\n      result += `\\\\u${code.toString(16).padStart(4, '0')}`;\n    } else if (code >= 0xd800 && code <= 0xdbff && next >= 0xdc00 && next <= 0xdfff) {\n      result += char + text[index + 1];\n      index += 1;\n    } else if (code >= 0xd800 && code <= 0xdfff) {\n      result += `\\\\u${code.toString(16)}`;\n    } else {\n      result += char;\n    }\n  }\n  return `${result}\"`;\n}\n",
+      "nodes": [
+        {
+          "id": "d1-wrap-the-root-in-a-holder",
+          "title": "Start from a holder object with the empty key",
+          "anchor": {
+            "lineStart": 12,
+            "lineEnd": 12,
+            "snippet": "return serializeProperty({ '': value }, '', []);"
+          },
+          "why": "Every value is read as holder[key], so the root gets the same toJSON call as nested values, with the empty string as its key.",
+          "alternative": "Special-case the root and call a separate function for children.",
+          "tradeoff": "One code path for root and children keeps toJSON keys correct everywhere."
+        },
+        {
+          "id": "d2-call-tojson-with-the-key",
+          "title": "Call toJSON with the property key before anything else",
+          "anchor": {
+            "lineStart": 19,
+            "lineEnd": 19,
+            "snippet": "value = value.toJSON(key);"
+          },
+          "why": "Date and custom classes decide their own JSON form, and they receive the property name or the array index as an argument.",
+          "alternative": "Check for Date with instanceof and call toISOString.",
+          "tradeoff": "instanceof Date misses every other class that defines toJSON."
+        },
+        {
+          "id": "d3-unwrap-boxed-primitives",
+          "title": "Unwrap Number, String and Boolean objects",
+          "anchor": {
+            "lineStart": 21,
+            "lineEnd": 21,
+            "snippet": "if (value instanceof Number) value = Number(value);"
+          },
+          "why": "new Number(3) must serialize as 3, not as an empty object with no own keys.",
+          "alternative": "Treat every object the same way.",
+          "tradeoff": "Without unwrapping, boxed values silently become {}."
+        },
+        {
+          "id": "d4-non-finite-numbers-become-null",
+          "title": "Write null for NaN and the infinities",
+          "anchor": {
+            "lineStart": 30,
+            "lineEnd": 30,
+            "snippet": "return Number.isFinite(value) ? String(value) : 'null';"
+          },
+          "why": "JSON has no syntax for NaN or Infinity, and String(-0) already gives \"0\".",
+          "alternative": "Return String(value) for every number.",
+          "tradeoff": "String(NaN) would produce text that JSON.parse rejects."
+        },
+        {
+          "id": "d5-track-ancestors-not-every-object",
+          "title": "Detect cycles with the current ancestor stack",
+          "anchor": {
+            "lineStart": 65,
+            "lineEnd": 65,
+            "snippet": "if (stack.includes(value)) throw new TypeError('Converting circular structure to JSON');"
+          },
+          "why": "Only an object that contains itself is a cycle; the same object appearing twice in different branches is valid JSON.",
+          "alternative": "Keep a set of every object seen so far.",
+          "tradeoff": "A global seen set wrongly rejects shared references."
+        },
+        {
+          "id": "d6-null-in-arrays-skip-in-objects",
+          "title": "Fill arrays with null, drop object properties",
+          "anchor": {
+            "lineStart": 47,
+            "lineEnd": 47,
+            "snippet": "parts.push(item === undefined ? 'null' : item);"
+          },
+          "why": "Array positions must be preserved, so undefined, functions and symbols become null there, while object properties holding them disappear.",
+          "alternative": "Use the same rule for both containers.",
+          "tradeoff": "Dropping array items would shift every later index."
+        },
+        {
+          "id": "d7-escape-lone-surrogates",
+          "title": "Escape control characters and lone surrogates",
+          "anchor": {
+            "lineStart": 83,
+            "lineEnd": 83,
+            "snippet": "result += `\\\\u${code.toString(16)}`;"
+          },
+          "why": "JSON text must be well-formed Unicode, so an unpaired surrogate is written as a lowercase \\u escape while valid pairs stay as they are.",
+          "alternative": "Escape only quotes and backslashes.",
+          "tradeoff": "A partial escaper produces text that differs from the built-in and can break decoders."
+        }
+      ]
+    },
+    "approach2": {
+      "language": "javascript",
+      "code": "const NEEDS_ESCAPE = /[\\u0000-\\u001f\"\\\\]|[\\ud800-\\udbff](?![\\udc00-\\udfff])|(?<![\\ud800-\\udbff])[\\udc00-\\udfff]/g;\nconst SHORT_ESCAPES = new Map([\n  ['\"', '\\\\\"'],\n  ['\\\\', '\\\\\\\\'],\n  ['\\b', '\\\\b'],\n  ['\\f', '\\\\f'],\n  ['\\n', '\\\\n'],\n  ['\\r', '\\\\r'],\n  ['\\t', '\\\\t'],\n]);\n\nexport default function jsonStringify(value) {\n  return write(value, '', new Set(), []);\n}\n\nfunction write(input, key, ancestors, path) {\n  let value = input;\n  const kind = typeof value;\n  if (value !== null && (kind === 'object' || kind === 'function' || kind === 'bigint') && typeof value.toJSON === 'function') {\n    value = value.toJSON(key);\n  }\n  if (value instanceof Number || value instanceof String || value instanceof Boolean) {\n    value = value.valueOf();\n  }\n  if (value === null) return 'null';\n  if (typeof value === 'boolean') return String(value);\n  if (typeof value === 'number') return Number.isFinite(value) ? String(value) : 'null';\n  if (typeof value === 'string') return quote(value);\n  if (typeof value === 'bigint') throw new TypeError(`Cannot serialize a BigInt at ${formatPath(path)}`);\n  if (typeof value !== 'object') return undefined;\n\n  if (ancestors.has(value)) {\n    throw new TypeError(`Converting circular structure to JSON at ${formatPath(path)}`);\n  }\n  ancestors.add(value);\n  const container = value;\n  const json = Array.isArray(container)\n    ? `[${Array.from({ length: container.length }, (_, index) =>\n        write(container[index], String(index), ancestors, [...path, String(index)]) ?? 'null').join(',')}]`\n    : `{${Object.keys(container)\n        .map((name) => [name, write(container[name], name, ancestors, [...path, name])])\n        .filter(([, item]) => item !== undefined)\n        .map(([name, item]) => `${quote(name)}:${item}`)\n        .join(',')}}`;\n  ancestors.delete(value);\n  return json;\n}\n\nfunction quote(text) {\n  const escaped = text.replace(NEEDS_ESCAPE, (char) =>\n    SHORT_ESCAPES.get(char) ?? `\\\\u${char.charCodeAt(0).toString(16).padStart(4, '0')}`);\n  return `\"${escaped}\"`;\n}\n\nfunction formatPath(path) {\n  return path.length ? path.join('.') : '(root)';\n}\n",
+      "nodes": [
+        {
+          "id": "d1-one-pattern-for-every-escape",
+          "title": "Find every character that needs escaping with one pattern",
+          "anchor": {
+            "lineStart": 1,
+            "lineEnd": 1,
+            "snippet": "const NEEDS_ESCAPE = "
+          },
+          "why": "Control characters, quotes, backslashes and unpaired surrogates are all matched in one pass, and the lookarounds leave valid pairs alone.",
+          "alternative": "Loop over the code units as in approach 1.",
+          "tradeoff": "The pattern is shorter but needs lookbehind support and is harder to read."
+        },
+        {
+          "id": "d2-set-of-ancestors",
+          "title": "Keep ancestors in a set and remove them on the way out",
+          "anchor": {
+            "lineStart": 45,
+            "lineEnd": 45,
+            "snippet": "ancestors.delete(value);"
+          },
+          "why": "Adding on entry and deleting on exit keeps only the current branch, so membership checks stay constant time on deep documents.",
+          "alternative": "Search an ancestor array with includes.",
+          "tradeoff": "An array scan costs the depth of the document on every object."
+        },
+        {
+          "id": "d3-report-where-the-cycle-closes",
+          "title": "Name the path where the cycle closes",
+          "anchor": {
+            "lineStart": 33,
+            "lineEnd": 33,
+            "snippet": "throw new TypeError(`Converting circular structure to JSON at ${formatPath(path)}`);"
+          },
+          "why": "A path such as user.manager.reports.0 tells the caller which reference to cut, which the bare built-in message does not.",
+          "alternative": "Throw the same message as the built-in.",
+          "tradeoff": "Building the path costs an array copy per level in exchange for a debuggable error."
+        },
+        {
+          "id": "d4-skip-undefined-entries",
+          "title": "Filter out properties that have no JSON form",
+          "anchor": {
+            "lineStart": 42,
+            "lineEnd": 42,
+            "snippet": ".filter(([, item]) => item !== undefined)"
+          },
+          "why": "Serializing first and filtering afterwards keeps the rule in one place for undefined, functions and symbols.",
+          "alternative": "Check the raw value type before serializing.",
+          "tradeoff": "A raw check misses values that become undefined through toJSON."
+        }
+      ]
+    }
+  }
+}

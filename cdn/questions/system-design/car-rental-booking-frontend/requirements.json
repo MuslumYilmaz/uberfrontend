@@ -1,0 +1,70 @@
+{
+  "key": "R",
+  "title": "Requirements",
+  "blocks": [
+    {
+      "type": "steps",
+      "title": "A 15-minute rental booking trace",
+      "steps": [
+        {
+          "title": "Frame the rental outcome",
+          "text": "A customer picks a pickup branch, an optional return branch, local pickup and return times and a driver age. They compare vehicle classes, add extras such as a child seat, enter driver details and finish with a reservation. Success means the rental backend confirms that reservation; a price on a results card proves nothing. Follow one booking through an expiring hold, a price change and a class that sells out."
+        },
+        {
+          "title": "Draw the authority line",
+          "text": "The browser owns search inputs, the booking draft and presentation. The rental backend owns branch hours, availability, rental-day counting, fees, taxes, holds and reservations behind an explicit frontend contract. Fleet allocation, payment processing and counter operations stay a black box. The payment provider returns only an opaque reference."
+        },
+        {
+          "title": "Keep time in the branch zone",
+          "text": "Pickup and return are wall-clock times at a branch, so the draft stores the date, the time and the branch's IANA zone together. The page formats them in that zone, labels the zone, and sends the same three values to the server. A traveler planning from another zone still sees branch time, and daylight-saving rules remain server policy."
+        },
+        {
+          "title": "Hold before details",
+          "text": "Reserve turns one offer into a server hold through a command with an idempotency key. The response carries the held total, expiresAt and serverNow, so the countdown follows the server clock. The page warns before expiry and offers an extension when policy allows. A lost response retries with the same key, so a double click cannot create two holds."
+        },
+        {
+          "title": "Recover with input intact",
+          "text": "Reserve can return price-changed or sold-out, and a hold can expire while the customer types. Each case keeps extras and driver details, shows old and new totals or alternative classes, and asks for a fresh choice. Confirmation spends the live holdId with its own idempotency key, and the receipt renders only from the confirmed reservation."
+        }
+      ],
+      "editorialRole": "timeboxed-answer"
+    },
+    {
+      "type": "table",
+      "title": "Rental booking authority map",
+      "columns": [
+        "Decision",
+        "Owner",
+        "Browser role"
+      ],
+      "rows": [
+        [
+          "Search criteria",
+          "Customer, encoded in the URL",
+          "Validate against branch hours and keep links shareable"
+        ],
+        [
+          "Price lines, fees and rental days",
+          "Server offer",
+          "Display totals exactly as returned"
+        ],
+        [
+          "Vehicle availability",
+          "Server hold",
+          "Show the held class and its expiry; never promise a specific car"
+        ],
+        [
+          "Reservation",
+          "Rental backend",
+          "Render confirmation only from server state"
+        ]
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Rejected alternative: browser-side rates and clocks",
+      "text": "We reject computing totals from a cached rate table and converting pickup times with the browser's zone. One-way fees, young-driver surcharges, taxes and rental-day rules vary by branch and date, and a customer planning from another zone would see the wrong pickup hour. That customer would meet a different price or time at the counter, which costs more trust than a short refresh."
+    }
+  ]
+}

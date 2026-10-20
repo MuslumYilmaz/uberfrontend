@@ -1,0 +1,109 @@
+{
+  "questionId": "react-battery-site-layout",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "typescript",
+      "code": "import React, { useMemo, useState } from 'react';\nimport './App.css';\n\n// Practice version of a reported take-home. The catalog, names and numbers are ours.\nexport type BatteryId = 'xl' | 'l' | 'm' | 's';\n\nexport interface Device {\n  id: BatteryId | 'transformer';\n  name: string;\n  widthFt: number;\n  energyMwh: number;\n  costUsd: number;\n}\n\nexport type Battery = Device & { id: BatteryId };\n\nexport const BATTERIES: Battery[] = [\n  { id: 's', name: 'Battery S', widthFt: 10, energyMwh: 1, costUsd: 12000 },\n  { id: 'm', name: 'Battery M', widthFt: 20, energyMwh: 2, costUsd: 48000 },\n  { id: 'l', name: 'Battery L', widthFt: 30, energyMwh: 3, costUsd: 82000 },\n  { id: 'xl', name: 'Battery XL', widthFt: 40, energyMwh: 4.2, costUsd: 125000 }\n];\n\n// A transformer is added automatically: one for every two batteries, rounded up.\nexport const TRANSFORMER: Device = { id: 'transformer', name: 'Transformer', widthFt: 10, energyMwh: -0.25, costUsd: 9000 };\n\nexport const SITE_WIDTH_FT = 100;\nexport const ROW_DEPTH_FT = 10;\nexport const MAX_QUANTITY = 50;\n\ntype Quantities = Record<BatteryId, string>;\n\nconst EMPTY_QUANTITIES: Quantities = { xl: '0', l: '0', m: '0', s: '0' };\n\nfunction formatUsd(value: number): string {\n  return '$' + value.toLocaleString('en-US');\n}\n\nfunction formatMwh(value: number): string {\n  return `${Number(value.toFixed(2))} MWh`;\n}\n\nfunction parseQuantity(raw: string): number | null {\n  const text = raw.trim();\n  if (!/^\\d+$/.test(text)) return null;\n  const value = Number(text);\n  return value <= MAX_QUANTITY ? value : null;\n}\n\nexport function transformersFor(batteryCount: number): number {\n  return Math.ceil(batteryCount / 2);\n}\n\ntype Row = { widthFt: number; devices: Device[] };\n\nexport function packRows(devices: Device[], maxWidthFt: number = SITE_WIDTH_FT): Row[] {\n  const largestFirst = [...devices].sort((a, b) => b.widthFt - a.widthFt);\n  const rows: Row[] = [];\n  for (const device of largestFirst) {\n    const row = rows.find((candidate) => candidate.widthFt + device.widthFt <= maxWidthFt);\n    if (row) {\n      row.widthFt += device.widthFt;\n      row.devices.push(device);\n    } else {\n      rows.push({ widthFt: device.widthFt, devices: [device] });\n    }\n  }\n  return rows;\n}\n\nexport default function App() {\n  const [quantities, setQuantities] = useState<Quantities>(EMPTY_QUANTITIES);\n\n  const site = useMemo(() => {\n    const invalid = BATTERIES.filter((battery) => parseQuantity(quantities[battery.id]) === null).map((battery) => battery.id);\n    const devices: Device[] = [];\n    for (const battery of BATTERIES) {\n      const count = parseQuantity(quantities[battery.id]) ?? 0;\n      for (let i = 0; i < count; i += 1) devices.push(battery);\n    }\n    const transformers = transformersFor(devices.length);\n    for (let i = 0; i < transformers; i += 1) devices.push(TRANSFORMER);\n\n    const costUsd = devices.reduce((sum, device) => sum + device.costUsd, 0);\n    const energyMwh = devices.reduce((sum, device) => sum + device.energyMwh, 0);\n    const rows = packRows(devices);\n    const widthFt = rows.reduce((widest, row) => Math.max(widest, row.widthFt), 0);\n    const depthFt = rows.length * ROW_DEPTH_FT;\n    return { invalid, transformers, costUsd, energyMwh, rows, widthFt, depthFt };\n  }, [quantities]);\n\n  return (\n    <main className=\"main\">\n      <section className=\"card\">\n        <header className=\"header\">\n          <h1 className=\"title\">Battery Site Planner (Solution)</h1>\n          <p className=\"subtitle\">Choose the batteries; the planner adds transformers, totals the site and lays it out.</p>\n        </header>\n\n        <section className=\"panel\" aria-labelledby=\"devices-title\">\n          <h2 className=\"panel-title\" id=\"devices-title\">Batteries</h2>\n          {BATTERIES.map((battery) => (\n            <label key={battery.id} className=\"qty-field\">\n              <span className=\"qty-name\">{battery.name}</span>\n              <span className=\"qty-meta\">{battery.widthFt} ft · {battery.energyMwh} MWh · {formatUsd(battery.costUsd)}</span>\n              <input\n                className=\"qty-input\"\n                data-device={battery.id}\n                type=\"number\"\n                min={0}\n                max={MAX_QUANTITY}\n                step={1}\n                value={quantities[battery.id]}\n                onChange={(event: React.ChangeEvent<HTMLInputElement>) =>\n                  setQuantities((current) => ({ ...current, [battery.id]: event.target.value }))\n                }\n              />\n            </label>\n          ))}\n          {site.invalid.length > 0 && (\n            <p className=\"qty-error\" role=\"alert\">Use a whole number from 0 to {MAX_QUANTITY}.</p>\n          )}\n          <button type=\"button\" className=\"reset\" onClick={() => setQuantities(EMPTY_QUANTITIES)}>Reset</button>\n        </section>\n\n        <section className=\"panel\" aria-labelledby=\"summary-title\">\n          <h2 className=\"panel-title\" id=\"summary-title\">Site summary</h2>\n          <dl className=\"summary\">\n            <dt>Budget</dt>\n            <dd className=\"total-cost\">{formatUsd(site.costUsd)}</dd>\n            <dt>Net energy</dt>\n            <dd className=\"total-energy\">{formatMwh(site.energyMwh)}</dd>\n            <dt>Land</dt>\n            <dd className=\"land-size\">{site.widthFt} ft × {site.depthFt} ft</dd>\n          </dl>\n          <p className=\"transformer-count\">Transformers: {site.transformers}</p>\n        </section>\n\n        <section className=\"panel\" aria-labelledby=\"layout-title\">\n          <h2 className=\"panel-title\" id=\"layout-title\">Layout (100 ft wide)</h2>\n          <div className=\"layout\">\n            {site.rows.map((row, rowIndex) => (\n              <div key={rowIndex} className=\"layout-row\" data-width={row.widthFt}>\n                {row.devices.map((device, deviceIndex) => (\n                  <div\n                    key={deviceIndex}\n                    className=\"layout-device\"\n                    data-device={device.id}\n                    style={{ width: `${(device.widthFt / SITE_WIDTH_FT) * 100}%` }}\n                    title={device.name}\n                  >\n                    {device.id === 'transformer' ? 'T' : device.id.toUpperCase()}\n                  </div>\n                ))}\n              </div>\n            ))}\n          </div>\n        </section>\n      </section>\n    </main>\n  );\n}\n",
+      "nodes": [
+        {
+          "id": "b1-validate-without-blocking",
+          "title": "Validate quantities without blocking typing",
+          "anchor": {
+            "lineStart": 45,
+            "lineEnd": 45,
+            "snippet": "if (!/^\\d+$/.test(text)) return null;"
+          },
+          "why": "The input keeps whatever the user typed, and only valid whole numbers reach the totals.",
+          "alternative": "Clamp or rewrite the input value on every keystroke.",
+          "tradeoff": "Rewriting fights the user mid-edit; a separate error line explains the problem instead."
+        },
+        {
+          "id": "b2-transformer-rule",
+          "title": "Round transformers up",
+          "anchor": {
+            "lineStart": 51,
+            "lineEnd": 51,
+            "snippet": "return Math.ceil(batteryCount / 2);"
+          },
+          "why": "Three batteries need two transformers; rounding down would under-provision the site.",
+          "alternative": "Use Math.floor or integer division.",
+          "tradeoff": "Rounding up matches the stated rule, and the tests check 3 and 4 batteries."
+        },
+        {
+          "id": "b3-largest-first",
+          "title": "Sort a copy largest first",
+          "anchor": {
+            "lineStart": 57,
+            "lineEnd": 57,
+            "snippet": "const largestFirst = [...devices].sort((a, b) => b.widthFt - a.widthFt);"
+          },
+          "why": "Placing big devices first leaves small gaps that later small devices can fill.",
+          "alternative": "Pack devices in input order.",
+          "tradeoff": "Input order is simpler but wastes space when sizes are mixed."
+        },
+        {
+          "id": "b4-first-fit",
+          "title": "Put each device into the first row with room",
+          "anchor": {
+            "lineStart": 60,
+            "lineEnd": 60,
+            "snippet": "const row = rows.find((candidate) => candidate.widthFt + device.widthFt <= maxWidthFt);"
+          },
+          "why": "First-fit is easy to explain and never breaks the 100 ft limit.",
+          "alternative": "Search every row for the tightest fit.",
+          "tradeoff": "Best-fit can save a row in rare cases but is harder to reason about in a take-home."
+        },
+        {
+          "id": "b5-derive-in-one-memo",
+          "title": "Derive the whole site in one useMemo",
+          "anchor": {
+            "lineStart": 74,
+            "lineEnd": 74,
+            "snippet": "const site = useMemo(() => {"
+          },
+          "why": "Totals, rows and land size always come from the same quantities, so they cannot drift apart.",
+          "alternative": "Keep totals and rows in state and update them in handlers.",
+          "tradeoff": "Derived values need no synchronization; state copies need every handler to be right."
+        },
+        {
+          "id": "b6-land-from-rows",
+          "title": "Compute the land from the packed rows",
+          "anchor": {
+            "lineStart": 88,
+            "lineEnd": 88,
+            "snippet": "const depthFt = rows.length * ROW_DEPTH_FT;"
+          },
+          "why": "The land follows the real layout: the widest row times the number of rows times 10 ft.",
+          "alternative": "Sum the device widths and divide by 100.",
+          "tradeoff": "Division ignores the gaps the packing leaves; the rows are the truth."
+        },
+        {
+          "id": "b7-format-units",
+          "title": "Format money and energy for people",
+          "anchor": {
+            "lineStart": 40,
+            "lineEnd": 40,
+            "snippet": "Number(value.toFixed(2))"
+          },
+          "why": "Floating sums such as 4.2 - 0.25 need rounding for display, and money needs thousands separators.",
+          "alternative": "Print the raw numbers.",
+          "tradeoff": "Raw floats leak values like 3.9500000000000006 into the UI."
+        },
+        {
+          "id": "b8-expose-width",
+          "title": "Expose each row width as data",
+          "anchor": {
+            "lineStart": 143,
+            "lineEnd": 143,
+            "snippet": "<div key={rowIndex} className=\"layout-row\" data-width={row.widthFt}>"
+          },
+          "why": "The 100 ft rule becomes visible to tests and to a reviewer reading the DOM.",
+          "alternative": "Rely on CSS widths alone.",
+          "tradeoff": "CSS percentages are hard to assert; a data attribute is explicit."
+        }
+      ]
+    }
+  }
+}

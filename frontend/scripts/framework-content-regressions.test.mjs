@@ -173,7 +173,7 @@ function assertFrameworkCssFormatting() {
       canonicalRoot: path.join(repoRoot, 'cdn', 'sb'),
       mirrorRoot: path.join(repoRoot, 'frontend', 'src', 'assets', 'sb'),
     }),
-    { assets: 206, cssSources: 271, changedAssets: 0, changedCssSources: 0 },
+    { assets: 210, cssSources: 275, changedAssets: 0, changedCssSources: 0 },
     'The full framework CSS corpus must stay canonical and exactly mirrored'
   );
 }
@@ -4980,6 +4980,56 @@ for (const node of memoContextVariant.nodes) {
   const { lineStart, lineEnd, snippet } = node.anchor;
   assert.ok(lineStart >= 1 && lineEnd >= lineStart && lineEnd <= memoContextLines.length, `${node.id}: invalid memo-context anchor range`);
   assert.ok(memoContextLines.slice(lineStart - 1, lineEnd).join('\n').includes(snippet), `${node.id}: memo-context anchor range must contain its snippet`);
+}
+
+const batteryQuestion = json('cdn/questions/react/coding.json').find((entry) => entry.id === 'react-battery-site-layout');
+assert.ok(batteryQuestion);
+assert.equal(batteryQuestion.access, 'premium');
+const batteryStarter = json('cdn/sb/react/question/react-battery-site-layout.v1.json').files['src/App.tsx'];
+const batterySolution = json('cdn/sb/react/solution/react-battery-site-layout-solution.v1.json').files['src/App.tsx'];
+const batteryCatalog = (source) => source.slice(source.indexOf('export const BATTERIES'), source.indexOf('type Quantities'));
+assert.equal(batteryCatalog(batteryStarter), batteryCatalog(batterySolution), 'the starter and the solution share one device catalog');
+assert.ok(batteryStarter.indexOf("id: 's'") < batteryStarter.indexOf("id: 'xl'"), 'the catalog stays smallest first so the largest-first rule is observable');
+assert.doesNotMatch(batteryStarter + batterySolution, /Megapack|Powerpack/, 'the practice catalog uses its own device names');
+assert.match(batterySolution, /Math\.ceil\(batteryCount \/ 2\)/);
+assert.match(batterySolution, /\.sort\(\(a, b\) => b\.widthFt - a\.widthFt\)/);
+const batteryGraph = json('cdn/questions/react/decision-graphs/react-battery-site-layout.v1.json');
+const batteryVariant = batteryGraph.variants.approach1;
+assert.equal(batteryGraph.questionId, 'react-battery-site-layout');
+assert.equal(batteryVariant.code, batterySolution, 'battery site decision graph must mirror the solution App.tsx');
+const batteryLines = batteryVariant.code.split('\n');
+for (const node of batteryVariant.nodes) {
+  const { lineStart, lineEnd, snippet } = node.anchor;
+  assert.ok(lineStart >= 1 && lineEnd >= lineStart && lineEnd <= batteryLines.length, `${node.id}: invalid battery anchor range`);
+  assert.ok(batteryLines.slice(lineStart - 1, lineEnd).join('\n').includes(snippet), `${node.id}: battery anchor range must contain its snippet`);
+}
+
+const explorerQuestion = json('cdn/questions/react/coding.json').find((entry) => entry.id === 'react-file-explorer');
+assert.ok(explorerQuestion);
+assert.equal(explorerQuestion.access, 'premium');
+const explorerStarter = json('cdn/sb/react/question/react-file-explorer.v1.json').files['src/App.tsx'];
+const explorerSolution = json('cdn/sb/react/solution/react-file-explorer-solution.v1.json').files['src/App.tsx'];
+const explorerFiles = (source) => source.slice(source.indexOf('export type FileNode'), source.indexOf('];') + 2);
+assert.equal(explorerFiles(explorerStarter), explorerFiles(explorerSolution), 'the starter and the solution share one FILES tree');
+assert.match(explorerStarter, /\{ id: 'styles', name: 'styles', children: \[\] \}/, 'the tree keeps an empty folder');
+assert.doesNotMatch(explorerStarter, /<ul[^>]*role="tree"/, 'the starter leaves the tree semantics to the learner');
+assert.match(explorerSolution, /node\.children !== undefined/);
+assert.match(explorerSolution, /sensitivity: 'base'/);
+assert.match(explorerSolution, /aria-expanded=\{folder \? open : undefined\}/);
+assert.match(explorerSolution, /tabIndex=\{tabStopId === node\.id \? 0 : -1\}/);
+assert.ok(
+  explorerQuestion.frameworkTests.some((test) => test.steps.some((step) => step.type === 'expectFocused')),
+  'keyboard checks must assert focus, not only tabindex',
+);
+const explorerGraph = json('cdn/questions/react/decision-graphs/react-file-explorer.v1.json');
+const explorerVariant = explorerGraph.variants.approach1;
+assert.equal(explorerGraph.questionId, 'react-file-explorer');
+assert.equal(explorerVariant.code, explorerSolution, 'file explorer decision graph must mirror the solution App.tsx');
+const explorerLines = explorerVariant.code.split('\n');
+for (const node of explorerVariant.nodes) {
+  const { lineStart, lineEnd, snippet } = node.anchor;
+  assert.ok(lineStart >= 1 && lineEnd >= lineStart && lineEnd <= explorerLines.length, `${node.id}: invalid file explorer anchor range`);
+  assert.ok(explorerLines.slice(lineStart - 1, lineEnd).join('\n').includes(snippet), `${node.id}: file explorer anchor range must contain its snippet`);
 }
 
 const countdownQuestion = json('cdn/questions/react/coding.json').find((entry) => entry.id === 'react-countdown-timer');

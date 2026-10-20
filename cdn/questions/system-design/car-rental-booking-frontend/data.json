@@ -1,0 +1,57 @@
+{
+  "key": "D",
+  "title": "Data",
+  "blocks": [
+    {
+      "type": "text",
+      "text": "Four kinds of state stay apart: search criteria in the URL, cached offers keyed by searchId, the editable booking draft, and server-owned holds and reservations. LocalDateTime pairs a wall-clock time with its branch zone, and every amount arrives in minor units from an offer."
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "code": "type BookingStep =\n  | 'searching'\n  | 'choosing'\n  | 'holding'\n  | 'details'\n  | 'confirming'\n  | 'confirmed'\n  | 'hold-expired'\n  | 'price-changed'\n  | 'sold-out';\n\ninterface LocalDateTime {\n  date: string;\n  time: string;\n  timeZone: string;\n}\n\ninterface RentalSearch {\n  pickupBranchId: string;\n  returnBranchId: string;\n  pickupAt: LocalDateTime;\n  returnAt: LocalDateTime;\n  driverAge: number;\n}\n\ninterface PriceLine {\n  code: string;\n  label: string;\n  amountMinor: number;\n}\n\ninterface VehicleOffer {\n  offerId: string;\n  searchId: string;\n  vehicleClass: string;\n  exampleModel: string;\n  rentalDays: number;\n  currency: string;\n  lines: PriceLine[];\n  totalMinor: number;\n  expiresAt: string;\n}\n\ninterface VehicleHold {\n  holdId: string;\n  offerId: string;\n  idempotencyKey: string;\n  totalMinor: number;\n  expiresAt: string;\n  extensionsLeft: number;\n  status: 'active' | 'expired' | 'released' | 'converted';\n}\n\ninterface DriverDetails {\n  firstName: string;\n  lastName: string;\n  email: string;\n  licenseCountry: string;\n}\n\ninterface BookingDraft {\n  search: RentalSearch;\n  selectedOfferId: string | null;\n  extras: string[];\n  driver: DriverDetails | null;\n  hold: VehicleHold | null;\n  step: BookingStep;\n}",
+      "validation": {
+        "kind": "contract",
+        "level": "typecheck",
+        "group": "car-rental-booking-frontend-contract"
+      }
+    },
+    {
+      "type": "table",
+      "title": "Booking identity rules",
+      "columns": [
+        "Identity",
+        "Lifetime",
+        "Reason"
+      ],
+      "rows": [
+        [
+          "searchId",
+          "One availability response",
+          "Offers from an older search cannot be held"
+        ],
+        [
+          "offerId",
+          "Until the offer's expiresAt",
+          "Price and class are a server snapshot"
+        ],
+        [
+          "Hold idempotencyKey",
+          "One Reserve intent",
+          "Retries reach the same hold instead of creating a second one"
+        ],
+        [
+          "holdId",
+          "Until expiry, release or conversion",
+          "Confirmation spends exactly one live hold"
+        ]
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "info",
+      "title": "Driver data stays minimal",
+      "text": "The draft keeps only fields the booking needs. License numbers, date of birth and payment details go to the server or the payment provider at confirmation and never enter the URL, logs, analytics or cross-tab messages. Driver age stays a search input because the server prices surcharges from it."
+    }
+  ]
+}

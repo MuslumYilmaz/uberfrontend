@@ -1,0 +1,79 @@
+{
+  "key": "A",
+  "title": "Architecture",
+  "blocks": [
+    {
+      "type": "table",
+      "title": "Who owns each part of a booking",
+      "columns": [
+        "Owner",
+        "Keeps",
+        "Never claims"
+      ],
+      "rows": [
+        [
+          "Search route",
+          "Branch ids, local times, zone, driver age and filters",
+          "Availability or prices"
+        ],
+        [
+          "Offer cache",
+          "Offers per searchId with expiresAt and serverNow",
+          "That an expired offer is still bookable"
+        ],
+        [
+          "Booking coordinator",
+          "Extras, driver details, the active hold and the current step",
+          "A reservation before the server confirms it"
+        ],
+        [
+          "Rental backend",
+          "Branch hours, availability, pricing, holds and reservations",
+          "Payment execution or counter operations"
+        ]
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "success",
+      "title": "Server-timed booking model",
+      "text": "A RentalSearch with branch-local times returns VehicleOffer snapshots, each with a server total and expiresAt. Reserve converts one offer into a VehicleHold through an idempotent command, and the countdown compares the hold's expiresAt with serverNow. Confirmation spends the live holdId once. A stale card, a returning tab or a late response only triggers a fresh offer or hold read.",
+      "editorialRole": "canonical-model"
+    },
+    {
+      "type": "steps",
+      "title": "Worked example: the hold expires during driver details",
+      "steps": [
+        {
+          "title": "Search",
+          "text": "The customer searches the San Francisco airport branch for pickup on 3 November at 10:00 and return on 6 November at 10:00, branch zone America/Los_Angeles. The URL carries both branch ids, the local times and the zone, so a shared link repeats the search."
+        },
+        {
+          "title": "Choose",
+          "text": "Offer of_42 lists a compact SUV or similar for three rental days at 312.40 USD, airport fee included. The card shows the server total and adds nothing in the browser."
+        },
+        {
+          "title": "Hold",
+          "text": "Reserve sends of_42 with key hk_1 and receives hold h_9. The coordinator records the offset between serverNow and the device clock and starts the countdown from it."
+        },
+        {
+          "title": "Expire",
+          "text": "The customer steps away. The warning offers Keep holding before expiry, nobody answers, and the server expires h_9. The page moves to hold-expired and keeps every entered field."
+        },
+        {
+          "title": "Re-hold",
+          "text": "Reserve again uses a new key, hk_2, because h_9 is terminal. The server answers price-changed with offer of_57 at 338.10 USD. The page shows both totals; after the customer accepts, Reserve sends of_57 with key hk_3 and hold h_10 leads to confirmation."
+        }
+      ]
+    },
+    {
+      "type": "image",
+      "src": "questions/system-design/car-rental-booking-frontend/rental-booking-authority.svg",
+      "alt": "Car rental booking flow from a branch-local browser search through server offers, an idempotent hold and a confirmed reservation, with payment in a separate provider.",
+      "caption": "Authority flow: the browser carries intent, while offers, holds and the reservation come back from the rental backend.",
+      "width": 960,
+      "height": 540,
+      "fallbackText": "Text fallback: The browser sends branch ids, local times and the zone. The backend returns priced offers with an expiry. Reserve creates a hold with an idempotency key, and confirmation spends that hold. Payment returns an opaque reference."
+    }
+  ]
+}

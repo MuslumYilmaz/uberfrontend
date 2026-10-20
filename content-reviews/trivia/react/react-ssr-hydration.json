@@ -1,0 +1,141 @@
+{
+  "contentId": "react-ssr-hydration",
+  "tech": "react",
+  "query": "react ssr hydration interview question",
+  "reviewedAt": "2026-10-19",
+  "reviewedBy": "Claude AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "Explain what React hydration is",
+      "url": "https://www.greatfrontend.com/questions/quiz/explain-what-react-hydration-is",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's hydration quiz answer targets the same interview question and is current with React 18 and 19.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "Current API usage (hydrateRoot), mismatch causes, useId, suppressHydrationWarning and selective hydration.",
+        "States clearly that early visibility does not mean early interactivity."
+      ],
+      "theirGaps": [
+        "No HTML parse order or script loading timeline.",
+        "No client-only section pattern, no metrics and no comparison with Server Components."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Between steps 3 and 5 the buy button is on screen but has no React click handler yet"
+        ],
+        "followUpConfusion": [
+          "Deferred and module scripts run after parsing finishes",
+          "SSR renders client components to HTML and then hydrates them, so their code still ships to the browser"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "They explain the visible-but-not-interactive gap and hydration cost in general terms, without a page-level case like a server-rendered hero with a client-only section below."
+        ],
+        "actionableExamples": [
+          "Their examples cover hydrateRoot, a Suspense boundary, useId and suppressHydrationWarning; ours cover two client-only patterns and a cause-and-fix table, so examples are tied."
+        ],
+        "followUpConfusion": [
+          "They skip script loading and parse order, the two-pass pattern, TTFB, LCP and INP, and how SSR differs from Server Components."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add a minimal server and client entry pair (renderToPipeableStream with bootstrapScripts, then hydrateRoot) so the timeline has code."
+        ]
+      },
+      "winReason": "GreatFrontEnd is a strong answer on hydration itself, but our page wins on the interview's scenario (server-rendered top, client-only bottom) and on follow-ups it skips: parse order, Server Components and the metrics trade-off."
+    },
+    {
+      "label": "hydrateRoot",
+      "url": "https://react.dev/reference/react-dom/client/hydrateRoot",
+      "category": "canonical_docs",
+      "selectionReason": "The React reference for hydrateRoot is the canonical source for hydration behavior, mismatches and the two-pass pattern.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "Authoritative mismatch causes, suppressHydrationWarning limits, two-pass rendering and error callbacks."
+      ],
+      "theirGaps": [
+        "API-centric: no walk from first byte to first click, no parse order and no metrics."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "Without it, the carousel pushes the footer down when it mounts, and that layout shift counts against CLS"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The reference documents mismatch causes and the two-pass pattern but does not walk a page from the first byte to the first click."
+        ],
+        "actionableExamples": [
+          "Its live examples for hydrating a root, a whole document, suppressing a mismatch and two-pass rendering are as reusable as ours."
+        ],
+        "followUpConfusion": [
+          "It answers the main traps (typeof window checks, browser-only APIs, suppressHydrationWarning limits) authoritatively; our parse-order and metrics follow-ups do not outweigh that."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Show onRecoverableError in the mismatch section so readers can find mismatches in production, not only in development."
+        ],
+        "followUpConfusion": [
+          "Add the case of calling root.render before hydration finishes, which switches the whole root to client rendering."
+        ]
+      }
+    },
+    {
+      "label": "The Perils of Hydration",
+      "url": "https://www.joshwcomeau.com/react/the-perils-of-rehydration/",
+      "category": "tutorial_reference",
+      "selectionReason": "A widely read, recently updated tutorial built around a real hydration bug and the client-only fix.",
+      "verdicts": {
+        "realWorldUseCases": "tie",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "Opens with a real production bug and explains the logged-out flicker on large sites.",
+        "Reusable useHasMounted hook and ClientOnly wrapper."
+      ],
+      "theirGaps": [
+        "Nothing on streaming SSR, Suspense, selective hydration, hydrateRoot, suppressHydrationWarning or parse order."
+      ],
+      "ourEvidence": {
+        "followUpConfusion": [
+          "Boundaries also hydrate independently"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Its opening bug from the author's own site is as concrete as our product-page scenario."
+        ],
+        "actionableExamples": [
+          "Its useHasMounted hook and ClientOnly wrapper are reusable patterns, comparable to our two client-only patterns."
+        ],
+        "followUpConfusion": [
+          "It stops at the two-pass fix: no Suspense, selective hydration, hydrateRoot, suppressHydrationWarning or parse order."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Add a logged-in versus logged-out header example, the most common real mismatch on content sites."
+        ],
+        "actionableExamples": [
+          "Show the placeholder pattern as a reusable ClientOnly component instead of inline state."
+        ]
+      }
+    }
+  ]
+}

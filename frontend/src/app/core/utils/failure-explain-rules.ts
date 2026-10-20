@@ -373,6 +373,90 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
     }),
   },
   {
+    ruleId: 'react-battery-site-layout-rules',
+    questionId: 'react-battery-site-layout',
+    priority: 100,
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, ['follow the quantities', 'one transformer', 'never exceed 100', 'small devices', 'largest devices', 'invalid quantities', 'reset clears']) ||
+      snapshot.failCount >= 2,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-battery-site-layout-rules',
+      title: 'Derive the whole site from the raw quantities',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'Every number on screen comes from the same device list: validated batteries plus one transformer per two batteries, rounded up.',
+      ),
+      actions: [
+        'Parse each quantity as a whole number from 0 to 50 and count invalid input as 0 while showing `.qty-error`.',
+        'Add `Math.ceil(batteries / 2)` transformers, then sum the cost and the net energy over all devices.',
+        'Sort a copy largest first and put each device into the first row with room, never above 100 ft; render `data-width` on each row.',
+      ],
+      confidence: 0.86,
+    }),
+  },
+  {
+    ruleId: 'react-file-explorer-tree',
+    questionId: 'react-file-explorer',
+    priority: 100,
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, ['folders first', 'aria-expanded', 'empty folder', 'only that file', 'one tab stop', 'enters a folder', 'Enter toggles', 'Collapse all']) ||
+      snapshot.failCount >= 2,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-file-explorer-tree',
+      title: 'Render the visible tree and move one tab stop through it',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'Folders are nodes with a children array, every level sorts folders first, and the keyboard walks a flat list of the items that are on screen.',
+      ),
+      actions: [
+        'Check `node.children !== undefined` for folders and sort with `localeCompare` and `sensitivity: \'base\'`.',
+        'Write `role="treeitem"`, `aria-level`, `data-path`, `aria-expanded` on folders and `aria-selected` on files.',
+        'Give exactly one item `tabIndex` 0 and move it with focus; if a collapse hides it, use the nearest visible ancestor.',
+      ],
+      confidence: 0.84,
+    }),
+  },
+  {
+    ruleId: 'react-battery-site-layout-default',
+    questionId: 'react-battery-site-layout',
+    priority: 40,
+    matches: () => true,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-battery-site-layout-default',
+      title: 'Keep only the input in state',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'Totals, rows and the land size stay correct when one `useMemo` recomputes them from the quantity strings on every change.',
+      ),
+      actions: [
+        'Hold the raw input strings in state; never store totals or rows next to them.',
+        'Format money with `toLocaleString(\'en-US\')` and energy with `Number(value.toFixed(2))`.',
+        'Make Reset write the empty quantities back to state.',
+      ],
+      confidence: 0.72,
+    }),
+  },
+  {
+    ruleId: 'react-file-explorer-default',
+    questionId: 'react-file-explorer',
+    priority: 40,
+    matches: () => true,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-file-explorer-default',
+      title: 'Keep open folders in a set and derive the rest',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The open folder ids, the selected path and the active id are the only state; rows, levels and the tab stop all follow from them.',
+      ),
+      actions: [
+        'Store open folders in a `Set` of ids and render children inside `role="group"` only when a folder is open.',
+        'Handle clicks on the `.row`, not on the list item, so nested items do not toggle their ancestors.',
+        'Use one `onKeyDown` on the tree and find the item with `event.target.closest(\'[role="treeitem"]\')`.',
+      ],
+      confidence: 0.72,
+    }),
+  },
+  {
     ruleId: 'css-flexbox-navbar-responsive-layout',
     questionId: 'css-flexbox-navbar',
     priority: 100,
@@ -681,6 +765,25 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
     }),
   },
   {
+    ruleId: 'js-json-stringify-rules',
+    questionId: 'js-json-stringify',
+    priority: 100,
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, ['NaN and the infinities', 'values without a JSON form', 'toJSON', 'shared references', 'lone surrogates', 'control characters']) ||
+      snapshot.failCount >= 2,
+    buildHint: (snapshot) => ({
+      ruleId: 'js-json-stringify-rules',
+      title: 'Let each container decide what undefined means',
+      why: buildProgressAwareWhy(snapshot, 'A value with no JSON form serializes to undefined: arrays write null in its place, objects drop the property, and the top level returns undefined.'),
+      actions: [
+        "Call `value.toJSON(key)` first when it exists, with `''` as the key for the root.",
+        "Return `'null'` for `NaN` and the infinities, and `undefined` for functions, symbols and `undefined`.",
+        'Detect cycles with the ancestors on the current branch and pop each container when you leave it.',
+      ],
+      confidence: 0.84,
+    }),
+  },
+  {
     ruleId: 'js-filter-tree-render-indented-prune',
     questionId: 'js-filter-tree-render-indented',
     priority: 100,
@@ -986,6 +1089,23 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
         'Test the shape with `/^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i` and throw a `TypeError` otherwise.',
         'Expand `#abc` to `#aabbcc` before parsing the pairs.',
         'Leave rounding to the UI; a pass or fail comparison needs the raw ratio.',
+      ],
+      confidence: 0.72,
+    }),
+  },
+  {
+    ruleId: 'js-json-stringify-default',
+    questionId: 'js-json-stringify',
+    priority: 40,
+    matches: () => true,
+    buildHint: (snapshot) => ({
+      ruleId: 'js-json-stringify-default',
+      title: 'Normalize the value, then dispatch on its type',
+      why: buildProgressAwareWhy(snapshot, 'Every value goes through the same steps: toJSON, unwrap boxed primitives, then one branch per type.'),
+      actions: [
+        "Read values as `holder[key]` and start from `{ '': value }` so the root behaves like any child.",
+        'Unwrap `Number`, `String` and `Boolean` objects before the type switch.',
+        'Throw a `TypeError` for BigInt values and for a container that is already among its ancestors.',
       ],
       confidence: 0.72,
     }),

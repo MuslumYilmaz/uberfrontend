@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="460" viewBox="0 0 960 460" role="img" aria-labelledby="title desc">
+  <title id="title">Reconnect catch-up by inbox cursor</title>
+  <desc id="desc">The thread is live at cursor 1203. The socket closes while reply cm_17 is retrying. After reconnecting, the client asks for events after 1203 and receives events 1204 and 1205, which carry messages 483 and 484. The thread inserts 483 and confirms the pending reply as 484. An expired cursor triggers a resync of the inbox and the open thread instead.</desc>
+  <rect width="960" height="460" rx="24" fill="#f7f9fc"/>
+  <text x="40" y="56" font-family="Arial, sans-serif" font-size="26" font-weight="700" fill="#172033">Catch-up fills the gap in server order</text>
+  <g fill="#ffffff" stroke="#9aa7bc" stroke-width="2">
+    <rect x="40" y="96" width="250" height="56" rx="14"/>
+    <rect x="350" y="96" width="250" height="56" rx="14"/>
+    <rect x="660" y="96" width="260" height="56" rx="14"/>
+    <rect x="660" y="196" width="260" height="96" rx="14"/>
+  </g>
+  <g font-family="Arial, sans-serif" fill="#172033">
+    <text x="56" y="120" font-size="15" font-weight="700">Live · cursor 1203</text>
+    <text x="56" y="141" font-size="12" fill="#526078">thread confirmed up to 482</text>
+    <text x="366" y="120" font-size="15" font-weight="700">Socket closed</text>
+    <text x="366" y="141" font-size="12" fill="#526078">reply cm_17 retrying</text>
+    <text x="676" y="120" font-size="15" font-weight="700">Reconnected</text>
+    <text x="676" y="141" font-size="12" fill="#526078">GET events after 1203</text>
+    <text x="676" y="222" font-size="15" font-weight="700">Catch-up response</text>
+    <text x="676" y="248" font-size="13" fill="#526078">1204 · message 483 from Ben</text>
+    <text x="676" y="272" font-size="13" fill="#526078">1205 · message 484 carries cm_17</text>
+  </g>
+  <g stroke-width="2">
+    <rect x="40" y="330" width="180" height="40" rx="12" fill="#ffffff" stroke="#9aa7bc"/>
+    <rect x="240" y="330" width="200" height="40" rx="12" fill="#eef3ff" stroke="#315ee8"/>
+    <rect x="460" y="330" width="220" height="40" rx="12" fill="#eaf8ef" stroke="#268455"/>
+    <rect x="700" y="330" width="220" height="40" rx="12" fill="#fdecec" stroke="#c0392b"/>
+  </g>
+  <g font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#172033">
+    <text x="56" y="355">482 · last confirmed</text>
+    <text x="256" y="355">483 · inserted in order</text>
+    <text x="476" y="355">484 · confirms cm_17</text>
+    <text x="716" y="355">expired cursor · resync</text>
+  </g>
+  <g stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M290 124H350" stroke="#7950b8"/>
+    <path d="m338 114 12 10-12 10" stroke="#7950b8"/>
+    <path d="M600 124H660" stroke="#315ee8"/>
+    <path d="m648 114 12 10-12 10" stroke="#315ee8"/>
+    <path d="M790 152V196" stroke="#315ee8"/>
+    <path d="m780 184 10 12 10-12" stroke="#315ee8"/>
+    <path d="M660 260 570 330" stroke="#268455"/>
+    <path d="m572 314-2 16 15-5" stroke="#268455"/>
+    <path d="M810 292V330" stroke="#c0392b" stroke-dasharray="6 6"/>
+  </g>
+  <g font-family="Arial, sans-serif" font-size="12" fill="#526078">
+    <text x="40" y="312">Thread after catch-up</text>
+    <text x="818" y="316">if expired</text>
+  </g>
+  <text x="40" y="420" font-family="Arial, sans-serif" font-size="14" fill="#526078">Repeated events are ignored by sequence, so a replayed range never renders a message twice.</text>
+</svg>

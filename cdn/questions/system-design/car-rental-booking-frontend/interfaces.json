@@ -1,0 +1,76 @@
+{
+  "key": "I",
+  "title": "Interfaces",
+  "blocks": [
+    {
+      "type": "text",
+      "text": "RentalGateway wraps availability, holds and reservations so views never parse raw responses. Commands that can be retried carry an idempotency key, and responses that start a timer carry serverNow so the client can correct a wrong device clock."
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "code": "interface AvailabilityResponse {\n  searchId: string;\n  offers: VehicleOffer[];\n  serverNow: string;\n}\n\ntype HoldResult =\n  | { kind: 'held'; hold: VehicleHold; serverNow: string }\n  | { kind: 'price-changed'; offer: VehicleOffer }\n  | { kind: 'sold-out'; alternatives: VehicleOffer[] };\n\ninterface Reservation {\n  reservationId: string;\n  holdId: string;\n  status: 'pending' | 'confirmed' | 'failed';\n  pickupAt: LocalDateTime;\n  returnAt: LocalDateTime;\n  totalMinor: number;\n  freeCancellationUntil: LocalDateTime;\n}\n\ninterface RentalGateway {\n  searchAvailability(input: { search: RentalSearch; signal: AbortSignal }): Promise<AvailabilityResponse>;\n  createHold(input: { offerId: string; extras: string[]; idempotencyKey: string; signal: AbortSignal }): Promise<HoldResult>;\n  extendHold(input: { holdId: string; signal: AbortSignal }): Promise<VehicleHold>;\n  releaseHold(input: { holdId: string }): Promise<void>;\n  confirmReservation(input: {\n    holdId: string;\n    driver: DriverDetails;\n    paymentReference: string;\n    idempotencyKey: string;\n    signal: AbortSignal;\n  }): Promise<Reservation>;\n  getReservation(input: { reservationId: string; signal: AbortSignal }): Promise<Reservation>;\n}",
+      "validation": {
+        "kind": "contract",
+        "level": "typecheck",
+        "group": "car-rental-booking-frontend-contract"
+      }
+    },
+    {
+      "type": "code",
+      "language": "http",
+      "code": "POST /api/rental/holds HTTP/1.1\nContent-Type: application/json\nIdempotency-Key: hk_2\n\n{\"offerId\": \"of_42\", \"extras\": [\"child-seat\"]}\n\nHTTP/1.1 409 Conflict\nContent-Type: application/json\n\n{\"kind\": \"price-changed\", \"offer\": {\"offerId\": \"of_57\", \"totalMinor\": 33810, \"currency\": \"USD\"}}",
+      "validation": {
+        "kind": "protocol",
+        "protocol": "http"
+      }
+    },
+    {
+      "type": "table",
+      "title": "Rental API semantics",
+      "columns": [
+        "Operation",
+        "Identity sent",
+        "Client behavior"
+      ],
+      "rows": [
+        [
+          "GET availability",
+          "Branch ids, local times, zone and driver age",
+          "Abort superseded searches; keep only the latest searchId"
+        ],
+        [
+          "POST hold",
+          "offerId, extras and Idempotency-Key",
+          "Retry with the same key after a lost response"
+        ],
+        [
+          "POST hold extension",
+          "holdId",
+          "Offer it only while extensionsLeft is above zero"
+        ],
+        [
+          "DELETE hold",
+          "holdId",
+          "Release on a class change; a failed release is harmless because holds expire"
+        ],
+        [
+          "POST reservation",
+          "holdId, driver details, payment reference and Idempotency-Key",
+          "Keep the command until the reservation is known"
+        ],
+        [
+          "GET reservation",
+          "reservationId",
+          "Render confirmation, the free-cancellation time and branch-local times"
+        ]
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "info",
+      "title": "Accessible countdown and search feedback",
+      "text": "A polite live region announces the results count once a search settles, not on every filter change. The hold timer stays visible as text, speaks only at warning thresholds, and its warning opens a dialog with Keep holding and Release actions that work from the keyboard and return focus afterward. Date and time fields accept typed input, and every branch can be chosen from a list without the map."
+    }
+  ]
+}

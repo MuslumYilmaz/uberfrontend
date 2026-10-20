@@ -1,0 +1,70 @@
+{
+  "key": "R",
+  "title": "Requirements",
+  "blocks": [
+    {
+      "type": "steps",
+      "title": "A 20-minute messaging trace",
+      "steps": [
+        {
+          "title": "Name the member outcome",
+          "text": "A member opens the inbox, sees conversations ordered by latest activity with unread counts, opens a thread, reads new messages as they arrive and replies. Success means the server accepted each message once, every device shows the same order, and read state follows the member across tabs and phones. Follow one reply through a dropped connection, a burst in a group thread and a read on another device."
+        },
+        {
+          "title": "Draw the authority line",
+          "text": "The browser owns drafts, the optimistic outbox, scroll position and what gets announced. The messaging backend owns membership, message order, delivery, read positions and history, behind an explicit frontend contract. Push delivery, spam filtering and storage stay a black box, and the realtime channel only carries server events."
+        },
+        {
+          "title": "Order by the server, not the clock",
+          "text": "Each conversation has a server sequence that grows with every accepted message. Threads sort by sequence, and pending messages sit after the confirmed tail with a sending state. Device clocks only format time labels, so members on skewed clocks still see each reply under the message it answers."
+        },
+        {
+          "title": "Send once through retries",
+          "text": "The composer creates a clientMessageId before the first attempt and reuses it for every retry. The server stores that id with the message, so a timeout followed by a resend returns the same message, and the socket echo replaces the optimistic bubble instead of adding a second one."
+        },
+        {
+          "title": "Recover and announce calmly",
+          "text": "After a reconnect the client asks for events after its last inbox cursor; an expired cursor triggers a resync of the inbox and the open thread. Read positions are server state, so a read on a phone clears the badge on the web. The thread is a polite log that summarizes bursts and never moves focus."
+        }
+      ],
+      "editorialRole": "timeboxed-answer"
+    },
+    {
+      "type": "table",
+      "title": "Messaging authority map",
+      "columns": [
+        "Concern",
+        "Owner",
+        "Browser role"
+      ],
+      "rows": [
+        [
+          "Message order and ids",
+          "Server sequence per conversation",
+          "Sort by sequence and keep pending sends after the confirmed tail"
+        ],
+        [
+          "Unread counts",
+          "Server read positions",
+          "Show server counts and update them from read events"
+        ],
+        [
+          "Drafts and the outbox",
+          "Browser",
+          "Keep a draft per conversation and retry under the same clientMessageId"
+        ],
+        [
+          "Typing and presence",
+          "Ephemeral server signals",
+          "Show briefly, expire automatically and never store"
+        ]
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Rejected alternative: device timestamps as order",
+      "text": "We reject sorting threads by the sender's or the reader's clock. Clocks drift, phones change zones, and a message that waited in an outbox would jump above newer replies. Members would read answers before questions and stop trusting the thread, so device time only formats labels."
+    }
+  ]
+}

@@ -4836,6 +4836,28 @@
     "assetRef": "questions/javascript/coding.json#js-implement-bind"
   },
   {
+    "id": "js-json-stringify",
+    "family": "question",
+    "title": "Implement JSON.stringify",
+    "route": "/javascript/coding/js-json-stringify",
+    "tech": "javascript",
+    "difficulty": "intermediate",
+    "summary": "Implement JSON.stringify from scratch so its output matches the built-in method for primitives, strings, arrays, objects, toJSON methods and the values JSON cannot represent.",
+    "tags": [
+      "polyfills",
+      "recursion",
+      "strings",
+      "objects",
+      "edge-cases",
+      "error-handling"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 18,
+    "updatedAt": "2026-10-19",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/javascript/coding.json#js-json-stringify"
+  },
+  {
     "id": "js-lodash-get",
     "family": "question",
     "title": "Implement lodash.get",
@@ -6877,6 +6899,28 @@
     "assetRef": "questions/javascript/trivia.json#js-this-keyword"
   },
   {
+    "id": "react-battery-site-layout",
+    "family": "question",
+    "title": "Battery Site Layout Planner (Take-Home Style)",
+    "route": "/react/coding/react-battery-site-layout",
+    "tech": "react",
+    "difficulty": "hard",
+    "summary": "Build a take-home style planner for an industrial battery site: totals, automatic transformers and a row layout that never exceeds 100 ft. The behavior checks pin down the business rules a reviewer would test.",
+    "tags": [
+      "react",
+      "state",
+      "forms",
+      "algorithms",
+      "layout",
+      "typescript"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 18,
+    "updatedAt": "2026-10-19",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/coding.json#react-battery-site-layout"
+  },
+  {
     "id": "react-render-nothing-return-value",
     "family": "question",
     "title": "Can a React component return undefined?",
@@ -7007,6 +7051,28 @@
     "assetRef": "questions/react/coding.json#react-debug-api-misuse"
   },
   {
+    "id": "react-file-explorer",
+    "family": "question",
+    "title": "File Explorer Tree with Keyboard Navigation",
+    "route": "/react/coding/react-file-explorer",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "Build a file explorer tree that sorts folders first, opens and closes folders, selects files, and works fully from the keyboard as an accessible tree widget.",
+    "tags": [
+      "react",
+      "recursion",
+      "tree",
+      "accessibility",
+      "keyboard",
+      "aria"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 18,
+    "updatedAt": "2026-10-19",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/coding.json#react-file-explorer"
+  },
+  {
     "id": "react-functional-vs-class-components",
     "family": "question",
     "title": "Functional vs class components in React: what actually differs?",
@@ -7110,6 +7176,50 @@
     "updatedAt": "2026-01-30",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-fragments-dom-and-reconciliation"
+  },
+  {
+    "id": "react-ssr-hydration",
+    "family": "question",
+    "title": "How do SSR and hydration work in React? Server-rendered above the fold, client-only below",
+    "route": "/react/trivia/react-ssr-hydration",
+    "tech": "react",
+    "difficulty": "hard",
+    "summary": "With SSR the server sends finished HTML, so the browser can paint the above-the-fold content before any JavaScript runs.",
+    "tags": [
+      "react",
+      "rendering",
+      "performance",
+      "script-loading",
+      "streaming",
+      "seo"
+    ],
+    "access": "free",
+    "estimatedMinutes": 7,
+    "updatedAt": "2026-10-19",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/trivia.json#react-ssr-hydration"
+  },
+  {
+    "id": "react-code-splitting-module-federation",
+    "family": "question",
+    "title": "How do you code split a React app, and when do you need module federation instead?",
+    "route": "/react/trivia/react-code-splitting-module-federation",
+    "tech": "react",
+    "difficulty": "hard",
+    "summary": "lazy with a Suspense boundary renders that chunk as a component, with a fallback while it loads.",
+    "tags": [
+      "react",
+      "lazy-loading",
+      "performance",
+      "frontend-architecture",
+      "build",
+      "modules"
+    ],
+    "access": "free",
+    "estimatedMinutes": 7,
+    "updatedAt": "2026-10-19",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/trivia.json#react-code-splitting-module-federation"
   },
   {
     "id": "react-jsx-transform-and-why-not-required",
@@ -7953,6 +8063,28 @@
     "assetRef": "questions/react/trivia.json#react-18-whats-new"
   },
   {
+    "id": "react-state-management-redux",
+    "family": "question",
+    "title": "When does a React app need Redux? Local state vs Context vs external stores",
+    "route": "/react/trivia/react-state-management-redux",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "Redux is an external store with one-way data flow: components dispatch actions that describe what happened, pure reducers compute the next state, and each component re-renders only when the slice it selects changes.",
+    "tags": [
+      "react",
+      "state-management",
+      "global-state",
+      "context",
+      "selectors",
+      "performance"
+    ],
+    "access": "free",
+    "estimatedMinutes": 7,
+    "updatedAt": "2026-10-19",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/trivia.json#react-state-management-redux"
+  },
+  {
     "id": "react-hooks-youve-used",
     "family": "question",
     "title": "Which React Hooks have you used, and when would you choose each?",
@@ -8447,6 +8579,58 @@
     "updatedAt": "2026-08-06",
     "schemaVersion": "question.v1",
     "assetRef": "questions/system-design/cross-device-preferences-sync/meta.json"
+  },
+  {
+    "id": "car-rental-booking-frontend",
+    "family": "question",
+    "title": "Design a Car Rental Booking Frontend",
+    "route": "/system-design/car-rental-booking-frontend",
+    "tech": "system-design",
+    "difficulty": "intermediate",
+    "summary": "Design a car rental booking frontend where server offers own price and rental days, pickup times stay in the branch zone, and expiring vehicle holds recover without losing customer input.",
+    "tags": [
+      "search",
+      "state-management",
+      "date-time",
+      "time-zones",
+      "timers",
+      "concurrency",
+      "api-calls",
+      "error-handling",
+      "accessibility",
+      "frontend-architecture"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 15,
+    "updatedAt": "2026-10-19",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/system-design/car-rental-booking-frontend/meta.json"
+  },
+  {
+    "id": "messaging-inbox-frontend",
+    "family": "question",
+    "title": "Design a Real-Time Messaging Inbox",
+    "route": "/system-design/messaging-inbox-frontend",
+    "tech": "system-design",
+    "difficulty": "hard",
+    "summary": "Design a real-time messaging inbox where server sequence numbers order every thread, optimistic sends never duplicate, and reconnects catch up without gaps.",
+    "tags": [
+      "real-time",
+      "state-management",
+      "concurrency",
+      "pagination",
+      "virtualization",
+      "api-calls",
+      "error-handling",
+      "accessibility",
+      "aria",
+      "frontend-architecture"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 20,
+    "updatedAt": "2026-10-19",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/system-design/messaging-inbox-frontend/meta.json"
   },
   {
     "id": "resilient-checkout-payment-flow",

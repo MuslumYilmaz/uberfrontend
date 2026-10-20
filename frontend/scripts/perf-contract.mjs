@@ -32,6 +32,14 @@ const noWrite = process.argv.includes('--no-write');
 // roughly 2 KB of /coding row markup each, so the threshold moved from 620,000
 // to 640,000. No existing row grew; the increase pays for new list rows only.
 //
+// 2026-10-19, after all thirteen planned items: /coding reached 639,517 bytes.
+// The shared app-fa-glyph left an empty comment anchor for every icon case,
+// about 29 per glyph on 13,794 prerendered glyphs. Rendering the shapes from
+// data cut /coding to 610,119 bytes and the prerender total from 107,282,132
+// to 103,873,950. The /coding threshold moved from 640,000 to 660,000 to leave
+// room for about fifteen more list rows; the total threshold stays at
+// 109,000,000.
+//
 // "Eager JS" is the static import closure of the module scripts in index.html,
 // i.e. everything the browser must load before the app boots. The modulepreload
 // hints are not used as a budget: Angular only emits hints for the first ten
@@ -41,7 +49,7 @@ const noWrite = process.argv.includes('--no-write');
 const THRESHOLDS = {
   initialBytes: 1_400_000,
   eagerJsBytes: 1_260_000,
-  codingHtmlBytes: 640_000,
+  codingHtmlBytes: 660_000,
   totalHtmlBytes: 109_000_000,
   sentryLazyChunkBytes: 260_000,
   showcaseLazyHeavyBytes: 620_000,

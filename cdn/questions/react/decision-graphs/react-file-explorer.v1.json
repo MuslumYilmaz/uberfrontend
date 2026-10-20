@@ -1,0 +1,133 @@
+{
+  "questionId": "react-file-explorer",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "typescript",
+      "code": "import React, { useCallback, useMemo, useRef, useState } from 'react';\nimport './App.css';\n\n// The preview passes useState, useEffect, useMemo, useRef, useReducer, useContext,\n// createContext and useCallback in as globals; write anything else as React.x.\n\nexport type FileNode = {\n  id: string;\n  name: string;\n  children?: FileNode[];\n};\n\n// The project tree as the API returns it: unsorted. Treat it as given.\n// A node with a children array is a folder, even when the array is empty.\nexport const FILES: FileNode[] = [\n  { id: 'readme', name: 'README.md' },\n  {\n    id: 'src',\n    name: 'src',\n    children: [\n      { id: 'index-tsx', name: 'index.tsx' },\n      { id: 'styles', name: 'styles', children: [] },\n      { id: 'app-tsx', name: 'App.tsx' },\n      {\n        id: 'components',\n        name: 'components',\n        children: [\n          { id: 'tree-tsx', name: 'Tree.tsx' },\n          { id: 'button-tsx', name: 'Button.tsx' },\n        ],\n      },\n    ],\n  },\n  { id: 'package-json', name: 'package.json' },\n  {\n    id: 'public',\n    name: 'public',\n    children: [\n      { id: 'index-html', name: 'index.html' },\n      { id: 'favicon', name: 'favicon.ico' },\n    ],\n  },\n];\n\ntype VisibleItem = {\n  node: FileNode;\n  path: string;\n  level: number;\n  parentId: string | null;\n};\n\nconst isFolder = (node: FileNode): boolean => node.children !== undefined;\n\nfunction sortNodes(nodes: FileNode[]): FileNode[] {\n  return [...nodes].sort((a, b) => {\n    if (isFolder(a) !== isFolder(b)) return isFolder(a) ? -1 : 1;\n    return a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });\n  });\n}\n\nfunction buildParentMap(nodes: FileNode[], parentId: string | null, map: Map<string, string | null>) {\n  for (const node of nodes) {\n    map.set(node.id, parentId);\n    if (node.children) buildParentMap(node.children, node.id, map);\n  }\n  return map;\n}\n\nconst PARENT_OF = buildParentMap(FILES, null, new Map<string, string | null>());\n\nfunction visibleItems(nodes: FileNode[], expanded: Set<string>, parent: VisibleItem | null): VisibleItem[] {\n  return sortNodes(nodes).flatMap((node) => {\n    const item: VisibleItem = {\n      node,\n      path: parent ? `${parent.path}/${node.name}` : node.name,\n      level: parent ? parent.level + 1 : 1,\n      parentId: parent ? parent.node.id : null,\n    };\n    const open = isFolder(node) && expanded.has(node.id);\n    return open ? [item, ...visibleItems(node.children ?? [], expanded, item)] : [item];\n  });\n}\n\nexport default function App() {\n  const [expanded, setExpanded] = useState<Set<string>>(() => new Set());\n  const [selectedPath, setSelectedPath] = useState<string | null>(null);\n  const [activeId, setActiveId] = useState<string>(() => sortNodes(FILES)[0].id);\n  const itemRefs = useRef(new Map<string, HTMLLIElement>());\n\n  const visible = useMemo(() => visibleItems(FILES, expanded, null), [expanded]);\n\n  // The tab stop must stay visible: if the active item sits inside a collapsed\n  // folder, the nearest visible ancestor takes over.\n  const tabStopId = useMemo(() => {\n    const visibleIds = new Set(visible.map((item) => item.node.id));\n    let id: string | null = activeId;\n    while (id !== null && !visibleIds.has(id)) id = PARENT_OF.get(id) ?? null;\n    return id ?? visible[0].node.id;\n  }, [visible, activeId]);\n\n  const focusItem = useCallback((id: string) => {\n    setActiveId(id);\n    itemRefs.current.get(id)?.focus();\n  }, []);\n\n  const toggle = useCallback((id: string) => {\n    setExpanded((current) => {\n      const next = new Set(current);\n      if (next.has(id)) next.delete(id);\n      else next.add(id);\n      return next;\n    });\n  }, []);\n\n  const activate = (item: VisibleItem) => {\n    if (isFolder(item.node)) toggle(item.node.id);\n    else setSelectedPath(item.path);\n  };\n\n  const onKeyDown = (event: React.KeyboardEvent<HTMLUListElement>) => {\n    const target = (event.target as HTMLElement).closest('[role=\"treeitem\"]');\n    const index = visible.findIndex((item) => item.node.id === target?.getAttribute('data-id'));\n    if (index < 0) return;\n    const item = visible[index];\n    const open = isFolder(item.node) && expanded.has(item.node.id);\n    const next = visible[index + 1];\n\n    switch (event.key) {\n      case 'ArrowDown':\n        if (next) focusItem(next.node.id);\n        break;\n      case 'ArrowUp':\n        if (index > 0) focusItem(visible[index - 1].node.id);\n        break;\n      case 'Home':\n        focusItem(visible[0].node.id);\n        break;\n      case 'End':\n        focusItem(visible[visible.length - 1].node.id);\n        break;\n      case 'ArrowRight':\n        if (isFolder(item.node) && !open) toggle(item.node.id);\n        else if (open && next && next.parentId === item.node.id) focusItem(next.node.id);\n        break;\n      case 'ArrowLeft':\n        if (open) toggle(item.node.id);\n        else if (item.parentId) focusItem(item.parentId);\n        break;\n      case 'Enter':\n        activate(item);\n        break;\n      default:\n        return;\n    }\n    event.preventDefault();\n  };\n\n  const renderNodes = (nodes: FileNode[], parent: VisibleItem | null): React.ReactNode =>\n    sortNodes(nodes).map((node) => {\n      const item: VisibleItem = {\n        node,\n        path: parent ? `${parent.path}/${node.name}` : node.name,\n        level: parent ? parent.level + 1 : 1,\n        parentId: parent ? parent.node.id : null,\n      };\n      const folder = isFolder(node);\n      const open = folder && expanded.has(node.id);\n      return (\n        <li\n          key={node.id}\n          role=\"treeitem\"\n          data-id={node.id}\n          data-path={item.path}\n          aria-level={item.level}\n          aria-expanded={folder ? open : undefined}\n          aria-selected={folder ? undefined : selectedPath === item.path}\n          tabIndex={tabStopId === node.id ? 0 : -1}\n          className={folder ? 'item item--folder' : 'item item--file'}\n          ref={(element) => {\n            if (element) itemRefs.current.set(node.id, element);\n            else itemRefs.current.delete(node.id);\n          }}\n          onFocus={(event) => {\n            if (event.target === event.currentTarget) setActiveId(node.id);\n          }}\n        >\n          <span\n            className=\"row\"\n            style={{ paddingLeft: `${(item.level - 1) * 18 + 10}px` }}\n            onClick={() => {\n              focusItem(node.id);\n              activate(item);\n            }}\n          >\n            <span className=\"icon\" aria-hidden=\"true\">{folder ? (open ? '▾' : '▸') : '•'}</span>\n            <span className=\"name\">{node.name}</span>\n          </span>\n          {open && (\n            <ul role=\"group\">\n              {node.children && node.children.length > 0 ? (\n                renderNodes(node.children, item)\n              ) : (\n                <li role=\"none\" className=\"empty\" style={{ paddingLeft: `${item.level * 18 + 10}px` }}>\n                  Empty folder\n                </li>\n              )}\n            </ul>\n          )}\n        </li>\n      );\n    });\n\n  return (\n    <main className=\"main\">\n      <section className=\"card\">\n        <header className=\"header\">\n          <h1 className=\"title\">Project files</h1>\n          <p className=\"subtitle\">Arrow keys move, Right opens, Left closes, Enter selects.</p>\n        </header>\n        <div className=\"toolbar\">\n          <button type=\"button\" className=\"collapse-all\" onClick={() => setExpanded(new Set())}>\n            Collapse all\n          </button>\n          <p className=\"selection\" aria-live=\"polite\">\n            {selectedPath ? `Selected: ${selectedPath}` : 'Nothing selected'}\n          </p>\n        </div>\n        <ul role=\"tree\" aria-label=\"Project files\" className=\"tree\" onKeyDown={onKeyDown}>\n          {renderNodes(FILES, null)}\n        </ul>\n      </section>\n    </main>\n  );\n}\n",
+      "nodes": [
+        {
+          "id": "f1-folder-means-children-array",
+          "title": "A folder is any node with a children array",
+          "anchor": {
+            "lineStart": 52,
+            "lineEnd": 52,
+            "snippet": "const isFolder = (node: FileNode): boolean => node.children !== undefined;"
+          },
+          "why": "An empty folder has children: [] and must still open, close and show that it is empty.",
+          "alternative": "Treat nodes with at least one child as folders.",
+          "tradeoff": "Checking the length turns every empty folder into a file."
+        },
+        {
+          "id": "f2-folders-first-case-insensitive",
+          "title": "Sort folders first, then by name ignoring case",
+          "anchor": {
+            "lineStart": 57,
+            "lineEnd": 57,
+            "snippet": "return a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });"
+          },
+          "why": "File explorers group folders above files, and README.md belongs between package.json and other files, not before them because of its capital letters.",
+          "alternative": "Sort by raw string comparison.",
+          "tradeoff": "Plain comparison puts every capitalized name before every lowercase one."
+        },
+        {
+          "id": "f3-flatten-only-visible-items",
+          "title": "Flatten only the items that are visible",
+          "anchor": {
+            "lineStart": 80,
+            "lineEnd": 80,
+            "snippet": "return open ? [item, ...visibleItems(node.children ?? [], expanded, item)] : [item];"
+          },
+          "why": "Keyboard movement walks the visible rows in order, so a flat list of what is on screen makes ArrowDown, ArrowUp, Home and End one-line lookups.",
+          "alternative": "Query the DOM for the next treeitem on every key press.",
+          "tradeoff": "DOM queries work but couple the logic to markup; the flat list is also easy to test."
+        },
+        {
+          "id": "f4-tab-stop-stays-visible",
+          "title": "Keep the tab stop on a visible item",
+          "anchor": {
+            "lineStart": 97,
+            "lineEnd": 97,
+            "snippet": "while (id !== null && !visibleIds.has(id)) id = PARENT_OF.get(id) ?? null;"
+          },
+          "why": "When a collapse hides the active item, its nearest visible ancestor takes the tab stop, so Tab still reaches the tree.",
+          "alternative": "Store the tab stop and update it in every handler that can hide items.",
+          "tradeoff": "Deriving it during render covers Collapse all, clicks and keys with one rule."
+        },
+        {
+          "id": "f5-focus-and-tab-stop-together",
+          "title": "Move focus and the tab stop together",
+          "anchor": {
+            "lineStart": 103,
+            "lineEnd": 103,
+            "snippet": "itemRefs.current.get(id)?.focus();"
+          },
+          "why": "Roving tabindex means the focused item is also the only item with tabIndex 0.",
+          "alternative": "Use aria-activedescendant and keep focus on the list.",
+          "tradeoff": "Active-descendant avoids moving focus but is less reliable across screen readers."
+        },
+        {
+          "id": "f6-key-from-focused-item",
+          "title": "Read the key from the item that has focus",
+          "anchor": {
+            "lineStart": 121,
+            "lineEnd": 121,
+            "snippet": "const target = (event.target as HTMLElement).closest('[role=\"treeitem\"]');"
+          },
+          "why": "One keydown handler on the tree serves every item; the event target tells which item the user is on.",
+          "alternative": "Attach a handler to every item.",
+          "tradeoff": "Per-item handlers multiply closures and bubble into ancestors anyway."
+        },
+        {
+          "id": "f7-right-enters-left-climbs",
+          "title": "Right opens, then enters; Left closes, then climbs",
+          "anchor": {
+            "lineStart": 143,
+            "lineEnd": 143,
+            "snippet": "else if (open && next && next.parentId === item.node.id) focusItem(next.node.id);"
+          },
+          "why": "This is the tree view keyboard pattern: a second ArrowRight moves into the first child, and ArrowLeft on a closed item goes to its parent.",
+          "alternative": "Let ArrowRight only toggle folders.",
+          "tradeoff": "Users then need ArrowDown to enter a folder, which breaks the expected pattern."
+        },
+        {
+          "id": "f8-states-on-the-right-nodes",
+          "title": "aria-expanded on folders, aria-selected on files",
+          "anchor": {
+            "lineStart": 175,
+            "lineEnd": 175,
+            "snippet": "aria-expanded={folder ? open : undefined}"
+          },
+          "why": "Assistive technology announces expandable items from aria-expanded, so files must not carry it.",
+          "alternative": "Set aria-expanded on every item.",
+          "tradeoff": "Files would be announced as collapsed folders."
+        },
+        {
+          "id": "f9-click-the-row",
+          "title": "Handle clicks on the row, not on the list item",
+          "anchor": {
+            "lineStart": 188,
+            "lineEnd": 188,
+            "snippet": "className=\"row\""
+          },
+          "why": "List items nest, so a click handler on the li would also fire for every ancestor folder.",
+          "alternative": "Stop propagation in an li click handler.",
+          "tradeoff": "A row handler has nothing to stop and keeps the hit area obvious."
+        },
+        {
+          "id": "f10-children-only-when-open",
+          "title": "Render children only when the folder is open",
+          "anchor": {
+            "lineStart": 199,
+            "lineEnd": 199,
+            "snippet": "<ul role=\"group\">"
+          },
+          "why": "Closed folders keep their children out of the DOM, so hidden items can never receive focus.",
+          "alternative": "Render every level and hide closed ones with CSS.",
+          "tradeoff": "Hidden but focusable items break keyboard order unless every one is also removed from the tab order."
+        }
+      ]
+    }
+  }
+}

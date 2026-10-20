@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="460" viewBox="0 0 960 460" role="img" aria-labelledby="title desc">
+  <title id="title">Vehicle hold lifecycle on the server clock</title>
+  <desc id="desc">An offer becomes an active hold through Reserve with an idempotency key and later converts into a confirmed reservation. Before expiry a warning dialog can extend the hold. Without an answer the server expires it, and Reserve runs again with a new key, which returns held, price-changed with both totals, or sold-out with alternatives.</desc>
+  <rect width="960" height="460" rx="24" fill="#f7f9fc"/>
+  <text x="40" y="56" font-family="Arial, sans-serif" font-size="26" font-weight="700" fill="#172033">A hold lives on the server clock</text>
+  <g fill="#ffffff" stroke="#9aa7bc" stroke-width="2">
+    <rect x="40" y="96" width="160" height="56" rx="14"/>
+    <rect x="300" y="96" width="200" height="56" rx="14"/>
+    <rect x="600" y="96" width="320" height="56" rx="14"/>
+    <rect x="300" y="210" width="200" height="56" rx="14"/>
+    <rect x="40" y="210" width="160" height="56" rx="14"/>
+    <rect x="40" y="330" width="200" height="56" rx="14"/>
+  </g>
+  <g stroke-width="2">
+    <rect x="330" y="300" width="290" height="38" rx="12" fill="#eaf8ef" stroke="#268455"/>
+    <rect x="330" y="346" width="290" height="38" rx="12" fill="#fff6e5" stroke="#b7791f"/>
+    <rect x="330" y="392" width="290" height="38" rx="12" fill="#fdecec" stroke="#c0392b"/>
+  </g>
+  <g font-family="Arial, sans-serif" fill="#172033">
+    <text x="56" y="120" font-size="15" font-weight="700">Offer of_42</text>
+    <text x="56" y="141" font-size="12" fill="#526078">server price, expiresAt</text>
+    <text x="316" y="120" font-size="15" font-weight="700">Active hold h_9</text>
+    <text x="316" y="141" font-size="12" fill="#526078">countdown from serverNow</text>
+    <text x="616" y="120" font-size="15" font-weight="700">Confirmed reservation</text>
+    <text x="616" y="141" font-size="12" fill="#526078">receipt renders from server state</text>
+    <text x="316" y="234" font-size="15" font-weight="700">Warning dialog</text>
+    <text x="316" y="255" font-size="12" fill="#526078">Keep holding or Release</text>
+    <text x="56" y="234" font-size="15" font-weight="700">Hold expired</text>
+    <text x="56" y="255" font-size="12" fill="#526078">server clock decides</text>
+    <text x="56" y="354" font-size="15" font-weight="700">Reserve again</text>
+    <text x="56" y="375" font-size="12" fill="#526078">new key hk_2</text>
+    <text x="346" y="324" font-size="14" font-weight="700">held: a new live hold</text>
+    <text x="346" y="370" font-size="14" font-weight="700">price-changed: show both totals</text>
+    <text x="346" y="416" font-size="14" font-weight="700">sold-out: offer alternatives</text>
+  </g>
+  <g stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M200 124H300" stroke="#315ee8"/>
+    <path d="m288 114 12 10-12 10" stroke="#315ee8"/>
+    <path d="M500 124H600" stroke="#268455"/>
+    <path d="m588 114 12 10-12 10" stroke="#268455"/>
+    <path d="M380 152V210" stroke="#7950b8"/>
+    <path d="m370 198 10 12 10-12" stroke="#7950b8"/>
+    <path d="M430 210V152" stroke="#268455"/>
+    <path d="m420 164 10-12 10 12" stroke="#268455"/>
+    <path d="M300 238H200" stroke="#c0392b"/>
+    <path d="m212 228-12 10 12 10" stroke="#c0392b"/>
+    <path d="M120 266V330" stroke="#315ee8"/>
+    <path d="m110 318 10 12 10-12" stroke="#315ee8"/>
+    <path d="M240 352 330 319" stroke="#526078"/>
+    <path d="M240 358H330" stroke="#526078"/>
+    <path d="M240 364 330 411" stroke="#526078"/>
+  </g>
+  <g font-family="Arial, sans-serif" font-size="12" fill="#526078">
+    <text x="250" y="112" text-anchor="middle">Reserve · hk_1</text>
+    <text x="550" y="112" text-anchor="middle">confirm · holdId</text>
+    <text x="372" y="186" text-anchor="end">before expiry</text>
+    <text x="438" y="186">extend</text>
+    <text x="250" y="228" text-anchor="middle">no answer</text>
+  </g>
+  <g font-family="Arial, sans-serif" font-size="13" fill="#526078">
+    <text x="660" y="230">Every branch keeps extras</text>
+    <text x="660" y="250">and driver details; only a</text>
+    <text x="660" y="270">confirmed reservation shows</text>
+    <text x="660" y="290">a receipt.</text>
+  </g>
+</svg>

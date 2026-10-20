@@ -1516,6 +1516,28 @@
     ],
     "tesla": [
       {
+        "id": "react-battery-site-layout",
+        "kind": "coding",
+        "tech": "react",
+        "title": "Battery Site Layout Planner (Take-Home Style)",
+        "access": "premium",
+        "route": "/react/coding/react-battery-site-layout",
+        "sources": [
+          {
+            "label": "GitHub: repository with the Tesla Energy UI evaluation brief, 2026",
+            "url": "https://github.com/HarryXiong24/tesla-energy-service-demo-project",
+            "publisher": "GitHub",
+            "date": "2026-02"
+          },
+          {
+            "label": "GitHub: Tesla Energy Sales Engineering take-home submission, 2024",
+            "url": "https://github.com/jasssse/tesla-takehome",
+            "publisher": "GitHub",
+            "date": "2024-09"
+          }
+        ]
+      },
+      {
         "id": "js-color-contrast-ratio",
         "kind": "coding",
         "tech": "javascript",
@@ -1640,6 +1662,21 @@
             "url": "https://github.com/poornasaiv/Tesla_Interview_Coding",
             "publisher": "GitHub",
             "date": "2025-08"
+          }
+        ]
+      },
+      {
+        "id": "car-rental-booking-frontend",
+        "kind": "system-design",
+        "title": "Design a Car Rental Booking Frontend",
+        "access": "premium",
+        "route": "/system-design/car-rental-booking-frontend",
+        "sources": [
+          {
+            "label": "Taro: Tesla front end developer interview, Fremont, January 2024",
+            "url": "https://www.jointaro.com/interviews/companies/tesla/experiences/front-end-developer-fremont-ca-january-1-2024-no-offer-neutral-9e5d4e3f/",
+            "publisher": "Taro",
+            "date": "2024-01"
           }
         ]
       }
@@ -1822,6 +1859,21 @@
             "url": "https://medium.com/@phalgun99/my-interview-experience-at-walmart-global-tech-for-the-software-engineer-3-ui-position-9751c81988ee",
             "publisher": "Medium",
             "date": "2024-11"
+          }
+        ]
+      },
+      {
+        "id": "messaging-inbox-frontend",
+        "kind": "system-design",
+        "title": "Design a Real-Time Messaging Inbox",
+        "access": "premium",
+        "route": "/system-design/messaging-inbox-frontend",
+        "sources": [
+          {
+            "label": "Blind: Walmart interview for frontend software engineer III, January 2022",
+            "url": "https://www.teamblind.com/post/Walmart-Interview-for-Frontend-software-engineer-III-TQhXf1X5",
+            "publisher": "Blind",
+            "date": "2022-01"
           }
         ]
       }

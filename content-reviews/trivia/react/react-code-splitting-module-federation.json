@@ -1,0 +1,140 @@
+{
+  "contentId": "react-code-splitting-module-federation",
+  "tech": "react",
+  "query": "react code splitting module federation interview question",
+  "reviewedAt": "2026-10-19",
+  "reviewedBy": "Claude AI draft",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": true
+  },
+  "competitors": [
+    {
+      "label": "What is code splitting in a React application?",
+      "url": "https://www.greatfrontend.com/questions/quiz/what-is-code-splitting-in-a-react-application",
+      "category": "interview_prep",
+      "selectionReason": "GreatFrontEnd's quiz answer targets the same React code splitting interview question and is current with React 19.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "Clear coverage of dynamic import, React.lazy with Suspense, route splitting, an error boundary and preloading on hover or focus.",
+        "Names the cost of over-splitting."
+      ],
+      "theirGaps": [
+        "No module federation or micro-frontend coverage.",
+        "Nothing on startTransition, SSR, request waterfalls, bundle measurement or the named-export mapping."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "two other teams want to ship the cart and the account pages on their own release schedules"
+        ],
+        "followUpConfusion": [
+          "React keeps the current screen instead of replacing already visible content with the fallback",
+          "That async boundary gives webpack time to load the remote entries and agree on shared versions before any component code runs"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "They split dashboard and settings routes and mention a deploy mismatch in passing, but never reach the multi-team case that module federation answers."
+        ],
+        "actionableExamples": [
+          "Their code covers dynamic import, React.lazy with Suspense, route splitting, an error boundary and hover preloading, close to ours; we add the named-export mapping and federation config, so examples stay tied."
+        ],
+        "followUpConfusion": [
+          "They skip startTransition, SSR, request waterfalls, bundle measurement and module federation entirely."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add a framework-level example, such as a React Router route module with a lazy loader, so readers see the splitting they get without React.lazy."
+        ]
+      },
+      "winReason": "GreatFrontEnd covers the React.lazy basics well, but this interview pairs code splitting with module federation, and our page answers that part plus the follow-ups it skips: transitions, SSR, waterfalls and stale chunks after deploys."
+    },
+    {
+      "label": "lazy",
+      "url": "https://react.dev/reference/react/lazy",
+      "category": "canonical_docs",
+      "selectionReason": "The React reference for lazy is the canonical source for component-level code splitting rules.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "Authoritative rules: default export only, the cached promise, rejection to the nearest error boundary, and top-level declaration."
+      ],
+      "theirGaps": [
+        "API-centric: no guidance on where to split, no deploy failures and no module federation."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "It contains the storefront every visitor needs, plus an admin dashboard, a charting library and a rich-text editor that only a few users ever open"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The reference explains lazy loading with a Markdown preview toggle, an API example rather than a production splitting plan."
+        ],
+        "actionableExamples": [
+          "Its sandboxes for lazy with Suspense and the top-level declaration fix are as reusable as our examples."
+        ],
+        "followUpConfusion": [
+          "It answers the core traps authoritatively: default export only, cached promise, rejection to the nearest error boundary, and state reset when lazy is declared inside a component."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add a measured before-and-after bundle size for the route split, so the payoff is shown with numbers."
+        ],
+        "followUpConfusion": [
+          "Add the state reset symptom (inputs clearing on every parent render) next to the top-level declaration comment, so readers can recognize the bug."
+        ]
+      }
+    },
+    {
+      "label": "Module Federation",
+      "url": "https://webpack.js.org/concepts/module-federation/",
+      "category": "canonical_docs",
+      "selectionReason": "The webpack concept page is the canonical source for module federation containers, remotes and shared modules.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "tie"
+      },
+      "theirStrengths": [
+        "Precise definitions of containers, remotes and shared modules, dynamic remotes, and the eager consumption error with the async boundary fix."
+      ],
+      "theirGaps": [
+        "Build-architecture use cases only: no team trade-offs, no React-specific traps and no comparison with code splitting."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "A broken or slow remote now breaks a region of the host in production"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Its use cases are build-architecture ones (separate builds per page, a components library as a container), not the team and failure trade-offs an interviewer probes."
+        ],
+        "actionableExamples": [
+          "Its configuration examples and the async boundary diff are as concrete as ours."
+        ],
+        "followUpConfusion": [
+          "It documents the eager consumption error, dynamic remotes and share scopes in more technical depth; our React-specific traps (singleton React, Invalid hook call) do not outweigh that."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add a dynamic remote example, with the remote URL resolved at runtime, for apps whose remote locations differ per environment."
+        ],
+        "followUpConfusion": [
+          "Add the follow-up on versioning remotes: how a host pins or rolls back a remote when a release breaks it."
+        ]
+      }
+    }
+  ]
+}

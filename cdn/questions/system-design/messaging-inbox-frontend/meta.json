@@ -1,0 +1,131 @@
+{
+  "id": "messaging-inbox-frontend",
+  "title": "Design a Real-Time Messaging Inbox",
+  "description": "Design a person-to-person messaging inbox with server-ordered threads, optimistic sends that never duplicate, reconnect catch-up, cross-device read state, and an accessible message log.",
+  "tags": [
+    "real-time",
+    "state-management",
+    "concurrency",
+    "pagination",
+    "virtualization",
+    "api-calls",
+    "error-handling",
+    "accessibility",
+    "aria",
+    "frontend-architecture"
+  ],
+  "companies": [
+    "walmart"
+  ],
+  "type": "system-design",
+  "sections": [
+    {
+      "key": "R",
+      "title": "Requirements",
+      "file": "requirements.json"
+    },
+    {
+      "key": "A",
+      "title": "Architecture",
+      "file": "architecture.json"
+    },
+    {
+      "key": "D",
+      "title": "Data",
+      "file": "data.json"
+    },
+    {
+      "key": "I",
+      "title": "Interfaces",
+      "file": "interfaces.json"
+    },
+    {
+      "key": "O",
+      "title": "Optimizations",
+      "file": "optimizations.json"
+    }
+  ],
+  "updatedAt": "2026-10-19",
+  "seo": {
+    "title": "Real-Time Messaging Inbox System Design",
+    "description": "Design a messaging inbox: server-ordered threads, optimistic sends without duplicates, reconnect catch-up, cross-device read state, accessible logs."
+  },
+  "premiumPreview": {
+    "summary": "Design a real-time messaging inbox where server sequence numbers order every thread, optimistic sends never duplicate, and reconnects catch up without gaps.",
+    "learningOutcomes": [
+      "Separate the server message log, the optimistic outbox and ephemeral typing signals.",
+      "Keep one client message id across retries, reconnects and the realtime echo.",
+      "Catch up after a dropped connection with an inbox cursor and resync when it expires.",
+      "Build an accessible message log that summarizes bursts and keeps focus stable."
+    ],
+    "unlockDescription": "Premium unlocks the reconnect worked example, the typed messaging contracts, the catch-up API semantics, and the busy-group accessibility walkthrough."
+  },
+  "editorial": {
+    "draftSource": "content-drafts/system-design/messaging-inbox-frontend.md",
+    "primaryKeyword": "real-time messaging inbox system design",
+    "searchIntent": "Prepare a frontend system design answer for a real-time messaging inbox.",
+    "readerPromise": "The reader can explain server-ordered threads, deduplicated optimistic sends, reconnect catch-up, cross-device read state and an accessible message log for a messaging product.",
+    "uniqueAngle": "Follow one reply through a dropped connection, a catch-up by inbox cursor, a burst in a busy group and a read on another device, with the server owning order and read state.",
+    "factCheckedAt": "2026-10-19",
+    "reviewedBy": "FrontendAtlas editorial",
+    "companyEvidence": [
+      {
+        "company": "walmart",
+        "evidenceType": "reported-interview-question",
+        "sourceUrl": "https://www.teamblind.com/post/Walmart-Interview-for-Frontend-software-engineer-III-TQhXf1X5",
+        "sourceTitle": "Walmart interview for frontend software engineer III, January 2022 (Blind)",
+        "checkedAt": "2026-10-19"
+      }
+    ]
+  },
+  "sources": [
+    {
+      "label": "Blind: Walmart interview for frontend software engineer III, January 2022",
+      "url": "https://www.teamblind.com/post/Walmart-Interview-for-Frontend-software-engineer-III-TQhXf1X5",
+      "company": "walmart",
+      "publisher": "Blind",
+      "date": "2022-01",
+      "note": "A Walmart-badged reply on this thread says frontend system design rounds include designing a professional network chat and search autocomplete, and that accessibility questions come up. This inbox practises the chat shape; it is not a reported prompt."
+    }
+  ],
+  "contentSchemaVersion": 2,
+  "practice": {
+    "targetLevel": "senior",
+    "timeboxMinutes": 20,
+    "candidatePrompt": "Design the messaging inbox for a professional network. Members see conversations with unread counts and open threads that update in real time. Messages sent during a dropped connection must not duplicate or reorder, read state must sync across devices, and old history loads on demand. Assign authority among the composer, local thread, realtime channel and server log. Explain ordering, optimistic sends, reconnect catch-up and an accessible message log.",
+    "constraints": [
+      "The server assigns message order.",
+      "Retries reuse one client id.",
+      "Read state belongs to the member, not the tab."
+    ],
+    "expectedDecisions": [
+      "Separate the server message log, the optimistic outbox, thread view state and ephemeral typing signals.",
+      "Reconcile sends and reconnects through clientMessageId, per-conversation sequence and an inbox cursor.",
+      "Announce and navigate messages accessibly without flooding screen readers or stealing focus."
+    ],
+    "prerequisites": [
+      "WebSocket basics",
+      "Cursor pagination",
+      "ARIA live regions"
+    ],
+    "coreSkills": [
+      "Ordering and deduplication",
+      "Reconnect recovery",
+      "Cross-device read state",
+      "Accessible live content"
+    ],
+    "guidedMock": false,
+    "evaluationSpine": {
+      "mustCover": [
+        "Server sequence numbers order threads; device clocks never do.",
+        "One clientMessageId survives every retry and reconnect."
+      ],
+      "strongSignals": [
+        "Reconnect replays events after the last cursor or resyncs.",
+        "The thread is a polite log that summarizes bursts."
+      ],
+      "expertStretch": "Sharing one connection across tabs with edits and deletes.",
+      "redFlag": "Device time orders messages or retries mint new ids."
+    }
+  }
+}

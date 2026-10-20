@@ -1522,6 +1522,18 @@ export const PUBLIC_QUESTION_NAVIGATION: readonly PublicQuestionNavigationItem[]
   {
     "tech": "react",
     "kind": "trivia",
+    "title": "How do SSR and hydration work in React? Server-rendered above the fold, client-only below",
+    "route": "/react/trivia/react-ssr-hydration"
+  },
+  {
+    "tech": "react",
+    "kind": "trivia",
+    "title": "How do you code split a React app, and when do you need module federation instead?",
+    "route": "/react/trivia/react-code-splitting-module-federation"
+  },
+  {
+    "tech": "react",
+    "kind": "trivia",
     "title": "How does JSX get transformed, and why doesn’t React require it?",
     "route": "/react/trivia/react-jsx-transform-and-why-not-required"
   },
@@ -1578,6 +1590,12 @@ export const PUBLIC_QUESTION_NAVIGATION: readonly PublicQuestionNavigationItem[]
     "kind": "trivia",
     "title": "What's new in React 18?",
     "route": "/react/trivia/react-18-whats-new"
+  },
+  {
+    "tech": "react",
+    "kind": "trivia",
+    "title": "When does a React app need Redux? Local state vs Context vs external stores",
+    "route": "/react/trivia/react-state-management-redux"
   },
   {
     "tech": "react",
