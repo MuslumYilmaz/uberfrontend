@@ -1,7 +1,7 @@
 import crypto from 'node:crypto';
 import path from 'node:path';
 import ts from 'typescript';
-import { parseFragment, serialize } from 'parse5';
+import { parseFragment, serialize, serializeOuter } from 'parse5';
 import { buildFrameworkFamilyByIdMap, collectCompanyCounts } from './gen-showcase-stats.mjs';
 import { collectSeoContentAssets } from './seo-content-assets.mjs';
 import { parseTypeScript } from './content-typescript.mjs';
@@ -9,7 +9,7 @@ import { AUTHORED_COMPANIES, AUTHORED_COMPANY_SET } from './authored-companies.m
 
 // Increment when the meaning of a projection changes. This module deliberately
 // has no filesystem or Git access: the same projection reads a worktree or a commit.
-export const PROJECTION_VERSION = 'seo-content-v2';
+export const PROJECTION_VERSION = 'seo-content-v3';
 const APP = 'frontend/src/app/';
 const ROUTES = `${APP}app.routes.ts`;
 const GUIDES = `${APP}shared/guides/guide.registry.ts`;
@@ -112,6 +112,26 @@ function dateOnly(node) {
 
 // Object literals keyed by company slug: a company page keeps only its own entry.
 const COMPANY_SCOPED_REGISTRIES = new Set(['AUTHORED_COMPANY_PREVIEWS', 'COMPANY_OFFICIAL_GUIDES', 'COMPANY_INTERVIEW_PROCESSES']);
+// Companies whose guide is written inline in the shared preview component: the *ngIf flag of
+// their template branch and the method that publishes their structured data.
+const LEGACY_COMPANY_BRANCHES = {
+  openai: { flag: 'isOpenAiPreview', seo: 'publishOpenAiSeo' },
+  google: { flag: 'isGooglePreview', seo: 'publishGoogleSeo' },
+  netflix: { flag: 'isNetflixPreview', seo: 'publishNetflixSeo' },
+};
+
+function legacyBranch(source, flag) {
+  let found = null;
+  function visit(node) {
+    if (found) return;
+    const condition = node.attrs?.find((attr) => attr.name.toLowerCase() === '*ngif')?.value?.trim();
+    if (condition && (condition === flag || condition.startsWith(`${flag};`))) { found = serializeOuter(node); return; }
+    node.childNodes?.forEach(visit);
+    if (node.content) visit(node.content);
+  }
+  visit(parseFragment(source));
+  return found;
+}
 
 function projectNode(node, scope = {}) {
   if (!node) return null;
@@ -137,7 +157,9 @@ function projectNode(node, scope = {}) {
     const knownPrefix = companyPrefix && (AUTHORED_COMPANY_SET.has(companyPrefix) || scope.companyPrefixes?.has(companyPrefix));
     if (knownPrefix && companyPrefix !== scope.company.replace(/-/g, '')) return null;
     if (ts.isVariableDeclaration(node) && COMPANY_SCOPED_REGISTRIES.has(name) && ts.isObjectLiteralExpression(node.initializer)) {
-      return [name, ...node.initializer.properties.filter((property) => propertyName(property.name) === scope.company).map((property) => projectNode(property, scope))];
+      // A company without an entry renders nothing from the registry, so wiring one in cannot re-date it.
+      const own = node.initializer.properties.filter((property) => propertyName(property.name) === scope.company).map((property) => projectNode(property, scope));
+      return own.length ? [name, ...own] : null;
     }
   }
   if (scope.tech && /^(?:REACT|ANGULAR|VUE)_/.test(name) && !name.startsWith(`${scope.tech.toUpperCase()}_`)) return null;
@@ -252,14 +274,24 @@ function contentDependency(from, target) {
     && !/\.(?:model|service|guard|resolver)\.ts$/.test(target);
 }
 
-function selectedStatements(source, names) {
+function selectedStatements(source, names, scope = {}) {
   if (!names?.length) return source.statements;
   const wanted = new Set(names);
   let selected = [];
   for (let pass = 0; pass < source.statements.length; pass += 1) {
     selected = source.statements.filter((statement) => declarationNames(statement).some((name) => wanted.has(name)));
     const before = wanted.size;
-    function visit(node) { if (ts.isIdentifier(node)) wanted.add(node.text); node.forEachChild(visit); }
+    function visit(node) {
+      if (ts.isIdentifier(node)) wanted.add(node.text);
+      // A company page follows only its own entry of a company-keyed registry, so a helper
+      // that only other companies' entries call takes no part.
+      if (scope.company && ts.isVariableDeclaration(node) && COMPANY_SCOPED_REGISTRIES.has(propertyName(node.name))
+        && ts.isObjectLiteralExpression(node.initializer)) {
+        node.initializer.properties.filter((property) => propertyName(property.name) === scope.company).forEach(visit);
+        return;
+      }
+      node.forEachChild(visit);
+    }
     selected.forEach(visit);
     if (before === wanted.size) break;
   }
@@ -282,9 +314,26 @@ function tsContent(reader, file, parts, sources, visited = new Set(), names = nu
   if (file.endsWith('.json')) { parts.push(clean(json(raw, file))); return true; }
   if (file.endsWith('.html')) { parts.push(html(raw, scope)); return true; }
   const source = ast(raw);
-  const statements = selectedStatements(source, names);
-  const cacheKey = `${JSON.stringify({ company: scope.company, slug: scope.slug, tech: scope.tech, hub: scope.hub })}\0${names?.slice().sort().join(',') || '*'}\0${raw}`;
-  if (!projectionCache.has(cacheKey)) projectionCache.set(cacheKey, statements.map((statement) => projectNode(statement, scope)).filter((part) => part !== null));
+  const statements = selectedStatements(source, names, scope);
+  // The shared company preview component renders every company: on a company page it
+  // contributes only that company's own prefixed constants (OPENAI_ for OpenAI) and, for an
+  // inline-branch company, its structured-data method; never the rest of its class, its
+  // template or its shared imports.
+  const companyRoot = Boolean(scope.companyRoot) && scope.companyRoot === file;
+  const ownPrefix = companyRoot ? `${scope.company.replace(/-/g, '').toUpperCase()}_` : '';
+  const ownMethod = companyRoot ? LEGACY_COMPANY_BRANCHES[scope.company]?.seo : null;
+  const projected = companyRoot
+    ? statements.flatMap((statement) => {
+      if (ts.isVariableStatement(statement)) {
+        return statement.declarationList.declarations.every((item) => ts.isIdentifier(item.name) && item.name.text.startsWith(ownPrefix)) ? [statement] : [];
+      }
+      return ownMethod && ts.isClassDeclaration(statement)
+        ? statement.members.filter((member) => ts.isMethodDeclaration(member) && member.name && propertyName(member.name) === ownMethod)
+        : [];
+    })
+    : statements;
+  const cacheKey = `${JSON.stringify({ company: scope.company, slug: scope.slug, tech: scope.tech, hub: scope.hub, companyRoot })}\0${names?.slice().sort().join(',') || '*'}\0${raw}`;
+  if (!projectionCache.has(cacheKey)) projectionCache.set(cacheKey, projected.map((statement) => projectNode(statement, scope)).filter((part) => part !== null));
   const projection = projectionCache.get(cacheKey);
   if (projection.length) parts.push(projection);
   const used = new Set();
@@ -292,7 +341,7 @@ function tsContent(reader, file, parts, sources, visited = new Set(), names = nu
     if (node.name && DATE_NAME.test(propertyName(node.name)) || dateOnly(node)) return;
     if (ts.isSpreadAssignment(node) && /\bdateModified\b|\bdatePublished\b/.test(node.getText())) return;
     if (ts.isIdentifier(node)) used.add(node.text);
-    if (ts.isPropertyAssignment(node) && propertyName(node.name) === 'templateUrl') {
+    if (!companyRoot && ts.isPropertyAssignment(node) && propertyName(node.name) === 'templateUrl') {
       const target = resolve(reader, file, string(node.initializer));
       if (target) tsContent(reader, target, parts, sources, visited, null, scope);
       else missing(path.posix.normalize(path.posix.join(path.posix.dirname(file), string(node.initializer))));
@@ -317,6 +366,7 @@ function tsContent(reader, file, parts, sources, visited = new Set(), names = nu
     if (!target) { missing(/\.(?:ts|json|html|md|[cm]?js)$/.test(candidate) ? candidate : `${candidate}.ts`); continue; }
     const companyFile = target.match(/\/([a-z0-9-]+)-preview-content\.ts$/);
     if (companyFile && scope.company && companyFile[1] !== scope.company) continue;
+    if (companyRoot && !companyFile && !target.startsWith(`${APP}shared/company-previews/`)) continue;
     if (ts.isExportDeclaration(statement)) { dependencies.push({ target, names: null }); continue; }
     if (bindings && ts.isNamedImports(bindings)) {
       if (selected.length) dependencies.push({ target, names: selected });
@@ -398,13 +448,44 @@ export function buildSeoInventory(reader) {
     const parts = [descriptor.data];
     const sources = new Set([ROUTES]);
     const scope = { route };
-    if (route.startsWith('/companies/')) {
-      scope.company = route.split('/')[2];
-      scope.companyPrefixes = new Set([...companies].map((slug) => slug.replace(/-/g, '')));
-    }
     if (route.startsWith('/tracks/')) scope.slug = route.split('/')[2];
     if (/^(?:\/(?:javascript|react|angular|vue|html|css|html-css))?\/interview-questions$/.test(route)) scope.hub = route === '/interview-questions' ? 'master' : route.split('/')[1] === 'html-css' ? 'htmlCss' : route.split('/')[1];
     if (!tsContent(reader, descriptor.component, parts, sources, new Set(), null, scope)) return null;
+    return { parts, sources };
+  }
+  // Company previews are dated by their own content, like per-entry pages: the scoped
+  // registries (authored guide, official pages, interview process), the company's content
+  // module, its catalog items and, for the three companies with an inline template branch,
+  // that branch alone. The shared component, the shared template and the route metadata
+  // render every company and take no part, so one shared edit cannot re-date every company.
+  // Record deliberate shared releases in seo-content-releases.mjs instead.
+  function companyPage(route, company) {
+    const descriptor = routes.get('/companies/:slug/preview');
+    if (!descriptor?.component) return null;
+    const parts = [];
+    const sources = new Set();
+    const scope = {
+      route,
+      company,
+      companyRoot: descriptor.component,
+      companyPrefixes: new Set([...companies].map((slug) => slug.replace(/-/g, ''))),
+    };
+    if (!tsContent(reader, descriptor.component, parts, sources, new Set(), null, scope)) return null;
+    const legacy = LEGACY_COMPANY_BRANCHES[company];
+    if (legacy) {
+      const template = descriptor.component.replace(/\.ts$/, '.html');
+      const raw = reader.read(template);
+      if (raw === null) {
+        if (strict) throw new Error(`Missing SEO content dependency: ${template}`);
+        reader.report?.({ route, file: template, reason: `Missing SEO content dependency: ${template}` });
+        return null;
+      }
+      sources.add(template);
+      // Before its inline guide shipped, the company was a catalog page without a branch.
+      const branch = legacyBranch(raw, legacy.flag);
+      if (branch === null && strict) throw new Error(`[seo-inventory] Missing ${company} branch (*ngIf="${legacy.flag}") in ${template}`);
+      if (branch !== null) parts.push(html(branch));
+    }
     return { parts, sources };
   }
   function requiredAsset(file, parts, sources, route) {
@@ -553,7 +634,7 @@ export function buildSeoInventory(reader) {
   }
   for (const company of [...companies].filter(Boolean).sort()) {
     const route = `/companies/${company}/preview`;
-    const value = page(route, '/companies/:slug/preview');
+    const value = companyPage(route, company);
     if (!value) continue;
     if (!AUTHORED_COMPANIES.includes(company)) {
       const techOrder = ['javascript', 'angular', 'react', 'vue', 'html', 'css'];
