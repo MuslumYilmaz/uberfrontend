@@ -572,6 +572,17 @@ const EDITORIAL_NOTE_SMOKE = [
     ],
     practicePath: '/css/coding/css-theme-variables-dark-mode',
   },
+  {
+    label: 'Airbnb',
+    route: '/companies/airbnb/preview',
+    title: 'Airbnb Frontend Interview Practice and Official FAQ',
+    h1: 'Airbnb Frontend Interview Practice',
+    headings: [
+      'An editorial practice grouping',
+      'Common questions about this Airbnb page',
+    ],
+    practicePath: '/javascript/trivia/js-closures',
+  },
 ];
 const ANGULAR_HTTP_CANCELLATION_LAB_ROUTE =
   '/angular/trivia/angular-http-what-actually-cancels-request';

@@ -875,6 +875,24 @@ const EDITORIAL_NOTE_CASES = [
     ],
     practicePath: '/css/coding/css-theme-variables-dark-mode',
   },
+  {
+    label: 'Airbnb',
+    path: '/companies/airbnb/preview',
+    title: 'Airbnb Frontend Interview Practice and Official FAQ',
+    h1: 'Airbnb Frontend Interview Practice',
+    headings: [
+      'An editorial practice grouping',
+      'Common questions about this Airbnb page',
+    ],
+    markers: [
+      'data-testid="company-editorial-intro"',
+      'data-testid="company-prep-steps"',
+      '>What you can do now for free</h2>',
+      'data-testid="company-editorial-faqs"',
+      'class="cta-stack"',
+    ],
+    practicePath: '/javascript/trivia/js-closures',
+  },
 ] as const;
 
 const AUTHORED_GUIDE_CASES = [

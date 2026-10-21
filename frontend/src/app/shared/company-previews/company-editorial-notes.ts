@@ -943,6 +943,69 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
     },
     about: ['Apple frontend interview preparation'],
   },
+  airbnb: {
+    slug: 'airbnb',
+    title: 'Airbnb Frontend Interview Practice and Official FAQ',
+    h1: 'Airbnb Frontend Interview Practice',
+    description: 'A small Airbnb frontend practice grouping with the official Airbnb careers FAQ. No public frontend interview reports have been read for this page yet.',
+    hero: {
+      kicker: 'Public preview',
+      subtitle: 'Three coding and two concept items grouped under Airbnb, plus the official careers FAQ. This page grows when public frontend interview reports can be read in full.',
+    },
+    intro: ['The official careers FAQ, linked below, says the process can involve a test, a video or an event, that candidates meet several members of the team, and gives response times; it also warns about recruiting scams. FrontendAtlas has not yet read a public frontend interview report for Airbnb in full, so this page makes no claim about the rounds.'],
+    prepSteps: {
+      kicker: 'How to prepare with this grouping',
+      title: 'An editorial practice grouping',
+      intro: 'None of these items comes from a public Airbnb interview report. They are staples of frontend loops in general.',
+      steps: [
+        {
+          label: 'Closures',
+          path: '/javascript/trivia/js-closures',
+          access: 'free',
+          why: 'A staple of JavaScript concept rounds.',
+        },
+        {
+          label: 'The event loop',
+          path: '/javascript/trivia/js-event-loop',
+          access: 'free',
+          why: 'A staple of JavaScript concept rounds.',
+        },
+        {
+          label: 'Chips input with autocomplete in React',
+          path: '/react/coding/react-chips-input-autocomplete',
+          access: 'premium',
+          why: 'A component build with keyboard handling and suggestions.',
+        },
+        {
+          label: 'Chips input with autocomplete in Angular',
+          path: '/angular/coding/angular-chips-input-autocomplete',
+          access: 'premium',
+          why: 'The same component in Angular.',
+        },
+        {
+          label: 'Chips input with autocomplete in Vue',
+          path: '/vue/coding/vue-chips-input-autocomplete',
+          access: 'premium',
+          why: 'The same component in Vue.',
+        },
+      ],
+    },
+    faqs: {
+      kicker: 'Preparation FAQ',
+      title: 'Common questions about this Airbnb page',
+      items: [
+        {
+          question: 'Why is this page short?',
+          answer: 'No public frontend interview report for Airbnb has been read in full yet, so the page lists the official FAQ and an editorial practice grouping only. It grows when readable accounts appear.',
+        },
+        {
+          question: 'Does Airbnb publish interview guidance?',
+          answer: 'The careers FAQ linked in the official pages table covers the shape of the process, response times and a warning about recruiting scams.',
+        },
+      ],
+    },
+    about: ['Airbnb frontend interview preparation'],
+  },
 };
 
 export type CompanyEditorialNotesRegistry = Readonly<Record<string, CompanyEditorialNotes>>;
