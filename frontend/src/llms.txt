@@ -75,7 +75,7 @@
 - [Company frontend interview questions](https://frontendatlas.com/companies): Company-specific frontend interview prep.
 - [Airbnb interview preview](https://frontendatlas.com/companies/airbnb/preview): Airbnb frontend interview practice preview.
 - [Amazon frontend interview questions](https://frontendatlas.com/companies/amazon/preview): Public Amazon prep guide with seven practice prompts modelled on Amazon's own preparation page and public front end engineer interview accounts from 2020 to 2025.
-- [Apple interview preview](https://frontendatlas.com/companies/apple/preview): Apple frontend interview practice preview.
+- [Apple Frontend Interview Questions and Process](https://frontendatlas.com/companies/apple/preview): How public reports describe Apple frontend interviews: a recruiter call, a 45 to 60 minute coding screen in React, JS or TS, and a team loop of 4 to 7 rounds.
 - [Booking.com Frontend Interview Questions and Process](https://frontendatlas.com/companies/booking-com/preview): How public reports from 2021 to 2023 describe Booking.com frontend interviews: a HackerRank test, coding rounds with two engineers and a fit interview.
 - [ByteDance and TikTok Frontend Interview Questions](https://frontendatlas.com/companies/bytedance/preview): How public reports describe ByteDance and TikTok frontend loops: HackerRank or CodeSignal assessments, a DSA round, a frontend round and a design round.
 - [Datadog frontend interview questions](https://frontendatlas.com/companies/datadog/preview): Public Datadog prep guide with five practice prompts modelled on public senior frontend interview accounts.

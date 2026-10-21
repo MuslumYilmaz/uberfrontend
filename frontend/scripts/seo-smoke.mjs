@@ -560,6 +560,18 @@ const EDITORIAL_NOTE_SMOKE = [
     ],
     practicePath: '/css/trivia/css-position-relative-absolute-fixed',
   },
+  {
+    label: 'Apple',
+    route: '/companies/apple/preview',
+    title: 'Apple Frontend Interview Process and Practice Questions',
+    h1: 'Apple Frontend Interview Questions and Process',
+    headings: [
+      'A screen, then a team loop of four to seven rounds',
+      'Rehearse the screen, then the coding loop',
+      'Common questions about Apple frontend interviews',
+    ],
+    practicePath: '/css/coding/css-theme-variables-dark-mode',
+  },
 ];
 const ANGULAR_HTTP_CANCELLATION_LAB_ROUTE =
   '/angular/trivia/angular-http-what-actually-cancels-request';

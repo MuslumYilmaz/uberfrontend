@@ -854,6 +854,27 @@ const EDITORIAL_NOTE_CASES = [
     ],
     practicePath: '/css/trivia/css-position-relative-absolute-fixed',
   },
+  {
+    label: 'Apple',
+    path: '/companies/apple/preview',
+    title: 'Apple Frontend Interview Process and Practice Questions',
+    h1: 'Apple Frontend Interview Questions and Process',
+    headings: [
+      'A screen, then a team loop of four to seven rounds',
+      'Rehearse the screen, then the coding loop',
+      'Common questions about Apple frontend interviews',
+    ],
+    markers: [
+      'data-testid="company-editorial-intro"',
+      'data-testid="company-reports-describe"',
+      'data-testid="company-interview-process"',
+      'data-testid="company-prep-steps"',
+      '>What you can do now for free</h2>',
+      'data-testid="company-editorial-faqs"',
+      'class="cta-stack"',
+    ],
+    practicePath: '/css/coding/css-theme-variables-dark-mode',
+  },
 ] as const;
 
 const AUTHORED_GUIDE_CASES = [

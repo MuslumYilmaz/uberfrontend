@@ -853,6 +853,96 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
     },
     about: ['Uber frontend interview preparation'],
   },
+  apple: {
+    slug: 'apple',
+    title: 'Apple Frontend Interview Process and Practice Questions',
+    h1: 'Apple Frontend Interview Questions and Process',
+    description: 'How public reports describe Apple frontend interviews: a recruiter call, a 45 to 60 minute coding screen in React, JS or TS, and a team loop of 4 to 7 rounds.',
+    hero: {
+      kicker: 'Public preview and process notes',
+      subtitle: 'Apple publishes no interview guide, so this page rests on public interview reports from 2021 to 2025: a technical screen, then a team loop of four to seven rounds whose mix differs by team.',
+    },
+    intro: ['No official Apple preparation page exists; the careers site has no interview content. The nine frontend accounts behind this page agree on a screen followed by a team loop of mostly frontend coding, and differ on everything the team decides.'],
+    reportsDescribe: {
+      kicker: 'What public interview reports describe',
+      title: 'A screen, then a team loop of four to seven rounds',
+      paragraphs: ['Most accounts start with a recruiter call, sometimes a hiring manager conversation, then a technical screen of 45 to 60 minutes in React, JavaScript or TypeScript. The team loop runs four to seven interviews of 30 to 45 minutes, mostly JavaScript, React and CSS coding and concepts.'],
+      bullets: [
+        {
+          text: 'One 2025 account describes a one-hour online assessment with two coding questions and 20 multiple-choice questions before the recruiter call.',
+          link: {
+            label: 'See the assessment stage',
+            fragment: 'apple-interview-process-1',
+          },
+        },
+        {
+          text: 'One screen was mostly conversational with about 15 minutes of coding in CoderPad; another asked for an autocomplete search bar in TypeScript with Vue or React.',
+        },
+        {
+          text: 'Loop composition differs by team: four coding rounds with no behavioural and no system design round in one 2025 account, one behavioural round in another, two cross-functional interviews in a third.',
+        },
+        {
+          text: 'One account ended with a director meeting after the loop.',
+        },
+      ],
+    },
+    prepSteps: {
+      kicker: 'How to prepare with this grouping',
+      title: 'Rehearse the screen, then the coding loop',
+      intro: 'Free items first, then the premium set. Each item is a practice version modelled on a reported round, not a leaked question.',
+      steps: [
+        {
+          label: 'Theme variables and dark mode',
+          path: '/css/coding/css-theme-variables-dark-mode',
+          access: 'free',
+          why: 'Reported as building a light and dark theme.',
+        },
+        {
+          label: 'Build a tree from a flat list',
+          path: '/javascript/coding/js-build-tree-from-flat-list',
+          access: 'free',
+          why: 'A nested-tabs-from-a-flat-list task described in a 2025 account.',
+        },
+        {
+          label: 'Unique array',
+          path: '/javascript/coding/js-unique-array',
+          access: 'premium',
+          why: 'Reported as concatenating two arrays and finding the unique elements.',
+        },
+        {
+          label: 'Stack and queue, with a min stack',
+          path: '/javascript/coding/js-stack-queue-implementation',
+          access: 'premium',
+          why: 'Reported as a min stack.',
+        },
+        {
+          label: 'Vue autocomplete search',
+          path: '/vue/coding/vue-autocomplete-search',
+          access: 'premium',
+          why: 'The autocomplete search bar reported in a 2022 screen, in one of the two frameworks offered.',
+        },
+      ],
+    },
+    faqs: {
+      kicker: 'Preparation FAQ',
+      title: 'Common questions about Apple frontend interviews',
+      items: [
+        {
+          question: 'Does Apple publish a preparation page?',
+          answer: 'No. The careers site has no interview content, so every stage here comes from public interview reports.',
+        },
+        {
+          question: 'Is there a system design round?',
+          answer: 'Not in the frontend-titled accounts. One 2025 account says its loop had four coding rounds with no behavioural and no system design round.',
+        },
+        {
+          question: 'Is the loop the same for every team?',
+          answer: 'No. One account had seven 30-minute interviews, another five 45-minute ones, and the behavioural and cross-functional rounds appear in some teams only.',
+        },
+      ],
+    },
+    about: ['Apple frontend interview preparation'],
+  },
 };
 
 export type CompanyEditorialNotesRegistry = Readonly<Record<string, CompanyEditorialNotes>>;
