@@ -3797,7 +3797,8 @@
     "solutionAsset": "assets/sb/react/solution/react-chat-streaming-ui-solution.v1.json",
     "companies": [
       "openai",
-      "intuit"
+      "intuit",
+      "xai"
     ],
     "sources": [
       {
@@ -3815,6 +3816,14 @@
         "publisher": "Taro",
         "date": "2024-05",
         "note": "One senior OpenAI account describes a system design prompt summarised as ChatGPT, but in a text area, in the technical screen. This coding exercise is the build-side practice version of that product, not the reported prompt."
+      },
+      {
+        "label": "Taro: xAI frontend engineer interview, London, August 2025",
+        "url": "https://www.jointaro.com/interviews/companies/xai/experiences/frontend-engineer-london-england-august-13-2025-no-offer-positive-45b410e6/",
+        "company": "xai",
+        "publisher": "Taro",
+        "date": "2025-08",
+        "note": "A one-hour pair-coding session built a chat interface in React while an engineer reviewed the code live. This chat UI is a practice version of that session, not its wording."
       }
     ],
     "access": "premium",
@@ -4561,7 +4570,10 @@
     "decisionGraphAsset": "assets/questions/react/decision-graphs/react-fetch-list-states.v1.json",
     "companies": [
       "revolut",
-      "tesla"
+      "tesla",
+      "jpmorgan",
+      "agoda",
+      "xai"
     ],
     "sources": [
       {
@@ -4587,6 +4599,30 @@
         "publisher": "Taro",
         "date": "2022-01",
         "note": "The virtual onsite asked to fetch photos and render them with theme contexts through React Context. This item practises the fetch-and-render part with loading, error and empty states."
+      },
+      {
+        "label": "Aced: JPMorgan Chase senior frontend engineer interview, United Kingdom, 2026",
+        "url": "https://www.aced.io/experiences/jp-morgan-chase-senior-frontend-engineer-interview-6faa4e",
+        "company": "jpmorgan",
+        "publisher": "Aced",
+        "date": "2026-05",
+        "note": "The technical interview was live coding of a generic async promise React hook, with generic types and a useEffect cleanup expected. This starter rehearses the fetch, state and cleanup contract behind such a hook; it is not the reported wording."
+      },
+      {
+        "label": "Code360: Agoda frontend engineer interview, Gurgaon, May 2025",
+        "url": "https://www.naukri.com/code360/interview-experiences/agoda/agoda-interview-experience-by-brijesh-verma-may-2025-exp-0-2-years",
+        "company": "agoda",
+        "publisher": "Code360",
+        "date": "2025-05",
+        "note": "The take-home asked for a React and TypeScript single-page app that fetches stock data from an API and renders paginated tables with summary statistics. This starter rehearses the fetch-and-render contract; it is not the brief."
+      },
+      {
+        "label": "xAI posting: React Frontend Engineer, grok.com and API, Built In, January 2026",
+        "url": "https://builtin.com/job/react-frontend-engineer-grokcom-api/4446453",
+        "company": "xai",
+        "publisher": "Built In",
+        "date": "2026-01",
+        "note": "The posting described a coding interview in TypeScript: write a small app in React. The posting has since closed. This starter rehearses a small app's fetch and state contract; it is not an interview question."
       }
     ],
     "access": "free",

@@ -382,6 +382,165 @@ const ZALANDO_ZA3 = report('LeetCode', 'https://leetcode.com/discuss/post/124928
 const ZALANDO_ZA4 = report('Blind', 'https://www.teamblind.com/post/zalando-frontend-interviews-asih8pba', '2022-02');
 const ZALANDO_ROLE = 'Frontend engineers, Berlin';
 
+// xAI merged into SpaceX (closed 2026-02-02) and rebranded as SpaceXAI in July 2026; the board slug is still
+// `xai`. Taro probably re-hosts Glassdoor reviews with a changed city, so the London account's label carries
+// no city. Every frontend posting with a loop was removed between 2025-06 and 2026-02, so the dates below are
+// posting months, not the month read.
+const XAI_X1_FE_2025 = report(
+  'Taro',
+  'https://www.jointaro.com/interviews/companies/xai/experiences/frontend-engineer-london-england-august-13-2025-no-offer-positive-45b410e6/',
+  '2025-08',
+);
+const XAI_X7_MTS_2025 = report('Aced', 'https://www.aced.io/experiences/x-ai-software-engineer-interview-7fbd12', '2025-12');
+const XAI_CAREERS: InterviewProcessSource = {
+  label: 'xAI careers page',
+  url: 'https://x.ai/careers',
+  kind: 'official',
+  date: '2026-10',
+};
+const XAI_O_LONDON_FE: InterviewProcessSource = {
+  label: 'London frontend posting',
+  url: 'https://www.builtinlondon.uk/job/frontend-engineer/7805551',
+  kind: 'official',
+  date: '2026-02',
+};
+const XAI_O_GROK_API: InterviewProcessSource = {
+  label: 'grok.com frontend posting',
+  url: 'https://builtin.com/job/react-frontend-engineer-grokcom-api/4446453',
+  kind: 'official',
+  date: '2026-01',
+};
+const XAI_O_ENTERPRISE: InterviewProcessSource = {
+  label: 'Enterprise frontend posting',
+  url: 'https://builtin.com/job/frontend-engineer-enterprise/7383404',
+  kind: 'official',
+  date: '2026-02',
+};
+const XAI_O_GROK_STUDIO: InterviewProcessSource = {
+  label: 'Grok Studio posting',
+  url: 'https://jobs.8vc.com/companies/x-ai/jobs/48336005-senior-frontend-engineer-grok-studio',
+  kind: 'official',
+  date: '2025-04',
+};
+const XAI_O_AUTONOMOUS_AGENTS: InterviewProcessSource = {
+  label: 'Autonomous Agents posting',
+  url: 'https://builtin.com/job/senior-frontend-engineer-autonomous-agents/4379947',
+  kind: 'official',
+  date: '2025-07',
+};
+// The designer-hybrid posting is undated on its mirror and was removed about 2025-02, so its date is the month read.
+const XAI_O_DESIGNER_HYBRID: InterviewProcessSource = {
+  label: 'UI/UX designer posting',
+  url: 'https://uiuxjobsboard.com/job/864124-frontend-engineer-ui-ux-designer-london-united-kingdom',
+  kind: 'official',
+  date: '2026-10',
+};
+const XAI_ROLE = 'Frontend roles on the closed 2025 to 2026 postings';
+
+// JPMorgan Chase. The loop is team-run: the official pages say it "will differ for each position". The online-assessment
+// and super-day rows rest on generic software-engineer accounts; no frontend-titled report confirms them.
+const JPMORGAN_HOW_WE_HIRE: InterviewProcessSource = {
+  label: 'JPMorgan How we hire page',
+  url: 'https://www.jpmorganchase.com/careers/how-we-hire',
+  kind: 'official',
+  date: '2026-10',
+};
+const JPMORGAN_HIRING_FAQS: InterviewProcessSource = {
+  label: 'JPMorgan hiring FAQs',
+  url: 'https://www.jpmorganchase.com/careers/how-we-hire/faqs',
+  kind: 'official',
+  date: '2026-10',
+};
+const JPMORGAN_JP1 = report('Aced', 'https://www.aced.io/experiences/jp-morgan-chase-senior-frontend-engineer-interview-6faa4e', '2026-05');
+const JPMORGAN_JP2 = report('Blind', 'https://www.teamblind.com/post/jp-morgan-interview-tips-ohvqbeuy', '2023-05');
+const JPMORGAN_JP2_PLAN = report('Blind', 'https://www.teamblind.com/post/jp-morgan-swe-interview-guide-tsoukjaf', '2023-05');
+const JPMORGAN_JP3 = report('Taro', 'https://www.jointaro.com/interviews/companies/jpmorgan-chase/experiences/associate-software-engineer-united-kingdom-february-1-2025-no-offer-negative-7f96780a/', '2025-02');
+const JPMORGAN_JP4 = report('Taro', 'https://www.jointaro.com/interviews/companies/jpmorgan-chase/experiences/frontend-developer-london-england-january-1-2021-accepted-offer-positive-e00df0d2/', '2021-01');
+const JPMORGAN_JP5 = report('Taro', 'https://www.jointaro.com/interviews/companies/jpmorgan-chase/experiences/frontend-developer-london-england-july-1-2017-no-offer-negative-5853573b/', '2017-07');
+const JPMORGAN_JP6 = report('Taro', 'https://www.jointaro.com/interviews/companies/jpmorgan-chase/experiences/frontend-developer-united-states-april-1-2022-no-offer-neutral-a3d9886a/', '2022-04');
+const JPMORGAN_JP7 = report('Taro', 'https://www.jointaro.com/interviews/companies/jpmorgan-chase/experiences/lead-software-engineer-united-states-march-13-2025-no-offer-positive-5ec74572/', '2025-03');
+const JPMORGAN_JP8 = report('Taro', 'https://www.jointaro.com/interviews/companies/jpmorgan-chase/experiences/react-developer-united-states-june-1-2022-no-offer-positive-87452f0d/', '2022-06');
+const JPMORGAN_JP9 = report('Blind', 'https://www.teamblind.com/post/JPMorgan-Front-End-position---HELP-uwhCeSaA', '2021-12');
+const JPMORGAN_JP10 = report('Blind', 'https://www.teamblind.com/post/JPMorgan-Chase---Front-End-Developer-Interview-Mb7vx1A6', '2021-03');
+const JPMORGAN_JP11 = report(
+  'frontendgeek',
+  'https://www.frontendgeek.com/interview-experience/frontend-interview-experience-at-jp-morgan-refused-offer---9f684f90-12ee-45ec-ac82-e40d2010260e',
+  '2024-04',
+);
+const JPMORGAN_JP12 = report('Taro', 'https://www.jointaro.com/interviews/companies/jpmorgan-chase/experiences/frontend-engineer-bengaluru-karnataka-april-1-2024-no-offer-negative-77dc2081/', '2024-04');
+const JPMORGAN_JP13 = report('Blind', 'https://www.teamblind.com/post/jpmorgan-chase-interview-rounds-expectation-bengaluru-ta1v2q0n', '2024-05');
+const JPMORGAN_JP14 = report('LeetCode', 'https://leetcode.com/discuss/post/1076639/', '2021-02');
+const JPMORGAN_JP15 = report('Taro', 'https://www.jointaro.com/interviews/companies/jpmorgan-chase/experiences/software-engineer-united-states-august-1-2025-declined-offer-negative-5c2f81ca/', '2025-08');
+const JPMORGAN_JP16 = report('Blind', 'https://www.teamblind.com/post/jpmc-interview-expectations-d0ed5ppz', '2026-04');
+const JPMORGAN_JP17A = report('LeetCode', 'https://leetcode.com/discuss/post/7421234/', '2025-12');
+const JPMORGAN_JP17B = report('LeetCode', 'https://leetcode.com/discuss/post/7455878/', '2026-01');
+const JPMORGAN_JP17C = report('LeetCode', 'https://leetcode.com/discuss/post/5438765/', '2024-07');
+const JPMORGAN_JP17D = report('LeetCode', 'https://leetcode.com/discuss/post/7275188/', '2025-10');
+const JPMORGAN_JP17E = report('LeetCode', 'https://leetcode.com/discuss/post/6830133/', '2025-06');
+const JPMORGAN_ROLE = 'Frontend-titled roles; varies by team';
+
+// Agoda. The live careersatagoda.com returns a Cloudflare 403 to automated readers, so the careers pages were read
+// from archive captures (the interview-process post captured 2026-04-06, the interview guide 2026-10-19, the hiring
+// process post 2025-10-25); the interviewer's guide is on the Agoda Engineering Medium publication.
+const AGODA_HOW_WE_HIRE_TECH: InterviewProcessSource = {
+  label: 'Agoda interview process page',
+  url: 'https://careersatagoda.com/blog/how-we-hire-agodas-tech-team-interview-process/',
+  kind: 'official',
+  date: '2026-10',
+}; // AO1 / AGD-O1
+const AGODA_INTERVIEW_GUIDE: InterviewProcessSource = {
+  label: 'Agoda interview guide',
+  url: 'https://careersatagoda.com/interview/',
+  kind: 'official',
+  date: '2026-10',
+}; // AO4 / AGD-O4
+const AGODA_HIRING_PROCESS: InterviewProcessSource = {
+  label: 'Agoda hiring process post',
+  url: 'https://careersatagoda.com/blog/how-we-hire-agoda-hiring-process/',
+  kind: 'official',
+  date: '2026-10',
+}; // AO5 / AGD-O5
+const AGODA_INTERVIEWER_GUIDE: InterviewProcessSource = {
+  label: 'Agoda interviewer guide',
+  url: 'https://medium.com/agoda-engineering/preparing-for-interview-at-agoda-2c07b7d13ca5',
+  kind: 'official',
+  date: '2026-10',
+}; // AO6 / AGD-O6
+const AGODA_A1_BANGKOK_2026 = report('LeetCode', 'https://leetcode.com/discuss/post/8459009/', '2026-07'); // AGD1
+const AGODA_A2_GURGAON_2025 = report(
+  'Code360',
+  'https://www.naukri.com/code360/interview-experiences/agoda/agoda-interview-experience-by-brijesh-verma-may-2025-exp-0-2-years',
+  '2025-05',
+); // AGD8
+const AGODA_A3_OFFER_2025 = report(
+  'Medium',
+  'https://kr-viku.medium.com/%EF%B8%8F-my-agoda-interview-journey-from-first-call-to-offer-086385b03d33',
+  '2025-09',
+); // AGD2
+const AGODA_A4_STAFF_2025 = report('LeetCode', 'https://leetcode.com/discuss/interview-question/6398233', '2025-02'); // AGD3
+const AGODA_A5_FULL_STACK_2025 = report('LeetCode', 'https://leetcode.com/discuss/post/7199643/', '2025-09'); // AGD4
+const AGODA_A7_GURGAON_URL = 'https://www.teamblind.com/post/my-interview-experience-with-agoda-zhhgctzk';
+const AGODA_A7_GURGAON_2025 = report('Blind', AGODA_A7_GURGAON_URL, '2025-06'); // AGD7, the poster's own loop
+const AGODA_A7_GURGAON_COMMENT = report('Blind comment', AGODA_A7_GURGAON_URL, '2025-06'); // AGD7 (c), commenters on the Staff track
+const AGODA_A8_CULTURE_FIT_2025 = report(
+  'Blind',
+  'https://www.teamblind.com/post/what-can-i-expect-in-agodas-sse-frontend-culture-fit-round-xchtevrv',
+  '2025-06',
+); // AGD5
+const AGODA_A9_HEADCOUNT_2025 = report(
+  'Medium',
+  'https://beyondthecode.medium.com/my-agoda-interview-journey-a-candid-reflection-55de22d2276b',
+  '2025-07',
+); // AGD6, archive capture
+const AGODA_A12_BANGALORE_2025 = report(
+  'frontendgeek',
+  'https://www.frontendgeek.com/interview-experience/staff-frontend-interview-experience-at-agoda-rejected-thailand-relocation---f13f1824-08d9-4385-a219-269aaeb3d301',
+  '2025-07',
+); // AGD10
+const AGODA_A13_SDE2_2024 = report('Substack', 'https://nerddesignlab.substack.com/p/interview-experience-agoda-gurgaon', '2024-10'); // AGD9
+const AGODA_A16_PREP_GUIDE_2024 = report('Blind comment', 'https://www.teamblind.com/post/agoda-bankok-platform-interview-wlgcyzeh', '2024-10'); // AGD12 (p, c)
+const AGODA_ROLE = 'Front-end engineers, Senior and Staff';
+
 export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyInterviewProcess>> = {
   amazon: {
     title: 'Amazon Front End Engineer interview process',
@@ -1510,6 +1669,274 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
             format: '45 minutes.',
             appliesTo: 'Senior roles',
             sources: [ZALANDO_ZA1, ZALANDO_ZA2],
+            practice: { label: 'Behavioral interview guide', path: '/guides/behavioral' },
+          },
+        ],
+      },
+    ],
+  },
+  xai: {
+    title: 'xAI (now SpaceXAI) frontend interview process',
+    summary:
+      'The careers page describes four generic steps and says engineers, not recruiters, evaluate applications. The closed frontend postings from March 2025 to February 2026 shared one template: a review of the CV and a "statement of exceptional work", a 15-minute phone interview with basic technical questions, then the team\'s main process on Google Meet with the goal of finishing within one week. For frontend roles that meant a React coding interview in TypeScript, an HTML/CSS interview from a screenshot, and a team or founding-engineer stage. One London account from August 2025 matches the React round.',
+    caveat:
+      'Every frontend posting with a loop was removed between June 2025 and February 2026, and on 21 October 2026 the board had no frontend posting with interview text, so this table describes the 2025 to early-2026 loops. The loop varies by team: Bay Area postings added a coding assessment and a systems session, London postings did not, and the take-home row comes from one general software-engineer account rather than a frontend posting. The "Software Engineer Specialist" loops with a CodeSignal assessment are left out as a separate track.',
+    checkedAt: '2026-10-21',
+    variants: [
+      {
+        title: 'Frontend engineers, London and Bay Area, from postings 2025-03 to 2026-02 and one London account',
+        note: 'Thin evidence: one public frontend account read in full. Stages marked "postings only" rest on the closed postings alone.',
+        stages: [
+          {
+            stage: 'Application review',
+            format: 'Engineers, not recruiters, review the CV and a "statement of exceptional work".',
+            appliesTo: 'All roles',
+            sources: [XAI_CAREERS, XAI_O_LONDON_FE, XAI_O_GROK_STUDIO, XAI_O_DESIGNER_HYBRID],
+          },
+          {
+            stage: 'Screening',
+            format: 'A 15-minute "phone interview" with "some basic technical questions".',
+            appliesTo: 'All roles',
+            sources: [XAI_O_LONDON_FE, XAI_O_GROK_API, XAI_O_ENTERPRISE, XAI_X1_FE_2025],
+          },
+          {
+            stage: 'React coding interview',
+            format:
+              '"Write a small app in React" in TypeScript; 45 minutes in London; one or two interviews on Bay Area teams. The one account built a chat interface in a one-hour pair-coding session with live review and React questions such as what useCallback does.',
+            appliesTo: XAI_ROLE,
+            sources: [XAI_O_LONDON_FE, XAI_O_GROK_API, XAI_O_ENTERPRISE, XAI_O_GROK_STUDIO, XAI_O_AUTONOMOUS_AGENTS, XAI_X1_FE_2025],
+            practice: { label: 'React fetch and render a list', path: '/react/coding/react-fetch-list-states' },
+          },
+          {
+            stage: 'HTML/CSS interview',
+            format: '"Given a screenshot of a UI, implement it"; 45 minutes with Tailwind in London. Postings only.',
+            appliesTo: 'Frontend roles on the grok.com & API, Enterprise and London postings',
+            sources: [XAI_O_LONDON_FE, XAI_O_GROK_API, XAI_O_ENTERPRISE, XAI_O_DESIGNER_HYBRID],
+            practice: { label: 'Grid card gallery', path: '/css/coding/css-grid-card-gallery' },
+          },
+          {
+            stage: 'Coding assessment in a language of your choice',
+            format: 'A general coding round before the frontend interviews. Postings only.',
+            appliesTo: 'Grok Studio and Autonomous Agents postings',
+            sources: [XAI_O_GROK_STUDIO, XAI_O_AUTONOMOUS_AGENTS],
+          },
+          {
+            stage: 'Systems hands-on',
+            format: '"Demonstrate practical skills in a live problem-solving session." Posting only.',
+            appliesTo: 'Autonomous Agents posting',
+            sources: [XAI_O_AUTONOMOUS_AGENTS],
+            practice: { label: 'AI chat composer and streaming turn', path: '/system-design/ai-chat-textarea-design' },
+          },
+          {
+            stage: 'Meet the team or founding engineer',
+            format:
+              'Bay Area: "Present your past exceptional work and your vision with xAI to a small audience." London: 30 minutes with founding engineer Toby Pohlen.',
+            appliesTo: 'All roles',
+            sources: [XAI_O_LONDON_FE, XAI_O_GROK_STUDIO, XAI_O_AUTONOMOUS_AGENTS, XAI_O_DESIGNER_HYBRID],
+            practice: { label: 'Behavioural stories', path: '/guides/behavioral/stories' },
+          },
+          {
+            stage: 'UI design exercise and presentation',
+            format: '"Design a UI in a tool of your choice (e.g. Figma or Photoshop)" and a 20-minute presentation of previous design projects and complex UI flows. Posting only.',
+            appliesTo: 'Frontend Engineer & UI/UX Designer posting only',
+            sources: [XAI_O_DESIGNER_HYBRID],
+          },
+          {
+            stage: 'Take-home and code-reading final',
+            format:
+              'A four-hour AI-assisted product build from one of six prompts, submitted as a GitHub repository with a Loom walkthrough within 24 hours, then a one-hour in-person session on an existing class.',
+            appliesTo: 'One general software-engineer loop from December 2025; not on any frontend posting',
+            sources: [XAI_X7_MTS_2025],
+          },
+        ],
+      },
+    ],
+  },
+  jpmorgan: {
+    summary:
+      'JPMorgan Chase\'s How we hire page says the interview process will differ for each position and that candidates meet several people in multiple rounds, and JPMC-badged employees on Blind describe decentralised, team-run loops. Frontend accounts from 2021 to 2026 in the UK, the US and India describe a recruiter screen, a one-hour React and JavaScript conversation often split between two interviewers, 60 to 90 minutes of live coding, and a hiring-manager or leadership round. The online-assessment and super-day rows come from generic software-engineer accounts that Software Engineer II and III requisitions probably share.',
+    caveat:
+      'No standard loop exists: the format depends on the line of business and the team, so the order and count of stages vary between accounts, and most accounts describe two to four of these stages rather than all of them. The super-day shape rests on generic software-engineer accounts, and no frontend-titled report confirms it. Several frontend accounts are one to three lines long and some dates are approximate; one candidate met an interviewer assigned to a back-end role, and another heard nothing after a cleared round.',
+    checkedAt: '2026-10-21',
+    variants: [
+      {
+        title: 'Front-end and React engineers, team-run loops, 2021 to 2026',
+        note: 'Stage order varies by team. The security-and-framework row is one Bengaluru loop; the super-day row is the generic Software Engineer II and III shape.',
+        stages: [
+          {
+            stage: 'Recruiter contact',
+            format: 'A phone screen about the CV; some candidates were contacted by email only and went straight to team interviews.',
+            appliesTo: 'Most loops',
+            sources: [JPMORGAN_HOW_WE_HIRE, JPMORGAN_JP1, JPMORGAN_JP4, JPMORGAN_JP15],
+          },
+          {
+            stage: 'Online assessment',
+            format: 'HackerRank with two easy-to-medium problems, or a recorded video interview for some roles; weeks before the loop in some accounts.',
+            appliesTo: 'Software Engineer II and III requisitions; not reported in the frontend-titled loops',
+            sources: [JPMORGAN_HIRING_FAQS, JPMORGAN_JP15, JPMORGAN_JP17A, JPMORGAN_JP17B, JPMORGAN_JP17C, JPMORGAN_JP17D, JPMORGAN_JP17E],
+            practice: { label: 'DSA for frontend loops', path: '/guides/interview-blueprint/dsa-for-fe' },
+          },
+          {
+            stage: 'Frontend technical conversation',
+            format: 'About an hour, often split between two interviewers or a panel of three: JavaScript fundamentals (closures, clones, Object.assign, reduce), React hooks and lifecycle, framework choice, resume-driven questions.',
+            appliesTo: JPMORGAN_ROLE,
+            sources: [JPMORGAN_JP2, JPMORGAN_JP3, JPMORGAN_JP5, JPMORGAN_JP6, JPMORGAN_JP7, JPMORGAN_JP9, JPMORGAN_JP10, JPMORGAN_JP12, JPMORGAN_JP13, JPMORGAN_JP14],
+            practice: { label: 'Explain closures', path: '/javascript/trivia/js-closures' },
+          },
+          {
+            stage: 'Live coding',
+            format: '60 to 90 minutes: a small React build (a to-do list with priorities, functional components, a generic async promise hook with useEffect cleanup) or paper coding; one London briefing planned 90 minutes of live coding plus a 30-minute behavioural stage.',
+            appliesTo: 'Most frontend loops',
+            sources: [JPMORGAN_JP1, JPMORGAN_JP2_PLAN, JPMORGAN_JP4, JPMORGAN_JP6, JPMORGAN_JP8, JPMORGAN_JP10],
+            practice: { label: 'React to-do list', path: '/react/coding/react-todo-list' },
+          },
+          {
+            stage: 'Security and framework rounds',
+            format: 'Three 60-minute rounds in one sitting: security and React (XSS, lifecycle, a memoization function), JavaScript and framework (promises, generators, a reduce polyfill, currying), hiring manager.',
+            appliesTo: 'One Bengaluru SDE2 loop, 2024',
+            sources: [JPMORGAN_JP11],
+            practice: { label: 'DOM XSS prevention', path: '/javascript/trivia/js-xss-dom-sinks' },
+          },
+          {
+            stage: 'Super day',
+            format: 'Three 45-minute rounds in one day, in any order: a pull-request review plus a medium problem, high-level design on a HackerRank whiteboard or CodePair (a rate limiter recurs), and a behavioural round with a Director or Executive Director; a short team-match call may follow.',
+            appliesTo: 'Generic Software Engineer II and III loops, US and India, 2024 to 2026; probably shared by React-titled requisitions, unconfirmed',
+            sources: [JPMORGAN_JP15, JPMORGAN_JP16, JPMORGAN_JP17A, JPMORGAN_JP17B, JPMORGAN_JP17C, JPMORGAN_JP17D, JPMORGAN_JP17E],
+            practice: { label: 'Create an LRU cache', path: '/javascript/coding/js-create-lru-cache' },
+          },
+          {
+            stage: 'Hiring manager and leadership',
+            format: 'A team manager and a managing director, the application owner and lead developer, a hiring-manager round on the candidate\'s project and culture fit, or a Director or Executive Director in the super-day loops.',
+            appliesTo: 'Most loops',
+            sources: [JPMORGAN_JP4, JPMORGAN_JP6, JPMORGAN_JP11, JPMORGAN_JP17A, JPMORGAN_JP17D],
+            practice: { label: 'Behavioural stories', path: '/guides/behavioral/stories' },
+          },
+        ],
+      },
+    ],
+  },
+  agoda: {
+    summary:
+      'Agoda\'s interview-process page describes a HackerRank online test as the coding assessment and four rounds: Coding, Platform, System Design and Agoda Culture Fit, with a decision typically within two weeks of the last round. Front-end accounts from Bangkok relocation loops in 2025 and 2026 describe a recruiter prep call, a 60-minute coding interview, a Frontend Platform interview and an architecture interview, all on HackerRank about a week apart, a preliminary call in which the level is set, a culture-fit conversation with an engineering manager, and the manager presenting the offer.',
+    caveat:
+      'The careers pages could only be read from archive captures. The Platform round\'s content varies by interviewer: a pure question-and-answer hour, a JavaScript implementation or an architecture discussion. Rejections after clearing the technical rounds are reported, over headcount or without a managerial round. Gurgaon loops differ by team; Manila and Bangalore rest on too little to state a loop. On 2026-10-21 the front-end postings were Staff, Lead and Manager level, all Bangkok-based with relocation.',
+    checkedAt: '2026-10-21',
+    variants: [
+      {
+        title: 'Front-end engineers, Bangkok relocation loops, Senior and Staff, 2025 to 2026',
+        stages: [
+          {
+            stage: 'Recruiter prep call',
+            format: '15 to 30 minutes on background, notice period, relocation and expectations.',
+            appliesTo: AGODA_ROLE,
+            sources: [AGODA_HOW_WE_HIRE_TECH, AGODA_A3_OFFER_2025, AGODA_A4_STAFF_2025, AGODA_A9_HEADCOUNT_2025],
+          },
+          {
+            stage: 'HackerRank assessment',
+            format:
+              'A HackerRank online test to complete within a timeframe, as the official page describes it; one 2025 Senior front-end account opened with an online assessment, while the other Senior and Staff accounts had none.',
+            appliesTo: 'Some loops',
+            sources: [AGODA_HOW_WE_HIRE_TECH, AGODA_A9_HEADCOUNT_2025],
+          },
+          {
+            stage: 'Coding interview',
+            format:
+              '60 minutes on HackerRank with an engineer: two easy-to-medium DSA problems in JavaScript, then verbal questions on test cases and the pull-request process.',
+            appliesTo: AGODA_ROLE,
+            sources: [AGODA_A1_BANGKOK_2026, AGODA_A4_STAFF_2025, AGODA_A5_FULL_STACK_2025, AGODA_A12_BANGALORE_2025, AGODA_INTERVIEWER_GUIDE],
+            practice: { label: 'DSA for frontend loops', path: '/guides/interview-blueprint/dsa-for-fe' },
+          },
+          {
+            stage: 'Frontend Platform interview',
+            format:
+              '60 minutes on HackerRank: a web-fundamentals question-and-answer hour, a JavaScript implementation grown from the resume, or a discussion of component reuse, state, API data and rendering performance; the prep guide promises a code snippet to improve.',
+            appliesTo: AGODA_ROLE,
+            sources: [
+              AGODA_A1_BANGKOK_2026,
+              AGODA_A3_OFFER_2025,
+              AGODA_A4_STAFF_2025,
+              AGODA_A5_FULL_STACK_2025,
+              AGODA_A16_PREP_GUIDE_2024,
+              AGODA_HOW_WE_HIRE_TECH,
+              AGODA_INTERVIEWER_GUIDE,
+            ],
+            practice: { label: 'Cookie vs sessionStorage vs localStorage', path: '/javascript/trivia/js-cookie-sessionstorage-localstorage' },
+          },
+          {
+            stage: 'Preliminary call',
+            format:
+              '30 minutes with the recruiter on compensation, relocation and feedback; the level is set here (a Staff applicant was moved to Senior, strong Senior candidates to the Staff track).',
+            appliesTo: AGODA_ROLE,
+            sources: [AGODA_A1_BANGKOK_2026, AGODA_A3_OFFER_2025, AGODA_A4_STAFF_2025, AGODA_A8_CULTURE_FIT_2025, AGODA_A9_HEADCOUNT_2025, AGODA_A7_GURGAON_COMMENT],
+          },
+          {
+            stage: 'Architecture interview',
+            format:
+              '60 minutes: a frontend-flavoured product design such as a hotel search page or a booking app, with no diagram expected; the Staff track adds a BE Platform hour on a hotel booking system.',
+            appliesTo: 'All; the extra hour on the Staff track',
+            sources: [AGODA_A1_BANGKOK_2026, AGODA_A3_OFFER_2025, AGODA_A4_STAFF_2025, AGODA_A8_CULTURE_FIT_2025, AGODA_HOW_WE_HIRE_TECH],
+            practice: { label: 'Frontend system design blueprint', path: '/guides/system-design-blueprint' },
+          },
+          {
+            stage: 'Culture fit',
+            format: '60 minutes with an engineering manager; behavioural questions, which the official interview guide frames with the CAR method (Context, Action, Results).',
+            appliesTo: AGODA_ROLE,
+            sources: [AGODA_A3_OFFER_2025, AGODA_A8_CULTURE_FIT_2025, AGODA_A9_HEADCOUNT_2025, AGODA_HOW_WE_HIRE_TECH, AGODA_INTERVIEW_GUIDE],
+            practice: { label: 'Behavioral interview guide', path: '/guides/behavioral' },
+          },
+          {
+            stage: 'Decision and offer',
+            format: 'The hiring manager presents the offer; the official target is a decision within two weeks of the last round, or under 30 days overall.',
+            appliesTo: 'Candidates who pass',
+            sources: [AGODA_A3_OFFER_2025, AGODA_HOW_WE_HIRE_TECH, AGODA_HIRING_PROCESS],
+          },
+        ],
+      },
+      {
+        title: 'Front-end engineers, Gurgaon, 2024 to 2025',
+        note:
+          'Team-specific: three accounts with different stage orders. Interviewers may sit in Bangkok, and one 2026 account was rejected in Gurgaon\'s second round before an offer from a Bangkok loop after the six-month cooling period. On 2026-10-21 the board listed no Gurugram front-end-titled role.',
+        stages: [
+          {
+            stage: 'Online assessment or take-home',
+            format:
+              'HTML/CSS and JavaScript questions in an online assessment, or a take-home such as a React and TypeScript stock dashboard listed as a 120-minute online coding interview.',
+            appliesTo: 'Some loops',
+            sources: [AGODA_A7_GURGAON_2025, AGODA_A2_GURGAON_2025],
+          },
+          {
+            stage: 'HR screen',
+            format: 'A short call before the technical rounds.',
+            appliesTo: 'Some loops',
+            sources: [AGODA_A7_GURGAON_2025],
+          },
+          {
+            stage: 'Coding round',
+            format: '60 minutes of JavaScript or DSA problems, on HackerRank in one account; another pairs a substring problem with a debounce utility.',
+            appliesTo: 'Front-end and full-stack engineers',
+            sources: [AGODA_A7_GURGAON_2025, AGODA_A2_GURGAON_2025, AGODA_A13_SDE2_2024],
+            practice: { label: 'Debounce', path: '/javascript/coding/js-debounce' },
+          },
+          {
+            stage: 'Platform or architecture round',
+            format:
+              'JavaScript depth (hoisting, class behaviour, SSR versus CSR, atomic design, testing), an hour of frontend architecture for a travel booking site, or a system architecture with a frontend that integrates backend API calls.',
+            appliesTo: 'Front-end and full-stack engineers',
+            sources: [AGODA_A7_GURGAON_2025, AGODA_A2_GURGAON_2025, AGODA_A13_SDE2_2024],
+            practice: { label: 'SSR and hydration in React', path: '/react/trivia/react-ssr-hydration' },
+          },
+          {
+            stage: 'HR salary and relocation call',
+            format: 'Compensation and relocation before a decision.',
+            appliesTo: 'Some loops',
+            sources: [AGODA_A7_GURGAON_2025],
+          },
+          {
+            stage: 'Managerial or technical-strategy round',
+            format:
+              'A managerial round in the 2024 offer account, a 60-minute technical-strategy round in the 2025 Code360 account, and a rejection without a managerial round in the 2025 Blind account.',
+            appliesTo: 'Some loops',
+            sources: [AGODA_A13_SDE2_2024, AGODA_A2_GURGAON_2025, AGODA_A7_GURGAON_2025],
             practice: { label: 'Behavioral interview guide', path: '/guides/behavioral' },
           },
         ],

@@ -13,6 +13,7 @@ export type CompanyOfficialGuide = {
 
 const CHECKED = '2026-10-15';
 const CHECKED_OCT_20 = '2026-10-20';
+const CHECKED_OCT_21 = '2026-10-21';
 
 export const COMPANY_OFFICIAL_GUIDES: Readonly<Record<string, readonly CompanyOfficialGuide[]>> = {
   amazon: [
@@ -278,6 +279,75 @@ export const COMPANY_OFFICIAL_GUIDES: Readonly<Record<string, readonly CompanyOf
       covers:
         'A 2023 article on the engineering loop: a talent acquisition call, a hiring manager interview, a coding interview, a system design and architecture interview and a general tech interview, over two to three weeks.',
       checkedAt: CHECKED_OCT_20,
+    },
+  ],
+  xai: [
+    {
+      label: 'Careers page: What to expect',
+      url: 'https://x.ai/careers',
+      covers:
+        'Four steps: the team reviews the CV and a statement of exceptional work; a short screening interview with short technical questions and a review of your background; technical interviews that dive deep into your technical expertise; then an offer. The page says "We generally do not use recruiters for assessments." and that applications are evaluated by technical team members.',
+      checkedAt: CHECKED_OCT_21,
+    },
+    {
+      label: 'Frontend Engineer posting, London (closed February 2026)',
+      url: 'https://www.builtinlondon.uk/job/frontend-engineer/7805551',
+      covers:
+        'An initial technical screening with basic technical questions (15 minutes), a React coding interview (45 minutes), an HTML/CSS/Tailwind coding interview (45 minutes) and a final stage with founding engineer Toby Pohlen (30 minutes), all conducted via Google Meet.',
+      checkedAt: CHECKED_OCT_21,
+    },
+    {
+      label: 'React Frontend Engineer posting, grok.com & API (closed January 2026)',
+      url: 'https://builtin.com/job/react-frontend-engineer-grokcom-api/4446453',
+      covers:
+        'A 15-minute phone interview with some basic technical questions, then two technical interviews: a coding interview in TypeScript to write a small app in React, and an HTML/CSS interview implementing a UI from a screenshot.',
+      checkedAt: CHECKED_OCT_21,
+    },
+  ],
+  jpmorgan: [
+    {
+      label: 'How we hire',
+      url: 'https://www.jpmorganchase.com/careers/how-we-hire',
+      covers:
+        'The four steps (Explore, Apply, Interview, Decision) and the statement that the interview process will differ for each position, with several people met across multiple rounds.',
+      checkedAt: CHECKED_OCT_21,
+    },
+    {
+      label: 'Hiring FAQs',
+      url: 'https://www.jpmorganchase.com/careers/how-we-hire/faqs',
+      covers:
+        'The assessment types (structured live interviews, on-demand recorded interviews and virtual skills assessments), technical assessments as online tests or live technical interviews with an interviewer, and the note that many assessments may not be retaken for a designated timeframe.',
+      checkedAt: CHECKED_OCT_21,
+    },
+    {
+      label: 'Software Engineer Program',
+      url: 'https://www.jpmorganchase.com/careers/explore-opportunities/programs/software-engineer-fulltime',
+      covers:
+        'The full-time programme\'s Front-end Developer track: AI-powered interfaces such as chat assistants with streaming responses and citations, design systems and accessibility standards, secure authentication, and frameworks such as React, Swift and Kotlin. It describes no interview format.',
+      checkedAt: CHECKED_OCT_21,
+    },
+  ],
+  agoda: [
+    {
+      label: 'How we hire: the Tech team interview process',
+      url: 'https://careersatagoda.com/blog/how-we-hire-agodas-tech-team-interview-process/',
+      covers:
+        'A HackerRank online test as the coding assessment, the four rounds the Tech interview process typically includes (Coding, Platform, System Design and Agoda Culture Fit), a final decision typically within two weeks of the last interview round, and the front-end stack (TypeScript with React and Redux, Rspack and Vite for bundling, micro-front-end and cross-platform solutions).',
+      checkedAt: CHECKED_OCT_21,
+    },
+    {
+      label: 'Interview guide',
+      url: 'https://careersatagoda.com/interview/',
+      covers:
+        'The CAR method (Context, Action, Results) used in interviews, two rounds of video interviews before the final stages for most candidates, and the parts of the process (live system design, technical Q&A and behavioural interviews) that must be completed without AI unless the candidate is asked to use it.',
+      checkedAt: CHECKED_OCT_21,
+    },
+    {
+      label: 'Preparing for an interview at Agoda (Agoda Engineering)',
+      url: 'https://medium.com/agoda-engineering/preparing-for-interview-at-agoda-2c07b7d13ca5',
+      covers:
+        'A 2023 interviewer\'s guide to the Coding round (testing skills, critical and systematic thinking, code efficiency and readability, computer science knowledge) and the Platform round (implementing something related to Agoda, and reviewing, fixing and improving a given code snippet as a lint tool would).',
+      checkedAt: CHECKED_OCT_21,
     },
   ],
 };

@@ -12,7 +12,8 @@
   "companies": [
     "meta",
     "zalando",
-    "booking-com"
+    "booking-com",
+    "agoda"
   ],
   "type": "system-design",
   "sections": [
@@ -87,6 +88,13 @@
         "sourceUrl": "https://enginebogie.com/interview/experience/booking-com-frontend-engineer/84",
         "sourceTitle": "Booking.com frontend engineer machine-coding round, May 2023 (enginebogie)",
         "checkedAt": "2026-10-17"
+      },
+      {
+        "company": "agoda",
+        "evidenceType": "reported-interview-question",
+        "sourceUrl": "https://leetcode.com/discuss/post/8459009/",
+        "sourceTitle": "Agoda senior software engineer (frontend) interview, Bangkok, July 2026 (LeetCode Discuss)",
+        "checkedAt": "2026-10-21"
       }
     ]
   },
@@ -114,6 +122,14 @@
       "publisher": "enginebogie",
       "date": "2023-05",
       "note": "One account lists debounce or throttle, caching, keyboard navigation and error states as the expectations of a 60-minute typeahead round. This case practises the design side of those expectations; it is not the reported prompt."
+    },
+    {
+      "label": "LeetCode Discuss: Agoda senior frontend interview, Bangkok, July 2026",
+      "url": "https://leetcode.com/discuss/post/8459009/",
+      "company": "agoda",
+      "publisher": "LeetCode Discuss",
+      "date": "2026-08",
+      "note": "The architecture round asked for a hotel search page with date, city and guest inputs, filters and result cards, built for a million users and multiple teams. This search case is a practice version of that round's search slice, not its wording."
     }
   ]
 }

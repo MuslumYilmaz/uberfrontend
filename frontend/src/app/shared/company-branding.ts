@@ -147,6 +147,22 @@ export const COMPANY_BRANDS: Record<string, CompanyBrand> = {
     logoUrl: `${COMPANY_LOGO_BASE}/tesla.svg`,
     monogram: 'T',
   },
+  // Tagged on 2026-10-21. Simple Icons has no JPMorgan, Agoda or xAI mark, so these keep monograms.
+  jpmorgan: {
+    slug: 'jpmorgan',
+    label: 'JPMorgan Chase',
+    monogram: 'J',
+  },
+  agoda: {
+    slug: 'agoda',
+    label: 'Agoda',
+    monogram: 'A',
+  },
+  xai: {
+    slug: 'xai',
+    label: 'xAI',
+    monogram: 'X',
+  },
 };
 
 const COMPANY_ALIASES: Record<string, string> = {

@@ -27,6 +27,7 @@ describe('company branding helpers', () => {
 
   it('has registry entries for all currently tagged companies', () => {
     const currentCompanySlugs = [
+      'agoda',
       'airbnb',
       'amazon',
       'apple',
@@ -36,6 +37,7 @@ describe('company branding helpers', () => {
       'elevenlabs',
       'google',
       'intuit',
+      'jpmorgan',
       'meta',
       'microsoft',
       'netflix',
@@ -48,6 +50,7 @@ describe('company branding helpers', () => {
       'uber',
       'walmart',
       'waymo',
+      'xai',
       'zalando',
     ];
 

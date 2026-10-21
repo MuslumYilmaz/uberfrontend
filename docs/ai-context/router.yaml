@@ -450,6 +450,37 @@ reference_rules:
       - docs/references/walmart-nvidia-tesla-questions-2026-10.md
     max_docs: 1
 
+  - id: jpmorgan_agoda_xai_questions
+    priority: 93
+    keywords:
+      - jpmorgan
+      - jp morgan
+      - jpmc
+      - agoda
+      - xai
+      - spacexai
+      - reported frontend questions
+      - company candidates 2026-10-21
+    paths:
+      - docs/references/jpmorgan-agoda-xai-questions-2026-10.md
+    load:
+      - docs/references/jpmorgan-agoda-xai-questions-2026-10.md
+    max_docs: 1
+
+  - id: jpmorgan_agoda_xai_interview_processes
+    priority: 93
+    keywords:
+      - jpmorgan interview process
+      - agoda interview process
+      - xai interview process
+      - interview process table
+      - reported interview process
+    paths:
+      - docs/references/jpmorgan-agoda-xai-interview-processes-2026-10.md
+    load:
+      - docs/references/jpmorgan-agoda-xai-interview-processes-2026-10.md
+    max_docs: 1
+
   - id: header_prep_menu_plan
     priority: 92
     keywords:

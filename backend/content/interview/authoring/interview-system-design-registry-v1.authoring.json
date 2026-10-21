@@ -4,9 +4,9 @@
   "registryVersion": "1.2.0",
   "status": "candidate",
   "finalApproval": null,
-  "definitionHash": "f8b5f1d8ef10644bfaa21923c229be4e3c54e058c9a1ed3a30b05d2cd3723882",
+  "definitionHash": "11f54c62023f492f543adba911128ecaec2b32083992f97e5e8222879f290db9",
   "reviewBatch": {
-    "reviewedDefinitionHash": "f8b5f1d8ef10644bfaa21923c229be4e3c54e058c9a1ed3a30b05d2cd3723882",
+    "reviewedDefinitionHash": "11f54c62023f492f543adba911128ecaec2b32083992f97e5e8222879f290db9",
     "reviewedAt": "2026-08-12",
     "technical": {
       "reviewer": "codex-system-design-technical-v8",
@@ -28,7 +28,8 @@
         "2026-10-15 source-pin maintenance review: the int-sd-autocomplete-race-mid-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
         "2026-10-15 source-pin maintenance review: the int-sd-ai-chat-composer-mid-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
         "2026-10-15 source-pin maintenance review: the int-sd-image-upload-lifecycle-jr-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
-        "2026-10-17 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the zalando and booking-com company tags, two public interview-report sources and the matching editorial.companyEvidence entries; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin for int-sd-autocomplete-race-mid-v1. This is not a new release approval."
+        "2026-10-17 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the zalando and booking-com company tags, two public interview-report sources and the matching editorial.companyEvidence entries; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin for int-sd-autocomplete-race-mid-v1. This is not a new release approval.",
+        "2026-10-21 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the agoda company tag, one public interview-report source and the matching editorial.companyEvidence entry, and the ai-chat-textarea-design meta.json source gains the xai company tag, one public interview-report source and the matching editorial.companyEvidence entry; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval."
       ]
     },
     "blind": {
@@ -1750,7 +1751,7 @@
       },
       "private": {
         "sourceContentId": "realtime-search-debounce-cache",
-        "expectedSourceBundleHash": "3d90f44b370ced59b02a3da135413b905bbc8209b2b784cdee89bfc52875db34",
+        "expectedSourceBundleHash": "cb62c0660188948e601c7a5be655270cb51421551f1460d698791acbbcb3f5c7",
         "clarificationAnswers": [
           {
             "clarificationId": "search-identity",
@@ -3053,7 +3054,7 @@
       },
       "private": {
         "sourceContentId": "ai-chat-textarea-design",
-        "expectedSourceBundleHash": "dbd7bd9c503a074a5fdd36ea64b81651f94de2b3fba84c5de7911abf2249830b",
+        "expectedSourceBundleHash": "e47307d52f94b6fff8a10a83ad95d6dd1bff50535c2cb3b30929a89d4a48073f",
         "clarificationAnswers": [
           {
             "clarificationId": "chat-draft-scope",

@@ -15,7 +15,8 @@
     "frontend-architecture"
   ],
   "companies": [
-    "tesla"
+    "tesla",
+    "agoda"
   ],
   "type": "system-design",
   "sections": [
@@ -75,6 +76,13 @@
         "sourceUrl": "https://www.jointaro.com/interviews/companies/tesla/experiences/front-end-developer-fremont-ca-january-1-2024-no-offer-neutral-9e5d4e3f/",
         "sourceTitle": "Tesla front end developer interview, Fremont, January 2024 (Taro)",
         "checkedAt": "2026-10-19"
+      },
+      {
+        "company": "agoda",
+        "evidenceType": "reported-interview-question",
+        "sourceUrl": "https://www.naukri.com/code360/interview-experiences/agoda/agoda-interview-experience-by-brijesh-verma-may-2025-exp-0-2-years",
+        "sourceTitle": "Agoda frontend engineer interview, Gurgaon, May 2025 (Code360)",
+        "checkedAt": "2026-10-21"
       }
     ]
   },
@@ -86,6 +94,14 @@
       "publisher": "Taro",
       "date": "2024-01",
       "note": "One front end developer account from Fremont lists a third round on the system design of a car rental company. This booking flow practises a frontend version of that round; it is not the reported prompt."
+    },
+    {
+      "label": "Code360: Agoda frontend engineer interview, Gurgaon, May 2025",
+      "url": "https://www.naukri.com/code360/interview-experiences/agoda/agoda-interview-experience-by-brijesh-verma-may-2025-exp-0-2-years",
+      "company": "agoda",
+      "publisher": "Code360",
+      "date": "2025-05",
+      "note": "The third round asked for a scalable frontend architecture for a travel booking website with micro-frontends, SSR or SSG and performance work. This booking-frontend case is a practice version of that round, not its wording."
     }
   ],
   "contentSchemaVersion": 2,

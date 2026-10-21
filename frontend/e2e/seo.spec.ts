@@ -342,6 +342,15 @@ test('seo: llms.txt is served with public discovery links only', async ({ page }
   expect(text).toContain(
     '[Spotify frontend interview questions](https://frontendatlas.com/companies/spotify/preview)',
   );
+  expect(text).toContain(
+    '[JPMorgan Chase frontend interview questions](https://frontendatlas.com/companies/jpmorgan/preview)',
+  );
+  expect(text).toContain(
+    '[Agoda frontend interview questions](https://frontendatlas.com/companies/agoda/preview)',
+  );
+  expect(text).toContain(
+    '[xAI frontend interview questions](https://frontendatlas.com/companies/xai/preview)',
+  );
 
   ['/dashboard', '/profile', '/admin', '/auth/', '/billing'].forEach((path) => {
     expect(text).not.toContain(path);
