@@ -678,6 +678,7 @@ const NETFLIX_OFFICIAL_SOURCES = [
 const NETFLIX_PREVIEW_INBOUND_PAGES = [
   { path: '/', anchor: 'View Netflix preview' },
   { path: '/companies', anchor: 'Netflix frontend interview questions' },
+  { path: '/companies/google/preview', anchor: 'Netflix frontend interview questions' },
   // /system-design stopped linking to the Netflix preview in the V2.1 calibration (17c349f1).
 ] as const;
 
@@ -3766,6 +3767,9 @@ test.describe('seo-ssr', () => {
       }
       for (const resource of guide.resources) {
         expect(html, `crawlable resource link ${resource}`).toContain(`href="${resource}"`);
+      }
+      for (const sibling of ['/companies/stripe/preview', '/companies/walmart/preview']) {
+        expect(html, `crawlable sibling company guide link ${sibling}`).toContain(`href="${sibling}"`);
       }
       expect(html).toMatch(new RegExp(`href="${escapeRegExp(guide.reportUrl)}"[^>]*rel="noopener noreferrer nofollow"`));
 

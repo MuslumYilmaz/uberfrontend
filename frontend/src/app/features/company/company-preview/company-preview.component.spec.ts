@@ -147,6 +147,36 @@ describe('CompanyPreviewComponent', () => {
     expect(host.textContent || '').not.toContain('Bytedance');
   });
 
+  it('links the other company guides from every preview branch', async () => {
+    const authored = buildAuthoredCompanyPreviewFixture();
+    const cases: Array<[string, Record<string, AuthoredCompanyPreview> | undefined]> = [
+      ['openai', undefined],
+      ['google', undefined],
+      ['netflix', undefined],
+      ['microsoft', undefined],
+      [authored.slug, { [authored.slug]: authored }],
+    ];
+
+    for (const [slug, registry] of cases) {
+      const fixture = registry ? await createComponent(slug, undefined, registry) : await createComponent(slug);
+      const host: HTMLElement = fixture.nativeElement;
+      const section = host.querySelector('[data-testid="company-related-guides"]') as HTMLElement;
+      const hrefs = Array.from(section.querySelectorAll<HTMLAnchorElement>('a'), (anchor) => anchor.getAttribute('href'));
+
+      expect(section).withContext(slug).toBeTruthy();
+      expect(hrefs.length).withContext(slug).toBeGreaterThanOrEqual(20);
+      expect(new Set(hrefs).size).withContext(slug).toBe(hrefs.length);
+      expect(hrefs).withContext(slug).not.toContain(`/companies/${slug}/preview`);
+      expect(hrefs).withContext(slug).toContain('/companies/meta/preview');
+      expect(hrefs).withContext(slug).toContain('/companies/stripe/preview');
+      expect(hrefs.every((href) => !href?.includes('?'))).withContext(slug).toBeTrue();
+      expect(section.textContent || '').withContext(slug).toContain('Booking.com frontend interview questions');
+      expect(section.textContent || '').withContext(slug).not.toContain('Openai');
+      expect(section.textContent || '').withContext(slug).not.toContain('Bytedance');
+      expect(host.querySelectorAll('h1').length).withContext(slug).toBe(1);
+    }
+  });
+
   it('keeps contextual OpenAI links on free public practice pages', async () => {
     const fixture = await createComponent('openai');
     const host: HTMLElement = fixture.nativeElement;

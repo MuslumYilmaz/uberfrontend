@@ -867,4 +867,16 @@
   </ng-container>
   </ng-template>
   </ng-template>
+
+  <section class="company-guide-section company-related-guides" aria-labelledby="company-related-guides-title" data-testid="company-related-guides">
+    <div class="company-guide-section__head">
+      <p class="preview-kicker">More company guides</p>
+      <h2 id="company-related-guides-title">Other company frontend interview guides</h2>
+    </div>
+    <ul class="company-related-guides__list">
+      <li *ngFor="let c of relatedCompanyLinks">
+        <a class="company-resource-link company-resource-link--inline" [routerLink]="c.link">{{ c.label }} frontend interview questions</a>
+      </li>
+    </ul>
+  </section>
 </section>

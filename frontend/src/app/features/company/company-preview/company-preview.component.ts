@@ -9,6 +9,7 @@ import { COMPANY_PRACTICE_DISCLAIMER } from '../../../core/content/public-editor
 import { Tech } from '../../../core/models/user.model';
 import { SeoService } from '../../../core/services/seo.service';
 import { companyBrandFor } from '../../../shared/company-branding';
+import { SHOWCASE_STATS } from '../../../generated/content-metadata';
 import type { AuthoredCompanyPreview, AuthoredSource } from '../../../shared/company-previews/authored-company-preview.model';
 import { AUTHORED_COMPANY_PREVIEWS_TOKEN } from '../../../shared/company-previews/authored-company-previews';
 import { COMPANY_OFFICIAL_GUIDES, type CompanyOfficialGuide } from '../../../shared/company-previews/company-official-guides';
@@ -73,6 +74,12 @@ const OPENAI_PREVIEW_TITLE = 'OpenAI Frontend Interview: 5 Practice Questions + 
 const OPENAI_PREVIEW_H1 = 'OpenAI Frontend Interview Questions';
 const OPENAI_PREVIEW_DESCRIPTION =
   'Practice for OpenAI frontend interviews with representative prompts on streaming chat UI, stale stream handling, optimistic React state, accessibility, and history design.';
+type RelatedCompanyLink = {
+  slug: string;
+  label: string;
+  link: string[];
+};
+
 const OPENAI_PREVIEW_CANONICAL_PATH = '/companies/openai/preview';
 const OPENAI_TRUST_NOTE =
   'These are not leaked or confirmed OpenAI interview questions; they are representative, role-relevant practice prompts.';
@@ -248,6 +255,8 @@ export class CompanyPreviewComponent implements OnInit {
   isNetflixPreview = false;
   /** Set when the slug has a data-driven authored guide in the registry (see shared/company-previews). */
   authoredPreview: AuthoredCompanyPreview | null = null;
+  /** The other company guides; built from the generated metadata so no company page re-dates. */
+  relatedCompanyLinks: RelatedCompanyLink[] = [];
   readonly openAiTitle = OPENAI_PREVIEW_TITLE;
   readonly openAiH1 = OPENAI_PREVIEW_H1;
   readonly openAiTrustNote = OPENAI_TRUST_NOTE;
@@ -300,6 +309,10 @@ export class CompanyPreviewComponent implements OnInit {
     }
 
     this.label = this.prettyCompany(this.slug);
+    this.relatedCompanyLinks = Object.keys((SHOWCASE_STATS as { companyCounts?: Record<string, unknown> }).companyCounts || {})
+      .filter((slug) => slug !== this.slug)
+      .map((slug) => ({ slug, label: companyBrandFor(slug)?.label ?? slug, link: ['/companies', slug, 'preview'] }))
+      .sort((a, b) => a.label.localeCompare(b.label));
     this.isOpenAiPreview = this.slug === 'openai';
     this.isGooglePreview = this.slug === 'google';
     this.isNetflixPreview = this.slug === 'netflix';
