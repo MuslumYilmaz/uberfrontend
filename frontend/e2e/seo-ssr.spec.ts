@@ -770,6 +770,27 @@ const EDITORIAL_NOTE_CASES = [
     ],
     practicePath: '/javascript/coding/js-color-contrast-ratio',
   },
+  {
+    label: 'Booking.com',
+    path: '/companies/booking-com/preview',
+    title: 'Booking.com Frontend Interview Process and Practice',
+    h1: 'Booking.com Frontend Interview Questions and Process',
+    headings: [
+      'HackerRank test, recruiter call, coding rounds, fit interview',
+      'Rehearse the autocomplete round first',
+      'Common questions about Booking.com frontend interviews',
+    ],
+    markers: [
+      'data-testid="company-editorial-intro"',
+      'data-testid="company-reports-describe"',
+      'data-testid="company-interview-process"',
+      'data-testid="company-prep-steps"',
+      '>What you can do now for free</h2>',
+      'data-testid="company-editorial-faqs"',
+      'class="cta-stack"',
+    ],
+    practicePath: '/react/coding/react-autocomplete-search-starter',
+  },
 ] as const;
 
 const AUTHORED_GUIDE_CASES = [

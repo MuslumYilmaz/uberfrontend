@@ -512,6 +512,18 @@ const EDITORIAL_NOTE_SMOKE = [
     ],
     practicePath: '/javascript/coding/js-color-contrast-ratio',
   },
+  {
+    label: 'Booking.com',
+    route: '/companies/booking-com/preview',
+    title: 'Booking.com Frontend Interview Process and Practice',
+    h1: 'Booking.com Frontend Interview Questions and Process',
+    headings: [
+      'HackerRank test, recruiter call, coding rounds, fit interview',
+      'Rehearse the autocomplete round first',
+      'Common questions about Booking.com frontend interviews',
+    ],
+    practicePath: '/react/coding/react-autocomplete-search-starter',
+  },
 ];
 const ANGULAR_HTTP_CANCELLATION_LAB_ROUTE =
   '/angular/trivia/angular-http-what-actually-cancels-request';

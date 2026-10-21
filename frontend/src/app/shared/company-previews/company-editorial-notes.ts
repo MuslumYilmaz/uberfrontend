@@ -463,6 +463,114 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
     },
     about: ['Tesla frontend interview preparation'],
   },
+  'booking-com': {
+    slug: 'booking-com',
+    title: 'Booking.com Frontend Interview Process and Practice',
+    h1: 'Booking.com Frontend Interview Questions and Process',
+    description: 'How public reports from 2021 to 2023 describe Booking.com frontend interviews: a HackerRank test, coding rounds with two engineers and a fit interview.',
+    hero: {
+      kicker: 'Public preview and process notes',
+      subtitle: 'Booking.com publishes a four-step journey; public frontend reports from 2021 to 2023 add the detail: a 90 to 100 minute HackerRank test, one or two 60 minute coding rounds in vanilla JavaScript or React, and a fit interview. Newer general software loops add a take-home.',
+    },
+    intro: ['The official page, linked below, describes Application, Interview, Business and Feedback steps over three to six weeks, with technical tests and coding interviews for technical roles. The frontend detail comes from public accounts, mostly from Amsterdam, and stops in mid-2023.'],
+    reportsDescribe: {
+      kicker: 'What public interview reports describe',
+      title: 'HackerRank test, recruiter call, coding rounds, fit interview',
+      paragraphs: ['The HackerRank test runs 90 to 100 minutes with about five items: two easy algorithm problems, two HTML and CSS multiple-choice questions and one React component. A 15 to 30 minute recruiter call follows, sometimes with a few technical questions, then one or two coding rounds of about 60 minutes with two engineers, and a fit interview of about an hour with engineering managers.'],
+      bullets: [
+        {
+          text: 'The coding rounds build a component in plain JavaScript or React. An autocomplete or typeahead recurs; other accounts mention a tooltip, a component fed by API data to a design spec and a new feature added to a prepared app.',
+          link: {
+            label: 'See the coding stage',
+            fragment: 'booking-com-interview-process-1',
+          },
+        },
+        {
+          text: 'Backend coding and system design appear only in full-stack and senior accounts; no frontend-titled account mentions system design.',
+        },
+        {
+          text: 'One account describes a monitored 40-minute HackerRank session with three engineers, a live round rather than the take-home test.',
+        },
+        {
+          text: '2025 general software engineer accounts describe a different loop with a take-home and a pairing session.',
+        },
+      ],
+    },
+    prepSteps: {
+      kicker: 'How to prepare with this grouping',
+      title: 'Rehearse the autocomplete round first',
+      intro: 'Free items first, then the premium set. Each item is a practice version modelled on a reported round, not a leaked question.',
+      steps: [
+        {
+          label: 'React autocomplete search',
+          path: '/react/coding/react-autocomplete-search-starter',
+          access: 'free',
+          why: 'The autocomplete that recurs across the coding rounds.',
+        },
+        {
+          label: 'Debounce',
+          path: '/javascript/coding/js-debounce',
+          access: 'free',
+          why: 'The debounce discussed inside the autocomplete rounds.',
+        },
+        {
+          label: 'Flatten one level',
+          path: '/javascript/coding/js-flatten-once',
+          access: 'free',
+          why: 'An editorial grouping for the easy algorithm items of the HackerRank test.',
+        },
+        {
+          label: 'Forms: validation and required fields',
+          path: '/html/coding/html-forms-validation-required',
+          access: 'free',
+          why: 'An editorial grouping for the HTML and CSS questions of the test.',
+        },
+        {
+          label: 'Throttle',
+          path: '/javascript/coding/js-throttle',
+          access: 'premium',
+          why: 'The throttle variant discussed in a 2023 machine coding round.',
+        },
+        {
+          label: 'React debounced search',
+          path: '/react/coding/react-debounced-search',
+          access: 'premium',
+          why: 'A practice version of the component fed by API data to a design spec.',
+        },
+        {
+          label: 'Vue autocomplete search',
+          path: '/vue/coding/vue-autocomplete-search',
+          access: 'premium',
+          why: 'The same autocomplete in Vue, one of the frameworks candidates could choose.',
+        },
+        {
+          label: 'Real-time search with debounce and cache',
+          path: '/system-design/realtime-search-debounce-cache',
+          access: 'premium',
+          why: 'A design-level practice version for the autocomplete with caching and keyboard navigation.',
+        },
+      ],
+    },
+    faqs: {
+      kicker: 'Preparation FAQ',
+      title: 'Common questions about Booking.com frontend interviews',
+      items: [
+        {
+          question: 'Is there a system design round for frontend roles?',
+          answer: 'Not in the frontend-titled accounts. Backend coding and system design appear in full-stack and senior accounts only.',
+        },
+        {
+          question: 'Is the HackerRank test monitored?',
+          answer: 'One account describes a monitored 40-minute session with three engineers, which was a live round. The take-home test in the other accounts ran 90 to 100 minutes on its own.',
+        },
+        {
+          question: 'How recent are these reports?',
+          answer: 'The frontend accounts run from 2021 to mid-2023. Later accounts are general software engineer loops with a take-home and a pairing session.',
+        },
+      ],
+    },
+    about: ['Booking.com frontend interview preparation'],
+  },
 };
 
 export type CompanyEditorialNotesRegistry = Readonly<Record<string, CompanyEditorialNotes>>;
