@@ -398,6 +398,23 @@ reference_rules:
       - docs/references/company-pages-plan-2026-10.md
     max_docs: 1
 
+  - id: company_generic_pages_content_plan
+    priority: 93
+    keywords:
+      - generic company page
+      - editorial notes
+      - company editorial notes
+      - company internal links
+      - company sibling links
+      - thin company page
+      - generic preview copy
+    paths:
+      - docs/references/company-generic-pages-content-plan-2026-10.md
+      - frontend/src/app/shared/company-previews/company-editorial-notes.ts
+    load:
+      - docs/references/company-generic-pages-content-plan-2026-10.md
+    max_docs: 1
+
   - id: europe_company_shortlist
     priority: 93
     keywords:
