@@ -92,7 +92,7 @@
 - [Stripe interview preview](https://frontendatlas.com/companies/stripe/preview): Stripe frontend interview practice preview.
 - [Tesla interview preview](https://frontendatlas.com/companies/tesla/preview): Tesla frontend interview practice preview.
 - [Uber interview preview](https://frontendatlas.com/companies/uber/preview): Uber frontend interview practice preview.
-- [Walmart interview preview](https://frontendatlas.com/companies/walmart/preview): Walmart frontend interview practice preview.
+- [Walmart Frontend Interview Questions and Process](https://frontendatlas.com/companies/walmart/preview): How public reports describe Walmart frontend interviews: HackerRank and Karat screens, React fundamentals rounds, and practice items for each stage.
 - [Waymo frontend interview questions](https://frontendatlas.com/companies/waymo/preview): Public Waymo prep guide with five practice prompts modelled on a public 2026 interview report.
 - [Zalando interview preview](https://frontendatlas.com/companies/zalando/preview): Zalando frontend interview practice preview.
 

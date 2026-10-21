@@ -682,6 +682,33 @@ const NETFLIX_PREVIEW_INBOUND_PAGES = [
   // /system-design stopped linking to the Netflix preview in the V2.1 calibration (17c349f1).
 ] as const;
 
+// Catalog-driven company previews with an editorial notes entry (COMPANY_EDITORIAL_NOTES): the notes
+// wrap the unchanged counts, samples, process table, reports and official pages.
+const EDITORIAL_NOTE_CASES = [
+  {
+    label: 'Walmart',
+    path: '/companies/walmart/preview',
+    title: 'Walmart Frontend Interview Process and Practice Questions',
+    h1: 'Walmart Frontend Interview Questions and Process',
+    headings: [
+      'Three loop shapes, by role and region',
+      'Rehearse the reported rounds in order',
+      'Common questions about Walmart frontend interviews',
+    ],
+    // Raw-HTML markers in document order.
+    markers: [
+      'data-testid="company-editorial-intro"',
+      'data-testid="company-reports-describe"',
+      'data-testid="company-interview-process"',
+      'data-testid="company-prep-steps"',
+      '>What you can do now for free</h2>',
+      'data-testid="company-editorial-faqs"',
+      'class="cta-stack"',
+    ],
+    practicePath: '/javascript/coding/js-valid-parentheses',
+  },
+] as const;
+
 const AUTHORED_GUIDE_CASES = [
   {
     label: 'Waymo',
@@ -3812,6 +3839,43 @@ test.describe('seo-ssr', () => {
 
       await page.waitForTimeout(300);
       expectNoHydrationOrChunkIssues(runtimeIssues, guide.path);
+    });
+  }
+
+  for (const note of EDITORIAL_NOTE_CASES) {
+    test(`raw ${note.label} company preview renders its editorial notes around the catalog blocks`, async ({ request }) => {
+      test.setTimeout(120_000);
+
+      const html = await readRawHtml(request, note.path);
+      const text = rawVisibleText(html);
+      const caseText = rawVisibleTextPreserveCase(html);
+      const schemaTypes = extractRawJsonLdTypes(html);
+      const schemaNodes = extractRawJsonLdNodes(html);
+
+      expect(extractRawTitle(html)).toBe(note.title);
+      expect(extractRawH1(html)).toBe(note.h1);
+      expect(extractRawCanonical(html)).toBe(expectedCanonical(note.path));
+      expect(normalizeText(extractRawMeta(html, 'robots')).replace(/\s+/g, '')).toBe('index,follow');
+      expect((html.match(/<h1[\s>]/g) || []).length).toBe(1);
+      for (const heading of note.headings) {
+        expect(text, `${note.label} preview includes ${heading}`).toContain(normalizeText(heading));
+      }
+
+      const positions = note.markers.map((marker) => html.indexOf(marker));
+      for (let index = 0; index < positions.length; index += 1) {
+        expect(positions[index], `${note.markers[index]} present`).toBeGreaterThan(-1);
+        if (index > 0) expect(positions[index], `${note.markers[index]} after ${note.markers[index - 1]}`).toBeGreaterThan(positions[index - 1]);
+      }
+
+      expect(html).toContain(`href="${note.practicePath}"`);
+      expect(schemaTypes).toContain('CollectionPage');
+      expect(schemaTypes).toContain('BreadcrumbList');
+      expect(schemaTypes).not.toContain('FAQPage');
+      const collection = schemaNodes.find((node: any) => node?.['@type'] === 'CollectionPage') as any;
+      expect(collection?.headline).toBe(note.h1);
+      expect(typeof collection?.dateModified).toBe('string');
+      expect(caseText).toContain('Editorial practice groupings, not verified official interview questions or endorsements.');
+      expect(caseText).not.toContain('known questions');
     });
   }
 

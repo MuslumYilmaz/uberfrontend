@@ -462,6 +462,21 @@ const AUTHORED_GUIDE_SMOKE = [
       'https://www.teamblind.com/post/weak-system-design-interview-for-spotify-chances-of-no-hire-00wjs6rg',
   },
 ];
+// Catalog-driven company previews with an editorial notes entry (COMPANY_EDITORIAL_NOTES).
+const EDITORIAL_NOTE_SMOKE = [
+  {
+    label: 'Walmart',
+    route: '/companies/walmart/preview',
+    title: 'Walmart Frontend Interview Process and Practice Questions',
+    h1: 'Walmart Frontend Interview Questions and Process',
+    headings: [
+      'Three loop shapes, by role and region',
+      'Rehearse the reported rounds in order',
+      'Common questions about Walmart frontend interviews',
+    ],
+    practicePath: '/javascript/coding/js-valid-parentheses',
+  },
+];
 const ANGULAR_HTTP_CANCELLATION_LAB_ROUTE =
   '/angular/trivia/angular-http-what-actually-cancels-request';
 const ANGULAR_HTTP_CANCELLATION_LAB_CANONICAL =
@@ -1755,6 +1770,22 @@ try {
         !visibleText.includes('Sample FrontendAtlas practice prompts') &&
         !visibleText.includes('Try free challenge'),
       detail: 'practice links present, catalog markup absent',
+    });
+  }
+
+  for (const note of EDITORIAL_NOTE_SMOKE) {
+    const body = await curlBody(`${base}${note.route}`, { followRedirects: true, userAgent: GOOGLEBOT_USER_AGENT });
+    const visibleText = extractVisibleText(body);
+    const jsonLd = extractSeoJsonLd(body);
+    const collectionPage = jsonLd.graph.find((node) => hasSchemaType(node, 'CollectionPage'));
+    const titleOk = extractTitle(body) === note.title;
+    const headingsOk = [note.h1, ...note.headings].every((heading) => visibleText.includes(normalizeText(heading)));
+    const catalogOk = visibleText.includes(normalizeText('What you can do now for free')) && body.includes(`href="${note.practicePath}"`);
+    const schemaOk = Boolean(collectionPage?.dateModified) && !jsonLd.graph.some((node) => hasSchemaType(node, 'FAQPage'));
+    checks.push({
+      name: `${note.label} company preview renders its editorial notes around the catalog blocks with a dated CollectionPage`,
+      ok: titleOk && headingsOk && catalogOk && schemaOk,
+      detail: `title=${titleOk} headings=${headingsOk} catalog=${catalogOk} schema=${schemaOk}`,
     });
   }
 
