@@ -749,6 +749,27 @@ const EDITORIAL_NOTE_CASES = [
     ],
     practicePath: '/javascript/trivia/js-promises-async-await',
   },
+  {
+    label: 'Tesla',
+    path: '/companies/tesla/preview',
+    title: 'Tesla Frontend Interview Process and Practice Questions',
+    h1: 'Tesla Frontend Interview Questions and Process',
+    headings: [
+      'Assessment, screen, then a three to five round onsite',
+      'Rehearse the reported stages in order',
+      'Common questions about Tesla frontend interviews',
+    ],
+    markers: [
+      'data-testid="company-editorial-intro"',
+      'data-testid="company-reports-describe"',
+      'data-testid="company-interview-process"',
+      'data-testid="company-prep-steps"',
+      '>What you can do now for free</h2>',
+      'data-testid="company-editorial-faqs"',
+      'class="cta-stack"',
+    ],
+    practicePath: '/javascript/coding/js-color-contrast-ratio',
+  },
 ] as const;
 
 const AUTHORED_GUIDE_CASES = [

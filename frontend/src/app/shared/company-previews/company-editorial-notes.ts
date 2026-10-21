@@ -336,6 +336,133 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
     },
     about: ['Microsoft frontend interview preparation'],
   },
+  tesla: {
+    slug: 'tesla',
+    title: 'Tesla Frontend Interview Process and Practice Questions',
+    h1: 'Tesla Frontend Interview Questions and Process',
+    description: 'How public reports describe Tesla frontend interviews: a Codility assessment, a one-hour technical screen, 3 to 5 onsite rounds and team-specific take-homes.',
+    hero: {
+      kicker: 'Public preview and process notes',
+      subtitle: 'Recruiter call, Codility assessment, technical screen and a three to five round onsite, as described in public interview reports from 2020 to 2026, with the free and premium items that rehearse each stage.',
+    },
+    intro: ['Tesla publishes no frontend interview guide, so this page rests on public interview reports from 2020 to 2026. Several accounts say the format depends on the team, and a few describe what a recruiter planned rather than a finished loop.'],
+    reportsDescribe: {
+      kicker: 'What public interview reports describe',
+      title: 'Assessment, screen, then a three to five round onsite',
+      paragraphs: ['Most accounts open with a recruiter or HR call, then an online assessment, often on Codility, then a one-hour technical screen. The onsite runs three to five rounds of about 45 minutes and mixes frontend coding, an algorithm round, frontend system design and a behavioural or hiring manager conversation.'],
+      bullets: [
+        {
+          text: 'Assessments vary: two hours for five questions on Codility in one account, a three-hour assessment with HTML, CSS, a like button and a string puzzle in another.',
+          link: {
+            label: 'See the assessment stage',
+            fragment: 'tesla-interview-process-1',
+          },
+        },
+        {
+          text: 'Frontend coding is mostly React; one 2024 loop ran an Angular round followed by a TypeScript and JavaScript round.',
+        },
+        {
+          text: 'Take-homes are team-specific. Candidates have published two briefs, an energy site layout and a creative technology control; this page describes their shape and does not reproduce them.',
+        },
+        {
+          text: 'Team match matters: a 2026 account passed four technical rounds and got no offer because the team wanted a full-stack engineer.',
+        },
+        {
+          text: 'Interns get one or two rounds, sometimes with a system design final.',
+          link: {
+            label: 'See the internship stages',
+            fragment: 'tesla-interview-process-2',
+          },
+        },
+      ],
+    },
+    prepSteps: {
+      kicker: 'How to prepare with this grouping',
+      title: 'Rehearse the reported stages in order',
+      intro: 'Free items first, then the premium set. Each item is a practice version modelled on a reported round, not a leaked question.',
+      steps: [
+        {
+          label: 'Color contrast ratio',
+          path: '/javascript/coding/js-color-contrast-ratio',
+          access: 'free',
+          why: 'A JavaScript task reported in a 2022 Codility assessment.',
+        },
+        {
+          label: 'Forms: validation and required fields',
+          path: '/html/coding/html-forms-validation-required',
+          access: 'free',
+          why: 'The same assessment asked for a login form.',
+        },
+        {
+          label: 'Semantic HTML layout',
+          path: '/html/coding/html-semantic-layout',
+          access: 'free',
+          why: 'Reported as replacing divs with semantic HTML5 elements.',
+        },
+        {
+          label: 'CSS positioning badge',
+          path: '/css/coding/css-positioning-badge',
+          access: 'free',
+          why: 'Reported as positioning boxes with CSS.',
+        },
+        {
+          label: 'React fetch and render a list',
+          path: '/react/coding/react-fetch-list-states',
+          access: 'free',
+          why: 'Reported as fetching photos and rendering them with a theme context.',
+        },
+        {
+          label: 'Shallow clone',
+          path: '/javascript/coding/js-shallow-clone',
+          access: 'free',
+          why: 'Copy semantics came up in a published round-one file.',
+        },
+        {
+          label: 'Deep clone',
+          path: '/javascript/coding/js-deep-clone',
+          access: 'premium',
+          why: 'The deep copy half of the same reported task.',
+        },
+        {
+          label: 'React like button',
+          path: '/react/coding/react-like-button',
+          access: 'premium',
+          why: 'Reported in a three-hour assessment.',
+        },
+        {
+          label: 'Battery site layout',
+          path: '/react/coding/react-battery-site-layout',
+          access: 'premium',
+          why: 'A practice version of a published take-home, built on our own catalog and wording.',
+        },
+        {
+          label: 'Car rental booking frontend design',
+          path: '/system-design/car-rental-booking-frontend',
+          access: 'premium',
+          why: 'A practice version for the system design round that discussed a car rental company.',
+        },
+      ],
+    },
+    faqs: {
+      kicker: 'Preparation FAQ',
+      title: 'Common questions about Tesla frontend interviews',
+      items: [
+        {
+          question: 'Does Tesla use a take-home?',
+          answer: 'Some teams do. Candidates have published two briefs, one of them marked confidential, so this page describes their shape only and the battery item uses our own catalog and wording.',
+        },
+        {
+          question: 'Which framework should I expect?',
+          answer: 'React in most accounts. One 2024 loop ran an Angular round and a TypeScript and JavaScript round, so ask the recruiter which stack the team uses.',
+        },
+        {
+          question: 'Is there a system design round?',
+          answer: 'Several onsite accounts include one, on a shared component and its API in one case and a car rental company in another. One intern loop ended with a system design final.',
+        },
+      ],
+    },
+    about: ['Tesla frontend interview preparation'],
+  },
 };
 
 export type CompanyEditorialNotesRegistry = Readonly<Record<string, CompanyEditorialNotes>>;

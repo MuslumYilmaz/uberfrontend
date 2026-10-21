@@ -10,4 +10,4 @@ export const AUTHORED_COMPANY_SET = new Set(AUTHORED_COMPANIES);
 // Catalog-driven companies with an entry in COMPANY_EDITORIAL_NOTES
 // (frontend/src/app/shared/company-previews/company-editorial-notes.ts). They stay catalog pages for the
 // sample and count checks but publish a dated CollectionPage, so the date parity audit requires one.
-export const EDITORIAL_NOTE_COMPANIES = ['walmart', 'bytedance', 'microsoft'];
+export const EDITORIAL_NOTE_COMPANIES = ['walmart', 'bytedance', 'microsoft', 'tesla'];

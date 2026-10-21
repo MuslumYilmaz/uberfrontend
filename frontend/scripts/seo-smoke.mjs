@@ -500,6 +500,18 @@ const EDITORIAL_NOTE_SMOKE = [
     ],
     practicePath: '/javascript/trivia/js-promises-async-await',
   },
+  {
+    label: 'Tesla',
+    route: '/companies/tesla/preview',
+    title: 'Tesla Frontend Interview Process and Practice Questions',
+    h1: 'Tesla Frontend Interview Questions and Process',
+    headings: [
+      'Assessment, screen, then a three to five round onsite',
+      'Rehearse the reported stages in order',
+      'Common questions about Tesla frontend interviews',
+    ],
+    practicePath: '/javascript/coding/js-color-contrast-ratio',
+  },
 ];
 const ANGULAR_HTTP_CANCELLATION_LAB_ROUTE =
   '/angular/trivia/angular-http-what-actually-cancels-request';

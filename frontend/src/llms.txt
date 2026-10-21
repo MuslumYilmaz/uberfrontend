@@ -90,7 +90,7 @@
 - [ServiceNow frontend interview questions](https://frontendatlas.com/companies/servicenow/preview): Public ServiceNow prep guide with five practice prompts modelled on public frontend interview accounts from 2021 to 2025.
 - [Spotify frontend interview questions](https://frontendatlas.com/companies/spotify/preview): Public Spotify prep guide with seven practice prompts modelled on public web engineer interview accounts from 2021 and 2022 and the official Life at Spotify hiring pages.
 - [Stripe interview preview](https://frontendatlas.com/companies/stripe/preview): Stripe frontend interview practice preview.
-- [Tesla interview preview](https://frontendatlas.com/companies/tesla/preview): Tesla frontend interview practice preview.
+- [Tesla Frontend Interview Questions and Process](https://frontendatlas.com/companies/tesla/preview): How public reports describe Tesla frontend interviews: a Codility assessment, a one-hour technical screen, 3 to 5 onsite rounds and team-specific take-homes.
 - [Uber interview preview](https://frontendatlas.com/companies/uber/preview): Uber frontend interview practice preview.
 - [Walmart Frontend Interview Questions and Process](https://frontendatlas.com/companies/walmart/preview): How public reports describe Walmart frontend interviews: HackerRank and Karat screens, React fundamentals rounds, and practice items for each stage.
 - [Waymo frontend interview questions](https://frontendatlas.com/companies/waymo/preview): Public Waymo prep guide with five practice prompts modelled on a public 2026 interview report.
