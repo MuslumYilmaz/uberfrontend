@@ -1512,6 +1512,168 @@
         ]
       }
     ],
+    "shopee": [
+      {
+        "id": "js-create-deferred-promise",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Create a Deferred Promise (For Async Tests)",
+        "access": "free",
+        "route": "/javascript/coding/js-create-deferred-promise",
+        "sources": [
+          {
+            "label": "Viblo: Shopee frontend engineer interview, Ho Chi Minh City, February 2025",
+            "url": "https://viblo.asia/p/luyen-tap-that-bai-va-thanh-cong-hanh-trinh-cua-anh-dat-hoc-vien-engineer-pro-vao-shopee-EbNVQnP04vR",
+            "publisher": "Viblo",
+            "date": "2025-02"
+          }
+        ]
+      },
+      {
+        "id": "js-deep-clone",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Deep Clone",
+        "access": "premium",
+        "route": "/javascript/coding/js-deep-clone",
+        "sources": [
+          {
+            "label": "Juejin: Shopee frontend interview record, two March 2020 loops",
+            "url": "https://juejin.cn/post/6880722165982429197",
+            "publisher": "Juejin",
+            "date": "2020-10"
+          }
+        ]
+      },
+      {
+        "id": "css-inline-centering",
+        "kind": "coding",
+        "tech": "css",
+        "title": "Display & Centering: Center Inline Content",
+        "access": "free",
+        "route": "/css/coding/css-inline-centering",
+        "sources": [
+          {
+            "label": "GoodJob: Shopee frontend engineer written test and panels, Taipei, January 2021",
+            "url": "https://www.goodjob.life/experiences/5ff7488233dedf001238f46c",
+            "publisher": "GoodJob",
+            "date": "2021-01"
+          }
+        ]
+      },
+      {
+        "id": "js-filter-tree-render-indented",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Filter a Tree by Substring and Render It Indented",
+        "access": "free",
+        "route": "/javascript/coding/js-filter-tree-render-indented",
+        "sources": [
+          {
+            "label": "Viblo: Shopee frontend engineer interview, Ho Chi Minh City, February 2025",
+            "url": "https://viblo.asia/p/luyen-tap-that-bai-va-thanh-cong-hanh-trinh-cua-anh-dat-hoc-vien-engineer-pro-vao-shopee-EbNVQnP04vR",
+            "publisher": "Viblo",
+            "date": "2025-02"
+          }
+        ]
+      },
+      {
+        "id": "js-flatten-once",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Flatten One Level",
+        "access": "free",
+        "route": "/javascript/coding/js-flatten-once",
+        "sources": [
+          {
+            "label": "Juejin: Shopee frontend interview record, two March 2020 loops",
+            "url": "https://juejin.cn/post/6880722165982429197",
+            "publisher": "Juejin",
+            "date": "2020-10"
+          }
+        ]
+      },
+      {
+        "id": "js-implement-new",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Implement the `new` Operator",
+        "access": "free",
+        "route": "/javascript/coding/js-implement-new",
+        "sources": [
+          {
+            "label": "Juejin: Shopee frontend interview record, two March 2020 loops",
+            "url": "https://juejin.cn/post/6880722165982429197",
+            "publisher": "Juejin",
+            "date": "2020-10"
+          }
+        ]
+      },
+      {
+        "id": "js-memoize-function",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Memoization",
+        "access": "premium",
+        "route": "/javascript/coding/js-memoize-function",
+        "sources": [
+          {
+            "label": "Nowcoder: Shopee frontend social-hire interview, April 2022",
+            "url": "https://www.nowcoder.com/discuss/353159545788768256",
+            "publisher": "Nowcoder",
+            "date": "2022-04"
+          }
+        ]
+      },
+      {
+        "id": "css-positioning-badge",
+        "kind": "coding",
+        "tech": "css",
+        "title": "Positioning: Relative/Absolute Badge",
+        "access": "free",
+        "route": "/css/coding/css-positioning-badge",
+        "sources": [
+          {
+            "label": "Viblo: Shopee frontend engineer interview, Ho Chi Minh City, February 2025",
+            "url": "https://viblo.asia/p/luyen-tap-that-bai-va-thanh-cong-hanh-trinh-cua-anh-dat-hoc-vien-engineer-pro-vao-shopee-EbNVQnP04vR",
+            "publisher": "Viblo",
+            "date": "2025-02"
+          }
+        ]
+      },
+      {
+        "id": "js-shallow-clone",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Shallow Clone (Object or Array)",
+        "access": "free",
+        "route": "/javascript/coding/js-shallow-clone",
+        "sources": [
+          {
+            "label": "GoodJob: Shopee frontend engineer written test and panels, Taipei, January 2021",
+            "url": "https://www.goodjob.life/experiences/5ff7488233dedf001238f46c",
+            "publisher": "GoodJob",
+            "date": "2021-01"
+          }
+        ]
+      },
+      {
+        "id": "js-valid-parentheses",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Valid Parentheses (Balanced Brackets)",
+        "access": "free",
+        "route": "/javascript/coding/js-valid-parentheses",
+        "sources": [
+          {
+            "label": "Nowcoder: Shopee frontend social-hire interview, April 2022",
+            "url": "https://www.nowcoder.com/discuss/353159545788768256",
+            "publisher": "Nowcoder",
+            "date": "2022-04"
+          }
+        ]
+      }
+    ],
     "spotify": [
       {
         "id": "react-image-slider",

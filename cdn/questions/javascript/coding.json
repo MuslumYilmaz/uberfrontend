@@ -381,7 +381,8 @@
     "access": "free",
     "companies": [
       "meta",
-      "booking-com"
+      "booking-com",
+      "shopee"
     ],
     "sources": [
       {
@@ -391,6 +392,14 @@
         "publisher": "Blind",
         "date": "2021-10",
         "note": "A candidate who interviewed at several companies lists flattening an array among the Facebook screening questions. Flattening one level is a representative drill, not the reported depth."
+      },
+      {
+        "label": "Juejin: Shopee frontend interview record, two March 2020 loops",
+        "url": "https://juejin.cn/post/6880722165982429197",
+        "company": "shopee",
+        "publisher": "Juejin",
+        "date": "2020-10",
+        "note": "The seller-platform first round set two coding tasks: flatten an array (拍平数组) and deep-copy an object. This one-level flatten is a practice version of the first task, not its wording."
       }
     ],
     "updatedAt": "2026-01-30",
@@ -1163,7 +1172,8 @@
     "tests": "import shallowClone from './file';\n\ndescribe('shallowClone', () => {\n  test('clones arrays shallowly', () => {\n    const nested = { x: 2 };\n    const arr = [1, nested];\n    const copy = shallowClone(arr);\n\n    expect(copy).toEqual(arr);\n    expect(copy === arr).toBe(false);\n    expect(copy[1]).toBe(nested);\n  });\n\n  test('clones objects shallowly', () => {\n    const nested = { c: 2 };\n    const obj = { a: 1, b: nested };\n    const copy = shallowClone(obj);\n\n    expect(copy).toEqual(obj);\n    expect(copy === obj).toBe(false);\n    expect(copy.b).toBe(nested);\n  });\n\n  test('returns a different array reference', () => {\n    const arr = [1, 2, 3];\n    const copy = shallowClone(arr);\n\n    expect(copy).toEqual(arr);\n    expect(copy === arr).toBe(false);\n  });\n\n  test('returns a different object reference', () => {\n    const obj = { a: 1, b: 2 };\n    const copy = shallowClone(obj);\n\n    expect(copy).toEqual(obj);\n    expect(copy === obj).toBe(false);\n  });\n\n  test('preserves nested object references', () => {\n    const nested = { count: 1 };\n    const obj = { nested };\n    const copy = shallowClone(obj);\n\n    expect(copy === obj).toBe(false);\n    expect(copy.nested).toBe(nested);\n    expect(copy.nested).toBe(obj.nested);\n  });\n\n  test('preserves nested array references', () => {\n    const nested = [1, 2];\n    const obj = { nested };\n    const copy = shallowClone(obj);\n\n    expect(copy === obj).toBe(false);\n    expect(copy.nested).toBe(nested);\n    expect(copy.nested).toBe(obj.nested);\n  });\n\n  test('top-level mutation on the clone does not mutate the original', () => {\n    const obj = { a: 1, nested: { count: 1 } };\n    const copy = shallowClone(obj);\n\n    copy.a = 99;\n\n    expect(obj.a).toBe(1);\n    expect(copy.a).toBe(99);\n  });\n\n  test('nested mutation through the clone is visible through the original', () => {\n    const obj = { nested: { count: 1 } };\n    const copy = shallowClone(obj);\n\n    copy.nested.count = 2;\n\n    expect(obj.nested.count).toBe(2);\n  });\n\n  test('handles empty arrays and objects', () => {\n    const arr = [];\n    const obj = {};\n\n    const arrCopy = shallowClone(arr);\n    const objCopy = shallowClone(obj);\n\n    expect(arrCopy).toEqual([]);\n    expect(arrCopy === arr).toBe(false);\n    expect(objCopy).toEqual({});\n    expect(objCopy === obj).toBe(false);\n  });\n\n  test('throws TypeError for null and primitives', () => {\n    expect(() => shallowClone(null)).toThrow(TypeError);\n    expect(() => shallowClone(42)).toThrow(TypeError);\n    expect(() => shallowClone('x')).toThrow(TypeError);\n    expect(() => shallowClone(true)).toThrow(TypeError);\n    expect(() => shallowClone(undefined)).toThrow(TypeError);\n  });\n\n  test('does not mutate the original container while cloning', () => {\n    const arr = [1, { count: 1 }];\n    const obj = { a: 1, nested: { count: 1 } };\n    const arrBefore = arr.slice();\n    const objKeysBefore = Object.keys(obj);\n\n    shallowClone(arr);\n    shallowClone(obj);\n\n    expect(arr).toEqual(arrBefore);\n    expect(Object.keys(obj)).toEqual(objKeysBefore);\n    expect(obj).toEqual({ a: 1, nested: { count: 1 } });\n  });\n\n  test('copies own enumerable symbol properties', () => {\n    const key = Symbol('id');\n    const obj = { a: 1, [key]: 123 };\n\n    const copy = shallowClone(obj);\n\n    expect(copy[key]).toBe(123);\n  });\n\n  test('preserves sparse array shape and custom enumerable properties', () => {\n    const key = Symbol('meta');\n    const arr = new Array(4);\n    arr[1] = 'value';\n    arr.extra = 7;\n    arr[key] = 9;\n\n    const copy = shallowClone(arr);\n\n    expect(copy.length).toBe(4);\n    expect(0 in copy).toBe(false);\n    expect(1 in copy).toBe(true);\n    expect(2 in copy).toBe(false);\n    expect(3 in copy).toBe(false);\n    expect(copy.extra).toBe(7);\n    expect(copy[key]).toBe(9);\n  });\n\n  test('does not copy prototype properties', () => {\n    const proto = { inherited: true };\n    const obj = Object.create(proto);\n    obj.own = true;\n\n    const copy = shallowClone(obj);\n\n    expect(copy.own).toBe(true);\n    expect(copy.inherited).toBe(undefined);\n    expect('inherited' in copy).toBe(false);\n  });\n});\n",
     "testsTs": "import shallowClone from './file';\n\ndescribe('shallowClone (TypeScript)', () => {\n  it('clones arrays shallowly', () => {\n    const nested = { x: 2 };\n    const arr = [1, nested];\n    const copy = shallowClone(arr);\n\n    expect(copy).toEqual(arr);\n    expect(copy === arr).toBe(false);\n    expect(copy[1]).toBe(nested);\n  });\n\n  it('clones objects shallowly', () => {\n    const nested = { c: 2 };\n    const obj = { a: 1, b: nested };\n    const copy = shallowClone(obj);\n\n    expect(copy).toEqual(obj);\n    expect(copy === obj).toBe(false);\n    expect(copy.b).toBe(nested);\n  });\n\n  it('returns a different array reference', () => {\n    const arr = [1, 2, 3];\n    const copy = shallowClone(arr);\n\n    expect(copy).toEqual(arr);\n    expect(copy === arr).toBe(false);\n  });\n\n  it('returns a different object reference', () => {\n    const obj = { a: 1, b: 2 };\n    const copy = shallowClone(obj);\n\n    expect(copy).toEqual(obj);\n    expect(copy === obj).toBe(false);\n  });\n\n  it('preserves nested object references', () => {\n    const nested = { count: 1 };\n    const obj = { nested };\n    const copy = shallowClone(obj);\n\n    expect(copy === obj).toBe(false);\n    expect(copy.nested).toBe(nested);\n    expect(copy.nested).toBe(obj.nested);\n  });\n\n  it('preserves nested array references', () => {\n    const nested = [1, 2];\n    const obj = { nested };\n    const copy = shallowClone(obj);\n\n    expect(copy === obj).toBe(false);\n    expect(copy.nested).toBe(nested);\n    expect(copy.nested).toBe(obj.nested);\n  });\n\n  it('top-level mutation on the clone does not mutate the original', () => {\n    const obj = { a: 1, nested: { count: 1 } };\n    const copy = shallowClone(obj);\n\n    copy.a = 99;\n\n    expect(obj.a).toBe(1);\n    expect(copy.a).toBe(99);\n  });\n\n  it('nested mutation through the clone is visible through the original', () => {\n    const obj = { nested: { count: 1 } };\n    const copy = shallowClone(obj);\n\n    copy.nested.count = 2;\n\n    expect(obj.nested.count).toBe(2);\n  });\n\n  it('handles empty arrays and objects', () => {\n    const arr: unknown[] = [];\n    const obj: Record<string, unknown> = {};\n\n    const arrCopy = shallowClone(arr);\n    const objCopy = shallowClone(obj);\n\n    expect(arrCopy).toEqual([]);\n    expect(arrCopy === arr).toBe(false);\n    expect(objCopy).toEqual({});\n    expect(objCopy === obj).toBe(false);\n  });\n\n  it('throws TypeError for null and primitives', () => {\n    expect(() => shallowClone(null as any)).toThrow(TypeError);\n    expect(() => shallowClone(42 as any)).toThrow(TypeError);\n    expect(() => shallowClone('x' as any)).toThrow(TypeError);\n    expect(() => shallowClone(true as any)).toThrow(TypeError);\n    expect(() => shallowClone(undefined as any)).toThrow(TypeError);\n  });\n\n  it('does not mutate the original container while cloning', () => {\n    const arr = [1, { count: 1 }];\n    const obj = { a: 1, nested: { count: 1 } };\n    const arrBefore = arr.slice();\n    const objKeysBefore = Object.keys(obj);\n\n    shallowClone(arr);\n    shallowClone(obj);\n\n    expect(arr).toEqual(arrBefore);\n    expect(Object.keys(obj)).toEqual(objKeysBefore);\n    expect(obj).toEqual({ a: 1, nested: { count: 1 } });\n  });\n\n  it('copies own enumerable symbol properties', () => {\n    const key = Symbol('id');\n    const obj = { a: 1, [key]: 123 };\n\n    const copy = shallowClone(obj);\n\n    expect(copy[key]).toBe(123);\n  });\n\n  it('preserves sparse array shape and custom enumerable properties', () => {\n    const key = Symbol('meta');\n    const arr = new Array(4) as Array<string | undefined> & { extra?: number; [key]: number };\n    arr[1] = 'value';\n    arr.extra = 7;\n    arr[key] = 9;\n\n    const copy = shallowClone(arr);\n\n    expect(copy.length).toBe(4);\n    expect(0 in copy).toBe(false);\n    expect(1 in copy).toBe(true);\n    expect(2 in copy).toBe(false);\n    expect(3 in copy).toBe(false);\n    expect(copy.extra).toBe(7);\n    expect(copy[key]).toBe(9);\n  });\n\n  it('does not copy prototype properties', () => {\n    const proto = { inherited: true };\n    const obj = Object.create(proto) as { own?: boolean; inherited?: boolean };\n    obj.own = true;\n\n    const copy = shallowClone(obj);\n\n    expect(copy.own).toBe(true);\n    expect(copy.inherited).toBe(undefined);\n    expect('inherited' in copy).toBe(false);\n  });\n});\n",
     "companies": [
-      "tesla"
+      "tesla",
+      "shopee"
     ],
     "sources": [
       {
@@ -1173,6 +1183,14 @@
         "publisher": "GitHub",
         "date": "2025-08",
         "note": "The repository says it holds solutions to questions asked in a Tesla interview. Exercise 1 of its TeslaRound1 file copies a nested employee object shallowly and deeply."
+      },
+      {
+        "label": "GoodJob: Shopee frontend engineer written test and panels, Taipei, January 2021",
+        "url": "https://www.goodjob.life/experiences/5ff7488233dedf001238f46c",
+        "company": "shopee",
+        "publisher": "GoodJob",
+        "date": "2021-01",
+        "note": "The 90-minute written test asked for shallow copy versus deep copy; a 2020 campus account asked the same with the ways to deep-copy. This drill is a practice version of the shallow side, not the reported wording."
       }
     ],
     "access": "free",
@@ -1873,7 +1891,8 @@
     "technology": "javascript",
     "companies": [
       "google",
-      "tesla"
+      "tesla",
+      "shopee"
     ],
     "sources": [
       {
@@ -1883,6 +1902,14 @@
         "publisher": "GitHub",
         "date": "2025-08",
         "note": "The repository says it holds solutions to questions asked in a Tesla interview. Exercise 1 of its TeslaRound1 file copies a nested employee object shallowly and deeply."
+      },
+      {
+        "label": "Juejin: Shopee frontend interview record, two March 2020 loops",
+        "url": "https://juejin.cn/post/6880722165982429197",
+        "company": "shopee",
+        "publisher": "Juejin",
+        "date": "2020-10",
+        "note": "The seller-platform first round asked for a deep-copy implementation (深复制) after questions on deep versus shallow copies. This drill is a practice version of that task, not its wording."
       }
     ],
     "difficulty": "hard",
@@ -2315,7 +2342,8 @@
       "meta",
       "intuit",
       "zalando",
-      "jpmorgan"
+      "jpmorgan",
+      "shopee"
     ],
     "sources": [
       {
@@ -2341,6 +2369,14 @@
         "publisher": "frontendgeek",
         "date": "2024-04",
         "note": "The security-and-React round ended with a request to write a generic memoization function. This drill is a practice version of that task, not its wording."
+      },
+      {
+        "label": "Nowcoder: Shopee frontend social-hire interview, April 2022",
+        "url": "https://www.nowcoder.com/discuss/353159545788768256",
+        "company": "shopee",
+        "publisher": "Nowcoder",
+        "date": "2022-04",
+        "note": "The PFMS frontend second round ended with a function-cache coding task (函数缓存), and a 2020 Juejin account describes the same cache-by-arguments exercise. This drill is a practice version of that task, not its wording."
       }
     ],
     "importance": 4,
@@ -4231,6 +4267,17 @@
     "title": "Implement the `new` Operator",
     "type": "coding",
     "technology": "javascript",
+    "companies": ["shopee"],
+    "sources": [
+      {
+        "label": "Juejin: Shopee frontend interview record, two March 2020 loops",
+        "url": "https://juejin.cn/post/6880722165982429197",
+        "company": "shopee",
+        "publisher": "Juejin",
+        "date": "2020-10",
+        "note": "The seller-platform first round asked how the new operator is implemented (new 的实现), with code; the 2022 digital-bank round asked the same. This drill is a practice version of that task, not its wording."
+      }
+    ],
     "importance": 4,
     "difficulty": "hard",
     "tags": [
@@ -8381,7 +8428,8 @@
     "testsTs": "import createDeferred from './createDeferred';\n\ndescribe('createDeferred (TypeScript)', () => {\n  it('returns promise, resolve, and reject controls', () => {\n    const d = createDeferred<string>();\n\n    expect(typeof d).toBe('object');\n    expect(typeof d.promise.then).toBe('function');\n    expect(typeof d.resolve).toBe('function');\n    expect(typeof d.reject).toBe('function');\n  });\n\n  it('does not settle before resolve or reject is called', async () => {\n    const d = createDeferred<string>();\n    let settled = false;\n\n    d.promise.finally(() => {\n      settled = true;\n    });\n\n    await Promise.resolve();\n\n    expect(settled).toBe(false);\n\n    d.resolve('ok');\n    await d.promise;\n\n    expect(settled).toBe(true);\n  });\n\n  it('resolves when resolve is called', async () => {\n    const d = createDeferred<number>();\n\n    d.resolve(123);\n\n    await expect(d.promise).resolves.toBe(123);\n  });\n\n  it('rejects with the exact reason when reject is called', async () => {\n    const d = createDeferred<number>();\n    const error = new Error('nope');\n\n    d.reject(error);\n\n    await expect(d.promise).rejects.toBe(error);\n  });\n\n  it('adopts another promise when resolving', async () => {\n    const d = createDeferred<string>();\n\n    d.resolve(Promise.resolve('ok'));\n\n    await expect(d.promise).resolves.toBe('ok');\n  });\n\n  it('only the first settlement wins', async () => {\n    const d = createDeferred<string>();\n\n    d.resolve('first');\n    d.resolve('second');\n    d.reject(new Error('ignored'));\n\n    await expect(d.promise).resolves.toBe('first');\n  });\n\n  it('then callbacks do not run synchronously after resolve', async () => {\n    const d = createDeferred<string>();\n    let value = 'pending';\n\n    d.promise.then((result) => {\n      value = result;\n    });\n\n    d.resolve('done');\n\n    expect(value).toBe('pending');\n\n    await Promise.resolve();\n\n    expect(value).toBe('done');\n  });\n});\n",
     "access": "free",
     "companies": [
-      "waymo"
+      "waymo",
+      "shopee"
     ],
     "sources": [
       {
@@ -8391,6 +8439,14 @@
         "publisher": "PracHub",
         "date": "2026-05",
         "note": "The report says a Promise problem in TypeScript was asked and does not say which. This deferred-promise drill is a representative exercise, not the reported question."
+      },
+      {
+        "label": "Viblo: Shopee frontend engineer interview, Ho Chi Minh City, February 2025",
+        "url": "https://viblo.asia/p/luyen-tap-that-bai-va-thanh-cong-hanh-trinh-cua-anh-dat-hoc-vien-engineer-pro-vao-shopee-EbNVQnP04vR",
+        "company": "shopee",
+        "publisher": "Viblo",
+        "date": "2025-02",
+        "note": "The two-hour frontend round asked the candidate to write a Promise without using Promise, after event-loop and async/await questions. This deferred-promise drill rehearses the resolve and reject contract; it is not the reported task."
       }
     ],
     "updatedAt": "2026-07-14",
@@ -8869,7 +8925,8 @@
     "access": "free",
     "updatedAt": "2026-10-14",
     "companies": [
-      "waymo"
+      "waymo",
+      "shopee"
     ],
     "sources": [
       {
@@ -8879,6 +8936,14 @@
         "publisher": "PracHub",
         "date": "2026-05",
         "note": "One self-reported senior loop. It establishes that a tree-filter-and-render phone screen was asked once, rendered as UI in the report; this text-rendering version is a practice adaptation, not the exact wording."
+      },
+      {
+        "label": "Viblo: Shopee frontend engineer interview, Ho Chi Minh City, February 2025",
+        "url": "https://viblo.asia/p/luyen-tap-that-bai-va-thanh-cong-hanh-trinh-cua-anh-dat-hoc-vien-engineer-pro-vao-shopee-EbNVQnP04vR",
+        "company": "shopee",
+        "publisher": "Viblo",
+        "date": "2025-02",
+        "note": "The React part asked for a multi-level menu in which hovering an item opens its sub-menu, recursively. This tree-filter-and-render drill rehearses the recursion over nested nodes; it is not the reported React task."
       }
     ],
     "seo": {
@@ -9181,7 +9246,8 @@
     "type": "coding",
     "technology": "javascript",
     "companies": [
-      "walmart"
+      "walmart",
+      "shopee"
     ],
     "sources": [
       {
@@ -9207,6 +9273,14 @@
         "publisher": "Medium",
         "date": "2024-11",
         "note": "The DSA round of this self-reported Software Engineer 3 UI loop asked First Missing Positive and then Valid Parentheses."
+      },
+      {
+        "label": "Nowcoder: Shopee frontend social-hire interview, April 2022",
+        "url": "https://www.nowcoder.com/discuss/353159545788768256",
+        "company": "shopee",
+        "publisher": "Nowcoder",
+        "date": "2022-04",
+        "note": "The PFMS frontend first round asked whether three kinds of brackets are balanced (判断括号是否闭合), beside a publish-subscribe function. This drill is a practice version of that task, not its wording."
       }
     ],
     "importance": 3,

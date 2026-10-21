@@ -541,6 +541,47 @@ const AGODA_A13_SDE2_2024 = report('Substack', 'https://nerddesignlab.substack.c
 const AGODA_A16_PREP_GUIDE_2024 = report('Blind comment', 'https://www.teamblind.com/post/agoda-bankok-platform-interview-wlgcyzeh', '2024-10'); // AGD12 (p, c)
 const AGODA_ROLE = 'Front-end engineers, Senior and Staff';
 
+// Shopee (Sea Group). Research: docs/references/shopee-questions-and-process-2026-10.md. Every label is 28
+// characters or shorter because the Evidence cell does not wrap at 360px.
+
+// Official pages. The How we hire page was read in Chrome on 2026-10-21. The campus posting is a third-party
+// reprint, posted 2026-04, of a Shenzhen Shopee posting for 2027 frontend development engineers.
+const SHOPEE_HOW_WE_HIRE: InterviewProcessSource = {
+  label: 'Shopee how we hire page',
+  url: 'https://careers.shopee.sg/how-we-hire',
+  kind: 'official',
+  date: '2026-10',
+}; // SH-O1
+const SHOPEE_CHINA_CAMPUS_REPRINT: InterviewProcessSource = {
+  label: 'China campus posting reprint',
+  url: 'https://campus.niuqizp.com/job-vlU5ZCLtN.html',
+  kind: 'official',
+  date: '2026-04',
+}; // SH-O3
+// Public reports, all read in full. Dates are the interview month where the account gives one.
+const SHOPEE_S1_HCMC_2025 = report(
+  'Viblo',
+  'https://viblo.asia/p/luyen-tap-that-bai-va-thanh-cong-hanh-trinh-cua-anh-dat-hoc-vien-engineer-pro-vao-shopee-EbNVQnP04vR',
+  '2025-02',
+); // SH1
+const SHOPEE_S3_JUEJIN_2020 = report('Juejin', 'https://juejin.cn/post/6880722165982429197', '2020-03'); // SH3
+const SHOPEE_S4_NOWCODER_2022 = report('Nowcoder', 'https://www.nowcoder.com/discuss/353159545788768256', '2022-04'); // SH4
+const SHOPEE_S6_SG_CAMPUS_2020 = report('Nowcoder', 'https://www.nowcoder.com/discuss/495162', '2020-09'); // SH6
+const SHOPEE_S7_CAMPUS_2020 = report('Nowcoder', 'https://www.nowcoder.com/discuss/463919', '2020-07'); // SH7
+const SHOPEE_S8_CAMPUS_2020 = report('Nowcoder', 'https://www.nowcoder.com/discuss/353156107927494656', '2020-03'); // SH8
+const SHOPEE_S9_CAMPUS_2021 = report('Nowcoder', 'https://www.nowcoder.com/discuss/353157728422010880', '2021-03'); // SH9
+const SHOPEE_S10_CAMPUS_2019 = report('Nowcoder', 'https://www.nowcoder.com/discuss/247729', '2019-09'); // SH10
+const SHOPEE_S36_MEDIUM_2020 = report('Medium', 'https://medium.com/@g4691821/2020-new-grad-面試心得-3-shopee-eaabf411c35b', '2020-04'); // SH36
+const SHOPEE_S37_MEDIUM_2022 = report(
+  'Medium',
+  'https://medium.com/@julianachang/2022-新鮮人軟體工程師面試心得-yahoo-foodpanda-shopee-dell-d576d6c004b6',
+  '2022-01',
+); // SH37
+const SHOPEE_S39_PTT_2021 = report('PTT', 'https://www.ptt.cc/bbs/Soft_Job/M.1613320989.A.BD5.html', '2021-02'); // SH39
+// SH41, a 2020 Shenzhen backend campus timeline hosted on GitHub (a Nowcoder test on 28 March, rounds on 3 and
+// 10 April, HR on 15 April), is not cited because the spec bans github.com as a source host.
+const SHOPEE_FE_ROLE = 'Front-end engineers';
+
 export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyInterviewProcess>> = {
   amazon: {
     title: 'Amazon Front End Engineer interview process',
@@ -1938,6 +1979,122 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
             appliesTo: 'Some loops',
             sources: [AGODA_A13_SDE2_2024, AGODA_A2_GURGAON_2025, AGODA_A7_GURGAON_2025],
             practice: { label: 'Behavioral interview guide', path: '/guides/behavioral' },
+          },
+        ],
+      },
+    ],
+  },
+  shopee: {
+    summary:
+      'Shopee\'s How we hire page lists five steps (Apply, Getting to Know You, Putting Your Skills to the Test, Meet the Hiring Manager, Preparing to Join Us) and says the number of rounds varies depending on the role and seniority. Public frontend accounts describe three shapes: a 2025 Ho Chi Minh City loop with an HR call, a two-hour frontend round, a CS-fundamentals round, a behavioural interview a week later and a final conversation; Singapore campus loops from 2020 to 2022 with an online assessment, video rounds of 60 to 90 minutes and an HR call; and mainland-China campus and social-hire loops run in Chinese, with a written test for some campus roles, two technical interviews per department and an HR conversation.',
+    caveat:
+      'The Singapore experienced-hire loop that English searches point at (an HR call, a coding test on HTML, CSS and JavaScript, two technical rounds heavy on verbal JavaScript, an engineering-manager round and an offer in about two weeks) rests on search snippets only and gets no table. Taipei has two accounts and no table: a 2021 frontend loop with a 30-minute HR call, a 90-minute junior-level written test and same-day panels with a product manager and a tech lead, and a 2023 senior software-engineer loop of HR, a manager round on technology, a peer round and a senior-manager chat. Most full-text accounts are from 2020 to 2022 and written in Chinese, and on 2026-10-21 the Shopee job board listed no frontend-titled opening in Singapore or South-East Asia.',
+    checkedAt: '2026-10-21',
+    variants: [
+      {
+        title: 'Front-end engineers, Ho Chi Minh City, 2025',
+        note: 'One full account (Viblo, February 2025, an offer) carries this table; the stage order rests on it alone.',
+        stages: [
+          {
+            stage: 'HR call',
+            format: 'Personal details, expected salary and whether the candidate is willing to move to Saigon.',
+            appliesTo: 'All candidates',
+            sources: [SHOPEE_S1_HCMC_2025],
+          },
+          {
+            stage: 'Frontend technical round',
+            format:
+              'About two hours in clear parts: CSS (the position values), JavaScript (the event loop, promises, async/await, a Promise written without using Promise), a React build (a recursive multi-level hover menu) and an algorithm on mapping characters between two data sets.',
+            appliesTo: SHOPEE_FE_ROLE,
+            sources: [SHOPEE_S1_HCMC_2025],
+            practice: { label: 'Create a deferred promise', path: '/javascript/coding/js-create-deferred-promise' },
+          },
+          {
+            stage: 'CS-fundamentals round',
+            format:
+              'Design a system based on the candidate\'s current work, then HTTP, TCP/UDP, WebSocket, how an API gateway and a load balancer work, and encryption, hashing and encoding.',
+            appliesTo: SHOPEE_FE_ROLE,
+            sources: [SHOPEE_S1_HCMC_2025],
+            practice: { label: 'HTTP caching basics', path: '/javascript/trivia/http-caching-basics' },
+          },
+          {
+            stage: 'Behavioural interview',
+            format: 'A week later: how the candidate had worked with a colleague who held a different view, and how it was resolved.',
+            appliesTo: 'All candidates',
+            sources: [SHOPEE_S1_HCMC_2025],
+            practice: { label: 'Behavioural stories', path: '/guides/behavioral/stories' },
+          },
+          {
+            stage: 'Final conversation and offer',
+            format: 'Future direction and expectations at Shopee compared with the previous job; the offer came a few days later.',
+            appliesTo: 'Candidates who pass',
+            sources: [SHOPEE_S1_HCMC_2025],
+          },
+        ],
+      },
+      {
+        title: 'Fresh graduates, Singapore, 2020 to 2022',
+        note:
+          'One frontend first round (Nowcoder, September 2020) plus three campus loops in other tracks for the assessment and round shape. Singapore experienced hires get no table.',
+        stages: [
+          {
+            stage: 'Online assessment',
+            format:
+              'A 70-minute test in the 2022 account: ten multiple-choice questions on operating systems and networking plus two array coding problems; twenty-odd multiple-choice questions plus one LeetCode problem in the 2021 account.',
+            appliesTo: 'Campus candidates; backend and platform accounts',
+            sources: [SHOPEE_S37_MEDIUM_2022, SHOPEE_S39_PTT_2021],
+          },
+          {
+            stage: 'Technical video rounds',
+            format:
+              'One to three rounds of 60 to 90 minutes on a shared editor, each with one or two problems, CS fundamentals and a design-concept question; the frontend first round had a string-compression algorithm plus JavaScript versus CSS animation, specificity, React keys, HTTPS and man-in-the-middle attacks, and session versus cookie versus token.',
+            appliesTo: 'All campus candidates; frontend content from the 2020 first round',
+            sources: [SHOPEE_S6_SG_CAMPUS_2020, SHOPEE_S36_MEDIUM_2020, SHOPEE_S37_MEDIUM_2022, SHOPEE_S39_PTT_2021],
+            practice: { label: 'Cascade, specificity and !important', path: '/css/trivia/css-cascade-order' },
+          },
+          {
+            stage: 'HR call with a verbal offer',
+            format:
+              'A verbal offer from HR about five weeks after applying, with cost-of-living and relocation material for overseas hires in the 2020 account; one 2022 loop ended in a rejection sixteen days after applying.',
+            appliesTo: 'Candidates who pass',
+            sources: [SHOPEE_S36_MEDIUM_2020, SHOPEE_S37_MEDIUM_2022],
+          },
+        ],
+      },
+      {
+        title: 'Campus and social hires, mainland China, in Chinese, 2019 to 2025',
+        note:
+          'All loops in Chinese. The official line comes from a reprinted 2027 campus posting; the accounts are campus loops from 2019 to 2021 and social-hire loops from 2020 and 2022, each social hire re-interviewed by a second department.',
+        stages: [
+          {
+            stage: 'Application or referral, then a written test',
+            format:
+              'The campus posting lists 网申/内推 (online application or referral), then 笔试 (a written test) that some roles skip (部分岗位不设笔试), before two to three technical rounds.',
+            appliesTo: 'Campus candidates',
+            sources: [SHOPEE_CHINA_CAMPUS_REPRINT],
+          },
+          {
+            stage: 'First technical interview',
+            format:
+              'JavaScript, CSS, HTTP and framework basics plus one or two small algorithms: event-loop and promise output questions, handwritten new, flatten and deep clone, XSS and CSRF, caching headers, CSS centring, binary search, set intersection or quicksort; the 2019 account says the interviewer guides the candidate\'s thinking.',
+            appliesTo: 'Front-end engineers, campus and social hires',
+            sources: [SHOPEE_S3_JUEJIN_2020, SHOPEE_S4_NOWCODER_2022, SHOPEE_S7_CAMPUS_2020, SHOPEE_S8_CAMPUS_2020, SHOPEE_S9_CAMPUS_2021, SHOPEE_S10_CAMPUS_2019],
+            practice: { label: 'Implement the new operator', path: '/javascript/coding/js-implement-new' },
+          },
+          {
+            stage: 'Second technical interview',
+            format:
+              'React internals and diffing, HTTP/2 and status codes, webpack performance and async chunks, CDN questions, scenario questions such as a user reporting a button that cannot be clicked, project depth, and a second coding task such as a function cache; the 2019 account had three questions only.',
+            appliesTo: SHOPEE_FE_ROLE,
+            sources: [SHOPEE_S3_JUEJIN_2020, SHOPEE_S4_NOWCODER_2022, SHOPEE_S7_CAMPUS_2020, SHOPEE_S10_CAMPUS_2019],
+            practice: { label: 'Memoization', path: '/javascript/coding/js-memoize-function' },
+          },
+          {
+            stage: 'HR interview and offer',
+            format:
+              'The posting lists an HR conversation (HR沟通) before the offer. In the social-hire accounts the loop runs per department, sometimes both technical rounds and HR on one day; a rejection after the first round can come back with feedback such as 算法有待加强 (algorithms need strengthening), and a second department can re-interview the same candidate.',
+            appliesTo: 'All candidates',
+            sources: [SHOPEE_S3_JUEJIN_2020, SHOPEE_S4_NOWCODER_2022, SHOPEE_CHINA_CAMPUS_REPRINT],
           },
         ],
       },

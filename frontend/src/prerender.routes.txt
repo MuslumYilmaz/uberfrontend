@@ -100,6 +100,7 @@
 /companies/openai/preview
 /companies/revolut/preview
 /companies/servicenow/preview
+/companies/shopee/preview
 /companies/spotify/preview
 /companies/stripe/preview
 /companies/tesla/preview

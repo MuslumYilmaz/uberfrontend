@@ -163,6 +163,12 @@ export const COMPANY_BRANDS: Record<string, CompanyBrand> = {
     label: 'xAI',
     monogram: 'X',
   },
+  // Tagged on 2026-10-21; Simple Icons has no Shopee mark, so it keeps a monogram.
+  shopee: {
+    slug: 'shopee',
+    label: 'Shopee',
+    monogram: 'S',
+  },
 };
 
 const COMPANY_ALIASES: Record<string, string> = {

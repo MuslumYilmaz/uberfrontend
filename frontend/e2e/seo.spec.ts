@@ -351,6 +351,9 @@ test('seo: llms.txt is served with public discovery links only', async ({ page }
   expect(text).toContain(
     '[xAI frontend interview questions](https://frontendatlas.com/companies/xai/preview)',
   );
+  expect(text).toContain(
+    '[Shopee frontend interview questions](https://frontendatlas.com/companies/shopee/preview)',
+  );
 
   ['/dashboard', '/profile', '/admin', '/auth/', '/billing'].forEach((path) => {
     expect(text).not.toContain(path);

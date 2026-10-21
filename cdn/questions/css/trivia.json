@@ -989,7 +989,8 @@
       "uber",
       "booking-com",
       "walmart",
-      "tesla"
+      "tesla",
+      "shopee"
     ],
     "difficulty": "intermediate",
     "importance": 5,
@@ -1615,7 +1616,8 @@
       "rereadPrompt": "Not quite. The key lesson is that hidden and removed are different. `visibility: hidden` keeps the element’s layout footprint, while `display: none` removes it from the document flow so surrounding elements can reflow."
     },
     "companies": [
-      "uber"
+      "uber",
+      "shopee"
     ]
   },
   {
@@ -2309,7 +2311,8 @@
       "meta",
       "bytedance",
       "zalando",
-      "spotify"
+      "spotify",
+      "shopee"
     ]
   },
   {

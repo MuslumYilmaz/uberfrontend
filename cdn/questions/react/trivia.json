@@ -1899,6 +1899,7 @@
     "id": "react-keys-in-lists",
     "title": "What is the significance of keys in lists in React?",
     "technology": "react",
+    "companies": ["shopee"],
     "difficulty": "intermediate",
     "importance": 5,
     "description": "Keys are React's identity contract for list items. Use stable keys to prevent reordered rows, lost input state, random remounts, and production bugs where React preserves the wrong component.",
@@ -3603,7 +3604,8 @@
     "companies": [
       "apple",
       "revolut",
-      "walmart"
+      "walmart",
+      "shopee"
     ],
     "seo": {
       "title": "Why React Remounts Instead of Updating: Keys and Type",
