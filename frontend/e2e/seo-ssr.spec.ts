@@ -707,6 +707,27 @@ const EDITORIAL_NOTE_CASES = [
     ],
     practicePath: '/javascript/coding/js-valid-parentheses',
   },
+  {
+    label: 'ByteDance and TikTok',
+    path: '/companies/bytedance/preview',
+    title: 'ByteDance and TikTok Frontend Interview Process and Prep',
+    h1: 'ByteDance and TikTok Frontend Interview Questions',
+    headings: [
+      'Two technical rounds and a hiring manager round, by region',
+      'Rehearse the reported rounds in order',
+      'Common questions about ByteDance and TikTok frontend interviews',
+    ],
+    markers: [
+      'data-testid="company-editorial-intro"',
+      'data-testid="company-reports-describe"',
+      'data-testid="company-interview-process"',
+      'data-testid="company-prep-steps"',
+      '>What you can do now for free</h2>',
+      'data-testid="company-editorial-faqs"',
+      'class="cta-stack"',
+    ],
+    practicePath: '/javascript/coding/js-build-tree-from-flat-list',
+  },
 ] as const;
 
 const AUTHORED_GUIDE_CASES = [

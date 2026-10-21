@@ -126,6 +126,104 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
     },
     about: ['Walmart frontend interview preparation', 'Walmart Global Tech hiring loop'],
   },
+  bytedance: {
+    slug: 'bytedance',
+    title: 'ByteDance and TikTok Frontend Interview Process and Prep',
+    h1: 'ByteDance and TikTok Frontend Interview Questions',
+    description: 'How public reports describe ByteDance and TikTok frontend loops: HackerRank or CodeSignal assessments, a DSA round, a frontend round and a design round.',
+    hero: {
+      kicker: 'Public preview and process notes',
+      subtitle: 'Early-careers pages from ByteDance and TikTok plus public interview reports from 2020 to 2025: assessments on HackerRank or CodeSignal, two technical rounds and a hiring manager round, with regional variants.',
+    },
+    intro: ['ByteDance and TikTok publish interview tips for early careers only, linked below. The experienced loop comes from public accounts, nine outside Taro and about sixteen on it, which agree on the core shape and differ on what the hiring manager round contains.'],
+    reportsDescribe: {
+      kicker: 'What public interview reports describe',
+      title: 'Two technical rounds and a hiring manager round, by region',
+      paragraphs: ['US accounts describe an online assessment for some candidates, a 15 to 30 minute recruiter call, two technical rounds of about an hour, one on algorithms and one on frontend, then a hiring manager round that often includes frontend system design, and an HR conversation.'],
+      bullets: [
+        {
+          text: 'Assessments run on HackerRank or CodeSignal. One 2025 CodeSignal task was a single frontend problem in four levels; another had four questions in 70 minutes.',
+          link: {
+            label: 'See the US stages',
+            fragment: 'bytedance-interview-process-1',
+          },
+        },
+        {
+          text: 'The frontend round builds a React component or a JavaScript utility: a tooltip component in one account, a throttle function with a fetch-and-render task in another, LeetCode 784 plus React coding in a third.',
+        },
+        {
+          text: 'Singapore and Australia loops add an HR call and two or three technical rounds; two candidates skipped the assessment.',
+          link: {
+            label: 'See the Singapore and Australia stages',
+            fragment: 'bytedance-interview-process-2',
+          },
+        },
+        {
+          text: 'New graduates and interns take an assessment with multiple-choice, algorithm and debugging questions, then one to three technical interviews and a manager or behavioural round.',
+          link: {
+            label: 'See the early-careers stages',
+            fragment: 'bytedance-interview-process-3',
+          },
+        },
+      ],
+    },
+    prepSteps: {
+      kicker: 'How to prepare with this grouping',
+      title: 'Rehearse the reported rounds in order',
+      intro: 'Free items first, then the premium set. Each item is a practice version modelled on a reported round, not a leaked question.',
+      steps: [
+        {
+          label: 'Build a tree from a flat list',
+          path: '/javascript/coding/js-build-tree-from-flat-list',
+          access: 'free',
+          why: 'Reported in a 2023 new-graduate loop: create a tree from a flat array of objects.',
+        },
+        {
+          label: 'The event loop',
+          path: '/javascript/trivia/js-event-loop',
+          access: 'free',
+          why: 'Output-order questions on setTimeout and promises recur in the frontend round.',
+        },
+        {
+          label: 'CSS cascade and specificity',
+          path: '/css/trivia/css-cascade-order',
+          access: 'free',
+          why: 'Specificity questions appear in the same round.',
+        },
+        {
+          label: 'Implement Array.prototype.map',
+          path: '/javascript/coding/js-array-prototype-map',
+          access: 'premium',
+          why: 'A representative drill for the reported task of implementing a built-in method.',
+        },
+        {
+          label: 'Implement Array.prototype.reduce',
+          path: '/javascript/coding/js-array-prototype-reduce',
+          access: 'premium',
+          why: 'A second drill for the same reported task.',
+        },
+      ],
+    },
+    faqs: {
+      kicker: 'Preparation FAQ',
+      title: 'Common questions about ByteDance and TikTok frontend interviews',
+      items: [
+        {
+          question: 'Is the hiring manager round behavioural only?',
+          answer: 'Accounts disagree. Several describe frontend system design or React and JavaScript questions in it; others describe a conversation about experience only.',
+        },
+        {
+          question: 'Where does system design appear?',
+          answer: 'It varies by account: inside a technical round in a 2022 loop, inside the hiring manager round in three others.',
+        },
+        {
+          question: 'Does every loop start with an assessment?',
+          answer: 'No. Two Singapore accounts had none, and the TikTok early-careers page says the assessment depends on the role and region.',
+        },
+      ],
+    },
+    about: ['ByteDance frontend interview preparation', 'TikTok frontend interview preparation'],
+  },
 };
 
 export type CompanyEditorialNotesRegistry = Readonly<Record<string, CompanyEditorialNotes>>;

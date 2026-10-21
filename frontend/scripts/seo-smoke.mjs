@@ -476,6 +476,18 @@ const EDITORIAL_NOTE_SMOKE = [
     ],
     practicePath: '/javascript/coding/js-valid-parentheses',
   },
+  {
+    label: 'ByteDance and TikTok',
+    route: '/companies/bytedance/preview',
+    title: 'ByteDance and TikTok Frontend Interview Process and Prep',
+    h1: 'ByteDance and TikTok Frontend Interview Questions',
+    headings: [
+      'Two technical rounds and a hiring manager round, by region',
+      'Rehearse the reported rounds in order',
+      'Common questions about ByteDance and TikTok frontend interviews',
+    ],
+    practicePath: '/javascript/coding/js-build-tree-from-flat-list',
+  },
 ];
 const ANGULAR_HTTP_CANCELLATION_LAB_ROUTE =
   '/angular/trivia/angular-http-what-actually-cancels-request';

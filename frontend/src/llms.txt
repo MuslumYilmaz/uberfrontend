@@ -77,7 +77,7 @@
 - [Amazon frontend interview questions](https://frontendatlas.com/companies/amazon/preview): Public Amazon prep guide with seven practice prompts modelled on Amazon's own preparation page and public front end engineer interview accounts from 2020 to 2025.
 - [Apple interview preview](https://frontendatlas.com/companies/apple/preview): Apple frontend interview practice preview.
 - [Booking.com interview preview](https://frontendatlas.com/companies/booking-com/preview): Booking.com frontend interview practice preview.
-- [ByteDance interview preview](https://frontendatlas.com/companies/bytedance/preview): ByteDance frontend interview practice preview.
+- [ByteDance and TikTok Frontend Interview Questions](https://frontendatlas.com/companies/bytedance/preview): How public reports describe ByteDance and TikTok frontend loops: HackerRank or CodeSignal assessments, a DSA round, a frontend round and a design round.
 - [Datadog frontend interview questions](https://frontendatlas.com/companies/datadog/preview): Public Datadog prep guide with five practice prompts modelled on public senior frontend interview accounts.
 - [ElevenLabs frontend interview questions](https://frontendatlas.com/companies/elevenlabs/preview): Public ElevenLabs prep guide with five practice prompts modelled on candidate-sourced reports.
 - [Google frontend interview questions](https://frontendatlas.com/companies/google/preview): Public Google prep guide with seven representative prompts and a framework-neutral preparation plan.
