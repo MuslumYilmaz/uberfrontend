@@ -833,6 +833,27 @@ const EDITORIAL_NOTE_CASES = [
     ],
     practicePath: '/javascript/debug/js-debug-async-race',
   },
+  {
+    label: 'Uber',
+    path: '/companies/uber/preview',
+    title: 'Uber Frontend Interview Process and Practice Questions',
+    h1: 'Uber Frontend Interview Questions and Process',
+    headings: [
+      'The official loop and what candidates met',
+      'Rehearse the screen, then the specialization round',
+      'Common questions about Uber frontend interviews',
+    ],
+    markers: [
+      'data-testid="company-editorial-intro"',
+      'data-testid="company-reports-describe"',
+      'data-testid="company-interview-process"',
+      'data-testid="company-prep-steps"',
+      '>What you can do now for free</h2>',
+      'data-testid="company-editorial-faqs"',
+      'class="cta-stack"',
+    ],
+    practicePath: '/css/trivia/css-position-relative-absolute-fixed',
+  },
 ] as const;
 
 const AUTHORED_GUIDE_CASES = [

@@ -548,6 +548,18 @@ const EDITORIAL_NOTE_SMOKE = [
     ],
     practicePath: '/javascript/debug/js-debug-async-race',
   },
+  {
+    label: 'Uber',
+    route: '/companies/uber/preview',
+    title: 'Uber Frontend Interview Process and Practice Questions',
+    h1: 'Uber Frontend Interview Questions and Process',
+    headings: [
+      'The official loop and what candidates met',
+      'Rehearse the screen, then the specialization round',
+      'Common questions about Uber frontend interviews',
+    ],
+    practicePath: '/css/trivia/css-position-relative-absolute-fixed',
+  },
 ];
 const ANGULAR_HTTP_CANCELLATION_LAB_ROUTE =
   '/angular/trivia/angular-http-what-actually-cancels-request';

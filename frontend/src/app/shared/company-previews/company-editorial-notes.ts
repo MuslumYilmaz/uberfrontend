@@ -763,6 +763,96 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
     },
     about: ['Stripe frontend interview preparation'],
   },
+  uber: {
+    slug: 'uber',
+    title: 'Uber Frontend Interview Process and Practice Questions',
+    h1: 'Uber Frontend Interview Questions and Process',
+    description: 'Uber publishes its frontend loop: a HackerRank assessment, a coding and design phone screen, and three 60 minute interviews. Public reports add the detail.',
+    hero: {
+      kicker: 'Public preview and process notes',
+      subtitle: 'Uber is one of the few companies with an official frontend interview guide. This page pairs it with public interview reports from 2021 to 2026 and the practice items that fit each stage.',
+    },
+    intro: ['The official guide, linked below, lists every stage for levels L3 to L6 and says the steps may vary by role, location and business need. Most of the public accounts come from India.'],
+    reportsDescribe: {
+      kicker: 'What public interview reports describe',
+      title: 'The official loop and what candidates met',
+      paragraphs: ['The guide describes a 30-minute recruiter call, a HackerRank coding assessment, a 60-minute phone screen on coding plus design and architecture, then three 60-minute interviews: algorithms and data structures, depth in specialization, and collaboration and leadership. A published candidate story adds a separate system design round and a hiring manager conversation about past projects.'],
+      bullets: [
+        {
+          text: 'The 2022 accounts took a 35-minute CodeSignal test with two algorithm questions and eight frontend multiple-choice questions rather than HackerRank.',
+          link: {
+            label: 'See the assessment stage',
+            fragment: 'uber-interview-process-1',
+          },
+        },
+        {
+          text: 'The phone screen sometimes builds a React component; the specialization round is a UI build or a JavaScript problem, in plain JavaScript in two accounts.',
+        },
+        {
+          text: 'Mid-level and senior accounts report a separate system design round; two of them designed a calendar.',
+        },
+        {
+          text: 'Two accounts got different rounds than the recruiter had announced, and one candidate did every round in a single day.',
+        },
+      ],
+    },
+    prepSteps: {
+      kicker: 'How to prepare with this grouping',
+      title: 'Rehearse the screen, then the specialization round',
+      intro: 'Free items first, then the premium set. Each item is a practice version modelled on a reported round, not a leaked question.',
+      steps: [
+        {
+          label: 'CSS position: relative, absolute and fixed',
+          path: '/css/trivia/css-position-relative-absolute-fixed',
+          access: 'free',
+          why: 'CSS position came up in a 2025 recruiter call.',
+        },
+        {
+          label: 'CSS visibility versus display',
+          path: '/css/trivia/css-visibility-vs-display',
+          access: 'free',
+          why: 'CSS display came up in the same call.',
+        },
+        {
+          label: 'Promises and async/await',
+          path: '/javascript/trivia/js-promises-async-await',
+          access: 'free',
+          why: 'A 2025 loop had a round on promises.',
+        },
+        {
+          label: 'Truthy, falsy and strict equality',
+          path: '/javascript/trivia/js-truthy-falsy-pass-by-value-reference-strict-equality-use-case',
+          access: 'free',
+          why: 'An editorial grouping for the JavaScript side of the specialization round.',
+        },
+        {
+          label: 'Concurrency map with a limit',
+          path: '/javascript/coding/js-concurrency-map-limit',
+          access: 'premium',
+          why: 'Reported as a mapLimit task in a 2022 CodeSignal phone screen.',
+        },
+      ],
+    },
+    faqs: {
+      kicker: 'Preparation FAQ',
+      title: 'Common questions about Uber frontend interviews',
+      items: [
+        {
+          question: 'HackerRank or CodeSignal?',
+          answer: 'The official guide names HackerRank. The 2021 and 2022 accounts used CodeSignal, so expect either and check your invitation.',
+        },
+        {
+          question: 'Is design a separate round?',
+          answer: 'The guide puts design inside the phone screen. The published candidate story and four accounts describe a separate system design round, usually for mid-level and senior candidates.',
+        },
+        {
+          question: 'Do recruiter labels match the rounds?',
+          answer: 'Not in two accounts: candidates told to expect an algorithms round got a frontend task instead. Prepare for both.',
+        },
+      ],
+    },
+    about: ['Uber frontend interview preparation'],
+  },
 };
 
 export type CompanyEditorialNotesRegistry = Readonly<Record<string, CompanyEditorialNotes>>;
