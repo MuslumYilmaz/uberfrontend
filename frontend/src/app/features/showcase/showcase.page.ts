@@ -42,6 +42,7 @@ import {
   PUBLIC_EDITORIAL_FACTS,
 } from '../../core/content/public-editorial-facts';
 import { CompanyLogoMarkComponent } from '../../shared/components/company-logo-mark/company-logo-mark.component';
+import { companyBrandFor } from '../../shared/company-branding';
 import { PrepRoadmapComponent, type PrepRoadmapItem } from '../../shared/components/prep-roadmap/prep-roadmap.component';
 import { PriorityLinksComponent } from '../../shared/components/priority-links/priority-links.component';
 import { HOME_PRIORITY_LINK_GROUPS } from '../../core/content/priority-links';
@@ -59,6 +60,11 @@ type CompanyQuestionCard = {
   slug: string;
   note: string;
   link: any[];
+};
+type CompanyDirectoryLink = {
+  slug: string;
+  label: string;
+  link: string[];
 };
 type ReasoningPreviewCard = {
   id: string;
@@ -572,6 +578,10 @@ You can also reset any task back to the starter whenever you want to re-practice
   ];
 
   companyCounts: ShowcaseStatsPayload['companyCounts'] = SHOWCASE_STATIC_STATS.companyCounts || {};
+  // Built from the build-time stats only, so the server HTML and the hydrated page link the same guides.
+  readonly companyDirectoryLinks: CompanyDirectoryLink[] = Object.keys(SHOWCASE_STATIC_STATS.companyCounts || {})
+    .map((slug) => ({ slug, label: companyBrandFor(slug)?.label ?? slug, link: ['/companies', slug, 'preview'] }))
+    .sort((a, b) => a.label.localeCompare(b.label));
   premiumPracticeCount = SHOWCASE_STATIC_STATS.premiumPracticeCount;
   heroQuestionCount = SHOWCASE_STATIC_STATS.totalQuestions || 0;
   reasoningCounts = {
