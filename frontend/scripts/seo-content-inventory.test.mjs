@@ -521,3 +521,17 @@ test('actual Waymo guide edits re-date only the Waymo preview and the directory 
     assert.ok(!changes.includes(route), `${route} must not re-date: ${changes.join(',')}`);
   }
 });
+
+test('an editorial notes entry re-dates only its own company preview', () => {
+  const file = `${APP}shared/company-previews/company-editorial-notes.ts`;
+  const read = currentReader();
+  const before = buildSeoInventory(read);
+  const original = read.read(file);
+  const entry = "  google: { slug: 'google', title: 'Google Frontend Interview Process and Practice', h1: 'Google Frontend Interview Questions and Process', description: 'How public reports describe Google frontend interviews, stage by stage, with practice items for each stage.' },\n";
+  const modified = original.replace(/= \{\n/, `= {\n${entry}`);
+  assert.notEqual(modified, original, 'the registry literal opens with "= {" on its own line');
+  const changes = (text) => [...buildSeoInventory(currentReader({ [file]: text }))]
+    .filter(([route, item]) => before.get(route)?.fingerprint !== item.fingerprint).map(([route]) => route);
+  assert.deepEqual(changes(modified), ['/companies/google/preview']);
+  assert.deepEqual(changes(modified.replace('stage by stage', 'round by round')), ['/companies/google/preview']);
+});

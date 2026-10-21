@@ -759,11 +759,14 @@
 
   <ng-template #catalogPreview>
   <header class="preview-hero fa-card fa-card--elevated">
-    <p class="preview-kicker">Public preview</p>
-    <h1>{{ label }} Frontend Interview Questions Preview</h1>
-    <p class="preview-subtitle">
-      Review a FrontendAtlas editorial practice grouping across coding, concept questions, and system design before choosing the full practice set.
-    </p>
+    <p class="preview-kicker">{{ editorialNotes?.hero?.kicker || 'Public preview' }}</p>
+    <h1>{{ editorialNotes?.h1 || label + ' Frontend Interview Questions Preview' }}</h1>
+    <p class="preview-subtitle" *ngIf="editorialNotes?.hero?.subtitle as subtitle; else sharedSubtitle">{{ subtitle }}</p>
+    <ng-template #sharedSubtitle>
+      <p class="preview-subtitle">
+        Review a FrontendAtlas editorial practice grouping across coding, concept questions, and system design before choosing the full practice set.
+      </p>
+    </ng-template>
 
     <ng-container>
       <div class="preview-meta">
@@ -775,7 +778,61 @@
   </header>
 
   <ng-container>
+    <section
+      class="company-guide-section company-editorial-intro"
+      *ngIf="editorialNotes?.intro?.length"
+      aria-label="Introduction"
+      data-testid="company-editorial-intro">
+      <p *ngFor="let paragraph of editorialNotes!.intro">{{ paragraph }}</p>
+    </section>
+
+    <section
+      class="company-guide-section"
+      *ngIf="editorialNotes?.reportsDescribe as reports"
+      [attr.aria-labelledby]="slug + '-reports-describe'"
+      data-testid="company-reports-describe">
+      <div class="company-guide-section__head">
+        <p class="preview-kicker">{{ reports.kicker }}</p>
+        <h2 [attr.id]="slug + '-reports-describe'">{{ reports.title }}</h2>
+      </div>
+      <p *ngFor="let paragraph of reports.paragraphs">{{ paragraph }}</p>
+      <ul class="company-editorial-bullets" *ngIf="reports.bullets?.length">
+        <li *ngFor="let bullet of reports.bullets">
+          {{ bullet.text }}
+          <a
+            *ngIf="bullet.link?.path"
+            class="company-editorial-bullets__link"
+            [routerLink]="bullet.link!.path">{{ bullet.link!.label }}</a>
+          <a
+            *ngIf="bullet.link && !bullet.link.path && bullet.link.fragment"
+            class="company-editorial-bullets__link"
+            [attr.href]="'#' + bullet.link.fragment">{{ bullet.link.label }}</a>
+        </li>
+      </ul>
+    </section>
+
     <app-company-interview-process *ngIf="interviewProcess as process" [slug]="slug" [companyLabel]="label" [process]="process"></app-company-interview-process>
+
+    <section
+      class="company-guide-section"
+      *ngIf="editorialNotes?.prepSteps as prep"
+      [attr.aria-labelledby]="slug + '-prep-steps'"
+      data-testid="company-prep-steps">
+      <div class="company-guide-section__head">
+        <p class="preview-kicker">{{ prep.kicker }}</p>
+        <h2 [attr.id]="slug + '-prep-steps'">{{ prep.title }}</h2>
+        <p *ngIf="prep.intro">{{ prep.intro }}</p>
+      </div>
+      <ol class="company-prep-sequence">
+        <li *ngFor="let step of prep.steps">
+          <strong>{{ step.access === 'free' ? 'Free now' : 'Premium' }}</strong>
+          <div>
+            <a class="company-resource-link company-resource-link--inline" [routerLink]="step.path">{{ step.label }}</a>
+            <p>{{ step.why }}</p>
+          </div>
+        </li>
+      </ol>
+    </section>
 
     <section class="proof-grid">
       <article class="proof-card">
@@ -849,6 +906,23 @@
     </section>
 
     <app-company-official-guides [slug]="slug" [companyLabel]="label" [guides]="officialGuides"></app-company-official-guides>
+
+    <section
+      class="company-guide-section"
+      *ngIf="editorialNotes?.faqs as faqs"
+      [attr.aria-labelledby]="slug + '-editorial-faq'"
+      data-testid="company-editorial-faqs">
+      <div class="company-guide-section__head">
+        <p class="preview-kicker">{{ faqs.kicker }}</p>
+        <h2 [attr.id]="slug + '-editorial-faq'">{{ faqs.title }}</h2>
+      </div>
+      <div class="company-faq-list">
+        <article *ngFor="let faq of faqs.items">
+          <h3>{{ faq.question }}</h3>
+          <p>{{ faq.answer }}</p>
+        </article>
+      </div>
+    </section>
 
     <section class="cta-stack">
       <a

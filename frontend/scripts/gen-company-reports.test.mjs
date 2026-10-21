@@ -43,6 +43,8 @@ test('groups reported items by the company each source is scoped to, in kind the
   assert.equal(two.sources.length, 1);
   assert.equal(two.sources[0].company, undefined, 'the company field is implied by the bucket');
   assert.deepEqual(Object.keys(two.sources[0]), ['label', 'url', 'publisher', 'date']);
+  assert.equal(payload.companies.acme.find((item) => item.id === 'js-debug-bug').access, 'free', 'a missing access field is free, as the app treats it');
+  assert.equal(two.access, 'premium');
   assert.deepEqual(payload.companies.beta.map((item) => item.id), ['js-two']);
   assert.equal(payload.companies.beta[0].sources[0].label, 'Blind: Beta front end thread, 2025');
 });

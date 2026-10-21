@@ -12,6 +12,8 @@ import { companyBrandFor } from '../../../shared/company-branding';
 import { SHOWCASE_STATS } from '../../../generated/content-metadata';
 import type { AuthoredCompanyPreview, AuthoredSource } from '../../../shared/company-previews/authored-company-preview.model';
 import { AUTHORED_COMPANY_PREVIEWS_TOKEN } from '../../../shared/company-previews/authored-company-previews';
+import type { CompanyEditorialNotes } from '../../../shared/company-previews/company-editorial-notes.model';
+import { COMPANY_EDITORIAL_NOTES, type CompanyEditorialNotesRegistry } from '../../../shared/company-previews/company-editorial-notes';
 import { COMPANY_OFFICIAL_GUIDES, type CompanyOfficialGuide } from '../../../shared/company-previews/company-official-guides';
 import {
   COMPANY_INTERVIEW_PROCESSES,
@@ -257,6 +259,10 @@ export class CompanyPreviewComponent implements OnInit {
   authoredPreview: AuthoredCompanyPreview | null = null;
   /** The other company guides; built from the generated metadata so no company page re-dates. */
   relatedCompanyLinks: RelatedCompanyLink[] = [];
+  /** Imported directly, not injected: the SEO inventory scopes the registry per company that way. Specs override the field. */
+  editorialNotesRegistry: CompanyEditorialNotesRegistry = COMPANY_EDITORIAL_NOTES;
+  /** Set for catalog-driven companies with an editorial notes entry; null on authored and inline guides. */
+  editorialNotes: CompanyEditorialNotes | null = null;
   readonly openAiTitle = OPENAI_PREVIEW_TITLE;
   readonly openAiH1 = OPENAI_PREVIEW_H1;
   readonly openAiTrustNote = OPENAI_TRUST_NOTE;
@@ -317,6 +323,9 @@ export class CompanyPreviewComponent implements OnInit {
     this.isGooglePreview = this.slug === 'google';
     this.isNetflixPreview = this.slug === 'netflix';
     this.authoredPreview = this.authoredPreviews[this.slug] ?? null;
+    this.editorialNotes = this.authoredPreview || this.isOpenAiPreview || this.isGooglePreview || this.isNetflixPreview
+      ? null
+      : this.editorialNotesRegistry[this.slug] ?? null;
     this.data = resolved ?? {
       slug: this.slug,
       mode: 'catalog',
@@ -342,6 +351,11 @@ export class CompanyPreviewComponent implements OnInit {
 
     if (this.authoredPreview) {
       this.publishAuthoredSeo(this.authoredPreview);
+      return;
+    }
+
+    if (this.editorialNotes) {
+      this.publishEditorialNotesSeo(this.editorialNotes);
       return;
     }
 
@@ -666,7 +680,46 @@ export class CompanyPreviewComponent implements OnInit {
     if (this.isGooglePreview) return this.googleH1;
     if (this.isNetflixPreview) return this.netflixH1;
     if (this.authoredPreview) return this.authoredPreview.h1;
+    if (this.editorialNotes) return this.editorialNotes.h1;
     return `${this.label} frontend interview questions preview`;
+  }
+
+  private publishEditorialNotesSeo(notes: CompanyEditorialNotes): void {
+    const canonicalPath = `/companies/${this.slug}/preview`;
+    const canonicalUrl = this.seo.buildCanonicalUrl(canonicalPath);
+    const dateModified = seoContentDateModified(canonicalUrl);
+
+    const collectionPage = {
+      '@type': 'CollectionPage',
+      '@id': `${canonicalUrl}#collection`,
+      url: canonicalUrl,
+      name: notes.title,
+      headline: notes.h1,
+      description: notes.description,
+      disambiguatingDescription: COMPANY_PRACTICE_DISCLAIMER,
+      inLanguage: 'en',
+      ...(dateModified ? { dateModified } : {}),
+      isAccessibleForFree: true,
+      ...(notes.about?.length ? { about: notes.about.map((name) => ({ '@type': 'Thing', name })) } : {}),
+    };
+
+    const breadcrumb = {
+      '@type': 'BreadcrumbList',
+      '@id': `${canonicalUrl}#breadcrumb`,
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'FrontendAtlas', item: this.seo.buildCanonicalUrl('/') },
+        { '@type': 'ListItem', position: 2, name: 'Company Frontend Interview Questions', item: this.seo.buildCanonicalUrl('/companies') },
+        { '@type': 'ListItem', position: 3, name: notes.h1, item: canonicalUrl },
+      ],
+    };
+
+    this.seo.updateTags({
+      title: notes.title,
+      description: notes.description,
+      robots: 'index,follow',
+      canonical: canonicalPath,
+      jsonLd: [collectionPage, breadcrumb],
+    });
   }
 
   sourceRel(source: AuthoredSource): string {

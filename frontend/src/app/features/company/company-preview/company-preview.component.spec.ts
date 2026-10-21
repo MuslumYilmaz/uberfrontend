@@ -9,6 +9,8 @@ import { CompanyPreviewComponent } from './company-preview.component';
 import type { AuthoredCompanyPreview } from '../../../shared/company-previews/authored-company-preview.model';
 import { AUTHORED_COMPANY_PREVIEWS, AUTHORED_COMPANY_PREVIEWS_TOKEN } from '../../../shared/company-previews/authored-company-previews';
 import { buildAuthoredCompanyPreviewFixture } from '../../../shared/company-previews/authored-company-preview.spec-fixture';
+import type { CompanyEditorialNotesRegistry } from '../../../shared/company-previews/company-editorial-notes';
+import { buildCompanyEditorialNotesFixture } from '../../../shared/company-previews/company-editorial-notes.spec-fixture';
 
 describe('CompanyPreviewComponent', () => {
   let fixture: ComponentFixture<CompanyPreviewComponent>;
@@ -20,6 +22,7 @@ describe('CompanyPreviewComponent', () => {
     slug: string,
     resolved?: CompanyPreviewResolved,
     authored: Record<string, AuthoredCompanyPreview> = AUTHORED_COMPANY_PREVIEWS,
+    notes: CompanyEditorialNotesRegistry = {},
   ): Promise<ComponentFixture<CompanyPreviewComponent>> {
     TestBed.resetTestingModule();
 
@@ -68,6 +71,7 @@ describe('CompanyPreviewComponent', () => {
     }).compileComponents();
 
     fixture = TestBed.createComponent(CompanyPreviewComponent);
+    fixture.componentInstance.editorialNotesRegistry = notes;
     fixture.detectChanges();
     await fixture.whenStable();
     fixture.detectChanges();
@@ -145,6 +149,92 @@ describe('CompanyPreviewComponent', () => {
     expect(payload.title).toBe('ByteDance Frontend Interview Questions Preview');
     expect(payload.description).toContain('editorial ByteDance practice grouping');
     expect(host.textContent || '').not.toContain('Bytedance');
+  });
+
+  describe('editorial notes on a catalog-driven preview', () => {
+    const acme = buildCompanyEditorialNotesFixture();
+    const registry: CompanyEditorialNotesRegistry = { acme };
+
+    it('replaces the shared hero copy and metadata and renders the four sections in order', async () => {
+      const fixture = await createComponent('acme', undefined, AUTHORED_COMPANY_PREVIEWS, registry);
+      const host: HTMLElement = fixture.nativeElement;
+      const text = host.textContent || '';
+      const payload = seo.updateTags.calls.mostRecent().args[0] as any;
+
+      expect(host.querySelectorAll('h1').length).toBe(1);
+      expect(host.querySelector('h1')?.textContent?.trim()).toBe(acme.h1);
+      expect(host.querySelector('.preview-kicker')?.textContent?.trim()).toBe(acme.hero?.kicker);
+      expect(host.querySelector('.preview-subtitle')?.textContent?.trim()).toBe(acme.hero?.subtitle);
+      expect(host.querySelector('.preview-breadcrumb span:last-child')?.textContent?.trim()).toBe(acme.h1);
+      expect(text).not.toContain('Review a FrontendAtlas editorial practice grouping');
+      expect(payload.title).toBe(acme.title);
+      expect(payload.description).toBe(acme.description);
+      expect(payload.canonical).toBe('/companies/acme/preview');
+      expect(payload.robots).toBe('index,follow');
+
+      const order = [
+        'company-editorial-intro',
+        'company-reports-describe',
+        'company-prep-steps',
+        'company-editorial-faqs',
+      ].map((id) => host.querySelector(`[data-testid="${id}"]`) as HTMLElement);
+      for (const section of order) expect(section).not.toBeNull();
+      for (let index = 1; index < order.length; index += 1) {
+        expect(order[index - 1].compareDocumentPosition(order[index]) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+      }
+      const proof = host.querySelector('.proof-grid') as HTMLElement;
+      expect(order[2].compareDocumentPosition(proof) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+      expect(host.querySelector('#acme-reports-describe')?.textContent?.trim()).toBe(acme.reportsDescribe?.title);
+      expect(host.querySelector('[data-testid="company-reports-describe"] a[href="#acme-interview-process"]')).not.toBeNull();
+      expect(host.querySelector('[data-testid="company-reports-describe"] a[href="/react/coding/react-counter"]')).not.toBeNull();
+      const steps = Array.from(host.querySelectorAll('[data-testid="company-prep-steps"] ol > li'));
+      expect(steps.map((step) => step.querySelector('strong')?.textContent?.trim())).toEqual(['Free now', 'Premium']);
+      expect(steps[1].querySelector('a')?.getAttribute('href')).toBe('/react/coding/react-debounced-search');
+      expect(host.querySelectorAll('[data-testid="company-editorial-faqs"] article h3').length).toBe(2);
+      expect(host.querySelector('[data-testid="company-preview-counts"]')).not.toBeNull();
+      expect(text).toContain('What you can do now for free');
+      expect(text).not.toContain('known questions');
+    });
+
+    it('publishes a dated CollectionPage and BreadcrumbList without ItemList or FAQPage', async () => {
+      await createComponent('acme', undefined, AUTHORED_COMPANY_PREVIEWS, registry);
+      const payload = seo.updateTags.calls.mostRecent().args[0] as any;
+      const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
+      const types = graph.map((entry: any) => entry?.['@type']);
+      const collection = graph.find((entry: any) => entry?.['@type'] === 'CollectionPage');
+      const breadcrumb = graph.find((entry: any) => entry?.['@type'] === 'BreadcrumbList');
+      const expectedDate = seoContentDateModified('https://frontendatlas.com/companies/acme/preview');
+
+      expect(types).toEqual(['CollectionPage', 'BreadcrumbList']);
+      expect(collection?.url).toBe('https://frontendatlas.com/companies/acme/preview');
+      expect(collection?.name).toBe(acme.title);
+      expect(collection?.headline).toBe(acme.h1);
+      expect(collection?.isAccessibleForFree).toBeTrue();
+      expect(collection?.about?.map((item: any) => item.name)).toEqual(['Acme frontend interview preparation']);
+      expect(collection?.disambiguatingDescription).toContain('Editorial practice groupings');
+      expect(collection?.dateModified).toBe(expectedDate || undefined);
+      expect(breadcrumb?.itemListElement?.length).toBe(3);
+      expect(breadcrumb?.itemListElement?.[2]?.name).toBe(acme.h1);
+    });
+
+    it('renders no empty sections for a thin entry and ignores entries for authored companies', async () => {
+      const thin = buildCompanyEditorialNotesFixture({
+        hero: undefined, intro: undefined, reportsDescribe: undefined, prepSteps: undefined, faqs: undefined, about: undefined,
+      });
+      const fixture = await createComponent('acme', undefined, AUTHORED_COMPANY_PREVIEWS, { acme: thin });
+      const host: HTMLElement = fixture.nativeElement;
+      expect(host.querySelector('h1')?.textContent?.trim()).toBe(thin.h1);
+      expect(host.querySelector('.preview-kicker')?.textContent?.trim()).toBe('Public preview');
+      expect(host.textContent).toContain('Review a FrontendAtlas editorial practice grouping');
+      for (const id of ['company-editorial-intro', 'company-reports-describe', 'company-prep-steps', 'company-editorial-faqs']) {
+        expect(host.querySelector(`[data-testid="${id}"]`)).withContext(id).toBeNull();
+      }
+
+      const authored = buildAuthoredCompanyPreviewFixture();
+      const authoredFixture = await createComponent('acme', undefined, { acme: authored }, { acme });
+      expect(authoredFixture.componentInstance.editorialNotes).toBeNull();
+      expect((authoredFixture.nativeElement as HTMLElement).querySelector('[data-testid="company-reports-describe"]')).toBeNull();
+    });
   });
 
   it('links the other company guides from every preview branch', async () => {

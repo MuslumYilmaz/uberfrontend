@@ -111,7 +111,7 @@ function dateOnly(node) {
 }
 
 // Object literals keyed by company slug: a company page keeps only its own entry.
-const COMPANY_SCOPED_REGISTRIES = new Set(['AUTHORED_COMPANY_PREVIEWS', 'COMPANY_OFFICIAL_GUIDES', 'COMPANY_INTERVIEW_PROCESSES']);
+const COMPANY_SCOPED_REGISTRIES = new Set(['AUTHORED_COMPANY_PREVIEWS', 'COMPANY_OFFICIAL_GUIDES', 'COMPANY_INTERVIEW_PROCESSES', 'COMPANY_EDITORIAL_NOTES']);
 // Companies whose guide is written inline in the shared preview component: the *ngIf flag of
 // their template branch and the method that publishes their structured data.
 const LEGACY_COMPANY_BRANCHES = {

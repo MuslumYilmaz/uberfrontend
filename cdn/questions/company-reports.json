@@ -746,7 +746,7 @@
         "kind": "debug",
         "tech": "javascript",
         "title": "Fix async race in `fetchWithCache`",
-        "access": "premium",
+        "access": "free",
         "route": "/javascript/debug/js-debug-async-race",
         "sources": [
           {
@@ -1486,7 +1486,7 @@
         "kind": "debug",
         "tech": "javascript",
         "title": "Fix async race in `fetchWithCache`",
-        "access": "premium",
+        "access": "free",
         "route": "/javascript/debug/js-debug-async-race",
         "sources": [
           {
@@ -1502,7 +1502,7 @@
         "kind": "debug",
         "tech": "javascript",
         "title": "Fix stale closure in delayed autosave callback",
-        "access": "premium",
+        "access": "free",
         "route": "/javascript/debug/js-debug-stale-closure-autosave",
         "sources": [
           {

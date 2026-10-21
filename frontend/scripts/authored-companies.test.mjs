@@ -3,11 +3,12 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import test from 'node:test';
-import { AUTHORED_COMPANIES, LEGACY_AUTHORED_COMPANIES, REGISTRY_AUTHORED_COMPANIES } from './authored-companies.mjs';
+import { AUTHORED_COMPANIES, EDITORIAL_NOTE_COMPANIES, LEGACY_AUTHORED_COMPANIES, REGISTRY_AUTHORED_COMPANIES } from './authored-companies.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const registryFile = path.join(root, 'src/app/shared/company-previews/authored-company-previews.ts');
 const slugsFile = path.join(root, 'src/app/shared/company-previews/authored-company-slugs.ts');
+const notesFile = path.join(root, 'src/app/shared/company-previews/company-editorial-notes.ts');
 
 function registryKeys() {
   const text = fs.readFileSync(registryFile, 'utf8');
@@ -27,6 +28,18 @@ test('the content-free slug list mirrors the registry and never imports content 
   const slugs = [...literal[1].matchAll(/'([a-z0-9-]+)'/g)].map((match) => match[1]);
   assert.deepEqual([...REGISTRY_AUTHORED_COMPANIES].sort(), slugs.sort());
   assert.doesNotMatch(text, /from '[^']*(?:preview-content|authored-company-previews)'/, 'slug list must stay content-free');
+});
+
+test('the script-side editorial notes list mirrors the TypeScript registry and never names an authored company', () => {
+  const text = fs.readFileSync(notesFile, 'utf8');
+  const literal = text.match(/COMPANY_EDITORIAL_NOTES[^=]*=\s*\{([\s\S]*?)\n\};/);
+  assert.ok(literal, 'COMPANY_EDITORIAL_NOTES object literal not found');
+  const keys = [...literal[1].matchAll(/^  '?([a-z0-9-]+)'?\s*:/gm)].map((match) => match[1]);
+  assert.deepEqual([...EDITORIAL_NOTE_COMPANIES].sort(), keys.sort());
+  for (const slug of EDITORIAL_NOTE_COMPANIES) {
+    assert.match(slug, /^[a-z0-9]+(?:-[a-z0-9]+)*$/);
+    assert.ok(!AUTHORED_COMPANIES.includes(slug), `${slug} is authored, not catalog-driven`);
+  }
 });
 
 test('legacy and registry companies never overlap and all slugs are kebab-case', () => {
