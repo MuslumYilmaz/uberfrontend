@@ -571,6 +571,111 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
     },
     about: ['Booking.com frontend interview preparation'],
   },
+  zalando: {
+    slug: 'zalando',
+    title: 'Zalando Frontend Interview Process and Practice',
+    h1: 'Zalando Frontend Interview Questions and Process',
+    description: 'What Zalando publishes about its hiring loop and what public reports add for frontend roles: a Codility take-home, JS fundamentals and system design rounds.',
+    hero: {
+      kicker: 'Public preview and process notes',
+      subtitle: 'Zalando publishes two process pages; public interview reports from 2019 to 2024 add the Berlin frontend loop: a two to three hour Codility take-home, a hiring manager call, then a final day that reviews the take-home and covers JavaScript fundamentals, system design and a manager conversation.',
+    },
+    intro: ['The two official pages, linked below, describe a 30-minute talent acquisition call, a case study or coding exercise, a hiring manager interview and three to five final interviews of 45 to 60 minutes. Only three complete frontend loops are public, all from Berlin, and only one is from after 2022.'],
+    reportsDescribe: {
+      kicker: 'What public interview reports describe',
+      title: 'A take-home, a hiring manager call and a final day',
+      paragraphs: ['The Codility challenge is done at home in two to three hours: a React and Node app in 2024, easy algorithm problems in 2022, React plus an API design question due in three working days in 2020. The hiring manager interview is sometimes non-technical. The final day of the 2024 account had a 45-minute take-home review, an hour of JavaScript fundamentals with two senior frontend engineers, an hour of system design and 45 minutes with the engineering manager.'],
+      bullets: [
+        {
+          text: 'The 2024 take-home was a search box with suggestions on every keystroke, with a hand-written debounce and a discussion of further optimisation.',
+          link: {
+            label: 'See the challenge stage',
+            fragment: 'zalando-interview-process-1',
+          },
+        },
+        {
+          text: 'The system design round leaned backend in 2024, a load balancer for HTTP requests; a 2019 account expected something related to e-commerce.',
+        },
+        {
+          text: 'The official pages disagree on order: one puts the challenge before the hiring manager, the 2023 blog puts the hiring manager first. The blog gives two to three weeks for the loop.',
+        },
+      ],
+    },
+    prepSteps: {
+      kicker: 'How to prepare with this grouping',
+      title: 'Rehearse the take-home, then the fundamentals hour',
+      intro: 'Free items first, then the premium set. Each item is a practice version modelled on a reported round, not a leaked question.',
+      steps: [
+        {
+          label: 'React autocomplete search',
+          path: '/react/coding/react-autocomplete-search-starter',
+          access: 'free',
+          why: 'The search box with suggestions from the 2024 take-home.',
+        },
+        {
+          label: 'Debounce',
+          path: '/javascript/coding/js-debounce',
+          access: 'free',
+          why: 'The debounce the same account wrote by hand.',
+        },
+        {
+          label: 'Deferred and async scripts',
+          path: '/javascript/trivia/js-deferred-scripts',
+          access: 'free',
+          why: 'async versus defer, asked in the JavaScript fundamentals hour.',
+        },
+        {
+          label: 'HTML parsing and rendering',
+          path: '/html/trivia/html-parsing-rendering',
+          access: 'free',
+          why: 'The CSSOM and rendering questions from the same hour.',
+        },
+        {
+          label: 'Web performance: optimise load time',
+          path: '/javascript/trivia/web-performance-optimize-load-time',
+          access: 'free',
+          why: 'Metrics such as FCP and TTI came up in the fundamentals hour.',
+        },
+        {
+          label: 'XSS and DOM sinks',
+          path: '/javascript/trivia/js-xss-dom-sinks',
+          access: 'free',
+          why: 'Security questions, including XSS, from the fundamentals hour.',
+        },
+        {
+          label: 'Real-time search with debounce and cache',
+          path: '/system-design/realtime-search-debounce-cache',
+          access: 'premium',
+          why: 'A practice version of the optimisation discussion that followed the take-home.',
+        },
+        {
+          label: 'Memoize a function',
+          path: '/javascript/coding/js-memoize-function',
+          access: 'premium',
+          why: 'An editorial grouping for the JavaScript fundamentals hour.',
+        },
+      ],
+    },
+    faqs: {
+      kicker: 'Preparation FAQ',
+      title: 'Common questions about Zalando frontend interviews',
+      items: [
+        {
+          question: 'Is the take-home a React app?',
+          answer: 'The 2024 account built a React and Node search box. Earlier accounts had easy algorithm tasks in 2022 and a React plus API design question in 2020, so the challenge changes.',
+        },
+        {
+          question: 'Does the hiring manager come before or after the challenge?',
+          answer: 'The two official pages disagree, and in the 2024 account the engineering manager came on the final day. Ask your talent acquisition partner for the order of your loop.',
+        },
+        {
+          question: 'How long does the loop take?',
+          answer: 'The 2023 blog gives two to three weeks. The 2020 account had three working days for the take-home alone.',
+        },
+      ],
+    },
+    about: ['Zalando frontend interview preparation'],
+  },
 };
 
 export type CompanyEditorialNotesRegistry = Readonly<Record<string, CompanyEditorialNotes>>;

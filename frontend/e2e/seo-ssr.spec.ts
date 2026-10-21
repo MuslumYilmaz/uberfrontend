@@ -791,6 +791,27 @@ const EDITORIAL_NOTE_CASES = [
     ],
     practicePath: '/react/coding/react-autocomplete-search-starter',
   },
+  {
+    label: 'Zalando',
+    path: '/companies/zalando/preview',
+    title: 'Zalando Frontend Interview Process and Practice',
+    h1: 'Zalando Frontend Interview Questions and Process',
+    headings: [
+      'A take-home, a hiring manager call and a final day',
+      'Rehearse the take-home, then the fundamentals hour',
+      'Common questions about Zalando frontend interviews',
+    ],
+    markers: [
+      'data-testid="company-editorial-intro"',
+      'data-testid="company-reports-describe"',
+      'data-testid="company-interview-process"',
+      'data-testid="company-prep-steps"',
+      '>What you can do now for free</h2>',
+      'data-testid="company-editorial-faqs"',
+      'class="cta-stack"',
+    ],
+    practicePath: '/react/coding/react-autocomplete-search-starter',
+  },
 ] as const;
 
 const AUTHORED_GUIDE_CASES = [
