@@ -182,6 +182,17 @@
     "title": "Display & Centering: Center Inline Content",
     "type": "coding",
     "technology": "css",
+    "companies": ["shopee"],
+    "sources": [
+      {
+        "label": "GoodJob: Shopee frontend engineer written test and panels, Taipei, January 2021",
+        "url": "https://www.goodjob.life/experiences/5ff7488233dedf001238f46c",
+        "company": "shopee",
+        "publisher": "GoodJob",
+        "date": "2021-01",
+        "note": "The 90-minute written test asked for three ways to centre horizontally and vertically, the specificity rules and how to manage CSS at scale; a 2020 campus round asked the centring question too. This drill is a practice version, not the wording."
+      }
+    ],
     "difficulty": "easy",
     "importance": 3,
     "tags": [
@@ -272,7 +283,8 @@
     "difficulty": "easy",
     "importance": 4,
     "companies": [
-      "tesla"
+      "tesla",
+      "shopee"
     ],
     "sources": [
       {
@@ -282,6 +294,14 @@
         "publisher": "Taro",
         "date": "2022-01",
         "note": "The virtual onsite asked to position a set of given boxes with CSS. This item practises relative and absolute positioning on one component."
+      },
+      {
+        "label": "Viblo: Shopee frontend engineer interview, Ho Chi Minh City, February 2025",
+        "url": "https://viblo.asia/p/luyen-tap-that-bai-va-thanh-cong-hanh-trinh-cua-anh-dat-hoc-vien-engineer-pro-vao-shopee-EbNVQnP04vR",
+        "company": "shopee",
+        "publisher": "Viblo",
+        "date": "2025-02",
+        "note": "The frontend round opened with CSS questions on the position values fixed, absolute and sticky. This positioning drill is a practice version of that topic, not the reported wording."
       }
     ],
     "tags": [

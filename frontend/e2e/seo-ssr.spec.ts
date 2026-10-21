@@ -1369,6 +1369,46 @@ const AUTHORED_GUIDE_CASES = [
     reportUrl:
       'https://leetcode.com/discuss/post/8459009/',
   },
+  {
+    label: 'Shopee',
+    path: '/companies/shopee/preview',
+    title: 'Shopee Frontend Interview Questions: 5 Prompts + Prep Guide',
+    description:
+      'Prepare for a Shopee frontend interview with 5 practice prompts modelled on public reports: Promise from scratch, React hover menu, function cache, HTTP, CSS.',
+    h1: 'Shopee Frontend Interview Questions',
+    kicker: 'Public Shopee prep guide',
+    headings: [
+      'Prepare for product judgment, not Shopee trivia',
+      'What the public accounts establish, and what you still need to confirm',
+      'Five Shopee frontend interview practice questions',
+      'Scope the Promise implementation before the first line',
+      'A 7-day Shopee frontend interview preparation plan',
+      'Common Shopee frontend interview preparation questions',
+      'Build the underlying skills with free practice',
+      'Sources and evidence limits',
+    ],
+    trustFragment: 'not leaked, confirmed or official Shopee questions',
+    prompts: [
+      { id: 'promise-without-promise', title: 'Write a Promise without using Promise, after the event-loop and async questions' },
+      { id: 'recursive-hover-menu-react', title: 'Build a recursive multi-level hover menu in React' },
+      { id: 'function-cache-flatten-deep-clone-new', title: 'Implement a function cache keyed by its arguments, then flatten an array, deep-clone an object and implement new' },
+      { id: 'http-caching-cookie-security-hour', title: 'Answer the HTTP, caching, cookie and security hour' },
+      { id: 'written-test-and-css-questions', title: 'Clear the 90-minute written test and the CSS questions' },
+    ],
+    resources: [
+      '/javascript/coding/js-create-deferred-promise',
+      '/javascript/coding/js-implement-new',
+      '/javascript/coding/js-flatten-once',
+      '/javascript/trivia/js-event-loop',
+      '/javascript/trivia/http-caching-basics',
+      '/javascript/trivia/js-cookie-options',
+      '/javascript/trivia/js-xss-dom-sinks',
+      '/css/trivia/css-cascade-order',
+      '/guides/behavioral/stories',
+    ],
+    reportUrl:
+      'https://viblo.asia/p/luyen-tap-that-bai-va-thanh-cong-hanh-trinh-cua-anh-dat-hoc-vien-engineer-pro-vao-shopee-EbNVQnP04vR',
+  },
 ] as const;
 
 const INFINITE_SCROLL_PATH = '/system-design/infinite-scroll-list';
@@ -3971,7 +4011,7 @@ test.describe('seo-ssr', () => {
   // Every company with a sourced table; Airbnb, Netflix, OpenAI, ElevenLabs and Waymo wait for more accounts.
   const COMPANIES_WITH_PROCESS_TABLES = [
     'agoda', 'amazon', 'apple', 'booking-com', 'bytedance', 'datadog', 'google', 'intuit', 'jpmorgan', 'meta',
-    'microsoft', 'revolut', 'servicenow', 'spotify', 'stripe', 'tesla', 'uber', 'walmart', 'xai', 'zalando',
+    'microsoft', 'revolut', 'servicenow', 'shopee', 'spotify', 'stripe', 'tesla', 'uber', 'walmart', 'xai', 'zalando',
   ];
 
   test('raw company previews render a sourced process table only where research supports one', async ({ request }) => {

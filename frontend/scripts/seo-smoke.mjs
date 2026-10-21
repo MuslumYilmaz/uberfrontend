@@ -580,6 +580,46 @@ const AUTHORED_GUIDE_SMOKE = [
     reportUrl:
       'https://leetcode.com/discuss/post/8459009/',
   },
+  {
+    label: 'Shopee',
+    route: '/companies/shopee/preview',
+    title: 'Shopee Frontend Interview Questions: 5 Prompts + Prep Guide',
+    description:
+      'Prepare for a Shopee frontend interview with 5 practice prompts modelled on public reports: Promise from scratch, React hover menu, function cache, HTTP, CSS.',
+    h1: 'Shopee Frontend Interview Questions',
+    kicker: 'Public Shopee prep guide',
+    headings: [
+      'Prepare for product judgment, not Shopee trivia',
+      'What the public accounts establish, and what you still need to confirm',
+      'Five Shopee frontend interview practice questions',
+      'Scope the Promise implementation before the first line',
+      'A 7-day Shopee frontend interview preparation plan',
+      'Common Shopee frontend interview preparation questions',
+      'Build the underlying skills with free practice',
+      'Sources and evidence limits',
+    ],
+    trustFragment: 'not leaked, confirmed or official Shopee questions',
+    prompts: [
+      { id: 'promise-without-promise', title: 'Write a Promise without using Promise, after the event-loop and async questions' },
+      { id: 'recursive-hover-menu-react', title: 'Build a recursive multi-level hover menu in React' },
+      { id: 'function-cache-flatten-deep-clone-new', title: 'Implement a function cache keyed by its arguments, then flatten an array, deep-clone an object and implement new' },
+      { id: 'http-caching-cookie-security-hour', title: 'Answer the HTTP, caching, cookie and security hour' },
+      { id: 'written-test-and-css-questions', title: 'Clear the 90-minute written test and the CSS questions' },
+    ],
+    resources: [
+      '/javascript/coding/js-create-deferred-promise',
+      '/javascript/coding/js-implement-new',
+      '/javascript/coding/js-flatten-once',
+      '/javascript/trivia/js-event-loop',
+      '/javascript/trivia/http-caching-basics',
+      '/javascript/trivia/js-cookie-options',
+      '/javascript/trivia/js-xss-dom-sinks',
+      '/css/trivia/css-cascade-order',
+      '/guides/behavioral/stories',
+    ],
+    reportUrl:
+      'https://viblo.asia/p/luyen-tap-that-bai-va-thanh-cong-hanh-trinh-cua-anh-dat-hoc-vien-engineer-pro-vao-shopee-EbNVQnP04vR',
+  },
 ];
 // Catalog-driven company previews with an editorial notes entry (COMPANY_EDITORIAL_NOTES).
 const EDITORIAL_NOTE_SMOKE = [

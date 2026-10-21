@@ -350,4 +350,13 @@ export const COMPANY_OFFICIAL_GUIDES: Readonly<Record<string, readonly CompanyOf
       checkedAt: CHECKED_OCT_21,
     },
   ],
+  shopee: [
+    {
+      label: 'How we hire',
+      url: 'https://careers.shopee.sg/how-we-hire',
+      covers:
+        'Shopee\'s five hiring steps: Apply; Getting to Know You (a conversation with a recruiter); Putting Your Skills to the Test (depending on the role, additional tasks or assessments such as a coding, technical or role-specific assessment); Meet the Hiring Manager (questions about experiences, hypothetical scenarios or role-specific cases); and Preparing to Join Us (the offer by phone or email). Its FAQ says the number of rounds varies depending on the role and seniority and that the recruiter shares the details.',
+      checkedAt: CHECKED_OCT_21,
+    },
+  ],
 };

@@ -44,6 +44,7 @@ describe('company branding helpers', () => {
       'openai',
       'revolut',
       'servicenow',
+      'shopee',
       'spotify',
       'stripe',
       'tesla',

@@ -22,7 +22,8 @@
       "zalando",
       "spotify",
       "walmart",
-      "jpmorgan"
+      "jpmorgan",
+      "shopee"
     ],
     "answer": {
       "blocks": [
@@ -1051,7 +1052,8 @@
       "amazon",
       "microsoft",
       "uber",
-      "walmart"
+      "walmart",
+      "shopee"
     ],
     "answer": {
       "blocks": [
@@ -3617,7 +3619,8 @@
     "companies": [
       "tesla",
       "jpmorgan",
-      "agoda"
+      "agoda",
+      "shopee"
     ],
     "answer": {
       "blocks": [
@@ -3751,7 +3754,8 @@
       "meta",
       "bytedance",
       "apple",
-      "zalando"
+      "zalando",
+      "shopee"
     ],
     "answer": {
       "blocks": [
@@ -6491,7 +6495,8 @@
       "bytedance",
       "revolut",
       "zalando",
-      "spotify"
+      "spotify",
+      "shopee"
     ],
     "answer": {
       "blocks": [
@@ -8176,7 +8181,8 @@
     "importance": 4,
     "companies": [
       "bytedance",
-      "agoda"
+      "agoda",
+      "shopee"
     ],
     "answer": {
       "blocks": [
@@ -10271,7 +10277,8 @@
       "zalando",
       "walmart",
       "jpmorgan",
-      "agoda"
+      "agoda",
+      "shopee"
     ],
     "answer": {
       "blocks": [

@@ -1638,6 +1638,12 @@ export const SHOWCASE_STATS = {
       "trivia": 0,
       "system": 1
     },
+    "shopee": {
+      "all": 22,
+      "coding": 10,
+      "trivia": 12,
+      "system": 0
+    },
     "spotify": {
       "all": 13,
       "coding": 4,

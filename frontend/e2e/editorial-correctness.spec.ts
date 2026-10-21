@@ -79,6 +79,10 @@ const publicCopyCases = [
     expected: 'Prepare for product judgment, not xAI trivia',
   },
   {
+    path: '/companies/shopee/preview',
+    expected: 'Prepare for product judgment, not Shopee trivia',
+  },
+  {
     path: '/system-design',
     expected: 'Follow this four-step path when you are new to the bank',
   },

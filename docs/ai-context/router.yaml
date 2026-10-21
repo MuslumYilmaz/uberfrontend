@@ -481,6 +481,21 @@ reference_rules:
       - docs/references/jpmorgan-agoda-xai-interview-processes-2026-10.md
     max_docs: 1
 
+  - id: shopee_questions_and_process
+    priority: 93
+    keywords:
+      - shopee
+      - sea group
+      - shopee frontend interview
+      - vietnam frontend interview
+      - singapore campus interview
+      - china market check
+    paths:
+      - docs/references/shopee-questions-and-process-2026-10.md
+    load:
+      - docs/references/shopee-questions-and-process-2026-10.md
+    max_docs: 1
+
   - id: header_prep_menu_plan
     priority: 92
     keywords:
