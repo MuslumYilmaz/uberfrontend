@@ -221,8 +221,8 @@ The sections below give, per company, the replacement copy for the parts that ch
 
 | Step | State | Notes |
 |---|---|---|
-| 1. Plan document | done 2026-10-21 | |
-| 2. Link layer | pending | |
-| 3. Editorial notes layer | pending | |
-| 4. Company entries | pending | |
-| 5. Indexing requests and readout | pending | |
+| 1. Plan document | done 2026-10-21 | 188cdb13 |
+| 2. Link layer | done 2026-10-21 | home directory ecbfa668, sibling section 1fa0bbb7, sourced-item links 3e13f680; the optional footer group was left out to keep six footer slots free |
+| 3. Editorial notes layer | done 2026-10-21 | 65bfe89e; the registry is imported directly, not injected, so the inventory scopes it per company and no page re-dated on the layer commit; the reports generator now treats a missing access field as free |
+| 4. Company entries | done 2026-10-21 | one commit per company in the planned order, ac67a3f2 to 9329bc6f; each entry re-dates only its own preview |
+| 5. Indexing requests and readout | pending | request indexing for the ten previews after the deploy; read Search Console around 2026-11-17 to 12-01 with the process-table readout |
