@@ -536,6 +536,18 @@ const EDITORIAL_NOTE_SMOKE = [
     ],
     practicePath: '/react/coding/react-autocomplete-search-starter',
   },
+  {
+    label: 'Stripe',
+    route: '/companies/stripe/preview',
+    title: 'Stripe Frontend Interview Process and Practice Questions',
+    h1: 'Stripe Frontend Interview Questions and Process',
+    headings: [
+      'A multi-part screen, then an onsite of five rounds',
+      'Rehearse the bug squash and the JSON screen',
+      'Common questions about Stripe frontend interviews',
+    ],
+    practicePath: '/javascript/debug/js-debug-async-race',
+  },
 ];
 const ANGULAR_HTTP_CANCELLATION_LAB_ROUTE =
   '/angular/trivia/angular-http-what-actually-cancels-request';

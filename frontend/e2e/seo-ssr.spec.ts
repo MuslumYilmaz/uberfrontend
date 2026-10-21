@@ -812,6 +812,27 @@ const EDITORIAL_NOTE_CASES = [
     ],
     practicePath: '/react/coding/react-autocomplete-search-starter',
   },
+  {
+    label: 'Stripe',
+    path: '/companies/stripe/preview',
+    title: 'Stripe Frontend Interview Process and Practice Questions',
+    h1: 'Stripe Frontend Interview Questions and Process',
+    headings: [
+      'A multi-part screen, then an onsite of five rounds',
+      'Rehearse the bug squash and the JSON screen',
+      'Common questions about Stripe frontend interviews',
+    ],
+    markers: [
+      'data-testid="company-editorial-intro"',
+      'data-testid="company-reports-describe"',
+      'data-testid="company-interview-process"',
+      'data-testid="company-prep-steps"',
+      '>What you can do now for free</h2>',
+      'data-testid="company-editorial-faqs"',
+      'class="cta-stack"',
+    ],
+    practicePath: '/javascript/debug/js-debug-async-race',
+  },
 ] as const;
 
 const AUTHORED_GUIDE_CASES = [

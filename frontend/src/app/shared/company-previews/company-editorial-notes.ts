@@ -676,6 +676,93 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
     },
     about: ['Zalando frontend interview preparation'],
   },
+  stripe: {
+    slug: 'stripe',
+    title: 'Stripe Frontend Interview Process and Practice Questions',
+    h1: 'Stripe Frontend Interview Questions and Process',
+    description: 'How public reports describe Stripe frontend interviews: a 60 minute multi-part CoderPad screen, then an onsite with bug squash, integration and frontend design.',
+    hero: {
+      kicker: 'Public preview and process notes',
+      subtitle: 'Stripe describes its process only in general terms; public interview reports from 2021 to 2025 fill in the frontend loop: a multi-part CoderPad screen and an onsite built around a bug squash, an integration exercise and frontend design.',
+    },
+    intro: ['The careers FAQ, linked below, describes a recruiter screen, a technical or skills-based assessment and interviews with the team, and says timelines vary by role, level and location. Candidates mention a preparation document that recruiters share; the detail here comes from public accounts.'],
+    reportsDescribe: {
+      kicker: 'What public interview reports describe',
+      title: 'A multi-part screen, then an onsite of five rounds',
+      paragraphs: ['Accounts describe a 30-minute recruiter call and a 60-minute CoderPad screen with two to four exercises; one screen was a three-part exercise, another a four-digit code entry form. The onsite rows rest on fewer accounts: a programming exercise, a bug squash in an unfamiliar project, an integration of two provided tools, frontend design and a conversation about experience and goals.'],
+      bullets: [
+        {
+          text: 'The bug squash and integration rounds were the hardest in a 2022 account, and one candidate got a hiring manager interview instead of the bug squash.',
+          link: {
+            label: 'See the onsite stages',
+            fragment: 'stripe-interview-process-1',
+          },
+        },
+        {
+          text: 'One account describes about three weeks for the loop plus two more for an answer.',
+        },
+        {
+          text: 'A 2024 account of a JSON traversal and manipulation screen says the exercise suits JavaScript candidates; it does not share the exact questions.',
+        },
+      ],
+    },
+    prepSteps: {
+      kicker: 'How to prepare with this grouping',
+      title: 'Rehearse the bug squash and the JSON screen',
+      intro: 'Free items first, then the premium set. Each item is a practice version modelled on a reported round, not a leaked question.',
+      steps: [
+        {
+          label: 'Debug an async race',
+          path: '/javascript/debug/js-debug-async-race',
+          access: 'free',
+          why: 'A debugging exercise in the shape of the bug squash round.',
+        },
+        {
+          label: 'Debug a stale closure in autosave',
+          path: '/javascript/debug/js-debug-stale-closure-autosave',
+          access: 'free',
+          why: 'A second bug squash rehearsal, on a stale closure.',
+        },
+        {
+          label: 'BigInt in JavaScript',
+          path: '/javascript/trivia/js-bigint-data-type',
+          access: 'free',
+          why: 'An editorial grouping for the JavaScript fundamentals a screen can touch.',
+        },
+        {
+          label: 'Group by',
+          path: '/javascript/coding/js-group-by',
+          access: 'premium',
+          why: 'Practice for the JSON traversal and manipulation screen.',
+        },
+        {
+          label: 'Implement lodash get',
+          path: '/javascript/coding/js-lodash-get',
+          access: 'premium',
+          why: 'A second drill for the same screen: safe nested access.',
+        },
+      ],
+    },
+    faqs: {
+      kicker: 'Preparation FAQ',
+      title: 'Common questions about Stripe frontend interviews',
+      items: [
+        {
+          question: 'What is the bug squash round?',
+          answer: 'Finding and fixing bugs in a project you have not seen before. One account called it and the integration round the hardest parts of the loop.',
+        },
+        {
+          question: 'Is the screen in JavaScript?',
+          answer: 'The screen runs in CoderPad, and the account of the JSON manipulation exercise says it suits JavaScript candidates. Confirm the language with your recruiter.',
+        },
+        {
+          question: 'Does Stripe publish preparation material?',
+          answer: 'The careers FAQ describes the process in general terms only. Candidates mention a document that recruiters share, which is the source of truth for your loop.',
+        },
+      ],
+    },
+    about: ['Stripe frontend interview preparation'],
+  },
 };
 
 export type CompanyEditorialNotesRegistry = Readonly<Record<string, CompanyEditorialNotes>>;
