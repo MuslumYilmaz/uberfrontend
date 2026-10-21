@@ -69,3 +69,10 @@
   margin: 4px 0 0;
   color: color-mix(in srgb, var(--uf-text-secondary) 88%, transparent);
 }
+
+.question-sources__company {
+  margin: 10px 0 0;
+  font-size: 13px;
+  line-height: 1.55;
+  color: color-mix(in srgb, var(--uf-text-secondary) 88%, transparent);
+}
