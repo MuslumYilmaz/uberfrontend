@@ -83,7 +83,7 @@
 - [Google frontend interview questions](https://frontendatlas.com/companies/google/preview): Public Google prep guide with seven representative prompts and a framework-neutral preparation plan.
 - [Intuit frontend interview questions](https://frontendatlas.com/companies/intuit/preview): Public Intuit prep guide with five practice prompts modelled on public frontend interview accounts from 2021 to 2025.
 - [Meta frontend interview questions](https://frontendatlas.com/companies/meta/preview): Public Meta prep guide with seven practice prompts modelled on Meta's own hiring pages and public front end interview accounts from 2021 to 2025.
-- [Microsoft interview preview](https://frontendatlas.com/companies/microsoft/preview): Microsoft frontend interview practice preview.
+- [Microsoft Frontend Interview Questions and Process](https://frontendatlas.com/companies/microsoft/preview): What Microsoft publishes about its hiring loop and what public reports add for frontend roles: machine coding, JS and React concepts, DSA and design rounds.
 - [Netflix frontend interview questions](https://frontendatlas.com/companies/netflix/preview): Public Netflix prep guide with six representative prompts and a broad frontend preparation plan.
 - [OpenAI interview preview](https://frontendatlas.com/companies/openai/preview): OpenAI frontend interview practice preview.
 - [Revolut frontend interview questions](https://frontendatlas.com/companies/revolut/preview): Public Revolut prep guide with five practice prompts modelled on public frontend interview accounts from 2024 and 2025 and Revolut's own web-engineering post.

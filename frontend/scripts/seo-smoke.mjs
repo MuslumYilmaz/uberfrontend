@@ -488,6 +488,18 @@ const EDITORIAL_NOTE_SMOKE = [
     ],
     practicePath: '/javascript/coding/js-build-tree-from-flat-list',
   },
+  {
+    label: 'Microsoft',
+    route: '/companies/microsoft/preview',
+    title: 'Microsoft Frontend Interview Process and Practice Guide',
+    h1: 'Microsoft Frontend Interview Questions and Process',
+    headings: [
+      'Two to six rounds, set by the team',
+      'Rehearse the concept rounds, then the builds',
+      'Common questions about Microsoft frontend interviews',
+    ],
+    practicePath: '/javascript/trivia/js-promises-async-await',
+  },
 ];
 const ANGULAR_HTTP_CANCELLATION_LAB_ROUTE =
   '/angular/trivia/angular-http-what-actually-cancels-request';

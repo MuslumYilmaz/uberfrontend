@@ -224,6 +224,118 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
     },
     about: ['ByteDance frontend interview preparation', 'TikTok frontend interview preparation'],
   },
+  microsoft: {
+    slug: 'microsoft',
+    title: 'Microsoft Frontend Interview Process and Practice Guide',
+    h1: 'Microsoft Frontend Interview Questions and Process',
+    description: 'What Microsoft publishes about its hiring loop and what public reports add for frontend roles: machine coding, JS and React concepts, DSA and design rounds.',
+    hero: {
+      kicker: 'Public preview and process notes',
+      subtitle: 'Microsoft publishes its own hiring tips; public interview reports from 2020 to 2025 add the frontend detail: a short recruiter call, machine coding in JavaScript or React, concept rounds, algorithms and design. Loops differ by team and country.',
+    },
+    intro: ['Microsoft is one of the few companies with official hiring guidance, linked below. It covers the shape of the loop and its rules rather than frontend content, so the round-by-round detail comes from public interview reports.'],
+    reportsDescribe: {
+      kicker: 'What public interview reports describe',
+      title: 'Two to six rounds, set by the team',
+      paragraphs: ['The official pages describe a brief screening conversation and two to four conversations of up to an hour each, by phone, on Teams or in person, with no outside assistance unless explicitly permitted. Frontend accounts fill in the rounds.'],
+      bullets: [
+        {
+          text: 'Machine coding of one to two hours: plain JavaScript in the 2020 to 2021 accounts from Bangalore, React components in the 2024 to 2025 accounts.',
+          link: {
+            label: 'See the frontend stages',
+            fragment: 'microsoft-interview-process-1',
+          },
+        },
+        {
+          text: 'JavaScript and React concepts: output questions, polyfills and promises. One 2025 account wrote a useEffect polyfill and built a step form in React.',
+        },
+        {
+          text: 'Algorithms and problem solving, where two frontend candidates were asked mostly non-frontend questions.',
+        },
+        {
+          text: 'Design rounds: low-level design in the older accounts, an application or component design in 2024.',
+        },
+        {
+          text: 'Loop sizes run from two interviews to five or six; a 2020 account ended with a senior leader conversation.',
+        },
+        {
+          text: 'Students get an initial and a final interview, both virtual.',
+          link: {
+            label: 'See the student stages',
+            fragment: 'microsoft-interview-process-2',
+          },
+        },
+      ],
+    },
+    prepSteps: {
+      kicker: 'How to prepare with this grouping',
+      title: 'Rehearse the concept rounds, then the builds',
+      intro: 'Free items first, then the premium set. The coding items here are editorial groupings; no public account reports them as Microsoft prompts.',
+      steps: [
+        {
+          label: 'Promises and async/await',
+          path: '/javascript/trivia/js-promises-async-await',
+          access: 'free',
+          why: 'Promises are a reported theme of the concept rounds.',
+        },
+        {
+          label: 'Arrow functions versus regular functions',
+          path: '/javascript/trivia/js-arrow-vs-regular-functions',
+          access: 'free',
+          why: 'Output questions in the concept rounds lean on this and scope rules.',
+        },
+        {
+          label: 'Passing by value and by reference',
+          path: '/javascript/trivia/js-passing-by-value-and-by-reference',
+          access: 'free',
+          why: 'A frequent output-prediction topic.',
+        },
+        {
+          label: 'Spread versus rest parameters',
+          path: '/javascript/trivia/js-spread-vs-rest-parameters',
+          access: 'free',
+          why: 'Syntax questions that precede the machine coding round.',
+        },
+        {
+          label: 'Compare two objects',
+          path: '/javascript/trivia/js-compare-two-objects',
+          access: 'free',
+          why: 'A warm-up for the problem-solving round.',
+        },
+        {
+          label: 'Snake game in Angular',
+          path: '/angular/coding/angular-snake-game',
+          access: 'free',
+          why: 'An editorial grouping that rehearses a timed UI build like the machine coding round.',
+        },
+        {
+          label: 'Chessboard click highlight in React',
+          path: '/react/coding/react-chessboard-click-highlight',
+          access: 'premium',
+          why: 'An editorial grouping for a React component build under time.',
+        },
+      ],
+    },
+    faqs: {
+      kicker: 'Preparation FAQ',
+      title: 'Common questions about Microsoft frontend interviews',
+      items: [
+        {
+          question: 'How many rounds should I expect?',
+          answer: 'The official page says two to four conversations. Accounts from Bangalore in 2020 and 2021 report five or six rounds, and 2024 accounts report four, so the team decides.',
+        },
+        {
+          question: 'Are the interviews virtual or on site?',
+          answer: 'The student page says every student interview is virtual; the general hiring page allows phone, Teams or in person.',
+        },
+        {
+          question: 'Can I use AI or other help during the interview?',
+          answer: 'The official page allows no outside assistance unless it is explicitly permitted.',
+        },
+      ],
+    },
+    about: ['Microsoft frontend interview preparation'],
+  },
 };
 
 export type CompanyEditorialNotesRegistry = Readonly<Record<string, CompanyEditorialNotes>>;

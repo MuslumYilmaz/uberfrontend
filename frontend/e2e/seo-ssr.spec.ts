@@ -728,6 +728,27 @@ const EDITORIAL_NOTE_CASES = [
     ],
     practicePath: '/javascript/coding/js-build-tree-from-flat-list',
   },
+  {
+    label: 'Microsoft',
+    path: '/companies/microsoft/preview',
+    title: 'Microsoft Frontend Interview Process and Practice Guide',
+    h1: 'Microsoft Frontend Interview Questions and Process',
+    headings: [
+      'Two to six rounds, set by the team',
+      'Rehearse the concept rounds, then the builds',
+      'Common questions about Microsoft frontend interviews',
+    ],
+    markers: [
+      'data-testid="company-editorial-intro"',
+      'data-testid="company-reports-describe"',
+      'data-testid="company-interview-process"',
+      'data-testid="company-prep-steps"',
+      '>What you can do now for free</h2>',
+      'data-testid="company-editorial-faqs"',
+      'class="cta-stack"',
+    ],
+    practicePath: '/javascript/trivia/js-promises-async-await',
+  },
 ] as const;
 
 const AUTHORED_GUIDE_CASES = [
