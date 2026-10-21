@@ -61,7 +61,8 @@ export function buildCompanyReports(cdnRoot) {
             kind,
             tech,
             title: String(entry.title || entry.id),
-            access: entry.access === 'free' ? 'free' : 'premium',
+            // The app treats a missing access field as free (registry-detail-access-policy), so the report does too.
+            access: entry.access === 'premium' ? 'premium' : 'free',
             route: `/${tech}/${kind}/${entry.id}`,
             sources,
           });
@@ -79,7 +80,7 @@ export function buildCompanyReports(cdnRoot) {
         id: entry.id,
         kind: 'system-design',
         title: String(meta.title || entry.title || entry.id),
-        access: (meta.access ?? entry.access) === 'free' ? 'free' : 'premium',
+        access: (meta.access ?? entry.access) === 'premium' ? 'premium' : 'free',
         route: `/system-design/${entry.id}`,
         sources,
       });

@@ -552,6 +552,52 @@
   font-weight: 700;
 }
 
+.company-editorial-intro p {
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.company-editorial-bullets {
+  margin: 0;
+  padding-left: 20px;
+  display: grid;
+  gap: 8px;
+  color: var(--uf-text-secondary);
+  max-width: 78ch;
+}
+
+.company-editorial-bullets__link {
+  color: var(--uf-accent-strong);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.company-editorial-bullets__link:hover,
+.company-editorial-bullets__link:focus-visible {
+  color: var(--uf-text-primary);
+}
+
+.company-related-guides__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 10px;
+}
+
+.company-related-guides__list li {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.company-related-guides .company-resource-link--inline {
+  max-width: 100%;
+  font-size: 14px;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
 .openai-cta,
 .company-guide-cta {
   grid-template-columns: minmax(0, 1fr) auto;

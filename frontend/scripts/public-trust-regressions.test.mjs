@@ -239,6 +239,7 @@ const authoredPreviewFiles = (await fs.readdir(authoredPreviewDir))
   .filter((name) => name.endsWith('-preview-content.ts'))
   .map((name) => path.join(authoredPreviewDir, name));
 authoredPreviewFiles.push(path.join(appRoot, 'features', 'company', 'company-preview', 'company-preview.component.html'));
+authoredPreviewFiles.push(path.join(authoredPreviewDir, 'company-editorial-notes.ts'));
 assert.ok(authoredPreviewFiles.length > 1, 'authored company preview modules must exist');
 for (const file of authoredPreviewFiles) {
   const source = await fs.readFile(file, 'utf8');

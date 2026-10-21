@@ -461,6 +461,247 @@ const AUTHORED_GUIDE_SMOKE = [
     reportUrl:
       'https://www.teamblind.com/post/weak-system-design-interview-for-spotify-chances-of-no-hire-00wjs6rg',
   },
+  {
+    label: 'xAI',
+    route: '/companies/xai/preview',
+    title: 'xAI (now SpaceXAI) Frontend Interview Questions: 4 Prompts + Guide',
+    description:
+      'Prepare for an xAI (SpaceXAI) frontend interview with 4 practice prompts modelled on public postings and reports: chat UI, TS app, CSS screenshot, AI composer.',
+    h1: 'xAI (now SpaceXAI) Frontend Interview Questions',
+    kicker: 'Public xAI prep guide',
+    headings: [
+      'Prepare for product judgment, not xAI trivia',
+      'What the public pages establish, and what you still need to confirm',
+      'Four xAI frontend interview practice questions',
+      'Scope the chat interface before the first line of the pairing session',
+      'A 7-day xAI frontend interview preparation plan',
+      'Common xAI frontend interview preparation questions',
+      'Build the underlying skills with free practice',
+      'Sources and evidence limits',
+    ],
+    trustFragment: 'not leaked, confirmed or official xAI questions',
+    prompts: [
+      { id: 'react-chat-interface-pairing', title: 'Build a chat interface in React during a one-hour pairing session' },
+      { id: 'small-react-app-typescript', title: 'Write a small app in React with TypeScript in 45 minutes' },
+      { id: 'html-css-from-screenshot', title: 'Implement a UI from a screenshot in HTML and CSS' },
+      { id: 'ai-chat-composer-streaming-design', title: 'Design the AI chat composer and streaming turn for a grok.com-style product' },
+    ],
+    resources: [
+      '/react/coding/react-fetch-list-states',
+      '/css/coding/css-grid-card-gallery',
+      '/css/coding/css-flexbox-navbar',
+      '/react/trivia/react-usememo-vs-usecallback',
+      '/react/trivia/react-useref-vs-usestate',
+      '/javascript/trivia/ai-streaming-data-handling',
+      '/javascript/trivia/chat-conversation-state-management',
+      '/system-design/ai-chat-textarea-design',
+      '/guides/behavioral/stories',
+    ],
+    reportUrl:
+      'https://www.jointaro.com/interviews/companies/xai/experiences/frontend-engineer-london-england-august-13-2025-no-offer-positive-45b410e6/',
+  },
+  {
+    label: 'JPMorgan Chase',
+    route: '/companies/jpmorgan/preview',
+    title: 'JPMorgan Chase Frontend Interview Questions: 5 Prompts + Guide',
+    description:
+      'Prepare for a JPMorgan Chase frontend interview with 5 practice prompts modelled on public reports: memoize, reduce polyfill, async React hook, to-do list.',
+    h1: 'JPMorgan Chase Frontend Interview Questions',
+    kicker: 'Public JPMorgan Chase prep guide',
+    headings: [
+      'Prepare for product judgment, not JPMorgan Chase trivia',
+      'What the public accounts establish, and what you still need to confirm',
+      'Five JPMorgan Chase frontend interview practice questions',
+      'Scope the generic async promise hook before the first line',
+      'A 7-day JPMorgan Chase frontend interview preparation plan',
+      'Common JPMorgan Chase frontend interview preparation questions',
+      'Build the underlying skills with free practice',
+      'Sources and evidence limits',
+    ],
+    trustFragment: 'not leaked, confirmed or official JPMorgan Chase questions',
+    prompts: [
+      { id: 'generic-memoize-function', title: 'Write a generic memoization function inside a security-and-React round' },
+      { id: 'reduce-polyfill-with-async-follow-ups', title: 'Write a polyfill for the reduce function, with promises, generators and currying as follow-ups' },
+      { id: 'generic-async-promise-react-hook', title: 'Live-code a generic async promise React hook with typed state and effect cleanup' },
+      { id: 'priority-todo-list', title: 'Build a to-do list where each task has a priority that can be changed, and tasks can be deleted' },
+      { id: 'react-and-javascript-conversation-round', title: 'Hold the React and JavaScript conversation round: closures, clones, hooks, storage and CORS' },
+    ],
+    resources: [
+      '/javascript/trivia/js-closures',
+      '/javascript/trivia/js-event-loop',
+      '/react/trivia/react-usememo-vs-usecallback',
+      '/react/trivia/react-useref-vs-usestate',
+      '/react/trivia/react-higher-order-components',
+      '/javascript/trivia/js-cookie-sessionstorage-localstorage',
+      '/javascript/trivia/js-xss-dom-sinks',
+      '/javascript/coding/js-create-lru-cache',
+      '/guides/behavioral/stories',
+    ],
+    reportUrl:
+      'https://www.frontendgeek.com/interview-experience/frontend-interview-experience-at-jp-morgan-refused-offer---9f684f90-12ee-45ec-ac82-e40d2010260e',
+  },
+  {
+    label: 'Agoda',
+    route: '/companies/agoda/preview',
+    title: 'Agoda Frontend Interview Questions: 5 Prompts + Prep Guide',
+    description:
+      'Prepare for an Agoda frontend interview with 5 practice prompts modelled on public reports: hotel search page, React take-home, web fundamentals, debounce, DSA.',
+    h1: 'Agoda Frontend Interview Questions',
+    kicker: 'Public Agoda prep guide',
+    headings: [
+      'Prepare for product judgment, not Agoda trivia',
+      'What the public accounts establish, and what you still need to confirm',
+      'Five Agoda frontend interview practice questions',
+      'Scope the hotel search page before the first sentence',
+      'A 7-day Agoda frontend interview preparation plan',
+      'Common Agoda frontend interview preparation questions',
+      'Build the underlying skills with free practice',
+      'Sources and evidence limits',
+    ],
+    trustFragment: 'not leaked, confirmed or official Agoda questions',
+    prompts: [
+      { id: 'hotel-search-page-frontend-architecture', title: 'Design a hotel search page frontend from scratch for a million users and several teams' },
+      { id: 'travel-booking-frontend-architecture', title: 'Design a scalable frontend architecture for a travel booking website' },
+      { id: 'react-typescript-stock-dashboard-take-home', title: 'Build the React and TypeScript stock dashboard take-home, then explain it in the follow-up hour' },
+      { id: 'web-fundamentals-platform-hour', title: 'Answer the one-hour web-fundamentals Platform round without writing code' },
+      { id: 'javascript-pipeline-and-hackerrank-coding-hour', title: 'Implement a pipeline function, extend it to an async limit, and clear the HackerRank coding hour' },
+    ],
+    resources: [
+      '/javascript/coding/js-debounce',
+      '/react/coding/react-fetch-list-states',
+      '/javascript/trivia/js-xss-dom-sinks',
+      '/javascript/trivia/js-cookie-sessionstorage-localstorage',
+      '/javascript/trivia/http-caching-basics',
+      '/react/trivia/react-ssr-hydration',
+      '/react/trivia/react-state-management-redux',
+      '/javascript/trivia/js-testing-edge-cases-strategy',
+      '/guides/behavioral/stories',
+    ],
+    reportUrl:
+      'https://leetcode.com/discuss/post/8459009/',
+  },
+];
+// Catalog-driven company previews with an editorial notes entry (COMPANY_EDITORIAL_NOTES).
+const EDITORIAL_NOTE_SMOKE = [
+  {
+    label: 'Walmart',
+    route: '/companies/walmart/preview',
+    title: 'Walmart Frontend Interview Process and Practice Questions',
+    h1: 'Walmart Frontend Interview Questions and Process',
+    headings: [
+      'Three loop shapes, by role and region',
+      'Rehearse the reported rounds in order',
+      'Common questions about Walmart frontend interviews',
+    ],
+    practicePath: '/javascript/coding/js-valid-parentheses',
+  },
+  {
+    label: 'ByteDance and TikTok',
+    route: '/companies/bytedance/preview',
+    title: 'ByteDance and TikTok Frontend Interview Process and Prep',
+    h1: 'ByteDance and TikTok Frontend Interview Questions',
+    headings: [
+      'Two technical rounds and a hiring manager round, by region',
+      'Rehearse the reported rounds in order',
+      'Common questions about ByteDance and TikTok frontend interviews',
+    ],
+    practicePath: '/javascript/coding/js-build-tree-from-flat-list',
+  },
+  {
+    label: 'Microsoft',
+    route: '/companies/microsoft/preview',
+    title: 'Microsoft Frontend Interview Process and Practice Guide',
+    h1: 'Microsoft Frontend Interview Questions and Process',
+    headings: [
+      'Two to six rounds, set by the team',
+      'Rehearse the concept rounds, then the builds',
+      'Common questions about Microsoft frontend interviews',
+    ],
+    practicePath: '/javascript/trivia/js-promises-async-await',
+  },
+  {
+    label: 'Tesla',
+    route: '/companies/tesla/preview',
+    title: 'Tesla Frontend Interview Process and Practice Questions',
+    h1: 'Tesla Frontend Interview Questions and Process',
+    headings: [
+      'Assessment, screen, then a three to five round onsite',
+      'Rehearse the reported stages in order',
+      'Common questions about Tesla frontend interviews',
+    ],
+    practicePath: '/javascript/coding/js-color-contrast-ratio',
+  },
+  {
+    label: 'Booking.com',
+    route: '/companies/booking-com/preview',
+    title: 'Booking.com Frontend Interview Process and Practice',
+    h1: 'Booking.com Frontend Interview Questions and Process',
+    headings: [
+      'HackerRank test, recruiter call, coding rounds, fit interview',
+      'Rehearse the autocomplete round first',
+      'Common questions about Booking.com frontend interviews',
+    ],
+    practicePath: '/react/coding/react-autocomplete-search-starter',
+  },
+  {
+    label: 'Zalando',
+    route: '/companies/zalando/preview',
+    title: 'Zalando Frontend Interview Process and Practice',
+    h1: 'Zalando Frontend Interview Questions and Process',
+    headings: [
+      'A take-home, a hiring manager call and a final day',
+      'Rehearse the take-home, then the fundamentals hour',
+      'Common questions about Zalando frontend interviews',
+    ],
+    practicePath: '/react/coding/react-autocomplete-search-starter',
+  },
+  {
+    label: 'Stripe',
+    route: '/companies/stripe/preview',
+    title: 'Stripe Frontend Interview Process and Practice Questions',
+    h1: 'Stripe Frontend Interview Questions and Process',
+    headings: [
+      'A multi-part screen, then an onsite of five rounds',
+      'Rehearse the bug squash and the JSON screen',
+      'Common questions about Stripe frontend interviews',
+    ],
+    practicePath: '/javascript/debug/js-debug-async-race',
+  },
+  {
+    label: 'Uber',
+    route: '/companies/uber/preview',
+    title: 'Uber Frontend Interview Process and Practice Questions',
+    h1: 'Uber Frontend Interview Questions and Process',
+    headings: [
+      'The official loop and what candidates met',
+      'Rehearse the screen, then the specialization round',
+      'Common questions about Uber frontend interviews',
+    ],
+    practicePath: '/css/trivia/css-position-relative-absolute-fixed',
+  },
+  {
+    label: 'Apple',
+    route: '/companies/apple/preview',
+    title: 'Apple Frontend Interview Process and Practice Questions',
+    h1: 'Apple Frontend Interview Questions and Process',
+    headings: [
+      'A screen, then a team loop of four to seven rounds',
+      'Rehearse the screen, then the coding loop',
+      'Common questions about Apple frontend interviews',
+    ],
+    practicePath: '/css/coding/css-theme-variables-dark-mode',
+  },
+  {
+    label: 'Airbnb',
+    route: '/companies/airbnb/preview',
+    title: 'Airbnb Frontend Interview Practice and Official FAQ',
+    h1: 'Airbnb Frontend Interview Practice',
+    headings: [
+      'An editorial practice grouping',
+      'Common questions about this Airbnb page',
+    ],
+    practicePath: '/javascript/trivia/js-closures',
+  },
 ];
 const ANGULAR_HTTP_CANCELLATION_LAB_ROUTE =
   '/angular/trivia/angular-http-what-actually-cancels-request';
@@ -1755,6 +1996,22 @@ try {
         !visibleText.includes('Sample FrontendAtlas practice prompts') &&
         !visibleText.includes('Try free challenge'),
       detail: 'practice links present, catalog markup absent',
+    });
+  }
+
+  for (const note of EDITORIAL_NOTE_SMOKE) {
+    const body = await curlBody(`${base}${note.route}`, { followRedirects: true, userAgent: GOOGLEBOT_USER_AGENT });
+    const visibleText = extractVisibleText(body);
+    const jsonLd = extractSeoJsonLd(body);
+    const collectionPage = jsonLd.graph.find((node) => hasSchemaType(node, 'CollectionPage'));
+    const titleOk = extractTitle(body) === note.title;
+    const headingsOk = [note.h1, ...note.headings].every((heading) => visibleText.includes(normalizeText(heading)));
+    const catalogOk = visibleText.includes(normalizeText('What you can do now for free')) && body.includes(`href="${note.practicePath}"`);
+    const schemaOk = Boolean(collectionPage?.dateModified) && !jsonLd.graph.some((node) => hasSchemaType(node, 'FAQPage'));
+    checks.push({
+      name: `${note.label} company preview renders its editorial notes around the catalog blocks with a dated CollectionPage`,
+      ok: titleOk && headingsOk && catalogOk && schemaOk,
+      detail: `title=${titleOk} headings=${headingsOk} catalog=${catalogOk} schema=${schemaOk}`,
     });
   }
 

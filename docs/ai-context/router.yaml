@@ -398,6 +398,23 @@ reference_rules:
       - docs/references/company-pages-plan-2026-10.md
     max_docs: 1
 
+  - id: company_generic_pages_content_plan
+    priority: 93
+    keywords:
+      - generic company page
+      - editorial notes
+      - company editorial notes
+      - company internal links
+      - company sibling links
+      - thin company page
+      - generic preview copy
+    paths:
+      - docs/references/company-generic-pages-content-plan-2026-10.md
+      - frontend/src/app/shared/company-previews/company-editorial-notes.ts
+    load:
+      - docs/references/company-generic-pages-content-plan-2026-10.md
+    max_docs: 1
+
   - id: europe_company_shortlist
     priority: 93
     keywords:
@@ -431,6 +448,37 @@ reference_rules:
       - docs/references/walmart-nvidia-tesla-questions-2026-10.md
     load:
       - docs/references/walmart-nvidia-tesla-questions-2026-10.md
+    max_docs: 1
+
+  - id: jpmorgan_agoda_xai_questions
+    priority: 93
+    keywords:
+      - jpmorgan
+      - jp morgan
+      - jpmc
+      - agoda
+      - xai
+      - spacexai
+      - reported frontend questions
+      - company candidates 2026-10-21
+    paths:
+      - docs/references/jpmorgan-agoda-xai-questions-2026-10.md
+    load:
+      - docs/references/jpmorgan-agoda-xai-questions-2026-10.md
+    max_docs: 1
+
+  - id: jpmorgan_agoda_xai_interview_processes
+    priority: 93
+    keywords:
+      - jpmorgan interview process
+      - agoda interview process
+      - xai interview process
+      - interview process table
+      - reported interview process
+    paths:
+      - docs/references/jpmorgan-agoda-xai-interview-processes-2026-10.md
+    load:
+      - docs/references/jpmorgan-agoda-xai-interview-processes-2026-10.md
     max_docs: 1
 
   - id: header_prep_menu_plan

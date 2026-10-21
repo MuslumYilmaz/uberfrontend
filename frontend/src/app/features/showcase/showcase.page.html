@@ -595,6 +595,15 @@
     <ng-template #companyPlaceholder>
       <div class="preview-placeholder">Loading Company Prep…</div>
     </ng-template>
+
+    <div class="company-directory" data-testid="showcase-company-directory">
+      <p class="company-directory__title">All company guides</p>
+      <ul class="company-directory__list">
+        <li class="company-directory__item" *ngFor="let c of companyDirectoryLinks">
+          <a class="company-directory__link" [routerLink]="c.link">{{ c.label }} frontend interview questions</a>
+        </li>
+      </ul>
+    </div>
   </div>
 </div>
 

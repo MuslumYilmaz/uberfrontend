@@ -13,6 +13,7 @@ import { ExperimentService } from '../../core/services/experiment.service';
 import { QuestionService } from '../../core/services/question.service';
 import { TradeoffBattleService } from '../../core/services/tradeoff-battle.service';
 import { HOME_PRIORITY_LINK_GROUPS } from '../../core/content/priority-links';
+import { SHOWCASE_STATS } from '../../generated/content-metadata';
 import { PrepRoadmapComponent } from '../../shared/components/prep-roadmap/prep-roadmap.component';
 import { PriorityLinksComponent } from '../../shared/components/priority-links/priority-links.component';
 import { ShowcasePageComponent } from './showcase.page';
@@ -384,6 +385,28 @@ describe('ShowcasePageComponent', () => {
       expect(card.querySelector('.company-card__footer')).toBeTruthy();
       expect(card.querySelector<HTMLAnchorElement>('.company-link')?.getAttribute('href')).toContain('/companies/');
     }
+  });
+
+  it('lists every company guide as content, independent of the lazy card reveal', () => {
+    const page = fixture.nativeElement as HTMLElement;
+    const directoryLinks = () => Array.from(
+      page.querySelectorAll<HTMLAnchorElement>('[data-testid="showcase-company-directory"] a'),
+    );
+    const slugs = Object.keys(SHOWCASE_STATS.companyCounts || {});
+
+    expect(slugs.length).toBeGreaterThanOrEqual(20);
+    expect(new Set(directoryLinks().map((link) => link.getAttribute('href'))).size).toBe(slugs.length);
+    for (const slug of slugs) {
+      expect(directoryLinks().map((link) => link.getAttribute('href'))).toContain(`/companies/${slug}/preview`);
+    }
+    expect(directoryLinks().map((link) => link.textContent?.trim())).toContain('Booking.com frontend interview questions');
+    expect(directoryLinks().every((link) => !link.getAttribute('href')?.includes('?'))).toBeTrue();
+    expect(page.textContent || '').not.toContain('known questions');
+
+    fixture.componentInstance.sectionVisible = { ...fixture.componentInstance.sectionVisible, company: false };
+    fixture.detectChanges();
+    expect(page.querySelector('[data-testid="showcase-company-grid"]')).toBeNull();
+    expect(new Set(directoryLinks().map((link) => link.getAttribute('href'))).size).toBe(slugs.length);
   });
 
   it('renders product proof, the secondary account milestone, and canonical editorial facts after the roadmap', () => {

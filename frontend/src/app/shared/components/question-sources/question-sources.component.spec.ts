@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import type { QuestionSource } from '../../../core/models/question.model';
 import { QuestionSourcesComponent, QuestionSourcesVariant } from './question-sources.component';
 
@@ -30,7 +31,7 @@ describe('QuestionSourcesComponent', () => {
   ];
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({ imports: [HostComponent] }).compileComponents();
+    await TestBed.configureTestingModule({ imports: [HostComponent], providers: [provideRouter([])] }).compileComponents();
   });
 
   function render(value: QuestionSource[] | null | undefined, variant: QuestionSourcesVariant = 'full') {
@@ -69,6 +70,51 @@ describe('QuestionSourcesComponent', () => {
     expect(line.querySelectorAll('a').length).toBe(2);
     expect(line.querySelector('a')?.getAttribute('rel')).toBe('noopener noreferrer nofollow');
     expect(host.querySelector('[data-testid="question-sources"]')).toBeNull();
+  });
+
+  it('links the company guide once per company named in the sources', () => {
+    const host = render([
+      { ...sources[0], company: 'waymo' },
+      { ...sources[1], company: 'waymo' },
+    ]);
+    const lines = Array.from(host.querySelectorAll<HTMLElement>('[data-testid="question-sources-company"]'));
+    expect(lines.length).toBe(1);
+    expect(lines[0].textContent?.replace(/\s+/g, ' ').trim()).toBe(
+      'Reported in a public Waymo interview account. Waymo frontend interview questions',
+    );
+    const link = lines[0].querySelector('a') as HTMLAnchorElement;
+    expect(link.getAttribute('href')).toBe('/companies/waymo/preview');
+    expect(link.getAttribute('rel')).toBeNull();
+    expect(link.getAttribute('target')).toBeNull();
+  });
+
+  it('uses the brand label and a readable fallback for unknown company slugs', () => {
+    const host = render([
+      { ...sources[0], company: 'booking-com' },
+      { ...sources[1], company: 'acme-corp' },
+    ]);
+    const texts = Array.from(
+      host.querySelectorAll('[data-testid="question-sources-company"] a'),
+      (link) => link.textContent?.trim(),
+    );
+    expect(texts).toEqual(['Booking.com frontend interview questions', 'Acme Corp frontend interview questions']);
+  });
+
+  it('appends the company guide link to the compact line', () => {
+    const host = render([{ ...sources[0], company: 'waymo' }], 'compact');
+    const line = host.querySelector('[data-testid="question-sources-compact"]') as HTMLElement;
+    const links = Array.from(line.querySelectorAll('a'));
+    expect(links.length).toBe(2);
+    expect(links[1].getAttribute('href')).toBe('/companies/waymo/preview');
+    expect(links[1].getAttribute('rel')).toBeNull();
+    expect(line.textContent?.replace(/\s+/g, ' ').trim()).toBe(
+      'Public interview reports: PracHub (May 2026) · Waymo frontend interview questions',
+    );
+  });
+
+  it('renders no company line when no source names a company', () => {
+    const host = render(sources);
+    expect(host.querySelector('[data-testid="question-sources-company"]')).toBeNull();
   });
 
   it('renders nothing for empty, missing or malformed input', () => {

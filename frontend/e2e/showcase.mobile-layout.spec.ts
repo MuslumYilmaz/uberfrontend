@@ -156,6 +156,14 @@ async function assertTrustAndCompanyLayout(
     company.locator('.company-browse-link, .company-count, .company-link'),
     `${label} company labels`,
   );
+
+  const directory = page.getByTestId('showcase-company-directory');
+  await expect(directory).toBeVisible();
+  expect(await directory.locator('.company-directory__link').count()).toBeGreaterThanOrEqual(20);
+  await assertLocatorFitsWidth(
+    company.locator('.company-directory, .company-directory__list, .company-directory__link'),
+    `${label} company directory`,
+  );
 }
 
 async function assertContactFormLayout(page: import('@playwright/test').Page, label: string) {

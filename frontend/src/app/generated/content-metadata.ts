@@ -1536,6 +1536,12 @@ export const SHOWCASE_STATS = {
   "totalQuestions": 507,
   "premiumPracticeCount": 175,
   "companyCounts": {
+    "agoda": {
+      "all": 10,
+      "coding": 1,
+      "trivia": 7,
+      "system": 2
+    },
     "airbnb": {
       "all": 3,
       "coding": 1,
@@ -1589,6 +1595,12 @@ export const SHOWCASE_STATS = {
       "coding": 9,
       "trivia": 0,
       "system": 1
+    },
+    "jpmorgan": {
+      "all": 10,
+      "coding": 3,
+      "trivia": 7,
+      "system": 0
     },
     "meta": {
       "all": 51,
@@ -1660,6 +1672,12 @@ export const SHOWCASE_STATS = {
       "all": 8,
       "coding": 7,
       "trivia": 0,
+      "system": 1
+    },
+    "xai": {
+      "all": 9,
+      "coding": 4,
+      "trivia": 4,
       "system": 1
     },
     "zalando": {

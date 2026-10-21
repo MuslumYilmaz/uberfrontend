@@ -21,7 +21,8 @@
       "revolut",
       "zalando",
       "spotify",
-      "walmart"
+      "walmart",
+      "jpmorgan"
     ],
     "answer": {
       "blocks": [
@@ -618,7 +619,9 @@
       "airbnb",
       "spotify",
       "booking-com",
-      "walmart"
+      "walmart",
+      "jpmorgan",
+      "agoda"
     ],
     "answer": {
       "blocks": [
@@ -3612,7 +3615,9 @@
     ],
     "importance": 4,
     "companies": [
-      "tesla"
+      "tesla",
+      "jpmorgan",
+      "agoda"
     ],
     "answer": {
       "blocks": [
@@ -8170,7 +8175,8 @@
     ],
     "importance": 4,
     "companies": [
-      "bytedance"
+      "bytedance",
+      "agoda"
     ],
     "answer": {
       "blocks": [
@@ -8837,7 +8843,8 @@
     "title": "How should a front-end handle streaming data from an AI model?",
     "technology": "javascript",
     "companies": [
-      "openai"
+      "openai",
+      "xai"
     ],
     "difficulty": "intermediate",
     "importance": 3,
@@ -8935,7 +8942,8 @@
     "title": "How would you maintain conversation state in a chat app like ChatGPT?",
     "technology": "javascript",
     "companies": [
-      "openai"
+      "openai",
+      "xai"
     ],
     "difficulty": "intermediate",
     "importance": 4,
@@ -10261,7 +10269,9 @@
     "importance": 5,
     "companies": [
       "zalando",
-      "walmart"
+      "walmart",
+      "jpmorgan",
+      "agoda"
     ],
     "answer": {
       "blocks": [
@@ -10444,7 +10454,7 @@
       "error-handling"
     ],
     "importance": 4,
-    "companies": [],
+    "companies": ["agoda"],
     "answer": {
       "blocks": [
         {

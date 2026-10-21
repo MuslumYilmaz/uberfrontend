@@ -435,6 +435,77 @@ test('actual interview process edits re-date only the company whose stages or so
     assert.notEqual(modified, original, from);
     assert.deepEqual(changes(modified), [route]);
   }
+  // A shared helper belongs to the companies whose entries call it, never to a company without a table.
+  const companies = (slugs) => slugs.map((slug) => `/companies/${slug}/preview`);
+  for (const [from, to, expected] of [
+    ["report('LeetCode', `https://leetcode.com/discuss/post/", "report('LeetCode Discuss', `https://leetcode.com/discuss/post/", companies(['amazon'])],
+    ["kind: 'official', date: '2026-10' })", "kind: 'official', date: '2026-11' })",
+      companies(['booking-com', 'bytedance', 'datadog', 'google', 'intuit', 'meta', 'microsoft', 'revolut', 'spotify', 'stripe', 'uber', 'zalando'])],
+  ]) {
+    const modified = original.replace(from, to);
+    assert.notEqual(modified, original, from);
+    assert.deepEqual(changes(modified), expected);
+  }
+});
+
+test('company previews are dated by their own content: shared template and component edits re-date no company', () => {
+  const template = `${APP}features/company/company-preview/company-preview.component.html`;
+  const component = `${APP}features/company/company-preview/company-preview.component.ts`;
+  const read = currentReader();
+  const before = buildSeoInventory(read);
+  const companyChanges = (overrides) => [...buildSeoInventory(currentReader(overrides))]
+    .filter(([route, entry]) => route.startsWith('/companies/') && before.get(route)?.fingerprint !== entry.fingerprint)
+    .map(([route]) => route);
+  const html = read.read(template);
+  const ts = read.read(component);
+  const edits = [
+    // Shared catalog copy and the shared component class render every company.
+    [template, html.replace('<h2>What you can do now for free</h2>', '<h2>What you can do for free today</h2>'), []],
+    [component, ts.replace('title: `${this.label} Frontend Interview Questions Preview`,', 'title: `${this.label} Frontend Interview Questions: Preview`,'), []],
+    // Inline branches and prefixed constants belong to one company.
+    [template, html.replace('<p class="preview-kicker">Time-sensitive context</p>', '<p class="preview-kicker">Time-sensitive note</p>'), ['/companies/google/preview']],
+    [template, html.replace('<h2 id="openai-unlock">Unlock the full OpenAI practice set</h2>', '<h2 id="openai-unlock">Open the full OpenAI practice set</h2>'), ['/companies/openai/preview']],
+    [template, html.replace('<h2 id="netflix-premium-route">Continue with the full Netflix practice set</h2>', '<h2 id="netflix-premium-route">Open the full Netflix practice set</h2>'), ['/companies/netflix/preview']],
+    [component, ts.replace('not leaked or confirmed OpenAI interview questions', 'not leaked or confirmed OpenAI interview prompts'), ['/companies/openai/preview']],
+    // So does the method that publishes an inline-branch company's structured data.
+    [component, ts.replace("name: 'Google frontend interview preparation' }", "name: 'Google frontend interview prep' }"), ['/companies/google/preview']],
+  ];
+  for (const [file, modified, expected] of edits) {
+    assert.notEqual(modified, read.read(file), `${file} edit applies`);
+    assert.deepEqual(companyChanges({ [file]: modified }), expected);
+  }
+});
+
+test('wiring a company-keyed registry into the preview re-dates only the companies with an entry', () => {
+  const component = `${APP}features/company/company-preview/company-preview.component.ts`;
+  const read = currentReader();
+  const before = buildSeoInventory(read);
+  const original = read.read(component);
+  // As before the interview process tables shipped: no import, no getter.
+  const modified = original
+    .replace('  COMPANY_INTERVIEW_PROCESSES,\n  type CompanyInterviewProcess,\n', '  type CompanyInterviewProcess,\n')
+    .replace('  get interviewProcess(): CompanyInterviewProcess | null {\n    return COMPANY_INTERVIEW_PROCESSES[this.slug] ?? null;\n  }\n', '');
+  assert.ok(!modified.includes('COMPANY_INTERVIEW_PROCESSES'));
+  assert.notEqual(modified, original);
+  const changes = [...buildSeoInventory(currentReader({ [component]: modified }))]
+    .filter(([route, entry]) => before.get(route)?.fingerprint !== entry.fingerprint).map(([route]) => route);
+  assert.ok(changes.includes('/companies/walmart/preview'), changes.join(','));
+  for (const slug of ['airbnb', 'elevenlabs', 'netflix', 'openai', 'waymo']) {
+    assert.ok(!changes.includes(`/companies/${slug}/preview`), `${slug} has no interview process: ${changes.join(',')}`);
+  }
+});
+
+test('a missing inline company branch fails current reads and dates history as a catalog page', () => {
+  const template = `${APP}features/company/company-preview/company-preview.component.html`;
+  const route = '/companies/netflix/preview';
+  const html = currentReader().read(template);
+  // Netflix had no branch of its own before its inline guide shipped.
+  const modified = html.replace('*ngIf="isNetflixPreview; else genericPreview"', '*ngIf="false; else genericPreview"');
+  assert.notEqual(modified, html);
+  assert.throws(() => buildSeoInventory(currentReader({ [template]: modified })), /Missing netflix branch/);
+  const historical = buildSeoInventory({ ...currentReader({ [template]: modified }), strict: false });
+  assert.ok(historical.has(route));
+  assert.notEqual(historical.get(route).fingerprint, buildSeoInventory(currentReader()).get(route).fingerprint);
 });
 
 test('actual Waymo guide edits re-date only the Waymo preview and the directory that lists it', () => {
@@ -449,4 +520,18 @@ test('actual Waymo guide edits re-date only the Waymo preview and the directory 
   for (const route of ['/companies/google/preview', '/companies/netflix/preview', '/companies/openai/preview', '/companies/amazon/preview', '/']) {
     assert.ok(!changes.includes(route), `${route} must not re-date: ${changes.join(',')}`);
   }
+});
+
+test('an editorial notes entry re-dates only its own company preview', () => {
+  const file = `${APP}shared/company-previews/company-editorial-notes.ts`;
+  const read = currentReader();
+  const before = buildSeoInventory(read);
+  const original = read.read(file);
+  const entry = "  google: { slug: 'google', title: 'Google Frontend Interview Process and Practice', h1: 'Google Frontend Interview Questions and Process', description: 'How public reports describe Google frontend interviews, stage by stage, with practice items for each stage.' },\n";
+  const modified = original.replace(/= \{\n/, `= {\n${entry}`);
+  assert.notEqual(modified, original, 'the registry literal opens with "= {" on its own line');
+  const changes = (text) => [...buildSeoInventory(currentReader({ [file]: text }))]
+    .filter(([route, item]) => before.get(route)?.fingerprint !== item.fingerprint).map(([route]) => route);
+  assert.deepEqual(changes(modified), ['/companies/google/preview']);
+  assert.deepEqual(changes(modified.replace('stage by stage', 'round by round')), ['/companies/google/preview']);
 });

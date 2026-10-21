@@ -2314,7 +2314,8 @@
       "google",
       "meta",
       "intuit",
-      "zalando"
+      "zalando",
+      "jpmorgan"
     ],
     "sources": [
       {
@@ -2332,6 +2333,14 @@
         "publisher": "Medium",
         "date": "2022-03",
         "note": "One Meta front end engineer account describes a memoization problem as the second question of the first technical interview. This drill practises that exercise, not its reported wording."
+      },
+      {
+        "label": "frontendgeek: JPMorgan Chase SDE2 frontend interview, Bangalore, April 2024",
+        "url": "https://www.frontendgeek.com/interview-experience/frontend-interview-experience-at-jp-morgan-refused-offer---9f684f90-12ee-45ec-ac82-e40d2010260e",
+        "company": "jpmorgan",
+        "publisher": "frontendgeek",
+        "date": "2024-04",
+        "note": "The security-and-React round ended with a request to write a generic memoization function. This drill is a practice version of that task, not its wording."
       }
     ],
     "importance": 4,
@@ -3205,7 +3214,8 @@
     "companies": [
       "amazon",
       "apple",
-      "bytedance"
+      "bytedance",
+      "jpmorgan"
     ],
     "sources": [
       {
@@ -3223,6 +3233,14 @@
         "publisher": "Blind",
         "date": "2024-09",
         "note": "One TikTok front end account describes implementing a JavaScript built-in method in the first technical round. reduce is a representative drill, not the reported method."
+      },
+      {
+        "label": "frontendgeek: JPMorgan Chase SDE2 frontend interview, Bangalore, April 2024",
+        "url": "https://www.frontendgeek.com/interview-experience/frontend-interview-experience-at-jp-morgan-refused-offer---9f684f90-12ee-45ec-ac82-e40d2010260e",
+        "company": "jpmorgan",
+        "publisher": "frontendgeek",
+        "date": "2024-04",
+        "note": "The JavaScript round asked for a polyfill for the reduce function, alongside promises, generator functions and currying. This drill is a practice version of that task, not its wording."
       }
     ],
     "importance": 4,

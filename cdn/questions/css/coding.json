@@ -368,6 +368,17 @@
     "title": "Flexbox: Responsive Navbar",
     "type": "coding",
     "technology": "css",
+    "companies": ["xai"],
+    "sources": [
+      {
+        "label": "xAI posting: Frontend Engineer, London, Built In London, February 2026",
+        "url": "https://www.builtinlondon.uk/job/frontend-engineer/7805551",
+        "company": "xai",
+        "publisher": "Built In London",
+        "date": "2026-02",
+        "note": "The posting listed a 45-minute HTML/CSS/Tailwind coding interview, and a sibling posting asked candidates to implement a UI from a screenshot. The postings have since closed. This navbar drill rehearses that round."
+      }
+    ],
     "difficulty": "intermediate",
     "importance": 5,
     "tags": [
@@ -596,6 +607,17 @@
     "title": "Grid: Card Gallery (2→4 Columns)",
     "type": "coding",
     "technology": "css",
+    "companies": ["xai"],
+    "sources": [
+      {
+        "label": "xAI posting: Frontend Engineer, London, Built In London, February 2026",
+        "url": "https://www.builtinlondon.uk/job/frontend-engineer/7805551",
+        "company": "xai",
+        "publisher": "Built In London",
+        "date": "2026-02",
+        "note": "The posting listed a 45-minute HTML/CSS/Tailwind coding interview, and a sibling posting asked candidates to implement a UI from a screenshot. The postings have since closed. This layout drill rehearses that round."
+      }
+    ],
     "difficulty": "intermediate",
     "importance": 5,
     "tags": [

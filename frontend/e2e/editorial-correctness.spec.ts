@@ -67,6 +67,18 @@ const publicCopyCases = [
     expected: 'Prepare for product judgment, not Spotify trivia',
   },
   {
+    path: '/companies/jpmorgan/preview',
+    expected: 'Prepare for product judgment, not JPMorgan Chase trivia',
+  },
+  {
+    path: '/companies/agoda/preview',
+    expected: 'Prepare for product judgment, not Agoda trivia',
+  },
+  {
+    path: '/companies/xai/preview',
+    expected: 'Prepare for product judgment, not xAI trivia',
+  },
+  {
     path: '/system-design',
     expected: 'Follow this four-step path when you are new to the bank',
   },

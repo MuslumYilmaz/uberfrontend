@@ -1,6 +1,54 @@
 {
   "schemaVersion": 1,
   "companies": {
+    "agoda": [
+      {
+        "id": "react-fetch-list-states",
+        "kind": "coding",
+        "tech": "react",
+        "title": "React Fetch and Render a List with Loading, Error and Empty States",
+        "access": "free",
+        "route": "/react/coding/react-fetch-list-states",
+        "sources": [
+          {
+            "label": "Code360: Agoda frontend engineer interview, Gurgaon, May 2025",
+            "url": "https://www.naukri.com/code360/interview-experiences/agoda/agoda-interview-experience-by-brijesh-verma-may-2025-exp-0-2-years",
+            "publisher": "Code360",
+            "date": "2025-05"
+          }
+        ]
+      },
+      {
+        "id": "car-rental-booking-frontend",
+        "kind": "system-design",
+        "title": "Design a Car Rental Booking Frontend",
+        "access": "premium",
+        "route": "/system-design/car-rental-booking-frontend",
+        "sources": [
+          {
+            "label": "Code360: Agoda frontend engineer interview, Gurgaon, May 2025",
+            "url": "https://www.naukri.com/code360/interview-experiences/agoda/agoda-interview-experience-by-brijesh-verma-may-2025-exp-0-2-years",
+            "publisher": "Code360",
+            "date": "2025-05"
+          }
+        ]
+      },
+      {
+        "id": "realtime-search-debounce-cache",
+        "kind": "system-design",
+        "title": "Real-time Search with Debounce & Caching",
+        "access": "premium",
+        "route": "/system-design/realtime-search-debounce-cache",
+        "sources": [
+          {
+            "label": "LeetCode Discuss: Agoda senior frontend interview, Bangkok, July 2026",
+            "url": "https://leetcode.com/discuss/post/8459009/",
+            "publisher": "LeetCode Discuss",
+            "date": "2026-08"
+          }
+        ]
+      }
+    ],
     "amazon": [
       {
         "id": "angular-star-rating",
@@ -746,7 +794,7 @@
         "kind": "debug",
         "tech": "javascript",
         "title": "Fix async race in `fetchWithCache`",
-        "access": "premium",
+        "access": "free",
         "route": "/javascript/debug/js-debug-async-race",
         "sources": [
           {
@@ -1015,6 +1063,56 @@
             "url": "https://leetcode.com/discuss/post/4167001/",
             "publisher": "LeetCode Discuss",
             "date": "2023-10"
+          }
+        ]
+      }
+    ],
+    "jpmorgan": [
+      {
+        "id": "js-array-prototype-reduce",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Implement Array.prototype.reduce",
+        "access": "premium",
+        "route": "/javascript/coding/js-array-prototype-reduce",
+        "sources": [
+          {
+            "label": "frontendgeek: JPMorgan Chase SDE2 frontend interview, Bangalore, April 2024",
+            "url": "https://www.frontendgeek.com/interview-experience/frontend-interview-experience-at-jp-morgan-refused-offer---9f684f90-12ee-45ec-ac82-e40d2010260e",
+            "publisher": "frontendgeek",
+            "date": "2024-04"
+          }
+        ]
+      },
+      {
+        "id": "js-memoize-function",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Memoization",
+        "access": "premium",
+        "route": "/javascript/coding/js-memoize-function",
+        "sources": [
+          {
+            "label": "frontendgeek: JPMorgan Chase SDE2 frontend interview, Bangalore, April 2024",
+            "url": "https://www.frontendgeek.com/interview-experience/frontend-interview-experience-at-jp-morgan-refused-offer---9f684f90-12ee-45ec-ac82-e40d2010260e",
+            "publisher": "frontendgeek",
+            "date": "2024-04"
+          }
+        ]
+      },
+      {
+        "id": "react-fetch-list-states",
+        "kind": "coding",
+        "tech": "react",
+        "title": "React Fetch and Render a List with Loading, Error and Empty States",
+        "access": "free",
+        "route": "/react/coding/react-fetch-list-states",
+        "sources": [
+          {
+            "label": "Aced: JPMorgan Chase senior frontend engineer interview, United Kingdom, 2026",
+            "url": "https://www.aced.io/experiences/jp-morgan-chase-senior-frontend-engineer-interview-6faa4e",
+            "publisher": "Aced",
+            "date": "2026-05"
           }
         ]
       }
@@ -1486,7 +1584,7 @@
         "kind": "debug",
         "tech": "javascript",
         "title": "Fix async race in `fetchWithCache`",
-        "access": "premium",
+        "access": "free",
         "route": "/javascript/debug/js-debug-async-race",
         "sources": [
           {
@@ -1502,7 +1600,7 @@
         "kind": "debug",
         "tech": "javascript",
         "title": "Fix stale closure in delayed autosave callback",
-        "access": "premium",
+        "access": "free",
         "route": "/javascript/debug/js-debug-stale-closure-autosave",
         "sources": [
           {
@@ -2019,6 +2117,87 @@
             "url": "https://prachub.com/interview-experiences/waymo-senior-frontend-engineer-interview-experience-rejected-30-minutes-after-pushing-on-the-process",
             "publisher": "PracHub",
             "date": "2026-05"
+          }
+        ]
+      }
+    ],
+    "xai": [
+      {
+        "id": "react-chat-streaming-ui",
+        "kind": "coding",
+        "tech": "react",
+        "title": "Chat UI with Streaming Response",
+        "access": "premium",
+        "route": "/react/coding/react-chat-streaming-ui",
+        "sources": [
+          {
+            "label": "Taro: xAI frontend engineer interview, London, August 2025",
+            "url": "https://www.jointaro.com/interviews/companies/xai/experiences/frontend-engineer-london-england-august-13-2025-no-offer-positive-45b410e6/",
+            "publisher": "Taro",
+            "date": "2025-08"
+          }
+        ]
+      },
+      {
+        "id": "css-flexbox-navbar",
+        "kind": "coding",
+        "tech": "css",
+        "title": "Flexbox: Responsive Navbar",
+        "access": "free",
+        "route": "/css/coding/css-flexbox-navbar",
+        "sources": [
+          {
+            "label": "xAI posting: Frontend Engineer, London, Built In London, February 2026",
+            "url": "https://www.builtinlondon.uk/job/frontend-engineer/7805551",
+            "publisher": "Built In London",
+            "date": "2026-02"
+          }
+        ]
+      },
+      {
+        "id": "css-grid-card-gallery",
+        "kind": "coding",
+        "tech": "css",
+        "title": "Grid: Card Gallery (2→4 Columns)",
+        "access": "free",
+        "route": "/css/coding/css-grid-card-gallery",
+        "sources": [
+          {
+            "label": "xAI posting: Frontend Engineer, London, Built In London, February 2026",
+            "url": "https://www.builtinlondon.uk/job/frontend-engineer/7805551",
+            "publisher": "Built In London",
+            "date": "2026-02"
+          }
+        ]
+      },
+      {
+        "id": "react-fetch-list-states",
+        "kind": "coding",
+        "tech": "react",
+        "title": "React Fetch and Render a List with Loading, Error and Empty States",
+        "access": "free",
+        "route": "/react/coding/react-fetch-list-states",
+        "sources": [
+          {
+            "label": "xAI posting: React Frontend Engineer, grok.com and API, Built In, January 2026",
+            "url": "https://builtin.com/job/react-frontend-engineer-grokcom-api/4446453",
+            "publisher": "Built In",
+            "date": "2026-01"
+          }
+        ]
+      },
+      {
+        "id": "ai-chat-textarea-design",
+        "kind": "system-design",
+        "title": "Design an AI Chat Composer and Streaming Turn",
+        "access": "free",
+        "route": "/system-design/ai-chat-textarea-design",
+        "sources": [
+          {
+            "label": "Taro: xAI frontend engineer interview, London, August 2025",
+            "url": "https://www.jointaro.com/interviews/companies/xai/experiences/frontend-engineer-london-england-august-13-2025-no-offer-positive-45b410e6/",
+            "publisher": "Taro",
+            "date": "2025-08"
           }
         ]
       }

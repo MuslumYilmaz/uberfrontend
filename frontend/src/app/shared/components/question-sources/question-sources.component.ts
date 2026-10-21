@@ -1,9 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import type { QuestionSource } from '../../../core/models/question.model';
 import { formatQuestionSourceDate, normalizeQuestionSources } from '../../../core/utils/question-sources.util';
+import { companyBrandFor } from '../../company-branding';
 
 export type QuestionSourcesVariant = 'full' | 'compact';
+export type QuestionSourceCompanyLink = { slug: string; label: string };
 
 export const QUESTION_SOURCES_HEADING = 'Public interview reports';
 export const QUESTION_SOURCES_PROVENANCE =
@@ -17,7 +20,7 @@ export const QUESTION_SOURCES_PROVENANCE =
  */
 @Component({
   selector: 'app-question-sources',
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <section
@@ -37,6 +40,13 @@ export const QUESTION_SOURCES_PROVENANCE =
           <p class="question-sources__note" *ngIf="source.note">{{ source.note }}</p>
         </li>
       </ul>
+      <p
+        class="question-sources__company"
+        *ngFor="let company of companyLinks(); trackBy: trackBySlug"
+        data-testid="question-sources-company">
+        Reported in a public {{ company.label }} interview account.
+        <a class="question-sources__link" [routerLink]="['/companies', company.slug, 'preview']">{{ company.label }} frontend interview questions</a>
+      </p>
     </section>
     <p
       *ngIf="variant === 'compact' && entries().length"
@@ -48,7 +58,9 @@ export const QUESTION_SOURCES_PROVENANCE =
           [href]="source.url"
           target="_blank"
           rel="noopener noreferrer nofollow">{{ compactLabel(source) }}</a><ng-container *ngIf="!last">, </ng-container>
-      </ng-container>
+      </ng-container><ng-container *ngFor="let company of companyLinks(); trackBy: trackBySlug"> · <a
+          class="question-sources__link"
+          [routerLink]="['/companies', company.slug, 'preview']">{{ company.label }} frontend interview questions</a></ng-container>
     </p>
   `,
   styleUrls: ['./question-sources.component.css'],
@@ -62,6 +74,23 @@ export class QuestionSourcesComponent {
 
   entries(): QuestionSource[] {
     return normalizeQuestionSources(this.sources);
+  }
+
+  /** One internal link per company named by a source, so a sourced item points back to its company guide. */
+  companyLinks(): QuestionSourceCompanyLink[] {
+    const seen = new Set<string>();
+    const links: QuestionSourceCompanyLink[] = [];
+    for (const source of this.entries()) {
+      const slug = source.company;
+      if (!slug || seen.has(slug)) continue;
+      seen.add(slug);
+      links.push({ slug, label: companyBrandFor(slug)?.label ?? slug });
+    }
+    return links;
+  }
+
+  trackBySlug(_index: number, link: QuestionSourceCompanyLink): string {
+    return link.slug;
   }
 
   metaLabel(source: QuestionSource): string {

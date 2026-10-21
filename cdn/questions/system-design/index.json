@@ -89,7 +89,8 @@
       "frontend-architecture"
     ],
     "companies": [
-      "tesla"
+      "tesla",
+      "agoda"
     ],
     "type": "system-design",
     "access": "premium",
@@ -487,7 +488,8 @@
     "companies": [
       "meta",
       "zalando",
-      "booking-com"
+      "booking-com",
+      "agoda"
     ],
     "type": "system-design",
     "access": "premium",
@@ -628,7 +630,8 @@
     ],
     "companies": [
       "waymo",
-      "openai"
+      "openai",
+      "xai"
     ],
     "type": "system-design",
     "access": "free",

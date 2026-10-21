@@ -3132,6 +3132,7 @@
     "id": "react-higher-order-components",
     "title": "Higher-order components (HOCs) in React: what are they and when should you use them?",
     "technology": "react",
+    "companies": ["jpmorgan"],
     "difficulty": "intermediate",
     "importance": 2,
     "description": "Explain higher-order components as a legacy React reuse pattern, with focus on wrapper debugging, prop collisions, display names, typing friction, and when hooks are simpler.",
@@ -3332,7 +3333,9 @@
     "difficulty": "intermediate",
     "importance": 4,
     "companies": [
-      "walmart"
+      "walmart",
+      "jpmorgan",
+      "xai"
     ],
     "description": "useMemo caches a computed value, useCallback a function reference. Explain when they prevent real work, when the dependency comparison and retained memory cost more than they save, and the pitfalls (stale closures, non-memoized children) that make memoization a no-op.",
     "seo": {
@@ -4231,6 +4234,7 @@
     "id": "react-useref-vs-usestate",
     "title": "Why doesn't changing a ref re-render? useRef vs useState",
     "technology": "react",
+    "companies": ["jpmorgan", "xai"],
     "difficulty": "intermediate",
     "importance": 4,
     "description": "Explain why a ref update never shows on screen: React does not watch .current, while setState schedules a render. Covers when state is the right tool (anything the UI shows), when refs are (DOM nodes, timers, latest values in stale closures), and the bug of storing render-driving data in a ref.",
@@ -5697,7 +5701,8 @@
     "title": "When does a React app need Redux? Local state vs Context vs external stores",
     "technology": "react",
     "companies": [
-      "walmart"
+      "walmart",
+      "agoda"
     ],
     "difficulty": "intermediate",
     "importance": 4,
@@ -5854,7 +5859,8 @@
     "title": "How do SSR and hydration work in React? Server-rendered above the fold, client-only below",
     "technology": "react",
     "companies": [
-      "walmart"
+      "walmart",
+      "agoda"
     ],
     "difficulty": "hard",
     "importance": 4,

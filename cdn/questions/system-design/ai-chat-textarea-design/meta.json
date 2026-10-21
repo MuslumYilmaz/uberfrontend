@@ -12,7 +12,8 @@
   ],
   "companies": [
     "waymo",
-    "openai"
+    "openai",
+    "xai"
   ],
   "type": "system-design",
   "sections": [
@@ -69,6 +70,13 @@
         "sourceUrl": "https://www.jointaro.com/interviews/companies/openai/experiences/senior-frontend-software-engineer-united-states-may-30-2024-no-offer-negative-32a807aa/",
         "sourceTitle": "OpenAI senior frontend software engineer interview, United States, May 2024 (Taro)",
         "checkedAt": "2026-10-15"
+      },
+      {
+        "company": "xai",
+        "evidenceType": "reported-interview-question",
+        "sourceUrl": "https://www.jointaro.com/interviews/companies/xai/experiences/frontend-engineer-london-england-august-13-2025-no-offer-positive-45b410e6/",
+        "sourceTitle": "xAI frontend engineer interview, London, August 2025 (Taro)",
+        "checkedAt": "2026-10-21"
       }
     ]
   },
@@ -129,6 +137,14 @@
       "publisher": "Taro",
       "date": "2024-05",
       "note": "One senior OpenAI account describes a system design prompt summarised as ChatGPT, but in a text area, in the technical screen. This case practises that prompt; it is not the reported wording."
+    },
+    {
+      "label": "Taro: xAI frontend engineer interview, London, August 2025",
+      "url": "https://www.jointaro.com/interviews/companies/xai/experiences/frontend-engineer-london-england-august-13-2025-no-offer-positive-45b410e6/",
+      "company": "xai",
+      "publisher": "Taro",
+      "date": "2025-08",
+      "note": "The pair-coding session built a chat interface in React with live review. This composer-and-streaming case extends that interface to Send, Stop and stale stream events; it is a practice version, not the reported wording."
     }
   ]
 }

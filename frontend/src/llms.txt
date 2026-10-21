@@ -73,28 +73,31 @@
 - [Foundations Track preview](https://frontendatlas.com/tracks/foundations-30d/preview): Thirty-day foundations prep preview.
 - [JavaScript mastery crash track](https://frontendatlas.com/guides/framework-prep/javascript-prep-path/mastery): Guided JavaScript mastery path with checkpoints.
 - [Company frontend interview questions](https://frontendatlas.com/companies): Company-specific frontend interview prep.
-- [Airbnb interview preview](https://frontendatlas.com/companies/airbnb/preview): Airbnb frontend interview practice preview.
+- [Agoda frontend interview questions](https://frontendatlas.com/companies/agoda/preview): Public Agoda prep guide with five practice prompts modelled on public frontend interview accounts from 2025 and 2026 and Agoda's own interview process pages.
+- [Airbnb Frontend Interview Practice](https://frontendatlas.com/companies/airbnb/preview): A small Airbnb frontend practice grouping with the official Airbnb careers FAQ. No public frontend interview reports have been read for this page yet.
 - [Amazon frontend interview questions](https://frontendatlas.com/companies/amazon/preview): Public Amazon prep guide with seven practice prompts modelled on Amazon's own preparation page and public front end engineer interview accounts from 2020 to 2025.
-- [Apple interview preview](https://frontendatlas.com/companies/apple/preview): Apple frontend interview practice preview.
-- [Booking.com interview preview](https://frontendatlas.com/companies/booking-com/preview): Booking.com frontend interview practice preview.
-- [ByteDance interview preview](https://frontendatlas.com/companies/bytedance/preview): ByteDance frontend interview practice preview.
+- [Apple Frontend Interview Questions and Process](https://frontendatlas.com/companies/apple/preview): How public reports describe Apple frontend interviews: a recruiter call, a 45 to 60 minute coding screen in React, JS or TS, and a team loop of 4 to 7 rounds.
+- [Booking.com Frontend Interview Questions and Process](https://frontendatlas.com/companies/booking-com/preview): How public reports from 2021 to 2023 describe Booking.com frontend interviews: a HackerRank test, coding rounds with two engineers and a fit interview.
+- [ByteDance and TikTok Frontend Interview Questions](https://frontendatlas.com/companies/bytedance/preview): How public reports describe ByteDance and TikTok frontend loops: HackerRank or CodeSignal assessments, a DSA round, a frontend round and a design round.
 - [Datadog frontend interview questions](https://frontendatlas.com/companies/datadog/preview): Public Datadog prep guide with five practice prompts modelled on public senior frontend interview accounts.
 - [ElevenLabs frontend interview questions](https://frontendatlas.com/companies/elevenlabs/preview): Public ElevenLabs prep guide with five practice prompts modelled on candidate-sourced reports.
 - [Google frontend interview questions](https://frontendatlas.com/companies/google/preview): Public Google prep guide with seven representative prompts and a framework-neutral preparation plan.
 - [Intuit frontend interview questions](https://frontendatlas.com/companies/intuit/preview): Public Intuit prep guide with five practice prompts modelled on public frontend interview accounts from 2021 to 2025.
+- [JPMorgan Chase frontend interview questions](https://frontendatlas.com/companies/jpmorgan/preview): Public JPMorgan Chase prep guide with five practice prompts modelled on public frontend interview accounts from 2021 to 2026 and the official hiring pages.
 - [Meta frontend interview questions](https://frontendatlas.com/companies/meta/preview): Public Meta prep guide with seven practice prompts modelled on Meta's own hiring pages and public front end interview accounts from 2021 to 2025.
-- [Microsoft interview preview](https://frontendatlas.com/companies/microsoft/preview): Microsoft frontend interview practice preview.
+- [Microsoft Frontend Interview Questions and Process](https://frontendatlas.com/companies/microsoft/preview): What Microsoft publishes about its hiring loop and what public reports add for frontend roles: machine coding, JS and React concepts, DSA and design rounds.
 - [Netflix frontend interview questions](https://frontendatlas.com/companies/netflix/preview): Public Netflix prep guide with six representative prompts and a broad frontend preparation plan.
 - [OpenAI interview preview](https://frontendatlas.com/companies/openai/preview): OpenAI frontend interview practice preview.
 - [Revolut frontend interview questions](https://frontendatlas.com/companies/revolut/preview): Public Revolut prep guide with five practice prompts modelled on public frontend interview accounts from 2024 and 2025 and Revolut's own web-engineering post.
 - [ServiceNow frontend interview questions](https://frontendatlas.com/companies/servicenow/preview): Public ServiceNow prep guide with five practice prompts modelled on public frontend interview accounts from 2021 to 2025.
 - [Spotify frontend interview questions](https://frontendatlas.com/companies/spotify/preview): Public Spotify prep guide with seven practice prompts modelled on public web engineer interview accounts from 2021 and 2022 and the official Life at Spotify hiring pages.
-- [Stripe interview preview](https://frontendatlas.com/companies/stripe/preview): Stripe frontend interview practice preview.
-- [Tesla interview preview](https://frontendatlas.com/companies/tesla/preview): Tesla frontend interview practice preview.
-- [Uber interview preview](https://frontendatlas.com/companies/uber/preview): Uber frontend interview practice preview.
-- [Walmart interview preview](https://frontendatlas.com/companies/walmart/preview): Walmart frontend interview practice preview.
+- [Stripe Frontend Interview Questions and Process](https://frontendatlas.com/companies/stripe/preview): How public reports describe Stripe frontend interviews: a 60 minute multi-part CoderPad screen, then an onsite with bug squash, integration and frontend design.
+- [Tesla Frontend Interview Questions and Process](https://frontendatlas.com/companies/tesla/preview): How public reports describe Tesla frontend interviews: a Codility assessment, a one-hour technical screen, 3 to 5 onsite rounds and team-specific take-homes.
+- [Uber Frontend Interview Questions and Process](https://frontendatlas.com/companies/uber/preview): Uber publishes its frontend loop: a HackerRank assessment, a coding and design phone screen, and three 60 minute interviews. Public reports add the detail.
+- [Walmart Frontend Interview Questions and Process](https://frontendatlas.com/companies/walmart/preview): How public reports describe Walmart frontend interviews: HackerRank and Karat screens, React fundamentals rounds, and practice items for each stage.
 - [Waymo frontend interview questions](https://frontendatlas.com/companies/waymo/preview): Public Waymo prep guide with five practice prompts modelled on a public 2026 interview report.
-- [Zalando interview preview](https://frontendatlas.com/companies/zalando/preview): Zalando frontend interview practice preview.
+- [xAI frontend interview questions](https://frontendatlas.com/companies/xai/preview): Public xAI (now SpaceXAI) prep guide with four practice prompts modelled on xAI's own 2025 to 2026 frontend postings and one public London interview account.
+- [Zalando Frontend Interview Questions and Process](https://frontendatlas.com/companies/zalando/preview): What Zalando publishes about its hiring loop and what public reports add for frontend roles: a Codility take-home, JS fundamentals and system design rounds.
 
 ## Policies and Discovery
 
