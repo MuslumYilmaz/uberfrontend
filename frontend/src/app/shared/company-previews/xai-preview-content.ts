@@ -13,7 +13,7 @@ const XAI_SPECIALIST_REPORT_URL =
   'https://www.jointaro.com/interviews/companies/xai/experiences/software-engineer-specialist-yerevan-yerevan-august-1-2025-accepted-offer-negative-c940c932/';
 const XAI_SPECIALIST_REPORT_LABEL = 'Public report: xAI Software Engineer Specialist interview account on Taro, August 2025';
 const XAI_MTS_REPORT_URL = 'https://www.aced.io/experiences/x-ai-software-engineer-interview-7fbd12';
-const XAI_MTS_REPORT_LABEL = 'Public report: xAI Member of Technical Staff (L3) interview account on Aced, December 2025';
+const XAI_MTS_REPORT_LABEL = 'Public report: xAI Member of Technical Staff (L3) interview account on Aced, 2025';
 const XAI_GROK_API_POSTING_URL = 'https://builtin.com/job/react-frontend-engineer-grokcom-api/4446453';
 const XAI_GROK_API_POSTING_LABEL = 'Official posting: xAI React Frontend Engineer, grok.com & API, Built In, January 2026';
 const XAI_ENTERPRISE_POSTING_URL = 'https://builtin.com/job/frontend-engineer-enterprise/7383404';
@@ -62,7 +62,7 @@ export const XAI_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     kicker: 'Source boundary · checked October 2026',
     title: 'What the public pages establish, and what you still need to confirm',
     paragraphs: [
-      'Three public interview reports read in full inform this guide: one London Frontend Engineer account on Taro (August 2025) describing a 15-minute phone interview and a one-hour pair-coding session building a chat interface in React; one "Software Engineer Specialist" account with JavaScript and React interviews after a CodeSignal assessment, a title that looks like a separate track from the product frontend teams; and one general Member of Technical Staff account on Aced (December 2025) with a four-hour take-home. Two Bay Area frontend onsite accounts sit behind a login wall and only confirm that more accounts exist. The stage lists come from closed official postings for London and Bay Area frontend roles between March 2025 and February 2026, and the careers page read on 21 October 2026 keeps four generic steps.',
+      'Three public interview reports read in full inform this guide: one London Frontend Engineer account on Taro (August 2025) describing a 15-minute phone interview and a one-hour pair-coding session building a chat interface in React; one "Software Engineer Specialist" account with JavaScript and React interviews after a CodeSignal assessment, a title that looks like a separate track from the product frontend teams; and one general Member of Technical Staff account on Aced (2025, read in full on 21 October 2026 and behind a member wall since) with a four-hour take-home. Two Bay Area frontend onsite accounts sit behind a login wall and only confirm that more accounts exist. The stage lists come from closed official postings for London and Bay Area frontend roles between March 2025 and February 2026, and the careers page read on 21 October 2026 keeps four generic steps.',
       'These pages establish that those rounds and stages were described; they do not establish exact wording, the current format after the merger, or how each team interviews now. On 21 October 2026 the job board at the xai slug listed one frontend-titled opening and no engineering posting with an interview section. Confirm the exercise types, the allowed tools, the expected stack and the timing with whoever runs your process; the careers page says engineers, not recruiters, evaluate applications.',
     ],
   },
@@ -236,7 +236,7 @@ export const XAI_COMPANY_PREVIEW: AuthoredCompanyPreview = {
       {
         question: 'Is there a take-home?',
         answer:
-          'No frontend posting mentions one. Two general software-engineer accounts do: a Member of Technical Staff loop in December 2025 had a four-hour build with your own IDE and AI tools, the provided X and xAI API keys, a GitHub repository and a Loom walkthrough due within 24 hours, followed by a one-hour in-person session reading an existing class; a recruiter-sourced Grok role in October 2025 mentioned a "4-hour intensive programming challenge". Ask whether your loop includes one.',
+          'No frontend posting mentions one. Two general software-engineer accounts do: a 2025 Member of Technical Staff loop had a short recruiter screen, a four-hour AI-assisted take-home and a one-hour in-person session reading an unfamiliar class, per its public summary; the full account, read on 21 October 2026, added a choice of six prompts, provided API keys, a GitHub repository and a Loom walkthrough due within 24 hours. A personal blog post from October 2025 about a recruiter-sourced Grok role mentions a "4-hour intensive programming challenge". Ask whether your loop includes one.',
       },
       {
         question: 'Do I need Next.js or Tailwind?',
@@ -285,7 +285,7 @@ export const XAI_COMPANY_PREVIEW: AuthoredCompanyPreview = {
         label: XAI_MTS_REPORT_LABEL,
         url: XAI_MTS_REPORT_URL,
         note:
-          'One general software-engineer loop, not a frontend posting: a 15-minute screen, a four-hour AI-assisted take-home (one of six prompts, X and xAI API keys, a GitHub repository and a Loom video within 24 hours) and a one-hour in-person final reading an existing class. Used only for the take-home question.',
+          'One general software-engineer loop, not a frontend posting, rejected after four weeks. Its public summary: a short recruiter screen, a four-hour AI-assisted take-home and a one-hour in-person final reading an unfamiliar class. The full account, read on 21 October 2026 and behind a member wall since, added a choice of six prompts, provided API keys, a GitHub repository and a Loom video within 24 hours. Used only for the take-home question.',
         kind: 'report',
       },
       {
