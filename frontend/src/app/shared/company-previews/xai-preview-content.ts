@@ -289,6 +289,13 @@ export const XAI_COMPANY_PREVIEW: AuthoredCompanyPreview = {
         kind: 'report',
       },
       {
+        label: 'Public report: a developer blog on a recruiter-sourced xAI Grok role, October 2025',
+        url: 'https://andys.blog/xai/',
+        note:
+          'A personal post from 9 October 2025 about a recruiter approach for a Grok position that mentioned a 4-hour intensive programming challenge, which the author did not take. Used for that phrase only.',
+        kind: 'report',
+      },
+      {
         label: XAI_GROK_API_POSTING_LABEL,
         url: XAI_GROK_API_POSTING_URL,
         note:

@@ -1723,7 +1723,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
   xai: {
     title: 'xAI (now SpaceXSI) frontend interview process',
     summary:
-      'The careers page describes four generic steps and says engineers, not recruiters, evaluate applications. The closed frontend postings from March 2025 to February 2026 shared one template: a review of the CV and a "statement of exceptional work", a 15-minute phone interview with basic technical questions, then the team\'s main process on Google Meet with the goal of finishing within one week. For frontend roles that meant a React coding interview in TypeScript, an HTML/CSS interview from a screenshot, and a team or founding-engineer stage. One London account from August 2025 matches the React round.',
+      'The careers page describes four generic steps and says technical team members, not recruiters, evaluate applications. The closed frontend postings from March 2025 to February 2026 shared one template: a review of the CV and a "statement of exceptional work", a 15-minute phone interview with basic technical questions, then the team\'s main process on Google Meet with the goal of finishing within one week. For frontend roles that meant a React coding interview in TypeScript, an HTML/CSS interview from a screenshot, and a team or founding-engineer stage. One London account from August 2025 matches the React round.',
     caveat:
       'Every frontend posting with a loop was removed between June 2025 and February 2026, and on 21 October 2026 the board had no frontend posting with interview text, so this table describes the 2025 to early-2026 loops. The loop varies by team: Bay Area postings added a coding assessment and a systems session, London postings did not, and the take-home row comes from one general software-engineer account rather than a frontend posting. The "Software Engineer Specialist" loops with a CodeSignal assessment are left out as a separate track.',
     checkedAt: '2026-10-21',
@@ -1734,7 +1734,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         stages: [
           {
             stage: 'Application review',
-            format: 'Engineers, not recruiters, review the CV and a "statement of exceptional work".',
+            format: 'Technical team members, not recruiters, review the CV and a "statement of exceptional work".',
             appliesTo: 'All roles',
             sources: [XAI_CAREERS, XAI_O_LONDON_FE, XAI_O_GROK_STUDIO, XAI_O_DESIGNER_HYBRID],
           },
@@ -1790,7 +1790,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
             stage: 'Take-home and code-reading final',
             format:
               'A four-hour AI-assisted product build from one of six prompts, submitted as a GitHub repository with a Loom walkthrough within 24 hours, then a one-hour in-person session on an existing class.',
-            appliesTo: 'One general software-engineer loop from December 2025; not on any frontend posting',
+            appliesTo: 'One general software-engineer loop from 2025; not on any frontend posting',
             sources: [XAI_X7_MTS_2025],
           },
         ],
