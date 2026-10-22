@@ -382,7 +382,7 @@ const ZALANDO_ZA3 = report('LeetCode', 'https://leetcode.com/discuss/post/124928
 const ZALANDO_ZA4 = report('Blind', 'https://www.teamblind.com/post/zalando-frontend-interviews-asih8pba', '2022-02');
 const ZALANDO_ROLE = 'Frontend engineers, Berlin';
 
-// xAI merged into SpaceX (closed 2026-02-02) and rebranded as SpaceXAI in July 2026; the board slug is still
+// xAI merged into SpaceX (closed 2026-02-02), rebranded as SpaceXAI in July 2026 and SpaceXSI in October 2026; the board slug is still
 // `xai`. Taro probably re-hosts Glassdoor reviews with a changed city, so the London account's label carries
 // no city. Every frontend posting with a loop was removed between 2025-06 and 2026-02, so the dates below are
 // posting months, not the month read.
@@ -1717,7 +1717,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
     ],
   },
   xai: {
-    title: 'xAI (now SpaceXAI) frontend interview process',
+    title: 'xAI (now SpaceXSI) frontend interview process',
     summary:
       'The careers page describes four generic steps and says engineers, not recruiters, evaluate applications. The closed frontend postings from March 2025 to February 2026 shared one template: a review of the CV and a "statement of exceptional work", a 15-minute phone interview with basic technical questions, then the team\'s main process on Google Meet with the goal of finishing within one week. For frontend roles that meant a React coding interview in TypeScript, an HTML/CSS interview from a screenshot, and a team or founding-engineer stage. One London account from August 2025 matches the React round.',
     caveat:

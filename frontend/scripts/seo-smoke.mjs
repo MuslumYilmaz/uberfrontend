@@ -464,10 +464,10 @@ const AUTHORED_GUIDE_SMOKE = [
   {
     label: 'xAI',
     route: '/companies/xai/preview',
-    title: 'xAI (now SpaceXAI) Frontend Interview Questions: 4 Prompts + Guide',
+    title: 'xAI (now SpaceXSI) Frontend Interview Questions: 4 Prompts + Guide',
     description:
-      'Prepare for an xAI (SpaceXAI) frontend interview with 4 practice prompts modelled on public postings and reports: chat UI, TS app, CSS screenshot, AI composer.',
-    h1: 'xAI (now SpaceXAI) Frontend Interview Questions',
+      'Prepare for an xAI (SpaceXSI) frontend interview with 4 practice prompts modelled on public postings and reports: chat UI, TS app, CSS screenshot, AI composer.',
+    h1: 'xAI (now SpaceXSI) Frontend Interview Questions',
     kicker: 'Public xAI prep guide',
     headings: [
       'Prepare for product judgment, not xAI trivia',

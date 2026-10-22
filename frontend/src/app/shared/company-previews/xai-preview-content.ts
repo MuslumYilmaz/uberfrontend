@@ -1,7 +1,7 @@
 import type { AuthoredCompanyPreview } from '../../shared/company-previews/authored-company-preview.model';
 
 /**
- * xAI (now SpaceXAI) frontend interview guide. Every prompt is a FrontendAtlas practice version modelled
+ * xAI (now SpaceXSI) frontend interview guide. Every prompt is a FrontendAtlas practice version modelled
  * on one public London interview account (Taro, August 2025) and on the stage lists in closed official
  * frontend postings (March 2025 to February 2026). Nothing here is a leaked, confirmed or official xAI
  * question, and one account plus closed postings cannot establish the current loop.
@@ -26,10 +26,10 @@ const XAI_CAREERS_URL = 'https://x.ai/careers';
 const XAI_MERGER_NEWS_URL = 'https://driveteslacanada.ca/news/spacex-completes-merger-with-xai/';
 const XAI_REBRAND_NEWS_URL = 'https://www.freepressjournal.in/tech/elon-musks-xai-rebrands-to-spacexai-unveils-new-logo';
 
-export const XAI_PREVIEW_TITLE = 'xAI (now SpaceXAI) Frontend Interview Questions: 4 Prompts + Guide';
-export const XAI_PREVIEW_H1 = 'xAI (now SpaceXAI) Frontend Interview Questions';
+export const XAI_PREVIEW_TITLE = 'xAI (now SpaceXSI) Frontend Interview Questions: 4 Prompts + Guide';
+export const XAI_PREVIEW_H1 = 'xAI (now SpaceXSI) Frontend Interview Questions';
 export const XAI_PREVIEW_DESCRIPTION =
-  'Prepare for an xAI (SpaceXAI) frontend interview with 4 practice prompts modelled on public postings and reports: chat UI, TS app, CSS screenshot, AI composer.';
+  'Prepare for an xAI (SpaceXSI) frontend interview with 4 practice prompts modelled on public postings and reports: chat UI, TS app, CSS screenshot, AI composer.';
 export const XAI_PREVIEW_CANONICAL_PATH = '/companies/xai/preview';
 export const XAI_PREVIEW_TRUST_NOTE =
   'These are FrontendAtlas practice versions modelled on rounds described in public interview reports and official postings, not leaked, confirmed or official xAI questions. One London account and closed postings cannot establish the current loop; use the material your interviewers provide as the source of truth.';
@@ -47,7 +47,7 @@ export const XAI_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     subtitle:
       'Prepare with four practice prompts shaped by one public London account and the stage lists in closed official postings: a chat interface built in React during a one-hour pairing session, a small React app written in TypeScript, a UI implemented from a screenshot in HTML and CSS, and the composer and streaming turn of a grok.com-style chat product.',
     caveat:
-      'xAI merged into SpaceX (the merger closed on 2 February 2026) and rebranded as SpaceXAI in July 2026; on 21 October 2026 the careers page title read SpaceXSI and the job board still lived at the xai slug. The frontend postings that described a loop were removed between June 2025 and February 2026, so the loop below describes 2025 to early 2026. This guide does not claim access to private interview material, a fixed format, or the stack of every team.',
+      'xAI merged into SpaceX (the merger closed on 2 February 2026), rebranded as SpaceXAI in July 2026 and as SpaceXSI in October 2026, with SpaceXAI LLC as the legal entity; on 22 October 2026 the job board still lived at the xai slug. The frontend postings that described a loop were removed between June 2025 and February 2026, so the loop below describes 2025 to early 2026. This guide does not claim access to private interview material, a fixed format, or the stack of every team.',
     chips: ['4 practice prompts', 'React, TypeScript, HTML/CSS, AI chat design', 'Full practice set requires Premium'],
   },
   studyPriorities: {
@@ -226,7 +226,7 @@ export const XAI_COMPANY_PREVIEW: AuthoredCompanyPreview = {
       {
         question: 'Is xAI still called xAI?',
         answer:
-          'The company merged into SpaceX, with the merger closing on 2 February 2026, and rebranded as SpaceXAI in July 2026. On 21 October 2026 the careers page title read SpaceXSI while its footer named SpaceXAI LLC, and the job board still lived at the xai slug. This guide keeps the xAI name because the postings, the public accounts and search queries use it.',
+          'No. The company merged into SpaceX, with the merger closing on 2 February 2026, was rebranded as SpaceXAI in July 2026 and as SpaceXSI in October 2026; the legal entity is SpaceXAI LLC and the job board still uses the xai slug. This guide keeps the xAI name because the postings, the public accounts and search queries use it.',
       },
       {
         question: 'What does the xAI frontend interview loop look like?',
@@ -317,7 +317,7 @@ export const XAI_COMPANY_PREVIEW: AuthoredCompanyPreview = {
         kind: 'official',
       },
       {
-        label: 'xAI careers (SpaceXAI)',
+        label: 'xAI careers (SpaceXSI)',
         url: XAI_CAREERS_URL,
         note:
           'Read on 21 October 2026. Four generic steps (application review of the CV and a statement of exceptional work, a screening interview with short technical questions, technical interviews, offer) and "We generally do not use recruiters for assessments." Product context and the generic shape only; the job board that day listed no frontend posting with interview text.',
