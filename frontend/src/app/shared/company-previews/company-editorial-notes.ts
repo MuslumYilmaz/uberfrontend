@@ -22,13 +22,13 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
         'Walmart Global Tech loops reported from India and the US, from the 2024 multiple-choice assessment to the 2026 HackerRank Frontend Engineering Assessment, with free and premium practice items for each round.',
     },
     intro: [
-      'Walmart publishes no frontend interview guide, so this page rests on public interview reports from 2022 to 2026. Most of the detail comes from Walmart Global Tech India; US accounts mostly describe the shape of the loop rather than its questions.',
+      'Walmart publishes no frontend interview guide, so this page rests on public interview reports: process accounts from 2022 to 2026 and question sources from 2020. Most of the detail comes from Walmart Global Tech India; US accounts mostly describe the shape of the loop rather than its questions.',
     ],
     reportsDescribe: {
       kicker: 'What public interview reports describe',
       title: 'Three loop shapes, by role and region',
       paragraphs: [
-        'The loop depends on the role and the office. SDE 3 (UI) accounts from India describe three 60-minute rounds. SDE-2 and frontend engineer accounts from India open with an online assessment. Software Engineer III and senior accounts, mostly from the US, add a coding screen, design rounds and a hiring manager conversation.',
+        'The loop depends on the role and the office. Two SDE 3 (UI) accounts describe three 60-minute rounds, and a third lists the same rounds without durations. SDE-2 and frontend engineer accounts from India open with an online assessment. Software Engineer III and senior accounts, mostly from the US, add a coding screen, design rounds and a hiring manager conversation.',
       ],
       bullets: [
         {
@@ -75,13 +75,13 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
           label: 'Code splitting and module federation',
           path: '/react/trivia/react-code-splitting-module-federation',
           access: 'free',
-          why: 'One SDE 3 (UI) account went deep on module federation.',
+          why: 'One SDE 3 (UI) account was asked about module federation.',
         },
         {
           label: 'Debug a product search that misuses its API',
           path: '/react/coding/react-debug-api-misuse',
           access: 'premium',
-          why: 'The 2026 assessment and one senior onsite reported a debugging session on a React app.',
+          why: 'The 2026 assessment describes debugging a React or Angular app, and a Walmart-badged commenter on a Software Engineer III thread listed a React coding round and a debug session.',
         },
         {
           label: 'Select with compound components',
@@ -110,7 +110,7 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
         {
           question: 'Is there a system design round?',
           answer:
-            'Senior and Software Engineer III accounts from the US report one or two design rounds. The SDE 3 (UI) accounts from India report none, and none of them mentions an online assessment either.',
+            'Senior and Software Engineer III accounts, mostly from the US, report one or two design rounds. The SDE 3 (UI) accounts from India report none, and none of them mentions an online assessment either.',
         },
         {
           question: 'Which platform runs the screen?',
@@ -135,14 +135,14 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
       kicker: 'Public preview and process notes',
       subtitle: 'Early-careers pages from ByteDance and TikTok plus public interview reports from 2020 to 2025: assessments on HackerRank or CodeSignal, two technical rounds and a hiring manager round, with regional variants.',
     },
-    intro: ['ByteDance and TikTok publish interview tips for early careers only, linked below. The experienced loop comes from public accounts, nine outside Taro and about sixteen on it, which agree on the core shape and differ on what the hiring manager round contains.'],
+    intro: ['ByteDance and TikTok publish interview tips for early careers only, linked below. The experienced loop comes from public accounts, nine outside Taro and about sixteen on it, six of them new-graduate or intern loops, which agree on the core shape and differ on what the hiring manager round contains.'],
     reportsDescribe: {
       kicker: 'What public interview reports describe',
       title: 'Two technical rounds and a hiring manager round, by region',
       paragraphs: ['US accounts describe an online assessment for some candidates, a 15 to 30 minute recruiter call, two technical rounds of about an hour, one on algorithms and one on frontend, then a hiring manager round that often includes frontend system design, and an HR conversation.'],
       bullets: [
         {
-          text: 'Assessments run on HackerRank or CodeSignal. One 2025 CodeSignal task was a single frontend problem in four levels; another had four questions in 70 minutes.',
+          text: 'Assessments run on CodeSignal in one 2025 account and on an unnamed platform in two others; HackerRank appears in the new-graduate and intern accounts. One 2025 Singapore CodeSignal task was a single frontend problem in four levels; a US assessment had four questions in 70 minutes.',
           link: {
             label: 'See the US stages',
             fragment: 'bytedance-interview-process-1',
@@ -233,14 +233,14 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
       kicker: 'Public preview and process notes',
       subtitle: 'Microsoft publishes its own hiring tips; public interview reports from 2020 to 2025 add the frontend detail: a short recruiter call, machine coding in JavaScript or React, concept rounds, algorithms and design. Loops differ by team and country.',
     },
-    intro: ['Microsoft is one of the few companies with official hiring guidance, linked below. It covers the shape of the loop and its rules rather than frontend content, so the round-by-round detail comes from public interview reports.'],
+    intro: ['Microsoft publishes official hiring guidance, linked below. It covers the shape of the loop and its rules rather than frontend content, so the round-by-round detail comes from public interview reports.'],
     reportsDescribe: {
       kicker: 'What public interview reports describe',
       title: 'Two to six rounds, set by the team',
       paragraphs: ['The official pages describe a brief screening conversation and two to four conversations of up to an hour each, by phone, on Teams or in person, with no outside assistance unless explicitly permitted. Frontend accounts fill in the rounds.'],
       bullets: [
         {
-          text: 'Machine coding of one to two hours: plain JavaScript in the 2020 to 2021 accounts from Bangalore, React components in the 2024 to 2025 accounts.',
+          text: 'Machine coding, two hours in the one account that gives a duration: plain JavaScript in the 2020 to 2021 accounts from Bangalore, React components in the 2024 to 2025 accounts.',
           link: {
             label: 'See the frontend stages',
             fragment: 'microsoft-interview-process-1',
@@ -294,7 +294,7 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
           label: 'Spread versus rest parameters',
           path: '/javascript/trivia/js-spread-vs-rest-parameters',
           access: 'free',
-          why: 'Syntax questions that precede the machine coding round.',
+          why: 'Syntax questions from the JavaScript concept round that follows machine coding.',
         },
         {
           label: 'Compare two objects',
@@ -322,7 +322,7 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
       items: [
         {
           question: 'How many rounds should I expect?',
-          answer: 'The official page says two to four conversations. Accounts from Bangalore in 2020 and 2021 report five or six rounds, and 2024 accounts report four, so the team decides.',
+          answer: 'The official page says two to four conversations. Two Bangalore accounts from 2020 and 2021 report five or six rounds, a third reports four, and 2024 accounts report four, so the team decides.',
         },
         {
           question: 'Are the interviews virtual or on site?',
@@ -340,16 +340,16 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
     slug: 'tesla',
     title: 'Tesla Frontend Interview Process and Practice Questions',
     h1: 'Tesla Frontend Interview Questions and Process',
-    description: 'How public reports describe Tesla frontend interviews: a Codility assessment, a one-hour technical screen, 3 to 5 onsite rounds and team-specific take-homes.',
+    description: 'How public reports describe Tesla frontend interviews: a Codility assessment, a one-hour technical screen, 3 or 4 onsite rounds and team-specific take-homes.',
     hero: {
       kicker: 'Public preview and process notes',
-      subtitle: 'Recruiter call, Codility assessment, technical screen and a three to five round onsite, as described in public interview reports from 2020 to 2026, with the free and premium items that rehearse each stage.',
+      subtitle: 'Recruiter call, Codility assessment, technical screen and a three or four round onsite, as described in public interview reports from 2020 to 2026, with the free and premium items that rehearse each stage.',
     },
     intro: ['Tesla publishes no frontend interview guide, so this page rests on public interview reports from 2020 to 2026. Several accounts say the format depends on the team, and a few describe what a recruiter planned rather than a finished loop.'],
     reportsDescribe: {
       kicker: 'What public interview reports describe',
-      title: 'Assessment, screen, then a three to five round onsite',
-      paragraphs: ['Most accounts open with a recruiter or HR call, then an online assessment, often on Codility, then a one-hour technical screen. The onsite runs three to five rounds of about 45 minutes and mixes frontend coding, an algorithm round, frontend system design and a behavioural or hiring manager conversation.'],
+      title: 'Assessment, screen, then a three or four round onsite',
+      paragraphs: ['Two accounts open with a recruiter or HR call; most start with an online assessment, often on Codility, then a one-hour technical screen. The onsite runs three or four rounds of about 45 minutes and mixes frontend coding, an algorithm round, frontend system design and a behavioural or hiring manager conversation.'],
       bullets: [
         {
           text: 'Assessments vary: two hours for five questions on Codility in one account, a three-hour assessment with HTML, CSS, a like button and a string puzzle in another.',
@@ -385,13 +385,13 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
           label: 'Color contrast ratio',
           path: '/javascript/coding/js-color-contrast-ratio',
           access: 'free',
-          why: 'A JavaScript task reported in a 2022 Codility assessment.',
+          why: 'A JavaScript task listed in a 2022 account that also had a Codility assessment.',
         },
         {
           label: 'Forms: validation and required fields',
           path: '/html/coding/html-forms-validation-required',
           access: 'free',
-          why: 'The same assessment asked for a login form.',
+          why: 'The same account lists a login form among its tasks.',
         },
         {
           label: 'Semantic HTML layout',
@@ -470,13 +470,13 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
     description: 'How public reports from 2021 to 2023 describe Booking.com frontend interviews: a HackerRank test, coding rounds with two engineers and a fit interview.',
     hero: {
       kicker: 'Public preview and process notes',
-      subtitle: 'Booking.com publishes a four-step journey; public frontend reports from 2021 to 2023 add the detail: a 90 to 100 minute HackerRank test, one or two 60 minute coding rounds in vanilla JavaScript or React, and a fit interview. Newer general software loops add a take-home.',
+      subtitle: 'Booking.com publishes a four-step journey; public frontend reports from 2021 to 2023 add the detail: a 90 to 100 minute HackerRank test, one or two 60 minute coding rounds in vanilla JavaScript or React, and a fit interview. One 2025 software engineer account adds a take-home.',
     },
-    intro: ['The official page, linked below, describes Application, Interview, Business and Feedback steps over three to six weeks, with technical tests and coding interviews for technical roles. The frontend detail comes from public accounts, mostly from Amsterdam, and stops in mid-2023.'],
+    intro: ['The official page, linked below, describes Application, Interview, Business and Feedback steps over three to six weeks, with technical tests and coding interviews for technical roles. The frontend detail comes from public accounts from 2021 to mid-2023, most of them for Amsterdam roles; a thin September 2025 frontend developer account describes a recruiter call and a live-coding round with two engineers.'],
     reportsDescribe: {
       kicker: 'What public interview reports describe',
       title: 'HackerRank test, recruiter call, coding rounds, fit interview',
-      paragraphs: ['The HackerRank test runs 90 to 100 minutes with about five items: two easy algorithm problems, two HTML and CSS multiple-choice questions and one React component. A 15 to 30 minute recruiter call follows, sometimes with a few technical questions, then one or two coding rounds of about 60 minutes with two engineers, and a fit interview of about an hour with engineering managers.'],
+      paragraphs: ['The HackerRank test runs 90 to 100 minutes with about five items: two algorithm problems, mostly easy (one account had a medium), two HTML and CSS multiple-choice questions and one React component. A short recruiter call follows, 15 minutes in one full-stack account, sometimes with a few technical questions, then one or two coding rounds of about 60 minutes with two engineers, and a fit interview with engineering managers, 60 minutes in that same full-stack account.'],
       bullets: [
         {
           text: 'The coding rounds build a component in plain JavaScript or React. An autocomplete or typeahead recurs; other accounts mention a tooltip, a component fed by API data to a design spec and a new feature added to a prepared app.',
@@ -486,13 +486,13 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
           },
         },
         {
-          text: 'Backend coding and system design appear only in full-stack and senior accounts; no frontend-titled account mentions system design.',
+          text: 'Backend coding and system design appear only in full-stack and senior accounts; no frontend-titled account describes a system design round.',
         },
         {
           text: 'One account describes a monitored 40-minute HackerRank session with three engineers, a live round rather than the take-home test.',
         },
         {
-          text: '2025 general software engineer accounts describe a different loop with a take-home and a pairing session.',
+          text: 'One August 2025 software engineer account describes a take-home followed by a technical session, then system design and an engineering manager round; a May 2025 senior full-stack loop had an easy React exercise and system design.',
         },
       ],
     },
@@ -565,7 +565,7 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
         },
         {
           question: 'How recent are these reports?',
-          answer: 'The frontend accounts run from 2021 to mid-2023. Later accounts are general software engineer loops with a take-home and a pairing session.',
+          answer: 'Detailed frontend accounts run from 2021 to mid-2023; a thin September 2025 frontend developer account describes a recruiter call and a live-coding round with two engineers. The 2025 software engineer accounts describe a take-home followed by a technical session in one case and an easy React exercise plus system design in another.',
         },
       ],
     },
@@ -580,11 +580,11 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
       kicker: 'Public preview and process notes',
       subtitle: 'Zalando publishes two process pages; public interview reports from 2019 to 2024 add the Berlin frontend loop: a two to three hour Codility take-home, a hiring manager call, then a final day that reviews the take-home and covers JavaScript fundamentals, system design and a manager conversation.',
     },
-    intro: ['The two official pages, linked below, describe a 30-minute talent acquisition call, a case study or coding exercise, a hiring manager interview and three to five final interviews of 45 to 60 minutes. Only three complete frontend loops are public, all from Berlin, and only one is from after 2022.'],
+    intro: ['The two official pages, linked below, describe a 30-minute talent acquisition call, a case study or coding exercise, a hiring manager interview and three to five final interviews of 45 to 60 minutes. Only three complete frontend loops are public, two of them from Berlin, and only one is from after 2022.'],
     reportsDescribe: {
       kicker: 'What public interview reports describe',
       title: 'A take-home, a hiring manager call and a final day',
-      paragraphs: ['The Codility challenge is done at home in two to three hours: a React and Node app in 2024, easy algorithm problems in 2022, React plus an API design question due in three working days in 2020. The hiring manager interview is sometimes non-technical. The final day of the 2024 account had a 45-minute take-home review, an hour of JavaScript fundamentals with two senior frontend engineers, an hour of system design and 45 minutes with the engineering manager.'],
+      paragraphs: ['The take-home is a Codility challenge of two to three hours in 2022 and 2024, a React and Node app or easy algorithm problems; the 2020 assessment named no platform and gave three working days for a React question plus an API design question. The hiring manager interview is sometimes non-technical. The final day of the 2024 account had a 45-minute take-home review, an hour of JavaScript fundamentals with two senior frontend engineers, an hour of system design and 45 minutes with the engineering manager.'],
       bullets: [
         {
           text: 'The 2024 take-home was a search box with suggestions on every keystroke, with a hand-written debounce and a discussion of further optimisation.',
@@ -597,7 +597,7 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
           text: 'The system design round leaned backend in 2024, a load balancer for HTTP requests; a 2019 account expected something related to e-commerce.',
         },
         {
-          text: 'The official pages disagree on order: one puts the challenge before the hiring manager, the 2023 blog puts the hiring manager first. The blog gives two to three weeks for the loop.',
+          text: 'The official pages differ: the Tech tab puts the case study before the hiring manager, and the 2023 blog lists the hiring manager before a live coding interview and treats a take-home as an optional extra. The blog gives two to three weeks for the loop.',
         },
       ],
     },
@@ -683,12 +683,12 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
     description: 'How public reports describe Stripe frontend interviews: a 60 minute multi-part CoderPad screen, then an onsite with bug squash, integration and frontend design.',
     hero: {
       kicker: 'Public preview and process notes',
-      subtitle: 'Stripe describes its process only in general terms; public interview reports from 2021 to 2025 fill in the frontend loop: a multi-part CoderPad screen and an onsite built around a bug squash, an integration exercise and frontend design.',
+      subtitle: 'Stripe describes its process only in general terms; public interview reports from 2022 to 2025 fill in the frontend loop: a multi-part CoderPad screen and an onsite built around a bug squash, an integration exercise and frontend design.',
     },
     intro: ['The careers FAQ, linked below, describes a recruiter screen, a technical or skills-based assessment and interviews with the team, and says timelines vary by role, level and location. Candidates mention a preparation document that recruiters share; the detail here comes from public accounts.'],
     reportsDescribe: {
       kicker: 'What public interview reports describe',
-      title: 'A multi-part screen, then an onsite of five rounds',
+      title: 'A multi-part screen, then an onsite of four or five rounds',
       paragraphs: ['Accounts describe a 30-minute recruiter call and a 60-minute CoderPad screen with two to four exercises; one screen was a three-part exercise, another a four-digit code entry form. The onsite rows rest on fewer accounts: a programming exercise, a bug squash in an unfamiliar project, an integration of two provided tools, frontend design and a conversation about experience and goals.'],
       bullets: [
         {
@@ -772,14 +772,14 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
       kicker: 'Public preview and process notes',
       subtitle: 'Uber is one of the few companies with an official frontend interview guide. This page pairs it with public interview reports from 2021 to 2026 and the practice items that fit each stage.',
     },
-    intro: ['The official guide, linked below, lists every stage for levels L3 to L6 and says the steps may vary by role, location and business need. Most of the public accounts come from India.'],
+    intro: ['The official guide, linked below, lists every stage for levels L3 to L6+ and says the steps may vary by role, location and business need. Two of the public accounts come from India and one from Brazil; the others do not say where they interviewed.'],
     reportsDescribe: {
       kicker: 'What public interview reports describe',
       title: 'The official loop and what candidates met',
       paragraphs: ['The guide describes a 30-minute recruiter call, a HackerRank coding assessment, a 60-minute phone screen on coding plus design and architecture, then three 60-minute interviews: algorithms and data structures, depth in specialization, and collaboration and leadership. A published candidate story adds a separate system design round and a hiring manager conversation about past projects.'],
       bullets: [
         {
-          text: 'The 2022 accounts took a 35-minute CodeSignal test with two algorithm questions and eight frontend multiple-choice questions rather than HackerRank.',
+          text: 'A November 2022 account took a 35-minute CodeSignal test with two algorithm questions and eight frontend multiple-choice questions rather than HackerRank; the other 2022 accounts mention no assessment.',
           link: {
             label: 'See the assessment stage',
             fragment: 'uber-interview-process-1',
@@ -789,7 +789,7 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
           text: 'The phone screen sometimes builds a React component; the specialization round is a UI build or a JavaScript problem, in plain JavaScript in two accounts.',
         },
         {
-          text: 'Mid-level and senior accounts report a separate system design round; two of them designed a calendar.',
+          text: 'Mid-level and senior accounts report a separate system design round; three of them designed a calendar: a collaborative calendar in 2022 and Google Calendar in two 2025 loops.',
         },
         {
           text: 'Two accounts got different rounds than the recruiter had announced, and one candidate did every round in a single day.',
@@ -860,9 +860,9 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
     description: 'How public reports describe Apple frontend interviews: a recruiter call, a 45 to 60 minute coding screen in React, JS or TS, and a team loop of 4 to 7 rounds.',
     hero: {
       kicker: 'Public preview and process notes',
-      subtitle: 'Apple publishes no interview guide, so this page rests on public interview reports from 2021 to 2025: a technical screen, then a team loop of four to seven rounds whose mix differs by team.',
+      subtitle: 'Apple publishes general interview tips but no process or frontend guide, so this page rests on public interview reports from 2021 to 2025: a technical screen, then a team loop of four to seven rounds whose mix differs by team.',
     },
-    intro: ['No official Apple preparation page exists; the careers site has no interview content. The nine frontend accounts behind this page agree on a screen followed by a team loop of mostly frontend coding, and differ on everything the team decides.'],
+    intro: ['The Apple careers site has a general interview-tips page, linked below, with advice before, during and after an interview and a note that some roles include a technical assessment or coding exercises; it lists no stages and no frontend content. Four of the nine frontend accounts behind this page describe both a screen and a team loop of mostly frontend coding; the rest describe one stage, and all differ on what the team decides.'],
     reportsDescribe: {
       kicker: 'What public interview reports describe',
       title: 'A screen, then a team loop of four to seven rounds',
@@ -929,7 +929,7 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
       items: [
         {
           question: 'Does Apple publish a preparation page?',
-          answer: 'No. The careers site has no interview content, so every stage here comes from public interview reports.',
+          answer: 'Only a general interview-tips page, linked in the official pages table; it lists no stages. Every stage here comes from public interview reports.',
         },
         {
           question: 'Is there a system design round?',
@@ -947,16 +947,16 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
     slug: 'airbnb',
     title: 'Airbnb Frontend Interview Practice and Official FAQ',
     h1: 'Airbnb Frontend Interview Practice',
-    description: 'A small Airbnb frontend practice grouping with the official Airbnb careers FAQ. No public frontend interview reports have been read for this page yet.',
+    description: 'How two public Airbnb frontend accounts and the official careers FAQ describe the loop: a screen with passing tests, React UI coding and architecture questions.',
     hero: {
       kicker: 'Public preview',
-      subtitle: 'Three coding and two concept items grouped under Airbnb, plus the official careers FAQ. This page grows when public frontend interview reports can be read in full.',
+      subtitle: 'One coding component in three frameworks and two concept items grouped under Airbnb, plus the official careers FAQ and what two public frontend accounts describe.',
     },
-    intro: ['The official careers FAQ, linked below, says the process can involve a test, a video or an event, that candidates meet several members of the team, and gives response times; it also warns about recruiting scams. FrontendAtlas has not yet read a public frontend interview report for Airbnb in full, so this page makes no claim about the rounds.'],
+    intro: ['The official careers FAQ, linked below, says the process can involve a test, a video or an event, that candidates meet several members of the team, and gives response times; it also warns about recruiting scams. Two public frontend accounts from 2022 and 2024 and a few Blind threads describe a technical screen where the tests must pass, UI coding in React or plain HTML, CSS and JavaScript, one algorithm question and one architecture question. They are too few for a stage-by-stage table, so this page summarises them without one.'],
     prepSteps: {
       kicker: 'How to prepare with this grouping',
       title: 'An editorial practice grouping',
-      intro: 'None of these items comes from a public Airbnb interview report. They are staples of frontend loops in general.',
+      intro: 'The chips input is an editorial grouping with no Airbnb account behind it. Closures and the event loop are named as JavaScript fundamentals in a 2024 Blind comment about an Airbnb frontend loop.',
       steps: [
         {
           label: 'Closures',
@@ -996,7 +996,7 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
       items: [
         {
           question: 'Why is this page short?',
-          answer: 'No public frontend interview report for Airbnb has been read in full yet, so the page lists the official FAQ and an editorial practice grouping only. It grows when readable accounts appear.',
+          answer: 'Only two full first-person Airbnb frontend accounts and a few Blind comment threads are readable, so this page summarises them without a stage table. It grows as more accounts can be read in full.',
         },
         {
           question: 'Does Airbnb publish interview guidance?',

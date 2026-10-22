@@ -110,11 +110,11 @@ const WALMART_W31_FE_2026 = report('LeetCode', 'https://leetcode.com/discuss/pos
 // carry no city. Blind posts written before an interview are cited only for what the recruiter said.
 const TESLA_TARO = 'https://www.jointaro.com/interviews/companies/tesla/experiences';
 const TESLA_T1_FE_2025 = report('Taro', `${TESLA_TARO}/frontend-developer-october-15-2025-no-offer-positive-3c909dee/`, '2025-10');
-const TESLA_T2_FE_2021 = report('Taro', `${TESLA_TARO}/frontend-developer-san-francisco-ca-january-1-2021-no-offer-positive-8db5ee50/`, '2021-01');
+const TESLA_T2_FE_2021 = report('Taro (approx.)', `${TESLA_TARO}/frontend-developer-san-francisco-ca-january-1-2021-no-offer-positive-8db5ee50/`, '2021-01');
 const TESLA_T3_FE_2025 = report('Taro', `${TESLA_TARO}/front-end-developer-united-states-november-17-2025-no-offer-positive-868af7da/`, '2025-11');
-const TESLA_T4_FE_2024 = report('Taro', `${TESLA_TARO}/front-end-developer-fremont-ca-january-1-2024-no-offer-neutral-9e5d4e3f/`, '2024-01');
-const TESLA_T5_FE_2022 = report('Taro', `${TESLA_TARO}/front-end-developer-los-angeles-ca-january-1-2022-no-offer-negative-eadce28f/`, '2022-01');
-const TESLA_T6_FE_2020 = report('Taro', `${TESLA_TARO}/front-end-developer-fremont-ca-december-1-2020-no-offer-positive-5152922f/`, '2020-12');
+const TESLA_T4_FE_2024 = report('Taro (approx.)', `${TESLA_TARO}/front-end-developer-fremont-ca-january-1-2024-no-offer-neutral-9e5d4e3f/`, '2024-01');
+const TESLA_T5_FE_2022 = report('Taro (approx.)', `${TESLA_TARO}/front-end-developer-los-angeles-ca-january-1-2022-no-offer-negative-eadce28f/`, '2022-01');
+const TESLA_T6_FE_2020 = report('Taro (approx.)', `${TESLA_TARO}/front-end-developer-fremont-ca-december-1-2020-no-offer-positive-5152922f/`, '2020-12');
 const TESLA_T7_INTERN_2025 = report(
   'Taro',
   `${TESLA_TARO}/software-engineerinternship-fremont-ca-march-5-2025-accepted-offer-positive-461baf2a/`,
@@ -154,7 +154,7 @@ const GOOGLE_GO5 = report(
   'https://www.jointaro.com/interviews/companies/google/experiences/front-end-developer-germany-june-23-2024-no-offer-positive-f76226db/',
   '2024-06',
 );
-const GOOGLE_GO6 = report('Medium', 'https://shubhamjangle.medium.com/google-swe-iii-interview-the-round-by-round-breakdown-nobody-wrote-fd2c10fe52ff', '2026-04');
+const GOOGLE_GO6 = report('Medium (preview)', 'https://shubhamjangle.medium.com/google-swe-iii-interview-the-round-by-round-breakdown-nobody-wrote-fd2c10fe52ff', '2026-04');
 const GOOGLE_GO7 = report('LeetCode', 'https://leetcode.com/discuss/interview-experience/1274542/', '2021-06');
 const GOOGLE_GO8 = report('Blind comment', 'https://www.teamblind.com/post/Google-Frontend-interview-78mvqUW2', '2021-06');
 const GOOGLE_PHONE_2020 = report('LeetCode', 'https://leetcode.com/discuss/post/592667/', '2020-04');
@@ -163,18 +163,18 @@ const META_HIRING = official('Meta: Hiring process', 'https://www.metacareers.co
 const META_FEE_INITIAL = official('Meta: FEE initial interview prep', 'https://www.metacareers.com/FEE-prep-initial/');
 const META_FEE_ONSITE = official('Meta: FEE full loop prep', 'https://www.metacareers.com/FEE-prep-onsite/');
 const META_TARO = 'https://www.jointaro.com/interviews/companies/meta/experiences';
-const META_ME1 = report('Taro', `${META_TARO}/front-end-developer-intern-london-england-december-1-2021-no-offer-positive-4f6ff45b/`, '2021-12');
-const META_ME2 = report('Taro', `${META_TARO}/front-end-engineer-intern-united-states-january-1-2022-accepted-offer-positive-2e0f20e4/`, '2022-01');
+const META_ME1 = report('Taro (approx.)', `${META_TARO}/front-end-developer-intern-london-england-december-1-2021-no-offer-positive-4f6ff45b/`, '2021-12');
+const META_ME2 = report('Taro (approx.)', `${META_TARO}/front-end-engineer-intern-united-states-january-1-2022-accepted-offer-positive-2e0f20e4/`, '2022-01');
 const META_ME2B = report('Taro', `${META_TARO}/front-end-engineer-intern-united-states-december-5-2021-accepted-offer-positive-825fe97b/`, '2021-12');
 const META_ME3 = report('Medium', 'https://medium.com/@stylus07/meta-interview-experience-cdf53eea63f3', '2022-03');
 const META_ME4 = report('Blind', 'https://www.teamblind.com/post/meta-frontend-system-design-yexyrusi', '2022-03');
 const META_ME5 = report('Blind', 'https://www.teamblind.com/post/Frontend-interview-experience-CPR8odiD', '2021-10');
 const META_ME6 = report('Blind', 'https://www.teamblind.com/post/Went-through-Frontend-Interviews-recently-here-are-the-kinda-questions-they-ask-dbyQb3ob', '2021-10');
-const META_ME7 = report('Taro', `${META_TARO}/front-end-developer-new-york-ny-november-1-2020-no-offer-positive-b0918a8e/`, '2020-11');
+const META_ME7 = report('Taro (approx.)', `${META_TARO}/front-end-developer-new-york-ny-november-1-2020-no-offer-positive-b0918a8e/`, '2020-11');
 const META_ME8 = report('Blind', 'https://www.teamblind.com/post/meta-front-end-phone-interview-beroc46d', '2023-06');
 const META_ME9 = report('Taro', `${META_TARO}/front-end-developer-san-francisco-ca-march-6-2024-no-offer-positive-609eb715/`, '2024-03');
-const META_ME10 = report('Taro', `${META_TARO}/frontend-engineer-new-york-ny-april-1-2025-no-offer-positive-ae322f20/`, '2025-04');
-const META_ME11 = report('Taro', `${META_TARO}/frontend-engineer-menlo-park-ca-june-1-2025-accepted-offer-positive-143f4163/`, '2025-06');
+const META_ME10 = report('Taro (approx.)', `${META_TARO}/frontend-engineer-new-york-ny-april-1-2025-no-offer-positive-ae322f20/`, '2025-04');
+const META_ME11 = report('Taro (approx.)', `${META_TARO}/frontend-engineer-menlo-park-ca-june-1-2025-accepted-offer-positive-143f4163/`, '2025-06');
 const META_ROLE = 'FEE, IC4 to IC6';
 
 const MICROSOFT_HIRING_TIPS = official('Microsoft: Hiring tips', 'https://careers.microsoft.com/v2/global/en/hiring-tips');
@@ -183,24 +183,24 @@ const MICROSOFT_TARO = 'https://www.jointaro.com/interviews/companies/microsoft/
 const MICROSOFT_MS1 = report('dev.to', 'https://dev.to/dhilipkmr/software-engineer-2-ui-interview-at-microsoft-1i0b', '2020-10');
 const MICROSOFT_MS2 = report('LeetCode', 'https://leetcode.com/discuss/interview-experience/1254448/', '2021-06');
 const MICROSOFT_MS3 = report('LeetCode', 'https://leetcode.com/discuss/interview-question/489795/', '2020-01');
-const MICROSOFT_MS4 = report('Taro', `${MICROSOFT_TARO}/front-end-developer-tel-aviv-yafo-october-1-2022-no-offer-negative-7d7887be/`, '2022-10');
+const MICROSOFT_MS4 = report('Taro (approx.)', `${MICROSOFT_TARO}/front-end-developer-tel-aviv-yafo-october-1-2022-no-offer-negative-7d7887be/`, '2022-10');
 const MICROSOFT_MS5 = report('Taro', `${MICROSOFT_TARO}/senior-frontend-engineer-new-york-ny-january-27-2022-no-offer-negative-54d03a33/`, '2022-01');
 const MICROSOFT_MS6 = report('LeetCode', 'https://leetcode.com/discuss/interview-question/5335067/', '2024-06');
 const MICROSOFT_MS7 = report('LeetCode', 'https://leetcode.com/discuss/interview-experience/5456468/', '2024-07');
-const MICROSOFT_MS8 = report('Taro', `${MICROSOFT_TARO}/frontend-developer-belgrade-central-serbia-may-1-2024-no-offer-negative-380c5ce5/`, '2024-05');
+const MICROSOFT_MS8 = report('Taro (approx.)', `${MICROSOFT_TARO}/frontend-developer-belgrade-central-serbia-may-1-2024-no-offer-negative-380c5ce5/`, '2024-05');
 const MICROSOFT_MS9 = report('LeetCode', 'https://leetcode.com/discuss/interview-experience/7347058/', '2025-11');
 const MICROSOFT_ROLE = 'Frontend roles; varies by team';
 
 const APPLE_TARO = 'https://www.jointaro.com/interviews/companies/apple/experiences';
 const APPLE_AP1 = report('LeetCode', 'https://leetcode.com/discuss/post/6979238/', '2025-06');
 const APPLE_AP2 = report('Medium', 'https://srijansinghgulati.medium.com/my-apple-interview-experience-and-why-i-declined-the-offer-5ff442962bd8', '2022-07');
-const APPLE_AP3 = report('Taro', `${APPLE_TARO}/front-end-developer-cupertino-ca-july-1-2022-no-offer-negative-9299c7ea/`, '2022-07');
+const APPLE_AP3 = report('Taro (approx.)', `${APPLE_TARO}/front-end-developer-cupertino-ca-july-1-2022-no-offer-negative-9299c7ea/`, '2022-07');
 const APPLE_AP4 = report('Blind', 'https://www.teamblind.com/post/Apple-frontend-interview-advice-d64Fd3BM', '2022-02');
 const APPLE_AP5 = report('Taro', `${APPLE_TARO}/front-end-developer-united-states-august-25-2022-no-offer-positive-ceece13a/`, '2022-08');
-const APPLE_AP6 = report('Taro', `${APPLE_TARO}/frontend-engineer-san-francisco-ca-october-1-2023-accepted-offer-positive-e5223424/`, '2023-10');
-const APPLE_AP7 = report('Taro', `${APPLE_TARO}/frontend-developer-united-states-february-1-2025-no-offer-neutral-01c585c0/`, '2025-02');
+const APPLE_AP6 = report('Taro (approx.)', `${APPLE_TARO}/frontend-engineer-san-francisco-ca-october-1-2023-accepted-offer-positive-e5223424/`, '2023-10');
+const APPLE_AP7 = report('Taro (approx.)', `${APPLE_TARO}/frontend-developer-united-states-february-1-2025-no-offer-neutral-01c585c0/`, '2025-02');
 const APPLE_AP8 = report('Blind', 'https://www.teamblind.com/post/my-apple-interview-was-absolutely-brutal-tjrprfjx', '2025-03');
-const APPLE_AP9 = report('Taro', `${APPLE_TARO}/front-end-engineer-united-states-august-1-2021-no-offer-negative-2d79a1e7/`, '2021-08');
+const APPLE_AP9 = report('Taro (approx.)', `${APPLE_TARO}/front-end-engineer-united-states-august-1-2021-no-offer-negative-2d79a1e7/`, '2021-08');
 const APPLE_ICT3_2025 = report('LeetCode', 'https://leetcode.com/discuss/post/6579616/', '2025-03');
 const APPLE_FULLSTACK_2026 = report('LeetCode', 'https://leetcode.com/discuss/post/8354843/', '2026-06');
 const APPLE_ROLE = 'Frontend roles; varies by team';
@@ -212,6 +212,8 @@ const UBER_STORY = official(
   'https://jobs.uber.com/en/people-stories/interview-prep/landing-the-job-at-uber-front-end-engineer/',
 );
 const UBER_UB1 = report('LeetCode', 'https://leetcode.com/discuss/post/2409192/', '2022-08');
+const UBER_UB_CODESIGNAL_2021 = report('LeetCode', 'https://leetcode.com/discuss/post/1064199/', '2021-02');
+const UBER_UB_ROUNDS_2025 = report('LeetCode', 'https://leetcode.com/discuss/post/6840169/', '2025-06');
 const UBER_UB2 = report('Medium', 'https://medium.com/@iamjaasi/uber-sde-2-frontend-interview-experience-40c1a7437cc0', '2022-11');
 const UBER_UB3 = report(
   'Taro',
@@ -230,12 +232,13 @@ const UBER_ROLE = 'Frontend engineers, L3 to L5A';
 
 const STRIPE_CAREERS = official('Stripe: Careers FAQ', 'https://stripe.com/careers');
 const STRIPE_TARO = 'https://www.jointaro.com/interviews/companies/stripe/experiences';
-const STRIPE_ST1 = report('Taro', `${STRIPE_TARO}/frontend-engineer-barcelona-october-1-2023-no-offer-neutral-ceb407e7/`, '2023-10');
-const STRIPE_ST3 = report('Taro', `${STRIPE_TARO}/frontend-engineer-san-francisco-ca-august-1-2025-no-offer-neutral-8ad7d78f/`, '2025-08');
+const STRIPE_ST1 = report('Taro (approx.)', `${STRIPE_TARO}/frontend-engineer-barcelona-october-1-2023-no-offer-neutral-ceb407e7/`, '2023-10');
+const STRIPE_ST3 = report('Taro (approx.)', `${STRIPE_TARO}/frontend-engineer-san-francisco-ca-august-1-2025-no-offer-neutral-8ad7d78f/`, '2025-08');
 const STRIPE_ST4 = report('Taro', `${STRIPE_TARO}/front-end-developer-india-november-15-2022-no-offer-positive-f4ea85cd/`, '2022-11');
-const STRIPE_ST5 = report('Taro', `${STRIPE_TARO}/frontend-developer-barcelona-march-1-2025-no-offer-positive-c1c921ed/`, '2025-03');
+const STRIPE_ST5 = report('Taro (approx.)', `${STRIPE_TARO}/frontend-developer-barcelona-march-1-2025-no-offer-positive-c1c921ed/`, '2025-03');
 const STRIPE_ST6_PLAN = report('Blind (recruiter plan)', 'https://www.teamblind.com/post/Stripe-frontend-onsite-SfaGgc1a', '2024-11');
 const STRIPE_ST7 = report('Blind', 'https://www.teamblind.com/post/stripe-frontend-interview-be7f1ymm', '2024-07');
+const STRIPE_ST8 = report('Taro', `${STRIPE_TARO}/frontend-developer-canada-september-19-2025-no-offer-positive-caea53c0/`, '2025-09');
 const STRIPE_ROLE = 'Frontend engineers';
 
 const BYTEDANCE_CAMPUS = official('ByteDance: Early careers interview tips', 'https://jobs.bytedance.com/en/campus/interview-tips');
@@ -255,17 +258,17 @@ const BYTEDANCE_BD9 = report('LeetCode', 'https://leetcode.com/discuss/interview
 const BYTEDANCE_TARO = 'https://www.jointaro.com/interviews/companies/tiktok/experiences';
 const BYTEDANCE_TT1 = report('Taro', `${BYTEDANCE_TARO}/frontend-engineer-united-states-october-27-2025-no-offer-neutral-22728914/`, '2025-10');
 const BYTEDANCE_TT2 = report('Taro', `${BYTEDANCE_TARO}/front-end-developer-united-states-march-4-2025-no-offer-positive-8082b9a5/`, '2025-03');
-const BYTEDANCE_TT3 = report('Taro', `${BYTEDANCE_TARO}/frontend-engineer-united-states-june-1-2024-declined-offer-neutral-363898ae/`, '2024-06');
+const BYTEDANCE_TT3 = report('Taro (approx.)', `${BYTEDANCE_TARO}/frontend-engineer-united-states-june-1-2024-declined-offer-neutral-363898ae/`, '2024-06');
 const BYTEDANCE_TT4 = report('Taro', `${BYTEDANCE_TARO}/front-end-engineer-united-states-july-8-2024-no-offer-neutral-d83a6ff3/`, '2024-07');
-const BYTEDANCE_TT5 = report('Taro', `${BYTEDANCE_TARO}/front-end-developer-san-jose-ca-march-1-2024-no-offer-neutral-fc19c254/`, '2024-03');
+const BYTEDANCE_TT5 = report('Taro (approx.)', `${BYTEDANCE_TARO}/front-end-developer-san-jose-ca-march-1-2024-no-offer-neutral-fc19c254/`, '2024-03');
 const BYTEDANCE_TT6 = report('Taro', `${BYTEDANCE_TARO}/front-end-developer-october-22-2025-accepted-offer-positive-59a98129/`, '2025-10');
-const BYTEDANCE_TT7 = report('Taro', `${BYTEDANCE_TARO}/frontend-developer-singapore-november-1-2023-accepted-offer-positive-31530cbd/`, '2023-11');
-const BYTEDANCE_TT8 = report('Taro', `${BYTEDANCE_TARO}/frontend-engineer-sydney-september-1-2024-no-offer-neutral-5db123fe/`, '2024-09');
-const BYTEDANCE_TT9 = report('Taro', `${BYTEDANCE_TARO}/frontend-developer-singapore-august-1-2025-no-offer-neutral-4e4e5cf8/`, '2025-08');
+const BYTEDANCE_TT7 = report('Taro (approx.)', `${BYTEDANCE_TARO}/frontend-developer-singapore-november-1-2023-accepted-offer-positive-31530cbd/`, '2023-11');
+const BYTEDANCE_TT8 = report('Taro (approx.)', `${BYTEDANCE_TARO}/frontend-engineer-sydney-september-1-2024-no-offer-neutral-5db123fe/`, '2024-09');
+const BYTEDANCE_TT9 = report('Taro (approx.)', `${BYTEDANCE_TARO}/frontend-developer-singapore-august-1-2025-no-offer-neutral-4e4e5cf8/`, '2025-08');
 const BYTEDANCE_TT10 = report('Taro', `${BYTEDANCE_TARO}/frontend-developer-seattle-washington-october-27-2025-no-offer-positive-1abce1a2/`, '2025-10');
-const BYTEDANCE_TT11 = report('Taro', `${BYTEDANCE_TARO}/graduate-front-end-developer-sydney-may-1-2024-no-offer-neutral-11f1f10b/`, '2024-05');
-const BYTEDANCE_TT12 = report('Taro', `${BYTEDANCE_TARO}/front-end-software-engineer-intern-united-states-august-1-2024-no-offer-neutral-56f0627e/`, '2024-08');
-const BYTEDANCE_TT15 = report('Taro', `${BYTEDANCE_TARO}/frontend-developer-singapore-may-1-2024-no-offer-neutral-8a86f039/`, '2024-05');
+const BYTEDANCE_TT11 = report('Taro (approx.)', `${BYTEDANCE_TARO}/graduate-front-end-developer-sydney-may-1-2024-no-offer-neutral-11f1f10b/`, '2024-05');
+const BYTEDANCE_TT12 = report('Taro (approx.)', `${BYTEDANCE_TARO}/front-end-software-engineer-intern-united-states-august-1-2024-no-offer-neutral-56f0627e/`, '2024-08');
+const BYTEDANCE_TT15 = report('Taro (approx.)', `${BYTEDANCE_TARO}/frontend-developer-singapore-may-1-2024-no-offer-neutral-8a86f039/`, '2024-05');
 const BYTEDANCE_TT16 = report('Taro', `${BYTEDANCE_TARO}/frontend-engineer-singapore-september-16-2025-no-offer-neutral-cc1b7edd/`, '2025-09');
 const BYTEDANCE_BDT1 = report(
   'Taro',
@@ -282,25 +285,26 @@ const BOOKINGCOM_BK1 = report(
 );
 const BOOKINGCOM_BK2 = report('enginebogie', 'https://enginebogie.com/interview/experience/booking-com-frontend-engineer/84', '2023-05');
 const BOOKINGCOM_BK3 = report('LeetCode', 'https://leetcode.com/discuss/post/3673403/', '2023-06');
-const BOOKINGCOM_BK5 = report('Taro', `${BOOKINGCOM_TARO}/junior-frontend-developer-amsterdam-march-1-2022-accepted-offer-positive-88561605/`, '2022-03');
-const BOOKINGCOM_BK6 = report('Taro', `${BOOKINGCOM_TARO}/front-end-software-engineer-ii-amsterdam-june-1-2022-accepted-offer-positive-2d3acd6d/`, '2022-06');
-const BOOKINGCOM_BK7 = report('Taro', `${BOOKINGCOM_TARO}/frontend-software-engineer-ii-turkey-january-1-2023-accepted-offer-positive-e4aeb759/`, '2023-01');
-const BOOKINGCOM_BK8 = report('Taro', `${BOOKINGCOM_TARO}/junior-frontend-engineer-amsterdam-march-1-2022-accepted-offer-positive-9743e14f/`, '2022-03');
+const BOOKINGCOM_BK5 = report('Taro (approx.)', `${BOOKINGCOM_TARO}/junior-frontend-developer-amsterdam-march-1-2022-accepted-offer-positive-88561605/`, '2022-03');
+const BOOKINGCOM_BK6 = report('Taro (approx.)', `${BOOKINGCOM_TARO}/front-end-software-engineer-ii-amsterdam-june-1-2022-accepted-offer-positive-2d3acd6d/`, '2022-06');
+const BOOKINGCOM_BK7 = report('Taro (approx.)', `${BOOKINGCOM_TARO}/frontend-software-engineer-ii-turkey-january-1-2023-accepted-offer-positive-e4aeb759/`, '2023-01');
+const BOOKINGCOM_BK8 = report('Taro (approx.)', `${BOOKINGCOM_TARO}/junior-frontend-engineer-amsterdam-march-1-2022-accepted-offer-positive-9743e14f/`, '2022-03');
 const BOOKINGCOM_BK9 = report('Blind', 'https://www.teamblind.com/post/bookingcom-frontend-interview-experience-owh781q6', '2021-12');
 const BOOKINGCOM_BK10 = report('Blind', 'https://www.teamblind.com/post/bookingcom-interview-frontend-fzudnfhv', '2021-11');
-const BOOKINGCOM_BK11 = report('Taro', `${BOOKINGCOM_TARO}/frontend-developer-turkey-september-1-2021-no-offer-neutral-8e3079d9/`, '2021-09');
+const BOOKINGCOM_BK11 = report('Taro (approx.)', `${BOOKINGCOM_TARO}/frontend-developer-turkey-september-1-2021-no-offer-neutral-8e3079d9/`, '2021-09');
+const BOOKINGCOM_BK12 = report('Taro (approx.)', `${BOOKINGCOM_TARO}/full-stack-software-engineer-bangladesh-may-1-2022-accepted-offer-positive-8784f953/`, '2022-05');
 
 // Datadog, Intuit and ServiceNow.
 const DATADOG_CANDIDATE_EXPERIENCE = official('Datadog: Candidate experience', 'https://careers.datadoghq.com/candidate-experience/');
 const DATADOG_TARO = 'https://www.jointaro.com/interviews/companies/datadog/experiences';
-const DATADOG_DD1 = report('Taro', `${DATADOG_TARO}/senior-frontend-developer-valbonne-october-1-2024-accepted-offer-positive-47d59048/`, '2024-10');
-const DATADOG_DD2 = report('Taro', `${DATADOG_TARO}/senior-frontend-engineer-paris-september-1-2025-accepted-offer-positive-2a1ddfe8/`, '2025-09');
-const DATADOG_DD3 = report('Taro', `${DATADOG_TARO}/senior-software-engineer-frontend-france-july-1-2023-accepted-offer-positive-b4edf2ad/`, '2023-07');
-const DATADOG_DD4 = report('Taro', `${DATADOG_TARO}/senior-software-engineer-frontend-france-october-1-2024-accepted-offer-positive-3bd8f875/`, '2024-10');
-const DATADOG_DD5 = report('Taro', `${DATADOG_TARO}/software-engineer-front-end-paris-september-1-2024-accepted-offer-positive-ba0b1dd8/`, '2024-09');
-const DATADOG_DD6 = report('Taro', `${DATADOG_TARO}/frontend-engineer-madrid-february-1-2024-accepted-offer-positive-a8de35e5/`, '2024-02');
+const DATADOG_DD1 = report('Taro (approx.)', `${DATADOG_TARO}/senior-frontend-developer-valbonne-october-1-2024-accepted-offer-positive-47d59048/`, '2024-10');
+const DATADOG_DD2 = report('Taro (approx.)', `${DATADOG_TARO}/senior-frontend-engineer-paris-september-1-2025-accepted-offer-positive-2a1ddfe8/`, '2025-09');
+const DATADOG_DD3 = report('Taro (approx.)', `${DATADOG_TARO}/senior-software-engineer-frontend-france-july-1-2023-accepted-offer-positive-b4edf2ad/`, '2023-07');
+const DATADOG_DD4 = report('Taro (approx.)', `${DATADOG_TARO}/senior-software-engineer-frontend-france-october-1-2024-accepted-offer-positive-3bd8f875/`, '2024-10');
+const DATADOG_DD5 = report('Taro (approx.)', `${DATADOG_TARO}/software-engineer-front-end-paris-september-1-2024-accepted-offer-positive-ba0b1dd8/`, '2024-09');
+const DATADOG_DD6 = report('Taro (approx.)', `${DATADOG_TARO}/frontend-engineer-madrid-february-1-2024-accepted-offer-positive-a8de35e5/`, '2024-02');
 const DATADOG_DD7 = report('LeetCode', 'https://leetcode.com/discuss/interview-experience/7080135', '2025-05');
-const DATADOG_DD8 = report('Taro', `${DATADOG_TARO}/senior-frontend-engineer-madrid-community-of-madrid-july-1-2025-no-offer-positive-f1c8b321/`, '2025-07');
+const DATADOG_DD8 = report('Taro (approx.)', `${DATADOG_TARO}/senior-frontend-engineer-madrid-community-of-madrid-july-1-2025-no-offer-positive-f1c8b321/`, '2025-07');
 const DATADOG_DD9 = report('Taro', `${DATADOG_TARO}/senior-frontend-developer-lisbon-lisbon-district-november-23-2025-no-offer-positive-1a88bdda/`, '2025-11');
 const DATADOG_DD10 = report('Taro', `${DATADOG_TARO}/front-end-software-engineer-brazil-january-25-2024-accepted-offer-positive-c193fd19/`, '2024-01');
 const DATADOG_ROLE = 'Frontend engineers';
@@ -320,10 +324,10 @@ const INTUIT_IN8_PLAN = report(
 const INTUIT_IN9_PLAN = report('Blind (plan)', 'https://www.teamblind.com/post/intuit-a4a-interview-staff-swe-fe-bay-area-8-yoe-8ppjug5d', '2026-08');
 const INTUIT_IN10 = report('Blind', 'https://www.teamblind.com/post/intuit-team-matching-53d3l6c6', '2025-10');
 const INTUIT_IN11 = report('Taro', `${INTUIT_TARO}/staff-frontend-engineer-india-january-8-2025-no-offer-negative-8dde40c5/`, '2025-01');
-const INTUIT_IN12 = report('Taro', `${INTUIT_TARO}/staff-frontend-engineer-united-states-august-1-2024-no-offer-negative-3a91fb0d/`, '2024-08');
-const INTUIT_IN13 = report('Taro', `${INTUIT_TARO}/senior-software-engineer-frontend-bengaluru-march-1-2022-no-offer-negative-93ee0992/`, '2022-03');
-const INTUIT_IN15 = report('Taro', `${INTUIT_TARO}/senior-fullstack-engineer-united-states-december-1-2023-accepted-offer-positive-09501015/`, '2023-12');
-const INTUIT_HR_2022 = report('Taro', `${INTUIT_TARO}/senior-front-end-developer-united-states-april-1-2022-no-offer-negative-cd8e79ed/`, '2022-04');
+const INTUIT_IN12 = report('Taro (approx.)', `${INTUIT_TARO}/staff-frontend-engineer-united-states-august-1-2024-no-offer-negative-3a91fb0d/`, '2024-08');
+const INTUIT_IN13 = report('Taro (approx.)', `${INTUIT_TARO}/senior-software-engineer-frontend-bengaluru-march-1-2022-no-offer-negative-93ee0992/`, '2022-03');
+const INTUIT_IN15 = report('Taro (approx.)', `${INTUIT_TARO}/senior-fullstack-engineer-united-states-december-1-2023-accepted-offer-positive-09501015/`, '2023-12');
+const INTUIT_HR_2022 = report('Taro (approx.)', `${INTUIT_TARO}/senior-front-end-developer-united-states-april-1-2022-no-offer-negative-cd8e79ed/`, '2022-04');
 const INTUIT_ROLE = 'Frontend engineers';
 
 const SERVICENOW_SN1 = report(
@@ -347,18 +351,19 @@ const SERVICENOW_ROLE = 'UI and frontend, IC2 to senior';
 
 // Revolut, Spotify and Zalando.
 const REVOLUT_BAR_RAISER = official('Revolut: Bar Raiser interview video', 'https://www.youtube.com/watch?v=zreFxR7MRuI');
+const REVOLUT_ENGINEERING = official('Revolut: Engineering careers page', 'https://www.revolut.com/careers/team/engineering/');
 const REVOLUT_TARO = 'https://www.jointaro.com/interviews/companies/revolut/experiences';
-const REVOLUT_RV1 = report('Taro', `${REVOLUT_TARO}/frontend-developer-warsaw-masovia-april-1-2025-no-offer-neutral-71032bb4/`, '2025-04');
-const REVOLUT_RV2 = report('Taro', `${REVOLUT_TARO}/frontend-engineer-barcelona-may-1-2025-no-offer-neutral-3c58f9b9/`, '2025-05');
-const REVOLUT_RV3 = report('Taro', `${REVOLUT_TARO}/frontend-engineer-barcelona-march-1-2025-no-offer-neutral-fd597039/`, '2025-03');
-const REVOLUT_RV4 = report('Taro', `${REVOLUT_TARO}/senior-frontend-developer-poland-may-1-2024-no-offer-negative-b869132a/`, '2024-05');
-const REVOLUT_RV5 = report('Taro', `${REVOLUT_TARO}/senior-frontend-engineer-madrid-april-1-2024-no-offer-neutral-c98763a9/`, '2024-04');
+const REVOLUT_RV1 = report('Taro (approx.)', `${REVOLUT_TARO}/frontend-developer-warsaw-masovia-april-1-2025-no-offer-neutral-71032bb4/`, '2025-04');
+const REVOLUT_RV2 = report('Taro (approx.)', `${REVOLUT_TARO}/frontend-engineer-barcelona-may-1-2025-no-offer-neutral-3c58f9b9/`, '2025-05');
+const REVOLUT_RV3 = report('Taro (approx.)', `${REVOLUT_TARO}/frontend-engineer-barcelona-march-1-2025-no-offer-neutral-fd597039/`, '2025-03');
+const REVOLUT_RV4 = report('Taro (approx.)', `${REVOLUT_TARO}/senior-frontend-developer-poland-may-1-2024-no-offer-negative-b869132a/`, '2024-05');
+const REVOLUT_RV5 = report('Taro (approx.)', `${REVOLUT_TARO}/senior-frontend-engineer-madrid-april-1-2024-no-offer-neutral-c98763a9/`, '2024-04');
 const REVOLUT_RV6 = report('Taro', `${REVOLUT_TARO}/senior-frontend-engineer-react-georgia-february-7-2024-no-offer-neutral-9a9832e4/`, '2024-02');
-const REVOLUT_RV7 = report('Taro', `${REVOLUT_TARO}/web-engineer-krakow-september-1-2023-no-offer-neutral-349ae671/`, '2023-09');
+const REVOLUT_RV7 = report('Taro (approx.)', `${REVOLUT_TARO}/web-engineer-krakow-september-1-2023-no-offer-neutral-349ae671/`, '2023-09');
 const REVOLUT_RV8 = report('Taro', `${REVOLUT_TARO}/senior-front-end-developer-lisbon-lisbon-district-april-24-2023-no-offer-positive-025ce14f/`, '2023-04');
-const REVOLUT_RV9 = report('Taro', `${REVOLUT_TARO}/senior-frontend-engineer-berlin-april-1-2022-accepted-offer-positive-aa0a7d87/`, '2022-04');
+const REVOLUT_RV9 = report('Taro (approx.)', `${REVOLUT_TARO}/senior-frontend-engineer-berlin-april-1-2022-accepted-offer-positive-aa0a7d87/`, '2022-04');
 const REVOLUT_RV10 = report('Taro', `${REVOLUT_TARO}/frontend-developer-portugal-november-5-2025-no-offer-neutral-c06a19bc/`, '2025-11');
-const REVOLUT_RV12 = report('Taro', `${REVOLUT_TARO}/senior-frontend-software-engineer-porto-oporto-may-1-2024-no-offer-neutral-90611f7c/`, '2024-05');
+const REVOLUT_RV12 = report('Taro (approx.)', `${REVOLUT_TARO}/senior-frontend-software-engineer-porto-oporto-may-1-2024-no-offer-neutral-90611f7c/`, '2024-05');
 const REVOLUT_ROLE = 'Frontend engineers in European hubs';
 
 const SPOTIFY_JOURNEY = official('Spotify: Start your journey', 'https://www.lifeatspotify.com/start-your-journey');
@@ -366,12 +371,13 @@ const SPOTIFY_TARO = 'https://www.jointaro.com/interviews/companies/spotify/expe
 const SPOTIFY_SP1 = report('Blind', 'https://www.teamblind.com/post/spotify-final-round-web-interview-qyug2zqx', '2022-04');
 const SPOTIFY_SP1_DESIGN = report('Blind', 'https://www.teamblind.com/post/weak-system-design-interview-for-spotify-chances-of-no-hire-00wjs6rg', '2022-04');
 const SPOTIFY_SP2 = report('Blind', 'https://www.teamblind.com/post/spotify-senior-web-engineer-interview-k27u5vu7', '2022-04');
+const SPOTIFY_SP3 = report('Blind', 'https://www.teamblind.com/post/Spotify-Web-Engineer-Interview-hNTex8N7', '2021-10');
 const SPOTIFY_SP4 = report('Taro', `${SPOTIFY_TARO}/senior-web-engineer-united-states-august-30-2022-no-offer-neutral-e746c706/`, '2022-08');
-const SPOTIFY_SP5 = report('Taro', `${SPOTIFY_TARO}/web-engineer-toronto-on-april-1-2022-no-offer-positive-a2f8744e/`, '2022-04');
-const SPOTIFY_SP6 = report('Taro', `${SPOTIFY_TARO}/web-engineer-new-york-ny-april-1-2023-no-offer-negative-5bce68df/`, '2023-04');
-const SPOTIFY_SP7 = report('Taro', `${SPOTIFY_TARO}/senior-web-engineer-united-states-september-1-2023-no-offer-negative-890b3570/`, '2023-09');
-const SPOTIFY_SP8 = report('Taro', `${SPOTIFY_TARO}/web-engineer-united-states-may-1-2022-no-offer-neutral-70fb53e8/`, '2022-05');
-const SPOTIFY_SP9 = report('Taro', `${SPOTIFY_TARO}/software-engineer-new-york-ny-february-1-2025-no-offer-positive-0dc5e197/`, '2025-02');
+const SPOTIFY_SP5 = report('Taro (approx.)', `${SPOTIFY_TARO}/web-engineer-toronto-on-april-1-2022-no-offer-positive-a2f8744e/`, '2022-04');
+const SPOTIFY_SP6 = report('Taro (approx.)', `${SPOTIFY_TARO}/web-engineer-new-york-ny-april-1-2023-no-offer-negative-5bce68df/`, '2023-04');
+const SPOTIFY_SP7 = report('Taro (approx.)', `${SPOTIFY_TARO}/senior-web-engineer-united-states-september-1-2023-no-offer-negative-890b3570/`, '2023-09');
+const SPOTIFY_SP8 = report('Taro (approx.)', `${SPOTIFY_TARO}/web-engineer-united-states-may-1-2022-no-offer-neutral-70fb53e8/`, '2022-05');
+const SPOTIFY_SP9 = report('Taro (approx.)', `${SPOTIFY_TARO}/software-engineer-new-york-ny-february-1-2025-no-offer-positive-0dc5e197/`, '2025-02');
 const SPOTIFY_ROLE = 'Web engineers';
 
 const ZALANDO_HOW_WE_HIRE = official('Zalando: How we hire', 'https://jobs.zalando.com/en/how-we-hire');
@@ -380,9 +386,9 @@ const ZALANDO_ZA1 = report('LeetCode', 'https://leetcode.com/discuss/interview-e
 const ZALANDO_ZA2 = report('LeetCode', 'https://leetcode.com/discuss/post/1076335/', '2020-12');
 const ZALANDO_ZA3 = report('LeetCode', 'https://leetcode.com/discuss/post/1249280/', '2021-07');
 const ZALANDO_ZA4 = report('Blind', 'https://www.teamblind.com/post/zalando-frontend-interviews-asih8pba', '2022-02');
-const ZALANDO_ROLE = 'Frontend engineers, Berlin';
+const ZALANDO_ROLE = 'Frontend engineers';
 
-// xAI merged into SpaceX (closed 2026-02-02) and rebranded as SpaceXAI in July 2026; the board slug is still
+// xAI merged into SpaceX (closed 2026-02-02), rebranded as SpaceXAI in July 2026 and SpaceXSI in October 2026; the board slug is still
 // `xai`. Taro probably re-hosts Glassdoor reviews with a changed city, so the London account's label carries
 // no city. Every frontend posting with a loop was removed between 2025-06 and 2026-02, so the dates below are
 // posting months, not the month read.
@@ -454,23 +460,23 @@ const JPMORGAN_HIRING_FAQS: InterviewProcessSource = {
 const JPMORGAN_JP1 = report('Aced', 'https://www.aced.io/experiences/jp-morgan-chase-senior-frontend-engineer-interview-6faa4e', '2026-05');
 const JPMORGAN_JP2 = report('Blind', 'https://www.teamblind.com/post/jp-morgan-interview-tips-ohvqbeuy', '2023-05');
 const JPMORGAN_JP2_PLAN = report('Blind', 'https://www.teamblind.com/post/jp-morgan-swe-interview-guide-tsoukjaf', '2023-05');
-const JPMORGAN_JP3 = report('Taro', 'https://www.jointaro.com/interviews/companies/jpmorgan-chase/experiences/associate-software-engineer-united-kingdom-february-1-2025-no-offer-negative-7f96780a/', '2025-02');
-const JPMORGAN_JP4 = report('Taro', 'https://www.jointaro.com/interviews/companies/jpmorgan-chase/experiences/frontend-developer-london-england-january-1-2021-accepted-offer-positive-e00df0d2/', '2021-01');
-const JPMORGAN_JP5 = report('Taro', 'https://www.jointaro.com/interviews/companies/jpmorgan-chase/experiences/frontend-developer-london-england-july-1-2017-no-offer-negative-5853573b/', '2017-07');
-const JPMORGAN_JP6 = report('Taro', 'https://www.jointaro.com/interviews/companies/jpmorgan-chase/experiences/frontend-developer-united-states-april-1-2022-no-offer-neutral-a3d9886a/', '2022-04');
+const JPMORGAN_JP3 = report('Taro (approx.)', 'https://www.jointaro.com/interviews/companies/jpmorgan-chase/experiences/associate-software-engineer-united-kingdom-february-1-2025-no-offer-negative-7f96780a/', '2025-02');
+const JPMORGAN_JP4 = report('Taro (approx.)', 'https://www.jointaro.com/interviews/companies/jpmorgan-chase/experiences/frontend-developer-london-england-january-1-2021-accepted-offer-positive-e00df0d2/', '2021-01');
+const JPMORGAN_JP5 = report('Taro (approx.)', 'https://www.jointaro.com/interviews/companies/jpmorgan-chase/experiences/frontend-developer-london-england-july-1-2017-no-offer-negative-5853573b/', '2017-07');
+const JPMORGAN_JP6 = report('Taro (approx.)', 'https://www.jointaro.com/interviews/companies/jpmorgan-chase/experiences/frontend-developer-united-states-april-1-2022-no-offer-neutral-a3d9886a/', '2022-04');
 const JPMORGAN_JP7 = report('Taro', 'https://www.jointaro.com/interviews/companies/jpmorgan-chase/experiences/lead-software-engineer-united-states-march-13-2025-no-offer-positive-5ec74572/', '2025-03');
-const JPMORGAN_JP8 = report('Taro', 'https://www.jointaro.com/interviews/companies/jpmorgan-chase/experiences/react-developer-united-states-june-1-2022-no-offer-positive-87452f0d/', '2022-06');
-const JPMORGAN_JP9 = report('Blind', 'https://www.teamblind.com/post/JPMorgan-Front-End-position---HELP-uwhCeSaA', '2021-12');
-const JPMORGAN_JP10 = report('Blind', 'https://www.teamblind.com/post/JPMorgan-Chase---Front-End-Developer-Interview-Mb7vx1A6', '2021-03');
+const JPMORGAN_JP8 = report('Taro (approx.)', 'https://www.jointaro.com/interviews/companies/jpmorgan-chase/experiences/react-developer-united-states-june-1-2022-no-offer-positive-87452f0d/', '2022-06');
+const JPMORGAN_JP9 = report('Blind (briefing)', 'https://www.teamblind.com/post/JPMorgan-Front-End-position---HELP-uwhCeSaA', '2021-12');
+const JPMORGAN_JP10 = report('Blind (briefing)', 'https://www.teamblind.com/post/JPMorgan-Chase---Front-End-Developer-Interview-Mb7vx1A6', '2021-03');
 const JPMORGAN_JP11 = report(
   'frontendgeek',
   'https://www.frontendgeek.com/interview-experience/frontend-interview-experience-at-jp-morgan-refused-offer---9f684f90-12ee-45ec-ac82-e40d2010260e',
   '2024-04',
 );
-const JPMORGAN_JP12 = report('Taro', 'https://www.jointaro.com/interviews/companies/jpmorgan-chase/experiences/frontend-engineer-bengaluru-karnataka-april-1-2024-no-offer-negative-77dc2081/', '2024-04');
-const JPMORGAN_JP13 = report('Blind', 'https://www.teamblind.com/post/jpmorgan-chase-interview-rounds-expectation-bengaluru-ta1v2q0n', '2024-05');
+const JPMORGAN_JP12 = report('Taro (approx.)', 'https://www.jointaro.com/interviews/companies/jpmorgan-chase/experiences/frontend-engineer-bengaluru-karnataka-april-1-2024-no-offer-negative-77dc2081/', '2024-04');
+const JPMORGAN_JP13 = report('Blind (briefing)', 'https://www.teamblind.com/post/jpmorgan-chase-interview-rounds-expectation-bengaluru-ta1v2q0n', '2024-05');
 const JPMORGAN_JP14 = report('LeetCode', 'https://leetcode.com/discuss/post/1076639/', '2021-02');
-const JPMORGAN_JP15 = report('Taro', 'https://www.jointaro.com/interviews/companies/jpmorgan-chase/experiences/software-engineer-united-states-august-1-2025-declined-offer-negative-5c2f81ca/', '2025-08');
+const JPMORGAN_JP15 = report('Taro (approx.)', 'https://www.jointaro.com/interviews/companies/jpmorgan-chase/experiences/software-engineer-united-states-august-1-2025-declined-offer-negative-5c2f81ca/', '2025-08');
 const JPMORGAN_JP16 = report('Blind', 'https://www.teamblind.com/post/jpmc-interview-expectations-d0ed5ppz', '2026-04');
 const JPMORGAN_JP17A = report('LeetCode', 'https://leetcode.com/discuss/post/7421234/', '2025-12');
 const JPMORGAN_JP17B = report('LeetCode', 'https://leetcode.com/discuss/post/7455878/', '2026-01');
@@ -877,7 +883,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
     summary:
       'Google\'s hiring pages describe recruiter conversations, possible assessments and a panel of interviews by video or in person. Front-end accounts from 2021 to 2026 describe one or two technical screens, then four or five interviews mixing algorithm coding, usually one JavaScript or frontend round and Googleyness, with a frontend-leaning design round from L5.',
     caveat:
-      'The number of frontend rounds varies, and one account had none. Google\'s pages say AI tools are not permitted in interviews, while a May 2026 news report describes a pilot that allows an approved assistant in one round for some US teams. Confirm the loop with your recruiter.',
+      'The number of frontend rounds varies; one 2026 account, read as a preview only, had none. Google\'s pages say AI tools are not permitted in interviews, while a May 2026 news report describes a pilot that allows an approved assistant in one round for some US teams. Confirm the loop with your recruiter.',
     checkedAt: '2026-10-20',
     variants: [
       {
@@ -897,7 +903,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
           },
           {
             stage: 'Technical screen',
-            format: '45–60 minutes of coding in a shared document, in JavaScript or on an algorithm problem; some candidates have two screens.',
+            format: 'About an hour of coding in a shared document, in JavaScript or on an algorithm problem; some candidates have two screens.',
             appliesTo: 'Front-end candidates',
             sources: [GOOGLE_GO3, GOOGLE_GO4, GOOGLE_GO5, GOOGLE_GO6, GOOGLE_PHONE_2020],
             practice: { label: 'Debounce', path: '/javascript/coding/js-debounce' },
@@ -911,14 +917,14 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
           },
           {
             stage: 'System design',
-            format: 'A design round with a frontend and API focus.',
+            format: 'A design round with a frontend and API focus in most accounts; one L5 candidate reported a non-frontend design round.',
             appliesTo: 'L5 and above',
             sources: [GOOGLE_GO1, GOOGLE_GO2, GOOGLE_GO8],
             practice: { label: 'Frontend system design blueprint', path: '/guides/system-design-blueprint' },
           },
           {
             stage: 'Hiring committee and team match',
-            format: 'A committee review after the loop, then team matching.',
+            format: 'A hiring committee review and team matching after the loop; the order varies between accounts.',
             appliesTo: 'All candidates',
             sources: [GOOGLE_GO2, GOOGLE_GO7],
           },
@@ -996,7 +1002,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
     summary:
       'Microsoft\'s hiring tips describe a brief screening conversation and two to four interviews of up to an hour each. Frontend accounts from 2020 to 2025 describe two to six interviews mixing machine coding, JavaScript and React concepts, algorithms, design and a hiring manager conversation; the mix depends on the team.',
     caveat:
-      'Older accounts from Bangalore describe five or six rounds, more than the official two to four, and some frontend candidates were interviewed mostly on non-frontend material. Ask the recruiter which rounds your team runs.',
+      'Two older Bangalore accounts describe five or six rounds and a third four, against the official two to four, and some frontend candidates were interviewed mostly on non-frontend material. Ask the recruiter which rounds your team runs.',
     checkedAt: '2026-10-20',
     variants: [
       {
@@ -1010,7 +1016,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
           },
           {
             stage: 'Machine coding',
-            format: 'A UI build: one to two hours in plain JavaScript in 2020–2021 accounts from Bangalore, React components in 2024–2025 accounts.',
+            format: 'A UI build, two hours in the one account that gives a duration: plain JavaScript in 2020–2021 accounts from Bangalore, React components in 2024–2025 accounts.',
             appliesTo: MICROSOFT_ROLE,
             sources: [MICROSOFT_MS1, MICROSOFT_MS2, MICROSOFT_MS3, MICROSOFT_MS6, MICROSOFT_MS7, MICROSOFT_MS9],
             practice: { label: 'Todo list with local state', path: '/react/coding/react-todo-list' },
@@ -1038,7 +1044,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
           },
           {
             stage: 'Behavioural and hiring manager',
-            format: 'Conversations about past work and behaviour.',
+            format: 'Hiring-manager rounds that were technical in the 2020 and 2021 accounts and behavioural in 2024.',
             appliesTo: MICROSOFT_ROLE,
             sources: [MICROSOFT_MS1, MICROSOFT_MS2, MICROSOFT_MS6, MICROSOFT_MS7],
             practice: { label: 'Behavioral interview guide', path: '/guides/behavioral' },
@@ -1066,7 +1072,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
   },
   apple: {
     summary:
-      'Apple publishes no interview process page. Frontend accounts from 2021 to 2025 describe a recruiter or hiring manager conversation, a 45–60 minute technical screen and a team loop of four to seven interviews that are mostly JavaScript, React and CSS coding.',
+      'Apple publishes interview tips but no process page. Frontend accounts from 2021 to 2025 describe a recruiter or hiring manager conversation, a 45–60 minute technical screen and a team loop of four to seven interviews that are mostly JavaScript, React and CSS coding.',
     caveat:
       'Each team runs its own process: one 2025 senior loop had four coding rounds and no behavioural or design round, while other loops included behavioural or cross-functional interviews. Confirm the format with your recruiter.',
     checkedAt: '2026-10-20',
@@ -1137,7 +1143,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
             stage: 'Phone screen',
             format: '60 minutes of coding, sometimes a React UI component.',
             appliesTo: UBER_ROLE,
-            sources: [UBER_GUIDE, UBER_UB1, UBER_UB3, UBER_UB4, UBER_UB5],
+            sources: [UBER_GUIDE, UBER_UB_CODESIGNAL_2021, UBER_UB1, UBER_UB3, UBER_UB4, UBER_UB5],
             practice: { label: 'React fetch and render a list', path: '/react/coding/react-fetch-list-states' },
           },
           {
@@ -1151,12 +1157,12 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
             stage: 'Frontend specialization',
             format: '60 minutes: a UI build or a JavaScript problem, in plain JavaScript in two accounts.',
             appliesTo: UBER_ROLE,
-            sources: [UBER_GUIDE, UBER_STORY, UBER_UB2, UBER_UB3, UBER_UB4, UBER_UB5, UBER_UB6],
+            sources: [UBER_GUIDE, UBER_STORY, UBER_UB2, UBER_UB3, UBER_UB4, UBER_UB5, UBER_UB6, UBER_UB_ROUNDS_2025],
             practice: { label: 'Todo list with local state', path: '/react/coding/react-todo-list' },
           },
           {
             stage: 'System design',
-            format: 'Frontend architecture; two accounts were asked to design a calendar.',
+            format: 'Frontend architecture; three accounts were asked to design a calendar, a collaborative one in 2022 and Google Calendar in two 2025 loops.',
             appliesTo: 'Mid and senior levels',
             sources: [UBER_STORY, UBER_UB2, UBER_UB3, UBER_UB4, UBER_UB5],
             practice: { label: 'Frontend system design blueprint', path: '/guides/system-design-blueprint' },
@@ -1190,9 +1196,9 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
           },
           {
             stage: 'Technical screen',
-            format: '60 minutes of live, multi-part coding in CoderPad, sometimes building a UI component.',
+            format: '60 minutes of live, multi-part coding in CoderPad, sometimes building a UI component; one screen was a three-part exercise.',
             appliesTo: STRIPE_ROLE,
-            sources: [STRIPE_CAREERS, STRIPE_ST3, STRIPE_ST5, STRIPE_ST7],
+            sources: [STRIPE_CAREERS, STRIPE_ST3, STRIPE_ST5, STRIPE_ST7, STRIPE_ST8],
             practice: { label: 'React fetch and render a list', path: '/react/coding/react-fetch-list-states' },
           },
           {
@@ -1245,7 +1251,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         stages: [
           {
             stage: 'Online assessment',
-            format: 'HackerRank or CodeSignal with multiple-choice and LeetCode-style questions; a frontend task in 2025.',
+            format: 'CodeSignal in one 2025 account and an unnamed platform in two others, with multiple-choice and LeetCode-style questions and a frontend task; HackerRank appears in the early-careers accounts.',
             appliesTo: 'Some candidates',
             sources: [BYTEDANCE_TT1, BYTEDANCE_TT2, BYTEDANCE_TT10],
           },
@@ -1336,7 +1342,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
     summary:
       'Booking.com\'s hiring page describes a call with a sourcer or recruiter, interview rounds with the manager and team that depend on department and seniority, and technical tests and coding interviews for some technical roles. Frontend accounts from 2021 to 2023, mostly for Amsterdam, describe a HackerRank test, a recruiter call, one or two frontend coding rounds and a fit interview.',
     caveat:
-      'Full-stack and senior roles add backend coding and a system design round. Accounts from 2025 for general software engineer roles describe a take-home assignment instead, so recent frontend loops may differ.',
+      'Full-stack and senior roles add backend coding and a system design round. One August 2025 software engineer account describes a take-home followed by a technical session, a May 2025 senior full-stack loop had an easy React exercise and system design, and a thin September 2025 frontend account describes a recruiter call and a live-coding round, so recent frontend loops may differ.',
     checkedAt: '2026-10-20',
     variants: [
       {
@@ -1344,7 +1350,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         stages: [
           {
             stage: 'HackerRank assessment',
-            format: '90–100 minutes, about five items: two easy algorithm problems, two HTML and CSS multiple-choice questions and a React component.',
+            format: '90–100 minutes, about five items: two algorithm problems, mostly easy (one account had a medium), two HTML and CSS multiple-choice questions and a React component.',
             appliesTo: 'Junior to FE II',
             sources: [BOOKINGCOM_BK3, BOOKINGCOM_BK5, BOOKINGCOM_BK8, BOOKINGCOM_BK9, BOOKINGCOM_BK10, BOOKINGCOM_BK11],
             practice: { label: 'Valid Parentheses', path: '/javascript/coding/js-valid-parentheses' },
@@ -1364,9 +1370,9 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
           },
           {
             stage: 'Fit interview',
-            format: 'About 60 minutes with engineering managers.',
+            format: 'A conversation with engineering managers; 60 minutes in one full-stack account.',
             appliesTo: 'All candidates',
-            sources: [BOOKINGCOM_BK5, BOOKINGCOM_BK7, BOOKINGCOM_BK8, BOOKINGCOM_BK11],
+            sources: [BOOKINGCOM_BK5, BOOKINGCOM_BK7, BOOKINGCOM_BK8, BOOKINGCOM_BK11, BOOKINGCOM_BK12],
             practice: { label: 'Behavioral interview guide', path: '/guides/behavioral' },
           },
         ],
@@ -1495,13 +1501,13 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
   },
   servicenow: {
     summary:
-      'ServiceNow\'s hiring page says interview rounds vary by position and may include a technical coding assessment or a presentation. Accounts from India between 2022 and 2025 describe a screening call, two JavaScript-heavy technical rounds, sometimes a design or machine-coding round, and a hiring manager round.',
+      'ServiceNow\'s hiring page says interview rounds vary by position and may include a technical coding assessment or a presentation. Accounts from 2022 to 2025, two of them placed in India by Taro, describe a screening call, two JavaScript-heavy technical rounds, sometimes a design or machine-coding round, and a hiring manager round.',
     caveat:
-      'This table covers India only. Accounts from the US describe algorithm-focused loops and plans with the hiring manager first, but they are too few for a table. One 2025 account added a final round with a director.',
+      'This table covers the accounts that state India or no location. Accounts from the US describe algorithm-focused loops and plans with the hiring manager first, but they are too few for a table. One 2025 account added a final round with a director.',
     checkedAt: '2026-10-20',
     variants: [
       {
-        title: 'UI and frontend engineers in India',
+        title: 'UI and frontend engineers, 2022 to 2025',
         stages: [
           {
             stage: 'Screening call',
@@ -1511,7 +1517,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
           },
           {
             stage: 'JavaScript fundamentals',
-            format: 'One hour on closures, promises, polyfills and output prediction, or JavaScript, HTML and CSS with algorithm problems.',
+            format: 'About an hour in one account: closures, promises, polyfills and output prediction, or JavaScript, HTML and CSS with algorithm problems.',
             appliesTo: SERVICENOW_ROLE,
             sources: [SERVICENOW_SN1, SERVICENOW_SN2, SERVICENOW_SN3, SERVICENOW_SN4],
             practice: { label: 'Closures', path: '/javascript/trivia/js-closures' },
@@ -1532,7 +1538,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
           },
           {
             stage: 'Hiring manager',
-            format: 'One hour mixing JavaScript questions such as Map versus Object, a design task and behavioural questions.',
+            format: 'A hiring-manager round, short in one account and an hour in another, mixing JavaScript questions such as Map versus Object, a design task and behavioural questions.',
             appliesTo: SERVICENOW_ROLE,
             sources: [SERVICENOW_SN1, SERVICENOW_SN2, SERVICENOW_SN3, SERVICENOW_SN4],
             practice: { label: 'Map versus Object', path: '/javascript/trivia/js-map-vs-object' },
@@ -1543,7 +1549,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
   },
   revolut: {
     summary:
-      'Revolut publishes no interview process page. Frontend accounts from 2022 to 2025 across European hubs describe a recruiter or HR screen, a HackerRank test with three algorithm tasks, an hour of React live coding, a system design round for mid and senior roles, a team fit conversation and a Bar Raiser interview.',
+      'The Revolut engineering careers page lists four steps, an intro call with an IT recruiter, tech interviews, team fit and offer, without formats or durations; the Bar Raiser stage appears in the careers video, not in that list. Frontend accounts from 2022 to 2025 across European hubs describe a recruiter or HR screen, a HackerRank test with three algorithm tasks, an hour of React live coding, a system design round for mid and senior roles, a team fit conversation and a Bar Raiser interview.',
     caveat:
       'Almost every account is on Taro. The only account with an offer (2022) had neither a system design round nor a Bar Raiser, and the order of the HackerRank test and the recruiter call varies.',
     checkedAt: '2026-10-20',
@@ -1555,7 +1561,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
             stage: 'Recruiter or HR screen',
             format: 'Background and salary; some recruiters ask a few JavaScript questions.',
             appliesTo: REVOLUT_ROLE,
-            sources: [REVOLUT_RV2, REVOLUT_RV3, REVOLUT_RV5, REVOLUT_RV7, REVOLUT_RV12],
+            sources: [REVOLUT_ENGINEERING, REVOLUT_RV2, REVOLUT_RV3, REVOLUT_RV5, REVOLUT_RV7, REVOLUT_RV12],
           },
           {
             stage: 'HackerRank assessment',
@@ -1615,21 +1621,21 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
             stage: 'Technical screen',
             format: '60–75 minutes with one or two engineers: JavaScript and CSS questions, an easy algorithm problem, or rebuilding an HTML and CSS mockup.',
             appliesTo: SPOTIFY_ROLE,
-            sources: [SPOTIFY_JOURNEY, SPOTIFY_SP4, SPOTIFY_SP5, SPOTIFY_SP8, SPOTIFY_SP9],
+            sources: [SPOTIFY_JOURNEY, SPOTIFY_SP2, SPOTIFY_SP4, SPOTIFY_SP5, SPOTIFY_SP8, SPOTIFY_SP9],
             practice: { label: 'The event loop', path: '/javascript/trivia/js-event-loop' },
           },
           {
             stage: 'Final: web practical',
             format: 'A plain HTML, CSS and JavaScript build, such as a form that fetches from an API into the DOM or a traffic light, or web domain questions.',
             appliesTo: SPOTIFY_ROLE,
-            sources: [SPOTIFY_SP1_DESIGN, SPOTIFY_SP2, SPOTIFY_SP4, SPOTIFY_SP5, SPOTIFY_SP7, SPOTIFY_SP9],
+            sources: [SPOTIFY_SP1_DESIGN, SPOTIFY_SP3, SPOTIFY_SP4, SPOTIFY_SP5, SPOTIFY_SP7, SPOTIFY_SP9],
             practice: { label: 'Forms: validation and required fields', path: '/html/coding/html-forms-validation-required' },
           },
           {
             stage: 'Final: algorithms',
             format: 'An easy to medium LeetCode-style problem.',
             appliesTo: SPOTIFY_ROLE,
-            sources: [SPOTIFY_SP1, SPOTIFY_SP2, SPOTIFY_SP4, SPOTIFY_SP5, SPOTIFY_SP6, SPOTIFY_SP9],
+            sources: [SPOTIFY_SP1_DESIGN, SPOTIFY_SP3, SPOTIFY_SP4, SPOTIFY_SP5, SPOTIFY_SP6, SPOTIFY_SP9],
             practice: { label: 'Valid Parentheses', path: '/javascript/coding/js-valid-parentheses' },
           },
           {
@@ -1652,9 +1658,9 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
   },
   zalando: {
     summary:
-      'Zalando\'s hiring page describes a 30-minute talent acquisition call, a case study such as a coding exercise, a hiring manager conversation and three to five final interviews. Frontend accounts from Berlin between 2019 and 2024 describe a Codility take-home, then a final day with a review of the take-home, JavaScript fundamentals, coding, system design and a manager conversation.',
+      'Zalando\'s hiring page describes a 30-minute talent acquisition call, a case study such as a coding exercise, a hiring manager conversation and three to five final interviews. Frontend accounts, two of them from Berlin, between 2019 and 2024 describe a Codility take-home, then a final day with a review of the take-home, JavaScript fundamentals, coding, system design and a manager conversation.',
     caveat:
-      'Zalando\'s own pages disagree on whether the hiring manager comes before or after the coding challenge. Only one detailed account is from after 2022, and all accounts are from Berlin.',
+      'Zalando\'s own pages disagree on whether the hiring manager comes before or after the coding challenge. Only one detailed account is from after 2022, and two of the three complete loops are from Berlin.',
     checkedAt: '2026-10-20',
     variants: [
       {
@@ -1668,20 +1674,20 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
           },
           {
             stage: 'Coding challenge',
-            format: 'A Codility challenge done at home in two to three hours: a React and Node app in 2024, easy algorithm problems in 2022.',
+            format: 'An assessment at home: a Codility challenge of two to three hours in 2022 and 2024 (a React and Node app, easy algorithm problems); the 2020 account named no platform and had three working days.',
             appliesTo: ZALANDO_ROLE,
             sources: [ZALANDO_HOW_WE_HIRE, ZALANDO_ZA1, ZALANDO_ZA2, ZALANDO_ZA4],
             practice: { label: 'React fetch and render a list', path: '/react/coding/react-fetch-list-states' },
           },
           {
             stage: 'Hiring manager',
-            format: '30–60 minutes; one account describes it as non-technical.',
+            format: '30–60 minutes on the official pages; a Blind commenter describes it as non-technical, and in 2020 it was half of a two-hour phone stage.',
             appliesTo: ZALANDO_ROLE,
-            sources: [ZALANDO_HOW_WE_HIRE, ZALANDO_BLOG, ZALANDO_ZA2, ZALANDO_ZA3],
+            sources: [ZALANDO_HOW_WE_HIRE, ZALANDO_BLOG, ZALANDO_ZA2, ZALANDO_ZA3, ZALANDO_ZA4],
           },
           {
             stage: 'Final: take-home review',
-            format: '45 minutes discussing the submitted code.',
+            format: 'A discussion of the submitted code, 45 minutes in the 2024 account.',
             appliesTo: 'Senior roles',
             sources: [ZALANDO_ZA1, ZALANDO_ZA3],
           },
@@ -1717,9 +1723,9 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
     ],
   },
   xai: {
-    title: 'xAI (now SpaceXAI) frontend interview process',
+    title: 'xAI (now SpaceXSI) frontend interview process',
     summary:
-      'The careers page describes four generic steps and says engineers, not recruiters, evaluate applications. The closed frontend postings from March 2025 to February 2026 shared one template: a review of the CV and a "statement of exceptional work", a 15-minute phone interview with basic technical questions, then the team\'s main process on Google Meet with the goal of finishing within one week. For frontend roles that meant a React coding interview in TypeScript, an HTML/CSS interview from a screenshot, and a team or founding-engineer stage. One London account from August 2025 matches the React round.',
+      'The careers page describes four generic steps and says technical team members, not recruiters, evaluate applications. The closed frontend postings from March 2025 to February 2026 shared one template: a review of the CV and a "statement of exceptional work", a 15-minute phone interview with basic technical questions, then the team\'s main process on Google Meet with the goal of finishing within one week. For frontend roles that meant a React coding interview in TypeScript, an HTML/CSS interview from a screenshot, and a team or founding-engineer stage. One London account from August 2025 matches the React round.',
     caveat:
       'Every frontend posting with a loop was removed between June 2025 and February 2026, and on 21 October 2026 the board had no frontend posting with interview text, so this table describes the 2025 to early-2026 loops. The loop varies by team: Bay Area postings added a coding assessment and a systems session, London postings did not, and the take-home row comes from one general software-engineer account rather than a frontend posting. The "Software Engineer Specialist" loops with a CodeSignal assessment are left out as a separate track.',
     checkedAt: '2026-10-21',
@@ -1730,7 +1736,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         stages: [
           {
             stage: 'Application review',
-            format: 'Engineers, not recruiters, review the CV and a "statement of exceptional work".',
+            format: 'Technical team members, not recruiters, review the CV and a "statement of exceptional work".',
             appliesTo: 'All roles',
             sources: [XAI_CAREERS, XAI_O_LONDON_FE, XAI_O_GROK_STUDIO, XAI_O_DESIGNER_HYBRID],
           },
@@ -1786,7 +1792,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
             stage: 'Take-home and code-reading final',
             format:
               'A four-hour AI-assisted product build from one of six prompts, submitted as a GitHub repository with a Loom walkthrough within 24 hours, then a one-hour in-person session on an existing class.',
-            appliesTo: 'One general software-engineer loop from December 2025; not on any frontend posting',
+            appliesTo: 'One general software-engineer loop from 2025; not on any frontend posting',
             sources: [XAI_X7_MTS_2025],
           },
         ],
@@ -1795,7 +1801,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
   },
   jpmorgan: {
     summary:
-      'JPMorgan Chase\'s How we hire page says the interview process will differ for each position and that candidates meet several people in multiple rounds, and JPMC-badged employees on Blind describe decentralised, team-run loops. Frontend accounts from 2021 to 2026 in the UK, the US and India describe a recruiter screen, a one-hour React and JavaScript conversation often split between two interviewers, 60 to 90 minutes of live coding, and a hiring-manager or leadership round. The online-assessment and super-day rows come from generic software-engineer accounts that Software Engineer II and III requisitions probably share.',
+      'JPMorgan Chase\'s How we hire page says the interview process will differ for each position and that candidates meet several people in multiple rounds, and JPMorgan Chase-badged employees on Blind describe decentralised, team-run loops. Frontend accounts from 2021 to 2026 in the UK, the US and India describe a recruiter screen, a one-hour React and JavaScript conversation often split between two interviewers, 30 to 90 minutes of live coding, and a hiring-manager or leadership round. The online-assessment and super-day rows come from generic software-engineer accounts that Software Engineer II and III requisitions probably share.',
     caveat:
       'No standard loop exists: the format depends on the line of business and the team, so the order and count of stages vary between accounts, and most accounts describe two to four of these stages rather than all of them. The super-day shape rests on generic software-engineer accounts, and no frontend-titled report confirms it. Several frontend accounts are one to three lines long and some dates are approximate; one candidate met an interviewer assigned to a back-end role, and another heard nothing after a cleared round.',
     checkedAt: '2026-10-21',
@@ -1806,9 +1812,9 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         stages: [
           {
             stage: 'Recruiter contact',
-            format: 'A phone screen about the CV; some candidates were contacted by email only and went straight to team interviews.',
+            format: 'A phone screen about the CV.',
             appliesTo: 'Most loops',
-            sources: [JPMORGAN_HOW_WE_HIRE, JPMORGAN_JP1, JPMORGAN_JP4, JPMORGAN_JP15],
+            sources: [JPMORGAN_HOW_WE_HIRE, JPMORGAN_JP4, JPMORGAN_JP15],
           },
           {
             stage: 'Online assessment',
@@ -1826,7 +1832,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
           },
           {
             stage: 'Live coding',
-            format: '60 to 90 minutes: a small React build (a to-do list with priorities, functional components, a generic async promise hook with useEffect cleanup) or paper coding; one London briefing planned 90 minutes of live coding plus a 30-minute behavioural stage.',
+            format: '30 to 90 minutes: a small React build (a to-do list with priorities, functional components, generic types with a useEffect cleanup) or paper coding; one London briefing planned 90 minutes of live coding plus a 30-minute behavioural stage, other accounts give 30 to 45 minutes.',
             appliesTo: 'Most frontend loops',
             sources: [JPMORGAN_JP1, JPMORGAN_JP2_PLAN, JPMORGAN_JP4, JPMORGAN_JP6, JPMORGAN_JP8, JPMORGAN_JP10],
             practice: { label: 'React to-do list', path: '/react/coding/react-todo-list' },
@@ -1840,14 +1846,14 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
           },
           {
             stage: 'Super day',
-            format: 'Three 45-minute rounds in one day, in any order: a pull-request review plus a medium problem, high-level design on a HackerRank whiteboard or CodePair (a rate limiter recurs), and a behavioural round with a Director or Executive Director; a short team-match call may follow.',
+            format: 'Three rounds of 45 to 60 minutes in one day, in any order: a pull-request review plus a medium problem, high-level design on a HackerRank whiteboard or CodePair (a rate limiter recurs), and a behavioural round with a Director or a senior executive; a short team-match call may follow.',
             appliesTo: 'Generic Software Engineer II and III loops, US and India, 2024 to 2026; probably shared by React-titled requisitions, unconfirmed',
             sources: [JPMORGAN_JP15, JPMORGAN_JP16, JPMORGAN_JP17A, JPMORGAN_JP17B, JPMORGAN_JP17C, JPMORGAN_JP17D, JPMORGAN_JP17E],
             practice: { label: 'Create an LRU cache', path: '/javascript/coding/js-create-lru-cache' },
           },
           {
             stage: 'Hiring manager and leadership',
-            format: 'A team manager and a managing director, the application owner and lead developer, a hiring-manager round on the candidate\'s project and culture fit, or a Director or Executive Director in the super-day loops.',
+            format: 'A team manager and a managing director, the application owner and lead developer, a hiring-manager round on the candidate\'s project and culture fit, or a Director or a senior executive in the super-day loops.',
             appliesTo: 'Most loops',
             sources: [JPMORGAN_JP4, JPMORGAN_JP6, JPMORGAN_JP11, JPMORGAN_JP17A, JPMORGAN_JP17D],
             practice: { label: 'Behavioural stories', path: '/guides/behavioral/stories' },
@@ -1868,7 +1874,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         stages: [
           {
             stage: 'Recruiter prep call',
-            format: '15 to 30 minutes on background, notice period, relocation and expectations.',
+            format: 'About 15 minutes in the one account that gives a duration, on background, notice period, relocation and expectations.',
             appliesTo: AGODA_ROLE,
             sources: [AGODA_HOW_WE_HIRE_TECH, AGODA_A3_OFFER_2025, AGODA_A4_STAFF_2025, AGODA_A9_HEADCOUNT_2025],
           },
@@ -1906,7 +1912,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
           {
             stage: 'Preliminary call',
             format:
-              '30 minutes with the recruiter on compensation, relocation and feedback; the level is set here (a Staff applicant was moved to Senior, strong Senior candidates to the Staff track).',
+              '30 minutes with the recruiter on compensation, relocation and feedback; the level is set here or after the Platform round (a Staff applicant was moved to Senior after round two, strong Senior candidates to the Staff track).',
             appliesTo: AGODA_ROLE,
             sources: [AGODA_A1_BANGKOK_2026, AGODA_A3_OFFER_2025, AGODA_A4_STAFF_2025, AGODA_A8_CULTURE_FIT_2025, AGODA_A9_HEADCOUNT_2025, AGODA_A7_GURGAON_COMMENT],
           },
@@ -1936,7 +1942,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
       {
         title: 'Front-end engineers, Gurgaon, 2024 to 2025',
         note:
-          'Team-specific: three accounts with different stage orders. Interviewers may sit in Bangkok, and one 2026 account was rejected in Gurgaon\'s second round before an offer from a Bangkok loop after the six-month cooling period. On 2026-10-21 the board listed no Gurugram front-end-titled role.',
+          'Team-specific: three accounts with different stage orders. Interviewers may sit in Bangkok, and one 2026 senior full-stack account was rejected in Gurgaon\'s second round and received an offer from a Bangkok loop after the six-month cooling period. On 2026-10-21 the board listed no Gurugram front-end-titled role.',
         stages: [
           {
             stage: 'Online assessment or take-home',

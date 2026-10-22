@@ -199,3 +199,7 @@ Built the same day, after the user's approval of the three pages: `COMPANY_INTER
 - **xAI scope and name.** Label the table as "from postings 2025–2026 plus one London account"; decide between xAI and SpaceXAI in the title before writing. The "Software Engineer Specialist" CodeSignal loops stay off the page.
 - **Measure.** Read Search Console 4–6 weeks after the pages deploy, as for the earlier tables.
 - **Re-check before editing.** careersatagoda.com and x.ai block automated reads; the archive captures and the Chrome read are dated in each section.
+
+## Update 2026-10-22: SpaceXSI
+
+The company was renamed again in October 2026: the Wikipedia summary reads "SpaceXSI, legally SpaceXAI LLC, formerly xAI", and x.ai/careers is branded SpaceXSI with SpaceXAI LLC in its footer. The page title, H1, description, FAQ and process title now say "now SpaceXSI"; the slug, label and the Greenhouse board stay `xai`.

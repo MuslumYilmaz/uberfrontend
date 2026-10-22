@@ -174,6 +174,45 @@ Candidates and their sources are in section 4 of the market research document: E
   - The inventory maps hyphenated slugs to constant prefixes (`BOOKINGCOM_`).
   - The same work fixed unsupported claims in the Revolut, Intuit, ServiceNow, ElevenLabs and Datadog guides, and added nine companies' official process pages to the official guides table.
 
+## Candidate selection rule (2026-10-22)
+
+Why this rule exists: the Search Console read of 2026-10-22 (data through 2026-10-19) showed that the pages for companies with a GreatFrontEnd or Front End Interview Handbook guide collected 779 impressions and 12 clicks in 90 days (OpenAI and Netflix only), while the five authored pages for uncovered companies from the 2026-10-14 wave collected 59 impressions and 11 clicks in about five days, nine of them on ElevenLabs. In the 2026-10-19 demand sweep ElevenLabs had a Google autocomplete count of 2, so autocomplete depth did not predict the one page that works; brand interest with no editorial competitor did.
+
+Build a company page only when all of these hold:
+
+1. **Not covered.** No GreatFrontEnd company guide (37 companies on 2026-10-19) and no Front End Interview Handbook company page (36). Pages for covered companies sit at positions 15 to 35 and do not convert impressions into clicks.
+2. **Demand.** At least one of: Google or Bing autocomplete suggestions for `<company> frontend interview`, a Trends line, or visible brand heat (funding, launches, hiring news). Autocomplete depth is a proxy for India-heavy mass demand, not for conversion.
+3. **Active frontend hiring, measured on the day.** At least one open frontend-titled posting on the company's own board, with the count recorded with its date. Treat the number as a timing and tie-break signal, not a volume estimate: ElevenLabs had 1 frontend-titled and 12 adjacent postings on 2026-10-22.
+4. **Readable sources.** At least three full-text public reports (Taro, Blind, LeetCode discuss, Code360, Nowcoder) for a sourced guide; otherwise content-only tags, or hold.
+5. **Buyers.** US, Europe or SEA-relocation candidates first. India services and consultancies (Flipkart, TCS, Accenture, Deloitte, EY) are a separate "volume lane" decision, not a default.
+
+Measurement recipe for item 3 (public job-board APIs, no login): Greenhouse `https://boards-api.greenhouse.io/v1/boards/<slug>/jobs`, Lever `https://api.lever.co/v0/postings/<slug>?mode=json`, Ashby `https://api.ashbyhq.com/posting-api/job-board/<slug>`. Count titles matching frontend, front-end, UI engineer or developer, web engineer or developer, or a web, product or software design engineer; exclude hardware design engineer titles (ASIC, RTL, physical, electrical, mechanical, rack, data center) and non-engineering uses of "frontend" (Paytm lists collections managers as Frontend). Companies on Workday or custom boards (Revolut, Netflix, Intuit, ServiceNow, Shopee, Zalando, Booking.com, IBM, Deloitte, GitHub, Goldman Sachs, Nvidia, Flipkart and most banks) need a manual careers-page check. Generic "Software Engineer" titles undercount (Cursor, Notion, Replit, Supabase show zero).
+
+Snapshot on 2026-10-22 (open postings / frontend-titled / frontend-adjacent, which adds full stack, React, TypeScript and web titles):
+
+| Group | Company | Open | Frontend | Adjacent |
+|---|---|---|---|---|
+| Uncovered, frontend-titled | Anduril | 2494 | 10 | 21 |
+| Uncovered, frontend-titled | Brex | 265 | 4 | 4 |
+| Uncovered, frontend-titled | Jane Street | 221 | 2 | 2 |
+| Uncovered, frontend-titled | Sierra | 191 | 2 | 2 |
+| Uncovered, frontend-titled | Perplexity | 127 | 1 | 3 |
+| Uncovered, frontend-titled | Lovable | 78 | 1 | 3 |
+| Uncovered, frontend-titled | Suno | 68 | 1 | 3 |
+| Uncovered, frontend-titled | Granola | 22 | 1 | 3 |
+| Uncovered, frontend-titled | Glean | 121 | 1 | 2 |
+| Uncovered, frontend-titled | Adyen | 248 | 1 | 1 |
+| Uncovered, frontend-titled | Tekion | 92 | 1 | 1 |
+| Uncovered, adjacent only | Deliveroo 0/9, Scale AI 0/7, Plaid 0/6, Cohere 0/5, Cerebras 0/4, Decagon 0/2, Linear 0/2 | | | |
+| Uncovered, nothing frontend | Cursor, Notion, Replit, Supabase, Mistral, Wiz, Chime, Wise, Monzo, Character.AI, Synthesia, DeepL, Zomato, Freshworks, Zeta, TCS, Meesho | | | |
+| Ours, for scale | ElevenLabs | 160 | 1 | 12 |
+| Ours, for scale | Agoda | 310 | 4 | 8 |
+| Ours, for scale | OpenAI | 813 | 2 | 32 |
+| Ours, for scale | Stripe | 729 | 3 | 17 |
+| Covered by GFE or FEIH | Harvey 349/10/17, Ramp 170/3/5, Databricks 897/2/22, Anthropic 678/1/7 | | | |
+
+Implication, not a decision: with the rule applied, the next companies worth a source-research round are Anduril, Brex, Jane Street, Sierra, Perplexity (deferred earlier because its report was login-locked), Lovable, Suno and Glean. Each still needs the readable-sources check and a separate yes before any page is written.
+
 ## Hooks and CI
 
 Pre-commit (`.githooks/pre-commit:43` → `frontend/scripts/run-pre-commit-checks.mjs`): `lint:questions:hook` when cdn/questions or pipeline scripts are staged (:176); `generate-seo-content-dates.mjs --staged` for `frontend/src/app/**` or `cdn/**` (:184); `validate-coding-assist-sync.mjs --staged-files` for coding.json, decision graphs or failure-explain files (:189); `lint:design-system:strict` for app html/css or `shared/**/*.ts` (:197); targeted `ng test` for up to 12 matching specs (:205). Trap: the hook skips `gen-data-version.mjs --check`, so run `npm run lint:questions:check` before pushing. Pre-push (`.githooks/pre-push`): backend `generate:interview-content:check` and `validate:interview-content` when coding.json, system-design/, cdn/sb/ or backend/content/interview/ change (:182-193), then assist sync, the three registry lints, `verify:unit-and-content:prepush`, `verify:seo-prerender-guard`, critical e2e.

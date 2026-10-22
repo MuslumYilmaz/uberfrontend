@@ -385,6 +385,10 @@ reference_rules:
     keywords:
       - company pages plan
       - company page
+      - candidate selection
+      - next company
+      - hiring postings
+      - job board
       - waymo
       - question sources
       - sources on questions
@@ -396,6 +400,41 @@ reference_rules:
       - frontend/src/app/shared/company-previews/
     load:
       - docs/references/company-pages-plan-2026-10.md
+    max_docs: 1
+
+  - id: company_pages_template_thin_plan
+    priority: 94
+    keywords:
+      - company template look
+      - thin company page
+      - company page boilerplate
+      - authored headings
+      - company h2
+      - airbnb page
+      - company pages template plan
+    paths:
+      - docs/references/company-pages-template-thin-plan-2026-10.md
+      - docs/audits/company-pages-factcheck-2026-10-22.md
+    load:
+      - docs/references/company-pages-template-thin-plan-2026-10.md
+    max_docs: 1
+
+  - id: company_pages_factual_fixes_plan
+    priority: 95
+    keywords:
+      - company factual fixes
+      - company fact check
+      - wrong claim company page
+      - taro label
+      - taro city
+      - spacexsi
+      - company page corrections
+      - company pages fix plan
+    paths:
+      - docs/references/company-pages-factual-fixes-plan-2026-10.md
+      - docs/audits/company-pages-factcheck-2026-10-22.md
+    load:
+      - docs/references/company-pages-factual-fixes-plan-2026-10.md
     max_docs: 1
 
   - id: company_generic_pages_content_plan

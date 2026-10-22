@@ -38,14 +38,14 @@ export const WAYMO_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     title: 'Prepare for product judgment, not Waymo trivia',
     paragraphs: [
       'The reported loop rewards engineers who state a contract before writing code: what a filter removes, which state owns a list, what happens to a reply when the user presses Stop. Each prompt below starts with the clarifying questions a strong candidate asks, then the behaviours a strong answer covers, then the miss that usually ends the round.',
-      'Treat the report as a shape, not a script. The phone screen rendered a filtered tree as UI; the onsite mixed debugging, a Promise exercise, system design and a timed UI build. Practice those shapes in your own stack first, then once in Angular, because the May 2026 posting asked for production Angular experience.',
+      'Treat the report as a shape, not a script. The phone screen rendered a filtered tree as UI; the onsite mixed debugging, a Promise exercise, system design and an autocomplete build. Practice those shapes in your own stack first, then once in Angular, because the candidate says the job description asked for production-level Angular proficiency.',
     ],
   },
   sourceBoundary: {
     kicker: 'Source boundary · checked October 2026',
     title: 'What the report establishes, and what you still need to confirm',
     paragraphs: [
-      'One self-reported senior loop on PracHub (Simulation team, May 2026) describes the rounds this guide is modelled on. It establishes that those round types were asked once; it does not establish exact wording, the current format, or that every team interviews the same way. A second senior onsite account exists on 1point3acres but is locked, so it only confirms that more than one account exists.',
+      'One self-reported senior loop on PracHub (Simulation team, May 2026; curated and edited by PracHub) describes the rounds this guide is modelled on. It establishes that those round types were asked once; it does not establish exact wording, the current format, or that every team interviews the same way. A second senior onsite account exists on 1point3acres but is locked, so it only confirms that more than one account exists.',
       'Confirm the exercise types, the allowed tools, the expected stack and the timing with the recruiter and the job description. Waymo publishes roles and teams on its careers site; use that for context, not as evidence of interview content.',
     ],
   },
@@ -129,7 +129,7 @@ export const WAYMO_COMPANY_PREVIEW: AuthoredCompanyPreview = {
         id: 'promise-contract-typescript',
         title: 'Implement a Promise contract in TypeScript',
         statement:
-          'The report says a pure TypeScript Promise problem was asked and does not say which. Prepare the family: build a deferred promise, implement Promise.all with ordering and fail-fast semantics, and add cancellation or timeouts without breaking Promise rules.',
+          'The report says a Promise problem in plain TypeScript or JavaScript was asked and does not say which. Prepare the family: build a deferred promise, implement Promise.all with ordering and fail-fast semantics, and add cancellation or timeouts without breaking Promise rules.',
         whatThisMeasures:
           'Microtask timing, settlement rules, typed generics, error propagation, and whether you can explain adoption of a thenable and first-settlement-wins behaviour.',
         clarifyFirst: [
@@ -250,12 +250,12 @@ export const WAYMO_COMPANY_PREVIEW: AuthoredCompanyPreview = {
       {
         question: 'Is Waymo an Angular shop?',
         answer:
-          'The May 2026 posting behind the report asked for production Angular experience and the onsite included an Angular debugging round. One report cannot establish the stack of every team; confirm it with the recruiter and prepare the same contracts in your own framework first.',
+          'The candidate says the job description asked for production-level Angular proficiency, and the onsite included an Angular debugging round. One report cannot establish the stack of every team; confirm it with the recruiter and prepare the same contracts in your own framework first.',
       },
       {
         question: 'Which Promise problem was asked?',
         answer:
-          'The report only says a pure TypeScript Promise problem. Prepare the family: deferred promise, Promise.all semantics, and cancellation or timeout follow-ups.',
+          'The report only says a Promise problem in plain TypeScript or JavaScript. Prepare the family: deferred promise, Promise.all semantics, and cancellation or timeout follow-ups.',
       },
       {
         question: 'Does the report describe the current loop?',

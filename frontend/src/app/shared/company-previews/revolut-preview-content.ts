@@ -14,16 +14,16 @@ const REVOLUT_MAY_2025_URL =
 const REVOLUT_MAY_2025_LABEL = 'Public report: Revolut frontend engineer loop, May 2025';
 const REVOLUT_MADRID_2024_URL =
   'https://www.jointaro.com/interviews/companies/revolut/experiences/senior-frontend-engineer-madrid-april-1-2024-no-offer-neutral-c98763a9/';
-const REVOLUT_MADRID_2024_LABEL = 'Public report: Revolut senior frontend engineer loop, Madrid, April 2024';
+const REVOLUT_MADRID_2024_LABEL = 'Public report: Revolut senior frontend engineer loop, April 2024 (Taro, approximate date)';
 const REVOLUT_PORTUGAL_2025_URL =
   'https://www.jointaro.com/interviews/companies/revolut/experiences/frontend-developer-portugal-november-5-2025-no-offer-neutral-c06a19bc/';
-const REVOLUT_PORTUGAL_2025_LABEL = 'Public report: Revolut frontend developer screen, Portugal, November 2025';
+const REVOLUT_PORTUGAL_2025_LABEL = 'Public report: Revolut frontend developer screen, November 2025';
 const REVOLUT_POLAND_2024_URL =
   'https://www.jointaro.com/interviews/companies/revolut/experiences/senior-frontend-developer-poland-may-1-2024-no-offer-negative-b869132a/';
-const REVOLUT_POLAND_2024_LABEL = 'Public report: Revolut senior frontend developer loop, Poland, May 2024';
+const REVOLUT_POLAND_2024_LABEL = 'Public report: Revolut senior frontend developer loop, May 2024 (Taro, approximate date)';
 const REVOLUT_KRAKOW_2023_URL =
   'https://www.jointaro.com/interviews/companies/revolut/experiences/web-engineer-krakow-september-1-2023-no-offer-neutral-349ae671/';
-const REVOLUT_KRAKOW_2023_LABEL = 'Public report: Revolut web engineer loop, Krakow, September 2023';
+const REVOLUT_KRAKOW_2023_LABEL = 'Public report: Revolut web engineer loop, September 2023 (Taro, approximate date)';
 const REVOLUT_BLIND_2022_URL = 'https://www.teamblind.com/post/revolut-front-end-interview-ryrerkjw';
 const REVOLUT_HOME_TASK_URL = 'https://github.com/iskandiar/revolut-home-task';
 const REVOLUT_WEB_ENGINEERING_URL =
@@ -66,7 +66,7 @@ export const REVOLUT_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     kicker: 'Source boundary · checked October 2026',
     title: 'What the public accounts establish, and what you still need to confirm',
     paragraphs: [
-      'Six self-reported frontend accounts on Taro inform this guide. April 2025, a React role at middle level: an intro call with CV questions, a 15-minute theory check with HR from a checklist of React questions (reconciliation, microtasks versus macrotasks in the event loop, the DOM tree), then a one-hour TypeScript live-coding task with a provided boilerplate to implement a loading state, data state management and fetching with error handling, with optimisation or unit tests if time allowed; team-fit and Bar Raiser rounds would have followed. May 2025: a recruiter call, a pairing session that used a service API with authentication to display data in a React component, a frontend system-design round to suggest product features and design the APIs between the frontend and other services, and a team-fit call. Madrid, April 2024, senior: a HackerRank screen with three tasks in 85 minutes, the third at a high-medium level, then a timed live-coding session on a small React app. Portugal, November 2025: a HackerRank JavaScript test with a standard sliding-window problem. Poland, May 2024, senior: a HackerRank test with three tasks in 110 minutes, live coding on API calls, data mapping, error handling and unit tests, and a system-design round on a physical card delivery system. Krakow, September 2023: three HackerRank tasks, React components with three JavaScript questions, and a design interview used to set the level. A 2022 Blind thread adds a reply describing LeetCode-style problems, JavaScript fundamentals and React, with no system design expected.',
+      'Six self-reported frontend accounts on Taro inform this guide; Taro shows most of their dates as the first of a month, so those months are approximate, and its locations are not used. April 2025, a React role at middle level: an intro call with CV questions, a 15-minute theory check with HR from a checklist of React questions (reconciliation, microtasks versus macrotasks in the event loop, the DOM tree), then a one-hour TypeScript live-coding task with a provided boilerplate to implement a loading state, data state management and fetching with error handling, with optimisation or unit tests if time allowed; team-fit and Bar Raiser rounds would have followed. May 2025: a recruiter call, a pairing session that used a service API with authentication to display data in a React component, a frontend system-design round to suggest product features and design the APIs between the frontend and other services, and a team-fit call. April 2024, senior: a HackerRank screen with three tasks in 85 minutes, the third at a high-medium level, then a timed live-coding session on a small React app. November 2025: a HackerRank JavaScript test with a standard sliding-window problem. May 2024, senior: a HackerRank test with three tasks in 110 minutes, live coding on API calls, data mapping, error handling and unit tests, and a system-design round on a physical card delivery system. September 2023: three HackerRank tasks, React components with three JavaScript questions, and a design interview used to set the level. A 2022 Blind thread adds a reply describing LeetCode-style problems, JavaScript fundamentals and React, with no system design expected.',
       'Together they establish that these round types occurred between 2022 and 2025; they do not establish exact wording, the current format, or how every hub interviews. Confirm the screen format, the allowed tools, whether a take-home exists for the role and the timing with the recruiter. Revolut publishes its web stack and interview philosophy on its Tech blog and a careers video on the Bar Raiser stage; use them for context, not as evidence of specific questions.',
     ],
   },
@@ -147,7 +147,7 @@ export const REVOLUT_COMPANY_PREVIEW: AuthoredCompanyPreview = {
       },
       {
         id: 'hackerrank-screen-three-tasks',
-        title: 'Clear the HackerRank screen: three JavaScript tasks in 85 minutes',
+        title: 'Clear the HackerRank screen: three tasks in 85 minutes',
         statement:
           'A timed online screen with three tasks of rising difficulty: two straightforward problems and one at a high-medium level. A later account recalls a standard sliding-window problem. Submit working code for all three with the time budget intact.',
         whatThisMeasures:
@@ -285,7 +285,8 @@ export const REVOLUT_COMPANY_PREVIEW: AuthoredCompanyPreview = {
       { label: 'Blind: Revolut front-end interview thread, April 2022', url: REVOLUT_BLIND_2022_URL, note: 'A 2022 thread in which one reply, apparently secondhand, describes LeetCode-style problems, JavaScript fundamentals and React, and says no system design was expected. It shows an earlier shape of the loop; it cannot establish the current format.', kind: 'report' },
       { label: 'Candidate repository: Revolut web development home task, October 2017', url: REVOLUT_HOME_TASK_URL, note: 'A public solution whose README quotes the brief: an exchange-screen widget that polls rates for GBP, EUR and USD every ten seconds, in React or Preact with Redux. It establishes a 2017 take-home, not anything about the current process.', kind: 'report' },
       { label: 'Revolut Tech: Building the Web that Moves Money, October 2025', url: REVOLUT_WEB_ENGINEERING_URL, note: 'Official post on web engineering at Revolut. It states the interview philosophy, real-world scenarios rather than obscure JavaScript puzzles, the stack and the two groups of web products; it names no interview questions.', kind: 'official' },
-      { label: 'Revolut Careers: How to succeed in your Bar Raiser interview', url: REVOLUT_BAR_RAISER_VIDEO_URL, note: 'Official careers video on the Revolut YouTube channel. Only its title could be read by our tools, so the guide uses it to confirm that the Bar Raiser stage exists, not for its content.', kind: 'official' },
+      { label: 'Revolut Careers: How to succeed in your Bar Raiser interview', url: REVOLUT_BAR_RAISER_VIDEO_URL, note: 'Official careers video on the Revolut YouTube channel, published June 2025. Its description says the Bar Raiser interview is where Revolut gets to know how you work and what drives you and whether your decision-making fits its culture; the guide uses it to confirm that the stage exists and its purpose, not for questions.', kind: 'official' },
+      { label: 'Revolut Careers: Engineering', url: 'https://www.revolut.com/careers/team/engineering/', note: 'Lists four hiring steps, an intro call with an IT recruiter, tech interviews, team fit and offer, with no formats or durations. The live page blocks automated readers and was read from an archived copy.', kind: 'official' },
     ],
   },
   cta: {

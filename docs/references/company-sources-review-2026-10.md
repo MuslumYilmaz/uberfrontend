@@ -6,7 +6,7 @@ Scope rules applied:
 
 - A source is attached to a catalog item only when a readable public account describes that item's shape for that company. Trivia items cannot carry sources (the question lint forbids it), so trivia evidence is listed here instead.
 - Items that were already tagged for a company gained sources; reported questions that match an item we do **not** tag for that company are listed under "found but not tagged" rather than tagged, so the catalog does not drift without a decision. One exception: the AI chat textarea system design case gained an OpenAI tag because a public account describes the OpenAI design prompt as "ChatGPT, but in a text area".
-- Official preparation pages are rendered as a table on each company page (`company-official-guides.ts`). Only pages read on 2026-10-15 are listed; Apple and Stripe publish none.
+- Official preparation pages are rendered as a table on each company page (`company-official-guides.ts`). Only pages read on 2026-10-15 are listed; Stripe publishes none, and the Apple interview-tips page (general advice, no stages) was found and added on 2026-10-22.
 
 ## 1. Official preparation pages
 
@@ -21,7 +21,7 @@ Scope rules applied:
 | ByteDance | Interview tips (ByteDance early careers), Interview tips (TikTok early careers) | Early-careers pages; the technical section covers coding, algorithms and design, HackerRank and Nowcoder practice, thinking out loud. |
 | Netflix | New grads, Internships, Culture memo | No page for experienced hires; the new-grad and intern pages describe a take-home assessment and two to three rounds. |
 | Airbnb | Careers FAQ | Only general statements (a test, a video or an event; meeting several team members). |
-| Apple | none | No official interview page exists. |
+| Apple | https://www.apple.com/careers/us/interview_tips.html | General interview tips with no stages or frontend content; found on 2026-10-22, this table said none existed before. |
 | Stripe | none | Job postings only; a 2023 Barcelona account says Stripe sends candidates a written prep guide before the loop. The Stripe Atlas "recruiting" guide is an excerpt from Elad Gil's book, not Stripe's process. |
 
 ## 2. Sources added to tagged items
@@ -44,7 +44,7 @@ Scope rules applied:
 | Meta | js-stack-queue-implementation | Taro, Meta front end developer, San Francisco, June 2024 | How to implement a stack or queue in JavaScript. |
 | Meta | js-dom-find-node | Blind by-company list, October 2021 | Facebook onsite DOM algorithm: traverse the DOM and collect nodes. |
 | Apple | js-unique-array | Taro, Apple front end developer, Hyderabad, December 2019 | Concatenate two arrays and find the unique elements. |
-| Apple | vue-autocomplete-search | LeetCode Discuss, Apple IC3, June 2025 (public preview only) | An autocomplete search bar in TypeScript with Vue or React. |
+| Apple | vue-autocomplete-search | Taro, Apple front end developer, August 2022 (full read; until 2026-10-22 the source was the June 2025 LeetCode post from a search preview, whose only coding task is nested tabs) | An autocomplete search bar in TypeScript with Vue or React. |
 | OpenAI | react-chat-streaming-ui, ai-chat-textarea-design (new OpenAI tag) | Taro, OpenAI senior frontend, May 2024 | The technical screen's design prompt: "ChatGPT, but in a text area." |
 
 Pinned registry items touched: js-debounce, js-unique-array, the three tabs switchers (coding registry) and the AI chat composer scenario (system design registry); both registries were re-pinned with maintenance notes.

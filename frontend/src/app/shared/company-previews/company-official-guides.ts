@@ -1,6 +1,6 @@
 /**
  * Preparation pages that companies publish themselves. Rendered as a table on every company preview that has
- * rows; companies without a published page (Apple, for example) render nothing.
+ * rows; companies without a published page render nothing.
  * Keep `covers` to what the page actually says; these are official pages, so links keep the default rel.
  */
 export type CompanyOfficialGuide = {
@@ -14,8 +14,18 @@ export type CompanyOfficialGuide = {
 const CHECKED = '2026-10-15';
 const CHECKED_OCT_20 = '2026-10-20';
 const CHECKED_OCT_21 = '2026-10-21';
+const CHECKED_OCT_22 = '2026-10-22';
 
 export const COMPANY_OFFICIAL_GUIDES: Readonly<Record<string, readonly CompanyOfficialGuide[]>> = {
+  apple: [
+    {
+      label: 'Interview tips',
+      url: 'https://www.apple.com/careers/us/interview_tips.html',
+      covers:
+        'General advice before, during and after an interview, and a note that some roles include a presentation, case study, technical assessment or coding exercises; no stages and no frontend content.',
+      checkedAt: CHECKED_OCT_22,
+    },
+  ],
   amazon: [
     {
       label: 'Front End Engineer interview prep',
@@ -33,14 +43,14 @@ export const COMPANY_OFFICIAL_GUIDES: Readonly<Record<string, readonly CompanyOf
     },
     {
       label: 'Interviewing at Amazon',
-      url: 'https://www.amazon.jobs/en/landing_pages/interviewing-at-amazon',
+      url: 'https://www.amazon.jobs/content/en/how-we-hire',
       covers: 'The hub for every role-specific preparation page, remote interview setup and accommodations.',
       checkedAt: CHECKED,
     },
     {
       label: 'Leadership Principles',
       url: 'https://www.amazon.jobs/content/en/our-workplace/leadership-principles',
-      covers: 'The principles behind the behavioural questions that open every interview in the loop.',
+      covers: 'The principles behind the two or three behavioural questions each interviewer typically asks.',
       checkedAt: CHECKED,
     },
     {
@@ -122,7 +132,7 @@ export const COMPANY_OFFICIAL_GUIDES: Readonly<Record<string, readonly CompanyOf
     {
       label: 'Get interview ready',
       url: 'https://jobs.uber.com/en/get-interview-ready/',
-      covers: 'The hub that links every Uber interview guide, including the engineering guides by domain.',
+      covers: 'The hub that links the Uber interview guides; its Engineering Interview Guide links the frontend, backend, data and iOS guides.',
       checkedAt: CHECKED,
     },
   ],
@@ -147,7 +157,7 @@ export const COMPANY_OFFICIAL_GUIDES: Readonly<Record<string, readonly CompanyOf
       label: 'Interview tips (TikTok early careers)',
       url: 'https://careers.tiktok.com/m/campus/interview-tips',
       covers:
-        'The same early-careers guidance as the ByteDance page, plus a note that some roles and regions invite candidates to an assessment that can take a few hours, sometimes alongside other candidates.',
+        'The same early-careers guidance as the ByteDance page, plus a note that some roles and regions invite candidates to an assessment that can take a few hours, sometimes alongside other candidates. A TikTok page; since January 2026 US TikTok hiring runs through a joint venture in which ByteDance holds a minority stake.',
       checkedAt: CHECKED_OCT_20,
     },
   ],
@@ -169,7 +179,7 @@ export const COMPANY_OFFICIAL_GUIDES: Readonly<Record<string, readonly CompanyOf
     {
       label: 'Netflix culture memo',
       url: 'https://jobs.netflix.com/culture',
-      covers: 'The culture memo that interview questions draw on, including which parts resonate with you and which do not.',
+      covers: 'The memo the new-grad and internship pages say interviewers may ask about, including which parts resonate with you and which do not.',
       checkedAt: CHECKED,
     },
   ],
@@ -228,7 +238,7 @@ export const COMPANY_OFFICIAL_GUIDES: Readonly<Record<string, readonly CompanyOf
       label: 'How we hire',
       url: 'https://careers.withwaymo.com/how-we-hire',
       covers:
-        'A first conversation with a sourcer or recruiter, one or two behavioural or technical phone or video interviews, then a virtual onsite with up to five interviewers of about 45 minutes each; AI tools are not allowed unless the instructions say so.',
+        'A first conversation with a sourcer or recruiter, one or two behavioural or technical phone or video interviews, then a virtual onsite with up to five interviewers of about 45 minutes each; AI tools are not allowed in assessments unless the instructions say so, and not at all in live interviews.',
       checkedAt: CHECKED_OCT_20,
     },
   ],
@@ -263,6 +273,15 @@ export const COMPANY_OFFICIAL_GUIDES: Readonly<Record<string, readonly CompanyOf
       covers:
         'The steps from application to feedback: a call with a sourcer or recruiter, several interview rounds with the manager, teammates and colleagues that depend on department and seniority, technical tests and coding interviews for some technical roles, and feedback within a week.',
       checkedAt: CHECKED_OCT_20,
+    },
+  ],
+  revolut: [
+    {
+      label: 'Engineering careers page',
+      url: 'https://www.revolut.com/careers/team/engineering/',
+      covers:
+        'Four hiring steps (an intro call with an IT recruiter, tech interviews, team fit, offer) and the engineering stack; no formats or durations. The live page blocks automated readers, so it was read from an archived copy.',
+      checkedAt: CHECKED_OCT_22,
     },
   ],
   zalando: [

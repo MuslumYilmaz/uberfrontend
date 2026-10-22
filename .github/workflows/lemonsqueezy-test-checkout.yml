@@ -15,7 +15,7 @@ on:
 jobs:
   lemonsqueezy-test-checkout:
     name: LemonSqueezy Test Checkout
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04  # Playwright 1.57 cannot install browsers on ubuntu-26.04, which ubuntu-latest became on 2026-10-22
     timeout-minutes: 20
     defaults:
       run:

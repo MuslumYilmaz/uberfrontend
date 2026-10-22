@@ -638,7 +638,7 @@
         "company": "spotify",
         "publisher": "Blind",
         "date": "2021-10",
-        "note": "One web engineer thread describes the practical round as applying HTML, CSS and JavaScript to a feature such as an image carousel. This React slider is a practice version of that exercise; the reported round was framework-free."
+        "note": "One thread quotes a recruiter: the practical round applies HTML, CSS and JavaScript; the candidate gave an image carousel as their own example. This React slider is a practice version of that round shape, not a reported task; the reported round was framework-free."
       }
     ],
     "access": "premium",
@@ -1625,7 +1625,7 @@
     ],
     "sources": [
       {
-        "label": "Taro: Netflix senior frontend engineer interview, Warsaw, November 2024",
+        "label": "Taro: Netflix senior frontend engineer interview, 2024",
         "url": "https://www.jointaro.com/interviews/companies/netflix/experiences/senior-frontend-engineer-warsaw-masovia-november-1-2024-no-offer-negative-c999399f/",
         "company": "netflix",
         "publisher": "Taro",
@@ -1633,7 +1633,7 @@
         "note": "One senior Netflix account describes a domain question on filtering results dynamically from a REST API based on the input query, with a 200 millisecond debounce discussed. This debounced search is a practice version of that shape; it is not the reported wording."
       },
       {
-        "label": "Taro: Revolut frontend developer interview, April 2025",
+        "label": "Taro: Revolut frontend developer interview, 2025",
         "url": "https://www.jointaro.com/interviews/companies/revolut/experiences/frontend-developer-warsaw-masovia-april-1-2025-no-offer-neutral-71032bb4/",
         "company": "revolut",
         "publisher": "Taro",
@@ -1641,7 +1641,7 @@
         "note": "One mid-level account describes a one-hour TypeScript live-coding task: fetch data from a source and render it with a loading state, error handling and types. This debounced search is a practice version of that shape, not the reported wording."
       },
       {
-        "label": "Taro: Revolut frontend engineer interview, May 2025",
+        "label": "Taro: Revolut frontend engineer interview, 2025",
         "url": "https://www.jointaro.com/interviews/companies/revolut/experiences/frontend-engineer-barcelona-may-1-2025-no-offer-neutral-3c58f9b9/",
         "company": "revolut",
         "publisher": "Taro",
@@ -1657,7 +1657,7 @@
         "note": "One web engineer account with an offer describes the practical round as building a form, fetching from the Spotify API based on the input and rendering the results into the DOM. This React search is a practice version of that shape; the reported round was framework-free."
       },
       {
-        "label": "Taro: Booking.com senior full stack engineer interview, Amsterdam, July 2023",
+        "label": "Taro: Booking.com senior full stack engineer interview, 2023",
         "url": "https://www.jointaro.com/interviews/companies/bookingcom/experiences/senior-full-stack-engineer-amsterdam-july-1-2023-no-offer-negative-cb57c4dd/",
         "company": "booking-com",
         "publisher": "Taro",
@@ -1875,7 +1875,7 @@
     ],
     "sources": [
       {
-        "label": "Taro: Datadog senior frontend developer interview, Valbonne, October 2024",
+        "label": "Taro: Datadog senior frontend developer interview, 2024",
         "url": "https://www.jointaro.com/interviews/companies/datadog/experiences/senior-frontend-developer-valbonne-october-1-2024-accepted-offer-positive-47d59048/",
         "company": "datadog",
         "publisher": "Taro",
@@ -2235,7 +2235,7 @@
         "company": "elevenlabs",
         "publisher": "Aced",
         "date": "2026-08",
-        "note": "One senior account describes a 90-minute assessment with four questions mixing React tasks and medium algorithm problems. This React starter is a representative timed task, not the reported one."
+        "note": "One senior account describes a 90-minute technical assessment before the recruiter screen without listing its questions; two Taro full-stack accounts describe React and LeetCode-style problems on CoderPad. This React starter is a representative timed task, not a reported one."
       },
       {
         "label": "LeetCode Discuss: Intuit senior frontend engineer interview experience, November 2025",
@@ -3290,7 +3290,7 @@
     ],
     "sources": [
       {
-        "label": "Taro: Tesla frontend developer interview, San Francisco, 2021",
+        "label": "Taro: Tesla frontend developer interview, 2021",
         "url": "https://www.jointaro.com/interviews/companies/tesla/experiences/frontend-developer-san-francisco-ca-january-1-2021-no-offer-positive-8db5ee50/",
         "company": "tesla",
         "publisher": "Taro",
@@ -3810,7 +3810,7 @@
         "note": "One senior account describes a user story to call a provided LLM, stream the result to the page, handle errors and add unit tests. This chat UI is a practice version of that shape, not the reported codebase."
       },
       {
-        "label": "Taro: OpenAI senior frontend software engineer interview, United States, May 2024",
+        "label": "Taro: OpenAI senior frontend software engineer interview, May 2024",
         "url": "https://www.jointaro.com/interviews/companies/openai/experiences/senior-frontend-software-engineer-united-states-may-30-2024-no-offer-negative-32a807aa/",
         "company": "openai",
         "publisher": "Taro",
@@ -3818,7 +3818,7 @@
         "note": "One senior OpenAI account describes a system design prompt summarised as ChatGPT, but in a text area, in the technical screen. This coding exercise is the build-side practice version of that product, not the reported prompt."
       },
       {
-        "label": "Taro: xAI frontend engineer interview, London, August 2025",
+        "label": "Taro: xAI frontend engineer interview, August 2025",
         "url": "https://www.jointaro.com/interviews/companies/xai/experiences/frontend-engineer-london-england-august-13-2025-no-offer-positive-45b410e6/",
         "company": "xai",
         "publisher": "Taro",
@@ -4577,7 +4577,7 @@
     ],
     "sources": [
       {
-        "label": "Taro: Revolut frontend developer interview, April 2025",
+        "label": "Taro: Revolut frontend developer interview, 2025",
         "url": "https://www.jointaro.com/interviews/companies/revolut/experiences/frontend-developer-warsaw-masovia-april-1-2025-no-offer-neutral-71032bb4/",
         "company": "revolut",
         "publisher": "Taro",
@@ -4585,7 +4585,7 @@
         "note": "One mid-level account describes a one-hour TypeScript live-coding task: fetch data from a source and render it with a loading state, error handling and types; the feedback named loading-state handling. This exercise is modelled on that round, not copied from it."
       },
       {
-        "label": "Taro: Revolut frontend engineer interview, May 2025",
+        "label": "Taro: Revolut frontend engineer interview, 2025",
         "url": "https://www.jointaro.com/interviews/companies/revolut/experiences/frontend-engineer-barcelona-may-1-2025-no-offer-neutral-3c58f9b9/",
         "company": "revolut",
         "publisher": "Taro",
@@ -4593,7 +4593,7 @@
         "note": "One account describes a pairing session that used a service API with authentication to display data in a React component. This exercise practises the same fetch-and-render loop against a fake API; it is not the reported task."
       },
       {
-        "label": "Taro: Tesla front end developer interview, Los Angeles, 2022",
+        "label": "Taro: Tesla front end developer interview, 2022",
         "url": "https://www.jointaro.com/interviews/companies/tesla/experiences/front-end-developer-los-angeles-ca-january-1-2022-no-offer-negative-eadce28f/",
         "company": "tesla",
         "publisher": "Taro",

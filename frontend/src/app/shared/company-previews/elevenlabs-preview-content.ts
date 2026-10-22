@@ -1,10 +1,10 @@
 import type { AuthoredCompanyPreview } from '../../shared/company-previews/authored-company-preview.model';
 
 /**
- * ElevenLabs frontend interview guide. Every prompt is a FrontendAtlas practice version modelled on two
- * public, candidate-sourced pages on Aced (a question bank updated by ElevenLabs candidates and one senior
- * full-stack, frontend-leaning interview account). Nothing here is a leaked, confirmed or official
- * ElevenLabs question, and two pages cannot establish a fixed loop.
+ * ElevenLabs frontend interview guide. Every prompt is a FrontendAtlas practice version modelled on public,
+ * candidate-sourced pages on Aced and Taro (a question bank updated by ElevenLabs candidates, two Aced
+ * interview accounts and three Taro full-stack accounts). Nothing here is a leaked, confirmed or official
+ * ElevenLabs question, and a handful of accounts cannot establish a fixed loop.
  */
 const ELEVENLABS_BANK_URL = 'https://www.aced.io/guides/elevenlabs-software-engineer-interview/questions';
 const ELEVENLABS_BANK_LABEL = 'Public report: ElevenLabs candidate-sourced question bank on Aced, October 2026';
@@ -32,7 +32,7 @@ export const ELEVENLABS_COMPANY_PREVIEW: AuthoredCompanyPreview = {
   hero: {
     kicker: 'Public ElevenLabs prep guide',
     subtitle:
-      'Prepare with five practice prompts shaped by two public candidate pages: synchronising audio playback with transcript highlighting, designing a review interface for a voice-dubbing project, fixing a practical React problem live, clearing a 90-minute assessment that mixes React tasks with medium algorithms, and streaming generated audio and text to the screen.',
+      'Prepare with five practice prompts shaped by public candidate pages on Aced and Taro: synchronising audio playback with transcript highlighting, designing a review interface for a voice-dubbing project, fixing a practical React problem live, clearing a 90-minute technical assessment before the first call, and streaming generated audio and text to the screen.',
     caveat:
       'This guide uses public, candidate-sourced pages to create realistic constraints. It does not claim access to private interview material, a fixed interview format, or the stack of every ElevenLabs team.',
     chips: ['5 practice prompts', 'React, audio UI, product design', 'Full practice set requires Premium'],
@@ -49,7 +49,7 @@ export const ELEVENLABS_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     kicker: 'Source boundary · checked October 2026',
     title: 'What the public pages establish, and what you still need to confirm',
     paragraphs: [
-      'Two public pages on Aced inform this guide: a question bank updated by ElevenLabs candidates that lists the audio-transcript synchronisation exercise and the voice-dubbing review prompt alongside classic algorithm problems and behavioural questions, and one senior full-stack, frontend-leaning account describing a recruiter screen, a 90-minute four-question assessment and a live practical fix. They establish that those exercises and that shape occurred; they do not establish exact wording, the current format, or how other teams interview.',
+      'Two public pages on Aced anchor this guide: a question bank updated by ElevenLabs candidates that lists the audio-transcript synchronisation exercise and the voice-dubbing review prompt alongside classic algorithm problems and behavioural questions, and one senior full-stack, frontend-leaning account describing a 90-minute technical assessment, a recruiter screen and a live practical fix. Four further accounts add the stack: a second Aced account with a practical front-end debugging round in a small React app, and three Taro full-stack accounts with React bug fixes on CoderPad, a React knowledge check and a React and TypeScript take-home. They establish that those exercises and that shape occurred; they do not establish exact wording, the current format, or how other teams interview.',
       'Confirm the exercise types, the allowed tools, the expected stack and the timing with the recruiter and the job description. ElevenLabs publishes its roles on its careers site; use that for product context, not as evidence of interview content.',
     ],
   },
@@ -218,7 +218,7 @@ export const ELEVENLABS_COMPANY_PREVIEW: AuthoredCompanyPreview = {
       { day: 'Day 1', focus: 'Media timing: requestAnimationFrame loops, currentTime, binary search over timestamps, rendering only the active segment.', artifact: 'A transcript highlighter that survives seek and rate changes.' },
       { day: 'Day 2', focus: 'Review workflows: entities with explicit status, comments bound to versions, conflict handling.', artifact: 'A one-page state and recovery diagram for a dubbing review screen.' },
       { day: 'Day 3', focus: 'Debugging live: stale closures, overlapping requests, derived state; narrate every step.', artifact: 'The async-race fix with a written root cause.' },
-      { day: 'Day 4', focus: 'Timed drills: two React tasks and two medium algorithm problems in ninety minutes.', artifact: 'Four submissions with a time log.' },
+      { day: 'Day 4', focus: 'Timed drills: React tasks and LeetCode-style problems in ninety minutes, the mix two Taro accounts describe for the CoderPad round.', artifact: 'Submissions with a time log.' },
       { day: 'Day 5', focus: 'Streaming playback: request identity, AbortController, media element control, status states.', artifact: 'A streaming player that ignores chunks from a cancelled request.' },
       { day: 'Day 6', focus: 'Product thinking: decompose one creator workflow into UI, API and jobs; name the failure states.', artifact: 'A written decomposition with open questions for the interviewer.' },
       { day: 'Day 7', focus: 'Mock loop: one timed assessment, one live fix, one design walkthrough, each narrated.', artifact: 'A list of the questions you will ask the recruiter about format, tools and stack.' },
@@ -231,7 +231,7 @@ export const ELEVENLABS_COMPANY_PREVIEW: AuthoredCompanyPreview = {
       { question: 'Are these the real ElevenLabs questions?', answer: 'No. They are FrontendAtlas practice versions modelled on prompts listed in a candidate-sourced bank and on one senior interview account. The wording, the data and the test cases are ours.' },
       { question: 'How long is the assessment?', answer: 'One public account describes a 90-minute technical assessment that came before the recruiter screen; it does not say how many questions it had or what they covered. One account cannot establish the current format; confirm it with the recruiter.' },
       { question: 'Do I need audio engineering knowledge?', answer: 'The public prompts are about interface behaviour around audio: synchronising a highlight with playback and reviewing dubbing work. Comfort with media elements, timing and streaming matters more than signal processing.' },
-      { question: 'Is the loop React-specific?', answer: 'The public account mentions React tasks and the senior role was titled full-stack, frontend-leaning. Prepare the same contracts in your own framework first, then once in React.' },
+      { question: 'Is the loop React-specific?', answer: 'The senior Aced account does not name a stack. A second Aced account describes a practical front-end debugging round in a small React app, and three Taro full-stack accounts mention React bug fixes, a React knowledge check and a React and TypeScript take-home, so React is the safe default. Prepare the same contracts in your own framework first, then once in React.' },
     ],
   },
   resourceLinks: {
@@ -255,7 +255,11 @@ export const ELEVENLABS_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     intro: 'These links support the public context used by the guide. Their notes state what each source can and cannot establish about preparation.',
     items: [
       { label: ELEVENLABS_BANK_LABEL, url: ELEVENLABS_BANK_URL, note: 'A question bank marked as updated by ElevenLabs candidates. It establishes that the audio-transcript synchronisation exercise and the voice-dubbing review prompt were listed; it cannot establish wording, frequency or which role each belongs to.', kind: 'report' },
-      { label: ELEVENLABS_EXPERIENCE_LABEL, url: ELEVENLABS_EXPERIENCE_URL, note: 'One self-reported senior account: a 90-minute technical assessment, then a recruiter screen, then a live round fixing a practical problem with the interviewer. It cannot establish the current format or the loops of other teams.', kind: 'report' },
+      { label: ELEVENLABS_EXPERIENCE_LABEL, url: ELEVENLABS_EXPERIENCE_URL, note: 'One self-reported senior account, marked in progress and not verified by Aced: a 90-minute technical assessment, then a recruiter screen, then a live round fixing a practical problem with the interviewer. It cannot establish the current format or the loops of other teams.', kind: 'report' },
+      { label: 'Public report: ElevenLabs full-stack, frontend-leaning interview account on Aced, 2025', url: 'https://www.aced.io/experiences/eleven-labs-frontend-engineer-interview-c79e72', note: 'One self-reported account, rejected: a recruiter screen, a LeetCode-style Python round, a practical front-end debugging round in a small React app and a product-focused decomposition interview, with no system design. Only its overview is public.', kind: 'report' },
+      { label: 'Public report: ElevenLabs full-stack engineer interview on Taro, 2024', url: 'https://www.jointaro.com/interviews/companies/elevenlabs/experiences/full-stack-engineer-united-states-august-1-2024-no-offer-positive-675ce47d/', note: 'A technical recruiter call, React and LeetCode problems on CoderPad (fix a React bug, finish a React component), a text-to-speech React component built with an engineer and a final interview. Taro dates are approximate.', kind: 'report' },
+      { label: 'Public report: ElevenLabs full-stack engineer offer on Taro, 2024', url: 'https://www.jointaro.com/interviews/companies/elevenlabs/experiences/full-stack-engineer-poland-august-1-2024-accepted-offer-positive-766f1de3/', note: 'An async LeetCode easy or medium question with a React knowledge check, a coding interview with changing constraints and a system design interview. Taro dates are approximate.', kind: 'report' },
+      { label: 'Public report: ElevenLabs full-stack engineer offer on Taro, 2025', url: 'https://www.jointaro.com/interviews/companies/elevenlabs/experiences/full-stack-engineer-united-kingdom-may-1-2025-accepted-offer-positive-8ac03948/', note: 'A take-home technical exercise in TypeScript and React, a technical interview, a product interview and a call with the CTO, over about a month. Taro dates are approximate.', kind: 'report' },
       { label: 'ElevenLabs careers', url: 'https://elevenlabs.io/careers', note: 'Official roles and teams for product context only, not evidence of interview content or format.', kind: 'official' },
     ],
   },

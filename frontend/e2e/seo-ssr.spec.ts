@@ -755,7 +755,7 @@ const EDITORIAL_NOTE_CASES = [
     title: 'Tesla Frontend Interview Process and Practice Questions',
     h1: 'Tesla Frontend Interview Questions and Process',
     headings: [
-      'Assessment, screen, then a three to five round onsite',
+      'Assessment, screen, then a three or four round onsite',
       'Rehearse the reported stages in order',
       'Common questions about Tesla frontend interviews',
     ],
@@ -818,7 +818,7 @@ const EDITORIAL_NOTE_CASES = [
     title: 'Stripe Frontend Interview Process and Practice Questions',
     h1: 'Stripe Frontend Interview Questions and Process',
     headings: [
-      'A multi-part screen, then an onsite of five rounds',
+      'A multi-part screen, then an onsite of four or five rounds',
       'Rehearse the bug squash and the JSON screen',
       'Common questions about Stripe frontend interviews',
     ],
@@ -1189,7 +1189,7 @@ const AUTHORED_GUIDE_CASES = [
     prompts: [
       { id: 'fetch-and-render-in-one-hour', title: 'Fetch data and render it in one hour, in TypeScript, with every request state' },
       { id: 'authenticated-api-pairing', title: 'Display data from an authenticated API in a React component, pairing with the interviewer' },
-      { id: 'hackerrank-screen-three-tasks', title: 'Clear the HackerRank screen: three JavaScript tasks in 85 minutes' },
+      { id: 'hackerrank-screen-three-tasks', title: 'Clear the HackerRank screen: three tasks in 85 minutes' },
       { id: 'recruiter-theory-check', title: 'Answer the recruiter-run theory check: reconciliation, microtasks versus macrotasks, the DOM tree' },
       { id: 'frontend-system-design-api-contracts', title: 'Design a product feature end to end: the frontend, its API contracts and the services behind them' },
     ],
@@ -1253,10 +1253,10 @@ const AUTHORED_GUIDE_CASES = [
   {
     label: 'xAI',
     path: '/companies/xai/preview',
-    title: 'xAI (now SpaceXAI) Frontend Interview Questions: 4 Prompts + Guide',
+    title: 'xAI (now SpaceXSI) Frontend Interview Questions: 4 Prompts + Guide',
     description:
-      'Prepare for an xAI (SpaceXAI) frontend interview with 4 practice prompts modelled on public postings and reports: chat UI, TS app, CSS screenshot, AI composer.',
-    h1: 'xAI (now SpaceXAI) Frontend Interview Questions',
+      'Prepare for an xAI (SpaceXSI) frontend interview with 4 practice prompts modelled on public postings and reports: chat UI, TS app, CSS screenshot, AI composer.',
+    h1: 'xAI (now SpaceXSI) Frontend Interview Questions',
     kicker: 'Public xAI prep guide',
     headings: [
       'Prepare for product judgment, not xAI trivia',
@@ -1392,7 +1392,7 @@ const AUTHORED_GUIDE_CASES = [
       { id: 'promise-without-promise', title: 'Write a Promise without using Promise, after the event-loop and async questions' },
       { id: 'recursive-hover-menu-react', title: 'Build a recursive multi-level hover menu in React' },
       { id: 'function-cache-flatten-deep-clone-new', title: 'Implement a function cache keyed by its arguments, then flatten an array, deep-clone an object and implement new' },
-      { id: 'http-caching-cookie-security-hour', title: 'Answer the HTTP, caching, cookie and security hour' },
+      { id: 'http-caching-cookie-security-hour', title: 'Answer the HTTP, caching, cookie and security round' },
       { id: 'written-test-and-css-questions', title: 'Clear the 90-minute written test and the CSS questions' },
     ],
     resources: [
@@ -3599,7 +3599,7 @@ test.describe('seo-ssr', () => {
       'DSA, JavaScript, browser, UI, system design',
       'Full practice set requires Premium',
       'What to study first for a Google frontend interview',
-      'Current process note — reviewed July 2026',
+      'Current process note — reviewed October 2026',
       'Seven Google frontend interview practice questions',
       'Walk through autocomplete request ordering before you code',
       'A 7-day Google frontend interview preparation plan',
@@ -3880,7 +3880,11 @@ test.describe('seo-ssr', () => {
     expect(anchor).toContain('target="_blank"');
 
     const apple = await readRawHtml(request, '/companies/apple/preview');
-    expect(rawVisibleTextPreserveCase(apple)).not.toContain('Official preparation pages from');
+    expect(rawVisibleTextPreserveCase(apple)).toContain('Official preparation pages from Apple');
+    expect(apple).toContain('href="https://www.apple.com/careers/us/interview_tips.html"');
+
+    const tesla = await readRawHtml(request, '/companies/tesla/preview');
+    expect(rawVisibleTextPreserveCase(tesla)).not.toContain('Official preparation pages from');
   });
 
   test('raw ByteDance company preview lists sourced items with nofollow report links, and Microsoft shows no block', async ({ request }) => {

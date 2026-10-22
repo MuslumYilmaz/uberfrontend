@@ -76,7 +76,7 @@ Status on 2026-10-20, after a second check of each claim against its source.
    - The HackerRank detail is credited to a commenter.
    - The virtual DOM reply is credited to a ServiceNow-badged user.
    - LC 7711064 stays. The guide labels it as a search preview, following the existing rule for unreadable sources, and no prompt depends on it.
-5. **ElevenLabs guide: fixed.** The intro, the assessment prompt, the FAQ and the source note now match the readable account: a 90-minute technical assessment before the recruiter screen, then a live round fixing a practical problem. The "four questions", React and linked-list details are gone, and the prompt keeps its id with a new title.
+5. **ElevenLabs guide: fixed.** The intro, the assessment prompt, the FAQ and the source note now match the readable account: a 90-minute technical assessment before the recruiter screen, then a live round fixing a practical problem. The "four questions", React and linked-list details are gone, and the prompt keeps its id with a new title. (2026-10-22: the four-question phrase had survived in the source boundary, and React in the Day 4 plan, the FAQ and the react-autocomplete-search-starter catalog note; the page now cites the c79e72 Aced account and the EL3 to EL5 Taro accounts for the React detail.)
 6. **Datadog guide: fixed.** The Glassdoor previews are replaced by the readable 2024 Lisbon Taro account, which has the same real-time event viewer prompt. The careers link now points to the candidate experience page.
 7. **Spotify guide: re-checked, no change.** The 2021 comment reads: 'I was told that Web Interview for Spotify final round is "practical application of HTML, CSS, JS" e.g. build an image carousel'. The guide's "relayed being told … such as an image carousel" is a fair reading.
 8. **Official guides table: fixed.**
@@ -262,7 +262,7 @@ Reported loop sizes: two interviews (MS4), four (MS6, MS7), five or six (MS1, MS
 
 ## Apple
 
-**Readiness: ready, team-specific.** There is no official page: apple.com/careers has no interview content, and the jobs FAQ redirects to an Apple ID sign-in. Nine frontend accounts agree on a screen followed by a team loop of mostly frontend coding. The loop size and the behavioural content vary by team.
+**Readiness: ready, team-specific.** The only official page is a general interview-tips page (apple.com/careers/us/interview_tips.html) with no stages and no frontend content, found on 2026-10-22 after this doc first said none existed; the jobs FAQ redirects to an Apple ID sign-in. Nine frontend accounts agree on a screen followed by a team loop of mostly frontend coding. The loop size and the behavioural content vary by team.
 
 **Accounts** (Taro links are `https://www.jointaro.com/interviews/companies/apple/experiences/<slug>/`)
 
@@ -1012,3 +1012,7 @@ Interns: a behavioural interview and one technical round (SP12, two single accou
 - **Measure.** Read GSC 4–6 weeks after these tables deploy, looking at queries that contain "process", "rounds" or "loop", before adding more companies or changing the layout.
 - **Thin companies.** Netflix, Airbnb, OpenAI, ElevenLabs and Waymo get a table only when more first-hand frontend accounts appear. Add new accounts to the matching section here first.
 - **Re-check before editing a table.** Pages change: Spotify and Booking.com have moved their process pages, and OpenAI and ServiceNow now block direct reads. Re-read the official pages and update `checkedAt`.
+
+## Booking.com addendum, 2026-10-22
+
+The live page said 2025 loops had "a take-home and a pairing session" and gave recruiter-call and fit-interview durations without a cited source. Readable accounts: Taro software engineer 1, Amsterdam, interviewed 2025-08-19 ("1. HR 2. Take-home assignment + First technical session 3. System design 4. Engineering Manager", https://www.jointaro.com/interviews/companies/bookingcom/experiences/software-engineer-1-amsterdam-august-19-2025-no-offer-positive-bfc9d249/); Taro senior software engineer, Amsterdam, 2025-05-29 ("1. First coding round: Just an easy React coding exercise. 2. Second round: System design.", https://www.jointaro.com/interviews/companies/bookingcom/experiences/senior-software-engineer-amsterdam-may-29-2025-no-offer-neutral-4678e62e/); Taro frontend developer, 2025-09-06 (recruiter call, then "a technical interview with two engineers" with live coding, https://www.jointaro.com/interviews/companies/bookingcom/experiences/frontend-developer-south-korea-september-6-2025-accepted-offer-negative-069b312f/); Taro full-stack software engineer, 2022-05* ("Recruiter call (15 min)", "Fit Interview (60 min)", https://www.jointaro.com/interviews/companies/bookingcom/experiences/full-stack-software-engineer-bangladesh-may-1-2022-accepted-offer-positive-8784f953/, now BK12 in the registry). No readable account mentions a pairing session.
