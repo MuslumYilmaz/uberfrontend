@@ -294,7 +294,7 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
           label: 'Spread versus rest parameters',
           path: '/javascript/trivia/js-spread-vs-rest-parameters',
           access: 'free',
-          why: 'Syntax questions that precede the machine coding round.',
+          why: 'Syntax questions from the JavaScript concept round that follows machine coding.',
         },
         {
           label: 'Compare two objects',
