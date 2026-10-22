@@ -665,7 +665,7 @@ const EDITORIAL_NOTE_SMOKE = [
     title: 'Tesla Frontend Interview Process and Practice Questions',
     h1: 'Tesla Frontend Interview Questions and Process',
     headings: [
-      'Assessment, screen, then a three to five round onsite',
+      'Assessment, screen, then a three or four round onsite',
       'Rehearse the reported stages in order',
       'Common questions about Tesla frontend interviews',
     ],

@@ -340,16 +340,16 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
     slug: 'tesla',
     title: 'Tesla Frontend Interview Process and Practice Questions',
     h1: 'Tesla Frontend Interview Questions and Process',
-    description: 'How public reports describe Tesla frontend interviews: a Codility assessment, a one-hour technical screen, 3 to 5 onsite rounds and team-specific take-homes.',
+    description: 'How public reports describe Tesla frontend interviews: a Codility assessment, a one-hour technical screen, 3 or 4 onsite rounds and team-specific take-homes.',
     hero: {
       kicker: 'Public preview and process notes',
-      subtitle: 'Recruiter call, Codility assessment, technical screen and a three to five round onsite, as described in public interview reports from 2020 to 2026, with the free and premium items that rehearse each stage.',
+      subtitle: 'Recruiter call, Codility assessment, technical screen and a three or four round onsite, as described in public interview reports from 2020 to 2026, with the free and premium items that rehearse each stage.',
     },
     intro: ['Tesla publishes no frontend interview guide, so this page rests on public interview reports from 2020 to 2026. Several accounts say the format depends on the team, and a few describe what a recruiter planned rather than a finished loop.'],
     reportsDescribe: {
       kicker: 'What public interview reports describe',
-      title: 'Assessment, screen, then a three to five round onsite',
-      paragraphs: ['Most accounts open with a recruiter or HR call, then an online assessment, often on Codility, then a one-hour technical screen. The onsite runs three to five rounds of about 45 minutes and mixes frontend coding, an algorithm round, frontend system design and a behavioural or hiring manager conversation.'],
+      title: 'Assessment, screen, then a three or four round onsite',
+      paragraphs: ['Two accounts open with a recruiter or HR call; most start with an online assessment, often on Codility, then a one-hour technical screen. The onsite runs three or four rounds of about 45 minutes and mixes frontend coding, an algorithm round, frontend system design and a behavioural or hiring manager conversation.'],
       bullets: [
         {
           text: 'Assessments vary: two hours for five questions on Codility in one account, a three-hour assessment with HTML, CSS, a like button and a string puzzle in another.',
@@ -385,13 +385,13 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
           label: 'Color contrast ratio',
           path: '/javascript/coding/js-color-contrast-ratio',
           access: 'free',
-          why: 'A JavaScript task reported in a 2022 Codility assessment.',
+          why: 'A JavaScript task listed in a 2022 account that also had a Codility assessment.',
         },
         {
           label: 'Forms: validation and required fields',
           path: '/html/coding/html-forms-validation-required',
           access: 'free',
-          why: 'The same assessment asked for a login form.',
+          why: 'The same account lists a login form among its tasks.',
         },
         {
           label: 'Semantic HTML layout',
