@@ -3880,7 +3880,11 @@ test.describe('seo-ssr', () => {
     expect(anchor).toContain('target="_blank"');
 
     const apple = await readRawHtml(request, '/companies/apple/preview');
-    expect(rawVisibleTextPreserveCase(apple)).not.toContain('Official preparation pages from');
+    expect(rawVisibleTextPreserveCase(apple)).toContain('Official preparation pages from Apple');
+    expect(apple).toContain('href="https://www.apple.com/careers/us/interview_tips.html"');
+
+    const tesla = await readRawHtml(request, '/companies/tesla/preview');
+    expect(rawVisibleTextPreserveCase(tesla)).not.toContain('Official preparation pages from');
   });
 
   test('raw ByteDance company preview lists sourced items with nofollow report links, and Microsoft shows no block', async ({ request }) => {
