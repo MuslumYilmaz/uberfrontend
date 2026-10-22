@@ -683,12 +683,12 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
     description: 'How public reports describe Stripe frontend interviews: a 60 minute multi-part CoderPad screen, then an onsite with bug squash, integration and frontend design.',
     hero: {
       kicker: 'Public preview and process notes',
-      subtitle: 'Stripe describes its process only in general terms; public interview reports from 2021 to 2025 fill in the frontend loop: a multi-part CoderPad screen and an onsite built around a bug squash, an integration exercise and frontend design.',
+      subtitle: 'Stripe describes its process only in general terms; public interview reports from 2022 to 2025 fill in the frontend loop: a multi-part CoderPad screen and an onsite built around a bug squash, an integration exercise and frontend design.',
     },
     intro: ['The careers FAQ, linked below, describes a recruiter screen, a technical or skills-based assessment and interviews with the team, and says timelines vary by role, level and location. Candidates mention a preparation document that recruiters share; the detail here comes from public accounts.'],
     reportsDescribe: {
       kicker: 'What public interview reports describe',
-      title: 'A multi-part screen, then an onsite of five rounds',
+      title: 'A multi-part screen, then an onsite of four or five rounds',
       paragraphs: ['Accounts describe a 30-minute recruiter call and a 60-minute CoderPad screen with two to four exercises; one screen was a three-part exercise, another a four-digit code entry form. The onsite rows rest on fewer accounts: a programming exercise, a bug squash in an unfamiliar project, an integration of two provided tools, frontend design and a conversation about experience and goals.'],
       bullets: [
         {

@@ -236,6 +236,7 @@ const STRIPE_ST4 = report('Taro', `${STRIPE_TARO}/front-end-developer-india-nove
 const STRIPE_ST5 = report('Taro', `${STRIPE_TARO}/frontend-developer-barcelona-march-1-2025-no-offer-positive-c1c921ed/`, '2025-03');
 const STRIPE_ST6_PLAN = report('Blind (recruiter plan)', 'https://www.teamblind.com/post/Stripe-frontend-onsite-SfaGgc1a', '2024-11');
 const STRIPE_ST7 = report('Blind', 'https://www.teamblind.com/post/stripe-frontend-interview-be7f1ymm', '2024-07');
+const STRIPE_ST8 = report('Taro', `${STRIPE_TARO}/frontend-developer-canada-september-19-2025-no-offer-positive-caea53c0/`, '2025-09');
 const STRIPE_ROLE = 'Frontend engineers';
 
 const BYTEDANCE_CAMPUS = official('ByteDance: Early careers interview tips', 'https://jobs.bytedance.com/en/campus/interview-tips');
@@ -1193,9 +1194,9 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
           },
           {
             stage: 'Technical screen',
-            format: '60 minutes of live, multi-part coding in CoderPad, sometimes building a UI component.',
+            format: '60 minutes of live, multi-part coding in CoderPad, sometimes building a UI component; one screen was a three-part exercise.',
             appliesTo: STRIPE_ROLE,
-            sources: [STRIPE_CAREERS, STRIPE_ST3, STRIPE_ST5, STRIPE_ST7],
+            sources: [STRIPE_CAREERS, STRIPE_ST3, STRIPE_ST5, STRIPE_ST7, STRIPE_ST8],
             practice: { label: 'React fetch and render a list', path: '/react/coding/react-fetch-list-states' },
           },
           {

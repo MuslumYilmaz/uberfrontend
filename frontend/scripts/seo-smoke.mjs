@@ -701,7 +701,7 @@ const EDITORIAL_NOTE_SMOKE = [
     title: 'Stripe Frontend Interview Process and Practice Questions',
     h1: 'Stripe Frontend Interview Questions and Process',
     headings: [
-      'A multi-part screen, then an onsite of five rounds',
+      'A multi-part screen, then an onsite of four or five rounds',
       'Rehearse the bug squash and the JSON screen',
       'Common questions about Stripe frontend interviews',
     ],
