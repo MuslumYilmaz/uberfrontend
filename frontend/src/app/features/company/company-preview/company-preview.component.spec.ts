@@ -89,7 +89,7 @@ describe('CompanyPreviewComponent', () => {
 
     expect(payload.title).toBe('OpenAI Frontend Interview: 5 Practice Questions + Prep Guide');
     expect(payload.description).toBe(
-      'Practice for OpenAI frontend interviews with representative prompts on streaming chat UI, stale stream handling, optimistic React state, accessibility, and history design.',
+      'Practice for OpenAI frontend interviews: streaming chat UI, stale stream handling, optimistic React state, accessibility and conversation history design.',
     );
     expect(payload.canonical).toBe('/companies/openai/preview');
     expect(payload.robots).toBe('index,follow');
