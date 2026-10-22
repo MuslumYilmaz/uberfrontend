@@ -31,7 +31,7 @@ describe('CompanyOfficialGuidesComponent', () => {
   });
 
   it('renders nothing for a company without published pages', async () => {
-    const host = await render('apple', 'Apple');
+    const host = await render('tesla', 'Tesla');
     expect(host.querySelector('[data-testid="company-official-guides"]')).toBeNull();
     expect(host.textContent?.trim()).toBe('');
   });
