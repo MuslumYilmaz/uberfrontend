@@ -147,7 +147,7 @@ export const REVOLUT_COMPANY_PREVIEW: AuthoredCompanyPreview = {
       },
       {
         id: 'hackerrank-screen-three-tasks',
-        title: 'Clear the HackerRank screen: three JavaScript tasks in 85 minutes',
+        title: 'Clear the HackerRank screen: three tasks in 85 minutes',
         statement:
           'A timed online screen with three tasks of rising difficulty: two straightforward problems and one at a high-medium level. A later account recalls a standard sliding-window problem. Submit working code for all three with the time budget intact.',
         whatThisMeasures:

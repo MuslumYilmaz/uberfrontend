@@ -132,7 +132,7 @@ export const COMPANY_OFFICIAL_GUIDES: Readonly<Record<string, readonly CompanyOf
     {
       label: 'Get interview ready',
       url: 'https://jobs.uber.com/en/get-interview-ready/',
-      covers: 'The hub that links every Uber interview guide, including the engineering guides by domain.',
+      covers: 'The hub that links the Uber interview guides; its Engineering Interview Guide links the frontend, backend, data and iOS guides.',
       checkedAt: CHECKED,
     },
   ],
@@ -157,7 +157,7 @@ export const COMPANY_OFFICIAL_GUIDES: Readonly<Record<string, readonly CompanyOf
       label: 'Interview tips (TikTok early careers)',
       url: 'https://careers.tiktok.com/m/campus/interview-tips',
       covers:
-        'The same early-careers guidance as the ByteDance page, plus a note that some roles and regions invite candidates to an assessment that can take a few hours, sometimes alongside other candidates.',
+        'The same early-careers guidance as the ByteDance page, plus a note that some roles and regions invite candidates to an assessment that can take a few hours, sometimes alongside other candidates. A TikTok page; since January 2026 US TikTok hiring runs through a joint venture in which ByteDance holds a minority stake.',
       checkedAt: CHECKED_OCT_20,
     },
   ],
@@ -179,7 +179,7 @@ export const COMPANY_OFFICIAL_GUIDES: Readonly<Record<string, readonly CompanyOf
     {
       label: 'Netflix culture memo',
       url: 'https://jobs.netflix.com/culture',
-      covers: 'The culture memo that interview questions draw on, including which parts resonate with you and which do not.',
+      covers: 'The memo the new-grad and internship pages say interviewers may ask about, including which parts resonate with you and which do not.',
       checkedAt: CHECKED,
     },
   ],
@@ -238,7 +238,7 @@ export const COMPANY_OFFICIAL_GUIDES: Readonly<Record<string, readonly CompanyOf
       label: 'How we hire',
       url: 'https://careers.withwaymo.com/how-we-hire',
       covers:
-        'A first conversation with a sourcer or recruiter, one or two behavioural or technical phone or video interviews, then a virtual onsite with up to five interviewers of about 45 minutes each; AI tools are not allowed unless the instructions say so.',
+        'A first conversation with a sourcer or recruiter, one or two behavioural or technical phone or video interviews, then a virtual onsite with up to five interviewers of about 45 minutes each; AI tools are not allowed in assessments unless the instructions say so, and not at all in live interviews.',
       checkedAt: CHECKED_OCT_20,
     },
   ],
