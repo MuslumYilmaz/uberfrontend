@@ -280,7 +280,7 @@
     ],
     "sources": [
       {
-        "label": "Taro: Datadog senior frontend developer interview, Valbonne, October 2024",
+        "label": "Taro: Datadog senior frontend developer interview, 2024",
         "url": "https://www.jointaro.com/interviews/companies/datadog/experiences/senior-frontend-developer-valbonne-october-1-2024-accepted-offer-positive-47d59048/",
         "company": "datadog",
         "publisher": "Taro",
@@ -507,7 +507,7 @@
     ],
     "sources": [
       {
-        "label": "Taro: Apple front end developer interview, Hyderabad, December 2019",
+        "label": "Taro: Apple front end developer interview, December 2019",
         "url": "https://www.jointaro.com/interviews/companies/apple/experiences/front-end-developer-hyderabad-december-24-2019-no-offer-positive-7397b890/",
         "company": "apple",
         "publisher": "Taro",
@@ -608,7 +608,7 @@
     ],
     "sources": [
       {
-        "label": "Taro: Datadog senior frontend developer interview, Valbonne, October 2024",
+        "label": "Taro: Datadog senior frontend developer interview, 2024",
         "url": "https://www.jointaro.com/interviews/companies/datadog/experiences/senior-frontend-developer-valbonne-october-1-2024-accepted-offer-positive-47d59048/",
         "company": "datadog",
         "publisher": "Taro",
@@ -1538,7 +1538,7 @@
     ],
     "sources": [
       {
-        "label": "Taro: Datadog senior frontend engineer interview, Paris, September 2025",
+        "label": "Taro: Datadog senior frontend engineer interview, 2025",
         "url": "https://www.jointaro.com/interviews/companies/datadog/experiences/senior-frontend-engineer-paris-september-1-2025-accepted-offer-positive-2a1ddfe8/",
         "company": "datadog",
         "publisher": "Taro",
@@ -1594,7 +1594,7 @@
         "note": "The thread lists a Google prompt to return a version of a function that runs on a timeout. Debounce is a practice version of that shape; the thread is a compiled list, not one loop."
       },
       {
-        "label": "Taro: Netflix senior frontend engineer interview, Warsaw, November 2024",
+        "label": "Taro: Netflix senior frontend engineer interview, 2024",
         "url": "https://www.jointaro.com/interviews/companies/netflix/experiences/senior-frontend-engineer-warsaw-masovia-november-1-2024-no-offer-negative-c999399f/",
         "company": "netflix",
         "publisher": "Taro",
@@ -3143,7 +3143,7 @@
         "note": "One TikTok front end account describes implementing a JavaScript built-in method in the first technical round. map is a representative drill, not the reported method."
       },
       {
-        "label": "Taro: Meta front end developer intern interview, London, December 2021",
+        "label": "Taro: Meta front end developer intern interview, 2021",
         "url": "https://www.jointaro.com/interviews/companies/meta/experiences/front-end-developer-intern-london-england-december-1-2021-no-offer-positive-4f6ff45b/",
         "company": "meta",
         "publisher": "Taro",
@@ -3423,7 +3423,7 @@
     ],
     "sources": [
       {
-        "label": "Taro: Datadog senior frontend developer interview, Lisbon, November 2025",
+        "label": "Taro: Datadog senior frontend developer interview, November 2025",
         "url": "https://www.jointaro.com/interviews/companies/datadog/experiences/senior-frontend-developer-lisbon-lisbon-district-november-23-2025-no-offer-positive-1a88bdda/",
         "company": "datadog",
         "publisher": "Taro",
@@ -3640,7 +3640,7 @@
     ],
     "sources": [
       {
-        "label": "Taro: Datadog senior frontend developer interview, Lisbon, November 2025",
+        "label": "Taro: Datadog senior frontend developer interview, November 2025",
         "url": "https://www.jointaro.com/interviews/companies/datadog/experiences/senior-frontend-developer-lisbon-lisbon-district-november-23-2025-no-offer-positive-1a88bdda/",
         "company": "datadog",
         "publisher": "Taro",
@@ -6491,7 +6491,7 @@
         "note": "The bank lists an exercise to synchronize audio playback timing with transcript highlighting. This timer-manager drill practises the scheduling control that exercise needs; it is not the reported exercise itself."
       },
       {
-        "label": "Taro: Meta front end engineer intern interview, United States, January 2022",
+        "label": "Taro: Meta front end engineer intern interview, 2022",
         "url": "https://www.jointaro.com/interviews/companies/meta/experiences/front-end-engineer-intern-united-states-january-1-2022-accepted-offer-positive-2e0f20e4/",
         "company": "meta",
         "publisher": "Taro",
@@ -6596,7 +6596,7 @@
     ],
     "sources": [
       {
-        "label": "Taro: Meta front end engineer intern interview, United States, January 2022",
+        "label": "Taro: Meta front end engineer intern interview, 2022",
         "url": "https://www.jointaro.com/interviews/companies/meta/experiences/front-end-engineer-intern-united-states-january-1-2022-accepted-offer-positive-2e0f20e4/",
         "company": "meta",
         "publisher": "Taro",
@@ -6785,7 +6785,7 @@
         "note": "One senior account describes implementing a function that checks whether two DOM trees are identical, node by node. Finding the corresponding node in twin trees practises the same lockstep traversal; it is not the reported exercise."
       },
       {
-        "label": "Taro: Meta front end developer intern interview, London, December 2021",
+        "label": "Taro: Meta front end developer intern interview, 2021",
         "url": "https://www.jointaro.com/interviews/companies/meta/experiences/front-end-developer-intern-london-england-december-1-2021-no-offer-positive-4f6ff45b/",
         "company": "meta",
         "publisher": "Taro",
@@ -6882,7 +6882,7 @@
     ],
     "sources": [
       {
-        "label": "Taro: Meta front end developer interview, San Francisco, June 2024",
+        "label": "Taro: Meta front end developer interview, June 2024",
         "url": "https://www.jointaro.com/interviews/companies/meta/experiences/front-end-developer-san-francisco-ca-june-27-2024-no-offer-positive-07526bae/",
         "company": "meta",
         "publisher": "Taro",
@@ -9251,7 +9251,7 @@
     ],
     "sources": [
       {
-        "label": "Taro: Walmart front end developer interview, India, October 2020",
+        "label": "Taro: Walmart front end developer interview, October 2020",
         "url": "https://www.jointaro.com/interviews/companies/walmart/experiences/front-end-developer-india-october-19-2020-no-offer-neutral-93bed894/",
         "company": "walmart",
         "publisher": "Taro",
@@ -9405,7 +9405,7 @@
     ],
     "sources": [
       {
-        "label": "Taro: Tesla front end developer interview, Los Angeles, 2022",
+        "label": "Taro: Tesla front end developer interview, 2022",
         "url": "https://www.jointaro.com/interviews/companies/tesla/experiences/front-end-developer-los-angeles-ca-january-1-2022-no-offer-negative-eadce28f/",
         "company": "tesla",
         "publisher": "Taro",
