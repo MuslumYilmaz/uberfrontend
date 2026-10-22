@@ -947,16 +947,16 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
     slug: 'airbnb',
     title: 'Airbnb Frontend Interview Practice and Official FAQ',
     h1: 'Airbnb Frontend Interview Practice',
-    description: 'A small Airbnb frontend practice grouping with the official Airbnb careers FAQ. No public frontend interview reports have been read for this page yet.',
+    description: 'How two public Airbnb frontend accounts and the official careers FAQ describe the loop: a screen with passing tests, React UI coding and architecture questions.',
     hero: {
       kicker: 'Public preview',
-      subtitle: 'Three coding and two concept items grouped under Airbnb, plus the official careers FAQ. This page grows when public frontend interview reports can be read in full.',
+      subtitle: 'One coding component in three frameworks and two concept items grouped under Airbnb, plus the official careers FAQ and what two public frontend accounts describe.',
     },
-    intro: ['The official careers FAQ, linked below, says the process can involve a test, a video or an event, that candidates meet several members of the team, and gives response times; it also warns about recruiting scams. FrontendAtlas has not yet read a public frontend interview report for Airbnb in full, so this page makes no claim about the rounds.'],
+    intro: ['The official careers FAQ, linked below, says the process can involve a test, a video or an event, that candidates meet several members of the team, and gives response times; it also warns about recruiting scams. Two public frontend accounts from 2022 and 2024 and a few Blind threads describe a technical screen where the tests must pass, UI coding in React or plain HTML, CSS and JavaScript, one algorithm question and one architecture question. They are too few for a stage-by-stage table, so this page summarises them without one.'],
     prepSteps: {
       kicker: 'How to prepare with this grouping',
       title: 'An editorial practice grouping',
-      intro: 'None of these items comes from a public Airbnb interview report. They are staples of frontend loops in general.',
+      intro: 'The chips input is an editorial grouping with no Airbnb account behind it. Closures and the event loop are named as JavaScript fundamentals in a 2024 Blind comment about an Airbnb frontend loop.',
       steps: [
         {
           label: 'Closures',
@@ -996,7 +996,7 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
       items: [
         {
           question: 'Why is this page short?',
-          answer: 'No public frontend interview report for Airbnb has been read in full yet, so the page lists the official FAQ and an editorial practice grouping only. It grows when readable accounts appear.',
+          answer: 'Only two full first-person Airbnb frontend accounts and a few Blind comment threads are readable, so this page summarises them without a stage table. It grows as more accounts can be read in full.',
         },
         {
           question: 'Does Airbnb publish interview guidance?',
