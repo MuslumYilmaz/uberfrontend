@@ -1926,6 +1926,12 @@ try {
       heading: 'Official preparation pages from Google',
       link: 'https://www.google.com/about/careers/applications/interview-tips',
     },
+    {
+      label: 'Apple',
+      route: '/companies/apple/preview',
+      heading: 'Official preparation pages from Apple',
+      link: 'https://www.apple.com/careers/us/interview_tips.html',
+    },
   ];
   for (const guide of OFFICIAL_GUIDE_SMOKE) {
     const body = await curlBody(`${base}${guide.route}`, { followRedirects: true, userAgent: GOOGLEBOT_USER_AGENT });
@@ -1939,10 +1945,10 @@ try {
     });
   }
   {
-    const body = await curlBody(`${base}/companies/apple/preview`, { followRedirects: true, userAgent: GOOGLEBOT_USER_AGENT });
+    const body = await curlBody(`${base}/companies/tesla/preview`, { followRedirects: true, userAgent: GOOGLEBOT_USER_AGENT });
     const leaked = extractVisibleText(body).includes(normalizeText('Official preparation pages from'));
     checks.push({
-      name: 'Apple company preview has no official preparation pages table',
+      name: 'Tesla company preview has no official preparation pages table',
       ok: !leaked,
       detail: leaked ? 'table rendered without data' : 'absent',
     });
