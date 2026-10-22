@@ -55,7 +55,7 @@ jobs:
 
   e2e:
     name: Playwright Critical
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04  # Playwright 1.57 cannot install browsers on ubuntu-26.04, which ubuntu-latest became on 2026-10-22
     timeout-minutes: 35
     defaults:
       run:
@@ -147,7 +147,7 @@ jobs:
 
   e2e-extended:
     name: Playwright Extended
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04  # Playwright 1.57 cannot install browsers on ubuntu-26.04, which ubuntu-latest became on 2026-10-22
     timeout-minutes: 35
     defaults:
       run:
@@ -205,7 +205,7 @@ jobs:
     name: Interview mocked (${{ matrix.browser }})
     needs: changes
     if: needs.changes.outputs.interview == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04  # Playwright 1.57 cannot install browsers on ubuntu-26.04, which ubuntu-latest became on 2026-10-22
     timeout-minutes: 30
     strategy:
       fail-fast: false
@@ -271,7 +271,7 @@ jobs:
     name: Interview production full-stack (${{ matrix.browser }})
     needs: changes
     if: needs.changes.outputs.interview == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04  # Playwright 1.57 cannot install browsers on ubuntu-26.04, which ubuntu-latest became on 2026-10-22
     timeout-minutes: 45
     strategy:
       fail-fast: false
@@ -368,7 +368,7 @@ jobs:
   e2e-perf:
     name: Playwright Perf Smoke
     if: github.event_name == 'workflow_dispatch' && inputs.run_perf == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04  # Playwright 1.57 cannot install browsers on ubuntu-26.04, which ubuntu-latest became on 2026-10-22
     timeout-minutes: 20
     defaults:
       run:
