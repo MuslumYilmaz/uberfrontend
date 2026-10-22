@@ -198,4 +198,5 @@ Waves 1, 2 and 4 (content modules, editorial notes, process registry): the Karma
 
 | Wave | State | Date |
 |---|---|---|
-| 1 to 5 | proposed, not started | 2026-10-22 |
+| 1 | done on dev, not pushed: 47048006 Airbnb, be6d0775 Apple (copy, official row, vue autocomplete source, research docs), 46e17691 xAI (SpaceXSI), 461b9ba8 JPMorgan Chase, c6340e8c Revolut (summary, official row, video note), b9b596a3 Amazon (note, Leadership Principles row, hub URL), cf81ece6 Microsoft, 35883a82 Uber. Karma company-previews specs 36/36; prerender guard on a clean dist run after the last commit (see the session report). The JPMorgan Aced account keeps its 2026-05 evidence date from the 2026-10-21 full read; the page copy uses only the public summary. | 2026-10-22 |
+| 2 to 5 | proposed, not started. Added to W2.1: the react-autocomplete-search-starter ElevenLabs source note in `cdn/questions/react/coding.json` still says "a 90-minute assessment with four questions"; fix it with the module. | 2026-10-22 |
