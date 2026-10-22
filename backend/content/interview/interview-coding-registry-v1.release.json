@@ -2,15 +2,15 @@
   "artifacts": {
     "private": {
       "file": "interview-coding-registry-v1.private.json",
-      "sha256": "debf9dbdbb1ebf23ad3d5c63ae528982dfb7aeff62e2ac631c729046892e5c6a"
+      "sha256": "3be9ad63bc7d42a0f4536b769a485dceb75a120161b9678dafa19291367c0df2"
     },
     "public": {
       "file": "interview-coding-registry-v1.public.json",
-      "sha256": "76e4cadc98b6d2c6e1b2b08ad06eda912ad04b48ded25cbf004240c6de29a53a"
+      "sha256": "9c8851a506579483641709e8988933c45b35ad852f54ce8c1e8d4e368e95611d"
     }
   },
-  "contentHash": "e70910fba7402a5221be9e16e4cd0640615c16db05d2cf63c97a4ecc855e5e9a",
-  "definitionHash": "f6688700f0ec88034a14298a162949ab1093baa3887474d6767e5d1b7dfb291d",
+  "contentHash": "3a29dcbcebbc6905e8b1f6a8a5a235e3ad58255a8caef42952a6c009591b8dce",
+  "definitionHash": "a994a816b873e7c7cf7254417e7a82140f375425e0fd11082d639d0b5126e8d1",
   "enabledVariantCount": 60,
   "finalApproval": {
     "approvedAt": "2026-08-24",
@@ -21,13 +21,14 @@
       "2026-10-15 source-pin maintenance: registryContentHash refreshed after the js-debounce, js-unique-array and the three tabs-switcher source questions gained public source lists. Public variant content is unchanged apart from contentHash; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release.",
       "2026-10-15 source-pin maintenance: registryContentHash refreshed after the js-concurrency-map-limit, js-group-by, react-debounced-search and react-pagination-table source questions gained company tags and public source lists. Public variant content is unchanged apart from contentHash; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release.",
       "2026-10-15 source-pin maintenance: registryContentHash refreshed after the public source lists on the pinned source questions gained a company field. Public variant content is unchanged apart from contentHash; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release.",
-      "2026-10-17 source-pin maintenance: registryContentHash refreshed after the js-debounce, js-group-by, js-once, js-unique-array, react-contact-form-starter, react-debounced-search and react-shopping-cart source questions gained company tags and public source lists for the European company pages. Public variant content is unchanged apart from contentHash; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release."
+      "2026-10-17 source-pin maintenance: registryContentHash refreshed after the js-debounce, js-group-by, js-once, js-unique-array, react-contact-form-starter, react-debounced-search and react-shopping-cart source questions gained company tags and public source lists for the European company pages. Public variant content is unchanged apart from contentHash; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release.",
+      "2026-10-22 source-pin maintenance: registryContentHash refreshed after the js-unique-array, js-debounce and react-debounced-search source questions had Taro cities and placeholder months removed from their public source labels. Public variant content is unchanged apart from that label text; no new approval."
     ],
-    "registryContentHash": "e70910fba7402a5221be9e16e4cd0640615c16db05d2cf63c97a4ecc855e5e9a",
+    "registryContentHash": "3a29dcbcebbc6905e8b1f6a8a5a235e3ad58255a8caef42952a6c009591b8dce",
     "registryVersion": "1.1.0",
     "selectionDefinitionHash": "95ae46b01019649017306384cd4928315a33ccb8d77c50f48306b2ecb5bc4c3e"
   },
-  "registryContentHash": "e70910fba7402a5221be9e16e4cd0640615c16db05d2cf63c97a4ecc855e5e9a",
+  "registryContentHash": "3a29dcbcebbc6905e8b1f6a8a5a235e3ad58255a8caef42952a6c009591b8dce",
   "registryId": "frontend-interview-coding-registry-v1",
   "registryVersion": "1.1.0",
   "schemaVersion": "1.0.0",
@@ -144,7 +145,7 @@
       "revision": 1
     },
     {
-      "contentHash": "acf3f2c448be9f08c4a30f1a79a98cae7239aa2e2623cf7098725429ea9766d5",
+      "contentHash": "db1aae580d6682ac9511fe1a29adb028c143764b6d42654e21d583820ab1954a",
       "enabled": true,
       "id": "int-code-core-web-junior-unique-array-v1",
       "revision": 1
@@ -156,7 +157,7 @@
       "revision": 1
     },
     {
-      "contentHash": "6b07d35920d532d29fb52ffce203fac3b77fcfa991f256cfe79e2347ff18ed78",
+      "contentHash": "0a0e7b84212755963530aac7e36eca4d5bb1fafe084821ea024ffb1abb4c8ca0",
       "enabled": true,
       "id": "int-code-core-web-mid-debounce-v1",
       "revision": 1
@@ -288,7 +289,7 @@
       "revision": 1
     },
     {
-      "contentHash": "5f4d7c31afaef28688fece2e657b1c0bc8e12f2d3ba550cd2d28744e08284055",
+      "contentHash": "a64b16a8d119050e0bef30688dba9f74e8c0a9dfc1dc8615d3db678fc33783de",
       "enabled": true,
       "id": "int-code-react-senior-debounced-search-v1",
       "revision": 1

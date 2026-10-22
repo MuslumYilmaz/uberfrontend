@@ -9,7 +9,7 @@
     "approvedBy": "project-owner",
     "approvedAt": "2026-08-24",
     "registryVersion": "1.1.0",
-    "registryContentHash": "e70910fba7402a5221be9e16e4cd0640615c16db05d2cf63c97a4ecc855e5e9a",
+    "registryContentHash": "3a29dcbcebbc6905e8b1f6a8a5a235e3ad58255a8caef42952a6c009591b8dce",
     "selectionDefinitionHash": "95ae46b01019649017306384cd4928315a33ccb8d77c50f48306b2ecb5bc4c3e",
     "notes": [
       "Project owner approved coding registry v1.1.0 for editorial-gold production use after the release-readiness audit.",
@@ -17,12 +17,13 @@
       "2026-10-15 source-pin maintenance: registryContentHash refreshed after the js-debounce, js-unique-array and the three tabs-switcher source questions gained public source lists. Public variant content is unchanged apart from contentHash; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release.",
       "2026-10-15 source-pin maintenance: registryContentHash refreshed after the js-concurrency-map-limit, js-group-by, react-debounced-search and react-pagination-table source questions gained company tags and public source lists. Public variant content is unchanged apart from contentHash; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release.",
       "2026-10-15 source-pin maintenance: registryContentHash refreshed after the public source lists on the pinned source questions gained a company field. Public variant content is unchanged apart from contentHash; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release.",
-      "2026-10-17 source-pin maintenance: registryContentHash refreshed after the js-debounce, js-group-by, js-once, js-unique-array, react-contact-form-starter, react-debounced-search and react-shopping-cart source questions gained company tags and public source lists for the European company pages. Public variant content is unchanged apart from contentHash; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release."
+      "2026-10-17 source-pin maintenance: registryContentHash refreshed after the js-debounce, js-group-by, js-once, js-unique-array, react-contact-form-starter, react-debounced-search and react-shopping-cart source questions gained company tags and public source lists for the European company pages. Public variant content is unchanged apart from contentHash; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release.",
+      "2026-10-22 source-pin maintenance: registryContentHash refreshed after the js-unique-array, js-debounce and react-debounced-search source questions had Taro cities and placeholder months removed from their public source labels. Public variant content is unchanged apart from that label text; no new approval."
     ]
   },
-  "definitionHash": "f6688700f0ec88034a14298a162949ab1093baa3887474d6767e5d1b7dfb291d",
+  "definitionHash": "a994a816b873e7c7cf7254417e7a82140f375425e0fd11082d639d0b5126e8d1",
   "reviewBatch": {
-    "reviewedDefinitionHash": "f6688700f0ec88034a14298a162949ab1093baa3887474d6767e5d1b7dfb291d",
+    "reviewedDefinitionHash": "a994a816b873e7c7cf7254417e7a82140f375425e0fd11082d639d0b5126e8d1",
     "reviewedAt": "2026-08-24",
     "technical": {
       "reviewer": "codex-interview-coding-technical-v1",
@@ -36,7 +37,8 @@
         "2026-10-15 source-pin maintenance review: the js-debounce, js-unique-array, react-tabs-switcher, angular-tabs-switcher and vue-tabs-switcher catalog entries add public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval.",
         "2026-10-15 source-pin maintenance review: the js-concurrency-map-limit, js-group-by, react-debounced-search and react-pagination-table catalog entries add company tags and public source lists pointing at public interview reports; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval.",
         "2026-10-15 source-pin maintenance review: the public source lists on angular-debounced-search, angular-tabs-switcher, js-concurrency-map-limit, js-debounce, js-fetch-json-timeout, js-group-by, js-unique-array, react-debounced-search, react-nested-comments, react-pagination-table, react-tabs-switcher, vue-tabs-switcher gain a company field naming the company each account concerns; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval.",
-        "2026-10-17 source-pin maintenance review: the js-debounce, js-group-by, js-once, js-unique-array, react-contact-form-starter, react-debounced-search and react-shopping-cart catalog entries gain company tags and, where a public interview account was read in full, public source lists for Revolut, Zalando, Spotify and Booking.com; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
+        "2026-10-17 source-pin maintenance review: the js-debounce, js-group-by, js-once, js-unique-array, react-contact-form-starter, react-debounced-search and react-shopping-cart catalog entries gain company tags and, where a public interview account was read in full, public source lists for Revolut, Zalando, Spotify and Booking.com; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval.",
+        "2026-10-22 source-pin maintenance review: the js-unique-array, js-debounce and react-debounced-search catalog entries change only the label text of public sources (a Taro city or a placeholder month removed); starters, tests, solutions, rubrics and remediation are unchanged."
       ]
     },
     "editorial": {
@@ -535,7 +537,7 @@
       "level": "junior",
       "catalog": "javascript",
       "sourceQuestionId": "js-unique-array",
-      "expectedQuestionHash": "3bcebb379ce8820ac8d67fdf641a03ba8b2c9ba71c09571191428a439c307721",
+      "expectedQuestionHash": "5d9bfcf37cd819a3b0576a3f96db07dc4e477981b91ecd22fe12455db110e848",
       "timeLimitSeconds": 1500,
       "roundLimit": 1,
       "runner": "javascript",
@@ -622,7 +624,7 @@
       "level": "mid",
       "catalog": "javascript",
       "sourceQuestionId": "js-debounce",
-      "expectedQuestionHash": "7f52f6dbfc2bbc3330a69ac3d9ee6f922d068fad1edcc7a3c167e0eb8169e1f4",
+      "expectedQuestionHash": "d6c1d9c1c6bc085cbff56c68f055b0de96901045f521e73dbb1811876b5f4cdf",
       "timeLimitSeconds": 2100,
       "roundLimit": 1,
       "runner": "javascript",
@@ -975,7 +977,7 @@
       "level": "senior",
       "catalog": "react",
       "sourceQuestionId": "react-debounced-search",
-      "expectedQuestionHash": "1900a01fea30c1f5a41cbea408f4a6347b8c5db295191887819bed87840705fe",
+      "expectedQuestionHash": "289fe14b32b2552c45f3aba3d38ed2e477ae9b925aa303c027899a77ccaadeda",
       "expectedStarterAssetHash": "9cc55b69ec9e100916051df2661a7c8b5786e8a12cf88ff0b1e9dc405af97bff",
       "expectedPressureAssetHash": "059c690882468d40432598a815947da6eba101de556a4925f7b4148d204971e2",
       "timeLimitSeconds": 2700,
