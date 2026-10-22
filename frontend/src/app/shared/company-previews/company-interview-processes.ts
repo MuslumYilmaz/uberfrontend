@@ -367,6 +367,7 @@ const SPOTIFY_TARO = 'https://www.jointaro.com/interviews/companies/spotify/expe
 const SPOTIFY_SP1 = report('Blind', 'https://www.teamblind.com/post/spotify-final-round-web-interview-qyug2zqx', '2022-04');
 const SPOTIFY_SP1_DESIGN = report('Blind', 'https://www.teamblind.com/post/weak-system-design-interview-for-spotify-chances-of-no-hire-00wjs6rg', '2022-04');
 const SPOTIFY_SP2 = report('Blind', 'https://www.teamblind.com/post/spotify-senior-web-engineer-interview-k27u5vu7', '2022-04');
+const SPOTIFY_SP3 = report('Blind', 'https://www.teamblind.com/post/Spotify-Web-Engineer-Interview-hNTex8N7', '2021-10');
 const SPOTIFY_SP4 = report('Taro', `${SPOTIFY_TARO}/senior-web-engineer-united-states-august-30-2022-no-offer-neutral-e746c706/`, '2022-08');
 const SPOTIFY_SP5 = report('Taro', `${SPOTIFY_TARO}/web-engineer-toronto-on-april-1-2022-no-offer-positive-a2f8744e/`, '2022-04');
 const SPOTIFY_SP6 = report('Taro', `${SPOTIFY_TARO}/web-engineer-new-york-ny-april-1-2023-no-offer-negative-5bce68df/`, '2023-04');
@@ -1616,21 +1617,21 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
             stage: 'Technical screen',
             format: '60–75 minutes with one or two engineers: JavaScript and CSS questions, an easy algorithm problem, or rebuilding an HTML and CSS mockup.',
             appliesTo: SPOTIFY_ROLE,
-            sources: [SPOTIFY_JOURNEY, SPOTIFY_SP4, SPOTIFY_SP5, SPOTIFY_SP8, SPOTIFY_SP9],
+            sources: [SPOTIFY_JOURNEY, SPOTIFY_SP2, SPOTIFY_SP4, SPOTIFY_SP5, SPOTIFY_SP8, SPOTIFY_SP9],
             practice: { label: 'The event loop', path: '/javascript/trivia/js-event-loop' },
           },
           {
             stage: 'Final: web practical',
             format: 'A plain HTML, CSS and JavaScript build, such as a form that fetches from an API into the DOM or a traffic light, or web domain questions.',
             appliesTo: SPOTIFY_ROLE,
-            sources: [SPOTIFY_SP1_DESIGN, SPOTIFY_SP2, SPOTIFY_SP4, SPOTIFY_SP5, SPOTIFY_SP7, SPOTIFY_SP9],
+            sources: [SPOTIFY_SP1_DESIGN, SPOTIFY_SP3, SPOTIFY_SP4, SPOTIFY_SP5, SPOTIFY_SP7, SPOTIFY_SP9],
             practice: { label: 'Forms: validation and required fields', path: '/html/coding/html-forms-validation-required' },
           },
           {
             stage: 'Final: algorithms',
             format: 'An easy to medium LeetCode-style problem.',
             appliesTo: SPOTIFY_ROLE,
-            sources: [SPOTIFY_SP1, SPOTIFY_SP2, SPOTIFY_SP4, SPOTIFY_SP5, SPOTIFY_SP6, SPOTIFY_SP9],
+            sources: [SPOTIFY_SP1_DESIGN, SPOTIFY_SP3, SPOTIFY_SP4, SPOTIFY_SP5, SPOTIFY_SP6, SPOTIFY_SP9],
             practice: { label: 'Valid Parentheses', path: '/javascript/coding/js-valid-parentheses' },
           },
           {
