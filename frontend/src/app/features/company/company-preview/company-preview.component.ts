@@ -75,7 +75,7 @@ type OpenAiResourceLink = {
 const OPENAI_PREVIEW_TITLE = 'OpenAI Frontend Interview: 5 Practice Questions + Prep Guide';
 const OPENAI_PREVIEW_H1 = 'OpenAI Frontend Interview Questions';
 const OPENAI_PREVIEW_DESCRIPTION =
-  'Practice for OpenAI frontend interviews with representative prompts on streaming chat UI, stale stream handling, optimistic React state, accessibility, and history design.';
+  'Practice for OpenAI frontend interviews: streaming chat UI, stale stream handling, optimistic React state, accessibility and conversation history design.';
 type RelatedCompanyLink = {
   slug: string;
   label: string;

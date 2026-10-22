@@ -48,6 +48,30 @@
       </aside>
     </section>
 
+    <aside class="company-process-note" aria-labelledby="openai-published-context">
+      <p class="preview-kicker">Source boundary · checked October 2026</p>
+      <h2 id="openai-published-context">What the public accounts describe, and what you still need to confirm</h2>
+      <p>
+        Public accounts from 2023 to 2026 agree on the front of the process: a recruiter or hiring-manager conversation,
+        then a technical screen. In a 2024 senior frontend account the screen came in two back-to-back parts, refactoring
+        existing code and then a systems design question, with neither interviewer a frontend engineer. Another 2024
+        candidate fixed a piece of JavaScript, a 2023 commenter had a React exercise in CoderPad, and a 2025 plan listed
+        frontend coding followed by system design or architecture. In October 2026 one senior candidate was offered a
+        choice between a 60-minute JavaScript coding interview and a 60-minute agentic coding interview in a Python
+        codebase with AI tools.
+      </p>
+      <p>
+        OpenAI's own interview guide says formats vary by team and may include pair coding, take-home projects or
+        technical tests, that some formats allow AI tools while others assess independent problem solving, and that final
+        interviews run 4 to 6 hours with 4 to 6 people over 1 to 2 days. No frontend account read for this page describes
+        that final loop; the one onsite account is a 2023 software engineer loop with a project presentation, a design
+        round mixing backend and frontend, and frontend coding. Confirm the format, the allowed tools and the stack with
+        your recruiter before you practise.
+      </p>
+    </aside>
+
+    <app-company-interview-process *ngIf="interviewProcess as process" [slug]="slug" [companyLabel]="label" [process]="process"></app-company-interview-process>
+
     <section class="openai-section" aria-labelledby="openai-prompts">
       <div class="openai-section__head">
         <p class="preview-kicker">Representative practice prompts</p>
@@ -386,7 +410,7 @@
     </section>
 
     <aside class="company-process-note" aria-labelledby="netflix-published-context">
-      <p class="preview-kicker">Source boundary · reviewed July 2026</p>
+      <p class="preview-kicker">Source boundary · reviewed October 2026</p>
       <h2 id="netflix-published-context">What Netflix publishes—and what you still need to confirm</h2>
       <p>
         Netflix publishes broad engineering domains, culture material, and role-specific careers information. Those
@@ -399,6 +423,8 @@
         not evidence of today's interview process.
       </p>
     </aside>
+
+    <app-company-interview-process *ngIf="interviewProcess as process" [slug]="slug" [companyLabel]="label" [process]="process"></app-company-interview-process>
 
     <section class="company-guide-section" aria-labelledby="netflix-role-lenses">
       <div class="company-guide-section__head">

@@ -3538,7 +3538,7 @@ test.describe('seo-ssr', () => {
 
     expect(extractRawTitle(html)).toBe('OpenAI Frontend Interview: 5 Practice Questions + Prep Guide');
     expect(extractRawMeta(html, 'description')).toBe(
-      'Practice for OpenAI frontend interviews with representative prompts on streaming chat UI, stale stream handling, optimistic React state, accessibility, and history design.',
+      'Practice for OpenAI frontend interviews: streaming chat UI, stale stream handling, optimistic React state, accessibility and conversation history design.',
     );
     expect(extractRawH1(html)).toBe('OpenAI Frontend Interview Questions');
     expect(extractRawCanonical(html)).toBe(expectedCanonical('/companies/openai/preview'));
@@ -4010,12 +4010,55 @@ test.describe('seo-ssr', () => {
       reportUrl: 'https://leetcode.com/discuss/interview-experience/5456468/',
       practicePath: '/javascript/trivia/js-event-loop',
     },
+    {
+      // OpenAI keeps its own template branch: the table follows the new source-boundary note.
+      path: '/companies/openai/preview',
+      heading: 'OpenAI frontend interview process',
+      tables: 1,
+      after: 'id="openai-published-context"',
+      before: 'id="openai-prompts"',
+      officialUrl: 'https://openai.com/interview-guide/',
+      reportUrl: 'https://www.teamblind.com/post/openai-agentic-code-interview-up8jhuiq',
+      practicePath: '/system-design/ai-chat-textarea-design',
+    },
+    {
+      // Netflix keeps its own template branch: the table follows the source-boundary note.
+      path: '/companies/netflix/preview',
+      heading: 'Netflix frontend interview process',
+      tables: 2,
+      after: 'id="netflix-published-context"',
+      before: 'id="netflix-role-lenses"',
+      officialUrl: 'https://jobs.netflix.com/careers/new-grads',
+      reportUrl: 'https://leetcode.com/discuss/post/7421643/',
+      practicePath: '/javascript/trivia/js-promise-combinators-all-allsettled-race-any',
+    },
+    {
+      path: '/companies/elevenlabs/preview',
+      heading: 'ElevenLabs frontend interview process',
+      tables: 1,
+      after: 'id="elevenlabs-published-context"',
+      before: 'id="elevenlabs-role-lenses"',
+      officialUrl: 'https://elevenlabs.io/careers',
+      reportUrl: 'https://www.aced.io/experiences/eleven-labs-frontend-engineer-interview-c79e72',
+      practicePath: '/javascript/debug/js-debug-async-race',
+    },
+    {
+      path: '/companies/waymo/preview',
+      heading: 'Waymo frontend interview process',
+      tables: 2,
+      after: 'id="waymo-published-context"',
+      before: 'id="waymo-role-lenses"',
+      officialUrl: 'https://careers.withwaymo.com/how-we-hire',
+      reportUrl: 'https://leetcode.com/discuss/post/7949696/',
+      practicePath: '/javascript/coding/js-debounce',
+    },
   ];
 
-  // Every company with a sourced table; Airbnb, Netflix, OpenAI, ElevenLabs and Waymo wait for more accounts.
+  // Every company with a sourced table; Airbnb waits for its authored page (template-thin plan, Step 4).
   const COMPANIES_WITH_PROCESS_TABLES = [
-    'agoda', 'amazon', 'apple', 'booking-com', 'bytedance', 'datadog', 'google', 'intuit', 'jpmorgan', 'meta',
-    'microsoft', 'revolut', 'servicenow', 'shopee', 'spotify', 'stripe', 'tesla', 'uber', 'walmart', 'xai', 'zalando',
+    'agoda', 'amazon', 'apple', 'booking-com', 'bytedance', 'datadog', 'elevenlabs', 'google', 'intuit', 'jpmorgan',
+    'meta', 'microsoft', 'netflix', 'openai', 'revolut', 'servicenow', 'shopee', 'spotify', 'stripe', 'tesla', 'uber',
+    'walmart', 'waymo', 'xai', 'zalando',
   ];
 
   test('raw company previews render a sourced process table only where research supports one', async ({ request }) => {
@@ -4030,7 +4073,7 @@ test.describe('seo-ssr', () => {
       expect(reportAnchors.length, `${slug} nofollow report links`).toBeGreaterThan(0);
       expect(section, `${slug} banned sources`).not.toMatch(/glassdoor|1point3acres|github\.com|prepfully|dataford/i);
     }
-    for (const slug of ['airbnb', 'netflix', 'openai', 'elevenlabs', 'waymo']) {
+    for (const slug of ['airbnb']) {
       const html = await readRawHtml(request, `/companies/${slug}/preview`);
       expect(html, `${slug} has no process table yet`).not.toContain('data-testid="company-interview-process"');
     }

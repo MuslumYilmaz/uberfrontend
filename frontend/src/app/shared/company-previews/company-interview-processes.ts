@@ -588,6 +588,85 @@ const SHOPEE_S39_PTT_2021 = report('PTT', 'https://www.ptt.cc/bbs/Soft_Job/M.161
 // 10 April, HR on 15 April), is not cited because the spec bans github.com as a source host.
 const SHOPEE_FE_ROLE = 'Front-end engineers';
 
+// OpenAI's interview guide answers 403 to automated clients; its sentences were read on the Wayback Machine copy
+// of 2026-10-09. Blind posts written before the interview are cited only for the plan the recruiter gave.
+const OPENAI_INTERVIEW_GUIDE = official('OpenAI interview guide', 'https://openai.com/interview-guide/');
+const OPENAI_TARO = 'https://www.jointaro.com/interviews/companies/openai/experiences';
+const OPENAI_OA1_SENIOR_FE_2024 = report(
+  'Taro',
+  `${OPENAI_TARO}/senior-frontend-software-engineer-united-states-may-30-2024-no-offer-negative-32a807aa/`,
+  '2024-05',
+);
+const OPENAI_OA2_FE_2024 = report('Blind', 'https://www.teamblind.com/post/preparing-for-openai-frontend-engineer-interview-hb1zxdy6', '2024-11');
+const OPENAI_OA3_COMMENT_2023 = report('Blind comment', 'https://www.teamblind.com/post/openai-front-end-interview-aqcvdppv', '2023-08');
+const OPENAI_OA4_SWE_2023 = report('Blind', 'https://www.teamblind.com/post/openai-full-stack-swe-interview-experience-4zgmdu7u', '2023-02');
+const OPENAI_OA5_PLAN_2025 = report('Blind (recruiter plan)', 'https://www.teamblind.com/post/open-ai-frontend-interview-dxwheejy', '2025-04');
+const OPENAI_OA6_PLAN_2026 = report('Blind (recruiter plan)', 'https://www.teamblind.com/post/openai-agentic-code-interview-up8jhuiq', '2026-10');
+const OPENAI_OA7_FE_2024 = report(
+  'Taro (approx.)',
+  `${OPENAI_TARO}/front-end-developer-san-francisco-ca-december-1-2024-no-offer-neutral-550d792a/`,
+  '2024-12',
+);
+const OPENAI_ROLE = 'Frontend candidates';
+
+// Netflix publishes a process only for new graduates and interns. Netflix-tagged Blind commenters say teams run
+// their own loops, so every experienced-hire row names the account it comes from.
+const NETFLIX_NEW_GRADS = official('Netflix new grad page', 'https://jobs.netflix.com/careers/new-grads');
+const NETFLIX_INTERNSHIPS = official('Netflix internship page', 'https://jobs.netflix.com/careers/internships');
+const NETFLIX_TARO = 'https://www.jointaro.com/interviews/companies/netflix/experiences';
+const NETFLIX_NF2_SENIOR_FE_2020 = report(
+  'Taro (approx.)',
+  `${NETFLIX_TARO}/senior-front-end-engineer-los-angeles-ca-october-1-2020-no-offer-positive-86100381/`,
+  '2020-10',
+);
+const NETFLIX_NF3_SCREEN_2025 = report('LeetCode', 'https://leetcode.com/discuss/post/7421643/', '2025-12');
+const NETFLIX_NF4_COMMENT_2024 = report('Blind comment', 'https://www.teamblind.com/post/netflix-frontend-onsite-interview-kodnou42', '2024-01');
+const NETFLIX_NF5_PLAN_2024 = report('Blind (recruiter plan)', 'https://www.teamblind.com/post/interview-rounds-for-netflix-vyxxuxco', '2024-02');
+const NETFLIX_NF6_FE_2022 = report('Blind', 'https://www.teamblind.com/post/Netflix-front-end-interview-N0UJeDug', '2022-03');
+const NETFLIX_NF8_SENIOR_FE_2021 = report(
+  'Taro (approx.)',
+  `${NETFLIX_TARO}/senior-frontend-engineer-san-jose-ca-august-1-2021-no-offer-negative-5771c678/`,
+  '2021-08',
+);
+
+// ElevenLabs accounts cover full-stack, frontend-leaning titles. The two Aced entries show relative dates only,
+// so their dates are the interview months the pages implied when read.
+const ELEVENLABS_CAREERS_FAQ = official('ElevenLabs careers FAQ', 'https://elevenlabs.io/careers');
+const ELEVENLABS_EL1_SENIOR_2026 = report('Aced', 'https://www.aced.io/experiences/eleven-labs-senior-frontend-engineer-interview-925c04', '2026-07');
+const ELEVENLABS_EL2_FE_2025 = report('Aced', 'https://www.aced.io/experiences/eleven-labs-frontend-engineer-interview-c79e72', '2025-11');
+const ELEVENLABS_TARO = 'https://www.jointaro.com/interviews/companies/elevenlabs/experiences';
+const ELEVENLABS_EL3_2024 = report(
+  'Taro (approx.)',
+  `${ELEVENLABS_TARO}/full-stack-engineer-united-states-august-1-2024-no-offer-positive-675ce47d/`,
+  '2024-08',
+);
+const ELEVENLABS_EL4_2024 = report(
+  'Taro (approx.)',
+  `${ELEVENLABS_TARO}/full-stack-engineer-poland-august-1-2024-accepted-offer-positive-766f1de3/`,
+  '2024-08',
+);
+const ELEVENLABS_EL5_2025 = report(
+  'Taro (approx.)',
+  `${ELEVENLABS_TARO}/full-stack-engineer-united-kingdom-may-1-2025-accepted-offer-positive-8ac03948/`,
+  '2025-05',
+);
+
+// Waymo's hiring page gives the stage structure. The one complete frontend loop is a PracHub account that the
+// site marks as curated and edited, so its label says so.
+const WAYMO_HOW_WE_HIRE = official('Waymo how we hire page', 'https://careers.withwaymo.com/how-we-hire');
+const WAYMO_WM1_SENIOR_FE_2026 = report(
+  'PracHub (curated)',
+  'https://prachub.com/interview-experiences/waymo-senior-frontend-engineer-interview-experience-rejected-30-minutes-after-pushing-on-the-process',
+  '2026-05',
+);
+const WAYMO_WM2_SWE_2026 = report('LeetCode', 'https://leetcode.com/discuss/post/7949696/', '2026-04');
+const WAYMO_WM3_COMMENT_2023 = report('Blind comment', 'https://www.teamblind.com/post/waymo-frontend-web-interview-xcpohaau', '2023-03');
+const WAYMO_WM4_INTERN_2022 = report(
+  'Taro',
+  'https://www.jointaro.com/interviews/companies/waymo/experiences/software-engineering-intern-united-states-september-12-2022-no-offer-positive-279c47ab/',
+  '2022-09',
+);
+
 export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyInterviewProcess>> = {
   amazon: {
     title: 'Amazon Front End Engineer interview process',
@@ -2101,6 +2180,251 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
               'The posting lists an HR conversation (HR沟通) before the offer. In the social-hire accounts the loop runs per department, sometimes both technical rounds and HR on one day; a rejection after the first round can come back with feedback such as 算法有待加强 (algorithms need strengthening), and a second department can re-interview the same candidate.',
             appliesTo: 'All candidates',
             sources: [SHOPEE_S3_JUEJIN_2020, SHOPEE_S4_NOWCODER_2022, SHOPEE_CHINA_CAMPUS_REPRINT],
+          },
+        ],
+      },
+    ],
+  },
+  openai: {
+    summary:
+      'OpenAI\'s interview guide describes résumé review, introductory calls, team-specific assessments and 4 to 6 hours of final interviews. Frontend accounts from 2023 to 2026 confirm the recruiter call and a two-part technical screen; no frontend account read for this page describes the final loop.',
+    caveat:
+      'Thin evidence: one senior frontend account, one 2023 software engineer onsite, one commenter and three Blind posts written before the interview. Whether algorithm problems appear is not settled by the accounts read, and the guide says formats vary by team.',
+    checkedAt: '2026-10-22',
+    variants: [
+      {
+        title: 'Frontend engineers',
+        stages: [
+          {
+            stage: 'Résumé review',
+            format: 'About one week before the recruiting team emails back, per the interview guide.',
+            appliesTo: 'All candidates',
+            sources: [OPENAI_INTERVIEW_GUIDE],
+          },
+          {
+            stage: 'Recruiter or hiring-manager call',
+            format:
+              'A recruiting coordinator schedules a conversation with the hiring manager or recruiter about work experience, motivations and goals. One 2024 account ended after this video screening.',
+            appliesTo: 'All candidates',
+            sources: [OPENAI_INTERVIEW_GUIDE, OPENAI_OA1_SENIOR_FE_2024, OPENAI_OA2_FE_2024, OPENAI_OA6_PLAN_2026, OPENAI_OA7_FE_2024],
+          },
+          {
+            stage: 'Technical screen',
+            format:
+              'Two back-to-back parts in one 2024 senior account: refactoring existing code, then a systems design question, with neither interviewer a frontend engineer. Another 2024 candidate fixed a piece of JavaScript; a 2023 commenter had a React exercise in CoderPad; a 2025 plan lists frontend coding, then system design or architecture.',
+            appliesTo: OPENAI_ROLE,
+            sources: [OPENAI_OA1_SENIOR_FE_2024, OPENAI_OA2_FE_2024, OPENAI_OA3_COMMENT_2023, OPENAI_OA5_PLAN_2025],
+            practice: { label: 'AI chat composer and streaming turn', path: '/system-design/ai-chat-textarea-design' },
+          },
+          {
+            stage: 'Agentic coding option',
+            format:
+              'In October 2026 one senior candidate could choose between a 60-minute JavaScript coding interview and a 60-minute agentic coding interview in a Python codebase with AI tools. The guide says some formats allow AI tools and others assess independent problem solving.',
+            appliesTo: 'One 2026 plan',
+            sources: [OPENAI_OA6_PLAN_2026, OPENAI_INTERVIEW_GUIDE],
+          },
+          {
+            stage: 'Final interviews',
+            format:
+              '4 to 6 hours with 4 to 6 people over 1 to 2 days, virtual by default with an onsite option in San Francisco, per the guide. The one onsite account, a 2023 software engineer loop, had a project presentation, a design round mixing backend and frontend, and frontend coding.',
+            appliesTo: 'All candidates',
+            sources: [OPENAI_INTERVIEW_GUIDE, OPENAI_OA4_SWE_2023],
+          },
+          {
+            stage: 'Decision',
+            format: 'Within a week of the final interviews; the recruiter may ask for references at this stage.',
+            appliesTo: 'All candidates',
+            sources: [OPENAI_INTERVIEW_GUIDE],
+          },
+        ],
+      },
+    ],
+  },
+  netflix: {
+    summary:
+      'Netflix publishes a process only for new graduates and interns: a take-home assessment, then two or about two to three rounds. Accounts for experienced frontend and UI roles from 2020 to 2025 describe recruiter and hiring-manager conversations, a live JavaScript screen or a take-home, and an onsite of about four interviews; Netflix-tagged commenters say each team runs its own loop.',
+    caveat:
+      'Thin evidence: one complete 2020 loop, one 2025 screen, one recruiter plan and commenters. The order differs between accounts, some loops use a take-home and others a live screen, and a 2024 senior account counted eight stages without naming them.',
+    checkedAt: '2026-10-22',
+    variants: [
+      {
+        title: 'Experienced frontend and UI engineers',
+        note: 'Netflix-tagged commenters describe a process that is not centralised and differs by team, so each row says which account it comes from.',
+        stages: [
+          {
+            stage: 'Recruiter conversation',
+            format:
+              'A long conversation in the 2020 account. A 2024 commenter was rejected after a recruiter screen that included a few light technical questions.',
+            appliesTo: 'All candidates',
+            sources: [NETFLIX_NF2_SENIOR_FE_2020, NETFLIX_NF4_COMMENT_2024, NETFLIX_NF5_PLAN_2024, NETFLIX_NF6_FE_2022],
+          },
+          {
+            stage: 'Hiring-manager conversation',
+            format:
+              'A long behavioural interview with a UI manager before the take-home in the 2020 account; a Netflix-tagged commenter in 2024 expects a manager screen before any technical round. A 2021 senior account describes only a confrontational talk with the would-be manager.',
+            appliesTo: 'Most loops',
+            sources: [NETFLIX_NF2_SENIOR_FE_2020, NETFLIX_NF4_COMMENT_2024, NETFLIX_NF6_FE_2022, NETFLIX_NF8_SENIOR_FE_2021],
+          },
+          {
+            stage: 'Technical screen',
+            format:
+              'One hour with three small JavaScript tasks in a 2025 Poland screen for an L4 or L5 frontend role: flatten a nested object, write expect and toBe style matchers, and combine two async calls so that one failure still shows the other result. A 2024 recruiter plan also opens with a technical screen.',
+            appliesTo: 'Loops without a take-home',
+            sources: [NETFLIX_NF3_SCREEN_2025, NETFLIX_NF5_PLAN_2024, NETFLIX_NF6_FE_2022],
+            practice: { label: 'Promise.all vs allSettled', path: '/javascript/trivia/js-promise-combinators-all-allsettled-race-any' },
+          },
+          {
+            stage: 'Take-home',
+            format: 'A build exercise reviewed later in the loop, in the 2020 account and in a loop from before 2022 that ended with a culture conversation.',
+            appliesTo: 'Some loops',
+            sources: [NETFLIX_NF2_SENIOR_FE_2020, NETFLIX_NF6_FE_2022],
+          },
+          {
+            stage: 'Onsite',
+            format:
+              'One coding interview, a take-home review and two behavioural interviews in 2020, with no LeetCode-type questions; a 2024 recruiter plan for an L4 Web UI role lists two technical and two behavioural rounds, possibly algorithms and system design.',
+            appliesTo: 'All candidates',
+            sources: [NETFLIX_NF2_SENIOR_FE_2020, NETFLIX_NF5_PLAN_2024],
+          },
+        ],
+      },
+      {
+        title: 'New graduates and interns',
+        note: 'From the official pages for the US new graduate programme and the internships in the United States, India, Poland and Japan.',
+        stages: [
+          {
+            stage: 'Take-home assessment',
+            format: 'A take-home assessment opens both processes.',
+            appliesTo: 'New graduates and interns',
+            sources: [NETFLIX_NEW_GRADS, NETFLIX_INTERNSHIPS],
+          },
+          {
+            stage: 'Interview rounds',
+            format:
+              'Two rounds for new graduates and about two to three for interns, advancing on the feedback at each stage. Interviewers evaluate technical, role-specific and behavioural skills and may ask which parts of the culture memo resonate.',
+            appliesTo: 'New graduates and interns',
+            sources: [NETFLIX_NEW_GRADS, NETFLIX_INTERNSHIPS],
+          },
+        ],
+      },
+    ],
+  },
+  elevenlabs: {
+    summary:
+      'ElevenLabs says steps vary by role and most processes include a pre-screen, virtual interviews with a possible skills assessment, a hiring-manager conversation and a final round with a founder or Bar Raiser. Five full-stack, frontend-leaning accounts from 2024 to 2026 describe a recruiter call, a coding assessment whose format changes from loop to loop, a live technical round and a final conversation.',
+    caveat:
+      'Thin evidence: no account covers a purely frontend title, and the assessment formats differ (a 90-minute assessment, an asynchronous CoderPad task, a Python algorithm round, a take-home). A 2025 account had no system design round; a 2024 account did.',
+    checkedAt: '2026-10-22',
+    variants: [
+      {
+        title: 'Full-stack engineers, frontend-leaning',
+        stages: [
+          {
+            stage: 'Recruiter call',
+            format: 'Background and what interests you about ElevenLabs; in the 2026 account it came after the technical assessment.',
+            appliesTo: 'All candidates',
+            sources: [ELEVENLABS_CAREERS_FAQ, ELEVENLABS_EL1_SENIOR_2026, ELEVENLABS_EL2_FE_2025, ELEVENLABS_EL3_2024, ELEVENLABS_EL5_2025],
+          },
+          {
+            stage: 'Coding assessment',
+            format:
+              'The format varies: four questions in 90 minutes (2026), an asynchronous easy or medium algorithm question with a React knowledge check (2024), React and algorithm problems on CoderPad such as fixing a React bug (another 2024 account), a LeetCode-style Python round (2025) or a take-home exercise (another 2025 account).',
+            appliesTo: 'All candidates',
+            sources: [ELEVENLABS_EL1_SENIOR_2026, ELEVENLABS_EL2_FE_2025, ELEVENLABS_EL3_2024, ELEVENLABS_EL4_2024, ELEVENLABS_EL5_2025],
+            practice: { label: 'Poll until, with timeout and abort', path: '/javascript/coding/js-poll-until' },
+          },
+          {
+            stage: 'Live technical round',
+            format:
+              'Pair work with an engineer: fixing a practical problem (2026), debugging a small React app (2025), building a text-to-speech React component (2024) or a real-life problem with changing constraints (another 2024 account).',
+            appliesTo: 'All candidates',
+            sources: [ELEVENLABS_EL1_SENIOR_2026, ELEVENLABS_EL2_FE_2025, ELEVENLABS_EL3_2024, ELEVENLABS_EL4_2024],
+            practice: { label: 'Fix an async race', path: '/javascript/debug/js-debug-async-race' },
+          },
+          {
+            stage: 'Product or design round',
+            format: 'A product interview or a product-focused decomposition interview in the two 2025 accounts, a system design interview in a 2024 account.',
+            appliesTo: 'Most loops',
+            sources: [ELEVENLABS_EL2_FE_2025, ELEVENLABS_EL4_2024, ELEVENLABS_EL5_2025],
+          },
+          {
+            stage: 'Final conversation',
+            format: 'A call with the CTO (2025) or with the head of the organisation, planned but not reached (2024); the careers FAQ names a founder or Bar Raiser.',
+            appliesTo: 'All candidates',
+            sources: [ELEVENLABS_CAREERS_FAQ, ELEVENLABS_EL3_2024, ELEVENLABS_EL5_2025],
+          },
+        ],
+      },
+    ],
+  },
+  waymo: {
+    summary:
+      'Waymo\'s hiring page describes a sourcer or recruiter conversation, one or two phone or video interviews with a potential peer or manager, and a virtual onsite of up to five 45-minute interviews. One senior frontend account from 2026 supplies the frontend rounds; a 2026 software engineer loop with a UI round, a 2023 Waymo-tagged commenter and a 2022 intern account add the mix of algorithm and frontend questions.',
+    caveat:
+      'Thin evidence: one complete frontend loop, curated and edited by PracHub, plus one software engineer loop, one commenter and one intern account. The commenter says the questions vary by interviewer. Waymo does not permit AI tools or LLMs in assessments or live interviews unless the instructions say so.',
+    checkedAt: '2026-10-22',
+    variants: [
+      {
+        title: 'Frontend engineers',
+        stages: [
+          {
+            stage: 'Sourcer or recruiter conversation',
+            format: 'An initial conversation with a sourcer or recruiter, per the hiring page.',
+            appliesTo: 'All candidates',
+            sources: [WAYMO_HOW_WE_HIRE],
+          },
+          {
+            stage: 'Phone or video interviews',
+            format:
+              'One or two behavioural or technical interviews with a potential peer or manager, per the hiring page. The 2026 frontend account had a two-part screen: remove the subtrees whose node values contain a substring, then build a UI for the filtered tree. The 2022 intern loop had two back-to-back 45-minute technical interviews, one on JavaScript and one on algorithms.',
+            appliesTo: 'All candidates',
+            sources: [WAYMO_HOW_WE_HIRE, WAYMO_WM1_SENIOR_FE_2026, WAYMO_WM4_INTERN_2022],
+            practice: { label: 'Filter a tree and render it indented', path: '/javascript/coding/js-filter-tree-render-indented' },
+          },
+          {
+            stage: 'Virtual onsite',
+            format:
+              'Up to five interviews of about 45 minutes with potential teammates and cross-functional partners, per the hiring page. The 2026 frontend account had four frontend rounds: debugging Angular UI code from user-reported issues, a Promise question in plain TypeScript, a frontend-focused design of an AI chat interface, and an autocomplete search bar with debounce. A 2023 Waymo-tagged commenter described two LeetCode and two frontend questions, in Angular and JavaScript, varying by interviewer.',
+            appliesTo: 'All candidates',
+            sources: [WAYMO_HOW_WE_HIRE, WAYMO_WM1_SENIOR_FE_2026, WAYMO_WM3_COMMENT_2023],
+            practice: { label: 'Debounce', path: '/javascript/coding/js-debounce' },
+          },
+        ],
+      },
+      {
+        title: 'Software engineers with a UI round, 2026',
+        note: 'One account for a software engineer title outside frontend, included because one of its four rounds was a JavaScript UI build.',
+        stages: [
+          {
+            stage: 'Recruiter screen',
+            format: 'Current role and backend experience, interest in Waymo and an overview of the process.',
+            appliesTo: 'The one account',
+            sources: [WAYMO_WM2_SWE_2026],
+          },
+          {
+            stage: 'Progressive coding round',
+            format: 'One problem whose constraints kept changing, judged on correctness, complexity and adapting the solution while debugging live.',
+            appliesTo: 'The one account',
+            sources: [WAYMO_WM2_SWE_2026],
+          },
+          {
+            stage: 'JavaScript and UI round',
+            format: 'Build a generic tree viewer component for hierarchical data, like a file explorer: recursive rendering, semantic lists, expand and collapse, event delegation and its trade-offs.',
+            appliesTo: 'The one account',
+            sources: [WAYMO_WM2_SWE_2026],
+            practice: { label: 'Build a tree from a flat list', path: '/javascript/coding/js-build-tree-from-flat-list' },
+          },
+          {
+            stage: 'Hiring-manager round',
+            format: 'Conversational and scenario-based: production ownership, reliability, cross-team collaboration, GenAI tools at work and a root-cause scenario.',
+            appliesTo: 'The one account',
+            sources: [WAYMO_WM2_SWE_2026],
+          },
+          {
+            stage: 'Algorithms round',
+            format: 'A data structures and algorithms round closed the loop.',
+            appliesTo: 'The one account',
+            sources: [WAYMO_WM2_SWE_2026],
           },
         ],
       },

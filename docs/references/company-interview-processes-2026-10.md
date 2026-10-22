@@ -320,7 +320,7 @@ Full-stack accounts with explicit frontend rounds:
 | NF4 | [Blind](https://www.teamblind.com/post/netflix-frontend-onsite-interview-kodnou42) | 2024-01 | TV UI team (p) | a Netflix-badged commenter: "You'll most likely have a manager screen before any technical rounds"; the poster: "Yup already had that." Another commenter was rejected after a recruiter screen with "a few softball technical questions". |
 | NF5 | [Blind](https://www.teamblind.com/post/interview-rounds-for-netflix-vyxxuxco) | 2024-02 | L4 Web UI (p) | the recruiter's plan: "a technical screen, which then would move to an onsite round", "two technicals, two behavioral: possibly DS/A + system design". A Netflix-badged commenter: "We don't centralize our interview process, generally." |
 | NF6 | [Blind](https://www.teamblind.com/post/Netflix-front-end-interview-N0UJeDug) | 2022-03 | poster's loop "a few years back" | "take home assignment, follow up about why it's implemented in that way, culture section"; a commenter (c): "a manager call … a recruiter call, a phone screen, and then I believe a take home." |
-| NF7 | [Blind](https://www.teamblind.com/post/netflix-frontend-interviews-q8kvrxy0) | 2024-08 | commenters only | "recruiter said no leetcode at any stage" (p); a Netflix-badged commenter: "Each team does interviews differently." |
+| NF7 | [Blind](https://www.teamblind.com/post/netflix-frontend-interviews-q8kvrxy0) | 2024-08 | commenters only | a Netflix-tagged commenter: "Each team does interviews differently." The "recruiter said no leetcode at any stage" line in this thread is a Disney Streaming Services commenter writing about Disney (re-checked 2026-10-22); do not use it for Netflix. |
 | NF8 | [Taro](https://www.jointaro.com/interviews/companies/netflix/experiences/senior-frontend-engineer-san-jose-ca-august-1-2021-no-offer-negative-5771c678/) | 2021-08* | Senior FE | one talk with the would-be manager; it cannot be placed in a sequence |
 
 Not used: FrontendLead Discuss threads (a vendor forum with anonymous posts) and accounts older than 2018.
@@ -340,10 +340,12 @@ New graduates and interns: a take-home assessment, then two rounds (new graduate
 **Caveats:**
 - The order differs: some loops start with the manager, others with a technical screen.
 - Some loops use a take-home and others a live screen.
-- "No LeetCode" (NF2, NF7) conflicts with "possibly DS/A" (NF5).
+- "No LeetCode" (NF2) conflicts with "possibly DS/A" (NF5). The NF7 "no leetcode" line is about Disney, not Netflix (re-checked 2026-10-22).
 - A search summary said the Warsaw account described a take-home and an all-day onsite. The Taro text has neither, so do not use that claim.
 
 **Re-checked:** NF-O1 ("take-home assessment followed by two rounds of interviews").
+
+**Re-checked 2026-10-22 (process table build):** NF-O1, NF-O2, NF1, NF2, NF4, NF5, NF6 and NF8 confirmed; NF3 read through the LeetCode GraphQL API. NF7 corrected as noted in the row. NF1 is cited in the table caveat only (eight stages, none named).
 
 ## Airbnb
 
@@ -564,7 +566,7 @@ Other variants:
 | Id | Source | Date | Role | What it reports |
 |---|---|---|---|---|
 | OA1 | [Taro](https://www.jointaro.com/interviews/companies/openai/experiences/senior-frontend-software-engineer-united-states-may-30-2024-no-offer-negative-32a807aa/) | 2024-05 | Senior Frontend, US | a recruiter call, then "two back-to-back technical screens. The first involved refactoring existing code. The second was a systems design question."; "neither of the interviewers was a frontend engineer." Possibly a Glassdoor mirror. |
-| OA2 | [Blind](https://www.teamblind.com/post/preparing-for-openai-frontend-engineer-interview-hb1zxdy6) | 2024-10 to 2025-01 | Frontend engineer, poster's updates | the recruiter call was "basic discussion around motivation and all. Why OpenAI?"; "cover edge cases in code refactoring"; "piece of JS code that was supposed to be fixed"; "The cool down period is 1 year." |
+| OA2 | [Blind](https://www.teamblind.com/post/preparing-for-openai-frontend-engineer-interview-hb1zxdy6) | 2024-10 to 2025-01 | Frontend engineer, poster's updates | the recruiter call was "basic discussion around motivation and all. Why OpenAI?"; "cover edge cases in code refactoring"; "piece of JS code that was supposed to be fixed". Re-check 2026-10-22: the one-year cool-down sentence and "They don't ask LC for FE" were not found on the page and are not used. |
 | OA3 | [Blind](https://www.teamblind.com/post/openai-front-end-interview-aqcvdppv) | 2023-08 | commenter's own account (c) | "The tech screen was great, it was a react based exercise in coderpad" |
 | OA4 | [Blind](https://www.teamblind.com/post/openai-full-stack-swe-interview-experience-4zgmdu7u) | 2023-02 to 2023-03 | full-stack, frontend-leaning | a phone screen with "a simple question that kept increasing in complexity", a presentation of a past project, then an onsite where "System design was a combination of backend & frontend… Coding was frontend." |
 | OA5 | [Blind](https://www.teamblind.com/post/open-ai-frontend-interview-dxwheejy) | 2025-04 | FE (p) | "The screening has two rounds - 1) Frontend coding 2) System design/ Architecture." |
@@ -587,6 +589,8 @@ Other variants:
 - OA2's poster says "They don't ask LC for FE", while a full-stack commenter expected "one leetcode".
 
 **Re-checked:** OA-O1 ("Formats vary by team", "4–6 hours of final interviews…", on the Wayback copy).
+
+**Re-checked 2026-10-22 (process table build):** OA-O1 on the Wayback copy, OA1, OA3 to OA7 confirmed. OA2: only the recruiter intro, the refactoring edge cases and the JavaScript fix are on the page; the cool-down and "no LC for FE" lines were not found. The Blind `…oh7zqh7i` recruiter quote was not re-read and is not cited in the table.
 
 ## Datadog
 
@@ -668,6 +672,8 @@ Not used: an Aced question bank, which lists questions and is not an account. A 
 | Leadership call | The CTO or a head of organization; a founder or Bar Raiser per the official FAQ | Late stage | EL-O1, EL5 (EL3 not reached) |
 
 **Re-checked:** EL-O1 ("a pre-screen, virtual interviews", "a final round with a founder or Bar Raiser").
+
+**Re-checked 2026-10-22 (process table build):** EL-O1, EL1 (four questions in 90 minutes, assessment before the recruiter screen), EL2 (reads first-person, "no system design at all"), EL3, EL4 and EL5 confirmed. The table labels the Taro accounts "Taro (approx.)" and carries no locations.
 
 ## Intuit
 
@@ -803,7 +809,7 @@ For the US the evidence is thin:
 |---|---|---|---|---|
 | WM1 | [PracHub](https://prachub.com/interview-experiences/waymo-senior-frontend-engineer-interview-experience-rejected-30-minutes-after-pushing-on-the-process) | interview 2026-05, published 2026-08 | Senior frontend, simulation team, rejected; "Curated and edited by PracHub" | a phone screen with a tree filter, then a UI that renders the filtered tree; "The VO (virtual onsite) had 4 rounds, all frontend focused.": Angular debugging "based on a few issues reported by users", "A Promise-related coding question, pure TS/JS.", "System design: design an AI chat model, frontend focused.", "Autocomplete search bar with debounce." |
 | WM2 | [LC 7949696](https://leetcode.com/discuss/post/7949696/) | 2026-04 | Software Engineer, fleet response (not a frontend title), rejected | "Recruiter Screen", "Coding Round 1 java", "JavaScript / UI Round" (a generic tree viewer, "like a file explorer"), "Hiring Manager Round", "DSA Round" |
-| WM3 | [Blind](https://www.teamblind.com/post/waymo-frontend-web-interview-xcpohaau) | 2023-03 | Waymo-badged commenter's own interview (c), year not stated | "2 Leetcode + 2 FE Qs"; "Just Angular and JavaScript."; "My phone interview was leetcode."; "Disclaimer: varies based on the interviewer." |
+| WM3 | [Blind](https://www.teamblind.com/post/waymo-frontend-web-interview-xcpohaau) | 2023-03 | Waymo-badged commenter's own interview (c), year not stated | "2 Leetcode + 2 FE Qs"; "Just Angular and JavaScript."; "Disclaimer: varies based on the interviewer." Re-check 2026-10-22: "My phone interview was leetcode." was not found on the page and is not used. |
 | WM4 | [Taro](https://www.jointaro.com/interviews/companies/waymo/experiences/software-engineering-intern-united-states-september-12-2022-no-offer-positive-279c47ab/) | 2022-09 | SWE intern | "two back-to-back technical interviews, each lasting 45 minutes"; "One interview focuses more on specific technologies, such as JavaScript" |
 
 **Proposed table: frontend engineers, US, 2023–2026 (thin; most rows "one account")**
@@ -822,6 +828,8 @@ For the US the evidence is thin:
 - WM1 was edited by PracHub, and its practice list is PracHub's own addition.
 
 **Re-checked:** WM-O1 ("up to five interviewers", "approximately 45 minutes", the AI rule) and WM1 ("had 4 rounds, all frontend focused", "design an AI chat model").
+
+**Re-checked 2026-10-22 (process table build):** WM-O1 (including "All live interviews (technical, behavioral, and design) must be conducted without the assistance of AI."), WM1 (the account says the interviewer "only knew Angular"), WM2 through the LeetCode GraphQL API and WM4 confirmed; WM3 as noted in the row.
 
 ## Revolut
 

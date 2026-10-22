@@ -440,7 +440,8 @@ test('actual interview process edits re-date only the company whose stages or so
   for (const [from, to, expected] of [
     ["report('LeetCode', `https://leetcode.com/discuss/post/", "report('LeetCode Discuss', `https://leetcode.com/discuss/post/", companies(['amazon'])],
     ["kind: 'official', date: '2026-10' })", "kind: 'official', date: '2026-11' })",
-      companies(['booking-com', 'bytedance', 'datadog', 'google', 'intuit', 'meta', 'microsoft', 'revolut', 'spotify', 'stripe', 'uber', 'zalando'])],
+      companies(['booking-com', 'bytedance', 'datadog', 'elevenlabs', 'google', 'intuit', 'meta', 'microsoft', 'netflix', 'openai', 'revolut',
+        'spotify', 'stripe', 'uber', 'waymo', 'zalando'])],
   ]) {
     const modified = original.replace(from, to);
     assert.notEqual(modified, original, from);
@@ -489,8 +490,10 @@ test('wiring a company-keyed registry into the preview re-dates only the compani
   assert.notEqual(modified, original);
   const changes = [...buildSeoInventory(currentReader({ [component]: modified }))]
     .filter(([route, entry]) => before.get(route)?.fingerprint !== entry.fingerprint).map(([route]) => route);
-  assert.ok(changes.includes('/companies/walmart/preview'), changes.join(','));
-  for (const slug of ['airbnb', 'elevenlabs', 'netflix', 'openai', 'waymo']) {
+  for (const slug of ['walmart', 'openai', 'netflix', 'elevenlabs', 'waymo']) {
+    assert.ok(changes.includes(`/companies/${slug}/preview`), `${slug} has an interview process: ${changes.join(',')}`);
+  }
+  for (const slug of ['airbnb']) {
     assert.ok(!changes.includes(`/companies/${slug}/preview`), `${slug} has no interview process: ${changes.join(',')}`);
   }
 });
