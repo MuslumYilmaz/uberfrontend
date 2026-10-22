@@ -262,7 +262,7 @@ Reported loop sizes: two interviews (MS4), four (MS6, MS7), five or six (MS1, MS
 
 ## Apple
 
-**Readiness: ready, team-specific.** There is no official page: apple.com/careers has no interview content, and the jobs FAQ redirects to an Apple ID sign-in. Nine frontend accounts agree on a screen followed by a team loop of mostly frontend coding. The loop size and the behavioural content vary by team.
+**Readiness: ready, team-specific.** The only official page is a general interview-tips page (apple.com/careers/us/interview_tips.html) with no stages and no frontend content, found on 2026-10-22 after this doc first said none existed; the jobs FAQ redirects to an Apple ID sign-in. Nine frontend accounts agree on a screen followed by a team loop of mostly frontend coding. The loop size and the behavioural content vary by team.
 
 **Accounts** (Taro links are `https://www.jointaro.com/interviews/companies/apple/experiences/<slug>/`)
 

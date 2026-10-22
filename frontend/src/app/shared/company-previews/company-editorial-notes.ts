@@ -860,9 +860,9 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
     description: 'How public reports describe Apple frontend interviews: a recruiter call, a 45 to 60 minute coding screen in React, JS or TS, and a team loop of 4 to 7 rounds.',
     hero: {
       kicker: 'Public preview and process notes',
-      subtitle: 'Apple publishes no interview guide, so this page rests on public interview reports from 2021 to 2025: a technical screen, then a team loop of four to seven rounds whose mix differs by team.',
+      subtitle: 'Apple publishes general interview tips but no process or frontend guide, so this page rests on public interview reports from 2021 to 2025: a technical screen, then a team loop of four to seven rounds whose mix differs by team.',
     },
-    intro: ['No official Apple preparation page exists; the careers site has no interview content. The nine frontend accounts behind this page agree on a screen followed by a team loop of mostly frontend coding, and differ on everything the team decides.'],
+    intro: ['The Apple careers site has a general interview-tips page, linked below, with advice before, during and after an interview and a note that some roles include a technical assessment or coding exercises; it lists no stages and no frontend content. Four of the nine frontend accounts behind this page describe both a screen and a team loop of mostly frontend coding; the rest describe one stage, and all differ on what the team decides.'],
     reportsDescribe: {
       kicker: 'What public interview reports describe',
       title: 'A screen, then a team loop of four to seven rounds',
@@ -929,7 +929,7 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
       items: [
         {
           question: 'Does Apple publish a preparation page?',
-          answer: 'No. The careers site has no interview content, so every stage here comes from public interview reports.',
+          answer: 'Only a general interview-tips page, linked in the official pages table; it lists no stages. Every stage here comes from public interview reports.',
         },
         {
           question: 'Is there a system design round?',

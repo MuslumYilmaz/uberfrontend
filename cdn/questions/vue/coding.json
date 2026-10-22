@@ -1969,12 +1969,12 @@
     ],
     "sources": [
       {
-        "label": "LeetCode Discuss: Apple IC3 frontend interview experience, June 2025",
-        "url": "https://leetcode.com/discuss/post/6979238/",
+        "label": "Taro: Apple front end developer interview, August 2022",
+        "url": "https://www.jointaro.com/interviews/companies/apple/experiences/front-end-developer-united-states-august-25-2022-no-offer-positive-ceece13a/",
         "company": "apple",
-        "publisher": "LeetCode Discuss",
-        "date": "2025-07",
-        "note": "Public search previews of this report list building an autocomplete search bar in TypeScript with Vue or React. The full report could not be read by our tools, so only that listing is used. This component practises the shape, not the reported wording."
+        "publisher": "Taro",
+        "date": "2022-08",
+        "note": "One self-reported 45-minute virtual interview asked for an autocomplete search bar in TypeScript with Vue or React, plus basic TypeScript and framework concept questions. This component practises the shape, not the reported wording."
       },
       {
         "label": "Code360: Booking.com frontend engineer interview experience, April 2023",

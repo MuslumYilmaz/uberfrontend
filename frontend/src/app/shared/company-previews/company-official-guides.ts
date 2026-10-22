@@ -1,6 +1,6 @@
 /**
  * Preparation pages that companies publish themselves. Rendered as a table on every company preview that has
- * rows; companies without a published page (Apple, for example) render nothing.
+ * rows; companies without a published page render nothing.
  * Keep `covers` to what the page actually says; these are official pages, so links keep the default rel.
  */
 export type CompanyOfficialGuide = {
@@ -14,8 +14,18 @@ export type CompanyOfficialGuide = {
 const CHECKED = '2026-10-15';
 const CHECKED_OCT_20 = '2026-10-20';
 const CHECKED_OCT_21 = '2026-10-21';
+const CHECKED_OCT_22 = '2026-10-22';
 
 export const COMPANY_OFFICIAL_GUIDES: Readonly<Record<string, readonly CompanyOfficialGuide[]>> = {
+  apple: [
+    {
+      label: 'Interview tips',
+      url: 'https://www.apple.com/careers/us/interview_tips.html',
+      covers:
+        'General advice before, during and after an interview, and a note that some roles include a presentation, case study, technical assessment or coding exercises; no stages and no frontend content.',
+      checkedAt: CHECKED_OCT_22,
+    },
+  ],
   amazon: [
     {
       label: 'Front End Engineer interview prep',

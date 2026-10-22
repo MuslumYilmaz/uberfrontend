@@ -1066,7 +1066,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
   },
   apple: {
     summary:
-      'Apple publishes no interview process page. Frontend accounts from 2021 to 2025 describe a recruiter or hiring manager conversation, a 45–60 minute technical screen and a team loop of four to seven interviews that are mostly JavaScript, React and CSS coding.',
+      'Apple publishes interview tips but no process page. Frontend accounts from 2021 to 2025 describe a recruiter or hiring manager conversation, a 45–60 minute technical screen and a team loop of four to seven interviews that are mostly JavaScript, React and CSS coding.',
     caveat:
       'Each team runs its own process: one 2025 senior loop had four coding rounds and no behavioural or design round, while other loops included behavioural or cross-functional interviews. Confirm the format with your recruiter.',
     checkedAt: '2026-10-20',
