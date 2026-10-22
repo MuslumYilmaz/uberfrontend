@@ -1157,7 +1157,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
           },
           {
             stage: 'System design',
-            format: 'Frontend architecture; two accounts were asked to design a calendar.',
+            format: 'Frontend architecture; three accounts were asked to design a calendar, a collaborative one in 2022 and Google Calendar in two 2025 loops.',
             appliesTo: 'Mid and senior levels',
             sources: [UBER_STORY, UBER_UB2, UBER_UB3, UBER_UB4, UBER_UB5],
             practice: { label: 'Frontend system design blueprint', path: '/guides/system-design-blueprint' },

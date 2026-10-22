@@ -789,7 +789,7 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
           text: 'The phone screen sometimes builds a React component; the specialization round is a UI build or a JavaScript problem, in plain JavaScript in two accounts.',
         },
         {
-          text: 'Mid-level and senior accounts report a separate system design round; two of them designed a calendar.',
+          text: 'Mid-level and senior accounts report a separate system design round; three of them designed a calendar: a collaborative calendar in 2022 and Google Calendar in two 2025 loops.',
         },
         {
           text: 'Two accounts got different rounds than the recruiter had announced, and one candidate did every round in a single day.',
