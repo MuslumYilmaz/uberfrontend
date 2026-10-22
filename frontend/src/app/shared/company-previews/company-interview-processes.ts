@@ -1795,7 +1795,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
   },
   jpmorgan: {
     summary:
-      'JPMorgan Chase\'s How we hire page says the interview process will differ for each position and that candidates meet several people in multiple rounds, and JPMC-badged employees on Blind describe decentralised, team-run loops. Frontend accounts from 2021 to 2026 in the UK, the US and India describe a recruiter screen, a one-hour React and JavaScript conversation often split between two interviewers, 60 to 90 minutes of live coding, and a hiring-manager or leadership round. The online-assessment and super-day rows come from generic software-engineer accounts that Software Engineer II and III requisitions probably share.',
+      'JPMorgan Chase\'s How we hire page says the interview process will differ for each position and that candidates meet several people in multiple rounds, and JPMorgan Chase-badged employees on Blind describe decentralised, team-run loops. Frontend accounts from 2021 to 2026 in the UK, the US and India describe a recruiter screen, a one-hour React and JavaScript conversation often split between two interviewers, 30 to 90 minutes of live coding, and a hiring-manager or leadership round. The online-assessment and super-day rows come from generic software-engineer accounts that Software Engineer II and III requisitions probably share.',
     caveat:
       'No standard loop exists: the format depends on the line of business and the team, so the order and count of stages vary between accounts, and most accounts describe two to four of these stages rather than all of them. The super-day shape rests on generic software-engineer accounts, and no frontend-titled report confirms it. Several frontend accounts are one to three lines long and some dates are approximate; one candidate met an interviewer assigned to a back-end role, and another heard nothing after a cleared round.',
     checkedAt: '2026-10-21',
@@ -1806,9 +1806,9 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         stages: [
           {
             stage: 'Recruiter contact',
-            format: 'A phone screen about the CV; some candidates were contacted by email only and went straight to team interviews.',
+            format: 'A phone screen about the CV.',
             appliesTo: 'Most loops',
-            sources: [JPMORGAN_HOW_WE_HIRE, JPMORGAN_JP1, JPMORGAN_JP4, JPMORGAN_JP15],
+            sources: [JPMORGAN_HOW_WE_HIRE, JPMORGAN_JP4, JPMORGAN_JP15],
           },
           {
             stage: 'Online assessment',
@@ -1826,7 +1826,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
           },
           {
             stage: 'Live coding',
-            format: '60 to 90 minutes: a small React build (a to-do list with priorities, functional components, a generic async promise hook with useEffect cleanup) or paper coding; one London briefing planned 90 minutes of live coding plus a 30-minute behavioural stage.',
+            format: '30 to 90 minutes: a small React build (a to-do list with priorities, functional components, generic types with a useEffect cleanup) or paper coding; one London briefing planned 90 minutes of live coding plus a 30-minute behavioural stage, other accounts give 30 to 45 minutes.',
             appliesTo: 'Most frontend loops',
             sources: [JPMORGAN_JP1, JPMORGAN_JP2_PLAN, JPMORGAN_JP4, JPMORGAN_JP6, JPMORGAN_JP8, JPMORGAN_JP10],
             practice: { label: 'React to-do list', path: '/react/coding/react-todo-list' },
@@ -1840,14 +1840,14 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
           },
           {
             stage: 'Super day',
-            format: 'Three 45-minute rounds in one day, in any order: a pull-request review plus a medium problem, high-level design on a HackerRank whiteboard or CodePair (a rate limiter recurs), and a behavioural round with a Director or Executive Director; a short team-match call may follow.',
+            format: 'Three rounds of 45 to 60 minutes in one day, in any order: a pull-request review plus a medium problem, high-level design on a HackerRank whiteboard or CodePair (a rate limiter recurs), and a behavioural round with a Director or a senior executive; a short team-match call may follow.',
             appliesTo: 'Generic Software Engineer II and III loops, US and India, 2024 to 2026; probably shared by React-titled requisitions, unconfirmed',
             sources: [JPMORGAN_JP15, JPMORGAN_JP16, JPMORGAN_JP17A, JPMORGAN_JP17B, JPMORGAN_JP17C, JPMORGAN_JP17D, JPMORGAN_JP17E],
             practice: { label: 'Create an LRU cache', path: '/javascript/coding/js-create-lru-cache' },
           },
           {
             stage: 'Hiring manager and leadership',
-            format: 'A team manager and a managing director, the application owner and lead developer, a hiring-manager round on the candidate\'s project and culture fit, or a Director or Executive Director in the super-day loops.',
+            format: 'A team manager and a managing director, the application owner and lead developer, a hiring-manager round on the candidate\'s project and culture fit, or a Director or a senior executive in the super-day loops.',
             appliesTo: 'Most loops',
             sources: [JPMORGAN_JP4, JPMORGAN_JP6, JPMORGAN_JP11, JPMORGAN_JP17A, JPMORGAN_JP17D],
             practice: { label: 'Behavioural stories', path: '/guides/behavioral/stories' },
