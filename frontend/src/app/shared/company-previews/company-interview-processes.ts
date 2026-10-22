@@ -212,6 +212,8 @@ const UBER_STORY = official(
   'https://jobs.uber.com/en/people-stories/interview-prep/landing-the-job-at-uber-front-end-engineer/',
 );
 const UBER_UB1 = report('LeetCode', 'https://leetcode.com/discuss/post/2409192/', '2022-08');
+const UBER_UB_CODESIGNAL_2021 = report('LeetCode', 'https://leetcode.com/discuss/post/1064199/', '2021-02');
+const UBER_UB_ROUNDS_2025 = report('LeetCode', 'https://leetcode.com/discuss/post/6840169/', '2025-06');
 const UBER_UB2 = report('Medium', 'https://medium.com/@iamjaasi/uber-sde-2-frontend-interview-experience-40c1a7437cc0', '2022-11');
 const UBER_UB3 = report(
   'Taro',
@@ -384,7 +386,7 @@ const ZALANDO_ZA1 = report('LeetCode', 'https://leetcode.com/discuss/interview-e
 const ZALANDO_ZA2 = report('LeetCode', 'https://leetcode.com/discuss/post/1076335/', '2020-12');
 const ZALANDO_ZA3 = report('LeetCode', 'https://leetcode.com/discuss/post/1249280/', '2021-07');
 const ZALANDO_ZA4 = report('Blind', 'https://www.teamblind.com/post/zalando-frontend-interviews-asih8pba', '2022-02');
-const ZALANDO_ROLE = 'Frontend engineers, Berlin';
+const ZALANDO_ROLE = 'Frontend engineers';
 
 // xAI merged into SpaceX (closed 2026-02-02), rebranded as SpaceXAI in July 2026 and SpaceXSI in October 2026; the board slug is still
 // `xai`. Taro probably re-hosts Glassdoor reviews with a changed city, so the London account's label carries
@@ -464,15 +466,15 @@ const JPMORGAN_JP5 = report('Taro (approx.)', 'https://www.jointaro.com/intervie
 const JPMORGAN_JP6 = report('Taro (approx.)', 'https://www.jointaro.com/interviews/companies/jpmorgan-chase/experiences/frontend-developer-united-states-april-1-2022-no-offer-neutral-a3d9886a/', '2022-04');
 const JPMORGAN_JP7 = report('Taro', 'https://www.jointaro.com/interviews/companies/jpmorgan-chase/experiences/lead-software-engineer-united-states-march-13-2025-no-offer-positive-5ec74572/', '2025-03');
 const JPMORGAN_JP8 = report('Taro (approx.)', 'https://www.jointaro.com/interviews/companies/jpmorgan-chase/experiences/react-developer-united-states-june-1-2022-no-offer-positive-87452f0d/', '2022-06');
-const JPMORGAN_JP9 = report('Blind', 'https://www.teamblind.com/post/JPMorgan-Front-End-position---HELP-uwhCeSaA', '2021-12');
-const JPMORGAN_JP10 = report('Blind', 'https://www.teamblind.com/post/JPMorgan-Chase---Front-End-Developer-Interview-Mb7vx1A6', '2021-03');
+const JPMORGAN_JP9 = report('Blind (briefing)', 'https://www.teamblind.com/post/JPMorgan-Front-End-position---HELP-uwhCeSaA', '2021-12');
+const JPMORGAN_JP10 = report('Blind (briefing)', 'https://www.teamblind.com/post/JPMorgan-Chase---Front-End-Developer-Interview-Mb7vx1A6', '2021-03');
 const JPMORGAN_JP11 = report(
   'frontendgeek',
   'https://www.frontendgeek.com/interview-experience/frontend-interview-experience-at-jp-morgan-refused-offer---9f684f90-12ee-45ec-ac82-e40d2010260e',
   '2024-04',
 );
 const JPMORGAN_JP12 = report('Taro (approx.)', 'https://www.jointaro.com/interviews/companies/jpmorgan-chase/experiences/frontend-engineer-bengaluru-karnataka-april-1-2024-no-offer-negative-77dc2081/', '2024-04');
-const JPMORGAN_JP13 = report('Blind', 'https://www.teamblind.com/post/jpmorgan-chase-interview-rounds-expectation-bengaluru-ta1v2q0n', '2024-05');
+const JPMORGAN_JP13 = report('Blind (briefing)', 'https://www.teamblind.com/post/jpmorgan-chase-interview-rounds-expectation-bengaluru-ta1v2q0n', '2024-05');
 const JPMORGAN_JP14 = report('LeetCode', 'https://leetcode.com/discuss/post/1076639/', '2021-02');
 const JPMORGAN_JP15 = report('Taro (approx.)', 'https://www.jointaro.com/interviews/companies/jpmorgan-chase/experiences/software-engineer-united-states-august-1-2025-declined-offer-negative-5c2f81ca/', '2025-08');
 const JPMORGAN_JP16 = report('Blind', 'https://www.teamblind.com/post/jpmc-interview-expectations-d0ed5ppz', '2026-04');
@@ -1000,7 +1002,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
     summary:
       'Microsoft\'s hiring tips describe a brief screening conversation and two to four interviews of up to an hour each. Frontend accounts from 2020 to 2025 describe two to six interviews mixing machine coding, JavaScript and React concepts, algorithms, design and a hiring manager conversation; the mix depends on the team.',
     caveat:
-      'Older accounts from Bangalore describe five or six rounds, more than the official two to four, and some frontend candidates were interviewed mostly on non-frontend material. Ask the recruiter which rounds your team runs.',
+      'Two older Bangalore accounts describe five or six rounds and a third four, against the official two to four, and some frontend candidates were interviewed mostly on non-frontend material. Ask the recruiter which rounds your team runs.',
     checkedAt: '2026-10-20',
     variants: [
       {
@@ -1014,7 +1016,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
           },
           {
             stage: 'Machine coding',
-            format: 'A UI build: one to two hours in plain JavaScript in 2020–2021 accounts from Bangalore, React components in 2024–2025 accounts.',
+            format: 'A UI build, two hours in the one account that gives a duration: plain JavaScript in 2020–2021 accounts from Bangalore, React components in 2024–2025 accounts.',
             appliesTo: MICROSOFT_ROLE,
             sources: [MICROSOFT_MS1, MICROSOFT_MS2, MICROSOFT_MS3, MICROSOFT_MS6, MICROSOFT_MS7, MICROSOFT_MS9],
             practice: { label: 'Todo list with local state', path: '/react/coding/react-todo-list' },
@@ -1042,7 +1044,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
           },
           {
             stage: 'Behavioural and hiring manager',
-            format: 'Conversations about past work and behaviour.',
+            format: 'Hiring-manager rounds that were technical in the 2020 and 2021 accounts and behavioural in 2024.',
             appliesTo: MICROSOFT_ROLE,
             sources: [MICROSOFT_MS1, MICROSOFT_MS2, MICROSOFT_MS6, MICROSOFT_MS7],
             practice: { label: 'Behavioral interview guide', path: '/guides/behavioral' },
@@ -1141,7 +1143,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
             stage: 'Phone screen',
             format: '60 minutes of coding, sometimes a React UI component.',
             appliesTo: UBER_ROLE,
-            sources: [UBER_GUIDE, UBER_UB1, UBER_UB3, UBER_UB4, UBER_UB5],
+            sources: [UBER_GUIDE, UBER_UB_CODESIGNAL_2021, UBER_UB1, UBER_UB3, UBER_UB4, UBER_UB5],
             practice: { label: 'React fetch and render a list', path: '/react/coding/react-fetch-list-states' },
           },
           {
@@ -1155,7 +1157,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
             stage: 'Frontend specialization',
             format: '60 minutes: a UI build or a JavaScript problem, in plain JavaScript in two accounts.',
             appliesTo: UBER_ROLE,
-            sources: [UBER_GUIDE, UBER_STORY, UBER_UB2, UBER_UB3, UBER_UB4, UBER_UB5, UBER_UB6],
+            sources: [UBER_GUIDE, UBER_STORY, UBER_UB2, UBER_UB3, UBER_UB4, UBER_UB5, UBER_UB6, UBER_UB_ROUNDS_2025],
             practice: { label: 'Todo list with local state', path: '/react/coding/react-todo-list' },
           },
           {
@@ -1249,7 +1251,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         stages: [
           {
             stage: 'Online assessment',
-            format: 'HackerRank or CodeSignal with multiple-choice and LeetCode-style questions; a frontend task in 2025.',
+            format: 'CodeSignal in one 2025 account and an unnamed platform in two others, with multiple-choice and LeetCode-style questions and a frontend task; HackerRank appears in the early-careers accounts.',
             appliesTo: 'Some candidates',
             sources: [BYTEDANCE_TT1, BYTEDANCE_TT2, BYTEDANCE_TT10],
           },
@@ -1515,7 +1517,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
           },
           {
             stage: 'JavaScript fundamentals',
-            format: 'One hour on closures, promises, polyfills and output prediction, or JavaScript, HTML and CSS with algorithm problems.',
+            format: 'About an hour in one account: closures, promises, polyfills and output prediction, or JavaScript, HTML and CSS with algorithm problems.',
             appliesTo: SERVICENOW_ROLE,
             sources: [SERVICENOW_SN1, SERVICENOW_SN2, SERVICENOW_SN3, SERVICENOW_SN4],
             practice: { label: 'Closures', path: '/javascript/trivia/js-closures' },
@@ -1536,7 +1538,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
           },
           {
             stage: 'Hiring manager',
-            format: 'One hour mixing JavaScript questions such as Map versus Object, a design task and behavioural questions.',
+            format: 'A hiring-manager round, short in one account and an hour in another, mixing JavaScript questions such as Map versus Object, a design task and behavioural questions.',
             appliesTo: SERVICENOW_ROLE,
             sources: [SERVICENOW_SN1, SERVICENOW_SN2, SERVICENOW_SN3, SERVICENOW_SN4],
             practice: { label: 'Map versus Object', path: '/javascript/trivia/js-map-vs-object' },
@@ -1656,9 +1658,9 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
   },
   zalando: {
     summary:
-      'Zalando\'s hiring page describes a 30-minute talent acquisition call, a case study such as a coding exercise, a hiring manager conversation and three to five final interviews. Frontend accounts from Berlin between 2019 and 2024 describe a Codility take-home, then a final day with a review of the take-home, JavaScript fundamentals, coding, system design and a manager conversation.',
+      'Zalando\'s hiring page describes a 30-minute talent acquisition call, a case study such as a coding exercise, a hiring manager conversation and three to five final interviews. Frontend accounts, two of them from Berlin, between 2019 and 2024 describe a Codility take-home, then a final day with a review of the take-home, JavaScript fundamentals, coding, system design and a manager conversation.',
     caveat:
-      'Zalando\'s own pages disagree on whether the hiring manager comes before or after the coding challenge. Only one detailed account is from after 2022, and all accounts are from Berlin.',
+      'Zalando\'s own pages disagree on whether the hiring manager comes before or after the coding challenge. Only one detailed account is from after 2022, and two of the three complete loops are from Berlin.',
     checkedAt: '2026-10-20',
     variants: [
       {
@@ -1672,20 +1674,20 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
           },
           {
             stage: 'Coding challenge',
-            format: 'A Codility challenge done at home in two to three hours: a React and Node app in 2024, easy algorithm problems in 2022.',
+            format: 'An assessment at home: a Codility challenge of two to three hours in 2022 and 2024 (a React and Node app, easy algorithm problems); the 2020 account named no platform and had three working days.',
             appliesTo: ZALANDO_ROLE,
             sources: [ZALANDO_HOW_WE_HIRE, ZALANDO_ZA1, ZALANDO_ZA2, ZALANDO_ZA4],
             practice: { label: 'React fetch and render a list', path: '/react/coding/react-fetch-list-states' },
           },
           {
             stage: 'Hiring manager',
-            format: '30–60 minutes; one account describes it as non-technical.',
+            format: '30–60 minutes on the official pages; a Blind commenter describes it as non-technical, and in 2020 it was half of a two-hour phone stage.',
             appliesTo: ZALANDO_ROLE,
-            sources: [ZALANDO_HOW_WE_HIRE, ZALANDO_BLOG, ZALANDO_ZA2, ZALANDO_ZA3],
+            sources: [ZALANDO_HOW_WE_HIRE, ZALANDO_BLOG, ZALANDO_ZA2, ZALANDO_ZA3, ZALANDO_ZA4],
           },
           {
             stage: 'Final: take-home review',
-            format: '45 minutes discussing the submitted code.',
+            format: 'A discussion of the submitted code, 45 minutes in the 2024 account.',
             appliesTo: 'Senior roles',
             sources: [ZALANDO_ZA1, ZALANDO_ZA3],
           },
@@ -1872,7 +1874,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         stages: [
           {
             stage: 'Recruiter prep call',
-            format: '15 to 30 minutes on background, notice period, relocation and expectations.',
+            format: 'About 15 minutes in the one account that gives a duration, on background, notice period, relocation and expectations.',
             appliesTo: AGODA_ROLE,
             sources: [AGODA_HOW_WE_HIRE_TECH, AGODA_A3_OFFER_2025, AGODA_A4_STAFF_2025, AGODA_A9_HEADCOUNT_2025],
           },
@@ -1910,7 +1912,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
           {
             stage: 'Preliminary call',
             format:
-              '30 minutes with the recruiter on compensation, relocation and feedback; the level is set here (a Staff applicant was moved to Senior, strong Senior candidates to the Staff track).',
+              '30 minutes with the recruiter on compensation, relocation and feedback; the level is set here or after the Platform round (a Staff applicant was moved to Senior after round two, strong Senior candidates to the Staff track).',
             appliesTo: AGODA_ROLE,
             sources: [AGODA_A1_BANGKOK_2026, AGODA_A3_OFFER_2025, AGODA_A4_STAFF_2025, AGODA_A8_CULTURE_FIT_2025, AGODA_A9_HEADCOUNT_2025, AGODA_A7_GURGAON_COMMENT],
           },
@@ -1940,7 +1942,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
       {
         title: 'Front-end engineers, Gurgaon, 2024 to 2025',
         note:
-          'Team-specific: three accounts with different stage orders. Interviewers may sit in Bangkok, and one 2026 account was rejected in Gurgaon\'s second round before an offer from a Bangkok loop after the six-month cooling period. On 2026-10-21 the board listed no Gurugram front-end-titled role.',
+          'Team-specific: three accounts with different stage orders. Interviewers may sit in Bangkok, and one 2026 senior full-stack account was rejected in Gurgaon\'s second round and received an offer from a Bangkok loop after the six-month cooling period. On 2026-10-21 the board listed no Gurugram front-end-titled role.',
         stages: [
           {
             stage: 'Online assessment or take-home',
