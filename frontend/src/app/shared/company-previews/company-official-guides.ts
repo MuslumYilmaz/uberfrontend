@@ -275,6 +275,15 @@ export const COMPANY_OFFICIAL_GUIDES: Readonly<Record<string, readonly CompanyOf
       checkedAt: CHECKED_OCT_20,
     },
   ],
+  revolut: [
+    {
+      label: 'Engineering careers page',
+      url: 'https://www.revolut.com/careers/team/engineering/',
+      covers:
+        'Four hiring steps (an intro call with an IT recruiter, tech interviews, team fit, offer) and the engineering stack; no formats or durations. The live page blocks automated readers, so it was read from an archived copy.',
+      checkedAt: CHECKED_OCT_22,
+    },
+  ],
   zalando: [
     {
       label: 'How we hire (Tech)',
