@@ -315,7 +315,7 @@ export const AMAZON_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     title: 'Sources and evidence limits',
     intro: 'These links support the public context used by the guide. Their notes state what each source can and cannot establish about preparation.',
     items: [
-      { label: 'Amazon: Front End Engineer interview prep', url: AMAZON_FEE_PREP_URL, note: 'The official loop shape, the design objectives, the whiteboard tool and the coding expectations. It names no exercises.', kind: 'official' },
+      { label: 'Amazon: Front End Engineer interview prep', url: AMAZON_FEE_PREP_URL, note: 'The official loop shape, the design objectives, the whiteboard tool and the coding expectations. It names example design prompts, an Instagram widget, a type-ahead widget, infinite scrolling and a carousel widget, and links a sample coding question, but not the questions asked in interviews.', kind: 'official' },
       { label: 'Amazon: Leadership Principles', url: AMAZON_LEADERSHIP_PRINCIPLES_URL, note: 'The principles behind the behavioural questions in each interview; official context only.', kind: 'official' },
       { label: AMAZON_PHONE_2020_LABEL, url: AMAZON_PHONE_2020_URL, note: 'One self-reported phone screen. It establishes the five-star widget in vanilla HTML, CSS and JavaScript; it cannot establish frequency or current wording.', kind: 'report' },
       { label: AMAZON_LOOP_2020_LABEL, url: AMAZON_LOOP_2020_URL, note: 'One self-reported five-round loop. It establishes the carousel, the language tabs modal, the countdown timer, the CSS questions and two algorithm problems; it names no exact wording.', kind: 'report' },

@@ -43,14 +43,14 @@ export const COMPANY_OFFICIAL_GUIDES: Readonly<Record<string, readonly CompanyOf
     },
     {
       label: 'Interviewing at Amazon',
-      url: 'https://www.amazon.jobs/en/landing_pages/interviewing-at-amazon',
+      url: 'https://www.amazon.jobs/content/en/how-we-hire',
       covers: 'The hub for every role-specific preparation page, remote interview setup and accommodations.',
       checkedAt: CHECKED,
     },
     {
       label: 'Leadership Principles',
       url: 'https://www.amazon.jobs/content/en/our-workplace/leadership-principles',
-      covers: 'The principles behind the behavioural questions that open every interview in the loop.',
+      covers: 'The principles behind the two or three behavioural questions each interviewer typically asks.',
       checkedAt: CHECKED,
     },
     {
