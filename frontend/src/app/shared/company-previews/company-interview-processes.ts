@@ -154,7 +154,7 @@ const GOOGLE_GO5 = report(
   'https://www.jointaro.com/interviews/companies/google/experiences/front-end-developer-germany-june-23-2024-no-offer-positive-f76226db/',
   '2024-06',
 );
-const GOOGLE_GO6 = report('Medium', 'https://shubhamjangle.medium.com/google-swe-iii-interview-the-round-by-round-breakdown-nobody-wrote-fd2c10fe52ff', '2026-04');
+const GOOGLE_GO6 = report('Medium (preview)', 'https://shubhamjangle.medium.com/google-swe-iii-interview-the-round-by-round-breakdown-nobody-wrote-fd2c10fe52ff', '2026-04');
 const GOOGLE_GO7 = report('LeetCode', 'https://leetcode.com/discuss/interview-experience/1274542/', '2021-06');
 const GOOGLE_GO8 = report('Blind comment', 'https://www.teamblind.com/post/Google-Frontend-interview-78mvqUW2', '2021-06');
 const GOOGLE_PHONE_2020 = report('LeetCode', 'https://leetcode.com/discuss/post/592667/', '2020-04');
@@ -880,7 +880,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
     summary:
       'Google\'s hiring pages describe recruiter conversations, possible assessments and a panel of interviews by video or in person. Front-end accounts from 2021 to 2026 describe one or two technical screens, then four or five interviews mixing algorithm coding, usually one JavaScript or frontend round and Googleyness, with a frontend-leaning design round from L5.',
     caveat:
-      'The number of frontend rounds varies, and one account had none. Google\'s pages say AI tools are not permitted in interviews, while a May 2026 news report describes a pilot that allows an approved assistant in one round for some US teams. Confirm the loop with your recruiter.',
+      'The number of frontend rounds varies; one 2026 account, read as a preview only, had none. Google\'s pages say AI tools are not permitted in interviews, while a May 2026 news report describes a pilot that allows an approved assistant in one round for some US teams. Confirm the loop with your recruiter.',
     checkedAt: '2026-10-20',
     variants: [
       {
@@ -900,7 +900,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
           },
           {
             stage: 'Technical screen',
-            format: '45–60 minutes of coding in a shared document, in JavaScript or on an algorithm problem; some candidates have two screens.',
+            format: 'About an hour of coding in a shared document, in JavaScript or on an algorithm problem; some candidates have two screens.',
             appliesTo: 'Front-end candidates',
             sources: [GOOGLE_GO3, GOOGLE_GO4, GOOGLE_GO5, GOOGLE_GO6, GOOGLE_PHONE_2020],
             practice: { label: 'Debounce', path: '/javascript/coding/js-debounce' },
@@ -914,14 +914,14 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
           },
           {
             stage: 'System design',
-            format: 'A design round with a frontend and API focus.',
+            format: 'A design round with a frontend and API focus in most accounts; one L5 candidate reported a non-frontend design round.',
             appliesTo: 'L5 and above',
             sources: [GOOGLE_GO1, GOOGLE_GO2, GOOGLE_GO8],
             practice: { label: 'Frontend system design blueprint', path: '/guides/system-design-blueprint' },
           },
           {
             stage: 'Hiring committee and team match',
-            format: 'A committee review after the loop, then team matching.',
+            format: 'A hiring committee review and team matching after the loop; the order varies between accounts.',
             appliesTo: 'All candidates',
             sources: [GOOGLE_GO2, GOOGLE_GO7],
           },

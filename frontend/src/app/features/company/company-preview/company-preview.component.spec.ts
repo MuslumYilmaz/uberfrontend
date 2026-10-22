@@ -356,7 +356,7 @@ describe('CompanyPreviewComponent', () => {
     );
     expect(text).toContain('Public Google prep guide');
     expect(text).toContain('What to study first for a Google frontend interview');
-    expect(text).toContain('Current process note — reviewed July 2026');
+    expect(text).toContain('Current process note — reviewed October 2026');
     expect(text).toContain('Seven Google frontend interview practice questions');
     expect(text).toContain('Walk through autocomplete request ordering before you code');
     expect(text).toContain('A 7-day Google frontend interview preparation plan');
@@ -580,7 +580,11 @@ describe('CompanyPreviewComponent', () => {
     expect(microsoftHost.innerHTML.indexOf('company-official-guides')).toBeLessThan(ctaIndex);
 
     const apple = await createComponent('apple');
-    expect((apple.nativeElement as HTMLElement).querySelector('[data-testid="company-official-guides"]')).toBeNull();
+    const appleTable = (apple.nativeElement as HTMLElement).querySelector('[data-testid="company-official-guides"]');
+    expect(appleTable?.textContent).toContain('Official preparation pages from Apple');
+
+    const tesla = await createComponent('tesla');
+    expect((tesla.nativeElement as HTMLElement).querySelector('[data-testid="company-official-guides"]')).toBeNull();
 
     const google = await createComponent('google');
     expect((google.nativeElement as HTMLElement).querySelector('#google-official-guides')?.textContent).toContain('Official preparation pages from Google');

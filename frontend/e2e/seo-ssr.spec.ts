@@ -3599,7 +3599,7 @@ test.describe('seo-ssr', () => {
       'DSA, JavaScript, browser, UI, system design',
       'Full practice set requires Premium',
       'What to study first for a Google frontend interview',
-      'Current process note — reviewed July 2026',
+      'Current process note — reviewed October 2026',
       'Seven Google frontend interview practice questions',
       'Walk through autocomplete request ordering before you code',
       'A 7-day Google frontend interview preparation plan',

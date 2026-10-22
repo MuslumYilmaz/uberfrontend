@@ -37,7 +37,7 @@ export const GOOGLE_PREVIEW_TRUST_NOTE =
   'These are representative FrontendAtlas practice prompts, not leaked or confirmed Google interview questions. Interview formats vary by role, level, team, location, and time.';
 
 export const GOOGLE_PROCESS_NOTE = {
-  title: 'Current process note — reviewed July 2026',
+  title: 'Current process note — reviewed October 2026',
   reportUrl:
     'https://www.businessinsider.com/google-job-interview-software-engineers-ai-assistant-coding-2026-5',
   guidanceUrl: 'https://www.google.com/about/careers/applications/interview-tips/',
