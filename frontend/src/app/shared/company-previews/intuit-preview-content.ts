@@ -14,7 +14,7 @@ const INTUIT_SDE2_2021_URL = 'https://leetcode.com/discuss/post/1618037/';
 const INTUIT_SDE2_2021_LABEL = 'Public report: Intuit SDE2 frontend loop, Bangalore, October 2021';
 const INTUIT_TARO_2022_URL =
   'https://www.jointaro.com/interviews/companies/intuit/experiences/software-engineer-los-angeles-ca-september-1-2022-no-offer-positive-60b4e7cb/';
-const INTUIT_TARO_2022_LABEL = 'Public report: Intuit software engineer loop, Los Angeles, September 2022';
+const INTUIT_TARO_2022_LABEL = 'Public report: Intuit software engineer loop, September 2022 (Taro, approximate date)';
 const INTUIT_BLIND_2024_URL =
   'https://www.teamblind.com/post/final-interview-for-front-end-engineer-at-intuit-new-coding-format-5jbsqcv5';
 const INTUIT_BLIND_2024_LABEL = 'Public thread: Intuit front end engineer final interview, new coding format, October 2024';

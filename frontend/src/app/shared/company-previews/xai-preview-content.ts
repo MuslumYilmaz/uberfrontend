@@ -2,16 +2,16 @@ import type { AuthoredCompanyPreview } from '../../shared/company-previews/autho
 
 /**
  * xAI (now SpaceXSI) frontend interview guide. Every prompt is a FrontendAtlas practice version modelled
- * on one public London interview account (Taro, August 2025) and on the stage lists in closed official
+ * on one public interview account (Taro, August 2025) and on the stage lists in closed official
  * frontend postings (March 2025 to February 2026). Nothing here is a leaked, confirmed or official xAI
  * question, and one account plus closed postings cannot establish the current loop.
  */
 const XAI_LONDON_REPORT_URL =
   'https://www.jointaro.com/interviews/companies/xai/experiences/frontend-engineer-london-england-august-13-2025-no-offer-positive-45b410e6/';
-const XAI_LONDON_REPORT_LABEL = 'Public report: xAI Frontend Engineer interview account, London, on Taro, August 2025';
+const XAI_LONDON_REPORT_LABEL = 'Public report: xAI Frontend Engineer interview account on Taro, August 2025';
 const XAI_SPECIALIST_REPORT_URL =
   'https://www.jointaro.com/interviews/companies/xai/experiences/software-engineer-specialist-yerevan-yerevan-august-1-2025-accepted-offer-negative-c940c932/';
-const XAI_SPECIALIST_REPORT_LABEL = 'Public report: xAI Software Engineer Specialist interview account on Taro, August 2025';
+const XAI_SPECIALIST_REPORT_LABEL = 'Public report: xAI Software Engineer Specialist interview account on Taro, 2025 (Taro, approximate date)';
 const XAI_MTS_REPORT_URL = 'https://www.aced.io/experiences/x-ai-software-engineer-interview-7fbd12';
 const XAI_MTS_REPORT_LABEL = 'Public report: xAI Member of Technical Staff (L3) interview account on Aced, 2025';
 const XAI_GROK_API_POSTING_URL = 'https://builtin.com/job/react-frontend-engineer-grokcom-api/4446453';
@@ -32,7 +32,7 @@ export const XAI_PREVIEW_DESCRIPTION =
   'Prepare for an xAI (SpaceXSI) frontend interview with 4 practice prompts modelled on public postings and reports: chat UI, TS app, CSS screenshot, AI composer.';
 export const XAI_PREVIEW_CANONICAL_PATH = '/companies/xai/preview';
 export const XAI_PREVIEW_TRUST_NOTE =
-  'These are FrontendAtlas practice versions modelled on rounds described in public interview reports and official postings, not leaked, confirmed or official xAI questions. One London account and closed postings cannot establish the current loop; use the material your interviewers provide as the source of truth.';
+  'These are FrontendAtlas practice versions modelled on rounds described in public interview reports and official postings, not leaked, confirmed or official xAI questions. One Taro account and closed postings cannot establish the current loop; use the material your interviewers provide as the source of truth.';
 
 export const XAI_COMPANY_PREVIEW: AuthoredCompanyPreview = {
   slug: 'xai',
@@ -45,7 +45,7 @@ export const XAI_COMPANY_PREVIEW: AuthoredCompanyPreview = {
   hero: {
     kicker: 'Public xAI prep guide',
     subtitle:
-      'Prepare with four practice prompts shaped by one public London account and the stage lists in closed official postings: a chat interface built in React during a one-hour pairing session, a small React app written in TypeScript, a UI implemented from a screenshot in HTML and CSS, and the composer and streaming turn of a grok.com-style chat product.',
+      'Prepare with four practice prompts shaped by one public Taro account and the stage lists in closed official postings: a chat interface built in React during a one-hour pairing session, a small React app written in TypeScript, a UI implemented from a screenshot in HTML and CSS, and the composer and streaming turn of a grok.com-style chat product.',
     caveat:
       'xAI merged into SpaceX (the merger closed on 2 February 2026), rebranded as SpaceXAI in July 2026 and as SpaceXSI in October 2026, with SpaceXAI LLC as the legal entity; on 22 October 2026 the job board still lived at the xai slug. The frontend postings that described a loop were removed between June 2025 and February 2026, so the loop below describes 2025 to early 2026. This guide does not claim access to private interview material, a fixed format, or the stack of every team.',
     chips: ['4 practice prompts', 'React, TypeScript, HTML/CSS, AI chat design', 'Full practice set requires Premium'],
@@ -54,7 +54,7 @@ export const XAI_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     kicker: 'Study priorities',
     title: 'Prepare for product judgment, not xAI trivia',
     paragraphs: [
-      'The public pages reward engineers who ship a working slice under a clock while explaining it: a small React app in TypeScript that handles its loading and failure states, a layout rebuilt from a screenshot that still reflows, a chat interface that can send, show a reply arriving and stop it. The one London account adds React questions asked in passing, such as what useCallback does, so each hook you use should come with a one-sentence reason. Each prompt below starts with the clarifying questions a strong candidate asks, then the behaviours a strong answer covers, then the miss that usually ends the round.',
+      'The public pages reward engineers who ship a working slice under a clock while explaining it: a small React app in TypeScript that handles its loading and failure states, a layout rebuilt from a screenshot that still reflows, a chat interface that can send, show a reply arriving and stop it. The one Taro account adds React questions asked in passing, such as what useCallback does, so each hook you use should come with a one-sentence reason. Each prompt below starts with the clarifying questions a strong candidate asks, then the behaviours a strong answer covers, then the miss that usually ends the round.',
       'Treat the postings as a shape, not a script. The closed London posting gave 45 minutes each to a React round and an HTML/CSS/Tailwind round; the Bay Area postings described a coding assessment in a language of your choice, one or two React/TypeScript interviews and a "Meet the Team" session where you present past exceptional work. Practise the timed builds first, then rehearse the ten-minute story of work you are proud of, because the application itself asks for a "statement of exceptional work".',
     ],
   },
@@ -62,7 +62,7 @@ export const XAI_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     kicker: 'Source boundary · checked October 2026',
     title: 'What the public pages establish, and what you still need to confirm',
     paragraphs: [
-      'Three public interview reports read in full inform this guide: one London Frontend Engineer account on Taro (August 2025) describing a 15-minute phone interview and a one-hour pair-coding session building a chat interface in React; one "Software Engineer Specialist" account with JavaScript and React interviews after a CodeSignal assessment, a title that looks like a separate track from the product frontend teams; and one general Member of Technical Staff account on Aced (2025, read in full on 21 October 2026 and behind a member wall since) with a four-hour take-home. Two Bay Area frontend onsite accounts sit behind a login wall and only confirm that more accounts exist. The stage lists come from closed official postings for London and Bay Area frontend roles between March 2025 and February 2026, and the careers page read on 21 October 2026 keeps four generic steps.',
+      'Three public interview reports read in full inform this guide: one Frontend Engineer account on Taro (August 2025) describing a 15-minute phone interview and a one-hour pair-coding session building a chat interface in React; one "Software Engineer Specialist" account with JavaScript and React interviews after a CodeSignal assessment, a title that looks like a separate track from the product frontend teams; and one general Member of Technical Staff account on Aced (2025, read in full on 21 October 2026 and behind a member wall since) with a four-hour take-home. Two Bay Area frontend onsite accounts sit behind a login wall and only confirm that more accounts exist. The stage lists come from closed official postings for London and Bay Area frontend roles between March 2025 and February 2026, and the careers page read on 21 October 2026 keeps four generic steps.',
       'These pages establish that those rounds and stages were described; they do not establish exact wording, the current format after the merger, or how each team interviews now. On 21 October 2026 the job board at the xai slug listed one frontend-titled opening and no engineering posting with an interview section. Confirm the exercise types, the allowed tools, the expected stack and the timing with whoever runs your process; the careers page says engineers, not recruiters, evaluate applications.',
     ],
   },
@@ -77,7 +77,7 @@ export const XAI_COMPANY_PREVIEW: AuthoredCompanyPreview = {
         id: 'react-chat-interface-pairing',
         title: 'Build a chat interface in React during a one-hour pairing session',
         statement:
-          'One London account describes a one-hour pair-coding session: build a chat interface in React while an engineer from the team reviews the code live, with React questions along the way such as what useCallback does. Practise the same shape: a message list, a composer, a status per message, and an assistant reply that renders as it arrives.',
+          'One Taro account describes a one-hour pair-coding session: build a chat interface in React while an engineer from the team reviews the code live, with React questions along the way such as what useCallback does. Practise the same shape: a message list, a composer, a status per message, and an assistant reply that renders as it arrives.',
         whatThisMeasures:
           'Scoping under a clock, component and state boundaries, controlled inputs and list rendering, explaining hooks while typing, and taking live review without losing the thread.',
         clarifyFirst: [
@@ -221,7 +221,7 @@ export const XAI_COMPANY_PREVIEW: AuthoredCompanyPreview = {
       {
         question: 'Are these the real xAI questions?',
         answer:
-          'No. They are FrontendAtlas practice versions modelled on one public London account and on the stage descriptions in closed official postings. The wording, the data and the test cases are ours.',
+          'No. They are FrontendAtlas practice versions modelled on one public Taro account and on the stage descriptions in closed official postings. The wording, the data and the test cases are ours.',
       },
       {
         question: 'Is xAI still called xAI?',
@@ -271,7 +271,7 @@ export const XAI_COMPANY_PREVIEW: AuthoredCompanyPreview = {
         label: XAI_LONDON_REPORT_LABEL,
         url: XAI_LONDON_REPORT_URL,
         note:
-          'One self-reported London loop: a 15-minute phone interview, then a one-hour pair-coding session building a chat interface in React with live code review and React questions such as what useCallback does. It establishes the round this guide is modelled on; it cannot establish wording, the current format or the loops of other teams.',
+          'One self-reported loop on Taro: a 15-minute phone interview, then a one-hour pair-coding session building a chat interface in React with live code review and React questions such as what useCallback does. It establishes the round this guide is modelled on; it cannot establish wording, the current format or the loops of other teams.',
         kind: 'report',
       },
       {

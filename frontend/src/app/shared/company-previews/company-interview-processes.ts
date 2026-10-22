@@ -1499,13 +1499,13 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
   },
   servicenow: {
     summary:
-      'ServiceNow\'s hiring page says interview rounds vary by position and may include a technical coding assessment or a presentation. Accounts from India between 2022 and 2025 describe a screening call, two JavaScript-heavy technical rounds, sometimes a design or machine-coding round, and a hiring manager round.',
+      'ServiceNow\'s hiring page says interview rounds vary by position and may include a technical coding assessment or a presentation. Accounts from 2022 to 2025, two of them placed in India by Taro, describe a screening call, two JavaScript-heavy technical rounds, sometimes a design or machine-coding round, and a hiring manager round.',
     caveat:
-      'This table covers India only. Accounts from the US describe algorithm-focused loops and plans with the hiring manager first, but they are too few for a table. One 2025 account added a final round with a director.',
+      'This table covers the accounts that state India or no location. Accounts from the US describe algorithm-focused loops and plans with the hiring manager first, but they are too few for a table. One 2025 account added a final round with a director.',
     checkedAt: '2026-10-20',
     variants: [
       {
-        title: 'UI and frontend engineers in India',
+        title: 'UI and frontend engineers, 2022 to 2025',
         stages: [
           {
             stage: 'Screening call',
