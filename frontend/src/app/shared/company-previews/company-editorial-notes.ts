@@ -470,13 +470,13 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
     description: 'How public reports from 2021 to 2023 describe Booking.com frontend interviews: a HackerRank test, coding rounds with two engineers and a fit interview.',
     hero: {
       kicker: 'Public preview and process notes',
-      subtitle: 'Booking.com publishes a four-step journey; public frontend reports from 2021 to 2023 add the detail: a 90 to 100 minute HackerRank test, one or two 60 minute coding rounds in vanilla JavaScript or React, and a fit interview. Newer general software loops add a take-home.',
+      subtitle: 'Booking.com publishes a four-step journey; public frontend reports from 2021 to 2023 add the detail: a 90 to 100 minute HackerRank test, one or two 60 minute coding rounds in vanilla JavaScript or React, and a fit interview. One 2025 software engineer account adds a take-home.',
     },
-    intro: ['The official page, linked below, describes Application, Interview, Business and Feedback steps over three to six weeks, with technical tests and coding interviews for technical roles. The frontend detail comes from public accounts, mostly from Amsterdam, and stops in mid-2023.'],
+    intro: ['The official page, linked below, describes Application, Interview, Business and Feedback steps over three to six weeks, with technical tests and coding interviews for technical roles. The frontend detail comes from public accounts from 2021 to mid-2023, most of them for Amsterdam roles; a thin September 2025 frontend developer account describes a recruiter call and a live-coding round with two engineers.'],
     reportsDescribe: {
       kicker: 'What public interview reports describe',
       title: 'HackerRank test, recruiter call, coding rounds, fit interview',
-      paragraphs: ['The HackerRank test runs 90 to 100 minutes with about five items: two easy algorithm problems, two HTML and CSS multiple-choice questions and one React component. A 15 to 30 minute recruiter call follows, sometimes with a few technical questions, then one or two coding rounds of about 60 minutes with two engineers, and a fit interview of about an hour with engineering managers.'],
+      paragraphs: ['The HackerRank test runs 90 to 100 minutes with about five items: two algorithm problems, mostly easy (one account had a medium), two HTML and CSS multiple-choice questions and one React component. A short recruiter call follows, 15 minutes in one full-stack account, sometimes with a few technical questions, then one or two coding rounds of about 60 minutes with two engineers, and a fit interview with engineering managers, 60 minutes in that same full-stack account.'],
       bullets: [
         {
           text: 'The coding rounds build a component in plain JavaScript or React. An autocomplete or typeahead recurs; other accounts mention a tooltip, a component fed by API data to a design spec and a new feature added to a prepared app.',
@@ -486,13 +486,13 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
           },
         },
         {
-          text: 'Backend coding and system design appear only in full-stack and senior accounts; no frontend-titled account mentions system design.',
+          text: 'Backend coding and system design appear only in full-stack and senior accounts; no frontend-titled account describes a system design round.',
         },
         {
           text: 'One account describes a monitored 40-minute HackerRank session with three engineers, a live round rather than the take-home test.',
         },
         {
-          text: '2025 general software engineer accounts describe a different loop with a take-home and a pairing session.',
+          text: 'One August 2025 software engineer account describes a take-home followed by a technical session, then system design and an engineering manager round; a May 2025 senior full-stack loop had an easy React exercise and system design.',
         },
       ],
     },
@@ -565,7 +565,7 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
         },
         {
           question: 'How recent are these reports?',
-          answer: 'The frontend accounts run from 2021 to mid-2023. Later accounts are general software engineer loops with a take-home and a pairing session.',
+          answer: 'Detailed frontend accounts run from 2021 to mid-2023; a thin September 2025 frontend developer account describes a recruiter call and a live-coding round with two engineers. The 2025 software engineer accounts describe a take-home followed by a technical session in one case and an easy React exercise plus system design in another.',
         },
       ],
     },

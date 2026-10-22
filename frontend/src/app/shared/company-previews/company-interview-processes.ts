@@ -289,6 +289,7 @@ const BOOKINGCOM_BK8 = report('Taro', `${BOOKINGCOM_TARO}/junior-frontend-engine
 const BOOKINGCOM_BK9 = report('Blind', 'https://www.teamblind.com/post/bookingcom-frontend-interview-experience-owh781q6', '2021-12');
 const BOOKINGCOM_BK10 = report('Blind', 'https://www.teamblind.com/post/bookingcom-interview-frontend-fzudnfhv', '2021-11');
 const BOOKINGCOM_BK11 = report('Taro', `${BOOKINGCOM_TARO}/frontend-developer-turkey-september-1-2021-no-offer-neutral-8e3079d9/`, '2021-09');
+const BOOKINGCOM_BK12 = report('Taro', `${BOOKINGCOM_TARO}/full-stack-software-engineer-bangladesh-may-1-2022-accepted-offer-positive-8784f953/`, '2022-05');
 
 // Datadog, Intuit and ServiceNow.
 const DATADOG_CANDIDATE_EXPERIENCE = official('Datadog: Candidate experience', 'https://careers.datadoghq.com/candidate-experience/');
@@ -1338,7 +1339,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
     summary:
       'Booking.com\'s hiring page describes a call with a sourcer or recruiter, interview rounds with the manager and team that depend on department and seniority, and technical tests and coding interviews for some technical roles. Frontend accounts from 2021 to 2023, mostly for Amsterdam, describe a HackerRank test, a recruiter call, one or two frontend coding rounds and a fit interview.',
     caveat:
-      'Full-stack and senior roles add backend coding and a system design round. Accounts from 2025 for general software engineer roles describe a take-home assignment instead, so recent frontend loops may differ.',
+      'Full-stack and senior roles add backend coding and a system design round. One August 2025 software engineer account describes a take-home followed by a technical session, a May 2025 senior full-stack loop had an easy React exercise and system design, and a thin September 2025 frontend account describes a recruiter call and a live-coding round, so recent frontend loops may differ.',
     checkedAt: '2026-10-20',
     variants: [
       {
@@ -1346,7 +1347,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         stages: [
           {
             stage: 'HackerRank assessment',
-            format: '90–100 minutes, about five items: two easy algorithm problems, two HTML and CSS multiple-choice questions and a React component.',
+            format: '90–100 minutes, about five items: two algorithm problems, mostly easy (one account had a medium), two HTML and CSS multiple-choice questions and a React component.',
             appliesTo: 'Junior to FE II',
             sources: [BOOKINGCOM_BK3, BOOKINGCOM_BK5, BOOKINGCOM_BK8, BOOKINGCOM_BK9, BOOKINGCOM_BK10, BOOKINGCOM_BK11],
             practice: { label: 'Valid Parentheses', path: '/javascript/coding/js-valid-parentheses' },
@@ -1366,9 +1367,9 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
           },
           {
             stage: 'Fit interview',
-            format: 'About 60 minutes with engineering managers.',
+            format: 'A conversation with engineering managers; 60 minutes in one full-stack account.',
             appliesTo: 'All candidates',
-            sources: [BOOKINGCOM_BK5, BOOKINGCOM_BK7, BOOKINGCOM_BK8, BOOKINGCOM_BK11],
+            sources: [BOOKINGCOM_BK5, BOOKINGCOM_BK7, BOOKINGCOM_BK8, BOOKINGCOM_BK11, BOOKINGCOM_BK12],
             practice: { label: 'Behavioral interview guide', path: '/guides/behavioral' },
           },
         ],
