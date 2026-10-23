@@ -4359,7 +4359,8 @@
     "solutionAsset": "assets/sb/react/solution/react-countdown-timer-solution.v1.json",
     "decisionGraphAsset": "assets/questions/react/decision-graphs/react-countdown-timer.v1.json",
     "companies": [
-      "amazon"
+      "amazon",
+      "anduril"
     ],
     "sources": [
       {
@@ -4369,6 +4370,14 @@
         "publisher": "LeetCode Discuss",
         "date": "2020-04",
         "note": "One Amazon front end engineer II loop account describes a 30-minute round of CSS questions followed by a countdown timer the candidate could not finish in time. This component is a practice version of that exercise, not its reported wording."
+      },
+      {
+        "label": "Taro: Anduril software engineer interview, December 2024",
+        "url": "https://www.jointaro.com/interviews/companies/anduril/experiences/software-engineer-united-states-december-24-2024-no-offer-positive-64f81210/",
+        "company": "anduril",
+        "publisher": "Taro",
+        "date": "2024-12",
+        "note": "An account with a frontend focus lists writing a timer class and a React app around it. This item practises the React half: start, pause, reset and interval cleanup. Write the timer as a class first."
       }
     ],
     "access": "premium",
@@ -6435,7 +6444,34 @@
     "solutionAsset": "assets/sb/react/solution/react-file-explorer-solution.v1.json",
     "decisionGraphAsset": "assets/questions/react/decision-graphs/react-file-explorer.v1.json",
     "companies": [
-      "walmart"
+      "walmart",
+      "anduril"
+    ],
+    "sources": [
+      {
+        "label": "Taro: Anduril frontend internship interview, July 2023",
+        "url": "https://www.jointaro.com/interviews/companies/anduril/experiences/software-engineerinternship-costa-mesa-ca-july-5-2023-accepted-offer-positive-dbb3fa63/",
+        "company": "anduril",
+        "publisher": "Taro",
+        "date": "2023-07",
+        "note": "An intern account for a frontend position reports building a file explorer in React where clicking a folder shows its children below it. This item practises that tree; its sorting and keyboard navigation go beyond the report."
+      },
+      {
+        "label": "Blind: Anduril front end interviews thread, March 2024",
+        "url": "https://www.teamblind.com/post/anduril-front-end-interviews-bugagvca",
+        "company": "anduril",
+        "publisher": "Blind",
+        "date": "2024-03",
+        "note": "A commenter reports getting the file folder component in the coding round before an onsite, and calls it straightforward. This item is a practice version of that task, not its wording."
+      },
+      {
+        "label": "Blind: Anduril front end interview thread, March 2025",
+        "url": "https://www.teamblind.com/post/anduril-front-end-interview-yt3cx1bt",
+        "company": "anduril",
+        "publisher": "Blind",
+        "date": "2025-03",
+        "note": "A commenter reports getting the file explorer problem in the screen. This item is a practice version of that task, not its wording."
+      }
     ],
     "premiumPreview": {
       "summary": "Build a file explorer tree that sorts folders first, opens and closes folders, selects files, and works fully from the keyboard as an accessible tree widget.",

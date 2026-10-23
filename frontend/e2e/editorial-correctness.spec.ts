@@ -83,6 +83,10 @@ const publicCopyCases = [
     expected: 'Prepare for product judgment, not Shopee trivia',
   },
   {
+    path: '/companies/anduril/preview',
+    expected: 'What Anduril frontend loops reward: a working React build in time and a class moved into a framework',
+  },
+  {
     path: '/system-design',
     expected: 'Follow this four-step path when you are new to the bank',
   },

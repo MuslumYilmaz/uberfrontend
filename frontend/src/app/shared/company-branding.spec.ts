@@ -29,6 +29,7 @@ describe('company branding helpers', () => {
     const currentCompanySlugs = [
       'agoda',
       'airbnb',
+      'anduril',
       'amazon',
       'apple',
       'booking-com',

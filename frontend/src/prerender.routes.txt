@@ -86,6 +86,7 @@
 /companies/agoda/preview
 /companies/airbnb/preview
 /companies/amazon/preview
+/companies/anduril/preview
 /companies/apple/preview
 /companies/booking-com/preview
 /companies/bytedance/preview

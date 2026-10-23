@@ -382,7 +382,8 @@
     "companies": [
       "meta",
       "booking-com",
-      "shopee"
+      "shopee",
+      "anduril"
     ],
     "sources": [
       {
@@ -400,6 +401,14 @@
         "publisher": "Juejin",
         "date": "2020-10",
         "note": "The seller-platform first round set two coding tasks: flatten an array (拍平数组) and deep-copy an object. This one-level flatten is a practice version of the first task, not its wording."
+      },
+      {
+        "label": "Blind: Anduril frontend interview thread, May 2024",
+        "url": "https://www.teamblind.com/post/anduril-frontend-interview-eg52tpe3",
+        "company": "anduril",
+        "publisher": "Blind",
+        "date": "2024-05",
+        "note": "A commenter in a thread about the Anduril frontend interview says they cleared it and were asked lodash-style questions: flatten, map and reduce. Flattening one level is a representative drill, not the reported depth."
       }
     ],
     "updatedAt": "2026-01-30",
@@ -8926,7 +8935,8 @@
     "updatedAt": "2026-10-14",
     "companies": [
       "waymo",
-      "shopee"
+      "shopee",
+      "anduril"
     ],
     "sources": [
       {
@@ -8944,6 +8954,14 @@
         "publisher": "Viblo",
         "date": "2025-02",
         "note": "The React part asked for a multi-level menu in which hovering an item opens its sub-menu, recursively. This tree-filter-and-render drill rehearses the recursion over nested nodes; it is not the reported React task."
+      },
+      {
+        "label": "Taro: Anduril frontend internship interview, July 2023",
+        "url": "https://www.jointaro.com/interviews/companies/anduril/experiences/software-engineerinternship-costa-mesa-ca-july-5-2023-accepted-offer-positive-dbb3fa63/",
+        "company": "anduril",
+        "publisher": "Taro",
+        "date": "2023-07",
+        "note": "The reported task was a React file explorer that shows a folder's children below it. This text drill practises the same depth-first recursion over nested data; it is not the reported task."
       }
     ],
     "seo": {

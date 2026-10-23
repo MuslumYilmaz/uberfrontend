@@ -15,6 +15,7 @@ const CHECKED = '2026-10-15';
 const CHECKED_OCT_20 = '2026-10-20';
 const CHECKED_OCT_21 = '2026-10-21';
 const CHECKED_OCT_22 = '2026-10-22';
+const CHECKED_OCT_23 = '2026-10-23';
 
 export const COMPANY_OFFICIAL_GUIDES: Readonly<Record<string, readonly CompanyOfficialGuide[]>> = {
   apple: [
@@ -376,6 +377,15 @@ export const COMPANY_OFFICIAL_GUIDES: Readonly<Record<string, readonly CompanyOf
       covers:
         'Shopee\'s five hiring steps: Apply; Getting to Know You (a conversation with a recruiter); Putting Your Skills to the Test (depending on the role, additional tasks or assessments such as a coding, technical or role-specific assessment); Meet the Hiring Manager (questions about experiences, hypothetical scenarios or role-specific cases); and Preparing to Join Us (the offer by phone or email). Its FAQ says the number of rounds varies depending on the role and seniority and that the recruiter shares the details.',
       checkedAt: CHECKED_OCT_21,
+    },
+  ],
+  anduril: [
+    {
+      label: 'Early careers FAQ',
+      url: 'https://www.anduril.com/early-careers',
+      covers:
+        'An answer to what the interview process looks like: a recruiter call, technical and behavioral interviews, and role-specific assessments that could include live coding challenges, presentations or in-depth technical discussions, plus US work-authorization rules tied to export regulations; no frontend format.',
+      checkedAt: CHECKED_OCT_23,
     },
   ],
 };

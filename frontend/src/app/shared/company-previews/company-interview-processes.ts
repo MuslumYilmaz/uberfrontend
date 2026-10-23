@@ -667,6 +667,33 @@ const WAYMO_WM4_INTERN_2022 = report(
   '2022-09',
 );
 
+// Anduril accounts are all US. Taro reports are Glassdoor re-hosts; the 2022 and 2025 ones carry placeholder dates.
+const ANDURIL_EARLY_CAREERS = official('Anduril early careers FAQ', 'https://www.anduril.com/early-careers');
+const ANDURIL_TARO = 'https://www.jointaro.com/interviews/companies/anduril/experiences';
+const ANDURIL_AN9_OFFER_2022 = report(
+  'Taro (approx.)',
+  `${ANDURIL_TARO}/frontend-software-engineer-costa-mesa-ca-september-1-2022-accepted-offer-positive-9ee69754/`,
+  '2022-09',
+);
+const ANDURIL_AN10_INTERN_2023 = report(
+  'Taro',
+  `${ANDURIL_TARO}/software-engineerinternship-costa-mesa-ca-july-5-2023-accepted-offer-positive-dbb3fa63/`,
+  '2023-07',
+);
+const ANDURIL_AN11_FE_FOCUS_2024 = report(
+  'Taro',
+  `${ANDURIL_TARO}/software-engineer-united-states-december-24-2024-no-offer-positive-64f81210/`,
+  '2024-12',
+);
+const ANDURIL_AN12_CLASS_2025 = report(
+  'Taro (approx.)',
+  `${ANDURIL_TARO}/software-engineer-seattle-wa-january-1-2025-no-offer-positive-c481c905/`,
+  '2025-01',
+);
+const ANDURIL_AN1_ONSITE_2025 = report('Blind', 'https://www.teamblind.com/post/front-end-interviews-at-anduril-3hihnhlv', '2025-04');
+const ANDURIL_AN2_OFFER_2023 = report('Blind', 'https://www.teamblind.com/post/anduril-front-end-interviews-bugagvca', '2023-10');
+const ANDURIL_AN6_SCREEN_2025 = report('Blind comment', 'https://www.teamblind.com/post/anduril-front-end-interview-yt3cx1bt', '2025-03');
+
 export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyInterviewProcess>> = {
   amazon: {
     title: 'Amazon Front End Engineer interview process',
@@ -2425,6 +2452,74 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
             format: 'A data structures and algorithms round closed the loop.',
             appliesTo: 'The one account',
             sources: [WAYMO_WM2_SWE_2026],
+          },
+        ],
+      },
+    ],
+  },
+  anduril: {
+    summary:
+      'Anduril describes a recruiter call, technical and behavioral interviews and role-specific assessments that could include live coding. Frontend accounts from 2022 to 2025 describe one technical screen with an applied frontend problem, then an onsite of two coding rounds, a system design round and a behavioral interview.',
+    caveat:
+      'Thin evidence: nine candidates from 2022 to 2025, four of them Taro re-hosts of Glassdoor reviews, and no senior, staff or 2026 frontend account. Anduril employees on Blind say the format depends on the team and the interviewer, and recruiters have described the wrong kind of round.',
+    checkedAt: '2026-10-23',
+    variants: [
+      {
+        title: 'Frontend engineers, United States',
+        stages: [
+          {
+            stage: 'Recruiter call',
+            format:
+              'Resume and past experience. In 2025 one recruiter predicted an algorithm-heavy round that turned out to be two simple JavaScript and React tasks; in another account the coordinator preparation document described the frontend test correctly.',
+            appliesTo: 'All candidates',
+            sources: [ANDURIL_EARLY_CAREERS, ANDURIL_AN9_OFFER_2022, ANDURIL_AN11_FE_FOCUS_2024, ANDURIL_AN12_CLASS_2025, ANDURIL_AN1_ONSITE_2025],
+          },
+          {
+            stage: 'Technical screen',
+            format:
+              'About an hour with an applied frontend problem: a file explorer in React in two accounts, or a JavaScript class or component written in an empty file and then moved into React, Vue or Angular. By video in 2022 and on HackerRank in 2025.',
+            appliesTo: 'Frontend candidates',
+            sources: [ANDURIL_AN12_CLASS_2025, ANDURIL_AN11_FE_FOCUS_2024, ANDURIL_AN9_OFFER_2022, ANDURIL_AN2_OFFER_2023, ANDURIL_AN6_SCREEN_2025],
+            practice: { label: 'File explorer tree', path: '/react/coding/react-file-explorer' },
+          },
+          {
+            stage: 'Onsite',
+            format:
+              'Three or four interviews: two coding rounds, usually one in React and one in plain JavaScript or data structures, one system design round and one behavioral interview. A 2024 candidate flew to Costa Mesa for it.',
+            appliesTo: 'Candidates who pass the screen',
+            sources: [ANDURIL_AN1_ONSITE_2025, ANDURIL_AN2_OFFER_2023, ANDURIL_AN9_OFFER_2022, ANDURIL_AN11_FE_FOCUS_2024],
+            practice: { label: 'React countdown timer', path: '/react/coding/react-countdown-timer' },
+          },
+          {
+            stage: 'Decision',
+            format: 'Within about five days in a 2022 account; a 2023 offer came about three weeks after the first interview result.',
+            appliesTo: 'Candidates who finish',
+            sources: [ANDURIL_AN9_OFFER_2022, ANDURIL_AN2_OFFER_2023],
+          },
+        ],
+      },
+      {
+        title: 'Frontend interns, 2023',
+        note: 'One account of a frontend internship loop that ended in an offer.',
+        stages: [
+          {
+            stage: 'Introductory interview',
+            format: 'A short first conversation.',
+            appliesTo: 'The one account',
+            sources: [ANDURIL_AN10_INTERN_2023],
+          },
+          {
+            stage: 'Two technical rounds',
+            format: 'Build a small application; the reported task is a file explorer in React where clicking a folder shows its children.',
+            appliesTo: 'The one account',
+            sources: [ANDURIL_AN10_INTERN_2023],
+            practice: { label: 'Filter a tree and render it', path: '/javascript/coding/js-filter-tree-render-indented' },
+          },
+          {
+            stage: 'Behavioral interview',
+            format: 'Behavioral questions with a small technical question at the end.',
+            appliesTo: 'The one account',
+            sources: [ANDURIL_AN10_INTERN_2023],
           },
         ],
       },

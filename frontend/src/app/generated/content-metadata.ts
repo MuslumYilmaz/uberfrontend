@@ -1554,6 +1554,12 @@ export const SHOWCASE_STATS = {
       "trivia": 23,
       "system": 1
     },
+    "anduril": {
+      "all": 5,
+      "coding": 4,
+      "trivia": 1,
+      "system": 0
+    },
     "apple": {
       "all": 37,
       "coding": 23,
