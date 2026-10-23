@@ -181,6 +181,12 @@ export const COMPANY_BRANDS: Record<string, CompanyBrand> = {
     logoUrl: `${COMPANY_LOGO_BASE}/gitlab.svg`,
     monogram: 'G',
   },
+  // Tagged on 2026-10-23; Simple Icons has no Capital One mark, so it keeps a monogram.
+  'capital-one': {
+    slug: 'capital-one',
+    label: 'Capital One',
+    monogram: 'C',
+  },
 };
 
 const COMPANY_ALIASES: Record<string, string> = {

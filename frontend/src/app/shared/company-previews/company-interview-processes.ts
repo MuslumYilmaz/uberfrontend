@@ -722,6 +722,28 @@ const GITLAB_GL28_FE_2019 = report('Taro (approx.)', `${GITLAB_TARO}/frontend-en
 const GITLAB_GL35_FE_2018 = report('Taro (approx.)', `${GITLAB_TARO}/front-end-engineer-saint-louis-missouri-june-1-2018-accepted-offer-positive-0a133d02/`, '2018-06');
 const GITLAB_GL44_FULLSTACK_2025 = report('Medium', 'https://medium.com/@vedantj03/how-i-got-into-gitlab-an-open-source-journey-7ecdad137307', '2025-04');
 
+// Capital One frontend accounts are Taro re-hosts of Glassdoor reviews with placeholder dates; the generic loop
+// and the official page are written for other roles, so they only back the shared stages.
+const CAPITALONE_AI_ML_GUIDE = official('Capital One AI and ML guide', 'https://www.capitalonecareers.com/insider-tips-for-ai-and-machine-learning-interviews-tech-101-cdev');
+const CAPITALONE_WHAT_TO_EXPECT = official('Capital One interview guide', 'https://www.capitalonecareers.com/what-to-expect-during-your-capital-one-interview-students-101');
+const CAPITALONE_TARO = 'https://www.jointaro.com/interviews/companies/capital-one/experiences';
+const CAPITALONE_CO1_LEAD_2024 = report('Taro (approx.)', `${CAPITALONE_TARO}/lead-software-engineer-front-end-mclean-va-october-1-2024-no-offer-positive-6427acda/`, '2024-10');
+const CAPITALONE_CO2_SENIOR_2024 = report('Taro (approx.)', `${CAPITALONE_TARO}/senior-frontend-engineer-washington-dc-july-1-2024-no-offer-neutral-3e4968d4/`, '2024-07');
+const CAPITALONE_CO3_SENIOR_2024 = report('Taro (approx.)', `${CAPITALONE_TARO}/senior-frontend-engineer-chicago-il-august-1-2024-no-offer-negative-958c2993/`, '2024-08');
+const CAPITALONE_CO4_SENIOR_2024 = report('Taro (approx.)', `${CAPITALONE_TARO}/senior-frontend-engineer-united-states-november-1-2024-no-offer-neutral-52591f09/`, '2024-11');
+const CAPITALONE_CO5_SENIOR_2023 = report(
+  'Taro (approx.)',
+  `${CAPITALONE_TARO}/senior-web-front-end-engineer-mclean-va-february-1-2023-no-offer-negative-b9f0a15e/`,
+  '2023-02',
+);
+const CAPITALONE_CO6_FRONTEND_2022 = report(
+  'Taro (approx.)',
+  `${CAPITALONE_TARO}/senior-software-engineer-united-states-august-1-2022-accepted-offer-neutral-9d67e812/`,
+  '2022-08',
+);
+const CAPITALONE_CO7_LEAD_2022 = report('Taro (approx.)', `${CAPITALONE_TARO}/front-end-lead-plano-tx-august-1-2022-declined-offer-neutral-c94a48a3/`, '2022-08');
+const CAPITALONE_CO9_SENIOR_2024 = report('Taro (approx.)', `${CAPITALONE_TARO}/senior-front-end-developer-mclean-va-may-1-2024-no-offer-positive-3ea6b6f9/`, '2024-05');
+
 export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyInterviewProcess>> = {
   amazon: {
     title: 'Amazon Front End Engineer interview process',
@@ -2640,6 +2662,94 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
             format: 'About an hour each on behavioral and situational questions, values and how you work.',
             appliesTo: 'All candidates',
             sources: [GITLAB_GL18_FULLSTACK_2020, GITLAB_GL44_FULLSTACK_2025],
+          },
+        ],
+      },
+    ],
+  },
+  'capital-one': {
+    summary:
+      'Capital One describes a recruiter screen, an assessment and a Power Day of four hour-long interviews. Frontend accounts from 2022 to 2024 describe a CodeSignal assessment, then a Power Day with a frontend design round, a frontend technical round, a case built on reading code and a behavioral round.',
+    caveat:
+      'Thin and dated: the frontend accounts are Taro re-hosts of Glassdoor reviews, the newest with round detail is from late 2024, and the official description is written for AI and ML roles. A 2025 front-end-focused candidate on a full-stack loop met generic coding and backend design rounds instead.',
+    checkedAt: '2026-10-23',
+    variants: [
+      {
+        title: 'Senior frontend engineers, United States, 2022 to 2024',
+        stages: [
+          {
+            stage: 'Recruiter screen',
+            format: 'A call about the role and your background; in one account the candidate messaged the recruiter on LinkedIn first.',
+            appliesTo: 'All candidates',
+            sources: [CAPITALONE_WHAT_TO_EXPECT, CAPITALONE_CO2_SENIOR_2024, CAPITALONE_CO4_SENIOR_2024, CAPITALONE_CO6_FRONTEND_2022],
+          },
+          {
+            stage: 'Online assessment',
+            format: 'CodeSignal, about 70 minutes, four LeetCode-style questions in most accounts and three in one; candidates who solved two or three were still invited.',
+            appliesTo: 'All candidates',
+            sources: [CAPITALONE_AI_ML_GUIDE, CAPITALONE_CO4_SENIOR_2024, CAPITALONE_CO5_SENIOR_2023, CAPITALONE_CO6_FRONTEND_2022, CAPITALONE_CO2_SENIOR_2024],
+          },
+          {
+            stage: 'Power Day: frontend design',
+            format:
+              'A conversational design of a credit card application page and its confirmation page, with a whiteboard for notes, or the structure of a web app or single-page application from requirements: components, routing, data flow and API calls.',
+            appliesTo: 'Frontend engineers',
+            sources: [CAPITALONE_CO2_SENIOR_2024, CAPITALONE_CO3_SENIOR_2024, CAPITALONE_CO5_SENIOR_2023, CAPITALONE_CO6_FRONTEND_2022],
+            practice: { label: 'Multi-step form with autosave', path: '/system-design/multi-step-form-autosave' },
+          },
+          {
+            stage: 'Power Day: frontend technical',
+            format:
+              'A small framework task judged on structure, syntax and coding style: a React project, an Angular form with validations, or a form in the candidate framework of choice.',
+            appliesTo: 'Frontend engineers',
+            sources: [CAPITALONE_CO2_SENIOR_2024, CAPITALONE_CO5_SENIOR_2023, CAPITALONE_CO6_FRONTEND_2022],
+            practice: { label: 'Form validation basics', path: '/html/coding/html-forms-validation-required' },
+          },
+          {
+            stage: 'Power Day: case',
+            format:
+              'A business scenario read through code: find the bug in a budgeting program written by an intern without coding the fix, work example cost calculations and fix a faulty algorithm, or refactor badly written code.',
+            appliesTo: 'All candidates',
+            sources: [CAPITALONE_AI_ML_GUIDE, CAPITALONE_CO2_SENIOR_2024, CAPITALONE_CO5_SENIOR_2023, CAPITALONE_CO6_FRONTEND_2022],
+            practice: { label: 'Fix a defaults bug', path: '/javascript/debug/js-debug-nullish-defaults' },
+          },
+          {
+            stage: 'Power Day: behavioral',
+            format: 'STAR questions, in one account all about a single past project.',
+            appliesTo: 'All candidates',
+            sources: [CAPITALONE_CO2_SENIOR_2024, CAPITALONE_CO5_SENIOR_2023, CAPITALONE_CO6_FRONTEND_2022, CAPITALONE_CO9_SENIOR_2024],
+          },
+          {
+            stage: 'Result and team matching',
+            format: 'Feedback within a day in one account; in others a pass led to team matching that stalled, a filled position, or a call from another team.',
+            appliesTo: 'Candidates who pass',
+            sources: [CAPITALONE_CO2_SENIOR_2024, CAPITALONE_CO3_SENIOR_2024, CAPITALONE_CO5_SENIOR_2023, CAPITALONE_CO6_FRONTEND_2022],
+          },
+        ],
+      },
+      {
+        title: 'Lead frontend engineers, 2022 to 2024',
+        note: 'Two accounts.',
+        stages: [
+          {
+            stage: 'Online assessment',
+            format: 'A timed assessment; in 2024, four LeetCode questions in 70 minutes, and solving two still led to an invitation.',
+            appliesTo: 'The two accounts',
+            sources: [CAPITALONE_CO1_LEAD_2024, CAPITALONE_CO7_LEAD_2022],
+          },
+          {
+            stage: 'Power Day',
+            format:
+              'Four interviews. In 2024: front-end design, behavioral, a case study, and a technical round that built a single-page application like pair programming. In 2022: framework basics, a deployment process design, behavioral, and code to read and improve.',
+            appliesTo: 'The two accounts',
+            sources: [CAPITALONE_CO1_LEAD_2024, CAPITALONE_CO7_LEAD_2022],
+            practice: { label: 'Rewrite a mutating helper', path: '/javascript/debug/js-debug-mutating-input' },
+          },
+          {
+            stage: 'Result',
+            format: 'An automated rejection without feedback in 2024; an offer about a month after the first call in 2022.',
+            appliesTo: 'The two accounts',
+            sources: [CAPITALONE_CO1_LEAD_2024, CAPITALONE_CO7_LEAD_2022],
           },
         ],
       },

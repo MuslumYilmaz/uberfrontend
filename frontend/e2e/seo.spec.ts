@@ -360,6 +360,9 @@ test('seo: llms.txt is served with public discovery links only', async ({ page }
   expect(text).toContain(
     '[GitLab frontend interview questions](https://frontendatlas.com/companies/gitlab/preview)',
   );
+  expect(text).toContain(
+    '[Capital One frontend interview questions](https://frontendatlas.com/companies/capital-one/preview)',
+  );
 
   ['/dashboard', '/profile', '/admin', '/auth/', '/billing'].forEach((path) => {
     expect(text).not.toContain(path);

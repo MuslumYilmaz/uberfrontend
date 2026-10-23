@@ -710,7 +710,8 @@
     "importance": 4,
     "companies": [
       "booking-com",
-      "tesla"
+      "tesla",
+      "capital-one"
     ],
     "sources": [
       {
@@ -720,6 +721,14 @@
         "publisher": "Taro",
         "date": "2022-01",
         "note": "The virtual onsite asked for a simple login form. This item practises form fields with labels, required fields and validation messages."
+      },
+      {
+        "label": "Taro: Capital One senior web front end engineer interview, 2023",
+        "url": "https://www.jointaro.com/interviews/companies/capital-one/experiences/senior-web-front-end-engineer-mclean-va-february-1-2023-no-offer-negative-b9f0a15e/",
+        "company": "capital-one",
+        "publisher": "Taro",
+        "date": "2023-02",
+        "note": "The Angular-specific round in this account asked to integrate a form so that certain validations occur. This item practises required fields, constraints and validation messages in plain HTML; the reported task used Angular."
       }
     ],
     "tags": [

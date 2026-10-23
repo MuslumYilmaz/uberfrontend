@@ -440,7 +440,7 @@ test('actual interview process edits re-date only the company whose stages or so
   for (const [from, to, expected] of [
     ["report('LeetCode', `https://leetcode.com/discuss/post/", "report('LeetCode Discuss', `https://leetcode.com/discuss/post/", companies(['amazon'])],
     ["kind: 'official', date: '2026-10' })", "kind: 'official', date: '2026-11' })",
-      companies(['anduril', 'booking-com', 'bytedance', 'datadog', 'elevenlabs', 'gitlab', 'google', 'intuit', 'meta', 'microsoft', 'netflix', 'openai',
+      companies(['anduril', 'booking-com', 'bytedance', 'capital-one', 'datadog', 'elevenlabs', 'gitlab', 'google', 'intuit', 'meta', 'microsoft', 'netflix', 'openai',
         'revolut', 'spotify', 'stripe', 'uber', 'waymo', 'zalando'])],
   ]) {
     const modified = original.replace(from, to);

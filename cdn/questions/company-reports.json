@@ -675,6 +675,86 @@
         ]
       }
     ],
+    "capital-one": [
+      {
+        "id": "html-forms-validation-required",
+        "kind": "coding",
+        "tech": "html",
+        "title": "Forms: Validation and Required Fields",
+        "access": "free",
+        "route": "/html/coding/html-forms-validation-required",
+        "sources": [
+          {
+            "label": "Taro: Capital One senior web front end engineer interview, 2023",
+            "url": "https://www.jointaro.com/interviews/companies/capital-one/experiences/senior-web-front-end-engineer-mclean-va-february-1-2023-no-offer-negative-b9f0a15e/",
+            "publisher": "Taro",
+            "date": "2023-02"
+          }
+        ]
+      },
+      {
+        "id": "multi-step-form-autosave",
+        "kind": "system-design",
+        "title": "Multi-step Form with Autosave",
+        "access": "premium",
+        "route": "/system-design/multi-step-form-autosave",
+        "sources": [
+          {
+            "label": "Taro: Capital One senior frontend engineer interview, 2024",
+            "url": "https://www.jointaro.com/interviews/companies/capital-one/experiences/senior-frontend-engineer-washington-dc-july-1-2024-no-offer-neutral-3e4968d4/",
+            "publisher": "Taro",
+            "date": "2024-07"
+          }
+        ]
+      },
+      {
+        "id": "ui-component-state-from-mock",
+        "kind": "system-design",
+        "title": "UI Component and State Design From a Mock",
+        "access": "premium",
+        "route": "/system-design/ui-component-state-from-mock",
+        "sources": [
+          {
+            "label": "Taro: Capital One senior software engineer interview for a frontend position, 2022",
+            "url": "https://www.jointaro.com/interviews/companies/capital-one/experiences/senior-software-engineer-united-states-august-1-2022-accepted-offer-neutral-9d67e812/",
+            "publisher": "Taro",
+            "date": "2022-08"
+          }
+        ]
+      },
+      {
+        "id": "js-debug-nullish-defaults",
+        "kind": "debug",
+        "tech": "javascript",
+        "title": "Fix wrong defaults in `normalizeSettings`",
+        "access": "free",
+        "route": "/javascript/debug/js-debug-nullish-defaults",
+        "sources": [
+          {
+            "label": "Taro: Capital One senior frontend engineer interview, 2024",
+            "url": "https://www.jointaro.com/interviews/companies/capital-one/experiences/senior-frontend-engineer-washington-dc-july-1-2024-no-offer-neutral-3e4968d4/",
+            "publisher": "Taro",
+            "date": "2024-07"
+          }
+        ]
+      },
+      {
+        "id": "js-debug-mutating-input",
+        "kind": "debug",
+        "tech": "javascript",
+        "title": "Stop mutating caller data in `unique`",
+        "access": "free",
+        "route": "/javascript/debug/js-debug-mutating-input",
+        "sources": [
+          {
+            "label": "Taro: Capital One senior web front end engineer interview, 2023",
+            "url": "https://www.jointaro.com/interviews/companies/capital-one/experiences/senior-web-front-end-engineer-mclean-va-february-1-2023-no-offer-negative-b9f0a15e/",
+            "publisher": "Taro",
+            "date": "2023-02"
+          }
+        ]
+      }
+    ],
     "datadog": [
       {
         "id": "js-count-vowels",

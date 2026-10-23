@@ -1578,6 +1578,12 @@ export const SHOWCASE_STATS = {
       "trivia": 14,
       "system": 0
     },
+    "capital-one": {
+      "all": 6,
+      "coding": 1,
+      "trivia": 3,
+      "system": 2
+    },
     "datadog": {
       "all": 8,
       "coding": 6,

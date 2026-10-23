@@ -4347,6 +4347,9 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 5,
+    "companies": [
+      "capital-one"
+    ],
     "description": "Angular routing is more than path-to-component mapping. The interview-ready explanation covers RouterOutlet, route trees, guards, lazy loading, and the production bugs you debug when navigation is misconfigured.",
     "answer": {
       "blocks": [
@@ -6190,6 +6193,9 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 4,
+    "companies": [
+      "capital-one"
+    ],
     "description": "Template-driven forms fit small, mostly static Angular forms. Reactive Forms scale better when dynamic controls, cross-field or async validation, explicit state transitions, or isolated tests become requirements. Stable Signal Forms are a production option in Angular 22 for new signal-first apps, but they are a separate architecture choice rather than the primary answer to this comparison.",
     "answer": {
       "blocks": [

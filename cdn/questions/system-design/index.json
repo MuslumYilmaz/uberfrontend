@@ -465,6 +465,9 @@
       "validation",
       "local-storage"
     ],
+    "companies": [
+      "capital-one"
+    ],
     "type": "system-design",
     "access": "premium",
     "updatedAt": "2026-08-06",
@@ -827,7 +830,8 @@
       "performance"
     ],
     "companies": [
-      "intuit"
+      "intuit",
+      "capital-one"
     ],
     "type": "system-design",
     "access": "premium",

@@ -90,6 +90,7 @@
 /companies/apple/preview
 /companies/booking-com/preview
 /companies/bytedance/preview
+/companies/capital-one/preview
 /companies/datadog/preview
 /companies/elevenlabs/preview
 /companies/gitlab/preview

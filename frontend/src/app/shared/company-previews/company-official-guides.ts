@@ -418,4 +418,27 @@ export const COMPANY_OFFICIAL_GUIDES: Readonly<Record<string, readonly CompanyOf
       checkedAt: CHECKED_OCT_23,
     },
   ],
+  'capital-one': [
+    {
+      label: 'Insider tips for AI and machine learning interviews',
+      url: 'https://www.capitalonecareers.com/insider-tips-for-ai-and-machine-learning-interviews-tech-101-cdev',
+      covers:
+        'The technology loop as written for AI and ML roles: a recruiter screen, a 70-minute coding assessment of four questions, a resume review and a 30-minute hiring manager interview, then a Power Day of four hour-long interviews in technical coding, system design, behavioral and a case built on public Capital One products; no frontend version.',
+      checkedAt: CHECKED_OCT_23,
+    },
+    {
+      label: 'What to expect during your Capital One interview',
+      url: 'https://www.capitalonecareers.com/what-to-expect-during-your-capital-one-interview-students-101',
+      covers:
+        'The general steps: a recruiter screen, a virtual test depending on the position, a 30-minute hiring manager pre-screen, then Power Day job fit, behavioral and case interviews, with video required for all virtual interviews.',
+      checkedAt: CHECKED_OCT_23,
+    },
+    {
+      label: 'Tips to nail your virtual interview',
+      url: 'https://www.capitalonecareers.com/7-tips-to-nail-your-virtual-interview-101-cul-cdev',
+      covers:
+        'Power Day as a series of virtual interviews on Zoom, a note that not all positions require a case interview, and the rule to stay on video for the whole interview.',
+      checkedAt: CHECKED_OCT_23,
+    },
+  ],
 };

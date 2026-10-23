@@ -91,6 +91,10 @@ const publicCopyCases = [
     expected: 'What the GitLab frontend loop rewards: a written merge request review you can defend and improve live',
   },
   {
+    path: '/companies/capital-one/preview',
+    expected: 'What Capital One frontend loops reward: designing a card application out loud and reading code critically',
+  },
+  {
     path: '/system-design',
     expected: 'Follow this four-step path when you are new to the bank',
   },

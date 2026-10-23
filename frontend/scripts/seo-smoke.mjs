@@ -700,6 +700,46 @@ const AUTHORED_GUIDE_SMOKE = [
     reportUrl:
       'https://www.jointaro.com/interviews/companies/gitlab/experiences/front-end-engineer-united-states-february-1-2024-no-offer-neutral-031df9b0/',
   },
+  {
+    label: 'Capital One',
+    route: '/companies/capital-one/preview',
+    title: 'Capital One Frontend Interview Questions: 5 Prompts + Guide',
+    description:
+      'Prepare for a Capital One frontend interview with 5 practice prompts modelled on public reports: card application design, SPA build, Angular forms, case code.',
+    h1: 'Capital One Frontend Interview Questions',
+    kicker: 'Public Capital One prep guide',
+    headings: [
+      'What Capital One frontend loops reward: designing a card application out loud and reading code critically',
+      'What the public accounts establish, and what you still need to confirm',
+      'Micro frontends and AI-assisted engineering as practice contexts',
+      'Five Capital One frontend interview practice questions',
+      'Scope the card application design before you draw',
+      'A 7-day Capital One frontend interview preparation plan',
+      'Common Capital One frontend interview preparation questions',
+      'Build the underlying skills with free practice',
+      'Sources and evidence limits',
+    ],
+    trustFragment: 'not leaked, confirmed or official Capital One questions',
+    prompts: [
+      { id: 'credit-card-application-page-design', title: 'Design a credit card application page and its confirmation page' },
+      { id: 'single-page-app-from-requirements', title: 'Structure a single-page application from requirements, then build it with the interviewer' },
+      { id: 'angular-form-validation', title: 'Add validation to an existing Angular form' },
+      { id: 'power-day-case-budgeting-bug', title: 'Power Day case: find the bug in budgeting code written by an intern' },
+      { id: 'read-explain-refactor-code', title: 'Read, explain and refactor badly written code' },
+    ],
+    resources: [
+      '/html/coding/html-forms-validation-required',
+      '/javascript/debug/js-debug-nullish-defaults',
+      '/javascript/debug/js-debug-mutating-input',
+      '/react/trivia/react-state-management-redux',
+      '/angular/trivia/angular-template-driven-vs-reactive-forms-which-scales',
+      '/angular/trivia/angular-routing',
+      '/react/coding/react-fetch-list-states',
+      '/guides/behavioral/stories',
+    ],
+    reportUrl:
+      'https://www.jointaro.com/interviews/companies/capital-one/experiences/senior-frontend-engineer-washington-dc-july-1-2024-no-offer-neutral-3e4968d4/',
+  },
 ];
 // Catalog-driven company previews with an editorial notes entry (COMPANY_EDITORIAL_NOTES).
 const EDITORIAL_NOTE_SMOKE = [
