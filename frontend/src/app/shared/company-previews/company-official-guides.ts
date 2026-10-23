@@ -15,6 +15,7 @@ const CHECKED = '2026-10-15';
 const CHECKED_OCT_20 = '2026-10-20';
 const CHECKED_OCT_21 = '2026-10-21';
 const CHECKED_OCT_22 = '2026-10-22';
+const CHECKED_OCT_23 = '2026-10-23';
 
 export const COMPANY_OFFICIAL_GUIDES: Readonly<Record<string, readonly CompanyOfficialGuide[]>> = {
   apple: [
@@ -376,6 +377,68 @@ export const COMPANY_OFFICIAL_GUIDES: Readonly<Record<string, readonly CompanyOf
       covers:
         'Shopee\'s five hiring steps: Apply; Getting to Know You (a conversation with a recruiter); Putting Your Skills to the Test (depending on the role, additional tasks or assessments such as a coding, technical or role-specific assessment); Meet the Hiring Manager (questions about experiences, hypothetical scenarios or role-specific cases); and Preparing to Join Us (the offer by phone or email). Its FAQ says the number of rounds varies depending on the role and seniority and that the recruiter shares the details.',
       checkedAt: CHECKED_OCT_21,
+    },
+  ],
+  anduril: [
+    {
+      label: 'Early careers FAQ',
+      url: 'https://www.anduril.com/early-careers',
+      covers:
+        'An answer to what the interview process looks like: a recruiter call, technical and behavioral interviews, and role-specific assessments that could include live coding challenges, presentations or in-depth technical discussions, plus US work-authorization rules tied to export regulations; no frontend format.',
+      checkedAt: CHECKED_OCT_23,
+    },
+  ],
+  gitlab: [
+    {
+      label: 'Frontend Engineer job family (GitLab handbook)',
+      url: 'https://handbook.gitlab.com/job-description-library/engineering/development/frontend/',
+      covers:
+        'The six hiring steps for every frontend level: a short written assessment, a 30-minute screening call with a recruiter, a 90-minute technical interview with a frontend engineer or manager, a 45-minute behavioral interview, a 60-minute interview with a Director of Engineering, and the offer; plus the requirements, including Vue or another modern framework and automated tests.',
+      checkedAt: CHECKED_OCT_23,
+    },
+    {
+      label: 'Technical interviews (GitLab handbook)',
+      url: 'https://handbook.gitlab.com/handbook/hiring/interviewing/technical/',
+      covers:
+        'The merge request format: a self-contained merge request on a small application sent at least 72 hours before the call, up to an hour of review finished a day ahead, then a 90-minute video call to walk through the review and write code to improve it; exercises come from a curated bank, and AI use is encouraged.',
+      checkedAt: CHECKED_OCT_23,
+    },
+    {
+      label: 'Candidate handbook page (GitLab handbook)',
+      url: 'https://handbook.gitlab.com/handbook/hiring/candidate-faq/',
+      covers:
+        'The stages for all roles, screening calls of 30 to 40 minutes and the questions recruiters ask, team interviews that can be behavioral, panel or technical, three references with at least one past manager, the visa rule and the waiting period before reapplying.',
+      checkedAt: CHECKED_OCT_23,
+    },
+    {
+      label: 'Using AI in the interview process',
+      url: 'https://about.gitlab.com/jobs/ai-interview-process/',
+      covers:
+        'What GitLab expects by stage: transparent AI use in technical assessments with prompts and decisions you can explain, no reading from AI-produced answers in interviews, cited AI research in take-home answers, and disclosure of the tools used.',
+      checkedAt: CHECKED_OCT_23,
+    },
+  ],
+  'capital-one': [
+    {
+      label: 'Insider tips for AI and machine learning interviews',
+      url: 'https://www.capitalonecareers.com/insider-tips-for-ai-and-machine-learning-interviews-tech-101-cdev',
+      covers:
+        'The technology loop as written for AI and ML roles: a recruiter screen, a 70-minute coding assessment of four questions, a resume review and a 30-minute hiring manager interview, then a Power Day of four hour-long interviews in technical coding, system design, behavioral and a case built on public Capital One products; no frontend version.',
+      checkedAt: CHECKED_OCT_23,
+    },
+    {
+      label: 'What to expect during your Capital One interview',
+      url: 'https://www.capitalonecareers.com/what-to-expect-during-your-capital-one-interview-students-101',
+      covers:
+        'The general steps: a recruiter screen, a virtual test depending on the position, a 30-minute hiring manager pre-screen, then Power Day job fit, behavioral and case interviews, with video required for all virtual interviews.',
+      checkedAt: CHECKED_OCT_23,
+    },
+    {
+      label: 'Tips to nail your virtual interview',
+      url: 'https://www.capitalonecareers.com/7-tips-to-nail-your-virtual-interview-101-cul-cdev',
+      covers:
+        'Power Day as a series of virtual interviews on Zoom, a note that not all positions require a case interview, and the rule to stay on video for the whole interview.',
+      checkedAt: CHECKED_OCT_23,
     },
   ],
 };

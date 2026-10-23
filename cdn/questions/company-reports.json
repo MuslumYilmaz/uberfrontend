@@ -340,6 +340,106 @@
         ]
       }
     ],
+    "anduril": [
+      {
+        "id": "react-vanilla-dropdown-port",
+        "kind": "coding",
+        "tech": "react",
+        "title": "Build a Dropdown as a JavaScript Class, Then Port It to React",
+        "access": "free",
+        "route": "/react/coding/react-vanilla-dropdown-port",
+        "sources": [
+          {
+            "label": "Taro: Anduril software engineer interview, 2025",
+            "url": "https://www.jointaro.com/interviews/companies/anduril/experiences/software-engineer-seattle-wa-january-1-2025-no-offer-positive-c481c905/",
+            "publisher": "Taro",
+            "date": "2025-01"
+          },
+          {
+            "label": "Taro: Anduril software engineer interview, December 2024",
+            "url": "https://www.jointaro.com/interviews/companies/anduril/experiences/software-engineer-united-states-december-24-2024-no-offer-positive-64f81210/",
+            "publisher": "Taro",
+            "date": "2024-12"
+          }
+        ]
+      },
+      {
+        "id": "react-file-explorer",
+        "kind": "coding",
+        "tech": "react",
+        "title": "File Explorer Tree with Keyboard Navigation",
+        "access": "premium",
+        "route": "/react/coding/react-file-explorer",
+        "sources": [
+          {
+            "label": "Taro: Anduril frontend internship interview, July 2023",
+            "url": "https://www.jointaro.com/interviews/companies/anduril/experiences/software-engineerinternship-costa-mesa-ca-july-5-2023-accepted-offer-positive-dbb3fa63/",
+            "publisher": "Taro",
+            "date": "2023-07"
+          },
+          {
+            "label": "Blind: Anduril front end interviews thread, March 2024",
+            "url": "https://www.teamblind.com/post/anduril-front-end-interviews-bugagvca",
+            "publisher": "Blind",
+            "date": "2024-03"
+          },
+          {
+            "label": "Blind: Anduril front end interview thread, March 2025",
+            "url": "https://www.teamblind.com/post/anduril-front-end-interview-yt3cx1bt",
+            "publisher": "Blind",
+            "date": "2025-03"
+          }
+        ]
+      },
+      {
+        "id": "js-filter-tree-render-indented",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Filter a Tree by Substring and Render It Indented",
+        "access": "free",
+        "route": "/javascript/coding/js-filter-tree-render-indented",
+        "sources": [
+          {
+            "label": "Taro: Anduril frontend internship interview, July 2023",
+            "url": "https://www.jointaro.com/interviews/companies/anduril/experiences/software-engineerinternship-costa-mesa-ca-july-5-2023-accepted-offer-positive-dbb3fa63/",
+            "publisher": "Taro",
+            "date": "2023-07"
+          }
+        ]
+      },
+      {
+        "id": "js-flatten-once",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Flatten One Level",
+        "access": "free",
+        "route": "/javascript/coding/js-flatten-once",
+        "sources": [
+          {
+            "label": "Blind: Anduril frontend interview thread, May 2024",
+            "url": "https://www.teamblind.com/post/anduril-frontend-interview-eg52tpe3",
+            "publisher": "Blind",
+            "date": "2024-05"
+          }
+        ]
+      },
+      {
+        "id": "react-countdown-timer",
+        "kind": "coding",
+        "tech": "react",
+        "title": "React Countdown Timer (Start, Pause, Reset)",
+        "access": "premium",
+        "route": "/react/coding/react-countdown-timer",
+        "sources": [
+          {
+            "label": "Taro: Anduril software engineer interview, December 2024",
+            "url": "https://www.jointaro.com/interviews/companies/anduril/experiences/software-engineer-united-states-december-24-2024-no-offer-positive-64f81210/",
+            "publisher": "Taro",
+            "date": "2024-12"
+          }
+        ]
+      }
+    ],
     "apple": [
       {
         "id": "vue-autocomplete-search",
@@ -597,6 +697,86 @@
         ]
       }
     ],
+    "capital-one": [
+      {
+        "id": "html-forms-validation-required",
+        "kind": "coding",
+        "tech": "html",
+        "title": "Forms: Validation and Required Fields",
+        "access": "free",
+        "route": "/html/coding/html-forms-validation-required",
+        "sources": [
+          {
+            "label": "Taro: Capital One senior web front end engineer interview, 2023",
+            "url": "https://www.jointaro.com/interviews/companies/capital-one/experiences/senior-web-front-end-engineer-mclean-va-february-1-2023-no-offer-negative-b9f0a15e/",
+            "publisher": "Taro",
+            "date": "2023-02"
+          }
+        ]
+      },
+      {
+        "id": "multi-step-form-autosave",
+        "kind": "system-design",
+        "title": "Multi-step Form with Autosave",
+        "access": "premium",
+        "route": "/system-design/multi-step-form-autosave",
+        "sources": [
+          {
+            "label": "Taro: Capital One senior frontend engineer interview, 2024",
+            "url": "https://www.jointaro.com/interviews/companies/capital-one/experiences/senior-frontend-engineer-washington-dc-july-1-2024-no-offer-neutral-3e4968d4/",
+            "publisher": "Taro",
+            "date": "2024-07"
+          }
+        ]
+      },
+      {
+        "id": "ui-component-state-from-mock",
+        "kind": "system-design",
+        "title": "UI Component and State Design From a Mock",
+        "access": "premium",
+        "route": "/system-design/ui-component-state-from-mock",
+        "sources": [
+          {
+            "label": "Taro: Capital One senior software engineer interview for a frontend position, 2022",
+            "url": "https://www.jointaro.com/interviews/companies/capital-one/experiences/senior-software-engineer-united-states-august-1-2022-accepted-offer-neutral-9d67e812/",
+            "publisher": "Taro",
+            "date": "2022-08"
+          }
+        ]
+      },
+      {
+        "id": "js-debug-nullish-defaults",
+        "kind": "debug",
+        "tech": "javascript",
+        "title": "Fix wrong defaults in `normalizeSettings`",
+        "access": "free",
+        "route": "/javascript/debug/js-debug-nullish-defaults",
+        "sources": [
+          {
+            "label": "Taro: Capital One senior frontend engineer interview, 2024",
+            "url": "https://www.jointaro.com/interviews/companies/capital-one/experiences/senior-frontend-engineer-washington-dc-july-1-2024-no-offer-neutral-3e4968d4/",
+            "publisher": "Taro",
+            "date": "2024-07"
+          }
+        ]
+      },
+      {
+        "id": "js-debug-mutating-input",
+        "kind": "debug",
+        "tech": "javascript",
+        "title": "Stop mutating caller data in `unique`",
+        "access": "free",
+        "route": "/javascript/debug/js-debug-mutating-input",
+        "sources": [
+          {
+            "label": "Taro: Capital One senior web front end engineer interview, 2023",
+            "url": "https://www.jointaro.com/interviews/companies/capital-one/experiences/senior-web-front-end-engineer-mclean-va-february-1-2023-no-offer-negative-b9f0a15e/",
+            "publisher": "Taro",
+            "date": "2023-02"
+          }
+        ]
+      }
+    ],
     "datadog": [
       {
         "id": "js-count-vowels",
@@ -802,6 +982,72 @@
             "url": "https://www.aced.io/experiences/eleven-labs-senior-frontend-engineer-interview-925c04",
             "publisher": "Aced",
             "date": "2026-08"
+          }
+        ]
+      }
+    ],
+    "gitlab": [
+      {
+        "id": "js-create-spy-function",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Create a Spy Function (Test Double)",
+        "access": "free",
+        "route": "/javascript/coding/js-create-spy-function",
+        "sources": [
+          {
+            "label": "Taro: GitLab front end engineer interview, 2024",
+            "url": "https://www.jointaro.com/interviews/companies/gitlab/experiences/front-end-engineer-united-states-february-1-2024-no-offer-neutral-031df9b0/",
+            "publisher": "Taro",
+            "date": "2024-02"
+          }
+        ]
+      },
+      {
+        "id": "css-flexbox-navbar",
+        "kind": "coding",
+        "tech": "css",
+        "title": "Flexbox: Responsive Navbar",
+        "access": "free",
+        "route": "/css/coding/css-flexbox-navbar",
+        "sources": [
+          {
+            "label": "Taro: GitLab front end engineer interview, 2024",
+            "url": "https://www.jointaro.com/interviews/companies/gitlab/experiences/front-end-engineer-canada-march-1-2024-no-offer-negative-fbb295a4/",
+            "publisher": "Taro",
+            "date": "2024-03"
+          }
+        ]
+      },
+      {
+        "id": "html-head-seo-basics",
+        "kind": "coding",
+        "tech": "html",
+        "title": "SEO: Essential <head> Metadata",
+        "access": "free",
+        "route": "/html/coding/html-head-seo-basics",
+        "sources": [
+          {
+            "label": "Taro: GitLab frontend developer interview, May 2022",
+            "url": "https://www.jointaro.com/interviews/companies/gitlab/experiences/frontend-developer-paraguay-may-3-2022-no-offer-positive-0f872bc9/",
+            "publisher": "Taro",
+            "date": "2022-05"
+          }
+        ]
+      },
+      {
+        "id": "js-debug-async-race",
+        "kind": "debug",
+        "tech": "javascript",
+        "title": "Fix async race in `fetchWithCache`",
+        "access": "free",
+        "route": "/javascript/debug/js-debug-async-race",
+        "sources": [
+          {
+            "label": "Taro: GitLab front end engineer interview, 2024",
+            "url": "https://www.jointaro.com/interviews/companies/gitlab/experiences/front-end-engineer-canada-march-1-2024-no-offer-negative-fbb295a4/",
+            "publisher": "Taro",
+            "date": "2024-03"
           }
         ]
       }

@@ -535,6 +535,48 @@ reference_rules:
       - docs/references/shopee-questions-and-process-2026-10.md
     max_docs: 1
 
+  - id: anduril_questions_and_process
+    priority: 93
+    keywords:
+      - anduril
+      - anduril frontend interview
+      - defense tech frontend interview
+      - file explorer interview
+      - timer class react interview
+    paths:
+      - docs/references/anduril-questions-and-process-2026-10.md
+    load:
+      - docs/references/anduril-questions-and-process-2026-10.md
+    max_docs: 1
+
+  - id: gitlab_questions_and_process
+    priority: 93
+    keywords:
+      - gitlab
+      - gitlab frontend interview
+      - merge request review interview
+      - vue code review interview
+      - gitlab handbook hiring process
+    paths:
+      - docs/references/gitlab-questions-and-process-2026-10.md
+    load:
+      - docs/references/gitlab-questions-and-process-2026-10.md
+    max_docs: 1
+
+  - id: capital_one_questions_and_process
+    priority: 93
+    keywords:
+      - capital one
+      - capital one frontend interview
+      - power day
+      - codesignal assessment
+      - credit card application design interview
+    paths:
+      - docs/references/capital-one-questions-and-process-2026-10.md
+    load:
+      - docs/references/capital-one-questions-and-process-2026-10.md
+    max_docs: 1
+
   - id: header_prep_menu_plan
     priority: 92
     keywords:

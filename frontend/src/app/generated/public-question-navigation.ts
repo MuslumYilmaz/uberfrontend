@@ -1456,6 +1456,12 @@ export const PUBLIC_QUESTION_NAVIGATION: readonly PublicQuestionNavigationItem[]
   {
     "tech": "react",
     "kind": "coding",
+    "title": "Build a Dropdown as a JavaScript Class, Then Port It to React",
+    "route": "/react/coding/react-vanilla-dropdown-port"
+  },
+  {
+    "tech": "react",
+    "kind": "coding",
     "title": "React Autocomplete Interview Question",
     "route": "/react/coding/react-autocomplete-search-starter"
   },

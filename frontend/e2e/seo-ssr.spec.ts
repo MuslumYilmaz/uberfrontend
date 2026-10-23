@@ -1409,6 +1409,126 @@ const AUTHORED_GUIDE_CASES = [
     reportUrl:
       'https://viblo.asia/p/luyen-tap-that-bai-va-thanh-cong-hanh-trinh-cua-anh-dat-hoc-vien-engineer-pro-vao-shopee-EbNVQnP04vR',
   },
+  {
+    label: 'Anduril',
+    path: '/companies/anduril/preview',
+    title: 'Anduril Frontend Interview Questions: 5 Prompts + Prep Guide',
+    description:
+      'Prepare for an Anduril frontend interview with 5 practice prompts modelled on public reports: file explorer, timer class, plain JS to React, autocomplete.',
+    h1: 'Anduril Frontend Interview Questions',
+    kicker: 'Public Anduril prep guide',
+    headings: [
+      'What Anduril frontend loops reward: a working React build in time and a class moved into a framework',
+      'What the nine public accounts establish',
+      'Map-based command interfaces and live sensor data as practice contexts',
+      'Five Anduril frontend interview practice questions',
+      'Scope the file explorer before the first line',
+      'A 7-day Anduril frontend interview preparation plan',
+      'Common Anduril frontend interview preparation questions',
+      'Build the underlying skills with free practice',
+      'Sources and evidence limits',
+    ],
+    trustFragment: 'not leaked, confirmed or official Anduril questions',
+    prompts: [
+      { id: 'file-explorer-from-nested-data', title: 'Build a file explorer from nested data in React' },
+      { id: 'timer-class-then-react-app', title: 'Write a timer class, then build a React app around it' },
+      { id: 'vanilla-component-then-framework', title: 'Build a component in plain JavaScript, then port it to a framework' },
+      { id: 'lodash-style-helpers', title: 'Implement lodash-style flatten, map and reduce' },
+      { id: 'autocomplete-search-react', title: 'Build an autocomplete search in React' },
+    ],
+    resources: [
+      '/javascript/coding/js-filter-tree-render-indented',
+      '/react/coding/react-autocomplete-search-starter',
+      '/javascript/coding/js-flatten-once',
+      '/javascript/trivia/js-classes',
+      '/javascript/trivia/js-event-delegation',
+      '/javascript/trivia/debounce-vs-throttle-search-input',
+      '/system-design/infinite-scroll-list',
+      '/guides/behavioral/stories',
+    ],
+    reportUrl:
+      'https://www.teamblind.com/post/front-end-interviews-at-anduril-3hihnhlv',
+  },
+  {
+    label: 'GitLab',
+    path: '/companies/gitlab/preview',
+    title: 'GitLab Frontend Interview Questions: 5 Prompts + Prep Guide',
+    description:
+      'Prepare for a GitLab frontend interview with 5 practice prompts built on the handbook and public reports: Vue merge request review, refetching, CSS, tests.',
+    h1: 'GitLab Frontend Interview Questions',
+    kicker: 'Public GitLab prep guide',
+    headings: [
+      'What the GitLab frontend loop rewards: a written merge request review you can defend and improve live',
+      'What GitLab publishes and what the accounts add',
+      'Repository interfaces and a large Vue frontend as practice contexts',
+      'Five GitLab frontend interview practice questions',
+      'Plan the merge request review before the call',
+      'A 7-day GitLab frontend interview preparation plan',
+      'Common GitLab frontend interview preparation questions',
+      'Build the underlying skills with free practice',
+      'Sources and evidence limits',
+    ],
+    trustFragment: 'not leaked, confirmed or official GitLab questions',
+    prompts: [
+      { id: 'review-vue-merge-request-live', title: 'Review a small Vue merge request, then improve it live' },
+      { id: 'stop-refetching-on-click', title: 'Stop a component from refetching on every click' },
+      { id: 'fix-markup-match-mobile-mock', title: 'Fix broken markup and match the mobile mock' },
+      { id: 'make-unit-tests-catch-bug', title: 'Make the unit tests catch the bug' },
+      { id: 'written-page-load-answer', title: 'Answer the written question on how a browser loads a page' },
+    ],
+    resources: [
+      '/javascript/debug/js-debug-async-race',
+      '/css/coding/css-flexbox-navbar',
+      '/javascript/coding/js-create-spy-function',
+      '/html/coding/html-head-seo-basics',
+      '/html/trivia/html-parsing-rendering',
+      '/vue/trivia/vue-lifecycle-hooks',
+      '/system-design/infinite-scroll-list',
+      '/guides/behavioral/stories',
+    ],
+    reportUrl:
+      'https://www.jointaro.com/interviews/companies/gitlab/experiences/front-end-engineer-united-states-february-1-2024-no-offer-neutral-031df9b0/',
+  },
+  {
+    label: 'Capital One',
+    path: '/companies/capital-one/preview',
+    title: 'Capital One Frontend Interview Questions: 5 Prompts + Guide',
+    description:
+      'Prepare for a Capital One frontend interview with 5 practice prompts modelled on public reports: card application design, SPA build, Angular forms, case code.',
+    h1: 'Capital One Frontend Interview Questions',
+    kicker: 'Public Capital One prep guide',
+    headings: [
+      'What Capital One frontend loops reward: designing a card application out loud and reading code critically',
+      'What the public accounts establish',
+      'Micro frontends and AI-assisted engineering as practice contexts',
+      'Five Capital One frontend interview practice questions',
+      'Scope the card application design before you draw',
+      'A 7-day Capital One frontend interview preparation plan',
+      'Common Capital One frontend interview preparation questions',
+      'Build the underlying skills with free practice',
+      'Sources and evidence limits',
+    ],
+    trustFragment: 'not leaked, confirmed or official Capital One questions',
+    prompts: [
+      { id: 'credit-card-application-page-design', title: 'Design a credit card application page and its confirmation page' },
+      { id: 'single-page-app-from-requirements', title: 'Structure a single-page application from requirements, then build it with the interviewer' },
+      { id: 'angular-form-validation', title: 'Add validation to an existing Angular form' },
+      { id: 'power-day-case-budgeting-bug', title: 'Power Day case: find the bug in budgeting code written by an intern' },
+      { id: 'read-explain-refactor-code', title: 'Read, explain and refactor badly written code' },
+    ],
+    resources: [
+      '/html/coding/html-forms-validation-required',
+      '/javascript/debug/js-debug-nullish-defaults',
+      '/javascript/debug/js-debug-mutating-input',
+      '/react/trivia/react-state-management-redux',
+      '/angular/trivia/angular-template-driven-vs-reactive-forms-which-scales',
+      '/angular/trivia/angular-routing',
+      '/react/coding/react-fetch-list-states',
+      '/guides/behavioral/stories',
+    ],
+    reportUrl:
+      'https://www.jointaro.com/interviews/companies/capital-one/experiences/senior-frontend-engineer-washington-dc-july-1-2024-no-offer-neutral-3e4968d4/',
+  },
 ] as const;
 
 const INFINITE_SCROLL_PATH = '/system-design/infinite-scroll-list';
@@ -4056,7 +4176,7 @@ test.describe('seo-ssr', () => {
 
   // Every company with a sourced table; Airbnb waits for its authored page (template-thin plan, Step 4).
   const COMPANIES_WITH_PROCESS_TABLES = [
-    'agoda', 'amazon', 'apple', 'booking-com', 'bytedance', 'datadog', 'elevenlabs', 'google', 'intuit', 'jpmorgan',
+    'agoda', 'amazon', 'anduril', 'apple', 'booking-com', 'bytedance', 'capital-one', 'datadog', 'elevenlabs', 'gitlab', 'google', 'intuit', 'jpmorgan',
     'meta', 'microsoft', 'netflix', 'openai', 'revolut', 'servicenow', 'shopee', 'spotify', 'stripe', 'tesla', 'uber',
     'walmart', 'waymo', 'xai', 'zalando',
   ];

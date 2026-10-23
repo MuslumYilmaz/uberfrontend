@@ -1533,7 +1533,7 @@ export const TAG_REGISTRY = {
 };
 
 export const SHOWCASE_STATS = {
-  "totalQuestions": 507,
+  "totalQuestions": 508,
   "premiumPracticeCount": 175,
   "companyCounts": {
     "agoda": {
@@ -1554,6 +1554,12 @@ export const SHOWCASE_STATS = {
       "trivia": 23,
       "system": 1
     },
+    "anduril": {
+      "all": 6,
+      "coding": 5,
+      "trivia": 1,
+      "system": 0
+    },
     "apple": {
       "all": 37,
       "coding": 23,
@@ -1572,6 +1578,12 @@ export const SHOWCASE_STATS = {
       "trivia": 14,
       "system": 0
     },
+    "capital-one": {
+      "all": 6,
+      "coding": 1,
+      "trivia": 3,
+      "system": 2
+    },
     "datadog": {
       "all": 8,
       "coding": 6,
@@ -1583,6 +1595,12 @@ export const SHOWCASE_STATS = {
       "coding": 3,
       "trivia": 0,
       "system": 1
+    },
+    "gitlab": {
+      "all": 5,
+      "coding": 3,
+      "trivia": 2,
+      "system": 0
     },
     "google": {
       "all": 45,

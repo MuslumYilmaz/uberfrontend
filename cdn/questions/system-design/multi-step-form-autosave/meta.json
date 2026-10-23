@@ -8,6 +8,9 @@
     "validation",
     "local-storage"
   ],
+  "companies": [
+    "capital-one"
+  ],
   "type": "system-design",
   "sections": [
     {
@@ -60,6 +63,24 @@
     "uniqueAngle": "Design a multi-step form with versioned drafts, validation boundaries, autosave scheduling, conflict-safe restoration, submission recovery, and accessible navigation.",
     "factCheckedAt": "2026-08-06",
     "reviewedBy": "FrontendAtlas editorial",
-    "companyEvidence": []
-  }
+    "companyEvidence": [
+      {
+        "company": "capital-one",
+        "evidenceType": "reported-interview-question",
+        "sourceUrl": "https://www.jointaro.com/interviews/companies/capital-one/experiences/senior-frontend-engineer-washington-dc-july-1-2024-no-offer-neutral-3e4968d4/",
+        "sourceTitle": "Capital One senior frontend engineer interview, 2024 (Taro)",
+        "checkedAt": "2026-10-23"
+      }
+    ]
+  },
+  "sources": [
+    {
+      "label": "Taro: Capital One senior frontend engineer interview, 2024",
+      "url": "https://www.jointaro.com/interviews/companies/capital-one/experiences/senior-frontend-engineer-washington-dc-july-1-2024-no-offer-neutral-3e4968d4/",
+      "company": "capital-one",
+      "publisher": "Taro",
+      "date": "2024-07",
+      "note": "The Power Day design round in this account asked for a credit card information and application page followed by a confirmation page. This case practises the multi-step form, validation and confirmed submit; it is not the reported prompt."
+    }
+  ]
 }

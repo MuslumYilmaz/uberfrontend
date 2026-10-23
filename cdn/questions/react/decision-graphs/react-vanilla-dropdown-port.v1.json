@@ -1,0 +1,181 @@
+{
+  "questionId": "react-vanilla-dropdown-port",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "typescript",
+      "code": "import React, { useEffect, useReducer, useRef, useState } from 'react';\nimport './App.css';\n\ntype Basemap = {\n  id: string;\n  label: string;\n};\n\n// The last option is a user-named preset. Its name contains angle brackets on purpose.\nconst BASEMAPS: Basemap[] = [\n  { id: 'satellite', label: 'Satellite' },\n  { id: 'terrain', label: 'Terrain' },\n  { id: 'streets', label: 'Streets' },\n  { id: 'preset', label: 'My preset <draft>' }\n];\n\ntype PickerState = {\n  open: boolean;\n  activeIndex: number;\n  selectedIndex: number;\n  count: number;\n};\n\ntype PickerAction =\n  | { type: 'toggle' }\n  | { type: 'close' }\n  | { type: 'choose'; index: number }\n  | { type: 'key'; key: string };\n\ntype PickerOptions = {\n  items: Basemap[];\n  selectedId: string;\n  idPrefix: string;\n  label: string;\n  onChange: (item: Basemap) => void;\n};\n\nfunction createPickerState(count: number, selectedIndex: number): PickerState {\n  return { open: false, activeIndex: selectedIndex, selectedIndex, count };\n}\n\nfunction indexOfId(items: Basemap[], id: string): number {\n  return Math.max(0, items.findIndex((item) => item.id === id));\n}\n\n// Shared logic: no DOM, no React and no callbacks, so both versions call it unchanged.\n// It returns the same object when an action changes nothing.\nfunction pickerReducer(state: PickerState, action: PickerAction): PickerState {\n  switch (action.type) {\n    case 'toggle':\n      return state.open\n        ? { ...state, open: false }\n        : { ...state, open: true, activeIndex: state.selectedIndex };\n    case 'close':\n      return state.open ? { ...state, open: false } : state;\n    case 'choose':\n      return { ...state, open: false, activeIndex: action.index, selectedIndex: action.index };\n    case 'key':\n      return reduceKey(state, action.key);\n  }\n}\n\nfunction reduceKey(state: PickerState, key: string): PickerState {\n  if (!state.open) {\n    // A closed picker opens on the selected option. Enter and Space reach the button's own click.\n    return key === 'ArrowDown' || key === 'ArrowUp'\n      ? { ...state, open: true, activeIndex: state.selectedIndex }\n      : state;\n  }\n  const last = state.count - 1;\n  switch (key) {\n    case 'ArrowDown':\n      return moveActive(state, Math.min(state.activeIndex + 1, last));\n    case 'ArrowUp':\n      return moveActive(state, Math.max(state.activeIndex - 1, 0));\n    case 'Home':\n      return moveActive(state, 0);\n    case 'End':\n      return moveActive(state, last);\n    case 'Enter':\n      return { ...state, open: false, selectedIndex: state.activeIndex };\n    case 'Escape':\n    case 'Tab':\n      return { ...state, open: false };\n    default:\n      return state;\n  }\n}\n\nfunction moveActive(state: PickerState, index: number): PickerState {\n  return index === state.activeIndex ? state : { ...state, activeIndex: index };\n}\n\n// Keys the picker consumes, so the page does not scroll and the button does not click twice.\nfunction handlesKey(state: PickerState, key: string): boolean {\n  if (!state.open) return key === 'ArrowDown' || key === 'ArrowUp';\n  return ['ArrowDown', 'ArrowUp', 'Home', 'End', 'Enter', 'Escape'].includes(key);\n}\n\n// Plain JavaScript version: builds its DOM once and updates it from one state object.\nclass BasemapPicker {\n  private state: PickerState;\n  private readonly options: PickerOptions;\n  private readonly root: HTMLDivElement;\n  private readonly trigger: HTMLButtonElement;\n  private readonly list: HTMLUListElement;\n  private readonly optionElements: HTMLLIElement[];\n\n  constructor(host: HTMLElement, options: PickerOptions) {\n    this.options = options;\n    this.state = createPickerState(options.items.length, indexOfId(options.items, options.selectedId));\n\n    this.root = document.createElement('div');\n    this.root.className = 'picker';\n\n    const label = document.createElement('span');\n    label.id = `${options.idPrefix}-label`;\n    label.className = 'picker-label';\n    label.textContent = options.label;\n\n    this.trigger = document.createElement('button');\n    this.trigger.type = 'button';\n    this.trigger.className = 'picker-trigger';\n    this.trigger.setAttribute('role', 'combobox');\n    this.trigger.setAttribute('aria-haspopup', 'listbox');\n    this.trigger.setAttribute('aria-controls', `${options.idPrefix}-list`);\n    this.trigger.setAttribute('aria-labelledby', label.id);\n\n    this.list = document.createElement('ul');\n    this.list.id = `${options.idPrefix}-list`;\n    this.list.className = 'picker-list';\n    this.list.setAttribute('role', 'listbox');\n    this.list.setAttribute('aria-labelledby', label.id);\n\n    this.optionElements = options.items.map((item, index) => {\n      const option = document.createElement('li');\n      option.id = `${options.idPrefix}-opt-${index}`;\n      option.className = 'picker-option';\n      option.setAttribute('role', 'option');\n      option.dataset.index = String(index);\n      // textContent, never innerHTML: labels can contain characters such as < and >.\n      option.textContent = item.label;\n      return option;\n    });\n\n    this.list.append(...this.optionElements);\n    this.root.append(label, this.trigger, this.list);\n    host.append(this.root);\n\n    this.trigger.addEventListener('click', this.handleTriggerClick);\n    this.trigger.addEventListener('keydown', this.handleTriggerKeyDown);\n    this.list.addEventListener('click', this.handleListClick);\n    document.addEventListener('click', this.handleDocumentClick);\n    this.render();\n  }\n\n  destroy(): void {\n    this.trigger.removeEventListener('click', this.handleTriggerClick);\n    this.trigger.removeEventListener('keydown', this.handleTriggerKeyDown);\n    this.list.removeEventListener('click', this.handleListClick);\n    document.removeEventListener('click', this.handleDocumentClick);\n    this.root.remove();\n  }\n\n  private handleTriggerClick = (): void => {\n    this.send({ type: 'toggle' });\n  };\n\n  private handleTriggerKeyDown = (event: KeyboardEvent): void => {\n    if (handlesKey(this.state, event.key)) event.preventDefault();\n    this.send({ type: 'key', key: event.key });\n  };\n\n  // One listener for every option: event delegation.\n  private handleListClick = (event: MouseEvent): void => {\n    const option = (event.target as Element).closest<HTMLElement>('[role=\"option\"]');\n    if (!option || !this.list.contains(option)) return;\n    this.send({ type: 'choose', index: Number(option.dataset.index) });\n    this.trigger.focus();\n  };\n\n  private handleDocumentClick = (event: MouseEvent): void => {\n    if (!this.root.contains(event.target as Node)) this.send({ type: 'close' });\n  };\n\n  private send(action: PickerAction): void {\n    const previous = this.state;\n    const next = pickerReducer(previous, action);\n    if (next === previous) return;\n    this.state = next;\n    this.render();\n    if (next.selectedIndex !== previous.selectedIndex) {\n      this.options.onChange(this.options.items[next.selectedIndex]);\n    }\n  }\n\n  // Updates the existing nodes in place, so the focused trigger is never replaced.\n  private render(): void {\n    const { open, activeIndex, selectedIndex } = this.state;\n    this.trigger.textContent = this.options.items[selectedIndex].label;\n    this.trigger.setAttribute('aria-expanded', String(open));\n    if (open) {\n      this.trigger.setAttribute('aria-activedescendant', this.optionElements[activeIndex].id);\n    } else {\n      this.trigger.removeAttribute('aria-activedescendant');\n    }\n    this.list.hidden = !open;\n    this.optionElements.forEach((option, index) => {\n      option.setAttribute('aria-selected', String(index === selectedIndex));\n      option.classList.toggle('is-active', open && index === activeIndex);\n    });\n  }\n}\n\n// React version: the same reducer and DOM contract, with state, markup and listeners moved into React.\nfunction ReactBasemapPicker({ items, selectedId, idPrefix, label, onChange }: PickerOptions) {\n  const [state, dispatch] = useReducer(pickerReducer, null, () =>\n    createPickerState(items.length, indexOfId(items, selectedId))\n  );\n  const rootRef = useRef<HTMLDivElement>(null);\n  const triggerRef = useRef<HTMLButtonElement>(null);\n  const { open, activeIndex, selectedIndex } = state;\n\n  // The class adds this listener in its constructor and removes it in destroy(); here the effect\n  // and its cleanup do the same. dispatch is stable, so the listener never reads stale state.\n  useEffect(() => {\n    function handleDocumentClick(event: MouseEvent) {\n      if (!rootRef.current?.contains(event.target as Node)) dispatch({ type: 'close' });\n    }\n    document.addEventListener('click', handleDocumentClick);\n    return () => document.removeEventListener('click', handleDocumentClick);\n  }, []);\n\n  // Side effects stay in event handlers: report a change only when the selection really changes.\n  function send(action: PickerAction) {\n    const next = pickerReducer(state, action);\n    if (next === state) return;\n    dispatch(action);\n    if (next.selectedIndex !== state.selectedIndex) onChange(items[next.selectedIndex]);\n  }\n\n  function handleKeyDown(event: React.KeyboardEvent<HTMLButtonElement>) {\n    if (handlesKey(state, event.key)) event.preventDefault();\n    send({ type: 'key', key: event.key });\n  }\n\n  function choose(index: number) {\n    send({ type: 'choose', index });\n    triggerRef.current?.focus();\n  }\n\n  const labelId = `${idPrefix}-label`;\n  const listId = `${idPrefix}-list`;\n  const optionId = (index: number) => `${idPrefix}-opt-${index}`;\n\n  return (\n    <div className=\"picker\" ref={rootRef}>\n      <span className=\"picker-label\" id={labelId}>\n        {label}\n      </span>\n      <button\n        ref={triggerRef}\n        type=\"button\"\n        className=\"picker-trigger\"\n        role=\"combobox\"\n        aria-haspopup=\"listbox\"\n        aria-controls={listId}\n        aria-labelledby={labelId}\n        aria-expanded={open}\n        aria-activedescendant={open ? optionId(activeIndex) : undefined}\n        onClick={() => send({ type: 'toggle' })}\n        onKeyDown={handleKeyDown}\n      >\n        {items[selectedIndex].label}\n      </button>\n      <ul className=\"picker-list\" id={listId} role=\"listbox\" aria-labelledby={labelId} hidden={!open}>\n        {items.map((item, index) => (\n          <li\n            key={item.id}\n            id={optionId(index)}\n            className={open && index === activeIndex ? 'picker-option is-active' : 'picker-option'}\n            role=\"option\"\n            aria-selected={index === selectedIndex}\n            onClick={() => choose(index)}\n          >\n            {item.label}\n          </li>\n        ))}\n      </ul>\n    </div>\n  );\n}\n\n// Given: mounts the class version into a host element and destroys it on unmount.\nfunction VanillaBasemapPicker(props: PickerOptions) {\n  const hostRef = useRef<HTMLDivElement>(null);\n  const onChangeRef = useRef(props.onChange);\n  onChangeRef.current = props.onChange;\n\n  useEffect(() => {\n    const host = hostRef.current;\n    if (!host) return;\n    const picker = new BasemapPicker(host, { ...props, onChange: (item) => onChangeRef.current(item) });\n    return () => picker.destroy();\n    // The class owns its DOM after mount, so this wrapper mounts it once.\n  }, []);\n\n  return <div className=\"picker-host\" ref={hostRef} />;\n}\n\ntype ChangeLog = {\n  label: string;\n  changes: number;\n};\n\nfunction useChangeLog(initial: Basemap) {\n  const [log, setLog] = useState<ChangeLog>({ label: initial.label, changes: 0 });\n  const record = (item: Basemap) => setLog((current) => ({ label: item.label, changes: current.changes + 1 }));\n  return [log, record] as const;\n}\n\nfunction Status({ log }: { log: ChangeLog }) {\n  return (\n    <p className=\"status\" aria-live=\"polite\">\n      Selected <strong className=\"status-value\">{log.label}</strong>, changes reported:{' '}\n      <span className=\"status-count\">{log.changes}</span>\n    </p>\n  );\n}\n\nexport default function App() {\n  const [vanillaLog, recordVanilla] = useChangeLog(BASEMAPS[0]);\n  const [reactLog, recordReact] = useChangeLog(BASEMAPS[0]);\n\n  return (\n    <main className=\"main\">\n      <header className=\"header\">\n        <h1 className=\"title\">Basemap Picker (Solution)</h1>\n        <p className=\"subtitle\">One picker written twice, as a plain JavaScript class and as a React component. Both pass the same checks.</p>\n      </header>\n      <div className=\"panels\">\n        <section className=\"panel\" data-version=\"vanilla\" aria-labelledby=\"vanilla-title\">\n          <h2 className=\"panel-title\" id=\"vanilla-title\">\n            Plain JavaScript\n          </h2>\n          <VanillaBasemapPicker items={BASEMAPS} selectedId=\"satellite\" idPrefix=\"vanilla-basemap\" label=\"Basemap\" onChange={recordVanilla} />\n          <Status log={vanillaLog} />\n        </section>\n        <section className=\"panel\" data-version=\"react\" aria-labelledby=\"react-title\">\n          <h2 className=\"panel-title\" id=\"react-title\">\n            React\n          </h2>\n          <ReactBasemapPicker items={BASEMAPS} selectedId=\"satellite\" idPrefix=\"react-basemap\" label=\"Basemap\" onChange={recordReact} />\n          <Status log={reactLog} />\n        </section>\n      </div>\n    </main>\n  );\n}\n",
+      "nodes": [
+        {
+          "id": "a1-shared-reducer",
+          "title": "Keep every state change in one pure reducer",
+          "anchor": {
+            "lineStart": 48,
+            "lineEnd": 48,
+            "snippet": "function pickerReducer(state: PickerState, action: PickerAction): PickerState {"
+          },
+          "why": "Both versions send the same actions to the same function, so the port cannot drift: a key that moves the active option in the class moves it in React too, and the logic can be tested without a DOM.",
+          "alternative": "Write the open and keyboard logic twice, once in the class methods and once in React handlers.",
+          "tradeoff": "The reducer needs a small action vocabulary up front, but every behaviour then has one definition."
+        },
+        {
+          "id": "a2-same-object",
+          "title": "Return the same state when nothing changes",
+          "anchor": {
+            "lineStart": 55,
+            "lineEnd": 55,
+            "snippet": "return state.open ? { ...state, open: false } : state;"
+          },
+          "why": "Callers compare the previous and next object: the class skips render() and onChange, and React skips a re-render. A click outside an already closed picker therefore costs nothing.",
+          "alternative": "Always return a fresh object and let each caller diff the fields.",
+          "tradeoff": "Identity checks are cheap and simple, but every branch has to remember to return the original object when it changes nothing."
+        },
+        {
+          "id": "a3-handled-keys",
+          "title": "Prevent the default only for keys the picker handles",
+          "anchor": {
+            "lineStart": 95,
+            "lineEnd": 95,
+            "snippet": "function handlesKey(state: PickerState, key: string): boolean {"
+          },
+          "why": "Arrow keys would scroll the page and Enter on an open list would also click the button and reopen it. Enter and Space on a closed trigger are left alone so the native button click opens the list.",
+          "alternative": "Call preventDefault() for every keydown on the trigger.",
+          "tradeoff": "Blocking every key breaks Tab and browser shortcuts; a named list keeps native behaviour where the picker has nothing to add."
+        },
+        {
+          "id": "a4-build-once",
+          "title": "Build the class DOM once and update it in place",
+          "anchor": {
+            "lineStart": 198,
+            "lineEnd": 198,
+            "snippet": "private render(): void {"
+          },
+          "why": "render() only writes text and attributes onto nodes created in the constructor, so the focused trigger is never replaced and a click target stays inside the picker while the document listener checks it.",
+          "alternative": "Rebuild the markup with innerHTML or replaceChildren on every state change.",
+          "tradeoff": "In-place updates mean a little more code per attribute, but focus, listeners and click targets survive every update."
+        },
+        {
+          "id": "a5-text-content",
+          "title": "Write labels with textContent",
+          "anchor": {
+            "lineStart": 142,
+            "lineEnd": 142,
+            "snippet": "option.textContent = item.label;"
+          },
+          "why": "Labels can come from users. textContent shows \"My preset <draft>\" literally, while innerHTML would create a draft element and open the door to injected markup.",
+          "alternative": "Build an HTML string with the labels and assign it with innerHTML.",
+          "tradeoff": "textContent needs one node per label, which the class creates anyway."
+        },
+        {
+          "id": "a6-delegation",
+          "title": "Handle every option with one delegated listener",
+          "anchor": {
+            "lineStart": 176,
+            "lineEnd": 176,
+            "snippet": "const option = (event.target as Element).closest<HTMLElement>('[role=\"option\"]');"
+          },
+          "why": "One click listener on the list finds the option with closest() and reads its index from data-index, so options need no listeners of their own and there is less to remove in destroy().",
+          "alternative": "Add a click listener to each li when it is created.",
+          "tradeoff": "Delegation relies on the DOM structure and a data attribute, but it scales to long lists and keeps cleanup to one call."
+        },
+        {
+          "id": "a7-arrow-fields",
+          "title": "Keep handlers as arrow-function fields",
+          "anchor": {
+            "lineStart": 182,
+            "lineEnd": 182,
+            "snippet": "private handleDocumentClick = (event: MouseEvent): void => {"
+          },
+          "why": "Arrow-function fields keep this bound to the instance and give addEventListener and removeEventListener the same function reference, which is what removal needs.",
+          "alternative": "Pass this.method.bind(this) or an inline arrow function to addEventListener.",
+          "tradeoff": "Fields allocate one function per instance, which is fine for a picker and avoids the silent no-op removal that new bound functions cause."
+        },
+        {
+          "id": "a8-destroy",
+          "title": "Remove every listener in destroy()",
+          "anchor": {
+            "lineStart": 161,
+            "lineEnd": 161,
+            "snippet": "    document.removeEventListener('click', this.handleDocumentClick);"
+          },
+          "why": "The document listener outlives the picker unless it is removed; the wrapper calls destroy() when React unmounts it, and the unmount check counts listeners left on document.",
+          "alternative": "Rely on removing the root element to clean up.",
+          "tradeoff": "Removing the root drops listeners on its own nodes, but not the one on document, which keeps the instance alive and keeps closing nothing."
+        },
+        {
+          "id": "a9-class-change",
+          "title": "Report a change only when the selection moves",
+          "anchor": {
+            "lineStart": 192,
+            "lineEnd": 192,
+            "snippet": "    if (next.selectedIndex !== previous.selectedIndex) {"
+          },
+          "why": "send() compares the selected index before and after the reducer, so choosing the selected option again or moving the active option reports nothing.",
+          "alternative": "Call onChange after every choose action.",
+          "tradeoff": "The comparison is one line, and it keeps the callback meaningful for analytics or saving."
+        },
+        {
+          "id": "a10-use-reducer",
+          "title": "Port the state with useReducer and the same reducer",
+          "anchor": {
+            "lineStart": 217,
+            "lineEnd": 217,
+            "snippet": "  const [state, dispatch] = useReducer(pickerReducer, null, () =>"
+          },
+          "why": "useReducer takes the exact function the class calls, so the port changes where state lives, not what it does. The lazy initializer computes the selected index once.",
+          "alternative": "Rewrite the state as several useState calls inside the component.",
+          "tradeoff": "The reducer keeps both versions aligned; separate useState calls would be shorter here but would duplicate the transitions."
+        },
+        {
+          "id": "a11-effect-cleanup",
+          "title": "Pair the document listener with an effect cleanup",
+          "anchor": {
+            "lineStart": 231,
+            "lineEnd": 231,
+            "snippet": "    return () => document.removeEventListener('click', handleDocumentClick);"
+          },
+          "why": "The effect plays the role of the constructor and destroy() pair: it adds the listener after mount and removes it on unmount. dispatch is stable, so the listener never reads stale state.",
+          "alternative": "Add the listener during render or in an effect without a cleanup.",
+          "tradeoff": "An effect runs after paint, which is fine for outside clicks; without the cleanup every unmount would leak a listener."
+        },
+        {
+          "id": "a12-handler-side-effects",
+          "title": "Keep onChange in event handlers",
+          "anchor": {
+            "lineStart": 239,
+            "lineEnd": 239,
+            "snippet": "    if (next.selectedIndex !== state.selectedIndex) onChange(items[next.selectedIndex]);"
+          },
+          "why": "Running the same reducer on the current state tells the handler whether the selection will change before it dispatches. The reducer stays pure and no effect fires onChange on mount.",
+          "alternative": "Watch selectedIndex in a useEffect and call onChange there.",
+          "tradeoff": "Computing the next state twice is cheap; an effect would report a change nobody made on the first render."
+        },
+        {
+          "id": "a13-focus",
+          "title": "Return focus to the trigger after a mouse choice",
+          "anchor": {
+            "lineStart": 249,
+            "lineEnd": 249,
+            "snippet": "    triggerRef.current?.focus();"
+          },
+          "why": "Keyboard users can keep working after picking with the mouse, and screen readers announce the new value on the focused combobox.",
+          "alternative": "Leave focus wherever the click left it.",
+          "tradeoff": "One focus call in the handler; the class does the same with this.trigger.focus()."
+        },
+        {
+          "id": "a14-hidden-list",
+          "title": "Keep the list mounted and toggle hidden",
+          "anchor": {
+            "lineStart": 276,
+            "lineEnd": 276,
+            "snippet": "      <ul className=\"picker-list\" id={listId} role=\"listbox\" aria-labelledby={labelId} hidden={!open}>"
+          },
+          "why": "aria-controls always points at a real element and the React markup matches the class markup, so the same checks apply to both versions.",
+          "alternative": "Render the list only while it is open.",
+          "tradeoff": "A hidden list keeps its nodes in the DOM, which is negligible for four options."
+        }
+      ]
+    }
+  }
+}

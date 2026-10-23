@@ -86,11 +86,14 @@
 /companies/agoda/preview
 /companies/airbnb/preview
 /companies/amazon/preview
+/companies/anduril/preview
 /companies/apple/preview
 /companies/booking-com/preview
 /companies/bytedance/preview
+/companies/capital-one/preview
 /companies/datadog/preview
 /companies/elevenlabs/preview
+/companies/gitlab/preview
 /companies/google/preview
 /companies/intuit/preview
 /companies/jpmorgan/preview
@@ -458,6 +461,7 @@
 /react/coding/react-todo-list
 /react/coding/react-transfer-list
 /react/coding/react-use-effect-once
+/react/coding/react-vanilla-dropdown-port
 /react/interview-questions
 /react/trivia/react-18-whats-new
 /react/trivia/react-code-splitting-module-federation

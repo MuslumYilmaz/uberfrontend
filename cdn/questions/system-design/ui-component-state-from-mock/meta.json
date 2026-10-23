@@ -10,7 +10,8 @@
     "performance"
   ],
   "companies": [
-    "intuit"
+    "intuit",
+    "capital-one"
   ],
   "sections": [
     {
@@ -70,6 +71,13 @@
         "sourceUrl": "https://leetcode.com/discuss/post/1618037/",
         "sourceTitle": "Intuit SDE2 frontend interview, Bangalore, October 2021 (LeetCode Discuss)",
         "checkedAt": "2026-10-14"
+      },
+      {
+        "company": "capital-one",
+        "evidenceType": "reported-interview-question",
+        "sourceUrl": "https://www.jointaro.com/interviews/companies/capital-one/experiences/senior-software-engineer-united-states-august-1-2022-accepted-offer-neutral-9d67e812/",
+        "sourceTitle": "Capital One senior software engineer interview for a frontend position, 2022 (Taro)",
+        "checkedAt": "2026-10-23"
       }
     ]
   },
@@ -89,6 +97,14 @@
       "publisher": "LeetCode Discuss",
       "date": "2023-10",
       "note": "One SE2 account describes a week-long craft task, an event management system presented with slides and code, where the panel asked for an error fallback page and tests that check real conditions."
+    },
+    {
+      "label": "Taro: Capital One senior software engineer interview for a frontend position, 2022",
+      "url": "https://www.jointaro.com/interviews/companies/capital-one/experiences/senior-software-engineer-united-states-august-1-2022-accepted-offer-neutral-9d67e812/",
+      "company": "capital-one",
+      "publisher": "Taro",
+      "date": "2022-08",
+      "note": "The second technical round was a frontend design prompt to build a single-page application, covering component structure, routing, data flow, Redux and API calls. This case practises structuring an app from requirements."
     }
   ]
 }

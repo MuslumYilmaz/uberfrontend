@@ -667,6 +667,83 @@ const WAYMO_WM4_INTERN_2022 = report(
   '2022-09',
 );
 
+// Anduril accounts are all US. Taro reports are Glassdoor re-hosts; the 2022 and 2025 ones carry placeholder dates.
+const ANDURIL_EARLY_CAREERS = official('Anduril early careers FAQ', 'https://www.anduril.com/early-careers');
+const ANDURIL_TARO = 'https://www.jointaro.com/interviews/companies/anduril/experiences';
+const ANDURIL_AN9_OFFER_2022 = report(
+  'Taro (approx.)',
+  `${ANDURIL_TARO}/frontend-software-engineer-costa-mesa-ca-september-1-2022-accepted-offer-positive-9ee69754/`,
+  '2022-09',
+);
+const ANDURIL_AN10_INTERN_2023 = report(
+  'Taro',
+  `${ANDURIL_TARO}/software-engineerinternship-costa-mesa-ca-july-5-2023-accepted-offer-positive-dbb3fa63/`,
+  '2023-07',
+);
+const ANDURIL_AN11_FE_FOCUS_2024 = report(
+  'Taro',
+  `${ANDURIL_TARO}/software-engineer-united-states-december-24-2024-no-offer-positive-64f81210/`,
+  '2024-12',
+);
+const ANDURIL_AN12_CLASS_2025 = report(
+  'Taro (approx.)',
+  `${ANDURIL_TARO}/software-engineer-seattle-wa-january-1-2025-no-offer-positive-c481c905/`,
+  '2025-01',
+);
+const ANDURIL_AN1_ONSITE_2025 = report('Blind', 'https://www.teamblind.com/post/front-end-interviews-at-anduril-3hihnhlv', '2025-04');
+const ANDURIL_AN2_OFFER_2023 = report('Blind', 'https://www.teamblind.com/post/anduril-front-end-interviews-bugagvca', '2023-10');
+const ANDURIL_AN6_SCREEN_2025 = report('Blind comment', 'https://www.teamblind.com/post/anduril-front-end-interview-yt3cx1bt', '2025-03');
+
+// GitLab publishes the frontend loop in its handbook; Taro reports are Glassdoor re-hosts, most with placeholder dates.
+const GITLAB_JOB_FAMILY = official('GitLab frontend job family', 'https://handbook.gitlab.com/job-description-library/engineering/development/frontend/');
+const GITLAB_TECHNICAL_INTERVIEW = official('GitLab technical interview', 'https://handbook.gitlab.com/handbook/hiring/interviewing/technical/');
+const GITLAB_CANDIDATE_FAQ = official('GitLab candidate FAQ', 'https://handbook.gitlab.com/handbook/hiring/candidate-faq/');
+const GITLAB_TARO = 'https://www.jointaro.com/interviews/companies/gitlab/experiences';
+const GITLAB_GL1_FE_2025 = report('Taro', `${GITLAB_TARO}/frontend-developer-india-october-18-2025-no-offer-positive-b6eb8eea/`, '2025-10');
+const GITLAB_GL3_FE_2024 = report('Taro (approx.)', `${GITLAB_TARO}/front-end-engineer-canada-march-1-2024-no-offer-negative-fbb295a4/`, '2024-03');
+const GITLAB_GL4_FE_2024 = report('Taro (approx.)', `${GITLAB_TARO}/front-end-engineer-united-states-february-1-2024-no-offer-neutral-031df9b0/`, '2024-02');
+const GITLAB_GL7_FULLSTACK_2022 = report('Taro (approx.)', `${GITLAB_TARO}/full-stack-engineer-india-july-1-2022-no-offer-negative-6c945f7b/`, '2022-07');
+const GITLAB_GL10_FE_2021 = report('Taro (approx.)', `${GITLAB_TARO}/frontend-engineer-united-states-december-1-2021-no-offer-positive-f05a7545/`, '2021-12');
+const GITLAB_GL16_FE_2020 = report(
+  'Taro (approx.)',
+  `${GITLAB_TARO}/frontend-developer-amsterdam-north-holland-february-1-2020-no-offer-negative-14a19a13/`,
+  '2020-02',
+);
+const GITLAB_GL18_FULLSTACK_2020 = report(
+  'Taro (approx.)',
+  `${GITLAB_TARO}/full-stack-engineer-san-francisco-california-january-1-2020-accepted-offer-positive-6152258b/`,
+  '2020-01',
+);
+const GITLAB_GL20_FE_2019 = report('Taro (approx.)', `${GITLAB_TARO}/frontend-engineer-united-states-december-1-2019-accepted-offer-positive-8e8c9001/`, '2019-12');
+const GITLAB_GL21_FE_2019 = report('Taro (approx.)', `${GITLAB_TARO}/frontend-engineer-seattle-washington-december-1-2019-accepted-offer-positive-b630c835/`, '2019-12');
+const GITLAB_GL24_FE_2019 = report('Taro (approx.)', `${GITLAB_TARO}/frontend-engineer-montreal-quebec-november-1-2019-accepted-offer-positive-8b61c9a4/`, '2019-11');
+const GITLAB_GL27_FE_2019 = report('Taro', `${GITLAB_TARO}/frontend-engineer-united-kingdom-august-5-2019-no-offer-negative-d1e1bab6/`, '2019-08');
+const GITLAB_GL28_FE_2019 = report('Taro (approx.)', `${GITLAB_TARO}/frontend-engineer-australia-july-1-2019-accepted-offer-positive-0dcaf872/`, '2019-07');
+const GITLAB_GL35_FE_2018 = report('Taro (approx.)', `${GITLAB_TARO}/front-end-engineer-saint-louis-missouri-june-1-2018-accepted-offer-positive-0a133d02/`, '2018-06');
+const GITLAB_GL44_FULLSTACK_2025 = report('Medium', 'https://medium.com/@vedantj03/how-i-got-into-gitlab-an-open-source-journey-7ecdad137307', '2025-04');
+
+// Capital One frontend accounts are Taro re-hosts of Glassdoor reviews with placeholder dates; the generic loop
+// and the official page are written for other roles, so they only back the shared stages.
+const CAPITALONE_AI_ML_GUIDE = official('Capital One AI and ML guide', 'https://www.capitalonecareers.com/insider-tips-for-ai-and-machine-learning-interviews-tech-101-cdev');
+const CAPITALONE_WHAT_TO_EXPECT = official('Capital One interview guide', 'https://www.capitalonecareers.com/what-to-expect-during-your-capital-one-interview-students-101');
+const CAPITALONE_TARO = 'https://www.jointaro.com/interviews/companies/capital-one/experiences';
+const CAPITALONE_CO1_LEAD_2024 = report('Taro (approx.)', `${CAPITALONE_TARO}/lead-software-engineer-front-end-mclean-va-october-1-2024-no-offer-positive-6427acda/`, '2024-10');
+const CAPITALONE_CO2_SENIOR_2024 = report('Taro (approx.)', `${CAPITALONE_TARO}/senior-frontend-engineer-washington-dc-july-1-2024-no-offer-neutral-3e4968d4/`, '2024-07');
+const CAPITALONE_CO3_SENIOR_2024 = report('Taro (approx.)', `${CAPITALONE_TARO}/senior-frontend-engineer-chicago-il-august-1-2024-no-offer-negative-958c2993/`, '2024-08');
+const CAPITALONE_CO4_SENIOR_2024 = report('Taro (approx.)', `${CAPITALONE_TARO}/senior-frontend-engineer-united-states-november-1-2024-no-offer-neutral-52591f09/`, '2024-11');
+const CAPITALONE_CO5_SENIOR_2023 = report(
+  'Taro (approx.)',
+  `${CAPITALONE_TARO}/senior-web-front-end-engineer-mclean-va-february-1-2023-no-offer-negative-b9f0a15e/`,
+  '2023-02',
+);
+const CAPITALONE_CO6_FRONTEND_2022 = report(
+  'Taro (approx.)',
+  `${CAPITALONE_TARO}/senior-software-engineer-united-states-august-1-2022-accepted-offer-neutral-9d67e812/`,
+  '2022-08',
+);
+const CAPITALONE_CO7_LEAD_2022 = report('Taro (approx.)', `${CAPITALONE_TARO}/front-end-lead-plano-tx-august-1-2022-declined-offer-neutral-c94a48a3/`, '2022-08');
+const CAPITALONE_CO9_SENIOR_2024 = report('Taro (approx.)', `${CAPITALONE_TARO}/senior-front-end-developer-mclean-va-may-1-2024-no-offer-positive-3ea6b6f9/`, '2024-05');
+
 export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyInterviewProcess>> = {
   amazon: {
     title: 'Amazon Front End Engineer interview process',
@@ -2425,6 +2502,254 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
             format: 'A data structures and algorithms round closed the loop.',
             appliesTo: 'The one account',
             sources: [WAYMO_WM2_SWE_2026],
+          },
+        ],
+      },
+    ],
+  },
+  anduril: {
+    summary:
+      'Anduril describes a recruiter call, technical and behavioral interviews and role-specific assessments that could include live coding. Frontend accounts from 2022 to 2025 describe one technical screen with an applied frontend problem, then an onsite of two coding rounds, a system design round and a behavioral interview.',
+    caveat:
+      'Nine accounts from 2022 to 2025: five on Blind and four reviews re-hosted on Taro.',
+    checkedAt: '2026-10-23',
+    variants: [
+      {
+        title: 'Frontend engineers, United States',
+        stages: [
+          {
+            stage: 'Recruiter call',
+            format:
+              'Resume and past experience. In 2025 one recruiter predicted an algorithm-heavy round that turned out to be two simple JavaScript and React tasks; in another account the coordinator preparation document described the frontend test correctly.',
+            appliesTo: 'All candidates',
+            sources: [ANDURIL_EARLY_CAREERS, ANDURIL_AN9_OFFER_2022, ANDURIL_AN11_FE_FOCUS_2024, ANDURIL_AN12_CLASS_2025, ANDURIL_AN1_ONSITE_2025],
+          },
+          {
+            stage: 'Technical screen',
+            format:
+              'About an hour with an applied frontend problem: a file explorer in React in two accounts, or a JavaScript class or component written in an empty file and then moved into React, Vue or Angular. By video in 2022 and on HackerRank in 2025.',
+            appliesTo: 'Frontend candidates',
+            sources: [ANDURIL_AN12_CLASS_2025, ANDURIL_AN11_FE_FOCUS_2024, ANDURIL_AN9_OFFER_2022, ANDURIL_AN2_OFFER_2023, ANDURIL_AN6_SCREEN_2025],
+            practice: { label: 'File explorer tree', path: '/react/coding/react-file-explorer' },
+          },
+          {
+            stage: 'Onsite',
+            format:
+              'Three or four interviews: two coding rounds, usually one in React and one in plain JavaScript or data structures, one system design round and one behavioral interview. A 2024 candidate flew to Costa Mesa for it.',
+            appliesTo: 'Candidates who pass the screen',
+            sources: [ANDURIL_AN1_ONSITE_2025, ANDURIL_AN2_OFFER_2023, ANDURIL_AN9_OFFER_2022, ANDURIL_AN11_FE_FOCUS_2024],
+            practice: { label: 'React countdown timer', path: '/react/coding/react-countdown-timer' },
+          },
+          {
+            stage: 'Decision',
+            format: 'Within about five days in a 2022 account; a 2023 offer came about three weeks after the first interview result.',
+            appliesTo: 'Candidates who finish',
+            sources: [ANDURIL_AN9_OFFER_2022, ANDURIL_AN2_OFFER_2023],
+          },
+        ],
+      },
+      {
+        title: 'Frontend interns, 2023',
+        note: 'One account of a frontend internship loop that ended in an offer.',
+        stages: [
+          {
+            stage: 'Introductory interview',
+            format: 'A short first conversation.',
+            appliesTo: 'The one account',
+            sources: [ANDURIL_AN10_INTERN_2023],
+          },
+          {
+            stage: 'Two technical rounds',
+            format: 'Build a small application; the reported task is a file explorer in React where clicking a folder shows its children.',
+            appliesTo: 'The one account',
+            sources: [ANDURIL_AN10_INTERN_2023],
+            practice: { label: 'Filter a tree and render it', path: '/javascript/coding/js-filter-tree-render-indented' },
+          },
+          {
+            stage: 'Behavioral interview',
+            format: 'Behavioral questions with a small technical question at the end.',
+            appliesTo: 'The one account',
+            sources: [ANDURIL_AN10_INTERN_2023],
+          },
+        ],
+      },
+    ],
+  },
+  gitlab: {
+    summary:
+      'GitLab publishes one frontend loop for every level: a short written assessment, a recruiter screening call, a merge request you review on your own time and then improve in a 90-minute technical interview, a behavioral interview and an interview with a Director of Engineering. Public accounts from 2018 to 2025 describe the same order.',
+    caveat:
+      'Stages and durations come from the GitLab handbook; exercise details come from accounts dated 2018 to 2025.',
+    checkedAt: '2026-10-23',
+    variants: [
+      {
+        title: 'Frontend engineers, all levels',
+        stages: [
+          {
+            stage: 'Written assessment',
+            format:
+              'A short written assessment after applying. Older accounts describe open-ended technical questions answered in writing, such as what happens in the browser while a page loads.',
+            appliesTo: 'Selected applicants',
+            sources: [GITLAB_JOB_FAMILY, GITLAB_GL27_FE_2019, GITLAB_GL35_FE_2018, GITLAB_GL24_FE_2019],
+            practice: { label: 'How browsers parse and render', path: '/html/trivia/html-parsing-rendering' },
+          },
+          {
+            stage: 'Recruiter screening call',
+            format: '30 to 40 minutes on video: background, motivation, experience with each listed skill, location, notice period and salary range.',
+            appliesTo: 'All candidates',
+            sources: [GITLAB_JOB_FAMILY, GITLAB_CANDIDATE_FAQ, GITLAB_GL4_FE_2024, GITLAB_GL1_FE_2025],
+          },
+          {
+            stage: 'Merge request review',
+            format:
+              'A self-contained merge request on a small application arrives at least 72 hours before the call; up to an hour of review, finished a day ahead. Reports name Vue, HTML, CSS, Haml and Jest unit tests.',
+            appliesTo: 'Frontend engineers',
+            sources: [GITLAB_TECHNICAL_INTERVIEW, GITLAB_GL3_FE_2024, GITLAB_GL4_FE_2024, GITLAB_GL10_FE_2021, GITLAB_GL16_FE_2020],
+            practice: { label: 'Fix an async race', path: '/javascript/debug/js-debug-async-race' },
+          },
+          {
+            stage: 'Technical interview',
+            format:
+              '90 minutes on video with screen sharing: walk through your review, then write code to improve the merge request, with a frontend engineer or a frontend engineering manager.',
+            appliesTo: 'Frontend engineers',
+            sources: [GITLAB_JOB_FAMILY, GITLAB_TECHNICAL_INTERVIEW, GITLAB_GL4_FE_2024, GITLAB_GL21_FE_2019, GITLAB_GL28_FE_2019],
+            practice: { label: 'Build a spy function', path: '/javascript/coding/js-create-spy-function' },
+          },
+          {
+            stage: 'Behavioral interview',
+            format: '45 minutes with an engineering manager: STAR questions, sometimes with high-level technical questions.',
+            appliesTo: 'All candidates',
+            sources: [GITLAB_JOB_FAMILY, GITLAB_GL20_FE_2019, GITLAB_GL21_FE_2019, GITLAB_GL28_FE_2019],
+          },
+          {
+            stage: 'Director interview',
+            format: '60 minutes with a Director of Engineering on past experience and values, with a few technical questions in some accounts.',
+            appliesTo: 'All candidates',
+            sources: [GITLAB_JOB_FAMILY, GITLAB_GL20_FE_2019, GITLAB_GL21_FE_2019],
+          },
+          {
+            stage: 'References and offer',
+            format: 'Three references, at least one a past manager, and a background check before the offer.',
+            appliesTo: 'Candidates who pass',
+            sources: [GITLAB_CANDIDATE_FAQ, GITLAB_GL21_FE_2019, GITLAB_GL18_FULLSTACK_2020],
+          },
+        ],
+      },
+      {
+        title: 'Full-stack engineers',
+        note: 'Full-stack candidates get two technical interviews, each on its own merge request.',
+        stages: [
+          {
+            stage: 'Recruiter screening call',
+            format: 'About 30 minutes on motivation, experience with Ruby on Rails and Vue, and compensation.',
+            appliesTo: 'All candidates',
+            sources: [GITLAB_GL18_FULLSTACK_2020, GITLAB_GL7_FULLSTACK_2022, GITLAB_GL44_FULLSTACK_2025],
+          },
+          {
+            stage: 'Backend technical interview',
+            format: '90 minutes on a merge request reviewed before the call and improved during it; Ruby, Rails, testing and database topics.',
+            appliesTo: 'Full-stack engineers',
+            sources: [GITLAB_GL7_FULLSTACK_2022, GITLAB_GL44_FULLSTACK_2025],
+          },
+          {
+            stage: 'Frontend technical interview',
+            format: '90 minutes on a second merge request that needs Vue, HTML and CSS changes; JavaScript, Vue.js and testing.',
+            appliesTo: 'Full-stack engineers',
+            sources: [GITLAB_GL7_FULLSTACK_2022, GITLAB_GL44_FULLSTACK_2025, GITLAB_GL18_FULLSTACK_2020],
+          },
+          {
+            stage: 'Manager and director interviews',
+            format: 'About an hour each on behavioral and situational questions, values and how you work.',
+            appliesTo: 'All candidates',
+            sources: [GITLAB_GL18_FULLSTACK_2020, GITLAB_GL44_FULLSTACK_2025],
+          },
+        ],
+      },
+    ],
+  },
+  'capital-one': {
+    summary:
+      'Capital One describes a recruiter screen, an assessment and a Power Day of four hour-long interviews. Frontend accounts from 2022 to 2024 describe a CodeSignal assessment, then a Power Day with a frontend design round, a frontend technical round, a case built on reading code and a behavioral round.',
+    caveat:
+      'Built from frontend accounts dated 2022 to 2024, all reviews re-hosted on Taro.',
+    checkedAt: '2026-10-23',
+    variants: [
+      {
+        title: 'Senior frontend engineers, United States, 2022 to 2024',
+        stages: [
+          {
+            stage: 'Recruiter screen',
+            format: 'A call about the role and your background; in one account the candidate messaged the recruiter on LinkedIn first.',
+            appliesTo: 'All candidates',
+            sources: [CAPITALONE_WHAT_TO_EXPECT, CAPITALONE_CO2_SENIOR_2024, CAPITALONE_CO4_SENIOR_2024, CAPITALONE_CO6_FRONTEND_2022],
+          },
+          {
+            stage: 'Online assessment',
+            format: 'CodeSignal, about 70 minutes, four LeetCode-style questions in most accounts and three in one; candidates who solved two or three were still invited.',
+            appliesTo: 'All candidates',
+            sources: [CAPITALONE_AI_ML_GUIDE, CAPITALONE_CO4_SENIOR_2024, CAPITALONE_CO5_SENIOR_2023, CAPITALONE_CO6_FRONTEND_2022, CAPITALONE_CO2_SENIOR_2024],
+          },
+          {
+            stage: 'Power Day: frontend design',
+            format:
+              'A conversational design of a credit card application page and its confirmation page, with a whiteboard for notes, or the structure of a web app or single-page application from requirements: components, routing, data flow and API calls.',
+            appliesTo: 'Frontend engineers',
+            sources: [CAPITALONE_CO2_SENIOR_2024, CAPITALONE_CO3_SENIOR_2024, CAPITALONE_CO5_SENIOR_2023, CAPITALONE_CO6_FRONTEND_2022],
+            practice: { label: 'Multi-step form with autosave', path: '/system-design/multi-step-form-autosave' },
+          },
+          {
+            stage: 'Power Day: frontend technical',
+            format:
+              'A small framework task judged on structure, syntax and coding style: a React project, an Angular form with validations, or a form in the candidate framework of choice.',
+            appliesTo: 'Frontend engineers',
+            sources: [CAPITALONE_CO2_SENIOR_2024, CAPITALONE_CO5_SENIOR_2023, CAPITALONE_CO6_FRONTEND_2022],
+            practice: { label: 'Form validation basics', path: '/html/coding/html-forms-validation-required' },
+          },
+          {
+            stage: 'Power Day: case',
+            format:
+              'A business scenario read through code: find the bug in a budgeting program written by an intern without coding the fix, work example cost calculations and fix a faulty algorithm, or refactor badly written code.',
+            appliesTo: 'All candidates',
+            sources: [CAPITALONE_AI_ML_GUIDE, CAPITALONE_CO2_SENIOR_2024, CAPITALONE_CO5_SENIOR_2023, CAPITALONE_CO6_FRONTEND_2022],
+            practice: { label: 'Fix a defaults bug', path: '/javascript/debug/js-debug-nullish-defaults' },
+          },
+          {
+            stage: 'Power Day: behavioral',
+            format: 'STAR questions, in one account all about a single past project.',
+            appliesTo: 'All candidates',
+            sources: [CAPITALONE_CO2_SENIOR_2024, CAPITALONE_CO5_SENIOR_2023, CAPITALONE_CO6_FRONTEND_2022, CAPITALONE_CO9_SENIOR_2024],
+          },
+          {
+            stage: 'Result and team matching',
+            format: 'Feedback within a day in one account; in others a pass led to team matching that stalled, a filled position, or a call from another team.',
+            appliesTo: 'Candidates who pass',
+            sources: [CAPITALONE_CO2_SENIOR_2024, CAPITALONE_CO3_SENIOR_2024, CAPITALONE_CO5_SENIOR_2023, CAPITALONE_CO6_FRONTEND_2022],
+          },
+        ],
+      },
+      {
+        title: 'Lead frontend engineers, 2022 to 2024',
+        note: 'Two accounts.',
+        stages: [
+          {
+            stage: 'Online assessment',
+            format: 'A timed assessment; in 2024, four LeetCode questions in 70 minutes, and solving two still led to an invitation.',
+            appliesTo: 'The two accounts',
+            sources: [CAPITALONE_CO1_LEAD_2024, CAPITALONE_CO7_LEAD_2022],
+          },
+          {
+            stage: 'Power Day',
+            format:
+              'Four interviews. In 2024: front-end design, behavioral, a case study, and a technical round that built a single-page application like pair programming. In 2022: framework basics, a deployment process design, behavioral, and code to read and improve.',
+            appliesTo: 'The two accounts',
+            sources: [CAPITALONE_CO1_LEAD_2024, CAPITALONE_CO7_LEAD_2022],
+            practice: { label: 'Rewrite a mutating helper', path: '/javascript/debug/js-debug-mutating-input' },
+          },
+          {
+            stage: 'Result',
+            format: 'An automated rejection without feedback in 2024; an offer about a month after the first call in 2022.',
+            appliesTo: 'The two accounts',
+            sources: [CAPITALONE_CO1_LEAD_2024, CAPITALONE_CO7_LEAD_2022],
           },
         ],
       },
