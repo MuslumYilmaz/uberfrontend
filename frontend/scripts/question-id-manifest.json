@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-19T17:35:07.016Z",
+  "generatedAt": "2026-10-23T11:14:16.444Z",
   "entries": [
     {
       "tech": "angular",
@@ -2106,6 +2106,12 @@
       "tech": "react",
       "kind": "coding",
       "id": "react-use-effect-once",
+      "file": "react/coding.json"
+    },
+    {
+      "tech": "react",
+      "kind": "coding",
+      "id": "react-vanilla-dropdown-port",
       "file": "react/coding.json"
     },
     {

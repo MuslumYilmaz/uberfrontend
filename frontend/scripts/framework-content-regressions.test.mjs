@@ -173,7 +173,7 @@ function assertFrameworkCssFormatting() {
       canonicalRoot: path.join(repoRoot, 'cdn', 'sb'),
       mirrorRoot: path.join(repoRoot, 'frontend', 'src', 'assets', 'sb'),
     }),
-    { assets: 210, cssSources: 275, changedAssets: 0, changedCssSources: 0 },
+    { assets: 212, cssSources: 277, changedAssets: 0, changedCssSources: 0 },
     'The full framework CSS corpus must stay canonical and exactly mirrored'
   );
 }
@@ -5224,6 +5224,51 @@ assert.match(interviewHubSource, /label: 'Compare template-driven vs reactive fo
 assert.match(interviewHubSource, /<a href="\/pricing"><img alt="arrow"><\/a>/);
 assert.match(interviewHubSource, /anchor without href is not a hyperlink/i);
 assert.doesNotMatch(interviewHubSource, /<a><img alt="arrow"><\/a>/);
+
+const vanillaPortQuestion = json('cdn/questions/react/coding.json').find((entry) => entry.id === 'react-vanilla-dropdown-port');
+assert.ok(vanillaPortQuestion);
+assert.equal(vanillaPortQuestion.access, 'free');
+assert.equal(vanillaPortQuestion.decisionGraphAsset, 'assets/questions/react/decision-graphs/react-vanilla-dropdown-port.v1.json');
+const vanillaPortStarter = json('cdn/sb/react/question/react-vanilla-dropdown-port.v1.json').files['src/App.tsx'];
+const vanillaPortSolution = json('cdn/sb/react/solution/react-vanilla-dropdown-port-solution.v1.json').files['src/App.tsx'];
+const vanillaPortGiven = (source) => source.slice(source.indexOf('// Given: mounts the class version'), source.indexOf('export default function App'));
+assert.ok(vanillaPortGiven(vanillaPortSolution).includes('picker.destroy()'), 'the given wrapper destroys the class on unmount');
+assert.equal(vanillaPortGiven(vanillaPortStarter), vanillaPortGiven(vanillaPortSolution), 'the given wrapper, change log and status line must be identical in the starter and the solution');
+assert.match(vanillaPortStarter, /function pickerReducer\(state: PickerState, action: PickerAction\): PickerState \{\n  return state;\n\}/, 'the starter leaves the shared reducer to the candidate');
+assert.doesNotMatch(vanillaPortStarter, /document\.addEventListener\(/, 'the starter leaves the outside-click listener to the candidate');
+assert.match(vanillaPortSolution, /option\.textContent = item\.label;/);
+assert.doesNotMatch(vanillaPortSolution, /\.innerHTML\s*=/, 'labels are written as text');
+assert.match(vanillaPortSolution, /document\.removeEventListener\('click', this\.handleDocumentClick\);/);
+assert.match(vanillaPortSolution, /useReducer\(pickerReducer, null, \(\) =>/);
+assert.match(vanillaPortSolution, /return \(\) => document\.removeEventListener\('click', handleDocumentClick\);/);
+assert.match(vanillaPortSolution, /hidden=\{!open\}/);
+const vanillaPortReactPart = vanillaPortSolution.slice(
+  vanillaPortSolution.indexOf('function ReactBasemapPicker'),
+  vanillaPortSolution.indexOf('// Given: mounts the class version')
+);
+assert.doesNotMatch(vanillaPortReactPart, /new BasemapPicker\(/, 'the React version is a port, not a wrapper around the class');
+const vanillaPortPairs = new Map();
+for (const check of vanillaPortQuestion.frameworkTests) {
+  const match = /^(Plain JS|React): (.+)$/.exec(check.name);
+  if (!match) continue;
+  vanillaPortPairs.set(match[2], [...(vanillaPortPairs.get(match[2]) || []), match[1]]);
+  // The runner starts at the first commit, before the effect that mounts the class version.
+  assert.equal(check.steps[0].type, 'waitForCount', `${check.id} waits for its picker before the first step`);
+}
+assert.equal(vanillaPortPairs.size, 6);
+for (const [name, versions] of vanillaPortPairs) {
+  assert.deepEqual([...versions].sort(), ['Plain JS', 'React'], `${name} runs against both versions`);
+}
+const vanillaPortGraph = json('cdn/questions/react/decision-graphs/react-vanilla-dropdown-port.v1.json');
+const vanillaPortVariant = vanillaPortGraph.variants.approach1;
+assert.equal(vanillaPortGraph.questionId, 'react-vanilla-dropdown-port');
+assert.equal(vanillaPortVariant.code, vanillaPortSolution, 'Vanilla dropdown decision graph must mirror the solution App.tsx');
+const vanillaPortLines = vanillaPortVariant.code.split('\n');
+for (const node of vanillaPortVariant.nodes) {
+  const { lineStart, lineEnd, snippet } = node.anchor;
+  assert.ok(lineStart >= 1 && lineEnd >= lineStart && lineEnd <= vanillaPortLines.length, `${node.id}: invalid vanilla dropdown anchor range`);
+  assert.ok(vanillaPortLines.slice(lineStart - 1, lineEnd).join('\n').includes(snippet), `${node.id}: vanilla dropdown anchor range must contain its snippet`);
+}
 
 console.log('Framework content regressions: PASS');
 console.log('Legacy RIGHT -> UP -> LEFT reproduction: pending direction became LEFT');

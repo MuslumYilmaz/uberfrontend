@@ -457,6 +457,68 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
     }),
   },
   {
+    ruleId: 'react-vanilla-dropdown-port-listener-cleanup',
+    questionId: 'react-vanilla-dropdown-port',
+    priority: 110,
+    matches: (snapshot) => anyFailingErrorIncludes(snapshot, ['leaked']),
+    buildHint: (snapshot) => ({
+      ruleId: 'react-vanilla-dropdown-port-listener-cleanup',
+      title: 'Remove the document listener in destroy() and in the effect cleanup',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'Both unmount checks count every listener still attached to `document` after the preview unmounts, so a missing removal in either version fails both.',
+      ),
+      actions: [
+        'Store the class handlers as arrow-function fields and pass the same functions to `removeEventListener` in `destroy()`.',
+        "In React, add the listener inside `useEffect` and return `() => document.removeEventListener('click', handler)`.",
+        'Keep the given wrapper: it calls `picker.destroy()` when the preview unmounts.',
+      ],
+      confidence: 0.84,
+    }),
+  },
+  {
+    ruleId: 'react-vanilla-dropdown-port-contract',
+    questionId: 'react-vanilla-dropdown-port',
+    priority: 100,
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, ['renders closed', 'mouse choice', 'arrow keys', 'escape', 'as text', 'own state']) ||
+      snapshot.failCount >= 2,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-vanilla-dropdown-port-contract',
+      title: 'Render the same picker contract from one reducer in both versions',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'Every check runs once against the class and once against the component, so both must render the same classes, ids and ARIA attributes and take their state from `pickerReducer`.',
+      ),
+      actions: [
+        'Implement `pickerReducer` first: toggle, close, choose, and the ArrowDown, ArrowUp, Home, End, Enter and Escape keys, returning the same object when nothing changes.',
+        'Give options the ids `<idPrefix>-opt-<index>`, keep the list mounted with `hidden` while closed, and set `aria-activedescendant` only while open.',
+        'Write labels with `textContent`, call `onChange` only when `selectedIndex` changes, and focus the trigger after a mouse choice.',
+      ],
+      confidence: 0.8,
+    }),
+  },
+  {
+    ruleId: 'react-vanilla-dropdown-port-default',
+    questionId: 'react-vanilla-dropdown-port',
+    priority: 40,
+    matches: () => true,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-vanilla-dropdown-port-default',
+      title: 'Build the class once, then move its state and listeners into React',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The class creates its nodes once and updates them in `render()`; the React version keeps the same reducer and markup and replaces the listeners with handlers and one effect.',
+      ),
+      actions: [
+        'Create the trigger, list and options in the constructor and update text and attributes in place, so the focused trigger is never replaced.',
+        "Handle option clicks with one listener on the list and `closest('[role=\"option\"]')`.",
+        'In React, use `useReducer(pickerReducer, …)` and run the reducer in the handler to decide whether to report a change.',
+      ],
+      confidence: 0.72,
+    }),
+  },
+  {
     ruleId: 'css-flexbox-navbar-responsive-layout',
     questionId: 'css-flexbox-navbar',
     priority: 100,

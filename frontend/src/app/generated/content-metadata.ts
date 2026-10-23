@@ -1533,7 +1533,7 @@ export const TAG_REGISTRY = {
 };
 
 export const SHOWCASE_STATS = {
-  "totalQuestions": 507,
+  "totalQuestions": 508,
   "premiumPracticeCount": 175,
   "companyCounts": {
     "agoda": {
@@ -1555,8 +1555,8 @@ export const SHOWCASE_STATS = {
       "system": 1
     },
     "anduril": {
-      "all": 5,
-      "coding": 4,
+      "all": 6,
+      "coding": 5,
       "trivia": 1,
       "system": 0
     },

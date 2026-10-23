@@ -342,6 +342,28 @@
     ],
     "anduril": [
       {
+        "id": "react-vanilla-dropdown-port",
+        "kind": "coding",
+        "tech": "react",
+        "title": "Build a Dropdown as a JavaScript Class, Then Port It to React",
+        "access": "free",
+        "route": "/react/coding/react-vanilla-dropdown-port",
+        "sources": [
+          {
+            "label": "Taro: Anduril software engineer interview, 2025",
+            "url": "https://www.jointaro.com/interviews/companies/anduril/experiences/software-engineer-seattle-wa-january-1-2025-no-offer-positive-c481c905/",
+            "publisher": "Taro",
+            "date": "2025-01"
+          },
+          {
+            "label": "Taro: Anduril software engineer interview, December 2024",
+            "url": "https://www.jointaro.com/interviews/companies/anduril/experiences/software-engineer-united-states-december-24-2024-no-offer-positive-64f81210/",
+            "publisher": "Taro",
+            "date": "2024-12"
+          }
+        ]
+      },
+      {
         "id": "react-file-explorer",
         "kind": "coding",
         "tech": "react",

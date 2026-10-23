@@ -166,8 +166,8 @@ export const ANDURIL_COMPANY_PREVIEW: AuthoredCompanyPreview = {
         ],
         commonMiss:
           'Rewriting from scratch in the framework so the two versions drift apart, or using innerHTML with user text in the plain version.',
-        resourceLabel: 'Review what classes in JavaScript give you (free)',
-        resourcePath: '/javascript/trivia/js-classes',
+        resourceLabel: 'Practise the dropdown class and its React port (free)',
+        resourcePath: '/react/coding/react-vanilla-dropdown-port',
         reportedRound: { label: ANDURIL_TARO_CLASS_2025_LABEL, url: ANDURIL_TARO_CLASS_2025_URL },
       },
       {

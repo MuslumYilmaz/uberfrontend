@@ -6921,6 +6921,34 @@
     "assetRef": "questions/react/coding.json#react-battery-site-layout"
   },
   {
+    "id": "react-vanilla-dropdown-port",
+    "family": "question",
+    "title": "Build a Dropdown as a JavaScript Class, Then Port It to React",
+    "route": "/react/coding/react-vanilla-dropdown-port",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "Build one basemap picker twice: first as a plain JavaScript class that creates and updates its own DOM, then as a React component.",
+    "tags": [
+      "react",
+      "javascript",
+      "typescript",
+      "dom",
+      "ui-components",
+      "classes",
+      "event-delegation",
+      "keyboard",
+      "focus",
+      "aria",
+      "effects",
+      "refactoring"
+    ],
+    "access": "free",
+    "estimatedMinutes": 18,
+    "updatedAt": "2026-10-23",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/coding.json#react-vanilla-dropdown-port"
+  },
+  {
     "id": "react-render-nothing-return-value",
     "family": "question",
     "title": "Can a React component return undefined?",
