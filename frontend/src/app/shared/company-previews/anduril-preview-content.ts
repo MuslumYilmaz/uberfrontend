@@ -38,7 +38,7 @@ export const ANDURIL_PREVIEW_DESCRIPTION =
   'Prepare for an Anduril frontend interview with 5 practice prompts modelled on public reports: file explorer, timer class, plain JS to React, autocomplete.';
 export const ANDURIL_PREVIEW_CANONICAL_PATH = '/companies/anduril/preview';
 export const ANDURIL_PREVIEW_TRUST_NOTE =
-  'These are FrontendAtlas practice versions modelled on rounds described in public interview reports, not leaked, confirmed or official Anduril questions. Nine self-reported candidates cannot establish a fixed format, and recruiters have described the wrong kind of round before; use recruiter-provided material as the source of truth.';
+  'These are FrontendAtlas practice versions modelled on rounds described in public interview reports, not leaked, confirmed or official Anduril questions.';
 
 export const ANDURIL_COMPANY_PREVIEW: AuthoredCompanyPreview = {
   slug: 'anduril',
@@ -53,7 +53,7 @@ export const ANDURIL_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     subtitle:
       'Prepare with five practice prompts shaped by nine public frontend accounts from 2022 to 2025 and by Anduril employees describing the loop on Blind: a technical screen with an applied frontend problem, then an onsite of two coding rounds, a system design round and a behavioral interview.',
     caveat:
-      'This guide uses public, self-reported interview accounts, Anduril careers pages and its frontend job postings to create realistic constraints. It does not claim access to private interview material, a fixed interview format, or the stack of every Anduril team.',
+      'The evidence is thin: four of the nine accounts are reviews re-hosted on Taro, and none covers a senior, staff or 2026 frontend loop. Recruiters have predicted the wrong kind of round before, so confirm the format with yours.',
     chips: ['5 practice prompts', 'React, TypeScript, JavaScript classes', 'Full practice set requires Premium'],
   },
   studyPriorities: {
@@ -66,17 +66,17 @@ export const ANDURIL_COMPANY_PREVIEW: AuthoredCompanyPreview = {
   },
   sourceBoundary: {
     kicker: 'Source boundary · checked October 2026',
-    title: 'What the public accounts establish, and what you still need to confirm',
+    title: 'What the nine public accounts establish',
     paragraphs: [
       'Nine self-reported candidates inform this guide. Five are on Blind: an April 2025 onsite without an offer, a 2023 loop that ended in an offer, and three commenters describing a 2024 coding round, a 2024 interview with lodash-style questions and an autocomplete task, and a 2025 screen. Four are on Taro from 2022 to 2025, including a 2023 frontend internship; Taro re-hosts Glassdoor reviews, so each is counted once and none is given a location here. Anduril employees also describe the loop in Blind comments; those are statements, not interview accounts.',
-      'Together they establish the round types from 2022 to 2025. They do not establish the system design prompt, the content of the plain JavaScript round beyond one 2025 account, any senior or staff frontend loop, or the format in 2026. Anduril describes a recruiter call, technical and behavioral interviews and role-specific assessments that could include live coding, and its frontend postings ask for React and TypeScript, eligibility for a US security clearance and, in one posting, travel of up to 25 percent. Confirm the format with your recruiter.',
+      'Together they establish the round types from 2022 to 2025: a recruiter call, one technical screen with an applied frontend problem, and an onsite of two coding rounds, a system design round and a behavioral interview. Anduril\'s own description lists a recruiter call, technical and behavioral interviews and role-specific assessments that could include live coding, and its frontend postings ask for React and TypeScript, eligibility for a US security clearance and, in one posting, travel of up to 25 percent.',
     ],
   },
   roleLenses: {
     kicker: 'Role lenses',
     title: 'Map-based command interfaces and live sensor data as practice contexts',
     intro:
-      'These are preparation lenses based on Anduril frontend job postings, not claimed interview rounds or team assignments. Choose the lens closest to the role and keep the reasoning framework-neutral.',
+      'These lenses come from Anduril frontend job postings. Choose the one closest to the role and keep the reasoning framework-neutral.',
     items: [
       {
         title: 'Map-based command and control interfaces',
@@ -222,7 +222,7 @@ export const ANDURIL_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     kicker: 'Public mini walkthrough',
     title: 'Scope the file explorer before the first line',
     intro:
-      'Treat this as a representative exercise, not a description of the reported one. The accounts stress finishing working behaviour in time, so scope down first and extend only when the basics work.',
+      'The accounts stress finishing working behaviour in time, so scope down first and extend only when the basics work.',
     steps: [
       { title: 'Fix the data shape', description: 'Write the node type first: id, name, kind, and children for folders. Decide what an empty folder looks like.' },
       { title: 'Choose where open state lives', description: 'A set of open folder ids at the top is easy to reset and test; local state in each folder is simpler if nothing else needs it.' },
@@ -281,7 +281,7 @@ export const ANDURIL_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     kicker: 'Free public practice',
     title: 'Build the underlying skills with free practice',
     intro:
-      'These public pages cover the recursion, request ordering, array helpers, classes and event handling used by the practice prompts. They are supporting drills, not claimed Anduril questions.',
+      'These public pages cover the recursion, request ordering, array helpers, classes and event handling used by the practice prompts.',
     items: [
       { label: 'Filter a tree and render it indented', description: 'The depth-first recursion behind the file explorer task, as a text drill.', path: '/javascript/coding/js-filter-tree-render-indented' },
       { label: 'React autocomplete starter', description: 'Search suggestions with request ordering and keyboard selection.', path: '/react/coding/react-autocomplete-search-starter' },

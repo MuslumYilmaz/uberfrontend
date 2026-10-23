@@ -37,7 +37,7 @@ export const CAPITALONE_PREVIEW_DESCRIPTION =
   'Prepare for a Capital One frontend interview with 5 practice prompts modelled on public reports: card application design, SPA build, Angular forms, case code.';
 export const CAPITALONE_PREVIEW_CANONICAL_PATH = '/companies/capital-one/preview';
 export const CAPITALONE_PREVIEW_TRUST_NOTE =
-  'These are FrontendAtlas practice versions modelled on rounds described in public interview reports, not leaked, confirmed or official Capital One questions. The detailed frontend accounts date from 2022 to 2024 and are Taro re-hosts of Glassdoor reviews; use recruiter-provided material as the source of truth.';
+  'These are FrontendAtlas practice versions modelled on rounds described in public interview reports, not leaked, confirmed or official Capital One questions.';
 
 export const CAPITALONE_COMPANY_PREVIEW: AuthoredCompanyPreview = {
   slug: 'capital-one',
@@ -52,7 +52,7 @@ export const CAPITALONE_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     subtitle:
       'Prepare with five practice prompts shaped by fifteen public frontend accounts from 2020 to 2025 and by Capital One careers pages: a CodeSignal assessment, then a Power Day of four one-hour interviews covering frontend design, a frontend technical round, a case built on reading code, and behavioral questions.',
     caveat:
-      'This guide uses public, self-reported interview accounts, Capital One careers pages and its frontend job postings to create realistic constraints. It does not claim access to private interview material or to the current format of every team.',
+      'The evidence is thin and dated: all fifteen accounts are reviews re-hosted on Taro, the newest with round detail is from late 2024, and the official process text is written for AI and ML roles. A front-end-focused candidate on a 2025 full-stack loop met generic coding and backend design rounds instead, so confirm the rounds with your recruiter.',
     chips: ['5 practice prompts', 'React, Angular, TypeScript, case code', 'Full practice set requires Premium'],
   },
   studyPriorities: {
@@ -65,17 +65,17 @@ export const CAPITALONE_COMPANY_PREVIEW: AuthoredCompanyPreview = {
   },
   sourceBoundary: {
     kicker: 'Source boundary · checked October 2026',
-    title: 'What the public accounts establish, and what you still need to confirm',
+    title: 'What the public accounts establish',
     paragraphs: [
-      'Fifteen frontend-titled accounts inform this guide, all of them Taro re-hosts of Glassdoor reviews from the United States and Canada, 2020 to 2025; nine describe Power Day rounds, and the newest with round detail is from late 2024. Blind threads add Capital One employees describing the assessment and their own loops, and a 2025 account comes from a front-end-focused engineer on a full-stack loop.',
-      'They do not establish whether the Front-end Engineer 4 and 5 loops of 2025 and 2026 keep the frontend design and frontend technical rounds; the 2025 full-stack candidate met a three-level coding exercise and a backend system design instead. Capital One publishes a Power Day description for AI and ML roles and a general interview guide, but no frontend-specific one. Employees on Blind mentioned a hiring freeze in April 2026, while seven frontend postings were open in October 2026. Confirm the rounds with your recruiter.',
+      'Fifteen frontend-titled accounts inform this guide, all of them Taro re-hosts of Glassdoor reviews from the United States and Canada, 2020 to 2025, and nine describe Power Day rounds. Blind threads add Capital One employees describing the assessment and their own loops.',
+      'Capital One publishes a Power Day description for AI and ML roles and a general interview guide, but no frontend-specific one. Employees on Blind mentioned a hiring freeze in April 2026, while seven frontend postings were open in October 2026.',
     ],
   },
   roleLenses: {
     kicker: 'Role lenses',
     title: 'Micro frontends and AI-assisted engineering as practice contexts',
     intro:
-      'These are preparation lenses based on Capital One frontend job postings, not claimed interview rounds or team assignments. Choose the lens closest to the role and keep the reasoning framework-neutral.',
+      'These lenses come from Capital One frontend job postings. Choose the one closest to the role and keep the reasoning framework-neutral.',
     items: [
       {
         title: 'Micro frontends and backend-for-frontend layers',
@@ -221,7 +221,7 @@ export const CAPITALONE_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     kicker: 'Public mini walkthrough',
     title: 'Scope the card application design before you draw',
     intro:
-      'Treat this as a representative exercise, not a description of the reported one. The accounts describe a conversational round with a whiteboard for notes, so say each decision out loud.',
+      'The accounts describe a conversational round with a whiteboard for notes, so say each decision out loud.',
     steps: [
       { title: 'Pin the flow', description: 'Name the steps: basic details, personal information, income, review, submit and confirmation. Ask which are required.' },
       { title: 'Decide state ownership', description: 'One form state for the whole application, saved per step if resume is required, with the server as the final source of truth.' },
@@ -280,7 +280,7 @@ export const CAPITALONE_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     kicker: 'Free public practice',
     title: 'Build the underlying skills with free practice',
     intro:
-      'These public pages cover the form validation, code reading, refactoring, state and routing skills used by the practice prompts. They are supporting drills, not claimed Capital One questions.',
+      'These public pages cover the form validation, code reading, refactoring, state and routing skills used by the practice prompts.',
     items: [
       { label: 'Form validation with required fields', description: 'Required fields, constraints and validation messages for the application and framework rounds.', path: '/html/coding/html-forms-validation-required' },
       { label: 'Fix a defaults bug in a teammate helper', description: 'Read code someone else wrote and find the defect, as the case round asks.', path: '/javascript/debug/js-debug-nullish-defaults' },

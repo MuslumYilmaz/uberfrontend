@@ -1419,7 +1419,7 @@ const AUTHORED_GUIDE_CASES = [
     kicker: 'Public Anduril prep guide',
     headings: [
       'What Anduril frontend loops reward: a working React build in time and a class moved into a framework',
-      'What the public accounts establish, and what you still need to confirm',
+      'What the nine public accounts establish',
       'Map-based command interfaces and live sensor data as practice contexts',
       'Five Anduril frontend interview practice questions',
       'Scope the file explorer before the first line',
@@ -1459,7 +1459,7 @@ const AUTHORED_GUIDE_CASES = [
     kicker: 'Public GitLab prep guide',
     headings: [
       'What the GitLab frontend loop rewards: a written merge request review you can defend and improve live',
-      'What GitLab publishes, and what you still need to confirm',
+      'What GitLab publishes and what the accounts add',
       'Repository interfaces and a large Vue frontend as practice contexts',
       'Five GitLab frontend interview practice questions',
       'Plan the merge request review before the call',
@@ -1499,7 +1499,7 @@ const AUTHORED_GUIDE_CASES = [
     kicker: 'Public Capital One prep guide',
     headings: [
       'What Capital One frontend loops reward: designing a card application out loud and reading code critically',
-      'What the public accounts establish, and what you still need to confirm',
+      'What the public accounts establish',
       'Micro frontends and AI-assisted engineering as practice contexts',
       'Five Capital One frontend interview practice questions',
       'Scope the card application design before you draw',
