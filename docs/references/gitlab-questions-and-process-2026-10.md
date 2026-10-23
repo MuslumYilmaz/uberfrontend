@@ -10,7 +10,7 @@ Chosen in the candidate round recorded in `company-pages-plan-2026-10.md` (Candi
 - **Demand.** Google suggestions on 2026-10-22: `gitlab frontend engineer interview`, `gitlab frontend interview`, `gitlab interview process`; Bing returned seven.
 - **Hiring on the day.** Two frontend-titled postings (Senior and Staff Frontend Engineer) on 2026-10-22 and 2026-10-23. Both are listed in Bangalore, India, first published 2026-09-24; the candidate report had called them remote.
 - **Readable sources.** GitLab publishes the whole frontend loop; 41 Taro frontend or full-stack reports agree with it from 2018, plus independent Medium and Blind accounts.
-- **Buyers.** Remote roles worldwide with location-based eligibility; the current frontend openings are for candidates in India, which the selection rule treats as a separate lane. The user approved the company knowing the hiring signal.
+- **Buyers.** Remote roles worldwide with location-based eligibility; the current frontend openings are for candidates in India, which the selection rule treats as a separate lane. The user approved the company on 2026-10-23, when the candidate report described the postings as remote; the Bangalore listing was found while building the page and was reported with the build.
 
 ## Research rules
 
