@@ -925,6 +925,19 @@
     "webSolutionHtml": "<!DOCTYPE html>\\n<html lang=\"en\">\\n  <head>\\n    <meta charset=\"utf-8\">\\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\\n    <title>FrontendAtlas – Frontend Interview Practice</title>\\n    <meta\\n      name=\"description\"\\n      content=\"Practice real interview-style frontend tasks with clear solutions and explanations.\"\\n    >\\n\\n    <link rel=\"stylesheet\" href=\"styles.css\">\\n  </head>\\n  <body>\\n    <main class=\"card\">\\n      <h1>FrontendAtlas</h1>\\n      <p class=\"muted\">Interview-style frontend practice: coding tasks, explanations, and reviewable solutions.</p>\\n    </main>\\n  </body>\\n</html>",
     "webSolutionCss": "body {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  line-height: 1.6;\\n}\\n.card {\\n  border: 1px solid #2a2a2a;\\n  border-radius: 12px;\\n  padding: 16px;\\n  max-width: 760px;\\n}\\n.muted {\\n  opacity: 0.7;\\n}",
     "access": "free",
+    "companies": [
+      "gitlab"
+    ],
+    "sources": [
+      {
+        "label": "Taro: GitLab frontend developer interview, May 2022",
+        "url": "https://www.jointaro.com/interviews/companies/gitlab/experiences/frontend-developer-paraguay-may-3-2022-no-offer-positive-0f872bc9/",
+        "company": "gitlab",
+        "publisher": "Taro",
+        "date": "2022-05",
+        "note": "One account lists the question of which meta tag makes a web page responsive. This item practises a correct document head, including the viewport meta tag."
+      }
+    ],
     "updatedAt": "2026-01-30",
     "seo": {
       "title": "Add Essential SEO Meta Tags in HTML Head",

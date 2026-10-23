@@ -92,6 +92,7 @@
 /companies/bytedance/preview
 /companies/datadog/preview
 /companies/elevenlabs/preview
+/companies/gitlab/preview
 /companies/google/preview
 /companies/intuit/preview
 /companies/jpmorgan/preview

@@ -549,6 +549,20 @@ reference_rules:
       - docs/references/anduril-questions-and-process-2026-10.md
     max_docs: 1
 
+  - id: gitlab_questions_and_process
+    priority: 93
+    keywords:
+      - gitlab
+      - gitlab frontend interview
+      - merge request review interview
+      - vue code review interview
+      - gitlab handbook hiring process
+    paths:
+      - docs/references/gitlab-questions-and-process-2026-10.md
+    load:
+      - docs/references/gitlab-questions-and-process-2026-10.md
+    max_docs: 1
+
   - id: header_prep_menu_plan
     priority: 92
     keywords:

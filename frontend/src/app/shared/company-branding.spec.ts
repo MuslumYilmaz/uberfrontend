@@ -36,6 +36,7 @@ describe('company branding helpers', () => {
       'bytedance',
       'datadog',
       'elevenlabs',
+      'gitlab',
       'google',
       'intuit',
       'jpmorgan',

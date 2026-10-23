@@ -388,7 +388,9 @@
     "title": "Flexbox: Responsive Navbar",
     "type": "coding",
     "technology": "css",
-    "companies": ["xai"],
+    "companies": ["xai",
+      "gitlab"
+    ],
     "sources": [
       {
         "label": "xAI posting: Frontend Engineer, London, Built In London, February 2026",
@@ -397,6 +399,14 @@
         "publisher": "Built In London",
         "date": "2026-02",
         "note": "The posting listed a 45-minute HTML/CSS/Tailwind coding interview, and a sibling posting asked candidates to implement a UI from a screenshot. The postings have since closed. This navbar drill rehearses that round."
+      },
+      {
+        "label": "Taro: GitLab front end engineer interview, 2024",
+        "url": "https://www.jointaro.com/interviews/companies/gitlab/experiences/front-end-engineer-canada-march-1-2024-no-offer-negative-fbb295a4/",
+        "company": "gitlab",
+        "publisher": "Taro",
+        "date": "2024-03",
+        "note": "The candidate improved the merge request with Flexbox styling and media queries for a mobile layout. This item practises a responsive Flexbox layout, not the reported markup."
       }
     ],
     "difficulty": "intermediate",

@@ -1590,6 +1590,12 @@ export const SHOWCASE_STATS = {
       "trivia": 0,
       "system": 1
     },
+    "gitlab": {
+      "all": 5,
+      "coding": 3,
+      "trivia": 2,
+      "system": 0
+    },
     "google": {
       "all": 45,
       "coding": 14,

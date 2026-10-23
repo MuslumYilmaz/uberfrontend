@@ -388,4 +388,34 @@ export const COMPANY_OFFICIAL_GUIDES: Readonly<Record<string, readonly CompanyOf
       checkedAt: CHECKED_OCT_23,
     },
   ],
+  gitlab: [
+    {
+      label: 'Frontend Engineer job family (GitLab handbook)',
+      url: 'https://handbook.gitlab.com/job-description-library/engineering/development/frontend/',
+      covers:
+        'The six hiring steps for every frontend level: a short written assessment, a 30-minute screening call with a recruiter, a 90-minute technical interview with a frontend engineer or manager, a 45-minute behavioral interview, a 60-minute interview with a Director of Engineering, and the offer; plus the requirements, including Vue or another modern framework and automated tests.',
+      checkedAt: CHECKED_OCT_23,
+    },
+    {
+      label: 'Technical interviews (GitLab handbook)',
+      url: 'https://handbook.gitlab.com/handbook/hiring/interviewing/technical/',
+      covers:
+        'The merge request format: a self-contained merge request on a small application sent at least 72 hours before the call, up to an hour of review finished a day ahead, then a 90-minute video call to walk through the review and write code to improve it; exercises come from a curated bank, and AI use is encouraged.',
+      checkedAt: CHECKED_OCT_23,
+    },
+    {
+      label: 'Candidate handbook page (GitLab handbook)',
+      url: 'https://handbook.gitlab.com/handbook/hiring/candidate-faq/',
+      covers:
+        'The stages for all roles, screening calls of 30 to 40 minutes and the questions recruiters ask, team interviews that can be behavioral, panel or technical, three references with at least one past manager, the visa rule and the waiting period before reapplying.',
+      checkedAt: CHECKED_OCT_23,
+    },
+    {
+      label: 'Using AI in the interview process',
+      url: 'https://about.gitlab.com/jobs/ai-interview-process/',
+      covers:
+        'What GitLab expects by stage: transparent AI use in technical assessments with prompts and decisions you can explain, no reading from AI-produced answers in interviews, cited AI research in take-home answers, and disclosure of the tools used.',
+      checkedAt: CHECKED_OCT_23,
+    },
+  ],
 };

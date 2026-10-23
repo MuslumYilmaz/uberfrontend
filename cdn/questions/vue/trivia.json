@@ -2007,6 +2007,9 @@
     "technology": "vue",
     "difficulty": "intermediate",
     "importance": 5,
+    "companies": [
+      "gitlab"
+    ],
     "description": "This question is about lifecycle timing and side-effect placement in Vue components. Strong answers map real tasks like fetches, DOM reads, and cleanup to the right hook and explain why hook choice affects correctness, not just style.",
     "answer": {
       "blocks": [

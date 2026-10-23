@@ -175,6 +175,12 @@ export const COMPANY_BRANDS: Record<string, CompanyBrand> = {
     label: 'Anduril',
     monogram: 'A',
   },
+  gitlab: {
+    slug: 'gitlab',
+    label: 'GitLab',
+    logoUrl: `${COMPANY_LOGO_BASE}/gitlab.svg`,
+    monogram: 'G',
+  },
 };
 
 const COMPANY_ALIASES: Record<string, string> = {

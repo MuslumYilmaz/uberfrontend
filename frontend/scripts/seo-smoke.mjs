@@ -660,6 +660,46 @@ const AUTHORED_GUIDE_SMOKE = [
     reportUrl:
       'https://www.teamblind.com/post/front-end-interviews-at-anduril-3hihnhlv',
   },
+  {
+    label: 'GitLab',
+    route: '/companies/gitlab/preview',
+    title: 'GitLab Frontend Interview Questions: 5 Prompts + Prep Guide',
+    description:
+      'Prepare for a GitLab frontend interview with 5 practice prompts built on the handbook and public reports: Vue merge request review, refetching, CSS, tests.',
+    h1: 'GitLab Frontend Interview Questions',
+    kicker: 'Public GitLab prep guide',
+    headings: [
+      'What the GitLab frontend loop rewards: a written merge request review you can defend and improve live',
+      'What GitLab publishes, and what you still need to confirm',
+      'Repository interfaces and a large Vue frontend as practice contexts',
+      'Five GitLab frontend interview practice questions',
+      'Plan the merge request review before the call',
+      'A 7-day GitLab frontend interview preparation plan',
+      'Common GitLab frontend interview preparation questions',
+      'Build the underlying skills with free practice',
+      'Sources and evidence limits',
+    ],
+    trustFragment: 'not leaked, confirmed or official GitLab questions',
+    prompts: [
+      { id: 'review-vue-merge-request-live', title: 'Review a small Vue merge request, then improve it live' },
+      { id: 'stop-refetching-on-click', title: 'Stop a component from refetching on every click' },
+      { id: 'fix-markup-match-mobile-mock', title: 'Fix broken markup and match the mobile mock' },
+      { id: 'make-unit-tests-catch-bug', title: 'Make the unit tests catch the bug' },
+      { id: 'written-page-load-answer', title: 'Answer the written question on how a browser loads a page' },
+    ],
+    resources: [
+      '/javascript/debug/js-debug-async-race',
+      '/css/coding/css-flexbox-navbar',
+      '/javascript/coding/js-create-spy-function',
+      '/html/coding/html-head-seo-basics',
+      '/html/trivia/html-parsing-rendering',
+      '/vue/trivia/vue-lifecycle-hooks',
+      '/system-design/infinite-scroll-list',
+      '/guides/behavioral/stories',
+    ],
+    reportUrl:
+      'https://www.jointaro.com/interviews/companies/gitlab/experiences/front-end-engineer-united-states-february-1-2024-no-offer-neutral-031df9b0/',
+  },
 ];
 // Catalog-driven company previews with an editorial notes entry (COMPANY_EDITORIAL_NOTES).
 const EDITORIAL_NOTE_SMOKE = [

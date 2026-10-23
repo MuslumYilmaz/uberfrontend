@@ -11,6 +11,7 @@ import { REVOLUT_COMPANY_PREVIEW } from './revolut-preview-content';
 import { SERVICENOW_COMPANY_PREVIEW } from './servicenow-preview-content';
 import { SHOPEE_COMPANY_PREVIEW } from './shopee-preview-content';
 import { ANDURIL_COMPANY_PREVIEW } from './anduril-preview-content';
+import { GITLAB_COMPANY_PREVIEW } from './gitlab-preview-content';
 import { SPOTIFY_COMPANY_PREVIEW } from './spotify-preview-content';
 import { WAYMO_COMPANY_PREVIEW } from './waymo-preview-content';
 import { XAI_COMPANY_PREVIEW } from './xai-preview-content';
@@ -37,6 +38,7 @@ export const AUTHORED_COMPANY_PREVIEWS: Readonly<Record<string, AuthoredCompanyP
   xai: XAI_COMPANY_PREVIEW,
   shopee: SHOPEE_COMPANY_PREVIEW,
   anduril: ANDURIL_COMPANY_PREVIEW,
+  gitlab: GITLAB_COMPANY_PREVIEW,
 };
 
 export type AuthoredCompanyPreviewRegistry = Readonly<Record<string, AuthoredCompanyPreview>>;

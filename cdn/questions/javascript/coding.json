@@ -8287,6 +8287,19 @@
     "tests": "import createSpy from './createSpy';\n\ndescribe('createSpy', () => {\n  test('records calls and arguments', () => {\n    const spy = createSpy();\n    spy(1, 2);\n    spy('a');\n\n    expect(spy.callCount()).toBe(2);\n    expect(spy.calls).toEqual([[1, 2], ['a']]);\n    expect(spy.lastCall()).toEqual(['a']);\n  });\n\n  test('delegates to the implementation and returns its value', () => {\n    const spy = createSpy((a, b) => a + b);\n    const out = spy(2, 3);\n    expect(out).toBe(5);\n    expect(spy.calls[0]).toEqual([2, 3]);\n  });\n\n  test('preserves this binding when used as a method', () => {\n    const obj = {\n      x: 10,\n      fn: createSpy(function (n) { return this.x + n; })\n    };\n\n    const out = obj.fn(2);\n\n    expect(out).toBe(12);\n    expect(obj.fn.thisValues[0]).toBe(obj);\n  });\n\n  test('reset clears recorded calls', () => {\n    const spy = createSpy();\n    spy(1);\n    spy.reset();\n    expect(spy.callCount()).toBe(0);\n    expect(spy.calls).toEqual([]);\n    expect(spy.lastCall()).toBe(null);\n  });\n});\n",
     "testsTs": "import createSpy from './createSpy';\n\ndescribe('createSpy (TypeScript)', () => {\n  it('records calls and arguments', () => {\n    const spy = createSpy<[number, number], number>();\n    spy(1, 2);\n\n    expect(spy.callCount()).toBe(1);\n    expect(spy.calls).toEqual([[1, 2]]);\n    expect(spy.lastCall()).toEqual([1, 2]);\n  });\n\n  it('delegates to the implementation and returns its value', () => {\n    const spy = createSpy<[number, number], number>((a, b) => a + b);\n    expect(spy(2, 3)).toBe(5);\n    expect(spy.calls[0]).toEqual([2, 3]);\n  });\n\n  it('preserves this binding when used as a method', () => {\n    const obj = {\n      x: 7,\n      fn: createSpy<[number], number>(function (this: any, n) { return this.x + n; })\n    };\n\n    expect(obj.fn(5)).toBe(12);\n    expect(obj.fn.thisValues[0]).toBe(obj);\n  });\n\n  it('reset clears recorded calls', () => {\n    const spy = createSpy<[number], number>();\n    spy(1);\n    spy.reset();\n    expect(spy.callCount()).toBe(0);\n    expect(spy.calls).toEqual([]);\n    expect(spy.lastCall()).toBe(null);\n  });\n});\n",
     "access": "free",
+    "companies": [
+      "gitlab"
+    ],
+    "sources": [
+      {
+        "label": "Taro: GitLab front end engineer interview, 2024",
+        "url": "https://www.jointaro.com/interviews/companies/gitlab/experiences/front-end-engineer-united-states-february-1-2024-no-offer-neutral-031df9b0/",
+        "company": "gitlab",
+        "publisher": "Taro",
+        "date": "2024-02",
+        "note": "The merge request in this account was done in Vue.js along with unit tests in Jest. This item practises the test double behind Jest mock functions; it is not the reported test suite."
+      }
+    ],
     "updatedAt": "2026-02-05",
     "seo": {
       "title": "Create Spy Function Utility in JavaScript",

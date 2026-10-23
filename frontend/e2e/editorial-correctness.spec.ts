@@ -87,6 +87,10 @@ const publicCopyCases = [
     expected: 'What Anduril frontend loops reward: a working React build in time and a class moved into a framework',
   },
   {
+    path: '/companies/gitlab/preview',
+    expected: 'What the GitLab frontend loop rewards: a written merge request review you can defend and improve live',
+  },
+  {
     path: '/system-design',
     expected: 'Follow this four-step path when you are new to the bank',
   },

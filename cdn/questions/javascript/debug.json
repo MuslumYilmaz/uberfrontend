@@ -186,7 +186,8 @@
         "solution": "const cache = new Map();\nconst inflight = new Map();\n\nexport default async function fetchWithCache(key, fetcher){\n  if(cache.has(key)) return cache.get(key);\n  if(inflight.has(key)) return inflight.get(key);\n\n  const p = Promise.resolve()\n    .then(() => fetcher())\n    .then(res => {\n      cache.set(key, res);\n      return res;\n    })\n    .finally(() => {\n      inflight.delete(key);\n    });\n\n  inflight.set(key, p);\n  return p;\n}\n",
         "companies": [
             "elevenlabs",
-            "stripe"
+            "stripe",
+          "gitlab"
         ],
         "sources": [
             {
@@ -204,7 +205,15 @@
                 "publisher": "Taro",
                 "date": "2023-10",
                 "note": "One Stripe front end engineer account lists a round on bug finding within an unknown project. This debug exercise practises that shape in a small codebase; it is not the reported bug."
-            }
+            },
+          {
+            "label": "Taro: GitLab front end engineer interview, 2024",
+            "url": "https://www.jointaro.com/interviews/companies/gitlab/experiences/front-end-engineer-canada-march-1-2024-no-offer-negative-fbb295a4/",
+            "company": "gitlab",
+            "publisher": "Taro",
+            "date": "2024-03",
+            "note": "The merge request in this account was a small Vue app with an API call; the candidate cached the data in the component and cut unnecessary API calls. This debug drill practises stopping duplicate requests, not the reported app."
+          }
         ]
     }
 ]

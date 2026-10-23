@@ -357,6 +357,9 @@ test('seo: llms.txt is served with public discovery links only', async ({ page }
   expect(text).toContain(
     '[Anduril frontend interview questions](https://frontendatlas.com/companies/anduril/preview)',
   );
+  expect(text).toContain(
+    '[GitLab frontend interview questions](https://frontendatlas.com/companies/gitlab/preview)',
+  );
 
   ['/dashboard', '/profile', '/admin', '/auth/', '/billing'].forEach((path) => {
     expect(text).not.toContain(path);

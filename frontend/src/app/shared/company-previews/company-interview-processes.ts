@@ -694,6 +694,34 @@ const ANDURIL_AN1_ONSITE_2025 = report('Blind', 'https://www.teamblind.com/post/
 const ANDURIL_AN2_OFFER_2023 = report('Blind', 'https://www.teamblind.com/post/anduril-front-end-interviews-bugagvca', '2023-10');
 const ANDURIL_AN6_SCREEN_2025 = report('Blind comment', 'https://www.teamblind.com/post/anduril-front-end-interview-yt3cx1bt', '2025-03');
 
+// GitLab publishes the frontend loop in its handbook; Taro reports are Glassdoor re-hosts, most with placeholder dates.
+const GITLAB_JOB_FAMILY = official('GitLab frontend job family', 'https://handbook.gitlab.com/job-description-library/engineering/development/frontend/');
+const GITLAB_TECHNICAL_INTERVIEW = official('GitLab technical interview', 'https://handbook.gitlab.com/handbook/hiring/interviewing/technical/');
+const GITLAB_CANDIDATE_FAQ = official('GitLab candidate FAQ', 'https://handbook.gitlab.com/handbook/hiring/candidate-faq/');
+const GITLAB_TARO = 'https://www.jointaro.com/interviews/companies/gitlab/experiences';
+const GITLAB_GL1_FE_2025 = report('Taro', `${GITLAB_TARO}/frontend-developer-india-october-18-2025-no-offer-positive-b6eb8eea/`, '2025-10');
+const GITLAB_GL3_FE_2024 = report('Taro (approx.)', `${GITLAB_TARO}/front-end-engineer-canada-march-1-2024-no-offer-negative-fbb295a4/`, '2024-03');
+const GITLAB_GL4_FE_2024 = report('Taro (approx.)', `${GITLAB_TARO}/front-end-engineer-united-states-february-1-2024-no-offer-neutral-031df9b0/`, '2024-02');
+const GITLAB_GL7_FULLSTACK_2022 = report('Taro (approx.)', `${GITLAB_TARO}/full-stack-engineer-india-july-1-2022-no-offer-negative-6c945f7b/`, '2022-07');
+const GITLAB_GL10_FE_2021 = report('Taro (approx.)', `${GITLAB_TARO}/frontend-engineer-united-states-december-1-2021-no-offer-positive-f05a7545/`, '2021-12');
+const GITLAB_GL16_FE_2020 = report(
+  'Taro (approx.)',
+  `${GITLAB_TARO}/frontend-developer-amsterdam-north-holland-february-1-2020-no-offer-negative-14a19a13/`,
+  '2020-02',
+);
+const GITLAB_GL18_FULLSTACK_2020 = report(
+  'Taro (approx.)',
+  `${GITLAB_TARO}/full-stack-engineer-san-francisco-california-january-1-2020-accepted-offer-positive-6152258b/`,
+  '2020-01',
+);
+const GITLAB_GL20_FE_2019 = report('Taro (approx.)', `${GITLAB_TARO}/frontend-engineer-united-states-december-1-2019-accepted-offer-positive-8e8c9001/`, '2019-12');
+const GITLAB_GL21_FE_2019 = report('Taro (approx.)', `${GITLAB_TARO}/frontend-engineer-seattle-washington-december-1-2019-accepted-offer-positive-b630c835/`, '2019-12');
+const GITLAB_GL24_FE_2019 = report('Taro (approx.)', `${GITLAB_TARO}/frontend-engineer-montreal-quebec-november-1-2019-accepted-offer-positive-8b61c9a4/`, '2019-11');
+const GITLAB_GL27_FE_2019 = report('Taro', `${GITLAB_TARO}/frontend-engineer-united-kingdom-august-5-2019-no-offer-negative-d1e1bab6/`, '2019-08');
+const GITLAB_GL28_FE_2019 = report('Taro (approx.)', `${GITLAB_TARO}/frontend-engineer-australia-july-1-2019-accepted-offer-positive-0dcaf872/`, '2019-07');
+const GITLAB_GL35_FE_2018 = report('Taro (approx.)', `${GITLAB_TARO}/front-end-engineer-saint-louis-missouri-june-1-2018-accepted-offer-positive-0a133d02/`, '2018-06');
+const GITLAB_GL44_FULLSTACK_2025 = report('Medium', 'https://medium.com/@vedantj03/how-i-got-into-gitlab-an-open-source-journey-7ecdad137307', '2025-04');
+
 export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyInterviewProcess>> = {
   amazon: {
     title: 'Amazon Front End Engineer interview process',
@@ -2520,6 +2548,98 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
             format: 'Behavioral questions with a small technical question at the end.',
             appliesTo: 'The one account',
             sources: [ANDURIL_AN10_INTERN_2023],
+          },
+        ],
+      },
+    ],
+  },
+  gitlab: {
+    summary:
+      'GitLab publishes one frontend loop for every level: a short written assessment, a recruiter screening call, a merge request you review on your own time and then improve in a 90-minute technical interview, a behavioral interview and an interview with a Director of Engineering. Public accounts from 2018 to 2025 describe the same order.',
+    caveat:
+      'The format is official; the exercise content comes from accounts, mostly Taro re-hosts of Glassdoor reviews from 2018 to 2024, and GitLab now draws merge requests from a curated bank. Some candidates met a manager or director before the technical round, and roles have closed mid-loop.',
+    checkedAt: '2026-10-23',
+    variants: [
+      {
+        title: 'Frontend engineers, all levels',
+        stages: [
+          {
+            stage: 'Written assessment',
+            format:
+              'A short written assessment after applying. Older accounts describe open-ended technical questions answered in writing, such as what happens in the browser while a page loads.',
+            appliesTo: 'Selected applicants',
+            sources: [GITLAB_JOB_FAMILY, GITLAB_GL27_FE_2019, GITLAB_GL35_FE_2018, GITLAB_GL24_FE_2019],
+            practice: { label: 'How browsers parse and render', path: '/html/trivia/html-parsing-rendering' },
+          },
+          {
+            stage: 'Recruiter screening call',
+            format: '30 to 40 minutes on video: background, motivation, experience with each listed skill, location, notice period and salary range.',
+            appliesTo: 'All candidates',
+            sources: [GITLAB_JOB_FAMILY, GITLAB_CANDIDATE_FAQ, GITLAB_GL4_FE_2024, GITLAB_GL1_FE_2025],
+          },
+          {
+            stage: 'Merge request review',
+            format:
+              'A self-contained merge request on a small application arrives at least 72 hours before the call; up to an hour of review, finished a day ahead. Reports name Vue, HTML, CSS, Haml and Jest unit tests.',
+            appliesTo: 'Frontend engineers',
+            sources: [GITLAB_TECHNICAL_INTERVIEW, GITLAB_GL3_FE_2024, GITLAB_GL4_FE_2024, GITLAB_GL10_FE_2021, GITLAB_GL16_FE_2020],
+            practice: { label: 'Fix an async race', path: '/javascript/debug/js-debug-async-race' },
+          },
+          {
+            stage: 'Technical interview',
+            format:
+              '90 minutes on video with screen sharing: walk through your review, then write code to improve the merge request, with a frontend engineer or a frontend engineering manager.',
+            appliesTo: 'Frontend engineers',
+            sources: [GITLAB_JOB_FAMILY, GITLAB_TECHNICAL_INTERVIEW, GITLAB_GL4_FE_2024, GITLAB_GL21_FE_2019, GITLAB_GL28_FE_2019],
+            practice: { label: 'Build a spy function', path: '/javascript/coding/js-create-spy-function' },
+          },
+          {
+            stage: 'Behavioral interview',
+            format: '45 minutes with an engineering manager: STAR questions, sometimes with high-level technical questions.',
+            appliesTo: 'All candidates',
+            sources: [GITLAB_JOB_FAMILY, GITLAB_GL20_FE_2019, GITLAB_GL21_FE_2019, GITLAB_GL28_FE_2019],
+          },
+          {
+            stage: 'Director interview',
+            format: '60 minutes with a Director of Engineering on past experience and values, with a few technical questions in some accounts.',
+            appliesTo: 'All candidates',
+            sources: [GITLAB_JOB_FAMILY, GITLAB_GL20_FE_2019, GITLAB_GL21_FE_2019],
+          },
+          {
+            stage: 'References and offer',
+            format: 'Three references, at least one a past manager, and a background check before the offer.',
+            appliesTo: 'Candidates who pass',
+            sources: [GITLAB_CANDIDATE_FAQ, GITLAB_GL21_FE_2019, GITLAB_GL18_FULLSTACK_2020],
+          },
+        ],
+      },
+      {
+        title: 'Full-stack engineers',
+        note: 'Full-stack candidates get two technical interviews, each on its own merge request.',
+        stages: [
+          {
+            stage: 'Recruiter screening call',
+            format: 'About 30 minutes on motivation, experience with Ruby on Rails and Vue, and compensation.',
+            appliesTo: 'All candidates',
+            sources: [GITLAB_GL18_FULLSTACK_2020, GITLAB_GL7_FULLSTACK_2022, GITLAB_GL44_FULLSTACK_2025],
+          },
+          {
+            stage: 'Backend technical interview',
+            format: '90 minutes on a merge request reviewed before the call and improved during it; Ruby, Rails, testing and database topics.',
+            appliesTo: 'Full-stack engineers',
+            sources: [GITLAB_GL7_FULLSTACK_2022, GITLAB_GL44_FULLSTACK_2025],
+          },
+          {
+            stage: 'Frontend technical interview',
+            format: '90 minutes on a second merge request that needs Vue, HTML and CSS changes; JavaScript, Vue.js and testing.',
+            appliesTo: 'Full-stack engineers',
+            sources: [GITLAB_GL7_FULLSTACK_2022, GITLAB_GL44_FULLSTACK_2025, GITLAB_GL18_FULLSTACK_2020],
+          },
+          {
+            stage: 'Manager and director interviews',
+            format: 'About an hour each on behavioral and situational questions, values and how you work.',
+            appliesTo: 'All candidates',
+            sources: [GITLAB_GL18_FULLSTACK_2020, GITLAB_GL44_FULLSTACK_2025],
           },
         ],
       },
