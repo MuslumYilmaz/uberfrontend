@@ -2511,7 +2511,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
     summary:
       'Anduril describes a recruiter call, technical and behavioral interviews and role-specific assessments that could include live coding. Frontend accounts from 2022 to 2025 describe one technical screen with an applied frontend problem, then an onsite of two coding rounds, a system design round and a behavioral interview.',
     caveat:
-      'Thin evidence: nine candidates from 2022 to 2025, four of them Taro re-hosts of Glassdoor reviews, and no senior, staff or 2026 frontend account. Anduril employees on Blind say the format depends on the team and the interviewer, and recruiters have described the wrong kind of round.',
+      'Thin evidence: nine candidates from 2022 to 2025, four of them reviews re-hosted on Taro, and no senior, staff or 2026 frontend account. Anduril employees on Blind say the format depends on the team and the interviewer, and recruiters have described the wrong kind of round.',
     checkedAt: '2026-10-23',
     variants: [
       {
@@ -2579,7 +2579,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
     summary:
       'GitLab publishes one frontend loop for every level: a short written assessment, a recruiter screening call, a merge request you review on your own time and then improve in a 90-minute technical interview, a behavioral interview and an interview with a Director of Engineering. Public accounts from 2018 to 2025 describe the same order.',
     caveat:
-      'The format is official; the exercise content comes from accounts, mostly Taro re-hosts of Glassdoor reviews from 2018 to 2024, and GitLab now draws merge requests from a curated bank. Some candidates met a manager or director before the technical round, and roles have closed mid-loop.',
+      'The format is official; the exercise content comes from accounts, mostly reviews from 2018 to 2024 re-hosted on Taro, and GitLab now draws merge requests from a curated bank. Some candidates met a manager or director before the technical round, and roles have closed mid-loop.',
     checkedAt: '2026-10-23',
     variants: [
       {
@@ -2671,7 +2671,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
     summary:
       'Capital One describes a recruiter screen, an assessment and a Power Day of four hour-long interviews. Frontend accounts from 2022 to 2024 describe a CodeSignal assessment, then a Power Day with a frontend design round, a frontend technical round, a case built on reading code and a behavioral round.',
     caveat:
-      'Thin and dated: the frontend accounts are Taro re-hosts of Glassdoor reviews, the newest with round detail is from late 2024, and the official description is written for AI and ML roles. A 2025 front-end-focused candidate on a full-stack loop met generic coding and backend design rounds instead.',
+      'Thin and dated: the frontend accounts are reviews re-hosted on Taro, the newest with round detail is from late 2024, and the official description is written for AI and ML roles. A 2025 front-end-focused candidate on a full-stack loop met generic coding and backend design rounds instead.',
     checkedAt: '2026-10-23',
     variants: [
       {
