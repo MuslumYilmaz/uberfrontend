@@ -250,5 +250,7 @@ Re-read on the pages before writing: AN1 (onsite shape, recruiter prediction), A
 |---|---|---|
 | Research record | done | 2026-10-23 |
 | Catalog tags, guide, process table | built on dev | 2026-10-23 |
+| Prompt 3 practice item | new free React exercise `react-vanilla-dropdown-port` (a dropdown written as a class, then ported to React, sources AN12 and AN11) replaces the link to trivia `js-classes`; committed as 2b57c2ef | 2026-10-23 |
+| Caveats | the evidence limits moved into one block under the hero; the trust note, source section, process caveat and section intros no longer repeat them | 2026-10-23 |
 | Indexing request | after the main deploy | |
 | First readout | four weeks after deploy, against ElevenLabs's first week (9 clicks, 38 impressions) | |
