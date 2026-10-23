@@ -135,7 +135,7 @@
     "@primeuix/themes": "2.0.3",
     "@sentry/browser": "10.33.0",
     "canvas-confetti": "^1.9.3",
-    "dompurify": "3.4.16",
+    "dompurify": "3.4.17",
     "esbuild-wasm": "^0.25.10",
     "localforage": "^1.10.0",
     "primeflex": "^3.3.1",
