@@ -55,7 +55,7 @@
         },
         {
           "title": "2. Convert visibility into intent",
-          "text": "When the sentinel enters a prefetch margin, the viewport emits loadNext. The controller ignores the signal when there is no next cursor, the same cursor is already in flight, the retry delay is active, or the feed generation has changed."
+          "text": "When the sentinel enters a prefetch margin, the viewport emits loadNext. The controller ignores the signal when there is no next cursor, the same cursor is already in flight, the retry delay is active, or the feed generation has changed. IntersectionObserver reports only threshold changes, so an ignored signal never repeats: after each commit and when the retry delay ends, the controller re-checks the last isIntersecting value and loads again if the sentinel is still visible."
         },
         {
           "title": "3. Start an owned request",

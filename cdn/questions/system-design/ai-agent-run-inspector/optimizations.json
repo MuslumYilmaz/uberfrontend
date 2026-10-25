@@ -165,7 +165,7 @@
     },
     {
       "type": "text",
-      "text": "Use a tree when each row is mainly a label and status; use a treegrid only if rows expose meaningful interactive columns such as kind, duration, tokens, and status. Follow the WAI-ARIA interaction model consistently. The active row supports Up and Down movement through visible rows, Right to expand or enter the first child, Left to collapse or move to the parent, Home and End for boundaries, and Enter to open details. Expose expanded state and hierarchy with aria-expanded, aria-level, aria-posinset, and aria-setsize where the chosen pattern requires them."
+      "text": "Use a tree when each row is mainly a label and status; use a treegrid only if rows expose meaningful interactive columns such as kind, duration, tokens, and status. Follow the WAI-ARIA interaction model consistently. Up and Down move through visible rows, including into child rows; Right expands a collapsed row and, on an expanded row, moves focus to its first cell; Left collapses an expanded row; Home and End reach the boundaries; Enter opens details. Expose expanded state and hierarchy with aria-expanded, aria-level, aria-posinset, and aria-setsize, and set aria-rowcount to the full total because virtualized rows are absent from the DOM."
     },
     {
       "type": "checklist",
@@ -276,9 +276,9 @@
           "description": "Ground approval, rejection, interruption, and resume behavior in a concrete agent run model."
         },
         {
-          "label": "OpenTelemetry GenAI spans",
-          "href": "https://opentelemetry.io/docs/specs/semconv/registry/attributes/gen-ai/",
-          "description": "Review standardized generative AI attribute names and their evolving stability."
+          "label": "OpenTelemetry GenAI agent spans",
+          "href": "https://github.com/open-telemetry/semantic-conventions-genai/blob/main/docs/gen-ai/gen-ai-agent-spans.md",
+          "description": "Review the in-development semantic conventions for agent and tool spans."
         },
         {
           "label": "WAI-ARIA treegrid pattern",
@@ -286,9 +286,9 @@
           "description": "Use the keyboard and semantic expectations for an interactive hierarchical grid."
         },
         {
-          "label": "WAI-ARIA log role technique",
-          "href": "https://www.w3.org/WAI/WCAG21/Techniques/aria/ARIA23",
-          "description": "Understand live-region behavior before announcing meaningful appended status messages."
+          "label": "WAI-ARIA status role technique",
+          "href": "https://www.w3.org/WAI/WCAG21/Techniques/aria/ARIA22",
+          "description": "Announce meaningful status changes without reading every appended span."
         },
         {
           "label": "MDN AbortController",

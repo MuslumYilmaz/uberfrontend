@@ -212,7 +212,7 @@
     },
     {
       "type": "checklist",
-      "title": "flashcard language trainer answer rubric",
+      "title": "Flashcard language trainer answer rubric",
       "items": [
         "Must — Model prompt, reveal, grading, and next-card transitions as explicit learning states.",
         "Must — Support pointer, touch, Enter, and Space without making animation the only state cue.",

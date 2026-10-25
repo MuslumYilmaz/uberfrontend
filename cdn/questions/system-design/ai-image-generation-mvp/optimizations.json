@@ -195,7 +195,7 @@
     },
     {
       "type": "checklist",
-      "title": "ai image generation mvp answer rubric",
+      "title": "AI image generation MVP answer rubric",
       "items": [
         "Must — Create a generation through the canonical endpoint with a stored idempotency key.",
         "Must — Treat the accepted job and its versioned status as the source of lifecycle truth.",

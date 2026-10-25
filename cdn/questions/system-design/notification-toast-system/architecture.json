@@ -13,12 +13,12 @@
       "rows": [
         [
           "Toast store",
-          "Normalized records, visible order, overflow order, and terminal removal state.",
+          "Normalized records, visible order, overflow order, and the three-item admission limit.",
           "Browser timeout handles or DOM nodes."
         ],
         [
           "Lifecycle coordinator",
-          "One expiry handle per timed record and idempotent disposal by ID.",
+          "One expiry handle per visible timed record, removal status, and idempotent disposal by ID.",
           "Visual stacking, focus, or live-region text."
         ],
         [
@@ -37,7 +37,7 @@
       "type": "callout",
       "variant": "success",
       "title": "Canonical model",
-      "text": "toast.success(...) creates a command. The store assigns an ID and places its record in the visible stack or ordered queue. The lifecycle coordinator schedules expiry only when the normalized lifetime is timed. The viewport renders store state and returns user intent. The announcer receives an eligible announcement event once; it does not infer new speech from every render.",
+      "text": "toast.success(...) creates a command. The store assigns an ID and places its record in the visible stack or ordered queue. The lifecycle coordinator schedules expiry only for a visible record with a timed lifetime. The viewport renders store state and returns user intent. The announcer receives an eligible announcement event once; it does not infer new speech from every render.",
       "editorialRole": "canonical-model"
     },
     {
@@ -54,11 +54,11 @@
         },
         {
           "title": "Schedule and render",
-          "text": "The lifecycle coordinator schedules the expiry for this timed status. The viewport renders the same record through the root portal, while the announcer publishes Profile saved only if that ID has not been announced."
+          "text": "The lifecycle coordinator starts the countdown when this timed status becomes visible. The viewport renders the same record through the root portal, while the announcer publishes Profile saved only if that ID has not been announced."
         },
         {
           "title": "Converge removal",
-          "text": "Dismiss and timeout submit the same ID. The store accepts the first transition, the coordinator clears the handle, and a queued record may become visible. Any late signal is a no-op."
+          "text": "Dismiss and timeout submit the same ID. The coordinator accepts the first transition and clears the handle, the store removes the record, and a queued record may become visible. A dismiss that arrives after expiry is a no-op."
         }
       ]
     },

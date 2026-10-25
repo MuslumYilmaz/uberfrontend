@@ -49,6 +49,11 @@
           "Persistence status",
           "Report saving/saved/failed so the page can show non-blocking feedback.",
           "Blocking pointer interactions while a layout save request is pending."
+        ],
+        [
+          "Edit mode",
+          "editable switches widgets into an edit mode where their content ignores pointer input, so a drag never starts a chart tooltip or a table scroll.",
+          "Letting widget interactions and layout drags compete for the same pointer."
         ]
       ]
     },
@@ -78,7 +83,7 @@
         ],
         [
           "Fallback editor",
-          "Offer a list/table editor for order, width, and height when drag is hard on mobile or assistive tech.",
+          "Offer move and resize buttons or a list/table editor for order, width, and height that work with single taps, because WCAG 2.5.7 requires a non-dragging path.",
           "Complex spatial editing remains usable across devices."
         ]
       ]

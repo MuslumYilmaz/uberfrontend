@@ -26,7 +26,7 @@
         },
         {
           "title": "Schedule",
-          "text": "For a timed lifetime, the lifecycle coordinator creates one ToastRuntime keyed by toastId. Persistent records have no expiry handle, so Review or Undo cannot disappear because a provider default was applied accidentally."
+          "text": "For a timed lifetime, the lifecycle coordinator creates one ToastRuntime keyed by toastId when the record becomes visible, so a queued toast cannot expire unseen. Persistent records have no expiry handle, so Review or Undo cannot disappear because a provider default was applied."
         },
         {
           "title": "Remove",

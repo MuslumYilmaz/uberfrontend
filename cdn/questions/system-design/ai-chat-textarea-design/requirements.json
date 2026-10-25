@@ -12,7 +12,7 @@
         },
         {
           "title": "Separate input and upload state",
-          "text": "Keep composition status in the mounted textarea, recoverable text in an account-and-conversation draft, and each file in the upload flow. Enter submits only after compositionend; Shift+Enter preserves a newline. A snapshot contains only ready asset IDs. IME Enter, an uploading file, or a second Enter while Send is pending cannot submit."
+          "text": "Keep composition status in the mounted textarea, recoverable text in an account-and-conversation draft, and each file in the upload flow. Handle Enter on keydown and ignore it while isComposing is true or keyCode is 229, because Safari can end composition before the confirming Enter; Shift+Enter adds a newline. A snapshot contains only ready asset IDs. IME Enter, an uploading file, or a second Enter while Send is pending cannot submit."
         },
         {
           "title": "Create one logical send",
@@ -24,7 +24,7 @@
         },
         {
           "title": "Reconcile before the next turn",
-          "text": "Reconnect after lastSequence or fetch getTurnSnapshot. Merge results only when command, message, stream, and sequence identities match. After terminal state, Retry or Regenerate creates a fresh commandId and new streamId. Delayed Send, Stop, or stream results fail the active-turn check. Announce meaningful pending, stopped, failed, and completed changes, not token deltas."
+          "text": "Reconnect after lastSequence or fetch getTurnSnapshot. Accept events only when conversation, stream, message, and sequence match, and responses only when their command ID matches. After terminal state, Retry or Regenerate creates a fresh commandId and new streamId. Delayed Send, Stop, or stream results fail the active-turn check."
         }
       ],
       "editorialRole": "timeboxed-answer"
@@ -33,7 +33,7 @@
       "type": "callout",
       "variant": "warning",
       "title": "Rejected alternative: overlapping responses",
-      "text": "Allowing a second Send while the first response streams makes the Stop target ambiguous and lets answers appear beside the wrong prompt after a race. Drafting stays available, but Send becomes Stop until the active turn reaches an authoritative terminal state."
+      "text": "Allowing a second Send while the first response streams makes the Stop target ambiguous and lets answers appear beside the wrong prompt after a race."
     },
     {
       "type": "links",

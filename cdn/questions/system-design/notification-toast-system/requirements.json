@@ -8,19 +8,19 @@
       "steps": [
         {
           "title": "Open with the user story",
-          "text": "A user saves a profile and sees Profile saved without losing focus. A later edit conflict shows Review or Undo and must remain available until it is resolved or safely dismissed. Either event may come from a component or a service, so callers need one global command API rather than a toast container on every page. This gives the design two concrete records to follow instead of starting with an abstract notification platform."
+          "text": "A user saves a profile and sees Profile saved without losing focus. A later edit conflict shows Review or Undo and must remain available until it is resolved or safely dismissed. Either event may come from a component or a service, so callers need one global command API rather than a toast container on every page."
         },
         {
           "title": "Set the boundary",
-          "text": "Keep the scope on the client feedback layer. It accepts typed commands, keeps at most three records visible, and puts additional distinct records into an ordered overflow queue. Low-risk status messages may expire. Actionable and critical messages are persistent because a timer must not remove the user’s only recovery path. A server owns the profile save or conflict itself; the toast only reports its result and exposes a command such as Review."
+          "text": "Keep the scope on the client feedback layer. It accepts typed commands, keeps at most three records visible, and puts additional distinct records into an ordered overflow queue. A status message may expire only when its information stays available elsewhere, such as the saved form. Actionable and critical messages are persistent, and each action also exists outside the toast, so no timer removes the only recovery path. A server owns the profile save or conflict itself; the toast only reports its result and exposes a command such as Review."
         },
         {
           "title": "Assign one owner per job",
-          "text": "The store owns normalized records plus the visible and queued order. A lifecycle coordinator owns every expiry handle and all cleanup. The viewport renders the store through one root portal, applies the three-item limit, and sends dismiss or action intent back; it never starts a timer. A separate announcer tracks announcement identity and writes eligible messages to a stable live region once, so visual rerenders do not repeat speech."
+          "text": "The store owns normalized records plus the visible and queued order. A lifecycle coordinator owns every expiry handle and all cleanup. The viewport renders the store’s visible records through one root portal and sends dismiss or action intent back; it never starts a timer. A separate announcer tracks announcement identity and writes eligible messages to a stable live region once, so visual rerenders do not repeat speech."
         },
         {
           "title": "Resolve the required race",
-          "text": "Manual dismiss and timeout both request remove(toastId, cause). The first request marks that ID removed, tells the lifecycle coordinator to clear its handle, and lets the store promote the next queued record. The second request reads the terminal state and does nothing. Cleanup is therefore idempotent: there is one removal transition, one timer disposal, and no late callback that can delete a newer toast or mutate an unmounted viewport."
+          "text": "Manual dismiss and timeout both request remove(toastId, cause). If dismiss runs first, it clears the handle, so the callback never runs. If the timeout runs first, it starts removal, and a click during the exit animation or a later dismiss(id) reads the terminal state and does nothing. Either way the store promotes the next queued record once, and clearing the old handle on every reschedule keeps a stale callback from deleting a newer toast."
         },
         {
           "title": "Close with observable behavior",

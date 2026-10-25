@@ -205,7 +205,7 @@
     },
     {
       "type": "checklist",
-      "title": "cross device preferences sync answer rubric",
+      "title": "Cross-device preferences sync answer rubric",
       "items": [
         "Must — Track confirmed values and optimistic commands with a key-specific base revision.",
         "Must — Persist offline commands and resolve conflicts only for the same key with a stale revision.",

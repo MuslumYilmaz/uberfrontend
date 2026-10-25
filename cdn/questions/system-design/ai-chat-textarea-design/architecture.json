@@ -62,7 +62,7 @@
     },
     {
       "type": "text",
-      "text": "A Japanese input method is composing text when Enter is pressed. The user later submits the completed prompt with a ready attachment, starts another draft, and stops the streaming response. Keyboard shortcuts must respect composition, drafting must remain available, and Stop must not erase accepted partial text."
+      "text": "A Japanese input method is converting text when the user presses Enter to confirm it. Chrome reports that keydown with isComposing true; Safari can fire compositionend first, so the keydown arrives with isComposing false and keyCode 229. Neither may send. Later the user sends with a ready attachment, keeps drafting, and stops the stream."
     },
     {
       "type": "table",
@@ -75,8 +75,8 @@
       ],
       "rows": [
         [
-          "Enter during composition",
-          "Observe composition state and do not submit.",
+          "Enter confirms the conversion",
+          "Ignore the keydown because isComposing is true or keyCode is 229.",
           "The IME commits or selects text normally.",
           "Shortcut does not corrupt input."
         ],

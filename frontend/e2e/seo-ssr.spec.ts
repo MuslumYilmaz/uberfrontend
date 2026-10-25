@@ -1557,7 +1557,7 @@ const INFINITE_SCROLL_OFFICIAL_SOURCES = [
   'https://www.w3.org/WAI/ARIA/apg/patterns/feed/',
   'https://developers.google.com/search/docs/crawling-indexing/javascript/lazy-loading',
   'https://developer.mozilla.org/en-US/docs/Web/API/History/scrollRestoration',
-  'https://web.dev/articles/virtualize-long-lists-react-window',
+  'https://tanstack.com/virtual/latest/docs/api/virtualizer',
 ] as const;
 
 const AI_AGENT_RUN_INSPECTOR_PATH = '/system-design/ai-agent-run-inspector';
@@ -3383,7 +3383,7 @@ test.describe('seo-ssr', () => {
       'aria-busy',
       'status announcements',
       'visible Load More',
-      'persistent page URLs',
+      'item permalinks',
       'sequential links',
       'DOM node count',
       'long tasks',
@@ -3471,7 +3471,7 @@ test.describe('seo-ssr', () => {
       'tool call inspector',
       'human-in-the-loop approval UI',
       'real-time trace streaming',
-      'OpenTelemetry GenAI spans',
+      'OpenTelemetry GenAI agent spans',
       'virtualized treegrid',
     ].forEach((phrase) => {
       const normalizedPhrase = normalizeText(phrase);

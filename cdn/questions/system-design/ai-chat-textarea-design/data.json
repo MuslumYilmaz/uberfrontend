@@ -50,7 +50,7 @@
         ],
         [
           "Old event arrives",
-          "Compare command, message, stream, and sequence",
+          "Compare conversation, stream, message, and sequence",
           "A superseded turn cannot change active state"
         ]
       ]

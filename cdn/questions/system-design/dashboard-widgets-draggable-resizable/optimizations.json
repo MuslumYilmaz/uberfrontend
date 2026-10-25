@@ -170,6 +170,10 @@
         [
           "Keyboard and pointer edits race",
           "Use one active interaction lock so two controllers cannot mutate the same layout at once."
+        ],
+        [
+          "Touch user scrolls the board",
+          "Start drags only from the handle, which sets touch-action: none, or after a long press elsewhere, so a swipe over a widget still scrolls."
         ]
       ]
     },
@@ -193,9 +197,14 @@
       ],
       "rows": [
         [
-          "Pointer capture is lost",
+          "pointercancel, or lostpointercapture before pointerup",
           "Cancel preview and restore origin.",
           "No half-dragged state remains."
+        ],
+        [
+          "Escape during a drag",
+          "Cancel the preview, release capture, restore the origin, and keep focus on the widget.",
+          "Cancel never commits a partial placement."
         ],
         [
           "Save response is uncertain",
@@ -232,7 +241,7 @@
     },
     {
       "type": "checklist",
-      "title": "dashboard widgets draggable resizable answer rubric",
+      "title": "Drag-and-drop dashboard answer rubric",
       "items": [
         "Must — Store normalized widget identity separately from responsive layout placement.",
         "Must — Preserve a versioned layout and resolve drag or resize updates against the current revision.",
@@ -253,9 +262,9 @@
           "description": "Unified pointer input and pointer capture concepts."
         },
         {
-          "label": "W3C grid pattern",
-          "href": "https://www.w3.org/WAI/ARIA/apg/patterns/grid/",
-          "description": "Keyboard interaction considerations for composite grids."
+          "label": "WCAG dragging movements",
+          "href": "https://www.w3.org/WAI/WCAG22/Understanding/dragging-movements.html",
+          "description": "Why every drag needs a single-pointer alternative, not only keyboard support."
         }
       ],
       "editorialRole": "references"

@@ -187,11 +187,25 @@ topic_rules:
       - playwright
       - jest
       - karma
+      - pre-push
+      - pre-commit
+      - git hook
+      - ci failure
+      - data version
+      - data-version
+      - screenshot baseline
+      - ui baselines
+      - perf contract
+      - bundle budget
     paths:
       - backend/tests/**
       - frontend/e2e/**
       - frontend/**/*.spec.ts
       - .github/workflows/**
+      - .githooks/**
+      - frontend/scripts/perf-contract.mjs
+      - frontend/scripts/run-pre-commit-checks.mjs
+      - frontend/e2e/ui-visual.spec.ts-snapshots/**
     load:
       - docs/ai-context/testing.md
     avoid: []

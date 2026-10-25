@@ -1,5 +1,5 @@
 {
-  "definitionHash": "11f54c62023f492f543adba911128ecaec2b32083992f97e5e8222879f290db9",
+  "definitionHash": "a162973c75f6637c7b2bca2ba32730dd83d490c2a1f4e331de635c39090a4987",
   "finalApproval": null,
   "registryId": "interview-system-design-registry-v1",
   "registryVersion": "1.2.0",
@@ -31,7 +31,7 @@
           "clarificationId": "chat-stop-truth"
         }
       ],
-      "contentHash": "34e142b0dd9493b76d6b0689b92be2669910bab90e5970e353857577a8989faf",
+      "contentHash": "7e11aa6f974caa7039589f3a6b115accf6369e6babe17b31af312bdd6bb67fbf",
       "id": "int-sd-ai-chat-composer-mid-v1",
       "provenance": {
         "authoredAt": "2026-07-29",
@@ -73,8 +73,8 @@
           "reviewerType": "ai",
           "status": "passed"
         },
-        "contentHash": "34e142b0dd9493b76d6b0689b92be2669910bab90e5970e353857577a8989faf",
-        "definitionHash": "11f54c62023f492f543adba911128ecaec2b32083992f97e5e8222879f290db9",
+        "contentHash": "7e11aa6f974caa7039589f3a6b115accf6369e6babe17b31af312bdd6bb67fbf",
+        "definitionHash": "a162973c75f6637c7b2bca2ba32730dd83d490c2a1f4e331de635c39090a4987",
         "editorial": {
           "notes": [
             "Checkout guided language matches the resilient checkout static story and links to resilient-checkout-payment-flow without exposing authoring notes.",
@@ -106,7 +106,10 @@
             "2026-10-15 source-pin maintenance review: the int-sd-ai-chat-composer-mid-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
             "2026-10-15 source-pin maintenance review: the int-sd-image-upload-lifecycle-jr-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
             "2026-10-17 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the zalando and booking-com company tags, two public interview-report sources and the matching editorial.companyEvidence entries; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin for int-sd-autocomplete-race-mid-v1. This is not a new release approval.",
-            "2026-10-21 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the agoda company tag, one public interview-report source and the matching editorial.companyEvidence entry, and the ai-chat-textarea-design meta.json source gains the xai company tag, one public interview-report source and the matching editorial.companyEvidence entry; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval."
+            "2026-10-21 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the agoda company tag, one public interview-report source and the matching editorial.companyEvidence entry, and the ai-chat-textarea-design meta.json source gains the xai company tag, one public interview-report source and the matching editorial.companyEvidence entry; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval.",
+            "2026-10-25 source-pin maintenance review: the answer-checkpoint checklist title in optimizations.json changes from slug text to a readable title for realtime-search-debounce-cache, news-feed-timeline, dashboard-widgets-draggable-resizable, image-upload-preview and live-chart-high-frequency-updates (for example \"dashboard widgets draggable resizable answer rubric\" becomes \"Drag-and-drop dashboard answer rubric\"); the checklist items, all other section content and the other source files are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval.",
+            "2026-10-25 source-pin maintenance review: a fact-check corrected four pinned sources. notification-toast-system now describes the dismiss and expiry race in the orders the event loop allows (a cleared timeout never fires; a dismiss after expiry is a no-op), starts the countdown when a toast becomes visible, and states WCAG 2.2.1 correctly; ai-chat-textarea-design replaces \"Enter submits only after compositionend\" with a keydown guard on isComposing or keyCode 229 and aligns the event identity gate with TurnEvent; dashboard-widgets-draggable-resizable fixes the collision example, the WCAG 2.5.7 alternative, touch-action and the revision walkthrough; resilient-checkout-payment-flow allows a new attempt identity only after canceled (failed or quote-conflict first call cancelAttempt), removes the client secret from the return URL and corrects the Web Locks and idempotency-retention statements. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. The toast scenario's own public prompt still says the dismiss and expiry timer fire together and needs a separate content review. This is not a new release approval.",
+            "2026-10-25 source-pin maintenance review (second batch): three pinned sources gain missing practical guidance. notification-toast-system adds a focus hotkey into the toast region and focus return on close; dashboard-widgets-draggable-resizable adds the HTML drag and drop versus pointer events trade-off, Escape cancel, touch scrolling and an edit-mode row; resilient-checkout-payment-flow adds the 3-D Secure completion paths, integer minor units and the PCI DSS scope effect of hosted fields. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-system-design-technical-v8",
           "reviewerType": "ai",
@@ -428,31 +431,31 @@
         ]
       },
       "sourceEvidence": {
-        "bundleHash": "e47307d52f94b6fff8a10a83ad95d6dd1bff50535c2cb3b30929a89d4a48073f",
+        "bundleHash": "b06a592cedf901be8dfd66c89add4b3eaf64e0eaef786c1838cd73297c294b93",
         "files": [
           {
             "file": "cdn/questions/system-design/ai-chat-textarea-design/meta.json",
-            "sha256": "e6f20840889c328408ddcfef8b567bc5e68207416f284ebd1518bb4c7511b3ee"
+            "sha256": "d40c12cd0ed98dcebe18ac965165f0fca6f1a147ed65fa3dd0f7f49f50c58c05"
           },
           {
             "file": "cdn/questions/system-design/ai-chat-textarea-design/requirements.json",
-            "sha256": "7560db8216c817e8e15e152a6fae0e0644d6691a32d13113635e035cb974b333"
+            "sha256": "78659eb162c3771593dc21d78dd88074802d4d484930bb7a7c9a5c62411d4399"
           },
           {
             "file": "cdn/questions/system-design/ai-chat-textarea-design/architecture.json",
-            "sha256": "9c5d86f98c503b2b17f64204950240314c34e1aac74aae2c2eb6e69f7607b83a"
+            "sha256": "c9c9ee82ae9087d57ef8c774703fffd1c894d71e92bf1a248ecfc3a4ef5edcea"
           },
           {
             "file": "cdn/questions/system-design/ai-chat-textarea-design/data.json",
-            "sha256": "ae3b7e5ae651ec60a77c225e999d2119207ddcac1e3955366c6da22cbf753e69"
+            "sha256": "5d9fb53802de2a9805e89a8997146b51f19d9a550da323787caf41515b609ba4"
           },
           {
             "file": "cdn/questions/system-design/ai-chat-textarea-design/interfaces.json",
-            "sha256": "6dc5667480345fa912aaf72dc3d1164e19c51b6ab7899c42b560af9b9a496433"
+            "sha256": "b89219e97d210292e2204319961ba8fae8c7e9ada3d0d4ee8bfb65ba828d8ead"
           },
           {
             "file": "cdn/questions/system-design/ai-chat-textarea-design/optimizations.json",
-            "sha256": "a9860bcf238e2c9e95f84ffb5d3bee3168fe49c91c6af6ba1a2ddefb07666ef1"
+            "sha256": "9c351ed1a9de413bbaaded7fc3551637df99a75b8773a3481a0d01a87a438ddc"
           }
         ],
         "sourceContentId": "ai-chat-textarea-design",
@@ -1492,7 +1495,7 @@
           "clarificationId": "search-navigation"
         }
       ],
-      "contentHash": "a7d0100b42e598a7fb92043b3d52b7d544a4a9100a8e80cfe1cae5f4e71f725f",
+      "contentHash": "b3f6ec3096dd85fbfae1662122744992397dbda6bd2df9f4cebb26c5eb129b13",
       "id": "int-sd-autocomplete-race-mid-v1",
       "provenance": {
         "authoredAt": "2026-07-29",
@@ -1527,8 +1530,8 @@
           "reviewerType": "ai",
           "status": "passed"
         },
-        "contentHash": "a7d0100b42e598a7fb92043b3d52b7d544a4a9100a8e80cfe1cae5f4e71f725f",
-        "definitionHash": "11f54c62023f492f543adba911128ecaec2b32083992f97e5e8222879f290db9",
+        "contentHash": "b3f6ec3096dd85fbfae1662122744992397dbda6bd2df9f4cebb26c5eb129b13",
+        "definitionHash": "a162973c75f6637c7b2bca2ba32730dd83d490c2a1f4e331de635c39090a4987",
         "editorial": {
           "notes": [
             "Checkout guided language matches the resilient checkout static story and links to resilient-checkout-payment-flow without exposing authoring notes.",
@@ -1560,7 +1563,10 @@
             "2026-10-15 source-pin maintenance review: the int-sd-ai-chat-composer-mid-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
             "2026-10-15 source-pin maintenance review: the int-sd-image-upload-lifecycle-jr-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
             "2026-10-17 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the zalando and booking-com company tags, two public interview-report sources and the matching editorial.companyEvidence entries; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin for int-sd-autocomplete-race-mid-v1. This is not a new release approval.",
-            "2026-10-21 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the agoda company tag, one public interview-report source and the matching editorial.companyEvidence entry, and the ai-chat-textarea-design meta.json source gains the xai company tag, one public interview-report source and the matching editorial.companyEvidence entry; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval."
+            "2026-10-21 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the agoda company tag, one public interview-report source and the matching editorial.companyEvidence entry, and the ai-chat-textarea-design meta.json source gains the xai company tag, one public interview-report source and the matching editorial.companyEvidence entry; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval.",
+            "2026-10-25 source-pin maintenance review: the answer-checkpoint checklist title in optimizations.json changes from slug text to a readable title for realtime-search-debounce-cache, news-feed-timeline, dashboard-widgets-draggable-resizable, image-upload-preview and live-chart-high-frequency-updates (for example \"dashboard widgets draggable resizable answer rubric\" becomes \"Drag-and-drop dashboard answer rubric\"); the checklist items, all other section content and the other source files are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval.",
+            "2026-10-25 source-pin maintenance review: a fact-check corrected four pinned sources. notification-toast-system now describes the dismiss and expiry race in the orders the event loop allows (a cleared timeout never fires; a dismiss after expiry is a no-op), starts the countdown when a toast becomes visible, and states WCAG 2.2.1 correctly; ai-chat-textarea-design replaces \"Enter submits only after compositionend\" with a keydown guard on isComposing or keyCode 229 and aligns the event identity gate with TurnEvent; dashboard-widgets-draggable-resizable fixes the collision example, the WCAG 2.5.7 alternative, touch-action and the revision walkthrough; resilient-checkout-payment-flow allows a new attempt identity only after canceled (failed or quote-conflict first call cancelAttempt), removes the client secret from the return URL and corrects the Web Locks and idempotency-retention statements. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. The toast scenario's own public prompt still says the dismiss and expiry timer fire together and needs a separate content review. This is not a new release approval.",
+            "2026-10-25 source-pin maintenance review (second batch): three pinned sources gain missing practical guidance. notification-toast-system adds a focus hotkey into the toast region and focus return on close; dashboard-widgets-draggable-resizable adds the HTML drag and drop versus pointer events trade-off, Escape cancel, touch scrolling and an edit-mode row; resilient-checkout-payment-flow adds the 3-D Secure completion paths, integer minor units and the PCI DSS scope effect of hosted fields. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-system-design-technical-v8",
           "reviewerType": "ai",
@@ -1863,7 +1869,7 @@
         ]
       },
       "sourceEvidence": {
-        "bundleHash": "cb62c0660188948e601c7a5be655270cb51421551f1460d698791acbbcb3f5c7",
+        "bundleHash": "d8a0a0e7d2b8c5e5d0b7c84a5c88ae57622683b3181da31a8390e347a8196d02",
         "files": [
           {
             "file": "cdn/questions/system-design/realtime-search-debounce-cache/meta.json",
@@ -1887,7 +1893,7 @@
           },
           {
             "file": "cdn/questions/system-design/realtime-search-debounce-cache/optimizations.json",
-            "sha256": "b154ba18e6f124f1a0f79e889768f70e2b2fdce91ba22701dd2afa1e9ea44c60"
+            "sha256": "29ec981fea9bc3a9875874eb7e6f17b389e42843c3b00e44b3a744b255a2e447"
           }
         ],
         "sourceContentId": "realtime-search-debounce-cache",
@@ -2635,7 +2641,7 @@
           "clarificationId": "checkout-error-recovery"
         }
       ],
-      "contentHash": "e75229a1aca9b1c3ff92b5a6d2d244baa40e2ddafbdff41d107514a58073452e",
+      "contentHash": "7d3acb9ded06e5f01d59c7370809abc2604aa95cd5050712dfab56427d2243f2",
       "id": "int-sd-checkout-recovery-mid-v1",
       "provenance": {
         "authoredAt": "2026-08-12",
@@ -2691,8 +2697,8 @@
           "reviewerType": "ai",
           "status": "passed"
         },
-        "contentHash": "e75229a1aca9b1c3ff92b5a6d2d244baa40e2ddafbdff41d107514a58073452e",
-        "definitionHash": "11f54c62023f492f543adba911128ecaec2b32083992f97e5e8222879f290db9",
+        "contentHash": "7d3acb9ded06e5f01d59c7370809abc2604aa95cd5050712dfab56427d2243f2",
+        "definitionHash": "a162973c75f6637c7b2bca2ba32730dd83d490c2a1f4e331de635c39090a4987",
         "editorial": {
           "notes": [
             "Checkout guided language matches the resilient checkout static story and links to resilient-checkout-payment-flow without exposing authoring notes.",
@@ -2724,7 +2730,10 @@
             "2026-10-15 source-pin maintenance review: the int-sd-ai-chat-composer-mid-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
             "2026-10-15 source-pin maintenance review: the int-sd-image-upload-lifecycle-jr-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
             "2026-10-17 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the zalando and booking-com company tags, two public interview-report sources and the matching editorial.companyEvidence entries; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin for int-sd-autocomplete-race-mid-v1. This is not a new release approval.",
-            "2026-10-21 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the agoda company tag, one public interview-report source and the matching editorial.companyEvidence entry, and the ai-chat-textarea-design meta.json source gains the xai company tag, one public interview-report source and the matching editorial.companyEvidence entry; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval."
+            "2026-10-21 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the agoda company tag, one public interview-report source and the matching editorial.companyEvidence entry, and the ai-chat-textarea-design meta.json source gains the xai company tag, one public interview-report source and the matching editorial.companyEvidence entry; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval.",
+            "2026-10-25 source-pin maintenance review: the answer-checkpoint checklist title in optimizations.json changes from slug text to a readable title for realtime-search-debounce-cache, news-feed-timeline, dashboard-widgets-draggable-resizable, image-upload-preview and live-chart-high-frequency-updates (for example \"dashboard widgets draggable resizable answer rubric\" becomes \"Drag-and-drop dashboard answer rubric\"); the checklist items, all other section content and the other source files are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval.",
+            "2026-10-25 source-pin maintenance review: a fact-check corrected four pinned sources. notification-toast-system now describes the dismiss and expiry race in the orders the event loop allows (a cleared timeout never fires; a dismiss after expiry is a no-op), starts the countdown when a toast becomes visible, and states WCAG 2.2.1 correctly; ai-chat-textarea-design replaces \"Enter submits only after compositionend\" with a keydown guard on isComposing or keyCode 229 and aligns the event identity gate with TurnEvent; dashboard-widgets-draggable-resizable fixes the collision example, the WCAG 2.5.7 alternative, touch-action and the revision walkthrough; resilient-checkout-payment-flow allows a new attempt identity only after canceled (failed or quote-conflict first call cancelAttempt), removes the client secret from the return URL and corrects the Web Locks and idempotency-retention statements. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. The toast scenario's own public prompt still says the dismiss and expiry timer fire together and needs a separate content review. This is not a new release approval.",
+            "2026-10-25 source-pin maintenance review (second batch): three pinned sources gain missing practical guidance. notification-toast-system adds a focus hotkey into the toast region and focus return on close; dashboard-widgets-draggable-resizable adds the HTML drag and drop versus pointer events trade-off, Escape cancel, touch scrolling and an edit-mode row; resilient-checkout-payment-flow adds the 3-D Secure completion paths, integer minor units and the PCI DSS scope effect of hosted fields. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-system-design-technical-v8",
           "reviewerType": "ai",
@@ -3084,7 +3093,7 @@
         ]
       },
       "sourceEvidence": {
-        "bundleHash": "7054f4b19f21f8940ee778874c8d2b3f4ab44874d0ff400f237d651ddc5b13ea",
+        "bundleHash": "831e9bcc70a021b9c2587ae5602d4421bb73bf147c844e9353c0ec1ffaf234ba",
         "files": [
           {
             "file": "cdn/questions/system-design/resilient-checkout-payment-flow/meta.json",
@@ -3092,23 +3101,23 @@
           },
           {
             "file": "cdn/questions/system-design/resilient-checkout-payment-flow/requirements.json",
-            "sha256": "3a730d463c4791ea3d7bd3c09ffb48efb980a230950758164a9f172c341c08b7"
+            "sha256": "28a0c609dd29a97361fe9b021cf1cdd193f71149e1f645d55afb567766611740"
           },
           {
             "file": "cdn/questions/system-design/resilient-checkout-payment-flow/architecture.json",
-            "sha256": "e6f4e3c252ab3e124d6ba58b2f01dd67ea480cb4274831b528634bf23d723ec5"
+            "sha256": "865388e1861617f45d078798b9eeba45970f6e6b2d8b459d302c7227b8dc1307"
           },
           {
             "file": "cdn/questions/system-design/resilient-checkout-payment-flow/data.json",
-            "sha256": "6ed616744e5540bbbea4704fa0acc9e03dccdcfbf0548c3415260e7e760d2286"
+            "sha256": "22c82977ca58ba2ec4c0f81ed8b2cbd4bda13b7509d1037fb04d89c8e5ab8e57"
           },
           {
             "file": "cdn/questions/system-design/resilient-checkout-payment-flow/interfaces.json",
-            "sha256": "7f993361041cb88a49cc5c6240bad6e1eb6301f733d776cc29ae1258b739d608"
+            "sha256": "c429044de1d65043c9249968b84c026df7d96be07937ed825a1c9680d1d0363d"
           },
           {
             "file": "cdn/questions/system-design/resilient-checkout-payment-flow/optimizations.json",
-            "sha256": "c0a921b5239b225091b410a16861b96a842170cf9a276ba4d0073b4318e7b827"
+            "sha256": "fd933b2136fbeed6dac81f38c06de3d2d4346f037d9aec2c92440deb5e260520"
           }
         ],
         "sourceContentId": "resilient-checkout-payment-flow",
@@ -4272,7 +4281,7 @@
           "clarificationId": "dash-accessibility"
         }
       ],
-      "contentHash": "5bd681d66f6274df90633235cba5278bc151694882cf1d041c2b1c873c9b66d8",
+      "contentHash": "0c6c8d5e20bc2d4c6eeee8adf9bd5cf1c5df938b87296426277a84132a76fecd",
       "id": "int-sd-dashboard-layout-sr-v1",
       "provenance": {
         "authoredAt": "2026-08-04",
@@ -4307,8 +4316,8 @@
           "reviewerType": "ai",
           "status": "passed"
         },
-        "contentHash": "5bd681d66f6274df90633235cba5278bc151694882cf1d041c2b1c873c9b66d8",
-        "definitionHash": "11f54c62023f492f543adba911128ecaec2b32083992f97e5e8222879f290db9",
+        "contentHash": "0c6c8d5e20bc2d4c6eeee8adf9bd5cf1c5df938b87296426277a84132a76fecd",
+        "definitionHash": "a162973c75f6637c7b2bca2ba32730dd83d490c2a1f4e331de635c39090a4987",
         "editorial": {
           "notes": [
             "Checkout guided language matches the resilient checkout static story and links to resilient-checkout-payment-flow without exposing authoring notes.",
@@ -4340,7 +4349,10 @@
             "2026-10-15 source-pin maintenance review: the int-sd-ai-chat-composer-mid-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
             "2026-10-15 source-pin maintenance review: the int-sd-image-upload-lifecycle-jr-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
             "2026-10-17 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the zalando and booking-com company tags, two public interview-report sources and the matching editorial.companyEvidence entries; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin for int-sd-autocomplete-race-mid-v1. This is not a new release approval.",
-            "2026-10-21 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the agoda company tag, one public interview-report source and the matching editorial.companyEvidence entry, and the ai-chat-textarea-design meta.json source gains the xai company tag, one public interview-report source and the matching editorial.companyEvidence entry; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval."
+            "2026-10-21 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the agoda company tag, one public interview-report source and the matching editorial.companyEvidence entry, and the ai-chat-textarea-design meta.json source gains the xai company tag, one public interview-report source and the matching editorial.companyEvidence entry; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval.",
+            "2026-10-25 source-pin maintenance review: the answer-checkpoint checklist title in optimizations.json changes from slug text to a readable title for realtime-search-debounce-cache, news-feed-timeline, dashboard-widgets-draggable-resizable, image-upload-preview and live-chart-high-frequency-updates (for example \"dashboard widgets draggable resizable answer rubric\" becomes \"Drag-and-drop dashboard answer rubric\"); the checklist items, all other section content and the other source files are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval.",
+            "2026-10-25 source-pin maintenance review: a fact-check corrected four pinned sources. notification-toast-system now describes the dismiss and expiry race in the orders the event loop allows (a cleared timeout never fires; a dismiss after expiry is a no-op), starts the countdown when a toast becomes visible, and states WCAG 2.2.1 correctly; ai-chat-textarea-design replaces \"Enter submits only after compositionend\" with a keydown guard on isComposing or keyCode 229 and aligns the event identity gate with TurnEvent; dashboard-widgets-draggable-resizable fixes the collision example, the WCAG 2.5.7 alternative, touch-action and the revision walkthrough; resilient-checkout-payment-flow allows a new attempt identity only after canceled (failed or quote-conflict first call cancelAttempt), removes the client secret from the return URL and corrects the Web Locks and idempotency-retention statements. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. The toast scenario's own public prompt still says the dismiss and expiry timer fire together and needs a separate content review. This is not a new release approval.",
+            "2026-10-25 source-pin maintenance review (second batch): three pinned sources gain missing practical guidance. notification-toast-system adds a focus hotkey into the toast region and focus return on close; dashboard-widgets-draggable-resizable adds the HTML drag and drop versus pointer events trade-off, Escape cancel, touch scrolling and an edit-mode row; resilient-checkout-payment-flow adds the 3-D Secure completion paths, integer minor units and the PCI DSS scope effect of hosted fields. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-system-design-technical-v8",
           "reviewerType": "ai",
@@ -4715,7 +4727,7 @@
         ]
       },
       "sourceEvidence": {
-        "bundleHash": "6939eeb2c586bcbeb7540a82433e7a756a55ccbbe26ab0f5ff8c993d9fd1be67",
+        "bundleHash": "84b75fd212dc90c435481996fc2292c52edaedb62a33d3eae86ab9c629819662",
         "files": [
           {
             "file": "cdn/questions/system-design/dashboard-widgets-draggable-resizable/meta.json",
@@ -4723,11 +4735,11 @@
           },
           {
             "file": "cdn/questions/system-design/dashboard-widgets-draggable-resizable/requirements.json",
-            "sha256": "e4d06d47af4fb321c3fd3d0ac67854d1d60dba2b33f0e26ee98ee8f5816f4046"
+            "sha256": "d1984c041ab2483179d48e9e6c29079a0cfb7241e303784d6cd48ed035381828"
           },
           {
             "file": "cdn/questions/system-design/dashboard-widgets-draggable-resizable/architecture.json",
-            "sha256": "bb6b1b6315017d465f2ea76e9cb4ea4feec01e20f3d1b18e8642f4c90ee5f6a5"
+            "sha256": "9b33d14339c4b7116c909d25c1041ee87bd792005e3cf5eed725b79741fdff49"
           },
           {
             "file": "cdn/questions/system-design/dashboard-widgets-draggable-resizable/data.json",
@@ -4735,11 +4747,11 @@
           },
           {
             "file": "cdn/questions/system-design/dashboard-widgets-draggable-resizable/interfaces.json",
-            "sha256": "43f7aac6743ddf5ce2fb0debc1dd29abfb09e531bc4191fb2c96d91fa65a6142"
+            "sha256": "d499afe31b7c9c27b7af566271337f4ef58dda6bcd146caddd2503b4d9341a09"
           },
           {
             "file": "cdn/questions/system-design/dashboard-widgets-draggable-resizable/optimizations.json",
-            "sha256": "5765f3652247298076debbc58f73d7e52d2c85130c1183431570ace0254c0bac"
+            "sha256": "a32486ced96ec209037aba368efe6a16eaa82b8471d53f4ff933ec0a4b548b8b"
           }
         ],
         "sourceContentId": "dashboard-widgets-draggable-resizable",
@@ -5688,7 +5700,7 @@
           "clarificationId": "upload-accessibility"
         }
       ],
-      "contentHash": "2ace4a59c71200a9634e02bd9bd1461606c5d12968f4ca7ee3964e41ad801b7d",
+      "contentHash": "1ae05a5acad3bfe522bff3dd7f6bc1173de71a0a7d16c9a8f6bea37f02236a06",
       "id": "int-sd-image-upload-lifecycle-jr-v1",
       "provenance": {
         "authoredAt": "2026-08-04",
@@ -5723,8 +5735,8 @@
           "reviewerType": "ai",
           "status": "passed"
         },
-        "contentHash": "2ace4a59c71200a9634e02bd9bd1461606c5d12968f4ca7ee3964e41ad801b7d",
-        "definitionHash": "11f54c62023f492f543adba911128ecaec2b32083992f97e5e8222879f290db9",
+        "contentHash": "1ae05a5acad3bfe522bff3dd7f6bc1173de71a0a7d16c9a8f6bea37f02236a06",
+        "definitionHash": "a162973c75f6637c7b2bca2ba32730dd83d490c2a1f4e331de635c39090a4987",
         "editorial": {
           "notes": [
             "Checkout guided language matches the resilient checkout static story and links to resilient-checkout-payment-flow without exposing authoring notes.",
@@ -5756,7 +5768,10 @@
             "2026-10-15 source-pin maintenance review: the int-sd-ai-chat-composer-mid-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
             "2026-10-15 source-pin maintenance review: the int-sd-image-upload-lifecycle-jr-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
             "2026-10-17 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the zalando and booking-com company tags, two public interview-report sources and the matching editorial.companyEvidence entries; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin for int-sd-autocomplete-race-mid-v1. This is not a new release approval.",
-            "2026-10-21 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the agoda company tag, one public interview-report source and the matching editorial.companyEvidence entry, and the ai-chat-textarea-design meta.json source gains the xai company tag, one public interview-report source and the matching editorial.companyEvidence entry; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval."
+            "2026-10-21 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the agoda company tag, one public interview-report source and the matching editorial.companyEvidence entry, and the ai-chat-textarea-design meta.json source gains the xai company tag, one public interview-report source and the matching editorial.companyEvidence entry; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval.",
+            "2026-10-25 source-pin maintenance review: the answer-checkpoint checklist title in optimizations.json changes from slug text to a readable title for realtime-search-debounce-cache, news-feed-timeline, dashboard-widgets-draggable-resizable, image-upload-preview and live-chart-high-frequency-updates (for example \"dashboard widgets draggable resizable answer rubric\" becomes \"Drag-and-drop dashboard answer rubric\"); the checklist items, all other section content and the other source files are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval.",
+            "2026-10-25 source-pin maintenance review: a fact-check corrected four pinned sources. notification-toast-system now describes the dismiss and expiry race in the orders the event loop allows (a cleared timeout never fires; a dismiss after expiry is a no-op), starts the countdown when a toast becomes visible, and states WCAG 2.2.1 correctly; ai-chat-textarea-design replaces \"Enter submits only after compositionend\" with a keydown guard on isComposing or keyCode 229 and aligns the event identity gate with TurnEvent; dashboard-widgets-draggable-resizable fixes the collision example, the WCAG 2.5.7 alternative, touch-action and the revision walkthrough; resilient-checkout-payment-flow allows a new attempt identity only after canceled (failed or quote-conflict first call cancelAttempt), removes the client secret from the return URL and corrects the Web Locks and idempotency-retention statements. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. The toast scenario's own public prompt still says the dismiss and expiry timer fire together and needs a separate content review. This is not a new release approval.",
+            "2026-10-25 source-pin maintenance review (second batch): three pinned sources gain missing practical guidance. notification-toast-system adds a focus hotkey into the toast region and focus return on close; dashboard-widgets-draggable-resizable adds the HTML drag and drop versus pointer events trade-off, Escape cancel, touch scrolling and an edit-mode row; resilient-checkout-payment-flow adds the 3-D Secure completion paths, integer minor units and the PCI DSS scope effect of hosted fields. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-system-design-technical-v8",
           "reviewerType": "ai",
@@ -6283,7 +6298,7 @@
         ]
       },
       "sourceEvidence": {
-        "bundleHash": "01d2003028ffd4c667cd85656e1360df2dd848ea0e7b910254926e999da4c6b2",
+        "bundleHash": "ba93e8c79ca76b100dafbfef16fad317c1492c224a1a4b43bb1cd47a9e539375",
         "files": [
           {
             "file": "cdn/questions/system-design/image-upload-preview/meta.json",
@@ -6307,7 +6322,7 @@
           },
           {
             "file": "cdn/questions/system-design/image-upload-preview/optimizations.json",
-            "sha256": "d2f6b42935004fbdb7350ffcb478a60cfc1d2472b2d4ae36ff3198f8e0b66e7a"
+            "sha256": "5776fadadabd5e18afd85f3ad6543c0b99d1b7d5e33c3dd6847a4a32cc4af4f6"
           }
         ],
         "sourceContentId": "image-upload-preview",
@@ -7473,7 +7488,7 @@
           "clarificationId": "chart-accessibility"
         }
       ],
-      "contentHash": "051cfb98717b613151e42dc73ecead253abe6edfc92d7883ca41252645a807c8",
+      "contentHash": "039a700e74a9b69ba9fece81061d2620392a170ff335c59fd59d87946cc0d5e3",
       "id": "int-sd-live-chart-pipeline-mid-v1",
       "provenance": {
         "authoredAt": "2026-08-04",
@@ -7508,8 +7523,8 @@
           "reviewerType": "ai",
           "status": "passed"
         },
-        "contentHash": "051cfb98717b613151e42dc73ecead253abe6edfc92d7883ca41252645a807c8",
-        "definitionHash": "11f54c62023f492f543adba911128ecaec2b32083992f97e5e8222879f290db9",
+        "contentHash": "039a700e74a9b69ba9fece81061d2620392a170ff335c59fd59d87946cc0d5e3",
+        "definitionHash": "a162973c75f6637c7b2bca2ba32730dd83d490c2a1f4e331de635c39090a4987",
         "editorial": {
           "notes": [
             "Checkout guided language matches the resilient checkout static story and links to resilient-checkout-payment-flow without exposing authoring notes.",
@@ -7541,7 +7556,10 @@
             "2026-10-15 source-pin maintenance review: the int-sd-ai-chat-composer-mid-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
             "2026-10-15 source-pin maintenance review: the int-sd-image-upload-lifecycle-jr-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
             "2026-10-17 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the zalando and booking-com company tags, two public interview-report sources and the matching editorial.companyEvidence entries; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin for int-sd-autocomplete-race-mid-v1. This is not a new release approval.",
-            "2026-10-21 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the agoda company tag, one public interview-report source and the matching editorial.companyEvidence entry, and the ai-chat-textarea-design meta.json source gains the xai company tag, one public interview-report source and the matching editorial.companyEvidence entry; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval."
+            "2026-10-21 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the agoda company tag, one public interview-report source and the matching editorial.companyEvidence entry, and the ai-chat-textarea-design meta.json source gains the xai company tag, one public interview-report source and the matching editorial.companyEvidence entry; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval.",
+            "2026-10-25 source-pin maintenance review: the answer-checkpoint checklist title in optimizations.json changes from slug text to a readable title for realtime-search-debounce-cache, news-feed-timeline, dashboard-widgets-draggable-resizable, image-upload-preview and live-chart-high-frequency-updates (for example \"dashboard widgets draggable resizable answer rubric\" becomes \"Drag-and-drop dashboard answer rubric\"); the checklist items, all other section content and the other source files are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval.",
+            "2026-10-25 source-pin maintenance review: a fact-check corrected four pinned sources. notification-toast-system now describes the dismiss and expiry race in the orders the event loop allows (a cleared timeout never fires; a dismiss after expiry is a no-op), starts the countdown when a toast becomes visible, and states WCAG 2.2.1 correctly; ai-chat-textarea-design replaces \"Enter submits only after compositionend\" with a keydown guard on isComposing or keyCode 229 and aligns the event identity gate with TurnEvent; dashboard-widgets-draggable-resizable fixes the collision example, the WCAG 2.5.7 alternative, touch-action and the revision walkthrough; resilient-checkout-payment-flow allows a new attempt identity only after canceled (failed or quote-conflict first call cancelAttempt), removes the client secret from the return URL and corrects the Web Locks and idempotency-retention statements. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. The toast scenario's own public prompt still says the dismiss and expiry timer fire together and needs a separate content review. This is not a new release approval.",
+            "2026-10-25 source-pin maintenance review (second batch): three pinned sources gain missing practical guidance. notification-toast-system adds a focus hotkey into the toast region and focus return on close; dashboard-widgets-draggable-resizable adds the HTML drag and drop versus pointer events trade-off, Escape cancel, touch scrolling and an edit-mode row; resilient-checkout-payment-flow adds the 3-D Secure completion paths, integer minor units and the PCI DSS scope effect of hosted fields. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-system-design-technical-v8",
           "reviewerType": "ai",
@@ -8068,7 +8086,7 @@
         ]
       },
       "sourceEvidence": {
-        "bundleHash": "fdfa012254e114f85ba50919653dc2a80255413ee4ff2c0e6e06160838f33a1c",
+        "bundleHash": "fb847a6c965d71f61718faf456df59d5ca8ae0f1038abf51f6375d25c6375a38",
         "files": [
           {
             "file": "cdn/questions/system-design/live-chart-high-frequency-updates/meta.json",
@@ -8092,7 +8110,7 @@
           },
           {
             "file": "cdn/questions/system-design/live-chart-high-frequency-updates/optimizations.json",
-            "sha256": "191d9127f0a9c5705cb01094c8242bb33b81d385e489bb538595750960bb5568"
+            "sha256": "19639b5a7577fe3ab6fa8193557b339f11f4fd4a78c50e46f791a8d634aa2426"
           }
         ],
         "sourceContentId": "live-chart-high-frequency-updates",
@@ -9168,7 +9186,7 @@
           "clarificationId": "feed-accessibility"
         }
       ],
-      "contentHash": "f54fd3cc3c54b89715b99c6b3f9fe620984b0c55594c999ba8bbb83cdfbd46e5",
+      "contentHash": "32771bddaab564a483db4e25c68a1bafd7370b15bda69ab37a21cef3e706c001",
       "id": "int-sd-ranked-feed-sr-v1",
       "provenance": {
         "authoredAt": "2026-07-29",
@@ -9203,8 +9221,8 @@
           "reviewerType": "ai",
           "status": "passed"
         },
-        "contentHash": "f54fd3cc3c54b89715b99c6b3f9fe620984b0c55594c999ba8bbb83cdfbd46e5",
-        "definitionHash": "11f54c62023f492f543adba911128ecaec2b32083992f97e5e8222879f290db9",
+        "contentHash": "32771bddaab564a483db4e25c68a1bafd7370b15bda69ab37a21cef3e706c001",
+        "definitionHash": "a162973c75f6637c7b2bca2ba32730dd83d490c2a1f4e331de635c39090a4987",
         "editorial": {
           "notes": [
             "Checkout guided language matches the resilient checkout static story and links to resilient-checkout-payment-flow without exposing authoring notes.",
@@ -9236,7 +9254,10 @@
             "2026-10-15 source-pin maintenance review: the int-sd-ai-chat-composer-mid-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
             "2026-10-15 source-pin maintenance review: the int-sd-image-upload-lifecycle-jr-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
             "2026-10-17 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the zalando and booking-com company tags, two public interview-report sources and the matching editorial.companyEvidence entries; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin for int-sd-autocomplete-race-mid-v1. This is not a new release approval.",
-            "2026-10-21 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the agoda company tag, one public interview-report source and the matching editorial.companyEvidence entry, and the ai-chat-textarea-design meta.json source gains the xai company tag, one public interview-report source and the matching editorial.companyEvidence entry; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval."
+            "2026-10-21 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the agoda company tag, one public interview-report source and the matching editorial.companyEvidence entry, and the ai-chat-textarea-design meta.json source gains the xai company tag, one public interview-report source and the matching editorial.companyEvidence entry; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval.",
+            "2026-10-25 source-pin maintenance review: the answer-checkpoint checklist title in optimizations.json changes from slug text to a readable title for realtime-search-debounce-cache, news-feed-timeline, dashboard-widgets-draggable-resizable, image-upload-preview and live-chart-high-frequency-updates (for example \"dashboard widgets draggable resizable answer rubric\" becomes \"Drag-and-drop dashboard answer rubric\"); the checklist items, all other section content and the other source files are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval.",
+            "2026-10-25 source-pin maintenance review: a fact-check corrected four pinned sources. notification-toast-system now describes the dismiss and expiry race in the orders the event loop allows (a cleared timeout never fires; a dismiss after expiry is a no-op), starts the countdown when a toast becomes visible, and states WCAG 2.2.1 correctly; ai-chat-textarea-design replaces \"Enter submits only after compositionend\" with a keydown guard on isComposing or keyCode 229 and aligns the event identity gate with TurnEvent; dashboard-widgets-draggable-resizable fixes the collision example, the WCAG 2.5.7 alternative, touch-action and the revision walkthrough; resilient-checkout-payment-flow allows a new attempt identity only after canceled (failed or quote-conflict first call cancelAttempt), removes the client secret from the return URL and corrects the Web Locks and idempotency-retention statements. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. The toast scenario's own public prompt still says the dismiss and expiry timer fire together and needs a separate content review. This is not a new release approval.",
+            "2026-10-25 source-pin maintenance review (second batch): three pinned sources gain missing practical guidance. notification-toast-system adds a focus hotkey into the toast region and focus return on close; dashboard-widgets-draggable-resizable adds the HTML drag and drop versus pointer events trade-off, Escape cancel, touch scrolling and an edit-mode row; resilient-checkout-payment-flow adds the 3-D Secure completion paths, integer minor units and the PCI DSS scope effect of hosted fields. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-system-design-technical-v8",
           "reviewerType": "ai",
@@ -9551,7 +9572,7 @@
         ]
       },
       "sourceEvidence": {
-        "bundleHash": "ca070d73f0f227441aecf336af6dcffe6a67041f03cbb7a534842660de817948",
+        "bundleHash": "79380efa4a18cff764a87d45c6ffe7d153e1b6deda4925fd50b0eed4c20347fc",
         "files": [
           {
             "file": "cdn/questions/system-design/news-feed-timeline/meta.json",
@@ -9575,7 +9596,7 @@
           },
           {
             "file": "cdn/questions/system-design/news-feed-timeline/optimizations.json",
-            "sha256": "cf724a129804af10debf9cf7bbd482d46be72c1c54d85371bc5a884403d98120"
+            "sha256": "282ea89a4d35788d720caba656b113f091c9ab03aeb87db063d355bdbc86f5a9"
           }
         ],
         "sourceContentId": "news-feed-timeline",
@@ -10334,7 +10355,7 @@
           "clarificationId": "toast-navigation"
         }
       ],
-      "contentHash": "c85817e11c42482db36feeeaa71a0929282060afd2f6a9930c210970b1c3f2bb",
+      "contentHash": "29ad6171b84f09ccd9288a572279815c21e015c809950551850895991ade2de1",
       "id": "int-sd-toast-lifecycle-jr-v1",
       "provenance": {
         "authoredAt": "2026-07-29",
@@ -10369,8 +10390,8 @@
           "reviewerType": "ai",
           "status": "passed"
         },
-        "contentHash": "c85817e11c42482db36feeeaa71a0929282060afd2f6a9930c210970b1c3f2bb",
-        "definitionHash": "11f54c62023f492f543adba911128ecaec2b32083992f97e5e8222879f290db9",
+        "contentHash": "29ad6171b84f09ccd9288a572279815c21e015c809950551850895991ade2de1",
+        "definitionHash": "a162973c75f6637c7b2bca2ba32730dd83d490c2a1f4e331de635c39090a4987",
         "editorial": {
           "notes": [
             "Checkout guided language matches the resilient checkout static story and links to resilient-checkout-payment-flow without exposing authoring notes.",
@@ -10402,7 +10423,10 @@
             "2026-10-15 source-pin maintenance review: the int-sd-ai-chat-composer-mid-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
             "2026-10-15 source-pin maintenance review: the int-sd-image-upload-lifecycle-jr-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
             "2026-10-17 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the zalando and booking-com company tags, two public interview-report sources and the matching editorial.companyEvidence entries; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin for int-sd-autocomplete-race-mid-v1. This is not a new release approval.",
-            "2026-10-21 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the agoda company tag, one public interview-report source and the matching editorial.companyEvidence entry, and the ai-chat-textarea-design meta.json source gains the xai company tag, one public interview-report source and the matching editorial.companyEvidence entry; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval."
+            "2026-10-21 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the agoda company tag, one public interview-report source and the matching editorial.companyEvidence entry, and the ai-chat-textarea-design meta.json source gains the xai company tag, one public interview-report source and the matching editorial.companyEvidence entry; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval.",
+            "2026-10-25 source-pin maintenance review: the answer-checkpoint checklist title in optimizations.json changes from slug text to a readable title for realtime-search-debounce-cache, news-feed-timeline, dashboard-widgets-draggable-resizable, image-upload-preview and live-chart-high-frequency-updates (for example \"dashboard widgets draggable resizable answer rubric\" becomes \"Drag-and-drop dashboard answer rubric\"); the checklist items, all other section content and the other source files are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval.",
+            "2026-10-25 source-pin maintenance review: a fact-check corrected four pinned sources. notification-toast-system now describes the dismiss and expiry race in the orders the event loop allows (a cleared timeout never fires; a dismiss after expiry is a no-op), starts the countdown when a toast becomes visible, and states WCAG 2.2.1 correctly; ai-chat-textarea-design replaces \"Enter submits only after compositionend\" with a keydown guard on isComposing or keyCode 229 and aligns the event identity gate with TurnEvent; dashboard-widgets-draggable-resizable fixes the collision example, the WCAG 2.5.7 alternative, touch-action and the revision walkthrough; resilient-checkout-payment-flow allows a new attempt identity only after canceled (failed or quote-conflict first call cancelAttempt), removes the client secret from the return URL and corrects the Web Locks and idempotency-retention statements. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. The toast scenario's own public prompt still says the dismiss and expiry timer fire together and needs a separate content review. This is not a new release approval.",
+            "2026-10-25 source-pin maintenance review (second batch): three pinned sources gain missing practical guidance. notification-toast-system adds a focus hotkey into the toast region and focus return on close; dashboard-widgets-draggable-resizable adds the HTML drag and drop versus pointer events trade-off, Escape cancel, touch scrolling and an edit-mode row; resilient-checkout-payment-flow adds the 3-D Secure completion paths, integer minor units and the PCI DSS scope effect of hosted fields. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-system-design-technical-v8",
           "reviewerType": "ai",
@@ -10695,23 +10719,23 @@
         ]
       },
       "sourceEvidence": {
-        "bundleHash": "09c1ebfa63eb846060002e4d4f0079e683efc06ced7a094a22e3d612dc7afbbb",
+        "bundleHash": "97f98e84935ee98c508b2d6671fe0ac7a4674abc8bf6eff030291d57b30603ff",
         "files": [
           {
             "file": "cdn/questions/system-design/notification-toast-system/meta.json",
-            "sha256": "b71409d6c45f2127fdf0006be3976c239b441110d79c096e749595ada1820ac1"
+            "sha256": "f110ea5a7f5d8297712c4a4c38b1f79337f53fd6ed1cd86f926a00cb4c91b9d1"
           },
           {
             "file": "cdn/questions/system-design/notification-toast-system/requirements.json",
-            "sha256": "db7f176a1ade75b6c9af78c5bcdf8f112bddc6e4c7126304e191a73f7b0b7b29"
+            "sha256": "87e267926d72140cd063b97b32cfb42b1c504a9430c070e482cb09d8dbff09b3"
           },
           {
             "file": "cdn/questions/system-design/notification-toast-system/architecture.json",
-            "sha256": "be33bb9c3e991ca7049b54e45f141f9937d66d556c732dcf3ec3c01db4fed0d5"
+            "sha256": "bf28fe61f123d455b119e022fa6cad2ce4cf036e30178c358b6da76dec3a3bcd"
           },
           {
             "file": "cdn/questions/system-design/notification-toast-system/data.json",
-            "sha256": "6e675276deef1eacdfc7f1dd6a4eb8e2f98270671ba9a756cef9d73ad6f04fc7"
+            "sha256": "09ae7eca83b78fa9d6e19d9d07660f647dd6650e4e01473e4a8e26bf9e54f98d"
           },
           {
             "file": "cdn/questions/system-design/notification-toast-system/interfaces.json",
@@ -10719,7 +10743,7 @@
           },
           {
             "file": "cdn/questions/system-design/notification-toast-system/optimizations.json",
-            "sha256": "7772955019a0af067daec2cb7f7e2faf3bd509160968b0c2fed2a74b98ebd097"
+            "sha256": "7cceb1c4c94821afe103d942be5a90fc15b7f5537aed7321ec4f5d10d79f2a6c"
           }
         ],
         "sourceContentId": "notification-toast-system",

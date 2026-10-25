@@ -11,7 +11,7 @@ status: "converted"
 content_schema_version: 2
 target_level: "junior"
 timebox_minutes: 10
-candidate_prompt: "Design the toast feedback layer for a multi-route web app. After a user saves a profile, any feature or service can show a success message; an edit conflict may show Review or Undo. Focus first on the race where manual dismiss and an expiry timer fire together: the toast and timer must be cleaned up once. Explain where records, rendering, and timers live, then show how a burst, route change, and screen-reader update remain safe."
+candidate_prompt: "Design the toast feedback layer for a multi-route web app. After a user saves a profile, any feature or service can show a success message; an edit conflict may show Review or Undo. Focus first on the race where the expiry timer removes a toast while the user is dismissing it: the toast and timer must be cleaned up once. Explain where records, rendering, and timers live, then show how a burst, route change, and screen-reader update remain safe."
 constraints:
   - "Show no more than three toasts."
   - "Actions and critical messages persist."
@@ -65,7 +65,7 @@ confidence: "high"
 
 This toast notification system frontend system design exercise is deliberately smaller than a notification center. The actor is a person editing a profile, the immediate goal is trustworthy feedback, and the main failure is a cleanup race. The answer should follow two messages: a low-risk Profile saved status and a conflict that exposes Review or Undo. Starting with those messages makes each architecture choice observable.
 
-Candidate prompt: Design the toast feedback layer for a multi-route web app. After a user saves a profile, any feature or service can show a success message; an edit conflict may show Review or Undo. Focus first on the race where manual dismiss and an expiry timer fire together: the toast and timer must be cleaned up once. Explain where records, rendering, and timers live, then show how a burst, route change, and screen-reader update remain safe.
+Candidate prompt: Design the toast feedback layer for a multi-route web app. After a user saves a profile, any feature or service can show a success message; an edit conflict may show Review or Undo. Focus first on the race where the expiry timer removes a toast while the user is dismissing it: the toast and timer must be cleaned up once. Explain where records, rendering, and timers live, then show how a burst, route change, and screen-reader update remain safe.
 
 The reference answer stays on the browser feedback layer. The server still owns profile persistence, conflict detection, and the authoritative result of Review or Undo. A toast reports that result and can invoke a domain command, but it is not the system of record. A separate notification feed, unread counts, server retention, delivery across devices, and push notifications are outside the baseline.
 

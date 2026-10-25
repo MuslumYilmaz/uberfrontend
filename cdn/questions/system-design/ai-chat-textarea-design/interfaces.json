@@ -36,7 +36,7 @@
         },
         {
           "title": "Send or retransmit",
-          "text": "After composition ends and attachments are ready, call send with stable command and client message IDs. If only its response is lost, retransmit that same commandId."
+          "text": "When Enter is not part of composition and attachments are ready, call send with stable command and client message IDs. If only its response is lost, retransmit that same commandId."
         },
         {
           "title": "Open or resume events",

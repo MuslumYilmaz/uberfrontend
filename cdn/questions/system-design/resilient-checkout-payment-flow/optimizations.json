@@ -33,7 +33,7 @@
         ],
         [
           "Customer requests another payment",
-          "Read the old attempt; replace only after failed, canceled, or quote-conflict",
+          "Read the old attempt; cancel it, then replace only after canceled",
           "Processing cannot become an unexpected second charge"
         ],
         [
@@ -61,7 +61,7 @@
         },
         {
           "title": "Newer tab changes shipping",
-          "text": "Tab B gets quote version 5 but cannot replace uncertain ca_7. It proceeds only after merchant status reports failed, canceled, or quote-conflict."
+          "text": "Tab B gets quote version 5 but cannot replace uncertain ca_7. It proceeds only after merchant status reports ca_7 canceled, requesting cancelAttempt if ca_7 failed or conflicts with the new quote."
         },
         {
           "title": "Return reconciles both identities",
@@ -69,7 +69,7 @@
         },
         {
           "title": "Advisory event speeds convergence",
-          "text": "An attempt observation prompts refresh. Crashes strand local locks, and browsers cannot settle webhook truth."
+          "text": "An attempt observation prompts refresh. Storage-flag locks outlive a crashed tab, and Web Locks end when the tab leaves for the bank, so no browser lock spans the redirect."
         }
       ]
     },
@@ -92,8 +92,8 @@
       "items": [
         "Replay Pay; assert one clientAttemptId, one Idempotency-Key, and one merchant attempt.",
         "Lose creation response; assert lookup or same-key retry reaches the existing attempt.",
-        "Return before webhook reconciliation; assert processing remains and no receipt appears.",
-        "Request replacement while processing; assert no new identity before terminal state or successful cancellation.",
+        "Return before the webhook; assert the server reads provider status and the receipt waits for a confirmed order.",
+        "Request replacement while processing; assert no new identity before successful cancellation.",
         "Change quote version; assert review is required and correctable input survives.",
         "Reorder cross-tab events; assert receivers refresh instead of copying browser claims.",
         "Check keyboard and screen-reader recovery, linked errors, focus, preserved values, and redacted telemetry."
@@ -113,9 +113,9 @@
           "description": "Stable keys make creation retries converge."
         },
         {
-          "label": "Stripe payment-event webhooks",
-          "href": "https://docs.stripe.com/webhooks/handling-payment-events?lang=node",
-          "description": "Fulfillment follows server events, not redirects."
+          "label": "Stripe payment status updates",
+          "href": "https://docs.stripe.com/payments/payment-intents/verifying-status",
+          "description": "Failed attempts return to a retryable state; webhooks drive fulfillment, not redirects."
         },
         {
           "label": "Stripe PaymentIntent cancellation",

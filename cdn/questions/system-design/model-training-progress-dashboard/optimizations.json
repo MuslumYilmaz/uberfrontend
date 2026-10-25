@@ -211,7 +211,7 @@
     },
     {
       "type": "checklist",
-      "title": "model training progress dashboard answer rubric",
+      "title": "Model training dashboard answer rubric",
       "items": [
         "Must — Build the run view from a versioned snapshot plus ordered resumable metric events.",
         "Must — Mark data stale on gaps and reconcile with a fresh snapshot before resuming updates.",

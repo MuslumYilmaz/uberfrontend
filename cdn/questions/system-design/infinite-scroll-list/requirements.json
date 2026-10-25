@@ -62,7 +62,7 @@
         "Is the total known or is random access required? Assume an unknown total and forward browsing.",
         "Are rows fixed height? Assume variable text and media, so measurement and anchor correction are required.",
         "Should return navigation restore context? Assume yes, by item identity and intra-item offset.",
-        "Must the collection be discoverable without automatic loading? Assume durable pages and visible sequential links."
+        "Must the collection be discoverable without automatic loading? For a stable-ordered catalog, assume ?page=N URLs and visible sequential links; a personalized, changing feed exposes item permalinks instead."
       ]
     },
     {

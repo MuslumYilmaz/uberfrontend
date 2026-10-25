@@ -58,11 +58,11 @@
         },
         {
           "title": "Authenticate",
-          "text": "Attempt ca_7 requires bank action. The adapter opens authentication. On return, the route restores checkoutId and ca_7 and reads server status; provider values cannot confirm the order."
+          "text": "Attempt ca_7 requires bank action. The adapter opens authentication, which may finish in an in-page frame, after a full redirect, or without any challenge, so the UI waits for status rather than for a redirect. On return, the route restores checkoutId and ca_7 and reads server status; provider values cannot confirm the order."
         },
         {
           "title": "Confirm",
-          "text": "A provider webhook lets the merchant advance order o_31. The next status read reports succeeded. The coordinator renders the receipt and broadcasts an advisory observation."
+          "text": "A provider webhook lets the merchant advance order o_31; if it is delayed, the return route's server call can read provider status and run the same idempotent confirmation. The next status read reports succeeded. The coordinator renders the receipt and broadcasts an advisory observation."
         }
       ]
     },

@@ -34,6 +34,7 @@
 
 ## Verification
 - Run the closest meaningful checks for every non-trivial change and report what was verified, what was not verified, and residual risk.
+- Before committing or pushing a change under `frontend/`, `cdn/`, `backend/` or `content-drafts/`, load `docs/ai-context/testing.md` alongside any topic doc: the git hooks skip several CI checks, and it lists the commands that catch them.
 - If a check fails or cannot run, report the exact command, failure or blocker, and remaining risk instead of implying verification passed.
 - Before editing for any non-trivial change, map likely impact areas: direct call sites, shared contracts, generated/content files, backend/frontend/CDN crossings, route/SEO behavior, and user-visible workflows.
 - For each non-trivial change, explicitly check relevant edge cases such as empty/loading/error states, auth or premium access, async races/cancellation, navigation, mobile layout, SEO/prerender behavior, and content/data-version side effects.

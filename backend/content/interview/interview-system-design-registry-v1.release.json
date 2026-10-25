@@ -2,85 +2,85 @@
   "artifacts": {
     "private": {
       "file": "interview-system-design-registry-v1.private.json",
-      "sha256": "76a3ecd40af6fca086e384260771e2ea49a8ee4bfedd056fc6db08178b1f8da7"
+      "sha256": "f3bed884e95a13fc9d4c7fb6c3a6d014276f76696c617a030453ccfa4b67ee99"
     },
     "public": {
       "file": "interview-system-design-registry-v1.public.json",
-      "sha256": "c059c087683b13785ec1f6e4c8e4a6069b4f3773ac32f89c46c797e992c02f1c"
+      "sha256": "0ebe494ad951c03f18a3944e00fe71234a4344abd2cbdcb62b6657b1bd0b22a3"
     }
   },
-  "contentHash": "280bf65da6dd076782e1602862e47a6cf16fe43a0afbb8b48add28b1a87761c9",
-  "definitionHash": "11f54c62023f492f543adba911128ecaec2b32083992f97e5e8222879f290db9",
+  "contentHash": "df5087f48b1f8aca7d9937e20521c8bd27082c3e697a6e4833e12a3ae34a891c",
+  "definitionHash": "a162973c75f6637c7b2bca2ba32730dd83d490c2a1f4e331de635c39090a4987",
   "enabledScenarioCount": 8,
   "finalApproval": null,
-  "registryContentHash": "280bf65da6dd076782e1602862e47a6cf16fe43a0afbb8b48add28b1a87761c9",
+  "registryContentHash": "df5087f48b1f8aca7d9937e20521c8bd27082c3e697a6e4833e12a3ae34a891c",
   "registryId": "interview-system-design-registry-v1",
   "registryVersion": "1.2.0",
   "scenarioCount": 8,
   "scenarioRefs": [
     {
-      "contentHash": "34e142b0dd9493b76d6b0689b92be2669910bab90e5970e353857577a8989faf",
+      "contentHash": "7e11aa6f974caa7039589f3a6b115accf6369e6babe17b31af312bdd6bb67fbf",
       "enabled": true,
       "id": "int-sd-ai-chat-composer-mid-v1",
       "level": "mid",
       "revision": 3,
-      "sourceBundleHash": "e47307d52f94b6fff8a10a83ad95d6dd1bff50535c2cb3b30929a89d4a48073f"
+      "sourceBundleHash": "b06a592cedf901be8dfd66c89add4b3eaf64e0eaef786c1838cd73297c294b93"
     },
     {
-      "contentHash": "a7d0100b42e598a7fb92043b3d52b7d544a4a9100a8e80cfe1cae5f4e71f725f",
+      "contentHash": "b3f6ec3096dd85fbfae1662122744992397dbda6bd2df9f4cebb26c5eb129b13",
       "enabled": true,
       "id": "int-sd-autocomplete-race-mid-v1",
       "level": "mid",
       "revision": 5,
-      "sourceBundleHash": "cb62c0660188948e601c7a5be655270cb51421551f1460d698791acbbcb3f5c7"
+      "sourceBundleHash": "d8a0a0e7d2b8c5e5d0b7c84a5c88ae57622683b3181da31a8390e347a8196d02"
     },
     {
-      "contentHash": "e75229a1aca9b1c3ff92b5a6d2d244baa40e2ddafbdff41d107514a58073452e",
+      "contentHash": "7d3acb9ded06e5f01d59c7370809abc2604aa95cd5050712dfab56427d2243f2",
       "enabled": true,
       "id": "int-sd-checkout-recovery-mid-v1",
       "level": "mid",
       "revision": 1,
-      "sourceBundleHash": "7054f4b19f21f8940ee778874c8d2b3f4ab44874d0ff400f237d651ddc5b13ea"
+      "sourceBundleHash": "831e9bcc70a021b9c2587ae5602d4421bb73bf147c844e9353c0ec1ffaf234ba"
     },
     {
-      "contentHash": "5bd681d66f6274df90633235cba5278bc151694882cf1d041c2b1c873c9b66d8",
+      "contentHash": "0c6c8d5e20bc2d4c6eeee8adf9bd5cf1c5df938b87296426277a84132a76fecd",
       "enabled": true,
       "id": "int-sd-dashboard-layout-sr-v1",
       "level": "senior",
       "revision": 2,
-      "sourceBundleHash": "6939eeb2c586bcbeb7540a82433e7a756a55ccbbe26ab0f5ff8c993d9fd1be67"
+      "sourceBundleHash": "84b75fd212dc90c435481996fc2292c52edaedb62a33d3eae86ab9c629819662"
     },
     {
-      "contentHash": "2ace4a59c71200a9634e02bd9bd1461606c5d12968f4ca7ee3964e41ad801b7d",
+      "contentHash": "1ae05a5acad3bfe522bff3dd7f6bc1173de71a0a7d16c9a8f6bea37f02236a06",
       "enabled": true,
       "id": "int-sd-image-upload-lifecycle-jr-v1",
       "level": "junior",
       "revision": 2,
-      "sourceBundleHash": "01d2003028ffd4c667cd85656e1360df2dd848ea0e7b910254926e999da4c6b2"
+      "sourceBundleHash": "ba93e8c79ca76b100dafbfef16fad317c1492c224a1a4b43bb1cd47a9e539375"
     },
     {
-      "contentHash": "051cfb98717b613151e42dc73ecead253abe6edfc92d7883ca41252645a807c8",
+      "contentHash": "039a700e74a9b69ba9fece81061d2620392a170ff335c59fd59d87946cc0d5e3",
       "enabled": true,
       "id": "int-sd-live-chart-pipeline-mid-v1",
       "level": "mid",
       "revision": 2,
-      "sourceBundleHash": "fdfa012254e114f85ba50919653dc2a80255413ee4ff2c0e6e06160838f33a1c"
+      "sourceBundleHash": "fb847a6c965d71f61718faf456df59d5ca8ae0f1038abf51f6375d25c6375a38"
     },
     {
-      "contentHash": "f54fd3cc3c54b89715b99c6b3f9fe620984b0c55594c999ba8bbb83cdfbd46e5",
+      "contentHash": "32771bddaab564a483db4e25c68a1bafd7370b15bda69ab37a21cef3e706c001",
       "enabled": true,
       "id": "int-sd-ranked-feed-sr-v1",
       "level": "senior",
       "revision": 5,
-      "sourceBundleHash": "ca070d73f0f227441aecf336af6dcffe6a67041f03cbb7a534842660de817948"
+      "sourceBundleHash": "79380efa4a18cff764a87d45c6ffe7d153e1b6deda4925fd50b0eed4c20347fc"
     },
     {
-      "contentHash": "c85817e11c42482db36feeeaa71a0929282060afd2f6a9930c210970b1c3f2bb",
+      "contentHash": "29ad6171b84f09ccd9288a572279815c21e015c809950551850895991ade2de1",
       "enabled": true,
       "id": "int-sd-toast-lifecycle-jr-v1",
       "level": "junior",
       "revision": 6,
-      "sourceBundleHash": "09c1ebfa63eb846060002e4d4f0079e683efc06ced7a094a22e3d612dc7afbbb"
+      "sourceBundleHash": "97f98e84935ee98c508b2d6671fe0ac7a4674abc8bf6eff030291d57b30603ff"
     }
   ],
   "schemaVersion": "1.0.0",

@@ -290,7 +290,7 @@
           "id": "replacement-requires-authoritative-terminal-state",
           "target": "visible",
           "require": [
-            "new identity.{0,140}(?:merchant status|merchant reconciliation).{0,140}failed.{0,40}canceled.{0,40}quote-conflict",
+            "new identity.{0,140}(?:merchant status|merchant reconciliation).{0,40}canceled.{0,140}(?:failed|quote-conflict).{0,120}cancelAttempt",
             "cancelAttempt",
             "(?:ineligible cancellation|cannot replace (?:the )?uncertain).{0,100}(?:old|original|attempt|ca_7)"
           ]

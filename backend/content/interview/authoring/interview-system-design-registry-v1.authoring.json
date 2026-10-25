@@ -4,9 +4,9 @@
   "registryVersion": "1.2.0",
   "status": "candidate",
   "finalApproval": null,
-  "definitionHash": "11f54c62023f492f543adba911128ecaec2b32083992f97e5e8222879f290db9",
+  "definitionHash": "a162973c75f6637c7b2bca2ba32730dd83d490c2a1f4e331de635c39090a4987",
   "reviewBatch": {
-    "reviewedDefinitionHash": "11f54c62023f492f543adba911128ecaec2b32083992f97e5e8222879f290db9",
+    "reviewedDefinitionHash": "a162973c75f6637c7b2bca2ba32730dd83d490c2a1f4e331de635c39090a4987",
     "reviewedAt": "2026-08-12",
     "technical": {
       "reviewer": "codex-system-design-technical-v8",
@@ -29,7 +29,10 @@
         "2026-10-15 source-pin maintenance review: the int-sd-ai-chat-composer-mid-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
         "2026-10-15 source-pin maintenance review: the int-sd-image-upload-lifecycle-jr-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
         "2026-10-17 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the zalando and booking-com company tags, two public interview-report sources and the matching editorial.companyEvidence entries; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin for int-sd-autocomplete-race-mid-v1. This is not a new release approval.",
-        "2026-10-21 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the agoda company tag, one public interview-report source and the matching editorial.companyEvidence entry, and the ai-chat-textarea-design meta.json source gains the xai company tag, one public interview-report source and the matching editorial.companyEvidence entry; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval."
+        "2026-10-21 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the agoda company tag, one public interview-report source and the matching editorial.companyEvidence entry, and the ai-chat-textarea-design meta.json source gains the xai company tag, one public interview-report source and the matching editorial.companyEvidence entry; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval.",
+        "2026-10-25 source-pin maintenance review: the answer-checkpoint checklist title in optimizations.json changes from slug text to a readable title for realtime-search-debounce-cache, news-feed-timeline, dashboard-widgets-draggable-resizable, image-upload-preview and live-chart-high-frequency-updates (for example \"dashboard widgets draggable resizable answer rubric\" becomes \"Drag-and-drop dashboard answer rubric\"); the checklist items, all other section content and the other source files are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval.",
+        "2026-10-25 source-pin maintenance review: a fact-check corrected four pinned sources. notification-toast-system now describes the dismiss and expiry race in the orders the event loop allows (a cleared timeout never fires; a dismiss after expiry is a no-op), starts the countdown when a toast becomes visible, and states WCAG 2.2.1 correctly; ai-chat-textarea-design replaces \"Enter submits only after compositionend\" with a keydown guard on isComposing or keyCode 229 and aligns the event identity gate with TurnEvent; dashboard-widgets-draggable-resizable fixes the collision example, the WCAG 2.5.7 alternative, touch-action and the revision walkthrough; resilient-checkout-payment-flow allows a new attempt identity only after canceled (failed or quote-conflict first call cancelAttempt), removes the client secret from the return URL and corrects the Web Locks and idempotency-retention statements. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. The toast scenario's own public prompt still says the dismiss and expiry timer fire together and needs a separate content review. This is not a new release approval.",
+        "2026-10-25 source-pin maintenance review (second batch): three pinned sources gain missing practical guidance. notification-toast-system adds a focus hotkey into the toast region and focus return on close; dashboard-widgets-draggable-resizable adds the HTML drag and drop versus pointer events trade-off, Escape cancel, touch scrolling and an edit-mode row; resilient-checkout-payment-flow adds the 3-D Secure completion paths, integer minor units and the PCI DSS scope effect of hosted fields. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval."
       ]
     },
     "blind": {
@@ -407,7 +410,7 @@
       },
       "private": {
         "sourceContentId": "notification-toast-system",
-        "expectedSourceBundleHash": "09c1ebfa63eb846060002e4d4f0079e683efc06ced7a094a22e3d612dc7afbbb",
+        "expectedSourceBundleHash": "97f98e84935ee98c508b2d6671fe0ac7a4674abc8bf6eff030291d57b30603ff",
         "clarificationAnswers": [
           {
             "clarificationId": "toast-callers",
@@ -1751,7 +1754,7 @@
       },
       "private": {
         "sourceContentId": "realtime-search-debounce-cache",
-        "expectedSourceBundleHash": "cb62c0660188948e601c7a5be655270cb51421551f1460d698791acbbcb3f5c7",
+        "expectedSourceBundleHash": "d8a0a0e7d2b8c5e5d0b7c84a5c88ae57622683b3181da31a8390e347a8196d02",
         "clarificationAnswers": [
           {
             "clarificationId": "search-identity",
@@ -3054,7 +3057,7 @@
       },
       "private": {
         "sourceContentId": "ai-chat-textarea-design",
-        "expectedSourceBundleHash": "e47307d52f94b6fff8a10a83ad95d6dd1bff50535c2cb3b30929a89d4a48073f",
+        "expectedSourceBundleHash": "b06a592cedf901be8dfd66c89add4b3eaf64e0eaef786c1838cd73297c294b93",
         "clarificationAnswers": [
           {
             "clarificationId": "chat-draft-scope",
@@ -4715,7 +4718,7 @@
       },
       "private": {
         "sourceContentId": "news-feed-timeline",
-        "expectedSourceBundleHash": "ca070d73f0f227441aecf336af6dcffe6a67041f03cbb7a534842660de817948",
+        "expectedSourceBundleHash": "79380efa4a18cff764a87d45c6ffe7d153e1b6deda4925fd50b0eed4c20347fc",
         "clarificationAnswers": [
           {
             "clarificationId": "feed-order-authority",
@@ -6081,7 +6084,7 @@
       },
       "private": {
         "sourceContentId": "dashboard-widgets-draggable-resizable",
-        "expectedSourceBundleHash": "6939eeb2c586bcbeb7540a82433e7a756a55ccbbe26ab0f5ff8c993d9fd1be67",
+        "expectedSourceBundleHash": "84b75fd212dc90c435481996fc2292c52edaedb62a33d3eae86ab9c629819662",
         "clarificationAnswers": [
           {
             "clarificationId": "dash-widget-scale",
@@ -7692,7 +7695,7 @@
       },
       "private": {
         "sourceContentId": "image-upload-preview",
-        "expectedSourceBundleHash": "01d2003028ffd4c667cd85656e1360df2dd848ea0e7b910254926e999da4c6b2",
+        "expectedSourceBundleHash": "ba93e8c79ca76b100dafbfef16fad317c1492c224a1a4b43bb1cd47a9e539375",
         "clarificationAnswers": [
           {
             "clarificationId": "upload-file-policy",
@@ -9672,7 +9675,7 @@
       },
       "private": {
         "sourceContentId": "live-chart-high-frequency-updates",
-        "expectedSourceBundleHash": "fdfa012254e114f85ba50919653dc2a80255413ee4ff2c0e6e06160838f33a1c",
+        "expectedSourceBundleHash": "fb847a6c965d71f61718faf456df59d5ca8ae0f1038abf51f6375d25c6375a38",
         "clarificationAnswers": [
           {
             "clarificationId": "chart-workload",
@@ -11591,7 +11594,7 @@
       },
       "private": {
         "sourceContentId": "resilient-checkout-payment-flow",
-        "expectedSourceBundleHash": "7054f4b19f21f8940ee778874c8d2b3f4ab44874d0ff400f237d651ddc5b13ea",
+        "expectedSourceBundleHash": "831e9bcc70a021b9c2587ae5602d4421bb73bf147c844e9353c0ec1ffaf234ba",
         "clarificationAnswers": [
           {
             "clarificationId": "checkout-price-authority",

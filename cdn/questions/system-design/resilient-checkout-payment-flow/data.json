@@ -4,7 +4,7 @@
   "blocks": [
     {
       "type": "text",
-      "text": "Separate editable form state from server facts. CheckoutQuote is a replaceable snapshot, not a client calculation. CheckoutAttempt is durable recovery state and excludes action secrets. CheckoutPhase limits honest UI claims; quote-conflict returns control to review."
+      "text": "Separate editable form state from server facts. CheckoutQuote is a replaceable snapshot, not a client calculation, and its amounts stay in integer minor units because some currencies have no decimal places. CheckoutAttempt is durable recovery state and excludes action secrets. CheckoutPhase limits honest UI claims; quote-conflict returns control to review."
     },
     {
       "type": "code",
@@ -38,7 +38,7 @@
         [
           "idempotencyKey",
           "Reuse with the identical attempt payload",
-          "Transport retry cannot duplicate provider work"
+          "Retries cannot duplicate provider work while the key is retained; Stripe may prune keys after 24 hours"
         ],
         [
           "orderId",
@@ -51,7 +51,7 @@
       "type": "callout",
       "variant": "info",
       "title": "Sensitive data is deliberately absent",
-      "text": "Durable models exclude PAN, CVC, provider field values, and action tokens. Hosted fields yield an opaque paymentMethodReference. The adapter consumes required-action tokens directly from responses; persistence and telemetry redact them. Sensitive values never enter form state, replay, analytics, URLs, browser storage, or cross-tab messages."
+      "text": "Durable models exclude PAN, CVC, provider field values, and action tokens. Hosted fields yield an opaque paymentMethodReference. The adapter consumes required-action tokens directly from responses; persistence and telemetry redact them. Sensitive values never enter form state, replay, analytics, browser storage, or cross-tab messages. If the provider appends a client secret to the return URL, the return route reads it and removes it with history.replaceState before analytics or session replay read the URL."
     }
   ]
 }

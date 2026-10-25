@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="960" height="420" viewBox="0 0 960 420" role="img" aria-labelledby="title desc">
   <title id="title">Toast dismiss and timeout race</title>
-  <desc id="desc">Manual dismiss wins first, clears the timeout, and removes the toast once. A late timeout observes the terminal state and has no effect. The reverse ordering follows the same idempotent transition.</desc>
+  <desc id="desc">The timeout fires first and starts removal while the toast plays its exit animation. The user clicks dismiss on the exiting toast; the lifecycle coordinator sees the removing state and does nothing. If dismiss runs first, clearing the timeout means the callback never runs.</desc>
   <rect width="960" height="420" rx="24" fill="#f8fafc"/>
   <text x="48" y="56" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#172033">Dismiss and timeout converge</text>
   <g stroke="#9aa7bc" stroke-width="2">
@@ -14,19 +14,19 @@
     <text x="800" y="108" font-size="17" font-weight="700">Timer callback</text>
   </g>
   <g stroke="#315ee8" stroke-width="3" fill="none" stroke-linecap="round">
-    <path d="M160 164H470"/>
-    <path d="m458 154 12 10-12 10"/>
-    <path d="M470 222H800"/>
-    <path d="m788 212 12 10-12 10"/>
-    <path d="M800 290H470" stroke="#7950b8"/>
-    <path d="m482 280-12 10 12 10" stroke="#7950b8"/>
+    <path d="M800 164H470" stroke="#7950b8"/>
+    <path d="m482 154-12 10 12 10" stroke="#7950b8"/>
+    <path d="M470 222H160"/>
+    <path d="m172 212-12 10 12 10"/>
+    <path d="M160 290H470"/>
+    <path d="m458 280 12 10-12 10"/>
   </g>
   <g font-family="Arial, sans-serif" fill="#526078">
-    <text x="250" y="153" font-size="14">dismiss(toastId)</text>
-    <text x="540" y="211" font-size="14">clear scheduled handle</text>
-    <text x="568" y="279" font-size="14">late expiry signal</text>
+    <text x="520" y="153" font-size="14">expiry fires: remove(id, timeout)</text>
+    <text x="196" y="211" font-size="14">mark removing, start exit animation</text>
+    <text x="196" y="279" font-size="14">click dismiss(id) during exit</text>
     <rect x="354" y="316" width="232" height="54" rx="14" fill="#effaf4" stroke="#268455" stroke-width="2"/>
-    <text x="470" y="349" text-anchor="middle" font-size="15" fill="#172033">already removed → no-op</text>
+    <text x="470" y="349" text-anchor="middle" font-size="15" fill="#172033">already removing → no-op</text>
   </g>
-  <text x="48" y="394" font-family="Arial, sans-serif" font-size="14" fill="#526078">If timeout arrives first, the same terminal transition makes a later dismiss harmless.</text>
+  <text x="48" y="394" font-family="Arial, sans-serif" font-size="14" fill="#526078">If dismiss runs first, clearTimeout cancels the callback, so the timer never fires.</text>
 </svg>

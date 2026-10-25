@@ -8,7 +8,7 @@
       "steps": [
         {
           "title": "Keep the composer responsive",
-          "text": "The assistant reply is streaming from streamId s1. Send is rendered as Stop, yet the user may edit a separate draft. Recent history is paged independently, so neither a long transcript nor current-turn recovery blocks typing."
+          "text": "The assistant reply is streaming from streamId s1. Send is rendered as Stop, yet the user may edit a separate draft."
         },
         {
           "title": "Store the Stop intent",
@@ -20,7 +20,7 @@
         },
         {
           "title": "Reject the late result",
-          "text": "A delayed delta or Send acknowledgement from s1 is accepted only while its command, message, stream, and sequence match the active turn. Once a terminal snapshot is stored, any later s1 event is ignored without erasing preserved text."
+          "text": "A delayed delta from s1 must match the active stream, message, and next sequence, and a late Send acknowledgement must match the stored commandId. Once a terminal snapshot is stored, any later s1 event is ignored without erasing preserved text."
         },
         {
           "title": "Create a new retry turn",
@@ -54,7 +54,7 @@
     },
     {
       "type": "text",
-      "text": "Page older history independently from current-turn state. Add list virtualization or coalesce visual delta commits only after profiling representative long conversations and low-end devices; accepted sequence state still updates correctly even when paints are batched. Test IME composition, duplicate Enter, attachment races, lost Send and Stop responses, reconnect gaps, account changes, hostile Markdown, keyboard recovery, and narrow layouts. Compare duplicate-message rate, stale-event suppression, stop latency, draft loss, input responsiveness, and recovery completion by device and network cohort."
+      "text": "Page older history independently from current-turn state. Add list virtualization or coalesce visual delta commits only after profiling representative long conversations and low-end devices; accepted sequence state still updates correctly even when paints are batched. Test IME composition, duplicate Enter, attachment races, lost Send and Stop responses, reconnect gaps, account changes, hostile Markdown, keyboard recovery, and narrow layouts. Track duplicate messages, stop latency, and draft loss by device and network cohort."
     },
     {
       "type": "image",
@@ -70,9 +70,9 @@
       "title": "Technical references",
       "items": [
         {
-          "label": "MDN composition events",
-          "href": "https://developer.mozilla.org/en-US/docs/Web/API/Element/compositionstart_event",
-          "description": "IME composition lifecycle for text controls."
+          "label": "MDN keydown events with IME",
+          "href": "https://developer.mozilla.org/en-US/docs/Web/API/Element/keydown_event#keydown_events_with_ime",
+          "description": "Composition-safe Enter handling, including the keyCode 229 fallback."
         },
         {
           "label": "MDN AbortController",

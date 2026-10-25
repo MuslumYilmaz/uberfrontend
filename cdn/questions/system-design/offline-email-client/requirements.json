@@ -21,7 +21,7 @@
               "type": "checklist",
               "title": "Read and organize",
               "items": [
-                "Browse Inbox, Sent, Drafts, and labels through a virtualized email inbox with stable selection.",
+                "Browse Inbox, Sent, Drafts, and labels through an inbox list with stable selection that can virtualize when measurements justify it.",
                 "Open a thread and lazy-load bodies or attachments without losing reading position.",
                 "Archive, mark read, star, and change labels through recoverable commands.",
                 "Search the full mailbox online and label offline results as cached-only."
@@ -38,6 +38,7 @@
                 "Persist recipients, subject, body, reply context, and attachment references across reloads.",
                 "Autosave locally offline, then synchronize a versioned draft after reconnect.",
                 "Queue Send durably without fabricating a Sent message.",
+                "Offer Undo Send: hold the persisted send command for a user-chosen delay before dispatch and restore the draft if the user undoes it.",
                 "Retry an unknown outcome without creating a duplicate message."
               ]
             }
@@ -64,6 +65,11 @@
           "A failed load never looks like an empty mailbox."
         ],
         [
+          "Offline launch with a cached shell",
+          "The service worker serves the versioned app shell, then IndexedDB supplies cached rows and drafts.",
+          "A shell update waits for the next launch, so one running tab never mixes old and new code."
+        ],
+        [
           "Cached hydration and syncing",
           "Render cached rows with freshness while requesting a snapshot or delta.",
           "Cached revisions are not silently promoted to fresh."
@@ -86,7 +92,7 @@
         [
           "Quota or persistence denied",
           "Protect active drafts first, reduce offline coverage, and offer cache cleanup.",
-          "Server-backed bodies and attachments are evicted before drafts or commands."
+          "The app's own cleanup removes server-backed bodies and attachments before drafts or commands; browser eviction deletes the whole origin, so unsynced drafts are marked at risk."
         ],
         [
           "Authentication failure or account switch",

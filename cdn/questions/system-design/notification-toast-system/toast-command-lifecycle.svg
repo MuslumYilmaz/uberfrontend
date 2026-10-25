@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" role="img" aria-labelledby="title desc">
   <title id="title">Toast command and lifecycle ownership</title>
-  <desc id="desc">A global command flows into a store and lifecycle coordinator. The coordinator controls a three-toast viewport, an overflow queue, timer cleanup, and a live-region announcer that announces each toast once.</desc>
+  <desc id="desc">A global command flows into a store and lifecycle coordinator. The store orders a three-toast viewport and an overflow queue, the lifecycle coordinator owns timers and cleanup, and a separate announcer speaks each toast once.</desc>
   <rect width="960" height="540" rx="24" fill="#f8fafc"/>
   <g font-family="Arial, sans-serif" fill="#172033">
     <text x="48" y="58" font-size="28" font-weight="700">One command path, one lifecycle owner</text>

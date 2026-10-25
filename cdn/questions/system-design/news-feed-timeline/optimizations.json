@@ -149,7 +149,7 @@
     },
     {
       "type": "checklist",
-      "title": "news feed timeline answer rubric",
+      "title": "News feed timeline answer rubric",
       "items": [
         "Must — Merge cursor pages and live updates by stable identity under a server-authoritative rank revision.",
         "Must — Preserve the reading anchor while keeping rendering work bounded on representative devices.",
