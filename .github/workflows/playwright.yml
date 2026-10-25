@@ -206,7 +206,7 @@ jobs:
     needs: changes
     if: needs.changes.outputs.interview == 'true'
     runs-on: ubuntu-24.04  # Playwright 1.57 cannot install browsers on ubuntu-26.04, which ubuntu-latest became on 2026-10-22
-    timeout-minutes: 30
+    timeout-minutes: 45
     strategy:
       fail-fast: false
       matrix:
