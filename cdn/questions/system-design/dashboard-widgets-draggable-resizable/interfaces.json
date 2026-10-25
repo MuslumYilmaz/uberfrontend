@@ -78,7 +78,7 @@
         ],
         [
           "Fallback editor",
-          "Offer a list/table editor for order, width, and height when drag is hard on mobile or assistive tech.",
+          "Offer move and resize buttons or a list/table editor for order, width, and height that work with single taps, because WCAG 2.5.7 requires a non-dragging path.",
           "Complex spatial editing remains usable across devices."
         ]
       ]

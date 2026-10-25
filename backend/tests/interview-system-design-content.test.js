@@ -305,7 +305,7 @@ describe('guided system-design interview content', () => {
     });
     expect(result.source).toEqual(expect.objectContaining({
       sourceContentId: 'resilient-checkout-payment-flow',
-      bundleHash: '7054f4b19f21f8940ee778874c8d2b3f4ab44874d0ff400f237d651ddc5b13ea',
+      bundleHash: '353f5b2b293b34c650e2586ceaebad450e7b71cbd8a7c23fc0a9a26b671b1d3a',
       files: expect.any(Array),
     }));
     expect(result.source.files).toHaveLength(6);
@@ -376,7 +376,7 @@ describe('guided system-design interview content', () => {
 
     expect(result.sourceContentId).toBe('dashboard-widgets-draggable-resizable');
     expect(result.sourceBundleHash).toBe(
-      '5a5d5ceec5b28a72945a4e5620a3dd90c1b30e5f2d36a2a0dd5d498e35e795ad'
+      'd9d6ddea1e3a0ed73a2a2476a6b0836b876bf5cba497856606afbbb845bddc23'
     );
     expect(result.fixtures).toHaveLength(2);
     expect(new Set(result.fixtures.map((entry) => entry.ownershipOptionId)).size).toBe(2);

@@ -485,7 +485,7 @@ assert.match(
 );
 assert.match(
   checkout,
-  /new identity.{0,160}merchant status.{0,140}failed.{0,40}canceled.{0,40}quote-conflict/i,
+  /new identity.{0,160}merchant status.{0,40}canceled.{0,140}(?:failed|quote-conflict).{0,120}cancelAttempt/i,
 );
 assert.match(checkoutContractCode, /(?:interface|type)\s+CrossTabCheckoutEvent\b[\s\S]*?clientAttemptId/);
 assert.match(

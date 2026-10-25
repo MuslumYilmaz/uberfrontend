@@ -62,7 +62,7 @@
         },
         {
           "title": "Confirm",
-          "text": "A provider webhook lets the merchant advance order o_31. The next status read reports succeeded. The coordinator renders the receipt and broadcasts an advisory observation."
+          "text": "A provider webhook lets the merchant advance order o_31; if it is delayed, the return route's server call can read provider status and run the same idempotent confirmation. The next status read reports succeeded. The coordinator renders the receipt and broadcasts an advisory observation."
         }
       ]
     },

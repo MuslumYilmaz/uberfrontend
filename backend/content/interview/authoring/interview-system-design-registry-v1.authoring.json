@@ -4,9 +4,9 @@
   "registryVersion": "1.2.0",
   "status": "candidate",
   "finalApproval": null,
-  "definitionHash": "ee7e52b34d5a1c1075ceaa5ec50f8bf4bb681ed5149db6d3cf4701e26759e9a4",
+  "definitionHash": "70add27e67943176f97931a8a21ae11ad376d6c1bbc9011e09131edfbbbfcbe0",
   "reviewBatch": {
-    "reviewedDefinitionHash": "ee7e52b34d5a1c1075ceaa5ec50f8bf4bb681ed5149db6d3cf4701e26759e9a4",
+    "reviewedDefinitionHash": "70add27e67943176f97931a8a21ae11ad376d6c1bbc9011e09131edfbbbfcbe0",
     "reviewedAt": "2026-08-12",
     "technical": {
       "reviewer": "codex-system-design-technical-v8",
@@ -30,7 +30,8 @@
         "2026-10-15 source-pin maintenance review: the int-sd-image-upload-lifecycle-jr-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
         "2026-10-17 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the zalando and booking-com company tags, two public interview-report sources and the matching editorial.companyEvidence entries; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin for int-sd-autocomplete-race-mid-v1. This is not a new release approval.",
         "2026-10-21 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the agoda company tag, one public interview-report source and the matching editorial.companyEvidence entry, and the ai-chat-textarea-design meta.json source gains the xai company tag, one public interview-report source and the matching editorial.companyEvidence entry; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval.",
-        "2026-10-25 source-pin maintenance review: the answer-checkpoint checklist title in optimizations.json changes from slug text to a readable title for realtime-search-debounce-cache, news-feed-timeline, dashboard-widgets-draggable-resizable, image-upload-preview and live-chart-high-frequency-updates (for example \"dashboard widgets draggable resizable answer rubric\" becomes \"Drag-and-drop dashboard answer rubric\"); the checklist items, all other section content and the other source files are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval."
+        "2026-10-25 source-pin maintenance review: the answer-checkpoint checklist title in optimizations.json changes from slug text to a readable title for realtime-search-debounce-cache, news-feed-timeline, dashboard-widgets-draggable-resizable, image-upload-preview and live-chart-high-frequency-updates (for example \"dashboard widgets draggable resizable answer rubric\" becomes \"Drag-and-drop dashboard answer rubric\"); the checklist items, all other section content and the other source files are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval.",
+        "2026-10-25 source-pin maintenance review: a fact-check corrected four pinned sources. notification-toast-system now describes the dismiss and expiry race in the orders the event loop allows (a cleared timeout never fires; a dismiss after expiry is a no-op), starts the countdown when a toast becomes visible, and states WCAG 2.2.1 correctly; ai-chat-textarea-design replaces \"Enter submits only after compositionend\" with a keydown guard on isComposing or keyCode 229 and aligns the event identity gate with TurnEvent; dashboard-widgets-draggable-resizable fixes the collision example, the WCAG 2.5.7 alternative, touch-action and the revision walkthrough; resilient-checkout-payment-flow allows a new attempt identity only after canceled (failed or quote-conflict first call cancelAttempt), removes the client secret from the return URL and corrects the Web Locks and idempotency-retention statements. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. The toast scenario's own public prompt still says the dismiss and expiry timer fire together and needs a separate content review. This is not a new release approval."
       ]
     },
     "blind": {
@@ -408,7 +409,7 @@
       },
       "private": {
         "sourceContentId": "notification-toast-system",
-        "expectedSourceBundleHash": "09c1ebfa63eb846060002e4d4f0079e683efc06ced7a094a22e3d612dc7afbbb",
+        "expectedSourceBundleHash": "7d00cece2ff7884aff825283625f55c8dd1434a0285a26db6840d7e2668024be",
         "clarificationAnswers": [
           {
             "clarificationId": "toast-callers",
@@ -3055,7 +3056,7 @@
       },
       "private": {
         "sourceContentId": "ai-chat-textarea-design",
-        "expectedSourceBundleHash": "e47307d52f94b6fff8a10a83ad95d6dd1bff50535c2cb3b30929a89d4a48073f",
+        "expectedSourceBundleHash": "b06a592cedf901be8dfd66c89add4b3eaf64e0eaef786c1838cd73297c294b93",
         "clarificationAnswers": [
           {
             "clarificationId": "chat-draft-scope",
@@ -6082,7 +6083,7 @@
       },
       "private": {
         "sourceContentId": "dashboard-widgets-draggable-resizable",
-        "expectedSourceBundleHash": "5a5d5ceec5b28a72945a4e5620a3dd90c1b30e5f2d36a2a0dd5d498e35e795ad",
+        "expectedSourceBundleHash": "d9d6ddea1e3a0ed73a2a2476a6b0836b876bf5cba497856606afbbb845bddc23",
         "clarificationAnswers": [
           {
             "clarificationId": "dash-widget-scale",
@@ -11592,7 +11593,7 @@
       },
       "private": {
         "sourceContentId": "resilient-checkout-payment-flow",
-        "expectedSourceBundleHash": "7054f4b19f21f8940ee778874c8d2b3f4ab44874d0ff400f237d651ddc5b13ea",
+        "expectedSourceBundleHash": "353f5b2b293b34c650e2586ceaebad450e7b71cbd8a7c23fc0a9a26b671b1d3a",
         "clarificationAnswers": [
           {
             "clarificationId": "checkout-price-authority",

@@ -16,7 +16,7 @@
         },
         {
           "title": "Preserve one payment identity",
-          "text": "On Pay, freeze the accepted quote version and create a clientAttemptId with one idempotencyKey. Disable repeated activation for usability, but expect duplicate events. If the response disappears, read by clientAttemptId; retransmission uses the same immutable payload and key. A new identity is allowed only after merchant status proves a terminal no-charge state: failed, canceled, or quote-conflict."
+          "text": "On Pay, freeze the accepted quote version and create a clientAttemptId with one idempotencyKey. Disable repeated activation for usability, but expect duplicate events. If the response disappears, read by clientAttemptId; retransmission uses the same immutable payload and key. A new identity is allowed only after merchant status reports canceled; after failed or quote-conflict the coordinator first calls cancelAttempt, because a declined provider attempt can still be confirmed from another tab."
         },
         {
           "title": "Reconcile uncertain outcomes",

@@ -193,7 +193,7 @@
       ],
       "rows": [
         [
-          "Pointer capture is lost",
+          "pointercancel, or lostpointercapture before pointerup",
           "Cancel preview and restore origin.",
           "No half-dragged state remains."
         ],
@@ -253,9 +253,9 @@
           "description": "Unified pointer input and pointer capture concepts."
         },
         {
-          "label": "W3C grid pattern",
-          "href": "https://www.w3.org/WAI/ARIA/apg/patterns/grid/",
-          "description": "Keyboard interaction considerations for composite grids."
+          "label": "WCAG dragging movements",
+          "href": "https://www.w3.org/WAI/WCAG22/Understanding/dragging-movements.html",
+          "description": "Why every drag needs a single-pointer alternative, not only keyboard support."
         }
       ],
       "editorialRole": "references"

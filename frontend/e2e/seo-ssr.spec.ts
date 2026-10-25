@@ -1557,7 +1557,7 @@ const INFINITE_SCROLL_OFFICIAL_SOURCES = [
   'https://www.w3.org/WAI/ARIA/apg/patterns/feed/',
   'https://developers.google.com/search/docs/crawling-indexing/javascript/lazy-loading',
   'https://developer.mozilla.org/en-US/docs/Web/API/History/scrollRestoration',
-  'https://web.dev/articles/virtualize-long-lists-react-window',
+  'https://tanstack.com/virtual/latest/docs/api/virtualizer',
 ] as const;
 
 const AI_AGENT_RUN_INSPECTOR_PATH = '/system-design/ai-agent-run-inspector';

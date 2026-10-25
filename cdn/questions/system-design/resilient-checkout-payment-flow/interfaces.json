@@ -66,7 +66,7 @@
         },
         {
           "title": "Read before retry",
-          "text": "After timeout, call getAttempt. A permitted retransmission repeats the same payload and key. Replace it only after merchant status reports failed, canceled, or quote-conflict, including successful cancelAttempt."
+          "text": "After timeout, call getAttempt. A permitted retransmission repeats the same payload and key. Replace it only after merchant status reports canceled, which for failed or quote-conflict means a successful cancelAttempt first."
         },
         {
           "title": "Restore after navigation",
@@ -78,7 +78,7 @@
       "type": "callout",
       "variant": "info",
       "title": "Accessible field-error contract",
-      "text": "Return stable field keys and readable messages. Put a text summary before the fields. The form links each summary item to its control, sets programmatic associations, and focuses the summary after submit failure. Preserve valid values. Adapter errors name the hosted control without exposing its value."
+      "text": "Return stable field keys and readable messages. Put a text summary before the fields. The form links each summary item to its control, sets programmatic associations, and focuses the summary after submit failure. For a hosted card field, link to its container and use the provider's focus method; the merchant cannot set attributes inside the provider frame. Preserve valid values. Adapter errors name the hosted control without exposing its value."
     }
   ]
 }

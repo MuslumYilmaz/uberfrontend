@@ -115,3 +115,9 @@ jsxs
 jsxDEV
 noopener
 noreferrer
+pointercancel
+lostpointercapture
+gridstack
+rowcount
+resends
+sandboxed

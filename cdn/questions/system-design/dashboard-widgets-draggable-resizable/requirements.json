@@ -29,12 +29,12 @@
         {
           "label": "Performance optimization guide",
           "href": "/guides/system-design-blueprint/performance",
-          "description": "Use it for the pointermove, render-loop, and INP trade-offs."
+          "description": "Use it for rendering cost and INP trade-offs."
         },
         {
-          "label": "Build it instead: machine coding practice",
+          "label": "Machine coding practice",
           "href": "/machine-coding",
-          "description": "Came here for a working drag-and-drop dashboard? Start with implementation exercises, then come back for the design answer."
+          "description": "Practice building UI components from scratch. Looking for a ready-made grid library instead? react-grid-layout and gridstack implement the grid model described here."
         },
         {
           "label": "Related dashboard performance scenario",
@@ -84,8 +84,8 @@
         ],
         [
           "Accessibility",
-          "Can users move and resize widgets without a pointer device?",
-          "Adds keyboard move/resize controls, focus management, and an alternate layout editor."
+          "Can users move and resize widgets without dragging, by keyboard or with single taps?",
+          "WCAG 2.5.7 (AA) requires a single-pointer alternative to dragging, so add move and resize buttons or a layout editor next to keyboard controls."
         ]
       ]
     },
@@ -104,7 +104,7 @@
       "rows": [
         [
           "CSS Grid vs absolute positioning",
-          "CSS Grid is semantic and good for static responsive tracks, but drag previews are harder because grid placement triggers layout.",
+          "CSS Grid suits static responsive tracks, but changing grid placement during drag triggers layout, and visual order can drift from DOM order.",
           "Absolute positioned containers with transform previews are easier for interactive movement, but you must own all grid math.",
           "Use a logical grid model and render widgets as positioned boxes; use transforms during drag and commit final grid coordinates."
         ],
@@ -125,7 +125,7 @@
     {
       "type": "code",
       "language": "text",
-      "code": "Deterministic grid/snap/collision example\n\nGrid: 6 columns, rowHeight = 80px, gap = 8px\nWidget A: { id: 'a', x: 0, y: 0, width: 2, height: 2 }\nWidget B: { id: 'b', x: 2, y: 0, width: 2, height: 2 }\nWidget C: { id: 'c', x: 4, y: 1, width: 2, height: 1 }\n\nBefore\nrow 0: A A B B . .\nrow 1: A A B B C C\nrow 2: . . . . . .\n\nUser drags A right by 2 columns.\nCandidate A: x = 2, y = 0, width = 2, height = 2\nCollision: A overlaps B at columns 2-3, rows 0-1.\nResolution policy: push the blocking widget down, then compact if there is empty space.\n\nAfter\nrow 0: . . A A . .\nrow 1: . . A A C C\nrow 2: . . B B . .\nrow 3: . . B B . .",
+      "code": "Deterministic grid/snap/collision example\n\nGrid: 6 columns, rowHeight = 80px, gap = 8px\nWidget A: { id: 'a', x: 0, y: 0, width: 2, height: 2 }\nWidget B: { id: 'b', x: 2, y: 0, width: 2, height: 2 }\nWidget C: { id: 'c', x: 4, y: 0, width: 2, height: 1 }\n\nBefore\nrow 0: A A B B C C\nrow 1: A A B B . .\nrow 2: . . . . . .\n\nUser drags A right by 2 columns.\nCandidate A: x = 2, y = 0, width = 2, height = 2\nCollision: A overlaps B at columns 2-3, rows 0-1.\nResolution policy: push the blocking widget down, then compact if there is empty space.\n\nAfter\nrow 0: . . A A C C\nrow 1: . . A A . .\nrow 2: . . B B . .\nrow 3: . . B B . .",
       "validation": {
         "kind": "pseudocode"
       }
@@ -162,7 +162,7 @@
         [
           "Accessibility",
           "Drag handles are enough.",
-          "Provide keyboard move/resize steps, focusable handles, live position feedback, and a non-drag layout editor fallback."
+          "Provide keyboard move/resize steps, focusable handles, live position feedback, and move/resize buttons or a layout editor that work with single taps."
         ]
       ]
     },

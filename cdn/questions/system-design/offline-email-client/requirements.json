@@ -21,7 +21,7 @@
               "type": "checklist",
               "title": "Read and organize",
               "items": [
-                "Browse Inbox, Sent, Drafts, and labels through a virtualized email inbox with stable selection.",
+                "Browse Inbox, Sent, Drafts, and labels through an inbox list with stable selection that can virtualize when measurements justify it.",
                 "Open a thread and lazy-load bodies or attachments without losing reading position.",
                 "Archive, mark read, star, and change labels through recoverable commands.",
                 "Search the full mailbox online and label offline results as cached-only."
@@ -86,7 +86,7 @@
         [
           "Quota or persistence denied",
           "Protect active drafts first, reduce offline coverage, and offer cache cleanup.",
-          "Server-backed bodies and attachments are evicted before drafts or commands."
+          "The app's own cleanup removes server-backed bodies and attachments before drafts or commands; browser eviction deletes the whole origin, so unsynced drafts are marked at risk."
         ],
         [
           "Authentication failure or account switch",

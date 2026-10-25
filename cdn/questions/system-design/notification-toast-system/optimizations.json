@@ -4,7 +4,7 @@
   "blocks": [
     {
       "type": "text",
-      "text": "Harden the lifecycle before adding policy. Verify bounded bursts, recoverable actions, one cleanup, and one announcement per eligible ID."
+      "text": "Verify bounded bursts, recoverable actions, one cleanup, and one announcement per eligible ID."
     },
     {
       "type": "table",
@@ -16,8 +16,8 @@
       ],
       "rows": [
         [
-          "Manual dismiss and expiry fire together",
-          "Send both signals through remove(id); accept the first transition and ignore the late one.",
+          "Expiry wins while the user clicks dismiss",
+          "Send both signals through remove(id); accept the first transition and ignore the later dismiss.",
           "Store removal and timeout disposal each happen once."
         ],
         [
@@ -68,16 +68,16 @@
       "type": "callout",
       "variant": "info",
       "title": "Expert stretch",
-      "text": "Cover route scope, pause and resume, and measured policies for fair overflow. Define which records survive navigation. If research shows users need more reading time, resume from stored remaining lifetime. If telemetry shows starvation, compare admission using observed urgency, age, and recovery value instead of an invented priority rule."
+      "text": "Cover route scope, pause and resume, and measured policies for fair overflow. Define which records survive navigation. Pause the countdown while the toast has hover or focus or the tab is hidden, and resume from the stored remaining time. If telemetry shows starvation, compare admission using observed urgency, age, and recovery value instead of an invented priority rule."
     },
     {
       "type": "image",
       "src": "questions/system-design/notification-toast-system/toast-dismiss-timeout-race.svg",
-      "alt": "Timeline showing manual dismiss and timeout racing into one idempotent remove transition with timer cleanup.",
+      "alt": "Timeline where the timeout starts removal first and a click on the exiting toast becomes a no-op.",
       "caption": "Dismiss-timeout race: either signal may arrive first, but removal and cleanup happen once.",
       "width": 960,
       "height": 420,
-      "fallbackText": "Text fallback: Manual dismiss marks the toast removing and clears its timeout. A late timeout observes the terminal state and does nothing; if timeout wins, a later dismiss is also a no-op."
+      "fallbackText": "Text fallback: The timeout runs first and starts removal; a click on the exiting toast sees the removing state and does nothing. If dismiss runs first, clearing the timeout means the callback never runs."
     },
     {
       "type": "links",

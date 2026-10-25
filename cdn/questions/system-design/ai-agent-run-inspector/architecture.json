@@ -98,7 +98,7 @@
       "type": "callout",
       "variant": "warning",
       "title": "Do not subscribe before establishing a base",
-      "text": "A stream-only boot requires replaying an unknown amount of history and complicates permissions, payload policies, and loading UX. A snapshot-only poll makes live approvals and failures feel stale. Snapshot plus resumable deltas provides a coherent base and bounded recovery contract."
+      "text": "A stream-only boot without a snapshot event requires replaying an unknown amount of history and complicates permissions, payload policies, and loading UX. A snapshot-only poll makes live approvals and failures feel stale. Snapshot plus resumable deltas provides a coherent base and bounded recovery contract."
     },
     {
       "type": "heading",

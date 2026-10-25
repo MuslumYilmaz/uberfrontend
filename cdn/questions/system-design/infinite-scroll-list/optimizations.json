@@ -29,7 +29,7 @@
         [
           "Virtualized list",
           "Measured DOM, layout, paint, or row memory exceeds the performance budget",
-          "Mounted nodes remain near the viewport and long sessions stay bounded",
+          "Mounted nodes remain near the viewport, so mounted DOM stays bounded",
           "Requires height estimation, measurement, overscan, focus policy, and stronger restoration tests"
         ]
       ]
@@ -143,7 +143,7 @@
     },
     {
       "type": "text",
-      "text": "For search discovery, render a useful first page on a stable URL, then expose persistent page URLs through ordinary sequential links. Each page remains addressable while JavaScript appends it into the experience. Do not rely on fragments, IntersectionObserver, or synthetic scrolling for discovery."
+      "text": "For search discovery, pick one model. A stable-ordered catalog renders a useful first page and exposes absolute ?page=N URLs through ordinary sequential links, updating the address with the History API as pages append. A changing, personalized feed is not indexed page by page; its item permalinks are what search engines see. Either way crawlers need real links, not fragments or synthetic scrolling; IntersectionObserver remains fine for loading."
     },
     {
       "type": "heading",
@@ -162,7 +162,8 @@
                 "Return overlapping pages and assert stable order without duplicate IDs or gaps.",
                 "Resolve an old-filter response last and assert it cannot write.",
                 "Fail and retry a page without advancing its cursor.",
-                "Change row heights and verify anchor plus intra-item offset restoration."
+                "Change row heights and verify anchor plus intra-item offset restoration.",
+                "Return a short first page that leaves the sentinel visible; assert the next page loads without scrolling."
               ]
             }
           ]
@@ -206,12 +207,12 @@
         {
           "label": "MDN History.scrollRestoration",
           "href": "https://developer.mozilla.org/en-US/docs/Web/API/History/scrollRestoration",
-          "description": "Compare browser restoration with application anchors."
+          "description": "Set it to manual when the app restores its own anchor."
         },
         {
-          "label": "web.dev: Virtualize large lists with react-window",
-          "href": "https://web.dev/articles/virtualize-long-lists-react-window",
-          "description": "Review fixed-size and variable-size windowing."
+          "label": "TanStack Virtual: virtualizer API",
+          "href": "https://tanstack.com/virtual/latest/docs/api/virtualizer",
+          "description": "Measure variable-height rows with measureElement and size estimates."
         }
       ]
     },

@@ -57,7 +57,7 @@
       "rows": [
         [
           "CSS Grid placement",
-          "Static or low-frequency dashboard layout where semantic grid tracks matter.",
+          "Static or low-frequency dashboard layout where CSS can own the tracks.",
           "Changing grid-row/grid-column during drag can force layout and move many items.",
           "Useful for the committed layout if the dashboard is small and CSS handles breakpoints."
         ],
@@ -71,7 +71,7 @@
           "Transform-only drag preview",
           "High-frequency pointer movement while the user drags one widget.",
           "The visual preview can temporarily differ from committed DOM order/layout.",
-          "Use during interaction, then commit final grid coordinates on pointerup."
+          "Use during interaction, then commit final grid coordinates and re-sort DOM order on pointerup so Tab and reading order match the screen."
         ]
       ]
     },
@@ -81,7 +81,7 @@
       "steps": [
         {
           "title": "1. Start",
-          "text": "Pointerdown on a handle records the starting pointer, widget rectangle, grid config, and scroll/container bounds; setPointerCapture keeps events flowing even if the pointer leaves the handle."
+          "text": "Pointerdown on a handle records the starting pointer, widget rectangle, grid config, and scroll/container bounds; setPointerCapture keeps mouse and pen events flowing outside the handle, and the handle sets touch-action: none so the browser does not turn a touch drag into scrolling and end it with pointercancel."
         },
         {
           "title": "2. Preview",
@@ -150,7 +150,7 @@
     },
     {
       "type": "text",
-      "text": "A user drags widget w7 from column one to column three based on layout revision 12 while another tab saves revision 13. Pointer movement must stay local and fast, then the final command must reconcile the conflict."
+      "text": "A user drags widget w7 from column one to column three based on layout revision 12 while another tab saves revision 13. Pointer movement must stay local and fast, then the drop must rebase onto revision 13."
     },
     {
       "type": "table",
@@ -176,13 +176,13 @@
         ],
         [
           "Drop occurs",
-          "Solve constraints against the newest known base and send one command.",
+          "Rebase onto queued revision 13, solve constraints, and send one command with basedOnRevision 13.",
           "Show pending placement while keeping undo available.",
           "Only settled geometry is persisted."
         ],
         [
           "Server conflicts",
-          "Merge revision 13 and recompute or roll back the overlay.",
+          "If revision 14 landed meanwhile, fetch it and recompute or roll back the overlay.",
           "Explain the changed layout and restore focus to w7.",
           "Authoritative revision wins without losing context."
         ]

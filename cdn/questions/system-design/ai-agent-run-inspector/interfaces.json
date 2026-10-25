@@ -182,7 +182,7 @@
       "rows": [
         [
           "Server-sent events",
-          "Simple ordered server-to-client updates and native reconnect behavior",
+          "Simple ordered server-to-client updates; native reconnect resends the last id as Last-Event-ID, so send id only at contiguous points, and a non-200 response stops reconnection",
           "Headers and cursor behavior may require a fetch-based implementation; browser connection limits matter"
         ],
         [
