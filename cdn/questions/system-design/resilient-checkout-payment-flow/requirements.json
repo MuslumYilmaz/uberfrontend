@@ -51,7 +51,7 @@
         [
           "Card number and security code",
           "Hosted provider fields",
-          "Request a reference without reading PAN or CVC"
+          "Request a reference without reading PAN or CVC, which keeps card data off merchant servers and shrinks PCI DSS scope"
         ],
         [
           "Payment and order outcome",

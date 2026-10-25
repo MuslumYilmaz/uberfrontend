@@ -170,6 +170,10 @@
         [
           "Keyboard and pointer edits race",
           "Use one active interaction lock so two controllers cannot mutate the same layout at once."
+        ],
+        [
+          "Touch user scrolls the board",
+          "Start drags only from the handle, which sets touch-action: none, or after a long press elsewhere, so a swipe over a widget still scrolls."
         ]
       ]
     },
@@ -196,6 +200,11 @@
           "pointercancel, or lostpointercapture before pointerup",
           "Cancel preview and restore origin.",
           "No half-dragged state remains."
+        ],
+        [
+          "Escape during a drag",
+          "Cancel the preview, release capture, restore the origin, and keep focus on the widget.",
+          "Cancel never commits a partial placement."
         ],
         [
           "Save response is uncertain",

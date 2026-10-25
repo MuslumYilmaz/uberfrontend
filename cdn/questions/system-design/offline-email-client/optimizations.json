@@ -254,6 +254,21 @@
           "description": "Public draft-container lifecycle."
         },
         {
+          "label": "MDN Service Worker API",
+          "href": "https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API",
+          "description": "Cache the app shell for offline startup and control when a new version activates."
+        },
+        {
+          "label": "Gmail Help: undo sending",
+          "href": "https://support.google.com/mail/answer/2819488?hl=en",
+          "description": "Gmail offers a send cancellation period of 5, 10, 20, or 30 seconds."
+        },
+        {
+          "label": "WCAG character key shortcuts",
+          "href": "https://www.w3.org/WAI/WCAG22/Understanding/character-key-shortcuts.html",
+          "description": "Single-key shortcuts need a way to turn them off or remap them."
+        },
+        {
           "label": "MDN IndexedDB API",
           "href": "https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API",
           "description": "Transactional structured browser storage."

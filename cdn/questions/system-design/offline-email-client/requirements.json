@@ -38,6 +38,7 @@
                 "Persist recipients, subject, body, reply context, and attachment references across reloads.",
                 "Autosave locally offline, then synchronize a versioned draft after reconnect.",
                 "Queue Send durably without fabricating a Sent message.",
+                "Offer Undo Send: hold the persisted send command for a user-chosen delay before dispatch and restore the draft if the user undoes it.",
                 "Retry an unknown outcome without creating a duplicate message."
               ]
             }
@@ -62,6 +63,11 @@
           "Initial launch without cache",
           "Show an accessible shell, loading labels, retry, or sign-in recovery.",
           "A failed load never looks like an empty mailbox."
+        ],
+        [
+          "Offline launch with a cached shell",
+          "The service worker serves the versioned app shell, then IndexedDB supplies cached rows and drafts.",
+          "A shell update waits for the next launch, so one running tab never mixes old and new code."
         ],
         [
           "Cached hydration and syncing",

@@ -121,3 +121,5 @@ gridstack
 rowcount
 resends
 sandboxed
+dragstart
+precaches

@@ -109,6 +109,12 @@
           "Use a logical grid model and render widgets as positioned boxes; use transforms during drag and commit final grid coordinates."
         ],
         [
+          "HTML drag and drop vs pointer events",
+          "Native dragstart and drop handle file drops and drags between windows, but the browser draws the drag image as a static snapshot, so snapping and resize previews need a separate placeholder.",
+          "Pointer events give full control of preview, snapping, and touch handling, but the app owns capture, cancel, and scrolling.",
+          "Use pointer events for layout editing; keep native drag and drop for files or cross-window drops."
+        ],
+        [
           "Logical coordinates vs raw pixels",
           "Grid coordinates like x/y/width/height survive row height, gap, and breakpoint changes.",
           "Raw pixels feel direct but make snapping, persistence, and responsive remapping brittle.",

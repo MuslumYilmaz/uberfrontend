@@ -49,6 +49,11 @@
           "Persistence status",
           "Report saving/saved/failed so the page can show non-blocking feedback.",
           "Blocking pointer interactions while a layout save request is pending."
+        ],
+        [
+          "Edit mode",
+          "editable switches widgets into an edit mode where their content ignores pointer input, so a drag never starts a chart tooltip or a table scroll.",
+          "Letting widget interactions and layout drags compete for the same pointer."
         ]
       ]
     },

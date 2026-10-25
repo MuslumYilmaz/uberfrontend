@@ -4,7 +4,7 @@
   "blocks": [
     {
       "type": "text",
-      "text": "Separate editable form state from server facts. CheckoutQuote is a replaceable snapshot, not a client calculation. CheckoutAttempt is durable recovery state and excludes action secrets. CheckoutPhase limits honest UI claims; quote-conflict returns control to review."
+      "text": "Separate editable form state from server facts. CheckoutQuote is a replaceable snapshot, not a client calculation, and its amounts stay in integer minor units because some currencies have no decimal places. CheckoutAttempt is durable recovery state and excludes action secrets. CheckoutPhase limits honest UI claims; quote-conflict returns control to review."
     },
     {
       "type": "code",

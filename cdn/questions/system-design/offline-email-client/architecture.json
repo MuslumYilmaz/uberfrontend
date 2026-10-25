@@ -31,6 +31,11 @@
       ],
       "rows": [
         [
+          "AppShellServiceWorker",
+          "Precaches the versioned HTML, JavaScript, and CSS and serves them cache-first; a new version waits and activates on the next launch.",
+          "It never caches mailbox API responses; IndexedDB owns that data."
+        ],
+        [
           "MailboxStore",
           "Normalized entities, query IDs, revisions, cursor, overlays, and freshness.",
           "Bodies are not copied into inbox rows."
@@ -68,7 +73,7 @@
       "steps": [
         {
           "title": "Hydrate one account",
-          "text": "Open the authenticated account namespace and read cached entities, query IDs, cursor, drafts, and outbox. Render cached summaries with freshness while keeping account switches isolated."
+          "text": "The service worker serves the cached app shell, so startup needs no network. Open the authenticated account namespace and read cached entities, query IDs, cursor, drafts, and outbox. Render cached summaries with freshness while keeping account switches isolated."
         },
         {
           "title": "Establish authority",
@@ -133,6 +138,14 @@
       "validation": {
         "kind": "diagram"
       }
+    },
+    {
+      "type": "heading",
+      "text": "Undo Send without losing the command"
+    },
+    {
+      "type": "text",
+      "text": "The undo window starts only after the draft and its send command are durable in IndexedDB, and the command stores its dispatch time. The OutboxCoordinator dispatches when that time passes; Undo deletes the command and restores the draft in one transaction. If the tab closes during the window, the next launch reads the stored dispatch time and either keeps counting or sends immediately, so the user never loses a message they did not cancel."
     },
     {
       "type": "table",
