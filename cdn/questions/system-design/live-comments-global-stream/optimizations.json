@@ -206,7 +206,7 @@
     },
     {
       "type": "checklist",
-      "title": "live comments global stream answer rubric",
+      "title": "Global live comments answer rubric",
       "items": [
         "Must — Normalize comments by stable identity and merge resumable events in contiguous sequence order.",
         "Must — Keep moderation state versioned so removed or hidden content cannot reappear from stale events.",

@@ -211,7 +211,7 @@
     },
     {
       "type": "checklist",
-      "title": "component design system architecture answer rubric",
+      "title": "Design system architecture answer rubric",
       "items": [
         "Must — Separate stable design tokens and component contracts from product-specific composition.",
         "Must — Define accessible states and keyboard behavior as part of every public component API.",

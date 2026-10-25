@@ -207,7 +207,7 @@
     },
     {
       "type": "checklist",
-      "title": "image upload preview answer rubric",
+      "title": "Image upload and preview answer rubric",
       "items": [
         "Must — Model the eight upload state fields and guard every callback with the active attempt identity.",
         "Must — Revoke object URLs and abort transfer work on replace, remove, and unmount.",

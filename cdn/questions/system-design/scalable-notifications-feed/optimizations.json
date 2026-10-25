@@ -198,7 +198,7 @@
     },
     {
       "type": "checklist",
-      "title": "scalable notifications feed answer rubric",
+      "title": "Notifications feed answer rubric",
       "items": [
         "Must — Merge snapshot and resumable events by notification identity and contiguous sequence.",
         "Must — Keep unread markers and removal events authoritative across reconnect and pagination.",

@@ -232,7 +232,7 @@
     },
     {
       "type": "checklist",
-      "title": "dashboard widgets draggable resizable answer rubric",
+      "title": "Drag-and-drop dashboard answer rubric",
       "items": [
         "Must — Store normalized widget identity separately from responsive layout placement.",
         "Must — Preserve a versioned layout and resolve drag or resize updates against the current revision.",

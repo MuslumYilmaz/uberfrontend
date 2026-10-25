@@ -376,7 +376,7 @@ describe('guided system-design interview content', () => {
 
     expect(result.sourceContentId).toBe('dashboard-widgets-draggable-resizable');
     expect(result.sourceBundleHash).toBe(
-      '6939eeb2c586bcbeb7540a82433e7a756a55ccbbe26ab0f5ff8c993d9fd1be67'
+      '5a5d5ceec5b28a72945a4e5620a3dd90c1b30e5f2d36a2a0dd5d498e35e795ad'
     );
     expect(result.fixtures).toHaveLength(2);
     expect(new Set(result.fixtures.map((entry) => entry.ownershipOptionId)).size).toBe(2);
@@ -571,7 +571,7 @@ describe('guided system-design interview content', () => {
 
     expect(result.sourceContentId).toBe('live-chart-high-frequency-updates');
     expect(result.sourceBundleHash).toBe(
-      'fdfa012254e114f85ba50919653dc2a80255413ee4ff2c0e6e06160838f33a1c'
+      'fb847a6c965d71f61718faf456df59d5ca8ae0f1038abf51f6375d25c6375a38'
     );
     expect(result.fixtures).toHaveLength(2);
     expect(new Set(result.fixtures.map((entry) => [
@@ -930,7 +930,7 @@ describe('guided system-design interview content', () => {
 
     expect(result.sourceContentId).toBe('image-upload-preview');
     expect(result.sourceBundleHash).toBe(
-      '01d2003028ffd4c667cd85656e1360df2dd848ea0e7b910254926e999da4c6b2'
+      'ba93e8c79ca76b100dafbfef16fad317c1492c224a1a4b43bb1cd47a9e539375'
     );
     expect(result.fixtures).toHaveLength(2);
     expect(new Set(result.fixtures.map((entry) => entry.ownershipOptionId))).toEqual(new Set([

@@ -209,7 +209,7 @@
     },
     {
       "type": "checklist",
-      "title": "live chart high frequency updates answer rubric",
+      "title": "High-frequency live chart answer rubric",
       "items": [
         "Must — Decouple event ingestion from rendering with a bounded data buffer and one scheduled frame.",
         "Must — Preserve sequence or cursor continuity and expose stale state during reconnect recovery.",

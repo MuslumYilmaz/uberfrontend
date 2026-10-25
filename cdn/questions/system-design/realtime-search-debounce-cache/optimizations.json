@@ -211,7 +211,7 @@
     },
     {
       "type": "checklist",
-      "title": "realtime search debounce cache answer rubric",
+      "title": "Real-time search answer rubric",
       "items": [
         "Must — Key results by normalized query and accept them only for the active request generation.",
         "Must — Abort superseded transport work while still guarding against resolution after cancellation.",

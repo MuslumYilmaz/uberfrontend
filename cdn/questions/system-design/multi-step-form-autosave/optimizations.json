@@ -209,7 +209,7 @@
     },
     {
       "type": "checklist",
-      "title": "multi step form autosave answer rubric",
+      "title": "Multi-step autosave form answer rubric",
       "items": [
         "Must — Separate local draft revision, remote acknowledged revision, and current validation state.",
         "Must — Persist debounced saves with idempotency and reject stale responses from older draft generations.",

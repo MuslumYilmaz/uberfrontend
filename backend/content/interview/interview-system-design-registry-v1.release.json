@@ -2,18 +2,18 @@
   "artifacts": {
     "private": {
       "file": "interview-system-design-registry-v1.private.json",
-      "sha256": "76a3ecd40af6fca086e384260771e2ea49a8ee4bfedd056fc6db08178b1f8da7"
+      "sha256": "3a6cc96adbb6869ab6c7803a439bc69c4616121512016a6728ffa14d5b814979"
     },
     "public": {
       "file": "interview-system-design-registry-v1.public.json",
-      "sha256": "c059c087683b13785ec1f6e4c8e4a6069b4f3773ac32f89c46c797e992c02f1c"
+      "sha256": "fb75d9264e4667c74a5d704dea5363a68e79d95c9e1897f67f1052dbd0cfa52c"
     }
   },
-  "contentHash": "280bf65da6dd076782e1602862e47a6cf16fe43a0afbb8b48add28b1a87761c9",
-  "definitionHash": "11f54c62023f492f543adba911128ecaec2b32083992f97e5e8222879f290db9",
+  "contentHash": "dbd4b25fe75954d19683a1502bba84bf20b54d3c848fb5d391d6b8688f409447",
+  "definitionHash": "ee7e52b34d5a1c1075ceaa5ec50f8bf4bb681ed5149db6d3cf4701e26759e9a4",
   "enabledScenarioCount": 8,
   "finalApproval": null,
-  "registryContentHash": "280bf65da6dd076782e1602862e47a6cf16fe43a0afbb8b48add28b1a87761c9",
+  "registryContentHash": "dbd4b25fe75954d19683a1502bba84bf20b54d3c848fb5d391d6b8688f409447",
   "registryId": "interview-system-design-registry-v1",
   "registryVersion": "1.2.0",
   "scenarioCount": 8,
@@ -27,12 +27,12 @@
       "sourceBundleHash": "e47307d52f94b6fff8a10a83ad95d6dd1bff50535c2cb3b30929a89d4a48073f"
     },
     {
-      "contentHash": "a7d0100b42e598a7fb92043b3d52b7d544a4a9100a8e80cfe1cae5f4e71f725f",
+      "contentHash": "b3f6ec3096dd85fbfae1662122744992397dbda6bd2df9f4cebb26c5eb129b13",
       "enabled": true,
       "id": "int-sd-autocomplete-race-mid-v1",
       "level": "mid",
       "revision": 5,
-      "sourceBundleHash": "cb62c0660188948e601c7a5be655270cb51421551f1460d698791acbbcb3f5c7"
+      "sourceBundleHash": "d8a0a0e7d2b8c5e5d0b7c84a5c88ae57622683b3181da31a8390e347a8196d02"
     },
     {
       "contentHash": "e75229a1aca9b1c3ff92b5a6d2d244baa40e2ddafbdff41d107514a58073452e",
@@ -43,36 +43,36 @@
       "sourceBundleHash": "7054f4b19f21f8940ee778874c8d2b3f4ab44874d0ff400f237d651ddc5b13ea"
     },
     {
-      "contentHash": "5bd681d66f6274df90633235cba5278bc151694882cf1d041c2b1c873c9b66d8",
+      "contentHash": "0db689fbb4863f9d19b5705b395e25dcdc7128f216505ce994b64ac34841efda",
       "enabled": true,
       "id": "int-sd-dashboard-layout-sr-v1",
       "level": "senior",
       "revision": 2,
-      "sourceBundleHash": "6939eeb2c586bcbeb7540a82433e7a756a55ccbbe26ab0f5ff8c993d9fd1be67"
+      "sourceBundleHash": "5a5d5ceec5b28a72945a4e5620a3dd90c1b30e5f2d36a2a0dd5d498e35e795ad"
     },
     {
-      "contentHash": "2ace4a59c71200a9634e02bd9bd1461606c5d12968f4ca7ee3964e41ad801b7d",
+      "contentHash": "1ae05a5acad3bfe522bff3dd7f6bc1173de71a0a7d16c9a8f6bea37f02236a06",
       "enabled": true,
       "id": "int-sd-image-upload-lifecycle-jr-v1",
       "level": "junior",
       "revision": 2,
-      "sourceBundleHash": "01d2003028ffd4c667cd85656e1360df2dd848ea0e7b910254926e999da4c6b2"
+      "sourceBundleHash": "ba93e8c79ca76b100dafbfef16fad317c1492c224a1a4b43bb1cd47a9e539375"
     },
     {
-      "contentHash": "051cfb98717b613151e42dc73ecead253abe6edfc92d7883ca41252645a807c8",
+      "contentHash": "039a700e74a9b69ba9fece81061d2620392a170ff335c59fd59d87946cc0d5e3",
       "enabled": true,
       "id": "int-sd-live-chart-pipeline-mid-v1",
       "level": "mid",
       "revision": 2,
-      "sourceBundleHash": "fdfa012254e114f85ba50919653dc2a80255413ee4ff2c0e6e06160838f33a1c"
+      "sourceBundleHash": "fb847a6c965d71f61718faf456df59d5ca8ae0f1038abf51f6375d25c6375a38"
     },
     {
-      "contentHash": "f54fd3cc3c54b89715b99c6b3f9fe620984b0c55594c999ba8bbb83cdfbd46e5",
+      "contentHash": "32771bddaab564a483db4e25c68a1bafd7370b15bda69ab37a21cef3e706c001",
       "enabled": true,
       "id": "int-sd-ranked-feed-sr-v1",
       "level": "senior",
       "revision": 5,
-      "sourceBundleHash": "ca070d73f0f227441aecf336af6dcffe6a67041f03cbb7a534842660de817948"
+      "sourceBundleHash": "79380efa4a18cff764a87d45c6ffe7d153e1b6deda4925fd50b0eed4c20347fc"
     },
     {
       "contentHash": "c85817e11c42482db36feeeaa71a0929282060afd2f6a9930c210970b1c3f2bb",

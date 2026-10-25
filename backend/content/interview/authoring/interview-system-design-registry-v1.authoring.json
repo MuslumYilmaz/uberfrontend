@@ -4,9 +4,9 @@
   "registryVersion": "1.2.0",
   "status": "candidate",
   "finalApproval": null,
-  "definitionHash": "11f54c62023f492f543adba911128ecaec2b32083992f97e5e8222879f290db9",
+  "definitionHash": "ee7e52b34d5a1c1075ceaa5ec50f8bf4bb681ed5149db6d3cf4701e26759e9a4",
   "reviewBatch": {
-    "reviewedDefinitionHash": "11f54c62023f492f543adba911128ecaec2b32083992f97e5e8222879f290db9",
+    "reviewedDefinitionHash": "ee7e52b34d5a1c1075ceaa5ec50f8bf4bb681ed5149db6d3cf4701e26759e9a4",
     "reviewedAt": "2026-08-12",
     "technical": {
       "reviewer": "codex-system-design-technical-v8",
@@ -29,7 +29,8 @@
         "2026-10-15 source-pin maintenance review: the int-sd-ai-chat-composer-mid-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
         "2026-10-15 source-pin maintenance review: the int-sd-image-upload-lifecycle-jr-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
         "2026-10-17 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the zalando and booking-com company tags, two public interview-report sources and the matching editorial.companyEvidence entries; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin for int-sd-autocomplete-race-mid-v1. This is not a new release approval.",
-        "2026-10-21 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the agoda company tag, one public interview-report source and the matching editorial.companyEvidence entry, and the ai-chat-textarea-design meta.json source gains the xai company tag, one public interview-report source and the matching editorial.companyEvidence entry; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval."
+        "2026-10-21 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the agoda company tag, one public interview-report source and the matching editorial.companyEvidence entry, and the ai-chat-textarea-design meta.json source gains the xai company tag, one public interview-report source and the matching editorial.companyEvidence entry; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval.",
+        "2026-10-25 source-pin maintenance review: the answer-checkpoint checklist title in optimizations.json changes from slug text to a readable title for realtime-search-debounce-cache, news-feed-timeline, dashboard-widgets-draggable-resizable, image-upload-preview and live-chart-high-frequency-updates (for example \"dashboard widgets draggable resizable answer rubric\" becomes \"Drag-and-drop dashboard answer rubric\"); the checklist items, all other section content and the other source files are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval."
       ]
     },
     "blind": {
@@ -1751,7 +1752,7 @@
       },
       "private": {
         "sourceContentId": "realtime-search-debounce-cache",
-        "expectedSourceBundleHash": "cb62c0660188948e601c7a5be655270cb51421551f1460d698791acbbcb3f5c7",
+        "expectedSourceBundleHash": "d8a0a0e7d2b8c5e5d0b7c84a5c88ae57622683b3181da31a8390e347a8196d02",
         "clarificationAnswers": [
           {
             "clarificationId": "search-identity",
@@ -4715,7 +4716,7 @@
       },
       "private": {
         "sourceContentId": "news-feed-timeline",
-        "expectedSourceBundleHash": "ca070d73f0f227441aecf336af6dcffe6a67041f03cbb7a534842660de817948",
+        "expectedSourceBundleHash": "79380efa4a18cff764a87d45c6ffe7d153e1b6deda4925fd50b0eed4c20347fc",
         "clarificationAnswers": [
           {
             "clarificationId": "feed-order-authority",
@@ -6081,7 +6082,7 @@
       },
       "private": {
         "sourceContentId": "dashboard-widgets-draggable-resizable",
-        "expectedSourceBundleHash": "6939eeb2c586bcbeb7540a82433e7a756a55ccbbe26ab0f5ff8c993d9fd1be67",
+        "expectedSourceBundleHash": "5a5d5ceec5b28a72945a4e5620a3dd90c1b30e5f2d36a2a0dd5d498e35e795ad",
         "clarificationAnswers": [
           {
             "clarificationId": "dash-widget-scale",
@@ -7692,7 +7693,7 @@
       },
       "private": {
         "sourceContentId": "image-upload-preview",
-        "expectedSourceBundleHash": "01d2003028ffd4c667cd85656e1360df2dd848ea0e7b910254926e999da4c6b2",
+        "expectedSourceBundleHash": "ba93e8c79ca76b100dafbfef16fad317c1492c224a1a4b43bb1cd47a9e539375",
         "clarificationAnswers": [
           {
             "clarificationId": "upload-file-policy",
@@ -9672,7 +9673,7 @@
       },
       "private": {
         "sourceContentId": "live-chart-high-frequency-updates",
-        "expectedSourceBundleHash": "fdfa012254e114f85ba50919653dc2a80255413ee4ff2c0e6e06160838f33a1c",
+        "expectedSourceBundleHash": "fb847a6c965d71f61718faf456df59d5ca8ae0f1038abf51f6375d25c6375a38",
         "clarificationAnswers": [
           {
             "clarificationId": "chart-workload",

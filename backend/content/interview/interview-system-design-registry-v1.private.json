@@ -1,5 +1,5 @@
 {
-  "definitionHash": "11f54c62023f492f543adba911128ecaec2b32083992f97e5e8222879f290db9",
+  "definitionHash": "ee7e52b34d5a1c1075ceaa5ec50f8bf4bb681ed5149db6d3cf4701e26759e9a4",
   "finalApproval": null,
   "registryId": "interview-system-design-registry-v1",
   "registryVersion": "1.2.0",
@@ -74,7 +74,7 @@
           "status": "passed"
         },
         "contentHash": "34e142b0dd9493b76d6b0689b92be2669910bab90e5970e353857577a8989faf",
-        "definitionHash": "11f54c62023f492f543adba911128ecaec2b32083992f97e5e8222879f290db9",
+        "definitionHash": "ee7e52b34d5a1c1075ceaa5ec50f8bf4bb681ed5149db6d3cf4701e26759e9a4",
         "editorial": {
           "notes": [
             "Checkout guided language matches the resilient checkout static story and links to resilient-checkout-payment-flow without exposing authoring notes.",
@@ -106,7 +106,8 @@
             "2026-10-15 source-pin maintenance review: the int-sd-ai-chat-composer-mid-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
             "2026-10-15 source-pin maintenance review: the int-sd-image-upload-lifecycle-jr-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
             "2026-10-17 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the zalando and booking-com company tags, two public interview-report sources and the matching editorial.companyEvidence entries; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin for int-sd-autocomplete-race-mid-v1. This is not a new release approval.",
-            "2026-10-21 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the agoda company tag, one public interview-report source and the matching editorial.companyEvidence entry, and the ai-chat-textarea-design meta.json source gains the xai company tag, one public interview-report source and the matching editorial.companyEvidence entry; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval."
+            "2026-10-21 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the agoda company tag, one public interview-report source and the matching editorial.companyEvidence entry, and the ai-chat-textarea-design meta.json source gains the xai company tag, one public interview-report source and the matching editorial.companyEvidence entry; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval.",
+            "2026-10-25 source-pin maintenance review: the answer-checkpoint checklist title in optimizations.json changes from slug text to a readable title for realtime-search-debounce-cache, news-feed-timeline, dashboard-widgets-draggable-resizable, image-upload-preview and live-chart-high-frequency-updates (for example \"dashboard widgets draggable resizable answer rubric\" becomes \"Drag-and-drop dashboard answer rubric\"); the checklist items, all other section content and the other source files are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-system-design-technical-v8",
           "reviewerType": "ai",
@@ -1492,7 +1493,7 @@
           "clarificationId": "search-navigation"
         }
       ],
-      "contentHash": "a7d0100b42e598a7fb92043b3d52b7d544a4a9100a8e80cfe1cae5f4e71f725f",
+      "contentHash": "b3f6ec3096dd85fbfae1662122744992397dbda6bd2df9f4cebb26c5eb129b13",
       "id": "int-sd-autocomplete-race-mid-v1",
       "provenance": {
         "authoredAt": "2026-07-29",
@@ -1527,8 +1528,8 @@
           "reviewerType": "ai",
           "status": "passed"
         },
-        "contentHash": "a7d0100b42e598a7fb92043b3d52b7d544a4a9100a8e80cfe1cae5f4e71f725f",
-        "definitionHash": "11f54c62023f492f543adba911128ecaec2b32083992f97e5e8222879f290db9",
+        "contentHash": "b3f6ec3096dd85fbfae1662122744992397dbda6bd2df9f4cebb26c5eb129b13",
+        "definitionHash": "ee7e52b34d5a1c1075ceaa5ec50f8bf4bb681ed5149db6d3cf4701e26759e9a4",
         "editorial": {
           "notes": [
             "Checkout guided language matches the resilient checkout static story and links to resilient-checkout-payment-flow without exposing authoring notes.",
@@ -1560,7 +1561,8 @@
             "2026-10-15 source-pin maintenance review: the int-sd-ai-chat-composer-mid-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
             "2026-10-15 source-pin maintenance review: the int-sd-image-upload-lifecycle-jr-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
             "2026-10-17 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the zalando and booking-com company tags, two public interview-report sources and the matching editorial.companyEvidence entries; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin for int-sd-autocomplete-race-mid-v1. This is not a new release approval.",
-            "2026-10-21 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the agoda company tag, one public interview-report source and the matching editorial.companyEvidence entry, and the ai-chat-textarea-design meta.json source gains the xai company tag, one public interview-report source and the matching editorial.companyEvidence entry; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval."
+            "2026-10-21 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the agoda company tag, one public interview-report source and the matching editorial.companyEvidence entry, and the ai-chat-textarea-design meta.json source gains the xai company tag, one public interview-report source and the matching editorial.companyEvidence entry; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval.",
+            "2026-10-25 source-pin maintenance review: the answer-checkpoint checklist title in optimizations.json changes from slug text to a readable title for realtime-search-debounce-cache, news-feed-timeline, dashboard-widgets-draggable-resizable, image-upload-preview and live-chart-high-frequency-updates (for example \"dashboard widgets draggable resizable answer rubric\" becomes \"Drag-and-drop dashboard answer rubric\"); the checklist items, all other section content and the other source files are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-system-design-technical-v8",
           "reviewerType": "ai",
@@ -1863,7 +1865,7 @@
         ]
       },
       "sourceEvidence": {
-        "bundleHash": "cb62c0660188948e601c7a5be655270cb51421551f1460d698791acbbcb3f5c7",
+        "bundleHash": "d8a0a0e7d2b8c5e5d0b7c84a5c88ae57622683b3181da31a8390e347a8196d02",
         "files": [
           {
             "file": "cdn/questions/system-design/realtime-search-debounce-cache/meta.json",
@@ -1887,7 +1889,7 @@
           },
           {
             "file": "cdn/questions/system-design/realtime-search-debounce-cache/optimizations.json",
-            "sha256": "b154ba18e6f124f1a0f79e889768f70e2b2fdce91ba22701dd2afa1e9ea44c60"
+            "sha256": "29ec981fea9bc3a9875874eb7e6f17b389e42843c3b00e44b3a744b255a2e447"
           }
         ],
         "sourceContentId": "realtime-search-debounce-cache",
@@ -2692,7 +2694,7 @@
           "status": "passed"
         },
         "contentHash": "e75229a1aca9b1c3ff92b5a6d2d244baa40e2ddafbdff41d107514a58073452e",
-        "definitionHash": "11f54c62023f492f543adba911128ecaec2b32083992f97e5e8222879f290db9",
+        "definitionHash": "ee7e52b34d5a1c1075ceaa5ec50f8bf4bb681ed5149db6d3cf4701e26759e9a4",
         "editorial": {
           "notes": [
             "Checkout guided language matches the resilient checkout static story and links to resilient-checkout-payment-flow without exposing authoring notes.",
@@ -2724,7 +2726,8 @@
             "2026-10-15 source-pin maintenance review: the int-sd-ai-chat-composer-mid-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
             "2026-10-15 source-pin maintenance review: the int-sd-image-upload-lifecycle-jr-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
             "2026-10-17 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the zalando and booking-com company tags, two public interview-report sources and the matching editorial.companyEvidence entries; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin for int-sd-autocomplete-race-mid-v1. This is not a new release approval.",
-            "2026-10-21 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the agoda company tag, one public interview-report source and the matching editorial.companyEvidence entry, and the ai-chat-textarea-design meta.json source gains the xai company tag, one public interview-report source and the matching editorial.companyEvidence entry; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval."
+            "2026-10-21 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the agoda company tag, one public interview-report source and the matching editorial.companyEvidence entry, and the ai-chat-textarea-design meta.json source gains the xai company tag, one public interview-report source and the matching editorial.companyEvidence entry; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval.",
+            "2026-10-25 source-pin maintenance review: the answer-checkpoint checklist title in optimizations.json changes from slug text to a readable title for realtime-search-debounce-cache, news-feed-timeline, dashboard-widgets-draggable-resizable, image-upload-preview and live-chart-high-frequency-updates (for example \"dashboard widgets draggable resizable answer rubric\" becomes \"Drag-and-drop dashboard answer rubric\"); the checklist items, all other section content and the other source files are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-system-design-technical-v8",
           "reviewerType": "ai",
@@ -4272,7 +4275,7 @@
           "clarificationId": "dash-accessibility"
         }
       ],
-      "contentHash": "5bd681d66f6274df90633235cba5278bc151694882cf1d041c2b1c873c9b66d8",
+      "contentHash": "0db689fbb4863f9d19b5705b395e25dcdc7128f216505ce994b64ac34841efda",
       "id": "int-sd-dashboard-layout-sr-v1",
       "provenance": {
         "authoredAt": "2026-08-04",
@@ -4307,8 +4310,8 @@
           "reviewerType": "ai",
           "status": "passed"
         },
-        "contentHash": "5bd681d66f6274df90633235cba5278bc151694882cf1d041c2b1c873c9b66d8",
-        "definitionHash": "11f54c62023f492f543adba911128ecaec2b32083992f97e5e8222879f290db9",
+        "contentHash": "0db689fbb4863f9d19b5705b395e25dcdc7128f216505ce994b64ac34841efda",
+        "definitionHash": "ee7e52b34d5a1c1075ceaa5ec50f8bf4bb681ed5149db6d3cf4701e26759e9a4",
         "editorial": {
           "notes": [
             "Checkout guided language matches the resilient checkout static story and links to resilient-checkout-payment-flow without exposing authoring notes.",
@@ -4340,7 +4343,8 @@
             "2026-10-15 source-pin maintenance review: the int-sd-ai-chat-composer-mid-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
             "2026-10-15 source-pin maintenance review: the int-sd-image-upload-lifecycle-jr-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
             "2026-10-17 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the zalando and booking-com company tags, two public interview-report sources and the matching editorial.companyEvidence entries; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin for int-sd-autocomplete-race-mid-v1. This is not a new release approval.",
-            "2026-10-21 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the agoda company tag, one public interview-report source and the matching editorial.companyEvidence entry, and the ai-chat-textarea-design meta.json source gains the xai company tag, one public interview-report source and the matching editorial.companyEvidence entry; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval."
+            "2026-10-21 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the agoda company tag, one public interview-report source and the matching editorial.companyEvidence entry, and the ai-chat-textarea-design meta.json source gains the xai company tag, one public interview-report source and the matching editorial.companyEvidence entry; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval.",
+            "2026-10-25 source-pin maintenance review: the answer-checkpoint checklist title in optimizations.json changes from slug text to a readable title for realtime-search-debounce-cache, news-feed-timeline, dashboard-widgets-draggable-resizable, image-upload-preview and live-chart-high-frequency-updates (for example \"dashboard widgets draggable resizable answer rubric\" becomes \"Drag-and-drop dashboard answer rubric\"); the checklist items, all other section content and the other source files are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-system-design-technical-v8",
           "reviewerType": "ai",
@@ -4715,7 +4719,7 @@
         ]
       },
       "sourceEvidence": {
-        "bundleHash": "6939eeb2c586bcbeb7540a82433e7a756a55ccbbe26ab0f5ff8c993d9fd1be67",
+        "bundleHash": "5a5d5ceec5b28a72945a4e5620a3dd90c1b30e5f2d36a2a0dd5d498e35e795ad",
         "files": [
           {
             "file": "cdn/questions/system-design/dashboard-widgets-draggable-resizable/meta.json",
@@ -4739,7 +4743,7 @@
           },
           {
             "file": "cdn/questions/system-design/dashboard-widgets-draggable-resizable/optimizations.json",
-            "sha256": "5765f3652247298076debbc58f73d7e52d2c85130c1183431570ace0254c0bac"
+            "sha256": "5f66a88c94a01686c4103f098134c60d00b66b83023e9ac18d8a0708622598e9"
           }
         ],
         "sourceContentId": "dashboard-widgets-draggable-resizable",
@@ -5688,7 +5692,7 @@
           "clarificationId": "upload-accessibility"
         }
       ],
-      "contentHash": "2ace4a59c71200a9634e02bd9bd1461606c5d12968f4ca7ee3964e41ad801b7d",
+      "contentHash": "1ae05a5acad3bfe522bff3dd7f6bc1173de71a0a7d16c9a8f6bea37f02236a06",
       "id": "int-sd-image-upload-lifecycle-jr-v1",
       "provenance": {
         "authoredAt": "2026-08-04",
@@ -5723,8 +5727,8 @@
           "reviewerType": "ai",
           "status": "passed"
         },
-        "contentHash": "2ace4a59c71200a9634e02bd9bd1461606c5d12968f4ca7ee3964e41ad801b7d",
-        "definitionHash": "11f54c62023f492f543adba911128ecaec2b32083992f97e5e8222879f290db9",
+        "contentHash": "1ae05a5acad3bfe522bff3dd7f6bc1173de71a0a7d16c9a8f6bea37f02236a06",
+        "definitionHash": "ee7e52b34d5a1c1075ceaa5ec50f8bf4bb681ed5149db6d3cf4701e26759e9a4",
         "editorial": {
           "notes": [
             "Checkout guided language matches the resilient checkout static story and links to resilient-checkout-payment-flow without exposing authoring notes.",
@@ -5756,7 +5760,8 @@
             "2026-10-15 source-pin maintenance review: the int-sd-ai-chat-composer-mid-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
             "2026-10-15 source-pin maintenance review: the int-sd-image-upload-lifecycle-jr-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
             "2026-10-17 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the zalando and booking-com company tags, two public interview-report sources and the matching editorial.companyEvidence entries; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin for int-sd-autocomplete-race-mid-v1. This is not a new release approval.",
-            "2026-10-21 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the agoda company tag, one public interview-report source and the matching editorial.companyEvidence entry, and the ai-chat-textarea-design meta.json source gains the xai company tag, one public interview-report source and the matching editorial.companyEvidence entry; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval."
+            "2026-10-21 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the agoda company tag, one public interview-report source and the matching editorial.companyEvidence entry, and the ai-chat-textarea-design meta.json source gains the xai company tag, one public interview-report source and the matching editorial.companyEvidence entry; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval.",
+            "2026-10-25 source-pin maintenance review: the answer-checkpoint checklist title in optimizations.json changes from slug text to a readable title for realtime-search-debounce-cache, news-feed-timeline, dashboard-widgets-draggable-resizable, image-upload-preview and live-chart-high-frequency-updates (for example \"dashboard widgets draggable resizable answer rubric\" becomes \"Drag-and-drop dashboard answer rubric\"); the checklist items, all other section content and the other source files are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-system-design-technical-v8",
           "reviewerType": "ai",
@@ -6283,7 +6288,7 @@
         ]
       },
       "sourceEvidence": {
-        "bundleHash": "01d2003028ffd4c667cd85656e1360df2dd848ea0e7b910254926e999da4c6b2",
+        "bundleHash": "ba93e8c79ca76b100dafbfef16fad317c1492c224a1a4b43bb1cd47a9e539375",
         "files": [
           {
             "file": "cdn/questions/system-design/image-upload-preview/meta.json",
@@ -6307,7 +6312,7 @@
           },
           {
             "file": "cdn/questions/system-design/image-upload-preview/optimizations.json",
-            "sha256": "d2f6b42935004fbdb7350ffcb478a60cfc1d2472b2d4ae36ff3198f8e0b66e7a"
+            "sha256": "5776fadadabd5e18afd85f3ad6543c0b99d1b7d5e33c3dd6847a4a32cc4af4f6"
           }
         ],
         "sourceContentId": "image-upload-preview",
@@ -7473,7 +7478,7 @@
           "clarificationId": "chart-accessibility"
         }
       ],
-      "contentHash": "051cfb98717b613151e42dc73ecead253abe6edfc92d7883ca41252645a807c8",
+      "contentHash": "039a700e74a9b69ba9fece81061d2620392a170ff335c59fd59d87946cc0d5e3",
       "id": "int-sd-live-chart-pipeline-mid-v1",
       "provenance": {
         "authoredAt": "2026-08-04",
@@ -7508,8 +7513,8 @@
           "reviewerType": "ai",
           "status": "passed"
         },
-        "contentHash": "051cfb98717b613151e42dc73ecead253abe6edfc92d7883ca41252645a807c8",
-        "definitionHash": "11f54c62023f492f543adba911128ecaec2b32083992f97e5e8222879f290db9",
+        "contentHash": "039a700e74a9b69ba9fece81061d2620392a170ff335c59fd59d87946cc0d5e3",
+        "definitionHash": "ee7e52b34d5a1c1075ceaa5ec50f8bf4bb681ed5149db6d3cf4701e26759e9a4",
         "editorial": {
           "notes": [
             "Checkout guided language matches the resilient checkout static story and links to resilient-checkout-payment-flow without exposing authoring notes.",
@@ -7541,7 +7546,8 @@
             "2026-10-15 source-pin maintenance review: the int-sd-ai-chat-composer-mid-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
             "2026-10-15 source-pin maintenance review: the int-sd-image-upload-lifecycle-jr-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
             "2026-10-17 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the zalando and booking-com company tags, two public interview-report sources and the matching editorial.companyEvidence entries; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin for int-sd-autocomplete-race-mid-v1. This is not a new release approval.",
-            "2026-10-21 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the agoda company tag, one public interview-report source and the matching editorial.companyEvidence entry, and the ai-chat-textarea-design meta.json source gains the xai company tag, one public interview-report source and the matching editorial.companyEvidence entry; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval."
+            "2026-10-21 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the agoda company tag, one public interview-report source and the matching editorial.companyEvidence entry, and the ai-chat-textarea-design meta.json source gains the xai company tag, one public interview-report source and the matching editorial.companyEvidence entry; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval.",
+            "2026-10-25 source-pin maintenance review: the answer-checkpoint checklist title in optimizations.json changes from slug text to a readable title for realtime-search-debounce-cache, news-feed-timeline, dashboard-widgets-draggable-resizable, image-upload-preview and live-chart-high-frequency-updates (for example \"dashboard widgets draggable resizable answer rubric\" becomes \"Drag-and-drop dashboard answer rubric\"); the checklist items, all other section content and the other source files are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-system-design-technical-v8",
           "reviewerType": "ai",
@@ -8068,7 +8074,7 @@
         ]
       },
       "sourceEvidence": {
-        "bundleHash": "fdfa012254e114f85ba50919653dc2a80255413ee4ff2c0e6e06160838f33a1c",
+        "bundleHash": "fb847a6c965d71f61718faf456df59d5ca8ae0f1038abf51f6375d25c6375a38",
         "files": [
           {
             "file": "cdn/questions/system-design/live-chart-high-frequency-updates/meta.json",
@@ -8092,7 +8098,7 @@
           },
           {
             "file": "cdn/questions/system-design/live-chart-high-frequency-updates/optimizations.json",
-            "sha256": "191d9127f0a9c5705cb01094c8242bb33b81d385e489bb538595750960bb5568"
+            "sha256": "19639b5a7577fe3ab6fa8193557b339f11f4fd4a78c50e46f791a8d634aa2426"
           }
         ],
         "sourceContentId": "live-chart-high-frequency-updates",
@@ -9168,7 +9174,7 @@
           "clarificationId": "feed-accessibility"
         }
       ],
-      "contentHash": "f54fd3cc3c54b89715b99c6b3f9fe620984b0c55594c999ba8bbb83cdfbd46e5",
+      "contentHash": "32771bddaab564a483db4e25c68a1bafd7370b15bda69ab37a21cef3e706c001",
       "id": "int-sd-ranked-feed-sr-v1",
       "provenance": {
         "authoredAt": "2026-07-29",
@@ -9203,8 +9209,8 @@
           "reviewerType": "ai",
           "status": "passed"
         },
-        "contentHash": "f54fd3cc3c54b89715b99c6b3f9fe620984b0c55594c999ba8bbb83cdfbd46e5",
-        "definitionHash": "11f54c62023f492f543adba911128ecaec2b32083992f97e5e8222879f290db9",
+        "contentHash": "32771bddaab564a483db4e25c68a1bafd7370b15bda69ab37a21cef3e706c001",
+        "definitionHash": "ee7e52b34d5a1c1075ceaa5ec50f8bf4bb681ed5149db6d3cf4701e26759e9a4",
         "editorial": {
           "notes": [
             "Checkout guided language matches the resilient checkout static story and links to resilient-checkout-payment-flow without exposing authoring notes.",
@@ -9236,7 +9242,8 @@
             "2026-10-15 source-pin maintenance review: the int-sd-ai-chat-composer-mid-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
             "2026-10-15 source-pin maintenance review: the int-sd-image-upload-lifecycle-jr-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
             "2026-10-17 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the zalando and booking-com company tags, two public interview-report sources and the matching editorial.companyEvidence entries; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin for int-sd-autocomplete-race-mid-v1. This is not a new release approval.",
-            "2026-10-21 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the agoda company tag, one public interview-report source and the matching editorial.companyEvidence entry, and the ai-chat-textarea-design meta.json source gains the xai company tag, one public interview-report source and the matching editorial.companyEvidence entry; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval."
+            "2026-10-21 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the agoda company tag, one public interview-report source and the matching editorial.companyEvidence entry, and the ai-chat-textarea-design meta.json source gains the xai company tag, one public interview-report source and the matching editorial.companyEvidence entry; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval.",
+            "2026-10-25 source-pin maintenance review: the answer-checkpoint checklist title in optimizations.json changes from slug text to a readable title for realtime-search-debounce-cache, news-feed-timeline, dashboard-widgets-draggable-resizable, image-upload-preview and live-chart-high-frequency-updates (for example \"dashboard widgets draggable resizable answer rubric\" becomes \"Drag-and-drop dashboard answer rubric\"); the checklist items, all other section content and the other source files are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-system-design-technical-v8",
           "reviewerType": "ai",
@@ -9551,7 +9558,7 @@
         ]
       },
       "sourceEvidence": {
-        "bundleHash": "ca070d73f0f227441aecf336af6dcffe6a67041f03cbb7a534842660de817948",
+        "bundleHash": "79380efa4a18cff764a87d45c6ffe7d153e1b6deda4925fd50b0eed4c20347fc",
         "files": [
           {
             "file": "cdn/questions/system-design/news-feed-timeline/meta.json",
@@ -9575,7 +9582,7 @@
           },
           {
             "file": "cdn/questions/system-design/news-feed-timeline/optimizations.json",
-            "sha256": "cf724a129804af10debf9cf7bbd482d46be72c1c54d85371bc5a884403d98120"
+            "sha256": "282ea89a4d35788d720caba656b113f091c9ab03aeb87db063d355bdbc86f5a9"
           }
         ],
         "sourceContentId": "news-feed-timeline",
@@ -10370,7 +10377,7 @@
           "status": "passed"
         },
         "contentHash": "c85817e11c42482db36feeeaa71a0929282060afd2f6a9930c210970b1c3f2bb",
-        "definitionHash": "11f54c62023f492f543adba911128ecaec2b32083992f97e5e8222879f290db9",
+        "definitionHash": "ee7e52b34d5a1c1075ceaa5ec50f8bf4bb681ed5149db6d3cf4701e26759e9a4",
         "editorial": {
           "notes": [
             "Checkout guided language matches the resilient checkout static story and links to resilient-checkout-payment-flow without exposing authoring notes.",
@@ -10402,7 +10409,8 @@
             "2026-10-15 source-pin maintenance review: the int-sd-ai-chat-composer-mid-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
             "2026-10-15 source-pin maintenance review: the int-sd-image-upload-lifecycle-jr-v1 source meta.json public source list gains a company field naming the company each account concerns; all section files, the practice contract and every block value are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin. This is not a new release approval.",
             "2026-10-17 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the zalando and booking-com company tags, two public interview-report sources and the matching editorial.companyEvidence entries; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures, and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pin for int-sd-autocomplete-race-mid-v1. This is not a new release approval.",
-            "2026-10-21 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the agoda company tag, one public interview-report source and the matching editorial.companyEvidence entry, and the ai-chat-textarea-design meta.json source gains the xai company tag, one public interview-report source and the matching editorial.companyEvidence entry; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval."
+            "2026-10-21 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the agoda company tag, one public interview-report source and the matching editorial.companyEvidence entry, and the ai-chat-textarea-design meta.json source gains the xai company tag, one public interview-report source and the matching editorial.companyEvidence entry; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval.",
+            "2026-10-25 source-pin maintenance review: the answer-checkpoint checklist title in optimizations.json changes from slug text to a readable title for realtime-search-debounce-cache, news-feed-timeline, dashboard-widgets-draggable-resizable, image-upload-preview and live-chart-high-frequency-updates (for example \"dashboard widgets draggable resizable answer rubric\" becomes \"Drag-and-drop dashboard answer rubric\"); the checklist items, all other section content and the other source files are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval."
           ],
           "reviewer": "codex-system-design-technical-v8",
           "reviewerType": "ai",

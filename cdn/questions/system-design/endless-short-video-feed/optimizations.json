@@ -182,7 +182,7 @@
     },
     {
       "type": "checklist",
-      "title": "endless short video feed answer rubric",
+      "title": "Short-video feed answer rubric",
       "items": [
         "Must — Keep a bounded active media window while preserving server item identity and cursor order.",
         "Must — Pause playback and release expensive media resources when an item leaves the active slot.",
