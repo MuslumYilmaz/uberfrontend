@@ -3383,7 +3383,7 @@ test.describe('seo-ssr', () => {
       'aria-busy',
       'status announcements',
       'visible Load More',
-      'persistent page URLs',
+      'item permalinks',
       'sequential links',
       'DOM node count',
       'long tasks',
@@ -3471,7 +3471,7 @@ test.describe('seo-ssr', () => {
       'tool call inspector',
       'human-in-the-loop approval UI',
       'real-time trace streaming',
-      'OpenTelemetry GenAI spans',
+      'OpenTelemetry GenAI agent spans',
       'virtualized treegrid',
     ].forEach((phrase) => {
       const normalizedPhrase = normalizeText(phrase);
