@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard drag benchmark</title>
+<style>
+  body { margin: 0; font: 13px/1.35 system-ui, sans-serif; background: #f8fafc; color: #172033; }
+  #board { display: grid; grid-template-columns: repeat(12, 1fr); grid-auto-rows: 120px; gap: 8px; padding: 8px; }
+  .widget { position: relative; display: flex; flex-direction: column; min-width: 0; padding: 8px; border: 1px solid #cbd5e1; border-radius: 8px; background: #fff; }
+  .widget.dragging { z-index: 2; box-shadow: 0 8px 24px rgb(0 0 0 / 0.18); will-change: transform; }
+  .handle { cursor: grab; touch-action: none; font-weight: 600; margin-bottom: 4px; user-select: none; }
+  .chart { flex: 1; min-height: 0; width: 100%; }
+  table { width: 100%; border-collapse: collapse; font-size: 11px; }
+  td { padding: 0 4px; border-top: 1px solid #e2e8f0; }
+</style>
+</head>
+<body>
+<div id="board"></div>
+<script>
+// One dashboard, three ways to handle a drag of widget 0:
+//   rerender  - every pointermove updates state and re-renders the whole board
+//   grid      - every pointermove writes the candidate cell to grid-column/grid-row
+//   transform - pointermove stores the latest point; one rAF moves a transform
+//               preview and the grid cell is committed once on pointerup
+const params = new URLSearchParams(location.search);
+const MODE = params.get('mode') || 'transform';
+const COLUMNS = 12;
+const WIDGETS = Number(params.get('widgets') || 24);
+const BARS = 120;
+
+function mulberry32(seed) {
+  return function next() {
+    seed |= 0; seed = (seed + 0x6d2b79f5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+const rand = mulberry32(7);
+const widgets = Array.from({ length: WIDGETS }, (_, index) => ({
+  id: index,
+  x: (index % 4) * 3,
+  y: Math.floor(index / 4) * 2,
+  w: 3,
+  h: 2,
+  values: Array.from({ length: BARS }, () => Math.round(10 + rand() * 90)),
+  rows: Array.from({ length: 6 }, (_, row) => [`Metric ${row + 1}`, (rand() * 1000).toFixed(0), `${(rand() * 20 - 10).toFixed(1)}%`]),
+}));
+
+function widgetHtml(widget) {
+  const barWidth = 100 / BARS;
+  const bars = widget.values.map((value, index) => (
+    `<rect x="${(index * barWidth).toFixed(2)}" y="${100 - value}" width="${(barWidth * 0.8).toFixed(2)}" height="${value}" fill="#315ee8"></rect>`
+  )).join('');
+  const rows = widget.rows.map((row) => `<tr><td>${row[0]}</td><td>${row[1]}</td><td>${row[2]}</td></tr>`).join('');
+  return `<div class="widget" data-id="${widget.id}" style="grid-column:${widget.x + 1} / span ${widget.w};grid-row:${widget.y + 1} / span ${widget.h}">`
+    + `<div class="handle">Widget ${widget.id + 1}</div>`
+    + `<svg class="chart" viewBox="0 0 100 100" preserveAspectRatio="none">${bars}</svg>`
+    + `<table><tbody>${rows}</tbody></table></div>`;
+}
+
+const board = document.getElementById('board');
+function renderBoard() {
+  board.innerHTML = widgets.map(widgetHtml).join('');
+}
+renderBoard();
+
+let metrics = null;
+let drag = null;
+const boardRect = () => board.getBoundingClientRect();
+function cellFromPoint(clientX, clientY) {
+  const rect = boardRect();
+  const columnWidth = (rect.width - 16) / COLUMNS;
+  const x = Math.max(0, Math.min(COLUMNS - drag.widget.w, Math.floor((clientX - rect.left - drag.offsetX) / columnWidth)));
+  const y = Math.max(0, Math.floor((clientY - rect.top - drag.offsetY) / 128));
+  return { x, y };
+}
+function placeElement(element, widget) {
+  element.style.gridColumn = `${widget.x + 1} / span ${widget.w}`;
+  element.style.gridRow = `${widget.y + 1} / span ${widget.h}`;
+}
+
+board.addEventListener('pointerdown', (event) => {
+  const handle = event.target.closest('.handle');
+  if (!handle) return;
+  const element = handle.closest('.widget');
+  const widget = widgets[Number(element.dataset.id)];
+  const rect = element.getBoundingClientRect();
+  element.setPointerCapture(event.pointerId);
+  element.classList.add('dragging');
+  drag = { widget, element, startX: event.clientX, startY: event.clientY, offsetX: event.clientX - rect.left, offsetY: event.clientY - rect.top, latest: null, frameQueued: false };
+  metrics = { moves: 0, handlerMs: [], frames: [], longFrames: [], lastFrame: null, recording: true };
+  const observer = new PerformanceObserver((list) => {
+    for (const entry of list.getEntries()) metrics.longFrames.push(entry.duration);
+  });
+  try { observer.observe({ type: 'long-animation-frame' }); } catch {}
+  metrics.observer = observer;
+  const tick = (timestamp) => {
+    if (!metrics?.recording) return;
+    if (metrics.lastFrame !== null) metrics.frames.push(timestamp - metrics.lastFrame);
+    metrics.lastFrame = timestamp;
+    requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+});
+
+board.addEventListener('pointermove', (event) => {
+  if (!drag) return;
+  const start = performance.now();
+  metrics.moves += 1;
+  if (MODE === 'transform') {
+    drag.latest = { x: event.clientX, y: event.clientY };
+    if (!drag.frameQueued) {
+      drag.frameQueued = true;
+      requestAnimationFrame(() => {
+        drag.frameQueued = false;
+        const point = drag.latest;
+        drag.element.style.transform = `translate(${point.x - drag.startX}px, ${point.y - drag.startY}px)`;
+      });
+    }
+  } else {
+    const cell = cellFromPoint(event.clientX, event.clientY);
+    drag.widget.x = cell.x;
+    drag.widget.y = cell.y;
+    if (MODE === 'grid') {
+      placeElement(drag.element, drag.widget);
+    } else {
+      renderBoard();
+      drag.element = board.querySelector(`[data-id="${drag.widget.id}"]`);
+      drag.element.classList.add('dragging');
+    }
+    void board.offsetHeight;
+  }
+  metrics.handlerMs.push(performance.now() - start);
+});
+
+board.addEventListener('pointerup', (event) => {
+  if (!drag) return;
+  const start = performance.now();
+  if (MODE === 'transform') {
+    const cell = cellFromPoint(event.clientX, event.clientY);
+    drag.widget.x = cell.x;
+    drag.widget.y = cell.y;
+    drag.element.style.transform = '';
+    placeElement(drag.element, drag.widget);
+    void board.offsetHeight;
+  }
+  drag.element.classList.remove('dragging');
+  metrics.commitMs = performance.now() - start;
+  drag = null;
+  setTimeout(() => {
+    metrics.recording = false;
+    metrics.observer.disconnect();
+  }, 300);
+});
+
+window.__bench = {
+  mode: MODE,
+  domNodes: () => document.getElementsByTagName('*').length,
+  handleCenter: (id) => {
+    const rect = board.querySelector(`[data-id="${id}"] .handle`).getBoundingClientRect();
+    return { x: rect.left + 20, y: rect.top + rect.height / 2 };
+  },
+  result: () => {
+    const frames = [...metrics.frames].sort((a, b) => a - b);
+    const handler = [...metrics.handlerMs].sort((a, b) => a - b);
+    return {
+      moves: metrics.moves,
+      frames: frames.length,
+      p95FrameMs: frames[Math.floor(frames.length * 0.95)] ?? 0,
+      slowFrameShare: frames.filter((delta) => delta > 20).length / Math.max(1, frames.length),
+      longAnimationFrameMs: metrics.longFrames.reduce((sum, value) => sum + value, 0),
+      handlerMedianMs: handler[Math.floor(handler.length / 2)] ?? 0,
+      handlerTotalMs: metrics.handlerMs.reduce((sum, value) => sum + value, 0),
+      commitMs: metrics.commitMs ?? 0,
+    };
+  },
+};
+window.__ready = true;
+</script>
+</body>
+</html>

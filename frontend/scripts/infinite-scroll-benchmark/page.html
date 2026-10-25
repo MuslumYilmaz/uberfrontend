@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Infinite scroll benchmark</title>
+<style>
+  body { margin: 0; font: 14px/1.4 system-ui, sans-serif; background: #fff; color: #172033; }
+  header { position: sticky; top: 0; z-index: 1; height: 48px; display: flex; align-items: center; padding: 0 16px; background: #f1f5f9; }
+  #list { position: relative; max-width: 720px; margin: 0 auto; padding: 0; list-style: none; }
+  .row { box-sizing: border-box; height: 112px; display: flex; gap: 12px; padding: 12px 16px; border-bottom: 1px solid #e2e8f0; background: #fff; }
+  .mode-cv .row { content-visibility: auto; contain-intrinsic-size: auto 112px; }
+  .mode-window .row { position: absolute; top: 0; left: 0; right: 0; }
+  .avatar { flex: none; width: 40px; height: 40px; border-radius: 50%; background: #cbd5e1; }
+  .content { flex: 1; min-width: 0; }
+  .title { margin: 0 0 4px; font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .body { margin: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .meta { display: flex; gap: 12px; margin-top: 6px; font-size: 12px; color: #526078; }
+  .like { font: inherit; border: 0; background: none; padding: 0; color: inherit; cursor: pointer; }
+  .like.on { color: #315ee8; font-weight: 600; }
+</style>
+</head>
+<body>
+<header>Feed <span id="likes" style="margin-left:auto">0 likes</span></header>
+<ul id="list"></ul>
+<script>
+// One page, three ways to keep N feed rows on screen. Row height is fixed at
+// 112px in every mode so the comparison isolates DOM size, not measurement.
+//   plain  - every loaded row stays mounted
+//   cv     - every row stays mounted with content-visibility: auto
+//   window - only rows near the viewport are mounted (fixed-size windowing)
+const params = new URLSearchParams(location.search);
+const MODE = params.get('mode') || 'plain';
+const COUNT = Number(params.get('n') || 500);
+const ROW = 112;
+const OVERSCAN = 6;
+const PAGE = 20;
+document.body.classList.add(`mode-${MODE}`);
+
+function mulberry32(seed) {
+  return function next() {
+    seed |= 0; seed = (seed + 0x6d2b79f5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+const rand = mulberry32(42);
+const WORDS = ('cursor page scroll anchor render layout paint frame event list row item feed state cache retry ' +
+  'request response stream browser network server client focus status update merge order filter query ' +
+  'signal abort window range measure height offset viewport sentinel observer reader comment author ' +
+  'image media video preview thread reply share save search result label visible hidden stable').split(' ');
+const NAMES = ['Ada', 'Grace', 'Linus', 'Margaret', 'Ken', 'Barbara', 'Dennis', 'Frances', 'Alan', 'Radia'];
+const pick = (list) => list[Math.floor(rand() * list.length)];
+const sentence = (min, max) => {
+  const length = min + Math.floor(rand() * (max - min + 1));
+  return Array.from({ length }, () => pick(WORDS)).join(' ');
+};
+let nextId = 0;
+function makeItem() {
+  const id = nextId++;
+  return { id, title: sentence(5, 9), body: sentence(20, 60), author: pick(NAMES), minutes: 1 + Math.floor(rand() * 600), liked: false };
+}
+const items = Array.from({ length: COUNT }, makeItem);
+let likes = 0;
+
+function createRow() {
+  const li = document.createElement('li');
+  li.className = 'row';
+  const avatar = document.createElement('div');
+  avatar.className = 'avatar';
+  const content = document.createElement('div');
+  content.className = 'content';
+  const title = document.createElement('h3');
+  title.className = 'title';
+  const body = document.createElement('p');
+  body.className = 'body';
+  const meta = document.createElement('div');
+  meta.className = 'meta';
+  const author = document.createElement('span');
+  const time = document.createElement('time');
+  const like = document.createElement('button');
+  like.type = 'button';
+  like.className = 'like';
+  meta.append(author, time, like);
+  content.append(title, body, meta);
+  li.append(avatar, content);
+  return li;
+}
+
+function fillRow(li, item) {
+  li.dataset.id = String(item.id);
+  const [, content] = li.children;
+  const [title, body, meta] = content.children;
+  const [author, time, like] = meta.children;
+  title.textContent = item.title;
+  body.textContent = item.body;
+  author.textContent = item.author;
+  time.textContent = `${item.minutes} min ago`;
+  like.textContent = item.liked ? 'Liked' : 'Like';
+  like.classList.toggle('on', item.liked);
+  return li;
+}
+
+const list = document.getElementById('list');
+const likesLabel = document.getElementById('likes');
+list.addEventListener('click', (event) => {
+  const button = event.target.closest('.like');
+  if (!button) return;
+  const item = items[Number(button.closest('.row').dataset.id)];
+  item.liked = !item.liked;
+  likes += item.liked ? 1 : -1;
+  button.textContent = item.liked ? 'Liked' : 'Like';
+  button.classList.toggle('on', item.liked);
+  likesLabel.textContent = `${likes} likes`;
+});
+
+// Windowing: a pool of row elements is positioned inside a list whose height
+// stands in for every loaded row.
+const pool = [];
+let windowStart = -1;
+let windowEnd = -1;
+let renderQueued = false;
+function renderWindow(force = false) {
+  const top = list.getBoundingClientRect().top + scrollY;
+  const first = Math.max(0, Math.floor((scrollY - top) / ROW) - OVERSCAN);
+  const visible = Math.ceil(innerHeight / ROW) + OVERSCAN * 2;
+  const last = Math.min(items.length, first + visible);
+  if (!force && first === windowStart && last === windowEnd) return;
+  windowStart = first;
+  windowEnd = last;
+  const needed = last - first;
+  while (pool.length < needed) {
+    const li = createRow();
+    pool.push(li);
+    list.append(li);
+  }
+  for (let index = 0; index < pool.length; index += 1) {
+    const li = pool[index];
+    if (index < needed) {
+      const itemIndex = first + index;
+      fillRow(li, items[itemIndex]);
+      li.style.transform = `translateY(${itemIndex * ROW}px)`;
+      li.hidden = false;
+    } else {
+      li.hidden = true;
+    }
+  }
+}
+function queueWindow() {
+  if (renderQueued) return;
+  renderQueued = true;
+  requestAnimationFrame(() => {
+    renderQueued = false;
+    renderWindow();
+  });
+}
+
+const nextFrame = () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+const median = (values) => {
+  const sorted = [...values].sort((a, b) => a - b);
+  const middle = Math.floor(sorted.length / 2);
+  return sorted.length % 2 ? sorted[middle] : (sorted[middle - 1] + sorted[middle]) / 2;
+};
+
+async function build() {
+  const start = performance.now();
+  if (MODE === 'window') {
+    list.style.height = `${items.length * ROW}px`;
+    renderWindow(true);
+    addEventListener('scroll', queueWindow, { passive: true });
+  } else {
+    const fragment = document.createDocumentFragment();
+    for (const item of items) fragment.append(fillRow(createRow(), item));
+    list.append(fragment);
+  }
+  await nextFrame();
+  return performance.now() - start;
+}
+
+// Append one page of PAGE rows while the viewport is at the end of the list,
+// as an infinite-scroll load would. The timing covers DOM work plus the forced
+// style and layout pass; paint is not included.
+async function appendPage() {
+  scrollTo(0, document.documentElement.scrollHeight);
+  await nextFrame();
+  const start = performance.now();
+  const added = Array.from({ length: PAGE }, makeItem);
+  items.push(...added);
+  if (MODE === 'window') {
+    list.style.height = `${items.length * ROW}px`;
+    renderWindow(true);
+  } else {
+    const fragment = document.createDocumentFragment();
+    for (const item of added) fragment.append(fillRow(createRow(), item));
+    list.append(fragment);
+  }
+  void document.documentElement.offsetHeight;
+  const elapsed = performance.now() - start;
+  await nextFrame();
+  return elapsed;
+}
+
+// Scroll at a constant 48px per frame and record frame-to-frame time plus
+// long animation frames reported by the browser.
+async function scrollRun(durationMs = 3000) {
+  scrollTo(0, 0);
+  await nextFrame();
+  const longFrames = [];
+  const observer = new PerformanceObserver((list) => {
+    for (const entry of list.getEntries()) longFrames.push(entry.duration);
+  });
+  try { observer.observe({ type: 'long-animation-frame' }); } catch {}
+  const deltas = [];
+  await new Promise((resolve) => {
+    let previous = null;
+    const startedAt = performance.now();
+    function step(timestamp) {
+      if (previous !== null) deltas.push(timestamp - previous);
+      previous = timestamp;
+      if (timestamp - startedAt >= durationMs) { resolve(); return; }
+      scrollBy(0, 48);
+      requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  });
+  await nextFrame();
+  observer.disconnect();
+  const sorted = [...deltas].sort((a, b) => a - b);
+  return {
+    frames: deltas.length,
+    p95FrameMs: sorted[Math.floor(sorted.length * 0.95)] ?? 0,
+    slowFrameShare: deltas.filter((delta) => delta > 20).length / Math.max(1, deltas.length),
+    longAnimationFrames: longFrames.length,
+    longAnimationFrameMs: longFrames.reduce((sum, value) => sum + value, 0),
+  };
+}
+
+// Event Timing entries for the Like clicks the runner performs with real input.
+const interactionDurations = [];
+new PerformanceObserver((list) => {
+  for (const entry of list.getEntries()) {
+    if (entry.name === 'click' && entry.interactionId) interactionDurations.push(entry.duration);
+  }
+}).observe({ type: 'event', durationThreshold: 16, buffered: true });
+
+window.__bench = {
+  mode: MODE,
+  count: COUNT,
+  build,
+  appendPage,
+  scrollRun,
+  median,
+  domNodes: () => document.getElementsByTagName('*').length,
+  interactions: () => [...interactionDurations],
+  likeButtonCenter: () => {
+    const rows = [...list.querySelectorAll('.row')].filter((row) => !row.hidden);
+    const middle = innerHeight / 2;
+    const row = rows.find((candidate) => {
+      const rect = candidate.getBoundingClientRect();
+      return rect.top <= middle && rect.bottom >= middle;
+    }) || rows[0];
+    const rect = row.querySelector('.like').getBoundingClientRect();
+    return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+  },
+};
+window.__ready = true;
+</script>
+</body>
+</html>
