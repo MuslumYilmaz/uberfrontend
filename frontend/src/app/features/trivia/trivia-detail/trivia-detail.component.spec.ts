@@ -919,6 +919,33 @@ describe('TriviaDetailComponent', () => {
     expect(root.querySelector('.blocks')?.textContent || '').toContain('<a href="javascript:alert(1)"');
   });
 
+  it('keeps consecutive markdown list items in one list so ordered numbering continues', async () => {
+    const fixture = await createLoadedFixture('free', {
+      answer: {
+        blocks: [
+          {
+            type: 'text',
+            text:
+              'Each loop turn:\n1. Run the current task.\n2. Drain microtasks.\n3. Render if needed.\n\nWatch for:\n- Long tasks\n- Starved rendering',
+          },
+        ],
+      },
+    });
+
+    const root = fixture.nativeElement as HTMLElement;
+    const orderedLists = Array.from(root.querySelectorAll('.blocks ol.md-ol'));
+    const unorderedLists = Array.from(root.querySelectorAll('.blocks ul.md-ul'));
+
+    expect(orderedLists.length).toBe(1);
+    expect(Array.from(orderedLists[0].querySelectorAll('li')).map((li) => li.textContent?.trim())).toEqual([
+      'Run the current task.',
+      'Drain microtasks.',
+      'Render if needed.',
+    ]);
+    expect(unorderedLists.length).toBe(1);
+    expect(unorderedLists[0].querySelectorAll('li').length).toBe(2);
+  });
+
   it('renders async race answer section headings as H3', async () => {
     const fixture = await createLoadedFixture('free', {
       id: 'js-async-race-conditions',

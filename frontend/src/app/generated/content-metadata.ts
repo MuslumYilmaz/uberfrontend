@@ -1584,6 +1584,12 @@ export const SHOWCASE_STATS = {
       "trivia": 3,
       "system": 2
     },
+    "crowdstrike": {
+      "all": 9,
+      "coding": 1,
+      "trivia": 6,
+      "system": 2
+    },
     "datadog": {
       "all": 8,
       "coding": 6,

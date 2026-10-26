@@ -95,6 +95,10 @@ const publicCopyCases = [
     expected: 'What Capital One frontend loops reward: designing a card application out loud and reading code critically',
   },
   {
+    path: '/companies/crowdstrike/preview',
+    expected: 'What CrowdStrike frontend loops reward: a take-home you can defend and precise web fundamentals',
+  },
+  {
     path: '/system-design',
     expected: 'Follow this four-step path when you are new to the bank',
   },

@@ -11,7 +11,8 @@
   ],
   "companies": [
     "intuit",
-    "capital-one"
+    "capital-one",
+    "crowdstrike"
   ],
   "sections": [
     {
@@ -78,6 +79,13 @@
         "sourceUrl": "https://www.jointaro.com/interviews/companies/capital-one/experiences/senior-software-engineer-united-states-august-1-2022-accepted-offer-neutral-9d67e812/",
         "sourceTitle": "Capital One senior software engineer interview for a frontend position, 2022 (Taro)",
         "checkedAt": "2026-10-23"
+      },
+      {
+        "company": "crowdstrike",
+        "evidenceType": "reported-interview-question",
+        "sourceUrl": "https://www.jointaro.com/interviews/companies/crowdstrike/experiences/engineering-manager-frontend-united-states-september-3-2025-accepted-offer-neutral-6cbb594c/",
+        "sourceTitle": "CrowdStrike frontend engineering manager interview, United States, 2025 (Taro)",
+        "checkedAt": "2026-10-26"
       }
     ]
   },
@@ -105,6 +113,14 @@
       "publisher": "Taro",
       "date": "2022-08",
       "note": "The second technical round was a frontend design prompt to build a single-page application, covering component structure, routing, data flow, Redux and API calls. This case practises structuring an app from requirements."
+    },
+    {
+      "label": "Taro: CrowdStrike frontend engineering manager interview, United States, 2025",
+      "url": "https://www.jointaro.com/interviews/companies/crowdstrike/experiences/engineering-manager-frontend-united-states-september-3-2025-accepted-offer-neutral-6cbb594c/",
+      "company": "crowdstrike",
+      "publisher": "Taro",
+      "date": "2025-09",
+      "note": "The take-home asked for a table of downloadable files coded from a screenshot; the follow-up covered design changes, filtering, sorting and thousands of entries. This case practises deriving components and state from a mock; it is not the reported task."
     }
   ]
 }

@@ -519,6 +519,19 @@
     "technology": "html",
     "difficulty": "intermediate",
     "importance": 5,
+    "companies": [
+      "crowdstrike"
+    ],
+    "sources": [
+      {
+        "label": "Taro: CrowdStrike frontend engineering manager interview, United States, 2025",
+        "url": "https://www.jointaro.com/interviews/companies/crowdstrike/experiences/engineering-manager-frontend-united-states-september-3-2025-accepted-offer-neutral-6cbb594c/",
+        "company": "crowdstrike",
+        "publisher": "Taro",
+        "date": "2025-09",
+        "note": "The take-home asked for a table of downloadable files and their details, coded from a screenshot, and the listed questions include accessibility concerns. This exercise practises the semantic table markup; it is not the reported task."
+      }
+    ],
     "tags": [
       "html",
       "tables",

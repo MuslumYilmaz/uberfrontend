@@ -719,6 +719,9 @@
       "state-management",
       "api-calls"
     ],
+    "companies": [
+      "crowdstrike"
+    ],
     "type": "system-design",
     "access": "premium",
     "updatedAt": "2026-08-06",
@@ -831,7 +834,8 @@
     ],
     "companies": [
       "intuit",
-      "capital-one"
+      "capital-one",
+      "crowdstrike"
     ],
     "type": "system-design",
     "access": "premium",

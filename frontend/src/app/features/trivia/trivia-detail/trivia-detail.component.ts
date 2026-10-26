@@ -2645,11 +2645,18 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     // Normalize CRLF
     let text = raw.replace(/\r\n?/g, '\n');
 
-    // Ensure list/heading/quote starters begin a new paragraph
-    text = text.replace(
-      /([^\n])\n(?=([ \t]{0,3}(?:\d+\.\s|[-*]\s|#{1,3}\s|>\s)))/g,
-      '$1\n\n'
-    );
+    // Ensure list/heading/quote starters begin a new paragraph, but keep
+    // consecutive list items together so they render as one list
+    const listItemRe = /^[ \t]{0,3}(?:\d+\.\s|[-*]\s)/;
+    const blockStarterRe = /^[ \t]{0,3}(?:\d+\.\s|[-*]\s|#{1,3}\s|>\s)/;
+    const sourceLines: string[] = text.split('\n');
+    text = sourceLines
+      .map((line, index) => {
+        const prev = index > 0 ? sourceLines[index - 1] : '';
+        const continuesList = listItemRe.test(prev) && listItemRe.test(line);
+        return prev !== '' && blockStarterRe.test(line) && !continuesList ? `\n${line}` : line;
+      })
+      .join('\n');
 
     // -------- 1) Extract fenced code blocks into placeholders --------
     const blocks: string[] = [];
