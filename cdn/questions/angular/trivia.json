@@ -4302,6 +4302,48 @@
         },
         {
           "type": "text",
+          "text": "## More RxJS interview questions\n\nEach question below builds on the Observable basics above and links to its full answer."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Interview question",
+            "Short answer"
+          ],
+          "rows": [
+            [
+              "<a href=\"/angular/trivia/rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use\">When do you use switchMap, mergeMap, concatMap or exhaustMap?</a>",
+              "Pick by what should happen to work already in flight: <code>switchMap</code> cancels it, <code>mergeMap</code> runs alongside it, <code>concatMap</code> queues behind it, and <code>exhaustMap</code> ignores new triggers until it finishes."
+            ],
+            [
+              "<a href=\"/angular/trivia/rxjs-subject-vs-behaviorsubject-vs-replaysubject-vs-asyncsubject\">Subject vs BehaviorSubject vs ReplaySubject vs AsyncSubject: which one when?</a>",
+              "They differ in what a late subscriber receives: <code>Subject</code> for fire-and-forget events, <code>BehaviorSubject</code> for current state, <code>ReplaySubject</code> for bounded history, and <code>AsyncSubject</code> for the final value on completion."
+            ],
+            [
+              "<a href=\"/angular/trivia/rxjs-tap-vs-map-angular-when-to-use\">tap vs map: when do you use each?</a>",
+              "<code>map</code> transforms the value that moves downstream; <code>tap</code> observes the same value for side effects such as logging, analytics, or loading flags."
+            ],
+            [
+              "<a href=\"/angular/trivia/rxjs-sharereplay-angular-how-it-breaks-your-app\">What is shareReplay, and how can it break your app?</a>",
+              "It can cache one HTTP result for many subscribers, but it can also serve stale data or keep a subscription alive. The real question is when the shared subscription resets."
+            ],
+            [
+              "<a href=\"/angular/trivia/angular-http-what-actually-cancels-request\">Does unsubscribing from HttpClient cancel the request?</a>",
+              "Unsubscribing from an active request tears down the subscription and aborts the client request. It does not prove the server stopped working or that stale UI is impossible."
+            ],
+            [
+              "<a href=\"/angular/trivia/angular-prevent-memory-leaks-unsubscribe-patterns\">How do you prevent memory leaks from subscriptions?</a>",
+              "Most leaks come from long-lived streams, global listeners, or timers that outlive a component. Know when <code>AsyncPipe</code>, <code>takeUntilDestroyed</code>, or manual teardown matters, and when an HTTP call completes on its own."
+            ],
+            [
+              "<a href=\"/tradeoffs/async-pipe-vs-manual-subscribe-angular\">Async pipe or manual subscribe for UI data?</a>",
+              "Use the async pipe when the template is the real consumer of the stream. Subscribe manually when the component must do something imperative on each emission, such as patching a form or firing analytics."
+            ]
+          ],
+          "stackOnMobile": true
+        },
+        {
+          "type": "text",
           "text": "<strong>Summary</strong><br><br>Observables are RxJS streams used throughout Angular. Key points: they’re lazy, can emit multiple values, and support teardown via unsubscribe. In Angular, prefer composition with operators + <code>async</code> pipe (or <code>takeUntilDestroyed</code> for imperative subscriptions). Know cold vs hot and pick the right flattening operator (<code>switchMap/mergeMap/concatMap/exhaustMap</code>) to control cancellation and concurrency."
         }
       ]
@@ -4335,7 +4377,7 @@
       "async",
       "basics"
     ],
-    "updatedAt": "2026-10-09",
+    "updatedAt": "2026-10-26",
     "seo": {
       "title": "Observables in Angular: RxJS, Signals, and Cancellation",
       "description": "Explain Angular Observables through real app concerns: when RxJS still beats signals, how async pipe and cancellation work, and how shared streams behave with shareReplay."
