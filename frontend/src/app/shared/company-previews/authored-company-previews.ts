@@ -13,6 +13,7 @@ import { SHOPEE_COMPANY_PREVIEW } from './shopee-preview-content';
 import { ANDURIL_COMPANY_PREVIEW } from './anduril-preview-content';
 import { GITLAB_COMPANY_PREVIEW } from './gitlab-preview-content';
 import { CAPITALONE_COMPANY_PREVIEW } from './capital-one-preview-content';
+import { CROWDSTRIKE_COMPANY_PREVIEW } from './crowdstrike-preview-content';
 import { SPOTIFY_COMPANY_PREVIEW } from './spotify-preview-content';
 import { WAYMO_COMPANY_PREVIEW } from './waymo-preview-content';
 import { XAI_COMPANY_PREVIEW } from './xai-preview-content';
@@ -41,6 +42,7 @@ export const AUTHORED_COMPANY_PREVIEWS: Readonly<Record<string, AuthoredCompanyP
   anduril: ANDURIL_COMPANY_PREVIEW,
   gitlab: GITLAB_COMPANY_PREVIEW,
   'capital-one': CAPITALONE_COMPANY_PREVIEW,
+  crowdstrike: CROWDSTRIKE_COMPANY_PREVIEW,
 };
 
 export type AuthoredCompanyPreviewRegistry = Readonly<Record<string, AuthoredCompanyPreview>>;

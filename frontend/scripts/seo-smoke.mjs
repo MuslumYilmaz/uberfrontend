@@ -740,6 +740,48 @@ const AUTHORED_GUIDE_SMOKE = [
     reportUrl:
       'https://www.jointaro.com/interviews/companies/capital-one/experiences/senior-frontend-engineer-washington-dc-july-1-2024-no-offer-neutral-3e4968d4/',
   },
+  {
+    label: 'CrowdStrike',
+    route: '/companies/crowdstrike/preview',
+    title: 'CrowdStrike Frontend Interview Questions: 5 Prompts + Guide',
+    description:
+      'Prepare for a CrowdStrike frontend interview with 5 practice prompts: the file table take-home, its review round, web fundamentals and security questions.',
+    h1: 'CrowdStrike Frontend Interview Questions',
+    kicker: 'Public CrowdStrike prep guide',
+    headings: [
+      'What CrowdStrike frontend loops reward: a take-home you can defend and precise web fundamentals',
+      'What the public accounts establish',
+      'Ember, React and very large data as practice contexts',
+      'Five CrowdStrike frontend interview practice questions',
+      'Scope select all across pages before you code',
+      'A 7-day CrowdStrike frontend interview preparation plan',
+      'Common CrowdStrike frontend interview preparation questions',
+      'Build the underlying skills with free practice',
+      'Sources and evidence limits',
+    ],
+    trustFragment: 'not leaked, confirmed or official CrowdStrike questions',
+    prompts: [
+      { id: 'downloadable-files-table-select-all', title: 'Build a downloadable-files table with select all' },
+      { id: 'take-home-review-defend-extend', title: 'Defend and extend your take-home in review' },
+      { id: 'web-fundamentals-rapid-round', title: 'Web fundamentals rapid round' },
+      { id: 'explain-xss-and-cors', title: 'Explain XSS and CORS for a security product' },
+      { id: 'real-time-dashboard-stays-fast', title: 'Design a real-time dashboard that stays fast' },
+    ],
+    resources: [
+      '/html/coding/html-tables-accessibility',
+      '/system-design/infinite-scroll-list',
+      '/javascript/coding/js-poll-until',
+      '/javascript/trivia/js-event-delegation',
+      '/javascript/trivia/js-block-scoped-or-function-scoped',
+      '/css/trivia/css-box-model',
+      '/javascript/trivia/js-promises-async-await',
+      '/javascript/trivia/js-xss-dom-sinks',
+      '/javascript/trivia/js-secure-cors-handling',
+      '/javascript/trivia/sse-vs-websocket-real-time',
+    ],
+    reportUrl:
+      'https://www.jointaro.com/interviews/companies/crowdstrike/experiences/engineering-manager-frontend-united-states-september-3-2025-accepted-offer-neutral-6cbb594c/',
+  },
 ];
 // Catalog-driven company previews with an editorial notes entry (COMPANY_EDITORIAL_NOTES).
 const EDITORIAL_NOTE_SMOKE = [

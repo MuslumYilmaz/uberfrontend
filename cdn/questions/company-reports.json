@@ -777,6 +777,54 @@
         ]
       }
     ],
+    "crowdstrike": [
+      {
+        "id": "html-tables-accessibility",
+        "kind": "coding",
+        "tech": "html",
+        "title": "Tables and Accessibility",
+        "access": "free",
+        "route": "/html/coding/html-tables-accessibility",
+        "sources": [
+          {
+            "label": "Taro: CrowdStrike frontend engineering manager interview, United States, 2025",
+            "url": "https://www.jointaro.com/interviews/companies/crowdstrike/experiences/engineering-manager-frontend-united-states-september-3-2025-accepted-offer-neutral-6cbb594c/",
+            "publisher": "Taro",
+            "date": "2025-09"
+          }
+        ]
+      },
+      {
+        "id": "model-training-progress-dashboard",
+        "kind": "system-design",
+        "title": "Real-time Model Training Dashboard",
+        "access": "premium",
+        "route": "/system-design/model-training-progress-dashboard",
+        "sources": [
+          {
+            "label": "Taro: CrowdStrike senior front end engineer interview, Canada, 2025",
+            "url": "https://www.jointaro.com/interviews/companies/crowdstrike/experiences/senior-front-end-engineer-canada-january-1-2025-no-offer-neutral-476ef9db/",
+            "publisher": "Taro",
+            "date": "2025-01"
+          }
+        ]
+      },
+      {
+        "id": "ui-component-state-from-mock",
+        "kind": "system-design",
+        "title": "UI Component and State Design From a Mock",
+        "access": "premium",
+        "route": "/system-design/ui-component-state-from-mock",
+        "sources": [
+          {
+            "label": "Taro: CrowdStrike frontend engineering manager interview, United States, 2025",
+            "url": "https://www.jointaro.com/interviews/companies/crowdstrike/experiences/engineering-manager-frontend-united-states-september-3-2025-accepted-offer-neutral-6cbb594c/",
+            "publisher": "Taro",
+            "date": "2025-09"
+          }
+        ]
+      }
+    ],
     "datadog": [
       {
         "id": "js-count-vowels",

@@ -16,6 +16,7 @@ const CHECKED_OCT_20 = '2026-10-20';
 const CHECKED_OCT_21 = '2026-10-21';
 const CHECKED_OCT_22 = '2026-10-22';
 const CHECKED_OCT_23 = '2026-10-23';
+const CHECKED_OCT_26 = '2026-10-26';
 
 export const COMPANY_OFFICIAL_GUIDES: Readonly<Record<string, readonly CompanyOfficialGuide[]>> = {
   apple: [
@@ -439,6 +440,22 @@ export const COMPANY_OFFICIAL_GUIDES: Readonly<Record<string, readonly CompanyOf
       covers:
         'Power Day as a series of virtual interviews on Zoom, a note that not all positions require a case interview, and the rule to stay on video for the whole interview.',
       checkedAt: CHECKED_OCT_23,
+    },
+  ],
+  crowdstrike: [
+    {
+      label: 'Interviewing at CrowdStrike: Process & Tips',
+      url: 'https://www.crowdstrike.com/en-us/careers/interviewing/',
+      covers:
+        'Eight steps for all roles, from application, a recruiter conversation and a hiring manager interview to a skills assessment, more interviews, reference checks, an offer and a background check. Skills may be shown through coding, system design, a business case, a presentation or a mock customer call. Interviews and assessments are done without AI unless you are asked to use it, live coding runs on Codeinterview.io, and there is no frontend-specific text.',
+      checkedAt: CHECKED_OCT_26,
+    },
+    {
+      label: 'Emerging Talent Programs',
+      url: 'https://www.crowdstrike.com/en-us/careers/university-interns/',
+      covers:
+        'Internships and new graduate roles: up to three rounds of interviews, plus a technical assessment for technical positions, with a recruiter reaching out about the position and process when an application fits.',
+      checkedAt: CHECKED_OCT_26,
     },
   ],
 };

@@ -10,6 +10,9 @@
     "state-management",
     "api-calls"
   ],
+  "companies": [
+    "crowdstrike"
+  ],
   "type": "system-design",
   "sections": [
     {
@@ -61,6 +64,24 @@
     "uniqueAngle": "Design a model-training progress dashboard with resumable metrics, run comparison, chart downsampling, stale-state signaling, failure diagnosis, and accessibility.",
     "factCheckedAt": "2026-08-06",
     "reviewedBy": "FrontendAtlas editorial",
-    "companyEvidence": []
-  }
+    "companyEvidence": [
+      {
+        "company": "crowdstrike",
+        "evidenceType": "reported-interview-question",
+        "sourceUrl": "https://www.jointaro.com/interviews/companies/crowdstrike/experiences/senior-front-end-engineer-canada-january-1-2025-no-offer-neutral-476ef9db/",
+        "sourceTitle": "CrowdStrike senior front end engineer interview, Canada, 2025 (Taro)",
+        "checkedAt": "2026-10-26"
+      }
+    ]
+  },
+  "sources": [
+    {
+      "label": "Taro: CrowdStrike senior front end engineer interview, Canada, 2025",
+      "url": "https://www.jointaro.com/interviews/companies/crowdstrike/experiences/senior-front-end-engineer-canada-january-1-2025-no-offer-neutral-476ef9db/",
+      "company": "crowdstrike",
+      "publisher": "Taro",
+      "date": "2025-01",
+      "note": "A senior front-end account names one standout question: how to design a highly interactive, performant front-end dashboard that pulls real-time data. This case practises streaming, batching, downsampling and stale-data signals; it is not the reported prompt."
+    }
+  ]
 }

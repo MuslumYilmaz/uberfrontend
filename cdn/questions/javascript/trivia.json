@@ -893,7 +893,8 @@
       "amazon",
       "microsoft",
       "booking-com",
-      "walmart"
+      "walmart",
+      "crowdstrike"
     ],
     "answer": {
       "blocks": [
@@ -1053,7 +1054,8 @@
       "microsoft",
       "uber",
       "walmart",
-      "shopee"
+      "shopee",
+      "crowdstrike"
     ],
     "answer": {
       "blocks": [
@@ -1526,7 +1528,8 @@
       "bytedance",
       "meta",
       "google",
-      "booking-com"
+      "booking-com",
+      "crowdstrike"
     ],
     "answer": {
       "blocks": [
@@ -7533,7 +7536,8 @@
     "companies": [
       "netflix",
       "meta",
-      "apple"
+      "apple",
+      "crowdstrike"
     ],
     "answer": {
       "blocks": [
@@ -10280,7 +10284,8 @@
       "walmart",
       "jpmorgan",
       "agoda",
-      "shopee"
+      "shopee",
+      "crowdstrike"
     ],
     "answer": {
       "blocks": [

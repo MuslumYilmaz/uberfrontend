@@ -591,6 +591,20 @@ reference_rules:
       - docs/references/capital-one-questions-and-process-2026-10.md
     max_docs: 1
 
+  - id: crowdstrike_questions_and_process
+    priority: 93
+    keywords:
+      - crowdstrike
+      - crowdstrike frontend interview
+      - crowdstrike take-home
+      - downloadable files table select all
+      - ember web components interview
+    paths:
+      - docs/references/crowdstrike-questions-and-process-2026-10.md
+    load:
+      - docs/references/crowdstrike-questions-and-process-2026-10.md
+    max_docs: 1
+
   - id: header_prep_menu_plan
     priority: 92
     keywords:

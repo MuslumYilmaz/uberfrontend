@@ -35,6 +35,7 @@ describe('company branding helpers', () => {
       'booking-com',
       'bytedance',
       'capital-one',
+      'crowdstrike',
       'datadog',
       'elevenlabs',
       'gitlab',

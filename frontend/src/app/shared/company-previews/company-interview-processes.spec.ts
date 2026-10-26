@@ -10,7 +10,7 @@ describe('company interview processes', () => {
 
   it('covers the companies with enough sourced evidence, using known company slugs', () => {
     expect(entries.map(([slug]) => slug).sort()).toEqual([
-      'agoda', 'amazon', 'anduril', 'apple', 'booking-com', 'bytedance', 'capital-one', 'datadog', 'elevenlabs', 'gitlab', 'google', 'intuit', 'jpmorgan',
+      'agoda', 'amazon', 'anduril', 'apple', 'booking-com', 'bytedance', 'capital-one', 'crowdstrike', 'datadog', 'elevenlabs', 'gitlab', 'google', 'intuit', 'jpmorgan',
       'meta', 'microsoft', 'netflix', 'openai', 'revolut', 'servicenow', 'shopee', 'spotify', 'stripe', 'tesla', 'uber',
       'walmart', 'waymo', 'xai', 'zalando',
     ]);

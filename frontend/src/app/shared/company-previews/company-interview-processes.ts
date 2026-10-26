@@ -744,6 +744,114 @@ const CAPITALONE_CO6_FRONTEND_2022 = report(
 const CAPITALONE_CO7_LEAD_2022 = report('Taro (approx.)', `${CAPITALONE_TARO}/front-end-lead-plano-tx-august-1-2022-declined-offer-neutral-c94a48a3/`, '2022-08');
 const CAPITALONE_CO9_SENIOR_2024 = report('Taro (approx.)', `${CAPITALONE_TARO}/senior-front-end-developer-mclean-va-may-1-2024-no-offer-positive-3ea6b6f9/`, '2024-05');
 
+// CrowdStrike: research in docs/references/crowdstrike-questions-and-process-2026-10.md. Frontend accounts are
+// reviews re-hosted on Taro (placeholder dates are labelled approx.) plus one Blind post; Blind commenters support
+// the record only.
+const CROWDSTRIKE_INTERVIEWING = official('CrowdStrike interviewing page', 'https://www.crowdstrike.com/en-us/careers/interviewing/');
+const CROWDSTRIKE_EMERGING_TALENT = official('CrowdStrike Emerging Talent page', 'https://www.crowdstrike.com/en-us/careers/university-interns/');
+const CROWDSTRIKE_UK_UNIVERSITY = official('CrowdStrike UK university page', 'https://www.crowdstrike.com/en-gb/careers/university-interns/');
+const CROWDSTRIKE_CS1_EM_FE_2025 = report(
+  'Taro',
+  'https://www.jointaro.com/interviews/companies/crowdstrike/experiences/engineering-manager-frontend-united-states-september-3-2025-accepted-offer-neutral-6cbb594c/',
+  '2025-09',
+);
+const CROWDSTRIKE_CS2_UI_DEV_2025 = report(
+  'Taro',
+  'https://www.jointaro.com/interviews/companies/crowdstrike/experiences/ui-developer-new-york-new-york-november-5-2025-no-offer-positive-83b7272b/',
+  '2025-11',
+);
+const CROWDSTRIKE_CS3_SENIOR_FE_2025 = report(
+  'Taro',
+  'https://www.jointaro.com/interviews/companies/crowdstrike/experiences/senior-frontend-engineer-denmark-march-26-2025-no-offer-positive-775974f1/',
+  '2025-03',
+);
+const CROWDSTRIKE_CS6_SENIOR_2024 = report(
+  'Taro (approx.)',
+  'https://www.jointaro.com/interviews/companies/crowdstrike/experiences/senior-software-engineer-sunnyvale-ca-july-1-2024-no-offer-negative-760e6b0c/',
+  '2024-07',
+);
+const CROWDSTRIKE_CS7_SENIOR_FE_2024 = report(
+  'Taro (approx.)',
+  'https://www.jointaro.com/interviews/companies/crowdstrike/experiences/senior-front-end-developer-london-england-june-1-2024-no-offer-negative-2b30d254/',
+  '2024-06',
+);
+const CROWDSTRIKE_CS8_FE_2024 = report(
+  'Taro (approx.)',
+  'https://www.jointaro.com/interviews/companies/crowdstrike/experiences/front-end-developer-united-states-may-1-2024-no-offer-positive-92944bf7/',
+  '2024-05',
+);
+const CROWDSTRIKE_CS9_SENIOR_FE_2023 = report(
+  'Taro (approx.)',
+  'https://www.jointaro.com/interviews/companies/crowdstrike/experiences/senior-front-end-engineer-united-states-december-1-2023-no-offer-negative-08d0c99b/',
+  '2023-12',
+);
+const CROWDSTRIKE_CS10_UI_2023 = report(
+  'Taro (approx.)',
+  'https://www.jointaro.com/interviews/companies/crowdstrike/experiences/ui-engineer-united-states-november-1-2023-accepted-offer-positive-229b6510/',
+  '2023-11',
+);
+const CROWDSTRIKE_CS11_UI_INTERN_2023 = report(
+  'Taro (approx.)',
+  'https://www.jointaro.com/interviews/companies/crowdstrike/experiences/ui-engineer-intern-sunnyvale-ca-march-1-2023-accepted-offer-positive-0aad53bf/',
+  '2023-03',
+);
+const CROWDSTRIKE_CS12_SENIOR_FE_2022 = report(
+  'Taro',
+  'https://www.jointaro.com/interviews/companies/crowdstrike/experiences/senior-frontend-engineer-united-states-june-23-2022-no-offer-positive-e9222bd2/',
+  '2022-06',
+);
+const CROWDSTRIKE_CS13_FE_2022 = report(
+  'Taro',
+  'https://www.jointaro.com/interviews/companies/crowdstrike/experiences/frontend-engineer-united-states-june-14-2022-no-offer-negative-cb1aa154/',
+  '2022-06',
+);
+const CROWDSTRIKE_CS14_FE_2022 = report(
+  'Taro',
+  'https://www.jointaro.com/interviews/companies/crowdstrike/experiences/frontend-developer-united-states-may-11-2022-no-offer-negative-b051c42d/',
+  '2022-05',
+);
+const CROWDSTRIKE_CS15_SENIOR_UI_2022 = report(
+  'Taro (approx.)',
+  'https://www.jointaro.com/interviews/companies/crowdstrike/experiences/senior-ui-developer-united-states-march-1-2022-no-offer-negative-7d6f1130/',
+  '2022-03',
+);
+const CROWDSTRIKE_CS16_UI_2022 = report(
+  'Taro (approx.)',
+  'https://www.jointaro.com/interviews/companies/crowdstrike/experiences/ui-engineer-united-states-february-1-2022-accepted-offer-positive-26130ab1/',
+  '2022-02',
+);
+const CROWDSTRIKE_CS17_UI_2021 = report(
+  'Taro (approx.)',
+  'https://www.jointaro.com/interviews/companies/crowdstrike/experiences/ui-engineer-united-states-november-1-2021-no-offer-negative-50438a74/',
+  '2021-11',
+);
+const CROWDSTRIKE_CS18_SENIOR_UI_2021 = report(
+  'Taro',
+  'https://www.jointaro.com/interviews/companies/crowdstrike/experiences/senior-ui-engineer-united-states-august-20-2021-declined-offer-negative-e3ad88c5/',
+  '2021-08',
+);
+const CROWDSTRIKE_CS20_SENIOR_FE_2024 = report('Blind', 'https://www.teamblind.com/post/crowdstrike-frontend-interview-jmjmpz0w', '2024-07');
+const CROWDSTRIKE_TB_ML_INTERN_2024 = report(
+  'Taro (approx.)',
+  'https://www.jointaro.com/interviews/companies/crowdstrike/experiences/applied-machine-learning-internship-bucharest-bucuresti-april-1-2024-no-offer-negative-fb1210be/',
+  '2024-04',
+);
+const CROWDSTRIKE_TB_DATA_INTERN_2024 = report(
+  'Taro (approx.)',
+  'https://www.jointaro.com/interviews/companies/crowdstrike/experiences/data-engineering-intern-united-states-january-1-2024-no-offer-positive-f7ff8a15/',
+  '2024-01',
+);
+const CROWDSTRIKE_TB_ENG_INTERN_2024 = report(
+  'Taro (approx.)',
+  'https://www.jointaro.com/interviews/companies/crowdstrike/experiences/engineering-intern-pune-june-1-2024-no-offer-neutral-b3b466f9/',
+  '2024-06',
+);
+const CROWDSTRIKE_TB_SWE_INTERN_2025 = report(
+  'Taro',
+  'https://www.jointaro.com/interviews/companies/crowdstrike/experiences/software-developer-intern-united-states-january-5-2025-no-offer-neutral-c6753340/',
+  '2025-01',
+);
+
 export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyInterviewProcess>> = {
   amazon: {
     title: 'Amazon Front End Engineer interview process',
@@ -2750,6 +2858,192 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
             format: 'An automated rejection without feedback in 2024; an offer about a month after the first call in 2022.',
             appliesTo: 'The two accounts',
             sources: [CAPITALONE_CO1_LEAD_2024, CAPITALONE_CO7_LEAD_2022],
+          },
+        ],
+      },
+    ],
+  },
+  crowdstrike: {
+    summary:
+      'CrowdStrike lists eight hiring steps for all roles, from a recruiter conversation and a hiring manager interview to a skills assessment, more interviews, references, an offer and a background check. Frontend accounts from 2021 to 2025 describe a recruiter call, a manager round, spoken web fundamentals with engineers, a take-home build and a review of it.',
+    caveat:
+      'Built from frontend and UI accounts dated 2021 to 2025, mostly reviews re-hosted on Taro, a few intern accounts from other teams, and CrowdStrike careers pages; no frontend account from 2026 was found.',
+    checkedAt: '2026-10-26',
+    variants: [
+      {
+        title: 'Frontend and UI engineers, United States, 2021 to 2025',
+        note: 'The fullest 2025 account is a manager loop, so its manager and culture rounds may not apply to individual contributors.',
+        stages: [
+          {
+            stage: 'Recruiter call',
+            format: 'A short call about the role and your background; one candidate could not learn in advance whether the technical round would include coding.',
+            appliesTo: 'All candidates',
+            sources: [
+              CROWDSTRIKE_INTERVIEWING,
+              CROWDSTRIKE_CS1_EM_FE_2025,
+              CROWDSTRIKE_CS2_UI_DEV_2025,
+              CROWDSTRIKE_CS8_FE_2024,
+              CROWDSTRIKE_CS9_SENIOR_FE_2023,
+              CROWDSTRIKE_CS12_SENIOR_FE_2022,
+              CROWDSTRIKE_CS13_FE_2022,
+            ],
+          },
+          {
+            stage: 'Hiring manager',
+            format: 'An early conversation with the hiring manager or an engineering manager about your experience; some managers add technical knowledge questions.',
+            appliesTo: 'All candidates',
+            sources: [
+              CROWDSTRIKE_CS1_EM_FE_2025,
+              CROWDSTRIKE_CS6_SENIOR_2024,
+              CROWDSTRIKE_CS8_FE_2024,
+              CROWDSTRIKE_CS9_SENIOR_FE_2023,
+              CROWDSTRIKE_CS13_FE_2022,
+              CROWDSTRIKE_CS16_UI_2022,
+              CROWDSTRIKE_CS17_UI_2021,
+            ],
+          },
+          {
+            stage: 'Web fundamentals with engineers',
+            format:
+              'Spoken questions, often from two engineers taking turns through a list: JavaScript scope, events and promises, the CSS box model and specificity, accessibility, XSS and other security questions. The reports name no algorithm round.',
+            appliesTo: 'All candidates',
+            sources: [
+              CROWDSTRIKE_CS1_EM_FE_2025,
+              CROWDSTRIKE_CS2_UI_DEV_2025,
+              CROWDSTRIKE_CS6_SENIOR_2024,
+              CROWDSTRIKE_CS20_SENIOR_FE_2024,
+              CROWDSTRIKE_CS9_SENIOR_FE_2023,
+              CROWDSTRIKE_CS10_UI_2023,
+              CROWDSTRIKE_CS12_SENIOR_FE_2022,
+              CROWDSTRIKE_CS15_SENIOR_UI_2022,
+            ],
+            practice: { label: 'Bubbling and event delegation', path: '/javascript/trivia/js-event-delegation' },
+          },
+          {
+            stage: 'Take-home build',
+            format:
+              'A small UI built at home; one report was allowed any language or framework. The one named task is a table of downloadable files and their details, built from a screenshot; one report names a 4-hour project.',
+            appliesTo: 'Most candidates',
+            sources: [
+              CROWDSTRIKE_CS1_EM_FE_2025,
+              CROWDSTRIKE_CS6_SENIOR_2024,
+              CROWDSTRIKE_CS12_SENIOR_FE_2022,
+              CROWDSTRIKE_CS14_FE_2022,
+              CROWDSTRIKE_CS16_UI_2022,
+              CROWDSTRIKE_CS17_UI_2021,
+              CROWDSTRIKE_CS18_SENIOR_UI_2021,
+            ],
+            practice: { label: 'Tables and accessibility', path: '/html/coding/html-tables-accessibility' },
+          },
+          {
+            stage: 'Take-home review',
+            format:
+              'Engineers go through the submission, two of them in two reports: what you would change, how you would add filtering and sorting, generalising the component, when to load each file\'s status, thousands of rows, and select all across pages.',
+            appliesTo: 'Candidates who submit the take-home',
+            sources: [
+              CROWDSTRIKE_CS1_EM_FE_2025,
+              CROWDSTRIKE_CS6_SENIOR_2024,
+              CROWDSTRIKE_CS12_SENIOR_FE_2022,
+              CROWDSTRIKE_CS16_UI_2022,
+            ],
+            practice: { label: 'Component state from a mock', path: '/system-design/ui-component-state-from-mock' },
+          },
+          {
+            stage: 'Closing round',
+            format: 'A culture interview with someone outside engineering, a collaboration panel, or an informational talk with the hiring manager about the team.',
+            appliesTo: 'Some candidates',
+            sources: [CROWDSTRIKE_CS1_EM_FE_2025, CROWDSTRIKE_CS6_SENIOR_2024, CROWDSTRIKE_CS16_UI_2022],
+          },
+          {
+            stage: 'Result',
+            format: 'An offer, sometimes with a level discussion, or a standard rejection email without feedback; loops took one to four months.',
+            appliesTo: 'All candidates',
+            sources: [
+              CROWDSTRIKE_CS6_SENIOR_2024,
+              CROWDSTRIKE_CS9_SENIOR_FE_2023,
+              CROWDSTRIKE_CS14_FE_2022,
+              CROWDSTRIKE_CS16_UI_2022,
+              CROWDSTRIKE_CS17_UI_2021,
+              CROWDSTRIKE_CS18_SENIOR_UI_2021,
+            ],
+          },
+        ],
+      },
+      {
+        title: 'Senior frontend engineers, United Kingdom and Denmark, 2024 to 2025',
+        note: 'Single reports: one from the United Kingdom in 2024 and one from Denmark in 2025.',
+        stages: [
+          {
+            stage: 'Technical questions, two stages',
+            format:
+              'One 2024 report: two stages of questions read from a list to prevent bias, about two weeks for both. Its listed questions, not tied to a stage, cover security, HTML, CSS and JavaScript (CORS, const, let and var, copying objects, the box model).',
+            appliesTo: 'Senior front-end engineers',
+            sources: [CROWDSTRIKE_CS7_SENIOR_FE_2024],
+            practice: { label: 'Secure CORS handling', path: '/javascript/trivia/js-secure-cors-handling' },
+          },
+          {
+            stage: 'Home task',
+            format: 'One 2024 report: a week to deliver a task estimated at 5 hours; the candidate spent 10, and the reply came nearly three weeks later.',
+            appliesTo: 'Senior front-end engineers',
+            sources: [CROWDSTRIKE_CS7_SENIOR_FE_2024],
+          },
+          {
+            stage: 'Announced later stages',
+            format:
+              'One 2024 report: a presentation, a team meet-and-greet and a talk with HR were announced; the candidate was rejected before them, so their content is unknown.',
+            appliesTo: 'Candidates who pass the task',
+            sources: [CROWDSTRIKE_CS7_SENIOR_FE_2024],
+          },
+          {
+            stage: 'Live coding',
+            format: "One 2025 report: a 90-minute live coding exercise in a language of the candidate's choice.",
+            appliesTo: 'Senior front-end engineers',
+            sources: [CROWDSTRIKE_CS3_SENIOR_FE_2025],
+          },
+          {
+            stage: 'Whiteboard design',
+            format: 'One 2025 report: a whiteboard exercise on a system whose requirements were sent in advance. The report also lists a question on frontend optimization.',
+            appliesTo: 'Senior front-end engineers',
+            sources: [CROWDSTRIKE_CS3_SENIOR_FE_2025],
+          },
+        ],
+      },
+      {
+        title: 'Interns and new graduates',
+        stages: [
+          {
+            stage: 'Application and recruiter contact',
+            format: 'A recruiter reaches out with details of the position and the process if the application looks like a strong fit.',
+            appliesTo: 'All applicants',
+            sources: [CROWDSTRIKE_EMERGING_TALENT],
+          },
+          {
+            stage: 'Technical assessment',
+            format:
+              'Technical positions add an assessment, and CrowdStrike names HackerRank for Emerging Talent technical roles. Four intern accounts from other teams (machine learning, data engineering, engineering, software development; not UI) describe online tests, three of them on HackerRank or CodeSignal.',
+            appliesTo: 'Technical roles',
+            sources: [
+              CROWDSTRIKE_INTERVIEWING,
+              CROWDSTRIKE_EMERGING_TALENT,
+              CROWDSTRIKE_UK_UNIVERSITY,
+              CROWDSTRIKE_TB_SWE_INTERN_2025,
+              CROWDSTRIKE_TB_ENG_INTERN_2024,
+              CROWDSTRIKE_TB_ML_INTERN_2024,
+              CROWDSTRIKE_TB_DATA_INTERN_2024,
+            ],
+          },
+          {
+            stage: 'Interviews',
+            format:
+              'Up to three interview rounds. A UI engineer intern had a phone screen, a technical interview and a behavioral interview that also asked technical questions; the JavaScript and front-end topics the account lists are not tied to a round.',
+            appliesTo: 'All applicants',
+            sources: [CROWDSTRIKE_EMERGING_TALENT, CROWDSTRIKE_UK_UNIVERSITY, CROWDSTRIKE_CS11_UI_INTERN_2023],
+          },
+          {
+            stage: 'Second team',
+            format: 'The intern met a second team for a casual behavioral interview two weeks later and received an offer the next day.',
+            appliesTo: 'Some candidates',
+            sources: [CROWDSTRIKE_CS11_UI_INTERN_2023],
           },
         ],
       },

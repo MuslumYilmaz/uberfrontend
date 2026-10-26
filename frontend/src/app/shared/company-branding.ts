@@ -187,6 +187,12 @@ export const COMPANY_BRANDS: Record<string, CompanyBrand> = {
     label: 'Capital One',
     monogram: 'C',
   },
+  // Tagged on 2026-10-26; Simple Icons has no CrowdStrike mark, so it keeps a monogram.
+  crowdstrike: {
+    slug: 'crowdstrike',
+    label: 'CrowdStrike',
+    monogram: 'C',
+  },
 };
 
 const COMPANY_ALIASES: Record<string, string> = {
