@@ -1060,8 +1060,10 @@ html, body { height: 100%; background: var(--uf-bg); }
 .content .inline-code { background: var(--uf-surface-alt); border: 1px solid var(--uf-border-subtle); border-radius: 6px; padding: .12rem .38rem; font-family: "Fira Code","JetBrains Mono",monospace; font-size: .9em; color: var(--uf-text-primary); }
 :host ::ng-deep .content .md-h { margin: .9rem 0 .5rem; font-weight: 900; letter-spacing: -0.01em; color: var(--uf-text-primary); }
 :host ::ng-deep .content .md-h2 { font-size: 1.35rem; } :host ::ng-deep .content .md-h3 { font-size: 1.2rem; } :host ::ng-deep .content .md-h4 { font-size: 1.05rem; }
-.content .md-ul, .content .md-ol { margin: .5rem 0 .5rem 1.25rem; }
-.content .md-quote { margin: .95rem 0; padding: .6rem .85rem; border-left: 3px solid var(--uf-accent); background: color-mix(in srgb, var(--uf-accent) 10%, var(--uf-surface)); color: var(--uf-text-secondary); border-radius: 8px; }
+:host ::ng-deep .content :is(.md-ul, .md-ol) { margin: .5rem 0 .5rem 1.25rem; }
+:host ::ng-deep .content .md-ul { list-style: disc; } :host ::ng-deep .content .md-ol { list-style: decimal; }
+:host ::ng-deep .content :is(.md-ul, .md-ol) > li + li { margin-top: .3rem; }
+:host ::ng-deep .content .md-quote { margin: .95rem 0; padding: .6rem .85rem; border-left: 3px solid var(--uf-accent); background: color-mix(in srgb, var(--uf-accent) 10%, var(--uf-surface)); color: var(--uf-text-secondary); border-radius: 8px; }
 .content p,
 .content li,
 .content blockquote { min-width: 0; }
@@ -1091,8 +1093,7 @@ html, body { height: 100%; background: var(--uf-bg); }
   word-break: break-word;
 }
 /* Links inside rendered answer content, including table cells */
-:host ::ng-deep .content a,
-:host ::ng-deep .b-list .table td a {
+:host ::ng-deep :is(.content, .b-list .table td) a {
   color: var(--uf-accent);
   font-weight: 600;
   text-decoration-line: underline;
@@ -1100,19 +1101,13 @@ html, body { height: 100%; background: var(--uf-bg); }
   text-decoration-thickness: 1.3px;
   text-underline-offset: 2px;
 }
-:host ::ng-deep .content a:hover,
-:host ::ng-deep .b-list .table td a:hover {
+:host ::ng-deep :is(.content, .b-list .table td) a:hover {
   color: var(--uf-accent-strong);
   text-decoration-color: color-mix(in srgb, var(--uf-accent) 92%, transparent);
 }
 
 /* Extra spacing when blocks follow text */
-:host ::ng-deep .content p + h2.md-h,
-:host ::ng-deep .content p + h3.md-h,
-:host ::ng-deep .content p + h4.md-h { margin-top: 1rem; }
-.content p + ul.md-ul,
-.content p + ol.md-ol,
-.content p + blockquote.md-quote { margin-top: 1rem; }
+:host ::ng-deep .content p + :is(h2.md-h, h3.md-h, h4.md-h, ul.md-ul, ol.md-ol, blockquote.md-quote) { margin-top: 1rem; }
 
 /* Font Awesome icons inside content */
 .content i.fa-solid { margin-right: .35rem; font-size: .95em; vertical-align: text-bottom; }
