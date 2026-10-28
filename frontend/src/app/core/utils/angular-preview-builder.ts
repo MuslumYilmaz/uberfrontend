@@ -78,8 +78,23 @@ function compileTS(src, filename){
         importsNotUsedAsValues: ts.ImportsNotUsedAsValues.Remove
       },
       fileName: filename,
-      reportDiagnostics:false
+      reportDiagnostics:true
     });
+    const diagnostics = (out && out.diagnostics) || [];
+    if (diagnostics.length) {
+      // Report syntax errors here, with the file and position, instead of letting
+      // the broken JS fail later inside import() as an anonymous runtime error.
+      const diagnostic = diagnostics[0];
+      const text = ts.flattenDiagnosticMessageText(diagnostic.messageText, '\\n');
+      let where = '';
+      try {
+        if (diagnostic.file && typeof diagnostic.start === 'number') {
+          const pos = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start);
+          where = ' (' + (pos.line + 1) + ':' + (pos.character + 1) + ')';
+        }
+      } catch (_e) {}
+      throw new SyntaxError(filename + where + ': ' + text);
+    }
     js = (out && out.outputText) || '';
   }catch(e){ throw e; }
 
@@ -233,16 +248,19 @@ function compileTS(src, filename){
     const overlay = document.getElementById('_fa_overlay');
     const overlayMsg = document.getElementById('_fa_overlay_msg');
     const overlayMeta = document.getElementById('_fa_overlay_meta');
-    const notifyReady = (reason='render') => {
+    const lifecycleDetail = (msg) => {
+      try { return String(msg || '').split(/\r?\n/, 1)[0].slice(0, 500); } catch { return ''; }
+    };
+    const notifyReady = (reason='render', detail='') => {
       try {
         if (typeof window.__FA_NOTIFY_PREVIEW_READY === 'function') {
-          window.__FA_NOTIFY_PREVIEW_READY(reason);
+          window.__FA_NOTIFY_PREVIEW_READY(reason, detail || '');
           return;
         }
       } catch {}
       try {
         if (window.parent) {
-          window.parent.postMessage({ type: 'FA_PREVIEW_READY', reason: String(reason || 'render') }, '*');
+          window.parent.postMessage({ type: 'FA_PREVIEW_READY', reason: String(reason || 'render'), detail: String(detail || '') }, '*');
         }
       } catch {}
     };
@@ -265,9 +283,9 @@ function compileTS(src, filename){
         };
         tick();
       });
-    const showOverlay = (msg, meta='') => {
+    const showOverlay = (msg, meta='', reason='error') => {
       try { overlayMsg.textContent = String(msg||'Unknown error'); overlayMeta.textContent = meta; overlay.style.display='block'; } catch {}
-      notifyReady('error');
+      notifyReady(reason, lifecycleDetail(msg));
     };
     const hideOverlay = () => { try { overlay.style.display='none'; overlayMsg.textContent=''; overlayMeta.textContent=''; } catch {} };
 
@@ -407,7 +425,7 @@ function compileTS(src, filename){
       const basic = String(e && (e.message || e.error) || 'Error');
       const where = (e && e.filename) ? (e.filename + (e.lineno? ':'+e.lineno+(e.colno? ':'+e.colno:'') : '')) : '';
       const stack = e && e.error && e.error.stack ? '\\n\\n'+e.error.stack : '';
-      showOverlay(basic+stack, where);
+      showOverlay(basic+stack, where, (e && e.error && e.error.name === 'SyntaxError') ? 'compile-error' : 'error');
     });
     window.addEventListener('unhandledrejection', (e) => {
       const r = e && (e.reason || e.message) || 'Unhandled promise rejection';
@@ -443,7 +461,8 @@ function compileTS(src, filename){
       await waitForHostPaint('app-root', 10000);
       notifyReady('render');
     }catch(e){
-      try{ showOverlay(e?.message || e, 'bootstrap'); }catch{}
+      const isSyntax = !!(e && e.name === 'SyntaxError');
+      try{ showOverlay(e?.message || e, isSyntax ? 'compile' : 'bootstrap', isSyntax ? 'compile-error' : 'error'); }catch{}
     }
   </script>
 </body>

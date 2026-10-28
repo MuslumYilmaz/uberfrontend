@@ -887,8 +887,10 @@
     [middleSuffixLabel]="pressureActive() ? 'Interview round' : (kind === 'debug' ? 'Debugging challenge' : 'Coding task')" [leftCourseLabel]="leftDrawerLabel"
     [outline]="courseOutline || []" [currentLessonId]="currentCourseLessonId" [showSubmit]="!isCourseContext() && workspaceAvailable()"
     [submitLabel]="submitLabel()" [submitDisabled]="!isCourseContext() && isCompletionPending()"
+    [secondaryLabel]="footerSecondaryLabel()"
     (prev)="prev()" (next)="next()" (back)="backToReturn()" (coursePrev)="goCoursePrev()"
-    (courseNext)="goCourseNext()" (selectLesson)="onSelectFromFooter($event)" (submit)="submitCode()">
+    (courseNext)="goCourseNext()" (selectLesson)="onSelectFromFooter($event)" (submit)="submitCode()"
+    (secondary)="markIncompleteFromFooter()">
   </app-footer>
 </ng-container>
 

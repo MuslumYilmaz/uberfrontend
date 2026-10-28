@@ -466,8 +466,10 @@ export class CodeStorageService {
         return;
       }
 
-      // Guard 2: don't "revert" to baseline if user already has custom code (unless force)
-      if (!opts?.force && existing.trim().length > 0 && baseline != null && code === baseline) {
+      // Guard 2: a programmatic write must not revert diverged user code to the baseline.
+      // Forced or user-allowed writes carry what the user typed, so they always win,
+      // including when the user edits their way back to the exact starter.
+      if (!opts?.force && !opts?.allowEmpty && existing.trim().length > 0 && baseline != null && code === baseline) {
         return;
       }
 
@@ -898,8 +900,9 @@ export class CodeStorageService {
         return;
       }
 
-      // Guard 2: don't silently revert to baseline when user already has custom code
-      if (!opts?.force && existing.trim().length > 0 && baseline != null && code === baseline) {
+      // Guard 2: a programmatic write must not revert diverged user code to the baseline;
+      // forced or user-allowed writes always win (see saveJsAsync).
+      if (!opts?.force && !opts?.allowEmpty && existing.trim().length > 0 && baseline != null && code === baseline) {
         return;
       }
 
@@ -1146,9 +1149,11 @@ export class CodeStorageService {
         return;
       }
 
-      // Guard 2: don't silently revert to baseline if user already diverged (unless force)
+      // Guard 2: a programmatic write must not revert diverged user code to the baseline;
+      // forced or user-allowed writes always win (see saveJsAsync).
       if (
         !opts?.force &&
+        !opts?.allowEmpty &&
         existing.trim() &&
         baseline != null &&
         code === baseline

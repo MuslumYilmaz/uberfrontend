@@ -84,6 +84,10 @@
 
         <!-- RIGHT -->
         <div class="right">
+            <button *ngIf="showSubmit && secondaryLabel" class="pbtn-sm" type="button" [disabled]="submitDisabled"
+                (click)="secondary.emit()" data-testid="footer-secondary">
+                {{ secondaryLabel }}
+            </button>
             <button *ngIf="showSubmit" class="pbtn-sm primary" type="button" [disabled]="submitDisabled"
                 (click)="submit.emit()" data-testid="footer-submit">
                 {{ submitLabel }}

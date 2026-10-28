@@ -21,9 +21,15 @@ import {
   dismissUpdateBanner,
   isUpdateBannerDismissed,
   listOtherVersions,
+  clearSolutionDraft,
+  clearTestsDraft,
   makeDraftKey,
+  readSolutionDraft,
+  readTestsDraft,
   type DraftIndexEntry,
   upsertDraftIndexVersion,
+  writeSolutionDraft,
+  writeTestsDraft,
 } from '../../../../core/utils/versioned-drafts.util';
 import { MonacoEditorComponent, type MonacoLineClickEvent } from '../../../../monaco-editor.component';
 import { DraftUpdateBannerComponent } from '../../../../shared/components/draft-update-banner/draft-update-banner';
@@ -158,6 +164,8 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   private initSeq = 0;
   private destroyed = false;
   private persistTimer: any = null;
+  private testsPersistTimer: any = null;
+  private pendingTestsPersist: { key: string; lang: JsLang; code: string; canonical: string } | null = null;
   private pendingPersist: { key: string; lang: JsLang; code: string } | null = null;
   private resizeRaf: number | null = null;
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
@@ -244,10 +252,12 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
       clearTimeout(this.persistTimer);
       this.persistTimer = null;
     }
+    this.flushPendingTestsPersist();
   }
 
   private _persistLangOnUnload = () => {
     this.flushPendingPersist();
+    this.flushPendingTestsPersist();
     if (this.disablePersistence) return;
     const q = this.question;
     const key = this.storageKeyFor(q);
@@ -408,12 +418,32 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   dismissRestoreBanner() { this.restoreDismissed.set(true); }
 
   private exitSolutionMode(): void {
-    this.viewingSolution.set(false);
+    this.setViewingSolution(false);
     this.decisionGraphPopupOpen.set(false);
   }
 
   private clearSolutionDraftSnapshot(): void {
     this.solutionDraftSnapshot.set(null);
+    const storageKey = this.storageKeyFor(this.question);
+    if (storageKey) clearSolutionDraft(storageKey);
+  }
+
+  /**
+   * The snapshot lives in storage next to the code draft so "Revert to your
+   * code" survives a refresh; the flag records whether the editor still shows
+   * the loaded solution or the user has edited since.
+   */
+  private persistSolutionDraftSnapshot(): void {
+    const snapshot = this.solutionDraftSnapshot();
+    const storageKey = this.storageKeyFor(this.question);
+    if (!snapshot || !storageKey) return;
+    writeSolutionDraft(storageKey, { ...snapshot, viewingSolution: this.viewingSolution() });
+  }
+
+  private setViewingSolution(value: boolean): void {
+    if (this.viewingSolution() === value) return;
+    this.viewingSolution.set(value);
+    this.persistSolutionDraftSnapshot();
   }
 
   private captureSolutionDraftSnapshot(): void {
@@ -422,6 +452,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
       lang: this.jsLang(),
       code: this.editorContent(),
     });
+    this.persistSolutionDraftSnapshot();
   }
 
   async revertToUserCodeFromBanner(): Promise<void> {
@@ -442,7 +473,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     this.jsLang.set(targetLang);
     this.langChange.emit(targetLang);
     this.editorContent.set(targetCode);
-    this.testCode.set(this.pickTests(q as any, targetLang));
+    this.testCode.set(this.testsFor(q, targetLang));
 
     if (this.disablePersistence) {
       this.volatileBuffers[targetLang] = targetCode;
@@ -503,6 +534,11 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
 
     // 3) Ensure per-lang record exists and last write wins (bypass guards)
     await this.codeStore.saveJsAsync(storageKey, currentStarter, lang, { force: true });
+
+    // 3b) Edited tests go back to the canonical ones for both languages
+    this.cancelPendingTestsPersist();
+    clearTestsDraft(storageKey);
+    this.testCode.set(this.pickTests(q as any, lang));
 
     // 4) Banner & UI state
     this.restoredFromStorage.set(false); // no user divergence after a clean reset
@@ -637,13 +673,6 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
       .map((line) => line.replace(/\s+$/g, ''))
       .join('\n')
       .trim();
-  }
-
-  private syncViewingSolutionFromDecisionGraph(doc: DecisionGraphDocument | null): void {
-    if (!doc) return;
-    if (!this.isDecisionGraphCodeAligned(doc)) return;
-
-    this.viewingSolution.set(true);
   }
 
   private isDecisionGraphCodeAligned(doc: DecisionGraphDocument | null): boolean {
@@ -836,7 +865,6 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
       }
       this.decisionGraphDoc.set(doc);
       this.decisionGraphNodeId.set(doc.nodes[0]?.id ?? null);
-      this.syncViewingSolutionFromDecisionGraph(doc);
     } catch {
       if (token !== this.decisionGraphLoadToken) return;
       this.decisionGraphDoc.set(null);
@@ -968,7 +996,10 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     const initToken = ++this.initSeq;
     const q = this.question as Question; if (!q) return;
     this.resetRunnerStateForQuestionChange();
-    this.clearSolutionDraftSnapshot();
+    this.flushPendingTestsPersist();
+    // Memory only: the stored snapshot for this draft is restored below.
+    this.solutionDraftSnapshot.set(null);
+    this.viewingSolution.set(false);
     this._hydrating = true;
     const { js: sJs, ts: sTs } = this.startersForBoth(q);
 
@@ -991,7 +1022,6 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
       this.hasRunTests.set(false);
       this.testResults.set([]);
       this.consoleEntries.set([]);
-      this.syncViewingSolutionFromDecisionGraph(this.decisionGraphDoc());
       this._hydrating = false;
       return;
     }
@@ -1088,10 +1118,17 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     const restored = preferredState.dirty;
 
     this.editorContent.set(initial);
-    this.testCode.set(this.pickTests(q as any, preferred));
+    this.testCode.set(this.testsFor(q, preferred));
 
     this.restoredFromStorage.set(restored);
     this.restoreDismissed.set(false);
+
+    // The user's own code from before "Load into editor" survives a refresh.
+    const solutionDraft = readSolutionDraft(storageKey);
+    if (solutionDraft) {
+      this.solutionDraftSnapshot.set({ lang: solutionDraft.lang, code: solutionDraft.code });
+      if (solutionDraft.viewingSolution) this.viewingSolution.set(true);
+    }
     this.loadAssistStateForQuestion(q);
     await this.loadDecisionGraphForCurrentCode(q, preferred, initial);
     if (!this.isActiveInit(initToken, q)) return;
@@ -1468,8 +1505,9 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
       return;
     }
 
-    // Persist current buffer before switching drafts.
+    // Persist current buffers before switching drafts.
     this.flushPendingPersist();
+    this.flushPendingTestsPersist();
     const activeKey = makeDraftKey(baseKey, this.activeDraftVersion() || currentVersion);
     await this.codeStore.saveJsAsync(activeKey, this.editorContent(), this.jsLang(), { allowEmpty: true }).catch(() => { });
 
@@ -1509,7 +1547,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     this.jsLang.set(preferred);
     this.langChange.emit(preferred);
     this.editorContent.set(visible || '');
-    this.testCode.set(this.pickTests(q as any, preferred));
+    this.testCode.set(this.testsFor(q, preferred));
 
     this.restoredFromStorage.set(state.dirty);
     this.restoreDismissed.set(false);
@@ -1558,7 +1596,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     this._hydrating = true;
     this.clearSolutionDraftSnapshot();
     this.editorContent.set(nextCode);
-    this.testCode.set(this.pickTests(q as any, langToCopy));
+    this.testCode.set(this.testsFor(q, langToCopy));
     this.exitSolutionMode();
     this.restoredFromStorage.set(true);
     this.restoreDismissed.set(false);
@@ -1604,6 +1642,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     // 1) Persist current code for the current lang (unless we're hydrating)
     if (!this._hydrating) {
       this.cancelPendingPersist();
+      this.flushPendingTestsPersist();
       await this.codeStore.saveJsAsync(storageKey, this.editorContent(), currentLang, { allowEmpty: true });
     }
 
@@ -1629,7 +1668,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
       await this.codeStore.saveJsAsync(storageKey, nextCode, next, { force: true });
     }
 
-    const nextTests = this.pickTests(q as any, next);
+    const nextTests = this.testsFor(q, next);
 
     // 4) Hydrate editor + tests for the new lang in one sync batch to avoid transient squiggles
     this.editorContent.set(nextCode);
@@ -1664,9 +1703,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
       this.editorContent.set(code);
       this.volatileBuffers[this.jsLang()] = code;
       this.codeChange.emit({ lang: this.jsLang(), code });
-      if (this.viewingSolution()) {
-        this.viewingSolution.set(false);
-      }
+      this.setViewingSolution(false);
       return;
     }
     const storageKey = this.storageKeyFor(q);
@@ -1677,14 +1714,53 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     this.schedulePersist(storageKey, this.jsLang(), code);
     this.codeChange.emit({ lang: this.jsLang(), code });
 
-    if (this.viewingSolution()) {
-      this.viewingSolution.set(false);
-      // keep banner visible for manual revert
-    }
+    this.setViewingSolution(false);
   }
 
-  // Tests change is fine – it doesn't touch question
-  onTestsChange = (code: string) => { this.testCode.set(code); };
+  // Tests edits are kept per draft and language, like the code; canonical tests are never stored.
+  onTestsChange = (code: string) => {
+    if (code === this.testCode()) return;
+    this.testCode.set(code);
+    this.scheduleTestsPersist(code);
+  };
+
+  private testsFor(q: any, lang: JsLang): string {
+    const canonical = this.pickTests(q, lang);
+    const storageKey = this.storageKeyFor(q);
+    if (!storageKey) return canonical;
+    const draft = readTestsDraft(storageKey, lang);
+    return typeof draft === 'string' ? draft : canonical;
+  }
+
+  private scheduleTestsPersist(code: string): void {
+    if (this._hydrating || this.disablePersistence) return;
+    const q = this.question;
+    const storageKey = this.storageKeyFor(q);
+    if (!q || !storageKey) return;
+    const lang = this.jsLang();
+    this.pendingTestsPersist = { key: storageKey, lang, code, canonical: this.pickTests(q as any, lang) };
+    if (this.testsPersistTimer) clearTimeout(this.testsPersistTimer);
+    this.testsPersistTimer = setTimeout(() => {
+      this.testsPersistTimer = null;
+      this.flushPendingTestsPersist();
+    }, 200);
+  }
+
+  private flushPendingTestsPersist(): void {
+    const pending = this.pendingTestsPersist;
+    this.cancelPendingTestsPersist();
+    if (!pending || this.disablePersistence) return;
+    if (pending.code === pending.canonical) clearTestsDraft(pending.key, pending.lang);
+    else writeTestsDraft(pending.key, pending.lang, pending.code);
+  }
+
+  private cancelPendingTestsPersist(): void {
+    if (this.testsPersistTimer) {
+      clearTimeout(this.testsPersistTimer);
+      this.testsPersistTimer = null;
+    }
+    this.pendingTestsPersist = null;
+  }
 
   // Run tests
   async runTests() {
@@ -1953,9 +2029,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
         if (storageKey) this.schedulePersist(storageKey, this.jsLang(), rawUser);
       }
       this.codeChange.emit({ lang: this.jsLang(), code: rawUser });
-      if (this.viewingSolution()) {
-        this.viewingSolution.set(false);
-      }
+      this.setViewingSolution(false);
     }
 
     if (rawTests !== this.testCode()) {
@@ -2174,8 +2248,8 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     await this.setCode(code);
     if (runToken !== this.applySolutionToken) return;
 
-    // Mark the solution banner visible
-    this.viewingSolution.set(true);
+    // Mark the solution banner visible (and remember it across refreshes)
+    this.setViewingSolution(true);
     this.restoredFromStorage.set(true);
     this.restoreDismissed.set(false);
     this.refreshDecisionGraphDecorations();

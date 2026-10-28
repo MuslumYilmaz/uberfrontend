@@ -50,6 +50,8 @@ export class FooterComponent {
   @Input() showSubmit = false;
   @Input() submitLabel = 'Submit';
   @Input() submitDisabled = false;
+  /** Optional secondary action shown before the primary button, when non-empty. */
+  @Input() secondaryLabel: string | null = null;
 
   // Left-side course-outline menu (courses only)
   @Input() leftCourseLabel?: string | null;
@@ -62,6 +64,7 @@ export class FooterComponent {
   @Output() coursePrev = new EventEmitter<void>();
   @Output() courseNext = new EventEmitter<void>();
   @Output() submit = new EventEmitter<void>();
+  @Output() secondary = new EventEmitter<void>();
   @Output() selectLesson = new EventEmitter<{ topicId: string; lessonId: string }>();
 
   menuOpen = signal(false);

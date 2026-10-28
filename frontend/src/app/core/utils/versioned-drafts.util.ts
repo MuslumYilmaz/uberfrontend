@@ -123,3 +123,90 @@ export function dismissUpdateBanner(baseKeyRaw: string, currentVersionRaw: strin
   const current = String(currentVersionRaw ?? '').trim();
   safeSet(`${DISMISS_PREFIX}${baseKey}:${current}`, '1');
 }
+
+// ---------- Sidecars of the code draft: the pre-solution snapshot and edited tests ----------
+
+export type JsDraftLang = 'js' | 'ts';
+
+export type SolutionDraftRecord = {
+  lang: JsDraftLang;
+  /** The user's own code from before "Load into editor" replaced it. */
+  code: string;
+  /** True until the user edits, reverts or resets; drives the solution banner after a refresh. */
+  viewingSolution: boolean;
+  savedAt: string; // ISO
+};
+
+const SOLUTION_PREFIX = 'fa:solutionDraft:'; // key: fa:solutionDraft:<storageKey>
+const TESTS_PREFIX = 'fa:testsDraft:'; // key: fa:testsDraft:<storageKey>:<lang>
+
+function safeRemove(key: string): void {
+  if (!hasLocalStorage()) return;
+  try {
+    localStorage.removeItem(key);
+  } catch {
+    // ignore
+  }
+}
+
+function solutionDraftKey(storageKeyRaw: string): string {
+  return `${SOLUTION_PREFIX}${String(storageKeyRaw ?? '').trim()}`;
+}
+
+function testsDraftKey(storageKeyRaw: string, lang: JsDraftLang): string {
+  return `${TESTS_PREFIX}${String(storageKeyRaw ?? '').trim()}:${lang}`;
+}
+
+export function readSolutionDraft(storageKeyRaw: string): SolutionDraftRecord | null {
+  const storageKey = String(storageKeyRaw ?? '').trim();
+  if (!storageKey) return null;
+  const parsed = safeParse(safeGet(solutionDraftKey(storageKey)));
+  if (!parsed || typeof parsed.code !== 'string') return null;
+  return {
+    lang: parsed.lang === 'ts' ? 'ts' : 'js',
+    code: parsed.code,
+    viewingSolution: parsed.viewingSolution === true,
+    savedAt: typeof parsed.savedAt === 'string' ? parsed.savedAt : '',
+  };
+}
+
+export function writeSolutionDraft(
+  storageKeyRaw: string,
+  record: Omit<SolutionDraftRecord, 'savedAt'>,
+): void {
+  const storageKey = String(storageKeyRaw ?? '').trim();
+  if (!storageKey) return;
+  const payload: SolutionDraftRecord = {
+    lang: record.lang === 'ts' ? 'ts' : 'js',
+    code: String(record.code ?? ''),
+    viewingSolution: record.viewingSolution === true,
+    savedAt: new Date().toISOString(),
+  };
+  safeSet(solutionDraftKey(storageKey), JSON.stringify(payload));
+}
+
+export function clearSolutionDraft(storageKeyRaw: string): void {
+  const storageKey = String(storageKeyRaw ?? '').trim();
+  if (!storageKey) return;
+  safeRemove(solutionDraftKey(storageKey));
+}
+
+export function readTestsDraft(storageKeyRaw: string, lang: JsDraftLang): string | null {
+  const storageKey = String(storageKeyRaw ?? '').trim();
+  if (!storageKey) return null;
+  const parsed = safeParse(safeGet(testsDraftKey(storageKey, lang)));
+  return parsed && typeof parsed.code === 'string' ? parsed.code : null;
+}
+
+export function writeTestsDraft(storageKeyRaw: string, lang: JsDraftLang, code: string): void {
+  const storageKey = String(storageKeyRaw ?? '').trim();
+  if (!storageKey) return;
+  safeSet(testsDraftKey(storageKey, lang), JSON.stringify({ code: String(code ?? ''), savedAt: new Date().toISOString() }));
+}
+
+export function clearTestsDraft(storageKeyRaw: string, lang?: JsDraftLang): void {
+  const storageKey = String(storageKeyRaw ?? '').trim();
+  if (!storageKey) return;
+  const langs: JsDraftLang[] = lang ? [lang] : ['js', 'ts'];
+  for (const entry of langs) safeRemove(testsDraftKey(storageKey, entry));
+}

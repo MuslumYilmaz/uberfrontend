@@ -142,7 +142,7 @@
     opacity: 0.92;
   }
 
-  .footer--practice .right .pbtn-sm.primary {
+  .footer--practice .right .pbtn-sm {
     min-width: 0;
     max-width: min(44vw, 170px);
     height: 40px;
@@ -207,4 +207,10 @@
 
 .drawer-content .lesson-title {
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+.right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
