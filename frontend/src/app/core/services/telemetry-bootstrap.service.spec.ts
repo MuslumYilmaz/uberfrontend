@@ -10,6 +10,7 @@ import {
   SENTRY_BROWSER_LOADER,
   TelemetryBootstrapService,
   filterAndSanitizeSentryEvent,
+  filterExpectedMonacoCancellation,
   filterExpectedMonacoWorkerError,
   sanitizeInterviewSentryEvent,
   sanitizeInterviewSentryTransaction,
@@ -17,6 +18,7 @@ import {
 import type { ErrorEvent as SentryErrorEvent, Event as SentryEvent } from '@sentry/browser';
 
 const ANONYMOUS_ID_KEY = 'fa:sentry:anonymous-id';
+const MONACO_EDITOR_MAIN_URL = 'https://frontendatlas.com/assets/monaco/min/vs/editor/editor.main.js';
 
 describe('TelemetryBootstrapService', () => {
   const originalEnvironment = {
@@ -455,6 +457,43 @@ describe('TelemetryBootstrapService', () => {
     expect(filterAndSanitizeSentryEvent(sentryEvent, { originalException })).toBeNull();
   });
 
+  it('drops a Monaco cancellation that escapes the Monaco bundle as an unhandled rejection', () => {
+    const sentryEvent = monacoCancellationEvent(MONACO_EDITOR_MAIN_URL);
+    const originalException = monacoCancellationError();
+
+    expect(filterExpectedMonacoCancellation(sentryEvent, { originalException })).toBeNull();
+    expect(filterAndSanitizeSentryEvent(sentryEvent, { originalException })).toBeNull();
+  });
+
+  it('keeps "Canceled" errors without Monaco frames and Monaco errors that are not cancellations', () => {
+    const appEvent = monacoCancellationEvent('https://frontendatlas.com/main-ABC123.js');
+    const framelessEvent = monacoCancellationEvent();
+    const monacoEvent = monacoCancellationEvent(MONACO_EDITOR_MAIN_URL);
+    const renamedError = Object.assign(new Error('Request canceled'), { name: 'Canceled' });
+
+    expect(filterExpectedMonacoCancellation(
+      appEvent,
+      { originalException: monacoCancellationError() },
+    )).toBe(appEvent);
+    expect(filterExpectedMonacoCancellation(
+      framelessEvent,
+      { originalException: monacoCancellationError() },
+    )).toBe(framelessEvent);
+    expect(filterExpectedMonacoCancellation(
+      monacoEvent,
+      { originalException: renamedError },
+    )).toBe(monacoEvent);
+    expect(filterExpectedMonacoCancellation(
+      monacoEvent,
+      { originalException: 'Canceled' },
+    )).toBe(monacoEvent);
+    expect(filterExpectedMonacoCancellation(monacoEvent, {})).toBe(monacoEvent);
+    expect(filterAndSanitizeSentryEvent(
+      appEvent,
+      { originalException: monacoCancellationError() },
+    )).toBe(appEvent);
+  });
+
   it('drops only opaque errors from a tracked Monaco worker captured by BrowserApiErrors', () => {
     const sentryEvent = browserApiErrorEvent();
     const originalException = workerErrorEvent(trackedMonacoWorker());
@@ -842,6 +881,28 @@ describe('TelemetryBootstrapService', () => {
         }],
       },
     };
+  }
+
+  function monacoCancellationEvent(...filenames: string[]): SentryErrorEvent {
+    return {
+      type: undefined,
+      exception: {
+        values: [{
+          type: 'Canceled',
+          value: 'Canceled',
+          mechanism: { type: 'onunhandledrejection', handled: false },
+          stacktrace: filenames.length
+            ? { frames: filenames.map((filename) => ({ filename, function: 'cancel' })) }
+            : undefined,
+        }],
+      },
+    };
+  }
+
+  function monacoCancellationError(): Error {
+    const error = new Error('Canceled');
+    error.name = 'Canceled';
+    return error;
   }
 
   function trackedMonacoWorker(): EventTarget {
