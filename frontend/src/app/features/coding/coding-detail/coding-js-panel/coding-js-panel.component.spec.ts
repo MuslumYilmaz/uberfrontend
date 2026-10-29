@@ -5,6 +5,15 @@ import { ExperimentService } from '../../../../core/services/experiment.service'
 import { DecisionGraphService } from '../../../../core/services/decision-graph.service';
 import type { ConsoleEntry, TestResult } from '../../console-logger/console-logger.component';
 import { CodingJsPanelComponent } from './coding-js-panel.component';
+import { computeJsQuestionContentVersion } from '../../../../core/utils/content-version.util';
+import {
+  clearSolutionDraft,
+  clearTestsDraft,
+  makeDraftKey,
+  readSolutionDraft,
+  readTestsDraft,
+  writeSolutionDraft,
+} from '../../../../core/utils/versioned-drafts.util';
 
 class RunnerStub {
   lastArgs?: { userCode: string; testCode: string; timeoutMs?: number };
@@ -675,11 +684,11 @@ describe('CodingJsPanelComponent', () => {
     await component.initFromQuestion();
     await Promise.resolve();
 
-    expect(component.viewingSolution()).toBeTrue();
+    expect(component.viewingSolution()).toBeFalse();
     expect(component.decisionGraphVisible()).toBeTrue();
   });
 
-  it('falls back to reset-to-default copy when solution code is restored without a session snapshot', async () => {
+  it('does not treat self-written canonical code as the solution after a refresh', async () => {
     const graphCode = 'export default function debounce(fn, delay) { return fn; }';
 
     decisionGraphService.load.and.returnValue(of({
@@ -736,10 +745,11 @@ describe('CodingJsPanelComponent', () => {
     await component.initFromQuestion();
     await Promise.resolve();
 
-    expect(component.viewingSolution()).toBeTrue();
+    expect(component.viewingSolution()).toBeFalse();
     expect(component.canRevertToUserCode()).toBeFalse();
-    expect(component.restoreBannerIsSolutionContext()).toBeTrue();
-    expect(component.restoreBannerActionLabel()).toBe('Reset to default');
+    expect(component.restoreBannerIsSolutionContext()).toBeFalse();
+    expect(component.restoreBannerActionLabel()).toBeNull();
+    expect(component.decisionGraphVisible()).toBeTrue();
   });
 
   it('restores the matching approach rationale after refresh based on persisted solution code', async () => {
@@ -864,7 +874,7 @@ describe('CodingJsPanelComponent', () => {
     expect(decisionGraphService.load).toHaveBeenCalledWith(
       'assets/questions/javascript/decision-graphs/js-debounce-approach2.v1.json',
     );
-    expect(component.viewingSolution()).toBeTrue();
+    expect(component.viewingSolution()).toBeFalse();
     expect(component.decisionGraphVisible()).toBeTrue();
   });
 
@@ -1534,6 +1544,159 @@ describe('CodingJsPanelComponent', () => {
     expect(component.testResults()[0].error).toContain('Worker crashed');
     expect(component.testResults()[0].name).not.toBe('would run locally');
   });
+
+  function persistentCodeStoreStub(question: any, userCode: string) {
+    return {
+      getJsAsync: jasmine.createSpy('getJsAsync').and.resolveTo(null),
+      cloneJsBundleAsync: jasmine.createSpy('cloneJsBundleAsync').and.resolveTo(true),
+      setJsBaselineAsync: jasmine.createSpy('setJsBaselineAsync').and.resolveTo(undefined),
+      getJsLangStateAsync: jasmine.createSpy('getJsLangStateAsync').and.callFake(async (_key: string, lang: 'js' | 'ts') => ({
+        code: lang === 'js' ? userCode : '',
+        baseline: lang === 'js' ? question.starterCode : question.starterCodeTs,
+        dirty: lang === 'js' && userCode !== question.starterCode,
+        hasUserCode: lang === 'js',
+      })),
+      getJsForLangAsync: jasmine.createSpy('getJsForLangAsync').and.resolveTo(''),
+      saveJsAsync: jasmine.createSpy('saveJsAsync').and.resolveTo(undefined),
+      setLastLangAsync: jasmine.createSpy('setLastLangAsync').and.resolveTo(undefined),
+      resetJsBothAsync: jasmine.createSpy('resetJsBothAsync').and.resolveTo(undefined),
+    };
+  }
+
+  it('restores the pre-solution snapshot and solution mode after a refresh, and revert clears both', async () => {
+    const userCode = 'export default function greet() { return "mine"; }';
+    const solutionCode = 'export default function greet() { return "solution"; }';
+    const question = {
+      id: 'js-refresh-snapshot',
+      starterCode: 'export default function greet() {}',
+      starterCodeTs: 'export default function greet(): string { return ""; }',
+      tests: '',
+      testsTs: '',
+    } as any;
+    const storageKey = makeDraftKey(question.id, computeJsQuestionContentVersion(question));
+    writeSolutionDraft(storageKey, { lang: 'js', code: userCode, viewingSolution: true });
+
+    const component = TestBed.runInInjectionContext(
+      () => new CodingJsPanelComponent(persistentCodeStoreStub(question, solutionCode) as any),
+    );
+    component.disablePersistence = false;
+    component.question = question;
+
+    try {
+      await component.initFromQuestion();
+      await Promise.resolve();
+
+      expect(component.editorContent()).toBe(solutionCode);
+      expect(component.viewingSolution()).toBeTrue();
+      expect(component.canRevertToUserCode()).toBeTrue();
+      expect(component.restoreBannerActionLabel()).toBe('Revert to your code');
+
+      await component.revertToUserCodeFromBanner();
+
+      expect(component.editorContent()).toBe(userCode);
+      expect(component.viewingSolution()).toBeFalse();
+      expect(component.canRevertToUserCode()).toBeFalse();
+      expect(readSolutionDraft(storageKey)).toBeNull();
+    } finally {
+      clearSolutionDraft(storageKey);
+      clearTestsDraft(storageKey);
+    }
+  });
+
+  it('stores the snapshot when the solution is loaded and marks it edited on the first keystroke', async () => {
+    const question = {
+      id: 'js-solution-edit',
+      starterCode: 'export default function f() {}',
+      starterCodeTs: '',
+      tests: '',
+      testsTs: '',
+    } as any;
+    const storageKey = makeDraftKey(question.id, computeJsQuestionContentVersion(question));
+    const codeStoreStub = {
+      getJsForLangAsync: jasmine.createSpy('getJsForLangAsync').and.resolveTo(''),
+      saveJsAsync: jasmine.createSpy('saveJsAsync').and.resolveTo(undefined),
+      setLastLangAsync: jasmine.createSpy('setLastLangAsync').and.resolveTo(undefined),
+    };
+    const component = TestBed.runInInjectionContext(
+      () => new CodingJsPanelComponent(codeStoreStub as any),
+    );
+    component.disablePersistence = false;
+    component.question = question;
+    component.jsLang.set('js');
+    component.editorContent.set('export default function f() { return 1; }');
+
+    try {
+      await component.applySolution('export default function f() { return 2; }');
+
+      expect(readSolutionDraft(storageKey)).toEqual(jasmine.objectContaining({
+        lang: 'js',
+        code: 'export default function f() { return 1; }',
+        viewingSolution: true,
+      }));
+
+      component['_hydrating'] = false;
+      component.onCodeChange('export default function f() { return 3; }');
+
+      expect(component.viewingSolution()).toBeFalse();
+      expect(component.canRevertToUserCode()).toBeTrue();
+      expect(readSolutionDraft(storageKey)?.viewingSolution).toBeFalse();
+    } finally {
+      clearSolutionDraft(storageKey);
+    }
+  });
+
+  it('keeps edited tests for the draft across a refresh and drops them on reset', async () => {
+    const question = {
+      id: 'js-tests-draft',
+      starterCode: 'export default function f() {}',
+      starterCodeTs: 'export default function f(): void {}',
+      tests: "test('canonical', () => {});",
+      testsTs: "test('canonical ts', () => {});",
+    } as any;
+    const storageKey = makeDraftKey(question.id, computeJsQuestionContentVersion(question));
+    const editedTests = "test('mine', () => {});";
+
+    const first = TestBed.runInInjectionContext(
+      () => new CodingJsPanelComponent(persistentCodeStoreStub(question, question.starterCode) as any),
+    );
+    first.disablePersistence = false;
+    first.question = question;
+
+    try {
+      await first.initFromQuestion();
+      await Promise.resolve();
+      expect(first.testCode()).toBe(question.tests);
+
+      first['_hydrating'] = false;
+      first.onTestsChange(editedTests);
+      first['flushPendingTestsPersist']();
+      expect(readTestsDraft(storageKey, 'js')).toBe(editedTests);
+
+      const again = TestBed.runInInjectionContext(
+        () => new CodingJsPanelComponent(persistentCodeStoreStub(question, question.starterCode) as any),
+      );
+      again.disablePersistence = false;
+      again.question = question;
+      await again.initFromQuestion();
+      await Promise.resolve();
+      expect(again.testCode()).toBe(editedTests);
+
+      again['_hydrating'] = false;
+      again.onTestsChange(question.tests);
+      again['flushPendingTestsPersist']();
+      expect(readTestsDraft(storageKey, 'js')).toBeNull();
+
+      again.onTestsChange("test('mine again', () => {});");
+      again['flushPendingTestsPersist']();
+      await again.resetToDefault();
+      expect(again.testCode()).toBe(question.tests);
+      expect(readTestsDraft(storageKey, 'js')).toBeNull();
+    } finally {
+      clearTestsDraft(storageKey);
+      clearSolutionDraft(storageKey);
+    }
+  });
+
 });
 
 function deferred<T>() {

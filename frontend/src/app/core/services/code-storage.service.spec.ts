@@ -84,6 +84,26 @@ describe('CodeStorageService JS save guards', () => {
     expect(state.dirty).toBeFalse();
   });
 
+  it('stores a user edit that returns to the starter instead of keeping the diverged draft', async () => {
+    await service.setJsBaselineAsync(qid, 'js', 'const starter = true;');
+    await service.saveJsAsync(qid, 'const diverged = true;', 'js', { allowEmpty: true });
+
+    await service.saveJsAsync(qid, 'const starter = true;', 'js', { allowEmpty: true });
+
+    const state = await service.getJsLangStateAsync(qid, 'js');
+    expect(state.dirty).toBeFalse();
+    expect(await service.getJsForLangAsync(qid, 'js')).not.toBe('const diverged = true;');
+  });
+
+  it('keeps diverged JS code when a plain programmatic save carries the baseline', async () => {
+    await service.setJsBaselineAsync(qid, 'js', 'const starter = true;');
+    await service.saveJsAsync(qid, 'const diverged = true;', 'js', { allowEmpty: true });
+
+    await service.saveJsAsync(qid, 'const starter = true;', 'js');
+
+    expect(await service.getJsForLangAsync(qid, 'js')).toBe('const diverged = true;');
+  });
+
   it('preserves dirty JS user code when the baseline refreshes', async () => {
     await service.setJsBaselineAsync(qid, 'js', 'const oldStarter = true;');
     await service.saveJsAsync(qid, 'const userCode = true;', 'js', { force: true });
@@ -198,6 +218,16 @@ describe('CodeStorageService web save guards', () => {
     expect(await new CodeStorageService().initWebAsync(qid, starters)).toEqual({ ...starters, restored: false });
   });
 
+  it('stores a web edit that returns to the starter instead of keeping the diverged draft', async () => {
+    const starters = { html: '<main>Starter</main>', css: 'main { color: white; }' };
+    await service.initWebAsync(qid, starters);
+    await service.saveWebAsync(qid, 'html', '<main>Diverged</main>', { allowEmpty: true });
+
+    await service.saveWebAsync(qid, 'html', starters.html, { allowEmpty: true });
+
+    expect((await new CodeStorageService().initWebAsync(qid, starters)).html).toBe(starters.html);
+  });
+
   it('retains the web guard against accidental empty saves', async () => {
     await service.saveWebAsync(qid, 'html', '<main>Draft</main>', { force: true });
     await service.saveWebAsync(qid, 'html', '');
@@ -238,6 +268,17 @@ describe('CodeStorageService framework save guards', () => {
       code: '',
       baseline: starters[path],
     });
+  });
+
+  it('stores a framework edit that returns to the starter instead of keeping the diverged draft', async () => {
+    await service.initFrameworkAsync(qid, tech, starters, path);
+    const diverged = 'export default function App() { return <div>Diverged</div>; }';
+    await service.saveFrameworkFileAsync(qid, tech, path, diverged, { allowEmpty: true });
+
+    await service.saveFrameworkFileAsync(qid, tech, path, starters[path], { allowEmpty: true });
+
+    const restored = await new CodeStorageService().initFrameworkAsync(qid, tech, starters, path);
+    expect(restored.files[path]).toBe(starters[path]);
   });
 
   it('prefers saved framework user code over the starter baseline', async () => {

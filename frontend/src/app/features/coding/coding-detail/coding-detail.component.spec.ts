@@ -310,6 +310,47 @@ describe('CodingDetailComponent', () => {
     component.solved.set(true);
     component.question.set({ id: 'react-manual', technology: 'react', frameworkTests: [] } as any);
     expect(component.submitLabel()).toBe('Mark as incomplete');
+
+    component.question.set({
+      id: 'react-checked',
+      technology: 'react',
+      frameworkTests: [{
+        id: 'render',
+        name: 'Render',
+        steps: [{ type: 'expectExists', selector: '.app' }],
+      }],
+    } as any);
+    expect(component.submitLabel()).toBe('Run checks again');
+    expect(component.footerSecondaryLabel()).toBe('Mark as incomplete');
+
+    auth.isLoggedIn.and.returnValue(false);
+    expect(component.footerSecondaryLabel()).toBeNull();
+  });
+
+  it('marks a solved framework question incomplete from the secondary footer action', async () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+
+    auth.isLoggedIn.and.returnValue(true);
+    auth.user.and.returnValue({ _id: 'user-1' } as any);
+    activity.uncomplete.and.returnValue(of({} as any));
+    component.tech = 'react';
+    component.kind = 'coding';
+    component.question.set({
+      id: 'react-counter',
+      access: 'free',
+      difficulty: 'easy',
+      frameworkTests: [{ id: 'counter', name: 'Counter', steps: [{ type: 'expectExists', selector: '.value' }] }],
+    } as any);
+    component.solved.set(true);
+
+    await component.markIncompleteFromFooter();
+
+    expect(activity.uncomplete).toHaveBeenCalledWith({ kind: 'coding', tech: 'react', itemId: 'react-counter' });
+    expect(activity.complete).not.toHaveBeenCalled();
+    expect(component.solved()).toBeFalse();
+    expect(component.submitLabel()).toBe('Run checks');
+    expect(component.footerSecondaryLabel()).toBeNull();
   });
 
   it('uses mobile reading below 768px and compact workspace layout through 980px', () => {

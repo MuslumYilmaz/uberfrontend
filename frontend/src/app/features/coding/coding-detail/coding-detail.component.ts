@@ -613,6 +613,36 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     return this.activity.isCompletionPending(this.kind, q.id);
   }
 
+  /**
+   * Framework questions with structured checks complete through the checks and
+   * their footer button re-runs them, so they get a secondary way back to
+   * "not solved"; the other workspaces toggle through the primary button.
+   */
+  footerSecondaryLabel(): string | null {
+    if (this.isCourseContext() || this.pressureActive()) return null;
+    if (!this.hasFrameworkStructuredChecks()) return null;
+    if (!this.auth.isLoggedIn() || !this.solved()) return null;
+    return 'Mark as incomplete';
+  }
+
+  async markIncompleteFromFooter(): Promise<void> {
+    const q = this.question();
+    if (!q || this.isCompletionPending()) return;
+    if (!this.auth.isLoggedIn() || !this.solved()) return;
+    await this.markIncomplete(q.id);
+  }
+
+  private async markIncomplete(itemId: string): Promise<void> {
+    await firstValueFrom(this.activity.uncomplete({
+      kind: this.kind,
+      tech: this.tech,
+      itemId,
+    }));
+    this.solved.set(false);
+    // A later passing run must record again instead of trusting the stale flag.
+    this.recorded = false;
+  }
+
   ensureAuthenticated(context: AuthPromptContext = 'coding_submit'): boolean {
     if (this.auth.isLoggedIn()) return true;
     this.configureAuthPrompt(context);
@@ -2032,12 +2062,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
     // Toggle off if already completed
     if (this.auth.isLoggedIn() && this.solved()) {
-      await firstValueFrom(this.activity.uncomplete({
-        kind: this.kind,
-        tech: this.tech,
-        itemId: q.id,
-      }));
-      this.solved.set(false);
+      await this.markIncomplete(q.id);
       return;
     }
 

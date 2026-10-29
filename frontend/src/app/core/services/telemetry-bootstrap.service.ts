@@ -36,6 +36,9 @@ export const SENTRY_BROWSER_LOADER = new InjectionToken<() => Promise<SentryBrow
 
 const SENTRY_ANONYMOUS_ID_KEY = 'fa:sentry:anonymous-id';
 const BROWSER_API_ERRORS_MECHANISM_PREFIX = 'auto.browser.browserapierrors';
+// Monaco's CancellationError: name and message are both this literal.
+const MONACO_CANCELLATION_NAME = 'Canceled';
+const MONACO_ASSET_PATH_PATTERN = /\/assets\/monaco\//i;
 const INTERVIEW_ERROR_MESSAGE = 'Interview operation failed';
 const INTERVIEW_SENTRY_SCOPE_TAG = 'interview';
 const INTERVIEW_PAGE_ROUTE_PATTERN = /^\/interview(?:\/|[?#]|$)/i;
@@ -91,8 +94,37 @@ export function filterExpectedMonacoWorkerError(
 }
 
 /**
- * Applies the existing Monaco suppression first, then removes Interview data
- * which must never leave the browser. Non-Interview events are returned by
+ * Monaco abandons superseded work by rejecting with a CancellationError, and
+ * VS Code's own error handler ignores that error. One that escapes the Monaco
+ * bundle as an unhandled rejection (Safari's clipboard workaround did this) is
+ * noise, not a defect to triage. Only errors with Monaco frames are dropped so
+ * an application error that happens to be called "Canceled" is still reported.
+ */
+export function filterExpectedMonacoCancellation(
+  event: SentryErrorEvent,
+  hint: SentryEventHint,
+): SentryErrorEvent | null {
+  if (!isMonacoCancellationError(hint.originalException)) return event;
+
+  const fromMonaco = event.exception?.values?.some((exception) =>
+    exception.stacktrace?.frames?.some((frame) =>
+      MONACO_ASSET_PATH_PATTERN.test(frame.filename ?? '')
+      || MONACO_ASSET_PATH_PATTERN.test(frame.abs_path ?? ''),
+    ),
+  ) ?? false;
+
+  return fromMonaco ? null : event;
+}
+
+function isMonacoCancellationError(value: unknown): boolean {
+  if (!value || typeof value !== 'object') return false;
+  const { name, message } = value as { name?: unknown; message?: unknown };
+  return name === MONACO_CANCELLATION_NAME && message === MONACO_CANCELLATION_NAME;
+}
+
+/**
+ * Applies the Monaco suppressions first, then removes Interview data which
+ * must never leave the browser. Non-Interview events are returned by
  * reference so their established Sentry behaviour remains unchanged.
  */
 export function filterAndSanitizeSentryEvent(
@@ -100,7 +132,10 @@ export function filterAndSanitizeSentryEvent(
   hint: SentryEventHint,
   interviewRouteActive = false,
 ): SentryErrorEvent | null {
-  const filteredEvent = filterExpectedMonacoWorkerError(event, hint);
+  const withoutWorkerNoise = filterExpectedMonacoWorkerError(event, hint);
+  const filteredEvent = withoutWorkerNoise
+    ? filterExpectedMonacoCancellation(withoutWorkerNoise, hint)
+    : null;
   return filteredEvent
     ? sanitizeInterviewSentryEvent(filteredEvent, interviewRouteActive)
     : null;
