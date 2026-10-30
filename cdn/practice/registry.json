@@ -5077,7 +5077,7 @@
     "route": "/javascript/trivia/js-map-filter-reduce",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "map, filter, and reduce are the three core array transformation methods in JavaScript. map transforms each item, filter keeps some items, and reduce can build any result by accumulating values.",
+    "summary": "map returns a new array with every element transformed, filter returns a new array with the elements that pass a test, and reduce folds the array into one value of any type. None of them mutates the array.",
     "tags": [
       "arrays",
       "array-methods",
@@ -5089,7 +5089,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-10-30",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-map-filter-reduce"
   },

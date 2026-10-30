@@ -2,8 +2,8 @@
   "contentId": "js-map-filter-reduce",
   "tech": "javascript",
   "query": "map vs filter vs reduce javascript interview question",
-  "reviewedAt": "2026-04-13",
-  "reviewedBy": "Codex AI draft",
+  "reviewedAt": "2026-10-30",
+  "reviewedBy": "Claude Code draft",
   "selection": {
     "querySource": "manual",
     "greatFrontendRelevant": false,
@@ -28,13 +28,13 @@
       ],
       "ourEvidence": {
         "realWorldUseCases": [
-          "These three methods are about transforming arrays without mutating them:"
+          "None of the three changes the array it runs on, although a callback can still mutate the objects inside it."
         ],
         "actionableExamples": [
-          "map: transform each element"
+          "map keeps the length and changes the values; filter keeps the values and changes the length."
         ],
         "followUpConfusion": [
-          "map transforms each item, filter keeps some items, and reduce can build any result by accumulating values."
+          "map returns a new array with every element transformed, filter returns a new array with the elements that pass a test, and reduce folds the array into one value of any type."
         ]
       },
       "theirEvidence": {
@@ -73,13 +73,13 @@
       ],
       "ourEvidence": {
         "realWorldUseCases": [
-          "They are the foundation of functional-style programming in JavaScript."
+          "Yes, chaining is the idiomatic way to select and then transform"
         ],
         "actionableExamples": [
-          "filter: keep some elements"
+          "reduce calls the callback with an accumulator and the current element and keeps whatever the callback returns as the next accumulator."
         ],
         "followUpConfusion": [
-          "Combine all items into a single result."
+          "map transforms each element, filter selects some elements, and reduce combines all elements into a single result of any type."
         ]
       },
       "theirEvidence": {
@@ -118,13 +118,13 @@
       ],
       "ourEvidence": {
         "realWorldUseCases": [
-          "These three methods are about transforming arrays without mutating them:"
+          "None of the three changes the array it runs on, although a callback can still mutate the objects inside it."
         ],
         "actionableExamples": [
-          "reduce: build anything"
+          "map keeps the length and changes the values; filter keeps the values and changes the length."
         ],
         "followUpConfusion": [
-          "map transforms each item, filter keeps some items, and reduce can build any result by accumulating values."
+          "map returns a new array with every element transformed, filter returns a new array with the elements that pass a test, and reduce folds the array into one value of any type."
         ]
       },
       "theirEvidence": {
