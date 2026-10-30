@@ -29,6 +29,13 @@ const BOT_SUSPECT_TRAFFIC_TYPE = 'bot_suspect';
 // Crawlers, HTTP clients and automation runtimes that identify themselves never
 // load GA. Google's own bot list only covers a subset of these.
 const AUTOMATION_USER_AGENT_RE = /HeadlessChrome|Headless|Playwright|Puppeteer|Cypress|PhantomJS|Selenium|Lighthouse|PageSpeed|GTmetrix|Google-InspectionTool|bot(?![a-z])|crawler|crawl(?![a-z])|spider|slurp|scrapy|python-requests|python\/|curl\/|wget\/|httpclient|okhttp|axios\/|node-fetch|go-http-client|java\/|GPTBot|ChatGPT-User|OAI-SearchBot|ClaudeBot|anthropic-ai|Claude-Web|PerplexityBot|Bytespider|CCBot|cohere-ai|Applebot|Amazonbot|Baiduspider|facebookexternalhit|WhatsApp/i;
+// Headless Chrome reports an 800x600 screen unless a script overrides it, and
+// Puppeteer keeps that size. Scrapers that spoof the user agent and the
+// webdriver flag still carry it; real desktop displays practically never do.
+const HEADLESS_DEFAULT_SCREEN = { width: 800, height: 600 };
+const MOBILE_USER_AGENT_RE = /Mobi|Android|iPhone|iPad|iPod/i;
+// Referrer hosts (and their subdomains) that have only ever sent scripted traffic.
+const AUTOMATION_REFERRER_HOSTS = ['aocr.org'];
 
 const TRAFFIC_CLASS_QUERY_PARAM = 'fa_traffic';
 const TRAFFIC_CLASS_STORAGE_KEY = 'fa:analytics:traffic_class:v1';
@@ -318,8 +325,10 @@ export class AnalyticsService {
   }
 
   // Browser automation, crawlers and HTTP clients never load GA so local/CI
-  // traffic and self-declared bots do not pollute reports. Browsers that only
-  // look automated are kept but tagged (see effectiveTrafficType).
+  // traffic and self-declared bots do not pollute reports. Headless browsers
+  // that hide those markers are caught by their default screen or by a
+  // referrer only bots use. Browsers that only look automated are kept but
+  // tagged (see effectiveTrafficType).
   private classifyVisitor(): AnalyticsVisitorClass {
     if (!this.isBrowser) return 'human';
 
@@ -332,11 +341,30 @@ export class AnalyticsService {
       typeof globalScope.__playwright__binding__ !== 'undefined' ||
       typeof globalScope.__pwInitScripts !== 'undefined' ||
       typeof globalScope.Cypress !== 'undefined' ||
-      AUTOMATION_USER_AGENT_RE.test(userAgent),
+      AUTOMATION_USER_AGENT_RE.test(userAgent) ||
+      this.hasHeadlessDefaultScreen(userAgent) ||
+      this.hasAutomationReferrer(),
     );
     if (automation) return 'automation';
 
     return this.hasSuspectBrowserSignals(userAgent) ? 'suspect' : 'human';
+  }
+
+  private hasHeadlessDefaultScreen(userAgent: string): boolean {
+    const screenObject = window.screen;
+    return screenObject?.width === HEADLESS_DEFAULT_SCREEN.width
+      && screenObject?.height === HEADLESS_DEFAULT_SCREEN.height
+      && !MOBILE_USER_AGENT_RE.test(userAgent);
+  }
+
+  private hasAutomationReferrer(): boolean {
+    let host: string;
+    try {
+      host = new URL(this.document.referrer).hostname;
+    } catch {
+      return false;
+    }
+    return AUTOMATION_REFERRER_HOSTS.some((botHost) => host === botHost || host.endsWith(`.${botHost}`));
   }
 
   // Conservative signals of a scripted Chromium that spoofs a normal user agent:
