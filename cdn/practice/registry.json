@@ -4082,7 +4082,7 @@
     "route": "/javascript/trivia/js-escape-vs-sanitize",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "Explain the difference between output escaping (context-specific encoding) and sanitizing user input (allowlist filtering). Include when to use each, how they work, and why both matter for XSS prevention.",
+    "summary": "Escaping encodes characters so data renders as text in one output context; sanitizing filters HTML to an allowlist so some markup can stay. Validate input, escape output, sanitize only when you must render user HTML.",
     "tags": [
       "security",
       "html",
@@ -4092,7 +4092,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-02-03",
+    "updatedAt": "2026-10-30",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-escape-vs-sanitize"
   },

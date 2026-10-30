@@ -2,8 +2,8 @@
   "contentId": "js-escape-vs-sanitize",
   "tech": "javascript",
   "query": "escaping vs sanitizing xss interview question",
-  "reviewedAt": "2026-04-12",
-  "reviewedBy": "Codex AI draft",
+  "reviewedAt": "2026-10-30",
+  "reviewedBy": "Claude Code draft",
   "selection": {
     "querySource": "manual",
     "greatFrontendRelevant": false,
@@ -28,13 +28,13 @@
       ],
       "ourEvidence": {
         "realWorldUseCases": [
-          "Explain the difference between output escaping (context-specific encoding) and sanitizing user input (allowlist filtering). Include when to use each, how they work, and why both matter for XSS prevention."
+          "Validate input, escape output, sanitize only when you must render user HTML."
         ],
         "actionableExamples": [
-          "<i class='fa-solid fa-bolt'></i> <strong>Real-world scenario</strong>  A profile bio can be plain text (escape and render safely), but a blog editor might allow limited rich text (sanitize with an allowlist). Decide based on the product requirement, not convenience."
+          "Sanitizing is for the cases where the product promises rich text: comments with bold and links, a CMS body, a markdown preview."
         ],
         "followUpConfusion": [
-          "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Common pitfalls</strong>  - Stripping tags with regex (easy to bypass). - Sanitizing once and reusing the result in a different context. - Double-escaping by encoding the same value twice. - Storing only sanitized HTML and losing the original data."
+          "HTML-encoding a value and dropping it into href, an event handler or inline JavaScript leaves those contexts open."
         ]
       },
       "theirEvidence": {
@@ -73,13 +73,13 @@
       ],
       "ourEvidence": {
         "realWorldUseCases": [
-          "Explain the difference between output escaping (context-specific encoding) and sanitizing user input (allowlist filtering). Include when to use each, how they work, and why both matter for XSS prevention."
+          "Validate input, escape output, sanitize only when you must render user HTML."
         ],
         "actionableExamples": [
-          "<i class='fa-solid fa-bolt'></i> <strong>Real-world scenario</strong>  A profile bio can be plain text (escape and render safely), but a blog editor might allow limited rich text (sanitize with an allowlist). Decide based on the product requirement, not convenience."
+          "Sanitizing is for the cases where the product promises rich text: comments with bold and links, a CMS body, a markdown preview."
         ],
         "followUpConfusion": [
-          "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Common pitfalls</strong>  - Stripping tags with regex (easy to bypass). - Sanitizing once and reusing the result in a different context. - Double-escaping by encoding the same value twice. - Storing only sanitized HTML and losing the original data."
+          "HTML-encoding a value and dropping it into href, an event handler or inline JavaScript leaves those contexts open."
         ]
       },
       "theirEvidence": {
@@ -118,13 +118,13 @@
       ],
       "ourEvidence": {
         "realWorldUseCases": [
-          "Explain the difference between output escaping (context-specific encoding) and sanitizing user input (allowlist filtering). Include when to use each, how they work, and why both matter for XSS prevention."
+          "Validate input, escape output, sanitize only when you must render user HTML."
         ],
         "actionableExamples": [
-          "<i class='fa-solid fa-bolt'></i> <strong>Real-world scenario</strong>  A profile bio can be plain text (escape and render safely), but a blog editor might allow limited rich text (sanitize with an allowlist). Decide based on the product requirement, not convenience."
+          "Sanitizing is for the cases where the product promises rich text: comments with bold and links, a CMS body, a markdown preview."
         ],
         "followUpConfusion": [
-          "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Common pitfalls</strong>  - Stripping tags with regex (easy to bypass). - Sanitizing once and reusing the result in a different context. - Double-escaping by encoding the same value twice. - Storing only sanitized HTML and losing the original data."
+          "HTML-encoding a value and dropping it into href, an event handler or inline JavaScript leaves those contexts open."
         ]
       },
       "theirEvidence": {
