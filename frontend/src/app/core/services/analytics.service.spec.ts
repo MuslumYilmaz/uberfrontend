@@ -34,6 +34,9 @@ describe('AnalyticsService', () => {
     delete navigatorOverride.languages;
     delete (view as any).outerWidth;
     delete (view as any).outerHeight;
+    delete (view.screen as any).width;
+    delete (view.screen as any).height;
+    delete (doc as any).referrer;
     if (chromeRuntimeShimAdded) {
       delete (view as any).chrome;
       chromeRuntimeShimAdded = false;
@@ -68,6 +71,9 @@ describe('AnalyticsService', () => {
     });
     Object.defineProperty(win, 'outerWidth', { configurable: true, get: () => 1280 });
     Object.defineProperty(win, 'outerHeight', { configurable: true, get: () => 720 });
+    // Headless Chrome's own 800x600 screen would classify Karma as automation.
+    Object.defineProperty(win.screen, 'width', { configurable: true, get: () => 1440 });
+    Object.defineProperty(win.screen, 'height', { configurable: true, get: () => 900 });
     if (typeof (win as any).chrome === 'undefined') {
       (win as any).chrome = { runtime: {} };
       chromeRuntimeShimAdded = true;
@@ -279,6 +285,60 @@ describe('AnalyticsService', () => {
       expect(service.getVisitorClass()).withContext(userAgent).toBe('automation');
       expect(doc.getElementById('ga4-gtag-script')).withContext(userAgent).toBeNull();
       expect(win.dataLayer).withContext(userAgent).toBeUndefined();
+    }
+  });
+
+  it('skips analytics bootstrap for a desktop browser that keeps the headless 800x600 screen', () => {
+    // A stealth scraper: normal Windows Chrome user agent, webdriver hidden.
+    Object.defineProperty(win.navigator, 'userAgent', {
+      configurable: true,
+      get: () => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36',
+    });
+    Object.defineProperty(win.screen, 'width', { configurable: true, get: () => 800 });
+    Object.defineProperty(win.screen, 'height', { configurable: true, get: () => 600 });
+
+    const service = TestBed.inject(AnalyticsService);
+    service.ensureInitialized();
+    service.trackPageView('/react/trivia/react-context-performance-issues');
+
+    expect(service.getVisitorClass()).toBe('automation');
+    expect(doc.getElementById('ga4-gtag-script')).toBeNull();
+    expect(win.dataLayer).toBeUndefined();
+
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({ imports: [BrowserTestingModule], providers: [AnalyticsService] });
+    Object.defineProperty(win.navigator, 'userAgent', {
+      configurable: true,
+      get: () => 'Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36',
+    });
+    expect(TestBed.inject(AnalyticsService).getVisitorClass())
+      .withContext('the screen rule is desktop-only')
+      .toBe('human');
+  });
+
+  it('skips analytics bootstrap for visits referred by a bot-only host, including its subdomains', () => {
+    const cases: Array<[string, 'automation' | 'human']> = [
+      ['https://aocr.org/', 'automation'],
+      ['https://www.aocr.org/some/page', 'automation'],
+      ['https://notaocr.org/', 'human'],
+      ['https://aocr.org.example.com/', 'human'],
+      ['https://www.google.com/', 'human'],
+    ];
+
+    for (const [referrer, expected] of cases) {
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({ imports: [BrowserTestingModule], providers: [AnalyticsService] });
+      doc.getElementById('ga4-gtag-script')?.remove();
+      delete win.dataLayer;
+      delete win.gtag;
+      Object.defineProperty(doc, 'referrer', { configurable: true, get: () => referrer });
+
+      const service = TestBed.inject(AnalyticsService);
+      service.ensureInitialized();
+
+      const gaLoaded = doc.getElementById('ga4-gtag-script') !== null;
+      expect(service.getVisitorClass()).withContext(referrer).toBe(expected);
+      expect(gaLoaded).withContext(referrer).toBe(expected === 'human');
     }
   });
 
