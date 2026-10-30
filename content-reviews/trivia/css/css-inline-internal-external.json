@@ -2,8 +2,8 @@
   "contentId": "css-inline-internal-external",
   "tech": "css",
   "query": "What is the difference between inline, internal, and external CSS?",
-  "reviewedAt": "2026-04-19",
-  "reviewedBy": "Codex AI draft",
+  "reviewedAt": "2026-10-30",
+  "reviewedBy": "Claude Code draft",
   "selection": {
     "querySource": "manual",
     "greatFrontendRelevant": true
@@ -27,10 +27,10 @@
       ],
       "ourEvidence": {
         "realWorldUseCases": [
-          "Inline CSS is written directly on an element via the style attribute, internal CSS lives in a &lt;style&gt; tag in the &lt;head&gt;, and external CSS is loaded from a separate .css file via &lt;link&gt;. External styles are reusable and best for maintainability."
+          "Inline CSS styles one element from its style attribute, internal CSS styles one page from a &lt;style&gt; block, external CSS is a linked file every page shares. Inline wins the cascade; the others tie by source order."
         ],
         "followUpConfusion": [
-          "<strong>Overview</strong><br><br>CSS can be written directly inside HTML (inline), embedded within a &lt;style&gt; block (internal), or stored in a separate file (external). Understanding their differences is key to managing scalability, performance, and consistency in design."
+          "Inline CSS sits in an element’s <code>style</code> attribute and styles that one element. Internal CSS sits in a <code>&lt;style&gt;</code> block, usually inside <code>&lt;head&gt;</code>, and styles the one document that contains it. External CSS lives in a separate file that <code>&lt;link&gt;</code> loads, and styles every page that links it. The three differ in scope, reuse, caching and cascade priority: a normal inline declaration beats both stylesheets, while internal and external rules tie, so the one that appears later in the document wins when specificity is equal."
         ]
       },
       "theirEvidence": {
@@ -71,10 +71,10 @@
       ],
       "ourEvidence": {
         "realWorldUseCases": [
-          "Inline CSS is written directly on an element via the style attribute, internal CSS lives in a &lt;style&gt; tag in the &lt;head&gt;, and external CSS is loaded from a separate .css file via &lt;link&gt;. External styles are reusable and best for maintainability."
+          "Inline CSS styles one element from its style attribute, internal CSS styles one page from a &lt;style&gt; block, external CSS is a linked file every page shares. Inline wins the cascade; the others tie by source order."
         ],
         "followUpConfusion": [
-          "<strong>Overview</strong><br><br>CSS can be written directly inside HTML (inline), embedded within a &lt;style&gt; block (internal), or stored in a separate file (external). Understanding their differences is key to managing scalability, performance, and consistency in design."
+          "Inline CSS sits in an element’s <code>style</code> attribute and styles that one element. Internal CSS sits in a <code>&lt;style&gt;</code> block, usually inside <code>&lt;head&gt;</code>, and styles the one document that contains it. External CSS lives in a separate file that <code>&lt;link&gt;</code> loads, and styles every page that links it. The three differ in scope, reuse, caching and cascade priority: a normal inline declaration beats both stylesheets, while internal and external rules tie, so the one that appears later in the document wins when specificity is equal."
         ]
       },
       "theirEvidence": {
@@ -111,14 +111,15 @@
         "It is tightly focused on the exact compare question and includes straightforward examples of each CSS application method."
       ],
       "theirGaps": [
-        "It is weaker on production-scale reasoning and less explicit about caching, maintainability, and override debt."
+        "It is weaker on production-scale reasoning and less explicit about caching, maintainability, and override debt.",
+        "Its priority table ranks external CSS lowest and says internal always overrides external; internal and external actually tie and source order decides."
       ],
       "ourEvidence": {
         "realWorldUseCases": [
-          "Inline CSS is written directly on an element via the style attribute, internal CSS lives in a &lt;style&gt; tag in the &lt;head&gt;, and external CSS is loaded from a separate .css file via &lt;link&gt;. External styles are reusable and best for maintainability."
+          "Inline CSS styles one element from its style attribute, internal CSS styles one page from a &lt;style&gt; block, external CSS is a linked file every page shares. Inline wins the cascade; the others tie by source order."
         ],
         "followUpConfusion": [
-          "<strong>Overview</strong><br><br>CSS can be written directly inside HTML (inline), embedded within a &lt;style&gt; block (internal), or stored in a separate file (external). Understanding their differences is key to managing scalability, performance, and consistency in design."
+          "Inline CSS sits in an element’s <code>style</code> attribute and styles that one element. Internal CSS sits in a <code>&lt;style&gt;</code> block, usually inside <code>&lt;head&gt;</code>, and styles the one document that contains it. External CSS lives in a separate file that <code>&lt;link&gt;</code> loads, and styles every page that links it. The three differ in scope, reuse, caching and cascade priority: a normal inline declaration beats both stylesheets, while internal and external rules tie, so the one that appears later in the document wins when specificity is equal."
         ]
       },
       "theirEvidence": {

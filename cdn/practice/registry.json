@@ -2156,7 +2156,7 @@
     "route": "/css/trivia/css-inline-internal-external",
     "tech": "css",
     "difficulty": "intermediate",
-    "summary": "css file via &lt;link&gt;. External styles are reusable and best for maintainability.",
+    "summary": "Inline CSS styles one element from its style attribute, internal CSS styles one page from a &lt;style&gt; block, external CSS is a linked file every page shares. Inline wins the cascade; the others tie by source order.",
     "tags": [
       "css",
       "inline",
@@ -2166,7 +2166,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-10-30",
     "schemaVersion": "question.v1",
     "assetRef": "questions/css/trivia.json#css-inline-internal-external"
   },
