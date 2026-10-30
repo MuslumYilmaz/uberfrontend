@@ -30,7 +30,7 @@
           "Inline CSS styles one element from its style attribute, internal CSS styles one page from a &lt;style&gt; block, external CSS is a linked file every page shares. Inline wins the cascade; the others tie by source order."
         ],
         "followUpConfusion": [
-          "Inline CSS sits in an element’s <code>style</code> attribute and styles that one element. Internal CSS sits in a <code>&lt;style&gt;</code> block, usually inside <code>&lt;head&gt;</code>, and styles the one document that contains it. External CSS lives in a separate file that <code>&lt;link&gt;</code> loads, and styles every page that links it. The three differ in scope, reuse, caching and cascade priority: a normal inline declaration beats both stylesheets, while internal and external rules tie, so the one that appears later in the document wins when specificity is equal."
+          "Inline CSS sits in an element’s <code>style</code> attribute and styles that one element. Internal CSS sits in a <code>&lt;style&gt;</code> block, usually inside <code>&lt;head&gt;</code>, and styles the one document that contains it. External CSS lives in a separate file that <code>&lt;link&gt;</code> loads, and styles every page that links it. The three differ in scope, reuse, caching and cascade priority: a normal inline declaration beats both style sheets, while internal and external rules tie, so the one that appears later in the document wins when specificity is equal."
         ]
       },
       "theirEvidence": {
@@ -74,7 +74,7 @@
           "Inline CSS styles one element from its style attribute, internal CSS styles one page from a &lt;style&gt; block, external CSS is a linked file every page shares. Inline wins the cascade; the others tie by source order."
         ],
         "followUpConfusion": [
-          "Inline CSS sits in an element’s <code>style</code> attribute and styles that one element. Internal CSS sits in a <code>&lt;style&gt;</code> block, usually inside <code>&lt;head&gt;</code>, and styles the one document that contains it. External CSS lives in a separate file that <code>&lt;link&gt;</code> loads, and styles every page that links it. The three differ in scope, reuse, caching and cascade priority: a normal inline declaration beats both stylesheets, while internal and external rules tie, so the one that appears later in the document wins when specificity is equal."
+          "Inline CSS sits in an element’s <code>style</code> attribute and styles that one element. Internal CSS sits in a <code>&lt;style&gt;</code> block, usually inside <code>&lt;head&gt;</code>, and styles the one document that contains it. External CSS lives in a separate file that <code>&lt;link&gt;</code> loads, and styles every page that links it. The three differ in scope, reuse, caching and cascade priority: a normal inline declaration beats both style sheets, while internal and external rules tie, so the one that appears later in the document wins when specificity is equal."
         ]
       },
       "theirEvidence": {
@@ -119,7 +119,7 @@
           "Inline CSS styles one element from its style attribute, internal CSS styles one page from a &lt;style&gt; block, external CSS is a linked file every page shares. Inline wins the cascade; the others tie by source order."
         ],
         "followUpConfusion": [
-          "Inline CSS sits in an element’s <code>style</code> attribute and styles that one element. Internal CSS sits in a <code>&lt;style&gt;</code> block, usually inside <code>&lt;head&gt;</code>, and styles the one document that contains it. External CSS lives in a separate file that <code>&lt;link&gt;</code> loads, and styles every page that links it. The three differ in scope, reuse, caching and cascade priority: a normal inline declaration beats both stylesheets, while internal and external rules tie, so the one that appears later in the document wins when specificity is equal."
+          "Inline CSS sits in an element’s <code>style</code> attribute and styles that one element. Internal CSS sits in a <code>&lt;style&gt;</code> block, usually inside <code>&lt;head&gt;</code>, and styles the one document that contains it. External CSS lives in a separate file that <code>&lt;link&gt;</code> loads, and styles every page that links it. The three differ in scope, reuse, caching and cascade priority: a normal inline declaration beats both style sheets, while internal and external rules tie, so the one that appears later in the document wins when specificity is equal."
         ]
       },
       "theirEvidence": {

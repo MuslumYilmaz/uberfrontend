@@ -7111,7 +7111,7 @@
   {
     "id": "js-map-filter-reduce",
     "title": "map vs filter vs reduce in JavaScript (Array Transformations)",
-    "description": "map, filter, and reduce are the three core array transformation methods in JavaScript. map transforms each item, filter keeps some items, and reduce can build any result by accumulating values. Understanding them is essential for clean, functional-style data processing.",
+    "description": "map returns a new array with every element transformed, filter returns a new array with the elements that pass a test, and reduce folds the array into one value of any type. None of them mutates the array.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -7130,102 +7130,171 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The mental model</strong>\n\nThese three methods are about <strong>transforming arrays without mutating them</strong>:\n\n- <strong><code>map</code></strong>: \"For every item, produce a new item.\"\n- <strong><code>filter</code></strong>: \"Keep only the items that pass a test.\"\n- <strong><code>reduce</code></strong>: \"Combine all items into a single result.\"\n\nThey are the foundation of <strong>functional-style programming</strong> in JavaScript."
+          "text": "<code>map</code> returns a new array of the same length with every element transformed by the callback. <code>filter</code> returns a new array, the same length or shorter, holding only the elements whose callback returned a truthy value. <code>reduce</code> walks the array once and returns a single value of any type, built up in an accumulator. None of the three changes the array it runs on, although a callback can still mutate the objects inside it. In interviews the follow-ups are about what each one returns, when to chain them, and when a single <code>reduce</code> pass is the better choice."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Aspect",
+            "map",
+            "filter",
+            "reduce"
+          ],
+          "rows": [
+            [
+              "Returns",
+              "A new array",
+              "A new array",
+              "One value of any type"
+            ],
+            [
+              "Result length",
+              "Same as the input",
+              "Same or shorter",
+              "Not an array unless you build one"
+            ],
+            [
+              "Callback returns",
+              "The new element",
+              "Truthy keeps the element, falsy drops it",
+              "The next accumulator"
+            ],
+            [
+              "Callback arguments",
+              "<code>element, index, array</code>",
+              "<code>element, index, array</code>",
+              "<code>accumulator, element, index, array</code>"
+            ],
+            [
+              "Extra parameter",
+              "<code>thisArg</code> (ignored by arrow functions)",
+              "<code>thisArg</code> (ignored by arrow functions)",
+              "<code>initialValue</code>"
+            ],
+            [
+              "Mutates the source array",
+              "No",
+              "No",
+              "No, unless the callback does"
+            ],
+            [
+              "Holes in sparse arrays",
+              "Skipped",
+              "Skipped",
+              "Skipped"
+            ],
+            [
+              "Typical use",
+              "Transform every item",
+              "Select a subset",
+              "Aggregate, group or index"
+            ],
+            [
+              "The trap interviewers probe",
+              "Using it as a filter leaves <code>undefined</code> entries",
+              "It tests truthiness, not <code>=== true</code>",
+              "No <code>initialValue</code> on an empty array throws"
+            ]
+          ],
+          "caption": "map vs filter vs reduce at a glance",
+          "stackOnMobile": true
+        },
+        {
+          "type": "text",
+          "text": "## map vs filter: the same array, two results\n\n<code>map</code> keeps the length and changes the values; <code>filter</code> keeps the values and changes the length. The classic mistake is using <code>map</code> to drop items, which leaves <code>undefined</code> holes in the result."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "const numbers = [1, 2, 3, 4, 5];\n\nconst doubled = numbers.map(n => n * 2);\n// [2, 4, 6, 8, 10]  same length, new values\n\nconst evens = numbers.filter(n => n % 2 === 0);\n// [2, 4]  shorter, same values\n\n// Wrong: map cannot drop items\nconst wrong = numbers.map(n => (n % 2 === 0 ? n : undefined));\n// [undefined, 2, undefined, 4, undefined]\n\n// Right: filter first, then map\nconst evenSquares = numbers.filter(n => n % 2 === 0).map(n => n * n);\n// [4, 16]"
+        },
+        {
+          "type": "text",
+          "text": "## reduce: one value of any type\n\n<code>reduce</code> calls the callback with an accumulator and the current element and keeps whatever the callback returns as the next accumulator. The result can be a number, an object, a <code>Map</code>, or another array. The pitfall is the second argument: without <code>initialValue</code>, the first element becomes the accumulator and the loop starts at the second, so an empty array has nothing to start from and throws."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "const numbers = [1, 2, 3, 4];\n\nconst sum = numbers.reduce((acc, n) => acc + n, 0);\n// 10\n\nconst users = [\n  { id: 1, name: 'Alice', active: true },\n  { id: 2, name: 'Bob', active: false }\n];\n\nconst byId = users.reduce((acc, user) => {\n  acc[user.id] = user;\n  return acc;\n}, {});\n// { 1: { id: 1, ... }, 2: { id: 2, ... } }\n\n[].reduce((acc, n) => acc + n);\n// TypeError: Reduce of empty array with no initial value\n\n[].reduce((acc, n) => acc + n, 0);\n// 0"
+        },
+        {
+          "type": "text",
+          "text": "## Chain map and filter, or write one reduce?\n\nYes, you can chain them, and that is the normal way to select and then transform. The chain creates one intermediate array and reads like the sentence that describes it. A single <code>reduce</code> does the same work in one pass but hides the intent inside the callback, so reach for it when the result is one value, a grouping or an index, not as a general replacement."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// Chain: select, then transform (one intermediate array)\nconst activeNames = users\n  .filter(user => user.active)\n  .map(user => user.name);\n// ['Alice']\n\n// One pass with reduce: same result, more to read\nconst activeNames2 = users.reduce((acc, user) => {\n  if (user.active) acc.push(user.name);\n  return acc;\n}, []);"
+        },
+        {
+          "type": "text",
+          "text": "The performance argument is weaker than it sounds. The chain visits the array twice and allocates one extra array; for a few thousand elements that costs microseconds, far below anything a user can notice. Measure in a hot path before trading readability for it, and both are linear, so the <a href=\"/javascript/trivia/js-big-o-notation\">Big-O</a> is the same either way. Practice the three on <a href=\"/javascript/coding/js-compact\">removing falsy values</a>, <a href=\"/javascript/coding/js-sum-numbers\">summing numbers</a> and <a href=\"/javascript/coding/js-flatten-once\">flattening one level</a>."
+        },
+        {
+          "type": "text",
+          "text": "## Mistakes interviewers look for\n\n- Using <code>map</code> for side effects such as logging or pushing into another array. That is a <code>forEach</code> job; <code>map</code> allocates a result nobody reads.\n- Using <code>map</code> to drop items. It cannot change the length; you get <code>undefined</code> entries. Filter first.\n- A block body without <code>return</code>: <code>numbers.map(n => { n * 2; })</code> gives an array of <code>undefined</code>. The <a href=\"/javascript/debug/js-debug-missing-return-map-filter\">missing-return debug exercise</a> is exactly this bug.\n- Mutating objects inside the callback. <code>map</code> gives you a new array, but the elements are the same object references, so <code>user.active = false</code> inside the callback changes the original data too. Copy the object before changing it; see <a href=\"/javascript/trivia/js-shallow-vs-deep-copy\">shallow vs deep copy</a>.\n- <code>['10', '10', '10'].map(parseInt)</code> returns <code>[10, NaN, 2]</code>, because <code>map</code> passes the index as the second argument and <code>parseInt</code> reads it as the radix. The <a href=\"/javascript/trivia/js-map-parseint-callback-arity-output\">map(parseInt) question</a> walks through it.\n- <code>async</code> callbacks. <code>map</code> with an async function returns an array of promises, so wrap it in <code>Promise.all</code>. <code>filter</code> cannot await at all: a promise is always truthy, so every element passes. Resolve the checks with <code>map</code> and <code>Promise.all</code> first, then filter, or use a <code>for...of</code> loop.\n- Forgetting <code>initialValue</code> in <code>reduce</code>. Empty input throws, and a non-empty input starts with the first element as the accumulator, which breaks as soon as the elements and the result have different shapes.\n- Counting on holes. All three skip empty slots in sparse arrays, while a plain <code>for</code> loop visits them as <code>undefined</code>, so the two can disagree on length-dependent results."
+        },
+        {
+          "type": "text",
+          "text": "## Related methods you will be asked about\n\nThe follow-up is usually about the neighbors, especially <code>forEach</code>; the <a href=\"/javascript/trivia/js-foreach-vs-map\">forEach vs map answer</a> covers that pair in depth."
         },
         {
           "type": "list",
           "columns": [
             "Method",
-            "Input → Output",
-            "Callback returns",
-            "Typical use"
+            "Returns",
+            "Use it when"
           ],
           "rows": [
             [
-              "<strong>map</strong>",
-              "Array → Array (same length)",
-              "The new element",
-              "Transform each element (e.g., numbers → strings)"
+              "<code>forEach</code>",
+              "<code>undefined</code>",
+              "You only want side effects and never need the result; it cannot break early."
             ],
             [
-              "<strong>filter</strong>",
-              "Array → Array (shorter or same)",
-              "<code>true</code> / <code>false</code>",
-              "Select a subset (e.g., only active users)"
+              "<code>find</code>",
+              "The first matching element, or <code>undefined</code>",
+              "You need one item, not the whole subset."
             ],
             [
-              "<strong>reduce</strong>",
-              "Array → Any (number, object, array, map, etc.)",
-              "The new accumulator",
-              "Aggregate / fold data into one value"
+              "<code>some</code> / <code>every</code>",
+              "A boolean",
+              "You are asking whether any or all elements pass a test; both stop as soon as the answer is known."
+            ],
+            [
+              "<code>flatMap</code>",
+              "A new array, flattened one level",
+              "Each element maps to zero, one or many results, such as splitting sentences into words."
+            ],
+            [
+              "<code>for...of</code>",
+              "Nothing, it is a statement",
+              "You need <code>break</code>, <code>continue</code> or <code>await</code> inside the loop."
             ]
           ],
-          "caption": "Three different kinds of transformations."
+          "caption": "Neighbors of map, filter and reduce",
+          "stackOnMobile": true
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-code'></i> <strong>map: transform each element</strong>"
-        },
-        {
-          "type": "code",
-          "language": "javascript",
-          "code": "const numbers = [1, 2, 3];\n\nconst doubled = numbers.map(n => n * 2);\n\n// [2, 4, 6]\n// Same length, new values"
+          "text": "## Interview follow-ups\n\n### Can you use map and filter together?\n\nYes, chaining is the idiomatic way to select and then transform: <code>items.filter(test).map(transform)</code>. The chain creates one intermediate array; use a single <code>reduce</code> only when that allocation shows up in a measurement or when the result is not an array.\n\n### What is the difference between map, filter and reduce?\n\n<code>map</code> transforms every element and returns an array of the same length. <code>filter</code> keeps the elements that pass a test and returns an array of the same length or shorter. <code>reduce</code> combines all elements into one value of any type through an accumulator.\n\n### What is the difference between map, forEach and filter?\n\n<code>forEach</code> runs a callback for its side effects and returns <code>undefined</code>. <code>map</code> returns a new array of transformed values. <code>filter</code> returns a new array of the values that passed a test. Pick <code>forEach</code> when nobody needs a result, and never pick it when somebody does.\n\n### Does map change the original array?\n\nNo. <code>map</code>, <code>filter</code> and <code>reduce</code> never reassign or resize the array they run on. The elements are passed by reference, though, so mutating an object inside the callback changes the object the original array also holds.\n\n### What does reduce return on an empty array?\n\nThe <code>initialValue</code>, if you passed one. Without it, <code>reduce</code> throws a <code>TypeError</code>, because there is no element to use as the starting accumulator.\n\n### When should you use reduce instead of map and filter?\n\nWhen the result is a single value, such as a sum, a count, a grouped object or an index by id, or when a measured hot path cannot afford the intermediate array. If the code reads as select then transform, keep the chain."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-code'></i> <strong>filter: keep some elements</strong>"
-        },
-        {
-          "type": "code",
-          "language": "javascript",
-          "code": "const numbers = [1, 2, 3, 4, 5];\n\nconst evens = numbers.filter(n => n % 2 === 0);\n\n// [2, 4]\n// Only elements that pass the condition stay"
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nPicture an assembly line:\n\n- **map** repaints every item and sends the same number of items on.\n- **filter** pulls some items off the belt and sends the rest on unchanged.\n- **reduce** packs whatever arrives into one box and hands you the box.\n\nThe line never touches the warehouse the items came from, unless a worker scribbles on an item instead of repainting a copy."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-code'></i> <strong>reduce: build anything</strong>"
-        },
-        {
-          "type": "code",
-          "language": "javascript",
-          "code": "const numbers = [1, 2, 3, 4];\n\nconst sum = numbers.reduce((acc, n) => acc + n, 0);\n\n// 10\n// acc is the running total"
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-layer-group'></i> <strong>reduce can replace both (but shouldn’t always)</strong>\n\nYou can implement map and filter with reduce, but it’s usually <strong>less readable</strong>:"
-        },
-        {
-          "type": "code",
-          "language": "javascript",
-          "code": "// map with reduce\nconst doubled2 = numbers.reduce((acc, n) => {\n  acc.push(n * 2);\n  return acc;\n}, []);\n\n// filter with reduce\nconst evens2 = numbers.reduce((acc, n) => {\n  if (n % 2 === 0) acc.push(n);\n  return acc;\n}, []);"
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-bug'></i> <strong>Common mistakes</strong>\n\n1) <strong>Forgetting the initial value in <code>reduce</code></strong>: Can cause bugs with empty arrays and wrong types.\n\n2) <strong>Mutating the accumulator or items</strong>: Breaks immutability and can cause hard-to-track bugs in UI state.\n\n3) <strong>Overusing <code>reduce</code></strong>: If <code>map</code> or <code>filter</code> expresses the intent, use them."
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-screwdriver-wrench'></i> <strong>Real-world examples</strong>"
-        },
-        {
-          "type": "code",
-          "language": "javascript",
-          "code": "const users = [\n  { id: 1, name: 'Alice', active: true },\n  { id: 2, name: 'Bob', active: false },\n  { id: 3, name: 'Carol', active: true }\n];\n\n// 1) Get names of active users\nconst activeNames = users\n  .filter(u => u.active)\n  .map(u => u.name);\n\n// ['Alice', 'Carol']\n\n// 2) Index by id (reduce → object)\nconst byId = users.reduce((acc, u) => {\n  acc[u.id] = u;\n  return acc;\n}, {});\n\n// { '1': {...}, '2': {...}, '3': {...} }"
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-gauge-high'></i> <strong>Performance note</strong>\n\nChaining <code>filter().map()</code> loops twice. In <strong>hot paths</strong>, a single <code>reduce</code> can be faster. But in normal code, <strong>readability beats micro-optimizations</strong>."
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>One-sentence answer</strong>\n\n<strong><code>map</code></strong> transforms each element, <strong><code>filter</code></strong> selects some elements, and <strong><code>reduce</code></strong> combines all elements into a single result of any type."
+          "text": "<strong>Summary</strong>\n\n- <code>map</code> transforms each element, <code>filter</code> selects some elements, and <code>reduce</code> combines all elements into a single result of any type.\n- <code>map</code> keeps the length, <code>filter</code> keeps the values, <code>reduce</code> keeps whatever the accumulator says.\n- Chain <code>filter</code> and <code>map</code> to select and then transform; use one <code>reduce</code> for a single value, a grouping or an index.\n- None of them mutates the array, but callbacks can mutate the objects inside it; copy before changing.\n- Always pass <code>initialValue</code> to <code>reduce</code>, wrap async <code>map</code> calls in <code>Promise.all</code>, and never use <code>map</code> as a filter."
         }
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30",
+    "publishedAt": "2026-01-30",
+    "updatedAt": "2026-10-30",
     "seo": {
       "title": "map vs filter vs reduce in JavaScript: when to use each?",
-      "description": "Use map to transform items, filter to keep matching items, and reduce to combine values into one result."
+      "description": "map vs filter vs reduce with examples: what each returns, when to chain them, when one reduce pass is better, and the mistakes interviewers look for."
     },
     "incidentCard": {
       "title": "Array Method Choice Check",
