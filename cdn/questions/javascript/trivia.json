@@ -10198,7 +10198,7 @@
   {
     "id": "js-escape-vs-sanitize",
     "title": "Escaping vs Sanitizing: What's the Difference?",
-    "description": "Explain the difference between output escaping (context-specific encoding) and sanitizing user input (allowlist filtering). Include when to use each, how they work, and why both matter for XSS prevention.",
+    "description": "Escaping encodes characters so data renders as text in one output context; sanitizing filters HTML to an allowlist so some markup can stay. Validate input, escape output, sanitize only when you must render user HTML.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -10215,91 +10215,182 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>Big idea</strong>\n\nEscaping and sanitizing both reduce XSS risk, but they solve different problems. <strong>Escaping</strong> encodes characters so the browser treats user input as text in a specific output context. <strong>Sanitizing</strong> removes or rewrites dangerous parts of user-provided markup so some HTML can be allowed."
+          "text": "Escaping and sanitizing both exist to stop untrusted data from being read as code, but they answer different questions. Escaping, also called output encoding, converts the characters that carry meaning in a given context, such as <code>&lt;</code> and <code>&amp;</code> in HTML, into a representation the browser shows as text. Sanitizing takes input that is supposed to contain HTML and removes everything outside an allowlist of tags and attributes, so some markup survives. Validation is the third, separate step: rejecting input that does not match the expected shape. The rule that holds up in production is to validate on the way in, escape on the way out for the exact context, and sanitize only where the product must render user-supplied HTML."
         },
         {
           "type": "list",
           "columns": [
             "Aspect",
-            "Escaping",
-            "Sanitizing"
+            "Escaping (output encoding)",
+            "Sanitizing",
+            "Validation"
           ],
           "rows": [
             [
-              "Primary goal",
-              "Encode special characters so they render as text",
-              "Allow some HTML while blocking dangerous tags/attrs"
+              "Question it answers",
+              "How do I display this safely in this context?",
+              "Which parts of this HTML may stay?",
+              "Is this input the shape I expect?"
+            ],
+            [
+              "Where it runs",
+              "At output, every time the value is rendered",
+              "Once, where HTML must be accepted or rendered",
+              "At input, before storing or processing"
             ],
             [
               "Input expectation",
               "Plain text",
-              "HTML-like input"
+              "HTML the product wants to keep",
+              "Anything"
             ],
             [
-              "Context",
-              "Context-specific (HTML text, attributes, URLs, JS, CSS)",
-              "HTML context only"
+              "What happens to the data",
+              "Nothing is lost; characters are encoded for one context",
+              "Disallowed tags and attributes are dropped",
+              "The value is accepted or rejected"
             ],
             [
-              "Typical tooling",
-              "textContent, template auto-escaping, encoding helpers",
-              "DOMPurify, browser sanitizer APIs, server allowlists"
+              "Context-specific",
+              "Yes: HTML body, attribute, URL, JavaScript and CSS each have their own rules",
+              "No, HTML only",
+              "No"
+            ],
+            [
+              "Typical tools",
+              "<code>textContent</code>, <code>setAttribute</code>, <code>encodeURIComponent</code>, template auto-escaping",
+              "DOMPurify, <code>setHTML</code>, server-side allowlist libraries",
+              "Schema validators, format checks, type checks"
             ],
             [
               "Failure mode",
-              "Wrong encoder for the context can still allow XSS",
-              "Weak allowlist can allow XSS or strip too much content"
+              "The right encoder in the wrong context still leaves XSS",
+              "A weak allowlist lets XSS through; a strict one destroys content",
+              "Does nothing against valid but dangerous data, such as a bio that contains a script tag"
             ]
           ],
-          "caption": "Escaping encodes for a context; sanitizing filters to an allowlist."
+          "caption": "Escaping, sanitizing and validation side by side",
+          "stackOnMobile": true
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-bolt'></i> <strong>Real-world scenario</strong>\n\nA profile bio can be plain text (escape and render safely), but a blog editor might allow limited rich text (sanitize with an allowlist). Decide based on the product requirement, not convenience."
+          "text": "## Escaping: the same string, five contexts\n\nThe browser reads the same characters differently depending on where you put them, so the encoder must match the destination. In the DOM the safest move is to use APIs that never parse markup at all."
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "const userInput = '<img src=x onerror=alert(1) />';\n\n// Escaping (text only)\nbioEl.textContent = userInput;\n\n// Sanitizing (allow some HTML)\nbioEl.innerHTML = DOMPurify.sanitize(userInput, {\n  ALLOWED_TAGS: ['b', 'i', 'a'],\n  ALLOWED_ATTR: ['href', 'rel', 'target']\n});"
+          "code": "const input = '<img src=x onerror=\"alert(1)\">';\n\n// HTML text: textContent never parses markup\nel.textContent = input;\n\n// HTML attribute: set it as a value, never by string concatenation\nlink.setAttribute('title', input);\n\n// URL parameter: percent-encode the value, then check the protocol\nconst url = new URL(`/search?q=${encodeURIComponent(input)}`, location.origin);\n\n// Data for a script: serialize to JSON into a data attribute, never into inline JavaScript\nel.dataset.payload = JSON.stringify({ input });"
         },
         {
           "type": "list",
           "columns": [
             "Context",
-            "Use",
-            "Example"
+            "Safe approach",
+            "What goes wrong"
           ],
           "rows": [
             [
-              "HTML text",
-              "textContent / template escaping",
-              "el.textContent = userText"
+              "HTML body",
+              "<code>textContent</code>, or template interpolation that encodes <code>&amp;</code>, <code>&lt;</code>, <code>&gt;</code>, <code>&quot;</code> and <code>'</code>",
+              "<code>innerHTML</code> with concatenated strings runs whatever tags were injected"
             ],
             [
               "HTML attribute",
-              "Set attributes with encoded values",
-              "el.setAttribute('title', safeText)"
+              "<code>setAttribute</code>, or quoted attributes with encoded values",
+              "An unquoted attribute lets a space close it and add <code>onerror</code>"
             ],
             [
               "URL",
-              "Allowlist protocols + URL parsing",
-              "new URL(input, location.origin)"
+              "<code>encodeURIComponent</code> on each parameter value, then allow only <code>http:</code> and <code>https:</code> after parsing with <code>new URL()</code>",
+              "<code>javascript:</code> and <code>data:</code> links survive HTML encoding untouched"
             ],
             [
-              "JS string",
-              "Avoid inline JS; never concatenate user input",
-              "Prefer data attributes or JSON"
+              "JavaScript",
+              "Keep user data out of inline scripts and event handlers; pass it through <code>JSON.stringify</code> into a data attribute",
+              "Quote escaping by hand misses cases, and attribute encoding does not protect <code>onclick</code>"
+            ],
+            [
+              "CSS",
+              "Allow only known values, or expose them through CSS custom properties set from JavaScript",
+              "User input inside <code>style</code> or <code>url()</code> can trigger requests or break out of the declaration"
             ]
           ],
-          "caption": "Encoding is context-specific. Use the right output channel."
+          "caption": "One value, five encoders",
+          "stackOnMobile": true
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Common pitfalls</strong>\n\n- Stripping tags with regex (easy to bypass).\n- Sanitizing once and reusing the result in a different context.\n- Double-escaping by encoding the same value twice.\n- Storing only sanitized HTML and losing the original data."
+          "text": "## Sanitizing: keep some HTML, drop the rest\n\nSanitizing is for the cases where the product promises rich text: comments with bold and links, a CMS body, a markdown preview. The sanitizer parses the HTML, walks the tree and keeps only the tags and attributes on the allowlist, which is why a regex can never do the job. Use a maintained library and give it the smallest allowlist the feature needs."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "import DOMPurify from 'dompurify';\n\nconst dirty = '<p>Hi <b>there</b><img src=x onerror=\"alert(1)\"><a href=\"javascript:alert(2)\">x</a></p>';\n\nconst clean = DOMPurify.sanitize(dirty, {\n  ALLOWED_TAGS: ['p', 'b', 'i', 'a'],\n  ALLOWED_ATTR: ['href', 'rel', 'target']\n});\n// <p>Hi <b>there</b><a>x</a></p>  the img is gone and the javascript: href was removed\n\nbioEl.innerHTML = clean;\n\n// Where the browser supports it, the built-in sanitizer needs no library\nif ('setHTML' in bioEl) bioEl.setHTML(dirty);"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\nEscape for the specific output context. Sanitize only when you must allow markup, and pair it with defense-in-depth like CSP and Trusted Types."
+          "text": "## Sanitize input or escape output?\n\nThe old advice was to sanitize everything on the way in. It fails for two reasons. Input does not know where it will be shown later, so one transformation cannot be right for the HTML body, an attribute, a URL and a JSON payload at once. And it destroys data: a user named O’Brien or a code snippet in a support ticket comes out mangled. The approach that holds up is to store the original, validate its shape at the boundary, escape it at every output for that output’s context, and reserve sanitizing for the one place where the feature is HTML itself. When you do sanitize rich text, keep the raw version too, re-sanitize when the allowlist changes, and never serialize the sanitized DOM back to a string and parse it again with <code>innerHTML</code>, because re-parsing can reopen holes the sanitizer closed. The <a href=\"/javascript/trivia/js-xss-dom-sinks\">DOM XSS sinks answer</a> lists every API that parses markup, and the <a href=\"/javascript/coding/js-escape-html\">escape HTML exercise</a> has you write the encoder by hand."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Framework",
+            "Escapes for you",
+            "Where it stops"
+          ],
+          "rows": [
+            [
+              "React",
+              "Text and attribute values in JSX are encoded",
+              "<code>dangerouslySetInnerHTML</code> inserts raw HTML, so sanitize first; <code>href</code> values are not validated, so check URL protocols yourself"
+            ],
+            [
+              "Angular",
+              "Interpolation and property bindings are sanitized by context, including <code>[innerHTML]</code> and <code>[href]</code>",
+              "<code>bypassSecurityTrustHtml</code> and its siblings switch that off for one value; direct DOM APIs are never covered"
+            ],
+            [
+              "Vue",
+              "<code>{{ }}</code> and <code>v-bind</code> encode text and attributes",
+              "<code>v-html</code> inserts raw HTML and the docs say to sanitize first; see <a href=\"/vue/trivia/vue-reactive-interpolation-into-dom\">how Vue interpolates into the DOM</a>"
+            ],
+            [
+              "Plain DOM",
+              "Nothing",
+              "<code>textContent</code> and <code>setAttribute</code> are safe by construction; <code>innerHTML</code>, <code>outerHTML</code>, <code>insertAdjacentHTML</code> and <code>document.write</code> parse markup"
+            ]
+          ],
+          "caption": "Where frameworks escape for you, and where they stop",
+          "stackOnMobile": true
+        },
+        {
+          "type": "text",
+          "text": "## Defense in depth\n\n- Content Security Policy: a <code>script-src</code> without <code>'unsafe-inline'</code> stops injected inline scripts and event handlers from running even when one escape is missed.\n- Trusted Types: with <code>require-trusted-types-for 'script'</code>, passing a plain string to <code>innerHTML</code> or <code>eval</code> throws, so every sink has to go through a policy that sanitizes. Baseline across current browsers since early 2026.\n- <code>setHTML</code>: the built-in sanitizer always strips scripts and event handlers, but availability is still limited, so feature-detect it and fall back to a library.\n- Cookies: <code>HttpOnly</code> keeps the session cookie out of reach of an injected script, which limits the damage when everything else fails; see <a href=\"/javascript/trivia/js-cookie-options\">cookie options</a>."
+        },
+        {
+          "type": "text",
+          "text": "## Mistakes interviewers look for\n\n- Stripping tags with a regex. HTML is not a regular language; <code>&lt;scr&lt;script&gt;ipt&gt;</code>, attribute tricks and malformed markup get through. A parser-based sanitizer is the only option.\n- Encoding for the wrong context. HTML-encoding a value and dropping it into <code>href</code>, an event handler or inline JavaScript leaves those contexts open.\n- Double encoding. Encoding by hand and then rendering through a template that encodes again shows the entity text itself to the user instead of the character. Encode once, at the output.\n- Sanitizing once and reusing the result everywhere. Sanitized HTML is safe in the HTML body; put it in an attribute or a URL and the rules change.\n- Storing only the sanitized version. When the allowlist tightens or a bypass is fixed, you cannot re-sanitize what you no longer have.\n- Trusting the wrong helper. <code>escape()</code> and <code>encodeURI</code> are not HTML encoders, and <code>encodeURIComponent</code> is for URL parameter values only.\n- Letting <code>javascript:</code> through. HTML encoding does nothing to a URL scheme; parse the URL and allow only the protocols you expect.\n- Calling validation sanitizing. Rejecting an email address with a bad shape is validation; it says nothing about a valid comment that contains <code>&lt;script&gt;</code>."
+        },
+        {
+          "type": "text",
+          "text": "## Interview follow-ups\n\n### What is the difference between validation and sanitization?\n\nValidation decides whether input is acceptable and rejects it when it is not: wrong format, too long, unexpected type. Sanitization changes the input to make it safe to use, typically by removing disallowed HTML. Validation keeps bad data out, sanitization makes allowed data safe, and escaping makes any data safe to display.\n\n### What does it mean to sanitize input?\n\nTo transform untrusted input into a version that meets a safety rule, such as HTML reduced to an allowlist of tags. It only makes sense for data that is supposed to carry markup; for plain text, escaping at output is the right tool and sanitizing destroys legitimate characters.\n\n### What is escaping in HTML?\n\nReplacing the five characters the HTML parser treats as syntax with their entities, so the browser shows them as text instead of reading them as tags or attribute boundaries:"
+        },
+        {
+          "type": "code",
+          "language": "html",
+          "code": "&   becomes   &amp;\n<   becomes   &lt;\n>   becomes   &gt;\n\"   becomes   &quot;\n'   becomes   &#x27;"
+        },
+        {
+          "type": "text",
+          "text": "### How do you sanitize a string in JavaScript?\n\nIf the string is text, you do not sanitize it: set it with <code>textContent</code> or bind it through your framework and the characters are encoded for you. If the string is HTML you intend to render, run it through DOMPurify with an explicit allowlist, or <code>setHTML</code> where the browser supports it, and assign the result to <code>innerHTML</code>.\n\n### Should you escape input or output?\n\nOutput. The same value can be rendered into HTML, an attribute, a URL and a JSON payload, and each needs a different encoder, so the encoding has to happen where the context is known. Validate at input, store the original, escape at output.\n\n### Can escaping and sanitizing be used together?\n\nYes, and real products do: sanitize the rich-text field once with an allowlist, escape every other field at output, and keep CSP and Trusted Types as the net underneath both."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of a club with a guest list:\n\n- **Validation** is the ticket check at the door: wrong ticket, no entry.\n- **Sanitizing** is the bouncer who lets guests in but takes away anything not on the allowed list.\n- **Escaping** is putting every guest’s words in quotation marks so nobody mistakes them for the DJ’s instructions.\n\nThe ticket check and the bouncer work at the entrance; the quotation marks are applied every time someone speaks."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Summary</strong>\n\n- Escaping encodes data for one output context so it renders as text; sanitizing filters HTML to an allowlist so some markup survives; validation accepts or rejects input by shape.\n- Validate at input, escape at output, sanitize only where the product renders user HTML, and store the original.\n- Every context has its own encoder: <code>textContent</code> for HTML text, <code>setAttribute</code> for attributes, <code>encodeURIComponent</code> plus a protocol check for URLs, JSON in data attributes for script data.\n- Never strip tags with a regex, never reuse sanitized HTML in another context, and never encode twice.\n- CSP, Trusted Types and <code>HttpOnly</code> cookies catch what the first line misses."
         }
       ]
     },
@@ -10324,10 +10415,11 @@
       "rereadPrompt": "Not quite. Escaping and sanitizing solve different problems. Escape when the value should render as text in a specific context, and sanitize only when the product deliberately allows some markup and you need to filter it through a safe allowlist."
     },
     "access": "free",
-    "updatedAt": "2026-02-03",
+    "publishedAt": "2026-02-03",
+    "updatedAt": "2026-10-30",
     "seo": {
       "title": "Escaping vs sanitizing: what is the difference?",
-      "description": "Escaping encodes data for a specific output context, while sanitizing removes or allows only safe content."
+      "description": "Escaping encodes data per output context, sanitizing filters HTML to an allowlist, validation rejects bad input. Rules per context, examples and follow-ups."
     }
   },
   {
