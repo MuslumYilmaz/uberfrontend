@@ -1,2 +1,8 @@
 # Local backlink outreach research registry
 /docs/references/backlink-outreach-registry.tsv
+
+# Markdown stays local by default; lint scripts read content drafts and agents read docs/ai-context
+*.md
+!README.md
+!/content-drafts/**/*.md
+!/docs/ai-context/**/*.md
