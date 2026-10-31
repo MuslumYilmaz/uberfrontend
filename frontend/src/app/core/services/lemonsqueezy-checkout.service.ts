@@ -5,6 +5,7 @@ import {
   releaseExternalWindowReservation,
   reserveExternalWindow,
 } from '../utils/external-window.util';
+import { isLemonSqueezyCheckoutUrl } from '../utils/payments-provider.util';
 
 export type LemonSqueezyCheckoutContext = {
   userId?: string;
@@ -52,17 +53,6 @@ export class LemonSqueezyCheckoutService {
   private overlayLaunchId = 0;
   private activeOverlayCheckout?: ActiveOverlayCheckout;
 
-  private isValidBuyUrl(value: string): boolean {
-    try {
-      const parsed = new URL(value);
-      return parsed.protocol === 'https:'
-        && parsed.hostname === 'frontendatlas.lemonsqueezy.com'
-        && /^\/checkout\/(?:buy|custom)\/[^/]+/.test(parsed.pathname);
-    } catch {
-      return false;
-    }
-  }
-
   async prefetch(surface: LemonSqueezyCheckoutSurface = 'hosted_new_tab'): Promise<void> {
     if (surface !== 'overlay') return;
     await this.ensureLemonJs();
@@ -89,7 +79,7 @@ export class LemonSqueezyCheckoutService {
     if (typeof window === 'undefined') return overlayRequested ? 'failed' : 'new-tab';
 
     const finalUrl = String(url || '').trim();
-    if (!finalUrl || !this.isValidBuyUrl(finalUrl)) {
+    if (!finalUrl || !isLemonSqueezyCheckoutUrl(finalUrl)) {
       if (overlayRequested) this.invalidateOverlayLaunch();
       this.release(reservation);
       console.error('[billing] invalid LemonSqueezy checkout URL.');

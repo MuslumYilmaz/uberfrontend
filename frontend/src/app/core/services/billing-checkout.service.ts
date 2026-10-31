@@ -7,6 +7,7 @@ import { CheckoutLaunchMode } from '../utils/billing-ux.util';
 import {
   PaymentsProvider,
   PlanId,
+  isLemonSqueezyCheckoutUrl,
   resolveCheckoutPaymentsProvider,
   resolvePaymentsProvider,
 } from '../utils/payments-provider.util';
@@ -344,7 +345,7 @@ export class BillingCheckoutService {
       console.warn('[billing] missing checkout url from backend', { provider: start.provider, planId });
       return { ok: false, reason: 'missing-url', provider: start.provider };
     }
-    if (start.provider === 'lemonsqueezy' && !isLemonSqueezyBuyUrl(start.checkoutUrl)) {
+    if (start.provider === 'lemonsqueezy' && !isLemonSqueezyCheckoutUrl(start.checkoutUrl)) {
       this.releaseCheckoutWindow(context?.launchReservation);
       console.error('[billing] invalid LemonSqueezy checkout URL.');
       return { ok: false, reason: 'invalid-url', provider: start.provider };
@@ -532,19 +533,6 @@ function normalizeCampaignId(value: unknown): string | null {
 function normalizeOptionalAttributionId(value: unknown): string | null {
   const normalized = String(value || '').trim();
   return /^[a-zA-Z0-9][a-zA-Z0-9._:-]{0,127}$/.test(normalized) ? normalized : null;
-}
-
-function isLemonSqueezyBuyUrl(value: string): boolean {
-  try {
-    const parsed = new URL(value);
-    // Buy links are the configured hosted checkouts; signed /checkout/custom/
-    // links come from the backend for regional and student prices.
-    return parsed.protocol === 'https:'
-      && parsed.hostname === 'frontendatlas.lemonsqueezy.com'
-      && /^\/checkout\/(?:buy|custom)\/[^/]+/.test(parsed.pathname);
-  } catch {
-    return false;
-  }
 }
 
 function mapCheckoutStartError(error: unknown, provider: PaymentsProvider): CheckoutFailureReason {
