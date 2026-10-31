@@ -31,10 +31,10 @@ const CAPITALONE_VIRTUAL_INTERVIEW_URL = 'https://www.capitalonecareers.com/7-ti
 const CAPITALONE_FRONTEND_POSTING_URL =
   'https://capitalone.wd12.myworkdayjobs.com/Capital_One/job/McLean-VA/Front-End-Engineer-4--JavaScript--TypeScript--Angular-_R1003500-1';
 
-export const CAPITALONE_PREVIEW_TITLE = 'Capital One Frontend Interview Questions: 5 Prompts + Guide';
+export const CAPITALONE_PREVIEW_TITLE = 'Capital One Frontend Interview Questions and Power Day Guide';
 export const CAPITALONE_PREVIEW_H1 = 'Capital One Frontend Interview Questions';
 export const CAPITALONE_PREVIEW_DESCRIPTION =
-  'Prepare for a Capital One frontend interview with 5 practice prompts modelled on public reports: card application design, SPA build, Angular forms, case code.';
+  'Capital One frontend interview: Power Day explained (frontend design, React or Angular technical, case and behavioral hours), CodeSignal and 5 prompts.';
 export const CAPITALONE_PREVIEW_CANONICAL_PATH = '/companies/capital-one/preview';
 export const CAPITALONE_PREVIEW_TRUST_NOTE =
   'These are FrontendAtlas practice versions modelled on rounds described in public interview reports, not leaked, confirmed or official Capital One questions.';
@@ -71,6 +71,29 @@ export const CAPITALONE_COMPANY_PREVIEW: AuthoredCompanyPreview = {
       'Capital One publishes a Power Day description for AI and ML roles and a general interview guide, but no frontend-specific one. Employees on Blind mentioned a hiring freeze in April 2026, while seven frontend postings were open in October 2026.',
     ],
   },
+  roundSpotlights: [
+    {
+      id: 'power-day',
+      kicker: 'Round decoder',
+      title: 'Capital One Power Day for frontend engineers: what the four interviews are and what was asked',
+      lede: [
+        'Power Day is Capital One\'s final round: four one-hour interviews back to back, virtual on Zoom with video on, after a recruiter screen and a CodeSignal assessment. In the frontend accounts from 2022 to 2024 the four interviews are a frontend design round, a frontend technical round, a case built on reading code, and a behavioral round.',
+        'The design round is often a credit card application page with its confirmation page, or the structure of a single-page application from requirements. The technical round is a small framework task judged on structure, syntax and coding style: a React project, an Angular form with validations, or a form in your framework of choice. The case is a business scenario read through code, such as finding the bug in a budgeting program written by an intern without coding the fix. The behavioral hour is STAR questions, in one account all about a single past project.',
+      ],
+      facts: [
+        { label: 'Position in the loop', value: 'The final round, after a recruiter screen and a CodeSignal assessment of about 70 minutes with four LeetCode-style questions; candidates who solved two or three were still invited.' },
+        { label: 'Length and tool', value: 'Four one-hour interviews back to back, virtual on Zoom with video on.' },
+        { label: 'Frontend design hour', value: 'A credit card application page and its confirmation page, conversational with a whiteboard for notes, or a web app or single-page application from requirements: components, routing, data flow and API calls.' },
+        { label: 'Frontend technical hour', value: 'A React project, an Angular form with validations, or a form in the candidate\'s framework, judged on structure, syntax and coding style; the 2024 lead loop built a single-page application like pair programming.' },
+        { label: 'Case hour', value: 'Find the bug in an intern\'s budgeting program without coding the fix, work example cost calculations and fix a faulty algorithm, or refactor badly written code. The official guide for AI and ML roles says the case is built around public Capital One products and needs no financial background.' },
+        { label: 'Behavioral hour', value: 'STAR questions; in one account all about one past project.' },
+        { label: 'After Power Day', value: 'Feedback within a day in one account; in others a pass led to team matching that stalled, a filled position, or a call from another team.' },
+        { label: 'Sources', value: 'Taro re-hosted reviews of senior and lead frontend loops from 2022 to 2024 and Capital One careers pages; all listed under Sources below with what each can establish.' },
+      ],
+      practiceLink: { label: 'Rehearse the Power Day case: the budgeting bug', fragment: 'power-day-case-budgeting-bug' },
+      processLink: { label: 'See the four Power Day rows in the reported process', fragment: 'capital-one-interview-process-1-stage-power-day-frontend-design' },
+    },
+  ],
   roleLenses: {
     kicker: 'Role lenses',
     title: 'Micro frontends and AI-assisted engineering as practice contexts',
@@ -255,7 +278,7 @@ export const CAPITALONE_COMPANY_PREVIEW: AuthoredCompanyPreview = {
           'No. They are FrontendAtlas practice versions modelled on round types in public, self-reported accounts. Some accounts repeat the same prompts, such as the card application page, but treat the exact wording as unknown.',
       },
       {
-        question: 'What is Power Day?',
+        question: 'What is Capital One\'s Power Day for frontend engineers?',
         answer:
           'Capital One calls its final round Power Day: a series of virtual interviews on Zoom with video on. In the frontend accounts it was four one-hour interviews back to back: frontend design, a frontend technical round, a case and behavioral questions.',
       },

@@ -223,14 +223,15 @@ const AUTHORED_GUIDE_SMOKE = [
   {
     label: 'Intuit',
     route: '/companies/intuit/preview',
-    title: 'Intuit Frontend Interview Questions: 5 Prompts + Prep Guide',
+    title: 'Intuit Frontend Interview Questions and Craft Demo Guide',
     description:
-      'Prepare for an Intuit frontend interview with 5 practice prompts: craft demo app build, typeahead in a given codebase, promise retry, LLM streaming story.',
+      'Intuit frontend interview: the Craft Demo explained (the brief, the length, what the panel grades), the AI round, and 5 practice prompts from public reports.',
     h1: 'Intuit Frontend Interview Questions',
     kicker: 'Public Intuit prep guide',
     headings: [
       'Prepare for product judgment, not Intuit trivia',
       'What the public accounts establish, and what you still need to confirm',
+      'Intuit Craft Demo for frontend candidates: what it is and what was asked',
       'Five Intuit frontend interview practice questions',
       'Scope the craft demo app before the panel joins',
       'A 7-day Intuit frontend interview preparation plan',
@@ -704,14 +705,15 @@ const AUTHORED_GUIDE_SMOKE = [
   {
     label: 'Capital One',
     route: '/companies/capital-one/preview',
-    title: 'Capital One Frontend Interview Questions: 5 Prompts + Guide',
+    title: 'Capital One Frontend Interview Questions and Power Day Guide',
     description:
-      'Prepare for a Capital One frontend interview with 5 practice prompts modelled on public reports: card application design, SPA build, Angular forms, case code.',
+      'Capital One frontend interview: Power Day explained (frontend design, React or Angular technical, case and behavioral hours), CodeSignal and 5 prompts.',
     h1: 'Capital One Frontend Interview Questions',
     kicker: 'Public Capital One prep guide',
     headings: [
       'What Capital One frontend loops reward: designing a card application out loud and reading code critically',
       'What the public accounts establish',
+      'Capital One Power Day for frontend engineers: what the four interviews are and what was asked',
       'Micro frontends and AI-assisted engineering as practice contexts',
       'Five Capital One frontend interview practice questions',
       'Scope the card application design before you draw',

@@ -23,10 +23,10 @@ const INTUIT_BLIND_CRAFT_URL = 'https://www.teamblind.com/post/intuit-craft-demo
 const INTUIT_SWE2_2025_URL = 'https://leetcode.com/discuss/post/7313117/';
 const INTUIT_SENIOR_BE_2025_URL = 'https://leetcode.com/discuss/post/6707615/';
 
-export const INTUIT_PREVIEW_TITLE = 'Intuit Frontend Interview Questions: 5 Prompts + Prep Guide';
+export const INTUIT_PREVIEW_TITLE = 'Intuit Frontend Interview Questions and Craft Demo Guide';
 export const INTUIT_PREVIEW_H1 = 'Intuit Frontend Interview Questions';
 export const INTUIT_PREVIEW_DESCRIPTION =
-  'Prepare for an Intuit frontend interview with 5 practice prompts: craft demo app build, typeahead in a given codebase, promise retry, LLM streaming story.';
+  'Intuit frontend interview: the Craft Demo explained (the brief, the length, what the panel grades), the AI round, and 5 practice prompts from public reports.';
 export const INTUIT_PREVIEW_CANONICAL_PATH = '/companies/intuit/preview';
 export const INTUIT_PREVIEW_TRUST_NOTE =
   'These are FrontendAtlas practice versions modelled on rounds described in public interview reports, not leaked, confirmed or official Intuit questions. A few self-reported loops cannot establish a fixed format; use recruiter-provided material as the source of truth.';
@@ -64,6 +64,28 @@ export const INTUIT_COMPANY_PREVIEW: AuthoredCompanyPreview = {
       'Together these establish that these round types occurred between 2021 and 2025 (the only one of the three LeetCode loops that states a location was in Bangalore, and a 2026 Bay Area candidate listed the same round types before the interview); they do not establish exact wording, the current format, or how every team interviews. Confirm the round structure, whether the craft prompt arrives in advance, the allowed stack and tools, and the AI expectations with the recruiter. Intuit publishes its roles on its careers site; use that for product context, not as evidence of interview content.',
     ],
   },
+  roundSpotlights: [
+    {
+      id: 'craft-demo',
+      kicker: 'Round decoder',
+      title: 'Intuit Craft Demo for frontend candidates: what it is and what was asked',
+      lede: [
+        'The Craft Demo is the hands-on centre of Intuit\'s interview day, the loop candidates on Blind call A4A: you build or extend a small application from a brief, present it, walk the panel through the code and add features live while they ask why at every line. Intuit\'s hiring-process page lists it as the first interview of the day at 60 minutes; the recruiter plans reported in 2024 and 2026 give it 90 minutes, followed by a 60-minute technical round and 30 minutes each with an AI assessor and the hiring manager.',
+        'The brief arrived in advance in most accounts: a design document the day before in 2021, a codebase with user stories the day before in November 2025, a week-long task in 2023; a 2022 account got the prompt on the spot. Panels expected an error fallback, tests that assert behaviour rather than coverage, and code that survives a feature request under questioning.',
+      ],
+      facts: [
+        { label: 'Position in the loop', value: 'The first interview of the onsite day, after a recruiter call and a 45 to 75 minute technical phone interview; assessor rounds, a 30-minute AI round in loops from 2024 on, and the hiring manager follow.' },
+        { label: 'Length', value: '60 minutes on Intuit\'s hiring-process page; 90 minutes in the recruiter plans reported in October 2024 and 2026.' },
+        { label: 'The brief', value: 'A design document the day before (2021); a codebase received the day before with two of eight user stories (November 2025); a week-long event-management task presented with slides, code and tests (2023); fetch data from an API and display it, given on the spot (2022).' },
+        { label: 'Reported tasks', value: 'A Meeting Rooms app; a countries app that fetches from a public API and shows population, flag and languages; a nested comment component with IndexedDB and a typeahead with tests; an event management system.' },
+        { label: 'What the panel grades', value: 'The why behind every line, a visible error fallback, tests that check real conditions, and features added live without breaking the structure; a 2022 account says level 2 and above are expected to have unit-testing experience.' },
+        { label: 'Since 2024', value: 'A 30-minute AI assessor round and AI-focused user stories sit beside the craft demo (October 2024 and 2026 recruiter plans, November 2025 loop).' },
+        { label: 'Sources', value: 'LeetCode, November 2025, October 2023 and October 2021; Taro, September 2022; Blind threads from October 2024 and 2026; Intuit\'s hiring-process page. All are listed under Sources below with what each can establish.' },
+      ],
+      practiceLink: { label: 'Rehearse the craft demo build', fragment: 'craft-demo-build-and-extend' },
+      processLink: { label: 'See the craft demonstration row in the reported process', fragment: 'intuit-interview-process-1-stage-craft-demonstration' },
+    },
+  ],
   roleLenses: {
     kicker: 'Role lenses',
     title: 'Two product contexts for practising transferable frontend judgment',
@@ -240,6 +262,7 @@ export const INTUIT_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     kicker: 'Preparation FAQ',
     title: 'Common Intuit frontend interview preparation questions',
     items: [
+      { question: 'What is the Intuit Craft Demo for frontend candidates?', answer: 'The hands-on centre of the interview day: you build or extend a small application from a brief, present it, walk the panel through the code and add features live while they ask why at every line. The brief arrived in advance in most accounts and on the spot in one; the official page gives it 60 minutes and recent recruiter plans 90. Panels expected an error fallback and tests that assert behaviour.' },
       { question: 'Are these the real Intuit questions?', answer: 'No. They are FrontendAtlas practice versions modelled on round types described in public, self-reported accounts. The wording, the data and the test cases are ours.' },
       { question: 'How much of a frontend loop is about AI?', answer: 'Accounts from 2024 and 2025 describe a 30-minute AI assessor round, an AI tooling question in the phone screen and one AI-focused user story in the coding round. Expect to explain retrieval-augmented generation, prompts and model output handling, and to code against a model endpoint.' },
       { question: 'Do I really need unit tests in the craft demo?', answer: 'A 2022 account says level 2 and above are expected to have unit testing experience, and a 2023 account was challenged on tests that checked nothing. Write a few tests that assert behaviour.' },
