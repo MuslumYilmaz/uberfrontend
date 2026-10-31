@@ -1,4 +1,17 @@
 import type { AuthoredCompanyPreview } from './authored-company-preview.model';
+import { COMPANY_INTERVIEW_PROCESSES } from './company-interview-processes';
+
+/** Mirrors CompanyInterviewProcessComponent.stageId so a round section can only link to a row that renders. */
+export function processRowIds(slug: string): Set<string> {
+  const ids = new Set<string>();
+  COMPANY_INTERVIEW_PROCESSES[slug]?.variants.forEach((variant, index) => {
+    for (const stage of variant.stages) {
+      const name = stage.stage.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+      ids.add(`${slug}-interview-process-${index + 1}-stage-${name}`);
+    }
+  });
+  return ids;
+}
 
 /** A complete fixture for specs; not referenced by application code. */
 export function buildAuthoredCompanyPreviewFixture(

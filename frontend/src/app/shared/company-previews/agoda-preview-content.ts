@@ -86,6 +86,24 @@ export const AGODA_COMPANY_PREVIEW: AuthoredCompanyPreview = {
       practiceLink: { label: 'Rehearse the web-fundamentals Platform hour', fragment: 'web-fundamentals-platform-hour' },
       processLink: { label: 'See the Platform interview row in the reported process', fragment: 'agoda-interview-process-1-stage-frontend-platform-interview' },
     },
+    {
+      id: 'architecture-interview',
+      kicker: 'Round decoder',
+      title: 'Agoda Architecture interview for frontend engineers: what it is and what was asked',
+      lede: [
+        'The Architecture interview is Agoda\'s system-design hour, the third of the four rounds, after the Platform interview and before Culture Fit. It runs for 60 minutes and asks for a frontend-flavoured product design with no diagram expected: a hotel search page frontend built from scratch for a million users and several teams (July 2026), a scalable architecture for a travel booking site (May to June 2025), or a doctor appointment booking application (February 2025).',
+        'The Staff track adds a BE Platform hour on a hotel booking system (September 2025). The two architecture prompts on this page rehearse the hotel search page and the travel booking site, each starting with the clarifying questions a strong candidate asks before proposing anything.',
+      ],
+      facts: [
+        { label: 'Position in the loop', value: 'Third of four rounds, after the Platform interview and before Culture Fit; the Staff track adds a BE Platform hour.' },
+        { label: 'Length and format', value: '60 minutes; a product-design conversation with no diagram expected, on HackerRank in the Bangkok accounts.' },
+        { label: 'Reported prompts', value: 'A hotel search page frontend for a million users and several teams (July 2026); a scalable frontend architecture for a travel booking site (Gurgaon, May to June 2025); a doctor appointment booking application (February 2025); a hotel booking system in the Staff-track BE Platform hour (September 2025).' },
+        { label: 'Official description', value: 'The Agoda careers page lists System Design as the third of four rounds (Coding, Platform, System Design, Agoda Culture Fit).' },
+        { label: 'Sources', value: 'LeetCode, July 2026; Code360, May 2025; LeetCode, February 2025; Medium, September 2025; the Agoda careers process page. All are listed under Sources below with what each can establish.' },
+      ],
+      practiceLink: { label: 'Rehearse the hotel search page architecture prompt', fragment: 'hotel-search-page-frontend-architecture' },
+      processLink: { label: 'See the Architecture interview row in the reported process', fragment: 'agoda-interview-process-1-stage-architecture-interview' },
+    },
   ],
   roleLenses: {
     kicker: 'Role lenses',

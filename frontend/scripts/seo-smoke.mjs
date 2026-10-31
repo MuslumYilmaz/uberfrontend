@@ -59,9 +59,9 @@ const GOOGLE_PREVIEW_RESOURCE_ROUTES = [
 ];
 const NETFLIX_PREVIEW_ROUTE = '/companies/netflix/preview';
 const NETFLIX_PREVIEW_CANONICAL = `https://frontendatlas.com${NETFLIX_PREVIEW_ROUTE}`;
-const NETFLIX_PREVIEW_TITLE = 'Netflix Frontend Interview Questions: 6 Prompts + Prep Guide';
+const NETFLIX_PREVIEW_TITLE = 'Netflix Frontend and UI Engineer Interview Questions: 6 Prompts';
 const NETFLIX_PREVIEW_DESCRIPTION =
-  'Prepare for a Netflix frontend interview with 6 representative prompts on JavaScript, React, streaming UI, performance, accessibility, and system design.';
+  'Prepare for a Netflix frontend or UI engineer interview with 6 prompts on JavaScript, React, streaming UI, performance, accessibility and system design.';
 const NETFLIX_PREVIEW_H1 = 'Netflix Frontend Interview Questions';
 const NETFLIX_PREVIEW_HEADINGS = [
   'Prepare for product judgment, not Netflix trivia',
@@ -383,14 +383,15 @@ const AUTHORED_GUIDE_SMOKE = [
   {
     label: 'Revolut',
     route: '/companies/revolut/preview',
-    title: 'Revolut Frontend Interview Questions: 5 Prompts + Prep Guide',
+    title: 'Revolut Frontend Interview Questions and Bar Raiser Guide',
     description:
-      'Prepare for a Revolut frontend interview with 5 practice prompts: a one-hour TypeScript fetch-and-render task, HackerRank, theory checks, system design.',
+      'Revolut frontend interview: the Bar Raiser round explained, the HackerRank test, an hour of React and TypeScript live coding, system design and 5 prompts.',
     h1: 'Revolut Frontend Interview Questions',
     kicker: 'Public Revolut prep guide',
     headings: [
       'Prepare for product judgment, not Revolut trivia',
       'What the public accounts establish, and what you still need to confirm',
+      'Revolut Bar Raiser interview for frontend engineers: what it is and how to prepare',
       'Five Revolut frontend interview practice questions',
       'Scope the one-hour fetch-and-render task before the first line',
       'A 7-day Revolut frontend interview preparation plan',
@@ -505,14 +506,15 @@ const AUTHORED_GUIDE_SMOKE = [
   {
     label: 'JPMorgan Chase',
     route: '/companies/jpmorgan/preview',
-    title: 'JPMorgan Chase Frontend Interview Questions: 5 Prompts + Guide',
+    title: 'JPMorgan Chase Frontend Interview Questions and React Round Guide',
     description:
-      'Prepare for a JPMorgan Chase frontend interview with 5 practice prompts modelled on public reports: memoize, reduce polyfill, async React hook, to-do list.',
+      'JPMorgan Chase frontend interview: the React and JavaScript conversation, live coding, the Bengaluru security round and the super day, with 5 practice prompts.',
     h1: 'JPMorgan Chase Frontend Interview Questions',
     kicker: 'Public JPMorgan Chase prep guide',
     headings: [
       'Prepare for product judgment, not JPMorgan Chase trivia',
       'What the public accounts establish, and what you still need to confirm',
+      'JPMorgan Chase React interview for frontend engineers: what the team-run rounds ask',
       'Five JPMorgan Chase frontend interview practice questions',
       'Scope the generic async promise hook before the first line',
       'A 7-day JPMorgan Chase frontend interview preparation plan',
@@ -554,6 +556,7 @@ const AUTHORED_GUIDE_SMOKE = [
       'Prepare for product judgment, not Agoda trivia',
       'What the public accounts establish, and what you still need to confirm',
       'Agoda Platform interview for frontend engineers: what it is and what was asked',
+      'Agoda Architecture interview for frontend engineers: what it is and what was asked',
       'Five Agoda frontend interview practice questions',
       'Scope the hotel search page before the first sentence',
       'A 7-day Agoda frontend interview preparation plan',
@@ -793,10 +796,11 @@ const EDITORIAL_NOTE_SMOKE = [
   {
     label: 'Walmart',
     route: '/companies/walmart/preview',
-    title: 'Walmart Frontend Interview Process and Practice Questions',
+    title: 'Walmart Frontend Interview: 2026 Assessment and Karat Screen',
     h1: 'Walmart Frontend Interview Questions and Process',
     headings: [
       'Three loop shapes, by role and region',
+      'Walmart Frontend Engineering Assessment and Karat interview: what each one asks',
       'Rehearse the reported rounds in order',
       'Common questions about Walmart frontend interviews',
     ],
@@ -841,10 +845,11 @@ const EDITORIAL_NOTE_SMOKE = [
   {
     label: 'Booking.com',
     route: '/companies/booking-com/preview',
-    title: 'Booking.com Frontend Interview Process and Practice',
+    title: 'Booking.com Frontend Interview Process and Fit Interview',
     h1: 'Booking.com Frontend Interview Questions and Process',
     headings: [
       'HackerRank test, recruiter call, coding rounds, fit interview',
+      'Booking.com fit interview for frontend engineers: what it is and how to prepare',
       'Rehearse the autocomplete round first',
       'Common questions about Booking.com frontend interviews',
     ],

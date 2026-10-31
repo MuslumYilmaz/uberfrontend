@@ -82,7 +82,7 @@ export const CROWDSTRIKE_COMPANY_PREVIEW: AuthoredCompanyPreview = {
       kicker: 'Round decoder',
       title: 'CrowdStrike take-home build and review round for frontend engineers: what was asked',
       lede: [
-        'Most United States frontend loops at CrowdStrike end with a take-home UI build and a review of it with engineers, after a recruiter call, a hiring-manager conversation and a spoken web-fundamentals round. The one named task is a table of downloadable files and their details, built from a screenshot; one report was allowed any language or framework, one names a 4-hour project, and the 2024 United Kingdom report had a week for a task estimated at 5 hours.',
+        'Seven of the United States frontend accounts at CrowdStrike describe a take-home UI build and four describe a review of it with engineers, after a recruiter call, a hiring-manager conversation and a spoken web-fundamentals round. The one named task is a table of downloadable files and their details, built from a screenshot; one report was allowed any language or framework, one names a 4-hour project, and the 2024 United Kingdom report had a week for a task estimated at 5 hours.',
         'In the review, engineers, two of them in two reports, go through the submission: what you would change, how you would add filtering and sorting, whether the component should be generalised, when to load each file\'s status, how it copes with thousands of rows, and what happens when someone selects all, moves to another page and deselects a few rows.',
       ],
       facts: [

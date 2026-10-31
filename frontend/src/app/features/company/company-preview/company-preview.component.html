@@ -644,7 +644,8 @@
         </ng-container>
       </dl>
       <p class="company-round-links" *ngIf="round.practiceLink || round.processLink">
-        <a *ngIf="round.practiceLink as practice" class="company-round-links__link" [attr.href]="'#' + practice.fragment">{{ practice.label }}</a>
+        <a *ngIf="round.practiceLink?.path as path" class="company-round-links__link" [routerLink]="path">{{ round.practiceLink!.label }}</a>
+        <a *ngIf="round.practiceLink && !round.practiceLink.path && round.practiceLink.fragment" class="company-round-links__link" [attr.href]="'#' + round.practiceLink.fragment">{{ round.practiceLink.label }}</a>
         <a *ngIf="round.processLink as row" class="company-round-links__link" [attr.href]="'#' + row.fragment">{{ row.label }}</a>
       </p>
     </section>
@@ -876,7 +877,8 @@
         </ng-container>
       </dl>
       <p class="company-round-links" *ngIf="round.practiceLink || round.processLink">
-        <a *ngIf="round.practiceLink as practice" class="company-round-links__link" [attr.href]="'#' + practice.fragment">{{ practice.label }}</a>
+        <a *ngIf="round.practiceLink?.path as path" class="company-round-links__link" [routerLink]="path">{{ round.practiceLink!.label }}</a>
+        <a *ngIf="round.practiceLink && !round.practiceLink.path && round.practiceLink.fragment" class="company-round-links__link" [attr.href]="'#' + round.practiceLink.fragment">{{ round.practiceLink.label }}</a>
         <a *ngIf="round.processLink as row" class="company-round-links__link" [attr.href]="'#' + row.fragment">{{ row.label }}</a>
       </p>
     </section>

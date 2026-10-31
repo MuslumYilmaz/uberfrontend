@@ -1,4 +1,5 @@
 import { COMPANY_BRANDS } from '../company-branding';
+import { processRowIds } from './authored-company-preview.spec-fixture';
 import { AUTHORED_COMPANY_SLUGS } from './authored-company-slugs';
 import { COMPANY_EDITORIAL_NOTES } from './company-editorial-notes';
 
@@ -58,6 +59,14 @@ describe('company editorial notes', () => {
           expect(Boolean(bullet.link.path) !== Boolean(bullet.link.fragment)).withContext(`${slug}: one target per link`).toBeTrue();
           if (bullet.link.path) expect(bullet.link.path).toMatch(/^\/[a-z0-9/-]+$/);
         }
+      }
+      const rowIds = processRowIds(slug);
+      for (const round of notes.roundSpotlights ?? []) {
+        expect(round.lede.length).withContext(`${slug} ${round.id} lede`).toBeGreaterThan(0);
+        expect(round.facts.length).withContext(`${slug} ${round.id} facts`).toBeGreaterThan(0);
+        // Catalog-driven pages have no prompt anchors, so a practice link must be a page path.
+        if (round.practiceLink) expect(round.practiceLink.path ?? '').withContext(`${slug} ${round.id} practice`).toMatch(/^\/[a-z0-9/-]+$/);
+        if (round.processLink) expect(rowIds.has(round.processLink.fragment)).withContext(`${slug} ${round.id} process ${round.processLink.fragment}`).toBeTrue();
       }
       if (notes.faqs) {
         expect(notes.faqs.items.length).withContext(`${slug} faqs`).toBeGreaterThanOrEqual(2);

@@ -205,6 +205,7 @@ describe('CompanyPreviewComponent', () => {
             title: 'Acme CoderPad screen: what it is and what was asked',
             lede: ['A 60-minute screen on CoderPad with one engineer.'],
             facts: [{ label: 'Length and tool', value: '60 minutes on CoderPad.' }],
+            practiceLink: { label: 'Rehearse the screen', path: '/react/coding/react-counter' },
             processLink: { label: 'See the screen row', fragment: 'acme-interview-process' },
           },
         ],
@@ -215,7 +216,8 @@ describe('CompanyPreviewComponent', () => {
       expect(spotlight).not.toBeNull();
       expect(spotlight.querySelector('#acme-round-coderpad-screen')?.textContent?.trim()).toBe('Acme CoderPad screen: what it is and what was asked');
       expect(spotlight.querySelector('a[href="#acme-interview-process"]')?.textContent?.trim()).toBe('See the screen row');
-      expect(spotlight.querySelectorAll('a').length).toBe(1);
+      expect(spotlight.querySelector('a[href="/react/coding/react-counter"]')?.textContent?.trim()).toBe('Rehearse the screen');
+      expect(spotlight.querySelectorAll('a').length).toBe(2);
       const reports = host.querySelector('[data-testid="company-reports-describe"]') as HTMLElement;
       const prep = host.querySelector('[data-testid="company-prep-steps"]') as HTMLElement;
       expect(reports.compareDocumentPosition(spotlight) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
@@ -461,9 +463,9 @@ describe('CompanyPreviewComponent', () => {
     const itemList = graph.find((entry: any) => entry?.['@type'] === 'ItemList');
     const breadcrumb = graph.find((entry: any) => entry?.['@type'] === 'BreadcrumbList');
 
-    expect(payload.title).toBe('Netflix Frontend Interview Questions: 6 Prompts + Prep Guide');
+    expect(payload.title).toBe('Netflix Frontend and UI Engineer Interview Questions: 6 Prompts');
     expect(payload.description).toBe(
-      'Prepare for a Netflix frontend interview with 6 representative prompts on JavaScript, React, streaming UI, performance, accessibility, and system design.',
+      'Prepare for a Netflix frontend or UI engineer interview with 6 prompts on JavaScript, React, streaming UI, performance, accessibility and system design.',
     );
     expect(payload.canonical).toBe('/companies/netflix/preview');
     expect(payload.robots).toBe('index,follow');

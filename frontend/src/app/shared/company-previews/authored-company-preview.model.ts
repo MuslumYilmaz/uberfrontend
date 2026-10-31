@@ -59,8 +59,8 @@ export type AuthoredRoundSpotlight = {
   /** Two or three sentences that answer the query directly, before any detail. */
   readonly lede: readonly string[];
   readonly facts: readonly AuthoredRoundSpotlightFact[];
-  /** A practice prompt on the same page, by its prompt id. */
-  readonly practiceLink?: { readonly label: string; readonly fragment: string };
+  /** A practice prompt on the same page (fragment, a prompt id) or a practice page (path). */
+  readonly practiceLink?: { readonly label: string; readonly fragment?: string; readonly path?: string };
   /** The reported-process row for this round, by its row id. */
   readonly processLink?: { readonly label: string; readonly fragment: string };
 };
