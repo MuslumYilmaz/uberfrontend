@@ -2513,7 +2513,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
           {
             stage: 'Coding assessment',
             format:
-              'The format varies: four questions in 90 minutes (2026), an asynchronous easy or medium algorithm question with a React knowledge check (2024), React and algorithm problems on CoderPad such as fixing a React bug (another 2024 account), a LeetCode-style Python round (2025) or a take-home exercise (another 2025 account).',
+              'The format varies: a 90-minute assessment (2026), an asynchronous easy or medium algorithm question with a React knowledge check (2024), React and algorithm problems on CoderPad such as fixing a React bug (another 2024 account), a LeetCode-style Python round (2025) or a take-home exercise (another 2025 account).',
             appliesTo: 'All candidates',
             sources: [ELEVENLABS_EL1_SENIOR_2026, ELEVENLABS_EL2_FE_2025, ELEVENLABS_EL3_2024, ELEVENLABS_EL4_2024, ELEVENLABS_EL5_2025],
             practice: { label: 'Poll until, with timeout and abort', path: '/javascript/coding/js-poll-until' },

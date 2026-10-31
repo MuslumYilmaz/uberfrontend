@@ -937,14 +937,15 @@ const AUTHORED_GUIDE_CASES = [
   {
     label: 'ElevenLabs',
     path: '/companies/elevenlabs/preview',
-    title: 'ElevenLabs Frontend Interview Questions: 5 Prompts + Guide',
+    title: 'ElevenLabs Frontend Interview Questions and Coding Assessment Guide',
     description:
-      'Prepare for an ElevenLabs frontend interview with 5 prompts modelled on public reports: audio-transcript sync, dubbing review UI, live fix, timed assessment.',
+      'ElevenLabs frontend interview: the coding assessment formats (90-minute test, CoderPad React fix, take-home), the live technical round, and 5 practice prompts.',
     h1: 'ElevenLabs Frontend Interview Questions',
     kicker: 'Public ElevenLabs prep guide',
     headings: [
       'Prepare for product judgment, not ElevenLabs trivia',
       'What the public pages establish, and what you still need to confirm',
+      'ElevenLabs coding assessment and live technical round: what the formats were and what was asked',
       'Five ElevenLabs frontend interview practice questions',
       'Scope the transcript highlight before writing the first line',
       'A 7-day ElevenLabs frontend interview preparation plan',
@@ -1535,14 +1536,15 @@ const AUTHORED_GUIDE_CASES = [
   {
     label: 'CrowdStrike',
     path: '/companies/crowdstrike/preview',
-    title: 'CrowdStrike Frontend Interview Questions: 5 Prompts + Guide',
+    title: 'CrowdStrike Frontend Interview Questions and Take-Home Review Guide',
     description:
-      'Prepare for a CrowdStrike frontend interview with 5 practice prompts: the file table take-home, its review round, web fundamentals and security questions.',
+      'CrowdStrike frontend interview: the take-home file table and its review round (what engineers ask), spoken web fundamentals, the AI rule and 5 practice prompts.',
     h1: 'CrowdStrike Frontend Interview Questions',
     kicker: 'Public CrowdStrike prep guide',
     headings: [
       'What CrowdStrike frontend loops reward: a take-home you can defend and precise web fundamentals',
       'What the public accounts establish',
+      'CrowdStrike take-home build and review round for frontend engineers: what was asked',
       'Ember, React and very large data as practice contexts',
       'Five CrowdStrike frontend interview practice questions',
       'Scope select all across pages before you code',

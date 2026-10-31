@@ -13,10 +13,10 @@ const ELEVENLABS_EXPERIENCE_URL =
 const ELEVENLABS_EXPERIENCE_LABEL =
   'Public report: ElevenLabs senior full-stack (frontend-leaning) interview account on Aced, 2026';
 
-export const ELEVENLABS_PREVIEW_TITLE = 'ElevenLabs Frontend Interview Questions: 5 Prompts + Guide';
+export const ELEVENLABS_PREVIEW_TITLE = 'ElevenLabs Frontend Interview Questions and Coding Assessment Guide';
 export const ELEVENLABS_PREVIEW_H1 = 'ElevenLabs Frontend Interview Questions';
 export const ELEVENLABS_PREVIEW_DESCRIPTION =
-  'Prepare for an ElevenLabs frontend interview with 5 prompts modelled on public reports: audio-transcript sync, dubbing review UI, live fix, timed assessment.';
+  'ElevenLabs frontend interview: the coding assessment formats (90-minute test, CoderPad React fix, take-home), the live technical round, and 5 practice prompts.';
 export const ELEVENLABS_PREVIEW_CANONICAL_PATH = '/companies/elevenlabs/preview';
 export const ELEVENLABS_PREVIEW_TRUST_NOTE =
   'These are FrontendAtlas practice versions modelled on rounds described in public interview reports, not leaked, confirmed or official ElevenLabs questions. Two public pages cannot establish a fixed loop; use recruiter-provided material as the source of truth.';
@@ -53,6 +53,27 @@ export const ELEVENLABS_COMPANY_PREVIEW: AuthoredCompanyPreview = {
       'Confirm the exercise types, the allowed tools, the expected stack and the timing with the recruiter and the job description. ElevenLabs publishes its roles on its careers site; use that for product context, not as evidence of interview content.',
     ],
   },
+  roundSpotlights: [
+    {
+      id: 'coding-assessment',
+      kicker: 'Round decoder',
+      title: 'ElevenLabs coding assessment and live technical round: what the formats were and what was asked',
+      lede: [
+        'ElevenLabs runs a coding assessment around the recruiter call and then a live technical round with an engineer. The assessment\'s format changed from loop to loop in the five public accounts from 2024 to 2026: a 90-minute assessment sent before the recruiter screen, an asynchronous easy or medium algorithm question with a React knowledge check, React and algorithm problems on CoderPad such as fixing a React bug, a LeetCode-style Python round, or a take-home exercise.',
+        'The live round is pair work with an engineer: fixing a practical problem (2026), debugging a small React app (2025), building a text-to-speech React component (2024) or a real-life problem with changing constraints (another 2024 account). A product or design round follows in most loops, and the final conversation is with the CTO or a founder; the careers FAQ names a founder or Bar Raiser.',
+      ],
+      facts: [
+        { label: 'Position in the loop', value: 'The first technical step; in the 2026 account the 90-minute assessment arrived before the recruiter call.' },
+        { label: 'Assessment formats reported', value: 'A 90-minute assessment (2026); an asynchronous algorithm question with a React knowledge check (2024); React and algorithm problems on CoderPad (2024); a LeetCode-style Python round (2025); a take-home exercise (2025).' },
+        { label: 'Live technical round', value: 'Pair work with an engineer: fix a practical problem (2026); debug a small React app (2025); build a text-to-speech React component (2024); solve a real-life problem whose constraints change (2024).' },
+        { label: 'What follows', value: 'A product interview or product-focused decomposition (2025 accounts) or a system design interview (2024); then a call with the CTO (2025) or the head of the organisation (2024, planned but not reached). A 2025 account had no system design round.' },
+        { label: 'Stack', value: 'React is the safe default: React bug fixes on CoderPad, a React knowledge check and a React and TypeScript take-home appear in the accounts; the senior Aced account names no stack.' },
+        { label: 'Sources', value: 'Aced: a senior full-stack account from 2026, a frontend-leaning account from 2025 and a candidate-sourced question bank updated in October 2026; Taro full-stack accounts from 2024 and 2025; ElevenLabs careers pages. All are listed under Sources and in the reported process below with what each can establish.' },
+      ],
+      practiceLink: { label: 'Rehearse the 90-minute assessment', fragment: 'timed-assessment-react-and-algorithms' },
+      processLink: { label: 'See the coding assessment row in the reported process', fragment: 'elevenlabs-interview-process-1-stage-coding-assessment' },
+    },
+  ],
   roleLenses: {
     kicker: 'Role lenses',
     title: 'Two product contexts for practising transferable frontend judgment',
@@ -229,7 +250,7 @@ export const ELEVENLABS_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     title: 'Common ElevenLabs frontend interview preparation questions',
     items: [
       { question: 'Are these the real ElevenLabs questions?', answer: 'No. They are FrontendAtlas practice versions modelled on prompts listed in a candidate-sourced bank and on one senior interview account. The wording, the data and the test cases are ours.' },
-      { question: 'How long is the assessment?', answer: 'One public account describes a 90-minute technical assessment that came before the recruiter screen; it does not say how many questions it had or what they covered. One account cannot establish the current format; confirm it with the recruiter.' },
+      { question: 'What is the ElevenLabs coding assessment?', answer: 'A technical assessment whose format changed from loop to loop in the public accounts: a 90-minute assessment sent before the recruiter screen (2026), an asynchronous easy or medium algorithm question with a React knowledge check (2024), React and algorithm problems on CoderPad such as fixing a React bug (2024), a LeetCode-style Python round (2025) or a take-home exercise (2025). The 2026 account does not list its questions. Five accounts cannot establish the current format; confirm it with the recruiter.' },
       { question: 'Do I need audio engineering knowledge?', answer: 'The public prompts are about interface behaviour around audio: synchronising a highlight with playback and reviewing dubbing work. Comfort with media elements, timing and streaming matters more than signal processing.' },
       { question: 'Is the loop React-specific?', answer: 'The senior Aced account does not name a stack. A second Aced account describes a practical front-end debugging round in a small React app, and three Taro full-stack accounts mention React bug fixes, a React knowledge check and a React and TypeScript take-home, so React is the safe default. Prepare the same contracts in your own framework first, then once in React.' },
     ],

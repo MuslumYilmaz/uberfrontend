@@ -36,10 +36,10 @@ const CROWDSTRIKE_FALCON_COMPLETE_POSTING_URL =
 const CROWDSTRIKE_DATA_PLATFORM_POSTING_URL =
   'https://crowdstrike.wd5.myworkdayjobs.com/crowdstrikecareers/job/United-Kingdom---London/Sr-Engineer--Frontend---Data-Platform-Experiences--Hybrid--London-_R30313';
 
-export const CROWDSTRIKE_PREVIEW_TITLE = 'CrowdStrike Frontend Interview Questions: 5 Prompts + Guide';
+export const CROWDSTRIKE_PREVIEW_TITLE = 'CrowdStrike Frontend Interview Questions and Take-Home Review Guide';
 export const CROWDSTRIKE_PREVIEW_H1 = 'CrowdStrike Frontend Interview Questions';
 export const CROWDSTRIKE_PREVIEW_DESCRIPTION =
-  'Prepare for a CrowdStrike frontend interview with 5 practice prompts: the file table take-home, its review round, web fundamentals and security questions.';
+  'CrowdStrike frontend interview: the take-home file table and its review round (what engineers ask), spoken web fundamentals, the AI rule and 5 practice prompts.';
 export const CROWDSTRIKE_PREVIEW_CANONICAL_PATH = '/companies/crowdstrike/preview';
 export const CROWDSTRIKE_PREVIEW_TRUST_NOTE =
   'These are FrontendAtlas practice versions modelled on rounds described in public interview reports, not leaked, confirmed or official CrowdStrike questions.';
@@ -76,6 +76,28 @@ export const CROWDSTRIKE_COMPANY_PREVIEW: AuthoredCompanyPreview = {
       'Outside the United States, each country has one report. The United Kingdom report from 2024 describes a home task, the Denmark report from 2025 live coding and a whiteboard design, and the Canada report from 2025 a technical phone screen and a dashboard design question. CrowdStrike\'s interviewing page describes the general steps for all roles and leaves the number of interviews to the recruiter.',
     ],
   },
+  roundSpotlights: [
+    {
+      id: 'take-home-review',
+      kicker: 'Round decoder',
+      title: 'CrowdStrike take-home build and review round for frontend engineers: what was asked',
+      lede: [
+        'Most United States frontend loops at CrowdStrike end with a take-home UI build and a review of it with engineers, after a recruiter call, a hiring-manager conversation and a spoken web-fundamentals round. The one named task is a table of downloadable files and their details, built from a screenshot; one report was allowed any language or framework, one names a 4-hour project, and the 2024 United Kingdom report had a week for a task estimated at 5 hours.',
+        'In the review, engineers, two of them in two reports, go through the submission: what you would change, how you would add filtering and sorting, whether the component should be generalised, when to load each file\'s status, how it copes with thousands of rows, and what happens when someone selects all, moves to another page and deselects a few rows.',
+      ],
+      facts: [
+        { label: 'Position in the loop', value: 'After the recruiter call, the hiring-manager conversation and the web-fundamentals round with engineers; sometimes followed by a culture interview, a collaboration panel or an informational talk with the manager.' },
+        { label: 'The build', value: 'A table of downloadable files and their details from a screenshot; any language or framework in one report; a 4-hour project in one report; in the United Kingdom report a week for a task estimated at 5 hours, on which the candidate spent 10, with a reply nearly three weeks later.' },
+        { label: 'The review', value: 'What you would change; filtering and sorting; generalising the component; when to load each file\'s status; thousands of rows; select all across pages.' },
+        { label: 'Who runs it', value: 'Engineers from the team, two of them in two reports.' },
+        { label: 'AI rule', value: 'CrowdStrike\'s interviewing page, last modified on 20 October 2026, requires interviews and assessments to be completed without AI unless you are explicitly asked to use AI tools; ask the recruiter whether the take-home follows the same rule.' },
+        { label: 'Ember', value: 'Both frontend postings open in October 2026 name Ember and React; in one 2024 report the only feedback after a rejection named Ember; no public account lists an Ember question.' },
+        { label: 'Sources', value: 'Taro re-hosted frontend and UI accounts from 2021 to 2025, a Blind thread from 2024 and CrowdStrike\'s interviewing page. All are listed under Sources below with what each can establish.' },
+      ],
+      practiceLink: { label: 'Rehearse the review: defend and extend your table', fragment: 'take-home-review-defend-extend' },
+      processLink: { label: 'See the take-home rows in the reported process', fragment: 'crowdstrike-interview-process-1-stage-take-home-review' },
+    },
+  ],
   roleLenses: {
     kicker: 'Role lenses',
     title: 'Ember, React and very large data as practice contexts',
@@ -309,6 +331,11 @@ export const CROWDSTRIKE_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     kicker: 'Preparation FAQ',
     title: 'Common CrowdStrike frontend interview preparation questions',
     items: [
+      {
+        question: 'What is the CrowdStrike take-home review round?',
+        answer:
+          'A call in which engineers, two of them in two reports, go through the take-home you submitted: what you would change, how you would add filtering and sorting, whether the component should be generalised, when to load each file\'s status, how it copes with thousands of rows, and what select all means across pages. Prepare the trade-offs you made and one or two changes you would make yourself.',
+      },
       {
         question: 'Are these the real CrowdStrike questions?',
         answer:
