@@ -185,6 +185,19 @@ export function hasCheckoutUrls(urls: Record<PlanId, string>): boolean {
   return Object.values(urls).some((value) => !!value);
 }
 
+export function isLemonSqueezyCheckoutUrl(value: string): boolean {
+  try {
+    const parsed = new URL(value);
+    // Buy links are the configured hosted checkouts; signed /checkout/custom/
+    // links come from the backend for regional and student prices.
+    return parsed.protocol === 'https:'
+      && parsed.hostname === 'frontendatlas.lemonsqueezy.com'
+      && /^\/checkout\/(?:buy|custom)\/[^/]+/.test(parsed.pathname);
+  } catch {
+    return false;
+  }
+}
+
 export function resolveManageUrl(
   provider: ConfiguredPaymentsProvider,
   env: PaymentsEnv = environment

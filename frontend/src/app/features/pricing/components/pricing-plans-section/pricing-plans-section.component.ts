@@ -29,7 +29,7 @@ import {
   releaseExternalWindowReservation,
   reserveExternalWindow,
 } from '../../../../core/utils/external-window.util';
-import { PlanId } from '../../../../core/utils/payments-provider.util';
+import { isLemonSqueezyCheckoutUrl, PlanId } from '../../../../core/utils/payments-provider.util';
 import { isProActive } from '../../../../core/utils/entitlements.util';
 import { LoginRequiredDialogComponent } from '../../../../shared/components/login-required-dialog/login-required-dialog.component';
 import { FaqSectionComponent } from '../../../../shared/faq-section/faq-section.component';
@@ -1486,6 +1486,12 @@ HTML and CSS tasks rely on the live preview instead, because visuals are the pri
           ? 'same_tab'
           : result.mode;
       if (result.mode === 'same-tab') {
+        if (result.provider !== 'lemonsqueezy' || !isLemonSqueezyCheckoutUrl(result.url)) {
+          this.trackCheckoutLaunchFailed(planId, result.provider, 'invalid_same_tab_url', source, surface);
+          this.setCheckoutNotice('Checkout could not open safely. Please try again in a moment.', true);
+          this.pendingCheckoutIntent = this.checkoutIntent.load();
+          return;
+        }
         this.trackCheckoutOpened(
           planId,
           result.provider,
@@ -1505,10 +1511,7 @@ HTML and CSS tasks rely on the live preview instead, because visuals are the pri
           result.campaignId,
         );
         await this.recordClientStateBeforeNavigation(result.attemptId, 'provider_opened');
-        if (!this.navigateLemonSqueezyCheckoutSameTab(result.url, result.provider)) {
-          this.setCheckoutNotice('Checkout could not open safely. Please try again in a moment.', true);
-          this.pendingCheckoutIntent = this.checkoutIntent.load();
-        }
+        this.navigateCheckoutSameTab(result.url);
         return;
       }
 
@@ -1541,26 +1544,12 @@ HTML and CSS tasks rely on the live preview instead, because visuals are the pri
     }
   }
 
-  private navigateLemonSqueezyCheckoutSameTab(url: string, provider: string): boolean {
-    if (typeof window === 'undefined' || provider !== 'lemonsqueezy') return false;
-    try {
-      const parsed = new URL(String(url || '').trim());
-      if (
-        parsed.protocol !== 'https:'
-        || parsed.hostname !== 'frontendatlas.lemonsqueezy.com'
-        || !/^\/checkout\/buy\/[^/]+/.test(parsed.pathname)
-      ) {
-        return false;
-      }
-      const redirectHook = (window as any).__faCheckoutRedirect;
-      if (typeof redirectHook === 'function') {
-        redirectHook(parsed.toString());
-      } else {
-        window.location.assign(parsed.toString());
-      }
-      return true;
-    } catch {
-      return false;
+  private navigateCheckoutSameTab(url: string): void {
+    const redirectHook = (window as any).__faCheckoutRedirect;
+    if (typeof redirectHook === 'function') {
+      redirectHook(url);
+    } else {
+      window.location.assign(url);
     }
   }
 

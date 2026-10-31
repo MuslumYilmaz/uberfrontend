@@ -105,6 +105,7 @@ const WALMART_W20_SWE3_FE = report('Blind', 'https://www.teamblind.com/post/walm
 const WALMART_W24_SENIOR = report('Blind comment', 'https://www.teamblind.com/post/walmart-senior-software-engineer-interview-experience-j3hexss7', '2024-07');
 const WALMART_W25_SWE3 = report('Blind comment', 'https://www.teamblind.com/post/Have-an-interview-with-walmart-SWE3-2-4-YOEneed-advice-0JOeTkW6', '2023-10');
 const WALMART_W31_FE_2026 = report('LeetCode', 'https://leetcode.com/discuss/post/8288813/walmart-interview-for-frontend-role-by-a-s7fk/', '2026-05');
+const WALMART_W56_FULLSTACK_2026 = report('LeetCode thread', 'https://leetcode.com/discuss/post/8515332/', '2026-09');
 
 // Taro shows its own dates (often the 1st of a month) and its locations are not reliable, so Tesla labels
 // carry no city. Blind posts written before an interview are cited only for what the recruiter said.
@@ -363,6 +364,11 @@ const REVOLUT_RV7 = report('Taro (approx.)', `${REVOLUT_TARO}/web-engineer-krako
 const REVOLUT_RV8 = report('Taro', `${REVOLUT_TARO}/senior-front-end-developer-lisbon-lisbon-district-april-24-2023-no-offer-positive-025ce14f/`, '2023-04');
 const REVOLUT_RV9 = report('Taro (approx.)', `${REVOLUT_TARO}/senior-frontend-engineer-berlin-april-1-2022-accepted-offer-positive-aa0a7d87/`, '2022-04');
 const REVOLUT_RV10 = report('Taro', `${REVOLUT_TARO}/frontend-developer-portugal-november-5-2025-no-offer-neutral-c06a19bc/`, '2025-11');
+const REVOLUT_RV15_PLAN = report(
+  'Blind (plan)',
+  'https://www.teamblind.com/post/what-to-expect-in-revolut-frontend-engineer-interview-screening-technical-team-bar-raiser-qpgmtoum',
+  '2026-03',
+);
 const REVOLUT_RV12 = report('Taro (approx.)', `${REVOLUT_TARO}/senior-frontend-software-engineer-porto-oporto-may-1-2024-no-offer-neutral-90611f7c/`, '2024-05');
 const REVOLUT_ROLE = 'Frontend engineers in European hubs';
 
@@ -1103,11 +1109,11 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         note: 'Several of these posts record what a recruiter said before the interview. Rounds lasted 30 to 60 minutes.',
         stages: [
           {
-            stage: 'Online assessment (2026 account)',
+            stage: 'Online assessment (2026 accounts)',
             format:
-              'A HackerRank Frontend Engineering Assessment with a language-agnostic coding problem and a React or Angular debugging task, with AI assistance for UI navigation, syntax and clarification. The recruiter had first mentioned DSA and low-level design.',
-            appliesTo: 'Frontend engineer, level not stated',
-            sources: [WALMART_W31_FE_2026],
+              'A HackerRank Frontend Engineering Assessment with a language-agnostic coding problem and a React or Angular debugging task, with AI assistance for UI navigation, syntax and clarification; the recruiter had first mentioned DSA and low-level design. A September 2026 full-stack invite adds a back-end section, and a commenter who took that test reports 140 minutes, a medium DSA question and an Angular task: add a feature to an existing project until the test cases pass.',
+            appliesTo: 'Frontend and full-stack engineers, level not stated',
+            sources: [WALMART_W31_FE_2026, WALMART_W56_FULLSTACK_2026],
           },
           {
             stage: 'Coding screen',
@@ -1859,7 +1865,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
             stage: 'Bar Raiser',
             format: 'An interview on how you work and make decisions; listed in recent plans, with no first-hand account since 2022.',
             appliesTo: REVOLUT_ROLE,
-            sources: [REVOLUT_BAR_RAISER],
+            sources: [REVOLUT_BAR_RAISER, REVOLUT_RV1, REVOLUT_RV15_PLAN],
           },
         ],
       },
@@ -2513,7 +2519,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
           {
             stage: 'Coding assessment',
             format:
-              'The format varies: four questions in 90 minutes (2026), an asynchronous easy or medium algorithm question with a React knowledge check (2024), React and algorithm problems on CoderPad such as fixing a React bug (another 2024 account), a LeetCode-style Python round (2025) or a take-home exercise (another 2025 account).',
+              'The format varies: a 90-minute assessment (2026), an asynchronous easy or medium algorithm question with a React knowledge check (2024), React and algorithm problems on CoderPad such as fixing a React bug (another 2024 account), a LeetCode-style Python round (2025) or a take-home exercise (another 2025 account).',
             appliesTo: 'All candidates',
             sources: [ELEVENLABS_EL1_SENIOR_2026, ELEVENLABS_EL2_FE_2025, ELEVENLABS_EL3_2024, ELEVENLABS_EL4_2024, ELEVENLABS_EL5_2025],
             practice: { label: 'Poll until, with timeout and abort', path: '/javascript/coding/js-poll-until' },

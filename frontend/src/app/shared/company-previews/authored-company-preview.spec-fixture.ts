@@ -1,4 +1,17 @@
 import type { AuthoredCompanyPreview } from './authored-company-preview.model';
+import { COMPANY_INTERVIEW_PROCESSES } from './company-interview-processes';
+
+/** Mirrors CompanyInterviewProcessComponent.stageId so a round section can only link to a row that renders. */
+export function processRowIds(slug: string): Set<string> {
+  const ids = new Set<string>();
+  COMPANY_INTERVIEW_PROCESSES[slug]?.variants.forEach((variant, index) => {
+    for (const stage of variant.stages) {
+      const name = stage.stage.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+      ids.add(`${slug}-interview-process-${index + 1}-stage-${name}`);
+    }
+  });
+  return ids;
+}
 
 /** A complete fixture for specs; not referenced by application code. */
 export function buildAuthoredCompanyPreviewFixture(
@@ -28,6 +41,17 @@ export function buildAuthoredCompanyPreviewFixture(
       title: 'What the reports establish and what you still need to confirm',
       paragraphs: ['One report cannot establish a fixed loop.'],
     },
+    roundSpotlights: [
+      {
+        id: 'pairing-hour',
+        kicker: 'Round decoder',
+        title: 'Acme pairing hour: what it is and what was asked',
+        lede: ['A 60-minute pairing session on a shared editor with one Acme engineer.'],
+        facts: [{ label: 'Length and tool', value: '60 minutes on CoderPad.' }],
+        practiceLink: { label: 'Rehearse the pairing hour', fragment: 'acme-tree-filter' },
+        processLink: { label: 'See the pairing hour row', fragment: 'acme-interview-process-1-stage-pairing-hour' },
+      },
+    ],
     roleLenses: {
       kicker: 'Role lenses',
       title: 'Two product contexts',

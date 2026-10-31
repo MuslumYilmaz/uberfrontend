@@ -43,6 +43,27 @@ jobs:
           jq -e '.mode == "live" and .enabled == true and .provider == "lemonsqueezy"' /tmp/checkout-config.json >/dev/null \
             || { echo "Production checkout config is not live/enabled:"; cat /tmp/checkout-config.json; exit 1; }
 
+      - name: Probe the checkout overlay script
+        run: |
+          set -euo pipefail
+          # Lemon Squeezy moving this script behind a new host silently took the
+          # overlay down with no push on our side, so no pull request check could
+          # see it. Same URL as LemonSqueezyCheckoutService.SCRIPT_SRC.
+          entry='https://app.lemonsqueezy.com/js/lemon.js'
+          final="$(curl -sS -L -o /tmp/lemon.js -w '%{url_effective}' --max-time 20 --retry 3 --retry-delay 10 --retry-all-errors "$entry")"
+          echo "lemon.js resolves to $final"
+          grep -q 'createLemonSqueezy' /tmp/lemon.js \
+            || { echo "lemon.js no longer exposes createLemonSqueezy"; exit 1; }
+
+          # robots.txt carries the global headers and skips the bot challenge.
+          curl -sS -I --max-time 20 --retry 3 --retry-delay 10 --retry-all-errors "$SITE_BASE/robots.txt" > /tmp/site-headers.txt
+          allowed="$(tr -d '\r' < /tmp/site-headers.txt | grep -i '^content-security-policy:' | grep -o 'script-src-elem [^;]*')"
+          for url in "$entry" "$final"; do
+            host="$(printf '%s' "$url" | cut -d/ -f3)"
+            printf '%s' "$allowed" | grep -qF "https://$host" \
+              || { echo "The deployed CSP blocks https://$host, so the checkout overlay cannot load:"; echo "$allowed"; exit 1; }
+          done
+
       - name: Probe the crawl surfaces
         run: |
           set -euo pipefail

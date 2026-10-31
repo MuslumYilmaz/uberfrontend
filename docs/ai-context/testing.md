@@ -62,7 +62,7 @@ A push to `dev` runs no workflow; `dev` is first tested in CI by the open dev→
 | Security Verify | PR, main, Mondays | backend `npm audit --omit=dev --audit-level=high`; frontend audit against `docs/security/npm-audit-allowlist.json` (entries expire, criticals cannot be allowlisted); secret scan; CodeQL |
 | Action Policy | PR, main | every GitHub Action pinned to a full SHA |
 | WebKit Critical | Mondays | the critical suite in WebKit |
-| Production Smoke | after each production deploy, every 6 h | live API health, checkout config mode, crawl surfaces, read-only |
+| Production Smoke | after each production deploy, every 6 h | live API health, checkout config mode, the Lemon.js URL and its redirect hosts against the deployed CSP, crawl surfaces, read-only |
 | IndexNow | after each `frontendatlas-fe` production deploy, manual `all` | see below |
 | LemonSqueezy Test Checkout, Perf Smoke | manual only | hosted test-mode checkout (production refused); `e2e:perf` with `run_perf` |
 
@@ -102,6 +102,7 @@ Run from `frontend/` unless noted. After every push, run `git status --short` an
 - UI Regression runs in a pinned Playwright container on linux/amd64; keep the container image and `@playwright/test` version aligned when upgrading browsers.
 - `IndexNow` runs after each successful production deployment of the site's Vercel project, `frontendatlas-fe` (the `frontendatlas` CDN and `frontendatlas-be` API deployments are skipped), or by hand with scope `all` for a first run or key rotation. `frontend/scripts/indexnow-submit.mjs` reads the live sitemap and pings `api.indexnow.org` with the URLs whose `lastmod` falls in the last two days; Google does not take part. The key lives in `frontend/src/indexnow/<key>.txt`, which `angular.json` copies to the site root; `test:indexnow` and `e2e/seo.spec.ts` guard that placement.
 - Payment rule: no automated test may complete a real checkout. Billing coverage is webhook/lifecycle integration tests, mocked frontend flows and the test-mode backend smoke; the hosted LemonSqueezy checkout stays a manual, test-mode-only dispatch.
+- Checkout under the production CSP: `e2e/lemonsqueezy-integration.spec.ts` serves documents with the CSP from `frontend/vercel.json` (`e2e/helpers/production-csp.ts`) and loads the real Lemon.js from the network for list-price and signed regional checkouts. Every other Lemon Squeezy request gets a stub page, so no payment form can load. A failure here with no related code change means Lemon Squeezy moved the script or its API; check the host in the error against `script-src-elem`. It is the only critical test with a third-party network dependency.
 - Specs in `frontend/e2e/` that are in neither `test:e2e:critical` nor an Extended suite run nowhere; wire new specs into one of them. Add a Full-stack Smoke flow when the frontend mocks of an endpoint change shape.
 
 ## Deep reference

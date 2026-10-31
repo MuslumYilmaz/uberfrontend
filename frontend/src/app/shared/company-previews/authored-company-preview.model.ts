@@ -45,6 +45,26 @@ export type AuthoredFaq = {
   readonly answer: string;
 };
 
+export type AuthoredRoundSpotlightFact = {
+  readonly label: string;
+  readonly value: string;
+};
+
+/** One named interview round decoded in the searcher's own words: what it is, how long, on which tool, what was reported. */
+export type AuthoredRoundSpotlight = {
+  /** Heading id suffix; the rendered heading id is `<slug>-round-<id>`. */
+  readonly id: string;
+  readonly kicker: string;
+  readonly title: string;
+  /** Two or three sentences that answer the query directly, before any detail. */
+  readonly lede: readonly string[];
+  readonly facts: readonly AuthoredRoundSpotlightFact[];
+  /** A practice prompt on the same page (fragment, a prompt id) or a practice page (path). */
+  readonly practiceLink?: { readonly label: string; readonly fragment?: string; readonly path?: string };
+  /** The reported-process row for this round, by its row id. */
+  readonly processLink?: { readonly label: string; readonly fragment: string };
+};
+
 export type AuthoredResourceLink = {
   readonly label: string;
   readonly description: string;
@@ -81,6 +101,8 @@ export type AuthoredCompanyPreview = {
   };
   readonly studyPriorities: AuthoredSectionCopy;
   readonly sourceBoundary: AuthoredSectionCopy;
+  /** Named rounds rendered between the source boundary and the reported process table. */
+  readonly roundSpotlights?: readonly AuthoredRoundSpotlight[];
   readonly roleLenses?: {
     readonly kicker: string;
     readonly title: string;

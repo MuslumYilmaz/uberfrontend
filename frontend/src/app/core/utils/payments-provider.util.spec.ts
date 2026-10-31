@@ -1,4 +1,5 @@
 import {
+  isLemonSqueezyCheckoutUrl,
   resolveCheckoutPaymentsProvider,
   resolveCheckoutUrl,
   resolvePaymentsMode,
@@ -7,6 +8,15 @@ import {
 import { environment as productionEnvironment } from '../../../environments/environment.prod';
 
 describe('payments-provider util', () => {
+  it('accepts buy and signed custom checkouts on the store host only', () => {
+    expect(isLemonSqueezyCheckoutUrl('https://frontendatlas.lemonsqueezy.com/checkout/buy/abc')).toBeTrue();
+    expect(isLemonSqueezyCheckoutUrl('https://frontendatlas.lemonsqueezy.com/checkout/custom/abc?signature=sig')).toBeTrue();
+    expect(isLemonSqueezyCheckoutUrl('http://frontendatlas.lemonsqueezy.com/checkout/buy/abc')).toBeFalse();
+    expect(isLemonSqueezyCheckoutUrl('https://attacker.example/checkout/custom/abc?signature=sig')).toBeFalse();
+    expect(isLemonSqueezyCheckoutUrl('https://frontendatlas.lemonsqueezy.com/billing')).toBeFalse();
+    expect(isLemonSqueezyCheckoutUrl('not a url')).toBeFalse();
+  });
+
   it('defaults to test mode when not production', () => {
     const env = { production: false };
     expect(resolvePaymentsMode(env)).toBe('test');

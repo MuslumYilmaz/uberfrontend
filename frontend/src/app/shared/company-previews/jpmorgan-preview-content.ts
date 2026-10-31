@@ -33,10 +33,10 @@ const JPMORGAN_BLIND_2023_LABEL = 'Public report: Blind React software engineer 
 const JPMORGAN_HOW_WE_HIRE_URL = 'https://www.jpmorganchase.com/careers/how-we-hire';
 const JPMORGAN_HIRING_FAQS_URL = 'https://www.jpmorganchase.com/careers/how-we-hire/faqs';
 
-export const JPMORGAN_PREVIEW_TITLE = 'JPMorgan Chase Frontend Interview Questions: 5 Prompts + Guide';
+export const JPMORGAN_PREVIEW_TITLE = 'JPMorgan Chase Frontend Interview Questions and React Round Guide';
 export const JPMORGAN_PREVIEW_H1 = 'JPMorgan Chase Frontend Interview Questions';
 export const JPMORGAN_PREVIEW_DESCRIPTION =
-  'Prepare for a JPMorgan Chase frontend interview with 5 practice prompts modelled on public reports: memoize, reduce polyfill, async React hook, to-do list.';
+  'JPMorgan Chase frontend interview: the React and JavaScript conversation, live coding, the Bengaluru security round and the super day, with 5 practice prompts.';
 export const JPMORGAN_PREVIEW_CANONICAL_PATH = '/companies/jpmorgan/preview';
 export const JPMORGAN_PREVIEW_TRUST_NOTE =
   'These are FrontendAtlas practice versions modelled on rounds described in public interview reports, not leaked, confirmed or official JPMorgan Chase questions. Each team runs its own loop and a handful of self-reported accounts cannot establish a fixed format; use recruiter-provided material as the source of truth.';
@@ -73,6 +73,27 @@ export const JPMORGAN_COMPANY_PREVIEW: AuthoredCompanyPreview = {
       'Confirm with the recruiter how many rounds there are, how long each lasts, whether a HackerRank assessment or a recorded interview comes first, and whether the team runs a pull-request review. The official How we hire page and hiring FAQs describe assessment types, structured live interviews, on-demand recorded interviews and virtual skills assessments, with technical assessments as online tests or live technical interviews, but no frontend format. The official Software Engineer Program page describes a Front-end Developer track that builds AI-powered interfaces with streaming responses and citations, design systems and accessibility standards, and secure authentication with React. Use those pages for context, not as evidence of specific questions.',
     ],
   },
+  roundSpotlights: [
+    {
+      id: 'react-interview',
+      kicker: 'Round decoder',
+      title: 'JPMorgan Chase React interview for frontend engineers: what the team-run rounds ask',
+      lede: [
+        'JPMorgan Chase, which candidates also write as JP Morgan or JPMC, runs no standard loop: its How we hire page says the process differs by position, and employees describe team-run interviews that depend on the line of business. The frontend and React accounts from 2021 to 2026, from the UK, the US and India, agree on the questions more than on the format: a one-hour React and JavaScript conversation, often split between two interviewers or a panel of three, and a live-coding round of 30 to 90 minutes with a small React build.',
+        'The conversation covers closures, shallow versus deep clones and Object.assign, useCallback versus useMemo, useState versus useRef, context and higher-order components, cookie versus sessionStorage versus localStorage, and CORS. The coding is small and exact: a generic memoization function, a reduce polyfill with promises, generators and currying as follow-ups, a generic async promise hook with a useEffect cleanup, and a to-do list with priorities.',
+      ],
+      facts: [
+        { label: 'Position in the loop', value: 'After a recruiter phone screen. A HackerRank assessment with two easy-to-medium problems opens Software Engineer II and III requisitions; the frontend-titled loops do not report one.' },
+        { label: 'Conversation round', value: 'About an hour, often split between two interviewers or a panel of three: JavaScript fundamentals, React hooks and lifecycle, framework choice and resume-driven questions.' },
+        { label: 'Live coding', value: '30 to 90 minutes: a to-do list with priorities, functional components, generic types with a useEffect cleanup, or paper coding. One London briefing planned 90 minutes of live coding plus a 30-minute behavioural stage; other accounts give 30 to 45 minutes.' },
+        { label: 'Security and framework rounds', value: 'One Bengaluru SDE2 loop in 2024: three 60-minute rounds in one sitting, security and React (XSS, lifecycle, a memoization function), JavaScript and framework (promises, generators, a reduce polyfill, currying), then the hiring manager.' },
+        { label: 'Super day', value: 'The generic Software Engineer II and III shape from 2024 to 2026: three rounds of 45 to 60 minutes in one day, a pull-request review plus a medium problem, high-level design on a HackerRank whiteboard or CodePair (a rate limiter recurs), and a behavioural round with a Director; probably shared by React-titled requisitions, unconfirmed.' },
+        { label: 'Sources', value: 'Aced 2026; Taro accounts from 2022 to 2025; frontendgeek 2024; LeetCode 2021; Blind 2023; the JPMorgan Chase How we hire page and hiring FAQs. All are listed under Sources and in the reported process below with what each can establish.' },
+      ],
+      practiceLink: { label: 'Rehearse the React and JavaScript conversation round', fragment: 'react-and-javascript-conversation-round' },
+      processLink: { label: 'See the frontend technical conversation row in the reported process', fragment: 'jpmorgan-interview-process-1-stage-frontend-technical-conversation' },
+    },
+  ],
   roleLenses: {
     kicker: 'Role lenses',
     title: 'Two product contexts for practising transferable frontend judgment',
@@ -250,6 +271,7 @@ export const JPMORGAN_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     kicker: 'Preparation FAQ',
     title: 'Common JPMorgan Chase frontend interview preparation questions',
     items: [
+      { question: 'What does the JPMorgan Chase React interview ask?', answer: 'The frontend and React accounts from 2021 to 2026 agree on the questions more than on the format: an hour-long React and JavaScript conversation (closures, shallow versus deep clones, Object.assign, useCallback versus useMemo, useState versus useRef, context, storage, CORS), often split between two interviewers or a panel of three, and a live-coding round of 30 to 90 minutes with a small React build such as a to-do list with priorities or a generic async hook with a useEffect cleanup. One Bengaluru loop added a security-and-React round; the generic super day is unconfirmed for React-titled requisitions.' },
       { question: 'Are these the real JPMorgan Chase questions?', answer: 'No. They are FrontendAtlas practice versions modelled on rounds described in public, self-reported accounts on Aced, Taro, Blind, LeetCode Discuss and frontendgeek. The wording, the data and the test cases are ours.' },
       { question: 'Is there a standard JPMorgan loop?', answer: 'No. The official How we hire page says the interview process will differ for each position and that you can expect to meet several people in multiple rounds, and employees in public threads describe decentralised, team-run interviews that depend on the line of business. The public frontend accounts match that: a two-week senior loop with live coding on generic types and a useEffect cleanup in 2026, three 60-minute rounds in one sitting in Bengaluru in 2024, three video interviews in 2022, a panel of three lead engineers in 2025. Confirm the number of rounds, their length and whether an online assessment comes first.' },
       { question: 'Will I get LeetCode-style problems?', answer: 'Some loops include them. A New York candidate in 2021 was asked to delete a node in a linked list, check for balanced brackets and implement an LRU cache alongside JavaScript questions; in a 2025 lead-level panel one of three engineers asked three easy-to-medium LeetCode-style questions; and the generic Software Engineer II and III accounts describe a HackerRank screen with two easy problems, then a coding round that opens with a pull-request review and moves to a medium problem, with one interviewer in those threads saying the expected difficulty is medium. The frontend-titled Taro accounts used here describe concept questions and small builds instead. Ask the recruiter whether the team runs the super day.' },

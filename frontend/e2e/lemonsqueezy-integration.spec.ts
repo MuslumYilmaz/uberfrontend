@@ -1,5 +1,7 @@
+import type { Page } from '@playwright/test';
 import { test, expect } from './fixtures';
 import { buildMockUser } from './auth-mocks';
+import { enforceProductionCsp } from './helpers/production-csp';
 import { environment } from '../src/environments/environment';
 import {
   resolveCheckoutPaymentsProvider,
@@ -441,6 +443,189 @@ test.describe('lemonsqueezy integration (local)', () => {
     await expect.poll(() => page.evaluate(() => window.__fallbackRedirectUrl || '')).toContain('/checkout/buy/');
     expect(providerOpenedRecorded).toBe(true);
     await expect(page).toHaveURL(/\/pricing/);
+  });
+
+  test.describe('checkout under the production CSP', () => {
+    // A moved Lemon.js URL and a buy-only same-tab guard once left regional and
+    // student buyers with no way to pay while every test here stayed green,
+    // because these used a fake Lemon.js, buy links only and no CSP.
+    //
+    // Nothing below can reach a payment form: every Lemon Squeezy request except
+    // the script itself gets the stub page, and checkout start is mocked.
+    const checkoutCases = [
+      {
+        label: 'list price',
+        url: 'https://frontendatlas.lemonsqueezy.com/checkout/buy/e2e-variant',
+        path: /\/checkout\/buy\/e2e-variant/,
+      },
+      {
+        label: 'regional or student price',
+        url: 'https://frontendatlas.lemonsqueezy.com/checkout/custom/e2e-id?signature=e2e-signature',
+        path: /\/checkout\/custom\/e2e-id\?.*signature=e2e-signature/,
+      },
+    ];
+    const attemptId = 'chk_e2e_csp';
+
+    async function prepareOverlayCheckout(page: Page, checkoutUrl: string) {
+      const user = buildMockUser({
+        _id: 'e2e-csp-user',
+        username: 'csp_user',
+        email: 'csp@example.com',
+        accessTier: 'free',
+      });
+
+      await enforceProductionCsp(page);
+      await page.route(/^https:\/\/[^/]*lemonsqueezy\.com\//, async (route) => {
+        if (new URL(route.request().url()).pathname.endsWith('/lemon.js')) {
+          await route.continue();
+          return;
+        }
+        await route.fulfill({
+          status: 200,
+          contentType: 'text/html',
+          body: '<!doctype html><title>Checkout stub</title><h1 data-testid="checkout-stub">No payment form</h1>',
+        });
+      });
+      await page.unroute('**/api/billing/checkout/config');
+      await page.route('**/api/billing/checkout/config', async (route) => {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            ...buildCheckoutConfigResponse(),
+            offerVersion: 'interview_sprint_v3',
+            checkoutSurface: 'overlay',
+          }),
+        });
+      });
+      await page.route('**/api/auth/me', async (route) => {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            ...user,
+            entitlements: {
+              pro: { status: 'none', validUntil: null },
+              projects: { status: 'none', validUntil: null },
+            },
+            effectiveProActive: false,
+            accessTierEffective: 'free',
+          }),
+        });
+      });
+      await page.route('**/api/billing/checkout/start', async (route) => {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            attemptId,
+            provider: 'lemonsqueezy',
+            planId: 'quarterly',
+            mode: paymentsMode,
+            checkoutUrl,
+            successUrl: `${appOrigin}/billing/success?attempt=${attemptId}`,
+            cancelUrl: `${appOrigin}/billing/cancel?attempt=${attemptId}`,
+            offerVersion: 'interview_sprint_v3',
+            checkoutSurface: 'overlay',
+            reused: false,
+          }),
+        });
+      });
+      await page.addInitScript(() => {
+        localStorage.setItem('fa:auth:session', '1');
+      });
+    }
+
+    test.describe('harness', () => {
+      test.use({ consoleErrorAllowlist: ['csp-probe\\.invalid'] });
+
+      test('the browser enforces the policy from vercel.json', async ({ page }) => {
+        await prepareOverlayCheckout(page, checkoutCases[0].url);
+        await page.goto('/pricing');
+
+        const blocked = await page.evaluate(() => new Promise<string>((resolve) => {
+          document.addEventListener('securitypolicyviolation', (event) => resolve(event.blockedURI), { once: true });
+          const script = document.createElement('script');
+          script.src = 'https://csp-probe.invalid/probe.js';
+          document.head.appendChild(script);
+        }));
+
+        expect(blocked).toContain('csp-probe.invalid');
+      });
+    });
+
+    for (const checkout of checkoutCases) {
+      test(`${checkout.label}: the real Lemon.js opens the overlay and returns to billing success`, async ({ page }) => {
+        await prepareOverlayCheckout(page, checkout.url);
+        await page.route(`**/api/billing/checkout/attempts/${attemptId}/status`, async (route) => {
+          await route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify({
+              attemptId,
+              provider: 'lemonsqueezy',
+              planId: 'quarterly',
+              mode: 'test',
+              state: 'awaiting_webhook',
+              rawStatus: 'webhook_received',
+              entitlementActive: false,
+              accessTierEffective: 'free',
+              billingEventId: null,
+              lastErrorCode: null,
+              lastErrorMessage: null,
+            }),
+          });
+        });
+
+        await page.goto('/pricing');
+        await page.getByTestId('pricing-cta-quarterly').click();
+
+        const overlay = page.frameLocator('iframe[src*="lemonsqueezy.com/checkout/"]');
+        await expect(overlay.getByTestId('checkout-stub')).toBeVisible();
+        await expect(page).toHaveURL(/\/pricing/);
+        expect(page.frames().map((frame) => frame.url()).join(' ')).toMatch(checkout.path);
+
+        const overlayFrame = page.frames().find((frame) => checkout.path.test(frame.url()));
+        await overlayFrame?.evaluate(() => {
+          window.parent.postMessage({ event: 'Checkout.Success', data: {} }, '*');
+        });
+
+        await page.waitForURL(`**/billing/success?attempt=${attemptId}`);
+        await expect(page.getByTestId('billing-success-title')).toBeVisible();
+      });
+    }
+
+    test.describe('Lemon.js unavailable', () => {
+      test.use({ consoleErrorAllowlist: ['Failed to load resource: .*lemon\\.js'] });
+
+      for (const checkout of checkoutCases) {
+        test(`${checkout.label}: falls back to the hosted checkout in this tab`, async ({ page }) => {
+          let providerOpenedRecorded = false;
+          await prepareOverlayCheckout(page, checkout.url);
+          await page.route('**/lemon.js', (route) => route.abort());
+          await page.unroute(/\/api\/billing\/checkout\/attempts\/[^/?]+\/client-state(?:\?.*)?$/);
+          await page.route(
+            /\/api\/billing\/checkout\/attempts\/[^/?]+\/client-state(?:\?.*)?$/,
+            async (route) => {
+              const payload = route.request().postDataJSON() as { state?: string };
+              providerOpenedRecorded = payload.state === 'provider_opened';
+              await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ attemptId, state: 'awaiting_webhook' }),
+              });
+            },
+          );
+
+          await page.goto('/pricing');
+          await page.getByTestId('pricing-cta-quarterly').click();
+
+          await page.waitForURL(checkout.path);
+          await expect(page.getByTestId('checkout-stub')).toBeVisible();
+          expect(providerOpenedRecorded).toBe(true);
+        });
+      }
+    });
   });
 
   test.describe('logged-out checkout', () => {

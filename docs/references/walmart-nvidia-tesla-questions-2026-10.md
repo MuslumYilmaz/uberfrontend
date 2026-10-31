@@ -99,6 +99,7 @@ Source ids (W, N, T and the others) are local to this document. Each "Reported q
   - two React code challenges [W6];
   - CodePair for a React Native team [W26].
 - **2026 assessment** [W31]: a language-agnostic coding problem plus "debugging a React or Angular app, with AI assistance for UI navigation, syntax, and clarification". The recruiter had first said DSA and low-level design.
+- **2026 full-stack assessment** [W56]: the poster's invite lists "Software Fundamentals (1 language-agnostic coding question)", "Front-end (Bug fixing/features in React/Angular with AI assist)" and "Back-end (Node/Spring/Django task with AI assist)". A commenter who took it (2026-09-12): "The test was 140 minutes long", a medium DSA question, an Angular feature in an existing project until the test cases pass, and a simpler Java task. The 140 minutes belongs to this full-stack test; W31 gives no length.
 - **Onsites:**
   - "2 coding rounds, 2 design rounds and 1 behavioral round" [W20];
   - a 45-minute JavaScript coding screen, then coding, system design and team fit [W19];
@@ -261,6 +262,7 @@ Source ids (W, N, T and the others) are local to this document. Each "Reported q
 | W52 | Glassdoor review not pinned; likely https://www.glassdoor.com.hk/Interview/Walmart-Interview-E715-RVW30132371.htm | Glassdoor | not shown | S | Expense table with a bar graph |
 | W53 | https://www.glassdoor.co.in/Interview/Walmart-Senior-UI-Developer-Interview-Questions-EI_IE715.0,7_KO8,27.htm | Glassdoor, 2017 | Senior UI Developer, Bengaluru | S | Page-load speed |
 | W55 | https://leetcode.com/discuss/interview-experience/2774667/ | LeetCode, 2022-11-03 | Front end developer (multi-company post) | F (GraphQL) | Walmart section: three LeetCode problems; HTML/CSS, hoisting, closures, promises, callback hell, ES6; vanilla-JS accordion; manager round on frontend architecture; offer stage |
+| W56 | https://leetcode.com/discuss/post/8515332/ | LeetCode, 2026-09-11, comment 2026-09-12 | Full Stack (poster); Angular and Java (commenter) | F (GraphQL, read 2026-10-30) | Full-stack HackerRank OA: three sections, 140 minutes per a commenter |
 
 W48 (a Sam's Club Medium post), W49 (Fishbowl post titles), W50 (a Glassdoor mirror check) and W54 (job-posting titles) carry no questions and are not tabled.
 

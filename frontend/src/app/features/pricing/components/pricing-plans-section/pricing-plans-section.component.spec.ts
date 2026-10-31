@@ -865,6 +865,80 @@ describe('PricingPlansSectionComponent', () => {
     }));
   });
 
+  it('sends a signed regional checkout through the Lemon.js same-tab fallback', async () => {
+    const auth = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
+    const billingCheckout = TestBed.inject(BillingCheckoutService) as jasmine.SpyObj<BillingCheckoutService>;
+    const url = 'https://frontendatlas.lemonsqueezy.com/checkout/custom/regional?signature=sig';
+    const redirect = jasmine.createSpy('redirect');
+    auth.user.and.returnValue({
+      _id: 'regional_user',
+      username: 'regional_user',
+      email: 'regional@example.com',
+    } as any);
+    billingCheckout.checkout.and.resolveTo({
+      ok: true,
+      provider: 'lemonsqueezy',
+      mode: 'same-tab',
+      checkoutMode: 'live',
+      url,
+      attemptId: 'chk_regional_fallback',
+      reused: false,
+    });
+    billingCheckout.recordAttemptClientState.and.returnValue(of({} as any));
+    (window as any).__faCheckoutRedirect = redirect;
+    component.paymentsEnabled = true;
+    component.paymentsConfigReady = true;
+    component.checkoutAvailability = { monthly: true, quarterly: true, annual: true, lifetime: true };
+
+    try {
+      await component.onCta('quarterly');
+    } finally {
+      delete (window as any).__faCheckoutRedirect;
+    }
+
+    expect(redirect).toHaveBeenCalledOnceWith(url);
+    expect(component.checkoutNotice).toBeNull();
+  });
+
+  it('reports a failed launch instead of an open checkout when a same-tab URL is unsafe', async () => {
+    const auth = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
+    const billingCheckout = TestBed.inject(BillingCheckoutService) as jasmine.SpyObj<BillingCheckoutService>;
+    const analytics = TestBed.inject(AnalyticsService) as jasmine.SpyObj<AnalyticsService>;
+    const redirect = jasmine.createSpy('redirect');
+    auth.user.and.returnValue({
+      _id: 'unsafe_user',
+      username: 'unsafe_user',
+      email: 'unsafe@example.com',
+    } as any);
+    billingCheckout.checkout.and.resolveTo({
+      ok: true,
+      provider: 'lemonsqueezy',
+      mode: 'same-tab',
+      checkoutMode: 'live',
+      url: 'https://attacker.example/checkout/custom/abc?signature=sig',
+      attemptId: 'chk_unsafe_url',
+      reused: false,
+    });
+    (window as any).__faCheckoutRedirect = redirect;
+    component.paymentsEnabled = true;
+    component.paymentsConfigReady = true;
+    component.checkoutAvailability = { monthly: true, quarterly: true, annual: true, lifetime: true };
+
+    try {
+      await component.onCta('quarterly');
+    } finally {
+      delete (window as any).__faCheckoutRedirect;
+    }
+
+    expect(redirect).not.toHaveBeenCalled();
+    expect(billingCheckout.recordAttemptClientState).not.toHaveBeenCalled();
+    expect(analytics.track).not.toHaveBeenCalledWith('checkout_opened', jasmine.anything());
+    expect(analytics.track).not.toHaveBeenCalledWith('begin_checkout', jasmine.anything());
+    expect(analytics.track).toHaveBeenCalledWith('checkout_launch_failed', jasmine.objectContaining({
+      failure_reason: 'invalid_same_tab_url',
+    }));
+  });
+
   it('emits begin_checkout only after the provider tab opens', async () => {
     const auth = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
     const billingCheckout = TestBed.inject(BillingCheckoutService) as jasmine.SpyObj<BillingCheckoutService>;

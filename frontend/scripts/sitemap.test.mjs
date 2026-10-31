@@ -1122,7 +1122,7 @@ function assertVercelCspAllowsLemonSqueezyOverlay() {
         headerName,
         policy,
         directiveName,
-        requiredSources: ['https://app.lemonsqueezy.com'],
+        requiredSources: ['https://app.lemonsqueezy.com', 'https://assets.lemonsqueezy.com'],
       });
     });
     assertCspDirectiveSources({

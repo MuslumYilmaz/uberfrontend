@@ -30,10 +30,10 @@ const REVOLUT_WEB_ENGINEERING_URL =
   'https://medium.com/revolut/building-the-web-that-moves-money-inside-web-engineering-at-revolut-3dd4fb78fbfa';
 const REVOLUT_BAR_RAISER_VIDEO_URL = 'https://www.youtube.com/watch?v=zreFxR7MRuI';
 
-export const REVOLUT_PREVIEW_TITLE = 'Revolut Frontend Interview Questions: 5 Prompts + Prep Guide';
+export const REVOLUT_PREVIEW_TITLE = 'Revolut Frontend Interview Questions and Bar Raiser Guide';
 export const REVOLUT_PREVIEW_H1 = 'Revolut Frontend Interview Questions';
 export const REVOLUT_PREVIEW_DESCRIPTION =
-  'Prepare for a Revolut frontend interview with 5 practice prompts: a one-hour TypeScript fetch-and-render task, HackerRank, theory checks, system design.';
+  'Revolut frontend interview: the Bar Raiser round explained, the HackerRank test, an hour of React and TypeScript live coding, system design and 5 prompts.';
 export const REVOLUT_PREVIEW_CANONICAL_PATH = '/companies/revolut/preview';
 export const REVOLUT_PREVIEW_TRUST_NOTE =
   'These are FrontendAtlas practice versions modelled on rounds described in public interview reports, not leaked, confirmed or official Revolut questions. A few self-reported loops cannot establish a fixed format; use recruiter-provided material as the source of truth.';
@@ -70,6 +70,27 @@ export const REVOLUT_COMPANY_PREVIEW: AuthoredCompanyPreview = {
       'Together they establish that these round types occurred between 2022 and 2025; they do not establish exact wording, the current format, or how every hub interviews. Confirm the screen format, the allowed tools, whether a take-home exists for the role and the timing with the recruiter. Revolut publishes its web stack and interview philosophy on its Tech blog and a careers video on the Bar Raiser stage; use them for context, not as evidence of specific questions.',
     ],
   },
+  roundSpotlights: [
+    {
+      id: 'bar-raiser',
+      kicker: 'Round decoder',
+      title: 'Revolut Bar Raiser interview for frontend engineers: what it is and how to prepare',
+      lede: [
+        'Revolut\'s careers video describes the Bar Raiser as the interview where it gets to know how you work and what drives you, looking at how your previous work experience and decision-making align with its culture. In the plans frontend candidates report, it comes last, after a team-fit interview: the April 2025 account lists both after the live task, and a March 2026 post lists a recruiter screen, a technical interview, team fit and then the Bar Raiser.',
+        'None of the public frontend accounts used here describes sitting it or lists its questions, and the only account with an offer, from 2022, had no Bar Raiser at all. Before it, the loops in European hubs describe a recruiter or HR screen, a HackerRank test with three algorithm tasks in 85 to 110 minutes, about an hour of React and TypeScript live coding, and a system design round for mid and senior roles. Prepare stories with a decision, a trade-off and a measured result, and the reasons behind each.',
+      ],
+      facts: [
+        { label: 'Position in the loop', value: 'Listed last, after team fit, in the April 2025 and March 2026 plans. The engineering careers page does not list it, and the only account with an offer (2022) did not have it.' },
+        { label: 'What it covers', value: 'How you work and what drives you, and how your previous work and decision-making align with Revolut\'s culture, according to the description of the careers video (June 2025). No public frontend account lists its questions.' },
+        { label: 'Length', value: 'Not reported in the public accounts.' },
+        { label: 'Before it', value: 'A recruiter or HR screen (some recruiters ask a few JavaScript questions); a HackerRank test of three algorithm tasks in 85 to 110 minutes, sometimes before the recruiter call; about an hour of React and TypeScript live coding; a system design round for mid and senior roles; team fit.' },
+        { label: 'Official pages', value: 'The careers video "How to succeed in your Bar Raiser interview" and the engineering careers page, which lists an intro call, tech interviews, team fit and an offer, without formats or durations.' },
+        { label: 'Sources', value: 'Taro accounts from 2023 to 2025 across Warsaw, Barcelona, Madrid, Portugal, Poland and Krakow; Blind posts from 2022 and March 2026; Revolut careers pages and the Bar Raiser video. All are listed under Sources below with what each can establish.' },
+      ],
+      practiceLink: { label: 'Prepare decision stories with the behavioural guide', path: '/guides/behavioral' },
+      processLink: { label: 'See the Bar Raiser row in the reported process', fragment: 'revolut-interview-process-1-stage-bar-raiser' },
+    },
+  ],
   roleLenses: {
     kicker: 'Role lenses',
     title: 'Two product contexts for practising transferable frontend judgment',
@@ -250,7 +271,7 @@ export const REVOLUT_COMPANY_PREVIEW: AuthoredCompanyPreview = {
       { question: 'Are these the real Revolut questions?', answer: 'No. They are FrontendAtlas practice versions modelled on round types described in public, self-reported accounts and in the Revolut Tech post on web engineering. The wording, the data and the test cases are ours.' },
       { question: 'Is there still a take-home?', answer: 'A public candidate repository from 2017 quotes a web home task: rebuild the exchange screen of the Revolut app as a widget that polls currency rates every ten seconds, in React or Preact with Redux. None of the 2024 and 2025 accounts used here describes a take-home; they describe the one-hour live task instead. Confirm with the recruiter for the specific role.' },
       { question: 'Which stack should I prepare in?', answer: 'The Revolut Tech post on web engineering from October 2025 lists TypeScript, React and React Query at their latest stable versions, Rush and Nx for the monorepo, Zod to validate every external boundary at runtime, and Jest, Playwright, Storybook and React Testing Library for tests. Prepare in React and TypeScript.' },
-      { question: 'What is the Bar Raiser round?', answer: 'The April 2025 account lists a team-fit interview and a Bar Raiser interview as the rounds after the live task, and Revolut publishes a careers video on preparing for the Bar Raiser. None of the public accounts used here describes its questions, so prepare stories with a decision, a trade-off and a measured result.' },
+      { question: 'What is the Revolut Bar Raiser interview?', answer: 'The April 2025 account lists a team-fit interview and a Bar Raiser interview as the rounds after the live task, and Revolut publishes a careers video on preparing for the Bar Raiser. None of the public accounts used here describes its questions, so prepare stories with a decision, a trade-off and a measured result.' },
       { question: 'Does every hub interview the same way?', answer: 'The accounts come from different hubs and years and differ in round count and order: one loop opens with a HackerRank screen, another with a theory check, and system-design rounds appear in the 2023, 2024 and May 2025 loops but not in the others. Treat them as shapes to practise and confirm the loop with the recruiter.' },
     ],
   },
@@ -282,6 +303,7 @@ export const REVOLUT_COMPANY_PREVIEW: AuthoredCompanyPreview = {
       { label: REVOLUT_PORTUGAL_2025_LABEL, url: REVOLUT_PORTUGAL_2025_URL, note: 'One self-reported screen without an offer. It establishes that the HackerRank stage can include a standard sliding-window problem; nothing beyond the screen is described.', kind: 'report' },
       { label: REVOLUT_POLAND_2024_LABEL, url: REVOLUT_POLAND_2024_URL, note: 'One self-reported senior loop without an offer. It establishes a three-task HackerRank test in 110 minutes, live coding on API calls, data mapping, error handling and unit tests, and a system-design round on a physical card delivery system.', kind: 'report' },
       { label: REVOLUT_KRAKOW_2023_LABEL, url: REVOLUT_KRAKOW_2023_URL, note: 'One self-reported loop without an offer. It establishes three HackerRank tasks, a round on React components and JavaScript questions, and a design interview used to set the level.', kind: 'report' },
+      { label: 'Public report: Blind frontend interview plan, March 2026', url: 'https://www.teamblind.com/post/what-to-expect-in-revolut-frontend-engineer-interview-screening-technical-team-bar-raiser-qpgmtoum', note: 'A pre-interview post listing a recruiter screen, a technical interview on core frontend and system design, team fit and a Bar Raiser round. It records a plan, not an experience, and lists no questions.', kind: 'report' },
       { label: 'Blind: Revolut front-end interview thread, April 2022', url: REVOLUT_BLIND_2022_URL, note: 'A 2022 thread in which one reply, apparently secondhand, describes LeetCode-style problems, JavaScript fundamentals and React, and says no system design was expected. It shows an earlier shape of the loop; it cannot establish the current format.', kind: 'report' },
       { label: 'Candidate repository: Revolut web development home task, October 2017', url: REVOLUT_HOME_TASK_URL, note: 'A public solution whose README quotes the brief: an exchange-screen widget that polls rates for GBP, EUR and USD every ten seconds, in React or Preact with Redux. It establishes a 2017 take-home, not anything about the current process.', kind: 'report' },
       { label: 'Revolut Tech: Building the Web that Moves Money, October 2025', url: REVOLUT_WEB_ENGINEERING_URL, note: 'Official post on web engineering at Revolut. It states the interview philosophy, real-world scenarios rather than obscure JavaScript puzzles, the stack and the two groups of web products; it names no interview questions.', kind: 'official' },

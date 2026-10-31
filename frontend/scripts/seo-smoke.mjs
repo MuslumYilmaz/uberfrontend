@@ -59,9 +59,9 @@ const GOOGLE_PREVIEW_RESOURCE_ROUTES = [
 ];
 const NETFLIX_PREVIEW_ROUTE = '/companies/netflix/preview';
 const NETFLIX_PREVIEW_CANONICAL = `https://frontendatlas.com${NETFLIX_PREVIEW_ROUTE}`;
-const NETFLIX_PREVIEW_TITLE = 'Netflix Frontend Interview Questions: 6 Prompts + Prep Guide';
+const NETFLIX_PREVIEW_TITLE = 'Netflix Frontend and UI Engineer Interview Questions: 6 Prompts';
 const NETFLIX_PREVIEW_DESCRIPTION =
-  'Prepare for a Netflix frontend interview with 6 representative prompts on JavaScript, React, streaming UI, performance, accessibility, and system design.';
+  'Prepare for a Netflix frontend or UI engineer interview with 6 prompts on JavaScript, React, streaming UI, performance, accessibility and system design.';
 const NETFLIX_PREVIEW_H1 = 'Netflix Frontend Interview Questions';
 const NETFLIX_PREVIEW_HEADINGS = [
   'Prepare for product judgment, not Netflix trivia',
@@ -148,14 +148,15 @@ const AUTHORED_GUIDE_SMOKE = [
   {
     label: 'ElevenLabs',
     route: '/companies/elevenlabs/preview',
-    title: 'ElevenLabs Frontend Interview Questions: 5 Prompts + Guide',
+    title: 'ElevenLabs Frontend Interview Questions and Coding Assessment Guide',
     description:
-      'Prepare for an ElevenLabs frontend interview with 5 prompts modelled on public reports: audio-transcript sync, dubbing review UI, live fix, timed assessment.',
+      'ElevenLabs frontend interview: the coding assessment formats (90-minute test, CoderPad React fix, take-home), the live technical round, and 5 practice prompts.',
     h1: 'ElevenLabs Frontend Interview Questions',
     kicker: 'Public ElevenLabs prep guide',
     headings: [
       'Prepare for product judgment, not ElevenLabs trivia',
       'What the public pages establish, and what you still need to confirm',
+      'ElevenLabs coding assessment and live technical round: what the formats were and what was asked',
       'Five ElevenLabs frontend interview practice questions',
       'Scope the transcript highlight before writing the first line',
       'A 7-day ElevenLabs frontend interview preparation plan',
@@ -223,14 +224,15 @@ const AUTHORED_GUIDE_SMOKE = [
   {
     label: 'Intuit',
     route: '/companies/intuit/preview',
-    title: 'Intuit Frontend Interview Questions: 5 Prompts + Prep Guide',
+    title: 'Intuit Frontend Interview Questions and Craft Demo Guide',
     description:
-      'Prepare for an Intuit frontend interview with 5 practice prompts: craft demo app build, typeahead in a given codebase, promise retry, LLM streaming story.',
+      'Intuit frontend interview: the Craft Demo explained (the brief, the length, what the panel grades), the AI round, and 5 practice prompts from public reports.',
     h1: 'Intuit Frontend Interview Questions',
     kicker: 'Public Intuit prep guide',
     headings: [
       'Prepare for product judgment, not Intuit trivia',
       'What the public accounts establish, and what you still need to confirm',
+      'Intuit Craft Demo for frontend candidates: what it is and what was asked',
       'Five Intuit frontend interview practice questions',
       'Scope the craft demo app before the panel joins',
       'A 7-day Intuit frontend interview preparation plan',
@@ -381,14 +383,15 @@ const AUTHORED_GUIDE_SMOKE = [
   {
     label: 'Revolut',
     route: '/companies/revolut/preview',
-    title: 'Revolut Frontend Interview Questions: 5 Prompts + Prep Guide',
+    title: 'Revolut Frontend Interview Questions and Bar Raiser Guide',
     description:
-      'Prepare for a Revolut frontend interview with 5 practice prompts: a one-hour TypeScript fetch-and-render task, HackerRank, theory checks, system design.',
+      'Revolut frontend interview: the Bar Raiser round explained, the HackerRank test, an hour of React and TypeScript live coding, system design and 5 prompts.',
     h1: 'Revolut Frontend Interview Questions',
     kicker: 'Public Revolut prep guide',
     headings: [
       'Prepare for product judgment, not Revolut trivia',
       'What the public accounts establish, and what you still need to confirm',
+      'Revolut Bar Raiser interview for frontend engineers: what it is and how to prepare',
       'Five Revolut frontend interview practice questions',
       'Scope the one-hour fetch-and-render task before the first line',
       'A 7-day Revolut frontend interview preparation plan',
@@ -503,14 +506,15 @@ const AUTHORED_GUIDE_SMOKE = [
   {
     label: 'JPMorgan Chase',
     route: '/companies/jpmorgan/preview',
-    title: 'JPMorgan Chase Frontend Interview Questions: 5 Prompts + Guide',
+    title: 'JPMorgan Chase Frontend Interview Questions and React Round Guide',
     description:
-      'Prepare for a JPMorgan Chase frontend interview with 5 practice prompts modelled on public reports: memoize, reduce polyfill, async React hook, to-do list.',
+      'JPMorgan Chase frontend interview: the React and JavaScript conversation, live coding, the Bengaluru security round and the super day, with 5 practice prompts.',
     h1: 'JPMorgan Chase Frontend Interview Questions',
     kicker: 'Public JPMorgan Chase prep guide',
     headings: [
       'Prepare for product judgment, not JPMorgan Chase trivia',
       'What the public accounts establish, and what you still need to confirm',
+      'JPMorgan Chase React interview for frontend engineers: what the team-run rounds ask',
       'Five JPMorgan Chase frontend interview practice questions',
       'Scope the generic async promise hook before the first line',
       'A 7-day JPMorgan Chase frontend interview preparation plan',
@@ -543,14 +547,16 @@ const AUTHORED_GUIDE_SMOKE = [
   {
     label: 'Agoda',
     route: '/companies/agoda/preview',
-    title: 'Agoda Frontend Interview Questions: 5 Prompts + Prep Guide',
+    title: 'Agoda Frontend Interview Questions and Platform Interview Guide',
     description:
-      'Prepare for an Agoda frontend interview with 5 practice prompts modelled on public reports: hotel search page, React take-home, web fundamentals, debounce, DSA.',
+      'Agoda frontend interview: the Platform interview (60 min on HackerRank, three reported shapes), coding hour, architecture round and 5 practice prompts.',
     h1: 'Agoda Frontend Interview Questions',
     kicker: 'Public Agoda prep guide',
     headings: [
       'Prepare for product judgment, not Agoda trivia',
       'What the public accounts establish, and what you still need to confirm',
+      'Agoda Platform interview for frontend engineers: what it is and what was asked',
+      'Agoda Architecture interview for frontend engineers: what it is and what was asked',
       'Five Agoda frontend interview practice questions',
       'Scope the hotel search page before the first sentence',
       'A 7-day Agoda frontend interview preparation plan',
@@ -703,14 +709,15 @@ const AUTHORED_GUIDE_SMOKE = [
   {
     label: 'Capital One',
     route: '/companies/capital-one/preview',
-    title: 'Capital One Frontend Interview Questions: 5 Prompts + Guide',
+    title: 'Capital One Frontend Interview Questions and Power Day Guide',
     description:
-      'Prepare for a Capital One frontend interview with 5 practice prompts modelled on public reports: card application design, SPA build, Angular forms, case code.',
+      'Capital One frontend interview: Power Day explained (frontend design, React or Angular technical, case and behavioral hours), CodeSignal and 5 prompts.',
     h1: 'Capital One Frontend Interview Questions',
     kicker: 'Public Capital One prep guide',
     headings: [
       'What Capital One frontend loops reward: designing a card application out loud and reading code critically',
       'What the public accounts establish',
+      'Capital One Power Day for frontend engineers: what the four interviews are and what was asked',
       'Micro frontends and AI-assisted engineering as practice contexts',
       'Five Capital One frontend interview practice questions',
       'Scope the card application design before you draw',
@@ -743,14 +750,15 @@ const AUTHORED_GUIDE_SMOKE = [
   {
     label: 'CrowdStrike',
     route: '/companies/crowdstrike/preview',
-    title: 'CrowdStrike Frontend Interview Questions: 5 Prompts + Guide',
+    title: 'CrowdStrike Frontend Interview Questions and Take-Home Review Guide',
     description:
-      'Prepare for a CrowdStrike frontend interview with 5 practice prompts: the file table take-home, its review round, web fundamentals and security questions.',
+      'CrowdStrike frontend interview: the take-home file table and its review round (what engineers ask), spoken web fundamentals, the AI rule and 5 practice prompts.',
     h1: 'CrowdStrike Frontend Interview Questions',
     kicker: 'Public CrowdStrike prep guide',
     headings: [
       'What CrowdStrike frontend loops reward: a take-home you can defend and precise web fundamentals',
       'What the public accounts establish',
+      'CrowdStrike take-home build and review round for frontend engineers: what was asked',
       'Ember, React and very large data as practice contexts',
       'Five CrowdStrike frontend interview practice questions',
       'Scope select all across pages before you code',
@@ -788,10 +796,11 @@ const EDITORIAL_NOTE_SMOKE = [
   {
     label: 'Walmart',
     route: '/companies/walmart/preview',
-    title: 'Walmart Frontend Interview Process and Practice Questions',
+    title: 'Walmart Frontend Interview: 2026 Assessment and Karat Screen',
     h1: 'Walmart Frontend Interview Questions and Process',
     headings: [
       'Three loop shapes, by role and region',
+      'Walmart Frontend Engineering Assessment and Karat interview: what each one asks',
       'Rehearse the reported rounds in order',
       'Common questions about Walmart frontend interviews',
     ],
@@ -836,10 +845,11 @@ const EDITORIAL_NOTE_SMOKE = [
   {
     label: 'Booking.com',
     route: '/companies/booking-com/preview',
-    title: 'Booking.com Frontend Interview Process and Practice',
+    title: 'Booking.com Frontend Interview Process and Fit Interview',
     h1: 'Booking.com Frontend Interview Questions and Process',
     headings: [
       'HackerRank test, recruiter call, coding rounds, fit interview',
+      'Booking.com fit interview for frontend engineers: what it is and how to prepare',
       'Rehearse the autocomplete round first',
       'Common questions about Booking.com frontend interviews',
     ],

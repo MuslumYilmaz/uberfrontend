@@ -12,10 +12,10 @@ import type { CompanyEditorialNotes } from './company-editorial-notes.model';
 export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNotes>> = {
   walmart: {
     slug: 'walmart',
-    title: 'Walmart Frontend Interview Process and Practice Questions',
+    title: 'Walmart Frontend Interview: 2026 Assessment and Karat Screen',
     h1: 'Walmart Frontend Interview Questions and Process',
     description:
-      'How public reports describe Walmart frontend interviews: HackerRank and Karat screens, React fundamentals rounds, and practice items for each stage.',
+      'How public reports describe Walmart frontend interviews: the 2026 HackerRank Frontend Engineering Assessment, the Karat screen, React rounds and practice items.',
     hero: {
       kicker: 'Public preview and process notes',
       subtitle:
@@ -48,6 +48,28 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
         },
       ],
     },
+    roundSpotlights: [
+      {
+        id: 'frontend-engineering-assessment',
+        kicker: 'Round decoder',
+        title: 'Walmart Frontend Engineering Assessment and Karat interview: what each one asks',
+        lede: [
+          'A May 2026 invitation email described a HackerRank Frontend Engineering Assessment with two parts: a language-agnostic coding problem and a React or Angular debugging task, with AI assistance for UI navigation, syntax and clarification. The recruiter had first mentioned DSA and low-level design. A September 2026 full-stack invite adds a back-end section, and a commenter who took that test reports 140 minutes, a medium DSA question and an Angular task that adds a feature to an existing project until the test cases pass.',
+          'Software Engineer III and senior loops report a coding screen instead: a Karat interview with about ten minutes of short answers and then coding, a one-hour HackerRank interview, two React code challenges on HackerRank, or a 45-minute JavaScript coding round. The team sets the format, so your invitation names the platform that applies to your loop.',
+        ],
+        facts: [
+          { label: '2026 frontend assessment', value: 'Two sections on HackerRank: a language-agnostic coding problem, and debugging a React or Angular app with AI assistance for UI navigation, syntax and clarification. It comes from one pre-interview post quoting the invitation email (May 2026), which gives no length.' },
+          { label: '2026 full-stack assessment', value: 'Three sections: one language-agnostic coding question, front-end bug fixing or features in React or Angular with AI assist, and a back-end task in Node, Spring or Django with AI assist. One commenter who took it reports 140 minutes, a medium DSA question, an Angular feature added to an existing project until the test cases pass, and a simpler Java task (September 2026).' },
+          { label: '2024 assessment (India)', value: 'An older shape in one account: 20 multiple-choice questions on HTML, CSS and JavaScript, two easy coding questions in JavaScript only, and 10 multiple-choice questions on React or Angular.' },
+          { label: 'Karat interview', value: 'About ten minutes of short answers, then coding; reported for software engineer to senior roles.' },
+          { label: 'Other screens', value: 'A one-hour HackerRank interview, two React code challenges on HackerRank, or a 45-minute JavaScript coding round.' },
+          { label: 'After the screen', value: 'One or two coding rounds (React coding, a debugging session, two medium DSA problems, a UI and JavaScript round), one or two design rounds, and a behavioural or hiring-manager round.' },
+          { label: 'Sources', value: 'LeetCode, May and September 2026 and October 2024; Taro and Blind accounts from 2022 to 2025. All are linked in the reported process below.' },
+        ],
+        practiceLink: { label: 'Rehearse the React debugging task (Premium)', path: '/react/coding/react-debug-api-misuse' },
+        processLink: { label: 'See the 2026 assessment row in the reported process', fragment: 'walmart-interview-process-3-stage-online-assessment-2026-accounts' },
+      },
+    ],
     prepSteps: {
       kicker: 'How to prepare with this grouping',
       title: 'Rehearse the reported rounds in order',
@@ -113,9 +135,9 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
             'Senior and Software Engineer III accounts, mostly from the US, report one or two design rounds. The SDE 3 (UI) accounts from India report none, and none of them mentions an online assessment either.',
         },
         {
-          question: 'Which platform runs the screen?',
+          question: 'What is the Walmart Frontend Engineering Assessment, and which platform runs the screen?',
           answer:
-            'Reports name HackerRank, including CodePair and the 2026 Frontend Engineering Assessment, and Karat. Your invitation names the platform that applies to your loop.',
+            'A May 2026 invite describes a HackerRank Frontend Engineering Assessment with two parts: a language-agnostic coding problem and a React or Angular debugging task, with AI assistance allowed for UI navigation, syntax and clarification. A September 2026 full-stack invite adds a back-end section, and a commenter who took it reports 140 minutes. Other reports name HackerRank, including CodePair, and Karat. Your invitation names the platform that applies to your loop.',
         },
         {
           question: 'Are these the real Walmart questions?',
@@ -465,9 +487,9 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
   },
   'booking-com': {
     slug: 'booking-com',
-    title: 'Booking.com Frontend Interview Process and Practice',
+    title: 'Booking.com Frontend Interview Process and Fit Interview',
     h1: 'Booking.com Frontend Interview Questions and Process',
-    description: 'How public reports from 2021 to 2023 describe Booking.com frontend interviews: a HackerRank test, coding rounds with two engineers and a fit interview.',
+    description: 'How public reports from 2021 to 2023 describe Booking.com frontend interviews: a HackerRank test, coding rounds with two engineers and the fit interview.',
     hero: {
       kicker: 'Public preview and process notes',
       subtitle: 'Booking.com publishes a four-step journey; public frontend reports from 2021 to 2023 add the detail: a 90 to 100 minute HackerRank test, one or two 60 minute coding rounds in vanilla JavaScript or React, and a fit interview. One 2025 software engineer account adds a take-home.',
@@ -496,6 +518,27 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
         },
       ],
     },
+    roundSpotlights: [
+      {
+        id: 'fit-interview',
+        kicker: 'Round decoder',
+        title: 'Booking.com fit interview for frontend engineers: what it is and how to prepare',
+        lede: [
+          'The fit interview is the final round in the public frontend accounts from 2021 to 2023, after the HackerRank test, the recruiter call and one or two coding rounds. One account calls it a team fit with the engineering managers, another a behavioral interview, and two others a culture fit interview; one full-stack account gives it 60 minutes. Booking.com’s own journey page describes Application, Interview, Business and Feedback steps over three to six weeks.',
+          'These accounts name the round but list no questions, so treat it as a behavioural conversation: prepare stories with a decision, a trade-off and a measured result, and ask the recruiter who runs it and how long it takes.',
+        ],
+        facts: [
+          { label: 'Position in the loop', value: 'The final round, after the HackerRank test, the recruiter call and one or two coding rounds.' },
+          { label: 'What accounts call it', value: 'A team fit with the engineering managers (2022), a behavioral interview (2023), a culture fit interview (2021 and 2022).' },
+          { label: 'Length', value: '60 minutes in one full-stack account; the frontend accounts give no duration.' },
+          { label: 'Questions', value: 'The frontend accounts name the round but list no questions; the questions they report belong to the coding rounds.' },
+          { label: 'Recent loops', value: 'An August 2025 software engineer account describes a take-home, a technical session, system design and an engineering manager round; a thin September 2025 frontend account describes a recruiter call and a live-coding round.' },
+          { label: 'Sources', value: 'Taro frontend accounts from 2021 to 2023, linked in the reported process below, and the Booking.com careers journey page.' },
+        ],
+        practiceLink: { label: 'Prepare with the behavioural interview guide', path: '/guides/behavioral' },
+        processLink: { label: 'See the fit interview row in the reported process', fragment: 'booking-com-interview-process-1-stage-fit-interview' },
+      },
+    ],
     prepSteps: {
       kicker: 'How to prepare with this grouping',
       title: 'Rehearse the autocomplete round first',
