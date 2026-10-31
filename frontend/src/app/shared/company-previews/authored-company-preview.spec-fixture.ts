@@ -28,6 +28,17 @@ export function buildAuthoredCompanyPreviewFixture(
       title: 'What the reports establish and what you still need to confirm',
       paragraphs: ['One report cannot establish a fixed loop.'],
     },
+    roundSpotlights: [
+      {
+        id: 'pairing-hour',
+        kicker: 'Round decoder',
+        title: 'Acme pairing hour: what it is and what was asked',
+        lede: ['A 60-minute pairing session on a shared editor with one Acme engineer.'],
+        facts: [{ label: 'Length and tool', value: '60 minutes on CoderPad.' }],
+        practiceLink: { label: 'Rehearse the pairing hour', fragment: 'acme-tree-filter' },
+        processLink: { label: 'See the pairing hour row', fragment: 'acme-interview-process-1-stage-pairing-hour' },
+      },
+    ],
     roleLenses: {
       kicker: 'Role lenses',
       title: 'Two product contexts',

@@ -24,7 +24,7 @@
           </thead>
           <tbody>
             @for (stage of variant.stages; track $index) {
-              <tr>
+              <tr [attr.id]="stageId(i, stage)">
                 <th scope="row" data-label="Stage">{{ stage.stage }}</th>
                 <td data-label="What happens">
                   {{ stage.format }}

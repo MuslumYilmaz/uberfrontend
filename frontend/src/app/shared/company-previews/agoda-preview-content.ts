@@ -25,10 +25,10 @@ const AGODA_BANGALORE_2025_LABEL = 'Public report: frontendgeek staff frontend e
 const AGODA_HOW_WE_HIRE_TECH_URL = 'https://careersatagoda.com/blog/how-we-hire-agodas-tech-team-interview-process/';
 const AGODA_INTERVIEWER_GUIDE_URL = 'https://medium.com/agoda-engineering/preparing-for-interview-at-agoda-2c07b7d13ca5';
 
-export const AGODA_PREVIEW_TITLE = 'Agoda Frontend Interview Questions: 5 Prompts + Prep Guide';
+export const AGODA_PREVIEW_TITLE = 'Agoda Frontend Interview Questions and Platform Interview Guide';
 export const AGODA_PREVIEW_H1 = 'Agoda Frontend Interview Questions';
 export const AGODA_PREVIEW_DESCRIPTION =
-  'Prepare for an Agoda frontend interview with 5 practice prompts modelled on public reports: hotel search page, React take-home, web fundamentals, debounce, DSA.';
+  'Agoda frontend interview: the Platform interview (60 min on HackerRank, three reported shapes), coding hour, architecture round and 5 practice prompts.';
 export const AGODA_PREVIEW_CANONICAL_PATH = '/companies/agoda/preview';
 export const AGODA_PREVIEW_TRUST_NOTE =
   'These are FrontendAtlas practice versions modelled on rounds described in public interview reports, not leaked, confirmed or official Agoda questions. Six self-reported loops cannot establish a fixed format; use recruiter-provided material as the source of truth.';
@@ -65,6 +65,28 @@ export const AGODA_COMPANY_PREVIEW: AuthoredCompanyPreview = {
       'Together they establish that these round types occurred in 2025 and 2026; they do not establish exact wording, the current format, or how the Gurgaon, Manila and Bangalore teams interview today. Confirm with the recruiter whether a HackerRank assessment opens the loop, which rounds belong to the Staff track, which tool each round uses and the timing. Agoda publishes its process on its careers site, which our tools could only read from an archive capture, and an interviewer\'s guide on its engineering blog; use them for the round names and the Platform round\'s intent, not as evidence of specific questions.',
     ],
   },
+  roundSpotlights: [
+    {
+      id: 'platform-interview',
+      kicker: 'Round decoder',
+      title: 'Agoda Platform interview for frontend engineers: what it is and what was asked',
+      lede: [
+        'The Platform interview is the second of Agoda\'s four rounds, after the coding hour and before the architecture (system design) and culture-fit rounds. It runs for 60 minutes on HackerRank with an Agoda engineer, and in the public accounts the level track, Senior or Staff, is set right after it.',
+        'Agoda\'s own interviewer guide says the round asks you to implement something related to Agoda and often includes reviewing, fixing and improving a given code snippet. The three frontend accounts that describe it got three different shapes, so prepare for all three: a web-fundamentals question-and-answer hour with no code (July 2026), a JavaScript implementation grown out of a resume item (February 2025), and a discussion of component reuse, state management, API data handling and rendering performance (September 2025).',
+      ],
+      facts: [
+        { label: 'Position in the loop', value: 'Second of four rounds: Coding, Platform, System Design, Agoda Culture Fit, as the Agoda careers page lists them (July 2025).' },
+        { label: 'Length and tool', value: '60 minutes on HackerRank, with about a week between rounds in the Bangkok accounts.' },
+        { label: 'Who runs it', value: 'An Agoda engineer. One account describes a 15-minute recruiter prep call before the loop.' },
+        { label: 'What it decides', value: 'The level track: a Staff applicant was moved to Senior after it in July 2026, and a Senior candidate was moved to the Staff track and given an extra BE Platform hour in September 2025.' },
+        { label: 'Reported shapes', value: 'Web fundamentals without code (the July 2026 and June 2025 accounts list hoisting, SSR versus CSR, storage, caching, security and testing questions); a JavaScript implementation grown from your resume; a discussion of component reuse, state, API data and rendering performance.' },
+        { label: 'Official description', value: 'Implement something related to Agoda, and review, fix and improve a code snippet, playing the role of a lint tool (Agoda Engineering interviewer guide, June 2023).' },
+        { label: 'Sources', value: 'LeetCode, July 2026; Medium, September 2025; LeetCode, February 2025; Blind, June 2025; the Agoda careers process page; the Agoda Engineering interviewer guide. All are listed under Sources below with what each can establish.' },
+      ],
+      practiceLink: { label: 'Rehearse the web-fundamentals Platform hour', fragment: 'web-fundamentals-platform-hour' },
+      processLink: { label: 'See the Platform interview row in the reported process', fragment: 'agoda-interview-process-1-stage-frontend-platform-interview' },
+    },
+  ],
   roleLenses: {
     kicker: 'Role lenses',
     title: 'Two product contexts for practising transferable frontend judgment',
@@ -246,7 +268,7 @@ export const AGODA_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     items: [
       { question: 'Are these the real Agoda questions?', answer: 'No. They are FrontendAtlas practice versions modelled on round types and prompts described in public, self-reported accounts and on Agoda\'s own process pages. The wording, the data and the test cases are ours.' },
       { question: 'Is every round on HackerRank?', answer: 'The two Bangkok accounts that describe the tooling say so: the July 2026 account reports that all of its rounds were online on HackerRank with a week between them, and the September 2025 offer account says the Frontend Platform interview was also conducted through HackerRank. Agoda\'s process page describes a HackerRank online test as the coding assessment. One Gurgaon account names HackerRank for its coding round only, and the Code360 account names no tool, so confirm the tool for each round with the recruiter.' },
-      { question: 'What is the Platform round?', answer: 'Agoda\'s process page lists it as the second of four rounds, after Coding and before System Design and Culture Fit. The interviewer\'s guide on the Agoda Engineering blog says the Platform round typically asks candidates to implement something related to Agoda and often includes reviewing, fixing and improving a given code snippet, playing the role of a lint tool. The frontend accounts describe three shapes: a web-fundamentals question-and-answer hour with no code in July 2026, a JavaScript implementation grown out of a resume item followed by behavioural questions in February 2025, and a discussion of component reusability, state management, API data handling and rendering performance in September 2025. Prepare for all three.' },
+      { question: 'What is the Platform interview at Agoda?', answer: 'Agoda\'s process page lists it as the second of four rounds, after Coding and before System Design and Culture Fit. The interviewer\'s guide on the Agoda Engineering blog says the Platform round typically asks candidates to implement something related to Agoda and often includes reviewing, fixing and improving a given code snippet, playing the role of a lint tool. The frontend accounts describe three shapes: a web-fundamentals question-and-answer hour with no code in July 2026, a JavaScript implementation grown out of a resume item followed by behavioural questions in February 2025, and a discussion of component reusability, state management, API data handling and rendering performance in September 2025. Prepare for all three.' },
       { question: 'Can I be down- or up-levelled?', answer: 'In the accounts used here the level is set after the Platform round. The July 2026 candidate applied for Staff and was moved to Senior after the second round; the September 2025 Senior candidate was moved to the Staff track and got an extra hour, a BE Platform interview on a hotel booking system; a commenter on the June 2025 Blind thread describes the same path: Staff consideration after the platform round, then one architecture round, then culture fit. Ask the recruiter which track you are on before the architecture round.' },
       { question: 'Does Agoda ask DSA?', answer: 'The accounts say yes, at easy-to-medium level and in JavaScript. The July 2026 Senior loop opened with Rank Transform of an Array and Climbing Stairs with 1, 2 or 3 steps, with complexity analysis; the February 2025 Staff loop had two medium problems one after the other with pair programming and feedback corrections; a September 2025 full-stack account describes two medium problems on HackerRank finished in 35 minutes. Some loops also open with a HackerRank assessment. The interviewer\'s guide says the Coding round looks for testing skills, critical and systematic thinking, code efficiency and readability, and computer science knowledge.' },
     ],

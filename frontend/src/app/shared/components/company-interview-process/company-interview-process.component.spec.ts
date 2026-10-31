@@ -73,6 +73,7 @@ describe('CompanyInterviewProcessComponent', () => {
     expect(host.querySelector('#acme-interview-process-1')?.textContent?.trim()).toBe('Experienced hires');
     expect(tables.map((table) => table.querySelectorAll('tbody tr').length)).toEqual([2, 1]);
     expect(tables[0].querySelector('tbody th[scope="row"]')?.textContent?.trim()).toBe('Online assessment');
+    expect(tables[0].querySelector('tbody tr')?.id).toBe('acme-interview-process-1-stage-online-assessment');
   });
 
   it('labels evidence strength and keeps report links nofollow while official pages stay followed', async () => {

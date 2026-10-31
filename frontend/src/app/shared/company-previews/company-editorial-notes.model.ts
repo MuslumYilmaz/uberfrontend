@@ -1,4 +1,4 @@
-import type { AuthoredFaq } from './authored-company-preview.model';
+import type { AuthoredFaq, AuthoredRoundSpotlight } from './authored-company-preview.model';
 
 /** An internal route or an in-page anchor on the same preview (process table stage, official pages, reports). */
 export type EditorialLink = {
@@ -46,6 +46,8 @@ export type CompanyEditorialNotes = {
   readonly intro?: readonly string[];
   /** What public interview reports describe: loop shape, screening platform, frontend rounds, caveats. */
   readonly reportsDescribe?: EditorialSection;
+  /** Named rounds rendered between the reports section and the reported process table. */
+  readonly roundSpotlights?: readonly AuthoredRoundSpotlight[];
   readonly prepSteps?: {
     readonly kicker: string;
     readonly title: string;

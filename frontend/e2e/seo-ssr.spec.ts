@@ -1332,14 +1332,15 @@ const AUTHORED_GUIDE_CASES = [
   {
     label: 'Agoda',
     path: '/companies/agoda/preview',
-    title: 'Agoda Frontend Interview Questions: 5 Prompts + Prep Guide',
+    title: 'Agoda Frontend Interview Questions and Platform Interview Guide',
     description:
-      'Prepare for an Agoda frontend interview with 5 practice prompts modelled on public reports: hotel search page, React take-home, web fundamentals, debounce, DSA.',
+      'Agoda frontend interview: the Platform interview (60 min on HackerRank, three reported shapes), coding hour, architecture round and 5 practice prompts.',
     h1: 'Agoda Frontend Interview Questions',
     kicker: 'Public Agoda prep guide',
     headings: [
       'Prepare for product judgment, not Agoda trivia',
       'What the public accounts establish, and what you still need to confirm',
+      'Agoda Platform interview for frontend engineers: what it is and what was asked',
       'Five Agoda frontend interview practice questions',
       'Scope the hotel search page before the first sentence',
       'A 7-day Agoda frontend interview preparation plan',

@@ -627,6 +627,28 @@
       <p *ngFor="let paragraph of preview.sourceBoundary.paragraphs">{{ paragraph }}</p>
     </aside>
 
+    <section
+      class="company-guide-section company-round-spotlight"
+      *ngFor="let round of preview.roundSpotlights"
+      [attr.aria-labelledby]="preview.slug + '-round-' + round.id"
+      data-testid="company-round-spotlight">
+      <div class="company-guide-section__head">
+        <p class="preview-kicker">{{ round.kicker }}</p>
+        <h2 [attr.id]="preview.slug + '-round-' + round.id">{{ round.title }}</h2>
+        <p *ngFor="let paragraph of round.lede">{{ paragraph }}</p>
+      </div>
+      <dl class="company-round-facts">
+        <ng-container *ngFor="let fact of round.facts">
+          <dt>{{ fact.label }}</dt>
+          <dd>{{ fact.value }}</dd>
+        </ng-container>
+      </dl>
+      <p class="company-round-links" *ngIf="round.practiceLink || round.processLink">
+        <a *ngIf="round.practiceLink as practice" class="company-round-links__link" [attr.href]="'#' + practice.fragment">{{ practice.label }}</a>
+        <a *ngIf="round.processLink as row" class="company-round-links__link" [attr.href]="'#' + row.fragment">{{ row.label }}</a>
+      </p>
+    </section>
+
     <app-company-interview-process *ngIf="interviewProcess as process" [slug]="slug" [companyLabel]="label" [process]="process"></app-company-interview-process>
 
     <section class="company-guide-section" *ngIf="preview.roleLenses as lenses" [attr.aria-labelledby]="preview.slug + '-role-lenses'">
@@ -835,6 +857,28 @@
             [attr.href]="'#' + bullet.link.fragment">{{ bullet.link.label }}</a>
         </li>
       </ul>
+    </section>
+
+    <section
+      class="company-guide-section company-round-spotlight"
+      *ngFor="let round of editorialNotes?.roundSpotlights"
+      [attr.aria-labelledby]="slug + '-round-' + round.id"
+      data-testid="company-round-spotlight">
+      <div class="company-guide-section__head">
+        <p class="preview-kicker">{{ round.kicker }}</p>
+        <h2 [attr.id]="slug + '-round-' + round.id">{{ round.title }}</h2>
+        <p *ngFor="let paragraph of round.lede">{{ paragraph }}</p>
+      </div>
+      <dl class="company-round-facts">
+        <ng-container *ngFor="let fact of round.facts">
+          <dt>{{ fact.label }}</dt>
+          <dd>{{ fact.value }}</dd>
+        </ng-container>
+      </dl>
+      <p class="company-round-links" *ngIf="round.practiceLink || round.processLink">
+        <a *ngIf="round.practiceLink as practice" class="company-round-links__link" [attr.href]="'#' + practice.fragment">{{ practice.label }}</a>
+        <a *ngIf="round.processLink as row" class="company-round-links__link" [attr.href]="'#' + row.fragment">{{ row.label }}</a>
+      </p>
     </section>
 
     <app-company-interview-process *ngIf="interviewProcess as process" [slug]="slug" [companyLabel]="label" [process]="process"></app-company-interview-process>

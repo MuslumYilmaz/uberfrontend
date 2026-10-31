@@ -34,6 +34,12 @@ export class CompanyInterviewProcessComponent {
     return `${this.headingId}-${index + 1}`;
   }
 
+  /** Row id for deep links from round sections: `<variant id>-stage-<stage name in kebab case>`. */
+  stageId(variantIndex: number, stage: InterviewProcessStage): string {
+    const name = stage.stage.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    return `${this.variantId(variantIndex)}-stage-${name}`;
+  }
+
   formatMonth(value: string): string {
     const match = /^(\d{4})-(\d{2})(?:-\d{2})?$/.exec(value);
     if (!match) return value;
