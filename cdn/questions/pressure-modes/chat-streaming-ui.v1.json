@@ -1,0 +1,459 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "chat-streaming-ui-pressure-v1",
+  "family": "chat-streaming-ui",
+  "title": "Streaming Chat Interview Pressure Mode",
+  "access": "premium",
+  "estimatedMinutes": 45,
+  "supportedQuestions": {
+    "react": "react-chat-streaming-ui"
+  },
+  "rounds": [
+    {
+      "id": "stream-the-answer",
+      "title": "Stream the answer",
+      "interviewerPrompt": "Build the basic chat first. The user's message appears at once, and the answer grows word by word.",
+      "constraints": [
+        "Ignore messages that are empty or only spaces. Otherwise show the user's message right away and clear the input.",
+        "Add an assistant message and stream `SAMPLE_RESPONSE` into it with `startFakeStream`.",
+        "While it streams, disable Send and show the Stop button. When it ends, Stop goes away.",
+        "Keep the starter classes: `chat-input` for the form, `message--user` and `message--assistant` for messages, `message-bubble` for the text and `ghost` for Stop."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-chat-stream",
+          "name": "Round 1 · The answer grows while Send stays locked",
+          "steps": [
+            {
+              "type": "setValue",
+              "selector": ".chat-input input",
+              "value": "   "
+            },
+            {
+              "type": "submit",
+              "selector": ".chat-input"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".message",
+              "count": 0
+            },
+            {
+              "type": "setValue",
+              "selector": ".chat-input input",
+              "value": "Hello"
+            },
+            {
+              "type": "submit",
+              "selector": ".chat-input"
+            },
+            {
+              "type": "expectText",
+              "selector": ".message--user .message-bubble",
+              "text": "Hello"
+            },
+            {
+              "type": "expectValue",
+              "selector": ".chat-input input",
+              "value": ""
+            },
+            {
+              "type": "expectCount",
+              "selector": ".message--assistant",
+              "count": 1
+            },
+            {
+              "type": "waitForText",
+              "selector": ".message--assistant .message-bubble",
+              "text": "Sure!",
+              "match": "contains",
+              "timeoutMs": 2000
+            },
+            {
+              "type": "expectNoText",
+              "selector": ".message--assistant .message-bubble",
+              "text": "responsive",
+              "match": "contains"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".ghost",
+              "count": 1
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".chat-input button[type=\"submit\"]",
+              "disabled": true
+            },
+            {
+              "type": "waitForText",
+              "selector": ".message--assistant .message-bubble",
+              "text": "Sure! Here's a short streaming reply. It arrives token by token so the UI feels responsive.",
+              "timeoutMs": 3500
+            },
+            {
+              "type": "expectCount",
+              "selector": ".ghost",
+              "count": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "stop-keeps-the-text",
+      "title": "Stop keeps what arrived",
+      "interviewerPrompt": "Users stop answers all the time. Stopping must keep what already arrived, and the next answer must not touch the old one.",
+      "constraints": [
+        "Stop ends the stream. The text so far stays, no more words arrive, and `Stopped` appears in an element with the class `message-status` inside that message.",
+        "After Stop, move focus to the input, because the focused Stop button is now gone.",
+        "Keep the input enabled while streaming so the user can write their next message. Submitting during a stream sends nothing and keeps the text.",
+        "A new answer always goes into its own message. Earlier messages never change."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-chat-stop",
+          "name": "Round 2 · Stopping keeps the partial answer and the next one stays separate",
+          "steps": [
+            {
+              "type": "setValue",
+              "selector": ".chat-input input",
+              "value": "First"
+            },
+            {
+              "type": "submit",
+              "selector": ".chat-input"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".message--assistant .message-bubble",
+              "text": "Here's",
+              "match": "contains",
+              "timeoutMs": 2000
+            },
+            {
+              "type": "click",
+              "selector": ".ghost"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".ghost",
+              "count": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".message--assistant .message-status",
+              "text": "Stopped"
+            },
+            {
+              "type": "expectFocused",
+              "selector": ".chat-input input"
+            },
+            {
+              "type": "wait",
+              "durationMs": 600
+            },
+            {
+              "type": "expectNoText",
+              "selector": ".message--assistant .message-bubble",
+              "text": "reply.",
+              "match": "contains"
+            },
+            {
+              "type": "setValue",
+              "selector": ".chat-input input",
+              "value": "Second"
+            },
+            {
+              "type": "submit",
+              "selector": ".chat-input"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".message--user",
+              "count": 2
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".chat-input input",
+              "disabled": false
+            },
+            {
+              "type": "setValue",
+              "selector": ".chat-input input",
+              "value": "Third"
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".chat-input button[type=\"submit\"]",
+              "disabled": true
+            },
+            {
+              "type": "submit",
+              "selector": ".chat-input"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".message--user",
+              "count": 2
+            },
+            {
+              "type": "expectValue",
+              "selector": ".chat-input input",
+              "value": "Third"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".message--assistant .message-bubble",
+              "text": "Sure! Here's a short streaming reply. It arrives token by token so the UI feels responsive.",
+              "timeoutMs": 3500,
+              "index": 1
+            },
+            {
+              "type": "expectNoText",
+              "selector": ".message--assistant .message-bubble",
+              "text": "reply.",
+              "match": "contains",
+              "index": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "failure-and-retry",
+      "title": "Failure and retry",
+      "interviewerPrompt": "Streams break halfway. The user should see what happened and be able to try again without writing the message again.",
+      "constraints": [
+        "If the user's message contains the word `fail`, the first attempt breaks after 3 words. Change `startFakeStream` so it can report this.",
+        "Keep the words that arrived and show `Response failed` in the `message-status` element, with a Retry button with the class `retry-response`.",
+        "Retry empties that same answer and streams it again. It adds no new message, and this attempt succeeds.",
+        "The user can send a new message after a failure, without pressing Retry."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-chat-retry",
+          "name": "Round 3 · A broken stream can be retried in place",
+          "steps": [
+            {
+              "type": "setValue",
+              "selector": ".chat-input input",
+              "value": "please fail"
+            },
+            {
+              "type": "submit",
+              "selector": ".chat-input"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".message-status",
+              "text": "Response failed",
+              "match": "contains",
+              "timeoutMs": 1500
+            },
+            {
+              "type": "expectText",
+              "selector": ".message--assistant .message-bubble",
+              "text": "Sure! Here's a",
+              "match": "contains"
+            },
+            {
+              "type": "expectNoText",
+              "selector": ".message--assistant .message-bubble",
+              "text": "short",
+              "match": "contains"
+            },
+            {
+              "type": "setValue",
+              "selector": ".chat-input input",
+              "value": "Next question"
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".chat-input button[type=\"submit\"]",
+              "disabled": false
+            },
+            {
+              "type": "setValue",
+              "selector": ".chat-input input",
+              "value": ""
+            },
+            {
+              "type": "click",
+              "selector": ".retry-response"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".retry-response",
+              "count": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": ".message--assistant",
+              "count": 1
+            },
+            {
+              "type": "expectCount",
+              "selector": ".message--user",
+              "count": 1
+            },
+            {
+              "type": "expectNoText",
+              "selector": ".message--assistant .message-bubble",
+              "text": "Here's",
+              "match": "contains"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".message--assistant .message-bubble",
+              "text": "Sure! Here's a short streaming reply. It arrives token by token so the UI feels responsive.",
+              "timeoutMs": 3500
+            },
+            {
+              "type": "expectCount",
+              "selector": ".message-status",
+              "count": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "announcements-and-cleanup",
+      "title": "Screen readers and cleanup",
+      "interviewerPrompt": "A screen reader should not read every word as it arrives. It should hear when an answer starts and ends, and removing the chat must stop the stream.",
+      "constraints": [
+        "Remove `aria-live` from the element with the class `chat-list`.",
+        "Always keep one element with the class `chat-status` and `aria-live=\"polite\"` on the page. It says `Assistant is responding`, `Response complete`, `Response stopped` or `Response failed`.",
+        "Set `aria-busy=\"true\"` on the assistant message while it streams, and `aria-busy=\"false\"` after it ends.",
+        "When the component is removed, stop the running stream."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-chat-announce",
+          "name": "Round 4 · Screen readers hear the start and the end, not every word",
+          "steps": [
+            {
+              "type": "expectAttribute",
+              "selector": ".chat-list",
+              "attribute": "aria-live",
+              "expected": false
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".chat-status",
+              "attribute": "aria-live",
+              "expected": "polite"
+            },
+            {
+              "type": "setValue",
+              "selector": ".chat-input input",
+              "value": "Hello"
+            },
+            {
+              "type": "submit",
+              "selector": ".chat-input"
+            },
+            {
+              "type": "expectText",
+              "selector": ".chat-status",
+              "text": "Assistant is responding"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".message--assistant",
+              "attribute": "aria-busy",
+              "expected": "true"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".chat-status",
+              "text": "Response complete",
+              "timeoutMs": 3500
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".message--assistant",
+              "attribute": "aria-busy",
+              "expected": "false"
+            },
+            {
+              "type": "setValue",
+              "selector": ".chat-input input",
+              "value": "Stop this one"
+            },
+            {
+              "type": "submit",
+              "selector": ".chat-input"
+            },
+            {
+              "type": "click",
+              "selector": ".ghost"
+            },
+            {
+              "type": "expectText",
+              "selector": ".chat-status",
+              "text": "Response stopped"
+            },
+            {
+              "type": "setValue",
+              "selector": ".chat-input input",
+              "value": "please fail"
+            },
+            {
+              "type": "submit",
+              "selector": ".chat-input"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".chat-status",
+              "text": "Response failed",
+              "timeoutMs": 1500
+            }
+          ]
+        },
+        {
+          "id": "pressure-chat-cleanup",
+          "name": "Round 4 · Removing the chat stops the stream",
+          "steps": [
+            {
+              "type": "setValue",
+              "selector": ".chat-input input",
+              "value": "Hello"
+            },
+            {
+              "type": "submit",
+              "selector": ".chat-input"
+            },
+            {
+              "type": "wait",
+              "durationMs": 200
+            },
+            {
+              "type": "unmountPreview"
+            },
+            {
+              "type": "expectNoPreviewLeaks"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "debrief": {
+    "title": "You kept the stream under control",
+    "summary": "You built a chat that streams an answer, stops cleanly, recovers from a broken stream and tells screen readers only what matters. The interview signal is treating a stream as something with a clear owner, a clear end and a clear failure.",
+    "takeaways": [
+      "Add each word to a message found by its id, never to \"the last message\".",
+      "Keep one way to end a stream, and use it for stop, finish, failure and removal.",
+      "A failed answer is part of the conversation: keep its text and retry it in place.",
+      "Announce the start and the end of a stream, not every word."
+    ],
+    "frameworkNotes": {
+      "react": "A ref holds the cancel function of the running stream, functional updates add each word, and an effect cleanup cancels the stream when the component is removed."
+    }
+  },
+  "solutionAssets": {
+    "react": "assets/sb/react/solution/react-chat-streaming-ui-pressure-solution.v1.json"
+  }
+}

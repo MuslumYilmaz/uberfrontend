@@ -111,6 +111,86 @@ const AUTOCOMPLETE_PRESSURE_SOLUTIONS = {
   ),
 } as const;
 
+const TEAM_LIST_PRESSURE_SOLUTION = readCanonicalFiles(
+  '../cdn/sb/react/solution/react-fetch-list-states-pressure-solution.v1.json',
+);
+
+const NESTED_COMMENTS_PRESSURE_SOLUTIONS = {
+  react: readCanonicalFiles(
+    '../cdn/sb/react/solution/react-nested-comments-pressure-solution.v1.json',
+  ),
+  angular: readCanonicalFiles(
+    '../cdn/sb/angular/solution/angular-nested-comments-pressure-solution.v1.json',
+  ),
+  vue: readCanonicalFiles(
+    '../cdn/sb/vue/solution/vue-nested-comments-pressure-solution.v1.json',
+  ),
+} as const;
+
+const CONTACT_FORM_PRESSURE_SOLUTIONS = {
+  react: readCanonicalFiles(
+    '../cdn/sb/react/solution/react-contact-form-pressure-solution.v1.json',
+  ),
+  angular: readCanonicalFiles(
+    '../cdn/sb/angular/solution/angular-contact-form-pressure-solution.v1.json',
+  ),
+  vue: readCanonicalFiles(
+    '../cdn/sb/vue/solution/vue-contact-form-pressure-solution.v1.json',
+  ),
+} as const;
+
+const CHAT_STREAMING_PRESSURE_SOLUTION = readCanonicalFiles(
+  '../cdn/sb/react/solution/react-chat-streaming-ui-pressure-solution.v1.json',
+);
+
+const USE_EFFECT_ONCE_PRESSURE_SOLUTION = readCanonicalFiles(
+  '../cdn/sb/react/solution/react-use-effect-once-pressure-solution.v1.json',
+);
+
+const DEBUG_DOUBLE_RENDER_PRESSURE_SOLUTION = readCanonicalFiles(
+  '../cdn/sb/react/solution/react-debug-double-render-pressure-solution.v1.json',
+);
+
+// Each file must compile on its own while the bundle loads, so the child comes before the parent that uses it.
+const TWO_WAY_CONTROL_PRESSURE_SOLUTION = (() => {
+  const files = readCanonicalFiles(
+    '../cdn/sb/angular/solution/angular-input-output-two-way-pressure-solution.v1.json',
+  );
+  const order = [
+    'src/app/child.component.ts',
+    'src/app/child.component.html',
+    'src/app/child.component.css',
+    'src/app/app.component.ts',
+    'src/app/app.component.html',
+    'src/app/app.component.css',
+  ];
+  return Object.fromEntries(order.map((file) => [file, files[file]]));
+})();
+
+const MULTI_STEP_FORM_PRESSURE_SOLUTIONS = {
+  react: readCanonicalFiles(
+    '../cdn/sb/react/solution/react-multi-step-form-pressure-solution.v1.json',
+  ),
+  angular: readCanonicalFiles(
+    '../cdn/sb/angular/solution/angular-multi-step-form-pressure-solution.v1.json',
+  ),
+  vue: readCanonicalFiles(
+    '../cdn/sb/vue/solution/vue-multi-step-form-pressure-solution.v1.json',
+  ),
+} as const;
+
+const NESTED_CHECKBOXES_PRESSURE_SOLUTIONS = {
+  react: readCanonicalFiles(
+    '../cdn/sb/react/solution/react-nested-checkboxes-pressure-solution.v1.json',
+  ),
+  angular: readCanonicalFiles(
+    '../cdn/sb/angular/solution/angular-nested-checkboxes-pressure-solution.v1.json',
+  ),
+  vue: readCanonicalFiles(
+    '../cdn/sb/vue/solution/vue-nested-checkboxes-pressure-solution.v1.json',
+  ),
+} as const;
+
 const ACCORDION_FAQ_PRESSURE_SOLUTIONS = {
   react: readCanonicalFiles(
     '../cdn/sb/react/solution/react-accordion-faq-pressure-solution.v1.json',
@@ -240,6 +320,105 @@ const AUTOCOMPLETE_PRESSURE_FLOW: PressureFlowContract = {
     'accessibility-and-cleanup',
   ],
   debriefText: 'You kept the search predictable as it grew',
+};
+
+const TEAM_LIST_PRESSURE_FLOW: PressureFlowContract = {
+  checkCounts: [1, 2, 3, 5],
+  roundIds: [
+    'request-states',
+    'refresh-keeps-list',
+    'newest-request-wins',
+    'real-cancellation',
+  ],
+  debriefText: 'You kept every request state honest',
+};
+
+const NESTED_COMMENTS_PRESSURE_FLOW: PressureFlowContract = {
+  checkCounts: [1, 2, 3, 5],
+  roundIds: [
+    'core-thread',
+    'keyboard-flow',
+    'hide-threads',
+    'safe-delete',
+  ],
+  debriefText: 'You kept the thread correct as it grew',
+};
+
+const CONTACT_FORM_PRESSURE_FLOW: PressureFlowContract = {
+  checkCounts: [1, 2, 3, 5],
+  roundIds: [
+    'validation',
+    'one-request',
+    'failure-recovery',
+    'slow-server-and-accessibility',
+  ],
+  debriefText: "You protected the user's work in every outcome",
+};
+
+const CHAT_STREAMING_PRESSURE_FLOW: PressureFlowContract = {
+  checkCounts: [1, 2, 3, 5],
+  roundIds: [
+    'stream-the-answer',
+    'stop-keeps-the-text',
+    'failure-and-retry',
+    'announcements-and-cleanup',
+  ],
+  debriefText: 'You kept the stream under control',
+};
+
+const USE_EFFECT_ONCE_PRESSURE_FLOW: PressureFlowContract = {
+  checkCounts: [1, 2, 3, 5],
+  roundIds: [
+    'one-connection',
+    'prove-the-order',
+    'connecting-takes-time',
+    'settings-without-reconnecting',
+  ],
+  debriefText: 'You kept every connection accounted for',
+};
+
+const DEBUG_DOUBLE_RENDER_PRESSURE_FLOW: PressureFlowContract = {
+  checkCounts: [1, 2, 3, 5],
+  roundIds: [
+    'one-click-one-render',
+    'do-not-copy-props',
+    'typing-leaves-the-badge-alone',
+    'many-updates-one-render',
+  ],
+  debriefText: 'You removed every render that had no reason to happen',
+};
+
+const TWO_WAY_CONTROL_PRESSURE_FLOW: PressureFlowContract = {
+  checkCounts: [1, 2, 3, 4],
+  roundIds: [
+    'parent-owns-the-value',
+    'changes-from-the-parent',
+    'work-inside-a-form',
+    'keyboard-and-names',
+  ],
+  debriefText: 'You built a control other teams can reuse',
+};
+
+const MULTI_STEP_FORM_PRESSURE_FLOW: PressureFlowContract = {
+  checkCounts: [1, 2, 3, 5],
+  roundIds: [
+    'valid-navigation',
+    'edit-from-summary',
+    'company-step',
+    'finish-and-focus',
+  ],
+  debriefText: 'You kept the signup moving without losing anything',
+};
+
+const NESTED_CHECKBOXES_PRESSURE_FLOW: PressureFlowContract = {
+  checkCounts: [1, 2, 3, 5],
+  roundIds: [
+    'parent-child-sync',
+    'deep-tree',
+    'locked-items',
+    'selection-summary',
+  ],
+  debriefText: 'You kept the whole tree consistent',
 };
 
 const ACCORDION_FAQ_PRESSURE_FLOW: PressureFlowContract = {
@@ -1373,6 +1552,166 @@ test.describe('Framework checks against the production SSR build', () => {
       await loadCanonicalBundle(page, AUTOCOMPLETE_PRESSURE_SOLUTIONS[framework]);
       await rebuildPreview(page, '.input');
       await completePressureRounds(page, AUTOCOMPLETE_PRESSURE_FLOW);
+    });
+  }
+
+  test('React-only Team List runs its free pressure mode and keeps the normal draft isolated', async ({ page }) => {
+    await page.goto('/react/coding/react-fetch-list-states');
+    await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
+    await waitForFrameworkPreview(page, '.mode');
+
+    const normalMarker = `normal-team-list-draft-${Date.now()}`;
+    const normalDraft = `// ${normalMarker}\n${await getMonacoModelValue(page, 'src/App.tsx')}`;
+    await loadCanonicalFile(page, 'src/App.tsx', normalDraft);
+    await waitForIndexedDbKeyPrefixContains(page, {
+      dbName: 'frontendatlas',
+      storeName: 'fa_ng',
+      keyPrefix: 'v2:code:fw2:react:react-fetch-list-states@',
+      substring: normalMarker,
+    });
+
+    await page.getByTestId('pressure-mode-start').click();
+    await expect(page).toHaveURL(/\/react\/coding\/react-fetch-list-states\?mode=pressure$/);
+    await expect(page.getByTestId('pressure-mode-panel')).toContainText('Free pilot');
+    await waitForFrameworkPreview(page, '.mode');
+    await expect.poll(() => getMonacoModelValue(page, 'src/App.tsx')).not.toContain(normalMarker);
+
+    await loadCanonicalBundle(page, TEAM_LIST_PRESSURE_SOLUTION);
+    await rebuildPreview(page, '.mode');
+    await completePressureRounds(page, TEAM_LIST_PRESSURE_FLOW);
+
+    await page.getByRole('button', { name: 'Interview', exact: true }).click();
+    await page.getByTestId('pressure-mode-exit').click();
+    await expect(page).toHaveURL(/\/react\/coding\/react-fetch-list-states$/);
+    await waitForFrameworkPreview(page, '.mode');
+    await expect.poll(() => getMonacoModelValue(page, 'src/App.tsx')).toContain(normalMarker);
+  });
+
+  for (const [framework, questionId] of [
+    ['react', 'react-nested-comments'],
+    ['angular', 'angular-nested-comments'],
+    ['vue', 'vue-nested-comments'],
+  ] as const) {
+    test(`${framework} Nested Comments passes thread, keyboard, hide, delete, and announcement pressure rounds`, async ({
+      page,
+      baseURL,
+    }) => {
+      if (!baseURL) throw new Error('Playwright baseURL is required for the premium pressure test');
+      await seedPremiumSession(page, baseURL);
+      await page.goto(`/${framework}/coding/${questionId}?mode=pressure`);
+      await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
+      await expect(page.getByTestId('pressure-mode-panel')).toContainText('Premium');
+      await waitForFrameworkPreview(page, '.composer');
+
+      await loadCanonicalBundle(page, NESTED_COMMENTS_PRESSURE_SOLUTIONS[framework]);
+      await rebuildPreview(page, '.composer');
+      await completePressureRounds(page, NESTED_COMMENTS_PRESSURE_FLOW);
+    });
+  }
+
+  for (const [framework, questionId] of [
+    ['react', 'react-contact-form-starter'],
+    ['angular', 'angular-contact-form-starter'],
+    ['vue', 'vue-contact-form-starter'],
+  ] as const) {
+    test(`${framework} Contact Form passes validation, send, failure, time limit, and accessibility pressure rounds`, async ({
+      page,
+      baseURL,
+    }) => {
+      if (!baseURL) throw new Error('Playwright baseURL is required for the premium pressure test');
+      await seedPremiumSession(page, baseURL);
+      await page.goto(`/${framework}/coding/${questionId}?mode=pressure`);
+      await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
+      await expect(page.getByTestId('pressure-mode-panel')).toContainText('Premium');
+      await waitForFrameworkPreview(page, '.panel');
+
+      await loadCanonicalBundle(page, CONTACT_FORM_PRESSURE_SOLUTIONS[framework]);
+      await rebuildPreview(page, '.panel');
+      await completePressureRounds(page, CONTACT_FORM_PRESSURE_FLOW);
+    });
+  }
+
+  test('A long code value in a pressure rule stays inside the panel on a phone', async ({
+    page,
+    baseURL,
+  }) => {
+    if (!baseURL) throw new Error('Playwright baseURL is required for the premium pressure test');
+    await seedPremiumSession(page, baseURL);
+    await page.goto('/react/coding/react-contact-form-starter?mode=pressure');
+    await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
+    await waitForFrameworkPreview(page, '.panel');
+    await loadCanonicalBundle(page, CONTACT_FORM_PRESSURE_SOLUTIONS.react);
+    await rebuildPreview(page, '.panel');
+
+    const results = await runPressureChecks(page, 1);
+    await expect(results.locator('.framework-check-results__summary')).toHaveText('1/1 passed');
+    await page.getByTestId('pressure-next-round').click();
+
+    const round = page.getByTestId('pressure-active-round');
+    await expect(round).toHaveAttribute('data-round-id', 'one-request');
+    await expect(round.locator('code', { hasText: 'https://jsonplaceholder.typicode.com/posts' })).toBeVisible();
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await expect.poll(() => round.evaluate((panel) => panel.scrollWidth - panel.clientWidth)).toBeLessThanOrEqual(0);
+  });
+
+  for (const scenario of [
+    {
+      name: 'React Chat Streaming passes stream, stop, retry, announcement, and cleanup pressure rounds',
+      route: '/react/coding/react-chat-streaming-ui',
+      readySelector: '.chat-input',
+      solution: CHAT_STREAMING_PRESSURE_SOLUTION,
+      flow: CHAT_STREAMING_PRESSURE_FLOW,
+    },
+    {
+      name: 'React useEffect Once passes connection, order, slow connect, mute, and cleanup pressure rounds',
+      route: '/react/coding/react-use-effect-once',
+      readySelector: '.active-count',
+      solution: USE_EFFECT_ONCE_PRESSURE_SOLUTION,
+      flow: USE_EFFECT_ONCE_PRESSURE_FLOW,
+    },
+    {
+      name: 'React Debug Double Render passes render count, badge, note, update, and sum pressure rounds',
+      route: '/react/coding/react-debug-double-render',
+      readySelector: '[data-testid="count"]',
+      solution: DEBUG_DOUBLE_RENDER_PRESSURE_SOLUTION,
+      flow: DEBUG_DOUBLE_RENDER_PRESSURE_FLOW,
+    },
+    {
+      name: 'Angular Two-way Control passes owner, parent change, form, and keyboard pressure rounds',
+      route: '/angular/coding/angular-input-output-two-way',
+      readySelector: '.panel',
+      solution: TWO_WAY_CONTROL_PRESSURE_SOLUTION,
+      flow: TWO_WAY_CONTROL_PRESSURE_FLOW,
+    },
+    ...(['react', 'angular', 'vue'] as const).map((framework) => ({
+      name: `${framework} Multi-step Signup passes navigation, edit, company, finish, and focus pressure rounds`,
+      route: `/${framework}/coding/${
+        { react: 'react-multi-step-signup', angular: 'angular-multi-step-form-starter', vue: 'vue-multi-step-form' }[framework]
+      }`,
+      readySelector: '.step-title',
+      solution: MULTI_STEP_FORM_PRESSURE_SOLUTIONS[framework],
+      flow: MULTI_STEP_FORM_PRESSURE_FLOW,
+    })),
+    ...(['react', 'angular', 'vue'] as const).map((framework) => ({
+      name: `${framework} Checkbox Tree passes sync, depth, locked, summary, and order pressure rounds`,
+      route: `/${framework}/coding/${framework}-nested-checkboxes`,
+      readySelector: '.panel',
+      solution: NESTED_CHECKBOXES_PRESSURE_SOLUTIONS[framework],
+      flow: NESTED_CHECKBOXES_PRESSURE_FLOW,
+    })),
+  ]) {
+    test(scenario.name, async ({ page, baseURL }) => {
+      if (!baseURL) throw new Error('Playwright baseURL is required for the premium pressure test');
+      await seedPremiumSession(page, baseURL);
+      await page.goto(`${scenario.route}?mode=pressure`);
+      await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
+      await expect(page.getByTestId('pressure-mode-panel')).toContainText('Premium');
+      await waitForFrameworkPreview(page, scenario.readySelector);
+
+      await loadCanonicalBundle(page, scenario.solution);
+      await rebuildPreview(page, scenario.readySelector);
+      await completePressureRounds(page, scenario.flow);
     });
   }
 

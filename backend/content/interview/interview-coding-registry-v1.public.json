@@ -372,7 +372,7 @@
       "track": "angular"
     },
     {
-      "contentHash": "22605ebdb734033a820a7d8be6916bb691a02efa6750df095d1b999bf9a7ab96",
+      "contentHash": "654765839d01289e96b3077699702c70a277daa0470ff4d1407509846ec62ff1",
       "enabled": true,
       "id": "int-code-angular-mid-multi-step-form-v1",
       "level": "mid",
@@ -456,7 +456,7 @@
       "track": "angular"
     },
     {
-      "contentHash": "84118ae8cbd1cce6204a3388544fd10b2f7ac50d61aa5fdb9478fe1258472f23",
+      "contentHash": "41cec26d76848ee9eddbc23aa9dfd4fa951e6ccb87991b0b8df7efdd566c8b44",
       "enabled": true,
       "id": "int-code-angular-mid-nested-checkboxes-v1",
       "level": "mid",
@@ -898,7 +898,7 @@
       "track": "angular"
     },
     {
-      "contentHash": "7d1d298b8b3226918aa6016fa0c848b39f42bee1cb2fb1d96053959ad753f96b",
+      "contentHash": "07574fa4e7d39f8ee8ca58f4489249175708acf7690297c58120c5781c5d9e9e",
       "enabled": true,
       "id": "int-code-angular-senior-contact-form-v1",
       "level": "senior",
@@ -1091,7 +1091,7 @@
       "track": "angular"
     },
     {
-      "contentHash": "ad7053bcc1d4390d866052f4a8451ff95554d8395b77102cbd0434e42b66d316",
+      "contentHash": "bbdeeb3ca06aa3961b20c48abc1ab22be51cd6e03da0757c18c6e1153f9c0870",
       "enabled": true,
       "id": "int-code-angular-senior-nested-comments-v1",
       "level": "senior",
@@ -2118,7 +2118,7 @@
       "track": "react"
     },
     {
-      "contentHash": "1b4fd9d66cf3d6d6ad3e36971a6e0b60467b031fe27d8d0082dfae38515405fc",
+      "contentHash": "34adde6b1f3d7a2953981a4c233306534b2db7461cf752e804cc3a70eab3616b",
       "enabled": true,
       "id": "int-code-react-mid-multi-step-form-v1",
       "level": "mid",
@@ -2194,7 +2194,7 @@
       "track": "react"
     },
     {
-      "contentHash": "9052154fd5f82bc14b24a623f0b026717ded8021aea3c0323e8be23fb4d99122",
+      "contentHash": "fb5b766311f41d2fe44a96e38a4d0c03f2fffc6178366450704bb612d144be29",
       "enabled": true,
       "id": "int-code-react-mid-nested-checkboxes-v1",
       "level": "mid",
@@ -2592,7 +2592,7 @@
       "track": "react"
     },
     {
-      "contentHash": "e48855a40953a640219a9b267bf77b90c0f33ce4ad83e3c4ea665e0bea61bac9",
+      "contentHash": "fd1c15fda32e75ebc6632dd515e27cb814895248ca549143c72de4721ab20110",
       "enabled": true,
       "id": "int-code-react-senior-contact-form-v1",
       "level": "senior",
@@ -2769,7 +2769,7 @@
       "track": "react"
     },
     {
-      "contentHash": "d28d48e34869935679e5361d8f10131f6fe509fe25c35deaa3f7dce7297f2cc1",
+      "contentHash": "5d7de0b03bd999b00fbe9c405839b7aebbfda766fcb35c429aa755a84759d968",
       "enabled": true,
       "id": "int-code-react-senior-nested-comments-v1",
       "level": "senior",
@@ -2841,7 +2841,7 @@
           "path": "src/App.css"
         },
         {
-          "content": "import React, { useMemo, useState, useRef } from 'react';\nimport './App.css';\n\ntype CommentNode = {\n  id: string;\n  text: string;\n  children: CommentNode[];\n};\n\nexport default function App() {\n  // TODO: store a nested tree of comments\n  const [comments, setComments] = useState<CommentNode[]>([\n    { id: '1', text: 'First comment', children: [] }\n  ]);\n\n  // TODO: top-level draft\n  const [topDraft, setTopDraft] = useState('');\n\n  // TODO: reply UI state\n  const [activeReplyId, setActiveReplyId] = useState<string | null>(null);\n  const [replyDraft, setReplyDraft] = useState('');\n\n  // Simple id generator\n  const nextIdRef = useRef(2);\n  const makeId = () => String(nextIdRef.current++);\n\n  // TODO: add a top-level comment\n  const addTop = () => {\n  };\n\n  // TODO: open reply input ONLY for the given comment\n  const openReply = (_id: string) => {\n  };\n\n  // TODO: cancel reply\n  const cancelReply = () => {\n  };\n\n  // TODO: submit reply under the correct parent\n  const submitReply = (_parentId: string) => {\n  };\n\n  // TODO: find node by id in a tree\n  const findById = (_nodes: CommentNode[], _id: string): CommentNode | null => {\n    return null;\n  };\n\n  const Tree = useMemo(() => {\n    const Render = ({ nodes, depth }: { nodes: CommentNode[]; depth: number }) => {\n      return (\n        <>\n          {nodes.map((c) => (\n            <div key={c.id} className=\"node\" style={{ marginLeft: depth * 16 }}>\n              <div className=\"bubble\">\n                <div className=\"text\">{c.text}</div>\n                <div className=\"meta\">\n                  <button className=\"ghost\" onClick={() => openReply(c.id)}>Reply</button>\n                </div>\n\n                {/* Reply box: should open ONLY for the active comment */}\n                {activeReplyId === c.id && (\n                  <div className=\"reply\">\n                    <input\n                      value={replyDraft}\n                      onChange={(e) => setReplyDraft(e.target.value)}\n                      placeholder=\"Write a reply...\"\n                    />\n                    <div className=\"replyActions\">\n                      <button onClick={() => submitReply(c.id)}>Post</button>\n                      <button className=\"ghost\" onClick={cancelReply}>Cancel</button>\n                    </div>\n                  </div>\n                )}\n              </div>\n\n              {c.children.length > 0 && <Render nodes={c.children} depth={depth + 1} />}\n            </div>\n          ))}\n        </>\n      );\n    };\n    return Render;\n  }, [activeReplyId, replyDraft]);\n\n  return (\n    <main className=\"page\">\n      <section className=\"card\">\n        <h1 className=\"title\">Nested Comments</h1>\n        <p className=\"subtitle\">Add top-level comments and reply infinitely. Only the clicked comment should open a reply input.</p>\n\n        <div className=\"composer\">\n          <textarea\n            rows={3}\n            value={topDraft}\n            onChange={(e) => setTopDraft(e.target.value)}\n            placeholder=\"Write a comment...\"\n          />\n          <button onClick={addTop}>Add Comment</button>\n        </div>\n\n        <div className=\"list\">\n          <Tree nodes={comments} depth={0} />\n        </div>\n\n        <div className=\"hint\">Goal: replying should not open inputs on other comments. Replies must nest infinitely with indentation.</div>\n      </section>\n    </main>\n  );\n}\n",
+          "content": "import React, { useState, useRef } from 'react';\nimport './App.css';\n\ntype CommentNode = {\n  id: string;\n  text: string;\n  children: CommentNode[];\n};\n\nexport default function App() {\n  // TODO: store a nested tree of comments\n  const [comments, setComments] = useState<CommentNode[]>([\n    { id: '1', text: 'First comment', children: [] }\n  ]);\n\n  // TODO: top-level draft\n  const [topDraft, setTopDraft] = useState('');\n\n  // TODO: reply UI state\n  const [activeReplyId, setActiveReplyId] = useState<string | null>(null);\n  const [replyDraft, setReplyDraft] = useState('');\n\n  // Simple id generator\n  const nextIdRef = useRef(2);\n  const makeId = () => String(nextIdRef.current++);\n\n  // TODO: add a top-level comment\n  const addTop = () => {\n  };\n\n  // TODO: open reply input ONLY for the given comment\n  const openReply = (_id: string) => {\n  };\n\n  // TODO: cancel reply\n  const cancelReply = () => {\n  };\n\n  // TODO: submit reply under the correct parent\n  const submitReply = (_parentId: string) => {\n  };\n\n  // TODO: find node by id in a tree\n  const findById = (_nodes: CommentNode[], _id: string): CommentNode | null => {\n    return null;\n  };\n\n  // A plain recursive call on purpose. A component created inside App would get a new\n  // identity on every render, and React would rebuild the inputs and lose their focus.\n  const renderTree = (nodes: CommentNode[], depth: number) =>\n    nodes.map((c) => (\n      <div key={c.id} className=\"node\" style={{ marginLeft: depth * 16 }}>\n        <div className=\"bubble\">\n          <div className=\"text\">{c.text}</div>\n          <div className=\"meta\">\n            <button className=\"ghost\" onClick={() => openReply(c.id)}>Reply</button>\n          </div>\n\n          {/* Reply box: should open ONLY for the active comment */}\n          {activeReplyId === c.id && (\n            <div className=\"reply\">\n              <input\n                value={replyDraft}\n                onChange={(e) => setReplyDraft(e.target.value)}\n                placeholder=\"Write a reply...\"\n              />\n              <div className=\"replyActions\">\n                <button onClick={() => submitReply(c.id)}>Post</button>\n                <button className=\"ghost\" onClick={cancelReply}>Cancel</button>\n              </div>\n            </div>\n          )}\n        </div>\n\n        {c.children.length > 0 && renderTree(c.children, depth + 1)}\n      </div>\n    ));\n\n  return (\n    <main className=\"page\">\n      <section className=\"card\">\n        <h1 className=\"title\">Nested Comments</h1>\n        <p className=\"subtitle\">Add top-level comments and reply infinitely. Only the clicked comment should open a reply input.</p>\n\n        <div className=\"composer\">\n          <textarea\n            rows={3}\n            value={topDraft}\n            onChange={(e) => setTopDraft(e.target.value)}\n            placeholder=\"Write a comment...\"\n          />\n          <button onClick={addTop}>Add Comment</button>\n        </div>\n\n        <div className=\"list\">\n          {renderTree(comments, 0)}\n        </div>\n\n        <div className=\"hint\">Goal: replying should not open inputs on other comments. Replies must nest infinitely with indentation.</div>\n      </section>\n    </main>\n  );\n}\n",
           "path": "src/App.tsx"
         },
         {
@@ -3273,7 +3273,7 @@
       "track": "vue"
     },
     {
-      "contentHash": "95585f9b27f994c78e35d121c8e6ba3b5dc3f448b2e470116d0fc0abc582b0af",
+      "contentHash": "c19e0b8c590a8c8341af87417f0a6475928457bf515ccbc2490fbc544c02d2de",
       "enabled": true,
       "id": "int-code-vue-mid-multi-step-form-v1",
       "level": "mid",
@@ -3349,7 +3349,7 @@
       "track": "vue"
     },
     {
-      "contentHash": "84316b60221181903c3accc25ca754d68329e648a0b420f6fc3f5c12c9d39896",
+      "contentHash": "2a61348b980558c00ea034e0bfcc95f7585a7afc6ecc5dab1483e5abc5af917b",
       "enabled": true,
       "id": "int-code-vue-mid-nested-checkboxes-v1",
       "level": "mid",
@@ -3407,7 +3407,7 @@
           "path": "src/App.css"
         },
         {
-          "content": "<template>\n  <main class=\"main\">\n    <section class=\"section\">\n      <h1>Nested Checkboxes</h1>\n\n      <div class=\"panel\">\n        <label class=\"parent\">\n          <input\n            type=\"checkbox\"\n            :checked=\"parentChecked\"\n            @change=\"onParentChange\"\n          />\n          <span>Parent</span>\n        </label>\n\n        <div class=\"children\">\n          <label\n            v-for=\"child in children\"\n            :key=\"child.id\"\n            class=\"child\"\n          >\n            <input\n              type=\"checkbox\"\n              :checked=\"child.checked\"\n              @change=\"() => onChildChange(child.id)\"\n            />\n            <span>{{ child.label }}</span>\n          </label>\n        </div>\n      </div>\n    </section>\n  </main>\n</template>\n\n<script setup lang=\"ts\">\nimport { ref } from 'vue';\n\ntype ChildNode = {\n  id: string;\n  label: string;\n  checked: boolean;\n};\n\n// Parent checkbox state\n// In the solution, this will control all children when toggled.\nconst parentChecked = ref(false);\n\n// Children list (each child has its own checked flag)\nconst children = ref<ChildNode[]>([\n  { id: 'c1', label: 'Child 1', checked: false },\n  { id: 'c2', label: 'Child 2', checked: false },\n  { id: 'c3', label: 'Child 3', checked: false }\n]);\n\n// TODO (solution): when parent changes, update all children based on parentChecked.\nconst onParentChange = (_event: Event) => {\n  // starter: no-op so UI renders; students will implement logic.\n};\n\n// TODO (solution): when a child changes, toggle only that child.\n// Parent should NOT auto-change or become indeterminate.\nconst onChildChange = (_id: string) => {\n  // starter: no-op so UI renders; students will implement logic.\n};\n</script>\n",
+          "content": "<template>\n  <main class=\"main\">\n    <section class=\"section\">\n      <h1>Nested Checkboxes</h1>\n\n      <div class=\"panel\">\n        <label class=\"parent\">\n          <input\n            type=\"checkbox\"\n            :checked=\"parentChecked\"\n            @change=\"onParentChange\"\n          />\n          <span>Parent</span>\n        </label>\n\n        <div class=\"children\">\n          <label\n            v-for=\"child in children\"\n            :key=\"child.id\"\n            class=\"child\"\n          >\n            <input\n              type=\"checkbox\"\n              :checked=\"child.checked\"\n              @change=\"() => onChildChange(child.id)\"\n            />\n            <span>{{ child.label }}</span>\n          </label>\n        </div>\n      </div>\n    </section>\n  </main>\n</template>\n\n<script setup lang=\"ts\">\nimport { ref } from 'vue';\n\ntype ChildNode = {\n  id: string;\n  label: string;\n  checked: boolean;\n};\n\n// Parent checkbox state\n// In the solution, this will control all children when toggled.\nconst parentChecked = ref(false);\n\n// Children list (each child has its own checked flag)\nconst children = ref<ChildNode[]>([\n  { id: 'c1', label: 'Child 1', checked: false },\n  { id: 'c2', label: 'Child 2', checked: false },\n  { id: 'c3', label: 'Child 3', checked: false }\n]);\n\n// TODO (solution): when parent changes, update all children based on parentChecked.\nconst onParentChange = (_event: Event) => {\n  // starter: no-op so UI renders; students will implement logic.\n};\n\n// TODO (solution): when a child changes, toggle only that child.\n// Then update the parent: checked, unchecked or indeterminate.\nconst onChildChange = (_id: string) => {\n  // starter: no-op so UI renders; students will implement logic.\n};\n</script>\n",
           "path": "src/App.vue"
         },
         {
@@ -3743,7 +3743,7 @@
       "track": "vue"
     },
     {
-      "contentHash": "2ce356333cbbc1f0e9f8a5419a3679e100a193a56a2c7becea0557366f23218b",
+      "contentHash": "43e24e26a2ef6b112fcdb15e4a380e705f5b6b687ddb0a9bfe94803278519946",
       "enabled": true,
       "id": "int-code-vue-senior-contact-form-v1",
       "level": "senior",
@@ -3920,7 +3920,7 @@
       "track": "vue"
     },
     {
-      "contentHash": "12d95fd90633a3f3f13a54bba4ec058fbefc8bd34048c3aeb0527ef84d97cab5",
+      "contentHash": "38506ea7971d3ca1a1eef5518551661b55ccecfb9f079d1321e3ed155e8df284",
       "enabled": true,
       "id": "int-code-vue-senior-nested-comments-v1",
       "level": "senior",

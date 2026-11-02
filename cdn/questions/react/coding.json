@@ -248,6 +248,7 @@
       "openFile": "/src/App.tsx",
       "storageKey": "v2:ui:react:react-contact-form-starter"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/contact-form.v1.json",
     "solutionAsset": "assets/sb/react/solution/react-contact-form-solution.v1.json",
     "companies": [
       "netflix",
@@ -1330,6 +1331,7 @@
       "openFile": "/src/App.tsx",
       "storageKey": "v2:ui:react:react-multi-step-signup"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/multi-step-form.v1.json",
     "solutionAsset": "assets/sb/react/solution/react-multi-step-form-solution.v1.json",
     "companies": [],
     "access": "premium",
@@ -1963,6 +1965,7 @@
       "openFile": "/src/App.tsx",
       "storageKey": "v2:ui:react:react-nested-checkboxes"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/nested-checkboxes.v1.json",
     "solutionAsset": "assets/sb/react/solution/react-nested-checkboxes-solution.v1.json",
     "companies": [],
     "access": "premium",
@@ -3117,6 +3120,7 @@
       "openFile": "/src/App.tsx",
       "storageKey": "v2:react:react-use-effect-once"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/use-effect-once.v1.json",
     "solutionAsset": "assets/sb/react/solution/react-use-effect-once-solution.v1.json",
     "companies": [
       "netflix"
@@ -3170,6 +3174,11 @@
             "type": "waitForText",
             "selector": ".room-value",
             "text": "design"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".connection-status",
+            "text": "Connected to design"
           },
           {
             "type": "expectText",
@@ -3474,19 +3483,20 @@
       "approaches": [
         {
           "title": "Single component + recursive renderer + single active reply state",
-          "prose": "1) Store comments in a `CommentNode[]` state.\n2) Store `activeReplyId` + `replyDraft` as UI state.\n3) Implement `addTop`, `openReply`, `cancelReply`, `submitReply`.\n4) Implement `findById` DFS to locate a node.\n5) Render a recursive `Tree` component that maps nodes and renders children with increased depth.\n\nImportant: ensure text colors are explicitly set so headings and comment text are readable on the dark background."
+          "prose": "1) Store comments in a `CommentNode[]` state.\n2) Store `activeReplyId` + `replyDraft` as UI state.\n3) Implement `addTop`, `openReply`, `cancelReply`, `submitReply`.\n4) Implement `findById` DFS to locate a node.\n5) Render the tree with a plain recursive function that maps nodes and renders children with increased depth.\n\nImportant: ensure text colors are explicitly set so headings and comment text are readable on the dark background."
         }
       ],
       "notes": {
         "pitfalls": [
           "Opening multiple reply inputs (having per-node local reply state).",
           "Mutating state incorrectly when adding replies (losing children references).",
-          "Forgetting to apply readable text colors; default styles may render text too dark on dark backgrounds."
+          "Forgetting to apply readable text colors; default styles may render text too dark on dark backgrounds.",
+          "Creating the tree component inside `App` or `useMemo`: it gets a new identity, so React rebuilds the reply input and it loses focus after every letter."
         ],
         "techniques": [
           "DFS search in a tree (`findById`).",
           "Single active reply input via `activeReplyId`.",
-          "Recursive React component for tree rendering."
+          "Recursive rendering with a plain function, so inputs keep their identity and focus."
         ]
       }
     },
@@ -3495,6 +3505,7 @@
       "openFile": "/src/App.tsx",
       "storageKey": "v1:ui:react:react-nested-comments"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/nested-comments.v1.json",
     "solutionAsset": "assets/sb/react/solution/react-nested-comments-solution.v1.json",
     "companies": [
       "google",
@@ -3708,6 +3719,7 @@
       "openFile": "/src/App.tsx",
       "storageKey": "v2:ui:react:react-debug-double-render"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/debug-double-render.v1.json",
     "solutionAsset": "assets/sb/react/solution/react-debug-double-render-solution.v1.json",
     "companies": [
       "netflix",
@@ -3795,6 +3807,7 @@
       "asset": "assets/sb/react/question/react-chat-streaming-ui.v1.json",
       "openFile": "/src/App.tsx"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/chat-streaming-ui.v1.json",
     "solutionAsset": "assets/sb/react/solution/react-chat-streaming-ui-solution.v1.json",
     "companies": [
       "openai",
@@ -4576,6 +4589,7 @@
       "openFile": "/src/App.tsx",
       "storageKey": "v2:ui:react:react-fetch-list-states"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/fetch-list-states.v1.json",
     "solutionAsset": "assets/sb/react/solution/react-fetch-list-states-solution.v1.json",
     "decisionGraphAsset": "assets/questions/react/decision-graphs/react-fetch-list-states.v1.json",
     "companies": [

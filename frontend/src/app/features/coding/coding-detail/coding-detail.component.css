@@ -197,6 +197,7 @@
 .pressure-mode__constraint ul,
 .pressure-debrief ul {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 7px;
   margin: 12px 0 0;
   padding-left: 18px;

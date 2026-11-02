@@ -1,0 +1,455 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "fetch-list-states-pressure-v1",
+  "family": "fetch-list-states",
+  "title": "Team List Interview Pressure Mode",
+  "access": "free",
+  "estimatedMinutes": 45,
+  "supportedQuestions": {
+    "react": "react-fetch-list-states"
+  },
+  "rounds": [
+    {
+      "id": "request-states",
+      "title": "One request, four states",
+      "interviewerPrompt": "Load the team and show exactly one state at a time: loading, the list, an empty message, or an error the user can recover from.",
+      "constraints": [
+        "Call `fetchTeam(mode)` when the page opens and whenever the Data source select changes. The select keeps its class `mode`.",
+        "While loading, show `Loading team…` in an element with the class `status--loading`. Show no rows.",
+        "On success, show one element with the class `user-row` per member, and `6 members` in an element with the class `status--muted`.",
+        "For an empty team, show `No team members yet.` in an element with the class `empty`.",
+        "On failure, show `Could not load the team:` and the reason in an element with the class `status--error`, plus a Retry button with the class `retry`. Retry runs the same request again."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-team-list-states",
+          "name": "Round 1 · Each request state shows alone and Retry recovers",
+          "steps": [
+            {
+              "type": "waitForCount",
+              "selector": ".user-row",
+              "count": 6,
+              "timeoutMs": 2500
+            },
+            {
+              "type": "expectText",
+              "selector": ".status--muted",
+              "text": "6 members",
+              "match": "contains"
+            },
+            {
+              "type": "setValue",
+              "selector": ".mode",
+              "value": "empty"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".user-row",
+              "count": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".status--loading",
+              "text": "Loading team",
+              "match": "contains"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".empty",
+              "text": "No team members yet.",
+              "match": "contains",
+              "timeoutMs": 2500
+            },
+            {
+              "type": "setValue",
+              "selector": ".mode",
+              "value": "flaky"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".empty",
+              "count": 0
+            },
+            {
+              "type": "waitForText",
+              "selector": ".status--error",
+              "text": "Could not load the team",
+              "match": "contains",
+              "timeoutMs": 2500
+            },
+            {
+              "type": "expectCount",
+              "selector": ".user-row",
+              "count": 0
+            },
+            {
+              "type": "click",
+              "selector": ".retry"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".status--error",
+              "count": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".status--loading",
+              "text": "Loading team",
+              "match": "contains"
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".user-row",
+              "count": 6,
+              "timeoutMs": 2500
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "refresh-keeps-list",
+      "title": "Refresh without losing the list",
+      "interviewerPrompt": "Add a Refresh button. The list is already on screen, so the user should keep seeing it while new data loads, even if the refresh fails.",
+      "constraints": [
+        "Add a Refresh button with the class `refresh`. Show it whenever rows are on screen, and disable it while a request is running.",
+        "During a refresh, keep the rows and show `Refreshing team…` in the `status--loading` element.",
+        "If a refresh fails, keep the rows, show `Could not refresh the team:` and the reason in the `status--error` element, and show the Retry button.",
+        "Retry after a failed refresh also keeps the rows. When it succeeds, the error disappears."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-team-list-refresh",
+          "name": "Round 2 · Rows stay visible through a refresh and its failure",
+          "steps": [
+            {
+              "type": "setValue",
+              "selector": ".mode",
+              "value": "flaky"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".status--error",
+              "text": "Could not load the team",
+              "match": "contains",
+              "timeoutMs": 2500
+            },
+            {
+              "type": "click",
+              "selector": ".retry"
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".user-row",
+              "count": 6,
+              "timeoutMs": 2500
+            },
+            {
+              "type": "click",
+              "selector": ".refresh"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".user-row",
+              "count": 6
+            },
+            {
+              "type": "expectText",
+              "selector": ".status--loading",
+              "text": "Refreshing team",
+              "match": "contains"
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".refresh",
+              "disabled": true
+            },
+            {
+              "type": "waitForText",
+              "selector": ".status--error",
+              "text": "Could not refresh the team",
+              "match": "contains",
+              "timeoutMs": 2500
+            },
+            {
+              "type": "expectCount",
+              "selector": ".user-row",
+              "count": 6
+            },
+            {
+              "type": "click",
+              "selector": ".retry"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".user-row",
+              "count": 6
+            },
+            {
+              "type": "waitForText",
+              "selector": ".status--muted",
+              "text": "6 members",
+              "match": "contains",
+              "timeoutMs": 2500
+            },
+            {
+              "type": "expectCount",
+              "selector": ".status--error",
+              "count": 0
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".refresh",
+              "disabled": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "newest-request-wins",
+      "title": "Only the newest request counts",
+      "interviewerPrompt": "Requests can overlap. If the user changes the data source while something is loading, only the newest request may change the screen.",
+      "constraints": [
+        "Changing the data source clears the rows right away and shows `Loading team…`, even during a refresh.",
+        "A response from an older request must not change the rows or the status.",
+        "An error from an older request must not appear either.",
+        "Keep showing the loading state until the newest request has finished."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-team-list-latest",
+          "name": "Round 3 · A late answer cannot overwrite a newer source",
+          "steps": [
+            {
+              "type": "waitForCount",
+              "selector": ".user-row",
+              "count": 6,
+              "timeoutMs": 2500
+            },
+            {
+              "type": "click",
+              "selector": ".refresh"
+            },
+            {
+              "type": "wait",
+              "durationMs": 100
+            },
+            {
+              "type": "setValue",
+              "selector": ".mode",
+              "value": "empty"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".user-row",
+              "count": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".status--loading",
+              "text": "Loading team",
+              "match": "contains"
+            },
+            {
+              "type": "wait",
+              "durationMs": 250
+            },
+            {
+              "type": "expectCount",
+              "selector": ".user-row",
+              "count": 0
+            },
+            {
+              "type": "waitForText",
+              "selector": ".empty",
+              "text": "No team members yet.",
+              "match": "contains",
+              "timeoutMs": 2500
+            },
+            {
+              "type": "setValue",
+              "selector": ".mode",
+              "value": "flaky"
+            },
+            {
+              "type": "wait",
+              "durationMs": 100
+            },
+            {
+              "type": "setValue",
+              "selector": ".mode",
+              "value": "ok"
+            },
+            {
+              "type": "wait",
+              "durationMs": 250
+            },
+            {
+              "type": "expectCount",
+              "selector": ".status--error",
+              "count": 0
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".user-row",
+              "count": 6,
+              "timeoutMs": 2500
+            },
+            {
+              "type": "expectCount",
+              "selector": ".status--error",
+              "count": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "real-cancellation",
+      "title": "Cancel requests for real",
+      "interviewerPrompt": "Ignoring an old response is not the same as stopping it. You may now change `fetchTeam` so a request can really be cancelled. The page should also tell screen readers what is happening.",
+      "constraints": [
+        "Give `fetchTeam` a second parameter, an `AbortSignal`. When it aborts, clear the 400 ms timer and reject with an `AbortError`.",
+        "Abort the running request when the data source changes and when the component is removed.",
+        "A cancelled request is not a failure: it must never show the error line.",
+        "Set `aria-busy=\"true\"` on the element with the class `results` during a refresh, and `aria-busy=\"false\"` after it.",
+        "Give the element with the class `status-row` `aria-live=\"polite\"`, and give the error line `role=\"alert\"`."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-team-list-announce",
+          "name": "Round 4 · Status changes are announced and a cancel is not an error",
+          "steps": [
+            {
+              "type": "waitForCount",
+              "selector": ".user-row",
+              "count": 6,
+              "timeoutMs": 2500
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".status-row",
+              "attribute": "aria-live",
+              "expected": "polite"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".results",
+              "attribute": "aria-busy",
+              "expected": "false"
+            },
+            {
+              "type": "click",
+              "selector": ".refresh"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".results",
+              "attribute": "aria-busy",
+              "expected": "true"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".status--muted",
+              "text": "6 members",
+              "match": "contains",
+              "timeoutMs": 2500
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".results",
+              "attribute": "aria-busy",
+              "expected": "false"
+            },
+            {
+              "type": "click",
+              "selector": ".refresh"
+            },
+            {
+              "type": "setValue",
+              "selector": ".mode",
+              "value": "empty"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".status--error",
+              "count": 0
+            },
+            {
+              "type": "wait",
+              "durationMs": 100
+            },
+            {
+              "type": "expectCount",
+              "selector": ".status--error",
+              "count": 0
+            },
+            {
+              "type": "waitForText",
+              "selector": ".empty",
+              "text": "No team members yet.",
+              "match": "contains",
+              "timeoutMs": 2500
+            },
+            {
+              "type": "setValue",
+              "selector": ".mode",
+              "value": "flaky"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".status--error",
+              "text": "Could not load the team",
+              "match": "contains",
+              "timeoutMs": 2500
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".status--error",
+              "attribute": "role",
+              "expected": "alert"
+            }
+          ]
+        },
+        {
+          "id": "pressure-team-list-cleanup",
+          "name": "Round 4 · Removing the component stops the running request",
+          "steps": [
+            {
+              "type": "setValue",
+              "selector": ".mode",
+              "value": "empty"
+            },
+            {
+              "type": "wait",
+              "durationMs": 50
+            },
+            {
+              "type": "unmountPreview"
+            },
+            {
+              "type": "expectNoPreviewTimers"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "debrief": {
+    "title": "You kept every request state honest",
+    "summary": "You moved from simple loading states to a list that survives refreshes, ignores late answers and cancels work it no longer needs. The interview signal is knowing the difference between a first load, a refresh and a source change.",
+    "takeaways": [
+      "Treat a first load and a refresh differently: one has nothing to show yet, the other already has data worth keeping.",
+      "A source change makes the old data wrong, so clear it right away.",
+      "A cancelled flag hides a late answer. An `AbortSignal` actually stops the work.",
+      "Treat an abort as a normal outcome, not an error."
+    ],
+    "frameworkNotes": {
+      "react": "An effect keyed on the source and an attempt counter owns one `AbortController`, and its cleanup aborts the request when either changes or the component is removed."
+    }
+  },
+  "solutionAssets": {
+    "react": "assets/sb/react/solution/react-fetch-list-states-pressure-solution.v1.json"
+  }
+}

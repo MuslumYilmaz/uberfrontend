@@ -1,0 +1,399 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "debug-double-render-pressure-v1",
+  "family": "debug-double-render",
+  "title": "Extra Renders Interview Pressure Mode",
+  "access": "premium",
+  "estimatedMinutes": 45,
+  "supportedQuestions": {
+    "react": "react-debug-double-render"
+  },
+  "rounds": [
+    {
+      "id": "one-click-one-render",
+      "title": "One click, one render",
+      "interviewerPrompt": "Every click currently renders the page twice. Find out why and fix the cause.",
+      "constraints": [
+        "Clicking `Increment` or `Reset` must add exactly 1 to the number in the element with the test id `renders`.",
+        "Parity must always match the count: 0 is even, 1 is odd.",
+        "Keep the starter test ids `count`, `parity` and `renders`."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-render-one-click",
+          "name": "Round 1 · Each click renders once and parity stays right",
+          "steps": [
+            {
+              "type": "expectText",
+              "selector": "[data-testid=\"renders\"]",
+              "text": "1"
+            },
+            {
+              "type": "expectText",
+              "selector": "[data-testid=\"count\"]",
+              "text": "0"
+            },
+            {
+              "type": "expectText",
+              "selector": "[data-testid=\"parity\"]",
+              "text": "even"
+            },
+            {
+              "type": "click",
+              "selector": ".actions .btn",
+              "index": 0
+            },
+            {
+              "type": "expectText",
+              "selector": "[data-testid=\"count\"]",
+              "text": "1"
+            },
+            {
+              "type": "expectText",
+              "selector": "[data-testid=\"parity\"]",
+              "text": "odd"
+            },
+            {
+              "type": "expectText",
+              "selector": "[data-testid=\"renders\"]",
+              "text": "2"
+            },
+            {
+              "type": "click",
+              "selector": ".actions .btn",
+              "index": 0
+            },
+            {
+              "type": "expectText",
+              "selector": "[data-testid=\"count\"]",
+              "text": "2"
+            },
+            {
+              "type": "expectText",
+              "selector": "[data-testid=\"parity\"]",
+              "text": "even"
+            },
+            {
+              "type": "expectText",
+              "selector": "[data-testid=\"renders\"]",
+              "text": "3"
+            },
+            {
+              "type": "click",
+              "selector": ".actions .ghost",
+              "index": 0
+            },
+            {
+              "type": "expectText",
+              "selector": "[data-testid=\"count\"]",
+              "text": "0"
+            },
+            {
+              "type": "expectText",
+              "selector": "[data-testid=\"parity\"]",
+              "text": "even"
+            },
+            {
+              "type": "expectText",
+              "selector": "[data-testid=\"renders\"]",
+              "text": "4"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "do-not-copy-props",
+      "title": "Do not copy props into state",
+      "interviewerPrompt": "The parity label is moving into its own component. It must not bring the same bug with it.",
+      "constraints": [
+        "Create a component named `ParityBadge` outside `App`. It receives `count` as a prop and shows the parity with the test id `parity`.",
+        "Show how many times `ParityBadge` rendered, using the test id `badge-renders`. Count with `useRef`.",
+        "One click must add exactly 1 to `badge-renders`. Do not copy the prop into state."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-render-badge",
+          "name": "Round 2 · The badge renders once per click",
+          "steps": [
+            {
+              "type": "expectText",
+              "selector": "[data-testid=\"badge-renders\"]",
+              "text": "1"
+            },
+            {
+              "type": "click",
+              "selector": ".actions .btn",
+              "index": 0
+            },
+            {
+              "type": "expectText",
+              "selector": "[data-testid=\"parity\"]",
+              "text": "odd"
+            },
+            {
+              "type": "expectText",
+              "selector": "[data-testid=\"badge-renders\"]",
+              "text": "2"
+            },
+            {
+              "type": "expectText",
+              "selector": "[data-testid=\"renders\"]",
+              "text": "2"
+            },
+            {
+              "type": "click",
+              "selector": ".actions .btn",
+              "index": 0
+            },
+            {
+              "type": "expectText",
+              "selector": "[data-testid=\"badge-renders\"]",
+              "text": "3"
+            },
+            {
+              "type": "click",
+              "selector": ".actions .ghost",
+              "index": 0
+            },
+            {
+              "type": "expectText",
+              "selector": "[data-testid=\"parity\"]",
+              "text": "even"
+            },
+            {
+              "type": "expectText",
+              "selector": "[data-testid=\"badge-renders\"]",
+              "text": "4"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "typing-leaves-the-badge-alone",
+      "title": "Typing must not touch the badge",
+      "interviewerPrompt": "Add a note field to the page. Typing a note has nothing to do with the badge, so the badge should not render at all.",
+      "constraints": [
+        "Add an input with the class `note-input` and show its text with the test id `note`.",
+        "Wrap `ParityBadge` in `React.memo`. In this editor, write `React.memo`, not `memo`.",
+        "Add a Reset button inside the badge with the class `badge-reset`. It receives its handler as a prop named `onReset` and sets the count to 0.",
+        "Typing a note must add 0 to `badge-renders`, so `onReset` must keep the same identity between renders. Use `useCallback`."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-render-note",
+          "name": "Round 3 · Typing a note leaves the badge alone",
+          "steps": [
+            {
+              "type": "click",
+              "selector": ".actions .btn",
+              "index": 0
+            },
+            {
+              "type": "expectText",
+              "selector": "[data-testid=\"renders\"]",
+              "text": "2"
+            },
+            {
+              "type": "expectText",
+              "selector": "[data-testid=\"badge-renders\"]",
+              "text": "2"
+            },
+            {
+              "type": "setValue",
+              "selector": ".note-input",
+              "value": "a"
+            },
+            {
+              "type": "expectText",
+              "selector": "[data-testid=\"note\"]",
+              "text": "a"
+            },
+            {
+              "type": "expectText",
+              "selector": "[data-testid=\"renders\"]",
+              "text": "3"
+            },
+            {
+              "type": "expectText",
+              "selector": "[data-testid=\"badge-renders\"]",
+              "text": "2"
+            },
+            {
+              "type": "setValue",
+              "selector": ".note-input",
+              "value": "ab"
+            },
+            {
+              "type": "expectText",
+              "selector": "[data-testid=\"note\"]",
+              "text": "ab"
+            },
+            {
+              "type": "expectText",
+              "selector": "[data-testid=\"renders\"]",
+              "text": "4"
+            },
+            {
+              "type": "expectText",
+              "selector": "[data-testid=\"badge-renders\"]",
+              "text": "2"
+            },
+            {
+              "type": "click",
+              "selector": ".badge-reset"
+            },
+            {
+              "type": "expectText",
+              "selector": "[data-testid=\"count\"]",
+              "text": "0"
+            },
+            {
+              "type": "expectText",
+              "selector": "[data-testid=\"badge-renders\"]",
+              "text": "3"
+            },
+            {
+              "type": "expectText",
+              "selector": "[data-testid=\"parity\"]",
+              "text": "even"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "many-updates-one-render",
+      "title": "Many updates, one render",
+      "interviewerPrompt": "Two more reports came in: a button that loses updates, and a slow calculation that runs on every keystroke.",
+      "constraints": [
+        "Add a button with the class `add-five`. One click adds 1 five times, in five separate updates. The count goes up by 5 and renders by 1.",
+        "Add a button with the class `add-later`. 200 ms after the click it adds 1 twice. The count goes up by 2 and renders by 1.",
+        "Show the sum of 1 to `count` with the test id `sum`.",
+        "Show how many times the sum was calculated with the test id `sum-runs`. It changes when the count changes, not when the note changes. Use `useMemo`."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-render-updates",
+          "name": "Round 4 · Separate updates all count and render once",
+          "steps": [
+            {
+              "type": "click",
+              "selector": ".add-five"
+            },
+            {
+              "type": "expectText",
+              "selector": "[data-testid=\"count\"]",
+              "text": "5"
+            },
+            {
+              "type": "expectText",
+              "selector": "[data-testid=\"renders\"]",
+              "text": "2"
+            },
+            {
+              "type": "click",
+              "selector": ".add-later"
+            },
+            {
+              "type": "wait",
+              "durationMs": 300
+            },
+            {
+              "type": "expectText",
+              "selector": "[data-testid=\"count\"]",
+              "text": "7"
+            },
+            {
+              "type": "expectText",
+              "selector": "[data-testid=\"renders\"]",
+              "text": "3"
+            }
+          ]
+        },
+        {
+          "id": "pressure-render-sum",
+          "name": "Round 4 · The sum only recalculates when the count changes",
+          "steps": [
+            {
+              "type": "expectText",
+              "selector": "[data-testid=\"sum\"]",
+              "text": "0"
+            },
+            {
+              "type": "expectText",
+              "selector": "[data-testid=\"sum-runs\"]",
+              "text": "1"
+            },
+            {
+              "type": "setValue",
+              "selector": ".note-input",
+              "value": "x"
+            },
+            {
+              "type": "expectText",
+              "selector": "[data-testid=\"sum-runs\"]",
+              "text": "1"
+            },
+            {
+              "type": "click",
+              "selector": ".actions .btn",
+              "index": 0
+            },
+            {
+              "type": "expectText",
+              "selector": "[data-testid=\"sum\"]",
+              "text": "1"
+            },
+            {
+              "type": "expectText",
+              "selector": "[data-testid=\"sum-runs\"]",
+              "text": "2"
+            },
+            {
+              "type": "setValue",
+              "selector": ".note-input",
+              "value": "xy"
+            },
+            {
+              "type": "expectText",
+              "selector": "[data-testid=\"sum-runs\"]",
+              "text": "2"
+            },
+            {
+              "type": "click",
+              "selector": ".add-five"
+            },
+            {
+              "type": "expectText",
+              "selector": "[data-testid=\"sum\"]",
+              "text": "21"
+            },
+            {
+              "type": "expectText",
+              "selector": "[data-testid=\"sum-runs\"]",
+              "text": "3"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "debrief": {
+    "title": "You removed every render that had no reason to happen",
+    "summary": "You fixed the first bug at its cause, then kept finding the same family of problems: copied state, unstable props, lost updates and repeated work. The interview signal is explaining why a render happens before reaching for a tool that hides it.",
+    "takeaways": [
+      "A value that can be calculated from state should not be stored in state.",
+      "Copying a prop into state brings the same extra render into a child component.",
+      "`React.memo` only helps when the props keep their identity, which is why handlers need `useCallback`.",
+      "Use a function update when the next value depends on the previous one."
+    ],
+    "frameworkNotes": {
+      "react": "`StrictMode` can run renders twice in development, so measure in production or look for a state update as the real cause. Define components outside the parent, or they are rebuilt on every render."
+    }
+  },
+  "solutionAssets": {
+    "react": "assets/sb/react/solution/react-debug-double-render-pressure-solution.v1.json"
+  }
+}

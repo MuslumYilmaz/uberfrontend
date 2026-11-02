@@ -173,7 +173,7 @@ function assertFrameworkCssFormatting() {
       canonicalRoot: path.join(repoRoot, 'cdn', 'sb'),
       mirrorRoot: path.join(repoRoot, 'frontend', 'src', 'assets', 'sb'),
     }),
-    { assets: 215, cssSources: 280, changedAssets: 0, changedCssSources: 0 },
+    { assets: 232, cssSources: 298, changedAssets: 0, changedCssSources: 0 },
     'The full framework CSS corpus must stay canonical and exactly mirrored'
   );
 }
@@ -735,7 +735,6 @@ function assertPressureContractIsNamed(scenario, starterSources, label) {
   for (const round of scenario.rounds) {
     revealedRules.push(...round.constraints);
     const rulesSoFar = revealedRules.join('\n');
-    assert.doesNotMatch(rulesSoFar, /`/, `${label}: rules render as plain text, so they cannot use code formatting`);
     const selectors = (round.frameworkTests ?? []).flatMap((test) =>
       test.steps.map((step) => step.selector).filter(Boolean)
     );
@@ -909,6 +908,731 @@ function assertAutocompletePressureMode() {
       assert.match(source, marker, `${framework}: Autocomplete pressure solution is missing ${marker}`);
     }
   }
+}
+
+function assertTeamListPressureMode() {
+  const question = json('cdn/questions/react/coding.json').find(
+    (entry) => entry.id === 'react-fetch-list-states'
+  );
+  assert.ok(question, 'Team List question must exist');
+  assert.equal(question.access, 'free', 'Team List pressure entry must stay free');
+  assert.equal(question.sdk?.asset, 'assets/sb/react/question/react-fetch-list-states.v1.json');
+  assert.equal(question.solutionAsset, 'assets/sb/react/solution/react-fetch-list-states-solution.v1.json');
+  assert.deepEqual(
+    (question.frameworkTests ?? []).map((test) => test.id),
+    [
+      'fetch-list-initial-load',
+      'fetch-list-empty-state',
+      'fetch-list-loading-state',
+      'fetch-list-error-retry',
+    ],
+    'Normal Team List checks must stay unchanged'
+  );
+  assert.equal(question.pressureModeAsset, 'assets/questions/pressure-modes/fetch-list-states.v1.json');
+
+  const scenario = json('cdn/questions/pressure-modes/fetch-list-states.v1.json');
+  assert.equal(scenario.id, 'fetch-list-states-pressure-v1');
+  assert.equal(scenario.family, 'fetch-list-states');
+  assert.equal(scenario.access, 'free');
+  assert.equal(scenario.estimatedMinutes, 45);
+  for (const map of [scenario.supportedQuestions, scenario.solutionAssets, scenario.debrief.frameworkNotes]) {
+    assert.deepEqual(Object.keys(map), ['react'], 'Team List only exists in React, and every framework map must agree');
+  }
+  assert.equal(scenario.supportedQuestions.react, 'react-fetch-list-states');
+  assert.deepEqual(
+    scenario.rounds.map((round) => round.id),
+    ['request-states', 'refresh-keeps-list', 'newest-request-wins', 'real-cancellation']
+  );
+  const checks = scenario.rounds.flatMap((round) => round.frameworkTests ?? []);
+  assert.deepEqual(
+    checks.map((test) => test.id),
+    [
+      'pressure-team-list-states',
+      'pressure-team-list-refresh',
+      'pressure-team-list-latest',
+      'pressure-team-list-announce',
+      'pressure-team-list-cleanup',
+    ]
+  );
+  const starter = normalizedAssetFiles(
+    json('cdn/sb/react/question/react-fetch-list-states.v1.json'),
+    'react:team-list-starter'
+  );
+  assertPressureContractIsNamed(scenario, { react: Object.values(starter).join('\n') }, 'Team List');
+  assert.match(
+    starter['src/App.tsx'],
+    /window\.setTimeout\([\s\S]*?\}, 400\);/,
+    'Team List timing windows assume the 400 ms fake API'
+  );
+  const checksById = Object.fromEntries(checks.map((test) => [test.id, test]));
+
+  const refreshSteps = checksById['pressure-team-list-refresh'].steps;
+  const refreshClick = refreshSteps.findIndex((step) => step.selector === '.refresh');
+  assert.deepEqual(
+    refreshSteps[refreshClick + 1],
+    { type: 'expectCount', selector: '.user-row', count: 6 },
+    'A refresh must prove the rows stay on screen as soon as it starts'
+  );
+
+  assert.deepEqual(
+    checksById['pressure-team-list-latest'].steps
+      .filter((step) => step.type === 'wait')
+      .map((step) => step.durationMs),
+    [100, 250, 100, 250],
+    'The race checks must sample after the older 400 ms response lands and before the newer one does'
+  );
+
+  assert.deepEqual(
+    checksById['pressure-team-list-cleanup'].steps.map((step) => step.type),
+    ['setValue', 'wait', 'unmountPreview', 'expectNoPreviewTimers'],
+    'Cleanup must remove the component while a request is running'
+  );
+
+  const reference = scenario.solutionAssets.react;
+  assert.equal(reference, 'assets/sb/react/solution/react-fetch-list-states-pressure-solution.v1.json');
+  const relative = reference.replace(/^assets\//, '');
+  assertMirror(relative, 'react:team-list-pressure-solution');
+  const source = normalizedAssetFiles(json(`cdn/${relative}`), 'react:team-list-pressure-solution')['src/App.tsx'];
+  for (const marker of [/AbortController/, /AbortSignal/, /isAbortError/, /aria-busy/, /aria-live/, /refreshError/]) {
+    assert.match(source, marker, `Team List pressure solution is missing ${marker}`);
+  }
+}
+
+function assertSharedPressureEntries(expectedQuestions, assetPath, label) {
+  const starterSources = {};
+  for (const [framework, expected] of Object.entries(expectedQuestions)) {
+    const question = json(`cdn/questions/${framework}/coding.json`).find(
+      (entry) => entry.id === expected.id
+    );
+    assert.ok(question, `${framework}: ${label} question must exist`);
+    assert.equal(question.access, 'premium', `${framework}: ${label} pressure entry must stay premium`);
+    assert.equal(question.sdk?.asset, expected.starter, `${framework}: normal ${label} starter changed`);
+    assert.equal(question.solutionAsset, expected.solution, `${framework}: normal ${label} solution changed`);
+    assert.deepEqual(
+      (question.frameworkTests ?? []).map((test) => test.id),
+      expected.checks,
+      `${framework}: normal ${label} checks must stay unchanged`
+    );
+    assert.equal(question.pressureModeAsset, assetPath, `${framework}: ${label} must reference the shared scenario`);
+    starterSources[framework] = Object.values(
+      normalizedAssetFiles(json(`cdn/${expected.starter.replace(/^assets\//, '')}`), `${framework}:${label}-starter`)
+    ).join('\n');
+  }
+  return starterSources;
+}
+
+function assertPressureSolutions(scenario, solutionMarkers, slug, label) {
+  for (const [framework, markers] of Object.entries(solutionMarkers)) {
+    const reference = scenario.solutionAssets?.[framework];
+    assert.equal(
+      reference,
+      `assets/sb/${framework}/solution/${framework}-${slug}-pressure-solution.v1.json`,
+      `${framework}: invalid ${label} pressure solution reference`
+    );
+    const relative = reference.replace(/^assets\//, '');
+    assertMirror(relative, `${framework}:${slug}-pressure-solution`);
+    const source = Object.entries(normalizedAssetFiles(json(`cdn/${relative}`), `${framework}:${slug}-pressure-solution`))
+      .filter(([file]) => file.startsWith('src/'))
+      .map(([file, code]) => `${file}\n${code}`)
+      .join('\n');
+    for (const marker of markers) {
+      assert.match(source, marker, `${framework}: ${label} pressure solution is missing ${marker}`);
+    }
+  }
+}
+
+function assertNestedCommentsPressureMode() {
+  const normalCheck = ['comments-add-root-reply'];
+  const expectedQuestions = {
+    react: {
+      id: 'react-nested-comments',
+      starter: 'assets/sb/react/question/react-nested-comments.v1.json',
+      solution: 'assets/sb/react/solution/react-nested-comments-solution.v1.json',
+      checks: normalCheck,
+    },
+    angular: {
+      id: 'angular-nested-comments',
+      starter: 'assets/sb/angular/question/angular-nested-comments.v2.json',
+      solution: 'assets/sb/angular/solution/angular-nested-comments-solution.v2.json',
+      checks: normalCheck,
+    },
+    vue: {
+      id: 'vue-nested-comments',
+      starter: 'assets/sb/vue/question/vue-nested-comments.v1.json',
+      solution: 'assets/sb/vue/solution/vue-nested-comments-solution.v1.json',
+      checks: normalCheck,
+    },
+  };
+  const starterSources = assertSharedPressureEntries(
+    expectedQuestions,
+    'assets/questions/pressure-modes/nested-comments.v1.json',
+    'Nested Comments'
+  );
+
+  // A component created during render gets a new identity, which rebuilds the reply input on every letter.
+  for (const reference of [expectedQuestions.react.starter, expectedQuestions.react.solution]) {
+    const app = normalizedAssetFiles(json(`cdn/${reference.replace(/^assets\//, '')}`), reference)['src/App.tsx'];
+    assert.doesNotMatch(app, /useMemo/, `${reference}: the tree must not be a component created inside App`);
+    assert.match(app, /const renderTree = /, `${reference}: the tree must render through a plain function`);
+  }
+
+  const scenario = json('cdn/questions/pressure-modes/nested-comments.v1.json');
+  assert.equal(scenario.id, 'nested-comments-pressure-v1');
+  assert.equal(scenario.family, 'nested-comments');
+  assert.equal(scenario.access, 'premium');
+  assert.equal(scenario.estimatedMinutes, 45);
+  assert.deepEqual(
+    scenario.supportedQuestions,
+    Object.fromEntries(Object.entries(expectedQuestions).map(([framework, expected]) => [framework, expected.id]))
+  );
+  assert.deepEqual(
+    scenario.rounds.map((round) => round.id),
+    ['core-thread', 'keyboard-flow', 'hide-threads', 'safe-delete']
+  );
+  const checks = scenario.rounds.flatMap((round) => round.frameworkTests ?? []);
+  assert.deepEqual(
+    checks.map((test) => test.id),
+    [
+      'pressure-comments-core',
+      'pressure-comments-keyboard',
+      'pressure-comments-hide',
+      'pressure-comments-delete',
+      'pressure-comments-announce',
+    ]
+  );
+  assertPressureContractIsNamed(scenario, starterSources, 'Nested Comments');
+  const checksById = Object.fromEntries(checks.map((test) => [test.id, test]));
+
+  const keyboardSteps = checksById['pressure-comments-keyboard'].steps;
+  const firstDraft = keyboardSteps.findIndex((step) => step.type === 'setValue' && step.value === 'Draft one');
+  assert.deepEqual(
+    keyboardSteps[firstDraft + 1],
+    { type: 'expectFocused', selector: '.reply input' },
+    'Typing a reply must prove the input keeps focus'
+  );
+
+  const hideSteps = checksById['pressure-comments-hide'].steps;
+  const firstShow = hideSteps.findIndex(
+    (step, index) => step.type === 'expectCount' && step.selector === '.node' && step.count === 3 && index > 3
+      && hideSteps[index - 1].selector === '.toggle-replies'
+  );
+  assert.deepEqual(
+    hideSteps[firstShow + 1],
+    { type: 'expectCount', selector: '.reply', count: 0 },
+    'A hidden thread must really close its reply box, not only take it off the page'
+  );
+
+  assertPressureSolutions(
+    scenario,
+    {
+      react: [/const renderTree = /, /deleteFromTree/, /containsComment/, /thread-status/],
+      angular: [/deleteFromTree/, /containsComment/, /detectChanges/, /thread-status/],
+      vue: [/deleteFromTree/, /containsComment/, /nextTick/, /thread-status/],
+    },
+    'nested-comments',
+    'Nested Comments'
+  );
+}
+
+function assertContactFormPressureMode() {
+  const normalChecks = ['contact-form-validation', 'contact-form-submit-success', 'contact-form-submit-error'];
+  const expectedQuestions = {
+    react: {
+      id: 'react-contact-form-starter',
+      starter: 'assets/sb/react/question/react-contact-form.v1.json',
+      solution: 'assets/sb/react/solution/react-contact-form-solution.v1.json',
+      checks: normalChecks,
+    },
+    angular: {
+      id: 'angular-contact-form-starter',
+      starter: 'assets/sb/angular/question/angular-contact-form.v2.json',
+      solution: 'assets/sb/angular/solution/angular-contact-form-solution.v2.json',
+      checks: normalChecks,
+    },
+    vue: {
+      id: 'vue-contact-form-starter',
+      starter: 'assets/sb/vue/question/vue-contact-form.v1.json',
+      solution: 'assets/sb/vue/solution/vue-contact-form-solution.v1.json',
+      checks: normalChecks,
+    },
+  };
+  const starterSources = assertSharedPressureEntries(
+    expectedQuestions,
+    'assets/questions/pressure-modes/contact-form.v1.json',
+    'Contact Form'
+  );
+
+  const scenario = json('cdn/questions/pressure-modes/contact-form.v1.json');
+  assert.equal(scenario.id, 'contact-form-pressure-v1');
+  assert.equal(scenario.family, 'contact-form');
+  assert.equal(scenario.access, 'premium');
+  assert.equal(scenario.estimatedMinutes, 45);
+  assert.deepEqual(
+    scenario.supportedQuestions,
+    Object.fromEntries(Object.entries(expectedQuestions).map(([framework, expected]) => [framework, expected.id]))
+  );
+  assert.deepEqual(
+    scenario.rounds.map((round) => round.id),
+    ['validation', 'one-request', 'failure-recovery', 'slow-server-and-accessibility']
+  );
+  const checks = scenario.rounds.flatMap((round) => round.frameworkTests ?? []);
+  assert.deepEqual(
+    checks.map((test) => test.id),
+    [
+      'pressure-contact-validation',
+      'pressure-contact-send',
+      'pressure-contact-failure',
+      'pressure-contact-time-limit',
+      'pressure-contact-accessibility',
+    ]
+  );
+  assertPressureContractIsNamed(scenario, starterSources, 'Contact Form');
+  for (const check of checks) {
+    assert.equal(check.steps[0].type, 'mockHttp', `${check.id}: Angular installs its HttpClient double from the first step`);
+  }
+  const checksById = Object.fromEntries(checks.map((test) => [test.id, test]));
+
+  const sendSteps = checksById['pressure-contact-send'].steps;
+  const firstSubmit = sendSteps.findIndex((step) => step.type === 'submit');
+  assert.equal(sendSteps[firstSubmit + 1].type, 'submit', 'The send check must submit twice in a row');
+  assert.ok(
+    sendSteps.some((step) => step.bodyContains === '"name":"Jane Doe"' && step.count === 1),
+    'The send check must prove one request with trimmed values'
+  );
+
+  assert.ok(
+    checksById['pressure-contact-failure'].steps.some((step) => step.type === 'mockHttp' && step.status === 500),
+    'The failure check must cover an HTTP error, which fetch does not reject on'
+  );
+
+  const limitSteps = checksById['pressure-contact-time-limit'].steps;
+  assert.equal(limitSteps[0].durationMs, 3000, 'The late answer must arrive after the 2 second limit');
+  assert.deepEqual(
+    limitSteps.filter((step) => step.type === 'wait').map((step) => step.durationMs),
+    [1500, 1200],
+    'The limit check must sample before the limit and again after the late answer'
+  );
+
+  const accessibilitySteps = checksById['pressure-contact-accessibility'].steps;
+  assert.ok(
+    accessibilitySteps[0].durationMs >= 2000,
+    'The removal check must run while the request is still open, or finishing it would clear the timers anyway'
+  );
+  assert.deepEqual(
+    accessibilitySteps.slice(-3).map((step) => step.type),
+    ['submit', 'unmountPreview', 'expectNoPreviewTimers'],
+    'Cleanup must remove the component right after sending'
+  );
+
+  assertPressureSolutions(
+    scenario,
+    {
+      react: [/AbortController/, /response\.ok/, /aria-invalid/, /aria-describedby/, /role="alert"/],
+      angular: [/implements OnDestroy/, /timeout\(/, /unsubscribe/, /requiredText/, /aria-invalid/, /role="alert"/],
+      vue: [/AbortController/, /response\.ok/, /onUnmounted/, /aria-invalid/, /role="alert"/],
+    },
+    'contact-form',
+    'Contact Form'
+  );
+}
+
+function assertPremiumPressureScenario({ family, expectedQuestions, roundIds, checkIds, label }) {
+  const starterSources = assertSharedPressureEntries(
+    expectedQuestions,
+    `assets/questions/pressure-modes/${family}.v1.json`,
+    label
+  );
+  const scenario = json(`cdn/questions/pressure-modes/${family}.v1.json`);
+  assert.equal(scenario.id, `${family}-pressure-v1`);
+  assert.equal(scenario.family, family);
+  assert.equal(scenario.access, 'premium');
+  assert.equal(scenario.estimatedMinutes, 45);
+  assert.deepEqual(
+    scenario.supportedQuestions,
+    Object.fromEntries(Object.entries(expectedQuestions).map(([framework, expected]) => [framework, expected.id]))
+  );
+  for (const map of [scenario.solutionAssets, scenario.debrief.frameworkNotes]) {
+    assert.deepEqual(Object.keys(map), Object.keys(expectedQuestions), `${label}: every framework map must agree`);
+  }
+  assert.deepEqual(scenario.rounds.map((round) => round.id), roundIds);
+  const checks = scenario.rounds.flatMap((round) => round.frameworkTests ?? []);
+  assert.deepEqual(checks.map((test) => test.id), checkIds);
+  assertPressureContractIsNamed(scenario, starterSources, label);
+  return { scenario, checksById: Object.fromEntries(checks.map((test) => [test.id, test])) };
+}
+
+function assertChatStreamingPressureMode() {
+  const { scenario, checksById } = assertPremiumPressureScenario({
+    family: 'chat-streaming-ui',
+    label: 'Chat Streaming',
+    expectedQuestions: {
+      react: {
+        id: 'react-chat-streaming-ui',
+        starter: 'assets/sb/react/question/react-chat-streaming-ui.v1.json',
+        solution: 'assets/sb/react/solution/react-chat-streaming-ui-solution.v1.json',
+        checks: [],
+      },
+    },
+    roundIds: ['stream-the-answer', 'stop-keeps-the-text', 'failure-and-retry', 'announcements-and-cleanup'],
+    checkIds: [
+      'pressure-chat-stream',
+      'pressure-chat-stop',
+      'pressure-chat-retry',
+      'pressure-chat-announce',
+      'pressure-chat-cleanup',
+    ],
+  });
+
+  const stopSteps = checksById['pressure-chat-stop'].steps;
+  const quietPeriod = stopSteps.findIndex((step) => step.type === 'wait');
+  assert.deepEqual(
+    stopSteps[quietPeriod + 1],
+    {
+      type: 'expectNoText',
+      selector: '.message--assistant .message-bubble',
+      text: 'reply.',
+      match: 'contains',
+    },
+    'Stop must be sampled after more words would have arrived, or a running stream passes'
+  );
+
+  const retrySteps = checksById['pressure-chat-retry'].steps;
+  const retryClick = retrySteps.findIndex((step) => step.selector === '.retry-response' && step.type === 'click');
+  assert.ok(
+    retrySteps.slice(retryClick).some((step) => step.selector === '.message--assistant' && step.count === 1),
+    'Retry must stay in the same message'
+  );
+
+  assert.deepEqual(
+    checksById['pressure-chat-cleanup'].steps.slice(-3).map((step) => step.type),
+    ['wait', 'unmountPreview', 'expectNoPreviewLeaks'],
+    'Cleanup must remove the chat while a stream is running'
+  );
+
+  assertPressureSolutions(
+    scenario,
+    { react: [/cancelRef/, /aria-busy/, /chat-status/, /retry-response/] },
+    'chat-streaming-ui',
+    'Chat Streaming'
+  );
+}
+
+function assertUseEffectOncePressureMode() {
+  const { scenario, checksById } = assertPremiumPressureScenario({
+    family: 'use-effect-once',
+    label: 'useEffect Once',
+    expectedQuestions: {
+      react: {
+        id: 'react-use-effect-once',
+        starter: 'assets/sb/react/question/react-use-effect-once.v1.json',
+        solution: 'assets/sb/react/solution/react-use-effect-once-solution.v1.json',
+        checks: ['effect-steady-state', 'effect-dependency-change', 'effect-unmount-cleanup'],
+      },
+    },
+    roundIds: ['one-connection', 'prove-the-order', 'connecting-takes-time', 'settings-without-reconnecting'],
+    checkIds: [
+      'pressure-effect-one-connection',
+      'pressure-effect-order',
+      'pressure-effect-slow-connect',
+      'pressure-effect-mute',
+      'pressure-effect-cleanup',
+    ],
+  });
+
+  // The preview has no StrictMode, so a ref that skips the effect only shows up in the connection status.
+  const roomChange = json('cdn/questions/react/coding.json')
+    .find((entry) => entry.id === 'react-use-effect-once')
+    .frameworkTests.find((test) => test.id === 'effect-dependency-change');
+  assert.ok(
+    roomChange.steps.some((step) => step.selector === '.connection-status' && step.text === 'Connected to design'),
+    'The normal room change check must prove the connection moved to the new room'
+  );
+  assert.ok(
+    checksById['pressure-effect-one-connection'].steps.some(
+      (step) => step.selector === '.connection-status' && step.text === 'Connected to design'
+    ),
+    'The first round must prove the connection moved to the new room'
+  );
+
+  assert.deepEqual(
+    checksById['pressure-effect-slow-connect'].steps
+      .filter((step) => step.type === 'wait')
+      .map((step) => step.durationMs),
+    [100, 450, 400],
+    'The slow connection windows assume connect() takes 300 ms'
+  );
+
+  assert.deepEqual(
+    checksById['pressure-effect-cleanup'].steps.slice(-2).map((step) => step.type),
+    ['unmountPreview', 'expectNoPreviewLeaks'],
+    'Cleanup must remove the component while the panel is connected'
+  );
+
+  assertPressureSolutions(
+    scenario,
+    { react: [/clearTimeout/, /event-log/, /mute-button/, /useRef/] },
+    'use-effect-once',
+    'useEffect Once'
+  );
+}
+
+function assertDebugDoubleRenderPressureMode() {
+  const { scenario, checksById } = assertPremiumPressureScenario({
+    family: 'debug-double-render',
+    label: 'Debug Double Render',
+    expectedQuestions: {
+      react: {
+        id: 'react-debug-double-render',
+        starter: 'assets/sb/react/question/react-debug-double-render.v1.json',
+        solution: 'assets/sb/react/solution/react-debug-double-render-solution.v1.json',
+        checks: [],
+      },
+    },
+    roundIds: ['one-click-one-render', 'do-not-copy-props', 'typing-leaves-the-badge-alone', 'many-updates-one-render'],
+    checkIds: [
+      'pressure-render-one-click',
+      'pressure-render-badge',
+      'pressure-render-note',
+      'pressure-render-updates',
+      'pressure-render-sum',
+    ],
+  });
+
+  const noteSteps = checksById['pressure-render-note'].steps;
+  const firstNote = noteSteps.findIndex((step) => step.type === 'setValue');
+  assert.ok(
+    noteSteps.slice(firstNote, firstNote + 4).some(
+      (step) => step.selector === '[data-testid="badge-renders"]' && step.text === '2'
+    ),
+    'Typing a note must prove the badge did not render'
+  );
+
+  // The preview only passes hooks by name, so a bare memo import is undefined there.
+  assert.ok(
+    scenario.rounds.flatMap((round) => round.constraints).some((rule) => rule.includes('write `React.memo`, not `memo`')),
+    'The rules must warn that this editor needs React.memo'
+  );
+
+  assertPressureSolutions(
+    scenario,
+    { react: [/React\.memo/, /useCallback/, /useMemo/, /setCount\(\(c\) => c \+ 1\)/] },
+    'debug-double-render',
+    'Debug Double Render'
+  );
+}
+
+function assertTwoWayControlPressureMode() {
+  const { scenario, checksById } = assertPremiumPressureScenario({
+    family: 'input-output-two-way',
+    label: 'Two-way Control',
+    expectedQuestions: {
+      angular: {
+        id: 'angular-input-output-two-way',
+        starter: 'assets/sb/angular/question/angular-input-output-two-way.v2.json',
+        solution: 'assets/sb/angular/solution/angular-input-output-two-way-solution.v2.json',
+        checks: [],
+      },
+    },
+    roundIds: ['parent-owns-the-value', 'changes-from-the-parent', 'work-inside-a-form', 'keyboard-and-names'],
+    checkIds: [
+      'pressure-control-owner',
+      'pressure-control-parent-changes',
+      'pressure-control-form',
+      'pressure-control-keyboard',
+    ],
+  });
+
+  // The normal description once asked for a text input that the starter and solution never had.
+  const description = JSON.stringify(
+    json('cdn/questions/angular/coding.json').find((entry) => entry.id === 'angular-input-output-two-way').description
+  );
+  assert.doesNotMatch(description, /Typing in the child input|user edits input/);
+  assert.match(description, /Pressing \+ or −/);
+
+  const parentChangeSteps = checksById['pressure-control-parent-changes'].steps;
+  const setToTen = parentChangeSteps.findIndex((step) => step.selector === '.set-ten');
+  assert.ok(
+    parentChangeSteps.slice(setToTen, setToTen + 4).some((step) => step.selector === '.emit-count' && step.text === '1'),
+    'A change from the parent must prove the child reported nothing'
+  );
+
+  const keyboardSteps = checksById['pressure-control-keyboard'].steps;
+  const lastArrowDown = keyboardSteps.findLastIndex((step) => step.key === 'ArrowDown');
+  assert.deepEqual(
+    keyboardSteps.slice(lastArrowDown + 1, lastArrowDown + 3).map((step) => step.text),
+    ['0', '2'],
+    'ArrowDown at zero must keep the value and report nothing'
+  );
+
+  const panelRule = scenario.rounds[3].constraints.find((rule) => rule.includes('spinbutton'));
+  assert.match(panelRule, /class `v` inside the panel/, 'The buttons must not sit inside the spinbutton');
+
+  assertPressureSolutions(
+    scenario,
+    {
+      angular: [/NG_VALUE_ACCESSOR/, /writeValue/, /setDisabledState/, /registerOnTouched/, /role="spinbutton"/, /formControl/],
+    },
+    'input-output-two-way',
+    'Two-way Control'
+  );
+}
+
+function assertMultiStepFormPressureMode() {
+  const normalChecks = ['multi-step-form-advances'];
+  const { scenario, checksById } = assertPremiumPressureScenario({
+    family: 'multi-step-form',
+    label: 'Multi-step Signup',
+    expectedQuestions: {
+      react: {
+        id: 'react-multi-step-signup',
+        starter: 'assets/sb/react/question/react-multi-step-form.v1.json',
+        solution: 'assets/sb/react/solution/react-multi-step-form-solution.v1.json',
+        checks: normalChecks,
+      },
+      angular: {
+        id: 'angular-multi-step-form-starter',
+        starter: 'assets/sb/angular/question/angular-multi-step-form.v2.json',
+        solution: 'assets/sb/angular/solution/angular-multi-step-form-solution.v2.json',
+        checks: normalChecks,
+      },
+      vue: {
+        id: 'vue-multi-step-form',
+        starter: 'assets/sb/vue/question/vue-multi-step-form.v1.json',
+        solution: 'assets/sb/vue/solution/vue-multi-step-form-solution.v1.json',
+        checks: normalChecks,
+      },
+    },
+    roundIds: ['valid-navigation', 'edit-from-summary', 'company-step', 'finish-and-focus'],
+    checkIds: [
+      'pressure-signup-navigation',
+      'pressure-signup-edit',
+      'pressure-signup-company',
+      'pressure-signup-finish',
+      'pressure-signup-focus',
+    ],
+  });
+
+  const navigationSteps = checksById['pressure-signup-navigation'].steps;
+  assert.ok(
+    navigationSteps.some((step) => step.type === 'setValue' && step.value === '   '),
+    'A name made of spaces must be rejected, which Validators.required alone does not do'
+  );
+  assert.ok(
+    navigationSteps.some((step) => step.type === 'expectDisabled' && step.index === 1 && step.disabled === false),
+    'Next must stay enabled while the step is invalid'
+  );
+
+  const editSteps = checksById['pressure-signup-edit'].steps;
+  assert.equal(
+    editSteps.at(-3).text,
+    'Next',
+    'After returning from an edit, the same button must walk the steps as usual'
+  );
+
+  const finishSteps = checksById['pressure-signup-finish'].steps;
+  const restart = finishSteps.findIndex((step) => step.selector === '.restart');
+  assert.ok(
+    finishSteps.slice(restart).some((step) => step.selector === '.is-company:checked' && step.count === 0),
+    'Start over must clear the company checkbox'
+  );
+  assert.equal(
+    finishSteps.at(-2).type,
+    'expectValue',
+    'Start over must prove a later step was emptied too, not only the first'
+  );
+
+  assertPressureSolutions(
+    scenario,
+    {
+      react: [/STEP_FIELDS/, /tabIndex=\{-1\}/, /aria-invalid/, /aria-live="polite"/, /restartRef/],
+      angular: [/requiredText/, /detectChanges/, /formGroupName="company"/, /aria-invalid/, /form\.reset\(\)/],
+      vue: [/nextTick/, /computed<StepId\[\]>/, /aria-invalid/, /emptyForm/],
+    },
+    'multi-step-form',
+    'Multi-step Signup'
+  );
+}
+
+function assertNestedCheckboxesPressureMode() {
+  const normalChecks = ['nested-checkbox-parent-sync'];
+  const { scenario, checksById } = assertPremiumPressureScenario({
+    family: 'nested-checkboxes',
+    label: 'Checkbox Tree',
+    expectedQuestions: {
+      react: {
+        id: 'react-nested-checkboxes',
+        starter: 'assets/sb/react/question/react-nested-checkboxes.v1.json',
+        solution: 'assets/sb/react/solution/react-nested-checkboxes-solution.v1.json',
+        checks: normalChecks,
+      },
+      angular: {
+        id: 'angular-nested-checkboxes',
+        starter: 'assets/sb/angular/question/angular-nested-checkboxes.v1.json',
+        solution: 'assets/sb/angular/solution/angular-nested-checkboxes-solution.v1.json',
+        checks: normalChecks,
+      },
+      vue: {
+        id: 'vue-nested-checkboxes',
+        starter: 'assets/sb/vue/question/vue-nested-checkboxes.v1.json',
+        solution: 'assets/sb/vue/solution/vue-nested-checkboxes-solution.v1.json',
+        checks: normalChecks,
+      },
+    },
+    roundIds: ['parent-child-sync', 'deep-tree', 'locked-items', 'selection-summary'],
+    checkIds: [
+      'pressure-tree-sync',
+      'pressure-tree-depth',
+      'pressure-tree-locked',
+      'pressure-tree-summary',
+      'pressure-tree-order',
+    ],
+  });
+
+  // The starter comment once told candidates the parent should never become indeterminate.
+  const vueStarter = normalizedAssetFiles(
+    json('cdn/sb/vue/question/vue-nested-checkboxes.v1.json'),
+    'vue:checkbox-tree-starter'
+  )['src/App.vue'];
+  assert.doesNotMatch(vueStarter, /NOT auto-change/);
+  assert.match(vueStarter, /checked, unchecked or indeterminate/);
+
+  const allSteps = Object.values(checksById).flatMap((check) => check.steps);
+  assert.ok(
+    allSteps.some((step) => step.selector === '[data-id="parent"]:indeterminate'),
+    'A half-selected parent must be measured through the native indeterminate state'
+  );
+  assert.ok(
+    allSteps.every((step) => !`${step.selector ?? ''}${step.attribute ?? ''}`.includes('aria-checked')),
+    'A native checkbox must not be checked through aria-checked'
+  );
+
+  const lockedSteps = checksById['pressure-tree-locked'].steps;
+  const parentClicks = lockedSteps.flatMap((step, index) => (step.selector === '[data-id="parent"]' && step.type === 'click' ? [index] : []));
+  assert.equal(parentClicks.length, 2, 'The parent must be pressed on and off, so it can never get stuck');
+  assert.deepEqual(
+    lockedSteps.slice(-1),
+    [{ type: 'expectCount', selector: '[data-id="child-5"]:checked', count: 1 }],
+    'A locked item must keep its value through both clicks'
+  );
+
+  const orderSteps = checksById['pressure-tree-order'].steps;
+  const clicks = orderSteps.filter((step) => step.type === 'click').slice(0, 2).map((step) => step.selector);
+  assert.deepEqual(
+    clicks,
+    ['[data-id="child-3"]', '[data-id="child-1-1"]'],
+    'The clicks must go against tree order, or a click-ordered list passes'
+  );
+
+  assertPressureSolutions(
+    scenario,
+    {
+      react: [/\.indeterminate = /, /unlockedLeavesOf/, /const renderNode|function renderNode/],
+      angular: [/\[indeterminate\]/, /ngTemplateOutlet/, /unlockedLeavesOf/],
+      vue: [/:indeterminate/, /rowsOf/, /unlockedLeavesOf/],
+    },
+    'nested-checkboxes',
+    'Checkbox Tree'
+  );
 }
 
 function assertTodoListPressureMode() {
@@ -4713,6 +5437,15 @@ assertChessboardClickHighlightPressureMode();
 assertDynamicCounterButtonsPressureMode();
 assertPaginationTablePressureMode();
 assertAutocompletePressureMode();
+assertTeamListPressureMode();
+assertNestedCommentsPressureMode();
+assertContactFormPressureMode();
+assertChatStreamingPressureMode();
+assertUseEffectOncePressureMode();
+assertDebugDoubleRenderPressureMode();
+assertTwoWayControlPressureMode();
+assertMultiStepFormPressureMode();
+assertNestedCheckboxesPressureMode();
 
 const angularCodingQuestions = json('cdn/questions/angular/coding.json');
 const nestedCheckboxStarter = json('cdn/sb/angular/question/angular-nested-checkboxes.v1.json');

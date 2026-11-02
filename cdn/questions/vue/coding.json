@@ -228,6 +228,7 @@
       "openFile": "/src/App.vue",
       "storageKey": "v1:ui:vue:vue-contact-form-starter"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/contact-form.v1.json",
     "companies": [],
     "solutionAsset": "assets/sb/vue/solution/vue-contact-form-solution.v1.json",
     "access": "premium",
@@ -1274,6 +1275,7 @@
       "openFile": "/src/App.vue",
       "storageKey": "v1:ui:vue:vue-multi-step-form"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/multi-step-form.v1.json",
     "solutionAsset": "assets/sb/vue/solution/vue-multi-step-form-solution.v1.json",
     "access": "premium",
     "updatedAt": "2026-01-30",
@@ -1844,6 +1846,7 @@
       "openFile": "/src/App.vue",
       "storageKey": "v1:ui:vue:vue-nested-checkboxes"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/nested-checkboxes.v1.json",
     "solutionAsset": "assets/sb/vue/solution/vue-nested-checkboxes-solution.v1.json",
     "access": "premium",
     "updatedAt": "2026-01-30",
@@ -2541,6 +2544,7 @@
       "openFile": "/src/App.vue",
       "storageKey": "v1:ui:vue:vue-nested-comments"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/nested-comments.v1.json",
     "solutionAsset": "assets/sb/vue/solution/vue-nested-comments-solution.v1.json",
     "access": "premium",
     "updatedAt": "2026-01-30",

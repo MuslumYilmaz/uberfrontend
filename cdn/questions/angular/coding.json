@@ -227,6 +227,7 @@
       "openFile": "/src/app/app.component.ts",
       "storageKey": "v2:ui:angular:angular-contact-form-starter"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/contact-form.v1.json",
     "companies": [],
     "solutionAsset": "assets/sb/angular/solution/angular-contact-form-solution.v2.json",
     "decisionGraphAsset": "assets/questions/angular/decision-graphs/angular-contact-form-starter.v1.json",
@@ -1310,6 +1311,7 @@
       "openFile": "/src/app/app.component.ts",
       "storageKey": "v2:ui:angular:angular-multi-step-form-starter"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/multi-step-form.v1.json",
     "companies": [],
     "solutionAsset": "assets/sb/angular/solution/angular-multi-step-form-solution.v2.json",
     "decisionGraphAsset": "assets/questions/angular/decision-graphs/angular-multi-step-form-starter.v1.json",
@@ -1909,6 +1911,7 @@
       "openFile": "/src/app/app.component.ts",
       "storageKey": "v1:ui:angular:angular-nested-checkboxes"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/nested-checkboxes.v1.json",
     "solutionAsset": "assets/sb/angular/solution/angular-nested-checkboxes-solution.v1.json",
     "decisionGraphAsset": "assets/questions/angular/decision-graphs/angular-nested-checkboxes.v1.json",
     "access": "premium",
@@ -2427,17 +2430,17 @@
           "Parent component must demonstrate:",
           "  - Property binding: `[label]=\"...\"` and `[value]=\"...\"`",
           "  - Event binding: `(valueChange)=\"...\"` or `[(value)]=\"...\"`",
-          "UI should include an input + a button inside the child. Child emits updated value when user edits input or presses button."
+          "UI should include + and − buttons and a Like button inside the child. The child emits an updated value when the user presses a button."
         ],
         "expectedBehavior": [
-          "Typing in the child input updates the parent's state (via two-way binding).",
-          "Clicking child button emits an event that the parent logs/increments a counter.",
+          "Pressing + or − in the child updates the parent's state (via two-way binding).",
+          "Pressing Like emits an event that updates the parent's liked state.",
           "Parent can also update the value programmatically and child reflects it."
         ],
         "implementationNotes": [
           "Use standalone components.",
           "Use a classic `@Input() value` + `@Output() valueChange = new EventEmitter<...>()` for two-way binding.",
-          "Avoid FormsModule; use plain `(input)` event handling for simplicity.",
+          "Avoid FormsModule; plain button click handlers are enough.",
           "Keep everything minimal: two components + one small UI."
         ],
         "techFocus": [
@@ -2475,6 +2478,7 @@
       "openFile": "/src/app/app.component.ts",
       "storageKey": "v2:ui:angular:angular-input-output-two-way"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/input-output-two-way.v1.json",
     "solutionAsset": "assets/sb/angular/solution/angular-input-output-two-way-solution.v2.json",
     "companies": [
       "google"
@@ -2680,6 +2684,7 @@
       "openFile": "/src/app/app.component.ts",
       "storageKey": "v2:ui:angular:angular-nested-comments"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/nested-comments.v1.json",
     "solutionAsset": "assets/sb/angular/solution/angular-nested-comments-solution.v2.json",
     "companies": [],
     "access": "premium",
