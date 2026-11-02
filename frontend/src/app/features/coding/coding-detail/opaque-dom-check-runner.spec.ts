@@ -483,6 +483,139 @@ describe('OpaqueDomCheckRunner', () => {
     expect(results).toEqual([{ name: 'Vue script setup bindings', passed: true }]);
   });
 
+  // A candidate may write valid code in any common shape. None of these may die in the preview.
+  const countingCheck = [{
+    id: 'counter-runs',
+    name: 'The counter runs',
+    steps: [
+      { type: 'expectText', selector: '.out', text: '0' },
+      { type: 'click', selector: '.go' },
+      { type: 'expectText', selector: '.out', text: '1' },
+    ],
+  }] as any;
+  const passedCountingCheck = [{ name: 'The counter runs', passed: true }];
+  const reactBody = `<main><button className="go" onClick={() => setN((v) => v + 1)}>Go</button><p className="out">{n}</p></main>`;
+
+  const reactShapes: Record<string, string> = {
+    'a declared App exported at the end': `
+      import React, { useState } from 'react';
+      function App() { const [n, setN] = useState(0); return ${reactBody}; }
+      export default App;`,
+    'an arrow App exported at the end': `
+      import { useState } from 'react';
+      const App = () => { const [n, setN] = useState(0); return ${reactBody}; };
+      export default App;`,
+    'a default export wrapped in memo': `
+      import { memo, useState } from 'react';
+      function App() { const [n, setN] = useState(0); return ${reactBody}; }
+      export default memo(App);`,
+    'exports beyond the common hooks': `
+      import { Fragment, forwardRef, memo, useId, useLayoutEffect, useState } from 'react';
+      const Go = forwardRef<HTMLButtonElement, any>((props, ref) => <button ref={ref} className="go" {...props}>Go</button>);
+      const Out = memo(({ n }: { n: number }) => <p className="out">{n}</p>);
+      export default function App() {
+        const [n, setN] = useState(0);
+        const id = useId();
+        useLayoutEffect(() => {}, []);
+        return <Fragment><Go id={id} onClick={() => setN((v) => v + 1)} /><Out n={n} /></Fragment>;
+      }`,
+    'aliased and multi-line imports': `
+      import React, {
+        useState as useCount,
+        type ReactNode,
+      } from 'react';
+      const Shell = ({ children }: { children: ReactNode }) => <main>{children}</main>;
+      export default function App() {
+        const [n, setN] = useCount(0);
+        return <Shell><button className="go" onClick={() => setN((v) => v + 1)}>Go</button><p className="out">{n}</p></Shell>;
+      }`,
+    'a namespace import': `
+      import * as R from 'react';
+      export default function App() { const [n, setN] = R.useState(0); return ${reactBody}; }`,
+    'a default import under another name': `
+      import R from 'react';
+      export default function App() { const [n, setN] = R.useState(0); return ${reactBody}; }`,
+    'react-dom exports': `
+      import { useState } from 'react';
+      import { createPortal, flushSync } from 'react-dom';
+      export default function App() {
+        const [n, setN] = useState(0);
+        return <main>{createPortal(<p className="out">{n}</p>, document.body)}<button className="go" onClick={() => flushSync(() => setN((v) => v + 1))}>Go</button></main>;
+      }`,
+  };
+
+  for (const [label, code] of Object.entries(reactShapes)) {
+    it(`runs a React preview with ${label}`, async () => {
+      const html = makeReactPreviewHtml({ 'src/App.tsx': code } as any, window.location.origin);
+      expect(await runner.runFramework(html, countingCheck)).toEqual(passedCountingCheck);
+    });
+  }
+
+  const vueTemplate = `<main><button class="go" @click="inc">Go</button><p class="out">{{ n }}</p></main>`;
+  const vueShapes: Record<string, string> = {
+    'the Options API': `
+      <template>${vueTemplate}</template>
+      <script>
+      export default {
+        data() { return { n: 0 }; },
+        methods: { inc() { this.n += 1; } },
+      };
+      </script>`,
+    'defineComponent and lang="ts"': `
+      <template>${vueTemplate}</template>
+      <script lang="ts">
+      import { defineComponent } from 'vue';
+      export default defineComponent({
+        data() { return { n: 0 as number }; },
+        methods: { inc(): void { this.n += 1; } },
+      });
+      </script>`,
+    'a setup function': `
+      <template>${vueTemplate}</template>
+      <script>
+      import { ref } from 'vue';
+      export default {
+        setup() {
+          const n = ref(0);
+          const inc = () => { n.value += 1; };
+          return { n, inc };
+        },
+      };
+      </script>`,
+    'a nested template tag': `
+      <template><main><template v-if="true"><button class="go" @click="inc">Go</button></template><p class="out">{{ n }}</p></main></template>
+      <script setup lang="ts">
+      import { ref } from 'vue';
+      const n = ref(0);
+      const inc = () => { n.value += 1; };
+      </script>`,
+    'destructured refs and a helper outside the usual list': `
+      <template>${vueTemplate}</template>
+      <script setup lang="ts">
+      import { reactive, toRefs } from 'vue';
+      const state = reactive({ n: 0 });
+      const { n } = toRefs(state);
+      const inc = () => { state.n += 1; };
+      </script>`,
+    'a destructured composable with aliases': `
+      <template>${vueTemplate}</template>
+      <script setup lang="ts">
+      import { ref as makeRef, type Ref } from 'vue';
+      function useCounter() {
+        const count: Ref<number> = makeRef(0);
+        return { count, add: () => { count.value += 1; } };
+      }
+      const { count: n, add: inc } = useCounter();
+      </script>`,
+  };
+
+  for (const [label, code] of Object.entries(vueShapes)) {
+    it(`runs a Vue preview with ${label}`, async () => {
+      const html = makeVuePreviewHtml({ 'src/App.vue': code }, window.location.origin);
+      expect(await runner.runFramework(html, countingCheck)).toEqual(passedCountingCheck);
+    });
+  }
+
   it('removes the frame and rejects promptly when a run is cancelled', async () => {
     const run = runner.runFramework(
       '<!doctype html><html><body><div>never ready</div></body></html>',
