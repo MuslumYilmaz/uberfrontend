@@ -99,6 +99,18 @@ const PAGINATION_TABLE_PRESSURE_SOLUTIONS = {
   ),
 } as const;
 
+const AUTOCOMPLETE_PRESSURE_SOLUTIONS = {
+  react: readCanonicalFiles(
+    '../cdn/sb/react/solution/react-autocomplete-search-pressure-solution.v1.json',
+  ),
+  angular: readCanonicalFiles(
+    '../cdn/sb/angular/solution/angular-autocomplete-search-pressure-solution.v1.json',
+  ),
+  vue: readCanonicalFiles(
+    '../cdn/sb/vue/solution/vue-autocomplete-search-pressure-solution.v1.json',
+  ),
+} as const;
+
 const ACCORDION_FAQ_PRESSURE_SOLUTIONS = {
   react: readCanonicalFiles(
     '../cdn/sb/react/solution/react-accordion-faq-pressure-solution.v1.json',
@@ -217,6 +229,17 @@ const PAGINATION_TABLE_PRESSURE_FLOW: PressureFlowContract = {
     'selection-and-accessibility',
   ],
   debriefText: 'You kept table state predictable under pressure',
+};
+
+const AUTOCOMPLETE_PRESSURE_FLOW: PressureFlowContract = {
+  checkCounts: [1, 2, 3, 5],
+  roundIds: [
+    'core-search',
+    'keyboard-selection',
+    'instant-repeat-searches',
+    'accessibility-and-cleanup',
+  ],
+  debriefText: 'You kept the search predictable as it grew',
 };
 
 const ACCORDION_FAQ_PRESSURE_FLOW: PressureFlowContract = {
@@ -1298,6 +1321,61 @@ test.describe('Framework checks against the production SSR build', () => {
     });
   }
 
+  test('React Autocomplete keeps its free pressure draft isolated and passes every round', async ({ page }) => {
+    await page.goto('/react/coding/react-autocomplete-search-starter');
+    await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
+    await waitForFrameworkPreview(page, '.input');
+
+    const normalMarker = `normal-autocomplete-draft-${Date.now()}`;
+    const normalDraft = `// ${normalMarker}\n${await getMonacoModelValue(page, 'src/App.tsx')}`;
+    await loadCanonicalFile(page, 'src/App.tsx', normalDraft);
+    await waitForIndexedDbKeyPrefixContains(page, {
+      dbName: 'frontendatlas',
+      storeName: 'fa_ng',
+      keyPrefix: 'v2:code:fw2:react:react-autocomplete-search-starter@',
+      substring: normalMarker,
+    });
+
+    await page.getByTestId('pressure-mode-start').click();
+    await expect(page).toHaveURL(/\/react\/coding\/react-autocomplete-search-starter\?mode=pressure$/);
+    await expect(page.getByTestId('pressure-mode-panel')).toBeVisible();
+    await expect(page.getByTestId('pressure-mode-panel')).toContainText('Free pilot');
+    await waitForFrameworkPreview(page, '.input');
+    await expect.poll(() => getMonacoModelValue(page, 'src/App.tsx')).not.toContain(normalMarker);
+
+    await loadCanonicalBundle(page, AUTOCOMPLETE_PRESSURE_SOLUTIONS.react);
+    await rebuildPreview(page, '.input');
+    await completePressureRounds(page, AUTOCOMPLETE_PRESSURE_FLOW);
+
+    await page.getByRole('button', { name: 'Interview', exact: true }).click();
+    await page.getByTestId('pressure-mode-exit').click();
+    await expect(page).toHaveURL(/\/react\/coding\/react-autocomplete-search-starter$/);
+    await waitForFrameworkPreview(page, '.input');
+    await expect.poll(() => getMonacoModelValue(page, 'src/App.tsx')).toContain(normalMarker);
+  });
+
+  for (const [framework, questionId] of [
+    ['angular', 'angular-autocomplete-search-starter'],
+    ['vue', 'vue-autocomplete-search'],
+  ] as const) {
+    test(`${framework} Autocomplete passes search, selection, repeat, accessibility, and cleanup pressure rounds`, async ({
+      page,
+      baseURL,
+    }) => {
+      if (!baseURL) throw new Error('Playwright baseURL is required for the premium pressure test');
+      await seedPremiumSession(page, baseURL);
+      await page.goto(`/${framework}/coding/${questionId}?mode=pressure`);
+      await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
+      await expect(page.getByTestId('pressure-mode-panel')).toBeVisible();
+      await expect(page.getByTestId('pressure-mode-panel')).toContainText('Premium');
+      await waitForFrameworkPreview(page, '.input');
+
+      await loadCanonicalBundle(page, AUTOCOMPLETE_PRESSURE_SOLUTIONS[framework]);
+      await rebuildPreview(page, '.input');
+      await completePressureRounds(page, AUTOCOMPLETE_PRESSURE_FLOW);
+    });
+  }
+
   test('React Accordion keeps its premium pressure draft isolated and passes every round', async ({
     page,
     baseURL,
@@ -1632,16 +1710,16 @@ test.describe('Framework checks against the production SSR build', () => {
   }
 
   test('unsupported pressure URLs fall back to the normal canonical question flow', async ({ page }) => {
-    await page.goto('/react/coding/react-autocomplete-search-starter?mode=pressure');
+    await page.goto('/react/coding/react-vanilla-dropdown-port?mode=pressure');
     await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
-    await expect(page).toHaveURL(/\/react\/coding\/react-autocomplete-search-starter$/);
+    await expect(page).toHaveURL(/\/react\/coding\/react-vanilla-dropdown-port$/);
     await expect(page.getByTestId('pressure-mode-panel')).toHaveCount(0);
     const entry = page.getByTestId('pressure-mode-entry');
     await expect(entry).toHaveCount(0);
     await expect(page.getByTestId('pressure-mode-start')).toHaveCount(0);
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
       'href',
-      /\/react\/coding\/react-autocomplete-search-starter$/,
+      /\/react\/coding\/react-vanilla-dropdown-port$/,
     );
 
     for (const width of [834, 1366, 1440]) {

@@ -1998,7 +1998,7 @@
         {
           "title": "Subject-driven results$ stream + keyboard navigation + outside click close",
           "prose": "1) Create `queryControl = new FormControl<string>('')` for binding.\n2) Create `searchTerm$ = new Subject<string>()`.\n3) On input: `queryControl.setValue(value)` and `searchTerm$.next(value)`.\n4) Build `results$` from `searchTerm$`:\n   - `startWith(queryControl.value ?? '')`\n   - `map(v => String(v ?? '').trim())`\n   - `debounceTime(300)`\n   - `distinctUntilChanged()`\n   - `tap(q => open/close dropdown + reset activeIndex)`\n   - `switchMap(q => q ? search(q) : of([]))`\n5) Implement `onKeyDown`:\n   - Escape closes\n   - ArrowDown/ArrowUp updates `activeIndex` with wrap-around\n   - Enter selects the active option\n6) Close on outside click using `@HostListener('document:mousedown')` + `ElementRef.contains`.\n7) Use `(mousedown)` on options to avoid losing selection due to input blur ordering.",
-          "codeTs": "import { CommonModule } from '@angular/common';\nimport { Component, ElementRef, HostListener, inject } from '@angular/core';\nimport { FormControl, ReactiveFormsModule } from '@angular/forms';\nimport { Subject, of } from 'rxjs';\nimport { debounceTime, delay, distinctUntilChanged, map, startWith, switchMap, tap } from 'rxjs/operators';\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule, ReactiveFormsModule],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  private readonly host = inject(ElementRef<HTMLElement>);\n\n  readonly listboxId = 'autocomplete-listbox';\n\n  private readonly cities: string[] = [\n    'Amsterdam', 'Ankara', 'Athens', 'Austin',\n    'Barcelona', 'Berlin', 'Boston', 'Brussels',\n    'Chicago', 'Copenhagen',\n    'Dubai',\n    'Edinburgh',\n    'Frankfurt',\n    'Hamburg',\n    'Istanbul', 'Izmir',\n    'London', 'Los Angeles',\n    'Madrid', 'Miami', 'Milan', 'Munich',\n    'New York',\n    'Oslo',\n    'Paris', 'Prague',\n    'Rome',\n    'San Diego', 'San Francisco', 'San Jose', 'Seattle',\n    'Tokyo',\n    'Vienna',\n    'Zurich'\n  ];\n\n  readonly queryControl = new FormControl<string>('');\n\n  isOpen = false;\n  activeIndex = -1;\n\n  private readonly searchTerm$ = new Subject<string>();\n\n  readonly results$ = this.searchTerm$.pipe(\n    startWith(this.queryControl.value ?? ''),\n    map((v: string) => String(v ?? '').trim()),\n    debounceTime(300),\n    distinctUntilChanged(),\n    tap((q: string) => {\n      if (!q) {\n        this.isOpen = false;\n        this.activeIndex = -1;\n      } else {\n        this.isOpen = true;\n        this.activeIndex = -1;\n      }\n    }),\n    switchMap((q: string) => (q ? this.search(q) : of([] as string[])))\n  );\n\n  onInput(value: string): void {\n    this.queryControl.setValue(value);\n    this.searchTerm$.next(value);\n  }\n\n  onFocus(): void {\n    const q = String(this.queryControl.value ?? '').trim();\n    if (q) this.isOpen = true;\n  }\n\n  onKeyDown(ev: KeyboardEvent): void {\n    if (ev.key === 'Escape') {\n      this.isOpen = false;\n      this.activeIndex = -1;\n      return;\n    }\n\n    if (!this.isOpen && (ev.key === 'ArrowDown' || ev.key === 'ArrowUp')) {\n      const q = String(this.queryControl.value ?? '').trim();\n      this.isOpen = !!q;\n    }\n\n    const options = this.host.nativeElement.querySelectorAll('[role=\"option\"]');\n    const len = options.length;\n    if (!this.isOpen || len === 0) return;\n\n    if (ev.key === 'ArrowDown') {\n      ev.preventDefault();\n      this.activeIndex = this.activeIndex < 0 ? 0 : (this.activeIndex + 1) % len;\n      return;\n    }\n\n    if (ev.key === 'ArrowUp') {\n      ev.preventDefault();\n      this.activeIndex = this.activeIndex < 0 ? len - 1 : (this.activeIndex - 1 + len) % len;\n      return;\n    }\n\n    if (ev.key === 'Enter') {\n      if (this.activeIndex >= 0 && this.activeIndex < len) {\n        ev.preventDefault();\n        const el = options[this.activeIndex] as HTMLElement;\n        const text = el.textContent ?? '';\n        this.select(text);\n      }\n      return;\n    }\n  }\n\n  select(value: string): void {\n    this.queryControl.setValue(value);\n    this.isOpen = false;\n    this.activeIndex = -1;\n    this.searchTerm$.next(value);\n  }\n\n\n  optionId(i: number): string {\n    return `opt-${i}`;\n  }\n\n  highlight(item: string, queryRaw: unknown): string {\n    const q = String(queryRaw ?? '').trim();\n    if (!q) return this.escapeHtml(item);\n\n    const idx = item.toLowerCase().indexOf(q.toLowerCase());\n    if (idx < 0) return this.escapeHtml(item);\n\n    const before = this.escapeHtml(item.slice(0, idx));\n    const mid = this.escapeHtml(item.slice(idx, idx + q.length));\n    const after = this.escapeHtml(item.slice(idx + q.length));\n    return `${before}<mark>${mid}</mark>${after}`;\n  }\n\n  @HostListener('document:mousedown', ['$event'])\n  onDocMouseDown(ev: MouseEvent): void {\n    const target = ev.target as Node | null;\n    if (!target) return;\n    if (!this.host.nativeElement.contains(target)) {\n      this.isOpen = false;\n      this.activeIndex = -1;\n    }\n  }\n\n  private search(q: string) {\n    const needle = q.toLowerCase();\n    const filtered = this.cities\n      .filter(c => c.toLowerCase().includes(needle))\n      .slice(0, 8);\n\n    return of(filtered).pipe(delay(150));\n  }\n\n  private escapeHtml(s: string): string {\n    return s\n      .replace(/&/g, '&amp;')\n      .replace(/</g, '&lt;')\n      .replace(/>/g, '&gt;')\n      .replace(/\\\"/g, '&quot;')\n      .replace(/'/g, '&#39;');\n  }\n}\n"
+          "codeTs": "import { CommonModule } from '@angular/common';\nimport { Component, ElementRef, HostListener, inject } from '@angular/core';\nimport { FormControl, ReactiveFormsModule } from '@angular/forms';\nimport { Subject, of } from 'rxjs';\nimport { debounceTime, delay, distinctUntilChanged, map, startWith, switchMap, tap } from 'rxjs/operators';\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule, ReactiveFormsModule],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  private readonly host = inject(ElementRef<HTMLElement>);\n\n  readonly listboxId = 'autocomplete-listbox';\n\n  private readonly cities: string[] = [\n    'Amsterdam', 'Ankara', 'Athens', 'Austin',\n    'Barcelona', 'Berlin', 'Boston', 'Brussels',\n    'Chicago', 'Copenhagen',\n    'Dubai',\n    'Edinburgh',\n    'Frankfurt',\n    'Hamburg',\n    'Istanbul', 'Izmir',\n    'London', 'Los Angeles',\n    'Madrid', 'Miami', 'Milan', 'Munich',\n    'New York',\n    'Oslo',\n    'Paris', 'Prague',\n    'Rome',\n    'San Diego', 'San Francisco', 'San Jose', 'Seattle',\n    'Tokyo',\n    'Vienna',\n    'Zurich'\n  ];\n\n  readonly queryControl = new FormControl<string>('');\n\n  isOpen = false;\n  activeIndex = -1;\n\n  private pickedValue: string | null = null;\n  private readonly searchTerm$ = new Subject<string>();\n\n  readonly results$ = this.searchTerm$.pipe(\n    startWith(this.queryControl.value ?? ''),\n    map((v: string) => String(v ?? '').trim()),\n    debounceTime(300),\n    distinctUntilChanged(),\n    tap((q: string) => {\n      // A pick fills the input, but it is not a new search.\n      this.isOpen = !!q && q !== this.pickedValue;\n      this.activeIndex = -1;\n    }),\n    switchMap((q: string) => (q ? this.search(q) : of([] as string[])))\n  );\n\n  onInput(value: string): void {\n    this.pickedValue = null;\n    this.queryControl.setValue(value);\n    this.searchTerm$.next(value);\n  }\n\n  onFocus(): void {\n    const q = String(this.queryControl.value ?? '').trim();\n    if (q) this.isOpen = true;\n  }\n\n  onKeyDown(ev: KeyboardEvent): void {\n    if (ev.key === 'Escape') {\n      this.isOpen = false;\n      this.activeIndex = -1;\n      return;\n    }\n\n    if (!this.isOpen && (ev.key === 'ArrowDown' || ev.key === 'ArrowUp')) {\n      const q = String(this.queryControl.value ?? '').trim();\n      this.isOpen = !!q;\n    }\n\n    const options = this.host.nativeElement.querySelectorAll('[role=\"option\"]');\n    const len = options.length;\n    if (!this.isOpen || len === 0) return;\n\n    if (ev.key === 'ArrowDown') {\n      ev.preventDefault();\n      this.activeIndex = this.activeIndex < 0 ? 0 : (this.activeIndex + 1) % len;\n      return;\n    }\n\n    if (ev.key === 'ArrowUp') {\n      ev.preventDefault();\n      this.activeIndex = this.activeIndex < 0 ? len - 1 : (this.activeIndex - 1 + len) % len;\n      return;\n    }\n\n    if (ev.key === 'Enter') {\n      if (this.activeIndex >= 0 && this.activeIndex < len) {\n        ev.preventDefault();\n        const el = options[this.activeIndex] as HTMLElement;\n        const text = el.textContent ?? '';\n        this.select(text);\n      }\n      return;\n    }\n  }\n\n  select(value: string): void {\n    this.pickedValue = value;\n    this.queryControl.setValue(value);\n    this.isOpen = false;\n    this.activeIndex = -1;\n    this.searchTerm$.next(value);\n  }\n\n\n  optionId(i: number): string {\n    return `opt-${i}`;\n  }\n\n  highlight(item: string, queryRaw: unknown): string {\n    const q = String(queryRaw ?? '').trim();\n    if (!q) return this.escapeHtml(item);\n\n    const idx = item.toLowerCase().indexOf(q.toLowerCase());\n    if (idx < 0) return this.escapeHtml(item);\n\n    const before = this.escapeHtml(item.slice(0, idx));\n    const mid = this.escapeHtml(item.slice(idx, idx + q.length));\n    const after = this.escapeHtml(item.slice(idx + q.length));\n    return `${before}<mark>${mid}</mark>${after}`;\n  }\n\n  @HostListener('document:mousedown', ['$event'])\n  onDocMouseDown(ev: MouseEvent): void {\n    const target = ev.target as Node | null;\n    if (!target) return;\n    if (!this.host.nativeElement.contains(target)) {\n      this.isOpen = false;\n      this.activeIndex = -1;\n    }\n  }\n\n  private search(q: string) {\n    const needle = q.toLowerCase();\n    const filtered = this.cities\n      .filter(c => c.toLowerCase().includes(needle))\n      .slice(0, 8);\n\n    return of(filtered).pipe(delay(150));\n  }\n\n  private escapeHtml(s: string): string {\n    return s\n      .replace(/&/g, '&amp;')\n      .replace(/</g, '&lt;')\n      .replace(/>/g, '&gt;')\n      .replace(/\\\"/g, '&quot;')\n      .replace(/'/g, '&#39;');\n  }\n}\n"
         }
       ],
       "notes": {
@@ -2007,7 +2007,8 @@
           "Not trimming the query (whitespace should behave like empty).",
           "Using `(click)` on options (can lose selection due to event ordering when the input blurs).",
           "Not handling wrap-around behavior for arrow navigation.",
-          "Missing ARIA roles/attributes, making it harder for assistive tech."
+          "Missing ARIA roles/attributes, making it harder for assistive tech.",
+          "Reopening the dropdown after a pick: filling the input with the picked city is not a new search."
         ],
         "techniques": [
           "Drive the RxJS pipeline with a `Subject<string>` fed by `(input)` events to avoid `valueChanges` typing/environment issues.",
@@ -2022,6 +2023,7 @@
       "openFile": "/src/app/app.component.ts",
       "storageKey": "v2:ui:angular:angular-autocomplete-search-starter"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/autocomplete-search.v1.json",
     "companies": [
       "apple",
       "booking-com"
@@ -2077,6 +2079,42 @@
             "selector": ".input",
             "value": "London",
             "match": "contains"
+          },
+          {
+            "type": "wait",
+            "durationMs": 500
+          },
+          {
+            "type": "expectCount",
+            "selector": ".list",
+            "count": 0
+          }
+        ]
+      },
+      {
+        "id": "autocomplete-outside-click-closes",
+        "name": "Clicking outside closes the dropdown",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".input",
+            "value": "Lond"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".option",
+            "count": 1,
+            "timeoutMs": 800
+          },
+          {
+            "type": "mouseDown",
+            "selector": "body"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".list",
+            "count": 0,
+            "timeoutMs": 500
           }
         ]
       }

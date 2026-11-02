@@ -165,6 +165,29 @@ const ANGULAR_MODERN_TEMPLATE_QUESTION_IDS = [
   'angular-todo-list-starter',
 ] as const;
 
+const AUTOCOMPLETE_CLOSING_HINT_RULES = ['angular-autocomplete-search-starter', 'vue-autocomplete-search'].map(
+  (questionId): QuestionHintRule => ({
+    ruleId: 'autocomplete-dropdown-stays-closed',
+    questionId,
+    priority: 100,
+    matches: (snapshot) => anyFailingTestNameIncludes(snapshot, ['selects option', 'outside click']),
+    buildHint: (snapshot) => ({
+      ruleId: 'autocomplete-dropdown-stays-closed',
+      title: 'A pick or an outside click must close the dropdown for good',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'Filling the input with the picked city looks like a new query, so a debounced search can reopen the dropdown after it closed.',
+      ),
+      actions: [
+        'Mark the picked value, then skip opening the dropdown when the search stream or watcher sees that same value.',
+        'Clear the mark on the next real input event so typing still opens the dropdown.',
+        'Listen for mousedown on the document and close only when the target is outside the component.',
+      ],
+      confidence: 0.82,
+    }),
+  }),
+);
+
 const ANGULAR_MODERN_TEMPLATE_HINT_RULES = ANGULAR_MODERN_TEMPLATE_QUESTION_IDS.map(
   (questionId): QuestionHintRule => ({
     ruleId: 'angular-modern-template-compile',
@@ -204,6 +227,7 @@ const ANGULAR_MODERN_TEMPLATE_HINT_RULES = ANGULAR_MODERN_TEMPLATE_QUESTION_IDS.
 
 const QUESTION_HINT_RULES: QuestionHintRule[] = [
   ...ANGULAR_MODERN_TEMPLATE_HINT_RULES,
+  ...AUTOCOMPLETE_CLOSING_HINT_RULES,
   {
     ruleId: 'react-fetch-list-states-request-union',
     questionId: 'react-fetch-list-states',

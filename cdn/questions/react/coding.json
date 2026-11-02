@@ -2209,6 +2209,7 @@
       "openFile": "/src/App.tsx",
       "storageKey": "v3:ui:react:react-autocomplete-search-starter"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/autocomplete-search.v1.json",
     "solutionAsset": "assets/sb/react/solution/react-autocomplete-search-solution.v2.json",
     "access": "free",
     "companies": [

@@ -1948,7 +1948,8 @@
           "Not trimming query, causing dropdown to open for whitespace.",
           "Letting stale async responses overwrite newer results (fix with seq/cancel).",
           "Using `click` instead of `mousedown` on options (blur can close dropdown before select).",
-          "Injecting raw HTML into v-html without escaping (escape first)."
+          "Injecting raw HTML into v-html without escaping (escape first).",
+          "Reopening the dropdown after a pick: filling the input with the picked city is not a new search."
         ],
         "techniques": [
           "Debouncing with `setTimeout` inside `watch` and clearing on cleanup.",
@@ -1962,6 +1963,7 @@
       "openFile": "/src/App.vue",
       "storageKey": "v2:ui:vue:vue-autocomplete-search"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/autocomplete-search.v1.json",
     "solutionAsset": "assets/sb/vue/solution/vue-autocomplete-search-solution.v1.json",
     "companies": [
       "apple",
@@ -2024,6 +2026,42 @@
             "selector": ".input",
             "value": "London",
             "match": "contains"
+          },
+          {
+            "type": "wait",
+            "durationMs": 500
+          },
+          {
+            "type": "expectCount",
+            "selector": ".list",
+            "count": 0
+          }
+        ]
+      },
+      {
+        "id": "autocomplete-outside-click-closes",
+        "name": "Clicking outside closes the dropdown",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".input",
+            "value": "Lond"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".option",
+            "count": 1,
+            "timeoutMs": 800
+          },
+          {
+            "type": "mouseDown",
+            "selector": "body"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".list",
+            "count": 0,
+            "timeoutMs": 500
           }
         ]
       }

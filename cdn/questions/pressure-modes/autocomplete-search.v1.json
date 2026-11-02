@@ -1,0 +1,527 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "autocomplete-search-pressure-v1",
+  "family": "autocomplete-search",
+  "title": "Autocomplete Search Interview Pressure Mode",
+  "access": "premium",
+  "estimatedMinutes": 45,
+  "supportedQuestions": {
+    "react": "react-autocomplete-search-starter",
+    "angular": "angular-autocomplete-search-starter",
+    "vue": "vue-autocomplete-search"
+  },
+  "rounds": [
+    {
+      "id": "core-search",
+      "title": "Search after typing stops",
+      "interviewerPrompt": "Build the basic search first. It should wait until the user stops typing, then show the cities that match.",
+      "constraints": [
+        "Wait 300 ms after the last keystroke, then search. Every new keystroke restarts the wait.",
+        "Ignore letter case and extra spaces: \" SAN \" finds the same cities as \"san\".",
+        "Keep the starter classes: input for the text box, list for the dropdown and option for each city.",
+        "If the input is empty or only spaces, close the dropdown. If no city matches, show No results inside it.",
+        "Searching for the word error must fail on purpose. Show Search failed inside the dropdown."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-autocomplete-core",
+          "name": "Round 1 · Search waits, then shows every result state",
+          "steps": [
+            {
+              "type": "setValue",
+              "selector": ".input",
+              "value": "s"
+            },
+            {
+              "type": "wait",
+              "durationMs": 80
+            },
+            {
+              "type": "setValue",
+              "selector": ".input",
+              "value": "sa"
+            },
+            {
+              "type": "wait",
+              "durationMs": 80
+            },
+            {
+              "type": "setValue",
+              "selector": ".input",
+              "value": " SAN "
+            },
+            {
+              "type": "wait",
+              "durationMs": 190
+            },
+            {
+              "type": "expectCount",
+              "selector": ".option",
+              "count": 0
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".option",
+              "count": 3,
+              "timeoutMs": 2000
+            },
+            {
+              "type": "expectText",
+              "selector": ".option",
+              "index": 0,
+              "text": "San Diego"
+            },
+            {
+              "type": "setValue",
+              "selector": ".input",
+              "value": "   "
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".list",
+              "count": 0,
+              "timeoutMs": 1000
+            },
+            {
+              "type": "setValue",
+              "selector": ".input",
+              "value": "zz"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".list",
+              "text": "No results",
+              "timeoutMs": 2000,
+              "match": "contains"
+            },
+            {
+              "type": "setValue",
+              "selector": ".input",
+              "value": "error"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".list",
+              "text": "Search failed",
+              "timeoutMs": 2000,
+              "match": "contains"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "keyboard-selection",
+      "title": "Picking a city ends the search",
+      "interviewerPrompt": "Now make the search work without a mouse. When the user picks a city, the search is over and the dropdown must not come back by itself.",
+      "constraints": [
+        "ArrowDown and ArrowUp move through the options and wrap around at both ends. Give the current option the class active.",
+        "Enter picks the current option: the input shows the city and the dropdown closes.",
+        "The dropdown stays closed after a pick, even after 300 ms have passed. Filling the input with the picked city is not a new search.",
+        "Escape closes the dropdown and keeps what the user typed.",
+        "Typing again opens the dropdown as usual."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-autocomplete-keyboard",
+          "name": "Round 2 · A picked city closes the list for good",
+          "steps": [
+            {
+              "type": "setValue",
+              "selector": ".input",
+              "value": "san"
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".option",
+              "count": 3,
+              "timeoutMs": 2000
+            },
+            {
+              "type": "key",
+              "selector": ".input",
+              "key": "ArrowUp"
+            },
+            {
+              "type": "expectText",
+              "selector": ".option.active",
+              "text": "San Jose"
+            },
+            {
+              "type": "key",
+              "selector": ".input",
+              "key": "ArrowDown"
+            },
+            {
+              "type": "expectText",
+              "selector": ".option.active",
+              "text": "San Diego"
+            },
+            {
+              "type": "key",
+              "selector": ".input",
+              "key": "Enter"
+            },
+            {
+              "type": "expectValue",
+              "selector": ".input",
+              "value": "San Diego"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".list",
+              "count": 0
+            },
+            {
+              "type": "wait",
+              "durationMs": 600
+            },
+            {
+              "type": "expectCount",
+              "selector": ".list",
+              "count": 0
+            },
+            {
+              "type": "setValue",
+              "selector": ".input",
+              "value": "sea"
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".option",
+              "count": 1,
+              "timeoutMs": 2000
+            },
+            {
+              "type": "key",
+              "selector": ".input",
+              "key": "Escape"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".list",
+              "count": 0
+            },
+            {
+              "type": "expectValue",
+              "selector": ".input",
+              "value": "sea"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "instant-repeat-searches",
+      "title": "Repeat searches are instant",
+      "interviewerPrompt": "Users often go back to something they just searched. Showing it again should be instant, and an older search that finishes late must not replace it.",
+      "constraints": [
+        "Remember the results of each successful search. \" SAN \" and \"san\" count as the same search.",
+        "When a search is repeated, show its results right away, with no 300 ms wait and no loading text.",
+        "Do not remember failed searches. Searching for error again goes through the normal wait.",
+        "If an older search finishes while newer results are on screen, ignore it."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-autocomplete-repeat",
+          "name": "Round 3 · Repeat searches skip the wait, and late results are ignored",
+          "steps": [
+            {
+              "type": "setValue",
+              "selector": ".input",
+              "value": "san"
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".option",
+              "count": 3,
+              "timeoutMs": 2000
+            },
+            {
+              "type": "setValue",
+              "selector": ".input",
+              "value": "par"
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".option",
+              "count": 1,
+              "timeoutMs": 2000
+            },
+            {
+              "type": "setValue",
+              "selector": ".input",
+              "value": " SAN "
+            },
+            {
+              "type": "expectCount",
+              "selector": ".option",
+              "count": 3
+            },
+            {
+              "type": "expectNoText",
+              "selector": ".list",
+              "text": "Loading",
+              "match": "contains"
+            },
+            {
+              "type": "setValue",
+              "selector": ".input",
+              "value": "lon"
+            },
+            {
+              "type": "wait",
+              "durationMs": 270
+            },
+            {
+              "type": "setValue",
+              "selector": ".input",
+              "value": "san"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".option",
+              "count": 3
+            },
+            {
+              "type": "wait",
+              "durationMs": 400
+            },
+            {
+              "type": "expectCount",
+              "selector": ".option",
+              "count": 3
+            },
+            {
+              "type": "expectNoText",
+              "selector": ".list",
+              "text": "London",
+              "match": "contains"
+            },
+            {
+              "type": "setValue",
+              "selector": ".input",
+              "value": "error"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".list",
+              "text": "Search failed",
+              "timeoutMs": 2000,
+              "match": "contains"
+            },
+            {
+              "type": "setValue",
+              "selector": ".input",
+              "value": "sea"
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".option",
+              "count": 1,
+              "timeoutMs": 2000
+            },
+            {
+              "type": "setValue",
+              "selector": ".input",
+              "value": "error"
+            },
+            {
+              "type": "expectNoText",
+              "selector": ".list",
+              "text": "Search failed",
+              "match": "contains"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".list",
+              "text": "Search failed",
+              "timeoutMs": 2000,
+              "match": "contains"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "accessibility-and-cleanup",
+      "title": "Screen readers and cleanup",
+      "interviewerPrompt": "Finish with what users cannot see. A screen reader must hear what is happening, and removing the component must leave nothing running.",
+      "constraints": [
+        "Put role=\"combobox\", aria-expanded, aria-controls=\"autocomplete-listbox\" and aria-activedescendant on the input itself, not on a wrapper. Remove role from the element with the class combo.",
+        "Build each option id from the city name, for example autocomplete-option-san-diego, so an id does not change when the results change.",
+        "Always keep one element with the class result-status and aria-live=\"polite\" on the page. It says Searching while a search runs, then 3 results, 1 result, No results or Search failed.",
+        "When the component is removed, stop the waiting timer and any running search, and remove the document listener."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-autocomplete-aria",
+          "name": "Round 4 · The input and status tell screen readers what is happening",
+          "steps": [
+            {
+              "type": "expectAttribute",
+              "selector": ".result-status",
+              "attribute": "aria-live",
+              "expected": "polite"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".input",
+              "attribute": "role",
+              "expected": "combobox"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".combo",
+              "attribute": "role",
+              "expected": false
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".input",
+              "attribute": "aria-expanded",
+              "expected": "false"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".input",
+              "attribute": "aria-controls",
+              "expected": "autocomplete-listbox"
+            },
+            {
+              "type": "setValue",
+              "selector": ".input",
+              "value": "san"
+            },
+            {
+              "type": "expectText",
+              "selector": ".result-status",
+              "text": "Searching",
+              "match": "contains"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".result-status",
+              "text": "3 results",
+              "timeoutMs": 2000
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".input",
+              "attribute": "aria-expanded",
+              "expected": "true"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".list",
+              "attribute": "id",
+              "expected": "autocomplete-listbox"
+            },
+            {
+              "type": "key",
+              "selector": ".input",
+              "key": "ArrowDown"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".input",
+              "attribute": "aria-activedescendant",
+              "expected": "autocomplete-option-san-diego"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": "#autocomplete-option-san-diego",
+              "attribute": "aria-selected",
+              "expected": "true"
+            },
+            {
+              "type": "setValue",
+              "selector": ".input",
+              "value": "sea"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".input",
+              "attribute": "aria-activedescendant",
+              "expected": false
+            },
+            {
+              "type": "waitForText",
+              "selector": ".result-status",
+              "text": "1 result",
+              "timeoutMs": 2000
+            },
+            {
+              "type": "setValue",
+              "selector": ".input",
+              "value": "zz"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".result-status",
+              "text": "No results",
+              "timeoutMs": 2000
+            },
+            {
+              "type": "setValue",
+              "selector": ".input",
+              "value": "error"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".result-status",
+              "text": "Search failed",
+              "timeoutMs": 2000
+            }
+          ]
+        },
+        {
+          "id": "pressure-autocomplete-cleanup",
+          "name": "Round 4 · Removing the component leaves nothing running",
+          "steps": [
+            {
+              "type": "setValue",
+              "selector": ".input",
+              "value": "par"
+            },
+            {
+              "type": "wait",
+              "durationMs": 270
+            },
+            {
+              "type": "setValue",
+              "selector": ".input",
+              "value": "pari"
+            },
+            {
+              "type": "unmountPreview"
+            },
+            {
+              "type": "expectNoPreviewLeaks"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "debrief": {
+    "title": "You kept the search predictable as it grew",
+    "summary": "You built one search that waits for typing, ends when a city is picked, answers repeats instantly, ignores late results and cleans up after itself. The interview signal is keeping these rules true together as each new requirement arrives.",
+    "takeaways": [
+      "Separate \"the user typed\" from \"the input changed\". A pick changes the input, but it is not a search.",
+      "Let only the newest search change the screen.",
+      "Remember successes, not failures, and use one normalized key for each query.",
+      "Tie every timer and listener to the component so removing it stops them all."
+    ],
+    "frameworkNotes": {
+      "react": "An effect cleanup cancels the timer and the search, and a ref marks a picked value so the effect does not search again.",
+      "angular": "switchMap drops older searches, and a pick sends an empty key instead of the city so the wait cannot reopen the dropdown.",
+      "vue": "A watcher starts each search, so a pick must be marked or the watcher treats it as a new query."
+    }
+  },
+  "solutionAssets": {
+    "react": "assets/sb/react/solution/react-autocomplete-search-pressure-solution.v1.json",
+    "angular": "assets/sb/angular/solution/angular-autocomplete-search-pressure-solution.v1.json",
+    "vue": "assets/sb/vue/solution/vue-autocomplete-search-pressure-solution.v1.json"
+  }
+}

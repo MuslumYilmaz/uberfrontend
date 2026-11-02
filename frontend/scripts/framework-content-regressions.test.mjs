@@ -173,7 +173,7 @@ function assertFrameworkCssFormatting() {
       canonicalRoot: path.join(repoRoot, 'cdn', 'sb'),
       mirrorRoot: path.join(repoRoot, 'frontend', 'src', 'assets', 'sb'),
     }),
-    { assets: 212, cssSources: 277, changedAssets: 0, changedCssSources: 0 },
+    { assets: 215, cssSources: 280, changedAssets: 0, changedCssSources: 0 },
     'The full framework CSS corpus must stay canonical and exactly mirrored'
   );
 }
@@ -726,6 +726,189 @@ function assertDebouncedSearchPressureMode() {
     /esm\.sh\/rxjs/,
     'Angular preview must not fan RxJS out through esm.sh submodule requests'
   );
+}
+
+// Rules are the only brief a candidate sees before a check runs, so every class or id
+// a check looks for must be in the starter or named by the rules revealed so far.
+function assertPressureContractIsNamed(scenario, starterSources, label) {
+  const revealedRules = [];
+  for (const round of scenario.rounds) {
+    revealedRules.push(...round.constraints);
+    const rulesSoFar = revealedRules.join('\n');
+    assert.doesNotMatch(rulesSoFar, /`/, `${label}: rules render as plain text, so they cannot use code formatting`);
+    const selectors = (round.frameworkTests ?? []).flatMap((test) =>
+      test.steps.map((step) => step.selector).filter(Boolean)
+    );
+    for (const selector of selectors) {
+      const withoutAttributes = selector.replace(/\[[^\]]*\]/g, '');
+      for (const [, token] of withoutAttributes.matchAll(/[.#]([a-zA-Z][\w-]*)/g)) {
+        const named = new RegExp(`(^|[^\\w-])${token}([^\\w-]|$)`);
+        for (const [framework, source] of Object.entries(starterSources)) {
+          assert.ok(
+            named.test(rulesSoFar) || named.test(source),
+            `${label}: round ${round.id} checks ${selector}, but ${token} is in neither the ${framework} starter nor the rules so far`
+          );
+        }
+      }
+    }
+  }
+}
+
+function assertAutocompletePressureMode() {
+  const expectedQuestions = {
+    react: {
+      id: 'react-autocomplete-search-starter',
+      access: 'free',
+      starter: 'assets/sb/react/question/react-autocomplete-search.v2.json',
+      solution: 'assets/sb/react/solution/react-autocomplete-search-solution.v2.json',
+    },
+    angular: {
+      id: 'angular-autocomplete-search-starter',
+      access: 'premium',
+      starter: 'assets/sb/angular/question/angular-autocomplete-search.v2.json',
+      solution: 'assets/sb/angular/solution/angular-autocomplete-search-solution.v2.json',
+    },
+    vue: {
+      id: 'vue-autocomplete-search',
+      access: 'premium',
+      starter: 'assets/sb/vue/question/vue-autocomplete-search.v1.json',
+      solution: 'assets/sb/vue/solution/vue-autocomplete-search-solution.v1.json',
+    },
+  };
+  const starterSources = {};
+
+  for (const [framework, expected] of Object.entries(expectedQuestions)) {
+    const question = json(`cdn/questions/${framework}/coding.json`).find(
+      (entry) => entry.id === expected.id
+    );
+    assert.ok(question, `${framework}: Autocomplete question must exist`);
+    assert.equal(question.access, expected.access, `${framework}: Autocomplete access changed`);
+    assert.equal(question.sdk?.asset, expected.starter, `${framework}: normal Autocomplete starter changed`);
+    assert.equal(question.solutionAsset, expected.solution, `${framework}: normal Autocomplete solution changed`);
+    assert.equal(
+      question.pressureModeAsset,
+      'assets/questions/pressure-modes/autocomplete-search.v1.json',
+      `${framework}: Autocomplete must reference the shared pressure scenario`
+    );
+    starterSources[framework] = Object.values(
+      normalizedAssetFiles(
+        json(`cdn/${expected.starter.replace(/^assets\//, '')}`),
+        `${framework}:autocomplete-starter`
+      )
+    ).join('\n');
+
+    if (framework !== 'react') {
+      assert.deepEqual(
+        question.frameworkTests.map((test) => test.id),
+        ['autocomplete-selects-option', 'autocomplete-outside-click-closes'],
+        `${framework}: normal Autocomplete checks must cover the pick and the outside click`
+      );
+      const pickSteps = question.frameworkTests.find(
+        (test) => test.id === 'autocomplete-selects-option'
+      )?.steps;
+      assert.deepEqual(
+        pickSteps?.slice(-2),
+        [
+          { type: 'wait', durationMs: 500 },
+          { type: 'expectCount', selector: '.list', count: 0 },
+        ],
+        `${framework}: the normal check must prove that a pick does not reopen the list`
+      );
+    }
+  }
+
+  const scenario = json('cdn/questions/pressure-modes/autocomplete-search.v1.json');
+  assert.equal(scenario.id, 'autocomplete-search-pressure-v1');
+  assert.equal(scenario.family, 'autocomplete-search');
+  assert.equal(scenario.estimatedMinutes, 45);
+  assert.deepEqual(
+    scenario.supportedQuestions,
+    Object.fromEntries(
+      Object.entries(expectedQuestions).map(([framework, expected]) => [framework, expected.id])
+    )
+  );
+  assert.deepEqual(
+    scenario.rounds.map((round) => round.id),
+    ['core-search', 'keyboard-selection', 'instant-repeat-searches', 'accessibility-and-cleanup']
+  );
+  const checks = scenario.rounds.flatMap((round) => round.frameworkTests ?? []);
+  assert.deepEqual(
+    checks.map((test) => test.id),
+    [
+      'pressure-autocomplete-core',
+      'pressure-autocomplete-keyboard',
+      'pressure-autocomplete-repeat',
+      'pressure-autocomplete-aria',
+      'pressure-autocomplete-cleanup',
+    ]
+  );
+  assertPressureContractIsNamed(scenario, starterSources, 'Autocomplete');
+  const checksById = Object.fromEntries(checks.map((test) => [test.id, test]));
+
+  assert.deepEqual(
+    checksById['pressure-autocomplete-core'].steps
+      .filter((step) => step.type === 'wait')
+      .map((step) => step.durationMs),
+    [80, 80, 190],
+    'Core search must sample after an unrestarted first search would land but before the final wait ends'
+  );
+
+  const keyboardSteps = checksById['pressure-autocomplete-keyboard'].steps;
+  const enterIndex = keyboardSteps.findIndex((step) => step.key === 'Enter');
+  assert.deepEqual(
+    keyboardSteps.slice(enterIndex + 2, enterIndex + 5),
+    [
+      { type: 'expectCount', selector: '.list', count: 0 },
+      { type: 'wait', durationMs: 600 },
+      { type: 'expectCount', selector: '.list', count: 0 },
+    ],
+    'A pick must be proven closed both at once and after the debounce window'
+  );
+
+  const repeatSteps = checksById['pressure-autocomplete-repeat'].steps;
+  const repeatedSearch = repeatSteps.findIndex(
+    (step) => step.type === 'setValue' && step.value === ' SAN '
+  );
+  assert.deepEqual(
+    repeatSteps[repeatedSearch + 1],
+    { type: 'expectCount', selector: '.option', count: 3 },
+    'A repeated search must show results with no waiting step in between'
+  );
+  assert.deepEqual(
+    repeatSteps.filter((step) => step.type === 'wait').map((step) => step.durationMs),
+    [270, 400],
+    'The late-result check must start while the older search is running and outlast it'
+  );
+
+  assert.deepEqual(
+    checksById['pressure-autocomplete-cleanup'].steps.map((step) => step.type),
+    ['setValue', 'wait', 'setValue', 'unmountPreview', 'expectNoPreviewLeaks'],
+    'Cleanup must cover a running search and a pending wait together, plus the document listener'
+  );
+
+  const solutionMarkers = {
+    react: [/AbortController/, /cacheRef/, /pickedQueryRef/, /result-status/, /aria-activedescendant/],
+    angular: [/implements OnDestroy/, /switchMap/, /searchKey\$\.next\(''\)/, /result-status/, /aria-activedescendant/],
+    vue: [/AbortController/, /pickedQuery/, /onBeforeUnmount/, /result-status/, /aria-activedescendant/],
+  };
+  for (const framework of Object.keys(expectedQuestions)) {
+    const reference = scenario.solutionAssets?.[framework];
+    assert.equal(
+      reference,
+      `assets/sb/${framework}/solution/${framework}-autocomplete-search-pressure-solution.v1.json`,
+      `${framework}: invalid Autocomplete pressure solution reference`
+    );
+    const relative = reference.replace(/^assets\//, '');
+    assertMirror(relative, `${framework}:autocomplete-pressure-solution`);
+    const files = normalizedAssetFiles(json(`cdn/${relative}`), `${framework}:autocomplete-pressure-solution`);
+    const source = Object.entries(files)
+      .filter(([file]) => file.startsWith('src/'))
+      .map(([file, code]) => `${file}\n${code}`)
+      .join('\n');
+    for (const marker of solutionMarkers[framework]) {
+      assert.match(source, marker, `${framework}: Autocomplete pressure solution is missing ${marker}`);
+    }
+  }
 }
 
 function assertTodoListPressureMode() {
@@ -4529,6 +4712,7 @@ assertTicTacToePressureMode();
 assertChessboardClickHighlightPressureMode();
 assertDynamicCounterButtonsPressureMode();
 assertPaginationTablePressureMode();
+assertAutocompletePressureMode();
 
 const angularCodingQuestions = json('cdn/questions/angular/coding.json');
 const nestedCheckboxStarter = json('cdn/sb/angular/question/angular-nested-checkboxes.v1.json');
