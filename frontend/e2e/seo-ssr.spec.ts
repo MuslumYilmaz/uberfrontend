@@ -4417,6 +4417,44 @@ test.describe('seo-ssr', () => {
     });
   }
 
+  // The header's pricing link appears only after the first client render, so the clicks below reach the router.
+  test('a link low on a long page opens the next page at the top, on the first click after load', async ({ page }) => {
+    await page.setViewportSize({ width: 1366, height: 900 });
+    await page.goto('/companies/elevenlabs/preview', { waitUntil: 'domcontentloaded' });
+    await expect(page.getByTestId('header-pricing-link')).toBeVisible();
+
+    const closingCta = page.locator('.company-guide-cta a');
+    await closingCta.scrollIntoViewIfNeeded();
+    expect(await page.evaluate(() => window.scrollY)).toBeGreaterThan(1000);
+    await page.evaluate(() => { (window as Window & { __sameDocument?: boolean }).__sameDocument = true; });
+    await closingCta.click();
+
+    await expect(page).toHaveURL(/\/pricing\?src=company_preview_elevenlabs/);
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+    // A full page load would also start at the top, so this must have been a client-side navigation.
+    expect(await page.evaluate(() => (window as Window & { __sameDocument?: boolean }).__sameDocument)).toBe(true);
+  });
+
+  test('same-page hash links stay on the page and scroll their target clear of the fixed header', async ({ page }) => {
+    await page.setViewportSize({ width: 1366, height: 900 });
+    await page.goto('/companies/elevenlabs/preview', { waitUntil: 'domcontentloaded' });
+    await expect(page.getByTestId('header-pricing-link')).toBeVisible();
+
+    await page.getByRole('link', { name: 'Rehearse the 90-minute assessment' }).click();
+
+    await expect(page).toHaveURL(/\/companies\/elevenlabs\/preview#timed-assessment-react-and-algorithms$/);
+    await expect(page.locator('h1')).toHaveText('ElevenLabs Frontend Interview Questions');
+    await expect(page.locator('#timed-assessment-react-and-algorithms h3')).toBeInViewport();
+    const targetTop = await page.locator('#timed-assessment-react-and-algorithms').evaluate((node) => node.getBoundingClientRect().top);
+    expect(targetTop, 'the target clears the fixed header').toBeGreaterThanOrEqual(56);
+    expect(targetTop, 'the target is at the top of the viewport, not just somewhere inside it').toBeLessThan(200);
+
+    await page.goto('/legal/privacy', { waitUntil: 'networkidle' });
+    await page.locator('a[href="#cookies"]').first().click();
+    await expect(page).toHaveURL(/\/legal\/privacy#cookies$/);
+    expect(await page.evaluate(() => window.scrollY), 'privacy scrolled to its section').toBeGreaterThan(0);
+  });
+
   for (const note of EDITORIAL_NOTE_CASES) {
     test(`raw ${note.label} company preview renders its editorial notes around the catalog blocks`, async ({ request }) => {
       test.setTimeout(120_000);

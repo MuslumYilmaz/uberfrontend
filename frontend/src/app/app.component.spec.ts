@@ -1,7 +1,7 @@
 import { DeferBlockBehavior, DeferBlockState, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { Router } from '@angular/router';
-import { Component, DOCUMENT } from '@angular/core';
+import { Router, UrlTree } from '@angular/router';
+import { Component, DOCUMENT, NgZone } from '@angular/core';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 
 import { AppComponent } from './app.component';
@@ -77,6 +77,104 @@ describe('AppComponent', () => {
     ]
 }).compileComponents();
     mockDesktopViewport();
+  });
+
+  describe('page scroll contract', () => {
+    it('schedules the midnight rollover outside the zone, so the app can turn stable and the router can scroll', () => {
+      const fixture = TestBed.createComponent(AppComponent);
+      let scheduledInZone = null as boolean | null;
+      spyOn(window, 'setTimeout').and.callFake((() => {
+        scheduledInZone = NgZone.isInAngularZone();
+        return 1;
+      }) as any);
+
+      TestBed.inject(NgZone).run(() => (fixture.componentInstance as any).scheduleToNextMidnight());
+
+      expect(scheduledInZone).toBe(false);
+    });
+
+    it('keeps the page being read when a hash link is clicked before the first navigation ends', () => {
+      TestBed.overrideProvider(DOCUMENT, { useValue: createDocumentAt('/companies/acme/preview') });
+      const fixture = TestBed.createComponent(AppComponent);
+      fixture.detectChanges();
+      const router = TestBed.inject(Router);
+      const navigate = spyOn(router, 'navigateByUrl').and.resolveTo(true);
+      const link = document.createElement('a');
+      link.setAttribute('href', '#target-section');
+      document.body.appendChild(link);
+      const stopBrowserNavigation = (event: Event) => event.preventDefault();
+      window.addEventListener('click', stopBrowserNavigation);
+
+      try {
+        // Still '/', the page the plain link used to send readers to.
+        expect(router.url).toBe('/');
+        link.click();
+        expect(router.serializeUrl(navigate.calls.mostRecent().args[0] as UrlTree)).toBe('/companies/acme/preview#target-section');
+      } finally {
+        window.removeEventListener('click', stopBrowserNavigation);
+        link.remove();
+        fixture.destroy();
+      }
+    });
+
+    describe('same-page hash links', () => {
+      let fixture: ReturnType<typeof TestBed.createComponent<AppComponent>>;
+      let link: HTMLAnchorElement;
+      let navigate: jasmine.Spy;
+      // Runs after the document listener, so the test page itself never follows a link.
+      const stopBrowserNavigation = (event: Event) => event.preventDefault();
+
+      const click = (init: MouseEventInit = {}) => {
+        const event = new MouseEvent('click', { bubbles: true, cancelable: true, ...init });
+        link.dispatchEvent(event);
+        return event;
+      };
+
+      beforeEach(() => {
+        fixture = TestBed.createComponent(AppComponent);
+        fixture.detectChanges();
+        navigate = spyOn(TestBed.inject(Router), 'navigateByUrl').and.resolveTo(true);
+        link = document.createElement('a');
+        link.setAttribute('href', '#target-section');
+        document.body.appendChild(link);
+        window.addEventListener('click', stopBrowserNavigation);
+      });
+
+      afterEach(() => {
+        window.removeEventListener('click', stopBrowserNavigation);
+        link.remove();
+        fixture.destroy();
+      });
+
+      it('go through the router with the fragment instead of following the base href to the home page', () => {
+        click();
+
+        expect(navigate).toHaveBeenCalledTimes(1);
+        expect(TestBed.inject(Router).serializeUrl(navigate.calls.mostRecent().args[0])).toContain('#target-section');
+      });
+
+      it('leave modified clicks, already handled clicks and empty hashes to the browser', () => {
+        click({ ctrlKey: true });
+        click({ metaKey: true });
+
+        const handled = (event: Event) => event.preventDefault();
+        link.addEventListener('click', handled);
+        click();
+        link.removeEventListener('click', handled);
+
+        link.setAttribute('href', '#');
+        click();
+
+        expect(navigate).not.toHaveBeenCalled();
+      });
+
+      it('stop listening when the shell is destroyed', () => {
+        fixture.destroy();
+        click();
+
+        expect(navigate).not.toHaveBeenCalled();
+      });
+    });
   });
 
   it('does not mount bug report dialog until requested', () => {

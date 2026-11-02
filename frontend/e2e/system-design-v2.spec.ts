@@ -335,11 +335,6 @@ test.describe('System Design V2 acceptance', () => {
   });
 
   test('URL-restored filters use AND dimensions, OR tags, debounce, and replace history', async ({ page }) => {
-    // Known production defect (reproduced on frontendatlas.com on 2026-10-09): the
-    // prerendered bank keeps all 23 cards after hydration even though the
-    // "1 prompt shown" label updates. The dev server (no prerender) passes.
-    // Remove this marker once the hydrated *ngFor list follows the URL filters.
-    test.fail(SSR_ENABLED, 'Prerendered /system-design keeps every card after URL filters hydrate.');
     await page.setViewportSize({ width: 1366, height: 900 });
     await page.goto(
       '/system-design?q=toast&level=junior&access=free&format=component&tag=accessibility&tag=streams',
