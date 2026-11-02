@@ -375,8 +375,8 @@ function parseSfc(src: string): {
     // 2) Template içinde gerçekten kullanılan identifier'ları bul
     const templateIds = new Set<string>();
 
-    // {{ ... }}, :prop="...", v-foo="...", @click="..." içindeki expression'lar
-    const exprRE = /{{([^}]*)}}|:([\w-]+)="([^"]+)"|v-[\w-]+="([^"]+)"|@[\w-]+="([^"]+)"/g;
+    // {{ ... }}, :prop="...", v-foo:bar.baz="...", @click.prevent="...", ref="..." içindeki expression'lar
+    const exprRE = /{{([^}]*)}}|:[^\s=>"]+="([^"]+)"|v-[^\s=>"]+="([^"]+)"|@[^\s=>"]+="([^"]+)"|\sref="([^"]+)"/g;
     const identRE = /[A-Za-z_$][\w$]*/g;
     const reserved = new Set([
       'true', 'false', 'null', 'undefined',
@@ -386,7 +386,7 @@ function parseSfc(src: string): {
 
     m = null;
     while ((m = exprRE.exec(template)) !== null) {
-      const expr = m[1] || m[3] || m[4] || m[5] || '';
+      const expr = m[1] || m[2] || m[3] || m[4] || m[5] || '';
       let idm: RegExpExecArray | null;
       while ((idm = identRE.exec(expr)) !== null) {
         const name = idm[0];
@@ -401,7 +401,10 @@ function parseSfc(src: string): {
       templateIds.has(name)
     );
 
-    const returned = exportedNames.length ? exportedNames.join(', ') : '';
+    // Binding detection also sees locals of nested functions, which do not exist at this scope.
+    const returned = exportedNames
+      .map((name) => `...(typeof ${name} !== 'undefined' ? { ${name} } : {})`)
+      .join(', ');
 
     const indentedBody = body
       ? body.split('\n').map(line => '      ' + line).join('\n')

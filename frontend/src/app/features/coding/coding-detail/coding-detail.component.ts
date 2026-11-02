@@ -372,6 +372,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       && typeof q?.pressureModeAsset === 'string'
       && q.pressureModeAsset.trim().length > 0;
   });
+  pressureAccessLabel = computed(() => this.question()?.access === 'free' ? 'Free pilot' : 'Premium');
   pressureRounds = computed(() => this.pressureScenario()?.rounds || []);
   pressureCurrentRound = computed<PressureModeRound | null>(() => {
     const rounds = this.pressureRounds();
@@ -2504,7 +2505,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
         scenario_id: scenario.id,
         question_id: q.id,
         tech: framework,
-        access: scenario.access,
+        access: q.access,
         total_rounds: scenario.rounds.length,
       });
     }
@@ -2559,6 +2560,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     loadSeq: number,
   ): Promise<void> {
     const assetPath = scenario.solutionAssets[framework];
+    if (!assetPath) return;
     try {
       const raw = await fetchSdkAsset(this.http, assetPath);
       const { files, initialPath } = resolveSolutionFiles(raw);

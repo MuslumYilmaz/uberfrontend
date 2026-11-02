@@ -5,6 +5,7 @@ import {
   OpaquePreviewReadyTimeoutError,
 } from './opaque-dom-check-runner';
 import { makeReactPreviewHtml } from '../../../core/utils/react-preview-builder';
+import { makeVuePreviewHtml } from '../../../core/utils/vue-preview-builder';
 
 describe('OpaqueDomCheckRunner', () => {
   let runner: OpaqueDomCheckRunner;
@@ -351,6 +352,55 @@ describe('OpaqueDomCheckRunner', () => {
     expect(results).toEqual([{ name: 'Fetch lifecycle', passed: true }]);
   });
 
+  it('rejects an aborted mocked fetch with the signal reason and drops its late response', async () => {
+    const results = await runner.runFramework(
+      `<!doctype html><html><body>
+        <button class="send" type="button">Send</button>
+        <button class="cancel" type="button">Cancel</button>
+        <button class="send-aborted" type="button">Send aborted</button>
+        <div class="status"></div>
+        <script>
+          const status = document.querySelector('.status');
+          const url = 'https://jsonplaceholder.typicode.com/posts';
+          const report = (request) => request.then(
+            () => { status.textContent = 'Sent'; },
+            (error) => { status.textContent = error.name; },
+          );
+          let controller;
+          document.querySelector('.send').addEventListener('click', () => {
+            controller = new AbortController();
+            report(fetch(url, { method: 'POST', body: '{}', signal: controller.signal }));
+          });
+          document.querySelector('.cancel').addEventListener('click', () => controller.abort());
+          document.querySelector('.send-aborted').addEventListener('click', () => {
+            const signal = AbortSignal.abort(new DOMException('Too slow', 'TimeoutError'));
+            report(fetch(new Request(url, { method: 'POST', body: '{}', signal })));
+          });
+          setTimeout(() => window.__FA_NOTIFY_PREVIEW_READY('render-ready'), 0);
+        <\/script>
+      </body></html>`,
+      [{
+        id: 'fetch-abort',
+        name: 'Fetch abort',
+        steps: [
+          { type: 'mockHttp', status: 201, durationMs: 200 },
+          { type: 'click', selector: '.send' },
+          { type: 'expectHttpRequest', method: 'POST', count: 1 },
+          { type: 'click', selector: '.cancel' },
+          { type: 'expectText', selector: '.status', text: 'AbortError' },
+          { type: 'wait', durationMs: 250 },
+          { type: 'expectText', selector: '.status', text: 'AbortError' },
+          { type: 'mockHttp', status: 201, durationMs: 0 },
+          { type: 'click', selector: '.send-aborted' },
+          { type: 'expectText', selector: '.status', text: 'TimeoutError' },
+          { type: 'expectHttpRequest', count: 0 },
+        ],
+      }] as any,
+    );
+
+    expect(results).toEqual([{ name: 'Fetch abort', passed: true }]);
+  });
+
   it('runs the real React builder with production vendor assets at the assertion layer', async () => {
     const [starterResponse, solutionResponse] = await Promise.all([
       fetch('/assets/sb/react/question/react-counter.v1.json'),
@@ -384,6 +434,53 @@ describe('OpaqueDomCheckRunner', () => {
     expect(starterResults[0].error).toContain('did not reach text "1"');
     expect(solutionResults).toEqual([{ name: 'Counter increments', passed: true }]);
     expect(document.querySelectorAll('iframe[aria-hidden="true"]').length).toBe(0);
+  });
+
+  it('runs the real Vue builder with event modifiers, template refs and shadowing locals', async () => {
+    const html = makeVuePreviewHtml({
+      'src/App.vue': `
+        <template>
+          <main ref="rootRef" class="root" :data-has-root="hasRoot">
+            <input class="input" @keydown.enter="post" />
+            <div class="state" :class="{ active: isActive }">{{ label }}</div>
+          </main>
+        </template>
+
+        <script setup lang="ts">
+        import { computed, onMounted, ref } from 'vue';
+
+        const rootRef = ref<HTMLElement | null>(null);
+        const hasRoot = ref(false);
+        const posted = ref(false);
+        const isActive = computed(() => {
+          const active = posted.value;
+          return active;
+        });
+        const label = computed(() => (posted.value ? 'Posted' : 'Idle'));
+        function post() {
+          posted.value = true;
+        }
+        onMounted(() => {
+          hasRoot.value = !!rootRef.value;
+        });
+        </script>
+      `,
+    }, window.location.origin);
+
+    const results = await runner.runFramework(html, [{
+      id: 'vue-script-setup-bindings',
+      name: 'Vue script setup bindings',
+      steps: [
+        { type: 'expectText', selector: '.state', text: 'Idle' },
+        { type: 'wait', durationMs: 50 },
+        { type: 'expectAttribute', selector: '.root', attribute: 'data-has-root', expected: 'true' },
+        { type: 'key', selector: '.input', key: 'Enter' },
+        { type: 'expectText', selector: '.state', text: 'Posted' },
+        { type: 'expectClass', selector: '.state', className: 'active' },
+      ],
+    }] as any);
+
+    expect(results).toEqual([{ name: 'Vue script setup bindings', passed: true }]);
   });
 
   it('removes the frame and rejects promptly when a run is cancelled', async () => {

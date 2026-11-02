@@ -84,7 +84,7 @@
 
               <div class="pressure-mode__meta">
                 <span>{{ scenario.estimatedMinutes }} min</span>
-                <span>{{ scenario.access === 'free' ? 'Free pilot' : 'Premium' }}</span>
+                <span>{{ pressureAccessLabel() }}</span>
                 <span>{{ pressureClearedRounds() }}/{{ scenario.rounds.length }} rounds cleared</span>
               </div>
 

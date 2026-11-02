@@ -1426,6 +1426,33 @@ describe('CodingDetailComponent', () => {
     }));
   });
 
+  it('labels and reports pressure access from the question, not the shared scenario', async () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    const question = {
+      id: 'react-counter',
+      access: 'premium',
+      pressureModeAsset: 'assets/questions/pressure-modes/counter.v1.json',
+    } as any;
+
+    component.tech = 'react';
+    component.kind = 'coding';
+    component.question.set(question);
+    component.pressureRequested.set(true);
+
+    await (component as any).activatePressureMode(question);
+
+    expect(pressureScenario.access).toBe('free');
+    expect(component.pressureAccessLabel()).toBe('Premium');
+    expect(analytics.track).toHaveBeenCalledWith(
+      'pressure_mode_started',
+      jasmine.objectContaining({ access: 'premium' }),
+    );
+
+    component.question.set({ ...question, access: 'free' });
+    expect(component.pressureAccessLabel()).toBe('Free pilot');
+  });
+
   it('clears an intermediate pressure round without completing the normal question', async () => {
     const fixture = TestBed.createComponent(CodingDetailComponent);
     const component = fixture.componentInstance;

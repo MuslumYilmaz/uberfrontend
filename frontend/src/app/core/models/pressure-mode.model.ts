@@ -1,6 +1,7 @@
 import { FrameworkTest } from './question.model';
 
 export type PressureModeFramework = 'react' | 'angular' | 'vue';
+export type PressureModeFrameworkMap = Partial<Record<PressureModeFramework, string>>;
 
 export interface PressureModeRound {
   id: string;
@@ -14,7 +15,7 @@ export interface PressureModeDebrief {
   title: string;
   summary: string;
   takeaways: string[];
-  frameworkNotes: Record<PressureModeFramework, string>;
+  frameworkNotes: PressureModeFrameworkMap;
 }
 
 export interface PressureModeScenario {
@@ -24,10 +25,10 @@ export interface PressureModeScenario {
   title: string;
   access: 'free' | 'premium';
   estimatedMinutes: number;
-  supportedQuestions: Record<PressureModeFramework, string>;
+  supportedQuestions: PressureModeFrameworkMap;
   rounds: PressureModeRound[];
   debrief: PressureModeDebrief;
-  solutionAssets: Record<PressureModeFramework, string>;
+  solutionAssets: PressureModeFrameworkMap;
 }
 
 export interface PressureModeProgressState {

@@ -432,9 +432,18 @@ function opaqueChildBootstrap(config: ChildConfig): void {
       const method = String(init?.method || request?.method || 'GET').toUpperCase();
       const url = String(request?.url || input);
       const body = typeof init?.body === 'string' ? init.body : String(init?.body || '');
+      const signal = init?.signal ?? request?.signal ?? null;
+      const abortReason = () => signal?.reason ?? new DOMException('The operation was aborted.', 'AbortError');
+      // Like the real fetch, an already aborted signal sends nothing.
+      if (signal?.aborted) return Promise.reject(abortReason());
       httpCalls.push({ method, url, body });
       return new Promise<Response>((resolve, reject) => {
-        nativeSetTimeout(() => {
+        const onAbort = () => {
+          nativeClearTimeout(timer);
+          reject(abortReason());
+        };
+        const timer = nativeSetTimeout(() => {
+          signal?.removeEventListener('abort', onAbort);
           if (httpMock.error) {
             reject(new TypeError(httpMock.error));
             return;
@@ -444,6 +453,7 @@ function opaqueChildBootstrap(config: ChildConfig): void {
             headers: { 'Content-Type': 'application/json' },
           }));
         }, httpMock.delayMs);
+        signal?.addEventListener('abort', onAbort, { once: true });
       });
     }) as typeof window.fetch;
     Object.defineProperty(window, 'fetch', {
