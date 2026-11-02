@@ -990,12 +990,12 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
     slug: 'airbnb',
     title: 'Airbnb Frontend Interview Practice and Official FAQ',
     h1: 'Airbnb Frontend Interview Practice',
-    description: 'How two public Airbnb frontend accounts and the official careers FAQ describe the loop: a screen with passing tests, React UI coding and architecture questions.',
+    description: 'How public Airbnb frontend accounts and the official careers FAQ describe the loop: a technical screen, UI and JavaScript coding, and frontend system design.',
     hero: {
       kicker: 'Public preview',
-      subtitle: 'One coding component in three frameworks and two concept items grouped under Airbnb, plus the official careers FAQ and what two public frontend accounts describe.',
+      subtitle: 'One coding component in three frameworks and two concept items grouped under Airbnb, plus the official careers FAQ and a sourced table of what public frontend accounts describe.',
     },
-    intro: ['The official careers FAQ, linked below, says the process can involve a test, a video or an event, that candidates meet several members of the team, and gives response times; it also warns about recruiting scams. Two public frontend accounts from 2022 and 2024 and a few Blind threads describe a technical screen where the tests must pass, UI coding in React or plain HTML, CSS and JavaScript, one algorithm question and one architecture question. They are too few for a stage-by-stage table, so this page summarises them without one.'],
+    intro: ['The official careers FAQ, linked below, says the process can involve a test, a video or an event, that candidates meet several members of the team, and gives response times; it also warns about recruiting scams. Public frontend accounts fill in the rest: the table below lists what they report, with a link to each one.'],
     prepSteps: {
       kicker: 'How to prepare with this grouping',
       title: 'An editorial practice grouping',
@@ -1038,8 +1038,12 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
       title: 'Common questions about this Airbnb page',
       items: [
         {
-          question: 'Why is this page short?',
-          answer: 'Only two full first-person Airbnb frontend accounts and a few Blind comment threads are readable, so this page summarises them without a stage table. It grows as more accounts can be read in full.',
+          question: 'Do Airbnb frontend interviews include algorithm questions?',
+          answer: 'Accounts disagree. One from 2024 reports no algorithms, while two from 2025 report a LeetCode-hard problem, one in the technical screen and one as a 45-minute coding round. Ask your recruiter which rounds your loop has.',
+        },
+        {
+          question: 'How current are these reports?',
+          answer: 'The newest frontend account we read is from about September 2025 and we read none from 2026, so confirm the current format with your recruiter.',
         },
         {
           question: 'Does Airbnb publish interview guidance?',

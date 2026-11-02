@@ -888,6 +888,7 @@ const EDITORIAL_NOTE_CASES = [
     ],
     markers: [
       'data-testid="company-editorial-intro"',
+      'data-testid="company-interview-process"',
       'data-testid="company-prep-steps"',
       '>What you can do now for free</h2>',
       'data-testid="company-editorial-faqs"',
@@ -4235,16 +4236,25 @@ test.describe('seo-ssr', () => {
         'https://www.jointaro.com/interviews/companies/crowdstrike/experiences/engineering-manager-frontend-united-states-september-3-2025-accepted-offer-neutral-6cbb594c/',
       practicePath: '/javascript/trivia/js-event-delegation',
     },
+    {
+      path: '/companies/airbnb/preview',
+      heading: 'Airbnb frontend interview process',
+      tables: 1,
+      after: 'data-testid="company-editorial-intro"',
+      before: 'data-testid="company-prep-steps"',
+      reportUrl: 'https://www.teamblind.com/post/just-bombed-my-airbnb-coding-interviews-a3idwxsm',
+      practicePath: '/javascript/trivia/js-closures',
+    },
   ];
 
-  // Every company with a sourced table; Airbnb waits for its authored page (template-thin plan, Step 4).
+  // Every company with a sourced table.
   const COMPANIES_WITH_PROCESS_TABLES = [
-    'agoda', 'amazon', 'anduril', 'apple', 'booking-com', 'bytedance', 'capital-one', 'crowdstrike', 'datadog', 'elevenlabs', 'gitlab', 'google', 'intuit', 'jpmorgan',
+    'agoda', 'airbnb', 'amazon', 'anduril', 'apple', 'booking-com', 'bytedance', 'capital-one', 'crowdstrike', 'datadog', 'elevenlabs', 'gitlab', 'google', 'intuit', 'jpmorgan',
     'meta', 'microsoft', 'netflix', 'openai', 'revolut', 'servicenow', 'shopee', 'spotify', 'stripe', 'tesla', 'uber',
     'walmart', 'waymo', 'xai', 'zalando',
   ];
 
-  test('raw company previews render a sourced process table only where research supports one', async ({ request }) => {
+  test('raw company previews render a sourced process table for every company', async ({ request }) => {
     test.setTimeout(180_000);
     for (const slug of COMPANIES_WITH_PROCESS_TABLES) {
       const html = await readRawHtml(request, `/companies/${slug}/preview`);
@@ -4255,10 +4265,6 @@ test.describe('seo-ssr', () => {
       const reportAnchors = section.match(/<a[^>]*rel="noopener noreferrer nofollow"[^>]*>/g) ?? [];
       expect(reportAnchors.length, `${slug} nofollow report links`).toBeGreaterThan(0);
       expect(section, `${slug} banned sources`).not.toMatch(/glassdoor|1point3acres|github\.com|prepfully|dataford/i);
-    }
-    for (const slug of ['airbnb']) {
-      const html = await readRawHtml(request, `/companies/${slug}/preview`);
-      expect(html, `${slug} has no process table yet`).not.toContain('data-testid="company-interview-process"');
     }
   });
 
@@ -4288,9 +4294,6 @@ test.describe('seo-ssr', () => {
       expect(section, `${item.path} crawlable practice link`).toContain(`href="${item.practicePath}"`);
       expect(section).not.toMatch(/glassdoor|1point3acres|github\.com/i);
     }
-
-    const airbnb = await readRawHtml(request, '/companies/airbnb/preview');
-    expect(airbnb).not.toContain('data-testid="company-interview-process"');
   });
 
   test('interview process tables switch to cards in narrow containers and keep readable cells', async ({ page }) => {

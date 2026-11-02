@@ -858,6 +858,64 @@ const CROWDSTRIKE_TB_SWE_INTERN_2025 = report(
   '2025-01',
 );
 
+// Airbnb's careers FAQ gives only the general shape, so the stages come from public accounts. Taro reports are
+// Glassdoor re-hosts and those dated the 1st of a month carry placeholder dates. Some accounts carry a general
+// software engineer title but describe a frontend loop.
+const AIRBNB_TARO = 'https://www.jointaro.com/interviews/companies/airbnb/experiences';
+const AIRBNB_AB1_FE_2022 = report(
+  'Taro (approx.)',
+  `${AIRBNB_TARO}/front-end-engineer-san-francisco-ca-june-1-2022-declined-offer-negative-afab47f0/`,
+  '2022-06',
+);
+const AIRBNB_AB2_POSTER_2024 = report('Blind', 'https://www.teamblind.com/post/airbnb-frontend-interview-fyzmjrb5', '2024-02');
+const AIRBNB_AB2_COMMENT_2024 = report('Blind comment', 'https://www.teamblind.com/post/airbnb-frontend-interview-fyzmjrb5', '2024-05');
+const AIRBNB_AB3_COMMENT_2022 = report('Blind comment', 'https://www.teamblind.com/post/Airbnb-front-end-interview-L5-gkNsa6jg', '2022-02');
+const AIRBNB_AB4_COMMENT_2022 = report('Blind comment', 'https://www.teamblind.com/post/Airbnb-Frontend-Engineer-Interview-H7oqkCqu', '2022-04');
+const AIRBNB_AB6_FE_2021 = report(
+  'Blind',
+  'https://www.teamblind.com/post/Went-through-Frontend-Interviews-recently-here-are-the-kinda-questions-they-ask-dbyQb3ob',
+  '2021-10',
+);
+const AIRBNB_AB7_SCREEN_2025 = report('LeetCode', 'https://leetcode.com/discuss/post/7110255/', '2025-08');
+const AIRBNB_AB8_SWE_2024 = report(
+  'Taro (approx.)',
+  `${AIRBNB_TARO}/software-engineer-united-states-december-1-2024-no-offer-negative-4a03cdeb/`,
+  '2024-12',
+);
+const AIRBNB_AB9_FE_2025 = report('Taro', `${AIRBNB_TARO}/front-end-engineer-united-states-may-5-2025-no-offer-negative-f31948ca/`, '2025-05');
+const AIRBNB_AB10_STAFF_FE_2025 = report(
+  'Taro',
+  `${AIRBNB_TARO}/staff-frontend-engineer-united-states-february-22-2025-no-offer-positive-80b29888/`,
+  '2025-02',
+);
+const AIRBNB_AB11_FE_2024 = report('Taro', `${AIRBNB_TARO}/front-end-developer-mexico-december-6-2024-no-offer-neutral-f0413553/`, '2024-12');
+const AIRBNB_AB12_FE_2024 = report('Blind', 'https://www.teamblind.com/post/just-bombed-my-airbnb-coding-interviews-a3idwxsm', '2024-10');
+const AIRBNB_AB13_SWE_2025 = report(
+  'Taro (approx.)',
+  `${AIRBNB_TARO}/software-engineer-united-states-september-1-2025-no-offer-negative-8231f149/`,
+  '2025-09',
+);
+const AIRBNB_AB14_SENIOR_2024 = report(
+  'Taro (approx.)',
+  `${AIRBNB_TARO}/senior-software-engineer-united-states-december-1-2024-no-offer-negative-1f4f28c4/`,
+  '2024-12',
+);
+const AIRBNB_AB15_SENIOR_2024 = report(
+  'Taro (approx.)',
+  `${AIRBNB_TARO}/senior-software-engineer-united-states-june-1-2024-no-offer-neutral-1ca3bb85/`,
+  '2024-06',
+);
+const AIRBNB_AB16_SENIOR_2024 = report(
+  'Taro (approx.)',
+  `${AIRBNB_TARO}/senior-software-engineer-new-york-ny-july-1-2024-no-offer-negative-4d27b9bc/`,
+  '2024-07',
+);
+const AIRBNB_AB17_FULLSTACK_2025 = report(
+  'PracHub (curated)',
+  'https://prachub.com/interview-experiences/airbnb-software-engineer-interview-experience-full-stack-phone-screen-lands-an-onsite-invite',
+  '2025-08',
+);
+
 export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyInterviewProcess>> = {
   amazon: {
     title: 'Amazon Front End Engineer interview process',
@@ -3050,6 +3108,85 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
             format: 'The intern met a second team for a casual behavioral interview two weeks later and received an offer the next day.',
             appliesTo: 'Some candidates',
             sources: [CROWDSTRIKE_CS11_UI_INTERN_2023],
+          },
+        ],
+      },
+    ],
+  },
+  airbnb: {
+    summary:
+      'Airbnb\'s careers FAQ says the process depends on the position and that candidates meet several people on the team. Frontend accounts from 2024 and 2025 describe a recruiter call and a technical screen, then UI and JavaScript coding, frontend system design and a past-project deep dive.',
+    caveat:
+      'Accounts disagree on algorithms: one reports none, two report a LeetCode-hard problem in 2025. Most list tasks without naming the round, so the rows group them by type and do not give an order. Some accounts carry a general software engineer title but describe frontend rounds, and we read no frontend account from 2026.',
+    checkedAt: '2026-11-02',
+    variants: [
+      {
+        title: 'Frontend engineers, mostly 2024 to 2025',
+        stages: [
+          {
+            stage: 'Recruiter call',
+            format: 'One account describes a short call about experience. Two received prep material, and one of them was told to expect frontend concepts and best practices.',
+            appliesTo: 'Frontend engineers',
+            sources: [AIRBNB_AB9_FE_2025, AIRBNB_AB13_SWE_2025],
+          },
+          {
+            stage: 'Technical screen',
+            format:
+              'Content varies by account: a UI component or a store-style design question, tests that must pass, a 60-minute booking widget with product discussion in a full-stack account, or a LeetCode-hard problem despite frontend prep material. One interviewer said questions would keep coming until time ran out.',
+            appliesTo: 'Frontend engineers',
+            sources: [AIRBNB_AB9_FE_2025, AIRBNB_AB17_FULLSTACK_2025, AIRBNB_AB7_SCREEN_2025, AIRBNB_AB12_FE_2024, AIRBNB_AB2_POSTER_2024],
+            practice: { label: 'React autocomplete search', path: '/react/coding/react-autocomplete-search-starter' },
+          },
+          {
+            stage: 'Coding: UI or React',
+            format: 'Build UI: a styled card game, a photo gallery with live updates and timeouts, a star rating, a React component, or a DOM or React task.',
+            appliesTo: 'Frontend engineers',
+            sources: [AIRBNB_AB10_STAFF_FE_2025, AIRBNB_AB8_SWE_2024, AIRBNB_AB12_FE_2024, AIRBNB_AB15_SENIOR_2024, AIRBNB_AB1_FE_2022],
+            practice: { label: 'React star rating', path: '/react/coding/react-star-rating' },
+          },
+          {
+            stage: 'Coding: JavaScript',
+            format:
+              'Currying, callbacks, async, closures and prototypes in one account, vanilla JavaScript in another and a class that stores a data object in a third. A commenter who cleared the loop names the event loop and closures.',
+            appliesTo: 'Frontend engineers',
+            sources: [AIRBNB_AB8_SWE_2024, AIRBNB_AB12_FE_2024, AIRBNB_AB16_SENIOR_2024, AIRBNB_AB2_COMMENT_2024],
+            practice: { label: 'Explain closures', path: '/javascript/trivia/js-closures' },
+          },
+          {
+            stage: 'Frontend system design',
+            format:
+              'Design a frontend app or component: state, data, APIs, trade-offs and optimisations. Two accounts report a chat app, one of them going into WebSockets and online and offline flows. One account says its question matched neither the job nor the prep packet.',
+            appliesTo: 'Frontend engineers',
+            sources: [AIRBNB_AB13_SWE_2025, AIRBNB_AB10_STAFF_FE_2025, AIRBNB_AB11_FE_2024, AIRBNB_AB12_FE_2024, AIRBNB_AB1_FE_2022],
+            practice: { label: 'Frontend system design blueprint', path: '/guides/system-design-blueprint' },
+          },
+          {
+            stage: 'Experience deep dive',
+            format: 'An experience round on a past project in depth, in one account a project the candidate led.',
+            appliesTo: 'Frontend engineers',
+            sources: [AIRBNB_AB10_STAFF_FE_2025, AIRBNB_AB12_FE_2024, AIRBNB_AB4_COMMENT_2022, AIRBNB_AB3_COMMENT_2022],
+            practice: { label: 'Behavioural stories', path: '/guides/behavioral/stories' },
+          },
+          {
+            stage: 'Core values or behavioural',
+            format: 'A core values interview in one account, behavioural questions in others.',
+            appliesTo: 'Some loops',
+            sources: [AIRBNB_AB11_FE_2024, AIRBNB_AB14_SENIOR_2024, AIRBNB_AB4_COMMENT_2022],
+            practice: { label: 'Behavioral interview guide', path: '/guides/behavioral' },
+          },
+          {
+            stage: 'Algorithms',
+            format:
+              'Accounts disagree. One reports no algorithms and one not much. Reports from 2021 and 2022 name one array or LeetCode-medium problem. Two from 2025 report a LeetCode-hard problem, one in the technical screen and one as a 45-minute coding round.',
+            appliesTo: 'Some loops',
+            sources: [AIRBNB_AB13_SWE_2025, AIRBNB_AB9_FE_2025, AIRBNB_AB11_FE_2024, AIRBNB_AB4_COMMENT_2022, AIRBNB_AB3_COMMENT_2022, AIRBNB_AB6_FE_2021],
+            practice: { label: 'DSA for frontend loops', path: '/guides/interview-blueprint/dsa-for-fe' },
+          },
+          {
+            stage: 'Team matching',
+            format: 'Conversations with hiring managers after the interviews. This candidate then heard nothing from the recruiter for months.',
+            appliesTo: 'The one account',
+            sources: [AIRBNB_AB14_SENIOR_2024],
           },
         ],
       },

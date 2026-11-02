@@ -389,6 +389,64 @@ Not used:
 
 **Re-checked:** AB3 ("2 web UI/JS questions, 1 leetcode med, 1 architecture question").
 
+### Airbnb update, 2026-11-02
+
+**Readiness now: ready, with a conflict on algorithms.** The user asked for the missing table and approved it the same day. The entry is in `company-interview-processes.ts`; its rows follow the proposal below, with AB15 and AB16 added under coding. How the sources were read: Taro's public sitemap lists 437 Airbnb pages and all 60 dated 2023 to 2025 were read; Blind and PracHub through WebFetch; LeetCode through GraphQL; the official FAQ re-read.
+
+**New accounts**
+
+| Id | Source | Date | Role | What it reports |
+|---|---|---|---|---|
+| AB9 | [Taro](https://www.jointaro.com/interviews/companies/airbnb/experiences/front-end-engineer-united-states-may-5-2025-no-offer-negative-f31948ca/) | 2025-05 | FE | A recruiter call, then a technical screen. Told to expect frontend concepts and sent matching prep material; the screen was a LeetCode-hard algorithm problem. |
+| AB10 | [Taro](https://www.jointaro.com/interviews/companies/airbnb/experiences/staff-frontend-engineer-united-states-february-22-2025-no-offer-positive-80b29888/) | 2025-02 | Staff FE | Two coding challenges (a styled card game; a photo gallery with live updates and timeouts), system design (a mobile chat app, WebSockets, online and offline flows), a deep dive on a past project. |
+| AB11 | [Taro](https://www.jointaro.com/interviews/companies/airbnb/experiences/front-end-developer-mexico-december-6-2024-no-offer-neutral-f0413553/) | 2024-12 | FE | Several interviews over six weeks, frontend-oriented with no algorithms, an onsite plus core values, a front-end system design question. |
+| AB12 | [Blind](https://www.teamblind.com/post/just-bombed-my-airbnb-coding-interviews-a3idwxsm) | 2024-10 | FE, poster | A phone screen where the interviewer keeps adding questions. Final rounds: a project the candidate led; design of a frontend app or component (state, data, APIs, trade-offs, optimisations); DOM or React coding; JavaScript coding (currying, callbacks, async, closures, prototypes). The round list does not name Airbnb; the thread title and the question it answers do. |
+| AB13 | [Taro](https://www.jointaro.com/interviews/companies/airbnb/experiences/software-engineer-united-states-september-1-2025-no-offer-negative-8231f149/) | 2025-09* | SWE, front-end heavy | A recruiter contact and a prep packet. The onsite had a system design question that matched neither the job nor the packet, and a 45-minute LeetCode-hard coding puzzle. |
+| AB14 | [Taro](https://www.jointaro.com/interviews/companies/airbnb/experiences/senior-software-engineer-united-states-december-1-2024-no-offer-negative-1f4f28c4/) | 2024-12* | Senior SWE | Frontend-oriented coding, behavioural and system design; team matching with hiring managers, then months of recruiter silence. |
+| AB15 | [Taro](https://www.jointaro.com/interviews/companies/airbnb/experiences/senior-software-engineer-united-states-june-1-2024-no-offer-neutral-1ca3bb85/) | 2024-06* | Senior SWE | Tasks only: a Backbone model and a star rating UI. Round not stated. |
+| AB16 | [Taro](https://www.jointaro.com/interviews/companies/airbnb/experiences/senior-software-engineer-new-york-ny-july-1-2024-no-offer-negative-4d27b9bc/) | 2024-07* | Senior SWE | A JavaScript class that stores a data object; passing test cases were the only feedback. Round not stated. |
+| AB17 | [PracHub](https://prachub.com/interview-experiences/airbnb-software-engineer-interview-experience-full-stack-phone-screen-lands-an-onsite-invite) | 2025-08 | SWE, full-stack; curated and edited by PracHub | A 60-minute screen: 40 minutes building a booking widget, 20 of product discussion; follow-ups on multi-currency, fewer requests and offline caching. An onsite invite followed. |
+| AB18 | [PracHub](https://prachub.com/interview-experiences/airbnb-software-engineer-interview-experience-tree-sums-a-retry-hof-and-a-rental-watchlist-design-question) | 2025-09 per the page; its correction note is dated 2025-07 | SWE; curated and edited by PracHub | Screen: a tree problem. Onsite: a retry wrapper, which the author calls both frontend and algorithm; three inputs with validators. Also a rental watchlist design, round not stated. |
+| AB19 | [LC 348436](https://leetcode.com/discuss/interview-question/348436/Airbnb-or-Phone-Screen-or-Implement-StoreData-class) | 2019-08 | Senior FE | A phone screen: a JavaScript store class with change listeners. Old; used only to show that the store prompt recurs (AB7, AB15, AB16). |
+| AB20 | [Blind](https://www.teamblind.com/post/airbnb-coding-interviews-yf2ppofe) | 2024-03 | General engineering (c) | An Airbnb-badged commenter, hedged: a technical experience round for all engineers, one past project in depth. |
+
+**Corrections to the rows above**
+- AB5 is advice from an Airbnb-badged commenter, not an account of an interview.
+- AB3's first comment is an employee's general statement; "I also got an Experience round" is the only own-round claim there.
+- AB4 is hedged by its author ("I think").
+- AB7 is a question post with a later edit; the edit names a UI component or a design question such as a key-value store.
+
+**Not used**
+- A February 2026 Medium post on an SDE-1 frontend loop: the page answers 403 and the feed holds only a teaser.
+- 28 other PracHub Airbnb entries: their titles and card previews name no frontend work, and 5 are locked. They were screened, not read.
+- Templated guides surfaced by search (hack2hire, interviewstack, codinginterview and similar).
+
+**Proposed table: frontend engineers, 2024 to 2025**
+
+| Stage | What happens | Who | Sources |
+|---|---|---|---|
+| Recruiter call | A short call about experience. Two accounts received prep material. | Frontend accounts | AB9, AB13 |
+| Technical screen | Content varies: a JavaScript store or UI component, tests that must pass, a 60-minute booking widget with product discussion, or a LeetCode-hard problem despite frontend prep material. | All accounts | AB2, AB7, AB9, AB12, AB17 |
+| Coding: UI or React | Build UI: a styled card game, a photo gallery with live updates and timeouts, a React component, a DOM or React task. | Frontend accounts | AB1, AB8, AB10, AB12 |
+| Coding: JavaScript | Currying, callbacks, async, closures and prototypes in one account; vanilla JavaScript in another; event loop and closures in a commenter's loop. | Frontend accounts | AB2 (c), AB8, AB12 |
+| Frontend system design | Design a frontend app or component: state, data, APIs, trade-offs. Two accounts report a chat app. One says the question matched neither the job nor the prep packet. | Frontend accounts | AB1, AB10, AB11, AB12, AB13 |
+| Experience deep dive | A past project in depth, in one account a project the candidate led. | Frontend accounts | AB3 (c), AB4 (c), AB10, AB12 |
+| Core values or behavioural | A core values interview in one account, behavioural questions in others. | Some accounts | AB4 (c), AB11, AB14 |
+| Algorithms | Accounts disagree: no algorithms (AB11), not much (AB4), one array or LeetCode-medium problem in 2021 and 2022 (AB3, AB6), LeetCode-hard in 2025 (AB9, AB13). | Varies | AB3 (c), AB4 (c), AB6, AB9, AB11, AB13 |
+| Team matching | Conversations with hiring managers after the interviews. | One account | AB14 |
+
+**Draft copy**
+- Summary: "Airbnb's careers FAQ says the process depends on the position and that candidates meet several people on the team. Frontend accounts from 2024 and 2025 describe a recruiter call and a technical screen, then UI and JavaScript coding, frontend system design and a past-project deep dive."
+- Caveat: "Accounts disagree on algorithms: one reports none, two report a LeetCode-hard problem in 2025. Most list tasks without naming the round, so rows group them by type and do not give an order. We read no frontend account from 2026."
+
+**Practice links to check when building:** `react-star-rating`, `js-event-emitter-mini`, `js-curry-function`, the system design blueprint guide, the behavioral guide.
+
+**Open gaps**
+- No frontend account from 2026 was read. PracHub's 2026 software engineer titles are mostly a 90-minute four-level online assessment; whether frontend candidates get it is unknown.
+- Only AB10 and AB12 list most of a loop, and AB4 counts six interviews in 2022. Round order is not established.
+- Code review appears in general software engineer loops and in no frontend account here, so it stays out of the table.
+- Adding the table also means changing the Airbnb FAQ answer that explains why the page has none, and the checks that pin Airbnb as having no table (`frontend/e2e/seo-ssr.spec.ts`, `frontend/scripts/seo-content-inventory.test.mjs`).
+
 ## Uber
 
 **Readiness: ready.** The official frontend guide, a published candidate story and seven accounts from 2022 to 2026 agree on the core stages. Most accounts are from India.
