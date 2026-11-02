@@ -9,7 +9,7 @@
     "approvedBy": "project-owner",
     "approvedAt": "2026-08-24",
     "registryVersion": "1.1.0",
-    "registryContentHash": "becbc13eb5f6b33e776a469beca4ad364bf52e60c5697a5123c15e5c1fe4bb22",
+    "registryContentHash": "795ce6db9572574f52bee6063c968d6efcaa0575ae4fb25a8cfc709bebe537ed",
     "selectionDefinitionHash": "95ae46b01019649017306384cd4928315a33ccb8d77c50f48306b2ecb5bc4c3e",
     "notes": [
       "Project owner approved coding registry v1.1.0 for editorial-gold production use after the release-readiness audit.",
@@ -20,12 +20,13 @@
       "2026-10-17 source-pin maintenance: registryContentHash refreshed after the js-debounce, js-group-by, js-once, js-unique-array, react-contact-form-starter, react-debounced-search and react-shopping-cart source questions gained company tags and public source lists for the European company pages. Public variant content is unchanged apart from contentHash; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release.",
       "2026-10-22 source-pin maintenance: registryContentHash refreshed after the js-unique-array, js-debounce and react-debounced-search source questions had Taro cities and placeholder months removed from their public source labels. Public variant content is unchanged apart from that label text; no new approval.",
       "2026-11-02 source-pin maintenance: registryContentHash refreshed after the nested-comments and contact-form source questions gained a Pressure Mode reference and the React nested-comments starter stopped rebuilding its reply input on every letter. That starter is the only public variant content that changes; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release.",
-      "2026-11-02 source-pin maintenance: registryContentHash refreshed after the multi-step form and nested-checkboxes source questions gained a Pressure Mode reference and a wrong comment in the Vue nested-checkboxes starter was corrected. That comment is the only public variant content that changes; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release."
+      "2026-11-02 source-pin maintenance: registryContentHash refreshed after the multi-step form and nested-checkboxes source questions gained a Pressure Mode reference and a wrong comment in the Vue nested-checkboxes starter was corrected. That comment is the only public variant content that changes; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release.",
+      "2026-11-02 source-pin maintenance: registryContentHash refreshed after the transfer-list source questions gained a Pressure Mode reference. No public variant content changes; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release."
     ]
   },
-  "definitionHash": "3b565883b4a7064859e38fe79ffe1ec4f85a139afd8e907ea22fdee3eeb0442e",
+  "definitionHash": "64be5712c3aa9b32096d1852007b5d5d178557cb8d517b5cc6bb2ddbe0c9d149",
   "reviewBatch": {
-    "reviewedDefinitionHash": "3b565883b4a7064859e38fe79ffe1ec4f85a139afd8e907ea22fdee3eeb0442e",
+    "reviewedDefinitionHash": "64be5712c3aa9b32096d1852007b5d5d178557cb8d517b5cc6bb2ddbe0c9d149",
     "reviewedAt": "2026-08-24",
     "technical": {
       "reviewer": "codex-interview-coding-technical-v1",
@@ -42,7 +43,8 @@
         "2026-10-17 source-pin maintenance review: the js-debounce, js-group-by, js-once, js-unique-array, react-contact-form-starter, react-debounced-search and react-shopping-cart catalog entries gain company tags and, where a public interview account was read in full, public source lists for Revolut, Zalando, Spotify and Booking.com; starter code, tests, descriptions, solutions and every graded field are unchanged. Rubrics, time limits and variant revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval.",
         "2026-10-22 source-pin maintenance review: the js-unique-array, js-debounce and react-debounced-search catalog entries change only the label text of public sources (a Taro city or a placeholder month removed); starters, tests, solutions, rubrics and remediation are unchanged.",
         "2026-11-02 source-pin maintenance review: the React, Angular and Vue nested-comments and contact-form catalog entries gain pressureModeAsset, which this registry does not read because each variant pins its own candidate pressure asset. The React nested-comments starter renders its tree through a plain function instead of a component created in useMemo, so the reply input keeps focus while typing, and the same question's solution prose says so. Markup, classes, rubrics, time limits, pressure rounds and revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval.",
-        "2026-11-02 source-pin maintenance review: the React, Angular and Vue multi-step form and nested-checkboxes catalog entries gain pressureModeAsset, which this registry does not read because each variant pins its own candidate pressure asset. The Vue nested-checkboxes starter comment said the parent should never become indeterminate, which contradicted the question and its solution, and now says the parent is checked, unchecked or indeterminate. Markup, classes, rubrics, time limits, pressure rounds and revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
+        "2026-11-02 source-pin maintenance review: the React, Angular and Vue multi-step form and nested-checkboxes catalog entries gain pressureModeAsset, which this registry does not read because each variant pins its own candidate pressure asset. The Vue nested-checkboxes starter comment said the parent should never become indeterminate, which contradicted the question and its solution, and now says the parent is checked, unchecked or indeterminate. Markup, classes, rubrics, time limits, pressure rounds and revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval.",
+        "2026-11-02 source-pin maintenance review: the React, Angular and Vue transfer-list catalog entries gain pressureModeAsset, which this registry does not read because each variant pins its own candidate pressure asset. Starters, markup, classes, rubrics, time limits, pressure rounds and revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
       ]
     },
     "editorial": {
@@ -1429,7 +1431,7 @@
       "level": "senior",
       "catalog": "react",
       "sourceQuestionId": "react-transfer-list",
-      "expectedQuestionHash": "b7cb91e3805722bee58371a6490e74a3dfb2b382402e81f9f90c0acb02b71ed2",
+      "expectedQuestionHash": "89b7f31abc18d30b31d7d16ca07e7037cda3e2510cb7bcf956c71573e9c92a12",
       "expectedStarterAssetHash": "a80e4255df0164432b7ebf05954ea8822006f4051e709c000e50fe77653badf5",
       "pressureAsset": "authoring://pressure-modes/transfer-list.candidate-v1.json",
       "expectedPressureAssetHash": "2225d1e7ad732b1565cd6bb9ddba75dd66714355bc6f6b7dfc6ae2f4e0588ed1",
@@ -1618,7 +1620,7 @@
       "level": "senior",
       "catalog": "angular",
       "sourceQuestionId": "angular-transfer-list",
-      "expectedQuestionHash": "bf20743eb083ae24eae21b46411b4d19043cd62c0bed61bb815c62fd39a51510",
+      "expectedQuestionHash": "7cbda917ff1070ced87752560f6e35ba512df113d83c04e6e92d16d0b62dd457",
       "expectedStarterAssetHash": "7417a1a3ea187ae193b6c2772fefa7f33458f4d1005267f0f0e6fc26d11141a0",
       "pressureAsset": "authoring://pressure-modes/transfer-list.candidate-v1.json",
       "expectedPressureAssetHash": "2225d1e7ad732b1565cd6bb9ddba75dd66714355bc6f6b7dfc6ae2f4e0588ed1",
@@ -1807,7 +1809,7 @@
       "level": "senior",
       "catalog": "vue",
       "sourceQuestionId": "vue-transfer-list",
-      "expectedQuestionHash": "1bdc8448b99f4f35941ee510300629812b6dbf742b04b2e30168c57a5558c3c0",
+      "expectedQuestionHash": "0da7356748d791f03c2b6212109818793d2def423994cacb37764ea64f128b1b",
       "expectedStarterAssetHash": "be5b21544a9c797c7e09e79c035b5af9e01c7f7cce460cc9733a6e674dc8ede8",
       "pressureAsset": "authoring://pressure-modes/transfer-list.candidate-v1.json",
       "expectedPressureAssetHash": "2225d1e7ad732b1565cd6bb9ddba75dd66714355bc6f6b7dfc6ae2f4e0588ed1",

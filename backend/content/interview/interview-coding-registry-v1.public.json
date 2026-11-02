@@ -1188,7 +1188,7 @@
       "track": "angular"
     },
     {
-      "contentHash": "bd529822fa9573af9320418361a48114ef09de629e9a5fbe09e52308f78b0455",
+      "contentHash": "bf076a14611003511894b29d9216d8919c79ab95ed9f1db5338c8644140c591e",
       "enabled": true,
       "id": "int-code-angular-senior-transfer-list-v1",
       "level": "senior",
@@ -2858,7 +2858,7 @@
       "track": "react"
     },
     {
-      "contentHash": "8217d15cf01e71357c86c4ba04102d5fdc64ab11b8bce652ee1417ad25a46421",
+      "contentHash": "565aa71d9a24ec3b3a1d90a27eee556f690f7fce8b390c3b9d9956cb4e0c149f",
       "enabled": true,
       "id": "int-code-react-senior-transfer-list-v1",
       "level": "senior",
@@ -4009,7 +4009,7 @@
       "track": "vue"
     },
     {
-      "contentHash": "a194dcdd79f03241e9db8fb95cff276b2f1a1f1c2b14eb4b07bf88dc269d0cc3",
+      "contentHash": "de7ceb69e90c242884b78030808e288b37a235e3724d5cb417c3c1e6ad20add5",
       "enabled": true,
       "id": "int-code-vue-senior-transfer-list-v1",
       "level": "senior",

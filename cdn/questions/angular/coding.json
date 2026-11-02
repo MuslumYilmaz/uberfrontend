@@ -601,6 +601,7 @@
       "openFile": "/src/app/app.component.ts",
       "storageKey": "v2:ui:angular:angular-image-slider-starter"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/image-slider.v1.json",
     "companies": [
       "amazon",
       "google"
@@ -2196,6 +2197,7 @@
       "openFile": "/src/app/app.component.ts",
       "storageKey": "v2:ui:angular:angular-transfer-list"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/transfer-list.v1.json",
     "companies": [
       "meta"
     ],
@@ -2395,6 +2397,7 @@
       "openFile": "/src/app/app.component.ts",
       "storageKey": "v2:ui:angular:angular-like-button"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/like-button.v1.json",
     "companies": [
       "amazon"
     ],

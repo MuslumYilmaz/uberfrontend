@@ -1,0 +1,620 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "like-button-pressure-v1",
+  "family": "like-button",
+  "title": "Like Button Interview Pressure Mode",
+  "access": "premium",
+  "estimatedMinutes": 45,
+  "supportedQuestions": {
+    "react": "react-like-button",
+    "angular": "angular-like-button",
+    "vue": "vue-like-button"
+  },
+  "rounds": [
+    {
+      "id": "update-first",
+      "title": "Update first, save after",
+      "interviewerPrompt": "The like has to reach a server now. The button must answer at once, even though the server takes time.",
+      "constraints": [
+        "Add a function named `saveLike(liked)` that returns a promise and resolves after 400 ms. This is your fake server.",
+        "A click updates `label`, `aria-pressed` and `count` right away, before the save finishes. Liking adds 1 and unliking removes 1.",
+        "While a save runs, show `Saving…` in an element with the class `save-status`. When it finishes, show `Saved`.",
+        "Keep the starter classes `likeBtn`, `label` and `count`. The count starts at 120."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-like-instant",
+          "name": "Round 1 · The screen answers before the server does",
+          "steps": [
+            {
+              "type": "expectText",
+              "selector": ".label",
+              "text": "Like"
+            },
+            {
+              "type": "expectText",
+              "selector": ".count",
+              "text": "120"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".likeBtn",
+              "attribute": "aria-pressed",
+              "expected": "false"
+            },
+            {
+              "type": "click",
+              "selector": ".likeBtn"
+            },
+            {
+              "type": "expectText",
+              "selector": ".label",
+              "text": "Liked"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".likeBtn",
+              "attribute": "aria-pressed",
+              "expected": "true"
+            },
+            {
+              "type": "expectText",
+              "selector": ".count",
+              "text": "121"
+            },
+            {
+              "type": "expectText",
+              "selector": ".save-status",
+              "text": "Saving…"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".save-status",
+              "text": "Saved",
+              "timeoutMs": 800
+            },
+            {
+              "type": "expectText",
+              "selector": ".label",
+              "text": "Liked"
+            },
+            {
+              "type": "expectText",
+              "selector": ".count",
+              "text": "121"
+            },
+            {
+              "type": "click",
+              "selector": ".likeBtn"
+            },
+            {
+              "type": "expectText",
+              "selector": ".label",
+              "text": "Like"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".likeBtn",
+              "attribute": "aria-pressed",
+              "expected": "false"
+            },
+            {
+              "type": "expectText",
+              "selector": ".count",
+              "text": "120"
+            },
+            {
+              "type": "expectText",
+              "selector": ".save-status",
+              "text": "Saving…"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".save-status",
+              "text": "Saved",
+              "timeoutMs": 800
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "server-says-no",
+      "title": "Go back when the server says no",
+      "interviewerPrompt": "Servers fail. When a save fails, the screen must return to the truth and tell the user what happened.",
+      "constraints": [
+        "Add a checkbox with the class `server-down`. While it is checked, `saveLike` rejects after 400 ms.",
+        "When a save fails, `label`, `aria-pressed` and `count` return to what they were before the click.",
+        "Show `Could not save your like.` in an element with the class `save-error` and `role=\"alert\"`.",
+        "The next click removes the error right away."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-like-failure",
+          "name": "Round 2 · A failed save goes back and says why",
+          "steps": [
+            {
+              "type": "click",
+              "selector": ".server-down"
+            },
+            {
+              "type": "click",
+              "selector": ".likeBtn"
+            },
+            {
+              "type": "expectText",
+              "selector": ".label",
+              "text": "Liked"
+            },
+            {
+              "type": "expectText",
+              "selector": ".count",
+              "text": "121"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".save-error",
+              "count": 0
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".save-error",
+              "count": 1,
+              "timeoutMs": 800
+            },
+            {
+              "type": "expectText",
+              "selector": ".save-error",
+              "text": "Could not save your like."
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".save-error",
+              "attribute": "role",
+              "expected": "alert"
+            },
+            {
+              "type": "expectText",
+              "selector": ".label",
+              "text": "Like"
+            },
+            {
+              "type": "expectText",
+              "selector": ".count",
+              "text": "120"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".likeBtn",
+              "attribute": "aria-pressed",
+              "expected": "false"
+            },
+            {
+              "type": "click",
+              "selector": ".likeBtn"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".save-error",
+              "count": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".count",
+              "text": "121"
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".save-error",
+              "count": 1,
+              "timeoutMs": 800
+            },
+            {
+              "type": "expectText",
+              "selector": ".count",
+              "text": "120"
+            },
+            {
+              "type": "click",
+              "selector": ".server-down"
+            },
+            {
+              "type": "click",
+              "selector": ".likeBtn"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".save-error",
+              "count": 0
+            },
+            {
+              "type": "waitForText",
+              "selector": ".save-status",
+              "text": "Saved",
+              "timeoutMs": 800
+            },
+            {
+              "type": "expectCount",
+              "selector": ".save-error",
+              "count": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".label",
+              "text": "Liked"
+            },
+            {
+              "type": "expectText",
+              "selector": ".count",
+              "text": "121"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fast-clicks",
+      "title": "Fast clicks",
+      "interviewerPrompt": "People click quickly. Every click must show at once, but the server should only hear what matters.",
+      "constraints": [
+        "Keep the button enabled while saving. Every click updates the screen right away.",
+        "Only one save runs at a time. If the user clicks during a save, wait for it to finish, then save the latest value once.",
+        "If the latest value is what the server already has, send nothing more.",
+        "If a save fails, drop any waiting value and return to the last value the server accepted.",
+        "Show how many saves were sent in an element with the class `request-count`."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-like-fast-clicks",
+          "name": "Round 3 · Fast clicks end in one correct state",
+          "steps": [
+            {
+              "type": "expectText",
+              "selector": ".request-count",
+              "text": "0"
+            },
+            {
+              "type": "click",
+              "selector": ".likeBtn"
+            },
+            {
+              "type": "click",
+              "selector": ".likeBtn"
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".likeBtn",
+              "disabled": false
+            },
+            {
+              "type": "expectText",
+              "selector": ".label",
+              "text": "Like"
+            },
+            {
+              "type": "expectText",
+              "selector": ".count",
+              "text": "120"
+            },
+            {
+              "type": "expectText",
+              "selector": ".request-count",
+              "text": "1"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".request-count",
+              "text": "2",
+              "timeoutMs": 800
+            },
+            {
+              "type": "expectText",
+              "selector": ".save-status",
+              "text": "Saving…"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".save-status",
+              "text": "Saved",
+              "timeoutMs": 800
+            },
+            {
+              "type": "expectText",
+              "selector": ".request-count",
+              "text": "2"
+            },
+            {
+              "type": "expectText",
+              "selector": ".label",
+              "text": "Like"
+            },
+            {
+              "type": "expectText",
+              "selector": ".count",
+              "text": "120"
+            },
+            {
+              "type": "click",
+              "selector": ".likeBtn"
+            },
+            {
+              "type": "click",
+              "selector": ".likeBtn"
+            },
+            {
+              "type": "click",
+              "selector": ".likeBtn"
+            },
+            {
+              "type": "expectText",
+              "selector": ".label",
+              "text": "Liked"
+            },
+            {
+              "type": "expectText",
+              "selector": ".count",
+              "text": "121"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".save-status",
+              "text": "Saved",
+              "timeoutMs": 800
+            },
+            {
+              "type": "wait",
+              "durationMs": 100
+            },
+            {
+              "type": "expectText",
+              "selector": ".request-count",
+              "text": "3"
+            },
+            {
+              "type": "click",
+              "selector": ".server-down"
+            },
+            {
+              "type": "click",
+              "selector": ".likeBtn"
+            },
+            {
+              "type": "click",
+              "selector": ".likeBtn"
+            },
+            {
+              "type": "click",
+              "selector": ".likeBtn"
+            },
+            {
+              "type": "expectText",
+              "selector": ".label",
+              "text": "Like"
+            },
+            {
+              "type": "expectText",
+              "selector": ".count",
+              "text": "120"
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".save-error",
+              "count": 1,
+              "timeoutMs": 800
+            },
+            {
+              "type": "expectText",
+              "selector": ".label",
+              "text": "Liked"
+            },
+            {
+              "type": "expectText",
+              "selector": ".count",
+              "text": "121"
+            },
+            {
+              "type": "expectText",
+              "selector": ".request-count",
+              "text": "4"
+            },
+            {
+              "type": "click",
+              "selector": ".likeBtn"
+            },
+            {
+              "type": "click",
+              "selector": ".likeBtn"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".save-error",
+              "count": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".label",
+              "text": "Liked"
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".save-error",
+              "count": 1,
+              "timeoutMs": 800
+            },
+            {
+              "type": "expectText",
+              "selector": ".label",
+              "text": "Liked"
+            },
+            {
+              "type": "expectText",
+              "selector": ".count",
+              "text": "121"
+            },
+            {
+              "type": "expectText",
+              "selector": ".request-count",
+              "text": "5"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "say-what-happened",
+      "title": "Say what happened, leave nothing behind",
+      "interviewerPrompt": "Finish with what users cannot see. A screen reader must hear the result, and removing the button must leave nothing running.",
+      "constraints": [
+        "Always keep the element with the class `save-status` on the page, with `aria-live=\"polite\"`.",
+        "`Saved` goes away after 1 second. A new click cancels that wait, so an old timer cannot clear a newer message.",
+        "When a save fails, `save-status` is empty, because `save-error` already says it.",
+        "Removing the component during a save must leave no timer running, so `saveLike` needs a way to stop its wait."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-like-status",
+          "name": "Round 4 · The status stays on the page and clears itself",
+          "steps": [
+            {
+              "type": "expectCount",
+              "selector": ".save-status",
+              "count": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".save-status",
+              "text": ""
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".save-status",
+              "attribute": "aria-live",
+              "expected": "polite"
+            },
+            {
+              "type": "click",
+              "selector": ".likeBtn"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".save-status",
+              "text": "Saved",
+              "timeoutMs": 800
+            },
+            {
+              "type": "wait",
+              "durationMs": 700
+            },
+            {
+              "type": "expectText",
+              "selector": ".save-status",
+              "text": "Saved"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".save-status",
+              "text": "",
+              "timeoutMs": 800
+            },
+            {
+              "type": "expectCount",
+              "selector": ".save-status",
+              "count": 1
+            },
+            {
+              "type": "click",
+              "selector": ".likeBtn"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".save-status",
+              "text": "Saved",
+              "timeoutMs": 800
+            },
+            {
+              "type": "wait",
+              "durationMs": 450
+            },
+            {
+              "type": "click",
+              "selector": ".likeBtn"
+            },
+            {
+              "type": "expectText",
+              "selector": ".save-status",
+              "text": "Saving…"
+            },
+            {
+              "type": "wait",
+              "durationMs": 850
+            },
+            {
+              "type": "expectText",
+              "selector": ".save-status",
+              "text": "Saved"
+            },
+            {
+              "type": "click",
+              "selector": ".server-down"
+            },
+            {
+              "type": "click",
+              "selector": ".likeBtn"
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".save-error",
+              "count": 1,
+              "timeoutMs": 800
+            },
+            {
+              "type": "expectText",
+              "selector": ".save-status",
+              "text": ""
+            }
+          ]
+        },
+        {
+          "id": "pressure-like-cleanup",
+          "name": "Round 4 · Removing the button stops the save",
+          "steps": [
+            {
+              "type": "click",
+              "selector": ".likeBtn"
+            },
+            {
+              "type": "wait",
+              "durationMs": 100
+            },
+            {
+              "type": "unmountPreview"
+            },
+            {
+              "type": "expectNoPreviewTimers"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "debrief": {
+    "title": "You kept the button fast and the server honest",
+    "summary": "You made a small button answer at once, recover from failures, survive fast clicks and clean up after itself. The interview signal is separating what the screen shows from what the server has accepted.",
+    "takeaways": [
+      "Update the screen first, then save, and keep the last value the server accepted.",
+      "On failure go back to that accepted value, not to the previous click.",
+      "Send one save at a time, and send the latest value only when it differs.",
+      "Give every timer one owner, so an old one cannot change a newer message."
+    ],
+    "frameworkNotes": {
+      "react": "A ref holds the accepted value and the waiting value, because the save callback must read the latest ones, not the values from the render that started it.",
+      "angular": "Plain class fields hold the accepted and waiting values, and `ngOnDestroy` stops the running timer.",
+      "vue": "Keep the accepted and waiting values outside template state, and stop the running timer in `onUnmounted`."
+    }
+  },
+  "solutionAssets": {
+    "react": "assets/sb/react/solution/react-like-button-pressure-solution.v1.json",
+    "angular": "assets/sb/angular/solution/angular-like-button-pressure-solution.v1.json",
+    "vue": "assets/sb/vue/solution/vue-like-button-pressure-solution.v1.json"
+  }
+}

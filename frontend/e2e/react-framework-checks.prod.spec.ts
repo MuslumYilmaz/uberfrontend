@@ -191,6 +191,46 @@ const NESTED_CHECKBOXES_PRESSURE_SOLUTIONS = {
   ),
 } as const;
 
+const IMAGE_SLIDER_PRESSURE_SOLUTIONS = {
+  react: readCanonicalFiles(
+    '../cdn/sb/react/solution/react-image-slider-pressure-solution.v1.json',
+  ),
+  angular: readCanonicalFiles(
+    '../cdn/sb/angular/solution/angular-image-slider-pressure-solution.v1.json',
+  ),
+  vue: readCanonicalFiles(
+    '../cdn/sb/vue/solution/vue-image-slider-pressure-solution.v1.json',
+  ),
+} as const;
+
+const FILE_EXPLORER_PRESSURE_SOLUTION = readCanonicalFiles(
+  '../cdn/sb/react/solution/react-file-explorer-pressure-solution.v1.json',
+);
+
+const LIKE_BUTTON_PRESSURE_SOLUTIONS = {
+  react: readCanonicalFiles(
+    '../cdn/sb/react/solution/react-like-button-pressure-solution.v1.json',
+  ),
+  angular: readCanonicalFiles(
+    '../cdn/sb/angular/solution/angular-like-button-pressure-solution.v1.json',
+  ),
+  vue: readCanonicalFiles(
+    '../cdn/sb/vue/solution/vue-like-button-pressure-solution.v1.json',
+  ),
+} as const;
+
+const TRANSFER_LIST_PRESSURE_SOLUTIONS = {
+  react: readCanonicalFiles(
+    '../cdn/sb/react/solution/react-transfer-list-pressure-solution.v1.json',
+  ),
+  angular: readCanonicalFiles(
+    '../cdn/sb/angular/solution/angular-transfer-list-pressure-solution.v1.json',
+  ),
+  vue: readCanonicalFiles(
+    '../cdn/sb/vue/solution/vue-transfer-list-pressure-solution.v1.json',
+  ),
+} as const;
+
 const ACCORDION_FAQ_PRESSURE_SOLUTIONS = {
   react: readCanonicalFiles(
     '../cdn/sb/react/solution/react-accordion-faq-pressure-solution.v1.json',
@@ -419,6 +459,50 @@ const NESTED_CHECKBOXES_PRESSURE_FLOW: PressureFlowContract = {
     'selection-summary',
   ],
   debriefText: 'You kept the whole tree consistent',
+};
+
+const IMAGE_SLIDER_PRESSURE_FLOW: PressureFlowContract = {
+  checkCounts: [1, 2, 3, 5],
+  roundIds: [
+    'one-current-slide',
+    'autoplay',
+    'keyboard-and-screen-readers',
+    'slides-can-disappear',
+  ],
+  debriefText: 'You kept every slide change under control',
+};
+
+const FILE_EXPLORER_PRESSURE_FLOW: PressureFlowContract = {
+  checkCounts: [1, 2, 3, 5],
+  roundIds: [
+    'folders-and-files',
+    'keyboard',
+    'load-when-opened',
+    'rename',
+  ],
+  debriefText: 'You turned a static tree into a working file explorer',
+};
+
+const LIKE_BUTTON_PRESSURE_FLOW: PressureFlowContract = {
+  checkCounts: [1, 2, 3, 5],
+  roundIds: [
+    'update-first',
+    'server-says-no',
+    'fast-clicks',
+    'say-what-happened',
+  ],
+  debriefText: 'You kept the button fast and the server honest',
+};
+
+const TRANSFER_LIST_PRESSURE_FLOW: PressureFlowContract = {
+  checkCounts: [1, 2, 3, 5],
+  roundIds: [
+    'move-between-lists',
+    'select-many',
+    'search-inside-a-list',
+    'undo-and-announce',
+  ],
+  debriefText: 'You kept every item in exactly one place',
 };
 
 const ACCORDION_FAQ_PRESSURE_FLOW: PressureFlowContract = {
@@ -1699,6 +1783,36 @@ test.describe('Framework checks against the production SSR build', () => {
       readySelector: '.panel',
       solution: NESTED_CHECKBOXES_PRESSURE_SOLUTIONS[framework],
       flow: NESTED_CHECKBOXES_PRESSURE_FLOW,
+    })),
+    ...(['react', 'angular', 'vue'] as const).map((framework) => ({
+      name: `${framework} Image Carousel passes slide, autoplay, keyboard, removal, and cleanup pressure rounds`,
+      route: `/${framework}/coding/${
+        { react: 'react-image-slider', angular: 'angular-image-slider-starter', vue: 'vue-image-slider' }[framework]
+      }`,
+      readySelector: '.actions',
+      solution: IMAGE_SLIDER_PRESSURE_SOLUTIONS[framework],
+      flow: IMAGE_SLIDER_PRESSURE_FLOW,
+    })),
+    {
+      name: 'React File Explorer passes tree, keyboard, loading, rename, and path pressure rounds',
+      route: '/react/coding/react-file-explorer',
+      readySelector: '.tree',
+      solution: FILE_EXPLORER_PRESSURE_SOLUTION,
+      flow: FILE_EXPLORER_PRESSURE_FLOW,
+    },
+    ...(['react', 'angular', 'vue'] as const).map((framework) => ({
+      name: `${framework} Like Button passes instant update, failure, fast click, status, and cleanup pressure rounds`,
+      route: `/${framework}/coding/${framework}-like-button`,
+      readySelector: '.likeBtn',
+      solution: LIKE_BUTTON_PRESSURE_SOLUTIONS[framework],
+      flow: LIKE_BUTTON_PRESSURE_FLOW,
+    })),
+    ...(['react', 'angular', 'vue'] as const).map((framework) => ({
+      name: `${framework} Transfer List passes move, select all, search, undo, and announcement pressure rounds`,
+      route: `/${framework}/coding/${framework}-transfer-list`,
+      readySelector: '.layout',
+      solution: TRANSFER_LIST_PRESSURE_SOLUTIONS[framework],
+      flow: TRANSFER_LIST_PRESSURE_FLOW,
     })),
   ]) {
     test(scenario.name, async ({ page, baseURL }) => {

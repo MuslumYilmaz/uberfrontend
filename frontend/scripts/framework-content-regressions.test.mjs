@@ -173,7 +173,7 @@ function assertFrameworkCssFormatting() {
       canonicalRoot: path.join(repoRoot, 'cdn', 'sb'),
       mirrorRoot: path.join(repoRoot, 'frontend', 'src', 'assets', 'sb'),
     }),
-    { assets: 232, cssSources: 298, changedAssets: 0, changedCssSources: 0 },
+    { assets: 242, cssSources: 308, changedAssets: 0, changedCssSources: 0 },
     'The full framework CSS corpus must stay canonical and exactly mirrored'
   );
 }
@@ -1407,12 +1407,6 @@ function assertDebugDoubleRenderPressureMode() {
     'Typing a note must prove the badge did not render'
   );
 
-  // The preview only passes hooks by name, so a bare memo import is undefined there.
-  assert.ok(
-    scenario.rounds.flatMap((round) => round.constraints).some((rule) => rule.includes('write `React.memo`, not `memo`')),
-    'The rules must warn that this editor needs React.memo'
-  );
-
   assertPressureSolutions(
     scenario,
     { react: [/React\.memo/, /useCallback/, /useMemo/, /setCount\(\(c\) => c \+ 1\)/] },
@@ -1632,6 +1626,320 @@ function assertNestedCheckboxesPressureMode() {
     },
     'nested-checkboxes',
     'Checkbox Tree'
+  );
+}
+
+function assertImageSliderPressureMode() {
+  const { scenario, checksById } = assertPremiumPressureScenario({
+    family: 'image-slider',
+    label: 'Image Carousel',
+    expectedQuestions: {
+      react: {
+        id: 'react-image-slider',
+        starter: 'assets/sb/react/question/react-image-slider.v1.json',
+        solution: 'assets/sb/react/solution/react-image-slider-solution.v1.json',
+        checks: [],
+      },
+      angular: {
+        id: 'angular-image-slider-starter',
+        starter: 'assets/sb/angular/question/angular-image-slider.v2.json',
+        solution: 'assets/sb/angular/solution/angular-image-slider-solution.v2.json',
+        checks: [],
+      },
+      vue: {
+        id: 'vue-image-slider',
+        starter: 'assets/sb/vue/question/vue-image-slider.v1.json',
+        solution: 'assets/sb/vue/solution/vue-image-slider-solution.v1.json',
+        checks: [],
+      },
+    },
+    roundIds: ['one-current-slide', 'autoplay', 'keyboard-and-screen-readers', 'slides-can-disappear'],
+    checkIds: [
+      'pressure-slider-current',
+      'pressure-slider-autoplay',
+      'pressure-slider-keyboard',
+      'pressure-slider-remove',
+      'pressure-slider-cleanup',
+    ],
+  });
+
+  const selectors = Object.values(checksById).flatMap((check) => check.steps.map((step) => step.selector ?? ''));
+  assert.ok(
+    selectors.every((selector) => !/dot--active|\.active/.test(selector)),
+    'The active dot class differs by framework, so a check must read aria-current instead'
+  );
+  // The preview's error overlay holds an empty .meta element too, so a bare selector always finds one.
+  assert.ok(
+    selectors.filter((selector) => selector.includes('.meta')).every((selector) => selector === '.section .meta'),
+    'Every .meta check must stay inside the slider'
+  );
+
+  const autoplaySteps = checksById['pressure-slider-autoplay'].steps;
+  assert.deepEqual(
+    autoplaySteps.filter((step) => step.type === 'wait').map((step) => step.durationMs),
+    [1200, 500, 700],
+    'The restart window must sample after the old timer would fire and before the restarted one does'
+  );
+  const quietWait = autoplaySteps.findLastIndex((step) => step.type === 'wait');
+  assert.equal(
+    autoplaySteps[quietWait - 1].text,
+    autoplaySteps[quietWait + 1].text,
+    'The slide the user picked must still be there after the old timer would have fired'
+  );
+
+  assert.deepEqual(
+    checksById['pressure-slider-cleanup'].steps.map((step) => step.type),
+    ['click', 'wait', 'unmountPreview', 'expectNoPreviewTimers'],
+    'Cleanup must remove the slider while it is playing'
+  );
+
+  assertPressureSolutions(
+    scenario,
+    {
+      react: [/aria-roledescription/, /% totalSlides/, /empty-state/, /aria-current/],
+      angular: [/ngOnDestroy/, /restartTimer/, /empty-state/, /aria-current/],
+      vue: [/onUnmounted/, /watch\(\[isPlaying, currentIndex, totalSlides\]/, /empty-state/, /aria-current/],
+    },
+    'image-slider',
+    'Image Carousel'
+  );
+}
+
+function assertFileExplorerPressureMode() {
+  const { scenario, checksById } = assertPremiumPressureScenario({
+    family: 'file-explorer',
+    label: 'File Explorer',
+    expectedQuestions: {
+      react: {
+        id: 'react-file-explorer',
+        starter: 'assets/sb/react/question/react-file-explorer.v1.json',
+        solution: 'assets/sb/react/solution/react-file-explorer-solution.v1.json',
+        checks: [
+          'explorer-sorts-folders-first',
+          'explorer-folder-toggles',
+          'explorer-empty-folder',
+          'explorer-selects-one-file',
+          'explorer-arrow-navigation',
+          'explorer-right-left',
+          'explorer-enter-activates',
+          'explorer-collapse-all-tab-stop',
+        ],
+      },
+    },
+    roundIds: ['folders-and-files', 'keyboard', 'load-when-opened', 'rename'],
+    checkIds: [
+      'pressure-explorer-tree',
+      'pressure-explorer-keyboard',
+      'pressure-explorer-load',
+      'pressure-explorer-rename',
+      'pressure-explorer-paths',
+    ],
+  });
+
+  // The normal empty folder check looks for .empty, so the question has to say so.
+  const question = json('cdn/questions/react/coding.json').find((entry) => entry.id === 'react-file-explorer');
+  assert.match(JSON.stringify(question.description.specs.requirements), /Empty folder` in an element with the class `empty`/);
+  const starter = normalizedAssetFiles(
+    json('cdn/sb/react/question/react-file-explorer.v1.json'),
+    'react:file-explorer-starter'
+  )['src/App.tsx'];
+  assert.match(starter, /in an element with the class empty/);
+
+  // Step 3 makes folders load late and makes public fail, and earlier checks keep running after it.
+  for (const id of ['pressure-explorer-tree', 'pressure-explorer-keyboard']) {
+    const steps = checksById[id].steps;
+    assert.ok(
+      steps.some((step) => step.type === 'waitForCount' && step.selector === '[data-path^="src/"]'),
+      `${id}: must wait for the children of an opened folder`
+    );
+    assert.ok(
+      !steps.some(
+        (step) =>
+          step.selector === '[data-path="public"] > .row'
+          || (step.selector === '[data-path="public"]' && ['ArrowRight', 'Enter'].includes(step.key))
+      ),
+      `${id}: must not open public, which fails on purpose in a later step`
+    );
+  }
+
+  const loadSteps = checksById['pressure-explorer-load'].steps;
+  const keyWhileLoading = loadSteps.findIndex((step) => step.key === 'ArrowRight');
+  assert.deepEqual(
+    loadSteps[keyWhileLoading + 1],
+    { type: 'expectFocused', selector: '[data-path="src"]' },
+    'ArrowRight on a loading folder must prove focus stays put'
+  );
+
+  const renameSteps = checksById['pressure-explorer-rename'].steps;
+  const keyInInput = renameSteps.findIndex((step) => step.key === 'ArrowDown');
+  assert.deepEqual(
+    renameSteps[keyInInput + 1],
+    { type: 'expectFocused', selector: '.rename-input' },
+    'A key pressed in the input must prove the tree did not move'
+  );
+
+  assertPressureSolutions(
+    scenario,
+    { react: [/fetchChildren/, /closest\('\.rename-input/, /focusAfterRender/, /aria-busy/] },
+    'file-explorer',
+    'File Explorer'
+  );
+}
+
+function assertLikeButtonPressureMode() {
+  const { scenario, checksById } = assertPremiumPressureScenario({
+    family: 'like-button',
+    label: 'Like Button',
+    expectedQuestions: {
+      react: {
+        id: 'react-like-button',
+        starter: 'assets/sb/react/question/react-like-button.v1.json',
+        solution: 'assets/sb/react/solution/react-like-button-solution.v2.json',
+        checks: [],
+      },
+      angular: {
+        id: 'angular-like-button',
+        starter: 'assets/sb/angular/question/angular-like-button.v2.json',
+        solution: 'assets/sb/angular/solution/angular-like-button-solution.v2.json',
+        checks: [],
+      },
+      vue: {
+        id: 'vue-like-button',
+        starter: 'assets/sb/vue/question/vue-like-button.v2.json',
+        solution: 'assets/sb/vue/solution/vue-like-button-solution.v2.json',
+        checks: [],
+      },
+    },
+    roundIds: ['update-first', 'server-says-no', 'fast-clicks', 'say-what-happened'],
+    checkIds: [
+      'pressure-like-instant',
+      'pressure-like-failure',
+      'pressure-like-fast-clicks',
+      'pressure-like-status',
+      'pressure-like-cleanup',
+    ],
+  });
+
+  // React runs updaters twice in StrictMode, so a nested setCount would change the count twice.
+  const normalSolution = normalizedAssetFiles(
+    json('cdn/sb/react/solution/react-like-button-solution.v2.json'),
+    'react:like-button-solution'
+  )['src/App.tsx'];
+  assert.doesNotMatch(normalSolution, /setLiked\(\(/, 'The official solution must keep state updaters pure');
+  assert.match(normalSolution, /setCount\(\(prevCount\)/);
+
+  const allSteps = Object.values(checksById).flatMap((check) => check.steps);
+  assert.ok(
+    allSteps.every((step) => step.type !== 'mockHttp'),
+    'fetch is off in live previews, so the candidate must be able to try this with the fake saveLike'
+  );
+
+  const fastSteps = checksById['pressure-like-fast-clicks'].steps;
+  assert.deepEqual(
+    fastSteps.filter((step) => step.selector === '.request-count').map((step) => step.text),
+    ['0', '1', '2', '2', '3', '4', '5'],
+    'Fast clicks must prove exactly how many saves reach the server'
+  );
+
+  assert.deepEqual(
+    checksById['pressure-like-status'].steps.filter((step) => step.type === 'wait').map((step) => step.durationMs),
+    [700, 450, 850],
+    'The status windows must sample after an old timer would clear a newer message'
+  );
+
+  assert.deepEqual(
+    checksById['pressure-like-cleanup'].steps.map((step) => step.type),
+    ['click', 'wait', 'unmountPreview', 'expectNoPreviewTimers'],
+    'Cleanup must remove the button during a save'
+  );
+
+  assertPressureSolutions(
+    scenario,
+    {
+      react: [/accepted/, /saveLike/, /messageTimer/, /role="alert"/],
+      angular: [/accepted/, /saveLike/, /ngOnDestroy/, /role="alert"/],
+      vue: [/accepted/, /saveLike/, /onUnmounted/, /role="alert"/],
+    },
+    'like-button',
+    'Like Button'
+  );
+}
+
+function assertTransferListPressureMode() {
+  const normalChecks = ['transfer-move-item'];
+  const { scenario, checksById } = assertPremiumPressureScenario({
+    family: 'transfer-list',
+    label: 'Transfer List',
+    expectedQuestions: {
+      react: {
+        id: 'react-transfer-list',
+        starter: 'assets/sb/react/question/react-transfer-list.v2.json',
+        solution: 'assets/sb/react/solution/react-transfer-list-solution.v2.json',
+        checks: normalChecks,
+      },
+      angular: {
+        id: 'angular-transfer-list',
+        starter: 'assets/sb/angular/question/angular-transfer-list.v2.json',
+        solution: 'assets/sb/angular/solution/angular-transfer-list-solution.v2.json',
+        checks: normalChecks,
+      },
+      vue: {
+        id: 'vue-transfer-list',
+        starter: 'assets/sb/vue/question/vue-transfer-list.v2.json',
+        solution: 'assets/sb/vue/solution/vue-transfer-list-solution.v2.json',
+        checks: normalChecks,
+      },
+    },
+    roundIds: ['move-between-lists', 'select-many', 'search-inside-a-list', 'undo-and-announce'],
+    checkIds: [
+      'pressure-transfer-move',
+      'pressure-transfer-select-all',
+      'pressure-transfer-search',
+      'pressure-transfer-undo',
+      'pressure-transfer-announce',
+    ],
+  });
+
+  assert.deepEqual(
+    checksById['pressure-transfer-move'].steps.filter((step) => step.type === 'click').slice(0, 2).map((step) => step.index),
+    [2, 1],
+    'The clicks must go against list order, or moving in click order passes'
+  );
+
+  const selectAllSteps = checksById['pressure-transfer-select-all'].steps;
+  const emptied = selectAllSteps.findIndex((step) => step.text === '0 of 0 selected');
+  assert.ok(emptied > 0, 'The select all check must empty a list');
+  assert.deepEqual(
+    selectAllSteps.slice(emptied + 1, emptied + 3).map((step) => step.selector),
+    ['.listCard:first-child .select-all', '.listCard:first-child .select-all:checked'],
+    'An empty list must not count as all selected'
+  );
+
+  assert.ok(
+    checksById['pressure-transfer-search'].steps.some(
+      (step) => step.selector === '.listCard:first-child .row:first-child input:checked' && step.count === 1
+    ),
+    'A hidden selected item must stay selected after a move'
+  );
+
+  const undoSteps = checksById['pressure-transfer-undo'].steps;
+  const firstUndo = undoSteps.findIndex((step) => step.type === 'click' && step.selector === '.undo-move');
+  assert.ok(
+    undoSteps.slice(firstUndo).some(
+      (step) => step.selector === '.listCard:last-child .row' && step.text === 'Xenon' && step.index === 0
+    ),
+    'Undo must return an item to its old position, not to the end of the list'
+  );
+
+  assertPressureSolutions(
+    scenario,
+    {
+      react: [/history/, /indeterminate/, /titles\.current/, /transfer-status/],
+      angular: [/\[indeterminate\]/, /history/, /nativeElement\.focus/, /transfer-status/],
+      vue: [/:indeterminate/, /history/, /topTitle\.value\?\.focus/, /transfer-status/],
+    },
+    'transfer-list',
+    'Transfer List'
   );
 }
 
@@ -5446,6 +5754,10 @@ assertDebugDoubleRenderPressureMode();
 assertTwoWayControlPressureMode();
 assertMultiStepFormPressureMode();
 assertNestedCheckboxesPressureMode();
+assertImageSliderPressureMode();
+assertFileExplorerPressureMode();
+assertLikeButtonPressureMode();
+assertTransferListPressureMode();
 
 const angularCodingQuestions = json('cdn/questions/angular/coding.json');
 const nestedCheckboxStarter = json('cdn/sb/angular/question/angular-nested-checkboxes.v1.json');

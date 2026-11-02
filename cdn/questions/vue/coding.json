@@ -610,6 +610,7 @@
       "openFile": "/src/App.vue",
       "storageKey": "v1:ui:vue:vue-image-slider"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/image-slider.v1.json",
     "solutionAsset": "assets/sb/vue/solution/vue-image-slider-solution.v1.json",
     "access": "premium",
     "updatedAt": "2026-01-30",
@@ -2144,6 +2145,7 @@
       "openFile": "/src/App.vue",
       "storageKey": "v2:ui:vue:vue-transfer-list"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/transfer-list.v1.json",
     "solutionAsset": "assets/sb/vue/solution/vue-transfer-list-solution.v2.json",
     "access": "premium",
     "updatedAt": "2026-01-30",
@@ -2344,6 +2346,7 @@
       "openFile": "/src/App.vue",
       "storageKey": "v2:ui:vue:vue-like-button"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/like-button.v1.json",
     "solutionAsset": "assets/sb/vue/solution/vue-like-button-solution.v2.json",
     "companies": [
       "amazon"

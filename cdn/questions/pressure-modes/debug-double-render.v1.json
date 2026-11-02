@@ -176,7 +176,7 @@
       "interviewerPrompt": "Add a note field to the page. Typing a note has nothing to do with the badge, so the badge should not render at all.",
       "constraints": [
         "Add an input with the class `note-input` and show its text with the test id `note`.",
-        "Wrap `ParityBadge` in `React.memo`. In this editor, write `React.memo`, not `memo`.",
+        "Wrap `ParityBadge` in `React.memo`.",
         "Add a Reset button inside the badge with the class `badge-reset`. It receives its handler as a prop named `onReset` and sets the count to 0.",
         "Typing a note must add 0 to `badge-renders`, so `onReset` must keep the same identity between renders. Use `useCallback`."
       ],

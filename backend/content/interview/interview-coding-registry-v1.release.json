@@ -2,15 +2,15 @@
   "artifacts": {
     "private": {
       "file": "interview-coding-registry-v1.private.json",
-      "sha256": "7870306e710e6fd8fc26c8755893880cd8472fbd25d8a2caea30d3ed7538ff69"
+      "sha256": "527e76d4a46fb8c035a79f7be8cb19a331491ccc7eaf33c94f73920d50f2a664"
     },
     "public": {
       "file": "interview-coding-registry-v1.public.json",
-      "sha256": "693fd31c3910fe6b8573086b1e4d678fc2c13a2ba30bd32b9c4efe97b335d6f2"
+      "sha256": "11f9c642c4e17d4dbc2404d5a3faf9401b4d8b696133f4107568af3ff512100c"
     }
   },
-  "contentHash": "becbc13eb5f6b33e776a469beca4ad364bf52e60c5697a5123c15e5c1fe4bb22",
-  "definitionHash": "3b565883b4a7064859e38fe79ffe1ec4f85a139afd8e907ea22fdee3eeb0442e",
+  "contentHash": "795ce6db9572574f52bee6063c968d6efcaa0575ae4fb25a8cfc709bebe537ed",
+  "definitionHash": "64be5712c3aa9b32096d1852007b5d5d178557cb8d517b5cc6bb2ddbe0c9d149",
   "enabledVariantCount": 60,
   "finalApproval": {
     "approvedAt": "2026-08-24",
@@ -24,13 +24,14 @@
       "2026-10-17 source-pin maintenance: registryContentHash refreshed after the js-debounce, js-group-by, js-once, js-unique-array, react-contact-form-starter, react-debounced-search and react-shopping-cart source questions gained company tags and public source lists for the European company pages. Public variant content is unchanged apart from contentHash; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release.",
       "2026-10-22 source-pin maintenance: registryContentHash refreshed after the js-unique-array, js-debounce and react-debounced-search source questions had Taro cities and placeholder months removed from their public source labels. Public variant content is unchanged apart from that label text; no new approval.",
       "2026-11-02 source-pin maintenance: registryContentHash refreshed after the nested-comments and contact-form source questions gained a Pressure Mode reference and the React nested-comments starter stopped rebuilding its reply input on every letter. That starter is the only public variant content that changes; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release.",
-      "2026-11-02 source-pin maintenance: registryContentHash refreshed after the multi-step form and nested-checkboxes source questions gained a Pressure Mode reference and a wrong comment in the Vue nested-checkboxes starter was corrected. That comment is the only public variant content that changes; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release."
+      "2026-11-02 source-pin maintenance: registryContentHash refreshed after the multi-step form and nested-checkboxes source questions gained a Pressure Mode reference and a wrong comment in the Vue nested-checkboxes starter was corrected. That comment is the only public variant content that changes; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release.",
+      "2026-11-02 source-pin maintenance: registryContentHash refreshed after the transfer-list source questions gained a Pressure Mode reference. No public variant content changes; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release."
     ],
-    "registryContentHash": "becbc13eb5f6b33e776a469beca4ad364bf52e60c5697a5123c15e5c1fe4bb22",
+    "registryContentHash": "795ce6db9572574f52bee6063c968d6efcaa0575ae4fb25a8cfc709bebe537ed",
     "registryVersion": "1.1.0",
     "selectionDefinitionHash": "95ae46b01019649017306384cd4928315a33ccb8d77c50f48306b2ecb5bc4c3e"
   },
-  "registryContentHash": "becbc13eb5f6b33e776a469beca4ad364bf52e60c5697a5123c15e5c1fe4bb22",
+  "registryContentHash": "795ce6db9572574f52bee6063c968d6efcaa0575ae4fb25a8cfc709bebe537ed",
   "registryId": "frontend-interview-coding-registry-v1",
   "registryVersion": "1.1.0",
   "schemaVersion": "1.0.0",
@@ -123,7 +124,7 @@
       "revision": 1
     },
     {
-      "contentHash": "bd529822fa9573af9320418361a48114ef09de629e9a5fbe09e52308f78b0455",
+      "contentHash": "bf076a14611003511894b29d9216d8919c79ab95ed9f1db5338c8644140c591e",
       "enabled": true,
       "id": "int-code-angular-senior-transfer-list-v1",
       "revision": 1
@@ -303,7 +304,7 @@
       "revision": 1
     },
     {
-      "contentHash": "8217d15cf01e71357c86c4ba04102d5fdc64ab11b8bce652ee1417ad25a46421",
+      "contentHash": "565aa71d9a24ec3b3a1d90a27eee556f690f7fce8b390c3b9d9956cb4e0c149f",
       "enabled": true,
       "id": "int-code-react-senior-transfer-list-v1",
       "revision": 1
@@ -393,7 +394,7 @@
       "revision": 1
     },
     {
-      "contentHash": "a194dcdd79f03241e9db8fb95cff276b2f1a1f1c2b14eb4b07bf88dc269d0cc3",
+      "contentHash": "de7ceb69e90c242884b78030808e288b37a235e3724d5cb417c3c1e6ad20add5",
       "enabled": true,
       "id": "int-code-vue-senior-transfer-list-v1",
       "revision": 1
