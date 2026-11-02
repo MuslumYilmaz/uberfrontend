@@ -1439,7 +1439,7 @@
     ],
     "updatedAt": "2026-04-09",
     "seo": {
-      "title": "React one-way data flow in production: state ownership, multi-writer bugs, and debug clarity",
+      "title": "React one-way data flow: state ownership and multi-writer bugs",
       "description": "React one-way data flow keeps state ownership clear, prevents multi-writer bugs, and makes production debugging and concurrent rendering safer."
     },
     "incidentCard": {
@@ -3303,7 +3303,7 @@
     ],
     "updatedAt": "2026-04-04",
     "seo": {
-      "title": "Higher-order components in React: legacy reuse, prop-collision pitfalls, and when not to use them",
+      "title": "Higher-order components in React: legacy reuse and prop collisions",
       "description": "HOCs still matter in legacy React and library APIs, but the practical angle is wrapper debugging, prop collisions, typing friction, and when hooks are simpler."
     },
     "incidentCard": {
@@ -3939,7 +3939,7 @@
     ],
     "updatedAt": "2026-04-04",
     "seo": {
-      "title": "Concurrent rendering in React: scheduling, interruptible work, and responsiveness pitfalls",
+      "title": "Concurrent rendering in React: scheduling and interruptible work",
       "description": "Concurrent rendering is about scheduling and interruptible work, not true parallelism. The key production question is when to split urgent and non-urgent updates."
     },
     "incidentCard": {
@@ -5571,7 +5571,7 @@
     ],
     "updatedAt": "2026-04-19",
     "seo": {
-      "title": "How to choose React Hooks: useState vs useReducer, useRef vs state, and effect trade-offs",
+      "title": "How to choose React Hooks: useState vs useReducer, useRef vs state",
       "description": "A strong React Hooks answer is a decision matrix, not a hook list. Learn when to use useState, useReducer, useEffect, useRef, memoization hooks, and transitions."
     },
     "incidentCard": {

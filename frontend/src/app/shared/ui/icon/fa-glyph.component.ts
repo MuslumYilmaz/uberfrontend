@@ -3,6 +3,7 @@ import { Component, Input } from '@angular/core';
 type FaGlyphName =
   | 'arrow-right'
   | 'bars'
+  | 'bolt'
   | 'bug'
   | 'calendar'
   | 'check'
@@ -21,6 +22,7 @@ type FaGlyphName =
   | 'flame'
   | 'folder'
   | 'info'
+  | 'lock'
   | 'search'
   | 'shuffle'
   | 'spinner'
@@ -44,6 +46,7 @@ type GlyphShapes = {
 const GLYPHS: Record<FaGlyphName, GlyphShapes> = {
   'arrow-right': { paths: ['M5 12h14', 'm13 6 6 6-6 6'] },
   'bars': { paths: ['M4 7h16', 'M4 12h16', 'M4 17h16'] },
+  'bolt': { paths: ['M13 3 5 14h6l-1 7 8-11h-6z'] },
   'bug': { paths: ['M9.5 7.5 8 5.8', 'm14.5 7.5 1.5-1.7', 'M7.5 9.5 5 8.5', 'm16.5 9.5 2.5-1', 'M7.5 14.5 5 15.5', 'm16.5 14.5 2.5 1', 'M12 8c-3 0-5 2.2-5 5v2.2A1.8 1.8 0 0 0 8.8 17h6.4a1.8 1.8 0 0 0 1.8-1.8V13c0-2.8-2-5-5-5Z', 'M12 8V5'] },
   'calendar': { paths: ['M8 3.5v4', 'M16 3.5v4', 'M4 10h16', 'M8 14h.01', 'M12 14h.01', 'M16 14h.01', 'M8 17h.01', 'M12 17h.01'], rects: [{ x: 4, y: 5.5, width: 16, height: 15, rx: 2.5 }] },
   'check': { paths: ['m5 12 4 4 10-10'] },
@@ -62,6 +65,7 @@ const GLYPHS: Record<FaGlyphName, GlyphShapes> = {
   'flame': { paths: ['M12 21c3.3 0 6-2.4 6-5.8 0-2.8-1.6-4.6-3.4-6.4-.9-.9-1.8-1.9-2.2-3.4-2.4 1.5-3.1 3.8-2.5 6-1.1-.4-1.8-1.2-2.2-2.1C6.6 10.6 6 12.3 6 14.2 6 18 8.7 21 12 21Z', 'M12.1 17.8c1.3 0 2.3-.9 2.3-2.2 0-1.2-.7-2-1.5-2.8-.4-.4-.8-.9-1-1.5-1 .7-1.4 1.8-1.2 2.9-.5-.2-.8-.5-1.1-.9-.5.7-.8 1.4-.8 2.2 0 1.4 1 2.3 2.3 2.3Z'] },
   'folder': { paths: ['M3.5 8.5A1.5 1.5 0 0 1 5 7h4l1.8 2H19a1.5 1.5 0 0 1 1.5 1.5v6A1.5 1.5 0 0 1 19 18H5A1.5 1.5 0 0 1 3.5 16.5z'] },
   'info': { paths: ['M12 10.5v5', 'M12 7.5h.01'], circles: [{ cx: 12, cy: 12, r: 9 }] },
+  'lock': { paths: ['M8 11V8a4 4 0 0 1 8 0v3'], rects: [{ x: 5.5, y: 11, width: 13, height: 9.5, rx: 2 }] },
   'search': { paths: ['m16 16 4 4'], circles: [{ cx: 11, cy: 11, r: 6 }] },
   'shuffle': { paths: ['M3.5 7h3.2c2.3 0 3.6 1.3 5.1 5 1.5 3.7 2.8 5 5.1 5h3.6', 'm17 14 3.5 3-3.5 3', 'M3.5 17h3.2c1.2 0 2.2-.4 3-1.4', 'M14.3 8.4c.8-1 1.8-1.4 3-1.4h3.2', 'm17 4 3.5 3-3.5 3'] },
   'spinner': { paths: ['M20.5 12A8.5 8.5 0 0 0 12 3.5'], circles: [{ cx: 12, cy: 12, r: 8.5, opacity: 0.25 }] },
@@ -148,6 +152,8 @@ export class FaGlyphComponent {
     if (value.includes('clipboard')) return 'clipboard';
     if (value.includes('calendar')) return 'calendar';
     if (value.includes('clock')) return 'clock';
+    if (value.includes('lock')) return 'lock';
+    if (value.includes('bolt')) return 'bolt';
     if (value.includes('spinner')) return 'spinner';
     if (value.includes('exclamation-triangle')) return 'warning';
     if (value.includes('info-circle')) return 'info';

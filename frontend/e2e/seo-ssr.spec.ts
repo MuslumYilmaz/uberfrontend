@@ -4492,6 +4492,42 @@ test.describe('seo-ssr', () => {
     expect((await page.locator('.main-col').boundingBox())?.x, 'the mounted sidebar takes the same column').toBe(280);
   });
 
+  test('a guest opening a premium company link lands on that company guide', async ({ page }) => {
+    await page.goto('/companies/agoda');
+    await expect(page).toHaveURL(/\/companies\/agoda\/preview$/);
+    await expect(page.locator('h1')).toContainText('Agoda');
+    await expect(page.locator('app-premium-required-dialog [role="dialog"]')).toHaveCount(0);
+  });
+
+  test('addresses with no page of their own end on /404 or their real page', async ({ page }) => {
+    for (const path of ['/companies/does-not-exist/preview', '/javascript/trivia/does-not-exist']) {
+      await page.goto(path);
+      await expect(page, path).toHaveURL(/\/404$/);
+    }
+    for (const [path, target] of [['/auth', /\/auth\/login/], ['/onboarding', /\/onboarding\/quick-start/], ['/billing', /\/pricing/]] as const) {
+      await page.goto(path);
+      await expect(page, path).toHaveURL(target);
+    }
+  });
+
+  test('legal pages and guide anchors stay stable: no reflow from late styles, every heading id unique', async ({ page, request }) => {
+    await page.setViewportSize({ width: 1366, height: 900 });
+    await page.addInitScript(() => {
+      (window as any).__shift = 0;
+      new PerformanceObserver((list) => {
+        for (const entry of list.getEntries() as any[]) if (!entry.hadRecentInput) (window as any).__shift += entry.value;
+      }).observe({ type: 'layout-shift', buffered: true });
+    });
+    await page.goto('/legal/refund', { waitUntil: 'networkidle' });
+    expect(await page.evaluate(() => (window as any).__shift), 'layout shift on /legal/refund').toBeLessThan(0.1);
+
+    for (const path of ['/guides/framework-prep/angular-prep-path', '/guides/interview-blueprint/dsa-for-fe']) {
+      const ids = [...(await readRawHtml(request, path)).matchAll(/<h[23][^>]*\sid="([^"]+)"/g)].map((match) => match[1]);
+      expect(ids.length, path).toBeGreaterThan(3);
+      expect(new Set(ids).size, `duplicate heading ids on ${path}`).toBe(ids.length);
+    }
+  });
+
   test('raw pages show no unrendered markdown or escaped entities', async ({ request }) => {
     test.setTimeout(120_000);
     const paths = [

@@ -3,6 +3,7 @@ import { Injectable, inject, DOCUMENT, PLATFORM_ID, REQUEST } from '@angular/cor
 import { isPlatformServer } from '@angular/common';
 import { Meta, Title } from '@angular/platform-browser';
 import { environment } from '../../../environments/environment';
+import { clampMetaDescription, fitSeoTitle } from '../utils/seo-text.util';
 
 const CANONICAL_HOST = 'frontendatlas.com';
 
@@ -46,14 +47,14 @@ export class SeoService {
    * Missing values fall back to defaults.
    */
   updateTags(payload: SeoMeta = {}): void {
-    const description = payload.description || this.defaults.description;
+    const description = clampMetaDescription(payload.description || this.defaults.description);
     const keywordsArr = payload.keywords?.length ? payload.keywords : this.defaults.keywords;
     const keywords = keywordsArr.join(', ');
     const hasQueryParams =
       this.hasCurrentQueryParams() || this.hasQueryInValue(payload.canonical);
     const image = this.toAbsoluteUrl(payload.image || this.defaults.image);
     const canonical = this.normalizeCanonical(payload.canonical || this.currentUrl());
-    const title = payload.title || `${this.defaults.siteName} | ${this.defaults.title}`;
+    const title = fitSeoTitle(payload.title || `${this.defaults.siteName} | ${this.defaults.title}`);
     const ogType = payload.ogType || 'website';
 
     this.titleSvc.setTitle(title);

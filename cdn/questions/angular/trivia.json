@@ -310,7 +310,7 @@
     ],
     "updatedAt": "2026-04-04",
     "seo": {
-      "title": "Angular vs AngularJS in real migrations: rewrite costs, digest cycle, and architecture shifts",
+      "title": "Angular vs AngularJS migrations: rewrite cost and digest cycle",
       "description": "Explain Angular vs AngularJS through the production migration lens: digest cycle vs component tree, controllers and $scope vs DI plus RxJS, and why upgrades are really rewrites."
     }
   },
@@ -653,7 +653,7 @@
     "publishedAt": "2026-04-12",
     "updatedAt": "2026-10-14",
     "seo": {
-      "title": "Angular @Component metadata under the hood: selector, scope, and runtime",
+      "title": "Angular @Component metadata: selector, scope, and runtime",
       "description": "Learn how @Component metadata drives Angular compilation, template scope, DI boundaries, and runtime behavior when components render or update incorrectly."
     }
   },
@@ -1074,7 +1074,7 @@
     ],
     "updatedAt": "2026-04-12",
     "seo": {
-      "title": "Standalone Angular migration: replacing AppModule without provider-scope bugs",
+      "title": "Standalone Angular migration: replace AppModule, avoid scope bugs",
       "description": "Explain standalone migration through real AppModule replacement work: bootstrapApplication, ApplicationConfig, component imports, route providers, and the DI-scope pitfalls that break features."
     }
   },
@@ -1086,7 +1086,7 @@
     "importance": 4,
     "description": "Angular templates are not runtime strings; Ivy compiles them into creation and update instructions, AOT type-checks them, and change detection re-runs the update phase. The useful mental model is how this under-the-hood pipeline explains stale bindings, update bugs, and template performance.",
     "seo": {
-      "title": "Angular template compilation under the hood: Ivy instructions, AOT checks, and binding debug",
+      "title": "Angular template compilation: Ivy instructions, AOT, binding debug",
       "description": "Explain Angular template compilation through the debug lens: Ivy create or update instructions, AOT template checking, and how change detection replays bindings against component state."
     },
     "answer": {
@@ -1529,7 +1529,7 @@
     ],
     "updatedAt": "2026-04-09",
     "seo": {
-      "title": "Angular data binding in production: one-way flow, property vs attribute, and two-way pitfalls",
+      "title": "Angular data binding: one-way flow, property vs attribute, two-way",
       "description": "Explain Angular data binding through real debugging pitfalls: one-way flow, property vs attribute mistakes, OnPush and signal follow-ups, and when two-way binding hides state bugs."
     }
   },
@@ -2039,7 +2039,7 @@
     ],
     "updatedAt": "2026-04-09",
     "seo": {
-      "title": "Angular directives in production: structural vs attribute, * syntax, and when TemplateRef matters",
+      "title": "Angular directives: structural vs attribute, * syntax, TemplateRef",
       "description": "Explain Angular directives through the real follow-ups: structural vs attribute behavior, * microsyntax desugaring, preserved state, and when TemplateRef/ViewContainerRef belongs in the answer."
     }
   },
@@ -2466,7 +2466,7 @@
     ],
     "updatedAt": "2026-04-18",
     "seo": {
-      "title": "Angular *ngIf in production: DOM teardown, lifecycle resets, and hide vs destroy",
+      "title": "Angular *ngIf: DOM teardown, lifecycle resets, and hide vs destroy",
       "description": "Explain *ngIf through real lifecycle behavior: embedded-view creation, DOM teardown, ngOnDestroy cleanup, and when hiding UI is safer than destroying it."
     }
   },
@@ -2649,7 +2649,7 @@
     ],
     "updatedAt": "2026-04-09",
     "seo": {
-      "title": "Angular trackBy for real list bugs: identity, DOM reuse, and preserved input state",
+      "title": "Angular trackBy: list identity, DOM reuse, and preserved input state",
       "description": "Explain trackBy through production list behavior: stable identity, DOM reuse, focus or input preservation, index-based reorder bugs, and why API refreshes break reference-based thinking."
     }
   },
@@ -2857,7 +2857,7 @@
     "publishedAt": "2026-04-10",
     "updatedAt": "2026-10-14",
     "seo": {
-      "title": "Angular services in production: DI scope, boundaries, and when to use one",
+      "title": "Angular services: DI scope, boundaries, and when to use one",
       "description": "Use services for shared logic, HTTP, caching, and orchestration; learn provider scope, component-vs-service boundaries, and common architecture mistakes."
     }
   },
@@ -3092,7 +3092,7 @@
     "publishedAt": "2026-04-09",
     "updatedAt": "2026-10-14",
     "seo": {
-      "title": "Angular dependency injection in production: providers, injector hierarchy, and scope bugs",
+      "title": "Angular dependency injection: providers, hierarchy, and scope bugs",
       "description": "Explain Angular DI through real provider-scope bugs, injector hierarchy, provider shapes, and resolution modifiers like Optional, Self, and SkipSelf."
     }
   },
@@ -4494,7 +4494,7 @@
     "publishedAt": "2026-04-09",
     "updatedAt": "2026-10-14",
     "seo": {
-      "title": "Angular routing in production: route trees, RouterOutlet, guards, and lazy loading",
+      "title": "Angular routing: route trees, RouterOutlet, guards, and lazy loading",
       "description": "Explain Angular routing through the real production concerns: route trees, RouterOutlet placement, guards, lazy loading, and the navigation bugs caused by misconfigured routes."
     }
   },
@@ -4630,7 +4630,7 @@
     "publishedAt": "2026-04-19",
     "updatedAt": "2026-10-14",
     "seo": {
-      "title": "Angular lazy loading in production: route boundaries, preloading, and bundle trade-offs",
+      "title": "Angular lazy loading: route boundaries, preloading, bundle trade-offs",
       "description": "Explain Angular lazy loading through real routing decisions: route boundaries, initial-bundle savings, preloading strategy, and the performance pitfalls of over-fragmented features."
     }
   },
@@ -5081,7 +5081,7 @@
     ],
     "updatedAt": "2026-04-19",
     "seo": {
-      "title": "ngOnChanges vs ngDoCheck in Angular: input diffs, custom checks, and cost",
+      "title": "ngOnChanges vs ngDoCheck in Angular: input diffs and custom checks",
       "description": "Use ngOnChanges for normal @Input reference changes, and reserve ngDoCheck for rare custom diffing when Angular's default checks are insufficient."
     }
   },
@@ -5392,7 +5392,7 @@
     "publishedAt": "2026-04-19",
     "updatedAt": "2026-10-14",
     "seo": {
-      "title": "Angular performance optimization in production: profiling, change detection, and render hotspots",
+      "title": "Angular performance: profiling, change detection, render hotspots",
       "description": "Explain Angular performance through real bottlenecks: profiling first, change-detection hotspots, large-list rendering costs, bundle trade-offs, and fixes like OnPush or trackBy."
     }
   },
@@ -6924,7 +6924,7 @@
     "importance": 5,
     "description": "Angular DI is hierarchical, so provider location changes instance count and service lifetime. The useful angle is the real production bug: re-providing a service in a component or standalone route and silently splitting shared state, caches, or coordination logic.",
     "seo": {
-      "title": "Angular hierarchical DI in production: duplicate providers, shadowed singletons, and cache bugs",
+      "title": "Angular hierarchical DI: duplicate providers and shadowed singletons",
       "description": "Explain Angular hierarchical DI through the real bug: a nearer provider shadows the root injector, creates a second instance, and breaks shared state or cache assumptions."
     },
     "answer": {
@@ -7912,7 +7912,7 @@
     ],
     "updatedAt": "2026-04-19",
     "seo": {
-      "title": "NgRx Store vs component state in Angular: shared state boundaries and cost trade-offs",
+      "title": "NgRx Store vs component state: shared state boundaries and cost",
       "description": "Keep short-lived UI state local, and move shared or business-critical state into NgRx Store only when traceable transitions and cross-feature access justify the extra structure."
     },
     "incidentCard": {
@@ -8055,7 +8055,7 @@
     ],
     "updatedAt": "2026-04-19",
     "seo": {
-      "title": "Pure reducers in NgRx: immutability, forbidden side effects, and effects boundaries",
+      "title": "Pure reducers in NgRx: immutability and forbidden side effects",
       "description": "A reducer should compute the next immutable state only from the current state and action. HTTP, router work, services, random values, and timestamps belong in effects."
     },
     "incidentCard": {

@@ -110,7 +110,7 @@ export const routes: Routes = [
     data: {
       seo: {
         title: 'FrontendAtlas changelog',
-        description: 'Weekly product updates and shipped improvements in FrontendAtlas.',
+        description: 'Weekly FrontendAtlas product updates: new practice questions, guides, fixes and shipped improvements.',
         robots: 'index,follow',
       },
     },
@@ -174,6 +174,7 @@ export const routes: Routes = [
   {
     path: 'auth',
     children: [
+      { path: '', pathMatch: 'full', redirectTo: 'login' },
       {
         path: 'login',
         loadComponent: () =>
@@ -245,6 +246,7 @@ export const routes: Routes = [
   {
     path: 'onboarding',
     children: [
+      { path: '', pathMatch: 'full', redirectTo: 'quick-start' },
       {
         path: 'quick-start',
         loadComponent: () =>
@@ -463,6 +465,7 @@ export const routes: Routes = [
   {
     path: 'billing',
     children: [
+      { path: '', pathMatch: 'full', redirectTo: '/pricing' },
       {
         path: 'success',
         loadComponent: () =>
@@ -1020,7 +1023,7 @@ export const routes: Routes = [
         data: {
           seo: {
             title: 'Legal overview',
-            description: 'Browse FrontendAtlas terms, privacy, and cookie policies.',
+            description: 'Browse the FrontendAtlas terms, privacy, cookie, refund and editorial policies in one place.',
           },
         },
       },
@@ -1033,7 +1036,7 @@ export const routes: Routes = [
         data: {
           seo: {
             title: 'Editorial Policy',
-            description: 'How FrontendAtlas creates, reviews, and updates learning content.',
+            description: 'How FrontendAtlas creates, reviews, corrects and updates its interview prep learning content.',
             robots: 'index,follow',
           },
         },
@@ -1045,7 +1048,7 @@ export const routes: Routes = [
         data: {
           seo: {
             title: 'Terms of Service',
-            description: 'FrontendAtlas terms of service and user responsibilities.',
+            description: 'FrontendAtlas terms of service: eligibility, acceptable use, content ownership and your responsibilities.',
             robots: 'index,follow',
           },
         },
@@ -1057,7 +1060,7 @@ export const routes: Routes = [
         data: {
           seo: {
             title: 'Privacy Policy',
-            description: 'How FrontendAtlas collects, uses, and protects your data.',
+            description: 'How FrontendAtlas collects, uses and protects your data, and the choices you have over it.',
             robots: 'index,follow',
           },
         },
@@ -1069,7 +1072,7 @@ export const routes: Routes = [
         data: {
           seo: {
             title: 'Refund Policy',
-            description: 'FrontendAtlas refund policy for digital subscription products.',
+            description: 'FrontendAtlas refund policy for digital products: the 14-day first-purchase refund, renewals and cancellations.',
             robots: 'index,follow',
           },
         },
@@ -1081,7 +1084,7 @@ export const routes: Routes = [
         data: {
           seo: {
             title: 'Cookie Policy',
-            description: 'Learn how FrontendAtlas uses cookies and how to control them.',
+            description: 'Learn which cookies FrontendAtlas uses, what each one is for, and how you can control them.',
             robots: 'index,follow',
           },
         },

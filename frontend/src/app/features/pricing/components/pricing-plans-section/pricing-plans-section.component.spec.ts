@@ -373,9 +373,10 @@ describe('PricingPlansSectionComponent', () => {
     for (const card of ['.pr-card--monthly', '.pr-card--quarterly', '.pr-card--annual', '[data-testid="pricing-lifetime-secondary"]']) {
       expect(text(`${card} .price-off`)).withContext(card).toBe('50% off');
     }
-    // The regional badge leads the page, above the headline.
+    // The regional line takes the kicker's slot above the headline, so it does not push the page down.
     const regionalLine = page.querySelector('[data-testid="pricing-regional-line"]')!;
-    expect(page.querySelector('.pr-wrap')!.firstElementChild).toBe(regionalLine);
+    expect(page.querySelector('.pr-hero')!.firstElementChild).toBe(regionalLine);
+    expect(page.querySelector('.pr-kicker')).toBeNull();
     expect(regionalLine.compareDocumentPosition(page.querySelector('.pr-hero h1')!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
 
     // begin_checkout reports the amount the checkout charges.

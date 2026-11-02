@@ -2373,6 +2373,21 @@ describe('TriviaDetailComponent', () => {
     expect((fixture.componentInstance.questionsList[0] as any).answer).toBeUndefined();
   });
 
+  it('sends a wrong address to /404 only when a loaded list proves it, never after a failed load', async () => {
+    const navigate = spyOn(TestBed.inject(Router), 'navigateByUrl').and.resolveTo(true);
+    const resolved = makeResolved('free');
+    routeData$.next({ questionDetail: { ...resolved, id: 'missing-question', list: [], listSummaries: [], question: null } });
+    const failedLoad = TestBed.createComponent(TriviaDetailComponent);
+    failedLoad.detectChanges();
+    await failedLoad.whenStable();
+    expect(failedLoad.componentInstance.loadState()).toBe('notFound');
+    expect(navigate).not.toHaveBeenCalled();
+
+    routeData$.next({ questionDetail: { ...resolved, id: 'missing-question', list: [], listSummaries: resolved.list.map(toSummary), question: null } });
+    await failedLoad.whenStable();
+    expect(navigate).toHaveBeenCalledWith('/404', jasmine.objectContaining({ replaceUrl: true }));
+  });
+
   it('keeps a missing lightweight detail in not-found state instead of rendering a summary as the question', async () => {
     const resolved = makeResolved('free');
     routeData$.next({

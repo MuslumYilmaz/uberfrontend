@@ -311,8 +311,11 @@ export class CompanyPreviewComponent implements OnInit {
 
   private applyResolvedPreview(resolved: CompanyPreviewResolved | undefined): void {
     this.slug = (resolved?.slug ?? this.route.snapshot.paramMap.get('slug') ?? '').trim().toLowerCase();
-    if (!this.slug) {
-      this.router.navigateByUrl('/404').catch(() => void 0);
+    const knownCompany = resolved?.mode === 'editorial'
+      || this.slug in this.editorialNotesRegistry
+      || this.slug in ((SHOWCASE_STATS as { companyCounts?: Record<string, unknown> }).companyCounts ?? {});
+    if (!knownCompany) {
+      this.router.navigateByUrl('/404', { replaceUrl: true }).catch(() => void 0);
       return;
     }
 

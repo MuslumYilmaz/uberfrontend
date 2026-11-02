@@ -831,7 +831,7 @@
     ],
     "updatedAt": "2026-04-05",
     "seo": {
-      "title": "Vue v-if in production: mount/unmount resets, lifecycle cleanup, and toggle pitfalls",
+      "title": "Vue v-if: mount and unmount resets, lifecycle cleanup, toggle pitfalls",
       "description": "v-if destroys and recreates component instances. The real production question is when that reset behavior is useful and when it becomes a pitfall."
     },
     "incidentCard": {
@@ -1126,7 +1126,7 @@
     ],
     "updatedAt": "2026-01-30",
     "seo": {
-      "title": "Vue v-model under the hood: expansion, modifiers, and component pitfalls",
+      "title": "Vue v-model under the hood: expansion, modifiers, and pitfalls",
       "description": "See how v-model compiles to prop binding plus update events for native inputs and custom components, and where modifiers or emits contracts create common pitfalls."
     },
     "incidentCard": {
@@ -1270,7 +1270,7 @@
     ],
     "updatedAt": "2026-04-05",
     "seo": {
-      "title": "v-show vs v-if in Vue: lifecycle cost, preserved state, and toggle-performance trade-offs",
+      "title": "v-show vs v-if in Vue: lifecycle cost, preserved state, toggle speed",
       "description": "v-show keeps the instance mounted while v-if unmounts it. The practical decision is state preservation versus zero hidden work."
     },
     "incidentCard": {
@@ -2294,7 +2294,7 @@
     ],
     "updatedAt": "2026-04-04",
     "seo": {
-      "title": "Vue directives under the hood: rendering behavior and when not to use them",
+      "title": "Vue directives under the hood: rendering and when not to use them",
       "description": "Learn how built-in directives affect patching and reactivity, when custom directives are appropriate, and which template pitfalls to avoid."
     },
     "incidentCard": {
@@ -2834,7 +2834,7 @@
     ],
     "updatedAt": "2026-04-04",
     "seo": {
-      "title": "Vue SFC vs global components: ownership, bundle clarity, and trade-offs",
+      "title": "Vue SFC vs global components: ownership and bundle clarity",
       "description": "Compare local SFC imports with global registration through maintainability, tree-shaking, and the pitfalls of app-wide component sprawl."
     },
     "incidentCard": {
@@ -3371,7 +3371,7 @@
     ],
     "updatedAt": "2026-04-10",
     "seo": {
-      "title": "Vue Composition API: feature-first organization, composables, and migration trade-offs",
+      "title": "Vue Composition API: organization, composables, migration trade-offs",
       "description": "Learn why Vue introduced the Composition API, how composables keep one feature together, and when migration trade-offs still favor the Options API."
     },
     "incidentCard": {
@@ -3491,7 +3491,7 @@
     ],
     "updatedAt": "2026-04-19",
     "seo": {
-      "title": "When Vuex is worth it: global vs local state, debugging flow, and modern Vue trade-offs",
+      "title": "When Vuex is worth it: global vs local state and modern trade-offs",
       "description": "Explain Vuex through store-boundary decisions: what belongs in global state, why predictable writes help debugging, and when Vuex becomes overkill in modern Vue."
     },
     "incidentCard": {
@@ -3647,7 +3647,7 @@
     ],
     "updatedAt": "2026-04-05",
     "seo": {
-      "title": "Vue virtual DOM under the hood: diffing, keyed identity, and patch-debugging pitfalls",
+      "title": "Vue virtual DOM: diffing, keyed identity, and patch debugging",
       "description": "Vue diffing is fast when identity is stable. The practical debugging angle is keyed reuse, compiler patch flags, and why efficient updates can still go wrong."
     },
     "incidentCard": {

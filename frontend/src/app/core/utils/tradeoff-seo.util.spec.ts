@@ -22,7 +22,7 @@ describe('tradeoff-seo.util', () => {
     }, buildCanonicalUrl);
 
     expect(seo.title).toBe(
-      'Context vs Zustand vs Redux for a growing React dashboard - React Tradeoff Question',
+      'Context vs Zustand vs Redux for a growing React dashboard',
     );
     expect(seo.description).toContain('Practice this react tradeoff interview question.');
     expect(seo.canonical).toBe('/tradeoffs/context-vs-zustand-vs-redux');

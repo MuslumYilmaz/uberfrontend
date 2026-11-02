@@ -913,8 +913,16 @@ export class GuideShellComponent implements AfterViewInit, OnDestroy {
   private buildToc(root: HTMLElement) {
     const heads = Array.from(root.querySelectorAll('h2, h3')) as HTMLHeadingElement[];
     const items: TocItem[] = [];
+    const usedIds = new Set(heads.map((h) => h.id).filter(Boolean));
     for (const h of heads) {
-      if (!h.id) h.id = this.slug(h.textContent || '');
+      if (!h.id) {
+        // Two headings can share a text; the later one takes a number so every anchor is unique.
+        const base = this.slug(h.textContent || '');
+        let id = base;
+        for (let n = 2; usedIds.has(id); n += 1) id = `${base}-${n}`;
+        usedIds.add(id);
+        h.id = id;
+      }
       items.push({ id: h.id, text: h.textContent || '', level: h.tagName === 'H2' ? 2 : 3 });
     }
     this.toc.set(items);

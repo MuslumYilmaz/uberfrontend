@@ -122,6 +122,10 @@ import {
     </article>
   `,
     styles: [`
+    /* The global stylesheet arrives after first paint; matching its type values here keeps the page from reflowing. */
+    h1, h2, h3 { line-height: 1.3; letter-spacing: 0.01em; }
+    p, li { font-size: 14px; line-height: 1.58; }
+
     :host { display: block; background: radial-gradient(circle at 12% 18%, color-mix(in srgb, var(--uf-accent) 10%, transparent), transparent 38%), var(--uf-bg); }
     .doc {
       max-width: 920px;

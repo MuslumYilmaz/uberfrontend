@@ -66,4 +66,14 @@ describe('FaGlyphComponent', () => {
 
     expect(path?.getAttribute('d')).toBe('m5 12 4 4 10-10');
   });
+
+  it('draws lock and bolt as themselves, not as the check-mark fallback', () => {
+    const glyph = new FaGlyphComponent();
+    glyph.icon = 'pi pi-lock';
+    expect(glyph.resolvedName()).toBe('lock');
+    glyph.icon = 'pi pi-bolt';
+    expect(glyph.resolvedName()).toBe('bolt');
+    glyph.icon = 'pi pi-clock';
+    expect(glyph.resolvedName()).toBe('clock');
+  });
 });

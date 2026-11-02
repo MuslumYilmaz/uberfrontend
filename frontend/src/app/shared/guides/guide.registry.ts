@@ -2670,7 +2670,7 @@ export const BEHAVIORAL: GuideEntry[] = [
         minutes: 13,
         summary: 'Answer frontend-specific behavioral prompts on trade-offs, accessibility, performance, and cross-team collaboration with structured, interview-ready examples.',
         seo: {
-            title: 'Frontend Behavioral Interview Scenarios: How to Answer Technical Prompts',
+            title: 'Frontend Behavioral Interview Scenarios: Answering Technical Prompts',
             description: 'Answer frontend-specific behavioral prompts on trade-offs, accessibility, performance, and cross-team collaboration with structured, interview-ready examples.',
             primaryKeyword: 'frontend behavioral interview scenarios',
             keywords: ['frontend behavioral interview scenarios', 'technical behavioral interview examples', 'frontend collaboration tradeoffs stories'],

@@ -260,11 +260,6 @@
             <!-- Prompt specs -->
             <ng-container *ngIf="descSpecs() as specs">
 
-              <!-- Tech focus chips -->
-              <div *ngIf="specs.techFocus?.length" class="mt-2 flex flex-wrap gap-1">
-                <span *ngFor="let t of specs.techFocus" class="fa-chip"><fa-inline-code [text]="t"></fa-inline-code></span>
-              </div>
-
               <!-- Framework preview button styled like the yellow banner -->
               <div *ngIf="isFrameworkTech() && workspaceAvailable()" class="mt-6">
                 <button

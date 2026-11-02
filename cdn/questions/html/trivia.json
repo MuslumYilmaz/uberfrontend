@@ -129,7 +129,7 @@
     "title": "What are HTML tags?",
     "description": "HTML tags are the markup primitives browsers parse into a DOM tree. In production, choosing the right tag affects semantics, accessibility, SEO, and how reliably CSS and JavaScript can target the page.",
     "seo": {
-      "title": "HTML tags explained: semantics, DOM structure, and common markup mistakes",
+      "title": "HTML tags explained: semantics, DOM structure, and common mistakes",
       "description": "Learn how HTML tags shape DOM structure, accessibility, SEO, and the common mistake of using generic markup where semantic elements belong."
     },
     "type": "trivia",
@@ -1830,7 +1830,7 @@
     "importance": 3,
     "description": "The placeholder attribute is only a temporary hint, and the common production pitfall is treating it like a label and creating accessibility, validation, and autofill confusion.",
     "seo": {
-      "title": "HTML placeholder attribute: accessibility pitfalls and form UX guidance",
+      "title": "HTML placeholder attribute: accessibility pitfalls and form UX",
       "description": "Learn when placeholder text helps, why it should not replace labels, and which common form UX mistakes it creates."
     },
     "answer": {
@@ -3094,7 +3094,7 @@
     ],
     "description": "Shadow DOM creates an encapsulated subtree for a component so styles and markup do not leak in or out. That isolation is useful, but the real pitfall is forgetting about theming, testing, focus behavior, and accessibility when the component stops behaving like regular DOM.",
     "seo": {
-      "title": "Shadow DOM explained: encapsulation, theming, and web-component pitfalls",
+      "title": "Shadow DOM explained: encapsulation, theming, and pitfalls",
       "description": "Learn how Shadow DOM isolates component markup and styles, and why testing, theming, focus, and accessibility require extra design."
     },
     "answer": {
@@ -3340,7 +3340,7 @@
     "title": "DOM Tree Structure and Depth",
     "description": "DOM tree structure matters under the hood because deep or unstable trees increase traversal, style recalculation, and layout cost, which turns into real debugging and performance pitfalls.",
     "seo": {
-      "title": "DOM tree structure under the hood: depth, traversal, and performance pitfalls",
+      "title": "DOM tree structure: depth, traversal, and performance pitfalls",
       "description": "Learn how DOM depth affects traversal, style/layout work, and why deeply nested trees become a real performance debugging problem."
     },
     "type": "trivia",

@@ -40,14 +40,14 @@
           routerLink="/tracks/foundations-30d/preview"
           data-testid="showcase-hero-primary-cta"
           (click)="onHeroPrimaryClick()"
-          aria-label="Start the 30-day frontend interview preparation roadmap">
+          aria-label="Start 30-day plan: frontend interview preparation roadmap">
           {{ heroPrimaryCtaLabel }}
         </a>
         <a
           class="sk-btn sk-btn-ghost"
           routerLink="/guides/interview-blueprint/intro"
           data-testid="showcase-hero-secondary-cta"
-          aria-label="View the frontend interview preparation guide"
+          aria-label="View prep guide: frontend interview preparation"
           (click)="onHeroSecondaryClick()"
         >
           View prep guide
@@ -198,7 +198,7 @@
 
 
     <a class="demo-banner" [routerLink]="['/', activeDemo.questionTech, 'coding', activeDemo.questionId]" role="button" [class.hidden]="demoHidden || showMobileCodingGuard"
-      aria-label="Open the live editor for this demo question" data-testid="showcase-demo-open-live">
+      data-testid="showcase-demo-open-live">
       <span class="dot" aria-hidden="true"></span>
       <span class="text">Try the {{ activeDemo.label }} demo in the live editor</span>
       <span class="demo-banner__arrow" aria-hidden="true">→</span>
@@ -312,7 +312,7 @@
 
       <a class="demo-banner" [routerLink]="triviaPreviewLink" role="button"
         data-testid="showcase-trivia-open"
-        [attr.aria-label]="'Open the full ' + activeTriviaTab.label + ' interview question'">
+        [attr.aria-label]="'Open full interview question: ' + activeTriviaTab.label">
         <span class="dot" aria-hidden="true"></span>
         <span class="text">Open full interview question →</span>
         <span class="demo-banner__arrow" aria-hidden="true">→</span>
@@ -386,7 +386,7 @@
           </div>
         </div>
 
-        <a class="reasoning-link" [routerLink]="incidentPreview.route" aria-label="Open the full debug scenario">
+        <a class="reasoning-link" [routerLink]="incidentPreview.route" aria-label="Open simulator: full debug scenario">
           Open simulator
           <span class="inline-arrow" aria-hidden="true">→</span>
         </a>
@@ -416,7 +416,7 @@
           </div>
         </div>
 
-        <a class="reasoning-link" [routerLink]="tradeoffPreview.route" aria-label="Open the full tradeoff battle">
+        <a class="reasoning-link" [routerLink]="tradeoffPreview.route" aria-label="Open battle: full tradeoff battle">
           Open battle
           <span class="inline-arrow" aria-hidden="true">→</span>
         </a>
@@ -498,7 +498,7 @@
         </p>
       </div>
 
-      <a class="sk-btn sk-btn-ghost" routerLink="/coding" aria-label="Browse the full Question Library">
+      <a class="sk-btn sk-btn-ghost" routerLink="/coding">
         Browse Full Question Library <span class="inline-arrow" aria-hidden="true">→</span>
       </a>
     </div>
@@ -566,7 +566,7 @@
         </p>
         <p class="company-disclaimer" data-testid="company-practice-disclaimer">{{ companyPracticeDisclaimer }}</p>
       </div>
-      <a class="sk-btn sk-btn-ghost company-browse-link" routerLink="/companies" aria-label="Open Company Prep">
+      <a class="sk-btn sk-btn-ghost company-browse-link" routerLink="/companies">
         Browse companies <span class="inline-arrow" aria-hidden="true">→</span>
       </a>
     </div>
@@ -735,7 +735,7 @@
       </div>
     </article>
 
-    <a class="demo-banner" routerLink="/tools/cv" role="button" aria-label="Open the CV Linter tool">
+    <a class="demo-banner" routerLink="/tools/cv" role="button" aria-label="Open the CV polish tool: CV Linter">
       <span class="dot" aria-hidden="true"></span>
       <span class="text">Open the CV polish tool →</span>
       <span class="demo-banner__arrow" aria-hidden="true">→</span>
@@ -772,7 +772,7 @@
     </ng-template>
 
     <div class="faq-cta">
-      <a class="sk-btn sk-btn-ghost tiny" routerLink="/guides/interview-blueprint/intro" aria-label="View the frontend interview preparation guide">
+      <a class="sk-btn sk-btn-ghost tiny" routerLink="/guides/interview-blueprint/intro" aria-label="View prep guide: frontend interview preparation">
         View prep guide
       </a>
     </div>

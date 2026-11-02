@@ -226,7 +226,7 @@ html, body { height: 100%; background: var(--uf-bg); }
 }
 
 /* Title */
-.title-block { position: sticky; top: 0; z-index: 2; padding: 6px 0 10px; background: linear-gradient(180deg, color-mix(in srgb, var(--uf-bg) 92%, transparent), color-mix(in srgb, var(--uf-bg) 78%, transparent), transparent); backdrop-filter: blur(2px); }
+.title-block { padding: 6px 0 10px; }
 .title-row { display:flex; gap: 12px; align-items: flex-start; flex-wrap: wrap; }
 .title-copy {
   display: grid;
@@ -245,7 +245,7 @@ html, body { height: 100%; background: var(--uf-bg); }
 }
 .title__question {
   display: block;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
 }
 .title__intent {
   display: inline-flex;

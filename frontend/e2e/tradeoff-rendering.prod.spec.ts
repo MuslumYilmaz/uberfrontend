@@ -5,6 +5,7 @@ import type { Page } from '@playwright/test';
 import type { TradeoffBattleListItem, TradeoffBattleScenario } from '../src/app/core/models/tradeoff-battle.model';
 import { expect, test } from './fixtures';
 import { buildMockUser, installAuthMock } from './auth-mocks';
+import { clampMetaDescription, labelledSeoTitle } from '../src/app/core/utils/seo-text.util';
 
 const catalogRoot = resolve(__dirname, '../../cdn/tradeoff-battles');
 const index = JSON.parse(readFileSync(resolve(catalogRoot, 'index.json'), 'utf8')) as TradeoffBattleListItem[];
@@ -50,7 +51,7 @@ function tradeoffTechLabel(tech: string): string {
   }
 }
 function expectedTitle(scenario: TradeoffBattleScenario): string {
-  return `${scenario.meta.title} - ${tradeoffTechLabel(scenario.meta.tech)} Tradeoff Question`;
+  return labelledSeoTitle(scenario.meta.title, `${tradeoffTechLabel(scenario.meta.tech)} Tradeoff Question`);
 }
 function expectedDescription(scenario: TradeoffBattleScenario): string {
   const tech = tradeoffTechLabel(scenario.meta.tech).toLowerCase();
@@ -84,7 +85,7 @@ function expectDetailSchema(graph: Array<Record<string, unknown>>, scenario: Tra
 function expectInitialHead(html: string, nodes: HtmlElement[], scenario: TradeoffBattleScenario) {
   const title = nodes.find((node) => node.tagName === 'title');
   const detailTitle = expectedTitle(scenario);
-  const detailDescription = expectedDescription(scenario);
+  const detailDescription = clampMetaDescription(expectedDescription(scenario));
   expect(title && normalize(htmlText(title))).toBe(detailTitle);
   const valueOf = (name: string, value: string, attribute = 'name') => nodes.find((node) =>
     node.tagName === 'meta' && attr(node, attribute) === name && attr(node, 'content') === value,

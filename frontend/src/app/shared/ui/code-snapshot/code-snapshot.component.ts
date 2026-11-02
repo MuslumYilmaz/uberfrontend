@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output, computed, signal } from '@angular/core';
+import { Component, EventEmitter, Output, computed, input, signal } from '@angular/core';
 import { PrismHighlightDirective } from '../../../core/directives/prism-highlight.directive';
 
 @Component({
@@ -10,8 +10,8 @@ import { PrismHighlightDirective } from '../../../core/directives/prism-highligh
       class="code-snapshot"
       role="button"
       tabindex="0"
-      [attr.data-testid]="testId || null"
-      [attr.aria-label]="ariaLabel"
+      [attr.data-testid]="testId() || null"
+      [attr.aria-label]="ariaLabel()"
       [class.code-snapshot--loading]="activationRequested()"
       (click)="requestActivation()"
       (keydown.enter)="onKeyboardActivate($event)"
@@ -27,7 +27,7 @@ import { PrismHighlightDirective } from '../../../core/directives/prism-highligh
           <span *ngFor="let line of lineNumbers(); trackBy: trackLine">{{ line }}</span>
         </div>
 
-        <pre class="code-snapshot__pre"><code prism [lang]="prismLanguage()" [code]="code || ''"></code></pre>
+        <pre class="code-snapshot__pre"><code prism [lang]="prismLanguage()" [code]="code() || ''"></code></pre>
       </div>
     </div>
   `,
@@ -128,19 +128,22 @@ import { PrismHighlightDirective } from '../../../core/directives/prism-highligh
       font-family: inherit;
       font-size: inherit;
       line-height: inherit;
+      background: transparent;
+      padding: 0;
+      border-radius: 0;
     }
   `]
 })
 export class CodeSnapshotComponent {
-  @Input() code = '';
-  @Input() language = 'plaintext';
-  @Input() ariaLabel = 'Code preview';
-  @Input() testId?: string;
+  readonly code = input('');
+  readonly language = input('plaintext');
+  readonly ariaLabel = input('Code preview');
+  readonly testId = input<string | undefined>();
   @Output() activate = new EventEmitter<void>();
 
   readonly activationRequested = signal(false);
   readonly prismLanguage = computed(() => {
-    const lang = String(this.language || 'plaintext').toLowerCase();
+    const lang = String(this.language() || 'plaintext').toLowerCase();
     if (lang === 'html') return 'markup';
     if (lang === 'js') return 'javascript';
     if (lang === 'ts') return 'typescript';
@@ -148,7 +151,7 @@ export class CodeSnapshotComponent {
     return lang;
   });
   readonly lineNumbers = computed(() => {
-    const count = Math.max(1, String(this.code || '').split(/\r\n?|\n/).length);
+    const count = Math.max(1, String(this.code() || '').split(/\r\n?|\n/).length);
     return Array.from({ length: count }, (_, index) => index + 1);
   });
 

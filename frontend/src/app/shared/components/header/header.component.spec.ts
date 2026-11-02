@@ -484,6 +484,9 @@ describe('HeaderComponent', () => {
 
     const continueAction = query<HTMLAnchorElement>(fixture, 'header-study-continue');
     expect(continueAction.getAttribute('href') || '').toContain('/guides/interview-blueprint/intro');
+    // A first-time guest has nothing to continue.
+    expect(continueAction.textContent).toContain('Not sure where to start?');
+    expect(continueAction.textContent).not.toContain('Continue where I left off');
 
     query<HTMLAnchorElement>(fixture, 'header-study-interview_blueprint').click();
     expect(analytics.track).toHaveBeenCalledWith(

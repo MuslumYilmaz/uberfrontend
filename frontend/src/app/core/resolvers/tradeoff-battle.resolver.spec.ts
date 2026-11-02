@@ -84,7 +84,7 @@ describe('tradeoffBattleDetailResolver', () => {
     const result = await resolve(scenario.meta.id);
 
     expect(result.seo.title).toBe(
-      'Context vs Zustand vs Redux for a growing React dashboard - React Tradeoff Question',
+      'Context vs Zustand vs Redux for a growing React dashboard',
     );
     expect(result.seo.description).toContain('Practice this react tradeoff interview question.');
     expect(result.seo.canonical).toBe('/tradeoffs/context-vs-zustand-vs-redux');

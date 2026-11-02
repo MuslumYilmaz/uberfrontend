@@ -1257,7 +1257,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     this.resetIncidentPrompt();
     this.solved.set(found ? this.progress.isSolved(found.id) : false);
     this.refreshLockedPersonalization();
-    this.setLoadState(found);
+    this.setLoadState(found, id);
     if (found && isQuestionLockedForTier(found, this.auth.user())) {
       this.experiments.expose(
         'premium_gate_copy_v1',
@@ -1304,13 +1304,18 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     return false;
   }
 
-  private setLoadState(found: Question | null) {
+  private setLoadState(found: Question | null, id: string) {
     if (found) {
       this.loadState.set('loaded');
       return;
     }
     if (this.isBrowser && this.dataLoaded) {
       this.loadState.set('notFound');
+      // Only a loaded list without this id proves the address is wrong; an empty list is a failed load.
+      if (this.questionsList.length && !this.questionsList.some((q) => q.id === id)) {
+        // replaceUrl so Back returns to the last valid page instead of the bad URL
+        this.router.navigateByUrl('/404', { state: { missing: this.router.url }, replaceUrl: true }).catch(() => void 0);
+      }
       return;
     }
     this.loadState.set('loading');

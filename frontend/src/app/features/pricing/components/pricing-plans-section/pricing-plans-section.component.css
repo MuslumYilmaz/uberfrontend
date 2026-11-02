@@ -1177,6 +1177,8 @@
   line-height:1.4;
 }
 .pr-regional-line i{color:var(--uf-accent);font-size:13px;flex:0 0 auto}
+.pr-regional-line--kicker{margin:0 0 10px;padding:0;border:0;border-radius:0;background:none;color:var(--uf-accent);line-height:1.35;align-items:flex-start}
+.pr-regional-line--kicker i{margin-top:2px}
 .price-list-row{
   display:flex;
   flex-wrap:wrap;

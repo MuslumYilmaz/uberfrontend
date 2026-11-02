@@ -162,7 +162,7 @@ test.describe('routing and access critical paths', () => {
     await expect(page.getByTestId('coding-detail-page')).toBeVisible();
   });
 
-  test('anonymous users see the premium gate without rendering the full Google company route', async ({ page }) => {
+  test('a direct link sends anonymous users to the public guide without rendering the full Google company route', async ({ page }) => {
     await page.route('**/api/auth/me', async (route) => {
       await route.fulfill({
         status: 401,
@@ -173,9 +173,8 @@ test.describe('routing and access critical paths', () => {
 
     await page.goto('/companies/google');
 
-    await expect(page).toHaveURL(/\/(?:companies)?$/);
-    expect(new URL(page.url()).pathname).not.toBe('/companies/google');
-    await expect(page.getByRole('heading', { name: 'Premium company questions' })).toBeVisible();
+    await expect(page).toHaveURL(/\/companies\/google\/preview$/);
+    await expect(page.getByRole('heading', { name: 'Premium company questions' })).toHaveCount(0);
     await expect(page.locator('app-company-detail')).toHaveCount(0);
     await expect(
       page.getByRole('heading', { level: 1, name: 'Google Frontend Practice Group' }),

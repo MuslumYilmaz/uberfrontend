@@ -171,7 +171,7 @@ test.describe('guides interaction perf smoke', () => {
         await page.goto('/', { waitUntil: 'domcontentloaded', timeout: 60_000 });
         await expect(page.getByTestId('showcase-hero-title')).toBeVisible({ timeout: 60_000 });
 
-        const target = page.getByRole('link', { name: 'View the frontend interview preparation guide', exact: true }).first();
+        const target = page.getByRole('link', { name: 'View prep guide: frontend interview preparation', exact: true }).first();
         await target.scrollIntoViewIfNeeded();
 
         const startedAt = await page.evaluate(() => performance.now());

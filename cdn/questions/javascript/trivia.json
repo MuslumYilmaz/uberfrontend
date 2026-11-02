@@ -688,7 +688,7 @@
     "access": "free",
     "updatedAt": "2026-04-10",
     "seo": {
-      "title": "JavaScript closures: stale callback bugs, loop capture, and memory retention",
+      "title": "JavaScript closures: stale callbacks, loop capture, memory retention",
       "description": "Learn closures through the frontend debug lens: private state, shared loop bindings, stale callbacks, and why long-lived listeners can retain old data."
     },
     "incidentCard": {
@@ -2122,7 +2122,7 @@
     "access": "free",
     "updatedAt": "2026-04-10",
     "seo": {
-      "title": "JavaScript 'use strict': migration bugs, module defaults, and eval restrictions",
+      "title": "JavaScript 'use strict': migration bugs, modules, eval restrictions",
       "description": "Learn what 'use strict' changes in practice: accidental globals, sloppy this, silent failures, module defaults, eval limits, and migration trade-offs."
     },
     "incidentCard": {
@@ -2294,7 +2294,7 @@
     "access": "free",
     "updatedAt": "2026-04-10",
     "seo": {
-      "title": "Why eval() is dangerous: same-origin code execution, CSP, and safer replacements",
+      "title": "Why eval() is dangerous: same-origin execution, CSP, safer options",
       "description": "Understand the real eval pitfall: untrusted data becomes code, CSP weakens, same-origin attack paths open up, and safer replacements are usually simpler."
     },
     "incidentCard": {
@@ -2455,7 +2455,7 @@
     "access": "free",
     "updatedAt": "2026-04-10",
     "seo": {
-      "title": "JavaScript ?? operator: defaulting bugs, precedence, and follow-up pitfalls",
+      "title": "JavaScript ?? operator: defaulting bugs, precedence, and pitfalls",
       "description": "Learn when to use ?? instead of ||, how to pair it with optional chaining, and what to do when empty values still need business-rule validation."
     },
     "incidentCard": {
@@ -3314,7 +3314,7 @@
     "access": "free",
     "updatedAt": "2026-04-04",
     "seo": {
-      "title": "Higher-order functions in JavaScript: callbacks, composition, and abstraction pitfalls",
+      "title": "Higher-order functions in JavaScript: callbacks and composition",
       "description": "Learn what higher-order functions are, why callbacks and composition depend on them, and which abstraction pitfalls to avoid."
     },
     "incidentCard": {
@@ -3959,7 +3959,7 @@
     "access": "free",
     "updatedAt": "2026-04-10",
     "seo": {
-      "title": "Cookie options for auth and embeds: SameSite, Secure, HttpOnly, and host-only scope",
+      "title": "Cookie options for auth: SameSite, Secure, HttpOnly, host-only scope",
       "description": "Learn how cookie attributes affect auth hardening, host-only vs Domain scope, cross-site widgets, SameSite defaults, and server-side Set-Cookie decisions."
     },
     "incidentCard": {
@@ -4101,7 +4101,7 @@
     "access": "free",
     "updatedAt": "2026-04-04",
     "seo": {
-      "title": "JavaScript Prototypal Inheritance: prototype-chain lookup and debug behavior",
+      "title": "JavaScript Prototypal Inheritance: prototype chain and debugging",
       "description": "Understand prototypal inheritance under the hood: shared methods, shadowed properties, and why classes still resolve through the prototype chain."
     },
     "incidentCard": {
@@ -4908,7 +4908,7 @@
     "access": "free",
     "updatedAt": "2026-04-08",
     "seo": {
-      "title": "JavaScript type coercion: real-world examples, == vs ===, and boundary bugs",
+      "title": "JavaScript type coercion: real examples, == vs ===, boundary bugs",
       "description": "Go beyond the definition of coercion with concrete examples, mixed-type edge cases, Number.isNaN vs isNaN, and safer input-handling rules."
     },
     "incidentCard": {
@@ -5068,7 +5068,7 @@
     "access": "free",
     "updatedAt": "2026-04-08",
     "seo": {
-      "title": "JavaScript pass by value vs reference: call-by-sharing and mutation bugs",
+      "title": "JavaScript pass by value vs reference: sharing and mutation bugs",
       "description": "Understand JavaScript argument passing precisely: copied reference values, call-by-sharing, mutation vs reassignment, and common state-management bugs."
     },
     "incidentCard": {
@@ -5168,7 +5168,7 @@
     "access": "free",
     "updatedAt": "2026-04-19",
     "seo": {
-      "title": "JavaScript currying vs partial application: reusable helpers and when not to use it",
+      "title": "JavaScript currying vs partial application: when to use each",
       "description": "Explain currying through the real interview trade-off: reusable partially configured helpers, clearer composition, and the point where extra indirection becomes harder to justify."
     },
     "incidentCard": {
@@ -5282,7 +5282,7 @@
     "access": "free",
     "updatedAt": "2026-04-04",
     "seo": {
-      "title": "JavaScript Arrow Functions: lexical this, callbacks, and when not to use them",
+      "title": "JavaScript Arrow Functions: lexical this, callbacks, when to avoid",
       "description": "Understand where arrow functions shine, where dynamic this is required, and which common mistakes appear in methods, constructors, and prototypes."
     },
     "incidentCard": {
@@ -5471,7 +5471,7 @@
     "access": "free",
     "updatedAt": "2026-04-10",
     "seo": {
-      "title": "Arrow vs regular functions: callbacks, methods, constructors, and this binding",
+      "title": "Arrow vs regular functions: callbacks, methods, and this binding",
       "description": "Compare arrow and regular functions through callbacks, event listeners, lexical vs dynamic this, constructors, arguments, prototypes, and class-field trade-offs."
     },
     "incidentCard": {
@@ -5598,7 +5598,7 @@
     "access": "free",
     "updatedAt": "2026-04-04",
     "seo": {
-      "title": "JavaScript object destructuring: defaults, renaming, and common mistakes",
+      "title": "JavaScript object destructuring: defaults, renaming, and mistakes",
       "description": "Learn how destructuring works, where nested access and defaults break down, and which common mistakes cause production bugs."
     },
     "incidentCard": {
@@ -5886,7 +5886,7 @@
     "access": "free",
     "updatedAt": "2026-04-04",
     "seo": {
-      "title": "JavaScript design patterns in production: module, factory, observer, and overengineering pitfalls",
+      "title": "JavaScript design patterns: module, factory, observer, overengineering",
       "description": "Learn design patterns through the real trade-off: when module, factory, or observer clarifies architecture and when pattern-heavy code becomes a pitfall."
     },
     "incidentCard": {
@@ -6005,7 +6005,7 @@
     "access": "free",
     "updatedAt": "2026-04-04",
     "seo": {
-      "title": "JavaScript defer in production: render-blocking, execution order, and async vs defer pitfalls",
+      "title": "JavaScript defer: render-blocking, execution order, async vs defer",
       "description": "Understand defer through the loading pitfall lens: stop parser blocking, preserve execution order, and avoid DOM-ready bugs caused by async assumptions."
     },
     "incidentCard": {
@@ -6128,7 +6128,7 @@
     "access": "free",
     "updatedAt": "2026-04-04",
     "seo": {
-      "title": "JavaScript Classes: prototype internals, shared methods, and when not to overuse them",
+      "title": "JavaScript Classes: prototype internals and shared methods",
       "description": "Learn what class syntax changes, what stays prototype-based under the hood, and which common mistakes appear around new, fields, and inheritance."
     },
     "incidentCard": {
@@ -6332,7 +6332,7 @@
     "access": "free",
     "updatedAt": "2026-04-04",
     "seo": {
-      "title": "JavaScript object creation methods: prototypes, trade-offs, and pitfalls",
+      "title": "JavaScript object creation: prototypes, trade-offs, and pitfalls",
       "description": "Compare literals, factories, constructors, classes, and Object.create through prototype behavior, memory use, and common design pitfalls."
     },
     "incidentCard": {
@@ -6455,7 +6455,7 @@
     "access": "free",
     "updatedAt": "2026-01-30",
     "seo": {
-      "title": "JavaScript memoization: when it helps, when it backfires, and cache pitfalls",
+      "title": "JavaScript memoization: when it helps, backfires, and cache pitfalls",
       "description": "Memoization speeds up repeated pure work, but it can waste memory or cache the wrong thing when inputs are large, impure, or rarely reused."
     },
     "incidentCard": {
@@ -6581,7 +6581,7 @@
     "access": "free",
     "updatedAt": "2026-04-10",
     "seo": {
-      "title": "Microtasks vs macrotasks: event-loop priority, paint starvation, and yielding",
+      "title": "Microtasks vs macrotasks: event-loop priority and paint starvation",
       "description": "Learn why Promise callbacks run before timers, how recursive microtasks can delay paint, and when to yield with setTimeout or requestAnimationFrame."
     },
     "incidentCard": {
@@ -7700,7 +7700,7 @@
     "access": "free",
     "updatedAt": "2026-04-04",
     "seo": {
-      "title": "Secure CORS handling in production: server policy, preflight debug, and BFF patterns",
+      "title": "Secure CORS handling: server policy, preflight debug, BFF patterns",
       "description": "Explain CORS through the real security model: the browser enforces it, the server sets policy, and production fixes come from allowlists, preflight handling, or a trusted proxy."
     },
     "incidentCard": {
@@ -8559,7 +8559,7 @@
     "access": "free",
     "updatedAt": "2026-04-10",
     "seo": {
-      "title": "Web load-time optimization: critical path, Core Web Vitals trade-offs, and RUM",
+      "title": "Web load-time optimization: critical path, Core Web Vitals, and RUM",
       "description": "Explain load-time optimization through critical-path debugging, render-blocking work, caching, LCP-vs-INP trade-offs, and field validation with Core Web Vitals."
     },
     "incidentCard": {
@@ -8994,7 +8994,7 @@
     "access": "free",
     "updatedAt": "2026-04-04",
     "seo": {
-      "title": "AI streaming in frontend: partial output, cancellation, and failure handling",
+      "title": "AI streaming in frontend: partial output, cancellation, failures",
       "description": "Handle AI streaming as a production state machine: render chunks incrementally, preserve partial and final output correctness, support cancellation, and recover from mid-stream failures."
     },
     "incidentCard": {
@@ -9146,7 +9146,7 @@
     "access": "free",
     "updatedAt": "2026-04-04",
     "seo": {
-      "title": "Chat conversation state in production: streaming buffers, retries, and ordering bugs",
+      "title": "Chat conversation state: streaming buffers, retries, ordering bugs",
       "description": "Explain chat state through the real pitfalls: append-only timelines, stable IDs, streaming drafts, retry or reconnect handling, and message-order bugs."
     }
   },
@@ -9860,7 +9860,7 @@
     "access": "free",
     "updatedAt": "2026-04-04",
     "seo": {
-      "title": "Big O in JavaScript interviews: scaling trade-offs, hidden costs, and common mistakes",
+      "title": "Big O in JavaScript interviews: scaling trade-offs, hidden costs",
       "description": "Learn Big O through the performance-decision lens: how growth rate shapes scalability, where hidden constants still matter, and which common complexity mistakes confuse interviews."
     }
   },
@@ -10609,7 +10609,7 @@
     "access": "free",
     "updatedAt": "2026-04-10",
     "seo": {
-      "title": "How do you prevent DOM XSS: sources, sinks, sanitization, and Trusted Types",
+      "title": "How to prevent DOM XSS: sources, sinks, sanitization, Trusted Types",
       "description": "Prevent DOM XSS by tracing attacker-controlled sources to dangerous sinks, using safe DOM APIs, validating URLs, and layering sanitization with Trusted Types."
     }
   },
@@ -10750,7 +10750,7 @@
     "access": "free",
     "updatedAt": "2026-04-04",
     "seo": {
-      "title": "Testing edge cases in JavaScript: boundaries, failure modes, and high-signal test strategy",
+      "title": "Testing edge cases in JavaScript: boundaries and failure modes",
       "description": "Explain edge-case testing through the real bug-prevention lens: boundaries, invalid inputs, invariants, and the common mistake of shipping happy-path-only coverage."
     }
   },
@@ -10903,7 +10903,7 @@
     "access": "free",
     "updatedAt": "2026-02-03",
     "seo": {
-      "title": "Profile JavaScript performance: DevTools workflow, bottlenecks, and debug steps",
+      "title": "Profile JavaScript performance: DevTools workflow and bottlenecks",
       "description": "Profile JavaScript performance with a production workflow: record the same scenario, find the slowest bottleneck, debug it with traces, and verify the exact fix."
     }
   },
@@ -11518,7 +11518,7 @@
     "access": "free",
     "updatedAt": "2026-04-04",
     "seo": {
-      "title": "JavaScript time-zone formatting: DST bugs, IANA zones, and Intl.DateTimeFormat",
+      "title": "JavaScript time zones: DST bugs, IANA zones, Intl.DateTimeFormat",
       "description": "Explain Intl.DateTimeFormat through the production pitfall: DST shifts, fixed-offset bugs, IANA time zones, and reliable cross-region date rendering."
     }
   },
@@ -11757,7 +11757,7 @@
     "access": "free",
     "updatedAt": "2026-04-04",
     "seo": {
-      "title": "JavaScript garbage collection: GC pauses, memory pressure, and debugging jank",
+      "title": "JavaScript garbage collection: GC pauses, memory pressure, jank",
       "description": "Learn how JavaScript garbage collection works, why memory pressure creates GC pauses, and how to debug retained references or allocation churn in production."
     }
   }

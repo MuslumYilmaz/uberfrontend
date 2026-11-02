@@ -55,6 +55,28 @@ function buildTrackPreviewUrlTree(router: Router, targetUrl?: string): UrlTree |
   });
 }
 
+function buildCompanyPreviewUrlTree(router: Router, targetUrl?: string): UrlTree | null {
+  if (!targetUrl) return null;
+  const parsed = router.parseUrl(targetUrl);
+  const segments = parsed.root.children['primary']?.segments.map((segment) => segment.path) ?? [];
+  if (segments[0] !== 'companies') return null;
+  const slug = segments[1];
+  if (!slug) return null;
+
+  return router.createUrlTree(['/companies', slug, 'preview'], {
+    queryParams: parsed.queryParams,
+    fragment: parsed.fragment ?? undefined,
+  });
+}
+
+// Tracks always send visitors without access to their preview. A direct link to a company
+// page lands on its public guide; a click inside the app keeps the gate, so the click gets an answer.
+function previewInsteadOfGate(router: Router, reason: PremiumGateReason, targetUrl?: string): UrlTree | null {
+  if (reason === 'tracks') return buildTrackPreviewUrlTree(router, targetUrl);
+  if (reason === 'company' && !router.navigated) return buildCompanyPreviewUrlTree(router, targetUrl);
+  return null;
+}
+
 function buildTrackDetailUrlTree(
   router: Router,
   targetUrl: string,
@@ -109,18 +131,10 @@ function premiumCheck(
   return auth.ensureMe().pipe(
     map((u) => {
       if (u && isPremiumUser(u)) return true;
-      if (reason === 'tracks') {
-        const previewUrl = buildTrackPreviewUrlTree(router, targetUrl);
-        if (previewUrl) return previewUrl;
-      }
-      return showGate(!!u);
+      return previewInsteadOfGate(router, reason, targetUrl) ?? showGate(!!u);
     }),
     catchError(() => {
-      if (reason === 'tracks') {
-        const previewUrl = buildTrackPreviewUrlTree(router, targetUrl);
-        if (previewUrl) return of(previewUrl);
-      }
-      return of(showGate(false));
+      return of(previewInsteadOfGate(router, reason, targetUrl) ?? showGate(false));
     }),
   );
 }

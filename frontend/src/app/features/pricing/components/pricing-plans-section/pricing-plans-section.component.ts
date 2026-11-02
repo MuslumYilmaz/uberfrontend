@@ -70,10 +70,10 @@ const STUDENT_PRICE_MULTIPLIER = 0.6;
     styleUrls: ['./pricing-plans-section.component.css'],
     template: `
     <section class="pr-wrap" [class.pr-wrap--compact]="variant === 'compact'" [class.pr-wrap--full]="variant === 'full'">
-      <!-- Regional pricing leads the section, above the headline, so the visitor reads every price below with it. -->
+      <!-- On the compact section regional pricing leads, so the visitor reads every price below with it. -->
       <p
         class="pr-regional-line"
-        *ngIf="regionalPricing as regional"
+        *ngIf="variant === 'compact' && regionalPricing as regional"
         role="status"
         data-testid="pricing-regional-line">
         <i class="pi pi-globe" aria-hidden="true"></i>
@@ -81,7 +81,16 @@ const STUDENT_PRICE_MULTIPLIER = 0.6;
       </p>
 
       <header class="pr-hero" *ngIf="variant === 'full'">
-        <p class="pr-kicker">Premium for interview sprints</p>
+        <!-- The price config arrives after first paint, so the regional line takes the kicker's slot instead of pushing the page down. -->
+        <p
+          class="pr-regional-line pr-regional-line--kicker"
+          *ngIf="regionalPricing as regional; else pricingKicker"
+          role="status"
+          data-testid="pricing-regional-line">
+          <i class="pi pi-globe" aria-hidden="true"></i>
+          <span>Prices for {{ regional.countryName }}: {{ regionalPercentOff() }}% off the list price, applied automatically at checkout.</span>
+        </p>
+        <ng-template #pricingKicker><p class="pr-kicker">Premium for interview sprints</p></ng-template>
         <h1>Prepare faster with deeper frontend interview reps</h1>
         <p class="pr-hero__lede" *ngIf="!isOfferV2(); else offerV2HeroCopy">
           Every Premium coding question ships with a guided solution; JavaScript and debugging tasks run checks in the

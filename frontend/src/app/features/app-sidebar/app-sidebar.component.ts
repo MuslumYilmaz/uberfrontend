@@ -34,6 +34,17 @@ interface GroupItem {
 }
 type NavItem = LinkItem | GroupItem;
 
+const SIDEBAR_COLLAPSED_KEY = 'fa:sidebar:collapsed';
+
+function readSavedCollapsed(): boolean | null {
+  try {
+    const value = localStorage.getItem(SIDEBAR_COLLAPSED_KEY);
+    return value === null ? null : value === '1';
+  } catch {
+    return null;
+  }
+}
+
 @Component({
     selector: 'app-sidebar',
     imports: [
@@ -46,7 +57,11 @@ type NavItem = LinkItem | GroupItem;
     styleUrls: ['./app-sidebar.component.css']
 })
 export class AppSidebarComponent implements OnInit, OnDestroy {
-  @Input() collapsed = false;
+  // The visitor's own choice beats the route default once they have toggled the rail.
+  private savedCollapsed = readSavedCollapsed();
+  private isCollapsed = this.savedCollapsed ?? false;
+  @Input() set collapsed(value: boolean) { this.isCollapsed = this.savedCollapsed ?? value; }
+  get collapsed(): boolean { return this.isCollapsed; }
   @Input() drawerOnly = false;
   readonly githubRepoUrl = GITHUB_REPO_URL;
 
@@ -94,7 +109,7 @@ export class AppSidebarComponent implements OnInit, OnDestroy {
   toggleGroup(i: number) {
     const wasCollapsed = this.collapsed;
     if (wasCollapsed) {
-      this.collapsed = false;
+      this.saveCollapsed(false);
       document.body.classList.remove('sidebar-mini');
     }
     this.nav.forEach((item, idx) => {
@@ -130,8 +145,16 @@ export class AppSidebarComponent implements OnInit, OnDestroy {
   }
 
   toggleCollapsed() {
-    this.collapsed = !this.collapsed;
+    this.saveCollapsed(!this.collapsed);
     document.body.classList.toggle('sidebar-mini', this.collapsed);
+  }
+
+  private saveCollapsed(value: boolean) {
+    this.savedCollapsed = value;
+    this.isCollapsed = value;
+    try {
+      localStorage.setItem(SIDEBAR_COLLAPSED_KEY, value ? '1' : '0');
+    } catch { /* private mode: the choice lasts until reload */ }
   }
 
   @HostListener('window:keydown.escape') onEsc() {

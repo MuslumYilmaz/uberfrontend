@@ -186,6 +186,26 @@ describe('AppSidebarComponent', () => {
     }));
   });
 
+  it('remembers a rail the visitor toggled, over the default of the route', async () => {
+    await configureTestingModule();
+    localStorage.removeItem('fa:sidebar:collapsed');
+    try {
+      const first = TestBed.createComponent(AppSidebarComponent).componentInstance;
+      first.collapsed = true;
+      expect(first.collapsed).withContext('route default without a saved choice').toBeTrue();
+      first.toggleCollapsed();
+      expect(first.collapsed).toBeFalse();
+      first.collapsed = true;
+      expect(first.collapsed).withContext('a route change keeps the choice').toBeFalse();
+
+      const afterReload = TestBed.createComponent(AppSidebarComponent).componentInstance;
+      afterReload.collapsed = true;
+      expect(afterReload.collapsed).withContext('a new page load keeps the choice').toBeFalse();
+    } finally {
+      localStorage.removeItem('fa:sidebar:collapsed');
+    }
+  });
+
   it('names compact rail controls and only enables their tooltips while collapsed', async () => {
     await configureTestingModule();
     spyOn(window, 'matchMedia').and.returnValue({ matches: false } as MediaQueryList);

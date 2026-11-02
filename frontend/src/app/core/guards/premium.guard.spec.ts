@@ -3,7 +3,8 @@ import { ActivatedRouteSnapshot, GuardResult, MaybeAsync, Router, RouterStateSna
 import { firstValueFrom, isObservable, of } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 import { AuthSessionAuthorityService } from '../services/auth-session-authority.service';
-import { companyPreviewAccessGuard, trackPreviewAccessGuard } from './premium.guard';
+import { PremiumGateService } from '../services/premium-gate.service';
+import { companyPreviewAccessGuard, premiumGuard, trackPreviewAccessGuard } from './premium.guard';
 
 type PreviewFixture = {
   guard: typeof trackPreviewAccessGuard;
@@ -66,4 +67,37 @@ describe('public preview access guards', () => {
       expect(ensureMe).not.toHaveBeenCalled();
     });
   }
+});
+
+describe('premium company routes without access', () => {
+  function runGuard(navigated: boolean, url = '/companies/agoda/all?src=mail') {
+    const open = jasmine.createSpy('open');
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter([]),
+        { provide: AuthService, useValue: { isLoggedIn: () => false, user: () => null, ensureMe: () => of(null) } },
+        { provide: PremiumGateService, useValue: { open } },
+      ],
+    });
+    const router = TestBed.inject(Router);
+    router.navigated = navigated;
+    const result = TestBed.runInInjectionContext(() =>
+      premiumGuard({ data: {} } as unknown as ActivatedRouteSnapshot, { url } as RouterStateSnapshot));
+    return { open, router, result };
+  }
+
+  it('lands a direct link on the public guide of that company, with no gate', async () => {
+    const { open, router, result } = runGuard(false);
+    const target = await resolve(result);
+
+    expect(open).not.toHaveBeenCalled();
+    expect(router.serializeUrl(target as UrlTree)).toBe('/companies/agoda/preview?src=mail');
+  });
+
+  it('keeps the gate for a click inside the app, so the click gets an answer', async () => {
+    const { open, result } = runGuard(true);
+    await resolve(result);
+
+    expect(open).toHaveBeenCalledWith(jasmine.objectContaining({ reason: 'company', isLoggedIn: false }));
+  });
 });

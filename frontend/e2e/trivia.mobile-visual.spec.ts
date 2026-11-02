@@ -11,9 +11,9 @@ const HIGH_RISK_ROUTES = [
   '/html/trivia/html-dom',
   '/html/trivia/html-div-vs-span',
   '/react/trivia/react-conditional-rendering',
-  '/react/trivia/react-state-vs-props',
-  '/javascript/trivia/js-promises-basics',
-  '/css/trivia/css-flexbox-basics',
+  '/react/trivia/react-pure-function-of-props-and-state',
+  '/javascript/trivia/js-promises-async-await',
+  '/css/trivia/css-display-flex',
 ];
 
 async function stabilize(page: import('@playwright/test').Page) {
