@@ -4038,15 +4038,17 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     const escapeHtml = (t: string) =>
       t.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
 
-    // Renders inline `code` spans safely
-    const renderInline = (t: string) => {
+    // Renders inline `code` and **bold** spans safely
+    const renderInline = (t: string): string => {
       let out = '';
       let last = 0;
-      const re = /`([^`]+)`/g;
+      const re = /`([^`]+)`|\*\*(?=\S)([^*\n]+?)(?<=\S)\*\*/g;
       let m: RegExpExecArray | null;
       while ((m = re.exec(t))) {
-        out += escapeHtml(t.slice(last, m.index));         // text before code
-        out += `<code>${escapeHtml(m[1])}</code>`;         // code content
+        out += escapeHtml(t.slice(last, m.index));         // text before the span
+        out += m[1] !== undefined
+          ? `<code>${escapeHtml(m[1])}</code>`
+          : `<strong>${renderInline(m[2])}</strong>`;
         last = re.lastIndex;
       }
       out += escapeHtml(t.slice(last));                    // tail

@@ -240,10 +240,12 @@ test.describe('coding solution source in production HTML', () => {
     expect(response.status()).toBe(200);
     const sections = elements(parse(await response.text())).filter((node) => attr(node, 'data-testid') === 'coding-common-mistakes');
     expect(sections).toHaveLength(1);
-    const text = normalize(htmlText(sections[0]));
+    // Hint text renders its `code` as elements, which drops the markers and splits text nodes.
+    const renderedText = (value: string) => value.replace(/`/g, '').replace(/\s+/g, '');
+    const text = renderedText(htmlText(sections[0]));
     for (const hint of hints) {
-      expect(text).toContain(normalize(hint.title));
-      expect(text).toContain(normalize(hint.actions[0]));
+      expect(text).toContain(renderedText(hint.title));
+      expect(text).toContain(renderedText(hint.actions[0]));
     }
   });
   test('premium HTML excludes solution snapshots and code payloads', async ({ request }) => {

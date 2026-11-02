@@ -1,6 +1,6 @@
 // app.component.ts
 import { CommonModule, ViewportScroller, isPlatformBrowser } from '@angular/common';
-import { Component, NgZone, OnDestroy, OnInit, PLATFORM_ID, computed, inject, signal, DOCUMENT } from '@angular/core';
+import { Component, NgZone, OnDestroy, OnInit, PLATFORM_ID, afterNextRender, computed, inject, signal, DOCUMENT } from '@angular/core';
 import { NavigationEnd, Router, RouterModule, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs';
 import { BugReportService } from './core/services/bug-report.service';
@@ -106,6 +106,13 @@ export class AppComponent implements OnInit, OnDestroy {
     this.HIDE_SIDEBAR_PATTERNS.some(rx => rx.test(this.pathOnly()))
   );
   showSidebar = computed(() => !this.hideSidebar());
+  // False through the server render and hydration, so @defer draws the sidebar's placeholder
+  // in prerendered HTML: a `when` that is already true on first render draws nothing there.
+  readonly sidebarReady = signal(false);
+
+  constructor() {
+    afterNextRender(() => this.sidebarReady.set(true));
+  }
 
   // --- SITE FOOTER on public pages ---
   // Route-only decisions (see core/content/site-footer.json), so the server and

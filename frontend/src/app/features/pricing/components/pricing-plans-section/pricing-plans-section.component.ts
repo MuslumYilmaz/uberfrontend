@@ -3,7 +3,6 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
-  HostListener,
   Input,
   OnChanges,
   OnDestroy,
@@ -461,7 +460,6 @@ export class PricingPlansSectionComponent implements OnInit, OnChanges, AfterVie
   private analyticsObservationStarted = false;
   private autoContinueAttempted = false;
   private checkoutPrefetchRequested = false;
-  private useMobilePrimaryPlanOrder = false;
   autoContinuingPendingCheckout = false;
   private planCardsSeenTracked = false;
   recommendedPlan = RECOMMENDED_PRICING_PLAN;
@@ -652,12 +650,7 @@ HTML and CSS tasks rely on the live preview instead, because visuals are the pri
 
   activePrimaryPlans(): PricingPlan[] {
     if (!this.isOfferV2()) return this.plans;
-    const primaryPlans = this.plans.filter((plan) => plan.id !== 'lifetime');
-    if (!this.useMobilePrimaryPlanOrder) return primaryPlans;
-    const mobileOrder: PlanId[] = ['quarterly', 'monthly', 'annual'];
-    return [...primaryPlans].sort(
-      (left, right) => mobileOrder.indexOf(left.id) - mobileOrder.indexOf(right.id),
-    );
+    return this.plans.filter((plan) => plan.id !== 'lifetime');
   }
 
   lifetimePlan(): PricingPlan {
@@ -934,9 +927,6 @@ HTML and CSS tasks rely on the live preview instead, because visuals are the pri
   }
 
   ngOnInit(): void {
-    // The viewport-dependent plan order is applied after the first render (see
-    // ngAfterViewInit): the prerendered HTML carries the server order, and the
-    // first client render must match it for hydration to claim the DOM.
     this.pendingCheckoutIntent = this.ctaMode === 'checkout' ? this.checkoutIntent.load() : null;
     this.maybePrefetchCheckout();
     this.schedulePendingCheckoutAutoContinue();
@@ -954,11 +944,6 @@ HTML and CSS tasks rely on the live preview instead, because visuals are the pri
   ngAfterViewInit(): void {
     this.viewInitialized = true;
     this.scheduleAnalyticsObservation();
-    if (typeof window !== 'undefined') {
-      // Runs after hydration has claimed the server DOM and before the next paint,
-      // so a mobile viewport reorders the cards as an ordinary update.
-      queueMicrotask(() => this.syncPrimaryPlanOrder());
-    }
   }
 
   ngOnDestroy(): void {
@@ -968,11 +953,6 @@ HTML and CSS tasks rely on the live preview instead, because visuals are the pri
     }
     this.visibilityObserver?.disconnect();
     this.visibilityObserver = undefined;
-  }
-
-  @HostListener('window:resize')
-  onViewportResize(): void {
-    this.syncPrimaryPlanOrder();
   }
 
   isCheckoutAvailable(planId: PlanId): boolean {
@@ -991,16 +971,6 @@ HTML and CSS tasks rely on the live preview instead, because visuals are the pri
     ) return;
     this.checkoutPrefetchRequested = true;
     void this.billingCheckout.prefetch();
-  }
-
-  private syncPrimaryPlanOrder(): void {
-    if (typeof window === 'undefined') {
-      this.useMobilePrimaryPlanOrder = false;
-      return;
-    }
-    this.useMobilePrimaryPlanOrder = typeof window.matchMedia === 'function'
-      ? window.matchMedia('(max-width: 640px)').matches
-      : window.innerWidth <= 640;
   }
 
   private scheduleAnalyticsObservation(): void {

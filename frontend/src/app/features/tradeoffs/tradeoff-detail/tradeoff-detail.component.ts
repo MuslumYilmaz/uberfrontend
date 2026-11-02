@@ -21,6 +21,7 @@ import { LoginRequiredDialogComponent } from '../../../shared/components/login-r
 import { frameworkFromTech, freeChallengeForFramework } from '../../../core/utils/onboarding-personalization.util';
 import { isProActive } from '../../../core/utils/entitlements.util';
 import { buildTradeoffSeoMeta } from '../../../core/utils/tradeoff-seo.util';
+import { InlineCodeComponent } from '../../../shared/ui/inline-code/inline-code.component';
 
 type LockedPath = {
   id: string;
@@ -38,7 +39,7 @@ function updatedLabel(value: string | null | undefined): string | null {
 
 @Component({
     selector: 'app-tradeoff-detail',
-    imports: [CommonModule, RouterModule, LockedPreviewComponent, LoginRequiredDialogComponent, FaButtonComponent],
+    imports: [CommonModule, RouterModule, InlineCodeComponent, LockedPreviewComponent, LoginRequiredDialogComponent, FaButtonComponent],
     templateUrl: './tradeoff-detail.component.html',
     styleUrls: ['./tradeoff-detail.component.css']
 })

@@ -53,6 +53,7 @@ import {
   NETFLIX_ROLE_LENSES,
   NETFLIX_WALKTHROUGH_STEPS,
 } from './netflix-preview-content';
+import { InlineCodeComponent } from '../../../shared/ui/inline-code/inline-code.component';
 
 type OpenAiPracticePrompt = {
   id: string;
@@ -224,6 +225,7 @@ const OPENAI_PREP_SEQUENCE: OpenAiPrepDay[] = [
       CompanyOfficialGuidesComponent,
       CompanyInterviewProcessComponent,
       StripInlineMarkupPipe,
+      InlineCodeComponent,
     ],
     templateUrl: './company-preview.component.html',
     styleUrls: ['./company-preview.component.css']

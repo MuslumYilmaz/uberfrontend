@@ -1890,7 +1890,7 @@
     "technology": "vue",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Computed properties and watchers both react to reactive changes, but they solve different problems: &lt;strong&gt;computed&lt;/strong&gt; is for &lt;strong&gt;derived state&lt;/strong&gt; (cached, declarative), while &lt;strong&gt;watch&lt;/strong&gt; is for &lt;strong&gt;side effects&lt;/strong&gt; (async/imperative work triggered by changes).",
+    "description": "Computed properties and watchers both react to reactive changes, but they solve different problems: **computed** is for **derived state** (cached, declarative), while **watch** is for **side effects** (async/imperative work triggered by changes).",
     "answer": {
       "blocks": [
         {

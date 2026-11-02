@@ -24,6 +24,7 @@ import { CodingJsPanelComponent } from './coding-js-panel/coding-js-panel.compon
 import { listQuestionFailureHints } from '../../../core/utils/failure-explain-rules';
 import { PUBLIC_QUESTION_NAVIGATION } from '../../../generated/public-question-navigation';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { stripInlineMarkup } from '../../../shared/ui/inline-code/inline-code.component';
 
 describe('CodingDetailComponent', () => {
   let questionService: jasmine.SpyObj<QuestionService>;
@@ -470,7 +471,8 @@ describe('CodingDetailComponent', () => {
     expect(Array.from(mistakes.querySelectorAll('[data-testid="coding-common-mistake-title"]')).map((node) => node.textContent?.trim()))
       .toEqual(expected.map((hint) => hint.title));
     expect(mistakes.textContent).toContain(expected[0].why);
-    expect(mistakes.textContent).toContain(expected[0].actions[0]);
+    expect(mistakes.textContent).toContain(stripInlineMarkup(expected[0].actions[0]));
+    expect(mistakes.textContent).withContext('hint text renders its inline code').not.toContain('`');
     expect(mistakes.textContent).not.toContain('Multiple tests are failing');
     expect(host.querySelector('[data-testid="coding-description-panel"]')?.textContent).not.toContain(expected[0].title);
 
@@ -2603,6 +2605,11 @@ describe('CodingDetailComponent', () => {
     expect(title?.tagName).toBe('H2');
     expect(title?.textContent?.trim()).toBeTruthy();
     expect(host.querySelectorAll('h1').length).toBe(0);
+  });
+
+  it('renders bold and inline code in solution prose', () => {
+    const html = TestBed.createComponent(CodingDetailComponent).componentInstance.md('**Test cases**\n- Click **Add** once, then check `count`.');
+    expect(html).toBe('<p class="sol-p"><strong>Test cases</strong></p><ul class="sol-ul"><li>Click <strong>Add</strong> once, then check <code>count</code>.</li></ul>');
   });
 
   it('renders inline code and bold in the prompt without a collapsed leading space', async () => {

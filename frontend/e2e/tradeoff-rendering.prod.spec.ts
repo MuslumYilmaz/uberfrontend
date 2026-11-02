@@ -19,6 +19,8 @@ const token = 'tradeoff-render-e2e-token';
 const user = buildMockUser();
 const progressKey = (scope = 'guest') => `fa:practice:progress:v3:${scope}`;
 const normalize = (value: string) => value.replace(/\s+/g, ' ').trim();
+// Authored text renders its `code` and **bold** as elements, which drops the markers and splits text nodes.
+const renderedText = (value: string) => value.replace(/`|\*\*/g, '').replace(/\s+/g, '');
 const legacyFallbackTitle = 'Frontend Tradeoff Battle for Interview Practice';
 const legacyFallbackDescription =
   'Practice a frontend tradeoff interview question and learn how to compare options, defend a balanced choice, and explain the downsides clearly.';
@@ -113,8 +115,8 @@ async function expectClosedAnalysis(page: Page, scenario: TradeoffBattleScenario
   const analysis = page.locator('#tradeoff-analysis');
   await expect(analysis).toHaveCount(1);
   await expect(analysis).toBeHidden();
-  const text = normalize(await analysis.textContent() || '');
-  for (const fragment of educationalText(scenario)) expect(text).toContain(normalize(fragment));
+  const text = renderedText(await analysis.textContent() || '');
+  for (const fragment of educationalText(scenario)) expect(text).toContain(renderedText(fragment));
   await expect(page.locator('[aria-controls="tradeoff-analysis"]')).toHaveAttribute('aria-expanded', 'false');
   await expect(page.getByRole('button', { name: 'Mark as completed', exact: true })).toHaveCount(0);
 }
@@ -140,8 +142,8 @@ test.describe('tradeoff production initial HTML', () => {
       const analysis = nodes.filter((node) => attr(node, 'id') === 'tradeoff-analysis');
       expect(analysis).toHaveLength(1);
       expect(attr(analysis[0], 'hidden')).toBeDefined();
-      const text = normalize(htmlText(analysis[0]));
-      for (const fragment of educationalText(scenario)) expect(text).toContain(normalize(fragment));
+      const text = renderedText(htmlText(analysis[0]));
+      for (const fragment of educationalText(scenario)) expect(text).toContain(renderedText(fragment));
       const revealButton = nodes.find((node) => attr(node, 'aria-controls') === 'tradeoff-analysis');
       expect(revealButton && attr(revealButton, 'aria-expanded')).toBe('false');
       const robots = nodes.find((node) => node.tagName === 'meta' && attr(node, 'name') === 'robots');
@@ -158,9 +160,9 @@ test.describe('tradeoff production initial HTML', () => {
       const nodes = elements(document);
       expectInitialHead(html, nodes, scenario);
       expect(nodes.filter((node) => attr(node, 'id') === 'tradeoff-analysis')).toHaveLength(0);
-      const text = normalize(htmlText(document));
-      expect(text).not.toContain(normalize(scenario.strongAnswer.summary));
-      for (const item of scenario.interviewerPushback) expect(text).not.toContain(normalize(item.answer));
+      const text = renderedText(htmlText(document));
+      expect(text).not.toContain(renderedText(scenario.strongAnswer.summary));
+      for (const item of scenario.interviewerPushback) expect(text).not.toContain(renderedText(item.answer));
       const robots = nodes.find((node) => node.tagName === 'meta' && attr(node, 'name') === 'robots');
       expect(robots && attr(robots, 'content')).toMatch(/noindex/i);
     });

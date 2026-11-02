@@ -468,7 +468,7 @@
                                     <img [src]="$any(b).src" [alt]="$any(b).alt || 'diagram'"
                                         [width]="$any(b).width || null" [height]="$any(b).height || null" loading="lazy"
                                         decoding="async" />
-                                    <figcaption *ngIf="$any(b).caption as cap">{{ cap }}</figcaption>
+                                    <figcaption *ngIf="$any(b).caption as cap"><fa-inline-code [text]="cap"></fa-inline-code></figcaption>
                                 </figure>
 
                                 <!-- LIST (table) -->
@@ -477,7 +477,7 @@
                                         <table class="table" [class.table--stacked-mobile]="isStackedMobileTable($any(b))">
                                             <thead>
                                                 <tr>
-                                                    <th *ngFor="let col of $any(b).columns; trackBy: trackByStringValue" [innerHTML]="md(col) | safeHtml"></th>
+                                                    <th *ngFor="let col of $any(b).columns; trackBy: trackByStringValue" [innerHTML]="mdCell(col) | safeHtml"></th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -485,13 +485,12 @@
                                                     <td
                                                         *ngFor="let cell of row; let cellIndex = index; trackBy: trackByCellValue"
                                                         [attr.data-label]="tableColumnLabel($any(b), cellIndex)"
-                                                        [innerHTML]="md(cell) | safeHtml"></td>
+                                                        [innerHTML]="mdCell(cell) | safeHtml"></td>
                                                 </tr>
                                             </tbody>
                                         </table>
                                     </div>
-                                    <figcaption *ngIf="$any(b).caption as cap" class="tbl-caption">{{ cap }}
-                                    </figcaption>
+                                    <figcaption *ngIf="$any(b).caption as cap" class="tbl-caption"><fa-inline-code [text]="cap"></fa-inline-code></figcaption>
                                 </figure>
                             </ng-container>
                         </div>

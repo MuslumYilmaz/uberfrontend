@@ -93,7 +93,7 @@ test('pricing offer v2 preserves plan hierarchy and responsive reflow', async ({
       : card.classList.contains('pr-card--monthly')
         ? 'monthly'
         : 'annual'
-  )))).toEqual(['quarterly', 'monthly', 'annual']);
+  )))).toEqual(['monthly', 'quarterly', 'annual']);
 });
 
 test('regional pricing shows the list price struck through next to the regional price', async ({ page }) => {

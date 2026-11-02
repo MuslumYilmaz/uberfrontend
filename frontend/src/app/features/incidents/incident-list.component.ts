@@ -6,6 +6,7 @@ import { IncidentListItem, IncidentTech } from '../../core/models/incident.model
 import { IncidentListResolved } from '../../core/resolvers/incident.resolver';
 import { IncidentProgressService } from '../../core/services/incident-progress.service';
 import { SeoService } from '../../core/services/seo.service';
+import { InlineCodeComponent } from '../../shared/ui/inline-code/inline-code.component';
 
 type IncidentFilterValue = 'all' | IncidentTech;
 type IncidentFilterOption = {
@@ -28,7 +29,7 @@ const INCIDENTS_SEO_DESCRIPTION =
 
 @Component({
     selector: 'app-incident-list',
-    imports: [CommonModule, FormsModule, RouterModule],
+    imports: [CommonModule, FormsModule, RouterModule, InlineCodeComponent],
     templateUrl: './incident-list.component.html',
     styleUrls: ['./incident-list.component.css']
 })

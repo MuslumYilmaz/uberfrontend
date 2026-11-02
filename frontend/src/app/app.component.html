@@ -15,8 +15,10 @@
   <!-- Regular app pages -->
   <ng-template #regularLayout>
     <div class="app-layout">
-      @defer (when showSidebar()) {
+      @defer (when sidebarReady()) {
         <app-sidebar [collapsed]="isGuestStarterRoute()"></app-sidebar>
+      } @placeholder {
+        <div class="sidebar-placeholder" [class.is-collapsed]="isGuestStarterRoute()" aria-hidden="true"></div>
       }
       <div class="main-col">
         <main class="main">

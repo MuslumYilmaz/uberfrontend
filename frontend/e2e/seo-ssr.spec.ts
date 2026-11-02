@@ -4455,6 +4455,83 @@ test.describe('seo-ssr', () => {
     expect(await page.evaluate(() => window.scrollY), 'privacy scrolled to its section').toBeGreaterThan(0);
   });
 
+  test('a direct load of /system-design opens at the top', async ({ page, request }) => {
+    // A select that writes autofocus into prerendered HTML makes the browser scroll down to the filters on load.
+    expect(await readRawHtml(request, '/system-design')).not.toMatch(/\sautofocus\b/);
+
+    for (const width of [1366, 390]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto('/system-design', { waitUntil: 'networkidle' });
+      expect(await page.evaluate(() => window.scrollY), `scroll position at ${width}px`).toBe(0);
+      await expect(page.locator('h1')).toBeInViewport();
+    }
+  });
+
+  test('prerendered pages already hold the sidebar column and the phone plan order, so loading moves nothing', async ({ browser, page }) => {
+    const rawContext = await browser.newContext({ javaScriptEnabled: false });
+    const rawPage = await rawContext.newPage();
+    const prerenderedColumnX = async (path: string, width: number) => {
+      await rawPage.setViewportSize({ width, height: 900 });
+      await rawPage.goto(fullUrl(path));
+      return (await rawPage.locator('.main-col').boundingBox())?.x;
+    };
+
+    expect(await prerenderedColumnX('/companies', 1366), 'full sidebar column').toBe(280);
+    expect(await prerenderedColumnX('/coding', 1366), 'guest rail on starter routes').toBe(60);
+    expect(await prerenderedColumnX('/companies', 390), 'no column where the sidebar is a drawer').toBe(0);
+
+    await rawPage.goto(fullUrl('/pricing'));
+    const quarterly = await rawPage.locator('.pr-card--quarterly').boundingBox();
+    const monthly = await rawPage.locator('.pr-card--monthly').boundingBox();
+    expect(quarterly!.y, 'the recommended plan leads on a phone before any script runs').toBeLessThan(monthly!.y);
+    await rawContext.close();
+
+    await page.setViewportSize({ width: 1366, height: 900 });
+    await page.goto('/companies', { waitUntil: 'networkidle' });
+    await expect(page.locator('app-sidebar aside')).toBeVisible();
+    expect((await page.locator('.main-col').boundingBox())?.x, 'the mounted sidebar takes the same column').toBe(280);
+  });
+
+  test('raw pages show no unrendered markdown or escaped entities', async ({ request }) => {
+    test.setTimeout(120_000);
+    const paths = [
+      '/interview-questions',
+      '/javascript/interview-questions',
+      '/angular/interview-questions',
+      '/react/interview-questions',
+      '/vue/interview-questions',
+      '/html/interview-questions',
+      '/html-css/interview-questions',
+      '/incidents',
+      '/tradeoffs/promise-all-vs-sequential-awaits',
+      '/companies/revolut/preview',
+    ];
+    for (const path of paths) {
+      const text = rawVisibleTextPreserveCase(await readRawHtml(request, path));
+      expect(text.match(/\*\*[^*\s]|`[^`\n]+`|&lt;|&gt;/)?.[0], `unrendered markup on ${path}`).toBeUndefined();
+    }
+
+    const solution = rawVisibleTextPreserveCase(await readRawHtml(request, '/javascript/coding/js-debounce'));
+    expect(solution, 'solution notes render their inline code').toContain('debounced wrappers typically return void');
+  });
+
+  test('raw trivia answers keep HTML examples as text and table cells as values', async ({ request }) => {
+    const cascade = await readRawHtml(request, '/css/trivia/css-cascade-order');
+    expect(rawVisibleTextPreserveCase(cascade)).toContain('#header');
+    expect(cascade).not.toMatch(/<td[^>]*>\s*<h\d/i);
+
+    const semantic = await readRawHtml(request, '/html/trivia/html-semantic-elements');
+    expect(semantic.match(/<h1\b/gi), 'one H1 on the page').toHaveLength(1);
+    expect(rawVisibleTextPreserveCase(semantic)).toContain('<header><h1>Site Title</h1></header>');
+
+    const inline = rawVisibleTextPreserveCase(await readRawHtml(request, '/html/trivia/html-block-inline-elements'));
+    expect(inline).toMatch(/Examples include <span>\s*,\s*<a>\s*,\s*<em>\s*,\s*and\s*<strong>/);
+
+    const lists = rawVisibleTextPreserveCase(await readRawHtml(request, '/html/trivia/html-ol-ul-dl-difference'));
+    expect(lists).not.toContain('<pre>');
+    expect(lists).toContain('Cook for 10 minutes');
+  });
+
   for (const note of EDITORIAL_NOTE_CASES) {
     test(`raw ${note.label} company preview renders its editorial notes around the catalog blocks`, async ({ request }) => {
       test.setTimeout(120_000);

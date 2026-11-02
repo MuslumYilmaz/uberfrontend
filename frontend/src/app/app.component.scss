@@ -5,6 +5,25 @@
   align-items: stretch;
   min-height: calc(100vh - var(--header-h));
 }
+/* Holds the deferred sidebar's column in prerendered HTML, so the page does not jump when it mounts. Mirrors .sidebar. */
+.sidebar-placeholder {
+  box-sizing: border-box;
+  flex: none;
+  position: sticky;
+  top: 56px;
+  height: calc(100vh - 56px);
+  width: 280px;
+  background: linear-gradient(160deg, var(--fa-surface), var(--fa-surface-alt));
+  border-right: 1px solid var(--fa-border-subtle);
+}
+.sidebar-placeholder.is-collapsed {
+  width: 60px;
+}
+@media (max-width: 980px) {
+  .sidebar-placeholder {
+    display: none;
+  }
+}
 /* The main column holds the page and, below it, the site footer; the sidebar stays beside both. */
 .main-col {
   flex: 1;

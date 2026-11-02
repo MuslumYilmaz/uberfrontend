@@ -212,7 +212,7 @@
                         </header>
 
                         <article class="editor-decision-focus">
-                            <h4 class="editor-decision-focus__title">{{ active.node.title }}</h4>
+                            <h4 class="editor-decision-focus__title"><fa-inline-code [text]="active.node.title"></fa-inline-code></h4>
                             <p *ngIf="!active.resolved" class="editor-decision-focus__hint">
                                 This anchor is not present in the currently loaded solution variant.
                             </p>
@@ -231,7 +231,7 @@
                                     <span>Why this choice?</span>
                                     <app-fa-glyph class="editor-branch__caret" icon="pi pi-chevron-down" aria-hidden="true"></app-fa-glyph>
                                 </button>
-                                <p *ngIf="isDecisionBranchExpanded('why')" class="editor-branch__copy">{{ active.node.why }}</p>
+                                <p *ngIf="isDecisionBranchExpanded('why')" class="editor-branch__copy"><fa-inline-code [text]="active.node.why"></fa-inline-code></p>
                             </article>
 
                             <article class="editor-branch" [class.expanded]="isDecisionBranchExpanded('alternative')">
@@ -246,7 +246,7 @@
                                     <span>Alternative</span>
                                     <app-fa-glyph class="editor-branch__caret" icon="pi pi-chevron-down" aria-hidden="true"></app-fa-glyph>
                                 </button>
-                                <p *ngIf="isDecisionBranchExpanded('alternative')" class="editor-branch__copy">{{ active.node.alternative }}</p>
+                                <p *ngIf="isDecisionBranchExpanded('alternative')" class="editor-branch__copy"><fa-inline-code [text]="active.node.alternative"></fa-inline-code></p>
                             </article>
 
                             <article class="editor-branch" [class.expanded]="isDecisionBranchExpanded('tradeoff')">
@@ -261,7 +261,7 @@
                                     <span>Tradeoff</span>
                                     <app-fa-glyph class="editor-branch__caret" icon="pi pi-chevron-down" aria-hidden="true"></app-fa-glyph>
                                 </button>
-                                <p *ngIf="isDecisionBranchExpanded('tradeoff')" class="editor-branch__copy">{{ active.node.tradeoff }}</p>
+                                <p *ngIf="isDecisionBranchExpanded('tradeoff')" class="editor-branch__copy"><fa-inline-code [text]="active.node.tradeoff"></fa-inline-code></p>
                             </article>
                         </section>
                     </section>
@@ -312,9 +312,9 @@
                             <strong>{{ explainHint()?.title }}</strong>
                             <button type="button" class="assist-chip__dismiss" (click)="dismissExplainPanel()">Dismiss</button>
                         </div>
-                        <p class="assist-chip__panel-body">{{ explainHint()?.why }}</p>
+                        <p class="assist-chip__panel-body"><fa-inline-code [text]="explainHint()?.why"></fa-inline-code></p>
                         <ul class="assist-chip__actions">
-                            <li *ngFor="let action of explainHint()?.actions">{{ action }}</li>
+                            <li *ngFor="let action of explainHint()?.actions"><fa-inline-code [text]="action"></fa-inline-code></li>
                         </ul>
                     </div>
                 </div>

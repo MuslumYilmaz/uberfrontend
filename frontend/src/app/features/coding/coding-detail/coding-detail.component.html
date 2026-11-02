@@ -109,9 +109,9 @@
                 [attr.data-round-id]="round.id" data-testid="pressure-active-round">
                 <p class="pressure-mode__eyebrow">Interviewer constraint · Round {{ pressureRoundIndex() + 1 }}</p>
                 <h2>{{ round.title }}</h2>
-                <p class="pressure-mode__prompt">{{ round.interviewerPrompt }}</p>
+                <p class="pressure-mode__prompt"><fa-inline-code [text]="round.interviewerPrompt"></fa-inline-code></p>
                 <ul>
-                  <li *ngFor="let constraint of round.constraints">{{ constraint }}</li>
+                  <li *ngFor="let constraint of round.constraints"><fa-inline-code [text]="constraint"></fa-inline-code></li>
                 </ul>
                 <p class="pressure-mode__cumulative">
                   Run checks when ready. This round includes every earlier constraint.
@@ -215,12 +215,10 @@
                 </span>
               </div>
               <div *ngIf="assessedSkillChips().length" class="detail-interview-hero__skills" aria-label="Assessed skills">
-                <span *ngFor="let skill of assessedSkillChips()" class="fa-chip">
-                  {{ skill }}
-                </span>
+                <span *ngFor="let skill of assessedSkillChips()" class="fa-chip"><fa-inline-code [text]="skill"></fa-inline-code></span>
               </div>
               <ul *ngIf="interviewFocusItems().length" class="detail-interview-hero__checks">
-                <li *ngFor="let item of interviewFocusItems()">{{ item }}</li>
+                <li *ngFor="let item of interviewFocusItems()"><fa-inline-code [text]="item"></fa-inline-code></li>
               </ul>
             </section>
 
@@ -472,13 +470,13 @@
                 class="pressure-debrief" data-testid="pressure-debrief">
                 <p class="pressure-mode__eyebrow">All constraints cleared</p>
                 <h3>{{ scenario.debrief.title }}</h3>
-                <p>{{ scenario.debrief.summary }}</p>
+                <p><fa-inline-code [text]="scenario.debrief.summary"></fa-inline-code></p>
                 <ul>
-                  <li *ngFor="let takeaway of scenario.debrief.takeaways">{{ takeaway }}</li>
+                  <li *ngFor="let takeaway of scenario.debrief.takeaways"><fa-inline-code [text]="takeaway"></fa-inline-code></li>
                 </ul>
                 <div class="pressure-debrief__framework-note">
                   <strong>{{ tech | titlecase }} implementation note</strong>
-                  <p>{{ $any(scenario.debrief.frameworkNotes)[tech] }}</p>
+                  <p><fa-inline-code [text]="$any(scenario.debrief.frameworkNotes)[tech]"></fa-inline-code></p>
                 </div>
               </section>
 
@@ -536,7 +534,7 @@
               <div class="p-3" *ngFor="let ap of approaches(); let i = index">
                 <div class="ap-row">
                   <span class="ap-num">{{ i + 1 }}</span>
-                  <h3 class="ap-title">{{ ap.title }}</h3>
+                  <h3 class="ap-title"><fa-inline-code [text]="ap.title"></fa-inline-code></h3>
                   <div class="ap-actions">
                     <button faButton [attr.data-testid]="'solution-load-approach-' + i"
                       *ngIf="workspaceAvailable() && activePanel()===1 && ((isWebTech() && (ap.codeHtml || ap.codeCss)) || (!isWebTech() && !isFrameworkTech() && codeFor(ap)?.trim()) || (!isFrameworkTech() && (ap.codeJs || ap.codeTs)))"
@@ -661,7 +659,7 @@
                   <div *ngIf="structuredSolution()?.notes?.pitfalls?.length" class="p-3 rounded border border-white/10">
                     <div class="text-xs uppercase opacity-70 mb-2">Pitfalls</div>
                     <ul class="list-disc list-inside text-sm space-y-1">
-                      <li class="font-sm" *ngFor="let p of structuredSolution()?.notes?.pitfalls">{{ p }}</li>
+                      <li class="font-sm" *ngFor="let p of structuredSolution()?.notes?.pitfalls"><fa-inline-code [text]="displayText(p)"></fa-inline-code></li>
                     </ul>
                   </div>
 
@@ -669,7 +667,7 @@
                     class="p-3 rounded border border-white/10">
                     <div class="text-xs uppercase opacity-70 mb-2">Edge cases</div>
                     <ul class="list-disc list-inside text-sm space-y-1">
-                      <li class="font-sm" *ngFor="let e of structuredSolution()?.notes?.edgeCases">{{ e }}</li>
+                      <li class="font-sm" *ngFor="let e of structuredSolution()?.notes?.edgeCases"><fa-inline-code [text]="displayText(e)"></fa-inline-code></li>
                     </ul>
                   </div>
 
@@ -677,7 +675,7 @@
                     class="p-3 rounded border border-white/10">
                     <div class="text-xs uppercase opacity-70 mb-2">Techniques</div>
                     <ul class="list-disc list-inside text-sm space-y-1">
-                      <li class="font-sm" *ngFor="let t of structuredSolution()?.notes?.techniques">{{ t }}</li>
+                      <li class="font-sm" *ngFor="let t of structuredSolution()?.notes?.techniques"><fa-inline-code [text]="displayText(t)"></fa-inline-code></li>
                     </ul>
                   </div>
                 </div>
@@ -689,9 +687,9 @@
                 <ul class="space-y-3">
                   <li *ngFor="let hint of commonMistakes()" class="p-3 rounded border border-white/10">
                     <p class="text-sm font-medium" data-testid="coding-common-mistake-title">{{ hint.title }}</p>
-                    <p class="text-sm opacity-80 mt-1">{{ hint.why }}</p>
+                    <p class="text-sm opacity-80 mt-1"><fa-inline-code [text]="hint.why"></fa-inline-code></p>
                     <ul class="list-disc list-inside text-sm space-y-1 mt-2">
-                      <li class="font-sm" *ngFor="let action of hint.actions">{{ action }}</li>
+                      <li class="font-sm" *ngFor="let action of hint.actions"><fa-inline-code [text]="action"></fa-inline-code></li>
                     </ul>
                   </li>
                 </ul>
@@ -701,7 +699,7 @@
               <section class="space-y-2 mb-6" *ngIf="!pressureRequested() && structuredSolution()?.followUp?.length">
                 <h3 class="text-sm font-semibold opacity-90">Common interview follow-ups:</h3>
                 <ul class="list-disc list-inside text-sm space-y-1">
-                  <li class="font-sm" *ngFor="let f of structuredSolution()?.followUp">{{ f }}</li>
+                  <li class="font-sm" *ngFor="let f of structuredSolution()?.followUp"><fa-inline-code [text]="displayText(f)"></fa-inline-code></li>
                 </ul>
               </section>
 

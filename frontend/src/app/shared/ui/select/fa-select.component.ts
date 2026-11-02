@@ -4,6 +4,9 @@ import { FormsModule } from '@angular/forms';
 import { SelectModule } from 'primeng/select';
 import { MultiSelectModule } from 'primeng/multiselect';
 
+// PrimeNG 20+ passes an unset autofocus straight to pAutoFocus, which writes
+// autofocus="true" for anything but false. In prerendered HTML the browser obeys
+// it on load and scrolls the page to the control, so it is always set to false here.
 @Component({
     selector: 'fa-select',
     imports: [CommonModule, FormsModule, SelectModule, MultiSelectModule],
@@ -11,6 +14,7 @@ import { MultiSelectModule } from 'primeng/multiselect';
     <ng-container *ngIf="multiple; else singleSelect">
       <p-multiSelect
         #multiSelect
+        [autofocus]="false"
         [options]="options"
         [ngModel]="value"
         (ngModelChange)="valueChange.emit($event)"
@@ -38,6 +42,7 @@ import { MultiSelectModule } from 'primeng/multiselect';
 
     <ng-template #singleSelect>
       <p-select
+        [autofocus]="false"
         [options]="options"
         [ngModel]="value"
         (ngModelChange)="valueChange.emit($event)"

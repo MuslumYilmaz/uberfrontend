@@ -502,6 +502,42 @@ describe('TriviaDetailComponent', () => {
     expect(fixture.nativeElement.textContent || '').toContain('Use this return-value map to debug empty UI');
   });
 
+  describe('markdown answers', () => {
+    let md: (src: string) => string;
+    let mdCell: (src: string) => string;
+
+    beforeEach(async () => {
+      const fixture = await createLoadedFixture();
+      md = (src) => fixture.componentInstance.md(src);
+      mdCell = (src) => fixture.componentInstance.mdCell(src);
+    });
+
+    it('keeps a tag named inside inline code as visible text instead of rendering it', () => {
+      expect(md('Examples include <code>&lt;span&gt;</code>, <code>&lt;em&gt;</code>, and <code>&lt;strong&gt;</code>.'))
+        .toBe('<p>Examples include <code>&lt;span&gt;</code>, <code>&lt;em&gt;</code>, and <code>&lt;strong&gt;</code>.</p>');
+      expect(md('Keep `<h1>` single and `**bold**` literal.'))
+        .toBe('<p>Keep <code class="inline-code">&lt;h1&gt;</code> single and <code class="inline-code">**bold**</code> literal.</p>');
+    });
+
+    it('treats <br> before a word as a line break and a named <br> as text', () => {
+      expect(md('<strong>Model</strong><br><br>For a typical run')).toBe('<p><strong>Model</strong><br><br>For a typical run</p>');
+      expect(md('Use the <br> tag sparingly')).toBe('<p>Use the <code class="inline-code">&lt;br&gt;</code> tag sparingly</p>');
+    });
+
+    it('needs a space after # for a heading, so a selector at the start of a line stays text', () => {
+      expect(md('# Cascade')).toBe('<h2 class="md-h md-h2">Cascade</h2>');
+      expect(md('#header wins here')).toBe('<p>#header wins here</p>');
+    });
+
+    it('keeps a table cell one value: no heading or list from its first characters, no heading tags', () => {
+      expect(mdCell('#header')).toBe('<p>#header</p>');
+      expect(mdCell('* or inherited styles')).toBe('<p>* or inherited styles</p>');
+      expect(mdCell('1. Reproduce')).toBe('<p>1. Reproduce</p>');
+      expect(mdCell('1. One<br>2. Two')).toBe('<p>1. One<br>2. Two</p>');
+      expect(mdCell('<h1>Hello</h1>')).not.toContain('<h1');
+    });
+  });
+
   it('renders quick answer before interview focus and practice frame', async () => {
     const fixture = await createLoadedFixture('free');
     const root = fixture.nativeElement as HTMLElement;

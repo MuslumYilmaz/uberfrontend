@@ -37,6 +37,7 @@ import { RestoreBannerComponent } from '../../../../shared/components/restore-ba
 import { CodeSnapshotComponent } from '../../../../shared/ui/code-snapshot/code-snapshot.component';
 import { FaGlyphComponent } from '../../../../shared/ui/icon/fa-glyph.component';
 import { ConsoleEntry, ConsoleLoggerComponent, TestResult } from '../../console-logger/console-logger.component';
+import { InlineCodeComponent } from '../../../../shared/ui/inline-code/inline-code.component';
 
 declare const monaco: any;
 
@@ -80,7 +81,7 @@ const DEFAULT_ASSIST_FLAGS: AssistFlags = {
 
 @Component({
     selector: 'app-coding-js-panel',
-    imports: [CommonModule, MonacoEditorComponent, ConsoleLoggerComponent, RestoreBannerComponent, DraftUpdateBannerComponent, CodeSnapshotComponent, FaGlyphComponent],
+    imports: [CommonModule, InlineCodeComponent, MonacoEditorComponent, ConsoleLoggerComponent, RestoreBannerComponent, DraftUpdateBannerComponent, CodeSnapshotComponent, FaGlyphComponent],
     templateUrl: './coding-js-panel.component.html',
     styleUrls: ['./coding-js-panel.component.css']
 })

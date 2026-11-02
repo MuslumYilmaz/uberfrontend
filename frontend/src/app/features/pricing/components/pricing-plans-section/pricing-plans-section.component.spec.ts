@@ -264,8 +264,8 @@ describe('PricingPlansSectionComponent', () => {
     expect((page.querySelector('.rec-badge')?.textContent || '').trim()).toBe('Recommended');
   });
 
-  it('keeps the server plan order on the first render and applies the mobile order after hydration', async () => {
-    // Prerendered HTML carries the desktop order; the first client render must match it.
+  it('keeps one plan order in the DOM on a phone, so prerendered cards do not swap on hydration', async () => {
+    // The phone order is CSS only (.pr-card--quarterly order); e2e/pricing-offer-v2 checks where the cards land.
     spyOn(window, 'matchMedia').and.callFake((query: string) => ({
       matches: query.includes('max-width: 640px'),
       media: query,
@@ -285,7 +285,7 @@ describe('PricingPlansSectionComponent', () => {
 
     await fixture.whenStable();
     fixture.detectChanges();
-    expect(cardTitles()).toEqual(['Quarterly', 'Monthly', 'Annual']);
+    expect(cardTitles()).toEqual(['Monthly', 'Quarterly', 'Annual']);
   });
 
   it('states student pricing per account state inside the discounts block', () => {

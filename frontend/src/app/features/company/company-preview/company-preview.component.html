@@ -681,7 +681,7 @@
           [attr.id]="prompt.id">
           <p class="company-prompt__number">Prompt {{ i + 1 }}</p>
           <h3>{{ prompt.title }}</h3>
-          <p>{{ prompt.statement }}</p>
+          <p><fa-inline-code [text]="prompt.statement"></fa-inline-code></p>
           <p class="company-prompt__reported" *ngIf="prompt.reportedRound as round" data-testid="company-prompt-reported-round">
             Practice version modelled on a reported round:
             <a [href]="round.url" target="_blank" rel="noopener noreferrer nofollow">{{ round.label }}</a>
@@ -689,24 +689,24 @@
 
           <div class="company-prompt__detail">
             <h4>What this measures</h4>
-            <p>{{ prompt.whatThisMeasures }}</p>
+            <p><fa-inline-code [text]="prompt.whatThisMeasures"></fa-inline-code></p>
           </div>
 
           <div class="company-prompt__detail">
             <h4>Clarify first</h4>
             <ul>
-              <li *ngFor="let item of prompt.clarifyFirst">{{ item }}</li>
+              <li *ngFor="let item of prompt.clarifyFirst"><fa-inline-code [text]="item"></fa-inline-code></li>
             </ul>
           </div>
 
           <div class="company-prompt__detail">
             <h4>Strong answer should cover</h4>
             <ul>
-              <li *ngFor="let item of prompt.strongAnswer">{{ item }}</li>
+              <li *ngFor="let item of prompt.strongAnswer"><fa-inline-code [text]="item"></fa-inline-code></li>
             </ul>
           </div>
 
-          <p class="company-prompt__miss"><strong>Common miss:</strong> {{ prompt.commonMiss }}</p>
+          <p class="company-prompt__miss"><strong>Common miss:</strong> <fa-inline-code [text]="prompt.commonMiss"></fa-inline-code></p>
           <a class="company-resource-link company-resource-link--inline" [routerLink]="prompt.resourcePath">
             {{ prompt.resourceLabel }}
           </a>
@@ -721,7 +721,7 @@
       <ol class="company-walkthrough-steps">
         <li *ngFor="let step of walkthrough.steps">
           <h3>{{ step.title }}</h3>
-          <p>{{ step.description }}</p>
+          <p><fa-inline-code [text]="step.description"></fa-inline-code></p>
         </li>
       </ol>
     </section>
