@@ -39,6 +39,7 @@ describe('company plan rounds', () => {
           expect(round.id.length).withContext(round.id).toBeLessThanOrEqual(ID_MAX_LENGTH);
           expect(round.kinds.length).withContext(round.id).toBeGreaterThan(0);
           expect(new Set(round.kinds).size).withContext(round.id).toBe(round.kinds.length);
+          for (const pick of round.picks ?? []) expect(pick).withContext(round.id).toMatch(/^\/[a-z0-9/-]+$/);
         }
       }
     });
@@ -60,13 +61,13 @@ describe('company plan rounds', () => {
       });
     });
 
-    it(`${slug}: ${several ? 'each level opens on one list and every list can be reached' : 'a single list needs no switching copy'}`, () => {
+    it(`${slug}: ${several ? 'every level opens on the same list and every list can be reached' : 'a single list needs no switching copy'}`, () => {
       if (!several) {
         for (const variant of plan.variants) {
           expect(variant.id).toBe('main');
           expect(variant.from).toBeUndefined();
           expect(variant.ask).toBeUndefined();
-          expect(variant.defaultFor).toBeUndefined();
+          expect(variant.default).toBeUndefined();
         }
         return;
       }
@@ -74,8 +75,7 @@ describe('company plan rounds', () => {
         expect(variant.from?.trim().length).withContext(variant.id).toBeGreaterThan(0);
         expect(variant.ask).withContext(variant.id).toMatch(/^Interviewing .+\?$/);
       }
-      const opened = plan.variants.flatMap((variant) => variant.defaultFor ?? []);
-      expect([...opened].sort()).toEqual([...COMPANY_PLAN_LEVELS].sort());
+      expect(plan.variants.filter((variant) => variant.default).length).toBe(1);
     });
 
     it(`${slug}: every reported question belongs to a list, by a cited source or by hand`, () => {

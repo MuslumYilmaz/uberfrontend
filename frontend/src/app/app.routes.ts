@@ -341,6 +341,28 @@ export const routes: Routes = [
         },
       },
       {
+        // Before :slug: the address carries one person's answers, so it stays out of search and the sitemap.
+        path: 'preview',
+        loadComponent: () =>
+          import('./features/company/company-plan/company-plan-preview.component').then(
+            (m) => m.CompanyPlanPreviewComponent,
+          ),
+        data: {
+          seo: {
+            title: 'Your company interview plan',
+            description: 'A preview of a frontend interview plan built from your company, date and level.',
+            robots: 'noindex,follow',
+          },
+        },
+      },
+      {
+        // Before :slug: a Premium page read from the account, so it stays out of search and the sitemap. Its routes
+        // carry the guard, which keeps it out of the first download.
+        path: 'plan',
+        loadChildren: () =>
+          import('./features/company/company-plan/company-plan.routes').then((m) => m.COMPANY_PLAN_ROUTES),
+      },
+      {
         path: ':slug/preview',
         canActivate: [companyPreviewAccessGuard],
         loadComponent: () =>

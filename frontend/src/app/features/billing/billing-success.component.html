@@ -5,9 +5,12 @@
       {{ state() === 'ready' ? 'Premium access is ready' : 'Payment received' }}
     </h1>
     <p class="lead">
-      {{ state() === 'ready' ? 'Your Premium library is unlocked.' : 'Payment received, syncing access...' }}
+      {{ state() !== 'ready' ? 'Payment received, syncing access...' : hasPlan() ? 'Opening your ' + planLabel() + '.' : 'Your Premium library is unlocked.' }}
     </p>
-    <p class="muted" *ngIf="state() !== 'ready'">This usually takes a few seconds.</p>
+    <p class="muted" *ngIf="state() !== 'ready'">
+      This usually takes a few seconds.<ng-container *ngIf="state() === 'syncing' && hasPlan()">
+        Your {{ planLabel() }} is saved and opens as soon as access is ready.</ng-container>
+    </p>
     <p class="muted" *ngIf="attemptId()" data-testid="billing-attempt-id">
       Support reference: {{ attemptId() }}
     </p>
@@ -21,19 +24,25 @@
         from the billing portal in your profile. If your employer offers a learning budget, interview prep often
         qualifies.
       </p>
-      <a
-        class="btn"
-        [routerLink]="['/react', 'coding', 'react-contact-form-starter']"
-        [queryParams]="{ src: 'billing_success' }"
-        (click)="trackPremiumChallengeStarted()"
-        data-testid="billing-start-premium">
-        Start your first Premium challenge
-      </a>
+      <button *ngIf="hasPlan(); else premiumChallenge" class="btn" type="button" (click)="openPlan()" data-testid="billing-open-plan">
+        Open my plan now
+      </button>
+      <ng-template #premiumChallenge>
+        <a
+          class="btn"
+          [routerLink]="['/react', 'coding', 'react-contact-form-starter']"
+          [queryParams]="{ src: 'billing_success' }"
+          (click)="trackPremiumChallengeStarted()"
+          data-testid="billing-start-premium">
+          Start your first Premium challenge
+        </a>
+      </ng-template>
       <a class="link" routerLink="/profile">View profile</a>
     </div>
 
     <div class="timeout" *ngIf="state() === 'timeout'">
       <p>We’re still waiting on the subscription update.</p>
+      <p *ngIf="hasPlan()" data-testid="billing-plan-saved">Your plan is saved. It opens when payment is confirmed.</p>
       <p class="muted">You can refresh your access or try again in a moment.</p>
       <p class="muted" data-testid="billing-timeout-hint">
         If you checked out with a different email, sign in with that email or contact support&#64;frontendatlas.com.
@@ -45,6 +54,7 @@
 
     <div class="timeout" *ngIf="state() === 'pending-user-match'" data-testid="billing-pending-user-match">
       <p>We found your payment, but we could not safely match it to this account yet.</p>
+      <p *ngIf="hasPlan()" data-testid="billing-plan-saved">Your plan is saved. It opens when payment is confirmed.</p>
       <p class="muted">
         Sign in with the email you used at checkout, or contact support&#64;frontendatlas.com with the reference above.
       </p>

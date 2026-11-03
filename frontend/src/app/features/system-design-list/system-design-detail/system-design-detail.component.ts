@@ -53,6 +53,7 @@ import {
   SystemDesignQuestion as SDQuestion,
   SystemDesignRadioSection as RadioSection,
 } from '../../../core/models/system-design.model';
+import { CompanyPlanReturnLink, companyPlanReturnLink } from '../../../core/utils/company-plan-return.util';
 
 type RelatedItem = {
   id: string;
@@ -117,6 +118,8 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
   private readonly interviewAvailability = inject(InterviewAvailabilityStore);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly guideTitleBySlug = new Map(SYSTEM.map((entry) => [entry.slug, entry.title]));
+  /** The way back to the company plan, for a walkthrough opened from it. */
+  planReturn = signal<CompanyPlanReturnLink | null>(null);
 
   q: WritableSignal<SDQuestion | null> = signal(null);
   all: SDQuestion[] = [];
@@ -420,6 +423,7 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
     if (initial) this.applyResolvedSystemDesign(initial);
 
     this.route.data.subscribe((data) => {
+      this.readPlanReturn();
       const resolved = data['systemDesignDetail'] as SystemDesignDetailResolved | undefined;
       if (resolved) {
         this.applyResolvedSystemDesign(resolved);
@@ -429,6 +433,15 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
       const id = this.route.snapshot.paramMap.get('id');
       if (id) this.setCurrentById(id, /*allowPending*/ true);
     });
+  }
+
+  private readPlanReturn(): void {
+    const state = (this.router.getCurrentNavigation()?.extras?.state ?? (this.isBrowser ? history.state : null)) as
+      | { returnToUrl?: unknown; returnLabel?: unknown }
+      | null;
+    const url = typeof state?.returnToUrl === 'string' ? state.returnToUrl : null;
+    const label = typeof state?.returnLabel === 'string' ? state.returnLabel : null;
+    this.planReturn.set(companyPlanReturnLink(this.router, url, label));
   }
 
   ngAfterViewInit(): void {

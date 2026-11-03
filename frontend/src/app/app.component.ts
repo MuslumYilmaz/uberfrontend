@@ -87,6 +87,9 @@ export class AppComponent implements OnInit, OnDestroy {
     /^\/showcase\/?$/,
     // The pricing page reads as a marketing page at full width; the drawer stays reachable from the header.
     /^\/pricing\/?$/,
+    // The plan form needs the width, and the company guides below it keep their own links.
+    /^\/companies\/?$/,
+    /^\/companies\/(?:preview|plan)\/?$/,
   ];
 
   // strip query/hash before testing

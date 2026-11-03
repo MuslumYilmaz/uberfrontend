@@ -1,9 +1,12 @@
+import { WritableSignal, signal } from '@angular/core';
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, provideRouter, Router } from '@angular/router';
 import { of } from 'rxjs';
+import type { CompanyPlanAnswers } from '../../core/models/company-plan.model';
 import { AnalyticsService } from '../../core/services/analytics.service';
 import { AuthService } from '../../core/services/auth.service';
 import { BillingCheckoutService } from '../../core/services/billing-checkout.service';
+import { CompanyPlanService } from '../company/company-plan/company-plan.service';
 import { BillingSuccessComponent } from './billing-success.component';
 
 describe('BillingSuccessComponent', () => {
@@ -13,6 +16,7 @@ describe('BillingSuccessComponent', () => {
   let billingCheckoutStub: jasmine.SpyObj<BillingCheckoutService>;
   let authStub: jasmine.SpyObj<AuthService>;
   let analyticsStub: jasmine.SpyObj<AnalyticsService>;
+  let plansStub: { answers: WritableSignal<CompanyPlanAnswers | null>; loadData: jasmine.Spy };
 
   beforeEach(async () => {
     (window as any).__billingPollConfig = { maxAttempts: 3, intervalMs: 25 };
@@ -25,8 +29,10 @@ describe('BillingSuccessComponent', () => {
       'recordAttemptClientState',
     ]);
     billingCheckoutStub.recordAttemptClientState.and.returnValue(of({} as any));
-    authStub = jasmine.createSpyObj<AuthService>('AuthService', ['fetchMeStatus']);
+    authStub = jasmine.createSpyObj<AuthService>('AuthService', ['fetchMeStatus', 'fetchMe']);
+    authStub.fetchMe.and.returnValue(of(null));
     analyticsStub = jasmine.createSpyObj<AnalyticsService>('AnalyticsService', ['track']);
+    plansStub = { answers: signal(null), loadData: jasmine.createSpy('loadData').and.returnValue(of(null)) };
 
     await TestBed.configureTestingModule({
       imports: [BillingSuccessComponent],
@@ -34,6 +40,7 @@ describe('BillingSuccessComponent', () => {
         provideRouter([]),
         { provide: BillingCheckoutService, useValue: billingCheckoutStub },
         { provide: AuthService, useValue: authStub },
+        { provide: CompanyPlanService, useValue: plansStub },
         {
           provide: AnalyticsService,
           useValue: analyticsStub,
@@ -374,6 +381,7 @@ describe('BillingSuccessComponent', () => {
         provideRouter([]),
         { provide: BillingCheckoutService, useValue: billingCheckoutStub },
         { provide: AuthService, useValue: authStub },
+        { provide: CompanyPlanService, useValue: plansStub },
         {
           provide: AnalyticsService,
           useValue: jasmine.createSpyObj('AnalyticsService', ['track']),
@@ -401,4 +409,73 @@ describe('BillingSuccessComponent', () => {
     expect(billingCheckoutStub.fetchAttemptStatus).not.toHaveBeenCalled();
     expect(router.navigateByUrl).toHaveBeenCalledWith('/profile');
   }));
+
+  describe('with a company plan waiting', () => {
+    const attempt = (state: string, entitlementActive: boolean) => ({
+      attempt: {
+        attemptId: 'chk_success_123',
+        provider: 'lemonsqueezy',
+        planId: 'quarterly',
+        mode: 'live',
+        state,
+        rawStatus: state,
+        entitlementActive,
+        accessTierEffective: entitlementActive ? 'premium' : 'free',
+        billingEventId: null,
+        lastErrorCode: null,
+        lastErrorMessage: null,
+        purchase: null,
+      },
+      status: 200,
+    }) as any;
+
+    const render = () => {
+      fixture = TestBed.createComponent(BillingSuccessComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      tick();
+      fixture.detectChanges();
+    };
+    const text = (selector: string) => (fixture.nativeElement.querySelector(selector)?.textContent ?? '').replace(/\s+/g, ' ').trim();
+
+    beforeEach(() => {
+      plansStub.answers.set({ companies: [{ slug: 'elevenlabs' }], when: 'next-week', level: 'senior' });
+      plansStub.loadData.and.returnValue(of({ companies: { elevenlabs: { name: 'ElevenLabs' } } }));
+    });
+
+    it('opens the plan once the payment is verified, after reading the account again', fakeAsync(() => {
+      // No sprint offer version: without a plan this buyer would go to the profile.
+      billingCheckoutStub.fetchAttemptStatus.and.returnValue(of(attempt('applied', true)));
+      render();
+
+      expect(component.state()).toBe('ready');
+      expect(analyticsStub.track).toHaveBeenCalledWith('checkout_verified', jasmine.anything());
+      expect(analyticsStub.track).toHaveBeenCalledBefore(authStub.fetchMe);
+      expect(authStub.fetchMe).toHaveBeenCalledBefore(router.navigateByUrl as jasmine.Spy);
+      expect(router.navigateByUrl).toHaveBeenCalledOnceWith('/companies/plan', { replaceUrl: true });
+      expect(text('.lead')).toBe('Opening your ElevenLabs plan.');
+      expect(fixture.nativeElement.querySelector('[data-testid="billing-open-plan"]')).toBeTruthy();
+      expect(fixture.nativeElement.querySelector('[data-testid="billing-start-premium"]')).toBeNull();
+    }));
+
+    it('says the plan is saved while the payment syncs and after the wait runs out', fakeAsync(() => {
+      billingCheckoutStub.fetchAttemptStatus.and.returnValue(of(attempt('awaiting_webhook', false)));
+      render();
+      expect(text('p.muted')).toBe('This usually takes a few seconds. Your ElevenLabs plan is saved and opens as soon as access is ready.');
+
+      tick(50);
+      fixture.detectChanges();
+      expect(component.state()).toBe('timeout');
+      expect(text('[data-testid="billing-plan-saved"]')).toBe('Your plan is saved. It opens when payment is confirmed.');
+      expect(router.navigateByUrl).not.toHaveBeenCalled();
+    }));
+
+    it('says the plan is saved when the payment waits for a match', fakeAsync(() => {
+      billingCheckoutStub.fetchAttemptStatus.and.returnValue(of(attempt('pending_user_match', false)));
+      render();
+      expect(component.state()).toBe('pending-user-match');
+      expect(text('[data-testid="billing-plan-saved"]')).toBe('Your plan is saved. It opens when payment is confirmed.');
+      expect(router.navigateByUrl).not.toHaveBeenCalled();
+    }));
+  });
 });

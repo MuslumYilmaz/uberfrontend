@@ -1,0 +1,435 @@
+import type { CompanyPlanWhen } from '../../../core/models/company-plan.model';
+import type { CompanyPlanFramework } from '../../../shared/company-previews/company-plan-profiles';
+import type { CompanyPlanLevel, CompanyPlanRoundKind } from '../../../shared/company-previews/company-plan-rounds';
+
+export type { CompanyPlanWhen };
+
+/**
+ * Builds a company plan from cdn/questions/company-plan-data.json and the answers on the form. The same input
+ * always gives the same plan, and nothing here knows about screens, accounts or the current time.
+ */
+
+export type CompanyPlanDataTask = {
+  readonly id: string;
+  readonly title: string;
+  readonly route: string;
+  readonly kind: 'coding' | 'debug' | 'trivia' | 'system-design' | 'guide';
+  readonly tech?: string;
+  readonly access: 'free' | 'premium';
+  readonly minutes: number;
+  readonly family?: string;
+  /** What it practises, best fit first. */
+  readonly focus?: readonly string[];
+};
+
+export type CompanyPlanReportLine = {
+  readonly publisher: string;
+  readonly date: string;
+  /** The source is a job posting rather than a candidate's account. */
+  readonly posting?: boolean;
+};
+
+export type CompanyPlanDataRow = {
+  readonly id: string;
+  readonly report?: CompanyPlanReportLine;
+  readonly rounds?: readonly string[];
+};
+
+export type CompanyPlanDataRound = {
+  readonly id: string;
+  readonly name: string;
+  readonly kinds: readonly CompanyPlanRoundKind[];
+  readonly note: string;
+  /** What the round's own words say it tests. */
+  readonly focus?: readonly string[];
+  readonly sources: readonly { readonly label: string; readonly date: string }[];
+  readonly moreSources?: number;
+};
+
+export type CompanyPlanDataList = {
+  readonly id: string;
+  readonly title: string;
+  readonly from?: string;
+  readonly ask?: string;
+  readonly default?: boolean;
+  readonly reported?: { readonly levels: readonly CompanyPlanLevel[]; readonly who: string };
+  readonly sourceCount: number;
+  readonly newestReport?: string;
+  readonly rounds: readonly CompanyPlanDataRound[];
+  readonly tasks: readonly CompanyPlanDataRow[];
+};
+
+export type CompanyPlanDataCompany = {
+  readonly name: string;
+  readonly signature: string;
+  readonly framework: CompanyPlanFramework;
+  readonly mixed?: boolean;
+  readonly aliases?: readonly string[];
+  readonly checkedAt: string;
+  readonly variants: readonly CompanyPlanDataList[];
+};
+
+export type CompanyPlanData = {
+  readonly schemaVersion: number;
+  readonly general: {
+    readonly starters: readonly string[];
+    readonly formatPractice: Readonly<Record<CompanyPlanFramework, readonly string[]>>;
+    readonly guides: { readonly people: string; readonly design: string };
+    readonly premiumCounts: Readonly<Record<CompanyPlanFramework | 'systemDesign', number>>;
+  };
+  readonly tasks: Readonly<Record<string, CompanyPlanDataTask>>;
+  readonly companies: Readonly<Record<string, CompanyPlanDataCompany>>;
+};
+
+export type CompanyPlanInput = {
+  /** Company slugs in the order they were picked. Unknown ones are ignored. */
+  readonly companies: readonly string[];
+  readonly when: CompanyPlanWhen;
+  readonly level: CompanyPlanLevel;
+  /** The list a person switched to, by company. A missing or unknown one opens the default list. */
+  readonly lists?: Readonly<Record<string, string>>;
+  /** Keys from companyPlanRoundKey. */
+  readonly passedRounds?: readonly string[];
+  readonly solvedTaskIds?: readonly string[];
+  /** YYYY-MM-DD, passed in so a plan never depends on the clock. */
+  readonly today: string;
+};
+
+export type CompanyPlanWhy =
+  | ({ readonly kind: 'report' } & CompanyPlanReportLine)
+  | { readonly kind: 'pick' }
+  | { readonly kind: 'format' }
+  | { readonly kind: 'general' };
+
+export type PlannedTask = CompanyPlanDataTask & {
+  readonly why: CompanyPlanWhy;
+  readonly solved: boolean;
+};
+
+export type PlannedRound = CompanyPlanDataRound & {
+  readonly key: string;
+  readonly passed: boolean;
+  readonly tasks: readonly PlannedTask[];
+};
+
+export type PlannedCompany = {
+  readonly slug: string;
+  readonly name: string;
+  readonly framework: CompanyPlanFramework;
+  readonly mixed: boolean;
+  readonly checkedAt: string;
+  readonly list: { readonly id: string; readonly title: string; readonly chosen: boolean; readonly sourceCount: number };
+  /** "These rounds come from Bangkok." and the questions that switch to the other lists. */
+  readonly switchLine: { readonly text: string; readonly options: readonly { readonly listId: string; readonly ask: string }[] } | null;
+  readonly rounds: readonly PlannedRound[];
+};
+
+export type CompanyPlan = {
+  /** No known company was picked, so these are general tasks. */
+  readonly general: boolean;
+  readonly companies: readonly PlannedCompany[];
+  readonly formatPractice: readonly PlannedTask[];
+  /** Every task in display order: company by company, round by round, then format practice. */
+  readonly tasks: readonly PlannedTask[];
+  /** What the screen before payment shows: tasks a visitor can open today, and the rest of the plan. */
+  readonly preview: { readonly open: readonly PlannedTask[]; readonly rest: readonly PlannedTask[] };
+  readonly next: PlannedTask | null;
+  readonly totalMinutes: number;
+  readonly remainingMinutes: number;
+  readonly warnings: readonly string[];
+};
+
+export const COMPANY_PLAN_BUDGETS: Readonly<Record<CompanyPlanWhen, { readonly total: number; readonly format: number }>> = {
+  tomorrow: { total: 3, format: 0 },
+  'this-week': { total: 4, format: 1 },
+  'next-week': { total: 6, format: 1 },
+  later: { total: 12, format: 2 },
+};
+
+export const COMPANY_PLAN_DESIGN_CAPS: Readonly<Record<CompanyPlanLevel, number>> = { junior: 1, mid: 1, senior: 2, staff: 3 };
+
+const PREVIEW_OPEN_TASKS = 3;
+const OLD_REPORT_YEARS = 2;
+const LEVEL_WORDS: Readonly<Record<CompanyPlanLevel, string>> = { junior: 'junior', mid: 'mid-level', senior: 'senior', staff: 'staff' };
+const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+/**
+ * Reported tasks go first, newest first, then tasks an editor tied to a round, then tags. Reading comes after
+ * practice, because a buyer pays for tasks: guides next, concept questions last.
+ */
+const PHASES = ['report', 'link', 'pick', 'guide', 'concept'] as const;
+type Phase = (typeof PHASES)[number];
+
+type Candidate = { readonly task: CompanyPlanDataTask; readonly row: CompanyPlanDataRow | null; readonly phase: Phase };
+type Slot = {
+  readonly slug: string;
+  readonly key: string;
+  readonly candidates: readonly Candidate[];
+};
+type Selected = { readonly slug: string; readonly key: string | null; readonly task: CompanyPlanDataTask; readonly why: CompanyPlanWhy };
+
+export function companyPlanRoundKey(slug: string, listId: string, roundId: string): string {
+  return `${slug}/${listId}/${roundId}`;
+}
+
+/** The list every plan opens on, whatever the level: the default one, else the first. The others are a switch away. */
+export function companyPlanDefaultList(company: CompanyPlanDataCompany): CompanyPlanDataList {
+  return company.variants.find((list) => list.default) ?? company.variants[0];
+}
+
+const isRunnable = (task: CompanyPlanDataTask) => task.kind === 'coding' || task.kind === 'debug' || task.kind === 'system-design';
+const whyOf = (row: CompanyPlanDataRow | null): CompanyPlanWhy => (row?.report ? { kind: 'report', ...row.report } : { kind: 'pick' });
+
+function roundTakes(round: CompanyPlanDataRound, task: CompanyPlanDataTask): boolean {
+  return round.kinds.includes(task.kind === 'system-design' ? 'design' : 'coding');
+}
+
+/** Narrows rounds to the ones whose words match the task, best fit first. A task with no match keeps them all. */
+function bestFit(rounds: readonly CompanyPlanDataRound[], task: CompanyPlanDataTask): readonly CompanyPlanDataRound[] {
+  for (const focus of task.focus ?? []) {
+    const fitting = rounds.filter((round) => round.focus?.includes(focus));
+    if (fitting.length) return fitting;
+  }
+  return rounds;
+}
+
+function slotsFor(data: CompanyPlanData, slug: string, list: CompanyPlanDataList, passed: ReadonlySet<string>): Slot[] {
+  const open = list.rounds.filter((round) => !passed.has(companyPlanRoundKey(slug, list.id, round.id)));
+  const byRound = new Map<string, Candidate[]>(open.map((round) => [round.id, []]));
+  const fallback = open.filter((round) => round.kinds.includes('coding') || round.kinds.includes('design')).slice(0, 1);
+
+  for (const row of list.tasks) {
+    const task = data.tasks[row.id];
+    if (!task) continue;
+    const phase: Phase = row.report ? 'report' : task.kind === 'guide' ? 'guide' : row.rounds?.length ? 'link' : task.kind === 'trivia' ? 'concept' : 'pick';
+    // A task stays with its rounds. Passing them all drops it and the budget moves on.
+    const eligible = row.rounds?.length ? open.filter((round) => row.rounds?.includes(round.id)) : open.filter((round) => roundTakes(round, task));
+    // Only a company with no round of this kind at all sends the task elsewhere, as with a reported design task.
+    const homeless = !row.rounds?.length && !list.rounds.some((round) => roundTakes(round, task));
+    for (const round of bestFit(homeless ? fallback : eligible, task)) byRound.get(round.id)?.push({ task, row, phase });
+  }
+
+  // A round with nothing of its own still gets the guide for its kind.
+  for (const round of open) {
+    const own = byRound.get(round.id) ?? [];
+    const addGuide = (route: string) => {
+      const guide = data.tasks[route];
+      if (guide) own.push({ task: guide, row: null, phase: 'guide' });
+    };
+    if (round.kinds.includes('people') && !own.some((candidate) => candidate.task.kind === 'guide')) addGuide(data.general.guides.people);
+    if (round.kinds.includes('design') && !own.some((candidate) => candidate.task.kind === 'guide' || candidate.task.kind === 'system-design')) addGuide(data.general.guides.design);
+  }
+
+  return open.map((round) => ({ slug, key: companyPlanRoundKey(slug, list.id, round.id), candidates: byRound.get(round.id) ?? [] }));
+}
+
+/** One company's tasks in the order it would spend a budget: phase by phase, with its rounds taking turns. */
+function preferenceOrder(slots: readonly Slot[]): Selected[] {
+  const order: Selected[] = [];
+  const seen = new Set<string>();
+  for (const phase of PHASES) {
+    const queues = slots
+      .map((slot) => ({ slot, rows: slot.candidates.filter((candidate) => candidate.phase === phase), at: 0 }))
+      .filter((queue) => queue.rows.length);
+    let moved = true;
+    while (moved) {
+      moved = false;
+      for (const queue of queues) {
+        while (queue.at < queue.rows.length) {
+          const candidate = queue.rows[queue.at];
+          queue.at += 1;
+          if (seen.has(candidate.task.id)) continue;
+          seen.add(candidate.task.id);
+          order.push({ slug: queue.slot.slug, key: queue.slot.key, task: candidate.task, why: whyOf(candidate.row) });
+          moved = true;
+          break;
+        }
+      }
+    }
+  }
+  return order;
+}
+
+function monthWords(month: string): string {
+  const [year, number] = month.split('-');
+  return `${MONTHS[Number(number) - 1]} ${year}`;
+}
+
+function olderThanCutoff(month: string, today: string): boolean {
+  const [year, number] = today.split('-');
+  return month < `${Number(year) - OLD_REPORT_YEARS}-${number}`;
+}
+
+function buildPreview(
+  planTasks: readonly PlannedTask[],
+  extras: readonly PlannedTask[],
+  starters: readonly PlannedTask[],
+  keepRest: boolean,
+): CompanyPlan['preview'] {
+  const open: PlannedTask[] = [];
+  const seen = new Set<string>();
+  const offer = (tasks: readonly PlannedTask[], accept: (task: PlannedTask) => boolean) => {
+    for (const task of tasks) {
+      if (open.length >= PREVIEW_OPEN_TASKS) return;
+      if (task.access !== 'free' || task.kind === 'guide' || seen.has(task.id) || !accept(task)) continue;
+      seen.add(task.id);
+      open.push(task);
+    }
+  };
+  // Something to run comes first. Solved tasks are the last resort, for someone who has done everything else.
+  for (const accept of [(task: PlannedTask) => !task.solved, () => true]) {
+    offer(planTasks, (task) => accept(task) && isRunnable(task));
+    offer(extras, (task) => accept(task) && isRunnable(task));
+    offer(planTasks, accept);
+    offer(extras, accept);
+    offer(starters, accept);
+  }
+  return { open, rest: keepRest ? planTasks.filter((task) => !seen.has(task.id)) : [] };
+}
+
+export function buildCompanyPlan(data: CompanyPlanData, input: CompanyPlanInput): CompanyPlan {
+  const budget = COMPANY_PLAN_BUDGETS[input.when];
+  const solved = new Set(input.solvedTaskIds ?? []);
+  const passed = new Set(input.passedRounds ?? []);
+  const asPlanTask = (task: CompanyPlanDataTask, why: CompanyPlanWhy): PlannedTask => ({ ...task, why, solved: solved.has(task.id) });
+  const starters = data.general.starters.flatMap((id) => (data.tasks[id] ? [asPlanTask(data.tasks[id], { kind: 'general' })] : []));
+
+  const chosen = [...new Set(input.companies)].flatMap((slug) => {
+    const company = data.companies[slug];
+    if (!company) return [];
+    const switched = company.variants.find((list) => list.id === input.lists?.[slug]);
+    return [{ slug, company, list: switched ?? companyPlanDefaultList(company), switched: Boolean(switched) }];
+  });
+
+  if (!chosen.length) {
+    const tasks = starters.slice(0, budget.total);
+    return {
+      general: true,
+      companies: [],
+      formatPractice: [],
+      tasks,
+      preview: buildPreview(tasks, [], starters, false),
+      next: tasks.find((task) => !task.solved) ?? null,
+      totalMinutes: tasks.reduce((sum, task) => sum + task.minutes, 0),
+      remainingMinutes: tasks.filter((task) => !task.solved).reduce((sum, task) => sum + task.minutes, 0),
+      warnings: [],
+    };
+  }
+
+  const designCap = COMPANY_PLAN_DESIGN_CAPS[input.level];
+  const selected: Selected[] = [];
+  const canTake = (slug: string, task: CompanyPlanDataTask) => {
+    if (selected.some((entry) => entry.task.id === task.id || (task.family && entry.task.family === task.family))) return false;
+    if (task.kind !== 'system-design') return true;
+    return selected.filter((entry) => entry.slug === slug && entry.task.kind === 'system-design').length < designCap;
+  };
+
+  // Rounds take turns inside a company and companies take turns inside the budget, so neither an early round
+  // nor the first company can use it up. A passed round has no slot.
+  const orders = chosen.map(({ slug, list }) => preferenceOrder(slotsFor(data, slug, list, passed)));
+  const cursors = orders.map(() => 0);
+  const fillRounds = (limit: number) => {
+    let moved = true;
+    while (selected.length < limit && moved) {
+      moved = false;
+      orders.forEach((order, index) => {
+        if (selected.length >= limit) return;
+        while (cursors[index] < order.length) {
+          const entry = order[cursors[index]];
+          cursors[index] += 1;
+          if (!canTake(entry.slug, entry.task)) continue;
+          selected.push(entry);
+          moved = true;
+          return;
+        }
+      });
+    }
+  };
+  fillRounds(budget.total - budget.format);
+
+  // Format practice takes its share, and whatever a thin company left of the budget.
+  const frameworks = [...new Set(chosen.map(({ company }) => company.framework))];
+  const formatPool = (index: number) => frameworks.flatMap((framework) => {
+    const id = data.general.formatPractice[framework]?.[index];
+    return id && data.tasks[id] ? [data.tasks[id]] : [];
+  });
+  for (const task of [...formatPool(0), ...formatPool(1)]) {
+    if (selected.length < budget.total && canTake('', task)) selected.push({ slug: '', key: null, task, why: { kind: 'format' } });
+  }
+  // When the plan already holds the format tasks, the rounds use what is left.
+  fillRounds(budget.total);
+
+  // A short plan still carries one Premium task, so a buyer gets something new. It replaces a task of the same
+  // company, so no company loses its only slot. Only a company with no Premium task of its own falls back on format practice.
+  if (input.when === 'tomorrow' && !selected.some((entry) => entry.task.access === 'premium')) {
+    let swapped = false;
+    for (let at = selected.length - 1; at >= 0 && !swapped; at -= 1) {
+      const [removed] = selected.splice(at, 1);
+      const order = orders[chosen.findIndex(({ slug }) => slug === removed.slug)] ?? [];
+      const premium = order.find((entry) => entry.task.access === 'premium' && canTake(entry.slug, entry.task));
+      if (premium) {
+        selected.push(premium);
+        swapped = true;
+      } else {
+        selected.splice(at, 0, removed);
+      }
+    }
+    if (!swapped) {
+      const removed = selected.pop();
+      const premium = [...formatPool(0), ...formatPool(1)].find((task) => task.access === 'premium' && canTake('', task));
+      if (premium) selected.push({ slug: '', key: null, task: premium, why: { kind: 'format' } });
+      else if (removed) selected.push(removed);
+    }
+  }
+
+  const companies: PlannedCompany[] = chosen.map(({ slug, company, list, switched }) => ({
+    slug,
+    name: company.name,
+    framework: company.framework,
+    mixed: Boolean(company.mixed),
+    checkedAt: company.checkedAt,
+    list: { id: list.id, title: list.title, chosen: switched, sourceCount: list.sourceCount },
+    switchLine: company.variants.length > 1
+      ? {
+          text: `${chosen.length > 1 ? `${company.name} rounds` : 'These rounds'} come from ${list.from}.`,
+          options: company.variants.filter((other) => other.id !== list.id).map((other) => ({ listId: other.id, ask: other.ask ?? '' })),
+        }
+      : null,
+    rounds: list.rounds.map((round) => {
+      const key = companyPlanRoundKey(slug, list.id, round.id);
+      return {
+        ...round,
+        key,
+        passed: passed.has(key),
+        tasks: selected.filter((entry) => entry.key === key).map((entry) => asPlanTask(entry.task, entry.why)),
+      };
+    }),
+  }));
+
+  const formatPractice = selected.filter((entry) => entry.key === null).map((entry) => asPlanTask(entry.task, entry.why));
+  const tasks = [...companies.flatMap((company) => company.rounds.flatMap((round) => round.tasks)), ...formatPractice];
+  const extras = chosen.flatMap(({ list }) => list.tasks.flatMap((row) => (data.tasks[row.id] ? [asPlanTask(data.tasks[row.id], whyOf(row))] : [])));
+
+  const warnings: string[] = [];
+  for (const { company, list, switched } of chosen) {
+    if (!switched && list.reported && !list.reported.levels.includes(input.level)) {
+      warnings.push(`No report from a ${LEVEL_WORDS[input.level]} candidate at ${company.name}. These accounts come from ${list.reported.who}. Confirm the loop with your recruiter.`);
+    }
+    if (list.newestReport && olderThanCutoff(list.newestReport, input.today)) {
+      const subject = chosen.length > 1 ? `the ${company.name} rounds` : 'these rounds';
+      warnings.push(`The newest report behind ${subject} is from ${monthWords(list.newestReport)}. Formats may have changed, so confirm with your recruiter.`);
+    }
+  }
+
+  return {
+    general: false,
+    companies,
+    formatPractice,
+    tasks,
+    preview: buildPreview(tasks, extras, starters, true),
+    next: tasks.find((task) => !task.solved && task.kind !== 'guide') ?? tasks.find((task) => !task.solved) ?? null,
+    totalMinutes: tasks.reduce((sum, task) => sum + task.minutes, 0),
+    remainingMinutes: tasks.filter((task) => !task.solved).reduce((sum, task) => sum + task.minutes, 0),
+    warnings,
+  };
+}

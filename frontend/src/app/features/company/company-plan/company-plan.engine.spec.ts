@@ -1,0 +1,381 @@
+import rawPlanData from '../../../../../../cdn/questions/company-plan-data.json';
+import type { CompanyPlanLevel } from '../../../shared/company-previews/company-plan-rounds';
+import {
+  COMPANY_PLAN_BUDGETS,
+  COMPANY_PLAN_DESIGN_CAPS,
+  CompanyPlan,
+  CompanyPlanData,
+  CompanyPlanDataRow,
+  CompanyPlanDataTask,
+  CompanyPlanInput,
+  CompanyPlanWhen,
+  buildCompanyPlan,
+  companyPlanDefaultList,
+  companyPlanRoundKey,
+} from './company-plan.engine';
+
+const REAL_DATA = rawPlanData as unknown as CompanyPlanData;
+const TODAY = '2026-11-02';
+const WHENS = Object.keys(COMPANY_PLAN_BUDGETS) as CompanyPlanWhen[];
+const LEVELS = Object.keys(COMPANY_PLAN_DESIGN_CAPS) as CompanyPlanLevel[];
+
+const task = (id: string, overrides: Partial<CompanyPlanDataTask> = {}): CompanyPlanDataTask => ({
+  id,
+  title: id,
+  route: `/javascript/coding/${id}`,
+  kind: 'coding',
+  tech: 'javascript',
+  access: 'free',
+  minutes: 30,
+  ...overrides,
+});
+
+const round = (id: string, kinds: readonly ('recruiter' | 'coding' | 'design' | 'people' | 'outcome' | 'other')[], extra: object = {}) => ({
+  id,
+  name: id,
+  kinds,
+  note: `${id} note.`,
+  sources: [],
+  ...extra,
+});
+
+const FIXTURE_TASKS = [
+  task('reported-new'),
+  task('reported-old', { access: 'premium' }),
+  task('linked'),
+  task('tagged-a'),
+  task('tagged-b'),
+  task('concept', { kind: 'trivia', route: '/javascript/trivia/concept', minutes: 10 }),
+  task('design-a', { kind: 'system-design', route: '/system-design/design-a', tech: undefined, access: 'premium', minutes: 45 }),
+  task('design-b', { kind: 'system-design', route: '/system-design/design-b', tech: undefined, minutes: 45 }),
+  task('format-a', { access: 'premium' }),
+  task('format-b', { access: 'premium' }),
+  task('starter-free'),
+  task('starter-premium', { access: 'premium' }),
+  task('starter-free-2'),
+  task('starter-free-3'),
+  task('/guides/people', { kind: 'guide', route: '/guides/people', tech: undefined, minutes: 15 }),
+  task('/guides/design', { kind: 'guide', route: '/guides/design', tech: undefined, minutes: 15 }),
+];
+
+function fixture(rows: readonly CompanyPlanDataRow[], rounds: readonly object[], extra: object = {}): CompanyPlanData {
+  return {
+    schemaVersion: 1,
+    general: {
+      starters: ['starter-free', 'starter-premium', 'starter-free-2', 'starter-free-3'],
+      formatPractice: { react: ['format-a', 'format-b'], angular: ['format-a', 'format-b'], vue: ['format-a', 'format-b'], javascript: ['format-a', 'format-b'] },
+      guides: { people: '/guides/people', design: '/guides/design' },
+    },
+    tasks: Object.fromEntries(FIXTURE_TASKS.map((entry) => [entry.id, entry])),
+    companies: {
+      acme: {
+        name: 'Acme',
+        signature: 'Coding',
+        framework: 'javascript',
+        checkedAt: '2026-10-20',
+        variants: [{ id: 'main', title: 'Engineers', sourceCount: 3, rounds, tasks: rows, ...extra }],
+      },
+    },
+  } as unknown as CompanyPlanData;
+}
+
+const input = (overrides: Partial<CompanyPlanInput> = {}): CompanyPlanInput => ({
+  companies: ['acme'],
+  when: 'next-week',
+  level: 'senior',
+  today: TODAY,
+  ...overrides,
+});
+
+const idsIn = (plan: CompanyPlan, roundId: string) => plan.companies[0].rounds.find((entry) => entry.id === roundId)?.tasks.map((entry) => entry.id) ?? [];
+const report = { publisher: 'Taro', date: '2026-01' };
+
+describe('company plan engine', () => {
+  describe('on the real data, for every company, list, date and level', () => {
+    for (const [slug, company] of Object.entries(REAL_DATA.companies)) {
+      it(slug, () => {
+        for (const list of company.variants) {
+          for (const when of WHENS) {
+            for (const level of LEVELS) {
+              const where = `${slug}/${list.id}/${when}/${level}`;
+              const plan = buildCompanyPlan(REAL_DATA, { companies: [slug], lists: { [slug]: list.id }, when, level, today: TODAY });
+
+              expect(plan.tasks.length).withContext(`${where}: empty plan`).toBeGreaterThan(0);
+              expect(plan.tasks.length).withContext(`${where}: over budget`).toBeLessThanOrEqual(COMPANY_PLAN_BUDGETS[when].total);
+              expect(new Set(plan.tasks.map((entry) => entry.id)).size).withContext(`${where}: repeated task`).toBe(plan.tasks.length);
+
+              const families = plan.tasks.flatMap((entry) => (entry.family ? [entry.family] : []));
+              expect(new Set(families).size).withContext(`${where}: repeated family`).toBe(families.length);
+
+              const expectedTech = company.framework === 'javascript' ? 'react' : company.framework;
+              for (const entry of plan.tasks) {
+                if (entry.tech && ['react', 'angular', 'vue'].includes(entry.tech)) expect(entry.tech).withContext(`${where}: ${entry.id}`).toBe(expectedTech);
+              }
+
+              const designs = plan.tasks.filter((entry) => entry.kind === 'system-design').length;
+              expect(designs).withContext(`${where}: design cap`).toBeLessThanOrEqual(COMPANY_PLAN_DESIGN_CAPS[level]);
+
+              expect(plan.preview.open.length).withContext(`${where}: preview`).toBe(3);
+              for (const entry of plan.preview.open) {
+                expect(entry.access).withContext(`${where}: ${entry.id}`).toBe('free');
+                expect(entry.kind).withContext(`${where}: ${entry.id}`).not.toBe('guide');
+              }
+              const openIds = new Set(plan.preview.open.map((entry) => entry.id));
+              expect(plan.preview.rest.every((entry) => !openIds.has(entry.id))).withContext(`${where}: rest repeats preview`).toBeTrue();
+
+              const rows = new Map(list.tasks.map((row) => [row.id, row]));
+              for (const entry of plan.tasks) {
+                if (entry.why.kind === 'report') expect(rows.get(entry.id)?.report).withContext(`${where}: ${entry.id} has no report`).toBeDefined();
+              }
+
+              if (when === 'tomorrow') {
+                expect(plan.tasks.some((entry) => entry.access === 'premium')).withContext(`${where}: no Premium task`).toBeTrue();
+              }
+
+              expect(plan.totalMinutes).withContext(where).toBe(plan.tasks.reduce((sum, entry) => sum + entry.minutes, 0));
+              expect(buildCompanyPlan(REAL_DATA, { companies: [slug], lists: { [slug]: list.id }, when, level, today: TODAY })).withContext(`${where}: not repeatable`).toEqual(plan);
+            }
+          }
+        }
+      });
+    }
+
+    it('fills the Next week budget for the list every level opens on', () => {
+      for (const [slug, company] of Object.entries(REAL_DATA.companies)) {
+        for (const level of LEVELS) {
+          const plan = buildCompanyPlan(REAL_DATA, { companies: [slug], when: 'next-week', level, today: TODAY });
+          expect(plan.tasks.length).withContext(`${slug}/${level}`).toBe(COMPANY_PLAN_BUDGETS['next-week'].total);
+          expect(plan.companies[0].list.id).withContext(`${slug}/${level}`).toBe(companyPlanDefaultList(company).id);
+        }
+      }
+    });
+
+    it('never repeats a task or a family across companies', () => {
+      const slugs = Object.keys(REAL_DATA.companies);
+      slugs.forEach((slug, index) => {
+        const trio = [slug, slugs[(index + 1) % slugs.length], slugs[(index + 7) % slugs.length]];
+        for (const when of WHENS) {
+          const plan = buildCompanyPlan(REAL_DATA, { companies: trio, when, level: 'senior', today: TODAY });
+          expect(plan.tasks.length).withContext(`${trio.join('+')}/${when}`).toBeLessThanOrEqual(COMPANY_PLAN_BUDGETS[when].total);
+          expect(new Set(plan.tasks.map((entry) => entry.id)).size).withContext(`${trio.join('+')}/${when}`).toBe(plan.tasks.length);
+          const families = plan.tasks.flatMap((entry) => (entry.family ? [entry.family] : []));
+          expect(new Set(families).size).withContext(`${trio.join('+')}/${when}`).toBe(families.length);
+          const withTasks = plan.companies.filter((company) => company.rounds.some((entry) => entry.tasks.length)).length;
+          expect(withTasks).withContext(`${trio.join('+')}/${when}: a company got nothing`).toBe(3);
+        }
+      });
+    });
+  });
+
+  it('spends the budget on reports first, newest first, then links, tags and concept questions', () => {
+    const data = fixture(
+      [
+        { id: 'reported-new', report: { publisher: 'Taro', date: '2026-05' } },
+        { id: 'reported-old', report: { publisher: 'Blind', date: '2020-01' } },
+        { id: 'linked', rounds: ['coding'] },
+        { id: 'tagged-a' },
+        { id: 'tagged-b' },
+        { id: 'concept' },
+      ],
+      [round('coding', ['coding'])],
+    );
+    const plan = buildCompanyPlan(data, input({ when: 'this-week' }));
+    expect(idsIn(plan, 'coding')).toEqual(['reported-new', 'reported-old', 'linked']);
+    expect(plan.tasks[0].why).toEqual({ kind: 'report', publisher: 'Taro', date: '2026-05' });
+    expect(plan.tasks[2].why).toEqual({ kind: 'pick' });
+    expect(plan.formatPractice.map((entry) => entry.id)).toEqual(['format-a']);
+    expect(plan.formatPractice[0].why).toEqual({ kind: 'format' });
+
+    const later = buildCompanyPlan(data, input({ when: 'later' }));
+    expect(idsIn(later, 'coding')).toEqual(['reported-new', 'reported-old', 'linked', 'tagged-a', 'tagged-b', 'concept']);
+  });
+
+  it('lets rounds take turns, so an early round cannot use the budget up', () => {
+    const data = fixture(
+      [{ id: 'tagged-a' }, { id: 'tagged-b' }, { id: 'linked' }, { id: 'reported-new' }],
+      [round('first', ['coding']), round('second', ['coding'])],
+    );
+    const plan = buildCompanyPlan(data, input({ when: 'this-week' }));
+    expect(idsIn(plan, 'first')).toEqual(['tagged-a', 'linked']);
+    expect(idsIn(plan, 'second')).toEqual(['tagged-b']);
+  });
+
+  it('puts a task on the round whose words match it', () => {
+    const data = {
+      ...fixture(
+        [{ id: 'tagged-a' }, { id: 'tagged-b' }],
+        [round('algorithms', ['coding'], { focus: ['algo'] }), round('bug-squash', ['coding'], { focus: ['debug'] })],
+      ),
+    };
+    const tasks = { ...data.tasks, 'tagged-a': task('tagged-a', { focus: ['debug', 'js'] }), 'tagged-b': task('tagged-b', { focus: ['algo', 'js'] }) };
+    const plan = buildCompanyPlan({ ...data, tasks }, input());
+    expect(idsIn(plan, 'bug-squash')).toEqual(['tagged-a']);
+    expect(idsIn(plan, 'algorithms')).toEqual(['tagged-b']);
+
+    const noMatch = { ...tasks, 'tagged-a': task('tagged-a', { focus: ['css'] }) };
+    expect(buildCompanyPlan({ ...data, tasks: noMatch }, input()).tasks.map((entry) => entry.id)).toContain('tagged-a');
+  });
+
+  it('gives a passed round no tasks and moves its budget on', () => {
+    const data = fixture(
+      [{ id: 'linked', rounds: ['first'] }, { id: 'tagged-a', rounds: ['second'] }, { id: 'tagged-b' }],
+      [round('first', ['coding']), round('second', ['coding'])],
+    );
+    const passed = companyPlanRoundKey('acme', 'main', 'first');
+    const plan = buildCompanyPlan(data, input({ passedRounds: [passed] }));
+    const first = plan.companies[0].rounds[0];
+    expect(first.passed).toBeTrue();
+    expect(first.tasks).toEqual([]);
+    expect(plan.tasks.map((entry) => entry.id)).not.toContain('linked');
+    expect(idsIn(plan, 'second')).toEqual(['tagged-a', 'tagged-b']);
+  });
+
+  it('holds system design to the cap for the level', () => {
+    const data = fixture([{ id: 'design-a' }, { id: 'design-b' }], [round('design', ['design'])]);
+    expect(idsIn(buildCompanyPlan(data, input({ level: 'mid' })), 'design')).toEqual(['design-a']);
+    expect(idsIn(buildCompanyPlan(data, input({ level: 'senior' })), 'design')).toEqual(['design-a', 'design-b']);
+  });
+
+  it('keeps solved tasks in the list, inside the budget, and asks for the next unsolved task', () => {
+    const data = fixture([{ id: 'tagged-a' }, { id: 'tagged-b' }, { id: 'linked' }], [round('coding', ['coding'])]);
+    const plan = buildCompanyPlan(data, input({ when: 'tomorrow', solvedTaskIds: ['tagged-a'] }));
+    const ids = plan.tasks.map((entry) => entry.id);
+    expect(ids).toContain('tagged-a');
+    expect(plan.tasks.find((entry) => entry.id === 'tagged-a')?.solved).toBeTrue();
+    expect(plan.tasks.length).toBe(3);
+    expect(plan.next?.id).not.toBe('tagged-a');
+    expect(plan.remainingMinutes).toBe(plan.totalMinutes - 30);
+  });
+
+  it('brings one Premium task into a Tomorrow plan of open tasks, from the company first', () => {
+    const data = fixture([{ id: 'tagged-a' }, { id: 'tagged-b' }, { id: 'linked' }, { id: 'reported-old' }], [round('coding', ['coding'])]);
+    const plan = buildCompanyPlan(data, input({ when: 'tomorrow' }));
+    expect(plan.tasks.length).toBe(3);
+    expect(plan.tasks.map((entry) => entry.id)).toContain('reported-old');
+  });
+
+  it('falls back to Premium format practice when the company has no Premium task', () => {
+    const data = fixture([{ id: 'tagged-a' }, { id: 'tagged-b' }, { id: 'linked' }], [round('coding', ['coding'])]);
+    const plan = buildCompanyPlan(data, input({ when: 'tomorrow' }));
+    expect(plan.tasks.length).toBe(3);
+    expect(plan.formatPractice.map((entry) => entry.id)).toEqual(['format-a']);
+  });
+
+  it('fills a thin plan with format practice, then lets rounds use what format practice left', () => {
+    const thin = fixture([{ id: 'tagged-a' }], [round('coding', ['coding'])]);
+    const plan = buildCompanyPlan(thin, input());
+    expect(plan.tasks.map((entry) => entry.id)).toEqual(['tagged-a', 'format-a', 'format-b']);
+
+    const covered = fixture([{ id: 'format-a' }, { id: 'format-b' }, { id: 'tagged-a' }, { id: 'tagged-b' }], [round('coding', ['coding'])]);
+    const full = buildCompanyPlan(covered, input({ when: 'this-week' }));
+    expect(full.tasks.map((entry) => entry.id)).toEqual(['format-a', 'format-b', 'tagged-a', 'tagged-b']);
+    expect(full.formatPractice).toEqual([]);
+  });
+
+  it('gives a people or design round its guide after practice, and only when it has none', () => {
+    const data = fixture([{ id: 'tagged-a' }], [round('coding', ['coding']), round('design', ['design']), round('values', ['people']), round('recruiter', ['recruiter']), round('offer', ['outcome'])]);
+    const plan = buildCompanyPlan(data, input({ when: 'later' }));
+    expect(idsIn(plan, 'design')).toEqual(['/guides/design']);
+    expect(idsIn(plan, 'values')).toEqual(['/guides/people']);
+    expect(idsIn(plan, 'recruiter')).toEqual([]);
+    expect(idsIn(plan, 'offer')).toEqual([]);
+
+    const owned = fixture([{ id: 'design-a', rounds: ['design'] }], [round('design', ['design'])]);
+    expect(idsIn(buildCompanyPlan(owned, input({ when: 'later' })), 'design')).toEqual(['design-a']);
+  });
+
+  it('places a reported design task on a coding round when the company has no design round', () => {
+    const data = fixture([{ id: 'design-a', report }], [round('coding', ['coding'])]);
+    expect(idsIn(buildCompanyPlan(data, input()), 'coding')).toEqual(['design-a']);
+  });
+
+  it('offers runnable open tasks first in the preview, then concept questions, then starters, and locks nothing open', () => {
+    const data = fixture(
+      [{ id: 'reported-old', report }, { id: 'concept' }, { id: 'tagged-a' }],
+      [round('coding', ['coding'])],
+    );
+    const plan = buildCompanyPlan(data, input({ when: 'tomorrow' }));
+    expect(plan.preview.open.map((entry) => entry.id)).toEqual(['tagged-a', 'concept', 'starter-free']);
+    expect(plan.preview.rest.map((entry) => entry.id)).toEqual(['reported-old']);
+  });
+
+  it('skips solved tasks in the preview unless nothing else is left', () => {
+    const data = fixture([{ id: 'tagged-a' }, { id: 'tagged-b' }], [round('coding', ['coding'])]);
+    const plan = buildCompanyPlan(data, input({ solvedTaskIds: ['tagged-a'] }));
+    expect(plan.preview.open.map((entry) => entry.id)).toEqual(['tagged-b', 'starter-free', 'starter-free-2']);
+    const everything = FIXTURE_TASKS.map((entry) => entry.id);
+    const allSolved = buildCompanyPlan(data, input({ solvedTaskIds: everything }));
+    expect(allSolved.preview.open.length).toBe(3);
+  });
+
+  it('opens the default list for every level, honours a switch, and ignores an unknown one', () => {
+    const data = fixture([{ id: 'tagged-a' }], [round('coding', ['coding'])]);
+    const list = data.companies['acme'].variants[0];
+    const two: CompanyPlanData = {
+      ...data,
+      companies: {
+        acme: {
+          ...data.companies['acme'],
+          variants: [
+            { ...list, id: 'students', from: 'students', ask: 'Interviewing as a student?' },
+            { ...list, id: 'experienced', from: 'experienced hires', ask: 'Interviewing as an experienced hire?', default: true },
+          ],
+        },
+      },
+    };
+    for (const level of ['junior', 'staff'] as const) {
+      const plan = buildCompanyPlan(two, input({ level }));
+      expect(plan.companies[0].list.id).withContext(level).toBe('experienced');
+      expect(plan.companies[0].list.chosen).withContext(level).toBeFalse();
+      expect(plan.companies[0].switchLine).withContext(level).toEqual({
+        text: 'These rounds come from experienced hires.',
+        options: [{ listId: 'students', ask: 'Interviewing as a student?' }],
+      });
+    }
+
+    const switched = buildCompanyPlan(two, input({ level: 'staff', lists: { acme: 'students' } }));
+    expect(switched.companies[0].list.id).toBe('students');
+    expect(switched.companies[0].list.chosen).toBeTrue();
+
+    expect(buildCompanyPlan(two, input({ lists: { acme: 'gone' } })).companies[0].list.id).toBe('experienced');
+  });
+
+  it('warns about a level the accounts do not cover, unless the person chose that list', () => {
+    const reported = { reported: { levels: ['senior', 'staff'], who: 'Senior and Staff candidates' } };
+    const data = fixture([{ id: 'tagged-a' }], [round('coding', ['coding'])], reported);
+    expect(buildCompanyPlan(data, input({ level: 'mid' })).warnings).toEqual([
+      'No report from a mid-level candidate at Acme. These accounts come from Senior and Staff candidates. Confirm the loop with your recruiter.',
+    ]);
+    expect(buildCompanyPlan(data, input({ level: 'senior' })).warnings).toEqual([]);
+    expect(buildCompanyPlan(data, input({ level: 'mid', lists: { acme: 'main' } })).warnings).toEqual([]);
+  });
+
+  it('warns about reports older than two years, to the month', () => {
+    const at = (newestReport: string) => fixture([{ id: 'tagged-a' }], [round('coding', ['coding'])], { newestReport });
+    expect(buildCompanyPlan(at('2024-10'), input()).warnings).toEqual([
+      'The newest report behind these rounds is from October 2024. Formats may have changed, so confirm with your recruiter.',
+    ]);
+    expect(buildCompanyPlan(at('2024-11'), input()).warnings).toEqual([]);
+    expect(buildCompanyPlan(fixture([{ id: 'tagged-a' }], [round('coding', ['coding'])]), input()).warnings).toEqual([]);
+  });
+
+  it('builds a general plan for no company or an unknown one, with nothing locked', () => {
+    const data = fixture([{ id: 'tagged-a' }], [round('coding', ['coding'])]);
+    for (const companies of [[], ['vercel']]) {
+      const plan = buildCompanyPlan(data, input({ companies, when: 'this-week' }));
+      expect(plan.general).toBeTrue();
+      expect(plan.companies).toEqual([]);
+      expect(plan.tasks.map((entry) => entry.id)).toEqual(['starter-free', 'starter-premium', 'starter-free-2', 'starter-free-3']);
+      expect(plan.preview.open.map((entry) => entry.id)).toEqual(['starter-free', 'starter-free-2', 'starter-free-3']);
+      expect(plan.preview.rest).toEqual([]);
+      expect(plan.tasks[0].why).toEqual({ kind: 'general' });
+    }
+  });
+
+  it('ignores an unknown company next to a known one and repeated slugs', () => {
+    const data = fixture([{ id: 'tagged-a' }], [round('coding', ['coding'])]);
+    const plan = buildCompanyPlan(data, input({ companies: ['vercel', 'acme', 'acme'] }));
+    expect(plan.general).toBeFalse();
+    expect(plan.companies.map((company) => company.slug)).toEqual(['acme']);
+  });
+});

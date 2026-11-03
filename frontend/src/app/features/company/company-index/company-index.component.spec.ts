@@ -1,7 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Data, provideRouter } from '@angular/router';
-import { BehaviorSubject } from 'rxjs';
+import { signal } from '@angular/core';
+import { BehaviorSubject, of } from 'rxjs';
 import { SeoService } from '../../../core/services/seo.service';
+import { CompanyPlanService } from '../company-plan/company-plan.service';
 import { CompanyIndexComponent } from './company-index.component';
 import { AUTHORED_COMPANY_PREVIEWS_TOKEN } from '../../../shared/company-previews/authored-company-previews';
 import { buildAuthoredCompanyPreviewFixture } from '../../../shared/company-previews/authored-company-preview.spec-fixture';
@@ -28,6 +30,10 @@ describe('CompanyIndexComponent', () => {
         provideRouter([]),
         { provide: ActivatedRoute, useValue: { data: routeData } },
         { provide: SeoService, useValue: seo },
+        {
+          provide: CompanyPlanService,
+          useValue: { loadData: () => of(null), saved: signal(null), draft: signal(null), answers: signal(null), draftConflict: signal(false), track: () => undefined },
+        },
       ],
     }).compileComponents();
 
@@ -80,21 +86,37 @@ describe('CompanyIndexComponent', () => {
     expect(collection.mainEntity).toBeUndefined();
   });
 
-  it('places the company directory immediately after the page header and guidance after the list', () => {
+  it('opens with the plan form, then the directory, and keeps the guidance after the list', () => {
     const host: HTMLElement = fixture.nativeElement;
-    const header = host.querySelector('.fa-page-header') as HTMLElement;
+    const form = host.querySelector('app-company-plan-form') as HTMLElement;
     const directory = host.querySelector('[data-testid="company-index-directory"]') as HTMLElement;
     const list = host.querySelector('[data-testid="company-index-list"]') as HTMLElement;
     const guidance = host.querySelector('[data-testid="company-index-guidance"]') as HTMLElement;
     const comesBefore = (left: HTMLElement, right: HTMLElement) =>
       Boolean(left.compareDocumentPosition(right) & Node.DOCUMENT_POSITION_FOLLOWING);
 
-    expect(header).toBeTruthy();
+    expect(form).toBeTruthy();
     expect(directory).toBeTruthy();
     expect(list).toBeTruthy();
     expect(guidance).toBeTruthy();
-    expect(header.nextElementSibling).toBe(directory);
+    expect(form.nextElementSibling).toBe(directory);
     expect(comesBefore(list, guidance)).toBeTrue();
+  });
+
+  it('keeps the one page heading the SEO contract expects, inside the form', () => {
+    const host: HTMLElement = fixture.nativeElement;
+    const headings = host.querySelectorAll('h1');
+    expect(headings.length).toBe(1);
+    expect(headings[0].textContent?.trim()).toBe('Company Frontend Interview Questions');
+    expect(headings[0].closest('app-company-plan-form')).toBeTruthy();
+  });
+
+  it('names each company guide by its signature round and keeps the crawlable count', () => {
+    const host: HTMLElement = fixture.nativeElement;
+    const google = host.querySelector<HTMLAnchorElement>('a.company-card[href="/companies/google/preview"]');
+    expect(google?.querySelector('.company-card__signature')?.textContent?.trim()).toBe('Hiring committee');
+    expect(google?.querySelector('.company-card__meta')?.textContent?.trim()).toBe('3 editorial practice prompts');
+    expect(host.querySelector('.company-directory__head')?.textContent).toContain('4 company guides');
   });
 
   it('uses shared user-facing brand labels for OpenAI and ByteDance cards and schema', () => {

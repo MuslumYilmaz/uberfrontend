@@ -254,6 +254,21 @@ thresholds. Choose the next change from the first material drop-off:
 | Pricing view to plan CTA | Pricing value proposition |
 | Checkout start to purchase | Hosted checkout flow |
 
+### Company plan release exception
+
+The company plan release changes pricing and navigation before these checks
+could be read: `/pricing` shows a waiting plan and a plan-specific first
+feature line on the plan cards, the header gains a **Your plan** link for
+people with a saved plan, and `/companies` starts the plan flow. The rule
+above is suspended for this release only.
+
+- Pushed to `dev`: 2026-11-03.
+- Production deployment: pending the `dev` to `main` merge. Record its
+  timestamp and Europe/Istanbul date here.
+
+Read the periods before and after the production deployment separately, as in
+the deployment boundary above. Do not compare a window that spans it.
+
 Report raw and qualified-session rates side by side. Raw all-session conversion
 is bot/crawler-contaminated and often behaves like a lower bound; qualified
 conversion is engagement-weighted and can exclude real sub-15-second bounces,

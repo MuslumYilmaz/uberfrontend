@@ -169,7 +169,7 @@ const STUDENT_PRICE_MULTIPLIER = 0.6;
           <p class="billing-note">{{ priceDetail(plan.id) }}</p>
           <p class="plan-savings" *ngIf="savingsLabel(plan.id)">{{ savingsLabel(plan.id) }}</p>
           <ul class="features">
-            <li *ngFor="let feat of plan.features">{{ feat }}</li>
+            <li *ngFor="let feat of featuresFor(plan)">{{ feat }}</li>
           </ul>
           <button
             class="btn"
@@ -441,6 +441,8 @@ export class PricingPlansSectionComponent implements OnInit, OnChanges, AfterVie
   @Input() regionalPricing: RegionalPricing | null = null;
   @Input() checkoutSurface: CheckoutSurface = 'hosted_new_tab';
   @Input() campaignId?: string | null;
+  /** Lines that replace "Full Premium content", the first line of every card, while a company plan waits. */
+  @Input() featureLead: readonly string[] | null = null;
 
   @ViewChild('planCardsRef') private planCardsRef?: ElementRef<HTMLElement>;
 
@@ -688,6 +690,10 @@ HTML and CSS tasks rely on the live preview instead, because visuals are the pri
       lifetime: 'Long-term access with one payment',
     };
     return summaries[plan.id];
+  }
+
+  featuresFor(plan: PricingPlan): readonly string[] {
+    return this.featureLead?.length ? [...this.featureLead, ...plan.features.slice(1)] : plan.features;
   }
 
   displayPrice(planId: PlanId): string {

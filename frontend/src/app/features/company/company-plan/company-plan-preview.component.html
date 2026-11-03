@@ -1,0 +1,119 @@
+@if (state() === 'loading') {
+  <p class="preview-status" role="status" data-testid="company-plan-preview-loading">Building your plan…</p>
+} @else if (state() === 'error') {
+  <div class="preview-status" role="alert" data-testid="company-plan-preview-error">
+    <p>We could not load your plan just now. Your answers are safe.</p>
+    <button faButton type="button" variant="primary" (click)="load()">Try again</button>
+  </div>
+} @else if (plan(); as current) {
+  <section class="preview" aria-labelledby="company-plan-preview-title" data-testid="company-plan-preview">
+    <div class="preview__head">
+      <p class="preview__kicker">Your plan</p>
+      <h1 id="company-plan-preview-title" class="preview__title">{{ title() }}</h1>
+      <div class="preview__chips">
+        @for (chip of chips(); track chip) {
+          <span class="preview__chip">{{ chip }}</span>
+        }
+        <a class="preview__edit" routerLink="/companies">Edit answers</a>
+      </div>
+      <p class="preview__evidence">{{ evidence() }}</p>
+
+      @for (company of current.companies; track company.slug) {
+        @if (company.switchLine; as line) {
+          <p class="preview__switch" data-testid="company-plan-switch-line">
+            {{ line.text }}
+            @for (option of line.options; track option.listId) {
+              <button type="button" class="preview__switch-button" (click)="switchList(company.slug, option.listId)">{{ option.ask }}</button>
+            }
+          </p>
+        }
+      }
+
+      @for (warning of current.warnings; track warning) {
+        <p class="preview__warning" data-testid="company-plan-warning">
+          <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4 2.5 20h19L12 4Z"></path><path d="M12 10v4M12 17.5v.5"></path></svg>
+          <span>{{ warning }}</span>
+        </p>
+      }
+    </div>
+
+    <section class="preview__tasks" aria-labelledby="company-plan-open-title">
+      <div class="preview__section-head">
+        <h2 id="company-plan-open-title" class="preview__section-title">
+          {{ viewer() === 'premium' ? 'Start with these ' + openTasks().length + ' tasks' : 'Try these ' + openTasks().length + ' tasks for free' }}
+        </h2>
+        <p class="preview__section-sub">{{ viewer() === 'premium' ? 'They run in your browser.' : 'They run in your browser. No account needed.' }}</p>
+      </div>
+      @for (row of openTasks(); track row.task.id) {
+        <a class="plan-row" data-testid="company-plan-open-task" [routerLink]="row.task.route" [state]="row.state" (click)="taskOpened(row.task)">
+          <span class="plan-row__text">
+            <span class="plan-row__title"><fa-inline-code [text]="row.task.title" /></span>
+            <span class="plan-row__meta">{{ row.why }}</span>
+          </span>
+          <span class="plan-row__time">{{ row.time }}</span>
+          <span class="plan-row__arrow" aria-hidden="true">→</span>
+        </a>
+      }
+      @if (!current.general && !restTasks().length) {
+        <p class="preview__section-sub">Your plan adds every round in order, with its sources.</p>
+      }
+    </section>
+
+    <aside class="preview__panel" aria-labelledby="company-plan-panel-title" data-testid="company-plan-panel">
+      <h2 id="company-plan-panel-title" class="preview__panel-title">{{ current.general ? 'Start here' : 'In your plan' }}</h2>
+      @if (facts().length) {
+        <ul class="preview__facts">
+          @for (fact of facts(); track fact) {
+            <li>
+              <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17.5 19 7"></path></svg>
+              <span>{{ fact }}</span>
+            </li>
+          }
+        </ul>
+      }
+
+      @if (current.general) {
+        @if (openTasks()[0]; as first) {
+          <a faButton variant="primary" size="lg" [block]="true" data-testid="company-plan-start-first" [routerLink]="first.task.route" [state]="first.state" (click)="taskOpened(first.task)">Start the first task <span aria-hidden="true">→</span></a>
+        }
+        <a class="preview__panel-link" data-testid="company-plan-premium-link" routerLink="/pricing" [queryParams]="pricingParams()">See what Premium includes</a>
+      } @else {
+        <button faButton type="button" variant="primary" size="lg" [block]="true" data-testid="company-plan-build" [loading]="building()" (click)="build()">Build my plan <span aria-hidden="true">→</span></button>
+        @if (ctaNote()) {
+          <p class="preview__note" data-testid="company-plan-cta-note">{{ ctaNote() }}</p>
+        }
+      }
+      <p class="preview__phone-note">Coding tasks need a larger screen.</p>
+      @if (viewer() === 'guest' && !current.general) {
+        <a class="preview__panel-link" data-testid="company-plan-save-link" routerLink="/auth/signup" [queryParams]="signupParams()">Save this plan with a free account</a>
+      }
+    </aside>
+
+    @if (restTasks().length) {
+      <section class="preview__rest" aria-labelledby="company-plan-rest-title" data-testid="company-plan-rest">
+        <div class="preview__section-head">
+          <h2 id="company-plan-rest-title" class="preview__section-title">{{ restTitle() }}</h2>
+          <p class="preview__section-sub">{{ viewer() === 'premium' ? 'These open with your plan.' : 'These unlock with Premium, along with every round in order.' }}</p>
+        </div>
+        @for (row of restTasks(); track row.task.id) {
+          @if (viewer() === 'premium') {
+            <a class="plan-row plan-row--rest" data-testid="company-plan-rest-task" [routerLink]="row.task.route" [attr.aria-label]="row.aria">
+              <span class="plan-row__text">
+                <span class="plan-row__title"><fa-inline-code [text]="row.task.title" /></span>
+                <span class="plan-row__meta">{{ row.meta }}</span>
+              </span>
+            </a>
+          } @else {
+            <a class="plan-row plan-row--rest plan-row--locked" data-testid="company-plan-rest-task" routerLink="/pricing" [queryParams]="pricingParams()" [attr.aria-label]="row.aria">
+              <svg class="plan-row__lock" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>
+              <span class="plan-row__text">
+                <span class="plan-row__title"><fa-inline-code [text]="row.task.title" /></span>
+                <span class="plan-row__meta">{{ row.meta }}</span>
+              </span>
+            </a>
+          }
+        }
+      </section>
+    }
+  </section>
+}

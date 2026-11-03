@@ -584,7 +584,8 @@
 
     <app-footer mode="practice" [progressText]="progressText" [prevDisabled]="!hasPrev" [nextDisabled]="!hasNext"
         [prevHref]="prevHref" [nextHref]="nextHref"
-        [practiceLeftLabel]="'Incidents hub'" [practiceLeftRoute]="['/incidents']"
+        [practiceLeftLabel]="planReturn()?.label ?? 'Incidents hub'" [practiceLeftRoute]="planReturn()?.route ?? ['/incidents']"
+        [practiceLeftQueryParams]="planReturn()?.queryParams ?? null"
         (prev)="onPrev()" (next)="onNext()">
     </app-footer>
 </div>

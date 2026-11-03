@@ -1,6 +1,6 @@
 /**
  * What the company plan needs to know about each row of COMPANY_INTERVIEW_PROCESSES: what a round tests,
- * stable ids for saved plans, which list each level opens on, and short notes.
+ * stable ids for saved plans, which list a plan opens on, and short notes.
  *
  * It is separate from the process table because an edit to that table re-dates every company guide in the
  * SEO inventory, and no public page imports this file. company-plan-rounds.spec.ts fails when a list or a
@@ -30,6 +30,8 @@ export type CompanyPlanRound = {
   readonly kinds: readonly CompanyPlanRoundKind[];
   /** Replaces the first sentence of the stage format when that is too long or says too little. */
   readonly note?: string;
+  /** Task routes an editor adds to this round beyond its process row. A plan labels them as our pick. */
+  readonly picks?: readonly string[];
 };
 
 export type CompanyPlanVariant = {
@@ -41,8 +43,11 @@ export type CompanyPlanVariant = {
   readonly from?: string;
   /** Companies with several lists: the question that switches a plan to this list. */
   readonly ask?: string;
-  /** Companies with several lists: the levels a plan opens on this list for. */
-  readonly defaultFor?: readonly CompanyPlanLevel[];
+  /**
+   * Companies with several lists: the list every plan opens on, whatever the level. The others are one click away
+   * on the switch line, also for every level.
+   */
+  readonly default?: true;
   /** Set only where the table names the levels its accounts come from. Other levels get a warning. */
   readonly reported?: { readonly levels: readonly CompanyPlanLevel[]; readonly who: string };
   readonly rounds: readonly CompanyPlanRound[];
@@ -72,7 +77,7 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
         title: 'Front-end engineers, Bangkok relocation loops, Senior and Staff, 2025 to 2026',
         from: 'Bangkok, Senior and Staff',
         ask: 'Interviewing in Bangkok?',
-        defaultFor: ['junior', 'mid', 'senior', 'staff'],
+        default: true,
         reported: { levels: ['senior', 'staff'], who: 'Senior and Staff candidates' },
         rounds: [
           { id: 'recruiter-prep-call', stage: 'Recruiter prep call', kinds: ['recruiter'] },
@@ -209,7 +214,7 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
         title: 'Front End Engineer, experienced hires',
         from: 'experienced hires',
         ask: 'Interviewing as an experienced hire?',
-        defaultFor: ['mid', 'senior', 'staff'],
+        default: true,
         rounds: [
           {
             id: 'online-assessment',
@@ -233,7 +238,6 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
         title: 'Students and new graduates',
         from: 'students and new graduates',
         ask: 'Interviewing as a student or new graduate?',
-        defaultFor: ['junior'],
         rounds: [
           { id: 'internship-interviews', stage: 'Internship interviews', kinds: ['coding', 'people'] },
           { id: 'new-graduate-first-round', stage: 'New graduate first round', kinds: ['coding'] },
@@ -252,7 +256,7 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
         title: 'Frontend engineers, United States',
         from: 'frontend engineers in the United States',
         ask: 'Interviewing for a full-time role?',
-        defaultFor: ['junior', 'mid', 'senior', 'staff'],
+        default: true,
         rounds: [
           { id: 'recruiter-call', stage: 'Recruiter call', kinds: ['recruiter'] },
           {
@@ -339,7 +343,7 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
         title: 'Frontend engineers, United States',
         from: 'the United States',
         ask: 'Interviewing in the United States?',
-        defaultFor: ['mid', 'senior', 'staff'],
+        default: true,
         rounds: [
           {
             id: 'online-assessment',
@@ -380,7 +384,6 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
         title: 'New graduates and interns',
         from: 'new graduates and interns',
         ask: 'Interviewing as a new graduate or intern?',
-        defaultFor: ['junior'],
         rounds: [
           {
             id: 'online-assessment',
@@ -401,7 +404,7 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
         title: 'Senior frontend engineers, United States, 2022 to 2024',
         from: 'senior frontend engineers in the United States',
         ask: 'Interviewing as a senior engineer?',
-        defaultFor: ['junior', 'mid', 'senior'],
+        default: true,
         reported: { levels: ['senior'], who: 'senior candidates' },
         rounds: [
           { id: 'recruiter-screen', stage: 'Recruiter screen', kinds: ['recruiter'] },
@@ -443,7 +446,6 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
         title: 'Lead frontend engineers, 2022 to 2024',
         from: 'lead frontend engineers',
         ask: 'Interviewing as a lead engineer?',
-        defaultFor: ['staff'],
         reported: { levels: ['staff'], who: 'lead candidates' },
         rounds: [
           { id: 'online-assessment', stage: 'Online assessment', kinds: ['coding'] },
@@ -468,7 +470,7 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
         title: 'Frontend and UI engineers, United States, 2021 to 2025',
         from: 'the United States',
         ask: 'Interviewing in the United States?',
-        defaultFor: ['mid', 'senior', 'staff'],
+        default: true,
         rounds: [
           {
             id: 'recruiter-call',
@@ -538,7 +540,6 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
         title: 'Interns and new graduates',
         from: 'interns and new graduates',
         ask: 'Interviewing as an intern or new graduate?',
-        defaultFor: ['junior'],
         rounds: [
           { id: 'application-and-recruiter-contact', stage: 'Application and recruiter contact', kinds: ['recruiter'] },
           { id: 'technical-assessment', stage: 'Technical assessment', kinds: ['coding'] },
@@ -578,18 +579,21 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
             stage: 'Coding assessment',
             kinds: ['coding'],
             note: 'The format varies; a 90-minute assessment in the 2026 account, React and algorithm problems in others.',
+            picks: ['/javascript/coding/js-stream-to-text'],
           },
           {
             id: 'live-technical-round',
             stage: 'Live technical round',
             kinds: ['coding'],
             note: 'Pair work with an engineer: fixing a practical problem, debugging a small React app or building a component.',
+            picks: ['/javascript/debug/js-debug-stale-closure-autosave'],
           },
           {
             id: 'product-or-design-round',
             stage: 'Product or design round',
             kinds: ['design'],
             note: 'A product or decomposition interview in the 2025 accounts, a system design interview in a 2024 account.',
+            picks: ['/system-design/live-chart-high-frequency-updates'],
           },
           {
             id: 'final-conversation',
@@ -611,7 +615,7 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
         title: 'Frontend engineers, all levels',
         from: 'frontend engineers',
         ask: 'Interviewing as a frontend engineer?',
-        defaultFor: ['junior', 'mid', 'senior', 'staff'],
+        default: true,
         rounds: [
           { id: 'written-assessment', stage: 'Written assessment', kinds: ['coding'] },
           {
@@ -771,7 +775,7 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
         title: 'Front End Engineer, IC4 to IC6',
         from: 'Front End Engineer roles, IC4 to IC6',
         ask: 'Interviewing for a full-time role?',
-        defaultFor: ['junior', 'mid', 'senior', 'staff'],
+        default: true,
         reported: { levels: ['mid', 'senior', 'staff'], who: 'IC4 to IC6 candidates' },
         rounds: [
           { id: 'recruiter-call', stage: 'Recruiter call', kinds: ['recruiter'] },
@@ -805,7 +809,7 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
         title: 'Frontend roles (the loop varies by team)',
         from: 'frontend roles, and the loop varies by team',
         ask: 'Interviewing for a full-time role?',
-        defaultFor: ['junior', 'mid', 'senior', 'staff'],
+        default: true,
         rounds: [
           { id: 'recruiter-or-hr-call', stage: 'Recruiter or HR call', kinds: ['recruiter'] },
           {
@@ -843,7 +847,7 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
         title: 'Experienced frontend and UI engineers',
         from: 'experienced engineers',
         ask: 'Interviewing as an experienced engineer?',
-        defaultFor: ['mid', 'senior', 'staff'],
+        default: true,
         rounds: [
           { id: 'recruiter-conversation', stage: 'Recruiter conversation', kinds: ['recruiter'] },
           {
@@ -877,7 +881,6 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
         title: 'New graduates and interns',
         from: 'new graduates and interns',
         ask: 'Interviewing as a new graduate or intern?',
-        defaultFor: ['junior'],
         rounds: [
           {
             id: 'take-home-assessment',
@@ -984,7 +987,7 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
         title: 'Front-end engineers, Ho Chi Minh City, 2025',
         from: 'Ho Chi Minh City',
         ask: 'Interviewing in Ho Chi Minh City?',
-        defaultFor: ['mid', 'senior', 'staff'],
+        default: true,
         rounds: [
           { id: 'hr-call', stage: 'HR call', kinds: ['recruiter'] },
           {
@@ -1008,7 +1011,6 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
         title: 'Fresh graduates, Singapore, 2020 to 2022',
         from: 'fresh graduates in Singapore',
         ask: 'Interviewing as a fresh graduate in Singapore?',
-        defaultFor: ['junior'],
         rounds: [
           {
             id: 'online-assessment',
@@ -1124,7 +1126,7 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
         title: 'Frontend developer and engineer roles',
         from: 'frontend developer and engineer roles',
         ask: 'Interviewing for a full-time role?',
-        defaultFor: ['junior', 'mid', 'senior', 'staff'],
+        default: true,
         rounds: [
           { id: 'recruiter-or-hr-call', stage: 'Recruiter or HR call', kinds: ['recruiter'] },
           {
@@ -1230,7 +1232,6 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
         title: 'SDE-2 and frontend engineer roles in India',
         from: 'SDE-2 and frontend engineer roles in India',
         ask: 'Interviewing for an SDE-2 role in India?',
-        defaultFor: ['junior', 'mid'],
         reported: { levels: ['mid'], who: 'SDE-2 and frontend engineer candidates' },
         rounds: [
           {
@@ -1248,7 +1249,7 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
         title: 'Software Engineer III, senior and frontend engineer roles',
         from: 'Software Engineer III and senior roles',
         ask: 'Interviewing for Software Engineer III or a senior role?',
-        defaultFor: ['senior', 'staff'],
+        default: true,
         rounds: [
           {
             id: 'online-assessment',
@@ -1281,7 +1282,7 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
         title: 'Frontend engineers',
         from: 'frontend engineers',
         ask: 'Interviewing as a frontend engineer?',
-        defaultFor: ['junior', 'mid', 'senior', 'staff'],
+        default: true,
         rounds: [
           { id: 'sourcer-or-recruiter-conversation', stage: 'Sourcer or recruiter conversation', kinds: ['recruiter'] },
           { id: 'phone-or-video-interviews', stage: 'Phone or video interviews', kinds: ['coding', 'people'] },

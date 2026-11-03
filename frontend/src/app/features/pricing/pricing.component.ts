@@ -1,6 +1,6 @@
 // src/app/features/pricing/pricing.component.ts
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import {
   PRICING_PAGE_LAYOUT,
@@ -9,19 +9,31 @@ import {
   PricingPlansSectionComponent,
 } from './components/pricing-plans-section/pricing-plans-section.component';
 import { AnalyticsService } from '../../core/services/analytics.service';
+import { AuthService } from '../../core/services/auth.service';
 import { BillingCheckoutService, CheckoutSurface, RegionalPricing } from '../../core/services/billing-checkout.service';
+import { CheckoutIntentService } from '../../core/services/checkout-intent.service';
 import { ConversionContextService } from '../../core/services/conversion-context.service';
+import { isProActive } from '../../core/utils/entitlements.util';
 import { isSprintOfferVersion, PRERENDER_OFFER_VERSION } from '../../core/utils/offer-version.util';
 import { PRERENDER_PLAN_DETAILS } from '../../generated/pricing-defaults';
 import { PlanId } from '../../core/utils/payments-provider.util';
 import { ConversionStickyCtaComponent } from '../../shared/components/conversion-sticky-cta/conversion-sticky-cta.component';
+import { CompanyPlanPricingStripComponent } from '../company/company-plan/company-plan-pricing-strip.component';
+import type { CompanyPlanData } from '../company/company-plan/company-plan.engine';
+import { companyPlanPricingCopy } from '../company/company-plan/company-plan.format';
+import { CompanyPlanService } from '../company/company-plan/company-plan.service';
+
+const COMPANY_PLAN_SOURCE = /^company_plan_(?!general$)[a-z0-9_-]+$/;
 
 @Component({
     selector: 'app-pricing',
-    imports: [CommonModule, RouterModule, PricingPlansSectionComponent, ConversionStickyCtaComponent],
+    imports: [CommonModule, RouterModule, PricingPlansSectionComponent, ConversionStickyCtaComponent, CompanyPlanPricingStripComponent],
     styleUrls: ['./pricing.component.css'],
     template: `
     <section class="pricing-page">
+      @if (waitingPlan(); as waiting) {
+        <app-company-plan-pricing-strip [copy]="waiting"></app-company-plan-pricing-strip>
+      }
       <app-pricing-plans-section
         variant="full"
         [paymentsEnabled]="paymentsEnabled"
@@ -34,7 +46,8 @@ import { ConversionStickyCtaComponent } from '../../shared/components/conversion
         [analyticsReady]="paymentsConfigReady"
         [analyticsSource]="analyticsSource"
         analyticsSurface="pricing_page"
-        ctaMode="checkout">
+        ctaMode="checkout"
+        [featureLead]="waitingPlan()?.lead ?? null">
       </app-pricing-plans-section>
     </section>
     <app-conversion-sticky-cta surface="pricing"></app-conversion-sticky-cta>
@@ -55,6 +68,21 @@ export class PricingComponent implements OnInit {
   analyticsSource = 'pricing_page';
   private pageViewTracked = false;
 
+  // Injected on every visit, so a draft made as a guest reaches the account once the person signs in on the way.
+  private readonly companyPlans = inject(CompanyPlanService);
+  private readonly auth = inject(AuthService);
+  private readonly checkoutIntent = inject(CheckoutIntentService);
+  private readonly planData = signal<CompanyPlanData | null>(null);
+
+  /** The plan someone came here to unlock. Premium members have it already. */
+  readonly waitingPlan = computed(() => {
+    const data = this.planData();
+    const answers = this.companyPlans.answers();
+    if (!data || !answers || isProActive(this.auth.user())) return null;
+    const plan = this.companyPlans.buildPlan(data, answers);
+    return plan.general ? null : companyPlanPricingCopy(data, answers, plan);
+  });
+
   constructor(
     private analytics: AnalyticsService,
     private billingCheckout: BillingCheckoutService,
@@ -68,10 +96,18 @@ export class PricingComponent implements OnInit {
     );
     this.analyticsSource = context.src;
     if (typeof window !== 'undefined') {
+      this.loadWaitingPlan();
       void this.loadCheckoutConfig();
     } else {
       this.trackPricingPageViewed();
     }
+  }
+
+  /** Signing in on the way drops the source from the address, so the saved checkout choice still names it. */
+  private loadWaitingPlan(): void {
+    const sources = [this.analyticsSource, this.checkoutIntent.load()?.src];
+    if (!sources.some((source) => COMPANY_PLAN_SOURCE.test(source ?? ''))) return;
+    this.companyPlans.loadData().subscribe((data) => this.planData.set(data));
   }
 
   private async loadCheckoutConfig(): Promise<void> {

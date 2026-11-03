@@ -71,6 +71,16 @@
   margin-bottom: 6px;
 }
 .profile-info span { min-width: 0; overflow-wrap: anywhere; }
+.profile-plan {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  color: var(--uf-accent);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+}
 
 /* Main */
 .profile-main {

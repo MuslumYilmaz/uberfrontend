@@ -6,6 +6,23 @@
   margin: 0 0 16px;
 }
 
+.company-directory__head {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0 0 18px;
+}
+
+.company-directory__title {
+  margin: 0;
+  font-family: var(--uf-font-heading);
+  font-size: 26px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  color: var(--uf-text-primary);
+}
+
 .company-intro {
   margin: 0 0 16px;
   padding: 16px 18px;
@@ -197,6 +214,7 @@
 
 .company-list {
   display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
   gap: 12px;
 }
 
@@ -244,6 +262,12 @@
 .company-card__title {
   color: var(--uf-text-primary);
   font-weight: 700;
+}
+
+.company-card__signature {
+  font-size: 13px;
+  line-height: 1.3;
+  color: var(--uf-accent);
 }
 
 .company-card__meta {

@@ -4479,9 +4479,9 @@ test.describe('seo-ssr', () => {
       return (await rawPage.locator('.main-col').boundingBox())?.x;
     };
 
-    expect(await prerenderedColumnX('/companies', 1366), 'full sidebar column').toBe(280);
+    expect(await prerenderedColumnX('/focus-areas', 1366), 'full sidebar column').toBe(280);
     expect(await prerenderedColumnX('/coding', 1366), 'guest rail on starter routes').toBe(60);
-    expect(await prerenderedColumnX('/companies', 390), 'no column where the sidebar is a drawer').toBe(0);
+    expect(await prerenderedColumnX('/focus-areas', 390), 'no column where the sidebar is a drawer').toBe(0);
 
     await rawPage.goto(fullUrl('/pricing'));
     const quarterly = await rawPage.locator('.pr-card--quarterly').boundingBox();
@@ -4490,7 +4490,7 @@ test.describe('seo-ssr', () => {
     await rawContext.close();
 
     await page.setViewportSize({ width: 1366, height: 900 });
-    await page.goto('/companies', { waitUntil: 'networkidle' });
+    await page.goto('/focus-areas', { waitUntil: 'networkidle' });
     await expect(page.locator('app-sidebar aside')).toBeVisible();
     expect((await page.locator('.main-col').boundingBox())?.x, 'the mounted sidebar takes the same column').toBe(280);
   });

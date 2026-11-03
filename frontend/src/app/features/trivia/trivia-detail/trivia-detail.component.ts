@@ -24,6 +24,7 @@ import {
   isContentAccessibleForFree,
   robotsForContentAccess,
 } from '../../../core/utils/content-access-policy.util';
+import { CompanyPlanReturnLink, companyPlanReturnLink } from '../../../core/utils/company-plan-return.util';
 import { buildLockedPreviewForTrivia, LockedPreviewData } from '../../../core/utils/locked-preview.util';
 import { isTriviaReferenceOnlyBlock } from '../../../core/utils/trivia-search-intent.util';
 import { publicQuestionHref } from '../../../core/utils/public-question-link.util';
@@ -708,6 +709,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
   returnTo: any[] | null = null;
   private returnToUrl: string | null = null;
   private returnLabel = signal<string | null>(null);
+  planReturn = signal<CompanyPlanReturnLink | null>(null);
   locked = computed(() => {
     const q = this.question();
     const user = this.auth.user();
@@ -1196,6 +1198,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     this.returnTo = s?.returnTo ?? null;
     this.returnToUrl = typeof s?.returnToUrl === 'string' ? s.returnToUrl : null;
     this.returnLabel.set(s?.returnLabel ?? null);
+    this.planReturn.set(companyPlanReturnLink(this.router, this.returnToUrl, this.returnLabel()));
     this.refreshSidebarQuestions();
   }
 

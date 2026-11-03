@@ -43,6 +43,7 @@ import {
   isContentAccessibleForFree,
   robotsForContentAccess,
 } from '../../../core/utils/content-access-policy.util';
+import { CompanyPlanReturnLink, companyPlanReturnLink } from '../../../core/utils/company-plan-return.util';
 import { CodeStorageService } from '../../../core/services/code-storage.service';
 import { QuestionService } from '../../../core/services/question.service';
 import { MonacoEditorComponent } from '../../../monaco-editor.component';
@@ -330,6 +331,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   returnLabel = signal<string | null>(null);
   private returnTo: any[] | null = null;      // old array-based navigation
   private returnToUrl: string | null = null;  // 🔹 new: full URL for global/company lists
+  planReturn = signal<CompanyPlanReturnLink | null>(null);
 
 
   copiedIdx: number | null = null;
@@ -981,6 +983,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       this.returnToUrl = null;
       this.returnLabel.set(null);
     }
+    this.planReturn.set(companyPlanReturnLink(this.router, this.returnToUrl, this.returnLabel()));
 
     this.courseIdFromState = s?.courseId ?? null;
     this.courseOutline = s?.outline ?? null;

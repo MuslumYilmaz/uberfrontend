@@ -1,8 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, computed, effect, inject, signal, untracked } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Subscription, of, timer } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
+import { planCompanyNames } from '../company/company-plan/company-plan.format';
+import { CompanyPlanService } from '../company/company-plan/company-plan.service';
 import { AnalyticsService } from '../../core/services/analytics.service';
 import { isSprintOfferVersion } from '../../core/utils/offer-version.util';
 import { AuthService, User } from '../../core/services/auth.service';
@@ -39,6 +41,32 @@ export class BillingSuccessComponent implements OnInit, OnDestroy {
   private checkoutSurface: string | null = null;
   private checkoutVerifiedTracked = false;
   private premiumChallengeTracked = false;
+
+  private readonly plans = inject(CompanyPlanService);
+  /** A company plan waits on the account or on this browser, so the payment opens it. */
+  readonly hasPlan = computed(() => Boolean(this.plans.answers()));
+  /** The plan's companies, once the plan data has loaded: "ElevenLabs". */
+  readonly planName = signal('');
+  /** "ElevenLabs plan", or just "plan" until the name is known. */
+  readonly planLabel = computed(() => (this.planName() ? `${this.planName()} plan` : 'plan'));
+  private planNameRequested = false;
+  private planOpened = false;
+
+  private readonly namePlan = effect(() => {
+    const answers = this.plans.answers();
+    if (!answers || this.planNameRequested) return;
+    this.planNameRequested = true;
+    untracked(() => this.plans.loadData().subscribe((data) => {
+      if (data) this.planName.set(planCompanyNames(data, answers));
+    }));
+  });
+
+  // The account may load after the payment is confirmed, so the plan opens whenever both are known.
+  private readonly openPlanWhenReady = effect(() => {
+    if (this.state() !== 'ready' || !this.hasPlan() || this.planOpened) return;
+    this.planOpened = true;
+    untracked(() => this.openPlan());
+  });
 
   constructor(
     private auth: AuthService,
@@ -279,12 +307,22 @@ export class BillingSuccessComponent implements OnInit, OnDestroy {
   private finishPolling(attempt?: CheckoutAttemptStatus): void {
     this.clearCheckoutContext();
     this.pollSub?.unsubscribe();
-    if (isSprintOfferVersion(attempt?.offerVersion)) {
+    if (this.hasPlan() || isSprintOfferVersion(attempt?.offerVersion)) {
       this.state.set('ready');
       this.errorMessage.set(null);
       return;
     }
     this.router.navigateByUrl('/profile').catch(() => void 0);
+  }
+
+  /**
+   * The account in memory was read before the payment and the plan page is Premium only, so the account is read again
+   * first. The billing page leaves the history, so Back does not land on it and open the plan a second time.
+   */
+  openPlan(): void {
+    this.auth.fetchMe().pipe(catchError(() => of(null))).subscribe(() => {
+      this.router.navigateByUrl('/companies/plan', { replaceUrl: true }).catch(() => void 0);
+    });
   }
 
   private clearCheckoutContext(): void {

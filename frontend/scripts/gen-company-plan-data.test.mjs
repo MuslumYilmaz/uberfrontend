@@ -1,0 +1,357 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import test from 'node:test';
+import { fileURLToPath } from 'node:url';
+import { buildCompanyPlanData, loadCompanyPlanSources, renderCompanyPlanData } from './gen-company-plan-data.mjs';
+
+const realSources = loadCompanyPlanSources();
+const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
+
+const reportUrl = (name) => `https://www.jointaro.com/interviews/companies/acme/experiences/${name}/`;
+const tableSource = (name, date) => ({ label: `Taro ${name}`, url: reportUrl(name), kind: 'report', date });
+const catalogSource = (name, date, publisher = 'Taro') => ({ label: `Taro: ${name}`, url: reportUrl(name), company: 'acme', publisher, date });
+
+function fixture(files) {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'company-plan-data-'));
+  for (const [relative, value] of Object.entries(files)) {
+    const filePath = path.join(dir, 'questions', relative);
+    fs.mkdirSync(path.dirname(filePath), { recursive: true });
+    fs.writeFileSync(filePath, JSON.stringify(value));
+  }
+  return dir;
+}
+
+const baseCatalog = {
+  'javascript/coding.json': [
+    { id: 'js-old', title: 'Old', difficulty: 'easy', companies: ['acme'], sources: [catalogSource('old', '2020-01')] },
+    { id: 'js-new', title: 'New', difficulty: 'hard', access: 'premium', companies: ['acme'], sources: [catalogSource('new', '2026-05')] },
+    { id: 'js-linked', title: 'Linked', difficulty: 'intermediate' },
+    { id: 'js-tag-low', title: 'Tag low', importance: 1, companies: ['acme'] },
+    { id: 'js-tag-high', title: 'Tag high', importance: 5, companies: ['acme'] },
+    { id: 'js-starter', title: 'Starter' },
+  ],
+  'react/coding.json': [
+    { id: 'react-star-rating', title: 'React stars', access: 'premium', companies: ['acme'], sources: [catalogSource('stars', '2021-01')] },
+    { id: 'react-file-explorer', title: 'Explorer', companies: ['acme'] },
+  ],
+  'angular/coding.json': [{ id: 'angular-star-rating', title: 'Angular stars', companies: ['acme'], sources: [catalogSource('stars-newer', '2023-03')] }],
+  'vue/coding.json': [{ id: 'vue-star-rating', title: 'Vue stars', companies: ['acme'], sources: [catalogSource('stars', '2021-01')] }],
+  'javascript/trivia.json': [
+    { id: 'concept-a', title: 'Concept A', importance: 4, companies: ['acme'] },
+    { id: 'concept-b', title: 'Concept B', importance: 2, companies: ['acme'] },
+  ],
+  'react/trivia.json': [{ id: 'react-concept', title: 'React concept', importance: 5, companies: ['acme'] }],
+  'system-design/index.json': [{ id: 'case-a', title: 'Case A', access: 'premium', companies: ['acme'] }],
+  'system-design/case-a/meta.json': { id: 'case-a', title: 'Case A', companies: ['acme'], sources: [catalogSource('case', '2024-02')] },
+};
+
+const baseProcess = () => ({
+  checkedAt: '2026-10-20',
+  variants: [
+    {
+      title: 'Engineers',
+      stages: [
+        { stage: 'Recruiter call', format: 'A short call. It covers logistics.', sources: [{ label: 'Acme hiring page', url: 'https://acme.example/jobs', kind: 'official', date: '2026-10' }] },
+        {
+          stage: 'Coding',
+          format: 'Two problems.',
+          sources: [tableSource('new', '2026-04'), tableSource('stars', '2021-02'), tableSource('other-a', '2025-01'), tableSource('other-b', '2024-01'), tableSource('other-c', '2023-01')],
+          practice: { label: 'Linked', path: '/javascript/coding/js-linked' },
+        },
+        { stage: 'Design', format: 'A design round.', sources: [tableSource('case', '2024-02')], practice: { label: 'Frontend system design blueprint', path: '/guides/system-design-blueprint' } },
+      ],
+    },
+    { title: 'Interns', stages: [{ stage: 'Coding', format: 'One problem.', sources: [tableSource('old', '2020-01')] }, { stage: 'Decision', format: 'An offer.', sources: [tableSource('old', '2020-01')] }] },
+  ],
+});
+
+const baseRounds = () => ({
+  reportVariants: { 'angular-star-rating': ['engineers'] },
+  variants: [
+    {
+      id: 'engineers',
+      title: 'Engineers',
+      from: 'engineers',
+      ask: 'Interviewing as an engineer?',
+      default: true,
+      rounds: [
+        { id: 'recruiter-call', stage: 'Recruiter call', kinds: ['recruiter'] },
+        { id: 'coding', stage: 'Coding', kinds: ['coding'] },
+        { id: 'design', stage: 'Design', kinds: ['design'], note: 'A short design line.' },
+      ],
+    },
+    {
+      id: 'interns',
+      title: 'Interns',
+      from: 'interns',
+      ask: 'Interviewing as an intern?',
+      rounds: [
+        { id: 'coding', stage: 'Coding', kinds: ['coding'] },
+        { id: 'decision', stage: 'Decision', kinds: ['outcome'] },
+      ],
+    },
+  ],
+});
+
+function sources(overrides = {}) {
+  return {
+    ...realSources,
+    processes: { acme: baseProcess() },
+    rounds: { acme: baseRounds() },
+    profiles: { acme: { framework: 'javascript', mixed: true, evidence: 'Fixture.', aliases: ['Acme Corp'] } },
+    signatures: { acme: 'Coding' },
+    brands: { acme: { label: 'Acme' } },
+    starters: ['js-starter'],
+    formatPractice: { javascript: ['js-starter'] },
+    guides: { design: { label: 'Frontend system design blueprint', path: '/guides/system-design-blueprint' } },
+    ...overrides,
+  };
+}
+
+const build = (overrides, files = baseCatalog) => buildCompanyPlanData(fixture(files), sources(overrides));
+
+test('company facts and rounds carry what the form and the plan show', () => {
+  const company = build().companies.acme;
+  assert.equal(company.name, 'Acme');
+  assert.equal(company.framework, 'javascript');
+  assert.equal(company.mixed, true);
+  assert.deepEqual(company.aliases, ['Acme Corp']);
+  assert.equal(company.checkedAt, '2026-10-20');
+  const [engineers, interns] = company.variants;
+  assert.equal(engineers.ask, 'Interviewing as an engineer?');
+  assert.equal(engineers.default, true);
+  assert.equal(interns.default, undefined);
+  assert.equal(engineers.sourceCount, 7);
+  assert.equal(engineers.rounds[0].note, 'A short call.');
+  assert.equal(engineers.rounds[2].note, 'A short design line.');
+});
+
+test('a round shows official pages first, then the three newest, and counts the rest', () => {
+  const coding = build().companies.acme.variants[0].rounds[1];
+  assert.deepEqual(coding.sources.map((source) => source.date), ['2026-04', '2025-01', '2024-01']);
+  assert.equal(coding.moreSources, 2);
+  const recruiter = build().companies.acme.variants[0].rounds[0];
+  assert.deepEqual(recruiter.sources, [{ label: 'Acme hiring page', date: '2026-10' }]);
+  assert.equal(recruiter.moreSources, undefined);
+});
+
+test('a widget reported in three frameworks is one task in the company framework, dated by its newest source', () => {
+  const payload = build();
+  const rows = payload.companies.acme.variants[0].tasks.filter((task) => payload.tasks[task.id].family === 'star-rating');
+  assert.equal(rows.length, 1);
+  assert.equal(rows[0].id, 'react-star-rating');
+  assert.deepEqual(rows[0].report, { publisher: 'Taro', date: '2023-03' });
+  assert.equal(payload.tasks['angular-star-rating'], undefined);
+  assert.equal(payload.tasks['vue-star-rating'], undefined);
+});
+
+test('a company framework decides which member of a family enters', () => {
+  const payload = build({ profiles: { acme: { framework: 'vue', evidence: 'Fixture.' } } }, {
+    ...baseCatalog,
+    'react/coding.json': baseCatalog['react/coding.json'].filter((entry) => entry.id !== 'react-file-explorer'),
+    'react/trivia.json': [],
+  });
+  assert.ok(payload.tasks['vue-star-rating']);
+  assert.equal(payload.tasks['react-star-rating'], undefined);
+  assert.equal(payload.companies.acme.mixed, undefined);
+});
+
+test('reported tasks come newest first, then linked tasks, then tags by importance, with concept questions last', () => {
+  const ids = build().companies.acme.variants[0].tasks.map((task) => task.id);
+  assert.deepEqual(ids.slice(0, 3), ['js-new', 'case-a', 'react-star-rating']);
+  assert.ok(ids.indexOf('js-linked') > ids.indexOf('react-star-rating'));
+  assert.ok(ids.indexOf('js-tag-high') > ids.indexOf('js-linked'));
+  assert.ok(ids.indexOf('js-tag-high') < ids.indexOf('js-tag-low'));
+  assert.ok(ids.indexOf('concept-a') > ids.indexOf('js-tag-low'));
+  assert.ok(ids.indexOf('concept-a') < ids.indexOf('concept-b'));
+});
+
+test('a source cited by both files shows the date in the process table', () => {
+  const payload = build();
+  const row = payload.companies.acme.variants[0].tasks.find((task) => task.id === 'js-new');
+  assert.deepEqual(row.report, { publisher: 'Taro', date: '2026-04' });
+});
+
+test('a task binds to the rounds that cite its source and test its kind', () => {
+  const tasks = build().companies.acme.variants[0].tasks;
+  assert.deepEqual(tasks.find((task) => task.id === 'js-new').rounds, ['coding']);
+  assert.deepEqual(tasks.find((task) => task.id === 'case-a').rounds, ['design']);
+  assert.deepEqual(tasks.find((task) => task.id === 'js-linked').rounds, ['coding']);
+  assert.equal(tasks.find((task) => task.id === 'js-tag-high').rounds, undefined);
+});
+
+test('a report belongs to the list citing it, and elsewhere is only a pick without a report line', () => {
+  const [engineers, interns] = build().companies.acme.variants;
+  assert.ok(interns.tasks.find((task) => task.id === 'js-old').report);
+  assert.equal(engineers.tasks.find((task) => task.id === 'js-old').report, undefined);
+  assert.equal(interns.tasks.find((task) => task.id === 'js-new').report, undefined);
+  assert.ok(interns.tasks.find((task) => task.id === 'js-new'));
+});
+
+test('a question no list cites joins the list named by hand', () => {
+  const payload = build({
+    rounds: { acme: { ...baseRounds(), reportVariants: { 'js-new': ['interns'] } } },
+    processes: { acme: { ...baseProcess(), variants: baseProcess().variants.map((variant) => ({ ...variant, stages: variant.stages.map((stage) => ({ ...stage, sources: stage.sources.filter((source) => source.url !== reportUrl('new')) })) })) } },
+  });
+  const [engineers, interns] = payload.companies.acme.variants;
+  assert.equal(interns.tasks.find((task) => task.id === 'js-new').report.date, '2026-05');
+  assert.equal(engineers.tasks.find((task) => task.id === 'js-new').report, undefined);
+});
+
+test('a hand pick binds to its round, comes after links and carries no report line', () => {
+  const rounds = baseRounds();
+  rounds.variants[0].rounds[1] = { ...rounds.variants[0].rounds[1], picks: ['/javascript/coding/js-starter'] };
+  const tasks = build({ rounds: { acme: rounds } }).companies.acme.variants[0].tasks;
+  const pick = tasks.find((task) => task.id === 'js-starter');
+  assert.deepEqual(pick.rounds, ['coding']);
+  assert.equal(pick.report, undefined);
+  assert.ok(tasks.indexOf(pick) > tasks.findIndex((task) => task.id === 'js-linked'));
+  assert.ok(tasks.indexOf(pick) < tasks.findIndex((task) => task.id === 'js-tag-high'));
+
+  rounds.variants[0].rounds[1] = { ...rounds.variants[0].rounds[1], picks: ['/javascript/coding/js-gone'] };
+  assert.throws(() => build({ rounds: { acme: rounds } }), /links \/javascript\/coding\/js-gone/);
+});
+
+test('a round says what it tests in its own words, and a task says what it practises', () => {
+  const process = baseProcess();
+  process.variants[0].stages[1].stage = 'Onsite: bug squash';
+  process.variants[0].stages[1].format = 'Fix bugs in a React app, then an algorithm problem.';
+  const rounds = baseRounds();
+  rounds.variants[0].rounds[1] = { id: 'bug-squash', stage: 'Onsite: bug squash', kinds: ['coding'] };
+  const payload = build({ processes: { acme: process }, rounds: { acme: rounds } }, {
+    ...baseCatalog,
+    'javascript/coding.json': [
+      ...baseCatalog['javascript/coding.json'],
+      { id: 'js-sort-it', title: 'Sort it', tags: ['arrays', 'sorting'], companies: ['acme'] },
+    ],
+    'javascript/debug.json': [{ id: 'js-debug-race', title: 'Race', companies: ['acme'] }],
+    'react/coding.json': [
+      ...baseCatalog['react/coding.json'],
+      { id: 'react-debug-render', title: 'Debug a render', companies: ['acme'] },
+    ],
+    'css/coding.json': [{ id: 'css-grid', title: 'Grid', companies: ['acme'] }],
+  });
+  const [recruiter, bugSquash] = payload.companies.acme.variants[0].rounds;
+  assert.equal(recruiter.focus, undefined);
+  assert.deepEqual(bugSquash.focus, ['debug', 'algo', 'ui']);
+  assert.deepEqual(payload.tasks['js-tag-low'].focus, ['js', 'algo']);
+  assert.deepEqual(payload.tasks['js-sort-it'].focus, ['algo', 'js']);
+  assert.deepEqual(payload.tasks['js-debug-race'].focus, ['debug', 'js']);
+  assert.deepEqual(payload.tasks['react-debug-render'].focus, ['debug', 'ui']);
+  assert.deepEqual(payload.tasks['react-star-rating'].focus, ['ui']);
+  assert.deepEqual(payload.tasks['css-grid'].focus, ['css', 'ui']);
+  assert.deepEqual(build().tasks['concept-a'].focus, ['concepts', 'js']);
+  assert.equal(payload.tasks['case-a'].focus, undefined);
+});
+
+test('the summary counts what Premium opens from the catalog', () => {
+  const counts = build({ formatPractice: { javascript: ['js-starter'], react: ['js-starter'] } }).general.premiumCounts;
+  assert.deepEqual(counts, { javascript: 1, react: 1, systemDesign: 1 });
+});
+
+test('a job posting is marked as one', () => {
+  const payload = build({}, {
+    ...baseCatalog,
+    'javascript/coding.json': [
+      ...baseCatalog['javascript/coding.json'],
+      { id: 'js-posted', title: 'Posted', companies: ['acme'], sources: [{ ...catalogSource('new', '2026-06', 'Built In'), label: 'Acme posting: Frontend Engineer, Built In, June 2026' }] },
+    ],
+  });
+  const [engineers] = payload.companies.acme.variants;
+  assert.equal(engineers.tasks.find((task) => task.id === 'js-posted').report.posting, true);
+  assert.equal(engineers.tasks.find((task) => task.id === 'js-old')?.report?.posting, undefined);
+});
+
+test('tasks carry real access and minutes, and a linked guide is a free 15-minute task', () => {
+  const { tasks } = build();
+  assert.equal(tasks['js-new'].access, 'premium');
+  assert.equal(tasks['js-new'].minutes, 45);
+  assert.equal(tasks['js-old'].access, 'free');
+  assert.equal(tasks['js-old'].minutes, 15);
+  assert.equal(tasks['js-linked'].minutes, 30);
+  assert.equal(tasks['case-a'].minutes, 45);
+  assert.equal(tasks['concept-a'].minutes, 10);
+  assert.deepEqual(tasks['/guides/system-design-blueprint'], { id: '/guides/system-design-blueprint', title: 'Frontend system design blueprint', route: '/guides/system-design-blueprint', kind: 'guide', access: 'free', minutes: 15 });
+});
+
+test('concept questions stop at the largest budget and never leave the company framework', () => {
+  const concepts = Array.from({ length: 20 }, (_, index) => ({ id: `concept-${index}`, title: `Concept ${index}`, companies: ['acme'] }));
+  const payload = build({}, { ...baseCatalog, 'javascript/trivia.json': concepts });
+  assert.equal(payload.companies.acme.variants[0].tasks.length, 12);
+  const vue = build({ profiles: { acme: { framework: 'vue', evidence: 'Fixture.' } } }, { ...baseCatalog, 'react/coding.json': [], 'angular/coding.json': [], 'vue/coding.json': [{ id: 'vue-star-rating', title: 'Vue stars', companies: ['acme'] }] });
+  assert.equal(vue.tasks['react-concept'], undefined);
+  assert.ok(vue.tasks['concept-a']);
+});
+
+test('each list dates its own reports and ignores official pages', () => {
+  const onlyOfficial = baseProcess();
+  onlyOfficial.variants = [{ title: 'Engineers', stages: [onlyOfficial.variants[0].stages[0]] }];
+  const company = build({
+    processes: { acme: onlyOfficial },
+    rounds: { acme: { variants: [{ ...baseRounds().variants[0], rounds: [baseRounds().variants[0].rounds[0]] }] } },
+  }, { 'javascript/coding.json': [{ id: 'js-starter', title: 'Starter' }] }).companies.acme;
+  assert.equal(company.variants[0].newestReport, undefined);
+  const [engineers, interns] = build().companies.acme.variants;
+  assert.equal(engineers.newestReport, '2026-04');
+  assert.equal(interns.newestReport, '2020-01');
+});
+
+test('broken joins fail with a message that names the problem', () => {
+  const brokenLink = baseProcess();
+  brokenLink.variants[0].stages[1].practice = { label: 'Gone', path: '/javascript/coding/js-gone' };
+  assert.throws(() => build({ processes: { acme: brokenLink } }), /links \/javascript\/coding\/js-gone/);
+
+  const renamedStage = baseProcess();
+  renamedStage.variants[0].stages[0].stage = 'Renamed';
+  assert.throws(() => build({ processes: { acme: renamedStage } }), /no plan data for the stage "Renamed"/);
+
+  const renamedList = baseProcess();
+  renamedList.variants[0].title = 'Renamed';
+  assert.throws(() => build({ processes: { acme: renamedList } }), /no plan data for the list "Renamed"/);
+
+  assert.throws(() => build({ starters: ['js-gone'] }), /general task js-gone/);
+
+  const wrongFramework = baseProcess();
+  wrongFramework.variants[0].stages[1].practice = { label: 'Explorer', path: '/react/coding/react-file-explorer' };
+  assert.throws(() => build({ processes: { acme: wrongFramework }, profiles: { acme: { framework: 'vue', evidence: 'Fixture.' } } }), /outside its framework/);
+});
+
+test('the real data joins cleanly, ships no source link and never repeats a family in a list', () => {
+  const payload = buildCompanyPlanData(path.join(repoRoot, 'cdn'), realSources);
+  const text = renderCompanyPlanData(payload);
+  assert.doesNotMatch(text, /https?:/);
+  assert.deepEqual(Object.keys(payload.companies).sort(), Object.keys(realSources.processes).sort());
+
+  for (const id of [...payload.general.starters, ...Object.values(payload.general.formatPractice).flat(), ...Object.values(payload.general.guides)]) {
+    assert.ok(payload.tasks[id], id);
+  }
+
+  for (const [slug, company] of Object.entries(payload.companies)) {
+    const expected = company.framework === 'javascript' ? 'react' : company.framework;
+    company.variants.forEach((variant, index) => {
+      const stages = realSources.processes[slug].variants[index].stages;
+      assert.deepEqual(variant.rounds.map((round) => round.name), stages.map((stage) => stage.stage), `${slug}/${variant.id}`);
+      const roundIds = new Set(variant.rounds.map((round) => round.id));
+      const families = new Set();
+      assert.ok(variant.tasks.length > 0, `${slug}/${variant.id} has no tasks`);
+      for (const row of variant.tasks) {
+        const task = payload.tasks[row.id];
+        assert.ok(task, `${slug}: ${row.id} is not in the task table`);
+        for (const round of row.rounds ?? []) assert.ok(roundIds.has(round), `${slug}/${variant.id}: ${row.id} binds to ${round}`);
+        if (['react', 'angular', 'vue'].includes(task.tech)) assert.equal(task.tech, expected, `${slug}: ${row.id}`);
+        if (task.family) {
+          assert.ok(!families.has(task.family), `${slug}/${variant.id} repeats ${task.family}`);
+          families.add(task.family);
+        }
+        if (row.report) assert.match(row.report.date, /^\d{4}-\d{2}$/);
+      }
+    });
+  }
+});
+
+test('rendering the same input twice gives the same bytes', () => {
+  const dir = fixture(baseCatalog);
+  assert.equal(renderCompanyPlanData(buildCompanyPlanData(dir, sources())), renderCompanyPlanData(buildCompanyPlanData(dir, sources())));
+});

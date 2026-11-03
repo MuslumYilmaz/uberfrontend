@@ -1,0 +1,204 @@
+import type { CompanyPlanAnswers, CompanyPlanAnswerLevel, CompanyPlanWhen } from '../../../core/models/company-plan.model';
+import type { CompanyPlan, CompanyPlanData, CompanyPlanWhy, PlannedTask } from './company-plan.engine';
+
+const SHORT_MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+export const WHEN_LABELS: Readonly<Record<CompanyPlanWhen, string>> = {
+  tomorrow: 'Tomorrow',
+  'this-week': 'This week',
+  'next-week': 'Next week',
+  later: 'Later or no date',
+};
+
+const WHEN_PHRASES: Readonly<Record<CompanyPlanWhen, string>> = {
+  tomorrow: ' for tomorrow',
+  'this-week': ' for this week',
+  'next-week': ' for next week',
+  later: '',
+};
+
+export const LEVEL_LABELS: Readonly<Record<CompanyPlanAnswerLevel, string>> = {
+  junior: 'Junior',
+  mid: 'Mid-level',
+  senior: 'Senior',
+  staff: 'Staff',
+};
+
+const FRAMEWORK_LABELS: Readonly<Record<string, string>> = { react: 'React', angular: 'Angular', vue: 'Vue', javascript: 'JavaScript' };
+
+export function frameworkLabel(framework: string): string {
+  return FRAMEWORK_LABELS[framework] ?? framework;
+}
+
+export function joinNames(names: readonly string[]): string {
+  return names.length > 1 ? `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}` : names[0] ?? '';
+}
+
+/** "2026-07" as "Jul 2026". */
+export function shortMonth(month: string): string {
+  const [year, number] = month.split('-');
+  return `${SHORT_MONTHS[Number(number) - 1] ?? ''} ${year}`.trim();
+}
+
+export function shortDay(day: string): string {
+  return new Date(`${day.slice(0, 10)}T00:00:00Z`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
+}
+
+/** Why a task is in the plan. A report label only ever comes from a report. */
+export function whyLine(why: CompanyPlanWhy): string {
+  switch (why.kind) {
+    case 'report':
+      return `Based on a ${why.posting ? 'job posting' : 'report'}: ${why.publisher}, ${shortMonth(why.date)}`;
+    case 'format':
+      return 'Format practice';
+    case 'general':
+      return 'General frontend practice';
+    default:
+      return 'Our pick for this round';
+  }
+}
+
+/** Half-hour steps, because a plan's time is an estimate. */
+export function hoursText(minutes: number): string {
+  const hours = Math.round(minutes / 30) / 2;
+  if (hours < 1) return `${minutes} minutes`;
+  return hours === 1 ? '1 hour' : `${hours} hours`;
+}
+
+export function clockText(minutes: number): string {
+  if (minutes < 60) return `${minutes} min`;
+  const rest = minutes % 60;
+  return `${Math.floor(minutes / 60)} h${rest ? ` ${rest} min` : ''}`;
+}
+
+function addDays(day: Date, days: number): Date {
+  const next = new Date(day.getFullYear(), day.getMonth(), day.getDate());
+  next.setDate(next.getDate() + days);
+  return next;
+}
+
+/**
+ * The days the interview falls in, counted from when the answers were given: the next day for Tomorrow, otherwise the
+ * Monday-to-Sunday week. Later has no date. Local time, because "next week" means the person's week.
+ */
+function interviewWindow(when: CompanyPlanWhen, answeredAt: string): { readonly start: Date; readonly end: Date } | null {
+  const answered = new Date(answeredAt);
+  if (when === 'later' || Number.isNaN(answered.getTime())) return null;
+  if (when === 'tomorrow') return { start: addDays(answered, 1), end: addDays(answered, 2) };
+  const monday = addDays(answered, -((answered.getDay() + 6) % 7) + (when === 'next-week' ? 7 : 0));
+  return { start: monday, end: addDays(monday, 7) };
+}
+
+/** "Week of Nov 9", "Nov 3" for Tomorrow, or "No date yet". */
+export function planDateChip(when: CompanyPlanWhen, answeredAt: string): string {
+  const window = interviewWindow(when, answeredAt);
+  if (!window) return 'No date yet';
+  const day = window.start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  return when === 'tomorrow' ? day : `Week of ${day}`;
+}
+
+export function planDatePassed(when: CompanyPlanWhen, answeredAt: string, now: Date): boolean {
+  const window = interviewWindow(when, answeredAt);
+  return Boolean(window && now.getTime() >= window.end.getTime());
+}
+
+/** "Built from 6 public sources, last checked Oct 22, 2026. These are practice versions, not leaked questions." */
+export function planEvidenceLine(plan: CompanyPlan, names: string): string {
+  const sources = plan.companies.reduce((sum, company) => sum + company.list.sourceCount, 0);
+  const where = plan.companies.length === 1 ? `, last checked ${shortDay(plan.companies[0].checkedAt)}` : ` across ${names}`;
+  return `Built from ${sources} public ${sources === 1 ? 'source' : 'sources'}${where}. These are practice versions, not leaked questions.`;
+}
+
+/** "React, from reports" for a framework the reports name, plain "JavaScript" otherwise. */
+export function planFrameworkChips(plan: CompanyPlan): string[] {
+  return [...new Set(plan.companies.map((company) => company.framework))].map((framework) => (
+    framework === 'javascript' ? frameworkLabel(framework) : `${frameworkLabel(framework)}, from reports`
+  ));
+}
+
+/** "Reported in Aced Jul 2026, Aced Nov 2025 and 2 more". Empty for a round without sources. */
+export function roundSourcesLine(round: { readonly sources: readonly { readonly label: string; readonly date: string }[]; readonly moreSources?: number }): string {
+  const named = round.sources.map((source) => (source.date ? `${source.label} ${shortMonth(source.date)}` : source.label));
+  if (!named.length) return '';
+  return `Reported in ${round.moreSources ? `${named.join(', ')} and ${round.moreSources} more` : joinNames(named)}`;
+}
+
+/** The first line of the summary: "6 tasks for next week, about 3.5 hours". */
+export function planSummaryLine(plan: Pick<CompanyPlan, 'tasks' | 'totalMinutes'>, when: CompanyPlanWhen): string {
+  const count = plan.tasks.length;
+  return `${count} ${count === 1 ? 'task' : 'tasks'}${WHEN_PHRASES[when]}, about ${hoursText(plan.totalMinutes)}`;
+}
+
+/** The round a task belongs to, for the line under its title. */
+export function taskGroups(plan: CompanyPlan): ReadonlyMap<string, string> {
+  const groups = new Map<string, string>();
+  for (const company of plan.companies) {
+    for (const round of company.rounds) {
+      for (const task of round.tasks) groups.set(task.id, round.name);
+    }
+  }
+  for (const task of plan.formatPractice) groups.set(task.id, 'Format practice');
+  return groups;
+}
+
+/** The preview address for these answers, for a plan that is not the one on the account. */
+export function previewQueryParams(answers: CompanyPlanAnswers): Record<string, string> {
+  const lists = answers.companies.flatMap((company) => (company.list ? [`${company.slug}:${company.list}`] : [])).join(',');
+  return {
+    companies: answers.companies.map((company) => company.slug).join(','),
+    ...(lists ? { lists } : {}),
+    when: answers.when,
+    level: answers.level,
+  };
+}
+
+export function planCompanyNames(data: CompanyPlanData, answers: CompanyPlanAnswers): string {
+  return joinNames(answers.companies.flatMap((company) => (data.companies[company.slug] ? [data.companies[company.slug].name] : [])));
+}
+
+export type CompanyPlanPricingCopy = {
+  readonly title: string;
+  readonly summary: string;
+  /** Lines that open every plan card, in place of "Full Premium content". */
+  readonly lead: readonly string[];
+};
+
+/**
+ * What the pricing page says while a plan waits behind Premium. Every framework task has a live preview, but only
+ * some run checks, so the card says only the first. The counts are left out when the data predates them.
+ */
+export function companyPlanPricingCopy(data: CompanyPlanData, answers: CompanyPlanAnswers, plan: CompanyPlan): CompanyPlanPricingCopy {
+  const names = planCompanyNames(data, answers);
+  const planned = new Set(plan.tasks.map((task) => task.id));
+  const open = plan.preview.open.filter((task) => planned.has(task.id)).length;
+  const opens = open ? ` ${open} ${open === 1 ? 'is' : 'are'} open now. Premium opens the rest` : ' Premium opens them';
+  const framework = plan.companies[0]?.framework ?? 'javascript';
+  const counts = data.general.premiumCounts;
+  return {
+    title: `Your ${names} plan is waiting`,
+    summary: `${planSummaryLine(plan, answers.when)}.${opens} and keeps every round in order.`,
+    lead: [
+      `Your full ${names} plan`,
+      ...(counts ? [
+        framework === 'javascript'
+          ? `${counts.javascript} Premium JavaScript tasks with browser tests`
+          : `${counts[framework]} Premium ${frameworkLabel(framework)} tasks with a live preview`,
+        `${counts.systemDesign} Premium system design walkthroughs`,
+      ] : []),
+    ],
+  };
+}
+
+/**
+ * What the task's page needs to offer the way back and, for practice it can step through, "Next". A design
+ * walkthrough gets only the way back, and a guide opens plainly.
+ */
+export function practiceState(task: PlannedTask, tasks: readonly PlannedTask[], returnToUrl: string, returnLabel: string): Record<string, unknown> {
+  if (task.kind === 'guide') return {};
+  if (task.kind === 'system-design') return { returnToUrl, returnLabel };
+  const items = tasks
+    .filter((entry) => entry.tech && entry.kind !== 'system-design' && entry.kind !== 'guide')
+    .map((entry) => ({ tech: entry.tech, kind: entry.kind, id: entry.id }));
+  const index = items.findIndex((item) => item.id === task.id);
+  return index < 0 ? {} : { session: { items, index }, returnToUrl, returnLabel };
+}

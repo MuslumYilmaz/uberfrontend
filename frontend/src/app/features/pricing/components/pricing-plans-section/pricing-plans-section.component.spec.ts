@@ -171,6 +171,20 @@ describe('PricingPlansSectionComponent', () => {
     expect(button.textContent || '').toContain('Manage subscription');
   });
 
+  it('opens every card with a waiting company plan and keeps what sets each plan apart', () => {
+    const features = (planId: string) => Array.from(
+      fixture.nativeElement.querySelector(`[data-testid="pricing-cta-${planId}"]`).closest('.pr-card').querySelectorAll('.features li'),
+    ).map((item) => (item as HTMLElement).textContent?.trim());
+
+    fixture.detectChanges();
+    expect(features('monthly')).toEqual(['Full Premium content', 'Cancel before the next renewal']);
+
+    fixture.componentRef.setInput('featureLead', ['Your full ElevenLabs plan', '31 Premium React tasks with a live preview']);
+    fixture.detectChanges();
+    expect(features('monthly')).toEqual(['Your full ElevenLabs plan', '31 Premium React tasks with a live preview', 'Cancel before the next renewal']);
+    expect(features('lifetime')).toEqual(['Your full ElevenLabs plan', '31 Premium React tasks with a live preview', 'Premium access forever']);
+  });
+
   it('renders quarterly as the only recommended sprint plan', () => {
     fixture.detectChanges();
 

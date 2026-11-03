@@ -29,6 +29,15 @@ const CONTENT_PIPELINE_SCRIPTS = new Set([
   'frontend/scripts/validate-question-identities.mjs',
   'frontend/scripts/validate-trivia-incident-balance.mjs',
 ]);
+// These feed cdn/questions/company-plan-data.json, so editing one without regenerating it must fail here.
+const COMPANY_PLAN_SOURCES = new Set([
+  'frontend/scripts/gen-company-plan-data.mjs',
+  'frontend/scripts/load-ts-module.mjs',
+  'frontend/src/app/shared/company-previews/company-interview-processes.ts',
+  'frontend/src/app/shared/company-previews/company-plan-profiles.ts',
+  'frontend/src/app/shared/company-previews/company-plan-rounds.ts',
+  'frontend/src/app/shared/company-previews/company-signatures.ts',
+]);
 
 function readArg(name) {
   const index = process.argv.indexOf(name);
@@ -131,7 +140,8 @@ function main() {
       || file === 'frontend/package.json'
       || file === 'frontend/angular.json'
       || file === 'frontend/src/app/generated/content-metadata.ts'
-      || CONTENT_PIPELINE_SCRIPTS.has(file);
+      || CONTENT_PIPELINE_SCRIPTS.has(file)
+      || COMPANY_PLAN_SOURCES.has(file);
   });
   const assistTouched = stagedFiles.some((file) => {
     return /^cdn\/questions\/[^/]+\/coding\.json$/.test(file)

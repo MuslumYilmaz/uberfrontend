@@ -1,0 +1,760 @@
+:host {
+  display: block;
+}
+
+.plan-status {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  min-height: 320px;
+  margin: 0;
+  padding: 36px;
+  color: var(--uf-text-secondary);
+}
+
+.plan-status p {
+  margin: 0;
+  max-width: 62ch;
+}
+
+/* The top of the page: answers and evidence on the left, the next task on the right, the time map under both. */
+.plan-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 420px);
+  grid-template-areas:
+    'head panel'
+    'facts panel'
+    'map map';
+  gap: 18px 48px;
+  align-items: start;
+  padding: 36px;
+  border: 1px solid var(--uf-border-subtle);
+  border-radius: 24px;
+  background:
+    radial-gradient(1100px at -6% 2%, color-mix(in srgb, var(--uf-accent) 16%, transparent), transparent 58%),
+    linear-gradient(132deg, var(--uf-surface), var(--uf-bg) 58%);
+}
+
+.plan-hero__head {
+  grid-area: head;
+  min-width: 0;
+}
+
+.plan-hero__facts {
+  grid-area: facts;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.plan-hero__kicker {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--uf-text-tertiary);
+}
+
+.plan-hero__title {
+  margin: 10px 0 14px;
+  font-family: var(--uf-font-heading);
+  font-size: clamp(32px, 4vw, 52px);
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  line-height: 1.08;
+  text-wrap: balance;
+  color: var(--uf-text-primary);
+}
+
+.plan-hero__chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.plan-hero__chip {
+  padding: 5px 11px;
+  border: 1px solid var(--uf-border-strong);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--uf-text-primary) 6%, transparent);
+  font-size: 13px;
+  color: var(--uf-text-primary);
+}
+
+.plan-hero__edit {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 4px;
+  font-size: 14px;
+  color: var(--uf-accent);
+}
+
+.plan-hero__evidence {
+  margin: 0;
+  max-width: 62ch;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--uf-text-secondary);
+}
+
+.plan-hero__warning {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  max-width: 62ch;
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px solid color-mix(in srgb, var(--uf-accent) 40%, transparent);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--uf-accent) 8%, transparent);
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--uf-text-primary);
+}
+
+.plan-hero__warning svg {
+  flex: none;
+  margin-top: 1px;
+  color: var(--uf-accent);
+}
+
+.plan-panel {
+  grid-area: panel;
+  box-sizing: border-box;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 22px 24px;
+  border: 1px solid color-mix(in srgb, var(--uf-accent) 70%, transparent);
+  border-radius: 20px;
+  background: linear-gradient(100deg, color-mix(in srgb, var(--uf-accent) 22%, transparent), color-mix(in srgb, var(--uf-accent) 8%, transparent) 44%, color-mix(in srgb, var(--uf-surface-alt) 94%, transparent) 80%);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--uf-accent) 15%, transparent), 0 18px 60px color-mix(in srgb, var(--uf-accent) 18%, transparent);
+}
+
+.plan-panel__label {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--uf-text-secondary);
+}
+
+.plan-panel__title {
+  margin: 0;
+  font-family: var(--uf-font-heading);
+  font-size: 28px;
+  font-weight: 500;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+  text-wrap: balance;
+  color: var(--uf-text-primary);
+}
+
+.plan-panel__meta,
+.plan-panel__note {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--uf-text-secondary);
+}
+
+.plan-panel__meta {
+  margin-bottom: 6px;
+}
+
+.plan-panel__note {
+  font-size: 13px;
+  text-align: center;
+}
+
+/* The time map: one block per task, as long as its minutes, filled once the task is solved. */
+.plan-map {
+  grid-area: map;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 10px;
+  padding-top: 20px;
+  border-top: 1px solid color-mix(in srgb, var(--uf-text-primary) 10%, transparent);
+}
+
+.plan-map__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 6px 24px;
+}
+
+.plan-map__heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 14px;
+}
+
+.plan-map__title {
+  margin: 0;
+  font-family: var(--uf-font-heading);
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--uf-text-primary);
+}
+
+.plan-map__progress {
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+  color: var(--uf-text-secondary);
+}
+
+.plan-map__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 13px;
+  color: var(--uf-text-secondary);
+}
+
+.plan-map__legend li {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.plan-map__swatch {
+  width: 18px;
+  height: 12px;
+  box-sizing: border-box;
+  border: 1px solid var(--uf-accent);
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--uf-accent) 18%, transparent);
+}
+
+.plan-map__swatch--done {
+  background: var(--uf-accent);
+}
+
+.plan-map__groups {
+  display: flex;
+  gap: 10px;
+}
+
+/* A narrow group's label can take two lines, so every bar sits at the bottom of its group and the bars line up. */
+.plan-map__group {
+  flex: 1 1 0;
+  min-width: 96px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.plan-map__group-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0 8px;
+  font-size: 13px;
+  line-height: 1.3;
+}
+
+.plan-map__group-name {
+  font-weight: 600;
+  color: var(--uf-text-primary);
+}
+
+.plan-map__group-time {
+  font-variant-numeric: tabular-nums;
+  color: var(--uf-text-secondary);
+}
+
+.plan-map__bar {
+  display: flex;
+  gap: 2px;
+}
+
+.plan-map__block {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.plan-map__fill {
+  display: block;
+  width: 100%;
+  height: 18px;
+  box-sizing: border-box;
+  border: 1px solid var(--uf-accent);
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--uf-accent) 18%, transparent);
+}
+
+.plan-map__block--done .plan-map__fill {
+  background: var(--uf-accent);
+}
+
+.plan-map__block:focus-visible {
+  outline: 2px solid var(--uf-accent);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+.plan-map__tip {
+  display: none;
+  position: absolute;
+  z-index: 5;
+  bottom: 38px;
+  left: 0;
+  width: max-content;
+  max-width: 280px;
+  padding: 7px 9px;
+  border: 1px solid var(--uf-border-strong);
+  border-radius: 8px;
+  background: var(--uf-surface-alt);
+  font-size: 12.5px;
+  line-height: 1.35;
+  text-align: left;
+  color: var(--uf-text-primary);
+  box-shadow: 0 12px 30px color-mix(in srgb, var(--uf-bg) 60%, transparent);
+}
+
+.plan-map__group--last .plan-map__tip {
+  left: auto;
+  right: 0;
+}
+
+.plan-map__block:hover .plan-map__tip,
+.plan-map__block:focus-visible .plan-map__tip {
+  display: block;
+}
+
+/* Rounds and tasks, with the guides beside them. */
+.plan-body {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 36px 48px;
+  margin-top: 36px;
+}
+
+.plan-body__main {
+  flex: 999 1 620px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.plan-body__alert {
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px solid color-mix(in srgb, var(--uf-accent) 40%, transparent);
+  border-radius: 12px;
+  font-size: 14px;
+  color: var(--uf-text-primary);
+}
+
+.plan-company {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.plan-company__title,
+.plan-format__title {
+  margin: 0;
+  font-family: var(--uf-font-heading);
+  font-size: 26px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--uf-text-primary);
+}
+
+.plan-format__title {
+  font-size: 20px;
+}
+
+.plan-company__meta,
+.plan-format__body {
+  margin: 4px 0 0;
+  max-width: 72ch;
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: var(--uf-text-tertiary);
+}
+
+.plan-format__body {
+  font-size: 14px;
+  color: var(--uf-text-secondary);
+}
+
+.plan-company__meta a {
+  color: var(--uf-accent);
+}
+
+.plan-rounds {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.plan-round {
+  position: relative;
+  padding: 0 0 22px 24px;
+}
+
+.plan-round__dot {
+  position: absolute;
+  top: 4px;
+  left: 0;
+  width: 12px;
+  height: 12px;
+  box-sizing: border-box;
+  border: 1px solid var(--uf-text-tertiary);
+  border-radius: 50%;
+  background: var(--uf-surface);
+}
+
+.plan-round--active .plan-round__dot {
+  border-color: var(--uf-accent);
+  background: var(--uf-accent);
+}
+
+.plan-round--passed .plan-round__dot {
+  border-color: var(--uf-border-strong);
+  background: var(--uf-border-strong);
+}
+
+.plan-round::after {
+  content: '';
+  position: absolute;
+  top: 20px;
+  bottom: 0;
+  left: 6px;
+  width: 1px;
+  background: var(--uf-border-strong);
+}
+
+.plan-round--last::after {
+  display: none;
+}
+
+.plan-round__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0 12px;
+}
+
+.plan-round__name {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--uf-text-primary);
+}
+
+.plan-round--passed .plan-round__name {
+  color: var(--uf-text-tertiary);
+}
+
+.plan-round__pass {
+  min-height: 44px;
+  margin: -12px 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 13px;
+  color: var(--uf-text-tertiary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.plan-round__note {
+  margin: 3px 0 0;
+  max-width: 72ch;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--uf-text-secondary);
+}
+
+.plan-round__sources {
+  margin: 3px 0 0;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--uf-text-tertiary);
+}
+
+.plan-tasks {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.plan-task {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 58px;
+  padding: 4px 12px 4px 0;
+  border: 1px solid var(--uf-border-subtle);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--uf-surface) 72%, transparent);
+  scroll-margin-top: 96px;
+  transition: border-color 160ms ease, background 160ms ease;
+}
+
+.plan-task:hover {
+  border-color: color-mix(in srgb, var(--uf-accent) 60%, transparent);
+  background: color-mix(in srgb, var(--uf-accent) 6%, transparent);
+}
+
+.plan-task--next {
+  border-color: color-mix(in srgb, var(--uf-accent) 70%, transparent);
+  background: color-mix(in srgb, var(--uf-accent) 8%, transparent);
+}
+
+.plan-task__check {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.plan-task__check:disabled {
+  cursor: default;
+}
+
+.plan-task__circle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  box-sizing: border-box;
+  border: 1px solid var(--uf-text-tertiary);
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--uf-bg);
+}
+
+.plan-task--done .plan-task__circle {
+  border-color: var(--uf-accent);
+  background: var(--uf-accent);
+}
+
+.plan-task__link {
+  flex: 1 1 auto;
+  min-width: 0;
+  color: var(--uf-text-primary);
+  text-decoration: none;
+}
+
+.plan-task--done .plan-task__link {
+  color: var(--uf-text-secondary);
+}
+
+.plan-task__next {
+  display: block;
+  margin-bottom: 2px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--uf-accent);
+}
+
+.plan-task__title {
+  display: block;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.plan-task__why {
+  display: block;
+  margin-top: 2px;
+  font-size: 12.5px;
+  line-height: 1.35;
+  color: var(--uf-text-tertiary);
+}
+
+.plan-task__inline-time {
+  display: none;
+}
+
+.plan-task__lock {
+  flex: none;
+  margin-left: 8px;
+  color: var(--uf-accent);
+}
+
+.plan-task__time {
+  flex: none;
+  width: 64px;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  color: var(--uf-text-secondary);
+}
+
+.plan-format {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.plan-format .plan-tasks {
+  margin-top: 0;
+}
+
+.plan-body__last {
+  display: flex;
+  gap: 12px;
+  margin: 0;
+  padding-top: 16px;
+  border-top: 1px solid var(--uf-border-subtle);
+  max-width: 72ch;
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: var(--uf-text-secondary);
+}
+
+.plan-body__last svg {
+  flex: none;
+  margin-top: 1px;
+  color: var(--uf-accent);
+}
+
+.plan-body__last strong {
+  color: var(--uf-text-primary);
+}
+
+.plan-guides {
+  flex: 1 1 320px;
+  min-width: 0;
+  max-width: 380px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px 20px;
+  border: 1px solid var(--uf-border-subtle);
+  border-radius: 16px;
+  background: var(--uf-surface);
+}
+
+.plan-guides__link {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--uf-accent);
+}
+
+.plan-guides__body {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: var(--uf-text-secondary);
+}
+
+@media (max-width: 959px) {
+  .plan-hero {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      'head'
+      'panel'
+      'facts'
+      'map';
+  }
+
+  .plan-guides {
+    max-width: none;
+  }
+}
+
+/* On a phone each group gets its own line, and its bar is as long as its share of the longest group. */
+@media (max-width: 760px) {
+  .plan-map__groups {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .plan-map__group {
+    flex: none;
+    min-width: 0;
+  }
+
+  .plan-map__bar {
+    width: var(--plan-map-share, 100%);
+  }
+
+  .plan-map__tip,
+  .plan-map__group--last .plan-map__tip {
+    left: 0;
+    right: auto;
+  }
+}
+
+@media (max-width: 640px) {
+  .plan-hero {
+    gap: 20px;
+    padding: 22px 16px 24px;
+    border-radius: 18px;
+  }
+
+  .plan-panel {
+    padding: 18px;
+  }
+
+  .plan-panel__title {
+    font-size: 24px;
+  }
+
+  .plan-company__title {
+    font-size: 22px;
+  }
+
+  .plan-task__time {
+    display: none;
+  }
+
+  .plan-task__inline-time {
+    display: inline;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .plan-task {
+    transition: none;
+  }
+}

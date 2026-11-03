@@ -9,6 +9,8 @@ import { COMPANY_PRACTICE_DISCLAIMER } from '../../../core/content/public-editor
 import { CompanyLogoMarkComponent } from '../../../shared/components/company-logo-mark/company-logo-mark.component';
 import { PrepSignalGridComponent, PrepSignalItem } from '../../../shared/components/prep-signal-grid/prep-signal-grid.component';
 import { AUTHORED_COMPANY_PREVIEWS_TOKEN } from '../../../shared/company-previews/authored-company-previews';
+import { COMPANY_SIGNATURES } from '../../../shared/company-previews/company-signatures';
+import { CompanyPlanFormComponent } from '../company-plan/company-plan-form.component';
 
 type CompanyHubLink = { label: string; route: string[]; path: string };
 
@@ -18,12 +20,14 @@ const COMPANY_INDEX_DESCRIPTION =
 
 @Component({
     selector: 'app-company-index',
-    imports: [CommonModule, RouterModule, PrepSignalGridComponent, CompanyLogoMarkComponent],
+    imports: [CommonModule, RouterModule, PrepSignalGridComponent, CompanyLogoMarkComponent, CompanyPlanFormComponent],
     templateUrl: './company-index.component.html',
     styleUrls: ['./company-index.component.css']
 })
 export class CompanyIndexComponent implements OnInit {
   readonly companyPracticeDisclaimer = COMPANY_PRACTICE_DISCLAIMER;
+  readonly pageTitle = COMPANY_INDEX_TITLE;
+  readonly signatures = COMPANY_SIGNATURES;
   companies: CompanyCard[] = [];
   private route = inject(ActivatedRoute);
   private destroyRef = inject(DestroyRef);

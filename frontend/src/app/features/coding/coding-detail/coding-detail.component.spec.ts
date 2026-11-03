@@ -258,6 +258,22 @@ describe('CodingDetailComponent', () => {
     });
   }
 
+  it('leads back to the company plan only from a task opened there', () => {
+    const component = TestBed.createComponent(CodingDetailComponent).componentInstance;
+    const state = window.history.state;
+    window.history.replaceState({ returnToUrl: '/companies/preview?companies=elevenlabs&level=staff', returnLabel: 'Back to plan' }, '');
+    (component as any).hydrateReturnInfo();
+    expect(component.planReturn()).toEqual({
+      label: 'Back to plan',
+      route: ['/companies/preview'],
+      queryParams: { companies: 'elevenlabs', level: 'staff' },
+    });
+    window.history.replaceState({ returnToUrl: '/coding?tech=javascript', returnLabel: 'Back to questions' }, '');
+    (component as any).hydrateReturnInfo();
+    expect(component.planReturn()).toBeNull();
+    window.history.replaceState(state, '');
+  });
+
   it('uses list neighbors for direct entry and suppresses links for course, pressure and unavailable targets', () => {
     const component = TestBed.createComponent(CodingDetailComponent).componentInstance;
     const target = PUBLIC_QUESTION_NAVIGATION.find((item) => item.kind === 'coding')!;

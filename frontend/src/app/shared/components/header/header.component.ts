@@ -92,6 +92,8 @@ export class HeaderComponent implements OnInit {
 
   public auth = inject(AuthService);
   isPro = computed(() => isProActive(this.auth.user()));
+  /** The plan route sends a free account on to its preview. */
+  hasPlan = computed(() => Boolean(this.auth.user()?.companyPlan));
   brandLink = computed(() => this.auth.authUiState() === 'authenticated' ? ['/dashboard'] : ['/']);
   brandDestination = computed(() => this.auth.authUiState() === 'authenticated' ? '/dashboard' : '/');
   ctaLabel = computed(() => {

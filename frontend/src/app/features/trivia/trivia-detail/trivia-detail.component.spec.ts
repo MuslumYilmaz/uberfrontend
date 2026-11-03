@@ -2431,6 +2431,16 @@ describe('TriviaDetailComponent', () => {
     expect(footerLeft?.getAttribute('href') || '').toContain('/coding');
   });
 
+  it('leads back to the company plan from a question opened there', async () => {
+    const address = '/companies/preview?companies=agoda&when=next-week&level=junior';
+    window.history.replaceState({ returnToUrl: address, returnLabel: 'Back to plan' }, '');
+    const fixture = await createLoadedFixture();
+
+    const footerLeft = fixture.nativeElement.querySelector('[data-testid="footer-left"]') as HTMLAnchorElement;
+    expect(footerLeft.textContent).toContain('Back to plan');
+    expect(footerLeft.getAttribute('href')).toBe(address);
+  });
+
   it('uses a native disclosure button for similar questions', async () => {
     const fixture = await createLoadedFixture();
     const toggle = fixture.nativeElement.querySelector(

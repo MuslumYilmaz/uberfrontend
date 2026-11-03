@@ -67,6 +67,7 @@
   background: color-mix(in srgb, var(--uf-accent) 10%, var(--uf-surface));
 }
 .fah-navlink .caret{ font-size:12px; opacity:.7; }
+.fah-navlink--plan{ color: var(--uf-accent); }
 
 /* ---- Right actions ---- */
 .fah-right{ display:flex; align-items:center; gap:10px; justify-content:flex-end; }
