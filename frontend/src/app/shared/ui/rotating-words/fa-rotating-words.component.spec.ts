@@ -12,6 +12,19 @@ class HostComponent {
   readonly index = signal(0);
 }
 
+@Component({
+  imports: [FaRotatingWordsComponent],
+  template: `
+    <fa-rotating-words [words]="words" [intervalMs]="1000" [(index)]="first"></fa-rotating-words>
+    <fa-rotating-words [words]="words" [intervalMs]="1000" [startDelayMs]="500" [(index)]="second"></fa-rotating-words>
+  `,
+})
+class TwoSentencesHostComponent {
+  readonly words = ['Agoda', 'Stripe', 'Walmart'];
+  readonly first = signal(0);
+  readonly second = signal(0);
+}
+
 describe('FaRotatingWordsComponent', () => {
   let fixture: ComponentFixture<HostComponent>;
 
@@ -53,6 +66,20 @@ describe('FaRotatingWordsComponent', () => {
     tick(1000);
     expect(fixture.componentInstance.index()).toBe(1);
     fixture.destroy();
+  }));
+
+  it('takes turns with another sentence when its start is delayed', fakeAsync(() => {
+    spyOn(window, 'matchMedia').and.returnValue({ matches: false } as MediaQueryList);
+    const pair = TestBed.createComponent(TwoSentencesHostComponent);
+    pair.detectChanges();
+    const indexes = () => [pair.componentInstance.first(), pair.componentInstance.second()];
+    tick(1000);
+    expect(indexes()).toEqual([1, 0]);
+    tick(500);
+    expect(indexes()).toEqual([1, 1]);
+    tick(500);
+    expect(indexes()).toEqual([2, 1]);
+    pair.destroy();
   }));
 
   it('never moves for someone who prefers reduced motion', fakeAsync(() => {

@@ -8,6 +8,7 @@ import { FaButtonComponent } from '../../../shared/ui/button/fa-button.component
 import { FaRotatingWordsComponent } from '../../../shared/ui/rotating-words/fa-rotating-words.component';
 import { hasPremium, premiumEnded } from './company-plan-access';
 import { companyMatchesSearch } from './company-plan-search';
+import { COMPANY_PLAN_WHEEL as WHEEL } from './company-plan-wheel';
 import { CompanyPlanData, companyPlanDefaultList } from './company-plan.engine';
 import { LEVEL_LABELS, WHEN_LABELS, planCompanyNames, previewQueryParams } from './company-plan.format';
 import { CompanyPlanService } from './company-plan.service';
@@ -15,18 +16,6 @@ import { CompanyPlanService } from './company-plan.service';
 const MAX_COMPANIES = 3;
 const MAX_CUSTOM_LENGTH = 60;
 const WIDE_LAYOUT = '(min-width: 960px)';
-
-/** The companies the sentence rotates through before anyone picks: the ones with the clearest signature round. */
-const WHEEL: readonly { readonly slug: string; readonly name: string }[] = [
-  { slug: 'elevenlabs', name: 'ElevenLabs' },
-  { slug: 'agoda', name: 'Agoda' },
-  { slug: 'capital-one', name: 'Capital One' },
-  { slug: 'intuit', name: 'Intuit' },
-  { slug: 'revolut', name: 'Revolut' },
-  { slug: 'stripe', name: 'Stripe' },
-  { slug: 'gitlab', name: 'GitLab' },
-  { slug: 'walmart', name: 'Walmart' },
-];
 
 const WHEN_OPTIONS: readonly { readonly id: CompanyPlanWhen; readonly label: string; readonly sub: string }[] = [
   { id: 'tomorrow', label: 'Tomorrow', sub: 'Up to 3 tasks, from your first rounds.' },
@@ -224,7 +213,7 @@ export class CompanyPlanFormComponent {
       this.wide.set(Boolean(wide?.matches));
       wide?.addEventListener?.('change', (event) => this.wide.set(event.matches));
       // After the first render, so a page loaded with the address still hydrates the prerendered first step.
-      this.startFromGuide();
+      this.startWithCompany();
       this.plans.loadData().subscribe((data) => this.data.set(data));
     });
   }
@@ -321,14 +310,18 @@ export class CompanyPlanFormComponent {
     this.maxStep.update((max) => Math.max(max, step));
   }
 
-  /** A company guide hands over its company in `?company=`: the form opens at the date with it picked. */
-  private startFromGuide(): void {
-    const slug = this.route.snapshot.queryParamMap.get('company')?.trim().toLowerCase();
+  /**
+   * A company guide, or the home page with `from=home`, hands over a company in `?company=`: the form opens at the
+   * date with it picked.
+   */
+  private startWithCompany(): void {
+    const query = this.route.snapshot.queryParamMap;
+    const slug = query.get('company')?.trim().toLowerCase();
     if (!slug || !this.directory().some((company) => company.slug === slug)) return;
     this.picked.set([slug]);
     this.chosen.set(true);
     this.started = true;
-    this.plans.track('company_plan_form_started', { from: 'guide', companies: slug });
+    this.plans.track('company_plan_form_started', { from: query.get('from') === 'home' ? 'home' : 'guide', companies: slug });
     this.goTo(2);
   }
 

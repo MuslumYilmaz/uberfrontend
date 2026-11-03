@@ -23,6 +23,8 @@ import { ChangeDetectionStrategy, Component, DestroyRef, NgZone, PLATFORM_ID, af
 export class FaRotatingWordsComponent {
   readonly words = input.required<readonly string[]>();
   readonly intervalMs = input(2400);
+  /** Waits this long before the timer starts, so two sentences on one screen take turns instead of moving together. */
+  readonly startDelayMs = input(0);
   /** Holds the current word, for example while the person hovers or a picker is open. */
   readonly paused = input(false);
   readonly index = model(0);
@@ -39,8 +41,14 @@ export class FaRotatingWordsComponent {
   constructor() {
     afterNextRender(() => {
       if (!this.isBrowser || window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
-      const timer = this.zone.runOutsideAngular(() => setInterval(() => this.advance(), this.intervalMs()));
-      this.destroyRef.onDestroy(() => clearInterval(timer));
+      let timer: ReturnType<typeof setInterval> | undefined;
+      const start = this.zone.runOutsideAngular(() => setTimeout(() => {
+        timer = setInterval(() => this.advance(), this.intervalMs());
+      }, this.startDelayMs()));
+      this.destroyRef.onDestroy(() => {
+        clearTimeout(start);
+        clearInterval(timer);
+      });
     });
   }
 

@@ -53,7 +53,7 @@ describe('CompanyPlanFormComponent', () => {
   let navigate: jasmine.Spy;
   let host: HTMLElement;
 
-  function setup(options: { data?: CompanyPlanData | null; wide?: boolean; saved?: unknown; draft?: unknown; user?: unknown; company?: string } = {}) {
+  function setup(options: { data?: CompanyPlanData | null; wide?: boolean; saved?: unknown; draft?: unknown; user?: unknown; company?: string; from?: string } = {}) {
     const saved = signal<any>(options.saved ?? null);
     const draft = signal<any>(options.draft ?? null);
     plans = {
@@ -76,7 +76,7 @@ describe('CompanyPlanFormComponent', () => {
         { provide: AuthService, useValue: { user: signal(options.user ?? null) } },
         ...(options.company === undefined
           ? []
-          : [{ provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: convertToParamMap({ company: options.company }) } } }]),
+          : [{ provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: convertToParamMap({ company: options.company, ...(options.from ? { from: options.from } : {}) }) } } }]),
       ],
     });
     navigate = spyOn(TestBed.inject(Router), 'navigate').and.resolveTo(true);
@@ -247,7 +247,7 @@ describe('CompanyPlanFormComponent', () => {
     });
   });
 
-  describe('arriving from a company guide', () => {
+  describe('arriving with a company from a guide or the home page', () => {
     it('opens at the date with the company the guide handed over, and still lets it change', () => {
       setup({ company: 'ElevenLabs' });
       expect(component.step()).toBe(2);
@@ -268,6 +268,12 @@ describe('CompanyPlanFormComponent', () => {
       steps[0].click();
       fixture.detectChanges();
       expect(host.querySelector('.plan-slot__answer')?.textContent?.trim()).toBe('ElevenLabs');
+    });
+
+    it('names the home page as the way in when the address says so', () => {
+      setup({ company: 'walmart', from: 'home' });
+      expect(component.step()).toBe(2);
+      expect(plans.track).toHaveBeenCalledWith('company_plan_form_started', { from: 'home', companies: 'walmart' });
     });
 
     it('starts at the first step when the company is not one it lists', () => {

@@ -24,7 +24,6 @@ async function prepare(page: Page, authenticated: boolean) {
   await page.clock.setFixedTime(new Date('2026-10-01T10:00:00Z'));
   await page.addInitScript((signedIn) => {
     try {
-      localStorage.setItem('fa:exp:assignment:hero_headline_cta_v1', 'control');
       localStorage.setItem('fa:exp:assignment:pricing_risk_reversal_placement_v1', 'top');
       if (signedIn) localStorage.setItem('fa:auth:session', '1');
     } catch { /* sandboxed preview */ }

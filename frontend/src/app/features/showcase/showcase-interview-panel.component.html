@@ -1,0 +1,81 @@
+<section
+  class="interview-panel"
+  aria-labelledby="showcase-interview-title"
+  data-testid="showcase-interview-panel"
+  (mouseenter)="hovering.set(true)"
+  (mouseleave)="hovering.set(false)"
+  (focusin)="focused.set(true)"
+  (focusout)="focused.set(false)">
+  <span class="interview-panel__icon" aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"></rect><path d="M16 3v4M8 3v4M3 10h18M9 15l2 2 4-4"></path></svg>
+  </span>
+
+  @if (resume(); as plan) {
+    <div class="interview-panel__text">
+      <h2 id="showcase-interview-title" class="interview-panel__label">Your plan</h2>
+      <p class="interview-panel__sentence">{{ plan.title }}</p>
+      <p class="interview-panel__sub">{{ plan.line }}</p>
+    </div>
+    <a
+      faButton
+      variant="primary"
+      size="lg"
+      class="interview-panel__cta"
+      data-testid="showcase-interview-resume"
+      [routerLink]="plan.link"
+      (click)="resumed(plan.plan)">
+      Open my plan <span aria-hidden="true">→</span>
+    </a>
+  } @else {
+    <div class="interview-panel__text">
+      <h2 id="showcase-interview-title" class="interview-panel__label">Interview coming up?</h2>
+      <div class="interview-slot" (keydown.escape)="close()">
+        <span class="interview-panel__sentence">I'm interviewing at</span>
+        <button
+          #slotButton
+          type="button"
+          class="interview-slot__button"
+          data-testid="showcase-interview-slot"
+          [attr.aria-expanded]="open()"
+          [attr.aria-label]="'Choose your company. Now: ' + company().name"
+          (click)="toggle()">
+          <fa-rotating-words [words]="names" [paused]="paused()" [startDelayMs]="startDelayMs" [(index)]="index"></fa-rotating-words>
+          <svg class="interview-slot__chevron" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg>
+        </button>
+
+        @if (open()) {
+          <div class="interview-menu" data-testid="showcase-interview-menu">
+            <div class="interview-menu__options">
+              @for (option of companies; track option.slug) {
+                <a
+                  class="interview-option"
+                  routerLink="/companies"
+                  [queryParams]="{ company: option.slug, from: 'home' }"
+                  (click)="built(option.slug, 'company_menu')">
+                  <app-company-logo-mark class="interview-option__logo" [company]="option.slug" [decorative]="true"></app-company-logo-mark>
+                  <span class="interview-option__text">
+                    <span class="interview-option__name">{{ option.name }}</span>
+                    <span class="interview-option__signature">{{ option.signature }}</span>
+                  </span>
+                </a>
+              }
+            </div>
+            <a class="interview-menu__all" routerLink="/companies" (click)="browsed()">See all {{ companyCount }} companies</a>
+          </div>
+        }
+      </div>
+      <p class="interview-panel__sub">See the rounds candidates reported and try the first tasks for free.</p>
+    </div>
+    <a
+      faButton
+      variant="primary"
+      size="lg"
+      class="interview-panel__cta"
+      data-testid="showcase-interview-build"
+      routerLink="/companies"
+      [queryParams]="{ company: company().slug, from: 'home' }"
+      (click)="built(company().slug, 'interview_panel')">
+      Build my plan <span aria-hidden="true">→</span>
+    </a>
+  }
+</section>

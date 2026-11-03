@@ -9,14 +9,10 @@ import { AuthService, User } from '../../../core/services/auth.service';
 import { PracticeAssetResolverService } from '../../../core/services/practice-asset-resolver.service';
 import { UserProgressService } from '../../../core/services/user-progress.service';
 import { apiUrl } from '../../../core/utils/api-base';
+import { COMPANY_PLAN_DRAFT_KEY, cleanCompanyPlanAnswers } from './company-plan-draft';
 import { CompanyPlan, CompanyPlanData, buildCompanyPlan } from './company-plan.engine';
 
-const DRAFT_STORAGE_KEY = 'fa:company-plan:draft:v1';
 const DATA_PATH = 'questions/company-plan-data.json';
-const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-const LEVELS = new Set(['junior', 'mid', 'senior', 'staff']);
-const WHENS = new Set(['tomorrow', 'this-week', 'next-week', 'later']);
-const MAX_COMPANIES = 3;
 const MAX_QUERY_LENGTH = 40;
 const MAX_QUERY_WORDS = 4;
 
@@ -33,23 +29,8 @@ export type CompanyPlanEvent =
 type PlanResponse = { companyPlan: SavedCompanyPlan };
 type MarkKind = 'round' | 'task';
 
-/** The answers with nothing unexpected in them, or null when they cannot be a plan. */
-function cleanAnswers(raw: unknown): CompanyPlanAnswers | null {
-  const value = raw as Partial<CompanyPlanAnswers> | null;
-  if (!value || typeof value !== 'object' || !Array.isArray(value.companies)) return null;
-  if (!LEVELS.has(String(value.level)) || !WHENS.has(String(value.when))) return null;
-  if (value.companies.length < 1 || value.companies.length > MAX_COMPANIES) return null;
-  const companies: { slug: string; list?: string }[] = [];
-  for (const company of value.companies) {
-    if (!SLUG.test(String(company?.slug)) || companies.some((other) => other.slug === company.slug)) return null;
-    if (company.list !== undefined && !SLUG.test(String(company.list))) return null;
-    companies.push(company.list ? { slug: company.slug, list: company.list } : { slug: company.slug });
-  }
-  return { companies, level: value.level as CompanyPlanAnswers['level'], when: value.when as CompanyPlanAnswers['when'] };
-}
-
 function sameAnswers(a: CompanyPlanAnswers, b: CompanyPlanAnswers): boolean {
-  return JSON.stringify(cleanAnswers(a)) === JSON.stringify(cleanAnswers(b));
+  return JSON.stringify(cleanCompanyPlanAnswers(a)) === JSON.stringify(cleanCompanyPlanAnswers(b));
 }
 
 /**
@@ -113,7 +94,7 @@ export class CompanyPlanService {
 
   /** Keeps the answers as a draft, and on the account when there is one. */
   save(answers: CompanyPlanAnswers): Observable<'saved' | 'draft' | 'invalid'> {
-    const clean = cleanAnswers(answers);
+    const clean = cleanCompanyPlanAnswers(answers);
     if (!clean) return of('invalid' as const);
     this.setDraft(clean);
     if (!this.auth.user()) return of('draft' as const);
@@ -281,10 +262,10 @@ export class CompanyPlanService {
   private readDraft(): CompanyPlanAnswers | null {
     if (!isPlatformBrowser(inject(PLATFORM_ID))) return null;
     try {
-      const stored = localStorage.getItem(DRAFT_STORAGE_KEY);
+      const stored = localStorage.getItem(COMPANY_PLAN_DRAFT_KEY);
       if (!stored) return null;
-      const draft = cleanAnswers(JSON.parse(stored));
-      if (!draft) localStorage.removeItem(DRAFT_STORAGE_KEY);
+      const draft = cleanCompanyPlanAnswers(JSON.parse(stored));
+      if (!draft) localStorage.removeItem(COMPANY_PLAN_DRAFT_KEY);
       return draft;
     } catch {
       return null;
@@ -295,8 +276,8 @@ export class CompanyPlanService {
     this.draftState.set(draft);
     if (!this.isBrowser) return;
     try {
-      if (draft) localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(draft));
-      else localStorage.removeItem(DRAFT_STORAGE_KEY);
+      if (draft) localStorage.setItem(COMPANY_PLAN_DRAFT_KEY, JSON.stringify(draft));
+      else localStorage.removeItem(COMPANY_PLAN_DRAFT_KEY);
     } catch {
       // Private windows can refuse storage. The draft still lives for this page.
     }
