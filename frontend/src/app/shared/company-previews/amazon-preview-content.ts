@@ -333,7 +333,7 @@ export const AMAZON_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     kicker: 'Full company practice',
     title: 'Continue with the full Amazon practice set',
     copy:
-      'This public guide is complete enough to plan a focused week. Premium unlocks the star rating, carousel, tabs, countdown timer and pagination exercises in React, Angular and Vue, the image upload case and the broader company-tagged editorial set.',
+      'Premium unlocks the star rating, carousel, tabs, countdown timer and pagination exercises in React, Angular and Vue, the image upload case and the broader company-tagged editorial set.',
     buttonLabel: 'Unlock the full Amazon practice set',
     src: 'company_preview_amazon',
   },

@@ -7,6 +7,7 @@ import { CompanyPreviewQuestion, CompanyPreviewResolved } from '../../../core/mo
 import { Difficulty } from '../../../core/models/question.model';
 import { COMPANY_PRACTICE_DISCLAIMER } from '../../../core/content/public-editorial-facts';
 import { Tech } from '../../../core/models/user.model';
+import { AnalyticsService } from '../../../core/services/analytics.service';
 import { SeoService } from '../../../core/services/seo.service';
 import { companyBrandFor } from '../../../shared/company-branding';
 import { SHOWCASE_STATS } from '../../../generated/content-metadata';
@@ -22,6 +23,7 @@ import {
 import type { CompanyReportedItem } from '../../../core/models/company-public.model';
 import { CompanyOfficialGuidesComponent } from '../../../shared/components/company-official-guides/company-official-guides.component';
 import { CompanyInterviewProcessComponent } from '../../../shared/components/company-interview-process/company-interview-process.component';
+import { FaButtonComponent } from '../../../shared/ui/button/fa-button.component';
 import {
   FaQuestionRowComponent,
   FaQuestionRowMetaChip,
@@ -82,6 +84,23 @@ type RelatedCompanyLink = {
   label: string;
   link: string[];
 };
+
+/** Where a followed link sits on a guide, most specific first; sent as `surface`. Anything else is `body`. */
+const GUIDE_LINK_ZONES: readonly (readonly [selector: string, surface: string])[] = [
+  ['.company-plan-entry', 'plan_card'],
+  ['.company-plan-link', 'plan_link'],
+  ['.preview-breadcrumb', 'breadcrumb'],
+  ['.company-guide-cta, .openai-cta, .cta-stack', 'closing_cta'],
+  ['app-company-interview-process', 'process_table'],
+  ['app-company-official-guides', 'official_guides'],
+  ['.company-round-spotlight', 'round_spotlight'],
+  ['.company-prompt, .openai-prompt', 'prompts'],
+  ['.company-guide-links, .openai-links', 'free_practice'],
+  ['.company-source-list', 'sources'],
+  ['[data-testid="company-prep-steps"]', 'prep_steps'],
+  ['[data-testid="company-public-reports"]', 'public_reports'],
+  ['.company-related-guides', 'related_guides'],
+];
 
 const OPENAI_PREVIEW_CANONICAL_PATH = '/companies/openai/preview';
 const OPENAI_TRUST_NOTE =
@@ -224,6 +243,7 @@ const OPENAI_PREP_SEQUENCE: OpenAiPrepDay[] = [
       FaQuestionRowComponent,
       CompanyOfficialGuidesComponent,
       CompanyInterviewProcessComponent,
+      FaButtonComponent,
       StripInlineMarkupPipe,
       InlineCodeComponent,
     ],
@@ -295,6 +315,7 @@ export class CompanyPreviewComponent implements OnInit {
   };
   private readonly destroyRef = inject(DestroyRef);
   private readonly authoredPreviews = inject(AUTHORED_COMPANY_PREVIEWS_TOKEN);
+  private readonly analytics = inject(AnalyticsService);
 
   constructor(
     private route: ActivatedRoute,
@@ -677,6 +698,29 @@ export class CompanyPreviewComponent implements OnInit {
       robots: 'index,follow',
       canonical: NETFLIX_PREVIEW_CANONICAL_PATH,
       jsonLd: [collectionPage, itemList, breadcrumb],
+    });
+  }
+
+  /**
+   * Counts a link that leaves the guide: where it sits, and the path it opens or the site it goes to. Jumps within
+   * the page are not counted.
+   */
+  onGuideClick(event: Event): void {
+    const anchor = (event.target as Element | null)?.closest?.('a');
+    const href = anchor?.getAttribute('href');
+    if (!anchor || !href || href.startsWith('#')) return;
+    let target: URL;
+    try {
+      target = new URL(href, window.location.href);
+    } catch {
+      return;
+    }
+    const internal = target.origin === window.location.origin;
+    if (internal && target.pathname === window.location.pathname && target.hash) return;
+    const surface = GUIDE_LINK_ZONES.find(([selector]) => anchor.closest(selector))?.[1] ?? 'body';
+    this.analytics.track('company_guide_link_clicked', {
+      surface,
+      target_path: internal ? target.pathname : target.origin,
     });
   }
 

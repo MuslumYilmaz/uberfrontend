@@ -328,7 +328,7 @@ export const AGODA_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     kicker: 'Full company practice',
     title: 'Continue with the full Agoda practice set',
     copy:
-      'This public guide is complete enough to plan a focused week. Premium unlocks the real-time search with debounce and caching case, the car rental booking frontend case, the React paginated data table drill and the wider premium library of coding, concept and system-design practice.',
+      'Premium unlocks the real-time search with debounce and caching case, the car rental booking frontend case, the React paginated data table drill and the wider premium library of coding, concept and system-design practice.',
     buttonLabel: 'Unlock the full Agoda practice set',
     src: 'company_preview_agoda',
   },

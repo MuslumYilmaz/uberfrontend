@@ -1,6 +1,6 @@
 import { computed, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Router, provideRouter } from '@angular/router';
+import { ActivatedRoute, Router, convertToParamMap, provideRouter } from '@angular/router';
 import { BehaviorSubject, of } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
 import { CompanyPlanFormComponent } from './company-plan-form.component';
@@ -53,7 +53,7 @@ describe('CompanyPlanFormComponent', () => {
   let navigate: jasmine.Spy;
   let host: HTMLElement;
 
-  function setup(options: { data?: CompanyPlanData | null; wide?: boolean; saved?: unknown; draft?: unknown; user?: unknown } = {}) {
+  function setup(options: { data?: CompanyPlanData | null; wide?: boolean; saved?: unknown; draft?: unknown; user?: unknown; company?: string } = {}) {
     const saved = signal<any>(options.saved ?? null);
     const draft = signal<any>(options.draft ?? null);
     plans = {
@@ -74,6 +74,9 @@ describe('CompanyPlanFormComponent', () => {
         provideRouter([]),
         { provide: CompanyPlanService, useValue: plans },
         { provide: AuthService, useValue: { user: signal(options.user ?? null) } },
+        ...(options.company === undefined
+          ? []
+          : [{ provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: convertToParamMap({ company: options.company }) } } }]),
       ],
     });
     navigate = spyOn(TestBed.inject(Router), 'navigate').and.resolveTo(true);
@@ -241,6 +244,37 @@ describe('CompanyPlanFormComponent', () => {
       expect(component.step()).toBe(2);
       expect(component.picked()).toEqual([]);
       expect(host.querySelector('.plan-card__name')?.textContent).toBe('General frontend plan');
+    });
+  });
+
+  describe('arriving from a company guide', () => {
+    it('opens at the date with the company the guide handed over, and still lets it change', () => {
+      setup({ company: 'ElevenLabs' });
+      expect(component.step()).toBe(2);
+      expect(host.querySelector('.plan-question__title')?.textContent?.trim()).toBe('When is your interview?');
+      const steps = Array.from(host.querySelectorAll<HTMLButtonElement>('.plan-step'));
+      expect(steps[0].textContent).toContain('ElevenLabs');
+      expect(steps.map((step) => step.disabled)).toEqual([false, false, true]);
+      expect(cardNames()).toEqual(['ElevenLabs']);
+      expect(plans.track.calls.allArgs()).toEqual([
+        ['company_plan_form_started', { from: 'guide', companies: 'elevenlabs' }],
+        ['company_plan_step_completed', { step: 1 }],
+      ]);
+
+      click('company-plan-when-next-week');
+      click('company-plan-level-senior');
+      expect(navigate).toHaveBeenCalledOnceWith(['/companies/preview'], { queryParams: { companies: 'elevenlabs', when: 'next-week', level: 'senior' } });
+
+      steps[0].click();
+      fixture.detectChanges();
+      expect(host.querySelector('.plan-slot__answer')?.textContent?.trim()).toBe('ElevenLabs');
+    });
+
+    it('starts at the first step when the company is not one it lists', () => {
+      setup({ company: 'vercel' });
+      expect(component.step()).toBe(1);
+      expect(component.chosen()).toBeFalse();
+      expect(plans.track).not.toHaveBeenCalled();
     });
   });
 

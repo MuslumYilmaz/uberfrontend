@@ -348,7 +348,7 @@ export const XAI_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     kicker: 'Full company practice',
     title: 'Continue with the full xAI practice set',
     copy:
-      'This public guide is complete enough to plan a focused week. Premium unlocks the chat UI with a streaming response and the rest of the Premium React and system design catalogue.',
+      'Premium unlocks the chat UI with a streaming response and the rest of the Premium React and system design catalogue.',
     buttonLabel: 'Unlock the full xAI practice set',
     src: 'company_preview_xai',
   },

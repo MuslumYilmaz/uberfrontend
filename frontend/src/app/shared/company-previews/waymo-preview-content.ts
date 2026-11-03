@@ -303,7 +303,7 @@ export const WAYMO_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     kicker: 'Full company practice',
     title: 'Continue with the full Waymo practice set',
     copy:
-      'This public guide is complete enough to plan a focused week. Premium unlocks the Angular debugging exercise, the Promise.all implementation and the broader company-tagged editorial set.',
+      'Premium unlocks the Angular debugging exercise, the Promise.all implementation and the broader company-tagged editorial set.',
     buttonLabel: 'Unlock the full Waymo practice set',
     src: 'company_preview_waymo',
   },

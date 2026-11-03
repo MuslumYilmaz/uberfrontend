@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ActivatedRoute, Data, provideRouter } from '@angular/router';
+import { ActivatedRoute, Data, convertToParamMap, provideRouter } from '@angular/router';
 import { signal } from '@angular/core';
 import { BehaviorSubject, of } from 'rxjs';
 import { SeoService } from '../../../core/services/seo.service';
@@ -12,6 +12,8 @@ describe('CompanyIndexComponent', () => {
   let fixture: ComponentFixture<CompanyIndexComponent>;
   let routeData: BehaviorSubject<Data>;
   let seo: jasmine.SpyObj<SeoService>;
+  // The plan form reads `?company=` from the snapshot.
+  const route = () => ({ data: routeData, snapshot: { queryParamMap: convertToParamMap({}) } });
 
   beforeEach(async () => {
     routeData = new BehaviorSubject<Data>({ companyIndex: { companies: [
@@ -28,7 +30,7 @@ describe('CompanyIndexComponent', () => {
       imports: [CompanyIndexComponent],
       providers: [
         provideRouter([]),
-        { provide: ActivatedRoute, useValue: { data: routeData } },
+        { provide: ActivatedRoute, useValue: route() },
         { provide: SeoService, useValue: seo },
         {
           provide: CompanyPlanService,
@@ -197,7 +199,7 @@ describe('CompanyIndexComponent', () => {
       imports: [CompanyIndexComponent],
       providers: [
         provideRouter([]),
-        { provide: ActivatedRoute, useValue: { data: routeData } },
+        { provide: ActivatedRoute, useValue: route() },
         { provide: SeoService, useValue: seo },
         { provide: AUTHORED_COMPANY_PREVIEWS_TOKEN, useValue: { acme: buildAuthoredCompanyPreviewFixture() } },
       ],

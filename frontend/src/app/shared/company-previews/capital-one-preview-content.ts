@@ -339,7 +339,7 @@ export const CAPITALONE_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     kicker: 'Full company practice',
     title: 'Continue with the full Capital One practice set',
     copy:
-      'This public guide is complete enough to plan a focused week. Premium unlocks the multi-step form with autosave case, the component state from a mock case and the wider premium library for the same skills.',
+      'Premium unlocks the multi-step form with autosave case, the component state from a mock case and the wider premium library for the same skills.',
     buttonLabel: 'Unlock the full Capital One practice set',
     src: 'company_preview_capital_one',
   },

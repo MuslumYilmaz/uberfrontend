@@ -451,11 +451,14 @@ describe('CompanyPlanService', () => {
       service.trackUnlistedCompany('x');
       expect(analytics.track).not.toHaveBeenCalled();
     });
+  });
+});
 
-    it('shortens and folds a long or accented name', () => {
-      expect(cleanCompanyQuery('Société Générale')).toBe('societe generale');
-      expect(cleanCompanyQuery('a'.repeat(60)).length).toBe(40);
-      expect(cleanCompanyQuery('Booking.com')).toBe('booking.com');
-    });
+// Outside the service block: it builds no TestBed, so the HTTP check after each service test does not apply.
+describe('cleanCompanyQuery', () => {
+  it('shortens and folds a long or accented name', () => {
+    expect(cleanCompanyQuery('Société Générale')).toBe('societe generale');
+    expect(cleanCompanyQuery('a'.repeat(60)).length).toBe(40);
+    expect(cleanCompanyQuery('Booking.com')).toBe('booking.com');
   });
 });

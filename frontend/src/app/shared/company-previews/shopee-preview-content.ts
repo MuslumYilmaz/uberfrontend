@@ -297,7 +297,7 @@ export const SHOPEE_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     kicker: 'Full company practice',
     title: 'Continue with the full Shopee practice set',
     copy:
-      'This public guide is complete enough to plan a focused week. Premium unlocks the memoisation drill, the deep clone drill, the React nested comments tree and the wider premium library of coding, concept and system-design practice.',
+      'Premium unlocks the memoisation drill, the deep clone drill, the React nested comments tree and the wider premium library of coding, concept and system-design practice.',
     buttonLabel: 'Unlock the full Shopee practice set',
     src: 'company_preview_shopee',
   },

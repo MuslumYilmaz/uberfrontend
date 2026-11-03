@@ -271,7 +271,7 @@ export const DATADOG_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     kicker: 'Full company practice',
     title: 'Continue with the full Datadog practice set',
     copy:
-      'This public guide is complete enough to plan a focused week. Premium unlocks the dynamic table, the sort and filter implementations, the live comments stream case and the broader company-tagged editorial set.',
+      'Premium unlocks the dynamic table, the sort and filter implementations, the live comments stream case and the broader company-tagged editorial set.',
     buttonLabel: 'Unlock the full Datadog practice set',
     src: 'company_preview_datadog',
   },

@@ -305,7 +305,7 @@ export const INTUIT_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     kicker: 'Full company practice',
     title: 'Continue with the full Intuit practice set',
     copy:
-      'This public guide is complete enough to plan a focused week. Premium unlocks the streaming chat UI, the curry and memoization drills, the twin DOM tree exercise, the component-and-state design case and the broader company-tagged editorial set.',
+      'Premium unlocks the streaming chat UI, the curry and memoization drills, the twin DOM tree exercise, the component-and-state design case and the broader company-tagged editorial set.',
     buttonLabel: 'Unlock the full Intuit practice set',
     src: 'company_preview_intuit',
   },

@@ -316,7 +316,7 @@ export const ANDURIL_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     kicker: 'Full company practice',
     title: 'Continue with the full Anduril practice set',
     copy:
-      'This public guide is complete enough to plan a focused week. Premium unlocks the file explorer tree with keyboard navigation, the React countdown timer and the wider premium library for the same skills.',
+      'Premium unlocks the file explorer tree with keyboard navigation, the React countdown timer and the wider premium library for the same skills.',
     buttonLabel: 'Unlock the full Anduril practice set',
     src: 'company_preview_anduril',
   },

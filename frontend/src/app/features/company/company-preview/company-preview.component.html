@@ -1,9 +1,25 @@
-<section class="company-preview" data-testid="company-preview-page">
+<section class="company-preview" data-testid="company-preview-page" (click)="onGuideClick($event)">
   <nav class="preview-breadcrumb" aria-label="Company breadcrumb">
     <a [routerLink]="['/companies']">Companies</a>
     <span>/</span>
     <span>{{ breadcrumbLabel() }}</span>
   </nav>
+
+  <aside
+    class="company-plan-entry"
+    *ngIf="interviewProcess"
+    aria-labelledby="company-plan-entry-title"
+    data-testid="company-plan-entry">
+    <div class="company-plan-entry__text">
+      <p id="company-plan-entry-title" class="company-plan-entry__title">Interviewing at {{ label }}?</p>
+      <p class="company-plan-entry__line">
+        Pick your interview date and level, then see the rounds candidates reported and try the first tasks for free.
+      </p>
+    </div>
+    <a faButton variant="primary" size="lg" [routerLink]="['/companies']" [queryParams]="{ company: slug }">
+      Build my {{ label }} plan <span aria-hidden="true">→</span>
+    </a>
+  </aside>
 
   <p class="preview-caveat" data-testid="company-practice-disclaimer">
     {{ companyPracticeDisclaimer }}
@@ -132,6 +148,9 @@
           <span>{{ item.focus }}</span>
         </li>
       </ol>
+      <p class="company-plan-link" *ngIf="interviewProcess">
+        <a [routerLink]="['/companies']" [queryParams]="{ company: slug }">Build my {{ label }} plan <span aria-hidden="true">→</span></a>
+      </p>
     </section>
 
     <section class="openai-section openai-links" aria-labelledby="openai-free-practice">
@@ -313,6 +332,9 @@
           </div>
         </li>
       </ol>
+      <p class="company-plan-link" *ngIf="interviewProcess">
+        <a [routerLink]="['/companies']" [queryParams]="{ company: slug }">Build my {{ label }} plan <span aria-hidden="true">→</span></a>
+      </p>
     </section>
 
     <section class="company-guide-section" aria-labelledby="google-prep-faq">
@@ -355,8 +377,8 @@
         <p class="preview-kicker">Full company practice</p>
         <h2 id="google-premium-route">Unlock the full Google practice set</h2>
         <p>
-          This public guide stands on its own for planning and practice. Premium unlocks the broader company-tagged set
-          as a FrontendAtlas editorial grouping, including deeper navigation across coding, concept questions, and system design.
+          Premium unlocks the broader company-tagged set as a FrontendAtlas editorial grouping, including deeper
+          navigation across coding, concept questions, and system design.
         </p>
       </div>
       <a
@@ -522,6 +544,9 @@
           </div>
         </li>
       </ol>
+      <p class="company-plan-link" *ngIf="interviewProcess">
+        <a [routerLink]="['/companies']" [queryParams]="{ company: slug }">Build my {{ label }} plan <span aria-hidden="true">→</span></a>
+      </p>
     </section>
 
     <section class="company-guide-section" aria-labelledby="netflix-prep-faq">
@@ -583,8 +608,8 @@
         <p class="preview-kicker">Full company practice</p>
         <h2 id="netflix-premium-route">Continue with the full Netflix practice set</h2>
         <p>
-          This public guide is complete enough to plan a focused week. Premium unlocks the broader company-tagged
-          editorial set, with deeper navigation across coding, concept questions, and system design.
+          Premium unlocks the broader company-tagged editorial set, with deeper navigation across coding, concept
+          questions, and system design.
         </p>
       </div>
       <a
@@ -741,6 +766,9 @@
           </div>
         </li>
       </ol>
+      <p class="company-plan-link" *ngIf="interviewProcess">
+        <a [routerLink]="['/companies']" [queryParams]="{ company: slug }">Build my {{ label }} plan <span aria-hidden="true">→</span></a>
+      </p>
     </section>
 
     <section class="company-guide-section" [attr.aria-labelledby]="preview.slug + '-prep-faq'">

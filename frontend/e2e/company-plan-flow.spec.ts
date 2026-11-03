@@ -223,3 +223,30 @@ test.describe('company plan, five people', () => {
     await expect(page).toHaveURL('/companies/plan');
   });
 });
+
+test.describe('company plan from a company guide', () => {
+  test('Deniz reads the ElevenLabs guide on a phone: the card above it opens the form at the date, with ElevenLabs picked', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/companies/elevenlabs/preview');
+    const card = page.getByTestId('company-plan-entry');
+    await expect(card).toContainText('Interviewing at ElevenLabs?');
+    expect(await overflow(page)).toBe(0);
+
+    await card.getByRole('link', { name: 'Build my ElevenLabs plan' }).click();
+    await expect(page).toHaveURL('/companies?company=elevenlabs');
+    await expect(page.getByRole('heading', { level: 2, name: 'When is your interview?' })).toBeVisible();
+    await expect(page.locator('.plan-step').first()).toContainText('ElevenLabs');
+    expect(await overflow(page)).toBe(0);
+
+    await page.getByTestId('company-plan-when-next-week').click();
+    await page.getByTestId('company-plan-level-senior').click();
+    await expect(page).toHaveURL('/companies/preview?companies=elevenlabs&when=next-week&level=senior');
+    await expect(page.getByRole('heading', { level: 1, name: 'Your ElevenLabs plan at a glance' })).toBeVisible();
+  });
+
+  test('the same address loaded on its own hydrates the first step, then opens at the date', async ({ page }) => {
+    await page.goto('/companies?company=agoda');
+    await expect(page.getByRole('heading', { level: 2, name: 'When is your interview?' })).toBeVisible();
+    await expect(page.locator('.plan-step').first()).toContainText('Agoda');
+  });
+});

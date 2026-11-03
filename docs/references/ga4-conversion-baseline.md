@@ -86,9 +86,16 @@ dimension whose dimension name and event parameter are exactly the same.
 | `provider` | Event | `provider` |
 | `qualification_method` | Event | `qualification_method` |
 | `qualification_version` | Event | `qualification_version` |
+| `target_path` | Event | `target_path` |
 
 Do not register `question_id` as a custom dimension. It is intentionally kept
 out because of its high cardinality.
+
+`target_path` is the destination of a followed link: the path of an internal
+page, or the origin of another site. `company_guide_link_clicked` sends it
+beside `surface`, which names the part of the guide the link sits in, and
+`trivia_internal_link_clicked` sends it for internal links. Custom dimensions
+are not retroactive, so create it before the release that ships the event.
 
 ## Key Events
 

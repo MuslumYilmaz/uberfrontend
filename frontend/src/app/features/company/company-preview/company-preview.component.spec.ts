@@ -1,8 +1,9 @@
 import { seoContentDateModified } from '../../../core/utils/seo-content-date.util';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ActivatedRoute, Data, convertToParamMap, provideRouter } from '@angular/router';
+import { ActivatedRoute, Data, Router, convertToParamMap, provideRouter } from '@angular/router';
 import { BehaviorSubject, of } from 'rxjs';
 import { CompanyPreviewResolved } from '../../../core/models/company-public.model';
+import { AnalyticsService } from '../../../core/services/analytics.service';
 import { QuestionService } from '../../../core/services/question.service';
 import { SeoService } from '../../../core/services/seo.service';
 import { CompanyPreviewComponent } from './company-preview.component';
@@ -16,6 +17,7 @@ describe('CompanyPreviewComponent', () => {
   let fixture: ComponentFixture<CompanyPreviewComponent>;
   let questionService: jasmine.SpyObj<QuestionService>;
   let seo: jasmine.SpyObj<SeoService>;
+  let analytics: jasmine.SpyObj<AnalyticsService>;
   let routeData: BehaviorSubject<Data>;
 
   async function createComponent(
@@ -50,6 +52,7 @@ describe('CompanyPreviewComponent', () => {
         ? `https://frontendatlas.com${raw}`
         : `https://frontendatlas.com/${raw}`;
     });
+    analytics = jasmine.createSpyObj<AnalyticsService>('AnalyticsService', ['track']);
 
     await TestBed.configureTestingModule({
       imports: [CompanyPreviewComponent],
@@ -66,6 +69,7 @@ describe('CompanyPreviewComponent', () => {
         },
         { provide: QuestionService, useValue: questionService },
         { provide: SeoService, useValue: seo },
+        { provide: AnalyticsService, useValue: analytics },
         { provide: AUTHORED_COMPANY_PREVIEWS_TOKEN, useValue: authored },
       ],
     }).compileComponents();
@@ -782,6 +786,67 @@ describe('CompanyPreviewComponent', () => {
       expect(host.querySelector('[data-testid="authored-company-preview"]')).toBeNull();
       expect(host.querySelector('[data-testid="company-preview-counts"]')).not.toBeNull();
       expect(host.textContent || '').toContain('Sample FrontendAtlas practice prompts');
+    });
+  });
+
+  describe('the way into a plan', () => {
+    const planHref = (slug: string) => `/companies?company=${slug}`;
+    const weekLinks = (host: HTMLElement) =>
+      Array.from(host.querySelectorAll<HTMLAnchorElement>('.company-plan-link a')).map((link) => link.getAttribute('href'));
+
+    it('opens the plan form from a card above the guide and from under each week plan', async () => {
+      for (const [slug, week] of [['elevenlabs', 'elevenlabs-prep-plan'], ['google', 'google-prep-plan'], ['netflix', 'netflix-prep-plan'], ['openai', 'openai-prep-sequence']]) {
+        await createComponent(slug);
+        const host: HTMLElement = fixture.nativeElement;
+        const card = host.querySelector('[data-testid="company-plan-entry"]') as HTMLElement;
+        const link = card.querySelector('a') as HTMLAnchorElement;
+        expect(link.getAttribute('href')).withContext(slug).toBe(planHref(slug));
+        expect(link.textContent).withContext(slug).toContain(`Build my ${fixture.componentInstance.label} plan`);
+        expect(card.compareDocumentPosition(host.querySelector('h1')!) & Node.DOCUMENT_POSITION_FOLLOWING).withContext(slug).toBeTruthy();
+        expect(host.querySelector(`#${week}`)?.closest('section')?.querySelector('.company-plan-link a')?.getAttribute('href'))
+          .withContext(slug).toBe(planHref(slug));
+        expect(weekLinks(host)).withContext(slug).toEqual([planHref(slug)]);
+      }
+    });
+
+    it('keeps the card on a guide without a week plan, and shows neither where no plan data exists', async () => {
+      await createComponent('apple');
+      let host: HTMLElement = fixture.nativeElement;
+      expect(host.querySelector('[data-testid="company-plan-entry"] a')?.getAttribute('href')).toBe(planHref('apple'));
+      expect(weekLinks(host)).toEqual([]);
+
+      await createComponent('acme', undefined, { acme: buildAuthoredCompanyPreviewFixture() });
+      host = fixture.nativeElement;
+      expect(host.querySelector('[data-testid="authored-company-preview"]')).not.toBeNull();
+      expect(host.querySelector('[data-testid="company-plan-entry"]')).toBeNull();
+      expect(weekLinks(host)).toEqual([]);
+    });
+
+    it('counts a followed link by where it sits and where it goes, but not a jump within the page', async () => {
+      await createComponent('elevenlabs');
+      const host: HTMLElement = fixture.nativeElement;
+      spyOn(TestBed.inject(Router), 'navigateByUrl').and.resolveTo(true);
+      const follow = (selector: string): HTMLAnchorElement => {
+        const link = host.querySelector<HTMLAnchorElement>(selector);
+        if (!link) throw new Error(`Missing ${selector}`);
+        // Keeps the test page where it is; the click still bubbles to the guide.
+        link.addEventListener('click', (event) => event.preventDefault());
+        link.click();
+        return link;
+      };
+
+      follow('[data-testid="company-plan-entry"] a');
+      follow('.company-plan-link a');
+      follow('.company-guide-cta a');
+      const source = follow('.company-source-list a');
+      follow('.company-round-links a[href^="#"]');
+
+      expect(analytics.track.calls.allArgs()).toEqual([
+        ['company_guide_link_clicked', { surface: 'plan_card', target_path: '/companies' }],
+        ['company_guide_link_clicked', { surface: 'plan_link', target_path: '/companies' }],
+        ['company_guide_link_clicked', { surface: 'closing_cta', target_path: '/pricing' }],
+        ['company_guide_link_clicked', { surface: 'sources', target_path: new URL(source.href).origin }],
+      ]);
     });
   });
 });

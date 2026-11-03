@@ -308,7 +308,7 @@ export const GITLAB_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     kicker: 'Full company practice',
     title: 'Continue with the full GitLab practice set',
     copy:
-      'This public guide is complete enough to plan a focused week. Premium unlocks the Vue debounced search component and the wider premium library for the Vue, testing and code review skills the loop relies on.',
+      'Premium unlocks the Vue debounced search component and the wider premium library for the Vue, testing and code review skills the loop relies on.',
     buttonLabel: 'Unlock the full GitLab practice set',
     src: 'company_preview_gitlab',
   },

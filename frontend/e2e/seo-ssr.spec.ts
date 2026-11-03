@@ -4040,6 +4040,17 @@ test.describe('seo-ssr', () => {
     expectNoHydrationOrChunkIssues(runtimeIssues, NETFLIX_PREVIEW_PATH);
   });
 
+  test('raw company guides carry the plan card above the H1, and the same link under a week plan where there is one', async ({ request }) => {
+    test.setTimeout(120_000);
+    for (const [slug, weekPlan] of [['elevenlabs', true], ['netflix', true], ['apple', false]] as const) {
+      const html = await readRawHtml(request, `/companies/${slug}/preview`);
+      const cardAt = html.indexOf('data-testid="company-plan-entry"');
+      expect(cardAt, `${slug} plan card`).toBeGreaterThan(-1);
+      expect(cardAt, `${slug} plan card before the H1`).toBeLessThan(html.indexOf('<h1'));
+      expect(html.split(`href="/companies?company=${slug}"`).length - 1, `${slug} plan links`).toBe(weekPlan ? 2 : 1);
+    }
+  });
+
   test('raw Amazon company preview renders the official preparation pages table with follow links', async ({ request }) => {
     test.setTimeout(120_000);
     const html = await readRawHtml(request, '/companies/amazon/preview');

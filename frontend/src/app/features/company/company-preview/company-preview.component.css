@@ -19,6 +19,54 @@
   text-decoration: none;
 }
 
+.company-plan-entry {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 24px;
+  padding: 16px 20px;
+  border: 1px solid color-mix(in srgb, var(--uf-accent) 55%, transparent);
+  border-radius: var(--uf-radius-16);
+  background: linear-gradient(100deg, color-mix(in srgb, var(--uf-accent) 16%, transparent), color-mix(in srgb, var(--uf-accent) 5%, transparent) 50%, color-mix(in srgb, var(--uf-surface-alt) 94%, transparent) 85%);
+}
+
+.company-plan-entry__text {
+  flex: 1 1 320px;
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.company-plan-entry__title {
+  margin: 0;
+  font-family: var(--uf-font-heading);
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+}
+
+.company-plan-entry__line {
+  margin: 0;
+  max-width: 64ch;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--uf-text-secondary);
+}
+
+.company-plan-link a {
+  font-weight: 700;
+  color: var(--uf-accent-strong);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.company-plan-link a:hover,
+.company-plan-link a:focus-visible {
+  color: var(--uf-text-primary);
+}
+
 .preview-hero {
   display: grid;
   gap: 10px;
@@ -700,6 +748,14 @@
 }
 
 @media (max-width: 640px) {
+  .company-plan-entry {
+    padding: 16px;
+  }
+
+  .company-plan-entry a[faButton] {
+    width: 100%;
+  }
+
   .preview-hero h1 {
     font-size: 28px;
   }

@@ -275,7 +275,7 @@ export const SERVICENOW_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     kicker: 'Full company practice',
     title: 'Continue with the full ServiceNow practice set',
     copy:
-      'This public guide is complete enough to plan a focused week. Premium unlocks the map polyfill, the DOM renderer and the broader company-tagged editorial set.',
+      'Premium unlocks the map polyfill, the DOM renderer and the broader company-tagged editorial set.',
     buttonLabel: 'Unlock the full ServiceNow practice set',
     src: 'company_preview_servicenow',
   },

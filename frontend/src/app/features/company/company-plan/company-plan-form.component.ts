@@ -1,5 +1,5 @@
 import { Component, ElementRef, Injector, afterNextRender, computed, inject, input, signal, viewChild } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import type { CompanyPlanAnswers, CompanyPlanAnswerLevel, CompanyPlanWhen } from '../../../core/models/company-plan.model';
 import type { CompanyCard } from '../../../core/models/company-public.model';
 import { AuthService } from '../../../core/services/auth.service';
@@ -87,6 +87,7 @@ export class CompanyPlanFormComponent {
   private readonly plans = inject(CompanyPlanService);
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   private readonly injector = inject(Injector);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly searchInput = viewChild<ElementRef<HTMLInputElement>>('companySearch');
@@ -222,6 +223,8 @@ export class CompanyPlanFormComponent {
       const wide = window.matchMedia?.(WIDE_LAYOUT);
       this.wide.set(Boolean(wide?.matches));
       wide?.addEventListener?.('change', (event) => this.wide.set(event.matches));
+      // After the first render, so a page loaded with the address still hydrates the prerendered first step.
+      this.startFromGuide();
       this.plans.loadData().subscribe((data) => this.data.set(data));
     });
   }
@@ -316,6 +319,17 @@ export class CompanyPlanFormComponent {
     this.plans.track('company_plan_step_completed', { step: step - 1 });
     this.step.set(step);
     this.maxStep.update((max) => Math.max(max, step));
+  }
+
+  /** A company guide hands over its company in `?company=`: the form opens at the date with it picked. */
+  private startFromGuide(): void {
+    const slug = this.route.snapshot.queryParamMap.get('company')?.trim().toLowerCase();
+    if (!slug || !this.directory().some((company) => company.slug === slug)) return;
+    this.picked.set([slug]);
+    this.chosen.set(true);
+    this.started = true;
+    this.plans.track('company_plan_form_started', { from: 'guide', companies: slug });
+    this.goTo(2);
   }
 
   private acceptWheel(): void {

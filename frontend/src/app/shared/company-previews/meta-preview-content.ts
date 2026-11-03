@@ -333,7 +333,7 @@ export const META_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     kicker: 'Full company practice',
     title: 'Continue with the full Meta practice set',
     copy:
-      'This public guide is complete enough to plan a focused week. Premium unlocks the map, timer manager, memoization, twin DOM node, DOM find and stack and queue drills, the real-time search case and the broader company-tagged editorial set.',
+      'Premium unlocks the map, timer manager, memoization, twin DOM node, DOM find and stack and queue drills, the real-time search case and the broader company-tagged editorial set.',
     buttonLabel: 'Unlock the full Meta practice set',
     src: 'company_preview_meta',
   },
