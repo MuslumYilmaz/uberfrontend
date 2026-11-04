@@ -131,6 +131,8 @@ describe('company plan engine', () => {
               if (when === 'tomorrow') {
                 expect(plan.tasks.some((entry) => entry.access === 'premium')).withContext(`${where}: no Premium task`).toBeTrue();
               }
+              // Something to try without paying, in every plan: no "0 open now".
+              expect(plan.tasks.some((entry) => entry.access === 'free' && entry.kind !== 'guide')).withContext(`${where}: no open task`).toBeTrue();
 
               expect(plan.totalMinutes).withContext(where).toBe(plan.tasks.reduce((sum, entry) => sum + entry.minutes, 0));
               expect(buildCompanyPlan(REAL_DATA, { companies: [slug], lists: { [slug]: list.id }, when, level, today: TODAY })).withContext(`${where}: not repeatable`).toEqual(plan);
@@ -190,6 +192,42 @@ describe('company plan engine', () => {
     expect(idsIn(later, 'coding')).toEqual(['reported-new', 'reported-old', 'linked', 'tagged-a', 'tagged-b', 'concept']);
   });
 
+  it('opens a round on the practice link the guide shows there, ahead of its reports, unless that link is a guide', () => {
+    const data = fixture(
+      [
+        { id: 'reported-new', report: { publisher: 'Taro', date: '2026-05' } },
+        { id: 'reported-old', report: { publisher: 'Blind', date: '2020-01' } },
+        { id: 'linked', rounds: ['coding'], lead: true },
+        { id: '/guides/design', rounds: ['design'], lead: true },
+        { id: 'design-b', rounds: ['design'] },
+      ],
+      [round('coding', ['coding']), round('design', ['design'])],
+    );
+    const plan = buildCompanyPlan(data, input({ when: 'later' }));
+    expect(idsIn(plan, 'coding')).toEqual(['linked', 'reported-new', 'reported-old']);
+    expect(plan.tasks[0].why).toEqual({ kind: 'pick' });
+    expect(idsIn(plan, 'design')).toEqual(['design-b', '/guides/design']);
+  });
+
+  it('keeps at least one open task in every company, trading its last Premium task for its first open candidate', () => {
+    const data = fixture(
+      [
+        { id: 'reported-old', report: { publisher: 'Blind', date: '2020-01' } },
+        { id: 'format-a', report: { publisher: 'Taro', date: '2021-01' } },
+        { id: 'format-b', report: { publisher: 'Taro', date: '2022-01' } },
+        { id: 'tagged-a' },
+      ],
+      [round('coding', ['coding'])],
+    );
+    const tomorrow = buildCompanyPlan(data, input({ when: 'tomorrow' }));
+    expect(tomorrow.tasks.map((entry) => entry.id)).toEqual(['reported-old', 'format-a', 'tagged-a']);
+    expect(tomorrow.tasks.filter((entry) => entry.access === 'free').length).toBe(1);
+
+    // With only Premium candidates nothing changes: format practice fills the budget, all of it Premium.
+    const premiumOnly = fixture([{ id: 'reported-old', report: { publisher: 'Blind', date: '2020-01' } }], [round('coding', ['coding'])]);
+    expect(buildCompanyPlan(premiumOnly, input({ when: 'tomorrow' })).tasks.map((entry) => entry.id)).toEqual(['reported-old', 'format-a', 'format-b']);
+  });
+
   it('lets rounds take turns, so an early round cannot use the budget up', () => {
     const data = fixture(
       [{ id: 'tagged-a' }, { id: 'tagged-b' }, { id: 'linked' }, { id: 'reported-new' }],
@@ -232,7 +270,8 @@ describe('company plan engine', () => {
 
   it('holds system design to the cap for the level', () => {
     const data = fixture([{ id: 'design-a' }, { id: 'design-b' }], [round('design', ['design'])]);
-    expect(idsIn(buildCompanyPlan(data, input({ level: 'mid' })), 'design')).toEqual(['design-a']);
+    // One design task for a mid-level plan; the open-task rule makes it the free one, since the company would otherwise hold only Premium.
+    expect(idsIn(buildCompanyPlan(data, input({ level: 'mid' })), 'design')).toEqual(['design-b']);
     expect(idsIn(buildCompanyPlan(data, input({ level: 'senior' })), 'design')).toEqual(['design-a', 'design-b']);
   });
 

@@ -2563,24 +2563,28 @@
           "tasks": [
             {
               "id": "/guides/interview-blueprint/dsa-for-fe",
+              "lead": true,
               "rounds": [
                 "coding-interview"
               ]
             },
             {
               "id": "js-cookie-sessionstorage-localstorage",
+              "lead": true,
               "rounds": [
                 "frontend-platform-interview"
               ]
             },
             {
               "id": "/guides/system-design-blueprint",
+              "lead": true,
               "rounds": [
                 "architecture-interview"
               ]
             },
             {
               "id": "/guides/behavioral",
+              "lead": true,
               "rounds": [
                 "culture-fit"
               ]
@@ -2757,18 +2761,21 @@
           "tasks": [
             {
               "id": "js-debounce",
+              "lead": true,
               "rounds": [
                 "coding-round"
               ]
             },
             {
               "id": "react-ssr-hydration",
+              "lead": true,
               "rounds": [
                 "platform-or-architecture-round"
               ]
             },
             {
               "id": "/guides/behavioral",
+              "lead": true,
               "rounds": [
                 "managerial-or-technical-strategy-round"
               ]
@@ -3051,42 +3058,49 @@
           "tasks": [
             {
               "id": "react-autocomplete-search-starter",
+              "lead": true,
               "rounds": [
                 "technical-screen"
               ]
             },
             {
               "id": "react-star-rating",
+              "lead": true,
               "rounds": [
                 "coding-ui-or-react"
               ]
             },
             {
               "id": "js-closures",
+              "lead": true,
               "rounds": [
                 "coding-javascript"
               ]
             },
             {
               "id": "/guides/system-design-blueprint",
+              "lead": true,
               "rounds": [
                 "frontend-system-design"
               ]
             },
             {
               "id": "/guides/behavioral/stories",
+              "lead": true,
               "rounds": [
                 "experience-deep-dive"
               ]
             },
             {
               "id": "/guides/behavioral",
+              "lead": true,
               "rounds": [
                 "core-values-or-behavioural"
               ]
             },
             {
               "id": "/guides/interview-blueprint/dsa-for-fe",
+              "lead": true,
               "rounds": [
                 "algorithms"
               ]
@@ -3254,30 +3268,35 @@
           "tasks": [
             {
               "id": "js-build-tree-from-flat-list",
+              "lead": true,
               "rounds": [
                 "online-assessment"
               ]
             },
             {
               "id": "react-todo-list",
+              "lead": true,
               "rounds": [
                 "phone-screen"
               ]
             },
             {
               "id": "js-implement-new",
+              "lead": true,
               "rounds": [
                 "loop-coding-interviews"
               ]
             },
             {
               "id": "resilient-checkout-payment-flow",
+              "lead": true,
               "rounds": [
                 "loop-front-end-system-design"
               ]
             },
             {
               "id": "/guides/behavioral",
+              "lead": true,
               "rounds": [
                 "loop-leadership-principles"
               ]
@@ -3452,6 +3471,27 @@
             }
           ],
           "tasks": [
+            {
+              "id": "react-todo-list",
+              "lead": true,
+              "rounds": [
+                "internship-interviews"
+              ]
+            },
+            {
+              "id": "js-build-tree-from-flat-list",
+              "lead": true,
+              "rounds": [
+                "new-graduate-first-round"
+              ]
+            },
+            {
+              "id": "js-implement-new",
+              "lead": true,
+              "rounds": [
+                "new-graduate-final-stage"
+              ]
+            },
             {
               "id": "js-array-prototype-filter"
             },
@@ -3637,7 +3677,8 @@
               "rounds": [
                 "technical-screen",
                 "onsite"
-              ]
+              ],
+              "lead": true
             },
             {
               "id": "react-countdown-timer",
@@ -3648,7 +3689,8 @@
               "rounds": [
                 "technical-screen",
                 "onsite"
-              ]
+              ],
+              "lead": true
             },
             {
               "id": "react-vanilla-dropdown-port",
@@ -3742,7 +3784,8 @@
               },
               "rounds": [
                 "two-technical-rounds"
-              ]
+              ],
+              "lead": true
             },
             {
               "id": "react-file-explorer",
@@ -3914,10 +3957,12 @@
               },
               "rounds": [
                 "technical-screen"
-              ]
+              ],
+              "lead": true
             },
             {
               "id": "react-todo-list",
+              "lead": true,
               "rounds": [
                 "team-loop"
               ]
@@ -4145,16 +4190,19 @@
               },
               "rounds": [
                 "frontend-coding"
-              ]
+              ],
+              "lead": true
             },
             {
               "id": "js-valid-parentheses",
+              "lead": true,
               "rounds": [
                 "hackerrank-assessment"
               ]
             },
             {
               "id": "/guides/behavioral",
+              "lead": true,
               "rounds": [
                 "fit-interview"
               ]
@@ -4368,18 +4416,21 @@
           "tasks": [
             {
               "id": "js-debounce",
+              "lead": true,
               "rounds": [
                 "technical-rounds"
               ]
             },
             {
               "id": "/guides/system-design-blueprint",
+              "lead": true,
               "rounds": [
                 "hiring-manager-round"
               ]
             },
             {
               "id": "/guides/behavioral",
+              "lead": true,
               "rounds": [
                 "hr-or-behavioural-round"
               ]
@@ -4904,7 +4955,8 @@
                 "online-assessment",
                 "power-day-frontend-technical",
                 "power-day-case"
-              ]
+              ],
+              "lead": true
             },
             {
               "id": "multi-step-form-autosave",
@@ -4914,7 +4966,8 @@
               },
               "rounds": [
                 "power-day-frontend-design"
-              ]
+              ],
+              "lead": true
             },
             {
               "id": "html-forms-validation-required",
@@ -4926,7 +4979,8 @@
                 "online-assessment",
                 "power-day-frontend-technical",
                 "power-day-case"
-              ]
+              ],
+              "lead": true
             },
             {
               "id": "js-debug-mutating-input",
@@ -5033,6 +5087,7 @@
           "tasks": [
             {
               "id": "js-debug-mutating-input",
+              "lead": true,
               "rounds": [
                 "power-day"
               ]
@@ -5261,7 +5316,8 @@
                 "web-fundamentals-with-engineers",
                 "take-home-build",
                 "take-home-review"
-              ]
+              ],
+              "lead": true
             },
             {
               "id": "ui-component-state-from-mock",
@@ -5271,10 +5327,12 @@
               },
               "rounds": [
                 "take-home-review"
-              ]
+              ],
+              "lead": true
             },
             {
               "id": "js-event-delegation",
+              "lead": true,
               "rounds": [
                 "web-fundamentals-with-engineers"
               ]
@@ -5396,6 +5454,7 @@
           "tasks": [
             {
               "id": "js-secure-cors-handling",
+              "lead": true,
               "rounds": [
                 "technical-questions-two-stages"
               ]
@@ -5739,24 +5798,28 @@
           "tasks": [
             {
               "id": "js-valid-parentheses",
+              "lead": true,
               "rounds": [
                 "technical-screen"
               ]
             },
             {
               "id": "react-fetch-list-states",
+              "lead": true,
               "rounds": [
                 "react-live-coding"
               ]
             },
             {
               "id": "dashboard-widgets-draggable-resizable",
+              "lead": true,
               "rounds": [
                 "frontend-system-design"
               ]
             },
             {
               "id": "/guides/behavioral",
+              "lead": true,
               "rounds": [
                 "experience-and-values"
               ]
@@ -5996,6 +6059,7 @@
                 "publisher": "Aced",
                 "date": "2026-10"
               },
+              "lead": true,
               "rounds": [
                 "coding-assessment"
               ]
@@ -6009,7 +6073,8 @@
               "rounds": [
                 "coding-assessment",
                 "live-technical-round"
-              ]
+              ],
+              "lead": true
             },
             {
               "id": "ai-ux-considerations",
@@ -6259,7 +6324,8 @@
               },
               "rounds": [
                 "merge-request-review"
-              ]
+              ],
+              "lead": true
             },
             {
               "id": "js-create-spy-function",
@@ -6270,10 +6336,12 @@
               "rounds": [
                 "merge-request-review",
                 "technical-interview"
-              ]
+              ],
+              "lead": true
             },
             {
               "id": "html-parsing-rendering",
+              "lead": true,
               "rounds": [
                 "written-assessment"
               ]
@@ -6579,18 +6647,21 @@
                 "publisher": "Blind",
                 "date": "2020-12"
               },
+              "lead": true,
               "rounds": [
                 "technical-screen"
               ]
             },
             {
               "id": "js-build-tree-from-flat-list",
+              "lead": true,
               "rounds": [
                 "interview-loop"
               ]
             },
             {
               "id": "/guides/system-design-blueprint",
+              "lead": true,
               "rounds": [
                 "system-design"
               ]
@@ -6830,24 +6901,28 @@
           "tasks": [
             {
               "id": "js-event-loop",
+              "lead": true,
               "rounds": [
                 "technical-phone-interview"
               ]
             },
             {
               "id": "react-fetch-list-states",
+              "lead": true,
               "rounds": [
                 "craft-demonstration"
               ]
             },
             {
               "id": "js-sleep",
+              "lead": true,
               "rounds": [
                 "assessor-or-technical-rounds"
               ]
             },
             {
               "id": "/guides/behavioral",
+              "lead": true,
               "rounds": [
                 "hiring-manager"
               ]
@@ -7167,36 +7242,42 @@
           "tasks": [
             {
               "id": "/guides/interview-blueprint/dsa-for-fe",
+              "lead": true,
               "rounds": [
                 "online-assessment"
               ]
             },
             {
               "id": "js-closures",
+              "lead": true,
               "rounds": [
                 "frontend-technical-conversation"
               ]
             },
             {
               "id": "react-todo-list",
+              "lead": true,
               "rounds": [
                 "live-coding"
               ]
             },
             {
               "id": "js-xss-dom-sinks",
+              "lead": true,
               "rounds": [
                 "security-and-framework-rounds"
               ]
             },
             {
               "id": "js-create-lru-cache",
+              "lead": true,
               "rounds": [
                 "super-day"
               ]
             },
             {
               "id": "/guides/behavioral/stories",
+              "lead": true,
               "rounds": [
                 "hiring-manager-and-leadership"
               ]
@@ -7412,22 +7493,26 @@
               "rounds": [
                 "initial-technical-screen",
                 "full-loop-coding"
-              ]
+              ],
+              "lead": true
             },
             {
               "id": "js-debounce",
+              "lead": true,
               "rounds": [
                 "full-loop-coding"
               ]
             },
             {
               "id": "infinite-scroll-list",
+              "lead": true,
               "rounds": [
                 "full-loop-ui-architecture-and-design"
               ]
             },
             {
               "id": "/guides/behavioral",
+              "lead": true,
               "rounds": [
                 "full-loop-behavioural"
               ]
@@ -7854,30 +7939,35 @@
           "tasks": [
             {
               "id": "react-todo-list",
+              "lead": true,
               "rounds": [
                 "machine-coding"
               ]
             },
             {
               "id": "js-event-loop",
+              "lead": true,
               "rounds": [
                 "javascript-and-react-concepts"
               ]
             },
             {
               "id": "js-valid-parentheses",
+              "lead": true,
               "rounds": [
                 "algorithms-and-problem-solving"
               ]
             },
             {
               "id": "/guides/system-design-blueprint",
+              "lead": true,
               "rounds": [
                 "design"
               ]
             },
             {
               "id": "/guides/behavioral",
+              "lead": true,
               "rounds": [
                 "behavioural-and-hiring-manager"
               ]
@@ -8125,6 +8215,7 @@
           "tasks": [
             {
               "id": "js-promise-combinators-all-allsettled-race-any",
+              "lead": true,
               "rounds": [
                 "technical-screen"
               ]
@@ -8409,7 +8500,8 @@
               },
               "rounds": [
                 "technical-screen"
-              ]
+              ],
+              "lead": true
             },
             {
               "id": "react-chat-streaming-ui",
@@ -8610,22 +8702,26 @@
               },
               "rounds": [
                 "live-coding"
-              ]
+              ],
+              "lead": true
             },
             {
               "id": "js-valid-parentheses",
+              "lead": true,
               "rounds": [
                 "hackerrank-assessment"
               ]
             },
             {
               "id": "resilient-checkout-payment-flow",
+              "lead": true,
               "rounds": [
                 "system-design"
               ]
             },
             {
               "id": "/guides/behavioral",
+              "lead": true,
               "rounds": [
                 "team-fit"
               ]
@@ -8806,24 +8902,28 @@
           "tasks": [
             {
               "id": "js-closures",
+              "lead": true,
               "rounds": [
                 "javascript-fundamentals"
               ]
             },
             {
               "id": "js-valid-parentheses",
+              "lead": true,
               "rounds": [
                 "second-technical-round"
               ]
             },
             {
               "id": "react-todo-list",
+              "lead": true,
               "rounds": [
                 "design-or-machine-coding"
               ]
             },
             {
               "id": "js-map-vs-object",
+              "lead": true,
               "rounds": [
                 "hiring-manager"
               ]
@@ -8999,16 +9099,19 @@
               "rounds": [
                 "frontend-technical-round",
                 "cs-fundamentals-round"
-              ]
+              ],
+              "lead": true
             },
             {
               "id": "http-caching-basics",
+              "lead": true,
               "rounds": [
                 "cs-fundamentals-round"
               ]
             },
             {
               "id": "/guides/behavioral/stories",
+              "lead": true,
               "rounds": [
                 "behavioural-interview"
               ]
@@ -9148,6 +9251,7 @@
           "tasks": [
             {
               "id": "css-cascade-order",
+              "lead": true,
               "rounds": [
                 "technical-video-rounds"
               ]
@@ -9301,7 +9405,8 @@
               "rounds": [
                 "first-technical-interview",
                 "second-technical-interview"
-              ]
+              ],
+              "lead": true
             },
             {
               "id": "js-implement-new",
@@ -9312,7 +9417,8 @@
               "rounds": [
                 "first-technical-interview",
                 "second-technical-interview"
-              ]
+              ],
+              "lead": true
             },
             {
               "id": "js-valid-parentheses",
@@ -9542,30 +9648,35 @@
           "tasks": [
             {
               "id": "js-event-loop",
+              "lead": true,
               "rounds": [
                 "technical-screen"
               ]
             },
             {
               "id": "html-forms-validation-required",
+              "lead": true,
               "rounds": [
                 "final-web-practical"
               ]
             },
             {
               "id": "js-valid-parentheses",
+              "lead": true,
               "rounds": [
                 "final-algorithms"
               ]
             },
             {
               "id": "/guides/system-design-blueprint",
+              "lead": true,
               "rounds": [
                 "final-system-design"
               ]
             },
             {
               "id": "/guides/behavioral",
+              "lead": true,
               "rounds": [
                 "final-values"
               ]
@@ -9781,22 +9892,26 @@
                 "onsite-bug-squash",
                 "onsite-integration",
                 "onsite-programming-exercise"
-              ]
+              ],
+              "lead": true
             },
             {
               "id": "react-fetch-list-states",
+              "lead": true,
               "rounds": [
                 "technical-screen"
               ]
             },
             {
               "id": "/guides/system-design-blueprint",
+              "lead": true,
               "rounds": [
                 "onsite-frontend-design"
               ]
             },
             {
               "id": "/guides/behavioral",
+              "lead": true,
               "rounds": [
                 "onsite-manager-conversation"
               ]
@@ -10047,6 +10162,7 @@
                 "publisher": "GitHub",
                 "date": "2025-08"
               },
+              "lead": true,
               "rounds": [
                 "final-loop-data-structures-and-algorithms"
               ]
@@ -10061,7 +10177,8 @@
                 "online-assessment",
                 "technical-screen",
                 "final-loop-frontend-coding"
-              ]
+              ],
+              "lead": true
             },
             {
               "id": "js-color-contrast-ratio",
@@ -10072,7 +10189,8 @@
               "rounds": [
                 "online-assessment",
                 "technical-screen"
-              ]
+              ],
+              "lead": true
             },
             {
               "id": "react-fetch-list-states",
@@ -10083,16 +10201,19 @@
               "rounds": [
                 "online-assessment",
                 "technical-screen"
-              ]
+              ],
+              "lead": true
             },
             {
               "id": "/guides/system-design-blueprint",
+              "lead": true,
               "rounds": [
                 "final-loop-frontend-system-design"
               ]
             },
             {
               "id": "/guides/behavioral",
+              "lead": true,
               "rounds": [
                 "final-loop-hiring-manager-and-behavioural"
               ]
@@ -10232,6 +10353,7 @@
           "tasks": [
             {
               "id": "react-autocomplete-search-starter",
+              "lead": true,
               "rounds": [
                 "technical-rounds"
               ]
@@ -10475,36 +10597,42 @@
           "tasks": [
             {
               "id": "js-valid-parentheses",
+              "lead": true,
               "rounds": [
                 "online-assessment"
               ]
             },
             {
               "id": "react-fetch-list-states",
+              "lead": true,
               "rounds": [
                 "phone-screen"
               ]
             },
             {
               "id": "js-build-tree-from-flat-list",
+              "lead": true,
               "rounds": [
                 "algorithms-and-data-structures"
               ]
             },
             {
               "id": "react-todo-list",
+              "lead": true,
               "rounds": [
                 "frontend-specialization"
               ]
             },
             {
               "id": "/guides/system-design-blueprint",
+              "lead": true,
               "rounds": [
                 "system-design"
               ]
             },
             {
               "id": "/guides/behavioral",
+              "lead": true,
               "rounds": [
                 "collaboration-and-leadership"
               ]
@@ -10657,16 +10785,19 @@
               "rounds": [
                 "dsa-round",
                 "javascript-react-and-web-fundamentals"
-              ]
+              ],
+              "lead": true
             },
             {
               "id": "react-ssr-hydration",
+              "lead": true,
               "rounds": [
                 "javascript-react-and-web-fundamentals"
               ]
             },
             {
               "id": "/guides/behavioral",
+              "lead": true,
               "rounds": [
                 "hiring-manager"
               ]
@@ -10813,12 +10944,14 @@
           "tasks": [
             {
               "id": "js-shallow-clone",
+              "lead": true,
               "rounds": [
                 "online-assessment"
               ]
             },
             {
               "id": "react-state-management-redux",
+              "lead": true,
               "rounds": [
                 "technical-rounds"
               ]
@@ -11003,24 +11136,28 @@
           "tasks": [
             {
               "id": "react-fetch-list-states",
+              "lead": true,
               "rounds": [
                 "coding-screen"
               ]
             },
             {
               "id": "react-autocomplete-search-starter",
+              "lead": true,
               "rounds": [
                 "coding-rounds"
               ]
             },
             {
               "id": "/guides/system-design-blueprint",
+              "lead": true,
               "rounds": [
                 "system-design"
               ]
             },
             {
               "id": "/guides/behavioral",
+              "lead": true,
               "rounds": [
                 "behavioural-and-hiring-manager"
               ]
@@ -11192,7 +11329,8 @@
               "rounds": [
                 "phone-or-video-interviews",
                 "virtual-onsite"
-              ]
+              ],
+              "lead": true
             },
             {
               "id": "js-filter-tree-render-indented",
@@ -11203,7 +11341,8 @@
               "rounds": [
                 "phone-or-video-interviews",
                 "virtual-onsite"
-              ]
+              ],
+              "lead": true
             },
             {
               "id": "ai-chat-textarea-design",
@@ -11376,6 +11515,7 @@
           "tasks": [
             {
               "id": "js-build-tree-from-flat-list",
+              "lead": true,
               "rounds": [
                 "javascript-and-ui-round"
               ]
@@ -11635,7 +11775,8 @@
               "rounds": [
                 "react-coding-interview",
                 "html-css-interview"
-              ]
+              ],
+              "lead": true
             },
             {
               "id": "react-fetch-list-states",
@@ -11647,7 +11788,8 @@
               "rounds": [
                 "react-coding-interview",
                 "html-css-interview"
-              ]
+              ],
+              "lead": true
             },
             {
               "id": "ai-chat-textarea-design",
@@ -11655,12 +11797,14 @@
                 "publisher": "Taro",
                 "date": "2025-08"
               },
+              "lead": true,
               "rounds": [
                 "systems-hands-on"
               ]
             },
             {
               "id": "/guides/behavioral/stories",
+              "lead": true,
               "rounds": [
                 "meet-the-team-or-founding-engineer"
               ]
@@ -11895,24 +12039,28 @@
           "tasks": [
             {
               "id": "react-fetch-list-states",
+              "lead": true,
               "rounds": [
                 "coding-challenge"
               ]
             },
             {
               "id": "js-event-loop",
+              "lead": true,
               "rounds": [
                 "final-javascript-fundamentals"
               ]
             },
             {
               "id": "/guides/system-design-blueprint",
+              "lead": true,
               "rounds": [
                 "final-system-design"
               ]
             },
             {
               "id": "/guides/behavioral",
+              "lead": true,
               "rounds": [
                 "final-engineering-manager-or-hr"
               ]

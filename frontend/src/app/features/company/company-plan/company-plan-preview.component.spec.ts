@@ -138,7 +138,7 @@ describe('CompanyPlanPreviewComponent', () => {
       expect(text('#company-plan-open-title')).toBe('Try these 3 tasks for free');
       expect(text('.preview__section-sub')).toBe('They run in your browser. No account needed.');
       expect(rows[0].getAttribute('href')).toMatch(/^\/javascript\/(coding|debug)\//);
-      expect(rows[0].textContent).toContain('Modelled on a report: Aced, Oct 2026');
+      expect(rows[0].textContent).toContain('Modelled on a report: Aced, Oct 2026 · Coding assessment');
       // "Fix async race in `fetchWithCache`" shows its code as code.
       expect(rows.map((row) => row.querySelector('code')?.textContent)).toContain('fetchWithCache');
       expect(rows.some((row) => row.textContent?.includes('`'))).toBeFalse();
@@ -214,10 +214,22 @@ describe('CompanyPlanPreviewComponent', () => {
     });
 
     it('calls the locked rows the plan when none of the free tasks is part of it', () => {
-      setup({ companies: 'walmart', when: 'next-week', level: 'senior' });
+      // Every real list now carries an open task, so a list of Premium-only candidates is made up here.
+      const walmart = DATA.companies['walmart'];
+      const premiumOnly = {
+        ...DATA,
+        companies: { walmart: { ...walmart, variants: walmart.variants.map((list) => ({ ...list, tasks: list.tasks.filter((row) => DATA.tasks[row.id]?.access === 'premium') })) } },
+      } as CompanyPlanData;
+      setup({ companies: 'walmart', when: 'next-week', level: 'senior' }, { data: premiumOnly });
       expect(text('.preview__facts li')).toMatch(/^6 tasks for next week, about [\d.]+ hours?(: \d open now, \d with Premium)?, plus 3 free warm-ups outside the plan$/);
       expect(all('company-plan-rest-task').length).toBe(6);
       expect(text('#company-plan-rest-title')).toBe('Your plan');
+    });
+
+    it('keeps an open task in a plan whose reports are all Premium, so the plan never reads "0 open now"', () => {
+      setup({ companies: 'walmart', when: 'next-week', level: 'senior' });
+      expect(text('.preview__facts li')).toMatch(/^6 tasks for next week, about [\d.]+ hours?: [1-9] open now, \d with Premium/);
+      expect(text('#company-plan-rest-title')).toBe('The rest of your plan');
     });
 
     it('says what the button does: the plan opens with Premium', () => {

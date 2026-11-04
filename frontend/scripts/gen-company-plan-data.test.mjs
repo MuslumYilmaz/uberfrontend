@@ -207,6 +207,17 @@ test('a task binds to the rounds that cite its source and test its kind', () => 
   assert.equal(tasks.find((task) => task.id === 'js-tag-high').rounds, undefined);
 });
 
+test('the practice link of a stage carries the lead flag; reports, picks and tags do not', () => {
+  const rounds = baseRounds();
+  rounds.variants[0].rounds[1] = { ...rounds.variants[0].rounds[1], picks: ['/javascript/coding/js-starter'] };
+  const tasks = build({ rounds: { acme: rounds } }).companies.acme.variants[0].tasks;
+  assert.equal(tasks.find((task) => task.id === 'js-linked').lead, true);
+  assert.equal(tasks.find((task) => task.id === '/guides/system-design-blueprint').lead, true);
+  assert.equal(tasks.find((task) => task.id === 'js-starter').lead, undefined);
+  assert.equal(tasks.find((task) => task.id === 'js-new').lead, undefined);
+  assert.equal(tasks.find((task) => task.id === 'js-tag-high').lead, undefined);
+});
+
 test('a report belongs to the list citing it, and elsewhere is only a pick without a report line', () => {
   const [engineers, interns] = build().companies.acme.variants;
   assert.ok(interns.tasks.find((task) => task.id === 'js-old').report);

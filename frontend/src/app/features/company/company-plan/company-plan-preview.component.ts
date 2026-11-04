@@ -25,6 +25,7 @@ import {
   previewQueryParams,
   taskGroups,
   whyLine,
+  whyLineFor,
 } from './company-plan.format';
 import { CompanyPlanService } from './company-plan.service';
 
@@ -176,7 +177,7 @@ export class CompanyPlanPreviewComponent {
     const planned = new Set((this.plan()?.tasks ?? []).map((task) => task.id));
     return this.rows().open.map((task) => ({
       task,
-      why: planned.has(task.id) ? whyLine(task.why) : 'Free warm-up, outside your plan',
+      why: planned.has(task.id) ? whyLineFor(task.why, this.groups().get(task.id) ?? null) : 'Free warm-up, outside your plan',
       time: clockText(task.minutes),
       state: practiceState(task, this.rows().open, this.router.url, 'Back to plan'),
     }));

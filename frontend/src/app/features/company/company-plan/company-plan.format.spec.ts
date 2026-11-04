@@ -1,7 +1,7 @@
 import rawPlanData from '../../../../../../cdn/questions/company-plan-data.json';
 import type { CompanyPlanAnswers } from '../../../core/models/company-plan.model';
 import { CompanyPlanData, PlannedTask, buildCompanyPlan } from './company-plan.engine';
-import { companyPlanPricingCopy, companySetLine, nextRoundName, planDateChip, planDatePassed, planPricingSource, practiceState, previewQueryParams, roundSourcesLine } from './company-plan.format';
+import { companyPlanPricingCopy, companySetLine, nextRoundName, planDateChip, planDatePassed, planPricingSource, practiceState, previewQueryParams, roundSourcesLine, whyLineFor } from './company-plan.format';
 
 const DATA = rawPlanData as unknown as CompanyPlanData;
 
@@ -12,6 +12,16 @@ describe('previewQueryParams', () => {
     expect(previewQueryParams({ companies: [{ slug: 'amazon' }], when: 'tomorrow', level: 'junior', passedRounds: ['amazon/experienced/online-assessment', 'amazon/experienced/phone-screen'] }))
       .toEqual({ companies: 'amazon', when: 'tomorrow', level: 'junior', passed: 'amazon/experienced/online-assessment,amazon/experienced/phone-screen' });
     expect(previewQueryParams({ companies: [{ slug: 'amazon' }], when: 'tomorrow', level: 'junior', passedRounds: [] })['passed']).toBeUndefined();
+  });
+});
+
+describe('whyLineFor', () => {
+  it('names the round on an open row, and leaves format and general practice alone', () => {
+    expect(whyLineFor({ kind: 'pick' }, 'Phone screen')).toBe('Our pick for the Phone screen');
+    expect(whyLineFor({ kind: 'report', publisher: 'Taro', date: '2025-05' }, 'Phone screen')).toBe('Modelled on a report: Taro, May 2025 · Phone screen');
+    expect(whyLineFor({ kind: 'format' }, 'Extra React practice')).toBe('Extra practice in the reported format');
+    expect(whyLineFor({ kind: 'general' }, null)).toBe('General frontend practice');
+    expect(whyLineFor({ kind: 'pick' }, null)).toBe('Our pick for this round');
   });
 });
 
@@ -35,8 +45,14 @@ describe('companyPlanPricingCopy', () => {
   it('counts as open only the free tasks inside the plan', () => {
     expect(copyFor('elevenlabs').title).toBe('Your ElevenLabs plan is waiting');
     expect(copyFor('elevenlabs').summary).toMatch(/^6 tasks for next week, about [\d.]+ hours?\. \d are open now, \d open with Premium\. Every round in order, with its tasks and your progress\.$/);
-    // Walmart's free tasks all sit outside its plan.
-    expect(copyFor('walmart').summary).toMatch(/^6 tasks for next week, about [\d.]+ hours?\. Every task opens with Premium\. Every round in order, with its tasks and your progress\.$/);
+    // A list of Premium-only candidates has every task locked; every real list now keeps an open task.
+    const walmart = DATA.companies['walmart'];
+    const premiumOnly = {
+      ...DATA,
+      companies: { walmart: { ...walmart, variants: walmart.variants.map((list) => ({ ...list, tasks: list.tasks.filter((row) => DATA.tasks[row.id]?.access === 'premium') })) } },
+    } as CompanyPlanData;
+    expect(copyFor('walmart', premiumOnly).summary).toMatch(/^6 tasks for next week, about [\d.]+ hours?\. Every task opens with Premium\. Every round in order, with its tasks and your progress\.$/);
+    expect(copyFor('walmart').summary).toMatch(/^6 tasks for next week, about [\d.]+ hours?\. [1-9] (is|are) open now, \d open with Premium\. Every round in order, with its tasks and your progress\.$/);
   });
 
   it('points at the month, with the reason, when the interview is within two weeks, and at the quarter otherwise', () => {

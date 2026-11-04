@@ -174,6 +174,7 @@ function buildCompany(slug, context) {
     const add = (id, fields) => {
       const entry = chosen.get(id) ?? { id };
       if (fields.report && !entry.report) entry.report = fields.report;
+      if (fields.lead) entry.lead = true;
       for (const round of fields.rounds ?? []) entry.rounds = [...new Set([...(entry.rounds ?? []), round])];
       chosen.set(id, entry);
     };
@@ -202,20 +203,21 @@ function buildCompany(slug, context) {
     }
 
     // A linked or picked task with no report of its own is still an editor's choice for that round.
-    const addLinked = (route, linked, roundId) => {
+    const addLinked = (route, linked, roundId, lead = false) => {
       if (!linked) throw new Error(`[gen-company-plan-data] ${slug}/${meta.id} links ${route}, which is not in the catalog.`);
       const settled = settle(linked);
       if (!fitsFramework(settled)) throw new Error(`[gen-company-plan-data] ${slug}/${meta.id} links ${settled.id} outside its framework (${framework}).`);
-      add(publish(settled), { rounds: [roundId] });
+      add(publish(settled), { rounds: [roundId], ...(lead ? { lead: true } : {}) });
       return settled.id;
     };
-    // The practice link on a stage is the editor's lead for that round: the plan opens the round on it, as the guide does.
+    // The practice link on a stage is the editor's lead for that round: the plan opens the round on it, as the guide
+    // does. The row carries the flag, and the lead rows also come first in the list.
     const leads = new Set();
     for (const stage of variant.stages) {
       const round = metaRound(stage);
       if (stage.practice) {
         const { path: route, label } = stage.practice;
-        leads.add(addLinked(route, route.startsWith('/guides/') ? guideTask(route, label) : catalog.get(route), round.id));
+        leads.add(addLinked(route, route.startsWith('/guides/') ? guideTask(route, label) : catalog.get(route), round.id, true));
       }
       for (const route of round.picks ?? []) addLinked(route, catalog.get(route), round.id);
     }

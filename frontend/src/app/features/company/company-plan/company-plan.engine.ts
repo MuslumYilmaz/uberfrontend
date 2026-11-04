@@ -35,6 +35,8 @@ export type CompanyPlanDataRow = {
   readonly id: string;
   readonly report?: CompanyPlanReportLine;
   readonly rounds?: readonly string[];
+  /** The practice link the guide shows on the round's row: the plan opens the round on it, as the guide does. */
+  readonly lead?: true;
 };
 
 export type CompanyPlanDataRound = {
@@ -156,10 +158,11 @@ const LEVEL_WORDS: Readonly<Record<CompanyPlanLevel, string>> = { junior: 'junio
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
 /**
- * Reported tasks go first, newest first, then tasks an editor tied to a round, then tags. Reading comes after
- * practice, because a buyer pays for tasks: guides next, concept questions last.
+ * The practice link the guide shows on a round opens that round, so the plan and the guide agree. Then reported tasks,
+ * newest first, then tasks an editor tied to a round, then tags. Reading comes after practice, because a buyer pays
+ * for tasks: guides next, concept questions last.
  */
-const PHASES = ['report', 'link', 'pick', 'guide', 'concept'] as const;
+const PHASES = ['lead', 'report', 'link', 'pick', 'guide', 'concept'] as const;
 type Phase = (typeof PHASES)[number];
 
 type Candidate = { readonly task: CompanyPlanDataTask; readonly row: CompanyPlanDataRow | null; readonly phase: Phase };
@@ -203,7 +206,8 @@ function slotsFor(data: CompanyPlanData, slug: string, list: CompanyPlanDataList
   for (const row of list.tasks) {
     const task = data.tasks[row.id];
     if (!task) continue;
-    const phase: Phase = row.report ? 'report' : task.kind === 'guide' ? 'guide' : row.rounds?.length ? 'link' : task.kind === 'trivia' ? 'concept' : 'pick';
+    // A guide linked on a round is still reading, so it waits like any guide.
+    const phase: Phase = row.lead && task.kind !== 'guide' ? 'lead' : row.report ? 'report' : task.kind === 'guide' ? 'guide' : row.rounds?.length ? 'link' : task.kind === 'trivia' ? 'concept' : 'pick';
     // A task stays with its rounds. Passing them all drops it and the budget moves on.
     const eligible = row.rounds?.length ? open.filter((round) => row.rounds?.includes(round.id)) : open.filter((round) => roundTakes(round, task));
     // Only a company with no round of this kind at all sends the task elsewhere, as with a reported design task.
@@ -383,6 +387,18 @@ export function buildCompanyPlan(data: CompanyPlanData, input: CompanyPlanInput)
       else if (removed) selected.push(removed);
     }
   }
+
+  // Every company keeps at least one open task to try, so no plan reads "0 open now": the last Premium task of a
+  // company with none makes way for its first open candidate. A Tomorrow plan keeps its one Premium task.
+  chosen.forEach(({ slug }, index) => {
+    const own = selected.filter((entry) => entry.slug === slug);
+    if (!own.length || own.some((entry) => entry.task.access === 'free')) return;
+    if (input.when === 'tomorrow' && selected.filter((entry) => entry.task.access === 'premium').length <= 1) return;
+    const at = selected.indexOf(own[own.length - 1]);
+    const [removed] = selected.splice(at, 1);
+    const open = orders[index].find((entry) => entry.task.access === 'free' && entry.task.kind !== 'guide' && canTake(entry.slug, entry.task));
+    selected.splice(at, 0, open ?? removed);
+  });
 
   const companies: PlannedCompany[] = chosen.map(({ slug, company, list, switched }) => ({
     slug,

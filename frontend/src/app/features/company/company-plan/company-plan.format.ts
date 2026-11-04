@@ -61,6 +61,15 @@ export function whyLine(why: CompanyPlanWhy): string {
   }
 }
 
+/**
+ * The why line of an open row, with the round it serves: "Our pick for the Phone screen", "Modelled on a report:
+ * Taro, May 2025 · Phone screen". Format and general practice have no round and read as before.
+ */
+export function whyLineFor(why: CompanyPlanWhy, round: string | null): string {
+  if (!round || why.kind === 'format' || why.kind === 'general') return whyLine(why);
+  return why.kind === 'report' ? `${whyLine(why)} · ${round}` : `Our pick for the ${round}`;
+}
+
 /** "Extra React practice", or plain "Extra practice" when the companies' reports name different frameworks. */
 export function formatGroupName(plan: Pick<CompanyPlan, 'companies'>): string {
   const frameworks = [...new Set(plan.companies.map((company) => company.framework))];
