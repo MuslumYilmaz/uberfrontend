@@ -4,9 +4,11 @@ import type { CompanyPlanAnswers } from '../../../core/models/company-plan.model
 export const COMPANY_PLAN_DRAFT_KEY = 'fa:company-plan:draft:v1';
 
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const ROUND_KEY = /^[a-z0-9]+(?:-[a-z0-9]+)*\/[a-z0-9]+(?:-[a-z0-9]+)*\/[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const LEVELS = new Set(['junior', 'mid', 'senior', 'staff']);
 const WHENS = new Set(['tomorrow', 'this-week', 'next-week', 'later']);
 const MAX_COMPANIES = 3;
+const MAX_PASSED_ROUNDS = 60;
 
 /** The answers with nothing unexpected in them, or null when they cannot be a plan. */
 export function cleanCompanyPlanAnswers(raw: unknown): CompanyPlanAnswers | null {
@@ -20,7 +22,19 @@ export function cleanCompanyPlanAnswers(raw: unknown): CompanyPlanAnswers | null
     if (company.list !== undefined && !SLUG.test(String(company.list))) return null;
     companies.push(company.list ? { slug: company.slug, list: company.list } : { slug: company.slug });
   }
-  return { companies, level: value.level as CompanyPlanAnswers['level'], when: value.when as CompanyPlanAnswers['when'] };
+  // Passed rounds stay only as keys of the plan's own companies; anything else is dropped rather than refused, so a
+  // stale draft can still become a plan. An empty or missing list is left out: it states nothing.
+  const passedRounds = Array.isArray(value.passedRounds)
+    ? [...new Set(value.passedRounds.filter((key): key is string => typeof key === 'string' && ROUND_KEY.test(key) && companies.some((company) => company.slug === key.split('/')[0])))]
+      .sort()
+      .slice(0, MAX_PASSED_ROUNDS)
+    : [];
+  return {
+    companies,
+    level: value.level as CompanyPlanAnswers['level'],
+    when: value.when as CompanyPlanAnswers['when'],
+    ...(passedRounds.length ? { passedRounds } : {}),
+  };
 }
 
 /**

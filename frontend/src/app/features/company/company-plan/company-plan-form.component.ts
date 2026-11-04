@@ -9,7 +9,7 @@ import { FaRotatingWordsComponent } from '../../../shared/ui/rotating-words/fa-r
 import { hasPremium, premiumEnded } from './company-plan-access';
 import { companyMatchesSearch } from './company-plan-search';
 import { COMPANY_PLAN_WHEEL as WHEEL } from './company-plan-wheel';
-import { CompanyPlanData, companyPlanDefaultList } from './company-plan.engine';
+import { CompanyPlanData, companyPlanDefaultList, companyPlanRoundKey } from './company-plan.engine';
 import { LEVEL_LABELS, WHEN_LABELS, planCompanyNames, previewQueryParams } from './company-plan.format';
 import { CompanyPlanService } from './company-plan.service';
 
@@ -58,7 +58,7 @@ export class CompanyPlanFormComponent {
   readonly levelOptions = LEVEL_OPTIONS;
   readonly wheelNames = WHEEL.map((company) => company.name);
 
-  readonly step = signal<1 | 2 | 3>(1);
+  readonly step = signal<1 | 2 | 3 | 4>(1);
   private readonly maxStep = signal(1);
   readonly picked = signal<readonly string[]>([]);
   readonly custom = signal('');
@@ -66,6 +66,8 @@ export class CompanyPlanFormComponent {
   readonly chosen = signal(false);
   readonly when = signal<CompanyPlanWhen>('next-week');
   readonly level = signal<CompanyPlanAnswerLevel>('senior');
+  /** The round that is next, by company; a company not in here starts from its first round. */
+  readonly next = signal<Readonly<Record<string, string>>>({});
   readonly open = signal(false);
   readonly query = signal('');
   readonly wheelIndex = signal(0);
@@ -103,8 +105,8 @@ export class CompanyPlanFormComponent {
   readonly steps = computed(() => {
     const whenLabel = WHEN_OPTIONS.find((option) => option.id === this.when())?.label ?? '';
     const levelLabel = LEVEL_OPTIONS.find((option) => option.id === this.level())?.label ?? '';
-    const answers = [this.companyLabel(), whenLabel, levelLabel];
-    return ['Company', 'Interview date', 'Level'].map((name, index) => {
+    const answers = [this.companyLabel(), whenLabel, levelLabel, this.nextLabel()];
+    return ['Company', 'Interview date', 'Level', 'Next round'].map((name, index) => {
       const number = index + 1;
       const done = number < this.step();
       return {
@@ -134,9 +136,49 @@ export class CompanyPlanFormComponent {
 
   readonly whenQuestion = computed(() => (this.picked().length > 1 ? 'When is your first interview?' : 'When is your interview?'));
 
+  /** The rounds of each picked company for "Which round is next?", with the one chosen as next (the first by default). */
+  readonly roundChoices = computed(() => {
+    const data = this.data();
+    if (!data) return [];
+    return this.picked().flatMap((slug) => {
+      const company = data.companies[slug];
+      if (!company) return [];
+      const list = companyPlanDefaultList(company);
+      return [{
+        slug,
+        name: company.name,
+        next: this.next()[slug] ?? list.rounds[0]?.id ?? '',
+        rounds: list.rounds.map((round) => ({ id: round.id, name: round.name, note: round.note })),
+      }];
+    });
+  });
+
+  /** The keys of the rounds before each chosen next round: what the plan treats as passed. */
+  readonly passedRounds = computed<readonly string[]>(() => {
+    const data = this.data();
+    if (!data) return [];
+    return this.roundChoices().flatMap((group) => {
+      const list = companyPlanDefaultList(data.companies[group.slug]);
+      const at = list.rounds.findIndex((round) => round.id === group.next);
+      return list.rounds.slice(0, Math.max(at, 0)).map((round) => companyPlanRoundKey(group.slug, list.id, round.id));
+    });
+  });
+
+  readonly nextQuestion = computed(() => (this.roundChoices().length > 1 ? 'Which round is next at each company?' : 'Which round is next?'));
+
+  /** "From the Phone screen", "From the first round", or how many companies are past their first round. */
+  readonly nextLabel = computed(() => {
+    const groups = this.roundChoices();
+    const started = groups.filter((group) => group.next !== group.rounds[0]?.id);
+    if (groups.length > 1) return started.length ? `${started.length} of ${groups.length} past the first round` : 'From the first round';
+    const next = started[0]?.rounds.find((round) => round.id === started[0].next);
+    return next ? `From the ${next.name}` : 'From the first round';
+  });
+
   readonly cards = computed(() => {
     const data = this.data();
     if (!data) return [];
+    const passed = new Set(this.passedRounds());
     return this.shownSlugs().flatMap((slug) => {
       const company = data.companies[slug];
       if (!company) return [];
@@ -150,6 +192,7 @@ export class CompanyPlanFormComponent {
           id: round.id,
           name: round.name,
           practice: round.kinds.some((kind) => kind === 'coding' || kind === 'design' || kind === 'people'),
+          passed: passed.has(companyPlanRoundKey(slug, list.id, round.id)),
         })),
       }];
     });
@@ -177,6 +220,12 @@ export class CompanyPlanFormComponent {
     if (this.step() >= 3) {
       const level = LEVEL_OPTIONS.find((option) => option.id === this.level());
       if (level) lines.push({ label: level.label, text: level.note });
+    }
+    if (this.step() >= 4 && this.roundChoices().length) {
+      lines.push({
+        label: 'Next round',
+        text: this.passedRounds().length ? `${this.nextLabel()}. The rounds before it count as passed.` : 'From the first round. Every reported round is in the plan.',
+      });
     }
     return lines;
   });
@@ -290,21 +339,33 @@ export class CompanyPlanFormComponent {
     this.goTo(3);
   }
 
+  /** A company with mapped rounds gets the question "Which round is next?"; an unlisted or no company goes straight on. */
   pickLevel(level: CompanyPlanAnswerLevel): void {
     this.level.set(level);
+    if (this.roundChoices().length) this.goTo(4);
+    else this.finish();
+  }
+
+  /** The round the person is about to face; the rounds before it are passed. With one company the answer is the last click. */
+  pickNext(slug: string, roundId: string): void {
+    this.next.update((next) => ({ ...next, [slug]: roundId }));
+    if (this.roundChoices().length === 1) this.finish();
+  }
+
+  seePlan(): void {
     this.finish();
   }
 
   back(): void {
     const step = this.step();
-    if (step > 1) this.step.set((step - 1) as 1 | 2);
+    if (step > 1) this.step.set((step - 1) as 1 | 2 | 3);
   }
 
   goToStep(number: number): void {
-    if (number <= this.maxStep()) this.step.set(number as 1 | 2 | 3);
+    if (number <= this.maxStep()) this.step.set(number as 1 | 2 | 3 | 4);
   }
 
-  private goTo(step: 2 | 3): void {
+  private goTo(step: 2 | 3 | 4): void {
     this.plans.track('company_plan_step_completed', { step: step - 1 });
     this.step.set(step);
     this.maxStep.update((max) => Math.max(max, step));
@@ -337,9 +398,16 @@ export class CompanyPlanFormComponent {
   }
 
   private finish(): void {
-    this.plans.track('company_plan_step_completed', { step: 3 });
+    this.plans.track('company_plan_step_completed', { step: this.step() === 4 ? 4 : 3 });
     const companies = this.picked();
-    const answers: CompanyPlanAnswers = { companies: companies.map((slug) => ({ slug })), level: this.level(), when: this.when() };
+    // Only a stated "next round" travels; starting from the first round states nothing, so an account keeps its own marks.
+    const passedRounds = this.step() === 4 ? this.passedRounds() : [];
+    const answers: CompanyPlanAnswers = {
+      companies: companies.map((slug) => ({ slug })),
+      level: this.level(),
+      when: this.when(),
+      ...(passedRounds.length ? { passedRounds } : {}),
+    };
     // A plan already on the account is replaced only from the preview, after the warning there.
     if (companies.length && !this.plans.saved()) this.plans.save(answers).subscribe();
     void this.router.navigate(['/companies/preview'], {
@@ -348,6 +416,7 @@ export class CompanyPlanFormComponent {
         ...(this.custom() ? { custom: this.custom() } : {}),
         when: this.when(),
         level: this.level(),
+        ...(passedRounds.length ? { passed: passedRounds.join(',') } : {}),
       },
     });
   }

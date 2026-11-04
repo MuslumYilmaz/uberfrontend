@@ -32,6 +32,14 @@ describe('readPreviewRequest', () => {
     expect(request?.answers).toEqual({ companies: [{ slug: 'agoda' }], when: 'next-week', level: 'senior' });
   });
 
+  it('keeps the passed rounds the data knows for the companies in the address, and leaves them out otherwise', () => {
+    const passed = 'amazon/experienced/phone-screen,amazon/experienced/online-assessment,amazon/experienced/online-assessment,amazon/experienced/nope,amazon/students/online-assessment,agoda/bangkok/recruiter-prep-call,meta';
+    expect(read({ companies: 'amazon', when: 'tomorrow', level: 'junior', passed })?.answers.passedRounds)
+      .toEqual(['amazon/experienced/online-assessment', 'amazon/experienced/phone-screen']);
+    expect(read({ companies: 'amazon', when: 'tomorrow', level: 'junior' })?.answers.passedRounds).toBeUndefined();
+    expect(read({ companies: 'amazon', when: 'tomorrow', level: 'junior', passed: 'agoda/bangkok/recruiter-prep-call' })?.answers.passedRounds).toBeUndefined();
+  });
+
   it('keeps at most three companies', () => {
     expect(read({ companies: 'agoda,meta,google,amazon', when: 'later', level: 'mid' })?.answers.companies.map((company) => company.slug)).toEqual(['agoda', 'meta', 'google']);
   });
@@ -72,6 +80,7 @@ describe('CompanyPlanPreviewComponent', () => {
         lists: Object.fromEntries(answers.companies.flatMap((company) => (company.list ? [[company.slug, company.list]] : []))),
         when: answers.when,
         level: answers.level,
+        passedRounds: answers.passedRounds ?? [],
         today: TODAY,
       }),
     };
@@ -106,6 +115,20 @@ describe('CompanyPlanPreviewComponent', () => {
       expect(Array.from(host.querySelectorAll('.preview__chip')).map((chip) => chip.textContent)).toEqual(['Next week', 'Senior', 'React, from reports']);
       expect(text('.preview__evidence')).toBe('Rounds and tasks from 6 public sources, last checked Oct 22, 2026. These are practice versions, not leaked questions.');
       expect(host.textContent).not.toContain('Which framework');
+    });
+
+    it('starts past the rounds the address says are passed, and says so', () => {
+      setup({ companies: 'amazon', when: 'tomorrow', level: 'junior', passed: 'amazon/experienced/online-assessment' });
+      expect(Array.from(host.querySelectorAll('.preview__chip')).map((chip) => chip.textContent)).toContain('From the Phone screen');
+      const facts = Array.from(host.querySelectorAll('.preview__facts li')).map((fact) => fact.textContent?.trim() ?? '');
+      expect(facts[1]).toBe('4 of 5 reported rounds left, in order, with their tasks and your progress');
+      const plan = fixture.componentInstance.plan()!;
+      expect(plan.companies[0].rounds.map((round) => round.passed)).toEqual([true, false, false, false, false]);
+      expect(plan.tasks.every((task) => plan.companies[0].rounds[0].tasks.every((other) => other.id !== task.id))).toBeTrue();
+
+      testId('company-plan-build')?.click();
+      expect(plans.save).toHaveBeenCalledOnceWith(jasmine.objectContaining({ passedRounds: ['amazon/experienced/online-assessment'] }));
+      expect(plans.track).toHaveBeenCalledWith('company_plan_build_clicked', jasmine.objectContaining({ passed_count: 1 }));
     });
 
     it('offers three tasks to open today, all free, with no account', () => {

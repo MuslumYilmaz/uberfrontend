@@ -165,7 +165,8 @@ export class CompanyPlanService {
       lists: Object.fromEntries(answers.companies.flatMap((company) => (company.list ? [[company.slug, company.list]] : []))),
       when: answers.when,
       level: answers.level,
-      passedRounds: saved?.passedRounds ?? [],
+      // What the form stated wins over the marks on the account; without a statement the marks stand.
+      passedRounds: answers.passedRounds ?? saved?.passedRounds ?? [],
       solvedTaskIds: [...this.progress.solvedIds(), ...(saved?.markedDone ?? [])],
       today,
     });

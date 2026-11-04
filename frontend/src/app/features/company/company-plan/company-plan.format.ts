@@ -1,5 +1,5 @@
 import type { CompanyPlanAnswers, CompanyPlanAnswerLevel, CompanyPlanWhen } from '../../../core/models/company-plan.model';
-import type { CompanyPlan, CompanyPlanData, CompanyPlanWhy, PlannedTask } from './company-plan.engine';
+import type { CompanyPlan, CompanyPlanData, CompanyPlanWhy, PlannedCompany, PlannedTask } from './company-plan.engine';
 
 const SHORT_MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
@@ -163,7 +163,17 @@ export function previewQueryParams(answers: CompanyPlanAnswers): Record<string, 
     ...(lists ? { lists } : {}),
     when: answers.when,
     level: answers.level,
+    ...(answers.passedRounds?.length ? { passed: answers.passedRounds.join(',') } : {}),
   };
+}
+
+/**
+ * The round a plan starts from, for a company whose first rounds are behind the person: "Phone screen", or null when
+ * nothing is passed or every round is.
+ */
+export function nextRoundName(company: Pick<PlannedCompany, 'rounds'>): string | null {
+  if (!company.rounds.some((round) => round.passed)) return null;
+  return company.rounds.find((round) => !round.passed)?.name ?? null;
 }
 
 /** How many questions a company's practice set holds, as the company pages count them. */

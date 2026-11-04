@@ -29,7 +29,7 @@
             <span class="plan-step__dot" aria-hidden="true">{{ item.done ? '✓' : item.number }}</span>
             <span class="plan-step__label">{{ item.label }}</span>
           </button>
-          @if (item.number < 3) {
+          @if (item.number < 4) {
             <span class="plan-steps__line" [class.plan-steps__line--done]="item.done" aria-hidden="true"></span>
           }
         </li>
@@ -108,7 +108,7 @@
           <button faButton type="button" variant="primary" size="lg" data-testid="company-plan-continue" (click)="continueFromCompany()">Continue</button>
           <button type="button" class="plan-link" data-testid="company-plan-no-company" (click)="noCompany()">I don't have a company yet</button>
         </div>
-        <p class="plan-footnote">Takes three clicks. No account needed.</p>
+        <p class="plan-footnote">Takes three clicks, or four if you have started. No account needed.</p>
       </div>
     }
 
@@ -153,6 +153,40 @@
         <button type="button" class="plan-back" (click)="back()">← Back</button>
       </div>
     }
+
+    @if (step() === 4) {
+      <div class="plan-question" data-testid="company-plan-next-step">
+        <h2 class="plan-question__title">{{ nextQuestion() }}</h2>
+        <p class="plan-question__hint">The rounds before it count as passed, so your plan starts where you are.</p>
+        @for (group of roundChoices(); track group.slug) {
+          <div class="plan-choice-group">
+            @if (roundChoices().length > 1) {
+              <p class="plan-choice-group__name">{{ group.name }}</p>
+            }
+            <div class="plan-choices plan-choices--compact">
+              @for (round of group.rounds; track round.id) {
+                <button
+                  type="button"
+                  class="plan-choice"
+                  [class.plan-choice--selected]="round.id === group.next"
+                  [attr.aria-pressed]="round.id === group.next"
+                  [attr.data-testid]="'company-plan-next-' + group.slug + '-' + round.id"
+                  (click)="pickNext(group.slug, round.id)">
+                  <span class="plan-choice__label">{{ round.name }}</span>
+                  @if (round.note) {
+                    <span class="plan-choice__sub">{{ round.note }}</span>
+                  }
+                </button>
+              }
+            </div>
+          </div>
+        }
+        <div class="plan-actions">
+          <button faButton type="button" variant="primary" size="lg" data-testid="company-plan-see-plan" (click)="seePlan()">See my plan <span aria-hidden="true">→</span></button>
+          <button type="button" class="plan-back" (click)="back()">← Back</button>
+        </div>
+      </div>
+    }
   </div>
 
   <aside class="plan-card" aria-label="Your plan so far" data-testid="company-plan-card">
@@ -164,7 +198,7 @@
         <p class="plan-card__meta">{{ card.meta }}</p>
         <ul class="plan-rounds">
           @for (round of card.rounds; track round.id) {
-            <li class="plan-rounds__item" [class.plan-rounds__item--practice]="round.practice">{{ round.name }}</li>
+            <li class="plan-rounds__item" [class.plan-rounds__item--practice]="round.practice" [class.plan-rounds__item--passed]="round.passed">{{ round.name }}@if (round.passed) {<span class="plan-rounds__passed"> passed</span>}</li>
           }
         </ul>
       </div>

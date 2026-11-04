@@ -157,7 +157,6 @@ describe('PUT saves the answers', () => {
     const saved = await savePlan(user._id, {
       ...elevenLabsPlan,
       createdAt: '2001-01-01',
-      passedRounds: ['elevenlabs/main/recruiter-call'],
       markedDone: ['js-debounce'],
       accessTier: 'premium',
       companies: [{ slug: 'elevenlabs', extra: 'x' }],
@@ -168,6 +167,48 @@ describe('PUT saves the answers', () => {
     expect(saved.body.companyPlan.companies).toEqual([{ slug: 'elevenlabs' }]);
     expect(new Date(saved.body.companyPlan.createdAt).getFullYear()).toBeGreaterThan(2001);
     expect((await User.findById(user._id)).accessTier).toBe('free');
+  });
+
+  test('the rounds the form says are passed are stored, minus any of another company or unknown to the catalog', async () => {
+    const user = await createUser();
+    const saved = await savePlan(user._id, {
+      ...elevenLabsPlan,
+      passedRounds: [
+        'elevenlabs/main/recruiter-call',
+        'elevenlabs/main/coding-assessment',
+        'elevenlabs/main/recruiter-call',
+        'agoda/bangkok/recruiter-prep-call',
+        'elevenlabs/main/no-such-round',
+        'not a key',
+      ],
+    });
+    expect(saved.status).toBe(200);
+    expect(saved.body.companyPlan.passedRounds).toEqual(['elevenlabs/main/recruiter-call', 'elevenlabs/main/coding-assessment']);
+  });
+
+  test('a stated list of passed rounds replaces the marks; answers without one keep them', async () => {
+    const user = await createUser();
+    await savePlan(user._id, elevenLabsPlan);
+    await mark(user._id, { kind: 'round', id: 'elevenlabs/main/recruiter-call', on: true });
+
+    const kept = await savePlan(user._id, { ...elevenLabsPlan, level: 'mid' });
+    expect(kept.body.companyPlan.passedRounds).toEqual(['elevenlabs/main/recruiter-call']);
+
+    const restated = await savePlan(user._id, { ...elevenLabsPlan, passedRounds: ['elevenlabs/main/coding-assessment'] });
+    expect(restated.body.companyPlan.passedRounds).toEqual(['elevenlabs/main/coding-assessment']);
+
+    const cleared = await savePlan(user._id, { ...elevenLabsPlan, passedRounds: [] });
+    expect(cleared.body.companyPlan.passedRounds).toEqual([]);
+  });
+
+  test('rejects passed rounds that are not a list of keys', async () => {
+    const user = await createUser();
+    for (const passedRounds of ['elevenlabs/main/recruiter-call', [7], { $ne: null }]) {
+      const response = await savePlan(user._id, { ...elevenLabsPlan, passedRounds });
+      expect(response.status).toBe(400);
+      expect(response.body.code).toBe('COMPANY_PLAN_INVALID');
+    }
+    expect((await User.findById(user._id)).companyPlan).toBeNull();
   });
 
   test('a new plan replaces the old one, keeps manual marks and drops passed rounds of a dropped company', async () => {

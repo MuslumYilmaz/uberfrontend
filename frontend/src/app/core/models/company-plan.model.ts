@@ -6,6 +6,11 @@ export type CompanyPlanAnswers = {
   readonly companies: readonly { readonly slug: string; readonly list?: string }[];
   readonly level: CompanyPlanAnswerLevel;
   readonly when: CompanyPlanWhen;
+  /**
+   * The rounds already behind the person, as keys from companyPlanRoundKey, from the form's "Which round is next?".
+   * Absent when nothing was stated, so an account keeps the rounds it marked by hand.
+   */
+  readonly passedRounds?: readonly string[];
 };
 
 /** The plan on an account, as PUT /api/users/me/company-plan and /api/auth/me return it. */

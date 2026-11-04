@@ -14,6 +14,7 @@ import {
   clockText,
   companySetLine,
   frameworkLabel,
+  nextRoundName,
   openTaskCount,
   planCompanyNames,
   planEvidenceLine,
@@ -21,6 +22,7 @@ import {
   planPricingSource,
   planSummaryLine,
   practiceState,
+  previewQueryParams,
   taskGroups,
   whyLine,
 } from './company-plan.format';
@@ -59,11 +61,19 @@ export function readPreviewRequest(params: ParamMap, data: CompanyPlanData, save
   });
   const when = params.get('when') as CompanyPlanWhen;
   const level = params.get('level') as CompanyPlanAnswerLevel;
+  // "Which round is next?" travels as the keys of the rounds behind the person; a key the data does not know is dropped.
+  const passedRounds = (params.get('passed') ?? '').split(',').map((key) => key.trim()).filter((key) => {
+    const [slug, listId, roundId] = key.split('/');
+    const company = companies.find((entry) => entry.slug === slug);
+    const list = company && data.companies[slug].variants.find((variant) => variant.id === listId);
+    return Boolean(list?.rounds.some((round) => round.id === roundId));
+  });
   return {
     answers: {
       companies,
       when: WHENS.includes(when) ? when : 'next-week',
       level: LEVELS.includes(level) ? level : 'senior',
+      ...(passedRounds.length ? { passedRounds: [...new Set(passedRounds)].sort() } : {}),
     },
     custom: companies.length ? '' : (params.get('custom') ?? '').trim().slice(0, MAX_CUSTOM_LENGTH),
   };
@@ -119,7 +129,13 @@ export class CompanyPlanPreviewComponent {
     const request = this.request();
     const plan = this.plan();
     if (!request || !plan) return [];
-    return [WHEN_LABELS[request.answers.when], LEVEL_LABELS[request.answers.level], ...planFrameworkChips(plan)];
+    // A plan that starts past the first rounds says so, per company when there are several.
+    const starts = plan.companies.flatMap((company) => {
+      const next = nextRoundName(company);
+      if (!next) return [];
+      return [plan.companies.length > 1 ? `${company.name} from the ${next}` : `From the ${next}`];
+    });
+    return [WHEN_LABELS[request.answers.when], LEVEL_LABELS[request.answers.level], ...planFrameworkChips(plan), ...starts];
   });
 
   readonly evidence = computed(() => {
@@ -229,6 +245,10 @@ export class CompanyPlanPreviewComponent {
     const request = this.request();
     if (!data || !plan || !request || plan.general) return [];
     const rounds = plan.companies.reduce((sum, company) => sum + company.rounds.length, 0);
+    const left = rounds - plan.companies.reduce((sum, company) => sum + company.rounds.filter((round) => round.passed).length, 0);
+    const roundsFact = left < rounds
+      ? `${left} of ${rounds} reported rounds left, in order, with their tasks and your progress`
+      : `All ${rounds} reported rounds in order, with their tasks and your progress`;
     const counts = data.general.premiumCounts;
     const framework = plan.companies[0].framework;
     const sets = companySetLine(plan.companies.map((company) => ({ name: company.name, counts: COMPANY_SET_COUNTS[company.slug] })));
@@ -243,7 +263,7 @@ export class CompanyPlanPreviewComponent {
     const split = this.viewer() === 'premium' || !locked ? '' : `: ${open} open now, ${locked} with Premium`;
     return [
       planSummaryLine(plan, request.answers.when) + split + (warmups ? `, plus ${warmups} free ${warmups === 1 ? 'warm-up' : 'warm-ups'} outside the plan` : ''),
-      `All ${rounds} reported rounds in order, with their tasks and your progress`,
+      roundsFact,
       ...(pressure ? [`${pressure} ${pressure === 1 ? 'task runs' : 'tasks run'} as an interview (Pressure Mode): the requirements change while you code`] : []),
       ...(sets ? [sets] : []),
       ...(lastFact ? [lastFact] : []),
@@ -312,10 +332,9 @@ export class CompanyPlanPreviewComponent {
       companies: request.answers.companies.map((company) => (company.slug === slug ? { slug, list: listId } : company)),
     };
     if (!this.replacing()) this.plans.save(answers).subscribe();
-    const lists = answers.companies.flatMap((company) => (company.list ? [`${company.slug}:${company.list}`] : [])).join(',');
     void this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: { companies: answers.companies.map((company) => company.slug).join(','), lists, when: answers.when, level: answers.level, custom: null },
+      queryParams: { ...previewQueryParams(answers), custom: null },
       replaceUrl: true,
     });
   }
@@ -329,6 +348,7 @@ export class CompanyPlanPreviewComponent {
       companies: request.answers.companies.map((company) => company.slug).join(','),
       when: request.answers.when,
       level: request.answers.level,
+      passed_count: request.answers.passedRounds?.length ?? 0,
       viewer: this.viewer(),
     });
     // Whatever the write does, the draft is kept, so the person always moves on.

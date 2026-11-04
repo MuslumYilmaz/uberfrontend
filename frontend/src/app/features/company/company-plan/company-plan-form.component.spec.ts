@@ -121,7 +121,7 @@ describe('CompanyPlanFormComponent', () => {
     it('starts on step one with the later steps locked', () => {
       setup();
       const steps = Array.from(host.querySelectorAll<HTMLButtonElement>('.plan-step'));
-      expect(steps.map((step) => step.disabled)).toEqual([false, true, true]);
+      expect(steps.map((step) => step.disabled)).toEqual([false, true, true, true]);
       expect(steps[0].getAttribute('aria-current')).toBe('step');
     });
 
@@ -254,7 +254,7 @@ describe('CompanyPlanFormComponent', () => {
       expect(host.querySelector('.plan-question__title')?.textContent?.trim()).toBe('When is your interview?');
       const steps = Array.from(host.querySelectorAll<HTMLButtonElement>('.plan-step'));
       expect(steps[0].textContent).toContain('ElevenLabs');
-      expect(steps.map((step) => step.disabled)).toEqual([false, false, true]);
+      expect(steps.map((step) => step.disabled)).toEqual([false, false, true, true]);
       expect(cardNames()).toEqual(['ElevenLabs']);
       expect(plans.track.calls.allArgs()).toEqual([
         ['company_plan_form_started', { from: 'guide', companies: 'elevenlabs' }],
@@ -263,6 +263,8 @@ describe('CompanyPlanFormComponent', () => {
 
       click('company-plan-when-next-week');
       click('company-plan-level-senior');
+      expect(component.step()).toBe(4);
+      click('company-plan-see-plan');
       expect(navigate).toHaveBeenCalledOnceWith(['/companies/preview'], { queryParams: { companies: 'elevenlabs', when: 'next-week', level: 'senior' } });
 
       steps[0].click();
@@ -386,9 +388,11 @@ describe('CompanyPlanFormComponent', () => {
   });
 
   describe('finishing', () => {
+    /** Date, level, and the rounds step where the form asks it, from the first round. */
     const finish = () => {
       click('company-plan-when-next-week');
       click('company-plan-level-mid');
+      if (component.step() === 4) click('company-plan-see-plan');
     };
 
     it('keeps the answers and opens the preview with them in the address', () => {
@@ -402,6 +406,68 @@ describe('CompanyPlanFormComponent', () => {
       expect(plans.save).toHaveBeenCalledOnceWith({ companies: [{ slug: 'agoda' }, { slug: 'stripe' }], level: 'mid', when: 'next-week' });
       expect(navigate).toHaveBeenCalledOnceWith(['/companies/preview'], { queryParams: { companies: 'agoda,stripe', when: 'next-week', level: 'mid' } });
       expect(plans.track).toHaveBeenCalledWith('company_plan_step_completed', { step: 3 });
+      expect(plans.track).toHaveBeenCalledWith('company_plan_step_completed', { step: 4 });
+    });
+
+    it('asks which round is next, marks the rounds before it as passed and carries them to the preview', () => {
+      setup();
+      openPicker();
+      click('company-plan-option-agoda');
+      click('company-plan-continue');
+      click('company-plan-when-tomorrow');
+      click('company-plan-level-junior');
+
+      expect(component.step()).toBe(4);
+      expect(host.querySelector('.plan-question__title')?.textContent).toBe('Which round is next?');
+      const choices = Array.from(host.querySelectorAll('.plan-choices--compact .plan-choice'));
+      expect(choices.map((choice) => choice.getAttribute('aria-pressed'))).toEqual(['true', 'false']);
+      expect(choices.map((choice) => choice.querySelector('.plan-choice__label')?.textContent)).toEqual(['recruiter round', 'coding round']);
+      expect(host.querySelectorAll('.plan-step')[3].textContent).toContain('Next round');
+      expect(host.querySelector('.plan-answers')?.textContent).toContain('From the first round. Every reported round is in the plan.');
+      expect(plans.track).toHaveBeenCalledWith('company_plan_step_completed', { step: 3 });
+
+      // One company: the round clicked is the last answer, and the one before it is passed.
+      click('company-plan-next-agoda-coding');
+      expect(component.passedRounds()).toEqual(['agoda/main/recruiter']);
+      expect(plans.save).toHaveBeenCalledOnceWith({ companies: [{ slug: 'agoda' }], level: 'junior', when: 'tomorrow', passedRounds: ['agoda/main/recruiter'] });
+      expect(navigate).toHaveBeenCalledOnceWith(['/companies/preview'], { queryParams: { companies: 'agoda', when: 'tomorrow', level: 'junior', passed: 'agoda/main/recruiter' } });
+      expect(plans.track).toHaveBeenCalledWith('company_plan_step_completed', { step: 4 });
+    });
+
+    it('with several companies, takes a next round per company and finishes on the button', () => {
+      setup();
+      openPicker();
+      click('company-plan-option-agoda');
+      click('company-plan-option-amazon');
+      click('company-plan-continue');
+      click('company-plan-when-next-week');
+      click('company-plan-level-mid');
+
+      expect(host.querySelector('.plan-question__title')?.textContent).toBe('Which round is next at each company?');
+      expect(Array.from(host.querySelectorAll('.plan-choice-group__name')).map((name) => name.textContent)).toEqual(['Agoda', 'Amazon']);
+      click('company-plan-next-agoda-coding');
+      expect(navigate).not.toHaveBeenCalled();
+      expect(component.nextLabel()).toBe('1 of 2 past the first round');
+      expect(Array.from(host.querySelectorAll('.plan-rounds__item--passed')).map((item) => item.textContent?.replace(/\s+/g, ' ').trim())).toEqual(['recruiter round passed']);
+      expect(host.querySelector('.plan-answers')?.textContent).toContain('1 of 2 past the first round. The rounds before it count as passed.');
+
+      click('company-plan-see-plan');
+      expect(navigate).toHaveBeenCalledOnceWith(['/companies/preview'], { queryParams: { companies: 'agoda,amazon', when: 'next-week', level: 'mid', passed: 'agoda/main/recruiter' } });
+    });
+
+    it('can go back from the rounds step and still reach it again', () => {
+      setup();
+      click('company-plan-continue');
+      click('company-plan-when-next-week');
+      click('company-plan-level-mid');
+      expect(component.step()).toBe(4);
+      component.back();
+      fixture.detectChanges();
+      expect(component.step()).toBe(3);
+      expect(host.querySelectorAll<HTMLButtonElement>('.plan-step')[3].disabled).toBeFalse();
+      component.goToStep(4);
+      fixture.detectChanges();
+      expect(host.querySelector('[data-testid="company-plan-next-step"]')).toBeTruthy();
     });
 
     it('leaves a plan already on the account until the preview has warned about replacing it', () => {

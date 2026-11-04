@@ -84,12 +84,21 @@ async function pickCompanies(page: Page, companies: string[]): Promise<void> {
   await page.getByTestId('company-plan-picker').getByRole('button', { name: 'Done' }).click();
 }
 
-async function answerForm(page: Page, companies: string[], when: string, level: string): Promise<void> {
+/** Fills the form; `next` names the round that is next per company, else every plan starts from its first round. */
+async function answerForm(page: Page, companies: string[], when: string, level: string, next: Record<string, string> = {}): Promise<void> {
   await page.goto('/companies');
   await pickCompanies(page, companies);
   await page.getByTestId('company-plan-continue').click();
   await page.getByTestId(`company-plan-when-${when}`).click();
   await page.getByTestId(`company-plan-level-${level}`).click();
+  await answerNextRound(page, companies, next);
+}
+
+/** The fourth step: with one company the round clicked finishes the form; with several, the button does. */
+async function answerNextRound(page: Page, companies: string[], next: Record<string, string> = {}): Promise<void> {
+  await expect(page.getByTestId('company-plan-next-step')).toBeVisible();
+  for (const [slug, round] of Object.entries(next)) await page.getByTestId(`company-plan-next-${slug}-${round}`).click();
+  if (companies.length > 1 || !Object.keys(next).length) await page.getByTestId('company-plan-see-plan').click();
 }
 
 const overflow = (page: Page) => page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
@@ -97,10 +106,14 @@ const overflow = (page: Page) => page.evaluate(() => document.documentElement.sc
 test.describe('company plan, five people', () => {
   test('Ayşe, junior, Amazon tomorrow, on a phone: the same list as everyone, the student switch, three free tasks and the way to pricing', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await answerForm(page, ['amazon'], 'tomorrow', 'junior');
+    // She passed the online assessment, so the plan starts at the phone screen.
+    await answerForm(page, ['amazon'], 'tomorrow', 'junior', { amazon: 'phone-screen' });
 
-    await expect(page).toHaveURL('/companies/preview?companies=amazon&when=tomorrow&level=junior');
+    await expect(page).toHaveURL('/companies/preview?companies=amazon&when=tomorrow&level=junior&passed=amazon%2Fexperienced%2Fonline-assessment');
     await expect(page.getByRole('heading', { level: 1, name: 'Your Amazon plan at a glance' })).toBeVisible();
+    await expect(page.locator('.preview__chip', { hasText: 'From the Phone screen' })).toBeVisible();
+    await expect(page.getByTestId('company-plan-rest-task').filter({ hasText: 'Online assessment' })).toHaveCount(0);
+    await expect(page.getByTestId('company-plan-panel')).toContainText(/\d of \d reported rounds left/);
     const switchLine = page.getByTestId('company-plan-switch-line');
     await expect(switchLine).toContainText('These rounds come from experienced hires.');
     await expect(switchLine.getByRole('button', { name: 'Interviewing as a student or new graduate?' })).toBeVisible();
@@ -125,6 +138,8 @@ test.describe('company plan, five people', () => {
     await expect(page.getByText('When is your first interview?')).toBeVisible();
     await page.getByTestId('company-plan-when-this-week').click();
     await page.getByTestId('company-plan-level-senior').click();
+    await expect(page.getByRole('heading', { level: 2, name: 'Which round is next at each company?' })).toBeVisible();
+    await answerNextRound(page, ['netflix', 'openai', 'spotify']);
 
     const title = 'Your Netflix, OpenAI and Spotify plan at a glance';
     await expect(page.getByRole('heading', { level: 1, name: title })).toBeVisible();
@@ -174,6 +189,7 @@ test.describe('company plan, five people', () => {
     await page.getByTestId('company-plan-continue').click();
     await page.getByTestId('company-plan-when-later').click();
     await page.getByTestId('company-plan-level-mid').click();
+    await answerNextRound(page, ['meta']);
     await expect(page.getByRole('heading', { level: 1, name: 'Your Meta plan at a glance' })).toBeVisible();
 
     await page.goto('/companies');
@@ -184,6 +200,7 @@ test.describe('company plan, five people', () => {
     await page.getByTestId('company-plan-when-later').click();
     await page.getByTestId('company-plan-level-mid').click();
 
+    // An unlisted company has no rounds to ask about, so the level is the last answer.
     await expect(page.getByRole('heading', { level: 1, name: 'We have not mapped Vercel yet' })).toBeVisible();
     await expect(page.getByTestId('company-plan-rest-task')).toHaveCount(0);
     await page.getByTestId('company-plan-start-first').click();
@@ -251,6 +268,7 @@ test.describe('company plan from a company guide', () => {
 
     await page.getByTestId('company-plan-when-next-week').click();
     await page.getByTestId('company-plan-level-senior').click();
+    await answerNextRound(page, ['elevenlabs']);
     await expect(page).toHaveURL('/companies/preview?companies=elevenlabs&when=next-week&level=senior');
     await expect(page.getByRole('heading', { level: 1, name: 'Your ElevenLabs plan at a glance' })).toBeVisible();
   });

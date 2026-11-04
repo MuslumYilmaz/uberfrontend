@@ -1,9 +1,29 @@
 import rawPlanData from '../../../../../../cdn/questions/company-plan-data.json';
 import type { CompanyPlanAnswers } from '../../../core/models/company-plan.model';
 import { CompanyPlanData, PlannedTask, buildCompanyPlan } from './company-plan.engine';
-import { companyPlanPricingCopy, companySetLine, planDateChip, planDatePassed, planPricingSource, practiceState, roundSourcesLine } from './company-plan.format';
+import { companyPlanPricingCopy, companySetLine, nextRoundName, planDateChip, planDatePassed, planPricingSource, practiceState, previewQueryParams, roundSourcesLine } from './company-plan.format';
 
 const DATA = rawPlanData as unknown as CompanyPlanData;
+
+describe('previewQueryParams', () => {
+  it('carries the companies, their lists, the date, the level and the passed rounds, leaving out what is empty', () => {
+    expect(previewQueryParams({ companies: [{ slug: 'agoda', list: 'gurgaon' }, { slug: 'meta' }], when: 'later', level: 'staff' }))
+      .toEqual({ companies: 'agoda,meta', lists: 'agoda:gurgaon', when: 'later', level: 'staff' });
+    expect(previewQueryParams({ companies: [{ slug: 'amazon' }], when: 'tomorrow', level: 'junior', passedRounds: ['amazon/experienced/online-assessment', 'amazon/experienced/phone-screen'] }))
+      .toEqual({ companies: 'amazon', when: 'tomorrow', level: 'junior', passed: 'amazon/experienced/online-assessment,amazon/experienced/phone-screen' });
+    expect(previewQueryParams({ companies: [{ slug: 'amazon' }], when: 'tomorrow', level: 'junior', passedRounds: [] })['passed']).toBeUndefined();
+  });
+});
+
+describe('nextRoundName', () => {
+  const rounds = (passed: boolean[]) => ({ rounds: passed.map((value, index) => ({ name: `Round ${index + 1}`, passed: value })) as never });
+
+  it('names the first round still ahead once something is passed', () => {
+    expect(nextRoundName(rounds([false, false]))).toBeNull();
+    expect(nextRoundName(rounds([true, false, false]))).toBe('Round 2');
+    expect(nextRoundName(rounds([true, true]))).toBeNull();
+  });
+});
 
 function copyFor(slug: string, data = DATA) {
   const answers: CompanyPlanAnswers = { companies: [{ slug }], when: 'next-week', level: 'senior' };

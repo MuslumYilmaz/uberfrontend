@@ -428,6 +428,26 @@ describe('CompanyPlanService', () => {
       expect(plan.companies[0].rounds.find((round) => round.id === 'second')?.passed).toBeTrue();
       expect(plan.companies[0].rounds.find((round) => round.id === 'second')?.tasks).toEqual([]);
     });
+
+    it('lets the rounds the form states as passed win over the marks on the account', () => {
+      const service = setup();
+      logIn(user('a', saved(ELEVENLABS, { passedRounds: ['elevenlabs/main/second'] })));
+      const stated = service.buildPlan(DATA, { ...ELEVENLABS, passedRounds: ['elevenlabs/main/coding'] }, '2026-11-02');
+      expect(stated.companies[0].rounds.map((round) => round.passed)).toEqual([true, false]);
+      const unstated = service.buildPlan(DATA, ELEVENLABS, '2026-11-02');
+      expect(unstated.companies[0].rounds.map((round) => round.passed)).toEqual([false, true]);
+    });
+
+    it('keeps a stated list of passed rounds in the draft, cleaned down to keys of its own companies', async () => {
+      const service = setup();
+      const answers: CompanyPlanAnswers = {
+        ...ELEVENLABS,
+        passedRounds: ['elevenlabs/main/second', 'agoda/bangkok/recruiter-prep-call', 'elevenlabs/main/second', 'nonsense', 'elevenlabs/main/coding'],
+      };
+      expect(await firstValueFrom(service.save(answers))).toBe('draft');
+      expect(JSON.parse(localStorage.getItem(DRAFT_KEY) ?? 'null')).toEqual({ ...ELEVENLABS, passedRounds: ['elevenlabs/main/coding', 'elevenlabs/main/second'] });
+      expect(service.draft()?.passedRounds).toEqual(['elevenlabs/main/coding', 'elevenlabs/main/second']);
+    });
   });
 
   describe('measurement', () => {

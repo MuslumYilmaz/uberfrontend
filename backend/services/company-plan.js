@@ -67,10 +67,29 @@ function parseCompany(entry, catalog) {
   return { value: { slug: entry.slug, list: entry.list } };
 }
 
+/**
+ * The rounds the form says are behind the person. Keys of a company outside the plan or of a round the catalog does
+ * not know are dropped rather than refused, so a stale draft still becomes a plan; a list of the wrong shape is refused.
+ */
+function parsePassedRounds(value, companies, catalog) {
+  if (value === undefined || value === null) return { value: undefined };
+  if (!Array.isArray(value) || value.some((key) => typeof key !== 'string')) return { error: 'passedRounds must be a list of round keys.' };
+  const slugs = new Set(companies.map((company) => company.slug));
+  const kept = [];
+  for (const key of value) {
+    if (!ROUND_KEY.test(key) || kept.includes(key)) continue;
+    const [slug, listId, roundId] = key.split('/');
+    if (!slugs.has(slug)) continue;
+    if (catalog && !catalog.companies.get(slug)?.get(listId)?.has(roundId)) continue;
+    kept.push(key);
+  }
+  return { value: kept.slice(0, MAX_PASSED_ROUNDS) };
+}
+
 /** Checks the form answers. The result holds only known fields, so nothing else in the body reaches the database. */
 function parseCompanyPlanAnswers(body, catalog) {
   if (!isPlainObject(body)) return { error: 'The plan must be an object.' };
-  const { companies, level, when } = body;
+  const { companies, level, when, passedRounds } = body;
   if (!Array.isArray(companies) || companies.length < 1 || companies.length > MAX_COMPANIES) {
     return { error: `A plan needs 1 to ${MAX_COMPANIES} companies.` };
   }
@@ -84,7 +103,9 @@ function parseCompanyPlanAnswers(body, catalog) {
     if (parsed.some((other) => other.slug === company.value.slug)) return { error: `Repeated company: ${company.value.slug}.` };
     parsed.push(company.value);
   }
-  return { value: { companies: parsed, level, when } };
+  const passed = parsePassedRounds(passedRounds, parsed, catalog);
+  if (passed.error) return { error: passed.error };
+  return { value: { companies: parsed, level, when, ...(passed.value ? { passedRounds: passed.value } : {}) } };
 }
 
 function sameCompanies(a, b) {
@@ -94,16 +115,18 @@ function sameCompanies(a, b) {
 
 /**
  * The plan to store after new answers. The clock restarts only when the date answer or the companies change, so
- * switching a round list keeps "Week of Nov 9". Passed rounds of a dropped company go; manual marks stay.
+ * switching a round list keeps "Week of Nov 9". Passed rounds the form states replace the old ones; without a
+ * statement, passed rounds of a dropped company go and the rest stay. Manual marks stay.
  */
 function nextCompanyPlan(previous, answers, now) {
   const before = typeof previous?.toObject === 'function' ? previous.toObject() : previous;
+  const { passedRounds: stated, ...rest } = answers;
   const keepClock = Boolean(before?.createdAt) && before.when === answers.when && sameCompanies(before.companies || [], answers.companies);
   const kept = new Set(answers.companies.map((company) => company.slug));
   return {
-    ...answers,
+    ...rest,
     createdAt: keepClock ? before.createdAt : now,
-    passedRounds: (before?.passedRounds || []).filter((key) => kept.has(String(key).split('/')[0])),
+    passedRounds: stated ?? (before?.passedRounds || []).filter((key) => kept.has(String(key).split('/')[0])),
     markedDone: before?.markedDone || [],
   };
 }

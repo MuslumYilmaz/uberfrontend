@@ -499,6 +499,58 @@
   background: var(--uf-accent);
 }
 
+/* A round the person has already passed: still in the list, so the loop reads whole, but visibly behind them. */
+.plan-rounds__item--passed {
+  color: var(--uf-text-tertiary);
+  text-decoration: line-through;
+}
+
+.plan-rounds__item--passed::before {
+  background: var(--uf-text-tertiary);
+}
+
+.plan-rounds__passed {
+  display: inline-block;
+  margin-left: 6px;
+  font-size: 12px;
+  text-decoration: none;
+}
+
+.plan-question__hint {
+  margin: -10px 0 0;
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--uf-text-secondary);
+}
+
+/* The rounds of a company are a longer list than four dates, so their choices sit tighter. */
+.plan-choice-group {
+  align-self: stretch;
+  display: grid;
+  gap: 8px;
+}
+
+.plan-choice-group__name {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--uf-text-secondary);
+}
+
+.plan-choices--compact {
+  grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr));
+  gap: 8px;
+}
+
+.plan-choices--compact .plan-choice {
+  min-height: 60px;
+  padding: 11px 14px;
+}
+
+.plan-choices--compact .plan-choice__label {
+  font-size: 15px;
+}
+
 .plan-answers {
   display: flex;
   flex-direction: column;
