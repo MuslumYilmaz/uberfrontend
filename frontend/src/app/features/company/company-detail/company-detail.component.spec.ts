@@ -1,20 +1,25 @@
+import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router';
 import { BehaviorSubject, of } from 'rxjs';
+import { AuthService } from '../../../core/services/auth.service';
 import { QuestionService } from '../../../core/services/question.service';
 import { CompanyDetailComponent } from './company-detail.component';
 
 describe('CompanyDetailComponent', () => {
   let fixture: ComponentFixture<CompanyDetailComponent>;
   let routeParamMap: BehaviorSubject<ReturnType<typeof convertToParamMap>>;
+  const user = signal<unknown>(null);
 
   beforeEach(async () => {
     routeParamMap = new BehaviorSubject(convertToParamMap({ slug: 'google' }));
+    user.set({ _id: 'member', role: 'user', accessTier: 'premium' });
 
     await TestBed.configureTestingModule({
       imports: [CompanyDetailComponent],
       providers: [
         provideRouter([]),
+        { provide: AuthService, useValue: { user } },
         {
           provide: ActivatedRoute,
           useValue: {
@@ -75,5 +80,19 @@ describe('CompanyDetailComponent', () => {
     );
     expect(text).not.toContain('Openai');
     expect(text).not.toContain('Bytedance');
+  });
+
+  it('links the guide, and the way back to the plan when the plan covers the company', () => {
+    const links = () => Array.from((fixture.nativeElement as HTMLElement).querySelectorAll<HTMLAnchorElement>('[data-testid="company-detail-links"] a'))
+      .map((link) => [link.textContent?.trim(), link.getAttribute('href')]);
+    expect(links()).toEqual([['Read the Google guide', '/companies/google/preview']]);
+
+    user.set({ _id: 'member', role: 'user', accessTier: 'premium', companyPlan: { companies: [{ slug: 'meta' }, { slug: 'google' }], when: 'later', level: 'senior' } });
+    fixture.detectChanges();
+    expect(links()).toEqual([['Read the Google guide', '/companies/google/preview'], ['Back to my plan', '/companies/plan']]);
+
+    routeParamMap.next(convertToParamMap({ slug: 'apple' }));
+    fixture.detectChanges();
+    expect(links()).toEqual([['Read the Apple guide', '/companies/apple/preview']]);
   });
 });

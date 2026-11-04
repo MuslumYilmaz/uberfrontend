@@ -687,6 +687,22 @@
   color: var(--uf-text-secondary);
 }
 
+.plan-guides__beyond {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--uf-border-subtle);
+}
+
+.plan-guides__title {
+  margin: 0;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--uf-text-secondary);
+}
+
 @media (max-width: 959px) {
   .plan-hero {
     grid-template-columns: minmax(0, 1fr);

@@ -1774,7 +1774,7 @@
             "label": "LeetCode Discuss: ServiceNow senior frontend developer interview experience, February 2026",
             "url": "https://leetcode.com/discuss/post/7711064/",
             "publisher": "LeetCode Discuss",
-            "date": "2026-03"
+            "date": "2026-02"
           },
           {
             "label": "Blind: ServiceNow phone screen for a staff engineer, frontend-leaning, September 2021",
@@ -1795,7 +1795,7 @@
             "label": "LeetCode Discuss: ServiceNow senior frontend developer interview experience, February 2026",
             "url": "https://leetcode.com/discuss/post/7711064/",
             "publisher": "LeetCode Discuss",
-            "date": "2026-03"
+            "date": "2026-02"
           },
           {
             "label": "Blind: ServiceNow phone screen for a staff engineer, frontend-leaning, September 2021",
@@ -1969,22 +1969,6 @@
       }
     ],
     "spotify": [
-      {
-        "id": "react-image-slider",
-        "kind": "coding",
-        "tech": "react",
-        "title": "Image Slider (Dots + Previous/Next)",
-        "access": "premium",
-        "route": "/react/coding/react-image-slider",
-        "sources": [
-          {
-            "label": "Blind: Spotify web engineer interview thread, October 2021",
-            "url": "https://www.teamblind.com/post/Spotify-Web-Engineer-Interview-hNTex8N7",
-            "publisher": "Blind",
-            "date": "2021-10"
-          }
-        ]
-      },
       {
         "id": "react-debounced-search",
         "kind": "coding",

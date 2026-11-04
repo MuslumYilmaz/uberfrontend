@@ -4,8 +4,10 @@ import fs from 'fs';
 import path from 'path';
 import { execFile } from 'child_process';
 import { promisify } from 'util';
-import { cdnSystemDesignIndexPath } from './content-paths.mjs';
+import { cdnSystemDesignIndexPath, generatedAppDir, srcPrerenderRoutesPath } from './content-paths.mjs';
+import { loadTsModule } from './load-ts-module.mjs';
 import { startSeoStaticServer } from './seo-static-server.mjs';
+import { marksPremiumParts, premiumLockViolations } from './seo-premium-lock-contract.mjs';
 import { loadSitemapDateMap, schemaDateMatchesSitemap } from './seo-sitemap-date-contract.mjs';
 
 const BUILD_DIR = path.resolve(process.env.SEO_BUILD_DIR || 'dist/frontendatlas/browser');
@@ -1888,9 +1890,9 @@ try {
     detail: `mainEntity=${googleCollectionPage?.mainEntity?.['@id'] || '(missing)'}`,
   });
   checks.push({
-    name: 'Google company preview CollectionPage declares free access and the sitemap modification date',
+    name: 'Google company preview CollectionPage marks its locked prompts as Premium and declares the sitemap modification date',
     ok:
-      googleCollectionPage?.isAccessibleForFree === true &&
+      marksPremiumParts(googleCollectionPage) &&
       schemaDateMatchesSitemap(googleCollectionPage, GOOGLE_PREVIEW_ROUTE, sitemapDates),
     detail: `dateModified=${googleCollectionPage?.dateModified || '(missing)'}`,
   });
@@ -2067,9 +2069,9 @@ try {
     detail: `mainEntity=${netflixCollectionPage?.mainEntity?.['@id'] || '(missing)'}`,
   });
   checks.push({
-    name: 'Netflix company preview CollectionPage declares free access and the sitemap modification date',
+    name: 'Netflix company preview CollectionPage marks its locked prompts as Premium and declares the sitemap modification date',
     ok:
-      netflixCollectionPage?.isAccessibleForFree === true &&
+      marksPremiumParts(netflixCollectionPage) &&
       schemaDateMatchesSitemap(netflixCollectionPage, NETFLIX_PREVIEW_ROUTE, sitemapDates),
     detail: `dateModified=${netflixCollectionPage?.dateModified || '(missing)'}`,
   });
@@ -2191,11 +2193,11 @@ try {
       detail: `item_count=${listItems.length}`,
     });
     checks.push({
-      name: `${guide.label} company preview CollectionPage references the ItemList, declares free access and matches the sitemap date`,
+      name: `${guide.label} company preview CollectionPage references the ItemList, marks its locked prompts as Premium and matches the sitemap date`,
       ok:
         Boolean(collectionPage?.mainEntity?.['@id']) &&
         collectionPage?.mainEntity?.['@id'] === itemList?.['@id'] &&
-        collectionPage?.isAccessibleForFree === true &&
+        (guide.prompts.length > 3 ? marksPremiumParts(collectionPage) : collectionPage?.isAccessibleForFree === true) &&
         schemaDateMatchesSitemap(collectionPage, guide.route, sitemapDates),
       detail: `mainEntity=${collectionPage?.mainEntity?.['@id'] || '(missing)'} dateModified=${collectionPage?.dateModified || '(missing)'}`,
     });
@@ -2232,6 +2234,22 @@ try {
       detail: `title=${titleOk} headings=${headingsOk} catalog=${catalogOk} schema=${schemaOk}`,
     });
   }
+
+  const premiumRoutes = new Set(loadTsModule(path.join(generatedAppDir, 'premium-question-routes.ts')).PREMIUM_QUESTION_ROUTES);
+  const companyGuideRoutes = fs.readFileSync(srcPrerenderRoutesPath, 'utf8').split('\n')
+    .map((line) => line.trim())
+    .filter((route) => /^\/companies\/[^/]+\/preview$/.test(route));
+  const lockProblems = [];
+  for (const route of companyGuideRoutes) {
+    const body = await curlBody(`${base}${route}`, { followRedirects: true, userAgent: GOOGLEBOT_USER_AGENT });
+    const collectionPage = extractSeoJsonLd(body).graph.find((node) => hasSchemaType(node, 'CollectionPage'));
+    lockProblems.push(...premiumLockViolations(body, { premiumRoutes, collectionPage }).map((problem) => `${route}: ${problem}`));
+  }
+  checks.push({
+    name: `${companyGuideRoutes.length} company guides show no Premium practice name to visitors and mark the locked parts for search`,
+    ok: companyGuideRoutes.length > 0 && premiumRoutes.size > 0 && lockProblems.length === 0,
+    detail: lockProblems.length ? lockProblems.slice(0, 5).join(' | ') : `${premiumRoutes.size} Premium routes checked`,
+  });
 
   let failed = 0;
   for (const check of checks) {

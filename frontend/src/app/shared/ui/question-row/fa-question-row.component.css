@@ -139,6 +139,12 @@
   box-shadow: inset 0 1px 0 color-mix(in srgb, var(--fa-text) 6%, transparent);
 }
 
+/* A Premium item for a viewer without Premium: the text stays in the page for search engines, under a blur. */
+.fa-question-row__concealed {
+  filter: blur(8px);
+  user-select: none;
+}
+
 .fa-question-row__locked {
   display: inline-flex;
   align-items: center;

@@ -185,11 +185,18 @@ test.describe('routing and access critical paths', () => {
     await expect(page.getByRole('heading', { name: /how google evaluates front-end engineers/i })).toHaveCount(0);
   });
 
-  test('company preview route redirects premium users to full company detail', async ({ page }) => {
+  test('premium users read the public company guide and still open the full company set', async ({ page }) => {
     await seedPremiumSession(page);
 
     await page.goto('/companies/google/preview');
+    await expect(page).toHaveURL('/companies/google/preview');
+    await expect(page.getByRole('heading', { level: 1, name: 'Google Frontend Interview Questions' })).toBeVisible();
+    await expect(page.getByTestId('company-plan-entry')).toContainText('With Premium, your plan opens right away.');
+    await expect(page.getByRole('link', { name: 'Unlock the full Google practice set' })).toBeHidden();
+
+    await page.getByTestId('company-set-entry').getByRole('link', { name: 'Open the Google set' }).click();
     await expect(page).toHaveURL('/companies/google/all');
+    await expect(page.getByTestId('company-detail-links').getByRole('link', { name: 'Read the Google guide' })).toHaveAttribute('href', '/companies/google/preview');
     await expect(page.locator('app-company-detail')).toBeVisible();
     await expect(
       page.getByRole('heading', { level: 1, name: 'Google Frontend Practice Group' }),

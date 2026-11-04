@@ -93,22 +93,6 @@ function buildTrackDetailUrlTree(
   });
 }
 
-function buildCompanyDetailUrlTree(
-  router: Router,
-  targetUrl: string,
-  fallbackSlug?: string | null,
-): UrlTree | null {
-  const parsed = router.parseUrl(targetUrl);
-  const segments = parsed.root.children['primary']?.segments.map((segment) => segment.path) ?? [];
-  const slug = fallbackSlug || (segments[0] === 'companies' ? segments[1] : undefined);
-  if (!slug) return null;
-
-  return router.createUrlTree(['/companies', slug], {
-    queryParams: parsed.queryParams,
-    fragment: parsed.fragment ?? undefined,
-  });
-}
-
 function premiumCheck(
   targetUrl: string | undefined,
   reason: PremiumGateReason,
@@ -169,36 +153,6 @@ export const trackPreviewAccessGuard: CanActivateFn = (
   const resolveAccess = (user: User | null): boolean | UrlTree => {
     if (!isPremiumUser(user)) return true;
     return buildTrackDetailUrlTree(router, state.url, routeSlug) || true;
-  };
-
-  if (auth.isLoggedIn()) {
-    return resolveAccess(auth.user());
-  }
-
-  // Public preview pages only redirect premium members to the full route. A
-  // visitor with no session hint (first visit, crawler rendering) is anonymous
-  // without asking the API, which otherwise answered 401 on every render.
-  if (!sessionAuthority.hasSessionHint()) return true;
-
-  return auth.ensureMe().pipe(
-    map((u) => resolveAccess(u)),
-    catchError(() => of(true)),
-  );
-};
-
-export const companyPreviewAccessGuard: CanActivateFn = (
-  route: ActivatedRouteSnapshot,
-  state: RouterStateSnapshot,
-): boolean | UrlTree | Observable<boolean | UrlTree> => {
-  const auth = inject(AuthService);
-  const sessionAuthority = inject(AuthSessionAuthorityService);
-  const router = inject(Router);
-
-  const routeSlug = (route.paramMap.get('slug') || '').trim().toLowerCase();
-
-  const resolveAccess = (user: User | null): boolean | UrlTree => {
-    if (!isPremiumUser(user)) return true;
-    return buildCompanyDetailUrlTree(router, state.url, routeSlug) || true;
   };
 
   if (auth.isLoggedIn()) {

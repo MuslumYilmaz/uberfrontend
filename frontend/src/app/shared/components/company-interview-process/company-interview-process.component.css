@@ -110,6 +110,26 @@
   color: color-mix(in srgb, var(--uf-text-secondary) 92%, transparent);
 }
 
+/* A Premium practice page: the name stays in the page for search engines, under a blur, until the viewer has Premium. */
+.interview-process__locked {
+  filter: blur(8px);
+  user-select: none;
+}
+
+/* Names a blurred link for what it is, or the evidence counts for what opens them, so neither reads as a rendering fault. */
+.interview-process__tag {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 0 7px;
+  border: 1px solid color-mix(in srgb, var(--uf-accent) 45%, transparent);
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.6;
+  color: var(--uf-accent);
+  vertical-align: middle;
+}
+
 .interview-process__strength {
   display: block;
   font-size: 12px;

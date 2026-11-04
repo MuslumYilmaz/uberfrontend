@@ -59,6 +59,11 @@ export type CompanyPlanCompany = {
    * the questions whose sources no list cites: the list the account matches, else the first list.
    */
   readonly reportVariants?: Readonly<Record<string, readonly string[]>>;
+  /**
+   * Round ids for a reported task whose report the process table cites on no stage, so the plan does not drop it on
+   * the first coding round. Ids are looked up in whichever list the task lands on.
+   */
+  readonly reportRounds?: Readonly<Record<string, readonly string[]>>;
   readonly variants: readonly CompanyPlanVariant[];
 };
 
@@ -75,7 +80,7 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
       {
         id: 'bangkok',
         title: 'Front-end engineers, Bangkok relocation loops, Senior and Staff, 2025 to 2026',
-        from: 'Bangkok, Senior and Staff',
+        from: 'Senior and Staff candidates in Bangkok',
         ask: 'Interviewing in Bangkok?',
         default: true,
         reported: { levels: ['senior', 'staff'], who: 'Senior and Staff candidates' },
@@ -128,7 +133,7 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
       {
         id: 'gurgaon',
         title: 'Front-end engineers, Gurgaon, 2024 to 2025',
-        from: 'Gurgaon',
+        from: 'candidates in Gurgaon',
         ask: 'Interviewing in Gurgaon?',
         rounds: [
           {
@@ -277,7 +282,7 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
       {
         id: 'interns',
         title: 'Frontend interns, 2023',
-        from: 'a 2023 internship',
+        from: 'a 2023 internship loop',
         ask: 'Interviewing for an internship?',
         rounds: [
           { id: 'introductory-interview', stage: 'Introductory interview', kinds: ['recruiter'] },
@@ -341,7 +346,7 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
       {
         id: 'us',
         title: 'Frontend engineers, United States',
-        from: 'the United States',
+        from: 'candidates in the United States',
         ask: 'Interviewing in the United States?',
         default: true,
         rounds: [
@@ -370,7 +375,7 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
       {
         id: 'singapore-australia',
         title: 'Frontend engineers, Singapore and Australia',
-        from: 'Singapore and Australia',
+        from: 'candidates in Singapore and Australia',
         ask: 'Interviewing in Singapore or Australia?',
         rounds: [
           { id: 'online-assessment', stage: 'Online assessment', kinds: ['coding'] },
@@ -468,7 +473,7 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
       {
         id: 'us',
         title: 'Frontend and UI engineers, United States, 2021 to 2025',
-        from: 'the United States',
+        from: 'candidates in the United States',
         ask: 'Interviewing in the United States?',
         default: true,
         rounds: [
@@ -773,7 +778,7 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
       {
         id: 'ic4-ic6',
         title: 'Front End Engineer, IC4 to IC6',
-        from: 'Front End Engineer roles, IC4 to IC6',
+        from: 'Front End Engineer candidates at IC4 to IC6',
         ask: 'Interviewing for a full-time role?',
         default: true,
         reported: { levels: ['mid', 'senior', 'staff'], who: 'IC4 to IC6 candidates' },
@@ -793,7 +798,7 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
       {
         id: 'interns',
         title: 'Front End Engineer internships',
-        from: 'internships',
+        from: 'internship candidates',
         ask: 'Interviewing for an internship?',
         rounds: [
           { id: 'recruiter-call', stage: 'Recruiter call', kinds: ['recruiter'] },
@@ -969,7 +974,8 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
           {
             id: 'hiring-manager',
             stage: 'Hiring manager',
-            kinds: ['people', 'coding'],
+            // Spoken JavaScript questions and a design task, so a polyfill drill does not land here.
+            kinds: ['people', 'design'],
             note: 'A hiring-manager round mixing JavaScript questions, a design task and behavioural questions.',
           },
         ],
@@ -985,7 +991,7 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
       {
         id: 'ho-chi-minh',
         title: 'Front-end engineers, Ho Chi Minh City, 2025',
-        from: 'Ho Chi Minh City',
+        from: 'candidates in Ho Chi Minh City',
         ask: 'Interviewing in Ho Chi Minh City?',
         default: true,
         rounds: [
@@ -1035,7 +1041,7 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
       {
         id: 'mainland-china',
         title: 'Campus and social hires, mainland China, in Chinese, 2019 to 2025',
-        from: 'mainland China',
+        from: 'candidates in mainland China',
         ask: 'Interviewing in mainland China?',
         rounds: [
           {
@@ -1093,6 +1099,8 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
     ],
   },
   stripe: {
+    // The LeetCode Discuss post behind both tasks describes a software engineer 2 initial screen, not the onsite.
+    reportRounds: { 'js-group-by': ['technical-screen'], 'js-lodash-get': ['technical-screen'] },
     variants: [
       {
         id: 'main',
@@ -1161,7 +1169,7 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
       {
         id: 'interns',
         title: 'Internships',
-        from: 'internships',
+        from: 'internship candidates',
         ask: 'Interviewing for an internship?',
         rounds: [
           { id: 'recruiter-call', stage: 'Recruiter call', kinds: ['recruiter'] },
@@ -1212,6 +1220,12 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
       'js-valid-anagram': ['swe3'],
       'messaging-inbox-frontend': ['swe3'],
       'react-accordion-faq': ['swe3'],
+    },
+    // The 2022 loop's tasks belong to the onsite coding rounds, not to the 2026 assessment or the Karat screen.
+    reportRounds: {
+      'js-add-two-promises': ['coding-rounds'],
+      'js-valid-anagram': ['coding-rounds'],
+      'react-accordion-faq': ['coding-rounds'],
     },
     variants: [
       {
@@ -1387,7 +1401,8 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
             kinds: ['people'],
             note: '30–60 minutes on the official pages; a Blind commenter describes it as non-technical.',
           },
-          { id: 'final-take-home-review', stage: 'Final: take-home review', kinds: ['coding'] },
+          // The review discusses the take-home's design and further optimisation, so a design case modelled on it fits here.
+          { id: 'final-take-home-review', stage: 'Final: take-home review', kinds: ['coding', 'design'] },
           { id: 'final-javascript-fundamentals', stage: 'Final: JavaScript fundamentals', kinds: ['coding'] },
           { id: 'final-coding', stage: 'Final: coding', kinds: ['coding'] },
           { id: 'final-system-design', stage: 'Final: system design', kinds: ['design'] },

@@ -1043,7 +1043,7 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
         },
         {
           question: 'How current are these reports?',
-          answer: 'The newest frontend account we read is from about September 2025 and we read none from 2026, so confirm the current format with your recruiter.',
+          answer: 'The newest frontend account cited here is from about September 2025, so confirm the current format with your recruiter.',
         },
         {
           question: 'Does Airbnb publish interview guidance?',

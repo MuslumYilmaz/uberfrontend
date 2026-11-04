@@ -13,7 +13,6 @@ import { prerenderPageRedirect } from './core/guards/prerender-page-redirect';
 import { authGuard, authMatchGuard } from './core/guards/auth.guard';
 import { adminGuard, adminMatchGuard } from './core/guards/admin.guard';
 import {
-  companyPreviewAccessGuard,
   premiumGuard,
   trackPreviewAccessGuard,
 } from './core/guards/premium.guard';
@@ -363,8 +362,8 @@ export const routes: Routes = [
           import('./features/company/company-plan/company-plan.routes').then((m) => m.COMPANY_PLAN_ROUTES),
       },
       {
+        // Open to everyone: a Premium member reads the same guide, with the card leading to their plan.
         path: ':slug/preview',
-        canActivate: [companyPreviewAccessGuard],
         loadComponent: () =>
           import('./features/company/company-preview/company-preview.component').then(
             (m) => m.CompanyPreviewComponent,

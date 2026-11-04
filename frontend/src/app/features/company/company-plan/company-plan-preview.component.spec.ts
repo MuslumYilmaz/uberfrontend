@@ -6,7 +6,9 @@ import rawPlanData from '../../../../../../cdn/questions/company-plan-data.json'
 import { CompanyPlanAnswers } from '../../../core/models/company-plan.model';
 import { AuthService } from '../../../core/services/auth.service';
 import { CompanyPlanPreviewComponent, readPreviewRequest } from './company-plan-preview.component';
+import { COMPANY_SET_COUNTS, PREMIUM_QUESTION_COUNT } from './company-plan-sets';
 import { CompanyPlanData, buildCompanyPlan } from './company-plan.engine';
+import { companySetLine } from './company-plan.format';
 import { CompanyPlanService } from './company-plan.service';
 
 const DATA = rawPlanData as unknown as CompanyPlanData;
@@ -102,7 +104,7 @@ describe('CompanyPlanPreviewComponent', () => {
       setup(ELEVENLABS);
       expect(text('h1')).toBe('Your ElevenLabs plan at a glance');
       expect(Array.from(host.querySelectorAll('.preview__chip')).map((chip) => chip.textContent)).toEqual(['Next week', 'Senior', 'React, from reports']);
-      expect(text('.preview__evidence')).toBe('Built from 6 public sources, last checked Oct 22, 2026. These are practice versions, not leaked questions.');
+      expect(text('.preview__evidence')).toBe('Rounds and tasks from 6 public sources, last checked Oct 22, 2026. These are practice versions, not leaked questions.');
       expect(host.textContent).not.toContain('Which framework');
     });
 
@@ -113,45 +115,91 @@ describe('CompanyPlanPreviewComponent', () => {
       expect(text('#company-plan-open-title')).toBe('Try these 3 tasks for free');
       expect(text('.preview__section-sub')).toBe('They run in your browser. No account needed.');
       expect(rows[0].getAttribute('href')).toMatch(/^\/javascript\/(coding|debug)\//);
-      expect(rows[0].textContent).toContain('Based on a report: Aced, Oct 2026');
+      expect(rows[0].textContent).toContain('Modelled on a report: Aced, Oct 2026');
       // "Fix async race in `fetchWithCache`" shows its code as code.
       expect(rows.map((row) => row.querySelector('code')?.textContent)).toContain('fetchWithCache');
       expect(rows.some((row) => row.textContent?.includes('`'))).toBeFalse();
     });
 
-    it('locks the rest of the list behind pricing, with an icon rather than a claim about each task', () => {
+    it('names every task in the rest of the plan, locks the Premium ones with their round, source and a lock, and leaves free ones open', () => {
       setup(ELEVENLABS);
       const rows = all('company-plan-rest-task');
-      expect(rows.length).toBeGreaterThan(0);
-      for (const row of rows) {
-        expect(row.getAttribute('href')).toBe('/pricing?src=company_plan_elevenlabs');
-        expect(row.querySelector('.plan-row__lock')).toBeTruthy();
-        expect(row.getAttribute('aria-label')).toContain('locked until you build your plan');
-        expect(row.textContent).not.toContain('Premium');
-      }
-      expect(text('[data-testid="company-plan-rest"] .preview__section-sub')).toBe('These unlock with Premium, along with every round in order.');
+      const planned = fixture.componentInstance.restTasks();
+      expect(rows.length).toBe(planned.length);
+      expect(planned.some((row) => row.locked)).toBeTrue();
+      planned.forEach((row, index) => {
+        const element = rows[index];
+        const title = row.task.title.replace(/`/g, '');
+        expect(element.getAttribute('href')).toBe(row.task.route);
+        expect(element.textContent).toContain(title);
+        expect(element.querySelector('.plan-row__meta')?.textContent).toMatch(/ · about \d/);
+        expect(element.querySelector('.plan-row__why')?.textContent).toBe(row.why);
+        if (row.locked) {
+          expect(row.task.access).toBe('premium');
+          expect(element.classList).toContain('plan-row--locked');
+          expect(element.querySelector('.plan-row__lock')).toBeTruthy();
+          expect(element.querySelector('.plan-row__tag--locked')?.textContent).toBe('Premium');
+          expect(element.getAttribute('aria-label')).toBe(`${title}, ${row.meta.replace(' · ', ', ')}, opens with Premium`);
+        } else {
+          expect(row.task.access).toBe('free');
+          expect(element.querySelector('.plan-row__lock')).toBeNull();
+          expect(element.querySelector('.plan-row__tag--free')?.textContent).toBe('Free');
+          expect(element.getAttribute('aria-label')).toBe(title);
+        }
+      });
+      expect(text('[data-testid="company-plan-rest"] .preview__section-sub')).toBe('Premium opens the locked tasks, with every round in order.');
     });
 
-    it('sums the plan up with real counts', () => {
+    it('marks the tasks that run as an interview, in the list and in the panel', () => {
       setup(ELEVENLABS);
-      const facts = Array.from(host.querySelectorAll('.preview__facts li')).map((fact) => fact.textContent?.trim());
-      expect(facts[0]).toMatch(/^6 tasks for next week, about [\d.]+ hours?$/);
-      expect(facts[1]).toBe('All 5 reported rounds in order, each with its sources');
-      expect(facts[2]).toBe(`Premium also opens ${DATA.general.premiumCounts.react} React tasks and ${DATA.general.premiumCounts.systemDesign} system design walkthroughs`);
+      const plan = fixture.componentInstance.plan()!;
+      const pressure = plan.tasks.filter((task) => task.pressure).length;
+      const facts = Array.from(host.querySelectorAll('.preview__facts li')).map((fact) => fact.textContent?.trim() ?? '');
+      const fact = facts.find((line) => line.includes('(Pressure Mode)'));
+      expect(Boolean(fact)).toBe(pressure > 0);
+      if (fact) expect(fact).toBe(`${pressure} ${pressure === 1 ? 'task runs' : 'tasks run'} as an interview (Pressure Mode): the requirements change while you code`);
+      const tagged = Array.from(host.querySelectorAll('[data-testid="company-plan-rest-task"], [data-testid="company-plan-open-task"]'))
+        .filter((row) => Array.from(row.querySelectorAll('.plan-row__tag')).some((tag) => tag.textContent === 'Pressure Mode')).length;
+      const shown = [...fixture.componentInstance.openTasks(), ...fixture.componentInstance.restTasks()].filter((row) => row.task.pressure).length;
+      expect(tagged).toBe(shown);
+    });
+
+    it('writes a company with a hyphen into the pricing source the way the guides do', () => {
+      setup({ companies: 'capital-one', when: 'next-week', level: 'senior' });
+      testId('company-plan-build')?.click();
+      expect(navigate).toHaveBeenCalledOnceWith(['/pricing'], { queryParams: { src: 'company_plan_capital_one' } });
+    });
+
+    it('sums the plan up with real counts: the plan, the company set and the whole Premium library', () => {
+      setup(ELEVENLABS);
+      const facts = Array.from(host.querySelectorAll('.preview__facts li')).map((fact) => fact.textContent?.trim() ?? '');
+      const set = COMPANY_SET_COUNTS['elevenlabs']!;
+      const plan = fixture.componentInstance.plan()!;
+      const open = plan.tasks.filter((task) => task.access === 'free').length;
+      expect(facts[0]).toBe(`6 tasks for next week, about ${facts[0].match(/about ([\d.]+ hours?)/)?.[1]}: ${open} open now, ${6 - open} with Premium`);
+      expect(facts[1]).toBe('All 5 reported rounds in order, with their tasks and your progress');
+      expect(facts).toContain(companySetLine([{ name: 'ElevenLabs', counts: set }]));
+      expect(facts.some((fact) => fact.includes(`The full ElevenLabs set: ${set.all} questions`))).toBeTrue();
+      expect(facts[facts.length - 1]).toBe(`Premium opens all ${PREMIUM_QUESTION_COUNT} Premium questions, including ${DATA.general.premiumCounts.react} React tasks and ${DATA.general.premiumCounts.systemDesign} system design walkthroughs`);
     });
 
     it('counts a free task from outside the plan apart, so the rows add up to what the panel says', () => {
       setup({ companies: 'agoda', when: 'next-week', level: 'junior' });
-      expect(text('.preview__facts li')).toMatch(/^6 tasks for next week, about [\d.]+ hours?, plus 1 free warm-up$/);
+      expect(text('.preview__facts li')).toMatch(/^6 tasks for next week, about [\d.]+ hours?(: \d open now, \d with Premium)?, plus 1 free warm-up outside the plan$/);
       expect(all('company-plan-open-task').length + all('company-plan-rest-task').length).toBe(7);
       expect(text('#company-plan-rest-title')).toBe('The rest of your plan');
     });
 
     it('calls the locked rows the plan when none of the free tasks is part of it', () => {
       setup({ companies: 'walmart', when: 'next-week', level: 'senior' });
-      expect(text('.preview__facts li')).toMatch(/^6 tasks for next week, about [\d.]+ hours?, plus 3 free warm-ups$/);
+      expect(text('.preview__facts li')).toMatch(/^6 tasks for next week, about [\d.]+ hours?(: \d open now, \d with Premium)?, plus 3 free warm-ups outside the plan$/);
       expect(all('company-plan-rest-task').length).toBe(6);
       expect(text('#company-plan-rest-title')).toBe('Your plan');
+    });
+
+    it('says what the button does: the plan opens with Premium', () => {
+      setup(ELEVENLABS);
+      expect(text('[data-testid="company-plan-build"]')).toBe('Unlock my plan →');
     });
 
     it('offers to save the plan on a free account and comes back here after signing up', () => {
@@ -168,10 +216,18 @@ describe('CompanyPlanPreviewComponent', () => {
       expect(plans.track).toHaveBeenCalledWith('company_plan_build_clicked', jasmine.objectContaining({ companies: 'elevenlabs', viewer: 'guest' }));
     });
 
-    it('does not offer a phone-only line in a way that hides the task list', () => {
+    it('tells a phone what the tasks are good for there, without hiding the task list', () => {
       setup(ELEVENLABS);
-      expect(text('.preview__phone-note')).toBe('Coding tasks need a larger screen.');
+      expect(text('.preview__phone-note')).toBe('On a phone, each task opens as a question with its solution. Writing code and running checks need a desktop or tablet.');
+      expect(testId('company-plan-phone-note')?.querySelector('a')).toBeNull();
+      expect(text('.preview__section-sub--phone')).toBe('Read them here; the code runs on a desktop or tablet. No account needed.');
       expect(all('company-plan-open-task').length).toBe(3);
+    });
+
+    it('the night before an interview, points a phone at the guide to read', () => {
+      setup({ ...ELEVENLABS, when: 'tomorrow' });
+      expect(text('.preview__phone-note')).toContain('Tonight on a phone, read the ElevenLabs guide: its rounds and open prompts.');
+      expect(testId('company-plan-phone-note')?.querySelector('a')?.getAttribute('href')).toBe('/companies/elevenlabs/preview');
     });
   });
 
@@ -199,6 +255,9 @@ describe('CompanyPlanPreviewComponent', () => {
       const rest = all('company-plan-rest-task');
       expect(rest[0].getAttribute('href')).not.toContain('/pricing');
       expect(rest[0].querySelector('.plan-row__lock')).toBeNull();
+      expect(rest[0].querySelector('.plan-row__tag--locked')).toBeNull();
+      expect(rest[0].textContent).toContain(fixture.componentInstance.restTasks()[0].task.title.replace(/`/g, ''));
+      expect(text('[data-testid="company-plan-build"]')).toBe('Open my plan →');
 
       testId('company-plan-build')?.click();
       expect(navigate).toHaveBeenCalledOnceWith(['/companies/plan']);
@@ -216,7 +275,7 @@ describe('CompanyPlanPreviewComponent', () => {
     it('explains where the rounds come from and switches the list on request', () => {
       setup({ companies: 'agoda', when: 'next-week', level: 'senior' });
       const line = testId('company-plan-switch-line');
-      expect(line?.textContent).toContain('These rounds come from Bangkok, Senior and Staff.');
+      expect(line?.textContent).toContain('These rounds come from Senior and Staff candidates in Bangkok.');
       (line?.querySelector('button') as HTMLButtonElement).click();
 
       expect(plans.save).toHaveBeenCalledOnceWith({ companies: [{ slug: 'agoda', list: 'gurgaon' }], when: 'next-week', level: 'senior' });

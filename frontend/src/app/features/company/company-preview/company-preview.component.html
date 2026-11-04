@@ -1,4 +1,8 @@
-<section class="company-preview" data-testid="company-preview-page" (click)="onGuideClick($event)">
+<section
+  class="company-preview"
+  [class.company-preview--member]="member()"
+  data-testid="company-preview-page"
+  (click)="onGuideClick($event)">
   <nav class="preview-breadcrumb" aria-label="Company breadcrumb">
     <a [routerLink]="['/companies']">Companies</a>
     <span>/</span>
@@ -11,19 +15,13 @@
     aria-labelledby="company-plan-entry-title"
     data-testid="company-plan-entry">
     <div class="company-plan-entry__text">
-      <p id="company-plan-entry-title" class="company-plan-entry__title">Interviewing at {{ label }}?</p>
-      <p class="company-plan-entry__line">
-        Pick your interview date and level, then see the rounds candidates reported and try the first tasks for free.
-      </p>
+      <p id="company-plan-entry-title" class="company-plan-entry__title">{{ planEntry().title }}</p>
+      <p class="company-plan-entry__line">{{ planEntry().line }}</p>
     </div>
-    <a faButton variant="primary" size="lg" [routerLink]="['/companies']" [queryParams]="{ company: slug }">
-      Build my {{ label }} plan <span aria-hidden="true">→</span>
+    <a faButton variant="primary" size="lg" [routerLink]="planEntry().link" [queryParams]="planEntry().queryParams">
+      {{ planEntry().button }} <span aria-hidden="true">→</span>
     </a>
   </aside>
-
-  <p class="preview-caveat" data-testid="company-practice-disclaimer">
-    {{ companyPracticeDisclaimer }}
-  </p>
 
   <ng-container *ngIf="isOpenAiPreview; else nonOpenAiPreview">
     <header class="preview-hero openai-hero fa-card fa-card--elevated">
@@ -39,7 +37,45 @@
         <span class="preview-chip">Streaming, state, accessibility, system design</span>
         <span class="preview-chip preview-chip--lock">Full practice set requires Premium</span>
       </div>
+      <ng-container *ngTemplateOutlet="practiceDisclaimer"></ng-container>
     </header>
+
+    <app-company-interview-process *ngIf="interviewProcess as process" [slug]="slug" [companyLabel]="label" [process]="process" [lockPremium]="tier() === 'guest'" [showSourceLinks]="!detailLocked()"></app-company-interview-process>
+    <ng-container *ngTemplateOutlet="lockGateCard; context: { $implicit: processGate() }"></ng-container>
+
+    <section class="openai-section" aria-labelledby="openai-prompts">
+      <div class="openai-section__head">
+        <p class="preview-kicker">Representative practice prompts</p>
+        <h2 id="openai-prompts">Five OpenAI frontend interview practice questions</h2>
+        <p>
+          Use these prompts as role-relevant drills. They are intentionally public, representative, and scoped to
+          frontend interview skills rather than leaked or confirmed company questions.
+        </p>
+      </div>
+
+      <div class="openai-prompt-list">
+        <article
+          class="openai-prompt"
+          *ngFor="let prompt of openAiPracticePrompts; let i = index"
+          [class.company-prompt--locked]="promptLocked(i)"
+          [attr.id]="prompt.id">
+          <p class="openai-prompt__number">Question {{ i + 1 }}</p>
+          <h3>{{ prompt.title }}</h3>
+          <p class="company-prompt__statement"><span [class.company-locked]="statementLocked(i)" [class.premium-locked]="statementLocked(i)" [attr.data-nosnippet]="statementLocked(i) ? '' : null" [attr.inert]="statementLocked(i) ? '' : null">{{ prompt.intent }}</span></p>
+          <div
+            class="company-prompt__details"
+            [class.company-prompt__locked]="promptLocked(i)" [class.premium-locked]="promptLocked(i)" [attr.data-nosnippet]="promptLocked(i) ? '' : null"
+            [attr.aria-hidden]="promptLocked(i) || null"
+            [attr.inert]="promptLocked(i) ? '' : null">
+            <h4>Strong answer should cover</h4>
+            <ul>
+              <li *ngFor="let item of prompt.rubric">{{ item }}</li>
+            </ul>
+          </div>
+        </article>
+      </div>
+      <ng-container *ngTemplateOutlet="lockGateCard; context: { $implicit: promptGate(openAiPracticePrompts.length) }"></ng-container>
+    </section>
 
     <section class="openai-section openai-section--intro" aria-labelledby="openai-study-focus">
       <div>
@@ -76,43 +112,15 @@
         choice between a 60-minute JavaScript coding interview and a 60-minute agentic coding interview in a Python
         codebase with AI tools.
       </p>
-      <p>
+      <p><span [class.company-locked]="detailLocked()" [class.premium-locked]="detailLocked()" [attr.data-nosnippet]="detailLocked() ? '' : null" [attr.inert]="detailLocked() ? '' : null">
         OpenAI's own interview guide says formats vary by team and may include pair coding, take-home projects or
         technical tests, that some formats allow AI tools while others assess independent problem solving, and that final
         interviews run 4 to 6 hours with 4 to 6 people over 1 to 2 days. No frontend account read for this page describes
         that final loop; the one onsite account is a 2023 software engineer loop with a project presentation, a design
         round mixing backend and frontend, and frontend coding. Confirm the format, the allowed tools and the stack with
         your recruiter before you practise.
-      </p>
+      </span></p>
     </aside>
-
-    <app-company-interview-process *ngIf="interviewProcess as process" [slug]="slug" [companyLabel]="label" [process]="process"></app-company-interview-process>
-
-    <section class="openai-section" aria-labelledby="openai-prompts">
-      <div class="openai-section__head">
-        <p class="preview-kicker">Representative practice prompts</p>
-        <h2 id="openai-prompts">Five OpenAI frontend interview practice questions</h2>
-        <p>
-          Use these prompts as role-relevant drills. They are intentionally public, representative, and scoped to
-          frontend interview skills rather than leaked or confirmed company questions.
-        </p>
-      </div>
-
-      <div class="openai-prompt-list">
-        <article
-          class="openai-prompt"
-          *ngFor="let prompt of openAiPracticePrompts; let i = index"
-          [attr.id]="prompt.id">
-          <p class="openai-prompt__number">Question {{ i + 1 }}</p>
-          <h3>{{ prompt.title }}</h3>
-          <p>{{ prompt.intent }}</p>
-          <h4>Strong answer should cover</h4>
-          <ul>
-            <li *ngFor="let item of prompt.rubric">{{ item }}</li>
-          </ul>
-        </article>
-      </div>
-    </section>
 
     <section class="openai-section openai-walkthrough" aria-labelledby="openai-walkthrough">
       <p class="preview-kicker">Public mini walkthrough</p>
@@ -211,7 +219,75 @@
         <span class="preview-chip">DSA, JavaScript, browser, UI, system design</span>
         <span class="preview-chip preview-chip--lock">Full practice set requires Premium</span>
       </div>
+      <ng-container *ngTemplateOutlet="practiceDisclaimer"></ng-container>
     </header>
+
+    <app-company-interview-process *ngIf="interviewProcess as process" [slug]="slug" [companyLabel]="label" [process]="process" [lockPremium]="tier() === 'guest'" [showSourceLinks]="!detailLocked()"></app-company-interview-process>
+    <ng-container *ngTemplateOutlet="lockGateCard; context: { $implicit: processGate() }"></ng-container>
+
+    <section class="company-guide-section" aria-labelledby="google-practice-prompts">
+      <div class="company-guide-section__head">
+        <p class="preview-kicker">Representative practice prompts</p>
+        <h2 id="google-practice-prompts">Seven Google frontend interview practice questions</h2>
+        <p>
+          Use each prompt to practice clarifying the contract, explaining trade-offs, implementing a focused slice, and
+          testing failure paths. The details below are public evaluation guidance, not paid solutions.
+        </p>
+      </div>
+
+      <div class="company-prompt-list">
+        <ng-container *ngFor="let prompt of googlePracticePrompts; let i = index">
+          <article
+            class="company-prompt"
+            [class.company-prompt--locked]="promptLocked(i)"
+            [attr.id]="prompt.id">
+            <p class="company-prompt__number">Prompt {{ i + 1 }}</p>
+            <h3>{{ prompt.title }}</h3>
+            <p class="company-prompt__statement"><span [class.company-locked]="statementLocked(i)" [class.premium-locked]="statementLocked(i)" [attr.data-nosnippet]="statementLocked(i) ? '' : null" [attr.inert]="statementLocked(i) ? '' : null">{{ prompt.statement }}</span></p>
+
+            <div
+              class="company-prompt__details"
+              [class.company-prompt__locked]="promptLocked(i)" [class.premium-locked]="promptLocked(i)" [attr.data-nosnippet]="promptLocked(i) ? '' : null"
+              [attr.aria-hidden]="promptLocked(i) || null"
+              [attr.inert]="promptLocked(i) ? '' : null">
+              <div class="company-prompt__detail">
+                <h4>What this measures</h4>
+                <p>{{ prompt.whatThisMeasures }}</p>
+              </div>
+
+              <div class="company-prompt__detail">
+                <h4>Clarify first</h4>
+                <ul>
+                  <li *ngFor="let item of prompt.clarifyFirst">{{ item }}</li>
+                </ul>
+              </div>
+
+              <div class="company-prompt__detail">
+                <h4>Strong answer should cover</h4>
+                <ul>
+                  <li *ngFor="let item of prompt.strongAnswer">{{ item }}</li>
+                </ul>
+              </div>
+
+              <p class="company-prompt__miss"><strong>Common miss:</strong> {{ prompt.commonMiss }}</p>
+            </div>
+            <span class="company-prompt__link-row">
+              <a
+                class="company-resource-link company-resource-link--inline"
+                [class.company-link--locked]="linkLocked(prompt.resourcePath)"
+                [attr.inert]="linkLocked(prompt.resourcePath) ? '' : null"
+                [routerLink]="prompt.resourcePath">
+                <span [class.premium-locked]="linkLocked(prompt.resourcePath)" [attr.data-nosnippet]="linkLocked(prompt.resourcePath) ? '' : null">{{ prompt.resourceLabel }}</span>
+              </a>
+              <span class="company-link__tag" *ngIf="linkLocked(prompt.resourcePath)">Premium task</span>
+            </span>
+          </article>
+          <ng-container *ngIf="i === openPrompts() - 1">
+            <ng-container *ngTemplateOutlet="lockGateCard; context: { $implicit: promptGate(googlePracticePrompts.length) }"></ng-container>
+          </ng-container>
+        </ng-container>
+      </div>
+    </section>
 
     <section class="company-guide-section company-guide-section--intro" aria-labelledby="google-study-first">
       <div>
@@ -248,54 +324,6 @@
         and the material supplied for your role.
       </p>
     </aside>
-
-    <app-company-interview-process *ngIf="interviewProcess as process" [slug]="slug" [companyLabel]="label" [process]="process"></app-company-interview-process>
-
-    <section class="company-guide-section" aria-labelledby="google-practice-prompts">
-      <div class="company-guide-section__head">
-        <p class="preview-kicker">Representative practice prompts</p>
-        <h2 id="google-practice-prompts">Seven Google frontend interview practice questions</h2>
-        <p>
-          Use each prompt to practice clarifying the contract, explaining trade-offs, implementing a focused slice, and
-          testing failure paths. The details below are public evaluation guidance, not paid solutions.
-        </p>
-      </div>
-
-      <div class="company-prompt-list">
-        <article
-          class="company-prompt"
-          *ngFor="let prompt of googlePracticePrompts; let i = index"
-          [attr.id]="prompt.id">
-          <p class="company-prompt__number">Prompt {{ i + 1 }}</p>
-          <h3>{{ prompt.title }}</h3>
-          <p>{{ prompt.statement }}</p>
-
-          <div class="company-prompt__detail">
-            <h4>What this measures</h4>
-            <p>{{ prompt.whatThisMeasures }}</p>
-          </div>
-
-          <div class="company-prompt__detail">
-            <h4>Clarify first</h4>
-            <ul>
-              <li *ngFor="let item of prompt.clarifyFirst">{{ item }}</li>
-            </ul>
-          </div>
-
-          <div class="company-prompt__detail">
-            <h4>Strong answer should cover</h4>
-            <ul>
-              <li *ngFor="let item of prompt.strongAnswer">{{ item }}</li>
-            </ul>
-          </div>
-
-          <p class="company-prompt__miss"><strong>Common miss:</strong> {{ prompt.commonMiss }}</p>
-          <a class="company-resource-link company-resource-link--inline" [routerLink]="prompt.resourcePath">
-            {{ prompt.resourceLabel }}
-          </a>
-        </article>
-      </div>
-    </section>
 
     <section class="company-guide-section company-guide-walkthrough" aria-labelledby="google-autocomplete-walkthrough">
       <p class="preview-kicker">Public mini walkthrough</p>
@@ -408,7 +436,76 @@
         <span class="preview-chip">JavaScript, React, streaming UI, system design</span>
         <span class="preview-chip preview-chip--lock">Full practice set requires Premium</span>
       </div>
+      <ng-container *ngTemplateOutlet="practiceDisclaimer"></ng-container>
     </header>
+
+    <app-company-interview-process *ngIf="interviewProcess as process" [slug]="slug" [companyLabel]="label" [process]="process" [lockPremium]="tier() === 'guest'" [showSourceLinks]="!detailLocked()"></app-company-interview-process>
+    <ng-container *ngTemplateOutlet="lockGateCard; context: { $implicit: processGate() }"></ng-container>
+
+    <section class="company-guide-section" aria-labelledby="netflix-practice-prompts">
+      <div class="company-guide-section__head">
+        <p class="preview-kicker">Representative practice prompts</p>
+        <h2 id="netflix-practice-prompts">Six Netflix frontend interview practice questions</h2>
+        <p>
+          For each prompt, clarify the contract, explain ownership and trade-offs, implement or diagram the smallest
+          credible slice, and test failures. The evaluation guidance is public; paid solutions and catalog titles remain
+          outside this page.
+        </p>
+      </div>
+
+      <div class="company-prompt-list">
+        <ng-container *ngFor="let prompt of netflixPracticePrompts; let i = index">
+          <article
+            class="company-prompt"
+            [class.company-prompt--locked]="promptLocked(i)"
+            [attr.id]="prompt.id">
+            <p class="company-prompt__number">Prompt {{ i + 1 }}</p>
+            <h3>{{ prompt.title }}</h3>
+            <p class="company-prompt__statement"><span [class.company-locked]="statementLocked(i)" [class.premium-locked]="statementLocked(i)" [attr.data-nosnippet]="statementLocked(i) ? '' : null" [attr.inert]="statementLocked(i) ? '' : null">{{ prompt.statement }}</span></p>
+
+            <div
+              class="company-prompt__details"
+              [class.company-prompt__locked]="promptLocked(i)" [class.premium-locked]="promptLocked(i)" [attr.data-nosnippet]="promptLocked(i) ? '' : null"
+              [attr.aria-hidden]="promptLocked(i) || null"
+              [attr.inert]="promptLocked(i) ? '' : null">
+              <div class="company-prompt__detail">
+                <h4>What this measures</h4>
+                <p>{{ prompt.whatThisMeasures }}</p>
+              </div>
+
+              <div class="company-prompt__detail">
+                <h4>Clarify first</h4>
+                <ul>
+                  <li *ngFor="let item of prompt.clarifyFirst">{{ item }}</li>
+                </ul>
+              </div>
+
+              <div class="company-prompt__detail">
+                <h4>Strong answer should cover</h4>
+                <ul>
+                  <li *ngFor="let item of prompt.strongAnswer">{{ item }}</li>
+                </ul>
+              </div>
+
+              <p class="company-prompt__miss"><strong>Common miss:</strong> {{ prompt.commonMiss }}</p>
+            </div>
+            <span class="company-prompt__link-row">
+              <a
+                class="company-resource-link company-resource-link--inline"
+                [class.company-link--locked]="linkLocked(prompt.resourcePath)"
+                [attr.inert]="linkLocked(prompt.resourcePath) ? '' : null"
+                [routerLink]="prompt.resourcePath">
+                <span [class.premium-locked]="linkLocked(prompt.resourcePath)" [attr.data-nosnippet]="linkLocked(prompt.resourcePath) ? '' : null">{{ prompt.resourceLabel }}</span>
+              </a>
+              <span class="company-link__tag" *ngIf="linkLocked(prompt.resourcePath)">Premium task</span>
+            </span>
+          </article>
+          <ng-container *ngIf="i === openPrompts() - 1">
+            <ng-container *ngTemplateOutlet="lockGateCard; context: { $implicit: promptGate(netflixPracticePrompts.length) }"></ng-container>
+          </ng-container>
+        </ng-container>
+      </div>
+    </section>
 
     <section class="company-guide-section company-guide-section--intro" aria-labelledby="netflix-study-first">
       <div>
@@ -439,14 +536,12 @@
         sources can inform practice scenarios, but they do not establish one universal frontend interview format.
         New-grad guidance is especially scope-specific and should not be generalized to experienced roles.
       </p>
-      <p>
+      <p><span [class.company-locked]="detailLocked()" [class.premium-locked]="detailLocked()" [attr.data-nosnippet]="detailLocked() ? '' : null" [attr.inert]="detailLocked() ? '' : null">
         Use the job description and recruiter-provided material to confirm exercise types, allowed tools, design depth,
         timing, and team context. Treat the older React TV UI and Lumen dashboard posts below as engineering case studies,
         not evidence of today's interview process.
-      </p>
+      </span></p>
     </aside>
-
-    <app-company-interview-process *ngIf="interviewProcess as process" [slug]="slug" [companyLabel]="label" [process]="process"></app-company-interview-process>
 
     <section class="company-guide-section" aria-labelledby="netflix-role-lenses">
       <div class="company-guide-section__head">
@@ -462,53 +557,6 @@
           <h3>{{ lens.title }}</h3>
           <p>{{ lens.description }}</p>
           <p><strong>Practice focus:</strong> {{ lens.practiceFocus }}</p>
-        </article>
-      </div>
-    </section>
-
-    <section class="company-guide-section" aria-labelledby="netflix-practice-prompts">
-      <div class="company-guide-section__head">
-        <p class="preview-kicker">Representative practice prompts</p>
-        <h2 id="netflix-practice-prompts">Six Netflix frontend interview practice questions</h2>
-        <p>
-          For each prompt, clarify the contract, explain ownership and trade-offs, implement or diagram the smallest
-          credible slice, and test failures. The evaluation guidance is public; paid solutions and catalog titles remain
-          outside this page.
-        </p>
-      </div>
-
-      <div class="company-prompt-list">
-        <article
-          class="company-prompt"
-          *ngFor="let prompt of netflixPracticePrompts; let i = index"
-          [attr.id]="prompt.id">
-          <p class="company-prompt__number">Prompt {{ i + 1 }}</p>
-          <h3>{{ prompt.title }}</h3>
-          <p>{{ prompt.statement }}</p>
-
-          <div class="company-prompt__detail">
-            <h4>What this measures</h4>
-            <p>{{ prompt.whatThisMeasures }}</p>
-          </div>
-
-          <div class="company-prompt__detail">
-            <h4>Clarify first</h4>
-            <ul>
-              <li *ngFor="let item of prompt.clarifyFirst">{{ item }}</li>
-            </ul>
-          </div>
-
-          <div class="company-prompt__detail">
-            <h4>Strong answer should cover</h4>
-            <ul>
-              <li *ngFor="let item of prompt.strongAnswer">{{ item }}</li>
-            </ul>
-          </div>
-
-          <p class="company-prompt__miss"><strong>Common miss:</strong> {{ prompt.commonMiss }}</p>
-          <a class="company-resource-link company-resource-link--inline" [routerLink]="prompt.resourcePath">
-            {{ prompt.resourceLabel }}
-          </a>
         </article>
       </div>
     </section>
@@ -591,7 +639,7 @@
           cannot—establish about preparation.
         </p>
       </div>
-      <div class="company-source-list">
+      <div class="company-source-list" [class.company-locked]="detailLocked()" [class.premium-locked]="detailLocked()" [attr.data-nosnippet]="detailLocked() ? '' : null" [attr.inert]="detailLocked() ? '' : null">
         <article *ngFor="let source of netflixOfficialSources">
           <h3>
             <a [href]="source.url" target="_blank" rel="noopener noreferrer">{{ source.label }}</a>
@@ -599,6 +647,7 @@
           <p>{{ source.note }}</p>
         </article>
       </div>
+      <ng-container *ngTemplateOutlet="lockGateCard; context: { $implicit: sourcesGate(netflixOfficialSources.length) }"></ng-container>
     </section>
 
     <app-company-official-guides [slug]="slug" [companyLabel]="label" [guides]="officialGuides"></app-company-official-guides>
@@ -631,9 +680,106 @@
       <p class="preview-subtitle">{{ preview.hero.subtitle }}</p>
       <p class="preview-caveat">{{ preview.hero.caveat }}</p>
       <div class="preview-meta" [attr.aria-label]="preview.label + ' guide coverage'">
-        <span class="preview-chip" *ngFor="let chip of preview.hero.chips">{{ chip }}</span>
+        <span class="preview-chip" *ngFor="let chip of preview.hero.chips" [class.preview-chip--locked-set]="chip === lockChip">{{ chip }}</span>
       </div>
+      <ng-container *ngTemplateOutlet="practiceDisclaimer"></ng-container>
     </header>
+
+    <app-company-interview-process *ngIf="interviewProcess as process" [slug]="slug" [companyLabel]="label" [process]="process" [lockPremium]="tier() === 'guest'" [showSourceLinks]="!detailLocked()"></app-company-interview-process>
+    <ng-container *ngTemplateOutlet="lockGateCard; context: { $implicit: processGate() }"></ng-container>
+
+    <section
+      class="company-guide-section company-round-spotlight"
+      *ngFor="let round of preview.roundSpotlights"
+      [attr.aria-labelledby]="preview.slug + '-round-' + round.id"
+      data-testid="company-round-spotlight">
+      <div class="company-guide-section__head">
+        <p class="preview-kicker">{{ round.kicker }}</p>
+        <h2 [attr.id]="preview.slug + '-round-' + round.id">{{ round.title }}</h2>
+        <p *ngFor="let paragraph of round.lede">{{ paragraph }}</p>
+      </div>
+      <dl class="company-round-facts">
+        <ng-container *ngFor="let fact of round.facts; let i = index">
+          <dt>{{ fact.label }}</dt>
+          <dd><span [class.company-locked]="detailLocked() && i > 0" [class.premium-locked]="detailLocked() && i > 0" [attr.data-nosnippet]="detailLocked() && i > 0 ? '' : null" [attr.inert]="detailLocked() && i > 0 ? '' : null">{{ fact.value }}</span></dd>
+        </ng-container>
+      </dl>
+      <p class="company-round-links" *ngIf="round.practiceLink || round.processLink">
+        <a
+          *ngIf="round.practiceLink?.path as path"
+          class="company-round-links__link"
+          [class.company-link--locked]="linkLocked(path)"
+          [attr.inert]="linkLocked(path) ? '' : null"
+          [routerLink]="path"><span [class.premium-locked]="linkLocked(path)" [attr.data-nosnippet]="linkLocked(path) ? '' : null">{{ round.practiceLink!.label }}</span></a><span class="company-link__tag" *ngIf="linkLocked(round.practiceLink?.path)">Premium task</span>
+        <a *ngIf="round.practiceLink && !round.practiceLink.path && round.practiceLink.fragment" class="company-round-links__link" [attr.href]="'#' + round.practiceLink.fragment">{{ round.practiceLink.label }}</a>
+        <a *ngIf="round.processLink as row" class="company-round-links__link" [attr.href]="'#' + row.fragment">{{ row.label }}</a>
+      </p>
+    </section>
+
+    <section class="company-guide-section" [attr.aria-labelledby]="preview.slug + '-practice-prompts'">
+      <div class="company-guide-section__head">
+        <p class="preview-kicker">{{ preview.prompts.kicker }}</p>
+        <h2 [attr.id]="preview.slug + '-practice-prompts'">{{ preview.prompts.title }}</h2>
+        <p>{{ preview.prompts.intro }}</p>
+      </div>
+
+      <div class="company-prompt-list">
+        <ng-container *ngFor="let prompt of preview.prompts.items; let i = index">
+          <article
+            class="company-prompt"
+            [class.company-prompt--locked]="promptLocked(i)"
+            [attr.id]="prompt.id">
+            <p class="company-prompt__number">Prompt {{ i + 1 }}</p>
+            <h3>{{ prompt.title }}</h3>
+            <p class="company-prompt__statement"><span [class.company-locked]="statementLocked(i)" [class.premium-locked]="statementLocked(i)" [attr.data-nosnippet]="statementLocked(i) ? '' : null" [attr.inert]="statementLocked(i) ? '' : null"><fa-inline-code [text]="prompt.statement"></fa-inline-code></span></p>
+            <p class="company-prompt__reported" *ngIf="prompt.reportedRound as round" data-testid="company-prompt-reported-round">
+              Practice version modelled on a reported round:
+              <a [href]="round.url" target="_blank" rel="noopener noreferrer nofollow">{{ round.label }}</a>
+            </p>
+
+            <div
+              class="company-prompt__details"
+              [class.company-prompt__locked]="promptLocked(i)" [class.premium-locked]="promptLocked(i)" [attr.data-nosnippet]="promptLocked(i) ? '' : null"
+              [attr.aria-hidden]="promptLocked(i) || null"
+              [attr.inert]="promptLocked(i) ? '' : null">
+              <div class="company-prompt__detail">
+                <h4>What this measures</h4>
+                <p><fa-inline-code [text]="prompt.whatThisMeasures"></fa-inline-code></p>
+              </div>
+
+              <div class="company-prompt__detail">
+                <h4>Clarify first</h4>
+                <ul>
+                  <li *ngFor="let item of prompt.clarifyFirst"><fa-inline-code [text]="item"></fa-inline-code></li>
+                </ul>
+              </div>
+
+              <div class="company-prompt__detail">
+                <h4>Strong answer should cover</h4>
+                <ul>
+                  <li *ngFor="let item of prompt.strongAnswer"><fa-inline-code [text]="item"></fa-inline-code></li>
+                </ul>
+              </div>
+
+              <p class="company-prompt__miss"><strong>Common miss: </strong><fa-inline-code [text]="prompt.commonMiss"></fa-inline-code></p>
+            </div>
+            <span class="company-prompt__link-row">
+              <a
+                class="company-resource-link company-resource-link--inline"
+                [class.company-link--locked]="linkLocked(prompt.resourcePath)"
+                [attr.inert]="linkLocked(prompt.resourcePath) ? '' : null"
+                [routerLink]="prompt.resourcePath">
+                <span [class.premium-locked]="linkLocked(prompt.resourcePath)" [attr.data-nosnippet]="linkLocked(prompt.resourcePath) ? '' : null">{{ prompt.resourceLabel }}</span>
+              </a>
+              <span class="company-link__tag" *ngIf="linkLocked(prompt.resourcePath)">Premium task</span>
+            </span>
+          </article>
+          <ng-container *ngIf="i === openPrompts() - 1">
+            <ng-container *ngTemplateOutlet="lockGateCard; context: { $implicit: promptGate(preview.prompts.items.length) }"></ng-container>
+          </ng-container>
+        </ng-container>
+      </div>
+    </section>
 
     <section class="company-guide-section company-guide-section--intro" [attr.aria-labelledby]="preview.slug + '-study-first'">
       <div>
@@ -649,33 +795,8 @@
     <aside class="company-process-note" [attr.aria-labelledby]="preview.slug + '-published-context'">
       <p class="preview-kicker">{{ preview.sourceBoundary.kicker }}</p>
       <h2 [attr.id]="preview.slug + '-published-context'">{{ preview.sourceBoundary.title }}</h2>
-      <p *ngFor="let paragraph of preview.sourceBoundary.paragraphs">{{ paragraph }}</p>
+      <p *ngFor="let paragraph of preview.sourceBoundary.paragraphs; let i = index"><span [class.company-locked]="detailLocked() && i > 0" [class.premium-locked]="detailLocked() && i > 0" [attr.data-nosnippet]="detailLocked() && i > 0 ? '' : null" [attr.inert]="detailLocked() && i > 0 ? '' : null">{{ paragraph }}</span></p>
     </aside>
-
-    <section
-      class="company-guide-section company-round-spotlight"
-      *ngFor="let round of preview.roundSpotlights"
-      [attr.aria-labelledby]="preview.slug + '-round-' + round.id"
-      data-testid="company-round-spotlight">
-      <div class="company-guide-section__head">
-        <p class="preview-kicker">{{ round.kicker }}</p>
-        <h2 [attr.id]="preview.slug + '-round-' + round.id">{{ round.title }}</h2>
-        <p *ngFor="let paragraph of round.lede">{{ paragraph }}</p>
-      </div>
-      <dl class="company-round-facts">
-        <ng-container *ngFor="let fact of round.facts">
-          <dt>{{ fact.label }}</dt>
-          <dd>{{ fact.value }}</dd>
-        </ng-container>
-      </dl>
-      <p class="company-round-links" *ngIf="round.practiceLink || round.processLink">
-        <a *ngIf="round.practiceLink?.path as path" class="company-round-links__link" [routerLink]="path">{{ round.practiceLink!.label }}</a>
-        <a *ngIf="round.practiceLink && !round.practiceLink.path && round.practiceLink.fragment" class="company-round-links__link" [attr.href]="'#' + round.practiceLink.fragment">{{ round.practiceLink.label }}</a>
-        <a *ngIf="round.processLink as row" class="company-round-links__link" [attr.href]="'#' + row.fragment">{{ row.label }}</a>
-      </p>
-    </section>
-
-    <app-company-interview-process *ngIf="interviewProcess as process" [slug]="slug" [companyLabel]="label" [process]="process"></app-company-interview-process>
 
     <section class="company-guide-section" *ngIf="preview.roleLenses as lenses" [attr.aria-labelledby]="preview.slug + '-role-lenses'">
       <div class="company-guide-section__head">
@@ -688,53 +809,6 @@
           <h3>{{ lens.title }}</h3>
           <p>{{ lens.description }}</p>
           <p><strong>Practice focus:</strong> {{ lens.practiceFocus }}</p>
-        </article>
-      </div>
-    </section>
-
-    <section class="company-guide-section" [attr.aria-labelledby]="preview.slug + '-practice-prompts'">
-      <div class="company-guide-section__head">
-        <p class="preview-kicker">{{ preview.prompts.kicker }}</p>
-        <h2 [attr.id]="preview.slug + '-practice-prompts'">{{ preview.prompts.title }}</h2>
-        <p>{{ preview.prompts.intro }}</p>
-      </div>
-
-      <div class="company-prompt-list">
-        <article
-          class="company-prompt"
-          *ngFor="let prompt of preview.prompts.items; let i = index"
-          [attr.id]="prompt.id">
-          <p class="company-prompt__number">Prompt {{ i + 1 }}</p>
-          <h3>{{ prompt.title }}</h3>
-          <p><fa-inline-code [text]="prompt.statement"></fa-inline-code></p>
-          <p class="company-prompt__reported" *ngIf="prompt.reportedRound as round" data-testid="company-prompt-reported-round">
-            Practice version modelled on a reported round:
-            <a [href]="round.url" target="_blank" rel="noopener noreferrer nofollow">{{ round.label }}</a>
-          </p>
-
-          <div class="company-prompt__detail">
-            <h4>What this measures</h4>
-            <p><fa-inline-code [text]="prompt.whatThisMeasures"></fa-inline-code></p>
-          </div>
-
-          <div class="company-prompt__detail">
-            <h4>Clarify first</h4>
-            <ul>
-              <li *ngFor="let item of prompt.clarifyFirst"><fa-inline-code [text]="item"></fa-inline-code></li>
-            </ul>
-          </div>
-
-          <div class="company-prompt__detail">
-            <h4>Strong answer should cover</h4>
-            <ul>
-              <li *ngFor="let item of prompt.strongAnswer"><fa-inline-code [text]="item"></fa-inline-code></li>
-            </ul>
-          </div>
-
-          <p class="company-prompt__miss"><strong>Common miss:</strong> <fa-inline-code [text]="prompt.commonMiss"></fa-inline-code></p>
-          <a class="company-resource-link company-resource-link--inline" [routerLink]="prompt.resourcePath">
-            {{ prompt.resourceLabel }}
-          </a>
         </article>
       </div>
     </section>
@@ -807,7 +881,7 @@
         <h2 [attr.id]="preview.slug + '-source-notes'">{{ preview.sources.title }}</h2>
         <p>{{ preview.sources.intro }}</p>
       </div>
-      <div class="company-source-list">
+      <div class="company-source-list" [class.company-locked]="detailLocked()" [class.premium-locked]="detailLocked()" [attr.data-nosnippet]="detailLocked() ? '' : null" [attr.inert]="detailLocked() ? '' : null">
         <article *ngFor="let source of preview.sources.items">
           <h3>
             <a [href]="source.url" target="_blank" [attr.rel]="sourceRel(source)">{{ source.label }}</a>
@@ -815,6 +889,7 @@
           <p>{{ source.note }}</p>
         </article>
       </div>
+      <ng-container *ngTemplateOutlet="lockGateCard; context: { $implicit: sourcesGate(preview.sources.items.length) }"></ng-container>
     </section>
 
     <app-company-official-guides [slug]="slug" [companyLabel]="label" [guides]="officialGuides"></app-company-official-guides>
@@ -823,7 +898,7 @@
       <div>
         <p class="preview-kicker">{{ preview.cta.kicker }}</p>
         <h2 [attr.id]="preview.slug + '-premium-route'">{{ preview.cta.title }}</h2>
-        <p>{{ preview.cta.copy }}</p>
+        <p>{{ ctaCopy(preview.prompts.items.length) }}</p>
       </div>
       <a
         class="preview-btn preview-btn--primary"
@@ -848,10 +923,11 @@
     <ng-container>
       <div class="preview-meta">
         <span class="preview-chip">{{ promptCountLabel(data.counts.all) }}</span>
-        <span class="preview-chip" data-testid="company-preview-counts">Coding {{ data.counts.coding }} · Concepts {{ data.counts.trivia }} · System {{ data.counts.system }}</span>
+        <span class="preview-chip" data-testid="company-preview-counts">{{ countsLabel(data.counts) }}</span>
         <span class="preview-chip preview-chip--lock">Full practice set requires Premium</span>
       </div>
     </ng-container>
+    <ng-container *ngTemplateOutlet="practiceDisclaimer"></ng-container>
   </header>
 
   <ng-container>
@@ -879,7 +955,9 @@
           <a
             *ngIf="bullet.link?.path"
             class="company-editorial-bullets__link"
-            [routerLink]="bullet.link!.path">{{ bullet.link!.label }}</a>
+            [class.company-link--locked]="linkLocked(bullet.link!.path)"
+            [attr.inert]="linkLocked(bullet.link!.path) ? '' : null"
+            [routerLink]="bullet.link!.path"><span [class.premium-locked]="linkLocked(bullet.link!.path)" [attr.data-nosnippet]="linkLocked(bullet.link!.path) ? '' : null">{{ bullet.link!.label }}</span></a><span class="company-link__tag" *ngIf="linkLocked(bullet.link?.path)">Premium task</span>
           <a
             *ngIf="bullet.link && !bullet.link.path && bullet.link.fragment"
             class="company-editorial-bullets__link"
@@ -899,19 +977,25 @@
         <p *ngFor="let paragraph of round.lede">{{ paragraph }}</p>
       </div>
       <dl class="company-round-facts">
-        <ng-container *ngFor="let fact of round.facts">
+        <ng-container *ngFor="let fact of round.facts; let i = index">
           <dt>{{ fact.label }}</dt>
-          <dd>{{ fact.value }}</dd>
+          <dd><span [class.company-locked]="detailLocked() && i > 0" [class.premium-locked]="detailLocked() && i > 0" [attr.data-nosnippet]="detailLocked() && i > 0 ? '' : null" [attr.inert]="detailLocked() && i > 0 ? '' : null">{{ fact.value }}</span></dd>
         </ng-container>
       </dl>
       <p class="company-round-links" *ngIf="round.practiceLink || round.processLink">
-        <a *ngIf="round.practiceLink?.path as path" class="company-round-links__link" [routerLink]="path">{{ round.practiceLink!.label }}</a>
+        <a
+          *ngIf="round.practiceLink?.path as path"
+          class="company-round-links__link"
+          [class.company-link--locked]="linkLocked(path)"
+          [attr.inert]="linkLocked(path) ? '' : null"
+          [routerLink]="path"><span [class.premium-locked]="linkLocked(path)" [attr.data-nosnippet]="linkLocked(path) ? '' : null">{{ round.practiceLink!.label }}</span></a><span class="company-link__tag" *ngIf="linkLocked(round.practiceLink?.path)">Premium task</span>
         <a *ngIf="round.practiceLink && !round.practiceLink.path && round.practiceLink.fragment" class="company-round-links__link" [attr.href]="'#' + round.practiceLink.fragment">{{ round.practiceLink.label }}</a>
         <a *ngIf="round.processLink as row" class="company-round-links__link" [attr.href]="'#' + row.fragment">{{ row.label }}</a>
       </p>
     </section>
 
-    <app-company-interview-process *ngIf="interviewProcess as process" [slug]="slug" [companyLabel]="label" [process]="process"></app-company-interview-process>
+    <app-company-interview-process *ngIf="interviewProcess as process" [slug]="slug" [companyLabel]="label" [process]="process" [lockPremium]="tier() === 'guest'" [showSourceLinks]="!detailLocked()"></app-company-interview-process>
+    <ng-container *ngTemplateOutlet="lockGateCard; context: { $implicit: processGate() }"></ng-container>
 
     <section
       class="company-guide-section"
@@ -926,7 +1010,11 @@
       <ol class="company-prep-sequence">
         <li *ngFor="let step of prep.steps">
           <strong>{{ step.access === 'free' ? 'Free now' : 'Premium' }}</strong>
-          <div>
+          <div
+            [class.company-locked]="itemLocked(step)"
+            [class.premium-locked]="itemLocked(step)"
+            [attr.data-nosnippet]="itemLocked(step) ? '' : null"
+            [attr.inert]="itemLocked(step) ? '' : null">
             <a class="company-resource-link company-resource-link--inline" [routerLink]="step.path">{{ step.label }}</a>
             <p>{{ step.why }}</p>
           </div>
@@ -957,7 +1045,7 @@
     <section class="sample-card fa-card" aria-label="Sample editorial practice prompts">
       <div class="sample-head">
         <h2>Sample FrontendAtlas practice prompts</h2>
-        <p class="sample-summary">
+        <p class="sample-summary sample-summary--access">
           Free in sample: <strong>{{ freeCount(data.samples) }}</strong> · Locked in full set:
           <strong>{{ premiumCount(data.samples) }}</strong>
         </p>
@@ -971,12 +1059,15 @@
           [title]="item.title"
           [description]="sampleDescription(item)"
           [metaChips]="sampleMetaChips(item)"
+          [concealed]="itemLocked(item)"
         ></fa-question-row>
       </div>
 
       <ng-template #noSamples>
         <p class="empty-state">No public samples yet for this company slug.</p>
       </ng-template>
+
+      <ng-container *ngTemplateOutlet="lockGateCard; context: { $implicit: sampleGate() }"></ng-container>
     </section>
 
     <section class="reports-card fa-card" *ngIf="data.reports?.length" [attr.aria-labelledby]="slug + '-public-reports'" data-testid="company-public-reports">
@@ -992,13 +1083,18 @@
         <li class="reports-item" *ngFor="let item of data.reports" [attr.data-testid]="'company-report-' + item.id">
           <div class="reports-item__head">
             <span class="preview-chip">{{ reportKindLabel(item.kind) }}</span>
-            <a class="reports-item__title" [routerLink]="item.route">{{ item.title | stripInlineMarkup }}</a>
+            <a
+              class="reports-item__title"
+              [class.company-link--locked]="itemLocked(item)"
+              [attr.inert]="itemLocked(item) ? '' : null"
+              [routerLink]="item.route"><span [class.premium-locked]="itemLocked(item)" [attr.data-nosnippet]="itemLocked(item) ? '' : null">{{ item.title | stripInlineMarkup }}</span></a>
             <span class="preview-chip preview-chip--lock" *ngIf="item.access === 'premium'">Premium</span>
           </div>
           <p class="reports-item__sources">
             Reported in
             <ng-container *ngFor="let source of item.sources; let last = last">
-              <a [href]="source.url" target="_blank" rel="noopener noreferrer nofollow">{{ source.label }}</a><ng-container *ngIf="!last">, </ng-container>
+              <ng-container *ngIf="detailLocked(); else sourceLink">{{ source.label }}</ng-container>
+              <ng-template #sourceLink><a [href]="source.url" target="_blank" rel="noopener noreferrer nofollow">{{ source.label }}</a></ng-template><ng-container *ngIf="!last">, </ng-container>
             </ng-container>
           </p>
         </li>
@@ -1028,19 +1124,26 @@
       <a
         class="preview-btn preview-btn--primary"
         [routerLink]="['/react', 'coding', 'react-counter']"
-        [queryParams]="{ src: 'company_preview_' + slug }">
+        [queryParams]="{ src: previewSource }">
         Try free challenge
       </a>
       <a
         class="preview-btn"
         [routerLink]="['/pricing']"
-        [queryParams]="{ src: 'company_preview_' + slug }">
+        [queryParams]="{ src: previewSource }">
         View pricing
       </a>
     </section>
   </ng-container>
   </ng-template>
   </ng-template>
+
+  <section class="company-guide-section company-set-entry" *ngIf="memberSet() as set" data-testid="company-set-entry">
+    <p class="company-set-entry__line">{{ set.line }}</p>
+    <a faButton variant="primary" size="lg" [routerLink]="set.link">
+      Open the {{ set.label }} set <span aria-hidden="true">→</span>
+    </a>
+  </section>
 
   <section class="company-guide-section company-related-guides" aria-labelledby="company-related-guides-title" data-testid="company-related-guides">
     <div class="company-guide-section__head">
@@ -1053,4 +1156,24 @@
       </li>
     </ul>
   </section>
+
+  <!-- The one line every guide carries, after its title rather than before it. -->
+  <ng-template #practiceDisclaimer>
+    <p class="preview-caveat preview-caveat--disclaimer" data-testid="company-practice-disclaimer">{{ companyPracticeDisclaimer }}</p>
+  </ng-template>
+
+  <ng-template #lockGateCard let-gate>
+    <aside *ngIf="gate" [class]="gate.className" [attr.data-testid]="gate.testId">
+      <div class="company-prompt-gate__text">
+        <p class="company-prompt-gate__title">{{ gate.title }}</p>
+        <p class="company-prompt-gate__line">{{ gate.line }}</p>
+      </div>
+      <span class="company-prompt-gate__actions">
+        <a faButton variant="primary" [routerLink]="gate.link" [queryParams]="gate.queryParams">
+          {{ gate.button }} <span aria-hidden="true">→</span>
+        </a>
+        <a *ngIf="gate.secondary as second" class="company-prompt-gate__secondary" [routerLink]="second.link" [queryParams]="second.queryParams">{{ second.label }}</a>
+      </span>
+    </aside>
+  </ng-template>
 </section>

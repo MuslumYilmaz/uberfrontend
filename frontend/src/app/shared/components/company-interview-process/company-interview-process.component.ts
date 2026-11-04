@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { isPremiumRoute } from '../../../core/utils/premium-route.util';
 import type {
   CompanyInterviewProcess,
   InterviewProcessSource,
@@ -21,6 +22,17 @@ export class CompanyInterviewProcessComponent {
   @Input() slug = '';
   @Input() companyLabel = '';
   @Input() process: CompanyInterviewProcess | null = null;
+  /** The viewer has no Premium, so a practice link to a Premium page keeps its name under a blur. */
+  @Input() lockPremium = false;
+  /**
+   * Whether the evidence links are rendered. A gated guide shows a viewer without an account the counts and a
+   * "Free account" tag in their place; what each round asks stays open for everyone.
+   */
+  @Input() showSourceLinks = true;
+
+  practiceLocked(path: string): boolean {
+    return this.lockPremium && isPremiumRoute(path);
+  }
 
   get headingId(): string {
     return `${this.slug || 'company'}-interview-process`;

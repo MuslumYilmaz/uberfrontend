@@ -15,6 +15,7 @@ import { interviewAvailabilityAllowsRole } from '../../core/models/interview.mod
 import { isProActive } from '../../core/utils/entitlements.util';
 import { FeatureAnnouncementsService } from '../../core/services/feature-announcements.service';
 import { GITHUB_REPO_URL } from '../../core/config/project-links';
+import { CompanyPlanSidebarCardComponent } from '../company/company-plan/company-plan-sidebar-card.component';
 
 interface LinkItem {
   key: string;
@@ -51,7 +52,8 @@ function readSavedCollapsed(): boolean | null {
         CommonModule,
         RouterModule,
         ButtonModule,
-        TooltipModule
+        TooltipModule,
+        CompanyPlanSidebarCardComponent
     ],
     templateUrl: './app-sidebar.component.html',
     styleUrls: ['./app-sidebar.component.css']
@@ -76,6 +78,8 @@ export class AppSidebarComponent implements OnInit, OnDestroy {
   readonly auth = inject(AuthService);
   readonly announcements = inject(FeatureAnnouncementsService);
   readonly isPro = computed(() => isProActive(this.auth.user()));
+  /** An account with a company plan gets its card at the top of Plans; the card's code loads only then. */
+  readonly hasCompanyPlan = computed(() => Boolean(this.auth.user()?.companyPlan));
   readonly drawerOpen = this.drawerState.isOpen;
   readonly interviewNavVisible = signal(false);
 

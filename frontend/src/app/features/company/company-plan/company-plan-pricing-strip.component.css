@@ -41,6 +41,14 @@
   color: var(--uf-text-secondary);
 }
 
+.plan-strip__note {
+  margin: 6px 0 0;
+  max-width: 70ch;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--uf-text-primary);
+}
+
 .plan-strip__link {
   display: inline-flex;
   align-items: center;

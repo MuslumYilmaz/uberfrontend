@@ -2060,7 +2060,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
     variants: [
       {
         title: 'Frontend engineers, London and Bay Area, from postings 2025-03 to 2026-02 and one London account',
-        note: 'Thin evidence: one public frontend account read in full. Stages marked "postings only" rest on the closed postings alone.',
+        note: 'Thin evidence: one public frontend account. Stages marked "postings only" rest on the closed postings alone.',
         stages: [
           {
             stage: 'Application review',
@@ -2194,7 +2194,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
     summary:
       'Agoda\'s interview-process page describes a HackerRank online test as the coding assessment and four rounds: Coding, Platform, System Design and Agoda Culture Fit, with a decision typically within two weeks of the last round. Front-end accounts from Bangkok relocation loops in 2025 and 2026 describe a recruiter prep call, a 60-minute coding interview, a Frontend Platform interview and an architecture interview, all on HackerRank about a week apart, a preliminary call in which the level is set, a culture-fit conversation with an engineering manager, and the manager presenting the offer.',
     caveat:
-      'The careers pages could only be read from archive captures. The Platform round\'s content varies by interviewer: a pure question-and-answer hour, a JavaScript implementation or an architecture discussion. Rejections after clearing the technical rounds are reported, over headcount or without a managerial round. Gurgaon loops differ by team; Manila and Bangalore rest on too little to state a loop. On 2026-10-21 the front-end postings were Staff, Lead and Manager level, all Bangkok-based with relocation.',
+      'The Platform round\'s content varies by interviewer: a pure question-and-answer hour, a JavaScript implementation or an architecture discussion. Rejections after clearing the technical rounds are reported, over headcount or without a managerial round. Gurgaon loops differ by team; Manila and Bangalore rest on too little to state a loop. On 2026-10-21 the front-end postings were Staff, Lead and Manager level, all Bangkok-based with relocation.',
     checkedAt: '2026-10-21',
     variants: [
       {
@@ -3117,7 +3117,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
     summary:
       'Airbnb\'s careers FAQ says the process depends on the position and that candidates meet several people on the team. Frontend accounts from 2024 and 2025 describe a recruiter call and a technical screen, then UI and JavaScript coding, frontend system design and a past-project deep dive.',
     caveat:
-      'Accounts disagree on algorithms: one reports none, two report a LeetCode-hard problem in 2025. Most list tasks without naming the round, so the rows group them by type and do not give an order. Some accounts carry a general software engineer title but describe frontend rounds, and we read no frontend account from 2026.',
+      'Accounts disagree on algorithms: one reports none, two report a LeetCode-hard problem in 2025. Most list tasks without naming the round, so the rows group them by type and do not give an order. Some accounts carry a general software engineer title but describe frontend rounds, and none of the frontend accounts cited is from 2026.',
     checkedAt: '2026-11-02',
     variants: [
       {

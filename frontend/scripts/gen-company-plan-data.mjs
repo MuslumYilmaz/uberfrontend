@@ -65,6 +65,7 @@ function catalogTask(entry, kind, tech) {
     ...(tech ? { tech } : {}),
     access: entry.access === 'premium' ? 'premium' : 'free',
     minutes: MINUTES_BY_KIND[kind] ?? MINUTES_BY_DIFFICULTY[entry.difficulty] ?? MINUTES_BY_DIFFICULTY.intermediate,
+    ...(entry.pressureModeAsset ? { pressure: true } : {}),
     ...(focus ? { focus } : {}),
     companies: Array.isArray(entry.companies) ? entry.companies.map((value) => String(value).trim().toLowerCase()) : [],
     importance: Number(entry.importance) || 0,
@@ -189,10 +190,15 @@ function buildCompany(slug, context) {
     for (const { entry, newest } of inList) {
       const urls = new Set(entry.sources.map((source) => source.url));
       const wanted = entry.task.kind === 'system-design' ? 'design' : 'coding';
-      const bound = variant.stages
-        .filter((stage) => stage.sources.some((source) => urls.has(source.url)) && metaRound(stage).kinds.includes(wanted))
-        .map((stage) => metaRound(stage).id);
-      add(publish(entry.task), { report: { publisher: newest.publisher, date: newest.date, ...(newest.posting ? { posting: true } : {}) }, rounds: bound });
+      const citing = variant.stages.filter((stage) => stage.sources.some((source) => urls.has(source.url)));
+      const bound = citing.filter((stage) => metaRound(stage).kinds.includes(wanted)).map((stage) => metaRound(stage).id);
+      // A list with no round of the task's kind keeps the task on the round whose account mentioned it, so a design
+      // walkthrough from a coding-round account is not filed under the first coding round.
+      const kindless = !variant.stages.some((stage) => metaRound(stage).kinds.includes(wanted));
+      const cited = kindless ? citing.map((stage) => metaRound(stage).id) : [];
+      // A report the table does not cite on any stage leaves the task unbound; the editor can name its rounds.
+      const named = (plan.reportRounds?.[entry.task.id] ?? []).filter((id) => variant.stages.some((stage) => metaRound(stage).id === id));
+      add(publish(entry.task), { report: { publisher: newest.publisher, date: newest.date, ...(newest.posting ? { posting: true } : {}) }, rounds: bound.length ? bound : cited.length ? cited : named });
     }
 
     // A linked or picked task with no report of its own is still an editor's choice for that round.
@@ -201,12 +207,15 @@ function buildCompany(slug, context) {
       const settled = settle(linked);
       if (!fitsFramework(settled)) throw new Error(`[gen-company-plan-data] ${slug}/${meta.id} links ${settled.id} outside its framework (${framework}).`);
       add(publish(settled), { rounds: [roundId] });
+      return settled.id;
     };
+    // The practice link on a stage is the editor's lead for that round: the plan opens the round on it, as the guide does.
+    const leads = new Set();
     for (const stage of variant.stages) {
       const round = metaRound(stage);
       if (stage.practice) {
         const { path: route, label } = stage.practice;
-        addLinked(route, route.startsWith('/guides/') ? guideTask(route, label) : catalog.get(route), round.id);
+        leads.add(addLinked(route, route.startsWith('/guides/') ? guideTask(route, label) : catalog.get(route), round.id));
       }
       for (const route of round.picks ?? []) addLinked(route, catalog.get(route), round.id);
     }
@@ -246,7 +255,7 @@ function buildCompany(slug, context) {
           ...roundSources(stage.sources),
         };
       }),
-      tasks: [...chosen.values()],
+      tasks: [...chosen.values()].sort((a, b) => Number(leads.has(b.id)) - Number(leads.has(a.id))),
     };
   });
 

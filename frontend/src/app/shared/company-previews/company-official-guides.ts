@@ -282,7 +282,7 @@ export const COMPANY_OFFICIAL_GUIDES: Readonly<Record<string, readonly CompanyOf
       label: 'Engineering careers page',
       url: 'https://www.revolut.com/careers/team/engineering/',
       covers:
-        'Four hiring steps (an intro call with an IT recruiter, tech interviews, team fit, offer) and the engineering stack; no formats or durations. The live page blocks automated readers, so it was read from an archived copy.',
+        'Four hiring steps (an intro call with an IT recruiter, tech interviews, team fit, offer) and the engineering stack; no formats or durations.',
       checkedAt: CHECKED_OCT_22,
     },
   ],

@@ -105,7 +105,9 @@ test.describe('company plan, five people', () => {
     await expect(switchLine).toContainText('These rounds come from experienced hires.');
     await expect(switchLine.getByRole('button', { name: 'Interviewing as a student or new graduate?' })).toBeVisible();
     await expect(page.getByTestId('company-plan-open-task')).toHaveCount(3);
-    await expect(page.getByText('Coding tasks need a larger screen.')).toBeVisible();
+    const phoneNote = page.getByTestId('company-plan-phone-note');
+    await expect(phoneNote).toContainText('Tonight on a phone, read the Amazon guide: its rounds and open prompts.');
+    await expect(phoneNote.getByRole('link', { name: 'Read the Amazon guide' })).toHaveAttribute('href', '/companies/amazon/preview');
     expect(await overflow(page)).toBe(0);
 
     await page.getByTestId('company-plan-build').click();
@@ -232,6 +234,15 @@ test.describe('company plan from a company guide', () => {
     await expect(card).toContainText('Interviewing at ElevenLabs?');
     expect(await overflow(page)).toBe(0);
 
+    // The first three prompts are open; the fourth keeps its title and opening, and its details sit under a blur.
+    const gate = page.getByTestId('company-prompt-gate');
+    await expect(gate).toContainText('Prompts 4 and 5, with their answer guides, are in Premium');
+    await expect(gate.getByRole('link', { name: 'Build my ElevenLabs plan' })).toHaveAttribute('href', '/companies?company=elevenlabs');
+    const prompts = page.locator('.company-prompt');
+    await expect(prompts.nth(2).locator('.company-prompt__details')).not.toHaveAttribute('inert', /.*/);
+    await expect(prompts.nth(3).locator('h3')).toBeVisible();
+    await expect(prompts.nth(3).locator('.company-prompt__details')).toHaveAttribute('inert', '');
+
     await card.getByRole('link', { name: 'Build my ElevenLabs plan' }).click();
     await expect(page).toHaveURL('/companies?company=elevenlabs');
     await expect(page.getByRole('heading', { level: 2, name: 'When is your interview?' })).toBeVisible();
@@ -244,9 +255,78 @@ test.describe('company plan from a company guide', () => {
     await expect(page.getByRole('heading', { level: 1, name: 'Your ElevenLabs plan at a glance' })).toBeVisible();
   });
 
+  test('a guest on the Airbnb guide reads the free questions, sees Premium names only under a blur, and is led into the plan', async ({ page }) => {
+    await page.goto('/companies/airbnb/preview');
+    // The process stays open; only the name of a Premium practice page is blurred.
+    await expect(page.getByTestId('company-interview-process')).toContainText('Explain closures');
+    await expect(page.locator('.interview-process__locked')).toHaveCount(1);
+    await expect(page.locator('[data-testid="company-prep-steps"] .company-locked').first()).toHaveAttribute('inert', '');
+    await expect(page.getByTestId('company-preview-question-js-closures')).toContainText('Explain Closures in JavaScript');
+    await expect(page.locator('.sample-list .fa-question-row__concealed').first()).toBeVisible();
+    const gate = page.getByTestId('company-sample-gate');
+    await expect(gate).toContainText('The locked questions open with Premium');
+    await gate.getByRole('link', { name: 'Build my Airbnb plan' }).click();
+    await expect(page).toHaveURL('/companies?company=airbnb');
+  });
+
   test('the same address loaded on its own hydrates the first step, then opens at the date', async ({ page }) => {
     await page.goto('/companies?company=agoda');
     await expect(page.getByRole('heading', { level: 2, name: 'When is your interview?' })).toBeVisible();
     await expect(page.locator('.plan-step').first()).toContainText('Agoda');
+  });
+
+  test('Ece, a Premium member, reads the Agoda guide: the card leads back to the plan, and nothing asks to unlock', async ({ page }) => {
+    await signIn(page, newAccount({ premium: true, plan: savedPlan({ companies: [{ slug: 'agoda' }], when: 'later', level: 'mid' }) }));
+    await page.goto('/companies/agoda/preview');
+    await expect(page).toHaveURL('/companies/agoda/preview');
+    const card = page.getByTestId('company-plan-entry');
+    await expect(card).toContainText('Continue your Agoda plan');
+    await expect(card).toContainText(/Later or no date · Mid-level · 0 of \d+ solved/);
+    await expect(page.locator('.preview-chip', { hasText: 'Full practice set requires Premium' })).toBeHidden();
+    await expect(page.getByRole('link', { name: 'Unlock the full Agoda practice set' })).toBeHidden();
+    const set = page.getByTestId('company-set-entry');
+    await expect(set).toContainText(/The full Agoda set: \d+ questions/);
+    await expect(set.getByRole('link', { name: 'Open the Agoda set' })).toHaveAttribute('href', '/companies/agoda/all');
+    await expect(page.getByTestId('company-prompt-gate')).toHaveCount(0);
+    await expect(page.locator('.company-prompt--locked')).toHaveCount(0);
+
+    const sidebarPlan = page.getByTestId('sidebar-company-plan');
+    await expect(sidebarPlan).toContainText('Your Agoda plan');
+    await expect(sidebarPlan).toContainText(/0 of \d+ solved/);
+    await expect(page.getByTestId('sidebar-company-plan-next')).toHaveAttribute('href', /^\/(javascript|react|angular|vue|html|css|system-design|guides)\//);
+
+    await card.getByRole('link', { name: 'Open my plan' }).click();
+    await expect(page).toHaveURL('/companies/plan');
+    await expect(page.getByRole('heading', { level: 1, name: 'Your Agoda plan is ready' })).toBeVisible();
+  });
+
+  test('Ferhat reads the Google guide behind the account gate: a visitor gets the lead-in, a free account the rounds and sources, Premium the answer guides', async ({ page }) => {
+    // As a visitor: every round in full with its counts but no evidence links, and the first prompt; two gates to a free account.
+    await page.goto('/companies/google/preview');
+    const process = page.getByTestId('company-interview-process');
+    await expect(process.locator('.premium-locked')).toHaveCount(0);
+    await expect(process.locator('.interview-process__sources')).toHaveCount(0);
+    await expect(process.locator('.interview-process__strength').first()).toBeVisible();
+    await expect(process.locator('.interview-process__tag').first()).toHaveText('Free account');
+    const processGate = page.getByTestId('company-process-gate');
+    await expect(processGate).toContainText('The sources behind each round open with a free account');
+    await expect(processGate.getByRole('link', { name: 'Create a free account' })).toHaveAttribute('href', /^\/auth\/signup\?redirectTo=%2Fcompanies%2Fgoogle%2Fpreview/);
+    await expect(processGate.getByRole('link', { name: 'Sign in' })).toHaveAttribute('href', /^\/auth\/login\?redirectTo=/);
+    const prompts = page.locator('.company-prompt');
+    await expect(prompts.nth(0).locator('.company-prompt__details')).not.toHaveAttribute('inert', /.*/);
+    await expect(prompts.nth(1).locator('.company-prompt__statement .premium-locked')).toHaveAttribute('data-nosnippet', '');
+    await expect(prompts.nth(1).locator('.company-prompt__details')).toHaveAttribute('inert', '');
+    await expect(page.getByTestId('company-prompt-gate')).toContainText(/Prompts 2 to \d+ open with a free account/);
+
+    // As a free account: every round and source, every prompt statement; the answer guides past the first wait for Premium.
+    await signIn(page, newAccount());
+    await page.goto('/companies/google/preview');
+    await expect(page.getByTestId('company-process-gate')).toHaveCount(0);
+    await expect(process.locator('.interview-process__tag')).toHaveCount(0);
+    await expect(process.locator('.interview-process__sources a').first()).toBeVisible();
+    await expect(prompts.nth(1).locator('.company-prompt__statement .premium-locked')).toHaveCount(0);
+    await expect(prompts.nth(1).locator('.company-prompt__details')).toHaveAttribute('inert', '');
+    await expect(page.getByTestId('company-prompt-gate')).toContainText(/Prompts 2 to \d+, with their answer guides, are in Premium/);
+    expect(await overflow(page)).toBe(0);
   });
 });

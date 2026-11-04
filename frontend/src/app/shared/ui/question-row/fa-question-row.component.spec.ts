@@ -84,6 +84,28 @@ describe('FaQuestionRowComponent', () => {
     expect((title.textContent || '').trim()).toBe('Implement the new Operator');
   });
 
+  it('keeps a concealed row\'s title and description in the page under a blur, out of snippets, with its chips readable', async () => {
+    const fixture = await createComponent();
+    fixture.componentRef.setInput('concealed', true);
+    fixture.detectChanges();
+
+    const host = fixture.nativeElement as HTMLElement;
+    for (const part of [host.querySelector('.fa-question-row__title'), host.querySelector('.fa-question-row__description')] as HTMLElement[]) {
+      expect(part.classList).toContain('fa-question-row__concealed');
+      expect(part.classList).toContain('premium-locked');
+      expect(part.hasAttribute('data-nosnippet')).toBeTrue();
+      expect(part.getAttribute('aria-hidden')).toBe('true');
+      expect(getComputedStyle(part).filter).toContain('blur');
+    }
+    expect(host.querySelector('.fa-question-row__description')?.hasAttribute('tabindex')).toBeFalse();
+    expect(host.textContent).toContain('What are callbacks?');
+    expect(host.querySelector('[aria-label="Difficulty: Easy"]')).not.toBeNull();
+
+    fixture.componentRef.setInput('concealed', false);
+    fixture.detectChanges();
+    expect(host.querySelector('.fa-question-row__concealed, [data-nosnippet]')).toBeNull();
+  });
+
   it('renders read-only rows without a chevron when no route is provided', async () => {
     await TestBed.configureTestingModule({
       imports: [FaQuestionRowComponent],

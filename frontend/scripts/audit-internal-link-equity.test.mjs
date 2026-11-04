@@ -167,7 +167,7 @@ test('generic company sample/count hydration shells fail and authored previews p
   f.page('/', link('/companies'));
   f.page('/companies', `<section data-testid="company-index-list">${companyLink(route, 2)}${companyLink(authored, 1)}</section>`);
   assert.match(failures(audit()), /Company preview missing or unexpected initial-HTML samples/);
-  const preview = '<span class="preview-chip">2 editorial practice prompts</span><span data-testid="company-preview-counts">Coding 2 · Concepts 0 · System 0</span><div data-testid="company-preview-question-one"></div><div data-testid="company-preview-question-two"></div>';
+  const preview = '<span class="preview-chip">2 editorial practice prompts</span><span data-testid="company-preview-counts">Coding 2</span><div data-testid="company-preview-question-one"></div><div data-testid="company-preview-question-two"></div>';
   f.page(route, preview);
   assert.deepEqual(audit().failures, []);
   f.page(route, preview.replace('Coding 2', 'Coding 999'));

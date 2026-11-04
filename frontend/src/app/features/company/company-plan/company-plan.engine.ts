@@ -17,6 +17,8 @@ export type CompanyPlanDataTask = {
   readonly tech?: string;
   readonly access: 'free' | 'premium';
   readonly minutes: number;
+  /** The page can run it as an interview: the requirements change while the person codes. */
+  readonly pressure?: true;
   readonly family?: string;
   /** What it practises, best fit first. */
   readonly focus?: readonly string[];

@@ -126,6 +126,7 @@
       "tech": "angular",
       "access": "premium",
       "minutes": 30,
+      "pressure": true,
       "focus": [
         "ui"
       ],
@@ -139,6 +140,7 @@
       "tech": "angular",
       "access": "premium",
       "minutes": 30,
+      "pressure": true,
       "focus": [
         "ui"
       ],
@@ -152,6 +154,7 @@
       "tech": "angular",
       "access": "premium",
       "minutes": 30,
+      "pressure": true,
       "focus": [
         "ui"
       ],
@@ -1792,6 +1795,7 @@
       "tech": "react",
       "access": "premium",
       "minutes": 30,
+      "pressure": true,
       "focus": [
         "ui"
       ],
@@ -1805,6 +1809,7 @@
       "tech": "react",
       "access": "free",
       "minutes": 30,
+      "pressure": true,
       "focus": [
         "ui"
       ],
@@ -1830,6 +1835,7 @@
       "tech": "react",
       "access": "premium",
       "minutes": 45,
+      "pressure": true,
       "focus": [
         "ui"
       ]
@@ -1842,6 +1848,7 @@
       "tech": "react",
       "access": "premium",
       "minutes": 15,
+      "pressure": true,
       "focus": [
         "ui"
       ],
@@ -1855,6 +1862,7 @@
       "tech": "react",
       "access": "premium",
       "minutes": 30,
+      "pressure": true,
       "focus": [
         "ui"
       ],
@@ -1868,6 +1876,7 @@
       "tech": "react",
       "access": "premium",
       "minutes": 30,
+      "pressure": true,
       "focus": [
         "ui"
       ],
@@ -1893,6 +1902,7 @@
       "tech": "react",
       "access": "premium",
       "minutes": 30,
+      "pressure": true,
       "focus": [
         "ui"
       ],
@@ -1919,6 +1929,7 @@
       "tech": "react",
       "access": "premium",
       "minutes": 30,
+      "pressure": true,
       "focus": [
         "debug",
         "ui"
@@ -1945,6 +1956,7 @@
       "tech": "react",
       "access": "premium",
       "minutes": 30,
+      "pressure": true,
       "focus": [
         "ui"
       ],
@@ -1971,6 +1983,7 @@
       "tech": "react",
       "access": "free",
       "minutes": 30,
+      "pressure": true,
       "focus": [
         "ui"
       ]
@@ -1983,6 +1996,7 @@
       "tech": "react",
       "access": "premium",
       "minutes": 30,
+      "pressure": true,
       "focus": [
         "ui"
       ]
@@ -1995,6 +2009,7 @@
       "tech": "react",
       "access": "premium",
       "minutes": 15,
+      "pressure": true,
       "focus": [
         "ui"
       ],
@@ -2020,6 +2035,7 @@
       "tech": "react",
       "access": "premium",
       "minutes": 15,
+      "pressure": true,
       "focus": [
         "ui"
       ],
@@ -2033,6 +2049,7 @@
       "tech": "react",
       "access": "premium",
       "minutes": 30,
+      "pressure": true,
       "focus": [
         "ui"
       ],
@@ -2046,6 +2063,7 @@
       "tech": "react",
       "access": "premium",
       "minutes": 30,
+      "pressure": true,
       "focus": [
         "ui"
       ],
@@ -2084,6 +2102,7 @@
       "tech": "react",
       "access": "premium",
       "minutes": 30,
+      "pressure": true,
       "focus": [
         "ui"
       ],
@@ -2162,6 +2181,7 @@
       "tech": "react",
       "access": "premium",
       "minutes": 15,
+      "pressure": true,
       "focus": [
         "ui"
       ],
@@ -2175,6 +2195,7 @@
       "tech": "react",
       "access": "free",
       "minutes": 15,
+      "pressure": true,
       "focus": [
         "ui"
       ],
@@ -2188,6 +2209,7 @@
       "tech": "react",
       "access": "premium",
       "minutes": 30,
+      "pressure": true,
       "focus": [
         "ui"
       ],
@@ -2201,6 +2223,7 @@
       "tech": "react",
       "access": "premium",
       "minutes": 30,
+      "pressure": true,
       "focus": [
         "ui"
       ]
@@ -2288,6 +2311,7 @@
       "tech": "vue",
       "access": "premium",
       "minutes": 30,
+      "pressure": true,
       "focus": [
         "ui"
       ],
@@ -2314,6 +2338,7 @@
       "tech": "vue",
       "access": "premium",
       "minutes": 30,
+      "pressure": true,
       "focus": [
         "ui"
       ],
@@ -2330,7 +2355,7 @@
         {
           "id": "bangkok",
           "title": "Front-end engineers, Bangkok relocation loops, Senior and Staff, 2025 to 2026",
-          "from": "Bangkok, Senior and Staff",
+          "from": "Senior and Staff candidates in Bangkok",
           "ask": "Interviewing in Bangkok?",
           "default": true,
           "reported": {
@@ -2537,16 +2562,6 @@
           ],
           "tasks": [
             {
-              "id": "realtime-search-debounce-cache",
-              "report": {
-                "publisher": "LeetCode Discuss",
-                "date": "2026-07"
-              },
-              "rounds": [
-                "architecture-interview"
-              ]
-            },
-            {
               "id": "/guides/interview-blueprint/dsa-for-fe",
               "rounds": [
                 "coding-interview"
@@ -2568,6 +2583,16 @@
               "id": "/guides/behavioral",
               "rounds": [
                 "culture-fit"
+              ]
+            },
+            {
+              "id": "realtime-search-debounce-cache",
+              "report": {
+                "publisher": "LeetCode Discuss",
+                "date": "2026-07"
+              },
+              "rounds": [
+                "architecture-interview"
               ]
             },
             {
@@ -2596,7 +2621,7 @@
         {
           "id": "gurgaon",
           "title": "Front-end engineers, Gurgaon, 2024 to 2025",
-          "from": "Gurgaon",
+          "from": "candidates in Gurgaon",
           "ask": "Interviewing in Gurgaon?",
           "sourceCount": 3,
           "newestReport": "2025-06",
@@ -2731,6 +2756,24 @@
           ],
           "tasks": [
             {
+              "id": "js-debounce",
+              "rounds": [
+                "coding-round"
+              ]
+            },
+            {
+              "id": "react-ssr-hydration",
+              "rounds": [
+                "platform-or-architecture-round"
+              ]
+            },
+            {
+              "id": "/guides/behavioral",
+              "rounds": [
+                "managerial-or-technical-strategy-round"
+              ]
+            },
+            {
               "id": "car-rental-booking-frontend",
               "report": {
                 "publisher": "Code360",
@@ -2750,24 +2793,6 @@
                 "online-assessment-or-take-home",
                 "coding-round",
                 "platform-or-architecture-round"
-              ]
-            },
-            {
-              "id": "js-debounce",
-              "rounds": [
-                "coding-round"
-              ]
-            },
-            {
-              "id": "react-ssr-hydration",
-              "rounds": [
-                "platform-or-architecture-round"
-              ]
-            },
-            {
-              "id": "/guides/behavioral",
-              "rounds": [
-                "managerial-or-technical-strategy-round"
               ]
             },
             {
@@ -3228,6 +3253,36 @@
           ],
           "tasks": [
             {
+              "id": "js-build-tree-from-flat-list",
+              "rounds": [
+                "online-assessment"
+              ]
+            },
+            {
+              "id": "react-todo-list",
+              "rounds": [
+                "phone-screen"
+              ]
+            },
+            {
+              "id": "js-implement-new",
+              "rounds": [
+                "loop-coding-interviews"
+              ]
+            },
+            {
+              "id": "resilient-checkout-payment-flow",
+              "rounds": [
+                "loop-front-end-system-design"
+              ]
+            },
+            {
+              "id": "/guides/behavioral",
+              "rounds": [
+                "loop-leadership-principles"
+              ]
+            },
+            {
               "id": "react-pagination-table",
               "report": {
                 "publisher": "LeetCode Discuss",
@@ -3320,36 +3375,6 @@
               },
               "rounds": [
                 "loop-coding-interviews"
-              ]
-            },
-            {
-              "id": "js-build-tree-from-flat-list",
-              "rounds": [
-                "online-assessment"
-              ]
-            },
-            {
-              "id": "react-todo-list",
-              "rounds": [
-                "phone-screen"
-              ]
-            },
-            {
-              "id": "js-implement-new",
-              "rounds": [
-                "loop-coding-interviews"
-              ]
-            },
-            {
-              "id": "resilient-checkout-payment-flow",
-              "rounds": [
-                "loop-front-end-system-design"
-              ]
-            },
-            {
-              "id": "/guides/behavioral",
-              "rounds": [
-                "loop-leadership-principles"
               ]
             },
             {
@@ -3615,10 +3640,10 @@
               ]
             },
             {
-              "id": "react-vanilla-dropdown-port",
+              "id": "react-countdown-timer",
               "report": {
                 "publisher": "Taro",
-                "date": "2025-01"
+                "date": "2024-12"
               },
               "rounds": [
                 "technical-screen",
@@ -3626,10 +3651,10 @@
               ]
             },
             {
-              "id": "react-countdown-timer",
+              "id": "react-vanilla-dropdown-port",
               "report": {
                 "publisher": "Taro",
-                "date": "2024-12"
+                "date": "2025-01"
               },
               "rounds": [
                 "technical-screen",
@@ -3654,7 +3679,7 @@
         {
           "id": "interns",
           "title": "Frontend interns, 2023",
-          "from": "a 2023 internship",
+          "from": "a 2023 internship loop",
           "ask": "Interviewing for an internship?",
           "sourceCount": 1,
           "newestReport": "2023-07",
@@ -3882,6 +3907,22 @@
           ],
           "tasks": [
             {
+              "id": "react-autocomplete-search-starter",
+              "report": {
+                "publisher": "Taro",
+                "date": "2022-08"
+              },
+              "rounds": [
+                "technical-screen"
+              ]
+            },
+            {
+              "id": "react-todo-list",
+              "rounds": [
+                "team-loop"
+              ]
+            },
+            {
               "id": "js-build-tree-from-flat-list",
               "report": {
                 "publisher": "LeetCode Discuss",
@@ -3889,16 +3930,6 @@
               },
               "rounds": [
                 "online-assessment",
-                "technical-screen"
-              ]
-            },
-            {
-              "id": "react-autocomplete-search-starter",
-              "report": {
-                "publisher": "Taro",
-                "date": "2022-08"
-              },
-              "rounds": [
                 "technical-screen"
               ]
             },
@@ -3928,12 +3959,6 @@
                 "publisher": "Taro",
                 "date": "2019-12"
               }
-            },
-            {
-              "id": "react-todo-list",
-              "rounds": [
-                "team-loop"
-              ]
             },
             {
               "id": "html-dialog-confirm-a11y"
@@ -4113,6 +4138,28 @@
           ],
           "tasks": [
             {
+              "id": "react-autocomplete-search-starter",
+              "report": {
+                "publisher": "enginebogie",
+                "date": "2023-05"
+              },
+              "rounds": [
+                "frontend-coding"
+              ]
+            },
+            {
+              "id": "js-valid-parentheses",
+              "rounds": [
+                "hackerrank-assessment"
+              ]
+            },
+            {
+              "id": "/guides/behavioral",
+              "rounds": [
+                "fit-interview"
+              ]
+            },
+            {
               "id": "react-debounced-search",
               "report": {
                 "publisher": "Taro",
@@ -4140,32 +4187,13 @@
               ]
             },
             {
-              "id": "react-autocomplete-search-starter",
+              "id": "realtime-search-debounce-cache",
               "report": {
                 "publisher": "enginebogie",
                 "date": "2023-05"
               },
               "rounds": [
                 "frontend-coding"
-              ]
-            },
-            {
-              "id": "realtime-search-debounce-cache",
-              "report": {
-                "publisher": "enginebogie",
-                "date": "2023-05"
-              }
-            },
-            {
-              "id": "js-valid-parentheses",
-              "rounds": [
-                "hackerrank-assessment"
-              ]
-            },
-            {
-              "id": "/guides/behavioral",
-              "rounds": [
-                "fit-interview"
               ]
             },
             {
@@ -4199,7 +4227,7 @@
         {
           "id": "us",
           "title": "Frontend engineers, United States",
-          "from": "the United States",
+          "from": "candidates in the United States",
           "ask": "Interviewing in the United States?",
           "default": true,
           "sourceCount": 10,
@@ -4339,6 +4367,24 @@
           ],
           "tasks": [
             {
+              "id": "js-debounce",
+              "rounds": [
+                "technical-rounds"
+              ]
+            },
+            {
+              "id": "/guides/system-design-blueprint",
+              "rounds": [
+                "hiring-manager-round"
+              ]
+            },
+            {
+              "id": "/guides/behavioral",
+              "rounds": [
+                "hr-or-behavioural-round"
+              ]
+            },
+            {
               "id": "js-array-prototype-map",
               "report": {
                 "publisher": "Blind",
@@ -4356,24 +4402,6 @@
               },
               "rounds": [
                 "technical-rounds"
-              ]
-            },
-            {
-              "id": "js-debounce",
-              "rounds": [
-                "technical-rounds"
-              ]
-            },
-            {
-              "id": "/guides/system-design-blueprint",
-              "rounds": [
-                "hiring-manager-round"
-              ]
-            },
-            {
-              "id": "/guides/behavioral",
-              "rounds": [
-                "hr-or-behavioural-round"
               ]
             },
             {
@@ -4402,7 +4430,7 @@
         {
           "id": "singapore-australia",
           "title": "Frontend engineers, Singapore and Australia",
-          "from": "Singapore and Australia",
+          "from": "candidates in Singapore and Australia",
           "ask": "Interviewing in Singapore or Australia?",
           "sourceCount": 8,
           "newestReport": "2025-10",
@@ -5038,7 +5066,7 @@
         {
           "id": "us",
           "title": "Frontend and UI engineers, United States, 2021 to 2025",
-          "from": "the United States",
+          "from": "candidates in the United States",
           "ask": "Interviewing in the United States?",
           "default": true,
           "sourceCount": 15,
@@ -5246,17 +5274,17 @@
               ]
             },
             {
+              "id": "js-event-delegation",
+              "rounds": [
+                "web-fundamentals-with-engineers"
+              ]
+            },
+            {
               "id": "model-training-progress-dashboard",
               "report": {
                 "publisher": "Taro",
                 "date": "2025-01"
               }
-            },
-            {
-              "id": "js-event-delegation",
-              "rounds": [
-                "web-fundamentals-with-engineers"
-              ]
             },
             {
               "id": "css-box-model"
@@ -5710,6 +5738,30 @@
           ],
           "tasks": [
             {
+              "id": "js-valid-parentheses",
+              "rounds": [
+                "technical-screen"
+              ]
+            },
+            {
+              "id": "react-fetch-list-states",
+              "rounds": [
+                "react-live-coding"
+              ]
+            },
+            {
+              "id": "dashboard-widgets-draggable-resizable",
+              "rounds": [
+                "frontend-system-design"
+              ]
+            },
+            {
+              "id": "/guides/behavioral",
+              "rounds": [
+                "experience-and-values"
+              ]
+            },
+            {
               "id": "js-array-prototype-filter",
               "report": {
                 "publisher": "Taro",
@@ -5787,30 +5839,6 @@
                 "technical-screen",
                 "react-live-coding",
                 "second-coding-round"
-              ]
-            },
-            {
-              "id": "js-valid-parentheses",
-              "rounds": [
-                "technical-screen"
-              ]
-            },
-            {
-              "id": "react-fetch-list-states",
-              "rounds": [
-                "react-live-coding"
-              ]
-            },
-            {
-              "id": "dashboard-widgets-draggable-resizable",
-              "rounds": [
-                "frontend-system-design"
-              ]
-            },
-            {
-              "id": "/guides/behavioral",
-              "rounds": [
-                "experience-and-values"
               ]
             }
           ]
@@ -5963,13 +5991,6 @@
           ],
           "tasks": [
             {
-              "id": "ai-ux-considerations",
-              "report": {
-                "publisher": "Aced",
-                "date": "2026-10"
-              }
-            },
-            {
               "id": "js-poll-until",
               "report": {
                 "publisher": "Aced",
@@ -5978,13 +5999,6 @@
               "rounds": [
                 "coding-assessment"
               ]
-            },
-            {
-              "id": "js-timer-manager",
-              "report": {
-                "publisher": "Aced",
-                "date": "2026-10"
-              }
             },
             {
               "id": "js-debug-async-race",
@@ -5996,6 +6010,20 @@
                 "coding-assessment",
                 "live-technical-round"
               ]
+            },
+            {
+              "id": "ai-ux-considerations",
+              "report": {
+                "publisher": "Aced",
+                "date": "2026-10"
+              }
+            },
+            {
+              "id": "js-timer-manager",
+              "report": {
+                "publisher": "Aced",
+                "date": "2026-10"
+              }
             },
             {
               "id": "react-autocomplete-search-starter",
@@ -6224,16 +6252,6 @@
           ],
           "tasks": [
             {
-              "id": "css-flexbox-navbar",
-              "report": {
-                "publisher": "Taro",
-                "date": "2024-03"
-              },
-              "rounds": [
-                "merge-request-review"
-              ]
-            },
-            {
               "id": "js-debug-async-race",
               "report": {
                 "publisher": "Taro",
@@ -6255,17 +6273,27 @@
               ]
             },
             {
+              "id": "html-parsing-rendering",
+              "rounds": [
+                "written-assessment"
+              ]
+            },
+            {
+              "id": "css-flexbox-navbar",
+              "report": {
+                "publisher": "Taro",
+                "date": "2024-03"
+              },
+              "rounds": [
+                "merge-request-review"
+              ]
+            },
+            {
               "id": "html-head-seo-basics",
               "report": {
                 "publisher": "Taro",
                 "date": "2022-05"
               }
-            },
-            {
-              "id": "html-parsing-rendering",
-              "rounds": [
-                "written-assessment"
-              ]
             },
             {
               "id": "vue-lifecycle-hooks"
@@ -6546,6 +6574,28 @@
           ],
           "tasks": [
             {
+              "id": "js-debounce",
+              "report": {
+                "publisher": "Blind",
+                "date": "2020-12"
+              },
+              "rounds": [
+                "technical-screen"
+              ]
+            },
+            {
+              "id": "js-build-tree-from-flat-list",
+              "rounds": [
+                "interview-loop"
+              ]
+            },
+            {
+              "id": "/guides/system-design-blueprint",
+              "rounds": [
+                "system-design"
+              ]
+            },
+            {
               "id": "js-retry-with-delay",
               "report": {
                 "publisher": "LeetCode Discuss",
@@ -6558,16 +6608,6 @@
                 "publisher": "LeetCode Discuss",
                 "date": "2021-06"
               }
-            },
-            {
-              "id": "js-debounce",
-              "report": {
-                "publisher": "Blind",
-                "date": "2020-12"
-              },
-              "rounds": [
-                "technical-screen"
-              ]
             },
             {
               "id": "js-throttle",
@@ -6585,18 +6625,6 @@
                 "publisher": "LeetCode Discuss",
                 "date": "2019-07"
               }
-            },
-            {
-              "id": "js-build-tree-from-flat-list",
-              "rounds": [
-                "interview-loop"
-              ]
-            },
-            {
-              "id": "/guides/system-design-blueprint",
-              "rounds": [
-                "system-design"
-              ]
             },
             {
               "id": "js-deep-clone"
@@ -6801,6 +6829,30 @@
           ],
           "tasks": [
             {
+              "id": "js-event-loop",
+              "rounds": [
+                "technical-phone-interview"
+              ]
+            },
+            {
+              "id": "react-fetch-list-states",
+              "rounds": [
+                "craft-demonstration"
+              ]
+            },
+            {
+              "id": "js-sleep",
+              "rounds": [
+                "assessor-or-technical-rounds"
+              ]
+            },
+            {
+              "id": "/guides/behavioral",
+              "rounds": [
+                "hiring-manager"
+              ]
+            },
+            {
               "id": "js-dom-twin-node",
               "report": {
                 "publisher": "LeetCode Discuss",
@@ -6913,30 +6965,11 @@
               "report": {
                 "publisher": "LeetCode Discuss",
                 "date": "2023-10"
-              }
-            },
-            {
-              "id": "js-event-loop",
+              },
               "rounds": [
-                "technical-phone-interview"
-              ]
-            },
-            {
-              "id": "react-fetch-list-states",
-              "rounds": [
-                "craft-demonstration"
-              ]
-            },
-            {
-              "id": "js-sleep",
-              "rounds": [
+                "technical-phone-interview",
+                "craft-demonstration",
                 "assessor-or-technical-rounds"
-              ]
-            },
-            {
-              "id": "/guides/behavioral",
-              "rounds": [
-                "hiring-manager"
               ]
             }
           ]
@@ -7133,36 +7166,6 @@
           ],
           "tasks": [
             {
-              "id": "react-fetch-list-states",
-              "report": {
-                "publisher": "Aced",
-                "date": "2026-05"
-              },
-              "rounds": [
-                "live-coding"
-              ]
-            },
-            {
-              "id": "js-array-prototype-reduce",
-              "report": {
-                "publisher": "frontendgeek",
-                "date": "2024-04"
-              },
-              "rounds": [
-                "security-and-framework-rounds"
-              ]
-            },
-            {
-              "id": "js-memoize-function",
-              "report": {
-                "publisher": "frontendgeek",
-                "date": "2024-04"
-              },
-              "rounds": [
-                "security-and-framework-rounds"
-              ]
-            },
-            {
               "id": "/guides/interview-blueprint/dsa-for-fe",
               "rounds": [
                 "online-assessment"
@@ -7199,6 +7202,36 @@
               ]
             },
             {
+              "id": "react-fetch-list-states",
+              "report": {
+                "publisher": "Aced",
+                "date": "2026-05"
+              },
+              "rounds": [
+                "live-coding"
+              ]
+            },
+            {
+              "id": "js-array-prototype-reduce",
+              "report": {
+                "publisher": "frontendgeek",
+                "date": "2024-04"
+              },
+              "rounds": [
+                "security-and-framework-rounds"
+              ]
+            },
+            {
+              "id": "js-memoize-function",
+              "report": {
+                "publisher": "frontendgeek",
+                "date": "2024-04"
+              },
+              "rounds": [
+                "security-and-framework-rounds"
+              ]
+            },
+            {
               "id": "js-event-loop"
             },
             {
@@ -7224,7 +7257,7 @@
         {
           "id": "ic4-ic6",
           "title": "Front End Engineer, IC4 to IC6",
-          "from": "Front End Engineer roles, IC4 to IC6",
+          "from": "Front End Engineer candidates at IC4 to IC6",
           "ask": "Interviewing for a full-time role?",
           "default": true,
           "reported": {
@@ -7371,6 +7404,35 @@
           ],
           "tasks": [
             {
+              "id": "js-flatten-once",
+              "report": {
+                "publisher": "Blind",
+                "date": "2021-10"
+              },
+              "rounds": [
+                "initial-technical-screen",
+                "full-loop-coding"
+              ]
+            },
+            {
+              "id": "js-debounce",
+              "rounds": [
+                "full-loop-coding"
+              ]
+            },
+            {
+              "id": "infinite-scroll-list",
+              "rounds": [
+                "full-loop-ui-architecture-and-design"
+              ]
+            },
+            {
+              "id": "/guides/behavioral",
+              "rounds": [
+                "full-loop-behavioural"
+              ]
+            },
+            {
               "id": "js-stack-queue-implementation",
               "report": {
                 "publisher": "Taro",
@@ -7445,35 +7507,6 @@
               ]
             },
             {
-              "id": "js-flatten-once",
-              "report": {
-                "publisher": "Blind",
-                "date": "2021-10"
-              },
-              "rounds": [
-                "initial-technical-screen",
-                "full-loop-coding"
-              ]
-            },
-            {
-              "id": "js-debounce",
-              "rounds": [
-                "full-loop-coding"
-              ]
-            },
-            {
-              "id": "infinite-scroll-list",
-              "rounds": [
-                "full-loop-ui-architecture-and-design"
-              ]
-            },
-            {
-              "id": "/guides/behavioral",
-              "rounds": [
-                "full-loop-behavioural"
-              ]
-            },
-            {
               "id": "js-array-sort"
             },
             {
@@ -7505,7 +7538,7 @@
         {
           "id": "interns",
           "title": "Front End Engineer internships",
-          "from": "internships",
+          "from": "internship candidates",
           "ask": "Interviewing for an internship?",
           "sourceCount": 3,
           "newestReport": "2022-01",
@@ -8091,6 +8124,12 @@
           ],
           "tasks": [
             {
+              "id": "js-promise-combinators-all-allsettled-race-any",
+              "rounds": [
+                "technical-screen"
+              ]
+            },
+            {
               "id": "js-debounce",
               "report": {
                 "publisher": "Taro",
@@ -8103,12 +8142,6 @@
                 "publisher": "Taro",
                 "date": "2024-11"
               }
-            },
-            {
-              "id": "js-promise-combinators-all-allsettled-race-any",
-              "rounds": [
-                "technical-screen"
-              ]
             },
             {
               "id": "react-debug-double-render"
@@ -8570,16 +8603,6 @@
           ],
           "tasks": [
             {
-              "id": "react-debounced-search",
-              "report": {
-                "publisher": "Taro",
-                "date": "2025-05"
-              },
-              "rounds": [
-                "live-coding"
-              ]
-            },
-            {
               "id": "react-fetch-list-states",
               "report": {
                 "publisher": "Taro",
@@ -8605,6 +8628,16 @@
               "id": "/guides/behavioral",
               "rounds": [
                 "team-fit"
+              ]
+            },
+            {
+              "id": "react-debounced-search",
+              "report": {
+                "publisher": "Taro",
+                "date": "2025-05"
+              },
+              "rounds": [
+                "live-coding"
               ]
             },
             {
@@ -8642,7 +8675,7 @@
             "who": "IC2 to senior candidates"
           },
           "sourceCount": 5,
-          "newestReport": "2026-03",
+          "newestReport": "2026-02",
           "rounds": [
             {
               "id": "screening-call",
@@ -8746,7 +8779,7 @@
               "name": "Hiring manager",
               "kinds": [
                 "people",
-                "coding"
+                "design"
               ],
               "note": "A hiring-manager round mixing JavaScript questions, a design task and behavioural questions.",
               "focus": [
@@ -8772,70 +8805,6 @@
           ],
           "tasks": [
             {
-              "id": "notification-toast-system",
-              "report": {
-                "publisher": "LeetCode Discuss",
-                "date": "2026-03"
-              }
-            },
-            {
-              "id": "react-nested-comments",
-              "report": {
-                "publisher": "LeetCode Discuss",
-                "date": "2026-03"
-              }
-            },
-            {
-              "id": "js-array-foreach",
-              "report": {
-                "publisher": "Medium",
-                "date": "2025-09"
-              },
-              "rounds": [
-                "javascript-fundamentals",
-                "second-technical-round",
-                "hiring-manager"
-              ]
-            },
-            {
-              "id": "js-array-prototype-map",
-              "report": {
-                "publisher": "Medium",
-                "date": "2025-09"
-              },
-              "rounds": [
-                "javascript-fundamentals",
-                "second-technical-round",
-                "hiring-manager"
-              ]
-            },
-            {
-              "id": "js-create-counter",
-              "report": {
-                "publisher": "Medium",
-                "date": "2025-09"
-              },
-              "rounds": [
-                "javascript-fundamentals",
-                "second-technical-round",
-                "hiring-manager"
-              ]
-            },
-            {
-              "id": "js-dom-renderer",
-              "report": {
-                "publisher": "Blind",
-                "date": "2021-09"
-              }
-            },
-            {
-              "id": "js-implement-bind",
-              "report": {
-                "publisher": "Blind",
-                "date": "2021-09"
-              }
-            },
-            {
               "id": "js-closures",
               "rounds": [
                 "javascript-fundamentals"
@@ -8858,6 +8827,67 @@
               "rounds": [
                 "hiring-manager"
               ]
+            },
+            {
+              "id": "notification-toast-system",
+              "report": {
+                "publisher": "LeetCode Discuss",
+                "date": "2026-02"
+              }
+            },
+            {
+              "id": "react-nested-comments",
+              "report": {
+                "publisher": "LeetCode Discuss",
+                "date": "2026-02"
+              }
+            },
+            {
+              "id": "js-array-foreach",
+              "report": {
+                "publisher": "Medium",
+                "date": "2025-09"
+              },
+              "rounds": [
+                "javascript-fundamentals",
+                "second-technical-round"
+              ]
+            },
+            {
+              "id": "js-array-prototype-map",
+              "report": {
+                "publisher": "Medium",
+                "date": "2025-09"
+              },
+              "rounds": [
+                "javascript-fundamentals",
+                "second-technical-round"
+              ]
+            },
+            {
+              "id": "js-create-counter",
+              "report": {
+                "publisher": "Medium",
+                "date": "2025-09"
+              },
+              "rounds": [
+                "javascript-fundamentals",
+                "second-technical-round"
+              ]
+            },
+            {
+              "id": "js-dom-renderer",
+              "report": {
+                "publisher": "Blind",
+                "date": "2021-09"
+              }
+            },
+            {
+              "id": "js-implement-bind",
+              "report": {
+                "publisher": "Blind",
+                "date": "2021-09"
+              }
             }
           ]
         }
@@ -8872,7 +8902,7 @@
         {
           "id": "ho-chi-minh",
           "title": "Front-end engineers, Ho Chi Minh City, 2025",
-          "from": "Ho Chi Minh City",
+          "from": "candidates in Ho Chi Minh City",
           "ask": "Interviewing in Ho Chi Minh City?",
           "default": true,
           "sourceCount": 1,
@@ -8961,7 +8991,7 @@
           ],
           "tasks": [
             {
-              "id": "css-positioning-badge",
+              "id": "js-create-deferred-promise",
               "report": {
                 "publisher": "Viblo",
                 "date": "2025-02"
@@ -8972,7 +9002,19 @@
               ]
             },
             {
-              "id": "js-create-deferred-promise",
+              "id": "http-caching-basics",
+              "rounds": [
+                "cs-fundamentals-round"
+              ]
+            },
+            {
+              "id": "/guides/behavioral/stories",
+              "rounds": [
+                "behavioural-interview"
+              ]
+            },
+            {
+              "id": "css-positioning-badge",
               "report": {
                 "publisher": "Viblo",
                 "date": "2025-02"
@@ -9006,18 +9048,6 @@
                 "publisher": "GoodJob",
                 "date": "2021-01"
               }
-            },
-            {
-              "id": "http-caching-basics",
-              "rounds": [
-                "cs-fundamentals-round"
-              ]
-            },
-            {
-              "id": "/guides/behavioral/stories",
-              "rounds": [
-                "behavioural-interview"
-              ]
             },
             {
               "id": "js-deep-clone"
@@ -9160,7 +9190,7 @@
         {
           "id": "mainland-china",
           "title": "Campus and social hires, mainland China, in Chinese, 2019 to 2025",
-          "from": "mainland China",
+          "from": "candidates in mainland China",
           "ask": "Interviewing in mainland China?",
           "sourceCount": 7,
           "newestReport": "2022-04",
@@ -9274,6 +9304,17 @@
               ]
             },
             {
+              "id": "js-implement-new",
+              "report": {
+                "publisher": "Juejin",
+                "date": "2020-03"
+              },
+              "rounds": [
+                "first-technical-interview",
+                "second-technical-interview"
+              ]
+            },
+            {
               "id": "js-valid-parentheses",
               "report": {
                 "publisher": "Nowcoder",
@@ -9297,17 +9338,6 @@
             },
             {
               "id": "js-flatten-once",
-              "report": {
-                "publisher": "Juejin",
-                "date": "2020-03"
-              },
-              "rounds": [
-                "first-technical-interview",
-                "second-technical-interview"
-              ]
-            },
-            {
-              "id": "js-implement-new",
               "report": {
                 "publisher": "Juejin",
                 "date": "2020-03"
@@ -9511,28 +9541,6 @@
           ],
           "tasks": [
             {
-              "id": "react-debounced-search",
-              "report": {
-                "publisher": "Blind",
-                "date": "2022-04"
-              },
-              "rounds": [
-                "final-web-practical",
-                "final-algorithms"
-              ]
-            },
-            {
-              "id": "react-image-slider",
-              "report": {
-                "publisher": "Blind",
-                "date": "2021-10"
-              },
-              "rounds": [
-                "final-web-practical",
-                "final-algorithms"
-              ]
-            },
-            {
               "id": "js-event-loop",
               "rounds": [
                 "technical-screen"
@@ -9563,10 +9571,24 @@
               ]
             },
             {
+              "id": "react-debounced-search",
+              "report": {
+                "publisher": "Blind",
+                "date": "2022-04"
+              },
+              "rounds": [
+                "final-web-practical",
+                "final-algorithms"
+              ]
+            },
+            {
               "id": "js-unique-array"
             },
             {
               "id": "js-once"
+            },
+            {
+              "id": "react-image-slider"
             },
             {
               "id": "css-box-model"
@@ -9750,33 +9772,7 @@
           ],
           "tasks": [
             {
-              "id": "js-group-by",
-              "report": {
-                "publisher": "LeetCode Discuss",
-                "date": "2024-10"
-              }
-            },
-            {
-              "id": "js-lodash-get",
-              "report": {
-                "publisher": "LeetCode Discuss",
-                "date": "2024-10"
-              }
-            },
-            {
               "id": "js-debug-async-race",
-              "report": {
-                "publisher": "Taro",
-                "date": "2023-10"
-              },
-              "rounds": [
-                "onsite-bug-squash",
-                "onsite-integration",
-                "onsite-programming-exercise"
-              ]
-            },
-            {
-              "id": "js-debug-stale-closure-autosave",
               "report": {
                 "publisher": "Taro",
                 "date": "2023-10"
@@ -9803,6 +9799,38 @@
               "id": "/guides/behavioral",
               "rounds": [
                 "onsite-manager-conversation"
+              ]
+            },
+            {
+              "id": "js-group-by",
+              "report": {
+                "publisher": "LeetCode Discuss",
+                "date": "2024-10"
+              },
+              "rounds": [
+                "technical-screen"
+              ]
+            },
+            {
+              "id": "js-lodash-get",
+              "report": {
+                "publisher": "LeetCode Discuss",
+                "date": "2024-10"
+              },
+              "rounds": [
+                "technical-screen"
+              ]
+            },
+            {
+              "id": "js-debug-stale-closure-autosave",
+              "report": {
+                "publisher": "Taro",
+                "date": "2023-10"
+              },
+              "rounds": [
+                "onsite-bug-squash",
+                "onsite-integration",
+                "onsite-programming-exercise"
               ]
             },
             {
@@ -10014,20 +10042,6 @@
           ],
           "tasks": [
             {
-              "id": "react-battery-site-layout",
-              "report": {
-                "publisher": "GitHub",
-                "date": "2026-02"
-              }
-            },
-            {
-              "id": "js-deep-clone",
-              "report": {
-                "publisher": "GitHub",
-                "date": "2025-08"
-              }
-            },
-            {
               "id": "js-shallow-clone",
               "report": {
                 "publisher": "GitHub",
@@ -10035,27 +10049,6 @@
               },
               "rounds": [
                 "final-loop-data-structures-and-algorithms"
-              ]
-            },
-            {
-              "id": "car-rental-booking-frontend",
-              "report": {
-                "publisher": "Taro",
-                "date": "2024-01"
-              },
-              "rounds": [
-                "final-loop-frontend-system-design"
-              ]
-            },
-            {
-              "id": "css-positioning-badge",
-              "report": {
-                "publisher": "Taro",
-                "date": "2022-01"
-              },
-              "rounds": [
-                "online-assessment",
-                "technical-screen"
               ]
             },
             {
@@ -10068,17 +10061,6 @@
                 "online-assessment",
                 "technical-screen",
                 "final-loop-frontend-coding"
-              ]
-            },
-            {
-              "id": "html-semantic-layout",
-              "report": {
-                "publisher": "Taro",
-                "date": "2022-01"
-              },
-              "rounds": [
-                "online-assessment",
-                "technical-screen"
               ]
             },
             {
@@ -10104,17 +10086,6 @@
               ]
             },
             {
-              "id": "react-like-button",
-              "report": {
-                "publisher": "Taro",
-                "date": "2021-01"
-              },
-              "rounds": [
-                "online-assessment",
-                "technical-screen"
-              ]
-            },
-            {
               "id": "/guides/system-design-blueprint",
               "rounds": [
                 "final-loop-frontend-system-design"
@@ -10124,6 +10095,63 @@
               "id": "/guides/behavioral",
               "rounds": [
                 "final-loop-hiring-manager-and-behavioural"
+              ]
+            },
+            {
+              "id": "react-battery-site-layout",
+              "report": {
+                "publisher": "GitHub",
+                "date": "2026-02"
+              }
+            },
+            {
+              "id": "js-deep-clone",
+              "report": {
+                "publisher": "GitHub",
+                "date": "2025-08"
+              }
+            },
+            {
+              "id": "car-rental-booking-frontend",
+              "report": {
+                "publisher": "Taro",
+                "date": "2024-01"
+              },
+              "rounds": [
+                "final-loop-frontend-system-design"
+              ]
+            },
+            {
+              "id": "css-positioning-badge",
+              "report": {
+                "publisher": "Taro",
+                "date": "2022-01"
+              },
+              "rounds": [
+                "online-assessment",
+                "technical-screen"
+              ]
+            },
+            {
+              "id": "html-semantic-layout",
+              "report": {
+                "publisher": "Taro",
+                "date": "2022-01"
+              },
+              "rounds": [
+                "online-assessment",
+                "technical-screen"
+              ]
+            },
+            {
+              "id": "react-like-button",
+              "report": {
+                "publisher": "Taro",
+                "date": "2021-01"
+              },
+              "rounds": [
+                "online-assessment",
+                "technical-screen"
               ]
             },
             {
@@ -10137,7 +10165,7 @@
         {
           "id": "interns",
           "title": "Internships",
-          "from": "internships",
+          "from": "internship candidates",
           "ask": "Interviewing for an internship?",
           "sourceCount": 4,
           "newestReport": "2025-03",
@@ -10446,16 +10474,6 @@
           ],
           "tasks": [
             {
-              "id": "js-concurrency-map-limit",
-              "report": {
-                "publisher": "LeetCode Discuss",
-                "date": "2022-08"
-              },
-              "rounds": [
-                "phone-screen"
-              ]
-            },
-            {
               "id": "js-valid-parentheses",
               "rounds": [
                 "online-assessment"
@@ -10489,6 +10507,16 @@
               "id": "/guides/behavioral",
               "rounds": [
                 "collaboration-and-leadership"
+              ]
+            },
+            {
+              "id": "js-concurrency-map-limit",
+              "report": {
+                "publisher": "LeetCode Discuss",
+                "date": "2022-08"
+              },
+              "rounds": [
+                "phone-screen"
               ]
             },
             {
@@ -10632,6 +10660,18 @@
               ]
             },
             {
+              "id": "react-ssr-hydration",
+              "rounds": [
+                "javascript-react-and-web-fundamentals"
+              ]
+            },
+            {
+              "id": "/guides/behavioral",
+              "rounds": [
+                "hiring-manager"
+              ]
+            },
+            {
               "id": "react-implement-usememo-context",
               "report": {
                 "publisher": "Medium",
@@ -10659,18 +10699,6 @@
                 "publisher": "LeetCode Discuss",
                 "date": "2021-08"
               }
-            },
-            {
-              "id": "react-ssr-hydration",
-              "rounds": [
-                "javascript-react-and-web-fundamentals"
-              ]
-            },
-            {
-              "id": "/guides/behavioral",
-              "rounds": [
-                "hiring-manager"
-              ]
             },
             {
               "id": "react-debug-api-misuse"
@@ -10784,13 +10812,6 @@
           ],
           "tasks": [
             {
-              "id": "js-stack-queue-implementation",
-              "report": {
-                "publisher": "Naukri Code360",
-                "date": "2021-03"
-              }
-            },
-            {
               "id": "js-shallow-clone",
               "rounds": [
                 "online-assessment"
@@ -10801,6 +10822,13 @@
               "rounds": [
                 "technical-rounds"
               ]
+            },
+            {
+              "id": "js-stack-queue-implementation",
+              "report": {
+                "publisher": "Naukri Code360",
+                "date": "2021-03"
+              }
             },
             {
               "id": "react-debug-api-misuse"
@@ -10974,44 +11002,6 @@
           ],
           "tasks": [
             {
-              "id": "react-debug-api-misuse",
-              "report": {
-                "publisher": "LeetCode Discuss",
-                "date": "2026-05"
-              },
-              "rounds": [
-                "coding-rounds"
-              ]
-            },
-            {
-              "id": "js-add-two-promises",
-              "report": {
-                "publisher": "LeetCode Discuss",
-                "date": "2022-11"
-              }
-            },
-            {
-              "id": "js-valid-anagram",
-              "report": {
-                "publisher": "LeetCode Discuss",
-                "date": "2022-11"
-              }
-            },
-            {
-              "id": "react-accordion-faq",
-              "report": {
-                "publisher": "LeetCode Discuss",
-                "date": "2022-11"
-              }
-            },
-            {
-              "id": "messaging-inbox-frontend",
-              "report": {
-                "publisher": "Blind",
-                "date": "2022-01"
-              }
-            },
-            {
               "id": "react-fetch-list-states",
               "rounds": [
                 "coding-screen"
@@ -11034,6 +11024,53 @@
               "rounds": [
                 "behavioural-and-hiring-manager"
               ]
+            },
+            {
+              "id": "react-debug-api-misuse",
+              "report": {
+                "publisher": "LeetCode Discuss",
+                "date": "2026-05"
+              },
+              "rounds": [
+                "coding-rounds"
+              ]
+            },
+            {
+              "id": "js-add-two-promises",
+              "report": {
+                "publisher": "LeetCode Discuss",
+                "date": "2022-11"
+              },
+              "rounds": [
+                "coding-rounds"
+              ]
+            },
+            {
+              "id": "js-valid-anagram",
+              "report": {
+                "publisher": "LeetCode Discuss",
+                "date": "2022-11"
+              },
+              "rounds": [
+                "coding-rounds"
+              ]
+            },
+            {
+              "id": "react-accordion-faq",
+              "report": {
+                "publisher": "LeetCode Discuss",
+                "date": "2022-11"
+              },
+              "rounds": [
+                "coding-rounds"
+              ]
+            },
+            {
+              "id": "messaging-inbox-frontend",
+              "report": {
+                "publisher": "Blind",
+                "date": "2022-01"
+              }
             },
             {
               "id": "react-file-explorer"
@@ -11147,6 +11184,28 @@
           ],
           "tasks": [
             {
+              "id": "js-debounce",
+              "report": {
+                "publisher": "PracHub",
+                "date": "2026-05"
+              },
+              "rounds": [
+                "phone-or-video-interviews",
+                "virtual-onsite"
+              ]
+            },
+            {
+              "id": "js-filter-tree-render-indented",
+              "report": {
+                "publisher": "PracHub",
+                "date": "2026-05"
+              },
+              "rounds": [
+                "phone-or-video-interviews",
+                "virtual-onsite"
+              ]
+            },
+            {
               "id": "ai-chat-textarea-design",
               "report": {
                 "publisher": "PracHub",
@@ -11190,29 +11249,7 @@
               ]
             },
             {
-              "id": "js-debounce",
-              "report": {
-                "publisher": "PracHub",
-                "date": "2026-05"
-              },
-              "rounds": [
-                "phone-or-video-interviews",
-                "virtual-onsite"
-              ]
-            },
-            {
               "id": "js-fetch-json-timeout",
-              "report": {
-                "publisher": "PracHub",
-                "date": "2026-05"
-              },
-              "rounds": [
-                "phone-or-video-interviews",
-                "virtual-onsite"
-              ]
-            },
-            {
-              "id": "js-filter-tree-render-indented",
               "report": {
                 "publisher": "PracHub",
                 "date": "2026-05"
@@ -11589,18 +11626,6 @@
           ],
           "tasks": [
             {
-              "id": "css-flexbox-navbar",
-              "report": {
-                "publisher": "Built In London",
-                "date": "2026-02",
-                "posting": true
-              },
-              "rounds": [
-                "react-coding-interview",
-                "html-css-interview"
-              ]
-            },
-            {
               "id": "css-grid-card-gallery",
               "report": {
                 "publisher": "Built In London",
@@ -11635,6 +11660,24 @@
               ]
             },
             {
+              "id": "/guides/behavioral/stories",
+              "rounds": [
+                "meet-the-team-or-founding-engineer"
+              ]
+            },
+            {
+              "id": "css-flexbox-navbar",
+              "report": {
+                "publisher": "Built In London",
+                "date": "2026-02",
+                "posting": true
+              },
+              "rounds": [
+                "react-coding-interview",
+                "html-css-interview"
+              ]
+            },
+            {
               "id": "react-chat-streaming-ui",
               "report": {
                 "publisher": "Taro",
@@ -11642,12 +11685,6 @@
               },
               "rounds": [
                 "react-coding-interview"
-              ]
-            },
-            {
-              "id": "/guides/behavioral/stories",
-              "rounds": [
-                "meet-the-team-or-founding-engineer"
               ]
             },
             {
@@ -11750,7 +11787,8 @@
               "id": "final-take-home-review",
               "name": "Final: take-home review",
               "kinds": [
-                "coding"
+                "coding",
+                "design"
               ],
               "note": "A discussion of the submitted code, 45 minutes in the 2024 account.",
               "focus": [
@@ -11856,6 +11894,30 @@
           ],
           "tasks": [
             {
+              "id": "react-fetch-list-states",
+              "rounds": [
+                "coding-challenge"
+              ]
+            },
+            {
+              "id": "js-event-loop",
+              "rounds": [
+                "final-javascript-fundamentals"
+              ]
+            },
+            {
+              "id": "/guides/system-design-blueprint",
+              "rounds": [
+                "final-system-design"
+              ]
+            },
+            {
+              "id": "/guides/behavioral",
+              "rounds": [
+                "final-engineering-manager-or-hr"
+              ]
+            },
+            {
               "id": "js-debounce",
               "report": {
                 "publisher": "LeetCode Discuss",
@@ -11886,31 +11948,8 @@
                 "date": "2024-07"
               },
               "rounds": [
+                "final-take-home-review",
                 "final-system-design"
-              ]
-            },
-            {
-              "id": "react-fetch-list-states",
-              "rounds": [
-                "coding-challenge"
-              ]
-            },
-            {
-              "id": "js-event-loop",
-              "rounds": [
-                "final-javascript-fundamentals"
-              ]
-            },
-            {
-              "id": "/guides/system-design-blueprint",
-              "rounds": [
-                "final-system-design"
-              ]
-            },
-            {
-              "id": "/guides/behavioral",
-              "rounds": [
-                "final-engineering-manager-or-hr"
               ]
             },
             {

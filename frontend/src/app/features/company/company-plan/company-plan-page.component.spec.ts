@@ -7,6 +7,7 @@ import type { CompanyPlanAnswers, SavedCompanyPlan } from '../../../core/models/
 import { AuthService } from '../../../core/services/auth.service';
 import { UserProgressService } from '../../../core/services/user-progress.service';
 import { CompanyPlanPageComponent } from './company-plan-page.component';
+import { COMPANY_SET_COUNTS, PREMIUM_QUESTION_COUNT } from './company-plan-sets';
 import { CompanyPlanData, buildCompanyPlan } from './company-plan.engine';
 import { CompanyPlanService } from './company-plan.service';
 
@@ -189,7 +190,7 @@ describe('CompanyPlanPageComponent', () => {
   it('groups the time map by company when there are several', () => {
     setup({ ...ELEVENLABS, companies: [{ slug: 'elevenlabs' }, { slug: 'agoda' }] });
     expect(text('.plan-map__title')).toMatch(/^About [\d.]+ hours?, company by company$/);
-    expect(Array.from(host.querySelectorAll('.plan-map__group-name')).map((name) => name.textContent)).toEqual(['ElevenLabs', 'Agoda', 'Format practice']);
+    expect(Array.from(host.querySelectorAll('.plan-map__group-name')).map((name) => name.textContent)).toEqual(['ElevenLabs', 'Agoda', 'Extra React practice']);
     expect(Array.from(host.querySelectorAll('.plan-company__title')).map((title) => title.textContent)).toEqual(['ElevenLabs, round by round', 'Agoda, round by round']);
   });
 
@@ -208,6 +209,17 @@ describe('CompanyPlanPageComponent', () => {
     expect(links[0].getAttribute('aria-label')).toMatch(/, opens again with Premium$/);
     expect(host.querySelectorAll('.plan-task__lock').length).toBe(links.length);
     expect(host.querySelector('.plan-task--next')).toBeNull();
+    expect(all('company-plan-beyond')).toEqual([]);
+  });
+
+  it('points past the plan to each company set and the whole Premium library', () => {
+    setup({ ...ELEVENLABS, companies: [{ slug: 'elevenlabs' }, { slug: 'amazon' }] });
+    const links = Array.from(all('company-plan-beyond')[0].querySelectorAll<HTMLAnchorElement>('a'));
+    expect(links.map((link) => [link.textContent?.trim(), link.getAttribute('href')])).toEqual([
+      [`The full ElevenLabs set: ${COMPANY_SET_COUNTS['elevenlabs']!.all} questions`, '/companies/elevenlabs/all'],
+      [`The full Amazon set: ${COMPANY_SET_COUNTS['amazon']!.all} questions`, '/companies/amazon/all'],
+      [`All ${PREMIUM_QUESTION_COUNT} Premium questions`, '/coding'],
+    ]);
   });
 
   it('prints code in a title as code, never as backticks', () => {

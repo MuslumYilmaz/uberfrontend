@@ -9262,7 +9262,7 @@
         "company": "apple",
         "publisher": "LeetCode Discuss",
         "date": "2025-07",
-        "note": "Public search previews of this report list a nested-tabs rendering problem in React that required converting a flat list into a tree. The full report could not be read by our tools, so only that listing is used."
+        "note": "Public search previews of this report list a nested-tabs rendering problem in React that required converting a flat list into a tree; nothing else from the report is used."
       }
     ],
     "seo": {

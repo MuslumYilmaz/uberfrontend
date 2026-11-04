@@ -201,11 +201,30 @@ describe('PricingComponent', () => {
 
     afterEach(() => sessionStorage.removeItem('fa:checkout:intent:v1'));
 
+    it('recommends the month, and says why, when the interview is this week', async () => {
+      plansStub.answers.set({ companies: [{ slug: 'elevenlabs' }], when: 'this-week', level: 'senior' });
+      await render('/?src=company_plan_elevenlabs');
+
+      expect(strip()?.querySelector('[data-testid="company-plan-pricing-note"]')?.textContent?.trim())
+        .toBe('Your interview is this week, so a month of Premium is enough.');
+      const recommended = fixture.nativeElement.querySelector('.pr-rec') as HTMLElement;
+      expect(recommended.textContent).toContain('Monthly');
+      expect(recommended.textContent).toContain('Recommended');
+      expect(fixture.nativeElement.querySelectorAll('.pr-rec').length).toBe(1);
+    });
+
+    it('keeps the quarter recommended, with no note, when the interview is further away', async () => {
+      plansStub.answers.set({ companies: [{ slug: 'elevenlabs' }], when: 'later', level: 'senior' });
+      await render('/?src=company_plan_elevenlabs');
+      expect(strip()?.querySelector('[data-testid="company-plan-pricing-note"]')).toBeNull();
+      expect((fixture.nativeElement.querySelector('.pr-rec') as HTMLElement).textContent).toContain('Quarterly');
+    });
+
     it('shows the plan above the plans and opens every card with it', async () => {
       await render('/?src=company_plan_elevenlabs');
 
       expect(strip()?.querySelector('h2')?.textContent?.trim()).toBe('Your ElevenLabs plan is waiting');
-      expect(strip()?.querySelector('p')?.textContent?.trim()).toMatch(/^6 tasks for next week, about [\d.]+ hours?\. 3 are open now\./);
+      expect(strip()?.querySelector('p')?.textContent?.trim()).toMatch(/^6 tasks for next week, about [\d.]+ hours?\. \d are open now, \d open with Premium\./);
       expect(strip()?.querySelector('a')?.getAttribute('href')).toBe('/companies/preview');
       expect(firstCardLines()).toEqual([
         'Your full ElevenLabs plan',

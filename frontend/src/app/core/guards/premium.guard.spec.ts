@@ -4,7 +4,7 @@ import { firstValueFrom, isObservable, of } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 import { AuthSessionAuthorityService } from '../services/auth-session-authority.service';
 import { PremiumGateService } from '../services/premium-gate.service';
-import { companyPreviewAccessGuard, premiumGuard, trackPreviewAccessGuard } from './premium.guard';
+import { premiumGuard, trackPreviewAccessGuard } from './premium.guard';
 
 type PreviewFixture = {
   guard: typeof trackPreviewAccessGuard;
@@ -13,9 +13,9 @@ type PreviewFixture = {
   detailUrl: string;
 };
 
-const FIXTURES: Record<'tracks' | 'companies', PreviewFixture> = {
+// Company guides have no such guard: a Premium member reads the same guide.
+const FIXTURES: Record<'tracks', PreviewFixture> = {
   tracks: { guard: trackPreviewAccessGuard, url: '/tracks/crash-7d/preview?src=hub', slug: 'crash-7d', detailUrl: '/tracks/crash-7d?src=hub' },
-  companies: { guard: companyPreviewAccessGuard, url: '/companies/google/preview', slug: 'google', detailUrl: '/companies/google' },
 };
 
 async function resolve(result: MaybeAsync<GuardResult>): Promise<GuardResult> {
@@ -40,7 +40,7 @@ describe('public preview access guards', () => {
     return TestBed.runInInjectionContext(() => fixture.guard(route, { url: fixture.url } as RouterStateSnapshot));
   }
 
-  for (const [family, fixture] of Object.entries(FIXTURES) as Array<['tracks' | 'companies', PreviewFixture]>) {
+  for (const [family, fixture] of Object.entries(FIXTURES) as Array<['tracks', PreviewFixture]>) {
     it(`${family}: an anonymous visitor without a session hint gets the preview without an API round trip`, async () => {
       const ensureMe = configure({ sessionHint: false });
       expect(await resolve(run(fixture))).toBeTrue();

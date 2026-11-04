@@ -3,6 +3,7 @@ import { loadSitemapDateMap, schemaDateMatchesSitemap } from '../scripts/seo-sit
 import { parse, serialize, DefaultTreeAdapterMap } from 'parse5';
 import { PRIORITY_LINK_SURFACES, priorityLinksFor, type PriorityLinkSurface } from './priority-links';
 import { PREP_MENU_ROUTES } from './prep-menu';
+import { GATED_COMPANY_GUIDES } from '../src/app/features/company/company-preview/company-guide-gate';
 
 const WEB_HOST = process.env.PLAYWRIGHT_HOST || '127.0.0.1';
 const WEB_PORT = process.env.PLAYWRIGHT_PORT || '4200';
@@ -3823,7 +3824,8 @@ test.describe('seo-ssr', () => {
       headline: GOOGLE_PREVIEW_H1,
       description: GOOGLE_PREVIEW_DESCRIPTION,
       inLanguage: 'en',
-      isAccessibleForFree: true,
+      isAccessibleForFree: false,
+      hasPart: [{ '@type': 'WebPageElement', isAccessibleForFree: false, cssSelector: '.premium-locked' }],
       mainEntity: { '@id': `${expectedCanonical(GOOGLE_PREVIEW_PATH)}#practice-prompts` },
     });
     await expectSitemapModificationDate(request, GOOGLE_PREVIEW_PATH, collectionPage);
@@ -3951,7 +3953,8 @@ test.describe('seo-ssr', () => {
       headline: NETFLIX_PREVIEW_H1,
       description: NETFLIX_PREVIEW_DESCRIPTION,
       inLanguage: 'en',
-      isAccessibleForFree: true,
+      isAccessibleForFree: false,
+      hasPart: [{ '@type': 'WebPageElement', isAccessibleForFree: false, cssSelector: '.premium-locked' }],
       mainEntity: { '@id': `${expectedCanonical(NETFLIX_PREVIEW_PATH)}#practice-prompts` },
     });
     await expectSitemapModificationDate(request, NETFLIX_PREVIEW_PATH, collectionPage);
@@ -4040,14 +4043,28 @@ test.describe('seo-ssr', () => {
     expectNoHydrationOrChunkIssues(runtimeIssues, NETFLIX_PREVIEW_PATH);
   });
 
-  test('raw company guides carry the plan card above the H1, and the same link under a week plan where there is one', async ({ request }) => {
+  test('raw company guides carry the plan card above the H1, the same link under a week plan and on the locked prompts and samples cards', async ({ request }) => {
     test.setTimeout(120_000);
-    for (const [slug, weekPlan] of [['elevenlabs', true], ['netflix', true], ['apple', false]] as const) {
+    // Guides with prompts past the open ones name them in a card, and catalog guides with Premium samples close the
+    // sample list with a card; both lead into the plan. Behind the account gate the prompts card leads to a free
+    // account instead, so it adds no plan link.
+    for (const [slug, weekPlan, lockedPrompts, lockedSamples] of [
+      ['elevenlabs', true, true, false],
+      ['netflix', true, true, false],
+      ['apple', false, false, true],
+    ] as const) {
       const html = await readRawHtml(request, `/companies/${slug}/preview`);
+      const gated = GATED_COMPANY_GUIDES.has(slug);
       const cardAt = html.indexOf('data-testid="company-plan-entry"');
       expect(cardAt, `${slug} plan card`).toBeGreaterThan(-1);
       expect(cardAt, `${slug} plan card before the H1`).toBeLessThan(html.indexOf('<h1'));
-      expect(html.split(`href="/companies?company=${slug}"`).length - 1, `${slug} plan links`).toBe(weekPlan ? 2 : 1);
+      expect(html.includes('data-testid="company-prompt-gate"'), `${slug} locked prompts card`).toBe(lockedPrompts);
+      expect(html.includes('data-testid="company-sample-gate"'), `${slug} locked samples card`).toBe(lockedSamples);
+      if (gated) {
+        expect(html, `${slug} account gate`).toContain(`href="/auth/signup?redirectTo=%2Fcompanies%2F${slug}%2Fpreview"`);
+      }
+      expect(html.split(`href="/companies?company=${slug}"`).length - 1, `${slug} plan links`)
+        .toBe(1 + Number(weekPlan) + Number(lockedPrompts && !gated) + Number(lockedSamples));
     }
   });
 
@@ -4138,8 +4155,8 @@ test.describe('seo-ssr', () => {
       path: '/companies/amazon/preview',
       heading: 'Amazon Front End Engineer interview process',
       tables: 2,
-      // The authored guide places the table between its source note and the practice prompts.
-      after: 'id="amazon-published-context"',
+      // The authored guide opens with the table, right under its hero, and the practice prompts follow it.
+      after: '<h1',
       before: 'id="amazon-practice-prompts"',
       officialUrl: 'https://amazon.jobs/content/en/how-we-hire/fee-interview-prep',
       reportUrl: 'https://leetcode.com/discuss/post/1984996/',
@@ -4156,6 +4173,7 @@ test.describe('seo-ssr', () => {
     },
     {
       path: '/companies/tesla/preview',
+      gated: true,
       heading: 'Tesla frontend interview process',
       tables: 2,
       after: '<h1',
@@ -4164,11 +4182,12 @@ test.describe('seo-ssr', () => {
       practicePath: '/javascript/coding/js-color-contrast-ratio',
     },
     {
-      // Google keeps its own template branch: the table follows the time-sensitive process note.
+      // Google keeps its own template branch; its table also opens the page, before the time-sensitive process note.
       path: '/companies/google/preview',
+      gated: true,
       heading: 'Google frontend interview process',
       tables: 1,
-      after: 'id="google-process-note"',
+      after: '<h1',
       before: 'id="google-practice-prompts"',
       officialUrl: 'https://www.google.com/about/careers/applications/how-we-hire/',
       reportUrl: 'https://www.teamblind.com/post/Google-L5-interview-experience-uyV7evLt',
@@ -4176,9 +4195,10 @@ test.describe('seo-ssr', () => {
     },
     {
       path: '/companies/meta/preview',
+      gated: true,
       heading: 'Meta Front End Engineer interview process',
       tables: 2,
-      after: 'id="meta-published-context"',
+      after: '<h1',
       before: 'id="meta-practice-prompts"',
       officialUrl: 'https://www.metacareers.com/FEE-prep-onsite/',
       reportUrl: 'https://www.teamblind.com/post/meta-frontend-system-design-yexyrusi',
@@ -4186,6 +4206,7 @@ test.describe('seo-ssr', () => {
     },
     {
       path: '/companies/microsoft/preview',
+      gated: true,
       heading: 'Microsoft frontend interview process',
       tables: 2,
       after: '<h1',
@@ -4199,7 +4220,7 @@ test.describe('seo-ssr', () => {
       path: '/companies/openai/preview',
       heading: 'OpenAI frontend interview process',
       tables: 1,
-      after: 'id="openai-published-context"',
+      after: '<h1',
       before: 'id="openai-prompts"',
       officialUrl: 'https://openai.com/interview-guide/',
       reportUrl: 'https://www.teamblind.com/post/openai-agentic-code-interview-up8jhuiq',
@@ -4208,9 +4229,10 @@ test.describe('seo-ssr', () => {
     {
       // Netflix keeps its own template branch: the table follows the source-boundary note.
       path: '/companies/netflix/preview',
+      gated: true,
       heading: 'Netflix frontend interview process',
       tables: 2,
-      after: 'id="netflix-published-context"',
+      after: '<h1',
       before: 'id="netflix-role-lenses"',
       officialUrl: 'https://jobs.netflix.com/careers/new-grads',
       reportUrl: 'https://leetcode.com/discuss/post/7421643/',
@@ -4220,7 +4242,7 @@ test.describe('seo-ssr', () => {
       path: '/companies/elevenlabs/preview',
       heading: 'ElevenLabs frontend interview process',
       tables: 1,
-      after: 'id="elevenlabs-published-context"',
+      after: '<h1',
       before: 'id="elevenlabs-role-lenses"',
       officialUrl: 'https://elevenlabs.io/careers',
       reportUrl: 'https://www.aced.io/experiences/eleven-labs-frontend-engineer-interview-c79e72',
@@ -4230,7 +4252,7 @@ test.describe('seo-ssr', () => {
       path: '/companies/waymo/preview',
       heading: 'Waymo frontend interview process',
       tables: 2,
-      after: 'id="waymo-published-context"',
+      after: '<h1',
       before: 'id="waymo-role-lenses"',
       officialUrl: 'https://careers.withwaymo.com/how-we-hire',
       reportUrl: 'https://leetcode.com/discuss/post/7949696/',
@@ -4240,7 +4262,7 @@ test.describe('seo-ssr', () => {
       path: '/companies/crowdstrike/preview',
       heading: 'CrowdStrike frontend interview process',
       tables: 3,
-      after: 'id="crowdstrike-published-context"',
+      after: '<h1',
       before: 'id="crowdstrike-role-lenses"',
       officialUrl: 'https://www.crowdstrike.com/en-us/careers/interviewing/',
       reportUrl:
@@ -4274,7 +4296,15 @@ test.describe('seo-ssr', () => {
       const section = html.slice(sectionAt, html.indexOf('</section>', sectionAt));
       expect(section.match(/<table\b/g)?.length ?? 0, `${slug} tables`).toBeGreaterThan(0);
       const reportAnchors = section.match(/<a[^>]*rel="noopener noreferrer nofollow"[^>]*>/g) ?? [];
-      expect(reportAnchors.length, `${slug} nofollow report links`).toBeGreaterThan(0);
+      if (GATED_COMPANY_GUIDES.has(slug)) {
+        // Behind the account gate the raw table reads in full and carries the evidence counts with a tag, not the links.
+        expect(reportAnchors.length, `${slug} report links behind the gate`).toBe(0);
+        expect(section, `${slug} evidence counts`).toContain('interview-process__strength');
+        expect(section, `${slug} free-account tag`).toContain('>Free account<');
+        expect(section, `${slug} blurred rounds`).not.toContain('interview-process__detail');
+      } else {
+        expect(reportAnchors.length, `${slug} nofollow report links`).toBeGreaterThan(0);
+      }
       expect(section, `${slug} banned sources`).not.toMatch(/glassdoor|1point3acres|github\.com|prepfully|dataford/i);
     }
   });
@@ -4294,13 +4324,20 @@ test.describe('seo-ssr', () => {
       expect(html.indexOf(item.after)).toBeLessThan(sectionAt);
       expect(html.indexOf(item.before), `${item.path} content after the table`).toBeGreaterThan(sectionAt);
 
-      const reportAnchor = section.match(new RegExp(`<a[^>]*href="${escapeRegExp(item.reportUrl)}"[^>]*>`))?.[0] ?? '';
-      expect(reportAnchor, `${item.path} report anchor`).not.toBe('');
-      expect(reportAnchor).toContain('rel="noopener noreferrer nofollow"');
-      if (item.officialUrl) {
-        const officialAnchor = section.match(new RegExp(`<a[^>]*href="${escapeRegExp(item.officialUrl)}"[^>]*>`))?.[0] ?? '';
-        expect(officialAnchor, `${item.path} official anchor`).not.toBe('');
-        expect(officialAnchor).not.toContain('nofollow');
+      if ('gated' in item && item.gated) {
+        // Behind the account gate the raw table keeps its text, counts and practice links and carries no evidence links.
+        expect(section, `${item.path} gated evidence`).not.toContain(`href="${item.reportUrl}"`);
+        expect(section).toContain('>Free account<');
+        expect(section).not.toContain('interview-process__detail');
+      } else {
+        const reportAnchor = section.match(new RegExp(`<a[^>]*href="${escapeRegExp(item.reportUrl)}"[^>]*>`))?.[0] ?? '';
+        expect(reportAnchor, `${item.path} report anchor`).not.toBe('');
+        expect(reportAnchor).toContain('rel="noopener noreferrer nofollow"');
+        if (item.officialUrl) {
+          const officialAnchor = section.match(new RegExp(`<a[^>]*href="${escapeRegExp(item.officialUrl)}"[^>]*>`))?.[0] ?? '';
+          expect(officialAnchor, `${item.path} official anchor`).not.toBe('');
+          expect(officialAnchor).not.toContain('nofollow');
+        }
       }
       expect(section, `${item.path} crawlable practice link`).toContain(`href="${item.practicePath}"`);
       expect(section).not.toMatch(/glassdoor|1point3acres|github\.com/i);

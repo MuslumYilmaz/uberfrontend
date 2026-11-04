@@ -15,7 +15,7 @@ export const WAYMO_PREVIEW_DESCRIPTION =
   'Prepare for a Waymo frontend interview with 5 prompts modelled on a public 2026 report: tree filtering, Angular debugging, Promises, AI chat and autocomplete.';
 export const WAYMO_PREVIEW_CANONICAL_PATH = '/companies/waymo/preview';
 export const WAYMO_PREVIEW_TRUST_NOTE =
-  'These are FrontendAtlas practice versions modelled on rounds described in public interview reports, not leaked, confirmed or official Waymo questions. One or two reports cannot establish a fixed loop; use recruiter-provided material as the source of truth.';
+  'These are FrontendAtlas practice versions modelled on rounds described in public interview reports, not leaked, confirmed or official Waymo questions. A handful of reports cannot establish a fixed loop; use recruiter-provided material as the source of truth.';
 
 export const WAYMO_COMPANY_PREVIEW: AuthoredCompanyPreview = {
   slug: 'waymo',
@@ -28,7 +28,7 @@ export const WAYMO_COMPANY_PREVIEW: AuthoredCompanyPreview = {
   hero: {
     kicker: 'Public Waymo prep guide',
     subtitle:
-      'Prepare with five practice prompts shaped by one public account of a 2026 senior frontend loop: a tree filter rendered as UI, an Angular screen fixed from user bug reports, a TypeScript Promise problem, the frontend of an AI chat application, and an autocomplete search bar with debounce.',
+      'Prepare with five practice prompts shaped by a public account of a 2026 senior frontend loop: a tree filter rendered as UI, an Angular screen fixed from user bug reports, a TypeScript Promise problem, the frontend of an AI chat application, and an autocomplete search bar with debounce.',
     caveat:
       'This guide uses a public, self-reported interview account to create realistic constraints. It does not claim access to private interview material, a fixed interview format, or the stack of every Waymo team.',
     chips: ['5 practice prompts', 'TypeScript, Angular, AI chat system design', 'Full practice set requires Premium'],
@@ -46,7 +46,7 @@ export const WAYMO_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     title: 'What the report establishes, and what you still need to confirm',
     paragraphs: [
       'One self-reported senior loop on PracHub (Simulation team, May 2026; curated and edited by PracHub) describes the rounds this guide is modelled on. It establishes that those round types were asked once; it does not establish exact wording, the current format, or that every team interviews the same way. A second senior onsite account exists on 1point3acres but is locked, so it only confirms that more than one account exists.',
-      'Confirm the exercise types, the allowed tools, the expected stack and the timing with the recruiter and the job description. Waymo publishes roles and teams on its careers site; use that for context, not as evidence of interview content.',
+      'Confirm the exercise types, the allowed tools, the expected stack and the timing with the recruiter and the job description. Waymo publishes roles and teams on its careers site; use that for context, not as evidence of interview content. The process table below draws on more reports: four from 2022 to 2026.',
     ],
   },
   roleLenses: {

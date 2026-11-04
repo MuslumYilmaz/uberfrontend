@@ -44,18 +44,27 @@ export function shortDay(day: string): string {
   return new Date(`${day.slice(0, 10)}T00:00:00Z`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
 }
 
-/** Why a task is in the plan. A report label only ever comes from a report. */
+/**
+ * Why a task is in the plan. A report label only ever comes from a report, and says "modelled on" because the task is
+ * a practice version of what the report describes, never the reported wording.
+ */
 export function whyLine(why: CompanyPlanWhy): string {
   switch (why.kind) {
     case 'report':
-      return `Based on a ${why.posting ? 'job posting' : 'report'}: ${why.publisher}, ${shortMonth(why.date)}`;
+      return `Modelled on a ${why.posting ? 'job posting' : 'report'}: ${why.publisher}, ${shortMonth(why.date)}`;
     case 'format':
-      return 'Format practice';
+      return 'Extra practice in the reported format';
     case 'general':
       return 'General frontend practice';
     default:
       return 'Our pick for this round';
   }
+}
+
+/** "Extra React practice", or plain "Extra practice" when the companies' reports name different frameworks. */
+export function formatGroupName(plan: Pick<CompanyPlan, 'companies'>): string {
+  const frameworks = [...new Set(plan.companies.map((company) => company.framework))];
+  return frameworks.length === 1 ? `Extra ${frameworkLabel(frameworks[0])} practice` : 'Extra practice';
 }
 
 /** Half-hour steps, because a plan's time is an estimate. */
@@ -102,11 +111,16 @@ export function planDatePassed(when: CompanyPlanWhen, answeredAt: string, now: D
   return Boolean(window && now.getTime() >= window.end.getTime());
 }
 
-/** "Built from 6 public sources, last checked Oct 22, 2026. These are practice versions, not leaked questions." */
+/** "Rounds and tasks from 6 public sources, last checked Oct 22, 2026. These are practice versions, not leaked questions." */
 export function planEvidenceLine(plan: CompanyPlan, names: string): string {
   const sources = plan.companies.reduce((sum, company) => sum + company.list.sourceCount, 0);
   const where = plan.companies.length === 1 ? `, last checked ${shortDay(plan.companies[0].checkedAt)}` : ` across ${names}`;
-  return `Built from ${sources} public ${sources === 1 ? 'source' : 'sources'}${where}. These are practice versions, not leaked questions.`;
+  return `Rounds and tasks from ${sources} public ${sources === 1 ? 'source' : 'sources'}${where}. These are practice versions, not leaked questions.`;
+}
+
+/** How many of a plan's tasks open without Premium. */
+export function openTaskCount(plan: Pick<CompanyPlan, 'tasks'>): number {
+  return plan.tasks.filter((task) => task.access === 'free').length;
 }
 
 /** "React, from reports" for a framework the reports name, plain "JavaScript" otherwise. */
@@ -137,7 +151,7 @@ export function taskGroups(plan: CompanyPlan): ReadonlyMap<string, string> {
       for (const task of round.tasks) groups.set(task.id, round.name);
     }
   }
-  for (const task of plan.formatPractice) groups.set(task.id, 'Format practice');
+  for (const task of plan.formatPractice) groups.set(task.id, formatGroupName(plan));
   return groups;
 }
 
@@ -152,6 +166,29 @@ export function previewQueryParams(answers: CompanyPlanAnswers): Record<string, 
   };
 }
 
+/** How many questions a company's practice set holds, as the company pages count them. */
+export type CompanySetCounts = { readonly all: number; readonly coding: number; readonly trivia: number; readonly system: number };
+
+/**
+ * "The full Amazon set: 42 questions (18 coding, 23 concept, 1 system design)", or the sets side by side for several
+ * companies. Empty when no company has a set, so a plan never promises one.
+ */
+export function companySetLine(sets: readonly { readonly name: string; readonly counts: CompanySetCounts | undefined }[]): string {
+  const known = sets.flatMap((set) => (set.counts && set.counts.all > 0 ? [{ name: set.name, counts: set.counts }] : []));
+  if (known.length === 1) {
+    const { name, counts } = known[0];
+    const parts: [number, string][] = [[counts.coding, 'coding'], [counts.trivia, 'concept'], [counts.system, 'system design']];
+    const split = parts.filter(([count]) => count > 0).map(([count, kind]) => `${count} ${kind}`).join(', ');
+    return `The full ${name} set: ${counts.all} questions (${split})`;
+  }
+  return known.length ? `The full sets: ${joinNames(known.map((set) => `${set.counts.all} ${set.name}`))} questions` : '';
+}
+
+/** The `src` pricing is opened with, written like the guides' own: `company_plan_capital_one`, never a hyphen. */
+export function planPricingSource(slug: string | undefined): string {
+  return `company_plan_${slug ? slug.replace(/-/g, '_') : 'general'}`;
+}
+
 export function planCompanyNames(data: CompanyPlanData, answers: CompanyPlanAnswers): string {
   return joinNames(answers.companies.flatMap((company) => (data.companies[company.slug] ? [data.companies[company.slug].name] : [])));
 }
@@ -159,8 +196,18 @@ export function planCompanyNames(data: CompanyPlanData, answers: CompanyPlanAnsw
 export type CompanyPlanPricingCopy = {
   readonly title: string;
   readonly summary: string;
+  /** Why the month is the card to pick when the interview is days away; empty otherwise. */
+  readonly note: string;
+  /** The card pricing recommends: the month for an interview this week, otherwise the quarter. */
+  readonly recommendedPlan: 'monthly' | 'quarterly';
   /** Lines that open every plan card, in place of "Full Premium content". */
   readonly lead: readonly string[];
+};
+
+const SOON_NOTES: Readonly<Partial<Record<CompanyPlanWhen, string>>> = {
+  tomorrow: 'Your interview is tomorrow, so a month of Premium is enough.',
+  'this-week': 'Your interview is this week, so a month of Premium is enough.',
+  'next-week': 'Your interview is next week, so a month of Premium is enough.',
 };
 
 /**
@@ -169,14 +216,19 @@ export type CompanyPlanPricingCopy = {
  */
 export function companyPlanPricingCopy(data: CompanyPlanData, answers: CompanyPlanAnswers, plan: CompanyPlan): CompanyPlanPricingCopy {
   const names = planCompanyNames(data, answers);
-  const planned = new Set(plan.tasks.map((task) => task.id));
-  const open = plan.preview.open.filter((task) => planned.has(task.id)).length;
-  const opens = open ? ` ${open} ${open === 1 ? 'is' : 'are'} open now. Premium opens the rest` : ' Premium opens them';
+  const open = openTaskCount(plan);
+  const locked = plan.tasks.length - open;
+  const opens = open
+    ? ` ${open} ${open === 1 ? 'is' : 'are'} open now, ${locked} ${locked === 1 ? 'opens' : 'open'} with Premium.`
+    : ' Every task opens with Premium.';
   const framework = plan.companies[0]?.framework ?? 'javascript';
   const counts = data.general.premiumCounts;
+  const note = SOON_NOTES[answers.when] ?? '';
   return {
     title: `Your ${names} plan is waiting`,
-    summary: `${planSummaryLine(plan, answers.when)}.${opens} and keeps every round in order.`,
+    summary: `${planSummaryLine(plan, answers.when)}.${opens} Every round in order, with its tasks and your progress.`,
+    note,
+    recommendedPlan: note ? 'monthly' : 'quarterly',
     lead: [
       `Your full ${names} plan`,
       ...(counts ? [

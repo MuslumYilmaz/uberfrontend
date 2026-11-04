@@ -1,0 +1,125 @@
+:host {
+  display: block;
+}
+
+.sidebar-plan {
+  margin-top: 8px;
+  border: 1px solid color-mix(in srgb, var(--fa-accent) 45%, transparent);
+  border-radius: var(--fa-radius-12);
+  background: linear-gradient(165deg, color-mix(in srgb, var(--fa-accent) 14%, transparent), color-mix(in srgb, var(--fa-surface) 92%, transparent));
+  overflow: hidden;
+}
+
+.sidebar-plan__main {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr);
+  column-gap: 12px;
+  align-items: start;
+  padding: 10px 12px;
+  color: var(--fa-text);
+  text-decoration: none;
+}
+
+.sidebar-plan__main:hover,
+.sidebar-plan__next:hover {
+  background: color-mix(in srgb, var(--fa-accent) 8%, transparent);
+}
+
+.sidebar-plan__mark {
+  position: relative;
+  display: inline-flex;
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+  align-items: center;
+  justify-content: center;
+  color: var(--fa-accent);
+  font-size: 15px;
+}
+
+.sidebar-plan__body {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.sidebar-plan__title {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.sidebar-plan__line {
+  font-size: 12px;
+  line-height: 1.35;
+  color: var(--fa-text-muted);
+}
+
+.sidebar-plan__bar {
+  display: block;
+  height: 4px;
+  margin-top: 3px;
+  border-radius: var(--fa-radius-pill);
+  background: color-mix(in srgb, var(--fa-text) 10%, transparent);
+  overflow: hidden;
+}
+
+.sidebar-plan__fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--fa-accent);
+}
+
+.sidebar-plan__next {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 6px;
+  align-items: baseline;
+  padding: 8px 12px;
+  border-top: 1px solid color-mix(in srgb, var(--fa-accent) 30%, transparent);
+  color: var(--fa-text);
+  font-size: 12px;
+  line-height: 1.35;
+  text-decoration: none;
+}
+
+.sidebar-plan__next-label {
+  font-weight: 700;
+  color: var(--fa-accent-strong);
+}
+
+.sidebar-plan__next-title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* The collapsed rail keeps only the flag, marked so it still stands out. */
+.sidebar-plan--rail {
+  border-color: transparent;
+  background: transparent;
+}
+
+.sidebar-plan--rail .sidebar-plan__main {
+  grid-template-columns: 1fr;
+  justify-items: center;
+  padding: 10px 0;
+}
+
+.sidebar-plan--rail .sidebar-plan__body,
+.sidebar-plan--rail .sidebar-plan__next {
+  display: none;
+}
+
+.sidebar-plan--rail .sidebar-plan__mark::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  right: -3px;
+  width: 7px;
+  height: 7px;
+  border-radius: var(--fa-radius-pill);
+  background: var(--fa-accent);
+}

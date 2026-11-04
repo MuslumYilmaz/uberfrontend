@@ -42,20 +42,24 @@
         <h2 id="company-plan-open-title" class="preview__section-title">
           {{ viewer() === 'premium' ? 'Start with these ' + openTasks().length + ' tasks' : 'Try these ' + openTasks().length + ' tasks for free' }}
         </h2>
-        <p class="preview__section-sub">{{ viewer() === 'premium' ? 'They run in your browser.' : 'They run in your browser. No account needed.' }}</p>
+        <p class="preview__section-sub preview__section-sub--desktop">{{ viewer() === 'premium' ? 'They run in your browser.' : 'They run in your browser. No account needed.' }}</p>
+        <p class="preview__section-sub preview__section-sub--phone">{{ viewer() === 'premium' ? 'Read them here; the code runs on a desktop or tablet.' : 'Read them here; the code runs on a desktop or tablet. No account needed.' }}</p>
       </div>
       @for (row of openTasks(); track row.task.id) {
         <a class="plan-row" data-testid="company-plan-open-task" [routerLink]="row.task.route" [state]="row.state" (click)="taskOpened(row.task)">
           <span class="plan-row__text">
             <span class="plan-row__title"><fa-inline-code [text]="row.task.title" /></span>
             <span class="plan-row__meta">{{ row.why }}</span>
+            @if (row.task.pressure) {
+              <span class="plan-row__tag">Pressure Mode</span>
+            }
           </span>
           <span class="plan-row__time">{{ row.time }}</span>
           <span class="plan-row__arrow" aria-hidden="true">→</span>
         </a>
       }
       @if (!current.general && !restTasks().length) {
-        <p class="preview__section-sub">Your plan adds every round in order, with its sources.</p>
+        <p class="preview__section-sub">Your plan adds every round in order, with its tasks and your progress.</p>
       }
     </section>
 
@@ -78,12 +82,17 @@
         }
         <a class="preview__panel-link" data-testid="company-plan-premium-link" routerLink="/pricing" [queryParams]="pricingParams()">See what Premium includes</a>
       } @else {
-        <button faButton type="button" variant="primary" size="lg" [block]="true" data-testid="company-plan-build" [loading]="building()" (click)="build()">Build my plan <span aria-hidden="true">→</span></button>
+        <button faButton type="button" variant="primary" size="lg" [block]="true" data-testid="company-plan-build" [loading]="building()" (click)="build()">{{ buildLabel() }} <span aria-hidden="true">→</span></button>
         @if (ctaNote()) {
           <p class="preview__note" data-testid="company-plan-cta-note">{{ ctaNote() }}</p>
         }
       }
-      <p class="preview__phone-note">Coding tasks need a larger screen.</p>
+      <p class="preview__phone-note" data-testid="company-plan-phone-note">
+        {{ phoneNote().text }}
+        @if (phoneNote().guide; as guide) {
+          <a [routerLink]="guide.path">Read the {{ guide.name }} guide</a>
+        }
+      </p>
       @if (viewer() === 'guest' && !current.general) {
         <a class="preview__panel-link" data-testid="company-plan-save-link" routerLink="/auth/signup" [queryParams]="signupParams()">Save this plan with a free account</a>
       }
@@ -93,25 +102,31 @@
       <section class="preview__rest" aria-labelledby="company-plan-rest-title" data-testid="company-plan-rest">
         <div class="preview__section-head">
           <h2 id="company-plan-rest-title" class="preview__section-title">{{ restTitle() }}</h2>
-          <p class="preview__section-sub">{{ viewer() === 'premium' ? 'These open with your plan.' : 'These unlock with Premium, along with every round in order.' }}</p>
+          <p class="preview__section-sub">{{ restLine() }}</p>
         </div>
         @for (row of restTasks(); track row.task.id) {
-          @if (viewer() === 'premium') {
-            <a class="plan-row plan-row--rest" data-testid="company-plan-rest-task" [routerLink]="row.task.route" [attr.aria-label]="row.aria">
-              <span class="plan-row__text">
-                <span class="plan-row__title"><fa-inline-code [text]="row.task.title" /></span>
-                <span class="plan-row__meta">{{ row.meta }}</span>
-              </span>
-            </a>
-          } @else {
-            <a class="plan-row plan-row--rest plan-row--locked" data-testid="company-plan-rest-task" routerLink="/pricing" [queryParams]="pricingParams()" [attr.aria-label]="row.aria">
+          <a class="plan-row plan-row--rest" [class.plan-row--locked]="row.locked" data-testid="company-plan-rest-task" [routerLink]="row.task.route" [state]="row.state" [attr.aria-label]="row.aria" (click)="row.locked || taskOpened(row.task)">
+            @if (row.locked) {
               <svg class="plan-row__lock" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>
-              <span class="plan-row__text">
-                <span class="plan-row__title"><fa-inline-code [text]="row.task.title" /></span>
-                <span class="plan-row__meta">{{ row.meta }}</span>
-              </span>
-            </a>
-          }
+            }
+            <span class="plan-row__text">
+              <span class="plan-row__title"><fa-inline-code [text]="row.task.title" /></span>
+              <span class="plan-row__meta">{{ row.meta }}</span>
+              <span class="plan-row__why">{{ row.why }}</span>
+              @if (viewer() !== 'premium' || row.task.pressure) {
+                <span class="plan-row__tags">
+                  @if (row.locked) {
+                    <span class="plan-row__tag plan-row__tag--locked">Premium</span>
+                  } @else if (viewer() !== 'premium') {
+                    <span class="plan-row__tag plan-row__tag--free">Free</span>
+                  }
+                  @if (row.task.pressure) {
+                    <span class="plan-row__tag">Pressure Mode</span>
+                  }
+                </span>
+              }
+            </span>
+          </a>
         }
       </section>
     }

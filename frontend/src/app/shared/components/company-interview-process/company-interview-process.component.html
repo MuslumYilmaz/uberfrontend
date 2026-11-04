@@ -30,20 +30,30 @@
                   {{ stage.format }}
                   @if (stage.practice; as practice) {
                     <span class="interview-process__practice">
-                      Practice: <a [routerLink]="practice.path">{{ practice.label }}</a>
+                      @if (practiceLocked(practice.path)) {
+                        Practice: <a class="interview-process__locked" [routerLink]="practice.path" inert><span class="premium-locked" data-nosnippet>{{ practice.label }}</span></a>
+                        <span class="interview-process__tag">Premium task</span>
+                      } @else {
+                        Practice: <a [routerLink]="practice.path">{{ practice.label }}</a>
+                      }
                     </span>
                   }
                 </td>
                 <td data-label="Who">{{ stage.appliesTo }}</td>
                 <td data-label="Evidence">
                   <span class="interview-process__strength">{{ evidenceLabel(stage) }}</span>
-                  <ul class="interview-process__sources">
-                    @for (source of stage.sources; track source.url) {
-                      <li>
-                        <a [href]="source.url" target="_blank" [attr.rel]="rel(source)">{{ sourceText(source) }}</a>
-                      </li>
-                    }
-                  </ul>
+                  @if (!showSourceLinks) {
+                    <span class="interview-process__tag">Free account</span>
+                  }
+                  @if (showSourceLinks) {
+                    <ul class="interview-process__sources">
+                      @for (source of stage.sources; track source.url) {
+                        <li>
+                          <a [href]="source.url" target="_blank" [attr.rel]="rel(source)">{{ sourceText(source) }}</a>
+                        </li>
+                      }
+                    </ul>
+                  }
                 </td>
               </tr>
             }

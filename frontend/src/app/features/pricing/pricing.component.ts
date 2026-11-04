@@ -47,6 +47,7 @@ const COMPANY_PLAN_SOURCE = /^company_plan_(?!general$)[a-z0-9_-]+$/;
         [analyticsSource]="analyticsSource"
         analyticsSurface="pricing_page"
         ctaMode="checkout"
+        [recommendedPlan]="waitingPlan()?.recommendedPlan ?? defaultRecommendedPlan"
         [featureLead]="waitingPlan()?.lead ?? null">
       </app-pricing-plans-section>
     </section>
@@ -67,6 +68,8 @@ export class PricingComponent implements OnInit {
   checkoutSurface: CheckoutSurface = 'hosted_new_tab';
   analyticsSource = 'pricing_page';
   private pageViewTracked = false;
+
+  readonly defaultRecommendedPlan = RECOMMENDED_PRICING_PLAN;
 
   // Injected on every visit, so a draft made as a guest reaches the account once the person signs in on the way.
   private readonly companyPlans = inject(CompanyPlanService);
@@ -140,7 +143,7 @@ export class PricingComponent implements OnInit {
       page_layout: isSprintLayout ? this.offerVersion : PRICING_PAGE_LAYOUT,
       offer_version: this.offerVersion,
       checkout_surface: this.checkoutSurface,
-      recommended_plan: RECOMMENDED_PRICING_PLAN,
+      recommended_plan: this.waitingPlan()?.recommendedPlan ?? RECOMMENDED_PRICING_PLAN,
     });
   }
 }

@@ -2,6 +2,9 @@
   <div class="plan-strip__text">
     <h2 id="company-plan-strip-title" class="plan-strip__title">{{ copy().title }}</h2>
     <p class="plan-strip__summary">{{ copy().summary }}</p>
+    @if (copy().note) {
+      <p class="plan-strip__note" data-testid="company-plan-pricing-note">{{ copy().note }}</p>
+    }
   </div>
   <a class="plan-strip__link" routerLink="/companies/preview" data-testid="company-plan-pricing-back">Back to my plan</a>
 </section>

@@ -24,6 +24,22 @@
   gap: 12px;
 }
 
+.company-header__links {
+  margin: 6px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  font-size: 13px;
+  color: var(--fa-text-muted);
+}
+
+.company-header__links a {
+  font-weight: 600;
+  color: var(--fa-accent-strong);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 .company-avatar {
   width: 48px;
   height: 48px;

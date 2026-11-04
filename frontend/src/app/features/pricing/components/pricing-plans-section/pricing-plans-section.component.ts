@@ -473,7 +473,8 @@ export class PricingPlansSectionComponent implements OnInit, OnChanges, AfterVie
   private checkoutPrefetchRequested = false;
   autoContinuingPendingCheckout = false;
   private planCardsSeenTracked = false;
-  recommendedPlan = RECOMMENDED_PRICING_PLAN;
+  /** The card with the badge and the filled button; a plan for an interview this week points it at the month. */
+  @Input() recommendedPlan: PlanId = RECOMMENDED_PRICING_PLAN;
   readonly totalQuestionCount = SHOWCASE_STATS.totalQuestions;
 
   get premiumPracticeSummary(): string {
@@ -674,7 +675,7 @@ HTML and CSS tasks rely on the live preview instead, because visuals are the pri
 
   badgeFor(plan: PricingPlan): string {
     if (!this.isOfferV2()) return plan.badge;
-    if (plan.id !== RECOMMENDED_PRICING_PLAN) return '';
+    if (plan.id !== this.recommendedPlan) return '';
     // The full page states the sprint length in the card summary, so its badge stays one word.
     return this.variant === 'full' ? 'Recommended' : 'Recommended — 4–12 week interview sprint';
   }
@@ -1166,7 +1167,7 @@ HTML and CSS tasks rely on the live preview instead, because visuals are the pri
       page_layout: this.pageLayout(),
       offer_version: this.normalizedOfferVersion(),
       checkout_surface: this.normalizedCheckoutSurface(),
-      recommended_plan: RECOMMENDED_PRICING_PLAN,
+      recommended_plan: this.recommendedPlan,
     };
   }
 

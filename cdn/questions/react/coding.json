@@ -633,14 +633,6 @@
         "publisher": "LeetCode Discuss",
         "date": "2020-04",
         "note": "One Amazon front end engineer II phone screen asked to implement a carousel component, with follow-ups on state management. This slider is a practice version of that shape, not the reported wording."
-      },
-      {
-        "label": "Blind: Spotify web engineer interview thread, October 2021",
-        "url": "https://www.teamblind.com/post/Spotify-Web-Engineer-Interview-hNTex8N7",
-        "company": "spotify",
-        "publisher": "Blind",
-        "date": "2021-10",
-        "note": "One thread quotes a recruiter: the practical round applies HTML, CSS and JavaScript; the candidate gave an image carousel as their own example. This React slider is a practice version of that round shape, not a reported task; the reported round was framework-free."
       }
     ],
     "access": "premium",
@@ -3529,8 +3521,8 @@
         "url": "https://leetcode.com/discuss/post/7711064/",
         "company": "servicenow",
         "publisher": "LeetCode Discuss",
-        "date": "2026-03",
-        "note": "Public search previews of this report list a nested comments design in a senior frontend loop. The full report could not be read by our tools, so only that listing is used. This component practises the shape, not the reported wording."
+        "date": "2026-02",
+        "note": "Public search previews of this report list a nested comments design in a senior frontend loop; nothing else from the report is used. This component practises the shape, not the reported wording."
       },
       {
         "label": "Blind: ServiceNow phone screen for a staff engineer, frontend-leaning, September 2021",

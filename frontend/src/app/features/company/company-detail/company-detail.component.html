@@ -8,6 +8,13 @@
             <div class="fa-meta-text">
                 FrontendAtlas editorial practice organized under the {{ label | async }} label.
             </div>
+            <p class="company-header__links" data-testid="company-detail-links">
+                <a [routerLink]="['/companies', slug | async, 'preview']">Read the {{ label | async }} guide</a>
+                <ng-container *ngIf="planCovers()">
+                    <span aria-hidden="true">·</span>
+                    <a routerLink="/companies/plan">Back to my plan</a>
+                </ng-container>
+            </p>
         </div>
     </div>
 

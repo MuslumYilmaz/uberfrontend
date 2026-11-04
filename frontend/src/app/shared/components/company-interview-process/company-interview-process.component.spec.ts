@@ -106,4 +106,66 @@ describe('CompanyInterviewProcessComponent', () => {
     expect(host.querySelector('[data-testid="company-interview-process"]')).toBeNull();
     expect(host.textContent?.trim()).toBe('');
   });
+
+  it('keeps the name of a Premium practice page under a blur for a viewer without Premium, and free ones open', async () => {
+    const premium: CompanyInterviewProcess = {
+      ...FIXTURE,
+      variants: [{
+        ...FIXTURE.variants[0],
+        stages: [
+          { ...FIXTURE.variants[0].stages[0], practice: { label: 'Chips input in React', path: '/react/coding/react-chips-input-autocomplete' } },
+          { ...FIXTURE.variants[0].stages[1], practice: { label: 'Closures', path: '/javascript/trivia/js-closures' } },
+        ],
+      }],
+    };
+    await TestBed.configureTestingModule({ imports: [CompanyInterviewProcessComponent], providers: [provideRouter([])] }).compileComponents();
+    const fixture = TestBed.createComponent(CompanyInterviewProcessComponent);
+    fixture.componentRef.setInput('slug', 'acme');
+    fixture.componentRef.setInput('process', premium);
+    fixture.componentRef.setInput('lockPremium', true);
+    fixture.detectChanges();
+    const host = fixture.nativeElement as HTMLElement;
+
+    const locked = host.querySelector('.interview-process__locked') as HTMLAnchorElement;
+    expect(locked.textContent?.trim()).toBe('Chips input in React');
+    expect(locked.hasAttribute('inert')).toBeTrue();
+    expect(locked.querySelector('.premium-locked')?.hasAttribute('data-nosnippet')).toBeTrue();
+    expect(host.querySelector('.interview-process__tag')?.textContent).toBe('Premium task');
+    expect(host.querySelectorAll('.interview-process__locked').length).toBe(1);
+
+    fixture.componentRef.setInput('lockPremium', false);
+    fixture.detectChanges();
+    expect(host.querySelector('.interview-process__locked')).toBeNull();
+    expect(Array.from(host.querySelectorAll('.interview-process__practice a')).map((link) => link.textContent?.trim()))
+      .toEqual(['Chips input in React', 'Closures']);
+  });
+
+  it('behind the gate, keeps what every round asks open and replaces the evidence links with their counts and a tag', async () => {
+    await TestBed.configureTestingModule({ imports: [CompanyInterviewProcessComponent], providers: [provideRouter([])] }).compileComponents();
+    const fixture = TestBed.createComponent(CompanyInterviewProcessComponent);
+    fixture.componentRef.setInput('slug', 'acme');
+    fixture.componentRef.setInput('process', FIXTURE);
+    fixture.componentRef.setInput('showSourceLinks', false);
+    fixture.detectChanges();
+    const host = fixture.nativeElement as HTMLElement;
+
+    // Every "What happens" cell reads in full; nothing in the table sits under a blur.
+    expect(host.textContent).toContain('Coding in a browser IDE.');
+    expect(host.textContent).toContain('React fundamentals.');
+    expect(host.textContent).toContain('A frontend design round.');
+    expect(host.querySelector('.premium-locked')).toBeNull();
+    // The counts stay with a "Free account" tag, the links go, the practice link stays.
+    const strengths = Array.from(host.querySelectorAll('.interview-process__strength'));
+    expect(strengths.length).toBe(3);
+    expect(strengths.every((cell) => cell.nextElementSibling?.classList.contains('interview-process__tag'))).toBeTrue();
+    expect(host.querySelector('.interview-process__tag')?.textContent).toBe('Free account');
+    expect(host.querySelector('.interview-process__sources')).toBeNull();
+    expect(host.querySelector('a[href="https://reports.example/one"]')).toBeNull();
+    expect(host.querySelector('.interview-process__practice a')?.getAttribute('href')).toBe('/javascript/coding/js-debounce');
+
+    fixture.componentRef.setInput('showSourceLinks', true);
+    fixture.detectChanges();
+    expect(host.querySelector('.interview-process__tag')).toBeNull();
+    expect(host.querySelectorAll('.interview-process__sources a').length).toBe(4);
+  });
 });

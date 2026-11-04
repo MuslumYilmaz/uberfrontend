@@ -242,8 +242,12 @@ export function auditBuild({ buildDir, canonicalBase = 'https://frontendatlas.co
     const sampleIds = new Set([...ids].filter((id) => id.startsWith('company-preview-question-')).map((id) => id.slice('company-preview-question-'.length)));
     const expected = expectedSamples.get(slug) ?? { count: 0, requiredIds: new Set() };
     const missing = sorted([...expected.requiredIds].filter((id) => !sampleIds.has(id)));
-    const buckets = pages.get(route)?.companyCounts.match(/Coding (\d+)\s*·\s*Concepts (\d+)\s*·\s*System (\d+)/);
-    const actualCounts = buckets ? { coding: Number(buckets[1]), trivia: Number(buckets[2]), system: Number(buckets[3]), all: pages.get(route).companyTotal } : null;
+    // A kind the set does not hold is left off the chip, so each count is read on its own.
+    const chip = pages.get(route)?.companyCounts ?? '';
+    const readCount = (label) => Number(chip.match(new RegExp(`\\b${label} (\\d+)`))?.[1] ?? 0);
+    const actualCounts = /\b(?:Coding|Concepts|System) \d+/.test(chip)
+      ? { coding: readCount('Coding'), trivia: readCount('Concepts'), system: readCount('System'), all: pages.get(route).companyTotal }
+      : null;
     companyCoverage.push({ route, expectedSamples: expected.count, actualSamples: sampleIds.size, missing, expectedCounts: counts, actualCounts });
     if (sampleIds.size !== expected.count || missing.length) failures.add(`Company preview missing or unexpected initial-HTML samples: ${route} (expected=${expected.count}, actual=${sampleIds.size}, missing=${missing.join(', ')})`);
     if (!actualCounts) failures.add(`Company preview missing initial-HTML counts: ${route}`);

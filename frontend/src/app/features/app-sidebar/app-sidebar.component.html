@@ -50,6 +50,10 @@
         <div class="nav-section">
             <p class="section-heading">Plans</p>
 
+            @defer (when hasCompanyPlan()) {
+                <app-company-plan-sidebar-card [collapsed]="shouldCollapseRail()" (followed)="closeDrawer()" />
+            }
+
             <ng-container *ngIf="isGroup(nav[2])">
                 <div class="nav-group nav-block">
                     <button class="group-header" type="button" (click)="toggleGroup(2)"

@@ -7,14 +7,18 @@ import { isProActive } from '../../../core/utils/entitlements.util';
 import { FaButtonComponent } from '../../../shared/ui/button/fa-button.component';
 import { InlineCodeComponent, stripInlineMarkup } from '../../../shared/ui/inline-code/inline-code.component';
 import type { CompanyPlan, CompanyPlanData, PlannedTask } from './company-plan.engine';
+import { COMPANY_SET_COUNTS, PREMIUM_QUESTION_COUNT } from './company-plan-sets';
 import {
   LEVEL_LABELS,
   WHEN_LABELS,
   clockText,
+  companySetLine,
   frameworkLabel,
+  openTaskCount,
   planCompanyNames,
   planEvidenceLine,
   planFrameworkChips,
+  planPricingSource,
   planSummaryLine,
   practiceState,
   taskGroups,
@@ -152,20 +156,61 @@ export class CompanyPlanPreviewComponent {
     return this.rows().open.filter((task) => !planned.has(task.id)).length;
   });
 
-  readonly openTasks = computed(() => this.rows().open.map((task) => ({
-    task,
-    why: whyLine(task.why),
-    time: clockText(task.minutes),
-    state: practiceState(task, this.rows().open, this.router.url, 'Back to plan'),
-  })));
+  readonly openTasks = computed(() => {
+    const planned = new Set((this.plan()?.tasks ?? []).map((task) => task.id));
+    return this.rows().open.map((task) => ({
+      task,
+      why: planned.has(task.id) ? whyLine(task.why) : 'Free warm-up, outside your plan',
+      time: clockText(task.minutes),
+      state: practiceState(task, this.rows().open, this.router.url, 'Back to plan'),
+    }));
+  });
 
-  readonly restTasks = computed(() => this.rows().rest.map((task) => ({
-    task,
-    meta: `${this.groups().get(task.id) ?? 'Plan'} · about ${clockText(task.minutes)}`,
-    aria: this.viewer() === 'premium' ? stripInlineMarkup(task.title) : `${stripInlineMarkup(task.title)}, locked until you build your plan`,
-  })));
+  /**
+   * The rest of the plan by name: what a Premium task is, which round it serves and where it was reported, so the
+   * person can see what Premium opens. Free tasks past the first three stay open.
+   */
+  readonly restTasks = computed(() => this.rows().rest.map((task) => {
+    const group = this.groups().get(task.id) ?? 'Plan';
+    const time = clockText(task.minutes);
+    const title = stripInlineMarkup(task.title);
+    const locked = this.viewer() !== 'premium' && task.access === 'premium';
+    return {
+      task,
+      locked,
+      why: whyLine(task.why),
+      meta: `${group} · about ${time}`,
+      aria: locked ? `${title}, ${group}, about ${time}, opens with Premium` : title,
+      state: locked ? {} : practiceState(task, this.rows().rest, this.router.url, 'Back to plan'),
+    };
+  }));
 
   readonly restTitle = computed(() => (this.warmups() === this.rows().open.length ? 'Your plan' : 'The rest of your plan'));
+
+  readonly restLine = computed(() => {
+    if (this.viewer() === 'premium') return 'These open with your plan.';
+    return this.restTasks().some((row) => row.locked)
+      ? 'Premium opens the locked tasks, with every round in order.'
+      : 'Every round in order, with its tasks and your progress.';
+  });
+
+  readonly buildLabel = computed(() => (this.viewer() === 'premium' ? 'Open my plan' : 'Unlock my plan'));
+
+  /**
+   * Shown on a phone only. The tasks open there as questions with their solutions, while the code runs on a larger
+   * screen; the night before an interview, the guide's rounds and open prompts are the reading a phone is good for.
+   */
+  readonly phoneNote = computed<{ text: string; guide: { name: string; path: string } | null }>(() => {
+    const plan = this.plan();
+    const company = plan && !plan.general && plan.companies.length === 1 ? plan.companies[0] : null;
+    if (company && this.request()?.answers.when === 'tomorrow') {
+      return {
+        text: `Tonight on a phone, read the ${company.name} guide: its rounds and open prompts. The tasks here open as questions with their solutions; the code runs on a desktop or tablet.`,
+        guide: { name: company.name, path: `/companies/${company.slug}/preview` },
+      };
+    }
+    return { text: 'On a phone, each task opens as a question with its solution. Writing code and running checks need a desktop or tablet.', guide: null };
+  });
 
   /** The plan a person already has, when building this one would replace it. */
   readonly replacing = computed(() => {
@@ -186,13 +231,21 @@ export class CompanyPlanPreviewComponent {
     const rounds = plan.companies.reduce((sum, company) => sum + company.rounds.length, 0);
     const counts = data.general.premiumCounts;
     const framework = plan.companies[0].framework;
+    const sets = companySetLine(plan.companies.map((company) => ({ name: company.name, counts: COMPANY_SET_COUNTS[company.slug] })));
     const lastFact = this.viewer() === 'premium'
       ? 'Progress saved as you go'
-      : counts && `Premium also opens ${counts[framework]} ${frameworkLabel(framework)} tasks and ${counts.systemDesign} system design walkthroughs`;
+      : counts && `Premium opens all ${PREMIUM_QUESTION_COUNT} Premium questions, including ${counts[framework]} ${frameworkLabel(framework)} tasks and ${counts.systemDesign} system design walkthroughs`;
     const warmups = this.warmups();
+    const open = openTaskCount(plan);
+    const locked = plan.tasks.length - open;
+    const pressure = plan.tasks.filter((task) => task.pressure).length;
+    // One set of numbers: the plan's tasks, how many open now, and the warm-ups that sit outside it.
+    const split = this.viewer() === 'premium' || !locked ? '' : `: ${open} open now, ${locked} with Premium`;
     return [
-      planSummaryLine(plan, request.answers.when) + (warmups ? `, plus ${warmups} free ${warmups === 1 ? 'warm-up' : 'warm-ups'}` : ''),
-      `All ${rounds} reported rounds in order, each with its sources`,
+      planSummaryLine(plan, request.answers.when) + split + (warmups ? `, plus ${warmups} free ${warmups === 1 ? 'warm-up' : 'warm-ups'} outside the plan` : ''),
+      `All ${rounds} reported rounds in order, with their tasks and your progress`,
+      ...(pressure ? [`${pressure} ${pressure === 1 ? 'task runs' : 'tasks run'} as an interview (Pressure Mode): the requirements change while you code`] : []),
+      ...(sets ? [sets] : []),
       ...(lastFact ? [lastFact] : []),
     ];
   });
@@ -212,10 +265,7 @@ export class CompanyPlanPreviewComponent {
     }
   });
 
-  readonly pricingParams = computed(() => {
-    const slug = this.plan()?.companies[0]?.slug;
-    return { src: slug ? `company_plan_${slug}` : 'company_plan_general' };
-  });
+  readonly pricingParams = computed(() => ({ src: planPricingSource(this.plan()?.companies[0]?.slug) }));
 
   readonly signupParams = computed(() => ({ redirectTo: this.router.url }));
 

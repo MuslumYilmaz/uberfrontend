@@ -6,6 +6,7 @@ import { UserProgressService } from '../../../core/services/user-progress.servic
 import { FaButtonComponent } from '../../../shared/ui/button/fa-button.component';
 import { InlineCodeComponent, stripInlineMarkup } from '../../../shared/ui/inline-code/inline-code.component';
 import { premiumEnded } from './company-plan-access';
+import { COMPANY_SET_COUNTS, PREMIUM_QUESTION_COUNT } from './company-plan-sets';
 import type { CompanyPlan, CompanyPlanData, PlannedRound, PlannedTask } from './company-plan.engine';
 import {
   LEVEL_LABELS,
@@ -16,8 +17,10 @@ import {
   planCompanyNames,
   planDateChip,
   planDatePassed,
+  formatGroupName,
   planEvidenceLine,
   planFrameworkChips,
+  planPricingSource,
   practiceState,
   roundSourcesLine,
   taskGroups,
@@ -86,7 +89,7 @@ export class CompanyPlanPageComponent {
   /** Premium ran out: the plan stays readable, and every task leads to renewing. */
   readonly ended = computed(() => premiumEnded(this.auth.user()));
 
-  readonly pricingParams = computed(() => ({ src: `company_plan_${this.plan()?.companies[0]?.slug ?? 'general'}` }));
+  readonly pricingParams = computed(() => ({ src: planPricingSource(this.plan()?.companies[0]?.slug) }));
 
   readonly solvedCount = computed(() => this.plan()?.tasks.filter((task) => task.solved).length ?? 0);
 
@@ -201,7 +204,7 @@ export class CompanyPlanPageComponent {
       ...(byCompany
         ? plan.companies.map((company) => ({ name: company.name, tasks: company.rounds.flatMap((round) => round.tasks) }))
         : plan.companies[0].rounds.map((round) => ({ name: round.name, tasks: round.tasks }))),
-      { name: 'Format practice', tasks: plan.formatPractice },
+      { name: formatGroupName(plan), tasks: plan.formatPractice },
     ].filter((group) => group.tasks.length);
     const longest = Math.max(1, ...groups.map((group) => minutesOf(group.tasks)));
     const solved = this.solvedCount();
@@ -236,6 +239,21 @@ export class CompanyPlanPageComponent {
       tasks: round.tasks.flatMap((task) => this.views().get(task.id) ?? []),
     })),
   })));
+
+  /**
+   * What Premium holds past the plan: each company's whole set and the library, so a plan of a few tasks never reads
+   * as everything paid for. Not for an ended member, whose links would only reach the paywall.
+   */
+  readonly beyond = computed(() => {
+    if (this.ended()) return null;
+    return {
+      sets: (this.plan()?.companies ?? []).flatMap((company) => {
+        const count = COMPANY_SET_COUNTS[company.slug]?.all ?? 0;
+        return count ? [{ name: company.name, count, link: `/companies/${company.slug}/all` }] : [];
+      }),
+      premiumTotal: PREMIUM_QUESTION_COUNT,
+    };
+  });
 
   readonly format = computed(() => {
     const plan = this.plan();

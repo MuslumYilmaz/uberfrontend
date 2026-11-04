@@ -158,14 +158,39 @@ test('a company framework decides which member of a family enters', () => {
   assert.equal(payload.companies.acme.mixed, undefined);
 });
 
-test('reported tasks come newest first, then linked tasks, then tags by importance, with concept questions last', () => {
+test('the practice links of the stages lead, then reported tasks newest first, then other links, then tags by importance, with concept questions last', () => {
   const ids = build().companies.acme.variants[0].tasks.map((task) => task.id);
-  assert.deepEqual(ids.slice(0, 3), ['js-new', 'case-a', 'react-star-rating']);
-  assert.ok(ids.indexOf('js-linked') > ids.indexOf('react-star-rating'));
-  assert.ok(ids.indexOf('js-tag-high') > ids.indexOf('js-linked'));
+  assert.deepEqual(ids.slice(0, 2), ['js-linked', '/guides/system-design-blueprint']);
+  assert.deepEqual(ids.slice(2, 5), ['js-new', 'case-a', 'react-star-rating']);
+  assert.ok(ids.indexOf('js-tag-high') > ids.indexOf('react-star-rating'));
   assert.ok(ids.indexOf('js-tag-high') < ids.indexOf('js-tag-low'));
   assert.ok(ids.indexOf('concept-a') > ids.indexOf('js-tag-low'));
   assert.ok(ids.indexOf('concept-a') < ids.indexOf('concept-b'));
+});
+
+test('a reported practice link leads its round ahead of a newer report, so the plan opens the round where the guide does', () => {
+  const process = baseProcess();
+  // The coding stage's practice link is the old report; the newer one stays a report of the same round.
+  process.variants[0].stages[1] = { ...process.variants[0].stages[1], sources: [tableSource('new', '2026-04'), tableSource('old', '2020-01')], practice: { label: 'Old', path: '/javascript/coding/js-old' } };
+  const ids = build({ processes: { acme: process } }).companies.acme.variants[0].tasks.map((task) => task.id);
+  assert.ok(ids.indexOf('js-old') < ids.indexOf('js-new'));
+  const old = build({ processes: { acme: process } }).companies.acme.variants[0].tasks.find((task) => task.id === 'js-old');
+  assert.deepEqual(old.rounds, ['coding']);
+  assert.deepEqual(old.report, { publisher: 'Taro', date: '2020-01' });
+});
+
+test('a design task reported by a list with no design round stays on the round whose account mentioned it', () => {
+  const rounds = baseRounds();
+  rounds.variants[0].rounds = rounds.variants[0].rounds.filter((round) => round.id !== 'design');
+  const process = baseProcess();
+  process.variants[0].stages = process.variants[0].stages.filter((stage) => stage.stage !== 'Design');
+  process.variants[0].stages[1] = { ...process.variants[0].stages[1], sources: [...process.variants[0].stages[1].sources, tableSource('case', '2024-02')] };
+  const tasks = build({ rounds: { acme: rounds }, processes: { acme: process } }).companies.acme.variants[0].tasks;
+  assert.deepEqual(tasks.find((task) => task.id === 'case-a').rounds, ['coding']);
+  // Cited nowhere, the same task stays unbound for the engine to place.
+  process.variants[0].stages[1] = { ...process.variants[0].stages[1], sources: process.variants[0].stages[1].sources.filter((source) => source.url !== reportUrl('case')) };
+  const unbound = build({ rounds: { acme: rounds }, processes: { acme: process } }).companies.acme.variants[0].tasks;
+  assert.equal(unbound.find((task) => task.id === 'case-a').rounds, undefined);
 });
 
 test('a source cited by both files shows the date in the process table', () => {
