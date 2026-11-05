@@ -53,6 +53,8 @@ describe('companyPlanPricingCopy', () => {
     } as CompanyPlanData;
     expect(copyFor('walmart', premiumOnly).summary).toMatch(/^6 tasks for next week, about [\d.]+ hours?\. Every task opens with Premium\. Every round in order, with its tasks and your progress\.$/);
     expect(copyFor('walmart').summary).toMatch(/^6 tasks for next week, about [\d.]+ hours?\. [1-9] (is|are) open now, \d open with Premium\. Every round in order, with its tasks and your progress\.$/);
+    // Airbnb's table groups its rounds by type and gives no order.
+    expect(copyFor('airbnb').summary).toMatch(/ Every round, with its tasks and your progress\.$/);
   });
 
   it('points at the month, with the reason, when the interview is within two weeks, and at the quarter otherwise', () => {

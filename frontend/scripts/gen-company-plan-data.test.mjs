@@ -207,6 +207,41 @@ test('a task binds to the rounds that cite its source and test its kind', () => 
   assert.equal(tasks.find((task) => task.id === 'js-tag-high').rounds, undefined);
 });
 
+test('the practice links of the guide prompts join the round whose report they follow, else the first round of their kind', () => {
+  const prompts = {
+    acme: [
+      { path: '/javascript/coding/js-tag-low', reportUrl: reportUrl('new') },
+      { path: '/system-design/case-a', reportUrl: null },
+      { path: '/react/coding/react-file-explorer', reportUrl: null },
+      { path: '/javascript/coding/js-tag-high', reportUrl: reportUrl('old') },
+      { path: '/guides/system-design-blueprint', reportUrl: null },
+    ],
+  };
+  const [engineers, interns] = build({ prompts }).companies.acme.variants;
+  // A tag with a report the Coding stage cites lands there; a task already bound by its own report keeps its round.
+  assert.deepEqual(engineers.tasks.find((task) => task.id === 'js-tag-low').rounds, ['coding']);
+  assert.deepEqual(engineers.tasks.find((task) => task.id === 'case-a').rounds, ['design']);
+  // No report: the first round of the task's kind.
+  assert.deepEqual(engineers.tasks.find((task) => task.id === 'react-file-explorer').rounds, ['coding']);
+  // A report only the interns' list cites binds the task there and nowhere else.
+  assert.equal(engineers.tasks.find((task) => task.id === 'js-tag-high').rounds, undefined);
+  assert.deepEqual(interns.tasks.find((task) => task.id === 'js-tag-high').rounds, ['coding']);
+});
+
+test('rounds the editor names for a reported task win over the stages that cite its report', () => {
+  const rounds = { ...baseRounds(), reportRounds: { 'js-new': ['design'] } };
+  const tasks = build({ rounds: { acme: rounds } }).companies.acme.variants[0].tasks;
+  assert.deepEqual(tasks.find((task) => task.id === 'js-new').rounds, ['design']);
+});
+
+test('a list that gives its rounds no order says so', () => {
+  const rounds = baseRounds();
+  rounds.variants[0] = { ...rounds.variants[0], unordered: true };
+  const [engineers, interns] = build({ rounds: { acme: rounds } }).companies.acme.variants;
+  assert.equal(engineers.unordered, true);
+  assert.equal(interns.unordered, undefined);
+});
+
 test('the practice link of a stage carries the lead flag; reports, picks and tags do not', () => {
   const rounds = baseRounds();
   rounds.variants[0].rounds[1] = { ...rounds.variants[0].rounds[1], picks: ['/javascript/coding/js-starter'] };

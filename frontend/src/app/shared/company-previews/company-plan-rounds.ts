@@ -50,6 +50,8 @@ export type CompanyPlanVariant = {
   readonly default?: true;
   /** Set only where the table names the levels its accounts come from. Other levels get a warning. */
   readonly reported?: { readonly levels: readonly CompanyPlanLevel[]; readonly who: string };
+  /** The table groups these rounds by type and gives no order, so the plan says so instead of "in order". */
+  readonly unordered?: true;
   readonly rounds: readonly CompanyPlanRound[];
 };
 
@@ -171,6 +173,8 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
       {
         id: 'main',
         title: 'Frontend engineers, mostly 2024 to 2025',
+        // Most accounts list tasks without naming the round, so the table groups the rows by type and gives no order.
+        unordered: true,
         rounds: [
           { id: 'recruiter-call', stage: 'Recruiter call', kinds: ['recruiter'] },
           {
@@ -1290,6 +1294,18 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
     ],
   },
   waymo: {
+    // The PracHub May 2026 account is cited on both the phone screen and the onsite. The guide puts the tree filter on
+    // the screen and the account's other tasks on the onsite, so the plan does too.
+    reportRounds: {
+      'js-filter-tree-render-indented': ['phone-or-video-interviews'],
+      'js-debounce': ['virtual-onsite'],
+      'angular-autocomplete-search-starter': ['virtual-onsite'],
+      'angular-debounced-search': ['virtual-onsite'],
+      'js-create-deferred-promise': ['virtual-onsite'],
+      'js-fetch-json-timeout': ['virtual-onsite'],
+      'js-promise-all': ['virtual-onsite'],
+      'ng-debug-fleet-status-bug-reports': ['virtual-onsite'],
+    },
     variants: [
       {
         id: 'frontend',

@@ -204,12 +204,18 @@ export class CompanyPlanPreviewComponent {
 
   readonly restTitle = computed(() => (this.warmups() === this.rows().open.length ? 'Your plan' : 'The rest of your plan'));
 
+  /** Whether every list in the plan gives its rounds in order; a table that groups them by type says so instead. */
+  readonly ordered = computed(() => !(this.plan()?.companies ?? []).some((company) => company.list.unordered));
+
   readonly restLine = computed(() => {
     if (this.viewer() === 'premium') return 'These open with your plan.';
+    const order = this.ordered() ? ' in order' : '';
     return this.restTasks().some((row) => row.locked)
-      ? 'Premium opens the locked tasks, with every round in order.'
-      : 'Every round in order, with its tasks and your progress.';
+      ? `Premium opens the locked tasks, with every round${order}.`
+      : `Every round${order}, with its tasks and your progress.`;
   });
+
+  readonly roundsLine = computed(() => `Your plan adds every round${this.ordered() ? ' in order' : ''}, with its tasks and your progress.`);
 
   readonly buildLabel = computed(() => (this.viewer() === 'premium' ? 'Open my plan' : 'Unlock my plan'));
 
@@ -247,9 +253,10 @@ export class CompanyPlanPreviewComponent {
     if (!data || !plan || !request || plan.general) return [];
     const rounds = plan.companies.reduce((sum, company) => sum + company.rounds.length, 0);
     const left = rounds - plan.companies.reduce((sum, company) => sum + company.rounds.filter((round) => round.passed).length, 0);
+    const order = this.ordered() ? 'in order' : 'grouped by type';
     const roundsFact = left < rounds
-      ? `${left} of ${rounds} reported rounds left, in order, with their tasks and your progress`
-      : `All ${rounds} reported rounds in order, with their tasks and your progress`;
+      ? `${left} of ${rounds} reported rounds left, ${order}, with their tasks and your progress`
+      : `All ${rounds} reported rounds ${order}, with their tasks and your progress`;
     const counts = data.general.premiumCounts;
     const framework = plan.companies[0].framework;
     const sets = companySetLine(plan.companies.map((company) => ({ name: company.name, counts: COMPANY_SET_COUNTS[company.slug] })));

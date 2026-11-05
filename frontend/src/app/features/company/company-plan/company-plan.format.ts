@@ -245,7 +245,7 @@ export function companyPlanPricingCopy(data: CompanyPlanData, answers: CompanyPl
   const note = SOON_NOTES[answers.when] ?? '';
   return {
     title: `Your ${names} plan is waiting`,
-    summary: `${planSummaryLine(plan, answers.when)}.${opens} Every round in order, with its tasks and your progress.`,
+    summary: `${planSummaryLine(plan, answers.when)}.${opens} Every round${plan.companies.some((company) => company.list.unordered) ? '' : ' in order'}, with its tasks and your progress.`,
     note,
     recommendedPlan: note ? 'monthly' : 'quarterly',
     lead: [

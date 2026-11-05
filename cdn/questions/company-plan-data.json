@@ -181,6 +181,19 @@
         "js"
       ]
     },
+    "content-delivery-caching-strategies-streaming": {
+      "id": "content-delivery-caching-strategies-streaming",
+      "title": "Streaming Platform Caching Architecture: CDN, HTTP Cache, and Frontend Delivery",
+      "route": "/javascript/trivia/content-delivery-caching-strategies-streaming",
+      "kind": "trivia",
+      "tech": "javascript",
+      "access": "free",
+      "minutes": 10,
+      "focus": [
+        "concepts",
+        "js"
+      ]
+    },
     "css-box-model": {
       "id": "css-box-model",
       "title": "Why is this element wider than its width? box-sizing and the box model",
@@ -1050,6 +1063,19 @@
         "js"
       ]
     },
+    "js-event-loop-nested-microtask-output": {
+      "id": "js-event-loop-nested-microtask-output",
+      "title": "Predict the Output of a Nested Microtask",
+      "route": "/javascript/trivia/js-event-loop-nested-microtask-output",
+      "kind": "trivia",
+      "tech": "javascript",
+      "access": "free",
+      "minutes": 10,
+      "focus": [
+        "concepts",
+        "js"
+      ]
+    },
     "js-fetch-json-timeout": {
       "id": "js-fetch-json-timeout",
       "title": "Fetch JSON with Timeout + Abort",
@@ -1097,6 +1123,19 @@
       "tech": "javascript",
       "access": "free",
       "minutes": 15,
+      "focus": [
+        "js",
+        "algo"
+      ]
+    },
+    "js-get-by-path-1": {
+      "id": "js-get-by-path-1",
+      "title": "Data Helper 1: Get Value by Path",
+      "route": "/javascript/coding/js-get-by-path-1",
+      "kind": "coding",
+      "tech": "javascript",
+      "access": "free",
+      "minutes": 30,
       "focus": [
         "js",
         "algo"
@@ -1375,19 +1414,6 @@
         "js"
       ]
     },
-    "js-prototypal-inheritance": {
-      "id": "js-prototypal-inheritance",
-      "title": "Explain how prototypal inheritance works in JavaScript",
-      "route": "/javascript/trivia/js-prototypal-inheritance",
-      "kind": "trivia",
-      "tech": "javascript",
-      "access": "free",
-      "minutes": 10,
-      "focus": [
-        "concepts",
-        "js"
-      ]
-    },
     "js-recover-bst-swapped-nodes": {
       "id": "js-recover-bst-swapped-nodes",
       "title": "Recover a BST with Two Swapped Nodes",
@@ -1548,6 +1574,19 @@
       "id": "js-stream-to-text",
       "title": "Stream to Text (ReadableStream -> string)",
       "route": "/javascript/coding/js-stream-to-text",
+      "kind": "coding",
+      "tech": "javascript",
+      "access": "free",
+      "minutes": 30,
+      "focus": [
+        "js",
+        "algo"
+      ]
+    },
+    "js-take-latest": {
+      "id": "js-take-latest",
+      "title": "Take Latest (Abort Previous Requests)",
+      "route": "/javascript/coding/js-take-latest",
       "kind": "coding",
       "tech": "javascript",
       "access": "free",
@@ -2343,6 +2382,19 @@
         "ui"
       ],
       "family": "pagination-table"
+    },
+    "web-performance-optimize-load-time": {
+      "id": "web-performance-optimize-load-time",
+      "title": "How do you optimize a web page’s response or load time?",
+      "route": "/javascript/trivia/web-performance-optimize-load-time",
+      "kind": "trivia",
+      "tech": "javascript",
+      "access": "free",
+      "minutes": 10,
+      "focus": [
+        "concepts",
+        "js"
+      ]
     }
   },
   "companies": {
@@ -2600,6 +2652,12 @@
               ]
             },
             {
+              "id": "js-debounce",
+              "rounds": [
+                "coding-interview"
+              ]
+            },
+            {
               "id": "react-fetch-list-states"
             },
             {
@@ -2616,9 +2674,6 @@
             },
             {
               "id": "js-testing-edge-cases-strategy"
-            },
-            {
-              "id": "react-ssr-hydration"
             }
           ]
         },
@@ -2836,6 +2891,7 @@
         {
           "id": "main",
           "title": "Frontend engineers, mostly 2024 to 2025",
+          "unordered": true,
           "sourceCount": 16,
           "newestReport": "2025-09",
           "rounds": [
@@ -3708,7 +3764,16 @@
               "report": {
                 "publisher": "Blind",
                 "date": "2024-05"
-              }
+              },
+              "rounds": [
+                "technical-screen"
+              ]
+            },
+            {
+              "id": "react-autocomplete-search-starter",
+              "rounds": [
+                "technical-screen"
+              ]
             },
             {
               "id": "js-filter-tree-render-indented"
@@ -3798,10 +3863,19 @@
               ]
             },
             {
-              "id": "react-vanilla-dropdown-port"
+              "id": "js-flatten-once",
+              "rounds": [
+                "two-technical-rounds"
+              ]
             },
             {
-              "id": "js-flatten-once"
+              "id": "react-autocomplete-search-starter",
+              "rounds": [
+                "two-technical-rounds"
+              ]
+            },
+            {
+              "id": "react-vanilla-dropdown-port"
             },
             {
               "id": "react-countdown-timer"
@@ -5093,6 +5167,12 @@
               ]
             },
             {
+              "id": "ui-component-state-from-mock",
+              "rounds": [
+                "power-day"
+              ]
+            },
+            {
               "id": "html-forms-validation-required"
             },
             {
@@ -5100,9 +5180,6 @@
             },
             {
               "id": "multi-step-form-autosave"
-            },
-            {
-              "id": "ui-component-state-from-mock"
             },
             {
               "id": "react-state-management-redux"
@@ -5342,7 +5419,16 @@
               "report": {
                 "publisher": "Taro",
                 "date": "2025-01"
-              }
+              },
+              "rounds": [
+                "take-home-review"
+              ]
+            },
+            {
+              "id": "js-xss-dom-sinks",
+              "rounds": [
+                "web-fundamentals-with-engineers"
+              ]
             },
             {
               "id": "css-box-model"
@@ -5352,9 +5438,6 @@
             },
             {
               "id": "js-promises-async-await"
-            },
-            {
-              "id": "js-xss-dom-sinks"
             },
             {
               "id": "js-secure-cors-handling"
@@ -5460,10 +5543,13 @@
               ]
             },
             {
-              "id": "html-tables-accessibility"
+              "id": "model-training-progress-dashboard",
+              "rounds": [
+                "whiteboard-design"
+              ]
             },
             {
-              "id": "model-training-progress-dashboard"
+              "id": "html-tables-accessibility"
             },
             {
               "id": "ui-component-state-from-mock"
@@ -5829,7 +5915,10 @@
               "report": {
                 "publisher": "Taro",
                 "date": "2025-11"
-              }
+              },
+              "rounds": [
+                "technical-screen"
+              ]
             },
             {
               "id": "js-array-sort",
@@ -6081,7 +6170,10 @@
               "report": {
                 "publisher": "Aced",
                 "date": "2026-10"
-              }
+              },
+              "rounds": [
+                "product-or-design-round"
+              ]
             },
             {
               "id": "js-timer-manager",
@@ -6362,6 +6454,12 @@
                 "publisher": "Taro",
                 "date": "2022-05"
               }
+            },
+            {
+              "id": "vue-debounced-search",
+              "rounds": [
+                "merge-request-review"
+              ]
             },
             {
               "id": "vue-lifecycle-hooks"
@@ -6678,7 +6776,10 @@
               "report": {
                 "publisher": "LeetCode Discuss",
                 "date": "2021-06"
-              }
+              },
+              "rounds": [
+                "assessment"
+              ]
             },
             {
               "id": "js-throttle",
@@ -6696,6 +6797,36 @@
                 "publisher": "LeetCode Discuss",
                 "date": "2019-07"
               }
+            },
+            {
+              "id": "js-get-by-path-1",
+              "rounds": [
+                "assessment"
+              ]
+            },
+            {
+              "id": "js-take-latest",
+              "rounds": [
+                "assessment"
+              ]
+            },
+            {
+              "id": "js-event-delegation",
+              "rounds": [
+                "assessment"
+              ]
+            },
+            {
+              "id": "web-performance-optimize-load-time",
+              "rounds": [
+                "assessment"
+              ]
+            },
+            {
+              "id": "infinite-scroll-list",
+              "rounds": [
+                "system-design"
+              ]
             },
             {
               "id": "js-deep-clone"
@@ -7522,7 +7653,10 @@
               "report": {
                 "publisher": "Taro",
                 "date": "2024-06"
-              }
+              },
+              "rounds": [
+                "initial-technical-screen"
+              ]
             },
             {
               "id": "realtime-search-debounce-cache",
@@ -7718,6 +7852,12 @@
               ]
             },
             {
+              "id": "js-stack-queue-implementation",
+              "rounds": [
+                "technical-interviews"
+              ]
+            },
+            {
               "id": "js-array-sort"
             },
             {
@@ -7752,9 +7892,6 @@
             },
             {
               "id": "js-maze-path"
-            },
-            {
-              "id": "js-stack-queue-implementation"
             },
             {
               "id": "js-palindrome-check"
@@ -8235,6 +8372,30 @@
               }
             },
             {
+              "id": "js-take-latest",
+              "rounds": [
+                "technical-screen"
+              ]
+            },
+            {
+              "id": "infinite-scroll-list",
+              "rounds": [
+                "onsite"
+              ]
+            },
+            {
+              "id": "react-rerender-decision-and-render",
+              "rounds": [
+                "technical-screen"
+              ]
+            },
+            {
+              "id": "content-delivery-caching-strategies-streaming",
+              "rounds": [
+                "technical-screen"
+              ]
+            },
+            {
               "id": "react-debug-double-render"
             },
             {
@@ -8248,18 +8409,6 @@
             },
             {
               "id": "js-recover-bst-swapped-nodes"
-            },
-            {
-              "id": "js-closures"
-            },
-            {
-              "id": "react-rerender-decision-and-render"
-            },
-            {
-              "id": "debounce-vs-throttle-search-input"
-            },
-            {
-              "id": "js-prototypal-inheritance"
             }
           ]
         },
@@ -8313,6 +8462,24 @@
           ],
           "tasks": [
             {
+              "id": "js-take-latest",
+              "rounds": [
+                "take-home-assessment"
+              ]
+            },
+            {
+              "id": "react-rerender-decision-and-render",
+              "rounds": [
+                "take-home-assessment"
+              ]
+            },
+            {
+              "id": "content-delivery-caching-strategies-streaming",
+              "rounds": [
+                "take-home-assessment"
+              ]
+            },
+            {
               "id": "react-debounced-search"
             },
             {
@@ -8337,16 +8504,7 @@
               "id": "js-closures"
             },
             {
-              "id": "react-rerender-decision-and-render"
-            },
-            {
               "id": "debounce-vs-throttle-search-input"
-            },
-            {
-              "id": "js-prototypal-inheritance"
-            },
-            {
-              "id": "js-secure-cors-handling"
             }
           ]
         }
@@ -8737,10 +8895,19 @@
               ]
             },
             {
-              "id": "js-event-loop"
+              "id": "js-fetch-json-timeout",
+              "rounds": [
+                "live-coding"
+              ]
             },
             {
-              "id": "js-microtasks-vs-macrotasks"
+              "id": "js-microtasks-vs-macrotasks",
+              "rounds": [
+                "live-coding"
+              ]
+            },
+            {
+              "id": "js-event-loop"
             },
             {
               "id": "html-dom-tree-structure"
@@ -8933,7 +9100,10 @@
               "report": {
                 "publisher": "LeetCode Discuss",
                 "date": "2026-02"
-              }
+              },
+              "rounds": [
+                "second-technical-round"
+              ]
             },
             {
               "id": "react-nested-comments",
@@ -8980,7 +9150,10 @@
               "report": {
                 "publisher": "Blind",
                 "date": "2021-09"
-              }
+              },
+              "rounds": [
+                "javascript-fundamentals"
+              ]
             },
             {
               "id": "js-implement-bind",
@@ -9143,7 +9316,10 @@
               "report": {
                 "publisher": "GoodJob",
                 "date": "2021-01"
-              }
+              },
+              "rounds": [
+                "frontend-technical-round"
+              ]
             },
             {
               "id": "js-shallow-clone",
@@ -9257,6 +9433,12 @@
               ]
             },
             {
+              "id": "css-inline-centering",
+              "rounds": [
+                "online-assessment"
+              ]
+            },
+            {
               "id": "css-positioning-badge"
             },
             {
@@ -9276,9 +9458,6 @@
             },
             {
               "id": "js-shallow-clone"
-            },
-            {
-              "id": "css-inline-centering"
             },
             {
               "id": "js-flatten-once"
@@ -9454,6 +9633,18 @@
               ]
             },
             {
+              "id": "http-caching-basics",
+              "rounds": [
+                "first-technical-interview"
+              ]
+            },
+            {
+              "id": "css-inline-centering",
+              "rounds": [
+                "application-or-referral-then-a-written-test"
+              ]
+            },
+            {
               "id": "css-positioning-badge"
             },
             {
@@ -9466,13 +9657,7 @@
               "id": "js-shallow-clone"
             },
             {
-              "id": "css-inline-centering"
-            },
-            {
               "id": "css-cascade-order"
-            },
-            {
-              "id": "css-position-relative-absolute-fixed"
             }
           ]
         }
@@ -9693,22 +9878,37 @@
               ]
             },
             {
+              "id": "js-take-latest",
+              "rounds": [
+                "final-web-practical"
+              ]
+            },
+            {
+              "id": "react-image-slider",
+              "rounds": [
+                "final-web-practical"
+              ]
+            },
+            {
+              "id": "js-sleep",
+              "rounds": [
+                "technical-screen"
+              ]
+            },
+            {
+              "id": "js-event-loop-nested-microtask-output",
+              "rounds": [
+                "technical-screen"
+              ]
+            },
+            {
+              "id": "js-once",
+              "rounds": [
+                "technical-screen"
+              ]
+            },
+            {
               "id": "js-unique-array"
-            },
-            {
-              "id": "js-once"
-            },
-            {
-              "id": "react-image-slider"
-            },
-            {
-              "id": "css-box-model"
-            },
-            {
-              "id": "css-cascade-order"
-            },
-            {
-              "id": "js-closures"
             }
           ]
         }
@@ -11327,7 +11527,6 @@
                 "date": "2026-05"
               },
               "rounds": [
-                "phone-or-video-interviews",
                 "virtual-onsite"
               ],
               "lead": true
@@ -11339,8 +11538,7 @@
                 "date": "2026-05"
               },
               "rounds": [
-                "phone-or-video-interviews",
-                "virtual-onsite"
+                "phone-or-video-interviews"
               ],
               "lead": true
             },
@@ -11361,7 +11559,6 @@
                 "date": "2026-05"
               },
               "rounds": [
-                "phone-or-video-interviews",
                 "virtual-onsite"
               ]
             },
@@ -11372,7 +11569,6 @@
                 "date": "2026-05"
               },
               "rounds": [
-                "phone-or-video-interviews",
                 "virtual-onsite"
               ]
             },
@@ -11383,7 +11579,6 @@
                 "date": "2026-05"
               },
               "rounds": [
-                "phone-or-video-interviews",
                 "virtual-onsite"
               ]
             },
@@ -11394,7 +11589,6 @@
                 "date": "2026-05"
               },
               "rounds": [
-                "phone-or-video-interviews",
                 "virtual-onsite"
               ]
             },
@@ -11405,7 +11599,6 @@
                 "date": "2026-05"
               },
               "rounds": [
-                "phone-or-video-interviews",
                 "virtual-onsite"
               ]
             },
@@ -11416,7 +11609,6 @@
                 "date": "2026-05"
               },
               "rounds": [
-                "phone-or-video-interviews",
                 "virtual-onsite"
               ]
             }

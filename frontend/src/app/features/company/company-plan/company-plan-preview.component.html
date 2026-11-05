@@ -59,7 +59,7 @@
         </a>
       }
       @if (!current.general && !restTasks().length) {
-        <p class="preview__section-sub">Your plan adds every round in order, with its tasks and your progress.</p>
+        <p class="preview__section-sub">{{ roundsLine() }}</p>
       }
     </section>
 

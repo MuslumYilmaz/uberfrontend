@@ -207,9 +207,14 @@ describe('CompanyPlanPreviewComponent', () => {
     });
 
     it('counts a free task from outside the plan apart, so the rows add up to what the panel says', () => {
-      setup({ companies: 'agoda', when: 'next-week', level: 'junior' });
-      expect(text('.preview__facts li')).toMatch(/^6 tasks for next week, about [\d.]+ hours?(: \d open now, \d with Premium)?, plus 1 free warm-up outside the plan$/);
-      expect(all('company-plan-open-task').length + all('company-plan-rest-task').length).toBe(7);
+      // A Tomorrow plan holds three tasks, one of them Premium, so a company with many free tasks always has a warm-up outside it.
+      setup({ companies: 'intuit', when: 'tomorrow', level: 'mid' });
+      const plan = fixture.componentInstance.plan()!;
+      const planned = new Set(plan.tasks.map((task) => task.id));
+      const warmups = plan.preview.open.filter((task) => !planned.has(task.id)).length;
+      expect(warmups).toBeGreaterThan(0);
+      expect(text('.preview__facts li')).toMatch(new RegExp(`^3 tasks for tomorrow, about [\\d.]+ hours?: \\d open now, \\d with Premium, plus ${warmups} free warm-ups? outside the plan$`));
+      expect(all('company-plan-open-task').length + all('company-plan-rest-task').length).toBe(plan.tasks.length + warmups);
       expect(text('#company-plan-rest-title')).toBe('The rest of your plan');
     });
 
@@ -224,6 +229,13 @@ describe('CompanyPlanPreviewComponent', () => {
       expect(text('.preview__facts li')).toMatch(/^6 tasks for next week, about [\d.]+ hours?(: \d open now, \d with Premium)?, plus 3 free warm-ups outside the plan$/);
       expect(all('company-plan-rest-task').length).toBe(6);
       expect(text('#company-plan-rest-title')).toBe('Your plan');
+    });
+
+    it('says the rounds are grouped by type where the table gives no order', () => {
+      setup({ companies: 'airbnb', when: 'later', level: 'senior' });
+      const facts = Array.from(host.querySelectorAll('.preview__facts li')).map((fact) => fact.textContent?.trim() ?? '');
+      expect(facts[1]).toMatch(/^All \d+ reported rounds grouped by type, with their tasks and your progress$/);
+      expect(text('.preview__rest .preview__section-sub')).toBe('Premium opens the locked tasks, with every round.');
     });
 
     it('keeps an open task in a plan whose reports are all Premium, so the plan never reads "0 open now"', () => {

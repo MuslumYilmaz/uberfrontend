@@ -197,9 +197,10 @@ function buildCompany(slug, context) {
       // walkthrough from a coding-round account is not filed under the first coding round.
       const kindless = !variant.stages.some((stage) => metaRound(stage).kinds.includes(wanted));
       const cited = kindless ? citing.map((stage) => metaRound(stage).id) : [];
-      // A report the table does not cite on any stage leaves the task unbound; the editor can name its rounds.
+      // Rounds the editor names win, as when one account is cited on several stages; otherwise the citing stages
+      // bind the task, and a report the table does not cite leaves it unbound.
       const named = (plan.reportRounds?.[entry.task.id] ?? []).filter((id) => variant.stages.some((stage) => metaRound(stage).id === id));
-      add(publish(entry.task), { report: { publisher: newest.publisher, date: newest.date, ...(newest.posting ? { posting: true } : {}) }, rounds: bound.length ? bound : cited.length ? cited : named });
+      add(publish(entry.task), { report: { publisher: newest.publisher, date: newest.date, ...(newest.posting ? { posting: true } : {}) }, rounds: named.length ? named : bound.length ? bound : cited });
     }
 
     // A linked or picked task with no report of its own is still an editor's choice for that round.
@@ -220,6 +221,23 @@ function buildCompany(slug, context) {
         leads.add(addLinked(route, route.startsWith('/guides/') ? guideTask(route, label) : catalog.get(route), round.id, true));
       }
       for (const route of round.picks ?? []) addLinked(route, catalog.get(route), round.id);
+    }
+
+    // The practice links on the guide's prompts join the plan too, under the round the prompt's report describes, or
+    // the first round of the task's kind. A task already tied to a round keeps it; a report another list cites stays
+    // out of this one; a guide or an unknown page is skipped.
+    for (const prompt of context.prompts?.[slug] ?? []) {
+      const linked = catalog.get(prompt.path);
+      if (!linked) continue;
+      const settled = settle(linked);
+      if (!fitsFramework(settled) || chosen.get(settled.id)?.rounds?.length) continue;
+      const wanted = settled.kind === 'system-design' ? 'design' : 'coding';
+      const citesReport = (stage) => Boolean(prompt.reportUrl) && stage.sources.some((source) => source.url === prompt.reportUrl);
+      const citing = variant.stages.filter((stage) => citesReport(stage) && metaRound(stage).kinds.includes(wanted));
+      const elsewhere = !citing.length && table.variants.some((other) => other !== variant && other.stages.some(citesReport));
+      if (elsewhere) continue;
+      const target = citing[0] ?? variant.stages.find((stage) => metaRound(stage).kinds.includes(wanted));
+      if (target) add(publish(settled), { rounds: [metaRound(target).id] });
     }
 
     // Reports from another list and unsourced tags can still fill this one, as picks without a report line.
@@ -243,6 +261,7 @@ function buildCompany(slug, context) {
       ...(meta.ask ? { ask: meta.ask } : {}),
       ...(meta.default ? { default: true } : {}),
       ...(meta.reported ? { reported: meta.reported } : {}),
+      ...(meta.unordered ? { unordered: true } : {}),
       sourceCount: cited.size,
       ...(reportDates.length ? { newestReport: reportDates.reduce((newest, date) => (date > newest ? date : newest)) } : {}),
       rounds: variant.stages.map((stage) => {
@@ -312,6 +331,29 @@ export function renderCompanyPlanData(payload) {
   return `${JSON.stringify(payload, null, 2)}\n`;
 }
 
+/**
+ * The practice links on the prompts of the authored guides, by company, each with the report the prompt is modelled
+ * on. Google and Netflix keep their prompts in the component folder; OpenAI's prompts carry no practice links.
+ */
+function loadCompanyPrompts(cache) {
+  const previews = path.join(sharedRoot, 'company-previews');
+  const prompts = {};
+  for (const file of fs.readdirSync(previews).sort()) {
+    const match = /^(.+)-preview-content\.ts$/.exec(file);
+    if (!match) continue;
+    const preview = Object.values(loadTsModule(path.join(previews, file), cache))
+      .find((value) => value && typeof value === 'object' && Array.isArray(value.prompts?.items));
+    if (!preview) continue;
+    prompts[match[1]] = preview.prompts.items.map((item) => ({ path: item.resourcePath, reportUrl: item.reportedRound?.url ?? null }));
+  }
+  const inline = path.resolve(sharedRoot, '..', 'features', 'company', 'company-preview');
+  for (const [slug, name] of [['google', 'GOOGLE_PRACTICE_PROMPTS'], ['netflix', 'NETFLIX_PRACTICE_PROMPTS']]) {
+    const module = loadTsModule(path.join(inline, `${slug}-preview-content.ts`), cache);
+    prompts[slug] = (module[name] ?? []).map((item) => ({ path: item.resourcePath, reportUrl: null }));
+  }
+  return prompts;
+}
+
 export function loadCompanyPlanSources() {
   const cache = new Map();
   const load = (relative) => loadTsModule(path.join(sharedRoot, relative), cache);
@@ -329,6 +371,7 @@ export function loadCompanyPlanSources() {
     starters: profiles.COMPANY_PLAN_STARTERS,
     formatPractice: profiles.COMPANY_PLAN_FORMAT_PRACTICE,
     guides: profiles.COMPANY_PLAN_GUIDES,
+    prompts: loadCompanyPrompts(cache),
   };
 }
 

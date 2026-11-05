@@ -57,6 +57,8 @@ export type CompanyPlanDataList = {
   readonly ask?: string;
   readonly default?: boolean;
   readonly reported?: { readonly levels: readonly CompanyPlanLevel[]; readonly who: string };
+  /** The table groups these rounds by type and gives no order. */
+  readonly unordered?: true;
   readonly sourceCount: number;
   readonly newestReport?: string;
   readonly rounds: readonly CompanyPlanDataRound[];
@@ -122,7 +124,7 @@ export type PlannedCompany = {
   readonly framework: CompanyPlanFramework;
   readonly mixed: boolean;
   readonly checkedAt: string;
-  readonly list: { readonly id: string; readonly title: string; readonly chosen: boolean; readonly sourceCount: number };
+  readonly list: { readonly id: string; readonly title: string; readonly chosen: boolean; readonly sourceCount: number; readonly unordered?: true };
   /** "These rounds come from Bangkok." and the questions that switch to the other lists. */
   readonly switchLine: { readonly text: string; readonly options: readonly { readonly listId: string; readonly ask: string }[] } | null;
   readonly rounds: readonly PlannedRound[];
@@ -406,7 +408,7 @@ export function buildCompanyPlan(data: CompanyPlanData, input: CompanyPlanInput)
     framework: company.framework,
     mixed: Boolean(company.mixed),
     checkedAt: company.checkedAt,
-    list: { id: list.id, title: list.title, chosen: switched, sourceCount: list.sourceCount },
+    list: { id: list.id, title: list.title, chosen: switched, sourceCount: list.sourceCount, ...(list.unordered ? { unordered: true as const } : {}) },
     switchLine: company.variants.length > 1
       ? {
           text: `${chosen.length > 1 ? `${company.name} rounds` : 'These rounds'} come from ${list.from}.`,
