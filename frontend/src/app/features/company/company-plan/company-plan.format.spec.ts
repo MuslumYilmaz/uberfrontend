@@ -1,17 +1,51 @@
 import rawPlanData from '../../../../../../cdn/questions/company-plan-data.json';
 import type { CompanyPlanAnswers } from '../../../core/models/company-plan.model';
 import { CompanyPlanData, PlannedTask, buildCompanyPlan } from './company-plan.engine';
-import { companyPlanPricingCopy, companySetLine, nextRoundName, planDateChip, planDatePassed, planPricingSource, practiceState, previewQueryParams, roundSourcesLine, whyLineFor } from './company-plan.format';
+import { companyPlanPricingCopy, companySetLine, nextRoundName, planDateChip, planDatePassed, planFrameworkChips, planFrameworkLine, planPricingSource, practiceState, previewQueryParams, roundSourcesLine, whyLineFor } from './company-plan.format';
 
 const DATA = rawPlanData as unknown as CompanyPlanData;
 
 describe('previewQueryParams', () => {
-  it('carries the companies, their lists, the date, the level and the passed rounds, leaving out what is empty', () => {
+  it('carries the companies, their lists, the date, the level, the passed rounds and a chosen framework, leaving out what is empty', () => {
     expect(previewQueryParams({ companies: [{ slug: 'agoda', list: 'gurgaon' }, { slug: 'meta' }], when: 'later', level: 'staff' }))
       .toEqual({ companies: 'agoda,meta', lists: 'agoda:gurgaon', when: 'later', level: 'staff' });
+    expect(previewQueryParams({ companies: [{ slug: 'meta' }], when: 'later', level: 'staff', framework: 'angular' }))
+      .toEqual({ companies: 'meta', when: 'later', level: 'staff', framework: 'angular' });
     expect(previewQueryParams({ companies: [{ slug: 'amazon' }], when: 'tomorrow', level: 'junior', passedRounds: ['amazon/experienced/online-assessment', 'amazon/experienced/phone-screen'] }))
       .toEqual({ companies: 'amazon', when: 'tomorrow', level: 'junior', passed: 'amazon/experienced/online-assessment,amazon/experienced/phone-screen' });
     expect(previewQueryParams({ companies: [{ slug: 'amazon' }], when: 'tomorrow', level: 'junior', passedRounds: [] })['passed']).toBeUndefined();
+  });
+});
+
+describe('planFrameworkLine', () => {
+  const plan = (answers: CompanyPlanAnswers) => buildCompanyPlan(DATA, {
+    companies: answers.companies.map((company) => company.slug),
+    when: answers.when,
+    level: answers.level,
+    ...(answers.framework ? { framework: answers.framework } : {}),
+    today: '2026-11-05',
+  });
+
+  it('says where the framework comes from and offers the other three, with a way back once one was chosen', () => {
+    const reports = planFrameworkLine(plan({ companies: [{ slug: 'elevenlabs' }], when: 'next-week', level: 'senior' }));
+    expect(reports.text).toBe('Tasks follow React, the framework in the reports.');
+    expect(reports.options).toEqual([{ framework: 'angular', label: 'Use Angular' }, { framework: 'vue', label: 'Use Vue' }, { framework: 'javascript', label: 'Use JavaScript' }]);
+
+    const chosen = planFrameworkLine(plan({ companies: [{ slug: 'elevenlabs' }], when: 'next-week', level: 'senior', framework: 'angular' }));
+    expect(chosen.text).toBe('Tasks follow Angular, your choice.');
+    expect(chosen.options.map((option) => option.label)).toEqual(['Use React', 'Use Vue', 'Use JavaScript', 'Back to the reports']);
+    expect(chosen.options[3].framework).toBeNull();
+
+    expect(planFrameworkLine(plan({ companies: [{ slug: 'google' }], when: 'later', level: 'mid' })).text).toBe('Tasks are in JavaScript, as the reports name no framework.');
+    const mixed = planFrameworkLine(plan({ companies: [{ slug: 'elevenlabs' }, { slug: 'google' }], when: 'later', level: 'mid' }));
+    expect(mixed.text).toBe("Tasks follow the framework in each company's reports.");
+    expect(mixed.options.map((option) => option.framework)).toEqual(['react', 'angular', 'vue', 'javascript']);
+  });
+
+  it('chips a chosen framework as the choice it is, and a reported one as from the reports', () => {
+    expect(planFrameworkChips(plan({ companies: [{ slug: 'elevenlabs' }], when: 'next-week', level: 'senior' }))).toEqual(['React, from reports']);
+    expect(planFrameworkChips(plan({ companies: [{ slug: 'elevenlabs' }], when: 'next-week', level: 'senior', framework: 'vue' }))).toEqual(['Vue, your choice']);
+    expect(planFrameworkChips(plan({ companies: [{ slug: 'google' }], when: 'later', level: 'mid' }))).toEqual(['JavaScript']);
   });
 });
 

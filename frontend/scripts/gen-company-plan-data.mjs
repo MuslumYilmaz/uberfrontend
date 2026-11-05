@@ -262,6 +262,7 @@ function buildCompany(slug, context) {
       ...(meta.default ? { default: true } : {}),
       ...(meta.reported ? { reported: meta.reported } : {}),
       ...(meta.unordered ? { unordered: true } : {}),
+      ...(meta.students ? { students: true } : {}),
       sourceCount: cited.size,
       ...(reportDates.length ? { newestReport: reportDates.reduce((newest, date) => (date > newest ? date : newest)) } : {}),
       rounds: variant.stages.map((stage) => {
@@ -321,6 +322,23 @@ export function buildCompanyPlanData(cdnRoot, sources) {
       systemDesign: premium.filter((task) => task.kind === 'system-design').length,
     },
   };
+
+  // Every member of a family in the plan is published and listed by framework, so a person who chose a framework
+  // over the reports' gets the same exercise in it. A member the catalog lacks is left out, and the plan keeps the row.
+  const familyMembers = {};
+  for (const [id, task] of [...tasks]) {
+    if (!task.family || familyMembers[task.family]) continue;
+    const members = {};
+    for (const tech of FRAMEWORK_TECHS) {
+      const member = sources.familyMember(id, tech);
+      const counterpart = member && catalog.get(`/${member.tech}/${member.kind}/${member.id}`);
+      if (!counterpart) continue;
+      if (!tasks.has(member.id)) tasks.set(member.id, taskEntry(counterpart, task.family));
+      members[tech] = member.id;
+    }
+    familyMembers[task.family] = members;
+  }
+  general.familyMembers = Object.fromEntries(Object.keys(familyMembers).sort().map((key) => [key, familyMembers[key]]));
 
   const sortedTasks = {};
   for (const id of [...tasks.keys()].sort()) sortedTasks[id] = tasks.get(id);

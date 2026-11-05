@@ -1,5 +1,7 @@
 export type CompanyPlanAnswerLevel = 'junior' | 'mid' | 'senior' | 'staff';
-export type CompanyPlanWhen = 'tomorrow' | 'this-week' | 'next-week' | 'later';
+/** The framework a person chose for the tasks, when it is not the one the company's reports name. */
+export type CompanyPlanFrameworkChoice = 'react' | 'angular' | 'vue' | 'javascript';
+export type CompanyPlanWhen = 'tomorrow' | 'this-week' | 'next-week' | 'few-weeks' | 'later';
 
 /** The form answers. A plan is rebuilt from these and the current content, so no task list is ever stored. */
 export type CompanyPlanAnswers = {
@@ -11,6 +13,8 @@ export type CompanyPlanAnswers = {
    * Absent when nothing was stated, so an account keeps the rounds it marked by hand.
    */
   readonly passedRounds?: readonly string[];
+  /** The framework the tasks follow, when the person chose one instead of the framework in the reports. */
+  readonly framework?: CompanyPlanFrameworkChoice;
 };
 
 /** The plan on an account, as PUT /api/users/me/company-plan and /api/auth/me return it. */

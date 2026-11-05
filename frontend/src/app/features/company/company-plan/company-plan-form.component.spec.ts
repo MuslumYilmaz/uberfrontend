@@ -29,7 +29,7 @@ const DATA = {
     amazon: company('Amazon', {
       framework: 'javascript',
       variants: [
-        { id: 'students', title: 'Students', sourceCount: 1, rounds: [round('students', ['coding'])], tasks: [] },
+        { id: 'students', title: 'Students', sourceCount: 1, students: true, rounds: [round('students', ['coding'])], tasks: [] },
         { id: 'experienced', title: 'Experienced', sourceCount: 9, default: true, rounds: [round('loop', ['coding'])], tasks: [] },
       ],
     }),
@@ -318,8 +318,27 @@ describe('CompanyPlanFormComponent', () => {
     it('states the framework from the reports without ever asking for one', () => {
       setup();
       click('company-plan-continue');
-      expect(host.querySelector('.plan-answers')?.textContent).toContain('React: Tasks follow the framework in these reports.');
+      expect(host.querySelector('.plan-answers')?.textContent).toContain('React: Tasks follow the framework in these reports. You can change it on the plan.');
       expect(host.textContent).not.toContain('Which framework');
+    });
+
+    it('does not call JavaScript a framework when the reports name none', () => {
+      setup();
+      openPicker();
+      click('company-plan-option-stripe');
+      click('company-plan-continue');
+      expect(host.querySelector('.plan-answers')?.textContent).toContain('JavaScript: These reports name no framework. You can pick one on the plan.');
+    });
+
+    it('carries a framework chosen on an earlier plan into the new answers, and says so', () => {
+      setup({ draft: { companies: [{ slug: 'elevenlabs' }], when: 'later', level: 'senior', framework: 'angular' } });
+      click('company-plan-continue');
+      expect(host.querySelector('.plan-answers')?.textContent).toContain('Angular: Tasks follow your framework. You can change it on the plan.');
+      click('company-plan-when-tomorrow');
+      click('company-plan-level-senior');
+      click('company-plan-see-plan');
+      expect(plans.save).toHaveBeenCalledOnceWith({ companies: [{ slug: 'elevenlabs' }], level: 'senior', when: 'tomorrow', framework: 'angular' });
+      expect(navigate).toHaveBeenCalledOnceWith(['/companies/preview'], { queryParams: { companies: 'elevenlabs', when: 'tomorrow', level: 'senior', framework: 'angular' } });
     });
 
     it('shows the rounds of the default list, whatever the level', () => {
@@ -453,6 +472,36 @@ describe('CompanyPlanFormComponent', () => {
 
       click('company-plan-see-plan');
       expect(navigate).toHaveBeenCalledOnceWith(['/companies/preview'], { queryParams: { companies: 'agoda,amazon', when: 'next-week', level: 'mid', passed: 'agoda/main/recruiter' } });
+    });
+
+    it('offers the student rounds under the level question, plans on them and names the list in the address', () => {
+      setup();
+      openPicker();
+      click('company-plan-option-amazon');
+      click('company-plan-continue');
+      click('company-plan-when-few-weeks');
+      expect(host.querySelector('[data-testid="company-plan-student"]')?.getAttribute('aria-pressed')).toBe('false');
+      expect(host.querySelector('.plan-toggle__sub')?.textContent).toBe('Uses the Amazon student and new-graduate rounds instead.');
+
+      click('company-plan-student');
+      expect(Array.from(host.querySelectorAll('.plan-rounds__item')).map((item) => item.textContent)).toEqual(['students round']);
+      expect(host.querySelector('.plan-answers')?.textContent).toContain('Student:');
+      click('company-plan-level-junior');
+      expect(host.querySelectorAll('.plan-step')[2].textContent).toContain('Junior, student');
+      expect(Array.from(host.querySelectorAll('.plan-choices--compact .plan-choice__label')).map((label) => label.textContent)).toEqual(['students round']);
+
+      click('company-plan-see-plan');
+      expect(plans.save).toHaveBeenCalledOnceWith({ companies: [{ slug: 'amazon', list: 'students' }], level: 'junior', when: 'few-weeks' });
+      expect(navigate).toHaveBeenCalledOnceWith(['/companies/preview'], { queryParams: { companies: 'amazon', lists: 'amazon:students', when: 'few-weeks', level: 'junior' } });
+    });
+
+    it('offers no student switch to a company without a student list', () => {
+      setup();
+      openPicker();
+      click('company-plan-option-agoda');
+      click('company-plan-continue');
+      click('company-plan-when-next-week');
+      expect(host.querySelector('[data-testid="company-plan-student"]')).toBeNull();
     });
 
     it('can go back from the rounds step and still reach it again', () => {

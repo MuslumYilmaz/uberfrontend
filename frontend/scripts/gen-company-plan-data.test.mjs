@@ -143,8 +143,7 @@ test('a widget reported in three frameworks is one task in the company framework
   assert.equal(rows.length, 1);
   assert.equal(rows[0].id, 'react-star-rating');
   assert.deepEqual(rows[0].report, { publisher: 'Taro', date: '2023-03' });
-  assert.equal(payload.tasks['angular-star-rating'], undefined);
-  assert.equal(payload.tasks['vue-star-rating'], undefined);
+  assert.equal(rows.filter((row) => row.id !== 'react-star-rating').length, 0);
 });
 
 test('a company framework decides which member of a family enters', () => {
@@ -153,9 +152,22 @@ test('a company framework decides which member of a family enters', () => {
     'react/coding.json': baseCatalog['react/coding.json'].filter((entry) => entry.id !== 'react-file-explorer'),
     'react/trivia.json': [],
   });
-  assert.ok(payload.tasks['vue-star-rating']);
-  assert.equal(payload.tasks['react-star-rating'], undefined);
+  const rows = payload.companies.acme.variants[0].tasks.filter((task) => payload.tasks[task.id].family === 'star-rating');
+  assert.deepEqual(rows.map((row) => row.id), ['vue-star-rating']);
   assert.equal(payload.companies.acme.mixed, undefined);
+});
+
+test('every member of a family in the plan is published and listed by framework, so a chosen framework can swap the task', () => {
+  const payload = build();
+  assert.deepEqual(payload.general.familyMembers, { 'star-rating': { react: 'react-star-rating', angular: 'angular-star-rating', vue: 'vue-star-rating' } });
+  assert.equal(payload.tasks['angular-star-rating'].family, 'star-rating');
+  assert.equal(payload.tasks['angular-star-rating'].companies, undefined);
+  assert.equal(payload.tasks['vue-star-rating'].tech, 'vue');
+
+  // A member the catalog lacks is left out rather than invented, and the row keeps its own task.
+  const thin = build({}, { ...baseCatalog, 'vue/coding.json': [] });
+  assert.deepEqual(thin.general.familyMembers['star-rating'], { react: 'react-star-rating', angular: 'angular-star-rating' });
+  assert.equal(thin.tasks['vue-star-rating'], undefined);
 });
 
 test('the practice links of the stages lead, then reported tasks newest first, then other links, then tags by importance, with concept questions last', () => {

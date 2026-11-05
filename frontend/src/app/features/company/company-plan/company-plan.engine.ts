@@ -59,6 +59,8 @@ export type CompanyPlanDataList = {
   readonly reported?: { readonly levels: readonly CompanyPlanLevel[]; readonly who: string };
   /** The table groups these rounds by type and gives no order. */
   readonly unordered?: true;
+  /** The rounds for students, interns and new graduates. */
+  readonly students?: true;
   readonly sourceCount: number;
   readonly newestReport?: string;
   readonly rounds: readonly CompanyPlanDataRound[];
@@ -82,6 +84,8 @@ export type CompanyPlanData = {
     readonly formatPractice: Readonly<Record<CompanyPlanFramework, readonly string[]>>;
     readonly guides: { readonly people: string; readonly design: string };
     readonly premiumCounts: Readonly<Record<CompanyPlanFramework | 'systemDesign', number>>;
+    /** The same exercise in each framework, by family, for a person who chose a framework over the reports'. */
+    readonly familyMembers?: Readonly<Record<string, Readonly<Partial<Record<'react' | 'angular' | 'vue', string>>>>>;
   };
   readonly tasks: Readonly<Record<string, CompanyPlanDataTask>>;
   readonly companies: Readonly<Record<string, CompanyPlanDataCompany>>;
@@ -97,6 +101,8 @@ export type CompanyPlanInput = {
   /** Keys from companyPlanRoundKey. */
   readonly passedRounds?: readonly string[];
   readonly solvedTaskIds?: readonly string[];
+  /** The framework the person chose for the tasks. Without one, the tasks follow each company's reports. */
+  readonly framework?: CompanyPlanFramework;
   /** YYYY-MM-DD, passed in so a plan never depends on the clock. */
   readonly today: string;
 };
@@ -133,6 +139,8 @@ export type PlannedCompany = {
 export type CompanyPlan = {
   /** No known company was picked, so these are general tasks. */
   readonly general: boolean;
+  /** The framework the person chose. Absent when the tasks follow the reports. */
+  readonly framework?: CompanyPlanFramework;
   readonly companies: readonly PlannedCompany[];
   readonly formatPractice: readonly PlannedTask[];
   /** Every task in display order: company by company, round by round, then format practice. */
@@ -149,6 +157,7 @@ export const COMPANY_PLAN_BUDGETS: Readonly<Record<CompanyPlanWhen, { readonly t
   tomorrow: { total: 3, format: 0 },
   'this-week': { total: 4, format: 1 },
   'next-week': { total: 6, format: 1 },
+  'few-weeks': { total: 8, format: 1 },
   later: { total: 12, format: 2 },
 };
 
@@ -200,13 +209,13 @@ function bestFit(rounds: readonly CompanyPlanDataRound[], task: CompanyPlanDataT
   return rounds;
 }
 
-function slotsFor(data: CompanyPlanData, slug: string, list: CompanyPlanDataList, passed: ReadonlySet<string>): Slot[] {
+function slotsFor(data: CompanyPlanData, slug: string, list: CompanyPlanDataList, passed: ReadonlySet<string>, taskFor: TaskLookup): Slot[] {
   const open = list.rounds.filter((round) => !passed.has(companyPlanRoundKey(slug, list.id, round.id)));
   const byRound = new Map<string, Candidate[]>(open.map((round) => [round.id, []]));
   const fallback = open.filter((round) => round.kinds.includes('coding') || round.kinds.includes('design')).slice(0, 1);
 
   for (const row of list.tasks) {
-    const task = data.tasks[row.id];
+    const task = taskFor(row.id);
     if (!task) continue;
     // A guide linked on a round is still reading, so it waits like any guide.
     const phase: Phase = row.lead && task.kind !== 'guide' ? 'lead' : row.report ? 'report' : task.kind === 'guide' ? 'guide' : row.rounds?.length ? 'link' : task.kind === 'trivia' ? 'concept' : 'pick';
@@ -295,12 +304,33 @@ function buildPreview(
   return { open, rest: keepRest ? planTasks.filter((task) => !seen.has(task.id)) : [] };
 }
 
+type TaskLookup = (id: string) => CompanyPlanDataTask | undefined;
+
+/**
+ * A row's task, in the framework the person chose when the task has a counterpart there. A task with no counterpart,
+ * such as a JavaScript or system design task, stays as reported. "JavaScript" keeps React for UI builds, as the
+ * companies with no framework in their reports do.
+ */
+function taskLookup(data: CompanyPlanData, framework: CompanyPlanFramework | undefined): TaskLookup {
+  const tech = framework === 'javascript' ? 'react' : framework;
+  return (id) => {
+    const task = data.tasks[id];
+    if (!task?.family || !tech || task.tech === tech) return task;
+    const memberId = data.general.familyMembers?.[task.family]?.[tech];
+    return memberId && data.tasks[memberId] ? data.tasks[memberId] : task;
+  };
+}
+
 export function buildCompanyPlan(data: CompanyPlanData, input: CompanyPlanInput): CompanyPlan {
   const budget = COMPANY_PLAN_BUDGETS[input.when];
   const solved = new Set(input.solvedTaskIds ?? []);
   const passed = new Set(input.passedRounds ?? []);
+  const taskFor = taskLookup(data, input.framework);
   const asPlanTask = (task: CompanyPlanDataTask, why: CompanyPlanWhy): PlannedTask => ({ ...task, why, solved: solved.has(task.id) });
-  const starters = data.general.starters.flatMap((id) => (data.tasks[id] ? [asPlanTask(data.tasks[id], { kind: 'general' })] : []));
+  const starters = data.general.starters.flatMap((id) => {
+    const task = taskFor(id);
+    return task ? [asPlanTask(task, { kind: 'general' })] : [];
+  });
 
   const chosen = [...new Set(input.companies)].flatMap((slug) => {
     const company = data.companies[slug];
@@ -313,6 +343,7 @@ export function buildCompanyPlan(data: CompanyPlanData, input: CompanyPlanInput)
     const tasks = starters.slice(0, budget.total);
     return {
       general: true,
+      ...(input.framework ? { framework: input.framework } : {}),
       companies: [],
       formatPractice: [],
       tasks,
@@ -334,7 +365,7 @@ export function buildCompanyPlan(data: CompanyPlanData, input: CompanyPlanInput)
 
   // Rounds take turns inside a company and companies take turns inside the budget, so neither an early round
   // nor the first company can use it up. A passed round has no slot.
-  const orders = chosen.map(({ slug, list }) => preferenceOrder(slotsFor(data, slug, list, passed)));
+  const orders = chosen.map(({ slug, list }) => preferenceOrder(slotsFor(data, slug, list, passed, taskFor)));
   const cursors = orders.map(() => 0);
   const fillRounds = (limit: number) => {
     let moved = true;
@@ -355,8 +386,9 @@ export function buildCompanyPlan(data: CompanyPlanData, input: CompanyPlanInput)
   };
   fillRounds(budget.total - budget.format);
 
-  // Format practice takes its share, and whatever a thin company left of the budget.
-  const frameworks = [...new Set(chosen.map(({ company }) => company.framework))];
+  // Format practice takes its share, and whatever a thin company left of the budget. It follows the person's
+  // framework when they chose one, and each company's reports otherwise.
+  const frameworks = input.framework ? [input.framework] : [...new Set(chosen.map(({ company }) => company.framework))];
   const formatPool = (index: number) => frameworks.flatMap((framework) => {
     const id = data.general.formatPractice[framework]?.[index];
     return id && data.tasks[id] ? [data.tasks[id]] : [];
@@ -405,8 +437,9 @@ export function buildCompanyPlan(data: CompanyPlanData, input: CompanyPlanInput)
   const companies: PlannedCompany[] = chosen.map(({ slug, company, list, switched }) => ({
     slug,
     name: company.name,
-    framework: company.framework,
-    mixed: Boolean(company.mixed),
+    // A chosen framework settles what the reports left mixed.
+    framework: input.framework ?? company.framework,
+    mixed: input.framework ? false : Boolean(company.mixed),
     checkedAt: company.checkedAt,
     list: { id: list.id, title: list.title, chosen: switched, sourceCount: list.sourceCount, ...(list.unordered ? { unordered: true as const } : {}) },
     switchLine: company.variants.length > 1
@@ -428,7 +461,10 @@ export function buildCompanyPlan(data: CompanyPlanData, input: CompanyPlanInput)
 
   const formatPractice = selected.filter((entry) => entry.key === null).map((entry) => asPlanTask(entry.task, entry.why));
   const tasks = [...companies.flatMap((company) => company.rounds.flatMap((round) => round.tasks)), ...formatPractice];
-  const extras = chosen.flatMap(({ list }) => list.tasks.flatMap((row) => (data.tasks[row.id] ? [asPlanTask(data.tasks[row.id], whyOf(row))] : [])));
+  const extras = chosen.flatMap(({ list }) => list.tasks.flatMap((row) => {
+    const task = taskFor(row.id);
+    return task ? [asPlanTask(task, whyOf(row))] : [];
+  }));
 
   const warnings: string[] = [];
   for (const { company, list, switched } of chosen) {
@@ -443,6 +479,7 @@ export function buildCompanyPlan(data: CompanyPlanData, input: CompanyPlanInput)
 
   return {
     general: false,
+    ...(input.framework ? { framework: input.framework } : {}),
     companies,
     formatPractice,
     tasks,

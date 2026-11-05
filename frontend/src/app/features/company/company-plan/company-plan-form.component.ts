@@ -9,7 +9,7 @@ import { FaRotatingWordsComponent } from '../../../shared/ui/rotating-words/fa-r
 import { hasPremium, premiumEnded } from './company-plan-access';
 import { companyMatchesSearch } from './company-plan-search';
 import { COMPANY_PLAN_WHEEL as WHEEL } from './company-plan-wheel';
-import { CompanyPlanData, companyPlanDefaultList, companyPlanRoundKey } from './company-plan.engine';
+import { CompanyPlanData, CompanyPlanDataList, companyPlanDefaultList, companyPlanRoundKey } from './company-plan.engine';
 import { LEVEL_LABELS, WHEN_LABELS, planCompanyNames, previewQueryParams } from './company-plan.format';
 import { CompanyPlanService } from './company-plan.service';
 
@@ -21,6 +21,7 @@ const WHEN_OPTIONS: readonly { readonly id: CompanyPlanWhen; readonly label: str
   { id: 'tomorrow', label: 'Tomorrow', sub: 'Up to 3 tasks, from your first rounds.' },
   { id: 'this-week', label: 'This week', sub: 'Up to 4 tasks across the rounds.' },
   { id: 'next-week', label: 'Next week', sub: 'Up to 6 tasks across the rounds.' },
+  { id: 'few-weeks', label: 'In two to four weeks', sub: 'Up to 8 tasks across the rounds.' },
   { id: 'later', label: 'Later or no date', sub: 'Up to 12 tasks across the rounds.' },
 ];
 
@@ -68,6 +69,8 @@ export class CompanyPlanFormComponent {
   readonly level = signal<CompanyPlanAnswerLevel>('senior');
   /** The round that is next, by company; a company not in here starts from its first round. */
   readonly next = signal<Readonly<Record<string, string>>>({});
+  /** The person is a student or new graduate, so a company with a student list plans on it. */
+  readonly student = signal(false);
   readonly open = signal(false);
   readonly query = signal('');
   readonly wheelIndex = signal(0);
@@ -102,9 +105,29 @@ export class CompanyPlanFormComponent {
 
   readonly slotAria = computed(() => `Choose companies. Now: ${this.chosen() ? this.companyLabel() : WHEEL[this.wheelIndex()].name}`);
 
+  /** The student or new-graduate list of a company, when its reports name one. */
+  private studentsList(slug: string): CompanyPlanDataList | null {
+    return this.data()?.companies[slug]?.variants.find((list) => list.students) ?? null;
+  }
+
+  /** The list a company's plan uses: its student list when the person is one and it has one, else the default. */
+  private listFor(slug: string): CompanyPlanDataList | null {
+    const company = this.data()?.companies[slug];
+    if (!company) return null;
+    return (this.student() && this.studentsList(slug)) || companyPlanDefaultList(company);
+  }
+
+  /** The picked companies whose reports name a student or new-graduate list, for the toggle under the level question. */
+  readonly studentOffers = computed(() => this.picked().flatMap((slug) => (this.studentsList(slug) ? [{ slug, name: this.nameOf(slug) }] : [])));
+
+  readonly studentOffersLine = computed(() => {
+    const names = this.studentOffers().map((offer) => offer.name);
+    return names.length === 1 ? `Uses the ${names[0]} student and new-graduate rounds instead.` : `Uses the student and new-graduate rounds at ${joinNames(names)}.`;
+  });
+
   readonly steps = computed(() => {
     const whenLabel = WHEN_OPTIONS.find((option) => option.id === this.when())?.label ?? '';
-    const levelLabel = LEVEL_OPTIONS.find((option) => option.id === this.level())?.label ?? '';
+    const levelLabel = (LEVEL_OPTIONS.find((option) => option.id === this.level())?.label ?? '') + (this.student() && this.studentOffers().length ? ', student' : '');
     const answers = [this.companyLabel(), whenLabel, levelLabel, this.nextLabel()];
     return ['Company', 'Interview date', 'Level', 'Next round'].map((name, index) => {
       const number = index + 1;
@@ -142,8 +165,8 @@ export class CompanyPlanFormComponent {
     if (!data) return [];
     return this.picked().flatMap((slug) => {
       const company = data.companies[slug];
-      if (!company) return [];
-      const list = companyPlanDefaultList(company);
+      const list = this.listFor(slug);
+      if (!company || !list) return [];
       return [{
         slug,
         name: company.name,
@@ -155,10 +178,9 @@ export class CompanyPlanFormComponent {
 
   /** The keys of the rounds before each chosen next round: what the plan treats as passed. */
   readonly passedRounds = computed<readonly string[]>(() => {
-    const data = this.data();
-    if (!data) return [];
     return this.roundChoices().flatMap((group) => {
-      const list = companyPlanDefaultList(data.companies[group.slug]);
+      const list = this.listFor(group.slug);
+      if (!list) return [];
       const at = list.rounds.findIndex((round) => round.id === group.next);
       return list.rounds.slice(0, Math.max(at, 0)).map((round) => companyPlanRoundKey(group.slug, list.id, round.id));
     });
@@ -181,8 +203,8 @@ export class CompanyPlanFormComponent {
     const passed = new Set(this.passedRounds());
     return this.shownSlugs().flatMap((slug) => {
       const company = data.companies[slug];
-      if (!company) return [];
-      const list = companyPlanDefaultList(company);
+      const list = this.listFor(slug);
+      if (!company || !list) return [];
       const practice = list.rounds.filter((round) => round.kinds.some((kind) => kind === 'coding' || kind === 'design' || kind === 'people')).length;
       return [{
         slug,
@@ -212,7 +234,17 @@ export class CompanyPlanFormComponent {
       const framework = this.data()?.companies[slug]?.framework;
       return framework ? [FRAMEWORK_LABELS[framework]] : [];
     }))];
-    if (this.step() >= 2 && frameworks.length) lines.push({ label: frameworks.join(', '), text: 'Tasks follow the framework in these reports.' });
+    // The framework is not asked here: the plan shows where it comes from and switches it in one click.
+    const chosen = this.plans.answers()?.framework;
+    if (this.step() >= 2 && chosen) lines.push({ label: FRAMEWORK_LABELS[chosen], text: 'Tasks follow your framework. You can change it on the plan.' });
+    else if (this.step() >= 2 && frameworks.length) {
+      // "JavaScript" means the reports name no framework, so the line must not call it one.
+      const named = frameworks.filter((label) => label !== 'JavaScript');
+      lines.push({
+        label: frameworks.join(', '),
+        text: named.length ? 'Tasks follow the framework in these reports. You can change it on the plan.' : 'These reports name no framework. You can pick one on the plan.',
+      });
+    }
     if (this.maxStep() > 2) {
       const when = WHEN_OPTIONS.find((option) => option.id === this.when());
       if (when) lines.push({ label: when.label, text: when.sub });
@@ -220,6 +252,7 @@ export class CompanyPlanFormComponent {
     if (this.step() >= 3) {
       const level = LEVEL_OPTIONS.find((option) => option.id === this.level());
       if (level) lines.push({ label: level.label, text: level.note });
+      if (this.student() && this.studentOffers().length) lines.push({ label: 'Student', text: this.studentOffersLine() });
     }
     if (this.step() >= 4 && this.roundChoices().length) {
       lines.push({
@@ -339,6 +372,12 @@ export class CompanyPlanFormComponent {
     this.goTo(3);
   }
 
+  /** Switches the plan to the student lists; the next-round answer resets, since the other list has other rounds. */
+  toggleStudent(): void {
+    this.student.update((student) => !student);
+    this.next.set({});
+  }
+
   /** A company with mapped rounds gets the question "Which round is next?"; an unlisted or no company goes straight on. */
   pickLevel(level: CompanyPlanAnswerLevel): void {
     this.level.set(level);
@@ -399,24 +438,36 @@ export class CompanyPlanFormComponent {
 
   private finish(): void {
     this.plans.track('company_plan_step_completed', { step: this.step() === 4 ? 4 : 3 });
-    const companies = this.picked();
+    const slugs = this.picked();
+    // A company planned on its student list names the list; the default list needs no name.
+    const companies = slugs.map((slug) => {
+      const company = this.data()?.companies[slug];
+      const list = this.listFor(slug);
+      return company && list && list.id !== companyPlanDefaultList(company).id ? { slug, list: list.id } : { slug };
+    });
+    const lists = companies.flatMap((company) => (company.list ? [`${company.slug}:${company.list}`] : [])).join(',');
     // Only a stated "next round" travels; starting from the first round states nothing, so an account keeps its own marks.
     const passedRounds = this.step() === 4 ? this.passedRounds() : [];
+    // A framework chosen on an earlier plan stays: the person's stack does not change with the company.
+    const framework = this.plans.answers()?.framework;
     const answers: CompanyPlanAnswers = {
-      companies: companies.map((slug) => ({ slug })),
+      companies,
       level: this.level(),
       when: this.when(),
       ...(passedRounds.length ? { passedRounds } : {}),
+      ...(framework ? { framework } : {}),
     };
     // A plan already on the account is replaced only from the preview, after the warning there.
     if (companies.length && !this.plans.saved()) this.plans.save(answers).subscribe();
     void this.router.navigate(['/companies/preview'], {
       queryParams: {
-        ...(companies.length ? { companies: companies.join(',') } : {}),
+        ...(companies.length ? { companies: slugs.join(',') } : {}),
+        ...(lists ? { lists } : {}),
         ...(this.custom() ? { custom: this.custom() } : {}),
         when: this.when(),
         level: this.level(),
         ...(passedRounds.length ? { passed: passedRounds.join(',') } : {}),
+        ...(framework ? { framework } : {}),
       },
     });
   }

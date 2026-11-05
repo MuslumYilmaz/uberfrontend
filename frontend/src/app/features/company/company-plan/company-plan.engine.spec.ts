@@ -56,6 +56,9 @@ const FIXTURE_TASKS = [
   task('starter-free-3'),
   task('/guides/people', { kind: 'guide', route: '/guides/people', tech: undefined, minutes: 15 }),
   task('/guides/design', { kind: 'guide', route: '/guides/design', tech: undefined, minutes: 15 }),
+  task('widget-react', { tech: 'react', family: 'widget', route: '/react/coding/widget-react' }),
+  task('widget-angular', { tech: 'angular', family: 'widget', route: '/angular/coding/widget-angular', access: 'premium' }),
+  task('format-ng', { tech: 'angular', route: '/angular/coding/format-ng', access: 'premium' }),
 ];
 
 function fixture(rows: readonly CompanyPlanDataRow[], rounds: readonly object[], extra: object = {}): CompanyPlanData {
@@ -63,8 +66,9 @@ function fixture(rows: readonly CompanyPlanDataRow[], rounds: readonly object[],
     schemaVersion: 1,
     general: {
       starters: ['starter-free', 'starter-premium', 'starter-free-2', 'starter-free-3'],
-      formatPractice: { react: ['format-a', 'format-b'], angular: ['format-a', 'format-b'], vue: ['format-a', 'format-b'], javascript: ['format-a', 'format-b'] },
+      formatPractice: { react: ['format-a', 'format-b'], angular: ['format-ng', 'format-b'], vue: ['format-a', 'format-b'], javascript: ['format-a', 'format-b'] },
       guides: { people: '/guides/people', design: '/guides/design' },
+      familyMembers: { widget: { react: 'widget-react', angular: 'widget-angular' } },
     },
     tasks: Object.fromEntries(FIXTURE_TASKS.map((entry) => [entry.id, entry])),
     companies: {
@@ -416,5 +420,42 @@ describe('company plan engine', () => {
     const plan = buildCompanyPlan(data, input({ companies: ['vercel', 'acme', 'acme'] }));
     expect(plan.general).toBeFalse();
     expect(plan.companies.map((company) => company.slug)).toEqual(['acme']);
+  });
+
+  it('builds the tasks in the framework the person chose where the exercise exists in it, and keeps the rest as reported', () => {
+    const data = fixture([{ id: 'widget-react', report }, { id: 'tagged-a' }], [round('coding', ['coding'])]);
+    const angular = buildCompanyPlan(data, input({ when: 'this-week', framework: 'angular' }));
+    expect(angular.framework).toBe('angular');
+    expect(angular.companies[0].framework).toBe('angular');
+    expect(idsIn(angular, 'coding')).toEqual(['widget-angular', 'tagged-a']);
+    expect(angular.tasks[0].why).toEqual({ kind: 'report', ...report });
+    // A thin company leaves budget to format practice, which comes from the chosen framework's pool.
+    expect(angular.formatPractice.map((entry) => entry.id)).toEqual(['format-ng', 'format-b']);
+    expect(angular.preview.rest.map((entry) => entry.id)).toContain('widget-angular');
+
+    // Vue has no member of this family, so the reported React task stays; JavaScript keeps React for UI builds.
+    expect(idsIn(buildCompanyPlan(data, input({ when: 'this-week', framework: 'vue' })), 'coding')).toEqual(['widget-react', 'tagged-a']);
+    const javascript = buildCompanyPlan(data, input({ when: 'this-week', framework: 'javascript' }));
+    expect(idsIn(javascript, 'coding')).toEqual(['widget-react', 'tagged-a']);
+    expect(javascript.formatPractice.map((entry) => entry.id)).toEqual(['format-a', 'format-b']);
+
+    const reported = buildCompanyPlan(data, input({ when: 'this-week' }));
+    expect(reported.framework).toBeUndefined();
+    expect(reported.companies[0].framework).toBe('javascript');
+    expect(idsIn(reported, 'coding')).toEqual(['widget-react', 'tagged-a']);
+  });
+
+  it('on the real data, a chosen framework gives every family task and the format practice in that framework', () => {
+    for (const framework of ['react', 'angular', 'vue'] as const) {
+      for (const slug of Object.keys(REAL_DATA.companies)) {
+        const plan = buildCompanyPlan(REAL_DATA, { companies: [slug], when: 'later', level: 'senior', framework, today: TODAY });
+        expect(plan.companies[0].framework).withContext(`${slug}/${framework}`).toBe(framework);
+        for (const entry of plan.tasks) {
+          const members = entry.family ? REAL_DATA.general.familyMembers?.[entry.family] : undefined;
+          if (members?.[framework]) expect(entry.tech).withContext(`${slug}/${framework}: ${entry.id}`).toBe(framework);
+        }
+        for (const entry of plan.formatPractice) expect(entry.tech).withContext(`${slug}/${framework}: format ${entry.id}`).toBe(framework);
+      }
+    }
   });
 });

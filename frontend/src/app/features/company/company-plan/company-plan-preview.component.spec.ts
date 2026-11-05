@@ -44,6 +44,12 @@ describe('readPreviewRequest', () => {
     expect(read({ companies: 'agoda,meta,google,amazon', when: 'later', level: 'mid' })?.answers.companies.map((company) => company.slug)).toEqual(['agoda', 'meta', 'google']);
   });
 
+  it('keeps a framework it knows and ignores any other', () => {
+    expect(read({ companies: 'agoda', when: 'later', level: 'mid', framework: 'angular' })?.answers.framework).toBe('angular');
+    expect(read({ companies: 'agoda', when: 'later', level: 'mid', framework: 'svelte' })?.answers.framework).toBeUndefined();
+    expect(read({ companies: 'agoda', when: 'later', level: 'mid' })?.answers.framework).toBeUndefined();
+  });
+
   it('treats only unknown companies as a general plan', () => {
     expect(read({ companies: 'vercel', when: 'later', level: 'mid' })?.answers.companies).toEqual([]);
   });
@@ -81,6 +87,7 @@ describe('CompanyPlanPreviewComponent', () => {
         when: answers.when,
         level: answers.level,
         passedRounds: answers.passedRounds ?? [],
+        ...(answers.framework ? { framework: answers.framework } : {}),
         today: TODAY,
       }),
     };
@@ -344,6 +351,41 @@ describe('CompanyPlanPreviewComponent', () => {
     it('shows no switch line at a company with one list', () => {
       setup(ELEVENLABS);
       expect(testId('company-plan-switch-line')).toBeNull();
+    });
+
+    it('says the tasks follow the reports and switches to the framework the person uses', () => {
+      setup(ELEVENLABS);
+      const line = testId('company-plan-framework-line');
+      expect(line?.textContent).toContain('Tasks follow React, the framework in the reports.');
+      expect(Array.from(line?.querySelectorAll('button') ?? []).map((button) => button.textContent)).toEqual(['Use Angular', 'Use Vue', 'Use JavaScript']);
+      (line?.querySelector('button') as HTMLButtonElement).click();
+
+      expect(plans.save).toHaveBeenCalledOnceWith({ companies: [{ slug: 'elevenlabs' }], when: 'next-week', level: 'senior', framework: 'angular' });
+      expect(navigate).toHaveBeenCalledTimes(1);
+      expect(navigate.calls.mostRecent().args[1].queryParams).toEqual(jasmine.objectContaining({ companies: 'elevenlabs', framework: 'angular' }));
+    });
+
+    it('builds the plan in the chosen framework, says whose choice it is, and offers the way back to the reports', () => {
+      setup({ ...ELEVENLABS, framework: 'angular' });
+      expect(Array.from(host.querySelectorAll('.preview__chip')).map((chip) => chip.textContent)).toEqual(['Next week', 'Senior', 'Angular, your choice']);
+      const plan = fixture.componentInstance.plan()!;
+      expect(plan.tasks.some((task) => task.tech === 'angular')).toBeTrue();
+      expect(plan.tasks.filter((task) => task.family).every((task) => task.tech === 'angular')).toBeTrue();
+
+      const line = testId('company-plan-framework-line');
+      expect(line?.textContent).toContain('Tasks follow Angular, your choice.');
+      const back = Array.from(line?.querySelectorAll('button') ?? []).find((button) => button.textContent === 'Back to the reports') as HTMLButtonElement;
+      back.click();
+      expect(plans.save).toHaveBeenCalledOnceWith({ companies: [{ slug: 'elevenlabs' }], when: 'next-week', level: 'senior' });
+      expect(navigate.calls.mostRecent().args[1].queryParams['framework']).toBeUndefined();
+
+      testId('company-plan-build')?.click();
+      expect(plans.track).toHaveBeenCalledWith('company_plan_build_clicked', jasmine.objectContaining({ framework: 'angular' }));
+    });
+
+    it('shows no framework line on a general plan, which follows no reports', () => {
+      setup({ custom: 'Vercel', when: 'later', level: 'mid' });
+      expect(testId('company-plan-framework-line')).toBeNull();
     });
 
     it('warns about a level the accounts do not cover and about old reports', () => {

@@ -271,6 +271,15 @@ test.describe('company plan from a company guide', () => {
     await answerNextRound(page, ['elevenlabs']);
     await expect(page).toHaveURL('/companies/preview?companies=elevenlabs&when=next-week&level=senior');
     await expect(page.getByRole('heading', { level: 1, name: 'Your ElevenLabs plan at a glance' })).toBeVisible();
+
+    // Deniz builds in Angular, the framework they use: the plan says whose choice it is and the address keeps it.
+    const frameworkLine = page.getByTestId('company-plan-framework-line');
+    await expect(frameworkLine).toContainText('Tasks follow React, the framework in the reports.');
+    await frameworkLine.getByRole('button', { name: 'Use Angular' }).click();
+    await expect(page).toHaveURL('/companies/preview?companies=elevenlabs&when=next-week&level=senior&framework=angular');
+    await expect(page.locator('.preview__chip', { hasText: 'Angular, your choice' })).toBeVisible();
+    await expect(frameworkLine).toContainText('Tasks follow Angular, your choice.');
+    expect(await overflow(page)).toBe(0);
   });
 
   test('a guest on the Airbnb guide reads the free questions, sees Premium names only under a blur, and is led into the plan', async ({ page }) => {

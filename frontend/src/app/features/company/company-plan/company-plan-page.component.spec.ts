@@ -63,6 +63,7 @@ describe('CompanyPlanPageComponent', () => {
         level: answers.level,
         passedRounds: saved()?.passedRounds ?? [],
         solvedTaskIds: [...solved(), ...(saved()?.markedDone ?? [])],
+        ...(answers.framework ? { framework: answers.framework } : {}),
         today: TODAY,
       }),
       setRoundPassed: jasmine.createSpy('setRoundPassed').and.callFake(async (key: string, on: boolean) => {
@@ -97,6 +98,15 @@ describe('CompanyPlanPageComponent', () => {
     await fixture.whenStable();
     fixture.detectChanges();
   }
+
+  it('builds the plan in the framework the account chose and says so in the chips', () => {
+    setup({ ...ELEVENLABS, framework: 'angular' });
+    expect(Array.from(host.querySelectorAll('.plan-hero__chip')).map((chip) => chip.textContent)).toEqual(['Week of Nov 9', 'Senior', 'Angular, your choice']);
+    const plan = plans.buildPlan(DATA, { ...ELEVENLABS, framework: 'angular' });
+    expect(plan.tasks.filter((task) => task.family).every((task) => task.tech === 'angular')).toBeTrue();
+    expect(plan.tasks.some((task) => task.tech === 'angular')).toBeTrue();
+    expect(all('company-plan-map-block').length).toBe(plan.tasks.length);
+  });
 
   it('opens on the first task, with the date, the time map and every round', () => {
     setup(ELEVENLABS);

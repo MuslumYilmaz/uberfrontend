@@ -150,6 +150,21 @@
             </button>
           }
         </div>
+        @if (studentOffers().length) {
+          <button
+            type="button"
+            class="plan-toggle"
+            [class.plan-toggle--on]="student()"
+            [attr.aria-pressed]="student()"
+            data-testid="company-plan-student"
+            (click)="toggleStudent()">
+            <span class="plan-toggle__mark" aria-hidden="true">{{ student() ? '✓' : '' }}</span>
+            <span class="plan-toggle__text">
+              <span class="plan-toggle__label">I'm a student or new graduate</span>
+              <span class="plan-toggle__sub">{{ studentOffersLine() }}</span>
+            </span>
+          </button>
+        }
         <button type="button" class="plan-back" (click)="back()">← Back</button>
       </div>
     }

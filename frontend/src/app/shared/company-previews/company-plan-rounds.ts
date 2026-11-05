@@ -52,6 +52,8 @@ export type CompanyPlanVariant = {
   readonly reported?: { readonly levels: readonly CompanyPlanLevel[]; readonly who: string };
   /** The table groups these rounds by type and gives no order, so the plan says so instead of "in order". */
   readonly unordered?: true;
+  /** The rounds for students, interns and new graduates; the form offers this list under the level question. */
+  readonly students?: true;
   readonly rounds: readonly CompanyPlanRound[];
 };
 
@@ -247,6 +249,7 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
         title: 'Students and new graduates',
         from: 'students and new graduates',
         ask: 'Interviewing as a student or new graduate?',
+        students: true,
         rounds: [
           { id: 'internship-interviews', stage: 'Internship interviews', kinds: ['coding', 'people'] },
           { id: 'new-graduate-first-round', stage: 'New graduate first round', kinds: ['coding'] },
@@ -288,6 +291,7 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
         title: 'Frontend interns, 2023',
         from: 'a 2023 internship loop',
         ask: 'Interviewing for an internship?',
+        students: true,
         rounds: [
           { id: 'introductory-interview', stage: 'Introductory interview', kinds: ['recruiter'] },
           { id: 'two-technical-rounds', stage: 'Two technical rounds', kinds: ['coding'] },
@@ -393,6 +397,7 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
         title: 'New graduates and interns',
         from: 'new graduates and interns',
         ask: 'Interviewing as a new graduate or intern?',
+        students: true,
         rounds: [
           {
             id: 'online-assessment',
@@ -549,6 +554,7 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
         title: 'Interns and new graduates',
         from: 'interns and new graduates',
         ask: 'Interviewing as an intern or new graduate?',
+        students: true,
         rounds: [
           { id: 'application-and-recruiter-contact', stage: 'Application and recruiter contact', kinds: ['recruiter'] },
           { id: 'technical-assessment', stage: 'Technical assessment', kinds: ['coding'] },
@@ -804,6 +810,7 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
         title: 'Front End Engineer internships',
         from: 'internship candidates',
         ask: 'Interviewing for an internship?',
+        students: true,
         rounds: [
           { id: 'recruiter-call', stage: 'Recruiter call', kinds: ['recruiter'] },
           { id: 'technical-interviews', stage: 'Technical interviews', kinds: ['coding'] },
@@ -838,6 +845,7 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
         title: 'Students',
         from: 'students',
         ask: 'Interviewing as a student?',
+        students: true,
         rounds: [
           { id: 'initial-interview', stage: 'Initial interview', kinds: ['coding'] },
           { id: 'final-interview', stage: 'Final interview', kinds: ['coding'] },
@@ -890,6 +898,7 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
         title: 'New graduates and interns',
         from: 'new graduates and interns',
         ask: 'Interviewing as a new graduate or intern?',
+        students: true,
         rounds: [
           {
             id: 'take-home-assessment',
@@ -1021,6 +1030,7 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
         title: 'Fresh graduates, Singapore, 2020 to 2022',
         from: 'fresh graduates in Singapore',
         ask: 'Interviewing as a fresh graduate in Singapore?',
+        students: true,
         rounds: [
           {
             id: 'online-assessment',
@@ -1175,6 +1185,7 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
         title: 'Internships',
         from: 'internship candidates',
         ask: 'Interviewing for an internship?',
+        students: true,
         rounds: [
           { id: 'recruiter-call', stage: 'Recruiter call', kinds: ['recruiter'] },
           {

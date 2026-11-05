@@ -1,7 +1,7 @@
 import { Component, computed, effect, inject, signal, untracked } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, ParamMap, Router, RouterLink } from '@angular/router';
-import type { CompanyPlanAnswers, CompanyPlanAnswerLevel, CompanyPlanWhen } from '../../../core/models/company-plan.model';
+import type { CompanyPlanAnswers, CompanyPlanAnswerLevel, CompanyPlanFrameworkChoice, CompanyPlanWhen } from '../../../core/models/company-plan.model';
 import { AuthService } from '../../../core/services/auth.service';
 import { isProActive } from '../../../core/utils/entitlements.util';
 import { FaButtonComponent } from '../../../shared/ui/button/fa-button.component';
@@ -19,6 +19,7 @@ import {
   planCompanyNames,
   planEvidenceLine,
   planFrameworkChips,
+  planFrameworkLine,
   planPricingSource,
   planSummaryLine,
   practiceState,
@@ -29,8 +30,9 @@ import {
 } from './company-plan.format';
 import { CompanyPlanService } from './company-plan.service';
 
-const WHENS: readonly CompanyPlanWhen[] = ['tomorrow', 'this-week', 'next-week', 'later'];
+const WHENS: readonly CompanyPlanWhen[] = ['tomorrow', 'this-week', 'next-week', 'few-weeks', 'later'];
 const LEVELS: readonly CompanyPlanAnswerLevel[] = ['junior', 'mid', 'senior', 'staff'];
+const FRAMEWORKS: readonly CompanyPlanFrameworkChoice[] = ['react', 'angular', 'vue', 'javascript'];
 const MAX_COMPANIES = 3;
 const MAX_CUSTOM_LENGTH = 60;
 
@@ -62,6 +64,8 @@ export function readPreviewRequest(params: ParamMap, data: CompanyPlanData, save
   });
   const when = params.get('when') as CompanyPlanWhen;
   const level = params.get('level') as CompanyPlanAnswerLevel;
+  // A framework the person chose over the reports'; an unknown one is ignored, and the tasks follow the reports.
+  const framework = params.get('framework') as CompanyPlanFrameworkChoice;
   // "Which round is next?" travels as the keys of the rounds behind the person; a key the data does not know is dropped.
   const passedRounds = (params.get('passed') ?? '').split(',').map((key) => key.trim()).filter((key) => {
     const [slug, listId, roundId] = key.split('/');
@@ -75,6 +79,7 @@ export function readPreviewRequest(params: ParamMap, data: CompanyPlanData, save
       when: WHENS.includes(when) ? when : 'next-week',
       level: LEVELS.includes(level) ? level : 'senior',
       ...(passedRounds.length ? { passedRounds: [...new Set(passedRounds)].sort() } : {}),
+      ...(FRAMEWORKS.includes(framework) ? { framework } : {}),
     },
     custom: companies.length ? '' : (params.get('custom') ?? '').trim().slice(0, MAX_CUSTOM_LENGTH),
   };
@@ -137,6 +142,12 @@ export class CompanyPlanPreviewComponent {
       return [plan.companies.length > 1 ? `${company.name} from the ${next}` : `From the ${next}`];
     });
     return [WHEN_LABELS[request.answers.when], LEVEL_LABELS[request.answers.level], ...planFrameworkChips(plan), ...starts];
+  });
+
+  /** Where the tasks' framework comes from, with the other frameworks to switch to. A general plan has no reports to follow. */
+  readonly frameworkLine = computed(() => {
+    const plan = this.plan();
+    return plan && !plan.general ? planFrameworkLine(plan) : null;
   });
 
   readonly evidence = computed(() => {
@@ -347,6 +358,20 @@ export class CompanyPlanPreviewComponent {
     });
   }
 
+  /** Rebuilds the plan in the framework the person uses, or back in the reports' framework, keeping the answer as switchList does. */
+  switchFramework(framework: CompanyPlanFrameworkChoice | null): void {
+    const request = this.request();
+    if (!request) return;
+    const { framework: _previous, ...rest } = request.answers;
+    const answers: CompanyPlanAnswers = { ...rest, ...(framework ? { framework } : {}) };
+    if (!this.replacing()) this.plans.save(answers).subscribe();
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { ...previewQueryParams(answers), custom: null },
+      replaceUrl: true,
+    });
+  }
+
   build(): void {
     const request = this.request();
     if (!request || this.building()) return;
@@ -357,6 +382,7 @@ export class CompanyPlanPreviewComponent {
       when: request.answers.when,
       level: request.answers.level,
       passed_count: request.answers.passedRounds?.length ?? 0,
+      framework: request.answers.framework ?? 'reports',
       viewer: this.viewer(),
     });
     // Whatever the write does, the draft is kept, so the person always moves on.

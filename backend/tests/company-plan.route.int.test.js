@@ -201,6 +201,27 @@ describe('PUT saves the answers', () => {
     expect(cleared.body.companyPlan.passedRounds).toEqual([]);
   });
 
+  test('accepts an interview two to four weeks away', async () => {
+    const user = await createUser();
+    const saved = await savePlan(user._id, { ...elevenLabsPlan, when: 'few-weeks' });
+    expect(saved.status).toBe(200);
+    expect(saved.body.companyPlan.when).toBe('few-weeks');
+  });
+
+  test('stores the framework a person chose, and refuses one it does not know', async () => {
+    const user = await createUser();
+    const chosen = await savePlan(user._id, { ...elevenLabsPlan, framework: 'angular' });
+    expect(chosen.status).toBe(200);
+    expect(chosen.body.companyPlan.framework).toBe('angular');
+
+    const cleared = await savePlan(user._id, elevenLabsPlan);
+    expect(cleared.body.companyPlan.framework).toBeUndefined();
+
+    const unknown = await savePlan(user._id, { ...elevenLabsPlan, framework: 'svelte' });
+    expect(unknown.status).toBe(400);
+    expect(unknown.body.code).toBe('COMPANY_PLAN_INVALID');
+  });
+
   test('rejects passed rounds that are not a list of keys', async () => {
     const user = await createUser();
     for (const passedRounds of ['elevenlabs/main/recruiter-call', [7], { $ne: null }]) {

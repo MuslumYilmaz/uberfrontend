@@ -41,6 +41,103 @@
       "vue": 23,
       "javascript": 50,
       "systemDesign": 18
+    },
+    "familyMembers": {
+      "accordion": {
+        "react": "react-accordion-faq",
+        "angular": "angular-faq-accordion",
+        "vue": "vue-accordion-faq"
+      },
+      "autocomplete-search": {
+        "react": "react-autocomplete-search-starter",
+        "angular": "angular-autocomplete-search-starter",
+        "vue": "vue-autocomplete-search"
+      },
+      "chessboard-click-highlight": {
+        "react": "react-chessboard-click-highlight",
+        "angular": "angular-chessboard-click-highlight",
+        "vue": "vue-chessboard-click-highlight"
+      },
+      "chips-input-autocomplete": {
+        "react": "react-chips-input-autocomplete",
+        "angular": "angular-chips-input-autocomplete",
+        "vue": "vue-chips-input-autocomplete"
+      },
+      "contact-form": {
+        "react": "react-contact-form-starter",
+        "angular": "angular-contact-form-starter",
+        "vue": "vue-contact-form-starter"
+      },
+      "debounced-search": {
+        "react": "react-debounced-search",
+        "angular": "angular-debounced-search",
+        "vue": "vue-debounced-search"
+      },
+      "dynamic-counter-buttons": {
+        "react": "react-dynamic-counter-buttons",
+        "angular": "angular-dynamic-counter-buttons",
+        "vue": "vue-dynamic-counter-buttons"
+      },
+      "dynamic-table": {
+        "react": "react-dynamic-table",
+        "angular": "angular-dynamic-table-starter",
+        "vue": "vue-dynamic-table"
+      },
+      "image-slider": {
+        "react": "react-image-slider",
+        "angular": "angular-image-slider-starter",
+        "vue": "vue-image-slider"
+      },
+      "like-button": {
+        "react": "react-like-button",
+        "angular": "angular-like-button",
+        "vue": "vue-like-button"
+      },
+      "nested-comments": {
+        "react": "react-nested-comments",
+        "angular": "angular-nested-comments",
+        "vue": "vue-nested-comments"
+      },
+      "pagination-table": {
+        "react": "react-pagination-table",
+        "angular": "angular-pagination-table",
+        "vue": "vue-pagination-table"
+      },
+      "shopping-cart": {
+        "react": "react-shopping-cart",
+        "angular": "angular-shopping-cart-mini",
+        "vue": "vue-shopping-cart"
+      },
+      "snake-game": {
+        "react": "react-snake-game",
+        "angular": "angular-snake-game",
+        "vue": "vue-snake-game"
+      },
+      "star-rating": {
+        "react": "react-star-rating",
+        "angular": "angular-star-rating",
+        "vue": "vue-star-rating"
+      },
+      "tabs-switcher": {
+        "react": "react-tabs-switcher",
+        "angular": "angular-tabs-switcher",
+        "vue": "vue-tabs-switcher"
+      },
+      "tictactoe": {
+        "react": "react-tictactoe",
+        "angular": "angular-tictactoe-starter",
+        "vue": "vue-tictactoe"
+      },
+      "todo-list": {
+        "react": "react-todo-list",
+        "angular": "angular-todo-list-starter",
+        "vue": "vue-todo-list"
+      },
+      "transfer-list": {
+        "react": "react-transfer-list",
+        "angular": "angular-transfer-list",
+        "vue": "vue-transfer-list"
+      }
     }
   },
   "tasks": {
@@ -132,6 +229,48 @@
       ],
       "family": "autocomplete-search"
     },
+    "angular-chessboard-click-highlight": {
+      "id": "angular-chessboard-click-highlight",
+      "title": "Angular Chessboard Click/Highlight (N×N Board)",
+      "route": "/angular/coding/angular-chessboard-click-highlight",
+      "kind": "coding",
+      "tech": "angular",
+      "access": "premium",
+      "minutes": 15,
+      "pressure": true,
+      "focus": [
+        "ui"
+      ],
+      "family": "chessboard-click-highlight"
+    },
+    "angular-chips-input-autocomplete": {
+      "id": "angular-chips-input-autocomplete",
+      "title": "Invite Chips Input (Tags + Autocomplete)",
+      "route": "/angular/coding/angular-chips-input-autocomplete",
+      "kind": "coding",
+      "tech": "angular",
+      "access": "premium",
+      "minutes": 30,
+      "pressure": true,
+      "focus": [
+        "ui"
+      ],
+      "family": "chips-input-autocomplete"
+    },
+    "angular-contact-form-starter": {
+      "id": "angular-contact-form-starter",
+      "title": "Contact Form (Standalone Component + HTTP)",
+      "route": "/angular/coding/angular-contact-form-starter",
+      "kind": "coding",
+      "tech": "angular",
+      "access": "premium",
+      "minutes": 30,
+      "pressure": true,
+      "focus": [
+        "ui"
+      ],
+      "family": "contact-form"
+    },
     "angular-debounced-search": {
       "id": "angular-debounced-search",
       "title": "Angular Debounced Search with Fake API (RxJS)",
@@ -146,6 +285,89 @@
       ],
       "family": "debounced-search"
     },
+    "angular-dynamic-counter-buttons": {
+      "id": "angular-dynamic-counter-buttons",
+      "title": "Angular Dynamic Counter Buttons (Grow-on-Click)",
+      "route": "/angular/coding/angular-dynamic-counter-buttons",
+      "kind": "coding",
+      "tech": "angular",
+      "access": "premium",
+      "minutes": 30,
+      "pressure": true,
+      "focus": [
+        "ui"
+      ],
+      "family": "dynamic-counter-buttons"
+    },
+    "angular-dynamic-table-starter": {
+      "id": "angular-dynamic-table-starter",
+      "title": "Angular Dynamic Table (Rows × Columns)",
+      "route": "/angular/coding/angular-dynamic-table-starter",
+      "kind": "coding",
+      "tech": "angular",
+      "access": "premium",
+      "minutes": 15,
+      "focus": [
+        "ui"
+      ],
+      "family": "dynamic-table"
+    },
+    "angular-faq-accordion": {
+      "id": "angular-faq-accordion",
+      "title": "Angular Accordion / FAQ Component",
+      "route": "/angular/coding/angular-faq-accordion",
+      "kind": "coding",
+      "tech": "angular",
+      "access": "premium",
+      "minutes": 30,
+      "pressure": true,
+      "focus": [
+        "ui"
+      ],
+      "family": "accordion"
+    },
+    "angular-image-slider-starter": {
+      "id": "angular-image-slider-starter",
+      "title": "Image Slider (Standalone Component)",
+      "route": "/angular/coding/angular-image-slider-starter",
+      "kind": "coding",
+      "tech": "angular",
+      "access": "premium",
+      "minutes": 30,
+      "pressure": true,
+      "focus": [
+        "ui"
+      ],
+      "family": "image-slider"
+    },
+    "angular-like-button": {
+      "id": "angular-like-button",
+      "title": "Like Button (Facebook-style Toggle)",
+      "route": "/angular/coding/angular-like-button",
+      "kind": "coding",
+      "tech": "angular",
+      "access": "premium",
+      "minutes": 15,
+      "pressure": true,
+      "focus": [
+        "ui"
+      ],
+      "family": "like-button"
+    },
+    "angular-nested-comments": {
+      "id": "angular-nested-comments",
+      "title": "Nested Comments (Infinite Replies)",
+      "route": "/angular/coding/angular-nested-comments",
+      "kind": "coding",
+      "tech": "angular",
+      "access": "premium",
+      "minutes": 30,
+      "pressure": true,
+      "focus": [
+        "ui"
+      ],
+      "family": "nested-comments"
+    },
     "angular-pagination-table": {
       "id": "angular-pagination-table",
       "title": "Angular Paginated Data Table",
@@ -159,6 +381,101 @@
         "ui"
       ],
       "family": "pagination-table"
+    },
+    "angular-shopping-cart-mini": {
+      "id": "angular-shopping-cart-mini",
+      "title": "Shopping Cart Mini (Standalone Component)",
+      "route": "/angular/coding/angular-shopping-cart-mini",
+      "kind": "coding",
+      "tech": "angular",
+      "access": "premium",
+      "minutes": 30,
+      "pressure": true,
+      "focus": [
+        "ui"
+      ],
+      "family": "shopping-cart"
+    },
+    "angular-snake-game": {
+      "id": "angular-snake-game",
+      "title": "Angular Snake Game",
+      "route": "/angular/coding/angular-snake-game",
+      "kind": "coding",
+      "tech": "angular",
+      "access": "free",
+      "minutes": 45,
+      "focus": [
+        "ui"
+      ],
+      "family": "snake-game"
+    },
+    "angular-star-rating": {
+      "id": "angular-star-rating",
+      "title": "Angular Star Rating Widget",
+      "route": "/angular/coding/angular-star-rating",
+      "kind": "coding",
+      "tech": "angular",
+      "access": "premium",
+      "minutes": 15,
+      "focus": [
+        "ui"
+      ],
+      "family": "star-rating"
+    },
+    "angular-tabs-switcher": {
+      "id": "angular-tabs-switcher",
+      "title": "Angular Tabs / Multi-View Switcher",
+      "route": "/angular/coding/angular-tabs-switcher",
+      "kind": "coding",
+      "tech": "angular",
+      "access": "premium",
+      "minutes": 15,
+      "focus": [
+        "ui"
+      ],
+      "family": "tabs-switcher"
+    },
+    "angular-tictactoe-starter": {
+      "id": "angular-tictactoe-starter",
+      "title": "Tic-Tac-Toe (Standalone Component)",
+      "route": "/angular/coding/angular-tictactoe-starter",
+      "kind": "coding",
+      "tech": "angular",
+      "access": "premium",
+      "minutes": 15,
+      "pressure": true,
+      "focus": [
+        "ui"
+      ],
+      "family": "tictactoe"
+    },
+    "angular-todo-list-starter": {
+      "id": "angular-todo-list-starter",
+      "title": "Todo List (Standalone Component with @for)",
+      "route": "/angular/coding/angular-todo-list-starter",
+      "kind": "coding",
+      "tech": "angular",
+      "access": "free",
+      "minutes": 15,
+      "pressure": true,
+      "focus": [
+        "ui"
+      ],
+      "family": "todo-list"
+    },
+    "angular-transfer-list": {
+      "id": "angular-transfer-list",
+      "title": "Angular Transfer List (Select + Move Between Two Lists)",
+      "route": "/angular/coding/angular-transfer-list",
+      "kind": "coding",
+      "tech": "angular",
+      "access": "premium",
+      "minutes": 30,
+      "pressure": true,
+      "focus": [
+        "ui"
+      ],
+      "family": "transfer-list"
     },
     "car-rental-booking-frontend": {
       "id": "car-rental-booking-frontend",
@@ -2342,6 +2659,76 @@
       "access": "premium",
       "minutes": 45
     },
+    "vue-accordion-faq": {
+      "id": "vue-accordion-faq",
+      "title": "Vue Accordion / FAQ Component",
+      "route": "/vue/coding/vue-accordion-faq",
+      "kind": "coding",
+      "tech": "vue",
+      "access": "premium",
+      "minutes": 30,
+      "pressure": true,
+      "focus": [
+        "ui"
+      ],
+      "family": "accordion"
+    },
+    "vue-autocomplete-search": {
+      "id": "vue-autocomplete-search",
+      "title": "Autocomplete Search (debounce + keyboard + outside click)",
+      "route": "/vue/coding/vue-autocomplete-search",
+      "kind": "coding",
+      "tech": "vue",
+      "access": "premium",
+      "minutes": 30,
+      "pressure": true,
+      "focus": [
+        "ui"
+      ],
+      "family": "autocomplete-search"
+    },
+    "vue-chessboard-click-highlight": {
+      "id": "vue-chessboard-click-highlight",
+      "title": "Vue Chessboard Click/Highlight (N×N Board)",
+      "route": "/vue/coding/vue-chessboard-click-highlight",
+      "kind": "coding",
+      "tech": "vue",
+      "access": "premium",
+      "minutes": 15,
+      "pressure": true,
+      "focus": [
+        "ui"
+      ],
+      "family": "chessboard-click-highlight"
+    },
+    "vue-chips-input-autocomplete": {
+      "id": "vue-chips-input-autocomplete",
+      "title": "Invite Chips Input (Tags + Autocomplete)",
+      "route": "/vue/coding/vue-chips-input-autocomplete",
+      "kind": "coding",
+      "tech": "vue",
+      "access": "premium",
+      "minutes": 30,
+      "pressure": true,
+      "focus": [
+        "ui"
+      ],
+      "family": "chips-input-autocomplete"
+    },
+    "vue-contact-form-starter": {
+      "id": "vue-contact-form-starter",
+      "title": "Contact Form (Single File Component + Fetch)",
+      "route": "/vue/coding/vue-contact-form-starter",
+      "kind": "coding",
+      "tech": "vue",
+      "access": "premium",
+      "minutes": 30,
+      "pressure": true,
+      "focus": [
+        "ui"
+      ],
+      "family": "contact-form"
+    },
     "vue-debounced-search": {
       "id": "vue-debounced-search",
       "title": "Vue Debounced Search with Fake API",
@@ -2356,6 +2743,47 @@
       ],
       "family": "debounced-search"
     },
+    "vue-dynamic-counter-buttons": {
+      "id": "vue-dynamic-counter-buttons",
+      "title": "Vue Dynamic Counter Buttons (Grow-on-Click)",
+      "route": "/vue/coding/vue-dynamic-counter-buttons",
+      "kind": "coding",
+      "tech": "vue",
+      "access": "premium",
+      "minutes": 30,
+      "pressure": true,
+      "focus": [
+        "ui"
+      ],
+      "family": "dynamic-counter-buttons"
+    },
+    "vue-dynamic-table": {
+      "id": "vue-dynamic-table",
+      "title": "Vue Dynamic Table (Rows × Columns)",
+      "route": "/vue/coding/vue-dynamic-table",
+      "kind": "coding",
+      "tech": "vue",
+      "access": "premium",
+      "minutes": 15,
+      "focus": [
+        "ui"
+      ],
+      "family": "dynamic-table"
+    },
+    "vue-image-slider": {
+      "id": "vue-image-slider",
+      "title": "Image Slider (Basic Navigation)",
+      "route": "/vue/coding/vue-image-slider",
+      "kind": "coding",
+      "tech": "vue",
+      "access": "premium",
+      "minutes": 15,
+      "pressure": true,
+      "focus": [
+        "ui"
+      ],
+      "family": "image-slider"
+    },
     "vue-lifecycle-hooks": {
       "id": "vue-lifecycle-hooks",
       "title": "What are lifecycle hooks in Vue and when are they used?",
@@ -2368,6 +2796,34 @@
         "concepts",
         "js"
       ]
+    },
+    "vue-like-button": {
+      "id": "vue-like-button",
+      "title": "Vue Like Button (Toggle + Counter)",
+      "route": "/vue/coding/vue-like-button",
+      "kind": "coding",
+      "tech": "vue",
+      "access": "premium",
+      "minutes": 15,
+      "pressure": true,
+      "focus": [
+        "ui"
+      ],
+      "family": "like-button"
+    },
+    "vue-nested-comments": {
+      "id": "vue-nested-comments",
+      "title": "Vue Nested Comments (Infinite Replies, Single Active Reply Input)",
+      "route": "/vue/coding/vue-nested-comments",
+      "kind": "coding",
+      "tech": "vue",
+      "access": "premium",
+      "minutes": 30,
+      "pressure": true,
+      "focus": [
+        "ui"
+      ],
+      "family": "nested-comments"
     },
     "vue-pagination-table": {
       "id": "vue-pagination-table",
@@ -2382,6 +2838,101 @@
         "ui"
       ],
       "family": "pagination-table"
+    },
+    "vue-shopping-cart": {
+      "id": "vue-shopping-cart",
+      "title": "Vue Shopping Cart Mini",
+      "route": "/vue/coding/vue-shopping-cart",
+      "kind": "coding",
+      "tech": "vue",
+      "access": "premium",
+      "minutes": 30,
+      "pressure": true,
+      "focus": [
+        "ui"
+      ],
+      "family": "shopping-cart"
+    },
+    "vue-snake-game": {
+      "id": "vue-snake-game",
+      "title": "Vue Snake Game (Grid + Food + Collision)",
+      "route": "/vue/coding/vue-snake-game",
+      "kind": "coding",
+      "tech": "vue",
+      "access": "premium",
+      "minutes": 45,
+      "focus": [
+        "ui"
+      ],
+      "family": "snake-game"
+    },
+    "vue-star-rating": {
+      "id": "vue-star-rating",
+      "title": "Vue Star Rating Widget",
+      "route": "/vue/coding/vue-star-rating",
+      "kind": "coding",
+      "tech": "vue",
+      "access": "premium",
+      "minutes": 15,
+      "focus": [
+        "ui"
+      ],
+      "family": "star-rating"
+    },
+    "vue-tabs-switcher": {
+      "id": "vue-tabs-switcher",
+      "title": "Vue Tabs / Multi-View Switcher",
+      "route": "/vue/coding/vue-tabs-switcher",
+      "kind": "coding",
+      "tech": "vue",
+      "access": "premium",
+      "minutes": 30,
+      "focus": [
+        "ui"
+      ],
+      "family": "tabs-switcher"
+    },
+    "vue-tictactoe": {
+      "id": "vue-tictactoe",
+      "title": "Tic-Tac-Toe (Reactivity + Winner Detection)",
+      "route": "/vue/coding/vue-tictactoe",
+      "kind": "coding",
+      "tech": "vue",
+      "access": "premium",
+      "minutes": 15,
+      "pressure": true,
+      "focus": [
+        "ui"
+      ],
+      "family": "tictactoe"
+    },
+    "vue-todo-list": {
+      "id": "vue-todo-list",
+      "title": "Todo List (Refs + List Rendering)",
+      "route": "/vue/coding/vue-todo-list",
+      "kind": "coding",
+      "tech": "vue",
+      "access": "free",
+      "minutes": 15,
+      "pressure": true,
+      "focus": [
+        "ui"
+      ],
+      "family": "todo-list"
+    },
+    "vue-transfer-list": {
+      "id": "vue-transfer-list",
+      "title": "Transfer List (Move Selected Items Between Two Lists)",
+      "route": "/vue/coding/vue-transfer-list",
+      "kind": "coding",
+      "tech": "vue",
+      "access": "premium",
+      "minutes": 30,
+      "pressure": true,
+      "focus": [
+        "ui"
+      ],
+      "family": "transfer-list"
     },
     "web-performance-optimize-load-time": {
       "id": "web-performance-optimize-load-time",
@@ -3477,6 +4028,7 @@
           "title": "Students and new graduates",
           "from": "students and new graduates",
           "ask": "Interviewing as a student or new graduate?",
+          "students": true,
           "sourceCount": 1,
           "rounds": [
             {
@@ -3788,6 +4340,7 @@
           "title": "Frontend interns, 2023",
           "from": "a 2023 internship loop",
           "ask": "Interviewing for an internship?",
+          "students": true,
           "sourceCount": 1,
           "newestReport": "2023-07",
           "rounds": [
@@ -4693,6 +5246,7 @@
           "title": "New graduates and interns",
           "from": "new graduates and interns",
           "ask": "Interviewing as a new graduate or intern?",
+          "students": true,
           "sourceCount": 7,
           "newestReport": "2025-02",
           "rounds": [
@@ -5576,6 +6130,7 @@
           "title": "Interns and new graduates",
           "from": "interns and new graduates",
           "ask": "Interviewing as an intern or new graduate?",
+          "students": true,
           "sourceCount": 8,
           "newestReport": "2025-01",
           "rounds": [
@@ -7759,6 +8314,7 @@
           "title": "Front End Engineer internships",
           "from": "internship candidates",
           "ask": "Interviewing for an internship?",
+          "students": true,
           "sourceCount": 3,
           "newestReport": "2022-01",
           "rounds": [
@@ -8137,6 +8693,7 @@
           "title": "Students",
           "from": "students",
           "ask": "Interviewing as a student?",
+          "students": true,
           "sourceCount": 1,
           "rounds": [
             {
@@ -8417,6 +8974,7 @@
           "title": "New graduates and interns",
           "from": "new graduates and interns",
           "ask": "Interviewing as a new graduate or intern?",
+          "students": true,
           "sourceCount": 2,
           "rounds": [
             {
@@ -9350,6 +9908,7 @@
           "title": "Fresh graduates, Singapore, 2020 to 2022",
           "from": "fresh graduates in Singapore",
           "ask": "Interviewing as a fresh graduate in Singapore?",
+          "students": true,
           "sourceCount": 4,
           "newestReport": "2022-01",
           "rounds": [
@@ -10488,6 +11047,7 @@
           "title": "Internships",
           "from": "internship candidates",
           "ask": "Interviewing for an internship?",
+          "students": true,
           "sourceCount": 4,
           "newestReport": "2025-03",
           "rounds": [

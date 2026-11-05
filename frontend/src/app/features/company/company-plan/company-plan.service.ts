@@ -168,6 +168,7 @@ export class CompanyPlanService {
       // What the form stated wins over the marks on the account; without a statement the marks stand.
       passedRounds: answers.passedRounds ?? saved?.passedRounds ?? [],
       solvedTaskIds: [...this.progress.solvedIds(), ...(saved?.markedDone ?? [])],
+      ...(answers.framework ? { framework: answers.framework } : {}),
       today,
     });
   }

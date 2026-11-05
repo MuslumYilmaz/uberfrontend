@@ -551,6 +551,64 @@
   font-size: 15px;
 }
 
+/* The student switch under the level question: a choice-shaped button with a mark, pressed or not. */
+.plan-toggle {
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 56px;
+  padding: 10px 14px;
+  border: 1px solid var(--uf-border-strong);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--uf-surface) 72%, transparent);
+  color: var(--uf-text-primary);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.plan-toggle:hover,
+.plan-toggle--on {
+  border-color: color-mix(in srgb, var(--uf-accent) 70%, transparent);
+}
+
+.plan-toggle--on {
+  background: color-mix(in srgb, var(--uf-accent) 12%, transparent);
+}
+
+.plan-toggle__mark {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 1px solid var(--uf-border-strong);
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--uf-accent);
+}
+
+.plan-toggle--on .plan-toggle__mark {
+  border-color: var(--uf-accent);
+}
+
+.plan-toggle__text {
+  display: grid;
+  gap: 2px;
+}
+
+.plan-toggle__label {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.plan-toggle__sub {
+  font-size: 13px;
+  color: var(--uf-text-secondary);
+}
+
 .plan-answers {
   display: flex;
   flex-direction: column;

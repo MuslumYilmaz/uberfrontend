@@ -1,4 +1,4 @@
-import type { CompanyPlanAnswers, CompanyPlanAnswerLevel, CompanyPlanWhen } from '../../../core/models/company-plan.model';
+import type { CompanyPlanAnswers, CompanyPlanAnswerLevel, CompanyPlanFrameworkChoice, CompanyPlanWhen } from '../../../core/models/company-plan.model';
 import type { CompanyPlan, CompanyPlanData, CompanyPlanWhy, PlannedCompany, PlannedTask } from './company-plan.engine';
 
 const SHORT_MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -7,6 +7,7 @@ export const WHEN_LABELS: Readonly<Record<CompanyPlanWhen, string>> = {
   tomorrow: 'Tomorrow',
   'this-week': 'This week',
   'next-week': 'Next week',
+  'few-weeks': 'In two to four weeks',
   later: 'Later or no date',
 };
 
@@ -14,6 +15,7 @@ const WHEN_PHRASES: Readonly<Record<CompanyPlanWhen, string>> = {
   tomorrow: ' for tomorrow',
   'this-week': ' for this week',
   'next-week': ' for next week',
+  'few-weeks': ' for the next few weeks',
   later: '',
 };
 
@@ -103,16 +105,19 @@ function interviewWindow(when: CompanyPlanWhen, answeredAt: string): { readonly 
   const answered = new Date(answeredAt);
   if (when === 'later' || Number.isNaN(answered.getTime())) return null;
   if (when === 'tomorrow') return { start: addDays(answered, 1), end: addDays(answered, 2) };
+  if (when === 'few-weeks') return { start: addDays(answered, 14), end: addDays(answered, 28) };
   const monday = addDays(answered, -((answered.getDay() + 6) % 7) + (when === 'next-week' ? 7 : 0));
   return { start: monday, end: addDays(monday, 7) };
 }
 
-/** "Week of Nov 9", "Nov 3" for Tomorrow, or "No date yet". */
+/** "Week of Nov 9", "Nov 3" for Tomorrow, "Nov 19 to Dec 3" for a few weeks out, or "No date yet". */
 export function planDateChip(when: CompanyPlanWhen, answeredAt: string): string {
   const window = interviewWindow(when, answeredAt);
   if (!window) return 'No date yet';
-  const day = window.start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-  return when === 'tomorrow' ? day : `Week of ${day}`;
+  const format = (date: Date) => date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  if (when === 'tomorrow') return format(window.start);
+  if (when === 'few-weeks') return `${format(window.start)} to ${format(window.end)}`;
+  return `Week of ${format(window.start)}`;
 }
 
 export function planDatePassed(when: CompanyPlanWhen, answeredAt: string, now: Date): boolean {
@@ -132,11 +137,35 @@ export function openTaskCount(plan: Pick<CompanyPlan, 'tasks'>): number {
   return plan.tasks.filter((task) => task.access === 'free').length;
 }
 
-/** "React, from reports" for a framework the reports name, plain "JavaScript" otherwise. */
+/** "Angular, your choice" for a chosen framework, "React, from reports" for one the reports name, plain "JavaScript" otherwise. */
 export function planFrameworkChips(plan: CompanyPlan): string[] {
+  if (plan.framework) return [`${frameworkLabel(plan.framework)}, your choice`];
   return [...new Set(plan.companies.map((company) => company.framework))].map((framework) => (
     framework === 'javascript' ? frameworkLabel(framework) : `${frameworkLabel(framework)}, from reports`
   ));
+}
+
+const FRAMEWORK_CHOICES: readonly CompanyPlanFrameworkChoice[] = ['react', 'angular', 'vue', 'javascript'];
+
+/**
+ * Where the tasks' framework comes from and how to change it: "Tasks follow React, the framework in the reports."
+ * with a button per other framework, and a way back to the reports once a framework was chosen.
+ */
+export function planFrameworkLine(plan: CompanyPlan): { text: string; options: { framework: CompanyPlanFrameworkChoice | null; label: string }[] } {
+  const reported = [...new Set(plan.companies.map((company) => company.framework))];
+  const current = plan.framework ?? (reported.length === 1 ? reported[0] : null);
+  const text = plan.framework
+    ? `Tasks follow ${frameworkLabel(plan.framework)}, your choice.`
+    : current === 'javascript'
+      ? 'Tasks are in JavaScript, as the reports name no framework.'
+      : current
+        ? `Tasks follow ${frameworkLabel(current)}, the framework in the reports.`
+        : "Tasks follow the framework in each company's reports.";
+  const options: { framework: CompanyPlanFrameworkChoice | null; label: string }[] = FRAMEWORK_CHOICES
+    .filter((framework) => framework !== current)
+    .map((framework) => ({ framework, label: `Use ${frameworkLabel(framework)}` }));
+  if (plan.framework) options.push({ framework: null, label: 'Back to the reports' });
+  return { text, options };
 }
 
 /** "Reported in Aced Jul 2026, Aced Nov 2025 and 2 more". Empty for a round without sources. */
@@ -173,6 +202,7 @@ export function previewQueryParams(answers: CompanyPlanAnswers): Record<string, 
     when: answers.when,
     level: answers.level,
     ...(answers.passedRounds?.length ? { passed: answers.passedRounds.join(',') } : {}),
+    ...(answers.framework ? { framework: answers.framework } : {}),
   };
 }
 
@@ -227,6 +257,7 @@ const SOON_NOTES: Readonly<Partial<Record<CompanyPlanWhen, string>>> = {
   tomorrow: 'Your interview is tomorrow, so a month of Premium is enough.',
   'this-week': 'Your interview is this week, so a month of Premium is enough.',
   'next-week': 'Your interview is next week, so a month of Premium is enough.',
+  'few-weeks': 'Your interview is a few weeks away: a month of Premium covers it, and the quarter adds time for the full library.',
 };
 
 /**

@@ -18,6 +18,15 @@
       </div>
       <p class="preview__evidence">{{ evidence() }}</p>
 
+      @if (frameworkLine(); as line) {
+        <p class="preview__switch" data-testid="company-plan-framework-line">
+          {{ line.text }}
+          @for (option of line.options; track option.label) {
+            <button type="button" class="preview__switch-button" (click)="switchFramework(option.framework)">{{ option.label }}</button>
+          }
+        </p>
+      }
+
       @for (company of current.companies; track company.slug) {
         @if (company.switchLine; as line) {
           <p class="preview__switch" data-testid="company-plan-switch-line">

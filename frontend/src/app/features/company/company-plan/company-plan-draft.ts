@@ -6,9 +6,10 @@ export const COMPANY_PLAN_DRAFT_KEY = 'fa:company-plan:draft:v1';
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const ROUND_KEY = /^[a-z0-9]+(?:-[a-z0-9]+)*\/[a-z0-9]+(?:-[a-z0-9]+)*\/[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const LEVELS = new Set(['junior', 'mid', 'senior', 'staff']);
-const WHENS = new Set(['tomorrow', 'this-week', 'next-week', 'later']);
+const WHENS = new Set(['tomorrow', 'this-week', 'next-week', 'few-weeks', 'later']);
 const MAX_COMPANIES = 3;
 const MAX_PASSED_ROUNDS = 60;
+const FRAMEWORKS = new Set(['react', 'angular', 'vue', 'javascript']);
 
 /** The answers with nothing unexpected in them, or null when they cannot be a plan. */
 export function cleanCompanyPlanAnswers(raw: unknown): CompanyPlanAnswers | null {
@@ -34,6 +35,7 @@ export function cleanCompanyPlanAnswers(raw: unknown): CompanyPlanAnswers | null
     level: value.level as CompanyPlanAnswers['level'],
     when: value.when as CompanyPlanAnswers['when'],
     ...(passedRounds.length ? { passedRounds } : {}),
+    ...(FRAMEWORKS.has(String(value.framework)) ? { framework: value.framework as CompanyPlanAnswers['framework'] } : {}),
   };
 }
 

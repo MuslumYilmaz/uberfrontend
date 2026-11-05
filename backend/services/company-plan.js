@@ -8,7 +8,8 @@ const path = require('path');
 const DATA_PATH = path.resolve(__dirname, '../../cdn/questions/company-plan-data.json');
 
 const LEVELS = new Set(['junior', 'mid', 'senior', 'staff']);
-const WHENS = new Set(['tomorrow', 'this-week', 'next-week', 'later']);
+const WHENS = new Set(['tomorrow', 'this-week', 'next-week', 'few-weeks', 'later']);
+const FRAMEWORKS = new Set(['react', 'angular', 'vue', 'javascript']);
 const MAX_COMPANIES = 3;
 const MAX_PASSED_ROUNDS = 60;
 const MAX_MARKED_DONE = 200;
@@ -89,12 +90,13 @@ function parsePassedRounds(value, companies, catalog) {
 /** Checks the form answers. The result holds only known fields, so nothing else in the body reaches the database. */
 function parseCompanyPlanAnswers(body, catalog) {
   if (!isPlainObject(body)) return { error: 'The plan must be an object.' };
-  const { companies, level, when, passedRounds } = body;
+  const { companies, level, when, passedRounds, framework } = body;
   if (!Array.isArray(companies) || companies.length < 1 || companies.length > MAX_COMPANIES) {
     return { error: `A plan needs 1 to ${MAX_COMPANIES} companies.` };
   }
   if (typeof level !== 'string' || !LEVELS.has(level)) return { error: 'Unknown level.' };
   if (typeof when !== 'string' || !WHENS.has(when)) return { error: 'Unknown interview date.' };
+  if (framework !== undefined && framework !== null && (typeof framework !== 'string' || !FRAMEWORKS.has(framework))) return { error: 'Unknown framework.' };
 
   const parsed = [];
   for (const entry of companies) {
@@ -105,7 +107,15 @@ function parseCompanyPlanAnswers(body, catalog) {
   }
   const passed = parsePassedRounds(passedRounds, parsed, catalog);
   if (passed.error) return { error: passed.error };
-  return { value: { companies: parsed, level, when, ...(passed.value ? { passedRounds: passed.value } : {}) } };
+  return {
+    value: {
+      companies: parsed,
+      level,
+      when,
+      ...(typeof framework === 'string' ? { framework } : {}),
+      ...(passed.value ? { passedRounds: passed.value } : {}),
+    },
+  };
 }
 
 function sameCompanies(a, b) {
