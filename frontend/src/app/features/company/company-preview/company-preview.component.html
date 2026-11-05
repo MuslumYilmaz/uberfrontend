@@ -40,7 +40,7 @@
       <ng-container *ngTemplateOutlet="practiceDisclaimer"></ng-container>
     </header>
 
-    <app-company-interview-process *ngIf="interviewProcess as process" [slug]="slug" [companyLabel]="label" [process]="process" [lockPremium]="tier() === 'guest'" [showSourceLinks]="!detailLocked()"></app-company-interview-process>
+    <app-company-interview-process *ngIf="interviewProcess as process" [slug]="slug" [companyLabel]="label" [process]="process" [lockPremium]="tier() === 'guest'" [showSourceLinks]="!detailLocked()" [returnState]="returnState"></app-company-interview-process>
     <ng-container *ngTemplateOutlet="lockGateCard; context: { $implicit: processGate() }"></ng-container>
 
     <section class="openai-section" aria-labelledby="openai-prompts">
@@ -222,7 +222,7 @@
       <ng-container *ngTemplateOutlet="practiceDisclaimer"></ng-container>
     </header>
 
-    <app-company-interview-process *ngIf="interviewProcess as process" [slug]="slug" [companyLabel]="label" [process]="process" [lockPremium]="tier() === 'guest'" [showSourceLinks]="!detailLocked()"></app-company-interview-process>
+    <app-company-interview-process *ngIf="interviewProcess as process" [slug]="slug" [companyLabel]="label" [process]="process" [lockPremium]="tier() === 'guest'" [showSourceLinks]="!detailLocked()" [returnState]="returnState"></app-company-interview-process>
     <ng-container *ngTemplateOutlet="lockGateCard; context: { $implicit: processGate() }"></ng-container>
 
     <section class="company-guide-section" aria-labelledby="google-practice-prompts">
@@ -276,12 +276,13 @@
               <a
                 *ngIf="linkLocked(prompt.resourcePath); else openPromptLink"
                 class="company-resource-link company-resource-link--inline company-link--premium"
-                [routerLink]="prompt.resourcePath">
+                [routerLink]="prompt.resourcePath"
+                [state]="returnState">
                 <span class="company-link__label">Premium task for this prompt</span>
                 <span class="premium-locked company-link__name" data-nosnippet>{{ prompt.resourceLabel }}</span>
               </a>
               <ng-template #openPromptLink>
-                <a class="company-resource-link company-resource-link--inline" [routerLink]="prompt.resourcePath">{{ prompt.resourceLabel }}</a>
+                <a class="company-resource-link company-resource-link--inline" [routerLink]="prompt.resourcePath" [state]="returnState">{{ prompt.resourceLabel }}</a>
               </ng-template>
             </span>
           </article>
@@ -442,7 +443,7 @@
       <ng-container *ngTemplateOutlet="practiceDisclaimer"></ng-container>
     </header>
 
-    <app-company-interview-process *ngIf="interviewProcess as process" [slug]="slug" [companyLabel]="label" [process]="process" [lockPremium]="tier() === 'guest'" [showSourceLinks]="!detailLocked()"></app-company-interview-process>
+    <app-company-interview-process *ngIf="interviewProcess as process" [slug]="slug" [companyLabel]="label" [process]="process" [lockPremium]="tier() === 'guest'" [showSourceLinks]="!detailLocked()" [returnState]="returnState"></app-company-interview-process>
     <ng-container *ngTemplateOutlet="lockGateCard; context: { $implicit: processGate() }"></ng-container>
 
     <section class="company-guide-section" aria-labelledby="netflix-practice-prompts">
@@ -497,12 +498,13 @@
               <a
                 *ngIf="linkLocked(prompt.resourcePath); else openPromptLink"
                 class="company-resource-link company-resource-link--inline company-link--premium"
-                [routerLink]="prompt.resourcePath">
+                [routerLink]="prompt.resourcePath"
+                [state]="returnState">
                 <span class="company-link__label">Premium task for this prompt</span>
                 <span class="premium-locked company-link__name" data-nosnippet>{{ prompt.resourceLabel }}</span>
               </a>
               <ng-template #openPromptLink>
-                <a class="company-resource-link company-resource-link--inline" [routerLink]="prompt.resourcePath">{{ prompt.resourceLabel }}</a>
+                <a class="company-resource-link company-resource-link--inline" [routerLink]="prompt.resourcePath" [state]="returnState">{{ prompt.resourceLabel }}</a>
               </ng-template>
             </span>
           </article>
@@ -691,7 +693,7 @@
       <ng-container *ngTemplateOutlet="practiceDisclaimer"></ng-container>
     </header>
 
-    <app-company-interview-process *ngIf="interviewProcess as process" [slug]="slug" [companyLabel]="label" [process]="process" [lockPremium]="tier() === 'guest'" [showSourceLinks]="!detailLocked()"></app-company-interview-process>
+    <app-company-interview-process *ngIf="interviewProcess as process" [slug]="slug" [companyLabel]="label" [process]="process" [lockPremium]="tier() === 'guest'" [showSourceLinks]="!detailLocked()" [returnState]="returnState"></app-company-interview-process>
     <ng-container *ngTemplateOutlet="lockGateCard; context: { $implicit: processGate() }"></ng-container>
 
     <section class="company-guide-section" [attr.aria-labelledby]="preview.slug + '-practice-prompts'">
@@ -748,12 +750,13 @@
               <a
                 *ngIf="linkLocked(prompt.resourcePath); else openPromptLink"
                 class="company-resource-link company-resource-link--inline company-link--premium"
-                [routerLink]="prompt.resourcePath">
+                [routerLink]="prompt.resourcePath"
+                [state]="returnState">
                 <span class="company-link__label">Premium task for this prompt</span>
                 <span class="premium-locked company-link__name" data-nosnippet>{{ prompt.resourceLabel }}</span>
               </a>
               <ng-template #openPromptLink>
-                <a class="company-resource-link company-resource-link--inline" [routerLink]="prompt.resourcePath">{{ prompt.resourceLabel }}</a>
+                <a class="company-resource-link company-resource-link--inline" [routerLink]="prompt.resourcePath" [state]="returnState">{{ prompt.resourceLabel }}</a>
               </ng-template>
             </span>
           </article>
@@ -785,7 +788,8 @@
           *ngIf="round.practiceLink?.path as path"
           class="company-round-links__link"
           [class.company-link--premium]="linkLocked(path)"
-          [routerLink]="path"><ng-container *ngIf="linkLocked(path); else openRoundLink"><span class="company-link__label">Premium task for this round</span><span class="premium-locked company-link__name" data-nosnippet>{{ round.practiceLink!.label }}</span></ng-container><ng-template #openRoundLink>{{ round.practiceLink!.label }}</ng-template></a>
+          [routerLink]="path"
+          [state]="returnState"><ng-container *ngIf="linkLocked(path); else openRoundLink"><span class="company-link__label">Premium task for this round</span><span class="premium-locked company-link__name" data-nosnippet>{{ round.practiceLink!.label }}</span></ng-container><ng-template #openRoundLink>{{ round.practiceLink!.label }}</ng-template></a>
         <a *ngIf="round.practiceLink && !round.practiceLink.path && round.practiceLink.fragment" class="company-round-links__link" [attr.href]="'#' + round.practiceLink.fragment">{{ round.practiceLink.label }}</a>
         <a *ngIf="round.processLink as row" class="company-round-links__link" [attr.href]="'#' + row.fragment">{{ row.label }}</a>
       </p>
@@ -983,7 +987,8 @@
             *ngIf="bullet.link?.path"
             class="company-editorial-bullets__link"
             [class.company-link--premium]="linkLocked(bullet.link!.path)"
-            [routerLink]="bullet.link!.path"><ng-container *ngIf="linkLocked(bullet.link!.path); else openBulletLink"><span class="company-link__label">Premium task</span><span class="premium-locked company-link__name" data-nosnippet>{{ bullet.link!.label }}</span></ng-container><ng-template #openBulletLink>{{ bullet.link!.label }}</ng-template></a>
+            [routerLink]="bullet.link!.path"
+            [state]="returnState"><ng-container *ngIf="linkLocked(bullet.link!.path); else openBulletLink"><span class="company-link__label">Premium task</span><span class="premium-locked company-link__name" data-nosnippet>{{ bullet.link!.label }}</span></ng-container><ng-template #openBulletLink>{{ bullet.link!.label }}</ng-template></a>
           <a
             *ngIf="bullet.link && !bullet.link.path && bullet.link.fragment"
             class="company-editorial-bullets__link"
@@ -1013,13 +1018,14 @@
           *ngIf="round.practiceLink?.path as path"
           class="company-round-links__link"
           [class.company-link--premium]="linkLocked(path)"
-          [routerLink]="path"><ng-container *ngIf="linkLocked(path); else openRoundLink"><span class="company-link__label">Premium task for this round</span><span class="premium-locked company-link__name" data-nosnippet>{{ round.practiceLink!.label }}</span></ng-container><ng-template #openRoundLink>{{ round.practiceLink!.label }}</ng-template></a>
+          [routerLink]="path"
+          [state]="returnState"><ng-container *ngIf="linkLocked(path); else openRoundLink"><span class="company-link__label">Premium task for this round</span><span class="premium-locked company-link__name" data-nosnippet>{{ round.practiceLink!.label }}</span></ng-container><ng-template #openRoundLink>{{ round.practiceLink!.label }}</ng-template></a>
         <a *ngIf="round.practiceLink && !round.practiceLink.path && round.practiceLink.fragment" class="company-round-links__link" [attr.href]="'#' + round.practiceLink.fragment">{{ round.practiceLink.label }}</a>
         <a *ngIf="round.processLink as row" class="company-round-links__link" [attr.href]="'#' + row.fragment">{{ row.label }}</a>
       </p>
     </section>
 
-    <app-company-interview-process *ngIf="interviewProcess as process" [slug]="slug" [companyLabel]="label" [process]="process" [lockPremium]="tier() === 'guest'" [showSourceLinks]="!detailLocked()"></app-company-interview-process>
+    <app-company-interview-process *ngIf="interviewProcess as process" [slug]="slug" [companyLabel]="label" [process]="process" [lockPremium]="tier() === 'guest'" [showSourceLinks]="!detailLocked()" [returnState]="returnState"></app-company-interview-process>
     <ng-container *ngTemplateOutlet="lockGateCard; context: { $implicit: processGate() }"></ng-container>
 
     <section
@@ -1041,7 +1047,7 @@
             [attr.data-nosnippet]="itemLocked(step) ? '' : null"
             [attr.inert]="itemLocked(step) ? '' : null">
             <!-- A blurred step keeps its words for search but carries no link: the address of a Premium page is not a teaser. -->
-            <a *ngIf="!itemLocked(step); else lockedStep" class="company-resource-link company-resource-link--inline" [routerLink]="step.path">{{ step.label }}</a>
+            <a *ngIf="!itemLocked(step); else lockedStep" class="company-resource-link company-resource-link--inline" [routerLink]="step.path" [state]="returnState">{{ step.label }}</a>
             <ng-template #lockedStep><span class="company-resource-link company-resource-link--inline">{{ step.label }}</span></ng-template>
             <p>{{ step.why }}</p>
           </div>
@@ -1094,7 +1100,8 @@
               class="reports-item__title"
               [class.company-link--locked]="itemLocked(item)"
               [attr.inert]="itemLocked(item) ? '' : null"
-              [routerLink]="item.route"><span [class.premium-locked]="itemLocked(item)" [attr.data-nosnippet]="itemLocked(item) ? '' : null">{{ item.title | stripInlineMarkup }}</span></a>
+              [routerLink]="item.route"
+              [state]="returnState"><span [class.premium-locked]="itemLocked(item)" [attr.data-nosnippet]="itemLocked(item) ? '' : null">{{ item.title | stripInlineMarkup }}</span></a>
             <span class="preview-chip preview-chip--lock" *ngIf="item.access === 'premium'">Premium</span>
           </div>
           <p class="reports-item__sources">

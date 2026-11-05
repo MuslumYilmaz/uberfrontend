@@ -42,6 +42,25 @@ import {
 import { SHOWCASE_STATS } from '../../../../generated/content-metadata';
 
 type PricingVariant = 'full' | 'compact';
+type PricingFaqGroup = { id: string; title: string; items: { id: string; q: string; a: string }[] };
+
+// An estimate reads as one: whole units under 100, two significant digits above (808 → 810, 14,900 → 15,000).
+function roundAbout(value: number): number {
+  if (!(value > 0)) return 0;
+  if (value < 100) return Math.round(value);
+  const magnitude = 10 ** (Math.floor(Math.log10(value)) - 1);
+  return Math.round(value / magnitude) * magnitude;
+}
+
+// The standard symbol, never the narrow one: "MX$200" and "COP 38,000" cannot be read as US dollars.
+function formatLocalMoney(amount: number, currency: string): string | null {
+  if (!(amount > 0)) return null;
+  try {
+    return new Intl.NumberFormat('en', { style: 'currency', currency, minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(amount);
+  } catch {
+    return null;
+  }
+}
 export type PricingCtaMode = 'checkout' | 'navigatePricing';
 
 export type PricingPlanDetail = CheckoutPlanDetail;
@@ -167,6 +186,7 @@ const STUDENT_PRICE_MULTIPLIER = 0.6;
             {{ priceHeadline(plan.id) }}<span>{{ priceHeadlineSuffix(plan.id) }}</span>
           </div>
           <p class="billing-note">{{ priceDetail(plan.id) }}</p>
+          <p class="price-local" *ngIf="localEstimate(plan.id) as local" data-testid="pricing-local-estimate">{{ local }}</p>
           <p class="plan-savings" *ngIf="savingsLabel(plan.id)">{{ savingsLabel(plan.id) }}</p>
           <ul class="features">
             <li *ngFor="let feat of featuresFor(plan)">{{ feat }}</li>
@@ -189,6 +209,12 @@ const STUDENT_PRICE_MULTIPLIER = 0.6;
         </article>
       </div>
 
+      <!-- The estimate orients; the charge is the dollar amount above. The rate provider asks for a link. -->
+      <p class="pr-local-note" *ngIf="regionalPricing?.local" data-testid="pricing-local-note">
+        Charged in US dollars. Local amounts are estimates at the exchange rate of {{ localRateDate() }},
+        <a href="https://www.exchangerate-api.com" rel="nofollow noopener" target="_blank">rates by Exchange Rate API</a>.
+      </p>
+
       <div class="pr-trust-strip" *ngIf="isOfferV2()" data-testid="pricing-trust-strip" aria-label="Checkout assurances">
         <span><i class="pi pi-check" aria-hidden="true"></i>{{ taxTrustCopy() }}</span>
         <span><i class="pi pi-refresh" aria-hidden="true"></i>Cancel anytime</span>
@@ -210,9 +236,9 @@ const STUDENT_PRICE_MULTIPLIER = 0.6;
           <article class="pr-discount pr-discount--student">
             <p class="pr-discount__eyebrow">Students</p>
             <p class="pr-discount__figure">40% off</p>
+            <!-- A regional price is named only where one applies; everyone else reads the student terms alone. -->
             <p class="pr-discount__copy">
-              The annual plan on your first purchase, with a verified .edu or .ac school email. Never combined with a
-              regional price: you get the better of the two.
+              The annual plan on your first purchase, with a verified .edu or .ac school email.<ng-container *ngIf="regionalPricing"> Never combined with the regional price: you get the better of the two.</ng-container>
             </p>
             <p
               class="student-pricing-line"
@@ -264,6 +290,7 @@ const STUDENT_PRICE_MULTIPLIER = 0.6;
           <p class="lifetime-offer__price">
             {{ displayPrice('lifetime') }} <span>{{ priceSuffix('lifetime') }}</span>
           </p>
+          <p class="price-local" *ngIf="localEstimate('lifetime') as local" data-testid="pricing-local-estimate">{{ local }}</p>
           <button
             class="btn btn--secondary"
             type="button"
@@ -560,7 +587,18 @@ export class PricingPlansSectionComponent implements OnInit, OnChanges, AfterVie
       },
     ];
 
-  faqGroups = [
+  // The student answer names a regional price only for a visitor who has one; the groups are rebuilt once it is known.
+  private faqGroupsCache: { regional: boolean; groups: PricingFaqGroup[] } | null = null;
+  get faqGroups(): PricingFaqGroup[] {
+    const regional = !!this.regionalPricing;
+    if (!this.faqGroupsCache || this.faqGroupsCache.regional !== regional) {
+      this.faqGroupsCache = { regional, groups: PricingPlansSectionComponent.faqGroupsFor(regional) };
+    }
+    return this.faqGroupsCache.groups;
+  }
+
+  private static faqGroupsFor(regional: boolean): PricingFaqGroup[] {
+    return [
     {
       id: 'plans-billing',
       title: 'Plans & Billing',
@@ -602,10 +640,12 @@ If your employer needs anything else, email <code>support@frontendatlas.com</cod
         {
           id: 'student-discount',
           q: 'Is there a student discount?',
-          a: `Yes: 40% off the annual plan on your first purchase.<br><br>
-Sign up with your school email address, or set it as your account email, and verify it from your profile. The price is applied at checkout automatically, and the pricing page says so once your address is verified.<br><br>
-Student pricing is never combined with a regional price; you get the better of the two.<br><br>
-If your school address does not end in .edu or .ac, email <code>support@frontendatlas.com</code> from that address and we switch student pricing on for your account.`,
+          a: [
+            'Yes: 40% off the annual plan on your first purchase.',
+            'Sign up with your school email address, or set it as your account email, and verify it from your profile. The price is applied at checkout automatically, and the pricing page says so once your address is verified.',
+            ...(regional ? ['Student pricing is never combined with the regional price; you get the better of the two.'] : []),
+            'If your school address does not end in .edu or .ac, email <code>support@frontendatlas.com</code> from that address and we switch student pricing on for your account.',
+          ].join('<br><br>'),
         },
         {
           id: 'payment-declined',
@@ -642,7 +682,8 @@ HTML and CSS tasks rely on the live preview instead, because visuals are the pri
         },
       ],
     },
-  ];
+    ];
+  }
 
   isOfferV2(): boolean {
     // v2 and every later sprint version share the layout; see offer-version.util.ts.
@@ -773,6 +814,29 @@ HTML and CSS tasks rely on the live preview instead, because visuals are the pri
   regionalPercentOff(): number {
     const multiplier = Number(this.regionalPricing?.multiplier);
     return Number.isFinite(multiplier) ? Math.round((1 - multiplier) * 100) : 0;
+  }
+
+  // "about ₹910 a month": the regional price in the visitor's money at the backend's dated rate, rounded to two
+  // significant digits. The checkout charges dollars; the note under the cards says so.
+  localEstimate(planId: PlanId): string | null {
+    const local = this.regionalPricing?.local;
+    const detail = this.planDetailForDisplay(planId);
+    if (!local || !detail || this.regionalAmount(planId) === null) return null;
+    const perMonth = this.usesPerMonthHeadline(planId) || (detail.interval === 'month' && detail.intervalCount === 1);
+    const dollars = (perMonth ? detail.amountCents / this.billingMonths(detail) : detail.amountCents) / 100;
+    const amount = formatLocalMoney(roundAbout(dollars * local.rate), local.currency);
+    if (!amount) return null;
+    return perMonth ? `about ${amount} a month` : `about ${amount}${this.priceSuffix(planId)}`;
+  }
+
+  localRateDate(): string {
+    const asOf = this.regionalPricing?.local?.asOf;
+    if (!asOf) return '';
+    try {
+      return new Date(`${asOf}T00:00:00Z`).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
+    } catch {
+      return asOf;
+    }
   }
 
   listPriceHeadline(planId: PlanId): string | null {

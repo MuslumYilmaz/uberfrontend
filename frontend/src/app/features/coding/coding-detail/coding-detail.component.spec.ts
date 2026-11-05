@@ -268,9 +268,50 @@ describe('CodingDetailComponent', () => {
       route: ['/companies/preview'],
       queryParams: { companies: 'elevenlabs', level: 'staff' },
     });
+    expect(component.lockedReturn()).toEqual(component.planReturn());
+    // A company guide is a way back for the locked view only; the footer keeps its usual link.
+    window.history.replaceState({ returnToUrl: '/companies/jpmorgan/preview', returnLabel: 'Back to the JPMorgan guide' }, '');
+    (component as any).hydrateReturnInfo();
+    expect(component.planReturn()).toBeNull();
+    expect(component.lockedReturn()).toEqual({ label: 'Back to the JPMorgan guide', route: ['/companies/jpmorgan/preview'], queryParams: {} });
     window.history.replaceState({ returnToUrl: '/coding?tech=javascript', returnLabel: 'Back to questions' }, '');
     (component as any).hydrateReturnInfo();
     expect(component.planReturn()).toBeNull();
+    expect(component.lockedReturn()).toBeNull();
+    window.history.replaceState(state, '');
+  });
+
+  it('tells a phone visitor what a locked task opens as and leads back to the guide it was opened from', async () => {
+    const width = spyOnProperty(window, 'innerWidth', 'get').and.returnValue(390);
+    const state = window.history.state;
+    window.history.replaceState({ returnToUrl: '/companies/jpmorgan/preview', returnLabel: 'Back to the JPMorgan guide' }, '');
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    const question = { ...makeDeferredPromiseQuestion(), access: 'premium' };
+    component.questionId = question.id;
+    component.questionTech = 'javascript';
+    questionService.loadQuestions.and.returnValue(of([question] as any));
+    spyOn(component as any, 'resolveSolutionAsset').and.resolveTo({ files: {}, initialPath: '' });
+    // The routed page reads the navigation state itself; a directly loaded question is hydrated here.
+    (component as any).hydrateReturnInfo();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const host = fixture.nativeElement as HTMLElement;
+    expect(component.locked()).toBeTrue();
+    expect(host.querySelector('[data-testid="coding-locked-phone-note"]')?.textContent?.trim())
+      .toBe('On a phone this task opens as a question with its solution; the workspace is on a desktop or tablet.');
+    const back = host.querySelector('[data-testid="coding-locked-return"]') as HTMLAnchorElement;
+    expect(back.textContent?.trim()).toBe('Back to the JPMorgan guide');
+    expect(back.getAttribute('href')).toBe('/companies/jpmorgan/preview');
+
+    // On a desktop the note goes; the way back stays.
+    width.and.returnValue(1366);
+    window.dispatchEvent(new Event('resize'));
+    fixture.detectChanges();
+    expect(host.querySelector('[data-testid="coding-locked-phone-note"]')).toBeNull();
+    expect(host.querySelector('[data-testid="coding-locked-return"]')).not.toBeNull();
     window.history.replaceState(state, '');
   });
 

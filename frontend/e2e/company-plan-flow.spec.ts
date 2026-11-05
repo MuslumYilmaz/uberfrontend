@@ -282,6 +282,27 @@ test.describe('company plan from a company guide', () => {
     expect(await overflow(page)).toBe(0);
   });
 
+  test('Deniz opens a Premium task from the plan on a phone: the locked page says what a phone gets and leads back to the plan', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await answerForm(page, ['elevenlabs'], 'next-week', 'senior');
+    const planUrl = '/companies/preview?companies=elevenlabs&when=next-week&level=senior';
+    await expect(page).toHaveURL(planUrl);
+
+    const locked = page.locator('[data-testid="company-plan-rest-task"].plan-row--locked[href*="/coding/"]').first();
+    await expect(locked).toBeVisible();
+    await locked.click();
+    await expect(page).toHaveURL(/\/coding\//);
+    await expect(page.getByTestId('coding-locked-phone-note'))
+      .toHaveText('On a phone this task opens as a question with its solution; the workspace is on a desktop or tablet.');
+    expect(await overflow(page)).toBe(0);
+
+    const back = page.getByTestId('coding-locked-return');
+    await expect(back).toHaveText('Back to plan');
+    await back.click();
+    await expect(page).toHaveURL(planUrl);
+    await expect(page.getByRole('heading', { level: 1, name: 'Your ElevenLabs plan at a glance' })).toBeVisible();
+  });
+
   test('a guest on the Airbnb guide reads the free questions, sees Premium names only under a blur, and is led into the plan', async ({ page }) => {
     await page.goto('/companies/airbnb/preview');
     // The process stays open; only the name of a Premium practice page is blurred.

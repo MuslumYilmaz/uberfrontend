@@ -1035,8 +1035,19 @@
           {{ lockedGuestCopy }}
         </ng-template>
       </p>
+      <!-- On a phone the unlocked task is reading material; the editor and checks need a larger screen. -->
+      <p class="locked-phone" *ngIf="isPhoneViewport()" data-testid="coding-locked-phone-note">
+        On a phone this task opens as a question with its solution; the workspace is on a desktop or tablet.
+      </p>
       <div class="locked-actions">
         <button faButton variant="primary" type="button" (click)="goToPricing()">View pricing</button>
+        <a
+          *ngIf="lockedReturn() as back"
+          faButton
+          variant="ghost"
+          data-testid="coding-locked-return"
+          [routerLink]="back.route"
+          [queryParams]="back.queryParams">{{ back.label }}</a>
         <button faButton variant="ghost" type="button" data-testid="coding-report-access-issue-btn" (click)="reportAccessIssue()">
           Report access issue
         </button>

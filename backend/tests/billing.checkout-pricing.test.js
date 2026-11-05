@@ -118,4 +118,21 @@ describe('public pricing rules for the pricing page', () => {
     const details = { ...PLAN_DETAILS, monthly: { amountCents: 150 } };
     expect(resolvePublicPricingRules({ countryCode: 'TR', planDetails: details, customCheckoutAvailable: true, env }).regional).toBeNull();
   });
+
+  test('adds a dated local-currency rate to the regional block, and none when the table is stale or missing', () => {
+    const exchangeRates = { asOf: '2026-11-05', base: 'USD', rates: { TRY: 50.03, INR: 94.62 } };
+    const today = Date.parse('2026-11-20T00:00:00Z');
+    const base = { countryCode: 'TR', planDetails: PLAN_DETAILS, customCheckoutAvailable: true, env };
+    expect(resolvePublicPricingRules({ ...base, exchangeRates, today }).regional.local).toEqual({
+      currency: 'TRY',
+      rate: 50.03,
+      asOf: '2026-11-05',
+    });
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    expect(resolvePublicPricingRules({ ...base, exchangeRates, today: Date.parse('2027-04-01T00:00:00Z') }).regional.local).toBeNull();
+    warn.mockRestore();
+    expect(resolvePublicPricingRules({ ...base, exchangeRates: null, today }).regional.local).toBeNull();
+    // The committed table serves the default path.
+    expect(resolvePublicPricingRules(base).regional.local).toEqual(expect.objectContaining({ currency: 'TRY' }));
+  });
 });

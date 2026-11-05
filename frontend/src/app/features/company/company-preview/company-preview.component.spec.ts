@@ -1,7 +1,8 @@
 import { seoContentDateModified } from '../../../core/utils/seo-content-date.util';
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ActivatedRoute, Data, Router, convertToParamMap, provideRouter } from '@angular/router';
+import { By } from '@angular/platform-browser';
+import { ActivatedRoute, Data, Router, RouterLink, convertToParamMap, provideRouter } from '@angular/router';
 import { BehaviorSubject, of } from 'rxjs';
 import type { CompanyPlanAnswers } from '../../../core/models/company-plan.model';
 import { CompanyPreviewResolved } from '../../../core/models/company-public.model';
@@ -335,6 +336,22 @@ describe('CompanyPreviewComponent', () => {
       expect(section.textContent || '').withContext(slug).not.toContain('Bytedance');
       expect(host.querySelectorAll('h1').length).withContext(slug).toBe(1);
     }
+  });
+
+  it('sends its task links with the way back, so a locked task page can return to the guide', async () => {
+    const authored = buildAuthoredCompanyPreviewFixture();
+    const fixture = await createComponent(authored.slug, undefined, { [authored.slug]: authored });
+    const component = fixture.componentInstance;
+    expect(component.returnState).toEqual({
+      returnToUrl: `/companies/${authored.slug}/preview`,
+      returnLabel: `Back to the ${component.label} guide`,
+    });
+    const promptLinks = fixture.debugElement.queryAll(By.directive(RouterLink))
+      .filter((link) => (link.nativeElement as HTMLElement).closest('.company-prompt__link-row'));
+    expect(promptLinks.length).toBeGreaterThan(0);
+    for (const link of promptLinks) expect(link.injector.get(RouterLink).state).toEqual(component.returnState);
+    // The state travels in the navigation, never in the address.
+    expect(promptLinks.every((link) => !(link.nativeElement as HTMLAnchorElement).getAttribute('href')?.includes('?'))).toBeTrue();
   });
 
   it('keeps contextual OpenAI links on free public practice pages', async () => {

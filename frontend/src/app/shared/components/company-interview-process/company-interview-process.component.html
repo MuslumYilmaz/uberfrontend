@@ -34,7 +34,7 @@
                         Practice: <a class="interview-process__locked" [routerLink]="practice.path" inert><span class="premium-locked" data-nosnippet>{{ practice.label }}</span></a>
                         <span class="interview-process__tag">Premium task</span>
                       } @else {
-                        Practice: <a [routerLink]="practice.path">{{ practice.label }}</a>
+                        Practice: <a [routerLink]="practice.path" [state]="returnState">{{ practice.label }}</a>
                       }
                     </span>
                   }

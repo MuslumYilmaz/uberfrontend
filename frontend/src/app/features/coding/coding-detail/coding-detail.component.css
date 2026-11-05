@@ -1184,6 +1184,15 @@
   color: color-mix(in srgb, var(--uf-text-secondary) 84%, transparent);
   font-weight: 600;
 }
+.locked-phone{
+  margin: 0;
+  color: var(--uf-text-primary);
+  font-size: 13px;
+  line-height: 1.5;
+}
+.locked-actions a{
+  text-decoration: none;
+}
 .locked-preview{
   text-align: left;
   padding: 12px;

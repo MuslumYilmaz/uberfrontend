@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { By } from '@angular/platform-browser';
+import { RouterLink, provideRouter } from '@angular/router';
 import { CompanyInterviewProcessComponent } from './company-interview-process.component';
 import type { CompanyInterviewProcess } from '../../company-previews/company-interview-processes';
 
@@ -124,6 +125,23 @@ describe('CompanyInterviewProcessComponent', () => {
     const practice = host.querySelector('.interview-process__practice a');
     expect(practice?.getAttribute('href')).toBe('/javascript/coding/js-debounce');
     expect(practice?.textContent?.trim()).toBe('Debounce');
+  });
+
+  it('sends a practice link with the way back the guide hands it, so a locked task page can return', async () => {
+    await TestBed.configureTestingModule({
+      imports: [CompanyInterviewProcessComponent],
+      providers: [provideRouter([])],
+    }).compileComponents();
+    const fixture = TestBed.createComponent(CompanyInterviewProcessComponent);
+    const returnState = { returnToUrl: '/companies/acme/preview', returnLabel: 'Back to the Acme guide' };
+    fixture.componentRef.setInput('slug', 'acme');
+    fixture.componentRef.setInput('companyLabel', 'Acme');
+    fixture.componentRef.setInput('process', FIXTURE);
+    fixture.componentRef.setInput('returnState', returnState);
+    fixture.detectChanges();
+    const practice = fixture.debugElement.query(By.css('.interview-process__practice a'));
+    expect(practice.injector.get(RouterLink).state).toEqual(returnState);
+    expect(practice.nativeElement.getAttribute('href')).toBe('/javascript/coding/js-debounce');
   });
 
   it('uses the title override when the company names the role', async () => {

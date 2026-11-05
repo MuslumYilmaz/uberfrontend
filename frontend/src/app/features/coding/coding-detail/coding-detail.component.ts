@@ -43,7 +43,7 @@ import {
   isContentAccessibleForFree,
   robotsForContentAccess,
 } from '../../../core/utils/content-access-policy.util';
-import { CompanyPlanReturnLink, companyPlanReturnLink } from '../../../core/utils/company-plan-return.util';
+import { CompanyPlanReturnLink, companyPlanReturnLink, companyReturnLink } from '../../../core/utils/company-plan-return.util';
 import { CodeStorageService } from '../../../core/services/code-storage.service';
 import { QuestionService } from '../../../core/services/question.service';
 import { MonacoEditorComponent } from '../../../monaco-editor.component';
@@ -332,6 +332,8 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   private returnTo: any[] | null = null;      // old array-based navigation
   private returnToUrl: string | null = null;  // 🔹 new: full URL for global/company lists
   planReturn = signal<CompanyPlanReturnLink | null>(null);
+  /** The way back from the locked view, which has no footer: the company plan or guide the task was opened from. */
+  lockedReturn = signal<CompanyPlanReturnLink | null>(null);
 
 
   copiedIdx: number | null = null;
@@ -984,6 +986,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       this.returnLabel.set(null);
     }
     this.planReturn.set(companyPlanReturnLink(this.router, this.returnToUrl, this.returnLabel()));
+    this.lockedReturn.set(companyReturnLink(this.router, this.returnToUrl, this.returnLabel()));
 
     this.courseIdFromState = s?.courseId ?? null;
     this.courseOutline = s?.outline ?? null;

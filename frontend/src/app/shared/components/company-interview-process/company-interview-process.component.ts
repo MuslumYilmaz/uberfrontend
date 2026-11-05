@@ -29,6 +29,8 @@ export class CompanyInterviewProcessComponent {
    * "Free account" tag in their place; what each round asks stays open for everyone.
    */
   @Input() showSourceLinks = true;
+  /** Navigation state for the practice links: a locked task page shows the way back to the guide. */
+  @Input() returnState: { [key: string]: any } | undefined;
 
   /** The rows whose source list a phone reader opened; wider screens show every list regardless. */
   private readonly opened = signal<ReadonlySet<string>>(new Set());

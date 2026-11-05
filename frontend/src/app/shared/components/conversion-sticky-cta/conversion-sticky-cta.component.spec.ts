@@ -5,20 +5,29 @@ import { AnalyticsService } from '../../../core/services/analytics.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { ConversionStickyCtaComponent } from './conversion-sticky-cta.component';
 
+const DISMISSED_KEY = 'fa:conversion-sticky:dismissed:v1';
+
 describe('ConversionStickyCtaComponent', () => {
   let fixture: ComponentFixture<ConversionStickyCtaComponent>;
   let authUiState: ReturnType<typeof signal<'signed_out' | 'authenticated' | 'pending'>>;
   let user: ReturnType<typeof signal<any>>;
 
+  const mount = async () => {
+    fixture = TestBed.createComponent(ConversionStickyCtaComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+  };
+
   beforeEach(async () => {
-    sessionStorage.removeItem('fa:conversion-sticky:dismissed:v1');
+    localStorage.removeItem(DISMISSED_KEY);
     authUiState = signal<'signed_out' | 'authenticated' | 'pending'>('signed_out');
     user = signal<any>(null);
     spyOnProperty(window, 'innerWidth', 'get').and.returnValue(390);
 
     // This component intentionally observes page-level landmarks. Isolate
     // those lookups so DOM left by unrelated full-suite fixtures cannot make
-    // this unit test think a pricing grid or overlay is currently visible.
+    // this unit test think a hero, a pricing grid or an overlay is on screen.
     const querySelector = document.querySelector.bind(document);
     spyOn(document, 'querySelector').and.callFake((selector: string) => {
       if (
@@ -42,17 +51,12 @@ describe('ConversionStickyCtaComponent', () => {
         },
       ],
     }).compileComponents();
-
-    fixture = TestBed.createComponent(ConversionStickyCtaComponent);
-    fixture.componentRef.setInput('surface', 'pricing');
-    fixture.detectChanges();
-    await fixture.whenStable();
-    fixture.detectChanges();
+    await mount();
   });
 
   afterEach(() => {
     fixture?.destroy();
-    sessionStorage.removeItem('fa:conversion-sticky:dismissed:v1');
+    localStorage.removeItem(DISMISSED_KEY);
   });
 
   it('shows clean account and pricing links for signed-out mobile visitors', () => {
@@ -62,11 +66,12 @@ describe('ConversionStickyCtaComponent', () => {
 
     expect(aside.getAttribute('aria-label')).toBe('Account and pricing shortcuts');
     expect(aside.hasAttribute('aria-live')).toBeFalse();
-    expect(dismiss.getAttribute('aria-label')).toBe('Hide shortcuts for this session');
+    expect(dismiss.getAttribute('aria-label')).toBe('Hide these shortcuts');
     expect(links.map((link) => (link.textContent || '').trim())).toEqual([
       'Create free account',
       'Compare plans',
     ]);
+    expect(links[0].getAttribute('href')).toBe('/auth/signup?src=showcase_mobile_sticky');
     expect(links[1].getAttribute('href')).toBe('/pricing#pricing-plans');
   });
 
@@ -83,12 +88,17 @@ describe('ConversionStickyCtaComponent', () => {
     expect(fixture.nativeElement.querySelector('[data-testid="conversion-mobile-sticky"]')).toBeNull();
   });
 
-  it('keeps a dismissal for the rest of the browser session', () => {
+  it('remembers a dismissal on the device, so the shortcuts show until closed once', async () => {
     const dismiss = fixture.nativeElement.querySelector('.conversion-sticky__dismiss') as HTMLButtonElement;
     dismiss.click();
     fixture.detectChanges();
 
-    expect(sessionStorage.getItem('fa:conversion-sticky:dismissed:v1')).toBe('1');
+    expect(localStorage.getItem(DISMISSED_KEY)).toBe('1');
+    expect(fixture.nativeElement.querySelector('[data-testid="conversion-mobile-sticky"]')).toBeNull();
+
+    // A later visit reads the flag before anything renders.
+    fixture.destroy();
+    await mount();
     expect(fixture.nativeElement.querySelector('[data-testid="conversion-mobile-sticky"]')).toBeNull();
   });
 });

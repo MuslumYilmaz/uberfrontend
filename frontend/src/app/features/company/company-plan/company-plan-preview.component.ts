@@ -209,7 +209,8 @@ export class CompanyPlanPreviewComponent {
       why: whyLine(task.why),
       meta: `${group} · about ${time}`,
       aria: locked ? `${title}, ${group}, about ${time}, opens with Premium` : title,
-      state: locked ? {} : practiceState(task, this.rows().rest, this.router.url, 'Back to plan'),
+      // A locked task carries no practice session, only the way back to this plan from its locked page.
+      state: locked ? { returnToUrl: this.router.url, returnLabel: 'Back to plan' } : practiceState(task, this.rows().rest, this.router.url, 'Back to plan'),
     };
   }));
 

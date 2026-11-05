@@ -10,7 +10,7 @@
     size="sm"
     iconOnly
     class="conversion-sticky__dismiss"
-    aria-label="Hide shortcuts for this session"
+    aria-label="Hide these shortcuts"
     (click)="dismiss()">
     <span aria-hidden="true">×</span>
   </button>
@@ -29,7 +29,7 @@
       variant="primary"
       size="sm"
       routerLink="/auth/signup"
-      [queryParams]="{ src: surface === 'pricing' ? 'pricing_mobile_sticky' : 'showcase_mobile_sticky' }"
+      [queryParams]="{ src: 'showcase_mobile_sticky' }"
       (click)="trackSignup()">
       Create free account
     </a>

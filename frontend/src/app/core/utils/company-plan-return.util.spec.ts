@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
-import { companyPlanReturnLink } from './company-plan-return.util';
+import { companyPlanReturnLink, companyReturnLink } from './company-plan-return.util';
 
 describe('companyPlanReturnLink', () => {
   let router: Router;
@@ -29,5 +29,34 @@ describe('companyPlanReturnLink', () => {
     }
     expect(companyPlanReturnLink(router, null, 'Back to plan')).toBeNull();
     expect(companyPlanReturnLink(router, '/companies/plan', null)).toBeNull();
+  });
+});
+
+describe('companyReturnLink', () => {
+  let router: Router;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({ providers: [provideRouter([])] });
+    router = TestBed.inject(Router);
+  });
+
+  it('leads a locked task back to the plan or the guide it was opened from', () => {
+    expect(companyReturnLink(router, '/companies/preview?companies=agoda&when=tomorrow', 'Back to plan')).toEqual({
+      label: 'Back to plan',
+      route: ['/companies/preview'],
+      queryParams: { companies: 'agoda', when: 'tomorrow' },
+    });
+    expect(companyReturnLink(router, '/companies/jpmorgan/preview', 'Back to the JPMorgan guide')).toEqual({
+      label: 'Back to the JPMorgan guide',
+      route: ['/companies/jpmorgan/preview'],
+      queryParams: {},
+    });
+  });
+
+  it('offers no link for any other list', () => {
+    for (const url of ['/coding?tech=javascript', '/companies/google/all', '/companies', '/companies/preview-old', '/guides/framework-prep']) {
+      expect(companyReturnLink(router, url, 'Back')).withContext(url).toBeNull();
+    }
+    expect(companyReturnLink(router, '/companies/jpmorgan/preview', null)).toBeNull();
   });
 });

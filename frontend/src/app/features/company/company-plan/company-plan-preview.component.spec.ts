@@ -170,11 +170,14 @@ describe('CompanyPlanPreviewComponent', () => {
           expect(element.querySelector('.plan-row__lock')).toBeTruthy();
           expect(element.querySelector('.plan-row__tag--locked')?.textContent).toBe('Premium');
           expect(element.getAttribute('aria-label')).toBe(`${title}, ${row.meta.replace(' · ', ', ')}, opens with Premium`);
+          // The locked page shows the way back here; a locked task joins no practice session.
+          expect(row.state).toEqual({ returnToUrl: TestBed.inject(Router).url, returnLabel: 'Back to plan' });
         } else {
           expect(row.task.access).toBe('free');
           expect(element.querySelector('.plan-row__lock')).toBeNull();
           expect(element.querySelector('.plan-row__tag--free')?.textContent).toBe('Free');
           expect(element.getAttribute('aria-label')).toBe(title);
+          if (row.task.kind !== 'guide') expect(row.state['returnLabel']).toBe('Back to plan');
         }
       });
       expect(text('[data-testid="company-plan-rest"] .preview__section-sub')).toBe('Premium opens the locked tasks, with every round in order.');

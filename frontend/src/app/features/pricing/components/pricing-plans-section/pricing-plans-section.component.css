@@ -408,6 +408,9 @@
 .price{font-size:28px;font-weight:800;margin:2px 0 2px;color:var(--uf-text-primary)}
 .price span{font-size:12px;font-weight:600;color:color-mix(in srgb,var(--uf-text-secondary) 80%,transparent);margin-left:6px}
 .billing-note{font-size:12px;color:color-mix(in srgb,var(--uf-text-secondary) 85%,transparent);margin:0 0 4px}
+.price-local{font-size:12px;color:color-mix(in srgb,var(--uf-text-secondary) 85%,transparent);margin:0 0 4px}
+.pr-local-note{margin:10px 0 0;font-size:12px;line-height:1.5;color:color-mix(in srgb,var(--uf-text-secondary) 85%,transparent)}
+.pr-local-note a{color:inherit;text-decoration:underline}
 .plan-savings{
   width:max-content;
   margin:0;
@@ -1198,4 +1201,6 @@
 }
 .price-off{color:var(--uf-accent);font-weight:800}
 .pr-wrap--full .price-list-row{font-size:15px}
+.pr-wrap--full .price-local{font-size:13px}
+.lifetime-offer__action .price-local{margin:2px 0 8px}
 .lifetime-offer__action .price-list-row{margin:0 0 2px}

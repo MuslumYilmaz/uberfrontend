@@ -17,7 +17,6 @@ import { isProActive } from '../../core/utils/entitlements.util';
 import { isSprintOfferVersion, PRERENDER_OFFER_VERSION } from '../../core/utils/offer-version.util';
 import { PRERENDER_PLAN_DETAILS } from '../../generated/pricing-defaults';
 import { PlanId } from '../../core/utils/payments-provider.util';
-import { ConversionStickyCtaComponent } from '../../shared/components/conversion-sticky-cta/conversion-sticky-cta.component';
 import { CompanyPlanPricingStripComponent } from '../company/company-plan/company-plan-pricing-strip.component';
 import type { CompanyPlanData } from '../company/company-plan/company-plan.engine';
 import { companyPlanPricingCopy } from '../company/company-plan/company-plan.format';
@@ -27,7 +26,7 @@ const COMPANY_PLAN_SOURCE = /^company_plan_(?!general$)[a-z0-9_-]+$/;
 
 @Component({
     selector: 'app-pricing',
-    imports: [CommonModule, RouterModule, PricingPlansSectionComponent, ConversionStickyCtaComponent, CompanyPlanPricingStripComponent],
+    imports: [CommonModule, RouterModule, PricingPlansSectionComponent, CompanyPlanPricingStripComponent],
     styleUrls: ['./pricing.component.css'],
     template: `
     <section class="pricing-page">
@@ -51,7 +50,6 @@ const COMPANY_PLAN_SOURCE = /^company_plan_(?!general$)[a-z0-9_-]+$/;
         [featureLead]="waitingPlan()?.lead ?? null">
       </app-pricing-plans-section>
     </section>
-    <app-conversion-sticky-cta surface="pricing"></app-conversion-sticky-cta>
   `
 })
 export class PricingComponent implements OnInit {

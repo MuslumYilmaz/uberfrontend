@@ -330,6 +330,8 @@ export class CompanyPreviewComponent implements OnInit {
   }
   slug = '';
   label = '';
+  /** Navigation state for the guide's task links: a locked task page shows the way back here. */
+  returnState: { returnToUrl: string; returnLabel: string } | undefined;
   isOpenAiPreview = false;
   isGooglePreview = false;
   isNetflixPreview = false;
@@ -620,6 +622,7 @@ export class CompanyPreviewComponent implements OnInit {
     }
 
     this.label = this.prettyCompany(this.slug);
+    this.returnState = { returnToUrl: `/companies/${this.slug}/preview`, returnLabel: `Back to the ${this.label} guide` };
     this.guide.set({ slug: this.slug, label: this.label });
     this.relatedCompanyLinks = Object.keys((SHOWCASE_STATS as { companyCounts?: Record<string, unknown> }).companyCounts || {})
       .filter((slug) => slug !== this.slug)
