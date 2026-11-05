@@ -399,13 +399,35 @@
   display: contents;
 }
 
-/* Past the open prompts: the title and the opening lines stay readable, the rest sits under a blur. */
-.company-prompt--locked .company-prompt__statement {
+/* Behind the gate, a locked statement shows its opening lines under the blur; an open statement is never clipped. */
+.company-prompt__statement--locked {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
   line-clamp: 3;
   overflow: hidden;
+}
+
+/* A link to a Premium page reads as a button a visitor can press, with the page's name kept under a small blur
+   beside it, so the lock is clear and the row is not a dead end. */
+.company-link--premium {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 10px;
+}
+
+/* The link's own box is the button; the label inside it needs no second border. */
+.company-link--premium .company-link__label {
+  color: var(--uf-accent);
+  font-weight: 600;
+}
+
+.company-link--premium .company-link__name {
+  font-size: 0.9em;
+  color: var(--uf-text-tertiary);
+  filter: blur(5px);
+  user-select: none;
 }
 
 /* A locked answer guide shows a few blurred lines and fades out, not a screen of blur: its text stays in the page for

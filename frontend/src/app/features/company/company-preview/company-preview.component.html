@@ -61,7 +61,7 @@
           [attr.id]="prompt.id">
           <p class="openai-prompt__number">Question {{ i + 1 }}</p>
           <h3>{{ prompt.title }}</h3>
-          <p class="company-prompt__statement"><span [class.company-locked]="statementLocked(i)" [class.premium-locked]="statementLocked(i)" [attr.data-nosnippet]="statementLocked(i) ? '' : null" [attr.inert]="statementLocked(i) ? '' : null">{{ prompt.intent }}</span></p>
+          <p class="company-prompt__statement" [class.company-prompt__statement--locked]="statementLocked(i)"><span [class.company-locked]="statementLocked(i)" [class.premium-locked]="statementLocked(i)" [attr.data-nosnippet]="statementLocked(i) ? '' : null" [attr.inert]="statementLocked(i) ? '' : null">{{ prompt.intent }}</span></p>
           <div
             class="company-prompt__details"
             [class.company-prompt__locked]="promptLocked(i)" [class.premium-locked]="promptLocked(i)" [attr.data-nosnippet]="promptLocked(i) ? '' : null"
@@ -243,7 +243,7 @@
             [attr.id]="prompt.id">
             <p class="company-prompt__number">Prompt {{ i + 1 }}</p>
             <h3>{{ prompt.title }}</h3>
-            <p class="company-prompt__statement"><span [class.company-locked]="statementLocked(i)" [class.premium-locked]="statementLocked(i)" [attr.data-nosnippet]="statementLocked(i) ? '' : null" [attr.inert]="statementLocked(i) ? '' : null">{{ prompt.statement }}</span></p>
+            <p class="company-prompt__statement" [class.company-prompt__statement--locked]="statementLocked(i)"><span [class.company-locked]="statementLocked(i)" [class.premium-locked]="statementLocked(i)" [attr.data-nosnippet]="statementLocked(i) ? '' : null" [attr.inert]="statementLocked(i) ? '' : null">{{ prompt.statement }}</span></p>
 
             <div
               class="company-prompt__details"
@@ -272,14 +272,17 @@
               <p class="company-prompt__miss"><strong>Common miss:</strong> {{ prompt.commonMiss }}</p>
             </div>
             <span class="company-prompt__link-row">
+              <!-- A Premium page gets a readable, clickable label; its name stays in the page under the blur for search. -->
               <a
-                class="company-resource-link company-resource-link--inline"
-                [class.company-link--locked]="linkLocked(prompt.resourcePath)"
-                [attr.inert]="linkLocked(prompt.resourcePath) ? '' : null"
+                *ngIf="linkLocked(prompt.resourcePath); else openPromptLink"
+                class="company-resource-link company-resource-link--inline company-link--premium"
                 [routerLink]="prompt.resourcePath">
-                <span [class.premium-locked]="linkLocked(prompt.resourcePath)" [attr.data-nosnippet]="linkLocked(prompt.resourcePath) ? '' : null">{{ prompt.resourceLabel }}</span>
+                <span class="company-link__label">Premium task for this prompt</span>
+                <span class="premium-locked company-link__name" data-nosnippet>{{ prompt.resourceLabel }}</span>
               </a>
-              <span class="company-link__tag" *ngIf="linkLocked(prompt.resourcePath)">Premium task</span>
+              <ng-template #openPromptLink>
+                <a class="company-resource-link company-resource-link--inline" [routerLink]="prompt.resourcePath">{{ prompt.resourceLabel }}</a>
+              </ng-template>
             </span>
           </article>
           <ng-container *ngIf="i === openPrompts() - 1">
@@ -461,7 +464,7 @@
             [attr.id]="prompt.id">
             <p class="company-prompt__number">Prompt {{ i + 1 }}</p>
             <h3>{{ prompt.title }}</h3>
-            <p class="company-prompt__statement"><span [class.company-locked]="statementLocked(i)" [class.premium-locked]="statementLocked(i)" [attr.data-nosnippet]="statementLocked(i) ? '' : null" [attr.inert]="statementLocked(i) ? '' : null">{{ prompt.statement }}</span></p>
+            <p class="company-prompt__statement" [class.company-prompt__statement--locked]="statementLocked(i)"><span [class.company-locked]="statementLocked(i)" [class.premium-locked]="statementLocked(i)" [attr.data-nosnippet]="statementLocked(i) ? '' : null" [attr.inert]="statementLocked(i) ? '' : null">{{ prompt.statement }}</span></p>
 
             <div
               class="company-prompt__details"
@@ -490,14 +493,17 @@
               <p class="company-prompt__miss"><strong>Common miss:</strong> {{ prompt.commonMiss }}</p>
             </div>
             <span class="company-prompt__link-row">
+              <!-- A Premium page gets a readable, clickable label; its name stays in the page under the blur for search. -->
               <a
-                class="company-resource-link company-resource-link--inline"
-                [class.company-link--locked]="linkLocked(prompt.resourcePath)"
-                [attr.inert]="linkLocked(prompt.resourcePath) ? '' : null"
+                *ngIf="linkLocked(prompt.resourcePath); else openPromptLink"
+                class="company-resource-link company-resource-link--inline company-link--premium"
                 [routerLink]="prompt.resourcePath">
-                <span [class.premium-locked]="linkLocked(prompt.resourcePath)" [attr.data-nosnippet]="linkLocked(prompt.resourcePath) ? '' : null">{{ prompt.resourceLabel }}</span>
+                <span class="company-link__label">Premium task for this prompt</span>
+                <span class="premium-locked company-link__name" data-nosnippet>{{ prompt.resourceLabel }}</span>
               </a>
-              <span class="company-link__tag" *ngIf="linkLocked(prompt.resourcePath)">Premium task</span>
+              <ng-template #openPromptLink>
+                <a class="company-resource-link company-resource-link--inline" [routerLink]="prompt.resourcePath">{{ prompt.resourceLabel }}</a>
+              </ng-template>
             </span>
           </article>
           <ng-container *ngIf="i === openPrompts() - 1">
@@ -708,9 +714,8 @@
         <a
           *ngIf="round.practiceLink?.path as path"
           class="company-round-links__link"
-          [class.company-link--locked]="linkLocked(path)"
-          [attr.inert]="linkLocked(path) ? '' : null"
-          [routerLink]="path"><span [class.premium-locked]="linkLocked(path)" [attr.data-nosnippet]="linkLocked(path) ? '' : null">{{ round.practiceLink!.label }}</span></a><span class="company-link__tag" *ngIf="linkLocked(round.practiceLink?.path)">Premium task</span>
+          [class.company-link--premium]="linkLocked(path)"
+          [routerLink]="path"><ng-container *ngIf="linkLocked(path); else openRoundLink"><span class="company-link__label">Premium task for this round</span><span class="premium-locked company-link__name" data-nosnippet>{{ round.practiceLink!.label }}</span></ng-container><ng-template #openRoundLink>{{ round.practiceLink!.label }}</ng-template></a>
         <a *ngIf="round.practiceLink && !round.practiceLink.path && round.practiceLink.fragment" class="company-round-links__link" [attr.href]="'#' + round.practiceLink.fragment">{{ round.practiceLink.label }}</a>
         <a *ngIf="round.processLink as row" class="company-round-links__link" [attr.href]="'#' + row.fragment">{{ row.label }}</a>
       </p>
@@ -731,10 +736,12 @@
             [attr.id]="prompt.id">
             <p class="company-prompt__number">Prompt {{ i + 1 }}</p>
             <h3>{{ prompt.title }}</h3>
-            <p class="company-prompt__statement"><span [class.company-locked]="statementLocked(i)" [class.premium-locked]="statementLocked(i)" [attr.data-nosnippet]="statementLocked(i) ? '' : null" [attr.inert]="statementLocked(i) ? '' : null"><fa-inline-code [text]="prompt.statement"></fa-inline-code></span></p>
+            <p class="company-prompt__statement" [class.company-prompt__statement--locked]="statementLocked(i)"><span [class.company-locked]="statementLocked(i)" [class.premium-locked]="statementLocked(i)" [attr.data-nosnippet]="statementLocked(i) ? '' : null" [attr.inert]="statementLocked(i) ? '' : null"><fa-inline-code [text]="prompt.statement"></fa-inline-code></span></p>
             <p class="company-prompt__reported" *ngIf="prompt.reportedRound as round" data-testid="company-prompt-reported-round">
               Practice version modelled on a reported round:
-              <a [href]="round.url" target="_blank" rel="noopener noreferrer nofollow">{{ round.label }}</a>
+              <!-- Behind the gate the report is named, and its link opens with a free account, as on the process table. -->
+              <ng-container *ngIf="detailLocked(); else reportedLink">{{ round.label }} <span class="company-link__tag">Free account</span></ng-container>
+              <ng-template #reportedLink><a [href]="round.url" target="_blank" rel="noopener noreferrer nofollow">{{ round.label }}</a></ng-template>
             </p>
 
             <div
@@ -764,14 +771,17 @@
               <p class="company-prompt__miss"><strong>Common miss: </strong><fa-inline-code [text]="prompt.commonMiss"></fa-inline-code></p>
             </div>
             <span class="company-prompt__link-row">
+              <!-- A Premium page gets a readable, clickable label; its name stays in the page under the blur for search. -->
               <a
-                class="company-resource-link company-resource-link--inline"
-                [class.company-link--locked]="linkLocked(prompt.resourcePath)"
-                [attr.inert]="linkLocked(prompt.resourcePath) ? '' : null"
+                *ngIf="linkLocked(prompt.resourcePath); else openPromptLink"
+                class="company-resource-link company-resource-link--inline company-link--premium"
                 [routerLink]="prompt.resourcePath">
-                <span [class.premium-locked]="linkLocked(prompt.resourcePath)" [attr.data-nosnippet]="linkLocked(prompt.resourcePath) ? '' : null">{{ prompt.resourceLabel }}</span>
+                <span class="company-link__label">Premium task for this prompt</span>
+                <span class="premium-locked company-link__name" data-nosnippet>{{ prompt.resourceLabel }}</span>
               </a>
-              <span class="company-link__tag" *ngIf="linkLocked(prompt.resourcePath)">Premium task</span>
+              <ng-template #openPromptLink>
+                <a class="company-resource-link company-resource-link--inline" [routerLink]="prompt.resourcePath">{{ prompt.resourceLabel }}</a>
+              </ng-template>
             </span>
           </article>
           <ng-container *ngIf="i === openPrompts() - 1">
@@ -955,9 +965,8 @@
           <a
             *ngIf="bullet.link?.path"
             class="company-editorial-bullets__link"
-            [class.company-link--locked]="linkLocked(bullet.link!.path)"
-            [attr.inert]="linkLocked(bullet.link!.path) ? '' : null"
-            [routerLink]="bullet.link!.path"><span [class.premium-locked]="linkLocked(bullet.link!.path)" [attr.data-nosnippet]="linkLocked(bullet.link!.path) ? '' : null">{{ bullet.link!.label }}</span></a><span class="company-link__tag" *ngIf="linkLocked(bullet.link?.path)">Premium task</span>
+            [class.company-link--premium]="linkLocked(bullet.link!.path)"
+            [routerLink]="bullet.link!.path"><ng-container *ngIf="linkLocked(bullet.link!.path); else openBulletLink"><span class="company-link__label">Premium task</span><span class="premium-locked company-link__name" data-nosnippet>{{ bullet.link!.label }}</span></ng-container><ng-template #openBulletLink>{{ bullet.link!.label }}</ng-template></a>
           <a
             *ngIf="bullet.link && !bullet.link.path && bullet.link.fragment"
             class="company-editorial-bullets__link"
@@ -986,9 +995,8 @@
         <a
           *ngIf="round.practiceLink?.path as path"
           class="company-round-links__link"
-          [class.company-link--locked]="linkLocked(path)"
-          [attr.inert]="linkLocked(path) ? '' : null"
-          [routerLink]="path"><span [class.premium-locked]="linkLocked(path)" [attr.data-nosnippet]="linkLocked(path) ? '' : null">{{ round.practiceLink!.label }}</span></a><span class="company-link__tag" *ngIf="linkLocked(round.practiceLink?.path)">Premium task</span>
+          [class.company-link--premium]="linkLocked(path)"
+          [routerLink]="path"><ng-container *ngIf="linkLocked(path); else openRoundLink"><span class="company-link__label">Premium task for this round</span><span class="premium-locked company-link__name" data-nosnippet>{{ round.practiceLink!.label }}</span></ng-container><ng-template #openRoundLink>{{ round.practiceLink!.label }}</ng-template></a>
         <a *ngIf="round.practiceLink && !round.practiceLink.path && round.practiceLink.fragment" class="company-round-links__link" [attr.href]="'#' + round.practiceLink.fragment">{{ round.practiceLink.label }}</a>
         <a *ngIf="round.processLink as row" class="company-round-links__link" [attr.href]="'#' + row.fragment">{{ row.label }}</a>
       </p>
@@ -1015,7 +1023,9 @@
             [class.premium-locked]="itemLocked(step)"
             [attr.data-nosnippet]="itemLocked(step) ? '' : null"
             [attr.inert]="itemLocked(step) ? '' : null">
-            <a class="company-resource-link company-resource-link--inline" [routerLink]="step.path">{{ step.label }}</a>
+            <!-- A blurred step keeps its words for search but carries no link: the address of a Premium page is not a teaser. -->
+            <a *ngIf="!itemLocked(step); else lockedStep" class="company-resource-link company-resource-link--inline" [routerLink]="step.path">{{ step.label }}</a>
+            <ng-template #lockedStep><span class="company-resource-link company-resource-link--inline">{{ step.label }}</span></ng-template>
             <p>{{ step.why }}</p>
           </div>
         </li>

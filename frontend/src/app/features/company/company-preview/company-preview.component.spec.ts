@@ -9,6 +9,7 @@ import { AnalyticsService } from '../../../core/services/analytics.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { QuestionService } from '../../../core/services/question.service';
 import { SeoService } from '../../../core/services/seo.service';
+import type { CompanyPreviewQuestion } from '../../../core/models/company-public.model';
 import { countWord } from './company-evidence';
 import { COMPANY_SET_COUNTS, PREMIUM_QUESTION_COUNT } from '../company-plan/company-plan-sets';
 import type { CompanyPlanData } from '../company-plan/company-plan.engine';
@@ -225,7 +226,9 @@ describe('CompanyPreviewComponent', () => {
       expect(host.querySelector('[data-testid="company-reports-describe"] a[href="/react/coding/react-counter"]')).not.toBeNull();
       const steps = Array.from(host.querySelectorAll('[data-testid="company-prep-steps"] ol > li'));
       expect(steps.map((step) => step.querySelector('strong')?.textContent?.trim())).toEqual(['Free now', 'Premium']);
-      expect(steps[1].querySelector('a')?.getAttribute('href')).toBe('/react/coding/react-debounced-search');
+      // The Premium step keeps its words under the blur but no link to the Premium page.
+      expect(steps[1].querySelector('a')).toBeNull();
+      expect(steps[1].querySelector('.company-resource-link')?.textContent?.trim()).toBeTruthy();
       expect(host.querySelectorAll('[data-testid="company-editorial-faqs"] article h3').length).toBe(2);
       expect(host.querySelector('[data-testid="company-preview-counts"]')).not.toBeNull();
       expect(text).toContain('What you can do now for free');
@@ -1050,8 +1053,12 @@ describe('CompanyPreviewComponent', () => {
       expect(link(3).hasAttribute('inert')).toBeFalse();
       expect(link(3).closest('.company-prompt__details')).toBeNull();
       expect(link(3).textContent?.trim()).toBe('Practise flattening one level (free)');
-      expect(link(0).classList).toContain('company-link--locked');
+      expect(link(0).classList).toContain('company-link--premium');
+      expect(link(0).hasAttribute('inert')).toBeFalse();
+      expect(link(0).querySelector('.company-link__label')?.textContent).toBe('Premium task for this prompt');
       expect(link(0).querySelector('.premium-locked')?.hasAttribute('data-nosnippet')).toBeTrue();
+      // Outside the gate, a locked prompt's free statement is never clipped.
+      expect(cards[3].querySelector('.company-prompt__statement')?.classList).not.toContain('company-prompt__statement--locked');
     });
 
     it('names the locked prompts in a card right after the third one, leading into the plan', async () => {
@@ -1120,7 +1127,7 @@ describe('CompanyPreviewComponent', () => {
     const host = () => fixture.nativeElement as HTMLElement;
     const row = (id: string) => host().querySelector(`[data-testid="company-preview-question-${id}"]`) as HTMLElement;
     const lockedSteps = () => Array.from(host().querySelectorAll('[data-testid="company-prep-steps"] li > div'))
-      .map((step) => [step.querySelector('a')?.textContent?.trim(), step.classList.contains('company-locked'), step.hasAttribute('inert')]);
+      .map((step) => [step.querySelector('.company-resource-link')?.textContent?.trim(), step.classList.contains('company-locked'), step.hasAttribute('inert')]);
 
     it('keeps a visitor from reading Premium names in a catalog guide, with free ones, chips and the process open', async () => {
       await createComponent('airbnb', AIRBNB, AUTHORED_COMPANY_PREVIEWS, COMPANY_EDITORIAL_NOTES);
@@ -1133,6 +1140,9 @@ describe('CompanyPreviewComponent', () => {
 
       expect(lockedSteps()).toContain(['Closures', false, false]);
       expect(lockedSteps()).toContain(['Chips input with autocomplete in React', true, true]);
+      // A blurred step carries no link: the Premium page's address is not in the row.
+      expect(host().querySelector('[data-testid="company-prep-steps"] li > div.company-locked a')).toBeNull();
+      expect(host().querySelector('[data-testid="company-prep-steps"] li > div:not(.company-locked) a')).not.toBeNull();
 
       const report = host().querySelector('[data-testid="company-report-react-chips-input-autocomplete"] .reports-item__title') as HTMLElement;
       expect(report.classList).toContain('company-link--locked');
@@ -1179,11 +1189,23 @@ describe('CompanyPreviewComponent', () => {
       await createComponent('amazon');
       const first = host().querySelector('.company-prompt') as HTMLElement;
       const link = first.querySelector('.company-resource-link--inline') as HTMLElement;
-      expect(link.classList).toContain('company-link--locked');
+      // A readable, clickable label; the page's name stays in the DOM under the lock, out of snippets.
+      expect(link.classList).toContain('company-link--premium');
+      expect(link.hasAttribute('inert')).toBeFalse();
+      expect(link.querySelector('.company-link__label')?.textContent).toBe('Premium task for this prompt');
       expect(link.querySelector('.premium-locked')?.hasAttribute('data-nosnippet')).toBeTrue();
-      expect(first.querySelector('.company-link__tag')?.textContent).toBe('Premium task');
+      expect(first.querySelector('.company-link__tag')).toBeNull();
       expect(host().querySelector('.company-guide-cta p:not(.preview-kicker)')?.textContent?.trim())
         .toBe(`Premium opens prompts 4 to 7 with their answer guides, every question in the Amazon set and all ${PREMIUM_QUESTION_COUNT} Premium questions in the library.`);
+    });
+
+    it('counts locked samples as exercises, so a widget in three frameworks is one', async () => {
+      await createComponent('airbnb', AIRBNB, AUTHORED_COMPANY_PREVIEWS, COMPANY_EDITORIAL_NOTES);
+      const sample = (id: string, access: 'free' | 'premium') => ({ id, access, kind: 'coding' }) as unknown as CompanyPreviewQuestion;
+      expect(fixture.componentInstance.premiumCount([
+        sample('react-star-rating', 'premium'), sample('angular-star-rating', 'premium'), sample('vue-star-rating', 'premium'),
+        sample('js-closures', 'premium'), sample('js-event-loop', 'free'),
+      ])).toBe(2);
     });
 
     it('counts a click on the sample card as its own surface', async () => {
@@ -1344,6 +1366,14 @@ describe('CompanyPreviewComponent', () => {
       expect(gateCard('company-sources-gate')?.querySelector('.company-prompt-gate__line')?.textContent).toMatch(new RegExp(`^${sourceRows} public accounts and official pages`));
       expect(gateCard('company-process-gate')?.querySelector('.company-prompt-gate__line')?.textContent).toMatch(new RegExp(`^${reports} public reports and ${sourceRows - reports} official pages`));
 
+      // The prompt cards follow the table's rule: the report is named, its link waits for the account; only the
+      // locked statement is clipped.
+      expect(host().querySelectorAll('[data-testid="company-prompt-reported-round"]').length).toBeGreaterThan(0);
+      expect(host().querySelectorAll('[data-testid="company-prompt-reported-round"] a').length).toBe(0);
+      expect(host().querySelector('[data-testid="company-prompt-reported-round"] .company-link__tag')?.textContent).toBe('Free account');
+      expect(cards[0].querySelector('.company-prompt__statement')?.classList).not.toContain('company-prompt__statement--locked');
+      expect(cards[1].querySelector('.company-prompt__statement')?.classList).toContain('company-prompt__statement--locked');
+
       const graph = (seo.updateTags.calls.mostRecent().args[0] as any).jsonLd as any[];
       const collection = graph.find((node) => node?.['@type'] === 'CollectionPage');
       expect(collection.isAccessibleForFree).toBeFalse();
@@ -1360,6 +1390,7 @@ describe('CompanyPreviewComponent', () => {
       expect(host().querySelector('.interview-process__tag')).toBeNull();
       expect(host().querySelectorAll('.interview-process__sources a').length).toBeGreaterThan(0);
       expect(host().querySelector('.company-source-list')?.classList).not.toContain('premium-locked');
+      expect(host().querySelectorAll('[data-testid="company-prompt-reported-round"] a').length).toBeGreaterThan(0);
 
       const cards = prompts();
       expect(cards.every((card) => card.querySelector('.company-prompt__statement .premium-locked') === null)).toBeTrue();

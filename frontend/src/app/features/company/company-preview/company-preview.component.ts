@@ -25,6 +25,8 @@ import { AUTHORED_COMPANY_PREVIEWS_TOKEN } from '../../../shared/company-preview
 import type { CompanyEditorialNotes } from '../../../shared/company-previews/company-editorial-notes.model';
 import { COMPANY_EDITORIAL_NOTES, type CompanyEditorialNotesRegistry } from '../../../shared/company-previews/company-editorial-notes';
 import { companyEvidence, fillAuthoredPreview, type CompanyEvidence } from './company-evidence';
+// Not the plan's family helper: an import from shared/company-previews would date every guide by this component.
+import { FRAMEWORK_FAMILY_BY_ID } from '../../../shared/framework-families';
 import { COMPANY_OFFICIAL_GUIDES, type CompanyOfficialGuide } from '../../../shared/company-previews/company-official-guides';
 import { isCompanyGuideGated } from './company-guide-gate';
 import {
@@ -669,8 +671,9 @@ export class CompanyPreviewComponent implements OnInit {
     return items.filter((item) => item.access === 'free').length;
   }
 
+  /** Premium items counted as exercises: a widget published in three frameworks is one, not three. */
   premiumCount(items: CompanyPreviewQuestion[]): number {
-    return items.filter((item) => item.access === 'premium').length;
+    return new Set(items.filter((item) => item.access === 'premium').map((item) => FRAMEWORK_FAMILY_BY_ID.get(item.id)?.key ?? `${item.kind}:${item.id}`)).size;
   }
 
   /** "Coding 8 · Concepts 14": a kind the set does not hold is left out rather than shown as zero. */

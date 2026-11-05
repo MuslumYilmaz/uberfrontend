@@ -23,6 +23,15 @@ test('accepts Premium links that show no name, locks kept out of snippets and sc
   );
 });
 
+test('accepts a Premium link whose readable words are a generic label, with the name under the lock', () => {
+  const labelled = '<a href="/react/coding/react-chips-input-autocomplete" class="company-link--premium"><span class="company-link__label">Premium task for this prompt</span><span class="premium-locked company-link__name" data-nosnippet>Chips input in React</span></a>';
+  assert.deepEqual(premiumLockViolations(labelled, { premiumRoutes, collectionPage: marked }), []);
+  const named = '<a href="/react/coding/react-chips-input-autocomplete"><span class="company-link__label">Premium: Chips input in React</span></a>';
+  assert.deepEqual(premiumLockViolations(named, { premiumRoutes, collectionPage: { isAccessibleForFree: true } }), [
+    'readable link to /react/coding/react-chips-input-autocomplete: "Premium: Chips input in React"',
+  ]);
+});
+
 test('flags a readable Premium name, a lock a snippet could quote and schema out of step with the locks', () => {
   assert.deepEqual(
     premiumLockViolations('<a href="/react/coding/react-chips-input-autocomplete?src=guide">Chips input in React</a>', {
