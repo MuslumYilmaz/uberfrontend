@@ -350,6 +350,15 @@ test.describe('company plan from a company guide', () => {
     await page.goto('/companies/google/preview');
     await expect(page.getByTestId('company-process-gate')).toHaveCount(0);
     await expect(process.locator('.interview-process__tag')).toHaveCount(0);
+    // A stacked table keeps each row's sources behind "Show the sources"; a wide one shows them at once.
+    await expect(process.locator('.interview-process__sources').first()).toBeAttached();
+    const sourcesToggle = process.locator('.interview-process__toggle').first();
+    if (await sourcesToggle.isVisible()) {
+      await expect(async () => {
+        await sourcesToggle.click();
+        await expect(sourcesToggle).toHaveAttribute('aria-expanded', 'true', { timeout: 1000 });
+      }).toPass();
+    }
     await expect(process.locator('.interview-process__sources a').first()).toBeVisible();
     await expect(prompts.nth(1).locator('.company-prompt__statement .premium-locked')).toHaveCount(0);
     await expect(prompts.nth(1).locator('.company-prompt__details')).toHaveAttribute('inert', '');

@@ -44,7 +44,7 @@ export const AGODA_COMPANY_PREVIEW: AuthoredCompanyPreview = {
   hero: {
     kicker: 'Public Agoda prep guide',
     subtitle:
-      'Prepare with five practice prompts shaped by public frontend accounts from 2025 and 2026, most of them Bangkok relocation loops, two of them interviewed from India, and by Agoda\'s own description of its four rounds: a hotel search page frontend designed from scratch for a million users and several teams, a scalable architecture for a travel booking site, a React and TypeScript take-home on stock data, a one-hour web-fundamentals round that runs from CDN caching to CSRF and Core Web Vitals, and a JavaScript implementation round beside a HackerRank coding hour.',
+      'Prepare with five practice prompts shaped by frontend accounts from 2025 and 2026 and by Agoda\'s description of its four rounds: a HackerRank coding hour, a Platform hour on web fundamentals or JavaScript, an architecture round and a React take-home.',
     caveat:
       'This guide uses public, self-reported interview accounts and Agoda\'s published careers and engineering pages to create realistic constraints. It does not claim access to private interview material, a fixed interview format, or the stack of every Agoda team.',
     chips: ['5 practice prompts', 'React, TypeScript, web platform', 'Full practice set requires Premium'],

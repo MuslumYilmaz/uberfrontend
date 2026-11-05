@@ -50,7 +50,7 @@ export const SHOPEE_COMPANY_PREVIEW: AuthoredCompanyPreview = {
   hero: {
     kicker: 'Public Shopee prep guide',
     subtitle:
-      'Prepare with five practice prompts shaped by public frontend interview accounts from Ho Chi Minh City, mainland China, Singapore campus hiring and Taipei, 2020 to 2025: a Promise written without using Promise after event-loop and async questions, a recursive multi-level hover menu in React, a function cache keyed by its arguments beside flatten, deep clone and new, an HTTP, caching, cookie and security round, and a 90-minute written test with CSS specificity and centring questions.',
+      'Prepare with five practice prompts shaped by public frontend accounts from Vietnam, China, Singapore and Taiwan, 2020 to 2025: a Promise written from scratch, a React hover menu, a function cache, an HTTP and security round and a CSS test.',
     caveat:
       'This guide uses public, self-reported interview accounts, most of them written in Chinese between 2020 and 2022, together with Shopee\'s own hiring page and a reprinted campus posting, to create realistic constraints. It does not claim access to private interview material, a fixed interview format, or the stack of every Shopee team.',
     chips: ['5 practice prompts', 'JavaScript, React, HTTP, CSS', 'Full practice set requires Premium'],

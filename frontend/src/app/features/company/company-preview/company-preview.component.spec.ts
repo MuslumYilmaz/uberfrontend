@@ -819,6 +819,13 @@ describe('CompanyPreviewComponent', () => {
       const guideRows = AUTHORED_COMPANY_PREVIEWS['agoda'].sources.items.length;
       expect(rows.length).toBeGreaterThan(guideRows);
       expect(rows[guideRows].querySelector('p')?.textContent).toMatch(/read for the process table, where it describes the /);
+      // The cited-only sources wait behind one closed line with their count; the guide's own notes stay open.
+      const more = host.querySelector('[data-testid="company-sources-more"]') as HTMLDetailsElement;
+      expect(more.open).toBeFalse();
+      expect(more.querySelector('summary')?.textContent?.trim()).toBe(`Show the ${rows.length - guideRows} sources cited only on the process table`);
+      expect(more.querySelectorAll('article').length).toBe(rows.length - guideRows);
+      expect(host.querySelectorAll('.company-faq-item').length).toBeGreaterThan(0);
+      expect((host.querySelector('.company-faq-item') as HTMLDetailsElement).open).toBeFalse();
       expect(new Set(rows.map((row) => row.querySelector('a')?.getAttribute('href'))).size).toBe(rows.length);
       expect(host.querySelector('.preview-subtitle')?.textContent).not.toContain('{');
       const reports = rows.filter((row) => row.querySelector('a')?.getAttribute('rel')?.includes('nofollow')).length;
@@ -836,6 +843,24 @@ describe('CompanyPreviewComponent', () => {
         expect(chip).withContext(slug).toBe(`${prompts} representative prompts`);
         TestBed.resetTestingModule();
       }
+    });
+
+    it('keeps the source notes in the page but closed, and puts the round decoders after the prompts', async () => {
+      await createComponent('acme', undefined, registry);
+      const host: HTMLElement = fixture.nativeElement;
+      const details = host.querySelector('.company-process-note details') as HTMLDetailsElement;
+      expect(details).not.toBeNull();
+      expect(details.open).toBeFalse();
+      expect(details.querySelector('summary')?.textContent).toContain('Show the source notes');
+      expect(details.textContent).toContain(acme.sourceBoundary.paragraphs[0]);
+      expect(host.querySelector('#acme-published-context')?.closest('details')).toBeNull();
+
+      // The fixture has no process table; the prompts come first, then the decoder, then the study notes.
+      const prompts = host.querySelector('#acme-practice-prompts')?.closest('section') as HTMLElement;
+      const spotlight = host.querySelector('[data-testid="company-round-spotlight"]') as HTMLElement;
+      const study = host.querySelector('#acme-study-first')?.closest('section') as HTMLElement;
+      expect(prompts.compareDocumentPosition(spotlight) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+      expect(spotlight.compareDocumentPosition(study) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     });
 
     it('publishes CollectionPage, ItemList and BreadcrumbList metadata for the authored guide', async () => {

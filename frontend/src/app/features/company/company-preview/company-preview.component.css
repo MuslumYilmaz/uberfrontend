@@ -317,6 +317,45 @@
   margin: 0;
 }
 
+/* The source notes open on request: a readable toggle, the paragraphs beneath it. */
+.company-process-note__details {
+  display: grid;
+  gap: 9px;
+}
+
+.company-process-note__summary {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  cursor: pointer;
+  color: var(--uf-accent);
+  font-weight: 600;
+  list-style: none;
+}
+
+.company-process-note__summary::-webkit-details-marker {
+  display: none;
+}
+
+.company-process-note__summary::before {
+  content: '▸';
+  margin-right: 6px;
+  transition: transform 160ms ease;
+}
+
+.company-process-note__details[open] > .company-process-note__summary::before {
+  transform: rotate(90deg);
+}
+
+.company-process-note__hide,
+.company-process-note__details[open] > .company-process-note__summary .company-process-note__show {
+  display: none;
+}
+
+.company-process-note__details[open] > .company-process-note__summary .company-process-note__hide {
+  display: inline;
+}
+
 .company-process-note p {
   color: var(--uf-text-secondary);
   max-width: 84ch;
@@ -1015,4 +1054,100 @@
 
 .reports-item__sources a {
   color: var(--uf-text-primary);
+}
+
+/* The sources only the process table cites wait behind one line; the guide's own notes stay open. */
+.company-source-list__more {
+  grid-column: 1 / -1;
+}
+
+.company-source-list__summary,
+.company-faq-item__summary {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  cursor: pointer;
+  color: var(--uf-accent);
+  font-weight: 600;
+  list-style: none;
+}
+
+.company-source-list__summary::-webkit-details-marker,
+.company-faq-item__summary::-webkit-details-marker {
+  display: none;
+}
+
+.company-source-list__summary::before,
+.company-faq-item__summary::before {
+  content: '▸';
+  flex: none;
+  margin-right: 6px;
+  transition: transform 160ms ease;
+}
+
+.company-source-list__more[open] > .company-source-list__summary::before,
+.company-faq-item[open] > .company-faq-item__summary::before {
+  transform: rotate(90deg);
+}
+
+.company-source-list__extra {
+  display: grid;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+/* Each answer opens on its question. */
+.company-faq-item {
+  padding: 4px 0;
+  border-top: 1px solid var(--uf-border-subtle);
+}
+
+.company-faq-item__summary h3 {
+  display: inline;
+  margin: 0;
+  color: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.company-faq-item > p {
+  margin: 0 0 12px;
+}
+
+/* Wide screens list every guide; a phone shows the first six until asked. */
+.company-related-guides__toggle {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .company-related-guides__list--collapsed li:nth-child(n + 7) {
+    display: none;
+  }
+
+  .company-related-guides__toggle {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    margin-top: 4px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--uf-accent);
+    font: inherit;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+  }
+}
+
+/* Collapsed questions read as one column; the cited-only sources keep the list's card grid once open. */
+.company-faq-list {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+}
+
+.company-source-list__extra {
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
 }

@@ -337,6 +337,14 @@ export class CompanyPreviewComponent implements OnInit {
   authoredPreview: AuthoredCompanyPreview | null = null;
   /** The authored guide's sources and counts, the page's one set of numbers. */
   evidence: CompanyEvidence | null = null;
+  /** The other guides' list is long; a phone shows the first few until asked. */
+  readonly relatedExpanded = signal(false);
+
+  /** The sources only the process table cites, after the guide's own list. */
+  extraSources(): readonly AuthoredSource[] {
+    const own = this.authoredPreview?.sources.items.length ?? 0;
+    return this.evidence?.sources.slice(own) ?? [];
+  }
   /** The other company guides; built from the generated metadata so no company page re-dates. */
   relatedCompanyLinks: RelatedCompanyLink[] = [];
   /** Imported directly, not injected: the SEO inventory scopes the registry per company that way. Specs override the field. */

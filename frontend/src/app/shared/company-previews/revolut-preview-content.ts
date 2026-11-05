@@ -49,7 +49,7 @@ export const REVOLUT_COMPANY_PREVIEW: AuthoredCompanyPreview = {
   hero: {
     kicker: 'Public Revolut prep guide',
     subtitle:
-      'Prepare with five practice prompts shaped by public frontend accounts from 2023 to 2025 and by the Revolut Tech post on web engineering: a one-hour TypeScript task that fetches data and renders it with loading and error states, a pairing session against an authenticated API, a three-task HackerRank screen, a recruiter-run theory check, and a frontend system-design round about product features and API contracts.',
+      'Prepare with five practice prompts shaped by public frontend accounts from 2023 to 2025 and the Revolut Tech post: a one-hour TypeScript fetch-and-render task, an API pairing session, a three-task HackerRank screen, a theory check and a system-design round.',
     caveat:
       'This guide uses public, self-reported interview accounts and the published Revolut Tech post on web engineering to create realistic constraints. It does not claim access to private interview material, a fixed interview format, or the stack of every Revolut team.',
     chips: ['5 practice prompts', 'TypeScript, React, API contracts', 'Full practice set requires Premium'],

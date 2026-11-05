@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { isPremiumRoute } from '../../../core/utils/premium-route.util';
 import type {
@@ -29,6 +29,23 @@ export class CompanyInterviewProcessComponent {
    * "Free account" tag in their place; what each round asks stays open for everyone.
    */
   @Input() showSourceLinks = true;
+
+  /** The rows whose source list a phone reader opened; wider screens show every list regardless. */
+  private readonly opened = signal<ReadonlySet<string>>(new Set());
+
+  expanded(variantIndex: number, stage: InterviewProcessStage): boolean {
+    return this.opened().has(`${variantIndex}:${stage.stage}`);
+  }
+
+  toggleSources(variantIndex: number, stage: InterviewProcessStage): void {
+    const key = `${variantIndex}:${stage.stage}`;
+    this.opened.update((current) => {
+      const next = new Set(current);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  }
 
   practiceLocked(path: string): boolean {
     return this.lockPremium && isPremiumRoute(path);

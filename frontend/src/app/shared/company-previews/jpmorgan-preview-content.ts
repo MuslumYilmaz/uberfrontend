@@ -52,7 +52,7 @@ export const JPMORGAN_COMPANY_PREVIEW: AuthoredCompanyPreview = {
   hero: {
     kicker: 'Public JPMorgan Chase prep guide',
     subtitle:
-      'Prepare with five practice prompts shaped by public frontend accounts from 2021 to 2026 and by the official hiring pages: a generic memoization function in a security-and-React round, a polyfill for reduce with promise, generator and currying follow-ups, a generic async promise React hook with typed state and effect cleanup, a to-do list whose tasks carry a changeable priority, and the React and JavaScript conversation round on closures, clones, hooks, storage and CORS.',
+      'Prepare with five practice prompts shaped by public frontend accounts from 2021 to 2026 and official hiring pages: a memoization function, a reduce polyfill, a typed async React hook, a priority to-do list and the React and JavaScript conversation round.',
     caveat:
       'This guide uses public, self-reported interview accounts and the official JPMorgan Chase hiring pages to create realistic constraints. It does not claim access to private interview material, a fixed interview format, or the stack of every JPMorgan Chase team; each team runs its own loop.',
     chips: ['5 practice prompts', 'JavaScript, React, web security', 'Full practice set requires Premium'],

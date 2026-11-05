@@ -38,7 +38,7 @@ export const SPOTIFY_COMPANY_PREVIEW: AuthoredCompanyPreview = {
   hero: {
     kicker: 'Public Spotify prep guide',
     subtitle:
-      'Prepare with seven practice prompts shaped by public web engineer accounts from 2021 and 2022, more recent Glassdoor previews and the official Life at Spotify pages: a search form that fetches from an API and renders into the DOM without a framework, an image carousel as a practice build, a traffic light, an event-loop output question, a closure that limits calls, a system-design round that includes the backend, and the algorithms round.',
+      'Prepare with seven practice prompts shaped by public web engineer accounts from 2021 and 2022 and the Life at Spotify pages: a framework-free search form, an image carousel, an event-loop question, a call limiter, system design and algorithms.',
     caveat:
       'This guide uses public, self-reported interview accounts and the official Spotify hiring pages to create realistic constraints. It does not claim access to private interview material, a fixed interview format, or the stack of every Spotify team.',
     chips: ['7 practice prompts', 'HTML, JavaScript, DOM, system design', 'Full practice set requires Premium'],

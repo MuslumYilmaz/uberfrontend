@@ -89,6 +89,36 @@ describe('CompanyInterviewProcessComponent', () => {
     expect(report?.parentElement?.textContent).toContain('Apr 2023');
   });
 
+  it('keeps each source list behind a toggle for stacked rows, open on request', async () => {
+    await TestBed.configureTestingModule({ imports: [CompanyInterviewProcessComponent], providers: [provideRouter([])] }).compileComponents();
+    const fixture = TestBed.createComponent(CompanyInterviewProcessComponent);
+    fixture.componentRef.setInput('slug', 'acme');
+    fixture.componentRef.setInput('companyLabel', 'Acme');
+    fixture.componentRef.setInput('process', FIXTURE);
+    fixture.detectChanges();
+    const host = fixture.nativeElement as HTMLElement;
+    const rows = Array.from(host.querySelectorAll('tbody tr')) as HTMLElement[];
+    const toggle = (row: HTMLElement) => row.querySelector('.interview-process__toggle') as HTMLButtonElement;
+    const list = (row: HTMLElement) => row.querySelector('.interview-process__sources') as HTMLElement;
+
+    // Every row starts closed, with its links still in the page.
+    expect(toggle(rows[0]).textContent?.trim()).toBe('Show the sources');
+    expect(toggle(rows[0]).getAttribute('aria-expanded')).toBe('false');
+    expect(list(rows[0]).classList).toContain('interview-process__sources--collapsed');
+    expect(list(rows[0]).querySelectorAll('a').length).toBeGreaterThan(0);
+
+    // A tap opens that row alone; a second tap closes it.
+    toggle(rows[0]).click();
+    fixture.detectChanges();
+    expect(toggle(rows[0]).textContent?.trim()).toBe('Hide the sources');
+    expect(toggle(rows[0]).getAttribute('aria-expanded')).toBe('true');
+    expect(list(rows[0]).classList).not.toContain('interview-process__sources--collapsed');
+    expect(list(rows[1]).classList).toContain('interview-process__sources--collapsed');
+    toggle(rows[0]).click();
+    fixture.detectChanges();
+    expect(list(rows[0]).classList).toContain('interview-process__sources--collapsed');
+  });
+
   it('links the matching practice page through the router', async () => {
     const host = await render(FIXTURE);
     const practice = host.querySelector('.interview-process__practice a');

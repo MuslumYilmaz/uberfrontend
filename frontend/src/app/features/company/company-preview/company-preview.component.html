@@ -694,33 +694,6 @@
     <app-company-interview-process *ngIf="interviewProcess as process" [slug]="slug" [companyLabel]="label" [process]="process" [lockPremium]="tier() === 'guest'" [showSourceLinks]="!detailLocked()"></app-company-interview-process>
     <ng-container *ngTemplateOutlet="lockGateCard; context: { $implicit: processGate() }"></ng-container>
 
-    <section
-      class="company-guide-section company-round-spotlight"
-      *ngFor="let round of preview.roundSpotlights"
-      [attr.aria-labelledby]="preview.slug + '-round-' + round.id"
-      data-testid="company-round-spotlight">
-      <div class="company-guide-section__head">
-        <p class="preview-kicker">{{ round.kicker }}</p>
-        <h2 [attr.id]="preview.slug + '-round-' + round.id">{{ round.title }}</h2>
-        <p *ngFor="let paragraph of round.lede">{{ paragraph }}</p>
-      </div>
-      <dl class="company-round-facts">
-        <ng-container *ngFor="let fact of round.facts; let i = index">
-          <dt>{{ fact.label }}</dt>
-          <dd><span [class.company-locked]="detailLocked() && i > 0" [class.premium-locked]="detailLocked() && i > 0" [attr.data-nosnippet]="detailLocked() && i > 0 ? '' : null" [attr.inert]="detailLocked() && i > 0 ? '' : null">{{ fact.value }}</span></dd>
-        </ng-container>
-      </dl>
-      <p class="company-round-links" *ngIf="round.practiceLink || round.processLink">
-        <a
-          *ngIf="round.practiceLink?.path as path"
-          class="company-round-links__link"
-          [class.company-link--premium]="linkLocked(path)"
-          [routerLink]="path"><ng-container *ngIf="linkLocked(path); else openRoundLink"><span class="company-link__label">Premium task for this round</span><span class="premium-locked company-link__name" data-nosnippet>{{ round.practiceLink!.label }}</span></ng-container><ng-template #openRoundLink>{{ round.practiceLink!.label }}</ng-template></a>
-        <a *ngIf="round.practiceLink && !round.practiceLink.path && round.practiceLink.fragment" class="company-round-links__link" [attr.href]="'#' + round.practiceLink.fragment">{{ round.practiceLink.label }}</a>
-        <a *ngIf="round.processLink as row" class="company-round-links__link" [attr.href]="'#' + row.fragment">{{ row.label }}</a>
-      </p>
-    </section>
-
     <section class="company-guide-section" [attr.aria-labelledby]="preview.slug + '-practice-prompts'">
       <div class="company-guide-section__head">
         <p class="preview-kicker">{{ preview.prompts.kicker }}</p>
@@ -791,6 +764,33 @@
       </div>
     </section>
 
+    <section
+      class="company-guide-section company-round-spotlight"
+      *ngFor="let round of preview.roundSpotlights"
+      [attr.aria-labelledby]="preview.slug + '-round-' + round.id"
+      data-testid="company-round-spotlight">
+      <div class="company-guide-section__head">
+        <p class="preview-kicker">{{ round.kicker }}</p>
+        <h2 [attr.id]="preview.slug + '-round-' + round.id">{{ round.title }}</h2>
+        <p *ngFor="let paragraph of round.lede">{{ paragraph }}</p>
+      </div>
+      <dl class="company-round-facts">
+        <ng-container *ngFor="let fact of round.facts; let i = index">
+          <dt>{{ fact.label }}</dt>
+          <dd><span [class.company-locked]="detailLocked() && i > 0" [class.premium-locked]="detailLocked() && i > 0" [attr.data-nosnippet]="detailLocked() && i > 0 ? '' : null" [attr.inert]="detailLocked() && i > 0 ? '' : null">{{ fact.value }}</span></dd>
+        </ng-container>
+      </dl>
+      <p class="company-round-links" *ngIf="round.practiceLink || round.processLink">
+        <a
+          *ngIf="round.practiceLink?.path as path"
+          class="company-round-links__link"
+          [class.company-link--premium]="linkLocked(path)"
+          [routerLink]="path"><ng-container *ngIf="linkLocked(path); else openRoundLink"><span class="company-link__label">Premium task for this round</span><span class="premium-locked company-link__name" data-nosnippet>{{ round.practiceLink!.label }}</span></ng-container><ng-template #openRoundLink>{{ round.practiceLink!.label }}</ng-template></a>
+        <a *ngIf="round.practiceLink && !round.practiceLink.path && round.practiceLink.fragment" class="company-round-links__link" [attr.href]="'#' + round.practiceLink.fragment">{{ round.practiceLink.label }}</a>
+        <a *ngIf="round.processLink as row" class="company-round-links__link" [attr.href]="'#' + row.fragment">{{ row.label }}</a>
+      </p>
+    </section>
+
     <section class="company-guide-section company-guide-section--intro" [attr.aria-labelledby]="preview.slug + '-study-first'">
       <div>
         <p class="preview-kicker">{{ preview.studyPriorities.kicker }}</p>
@@ -805,7 +805,11 @@
     <aside class="company-process-note" [attr.aria-labelledby]="preview.slug + '-published-context'">
       <p class="preview-kicker">{{ preview.sourceBoundary.kicker }}</p>
       <h2 [attr.id]="preview.slug + '-published-context'">{{ preview.sourceBoundary.title }}</h2>
+      <!-- Closed by default so the page reads shorter; the text stays in the page for search and opens on request. -->
+      <details class="company-process-note__details">
+        <summary class="company-process-note__summary"><span class="company-process-note__show">Show the source notes</span><span class="company-process-note__hide">Hide the source notes</span></summary>
       <p *ngFor="let paragraph of preview.sourceBoundary.paragraphs; let i = index"><span [class.company-locked]="detailLocked() && i > 0" [class.premium-locked]="detailLocked() && i > 0" [attr.data-nosnippet]="detailLocked() && i > 0 ? '' : null" [attr.inert]="detailLocked() && i > 0 ? '' : null">{{ paragraph }}</span></p>
+      </details>
     </aside>
 
     <section class="company-guide-section" *ngIf="preview.roleLenses as lenses" [attr.aria-labelledby]="preview.slug + '-role-lenses'">
@@ -861,10 +865,11 @@
         <h2 [attr.id]="preview.slug + '-prep-faq'">{{ preview.faqs.title }}</h2>
       </div>
       <div class="company-faq-list">
-        <article *ngFor="let item of preview.faqs.items">
-          <h3>{{ item.question }}</h3>
+        <!-- Each answer opens on its question; the text stays in the page for search. -->
+        <details class="company-faq-item" *ngFor="let item of preview.faqs.items">
+          <summary class="company-faq-item__summary"><h3>{{ item.question }}</h3></summary>
           <p>{{ item.answer }}</p>
-        </article>
+        </details>
       </div>
     </section>
 
@@ -892,12 +897,24 @@
         <p>{{ preview.sources.intro }}</p>
       </div>
       <div class="company-source-list" [class.company-locked]="detailLocked()" [class.premium-locked]="detailLocked()" [attr.data-nosnippet]="detailLocked() ? '' : null" [attr.inert]="detailLocked() ? '' : null">
-        <article *ngFor="let source of evidence?.sources ?? preview.sources.items">
+        <article *ngFor="let source of preview.sources.items">
           <h3>
             <a [href]="source.url" target="_blank" [attr.rel]="sourceRel(source)">{{ source.label }}</a>
           </h3>
           <p>{{ source.note }}</p>
         </article>
+        <!-- The sources only the process table cites stay in the page but open on request: they are the longest part of the list. -->
+        <details class="company-source-list__more" *ngIf="extraSources().length as extra" data-testid="company-sources-more">
+          <summary class="company-source-list__summary">Show the {{ extra }} {{ extra === 1 ? 'source' : 'sources' }} cited only on the process table</summary>
+          <div class="company-source-list__extra">
+            <article *ngFor="let source of extraSources()">
+              <h3>
+                <a [href]="source.url" target="_blank" [attr.rel]="sourceRel(source)">{{ source.label }}</a>
+              </h3>
+              <p>{{ source.note }}</p>
+            </article>
+          </div>
+        </details>
       </div>
       <ng-container *ngTemplateOutlet="lockGateCard; context: { $implicit: sourcesGate(evidence?.counts?.sources ?? preview.sources.items.length) }"></ng-container>
     </section>
@@ -1140,11 +1157,15 @@
       <p class="preview-kicker">More company guides</p>
       <h2 id="company-related-guides-title">Other company frontend interview guides</h2>
     </div>
-    <ul class="company-related-guides__list">
+    <ul class="company-related-guides__list" [class.company-related-guides__list--collapsed]="!relatedExpanded()">
       <li *ngFor="let c of relatedCompanyLinks">
         <a class="company-resource-link company-resource-link--inline" [routerLink]="c.link">{{ c.label }} frontend interview questions</a>
       </li>
     </ul>
+    <!-- A phone shows the first few guides; every link stays in the page. -->
+    <button type="button" class="company-related-guides__toggle" *ngIf="relatedCompanyLinks.length > 6" [attr.aria-expanded]="relatedExpanded()" (click)="relatedExpanded.set(!relatedExpanded())">
+      {{ relatedExpanded() ? 'Show fewer guides' : 'Show all ' + relatedCompanyLinks.length + ' guides' }}
+    </button>
   </section>
 
   <!-- The one line every guide carries, after its title rather than before it. -->

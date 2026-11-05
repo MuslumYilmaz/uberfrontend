@@ -44,7 +44,7 @@ export const AMAZON_COMPANY_PREVIEW: AuthoredCompanyPreview = {
   hero: {
     kicker: 'Public Amazon prep guide',
     subtitle:
-      'Prepare with seven practice prompts shaped by Amazon\'s own Front End Engineer preparation page and {reports} public interview accounts from 2020 to 2025: a five-star rating widget in vanilla JavaScript, a carousel with state follow-ups, a modal with language tabs, a countdown timer built in thirty minutes, a paginated address widget, a file explorer from an ASCII sketch, and the front-end design of an image service or an ordering app.',
+      'Prepare with seven practice prompts shaped by Amazon\'s Front End Engineer preparation page and {reports} public interview accounts from 2020 to 2025: a star rating widget, a carousel, a countdown timer, a file explorer and an image service design.',
     caveat:
       'This guide uses public, self-reported interview accounts and Amazon\'s published preparation page to create realistic constraints. It does not claim access to private interview material. The accounts span five years, two levels and three countries, so no single loop described here is the format you will get.',
     chips: ['7 practice prompts', 'Vanilla JavaScript, React, UI widgets, front-end design', 'Full practice set requires Premium'],
