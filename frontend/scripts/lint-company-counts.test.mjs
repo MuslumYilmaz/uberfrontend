@@ -64,6 +64,22 @@ test('flags hand-written totals, wrong prompt counts, impossible sub-counts, unk
   ]);
 });
 
+test('a round decoder may rehearse on an open prompt or a page, never on a locked prompt', () => {
+  const spotlights = (fragment) => [{ id: 'screen', kicker: 'k', title: 't', lede: [], facts: [], practiceLink: { label: 'Rehearse it', fragment } }];
+  const open = guide({ prompts: { kicker: 'k', title: 't', intro: 'Intro.', itemListName: 'n', items: [{ id: 'a' }, { id: 'b' }, { id: 'c' }, { id: 'd' }] }, roundSpotlights: spotlights('c') });
+  assert.deepEqual(checkGuide(open, null, evidence).filter((error) => error.includes('roundSpotlights')), []);
+  const locked = guide({ prompts: open.prompts, roundSpotlights: spotlights('d') });
+  assert.deepEqual(checkGuide(locked, null, evidence).filter((error) => error.includes('roundSpotlights')), [
+    '[roundSpotlights.screen] practice link leads to prompt 4, which a visitor cannot open; link an open prompt or a free page',
+  ]);
+  const missing = guide({ prompts: open.prompts, roundSpotlights: spotlights('zzz') });
+  assert.deepEqual(checkGuide(missing, null, evidence).filter((error) => error.includes('roundSpotlights')), [
+    '[roundSpotlights.screen] practice link points at #zzz, which is not a prompt',
+  ]);
+  const page = guide({ prompts: open.prompts, roundSpotlights: [{ ...spotlights('d')[0], practiceLink: { label: 'Rehearse it', path: '/javascript/trivia/js-closures' } }] });
+  assert.deepEqual(checkGuide(page, null, evidence).filter((error) => error.includes('roundSpotlights')), []);
+});
+
 test('every authored guide states its counts from the page', () => {
   const { guides, failures } = lintCompanyCounts();
   assert.ok(guides >= 17, `expected the authored guides, found ${guides}`);

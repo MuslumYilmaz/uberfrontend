@@ -703,7 +703,7 @@ const EDITORIAL_NOTE_CASES = [
       'data-testid="company-reports-describe"',
       'data-testid="company-interview-process"',
       'data-testid="company-prep-steps"',
-      '>What you can do now for free</h2>',
+      '>Sample FrontendAtlas practice prompts</h2>',
       'data-testid="company-editorial-faqs"',
       'class="cta-stack"',
     ],
@@ -724,7 +724,7 @@ const EDITORIAL_NOTE_CASES = [
       'data-testid="company-reports-describe"',
       'data-testid="company-interview-process"',
       'data-testid="company-prep-steps"',
-      '>What you can do now for free</h2>',
+      '>Sample FrontendAtlas practice prompts</h2>',
       'data-testid="company-editorial-faqs"',
       'class="cta-stack"',
     ],
@@ -745,7 +745,7 @@ const EDITORIAL_NOTE_CASES = [
       'data-testid="company-reports-describe"',
       'data-testid="company-interview-process"',
       'data-testid="company-prep-steps"',
-      '>What you can do now for free</h2>',
+      '>Sample FrontendAtlas practice prompts</h2>',
       'data-testid="company-editorial-faqs"',
       'class="cta-stack"',
     ],
@@ -766,7 +766,7 @@ const EDITORIAL_NOTE_CASES = [
       'data-testid="company-reports-describe"',
       'data-testid="company-interview-process"',
       'data-testid="company-prep-steps"',
-      '>What you can do now for free</h2>',
+      '>Sample FrontendAtlas practice prompts</h2>',
       'data-testid="company-editorial-faqs"',
       'class="cta-stack"',
     ],
@@ -788,7 +788,7 @@ const EDITORIAL_NOTE_CASES = [
       'data-testid="company-reports-describe"',
       'data-testid="company-interview-process"',
       'data-testid="company-prep-steps"',
-      '>What you can do now for free</h2>',
+      '>Sample FrontendAtlas practice prompts</h2>',
       'data-testid="company-editorial-faqs"',
       'class="cta-stack"',
     ],
@@ -809,7 +809,7 @@ const EDITORIAL_NOTE_CASES = [
       'data-testid="company-reports-describe"',
       'data-testid="company-interview-process"',
       'data-testid="company-prep-steps"',
-      '>What you can do now for free</h2>',
+      '>Sample FrontendAtlas practice prompts</h2>',
       'data-testid="company-editorial-faqs"',
       'class="cta-stack"',
     ],
@@ -830,7 +830,7 @@ const EDITORIAL_NOTE_CASES = [
       'data-testid="company-reports-describe"',
       'data-testid="company-interview-process"',
       'data-testid="company-prep-steps"',
-      '>What you can do now for free</h2>',
+      '>Sample FrontendAtlas practice prompts</h2>',
       'data-testid="company-editorial-faqs"',
       'class="cta-stack"',
     ],
@@ -851,7 +851,7 @@ const EDITORIAL_NOTE_CASES = [
       'data-testid="company-reports-describe"',
       'data-testid="company-interview-process"',
       'data-testid="company-prep-steps"',
-      '>What you can do now for free</h2>',
+      '>Sample FrontendAtlas practice prompts</h2>',
       'data-testid="company-editorial-faqs"',
       'class="cta-stack"',
     ],
@@ -872,7 +872,7 @@ const EDITORIAL_NOTE_CASES = [
       'data-testid="company-reports-describe"',
       'data-testid="company-interview-process"',
       'data-testid="company-prep-steps"',
-      '>What you can do now for free</h2>',
+      '>Sample FrontendAtlas practice prompts</h2>',
       'data-testid="company-editorial-faqs"',
       'class="cta-stack"',
     ],
@@ -891,7 +891,7 @@ const EDITORIAL_NOTE_CASES = [
       'data-testid="company-editorial-intro"',
       'data-testid="company-interview-process"',
       'data-testid="company-prep-steps"',
-      '>What you can do now for free</h2>',
+      '>Sample FrontendAtlas practice prompts</h2>',
       'data-testid="company-editorial-faqs"',
       'class="cta-stack"',
     ],
@@ -4167,7 +4167,7 @@ test.describe('seo-ssr', () => {
       heading: 'Walmart frontend interview process',
       tables: 3,
       after: '<h1',
-      before: '>What you can do now for free</h2>',
+      before: '>Sample FrontendAtlas practice prompts</h2>',
       reportUrl: 'https://leetcode.com/discuss/post/8288813/walmart-interview-for-frontend-role-by-a-s7fk/',
       practicePath: '/react/trivia/react-ssr-hydration',
     },
@@ -4177,7 +4177,7 @@ test.describe('seo-ssr', () => {
       heading: 'Tesla frontend interview process',
       tables: 2,
       after: '<h1',
-      before: '>What you can do now for free</h2>',
+      before: '>Sample FrontendAtlas practice prompts</h2>',
       reportUrl: 'https://www.teamblind.com/post/onsite-experience-8-companies-in-the-past-6-months-0-offers-1niasf5x',
       practicePath: '/javascript/coding/js-color-contrast-ratio',
     },
@@ -4210,7 +4210,7 @@ test.describe('seo-ssr', () => {
       heading: 'Microsoft frontend interview process',
       tables: 2,
       after: '<h1',
-      before: '>What you can do now for free</h2>',
+      before: '>Sample FrontendAtlas practice prompts</h2>',
       officialUrl: 'https://careers.microsoft.com/v2/global/en/hiring-tips',
       reportUrl: 'https://leetcode.com/discuss/interview-experience/5456468/',
       practicePath: '/javascript/trivia/js-event-loop',
@@ -4488,15 +4488,16 @@ test.describe('seo-ssr', () => {
 
   test('same-page hash links stay on the page and scroll their target clear of the fixed header', async ({ page }) => {
     await page.setViewportSize({ width: 1366, height: 900 });
-    await page.goto('/companies/elevenlabs/preview', { waitUntil: 'domcontentloaded' });
+    // Agoda's architecture decoder rehearses on prompt 1, an open prompt on the same page.
+    await page.goto('/companies/agoda/preview', { waitUntil: 'domcontentloaded' });
     await expect(page.getByTestId('header-pricing-link')).toBeVisible();
 
-    await page.getByRole('link', { name: 'Rehearse the 90-minute assessment' }).click();
+    await page.getByRole('link', { name: 'Rehearse the hotel search page architecture prompt' }).click();
 
-    await expect(page).toHaveURL(/\/companies\/elevenlabs\/preview#timed-assessment-react-and-algorithms$/);
-    await expect(page.locator('h1')).toHaveText('ElevenLabs Frontend Interview Questions');
-    await expect(page.locator('#timed-assessment-react-and-algorithms h3')).toBeInViewport();
-    const targetTop = await page.locator('#timed-assessment-react-and-algorithms').evaluate((node) => node.getBoundingClientRect().top);
+    await expect(page).toHaveURL(/\/companies\/agoda\/preview#hotel-search-page-frontend-architecture$/);
+    await expect(page.locator('h1')).toHaveText('Agoda Frontend Interview Questions');
+    await expect(page.locator('#hotel-search-page-frontend-architecture h3')).toBeInViewport();
+    const targetTop = await page.locator('#hotel-search-page-frontend-architecture').evaluate((node) => node.getBoundingClientRect().top);
     expect(targetTop, 'the target clears the fixed header').toBeGreaterThanOrEqual(56);
     expect(targetTop, 'the target is at the top of the viewport, not just somewhere inside it').toBeLessThan(200);
 

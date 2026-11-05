@@ -46,7 +46,7 @@ export const WAYMO_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     title: 'What the report establishes, and what you still need to confirm',
     paragraphs: [
       'A single senior loop on PracHub (Simulation team, May 2026; curated and edited by PracHub) describes the rounds this guide is modelled on; {reports} public accounts inform the guide and its process table in all, each listed under Sources. It establishes that those round types were asked once; it does not establish exact wording, the current format, or that every team interviews the same way. A second senior onsite account exists on 1point3acres but is locked, so it only confirms that more than one account exists.',
-      'Confirm the exercise types, the allowed tools, the expected stack and the timing with the recruiter and the job description. Waymo publishes roles and teams on its careers site; use that for context, not as evidence of interview content. The process table below draws on more reports: four from 2022 to 2026.',
+      'Confirm the exercise types, the allowed tools, the expected stack and the timing with the recruiter and the job description. Waymo publishes roles and teams on its careers site; use that for context, not as evidence of interview content. The process table above draws on more reports: four from 2022 to 2026.',
     ],
   },
   roleLenses: {

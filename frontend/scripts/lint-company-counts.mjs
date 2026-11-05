@@ -28,6 +28,8 @@ const CLAIM = new RegExp(`\\b(${NUMBER})\\s+((?:[A-Za-z][a-z-]*\\s+){0,3}?)(${NO
 const TOTAL_QUALIFIERS = new Set(['public', 'self-reported', 'frontend-titled', 'frontend-focused']);
 const PAGE_QUALIFIERS = new Set(['official', 'public']);
 const TOKEN = /\{#?[a-z]+\}/g;
+/** Prompts a visitor reads in full on an authored guide; the rest keep their answer guides for Premium (company-preview.component.ts). */
+const OPEN_PROMPTS = 3;
 
 export function toNumber(word) {
   const lower = word.toLowerCase();
@@ -91,6 +93,16 @@ export function checkGuide(preview, process, evidenceModule) {
   for (const prompt of preview.prompts.items) {
     const url = prompt.reportedRound?.url;
     if (url && !urls.has(url)) errors.push(`[prompts.items.${prompt.id}] modelled on ${url}, which the sources do not list`);
+  }
+
+  // A round decoder's "Rehearse…" call must land on something a visitor can open: one of the open prompts or a page,
+  // never a prompt whose answer guide sits under the blur.
+  for (const spotlight of preview.roundSpotlights ?? []) {
+    const fragment = spotlight.practiceLink?.fragment;
+    if (!fragment) continue;
+    const index = preview.prompts.items.findIndex((prompt) => prompt.id === fragment);
+    if (index < 0) errors.push(`[roundSpotlights.${spotlight.id}] practice link points at #${fragment}, which is not a prompt`);
+    else if (index >= OPEN_PROMPTS) errors.push(`[roundSpotlights.${spotlight.id}] practice link leads to prompt ${index + 1}, which a visitor cannot open; link an open prompt or a free page`);
   }
   return errors;
 }

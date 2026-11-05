@@ -70,7 +70,8 @@ export const ELEVENLABS_COMPANY_PREVIEW: AuthoredCompanyPreview = {
         { label: 'Stack', value: 'React is the safe default: React bug fixes on CoderPad, a React knowledge check and a React and TypeScript take-home appear in the accounts; the senior Aced account names no stack.' },
         { label: 'Sources', value: 'Aced: a senior full-stack account from 2026, a frontend-leaning account from 2025 and a candidate-sourced question bank updated in October 2026; Taro full-stack accounts from 2024 and 2025; ElevenLabs careers pages. All are listed under Sources and in the reported process below with what each can establish.' },
       ],
-      practiceLink: { label: 'Rehearse the 90-minute assessment', fragment: 'timed-assessment-react-and-algorithms' },
+      // Prompt 4 sits past the open prompts, so the rehearsal leads to its free starter rather than a locked card.
+      practiceLink: { label: 'Rehearse the assessment with the free React autocomplete starter', path: '/react/coding/react-autocomplete-search-starter' },
       processLink: { label: 'See the coding assessment row in the reported process', fragment: 'elevenlabs-interview-process-1-stage-coding-assessment' },
     },
   ],

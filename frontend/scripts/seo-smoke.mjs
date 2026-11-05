@@ -2226,7 +2226,7 @@ try {
     const collectionPage = jsonLd.graph.find((node) => hasSchemaType(node, 'CollectionPage'));
     const titleOk = extractTitle(body) === note.title;
     const headingsOk = [note.h1, ...note.headings].every((heading) => visibleText.includes(normalizeText(heading)));
-    const catalogOk = visibleText.includes(normalizeText('What you can do now for free')) && body.includes(`href="${note.practicePath}"`);
+    const catalogOk = visibleText.includes(normalizeText('Sample FrontendAtlas practice prompts')) && body.includes(`href="${note.practicePath}"`);
     const schemaOk = Boolean(collectionPage?.dateModified) && !jsonLd.graph.some((node) => hasSchemaType(node, 'FAQPage'));
     checks.push({
       name: `${note.label} company preview renders its editorial notes around the catalog blocks with a dated CollectionPage`,

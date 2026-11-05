@@ -90,7 +90,8 @@ export const CAPITALONE_COMPANY_PREVIEW: AuthoredCompanyPreview = {
         { label: 'After Power Day', value: 'Feedback within a day in one account; in others a pass led to team matching that stalled, a filled position, or a call from another team.' },
         { label: 'Sources', value: 'Taro re-hosted reviews of senior and lead frontend loops from 2022 to 2024 and Capital One careers pages; all listed under Sources below with what each can establish.' },
       ],
-      practiceLink: { label: 'Rehearse the Power Day case: the budgeting bug', fragment: 'power-day-case-budgeting-bug' },
+      // Prompt 4 sits past the open prompts, so the rehearsal leads to its free drill rather than a locked card.
+      practiceLink: { label: 'Rehearse the Power Day case with the free nullish-defaults debug', path: '/javascript/debug/js-debug-nullish-defaults' },
       processLink: { label: 'See the four Power Day rows in the reported process', fragment: 'capital-one-interview-process-1-stage-power-day-frontend-design' },
     },
   ],

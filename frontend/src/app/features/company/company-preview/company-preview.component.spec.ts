@@ -219,8 +219,10 @@ describe('CompanyPreviewComponent', () => {
       for (let index = 1; index < order.length; index += 1) {
         expect(order[index - 1].compareDocumentPosition(order[index]) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
       }
-      const proof = host.querySelector('.proof-grid') as HTMLElement;
-      expect(order[2].compareDocumentPosition(proof) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+      // The sample section follows the prep steps; the generic free/Premium boxes between them are gone.
+      const samples = host.querySelector('.sample-card') as HTMLElement;
+      expect(host.querySelector('.proof-grid')).toBeNull();
+      expect(order[2].compareDocumentPosition(samples) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
       expect(host.querySelector('#acme-reports-describe')?.textContent?.trim()).toBe(acme.reportsDescribe?.title);
       expect(host.querySelector('[data-testid="company-reports-describe"] a[href="#acme-interview-process"]')).not.toBeNull();
       expect(host.querySelector('[data-testid="company-reports-describe"] a[href="/react/coding/react-counter"]')).not.toBeNull();
@@ -231,7 +233,6 @@ describe('CompanyPreviewComponent', () => {
       expect(steps[1].querySelector('.company-resource-link')?.textContent?.trim()).toBeTruthy();
       expect(host.querySelectorAll('[data-testid="company-editorial-faqs"] article h3').length).toBe(2);
       expect(host.querySelector('[data-testid="company-preview-counts"]')).not.toBeNull();
-      expect(text).toContain('What you can do now for free');
       expect(text).not.toContain('known questions');
     });
 
@@ -1228,7 +1229,7 @@ describe('CompanyPreviewComponent', () => {
         ['google', ['.preview-chip--lock', '.company-guide-cta']],
         ['netflix', ['.preview-chip--lock', '.company-guide-cta']],
         ['openai', ['.preview-chip--lock', '.openai-cta']],
-        ['apple', ['.preview-chip--lock', '.proof-grid', '.sample-summary--access', '.cta-stack']],
+        ['apple', ['.preview-chip--lock', '.sample-summary--access', '.cta-stack']],
       ];
       for (const [slug, selectors] of guides) {
         user.set(null);
