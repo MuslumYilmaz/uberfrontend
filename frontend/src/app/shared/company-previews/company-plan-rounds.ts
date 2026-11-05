@@ -249,6 +249,8 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
         title: 'Students and new graduates',
         from: 'students and new graduates',
         ask: 'Interviewing as a student or new graduate?',
+        // Two tracks in one list: the internship round and the new-graduate rounds are not one sequence.
+        unordered: true,
         students: true,
         rounds: [
           { id: 'internship-interviews', stage: 'Internship interviews', kinds: ['coding', 'people'] },

@@ -69,7 +69,7 @@ const CompanyPlanSchema = new mongoose.Schema(
     level: { type: String, enum: ['junior', 'mid', 'senior', 'staff'] },
     when: { type: String, enum: ['tomorrow', 'this-week', 'next-week', 'few-weeks', 'later'] },
     // The framework the person chose for the tasks, when it differs from the one the company's reports name.
-    framework: { type: String, enum: ['react', 'angular', 'vue', 'javascript'] },
+    framework: { type: String, enum: ['react', 'angular', 'vue'] },
     // "Next week" is turned into a date from this.
     createdAt: Date,
     // Keys of the form <company>/<list>/<round>.

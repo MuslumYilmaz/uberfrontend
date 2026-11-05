@@ -9,7 +9,7 @@ const DATA_PATH = path.resolve(__dirname, '../../cdn/questions/company-plan-data
 
 const LEVELS = new Set(['junior', 'mid', 'senior', 'staff']);
 const WHENS = new Set(['tomorrow', 'this-week', 'next-week', 'few-weeks', 'later']);
-const FRAMEWORKS = new Set(['react', 'angular', 'vue', 'javascript']);
+const FRAMEWORKS = new Set(['react', 'angular', 'vue']);
 const MAX_COMPANIES = 3;
 const MAX_PASSED_ROUNDS = 60;
 const MAX_MARKED_DONE = 200;

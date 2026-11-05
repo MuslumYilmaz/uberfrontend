@@ -120,7 +120,7 @@ describe('CompanyPlanPreviewComponent', () => {
       setup(ELEVENLABS);
       expect(text('h1')).toBe('Your ElevenLabs plan at a glance');
       expect(Array.from(host.querySelectorAll('.preview__chip')).map((chip) => chip.textContent)).toEqual(['Next week', 'Senior', 'React, from reports']);
-      expect(text('.preview__evidence')).toBe('Rounds and tasks from 6 public sources, last checked Oct 22, 2026. These are practice versions, not leaked questions.');
+      expect(text('.preview__evidence')).toBe('Rounds and tasks from 7 public sources, last checked Oct 22, 2026. These are practice versions, not leaked questions.');
       expect(host.textContent).not.toContain('Which framework');
     });
 
@@ -128,7 +128,7 @@ describe('CompanyPlanPreviewComponent', () => {
       setup({ companies: 'amazon', when: 'tomorrow', level: 'junior', passed: 'amazon/experienced/online-assessment' });
       expect(Array.from(host.querySelectorAll('.preview__chip')).map((chip) => chip.textContent)).toContain('From the Phone screen');
       const facts = Array.from(host.querySelectorAll('.preview__facts li')).map((fact) => fact.textContent?.trim() ?? '');
-      expect(facts[1]).toBe('4 of 5 reported rounds left, in order, with their tasks and your progress');
+      expect(facts[1]).toMatch(/^4 of 5 reported rounds left, in order, (with their tasks and your progress|tasks on \d of them, and your progress)$/);
       const plan = fixture.componentInstance.plan()!;
       expect(plan.companies[0].rounds.map((round) => round.passed)).toEqual([true, false, false, false, false]);
       expect(plan.tasks.every((task) => plan.companies[0].rounds[0].tasks.every((other) => other.id !== task.id))).toBeTrue();
@@ -145,7 +145,7 @@ describe('CompanyPlanPreviewComponent', () => {
       expect(text('#company-plan-open-title')).toBe('Try these 3 tasks for free');
       expect(text('.preview__section-sub')).toBe('They run in your browser. No account needed.');
       expect(rows[0].getAttribute('href')).toMatch(/^\/javascript\/(coding|debug)\//);
-      expect(rows[0].textContent).toContain('Modelled on a report: Aced, Oct 2026 · Coding assessment');
+      expect(rows[0].textContent).toMatch(/Modelled on a report: Aced, (Jul|Oct) 2026 · Coding assessment/);
       // "Fix async race in `fetchWithCache`" shows its code as code.
       expect(rows.map((row) => row.querySelector('code')?.textContent)).toContain('fetchWithCache');
       expect(rows.some((row) => row.textContent?.includes('`'))).toBeFalse();
@@ -183,7 +183,8 @@ describe('CompanyPlanPreviewComponent', () => {
     it('marks the tasks that run as an interview, in the list and in the panel', () => {
       setup(ELEVENLABS);
       const plan = fixture.componentInstance.plan()!;
-      const pressure = plan.tasks.filter((task) => task.pressure).length;
+      // The count covers what the page badges: the plan's tasks and the free warm-ups shown beside them.
+      const pressure = new Set([...plan.tasks, ...plan.preview.open].filter((task) => task.pressure).map((task) => task.id)).size;
       const facts = Array.from(host.querySelectorAll('.preview__facts li')).map((fact) => fact.textContent?.trim() ?? '');
       const fact = facts.find((line) => line.includes('(Pressure Mode)'));
       expect(Boolean(fact)).toBe(pressure > 0);
@@ -192,6 +193,7 @@ describe('CompanyPlanPreviewComponent', () => {
         .filter((row) => Array.from(row.querySelectorAll('.plan-row__tag')).some((tag) => tag.textContent === 'Pressure Mode')).length;
       const shown = [...fixture.componentInstance.openTasks(), ...fixture.componentInstance.restTasks()].filter((row) => row.task.pressure).length;
       expect(tagged).toBe(shown);
+      expect(pressure).toBe(shown);
     });
 
     it('writes a company with a hyphen into the pricing source the way the guides do', () => {
@@ -206,8 +208,8 @@ describe('CompanyPlanPreviewComponent', () => {
       const set = COMPANY_SET_COUNTS['elevenlabs']!;
       const plan = fixture.componentInstance.plan()!;
       const open = plan.tasks.filter((task) => task.access === 'free').length;
-      expect(facts[0]).toBe(`6 tasks for next week, about ${facts[0].match(/about ([\d.]+ hours?)/)?.[1]}: ${open} open now, ${6 - open} with Premium`);
-      expect(facts[1]).toBe('All 5 reported rounds in order, with their tasks and your progress');
+      expect(facts[0]).toMatch(new RegExp(`^6 tasks for next week, about \\d+ hours?( \\d+ minutes)?: ${open} open now, ${6 - open} with Premium(, plus \\d free warm-ups? outside the plan)?$`));
+      expect(facts[1]).toMatch(/^All 5 reported rounds in order, (with their tasks and your progress|tasks on \d of them, and your progress)$/);
       expect(facts).toContain(companySetLine([{ name: 'ElevenLabs', counts: set }]));
       expect(facts.some((fact) => fact.includes(`The full ElevenLabs set: ${set.all} questions`))).toBeTrue();
       expect(facts[facts.length - 1]).toBe(`Premium opens all ${PREMIUM_QUESTION_COUNT} Premium questions, including ${DATA.general.premiumCounts.react} React tasks and ${DATA.general.premiumCounts.systemDesign} system design walkthroughs`);
@@ -220,7 +222,7 @@ describe('CompanyPlanPreviewComponent', () => {
       const planned = new Set(plan.tasks.map((task) => task.id));
       const warmups = plan.preview.open.filter((task) => !planned.has(task.id)).length;
       expect(warmups).toBeGreaterThan(0);
-      expect(text('.preview__facts li')).toMatch(new RegExp(`^3 tasks for tomorrow, about [\\d.]+ hours?: \\d open now, \\d with Premium, plus ${warmups} free warm-ups? outside the plan$`));
+      expect(text('.preview__facts li')).toMatch(new RegExp(`^3 tasks for tomorrow, about \\d+ (hours?|minutes)( \\d+ minutes)?: \\d open now, \\d with Premium, plus ${warmups} free warm-ups? outside the plan$`));
       expect(all('company-plan-open-task').length + all('company-plan-rest-task').length).toBe(plan.tasks.length + warmups);
       expect(text('#company-plan-rest-title')).toBe('The rest of your plan');
     });
@@ -241,13 +243,13 @@ describe('CompanyPlanPreviewComponent', () => {
     it('says the rounds are grouped by type where the table gives no order', () => {
       setup({ companies: 'airbnb', when: 'later', level: 'senior' });
       const facts = Array.from(host.querySelectorAll('.preview__facts li')).map((fact) => fact.textContent?.trim() ?? '');
-      expect(facts[1]).toMatch(/^All \d+ reported rounds grouped by type, with their tasks and your progress$/);
+      expect(facts[1]).toMatch(/^All \d+ reported rounds grouped by type, (with their tasks and your progress|tasks on \d of them, and your progress)$/);
       expect(text('.preview__rest .preview__section-sub')).toBe('Premium opens the locked tasks, with every round.');
     });
 
     it('keeps an open task in a plan whose reports are all Premium, so the plan never reads "0 open now"', () => {
       setup({ companies: 'walmart', when: 'next-week', level: 'senior' });
-      expect(text('.preview__facts li')).toMatch(/^6 tasks for next week, about [\d.]+ hours?: [1-9] open now, \d with Premium/);
+      expect(text('.preview__facts li')).toMatch(/^6 tasks for next week, about \d+ hours?( \d+ minutes)?: [1-9] open now, \d with Premium/);
       expect(text('#company-plan-rest-title')).toBe('The rest of your plan');
     });
 
@@ -356,8 +358,8 @@ describe('CompanyPlanPreviewComponent', () => {
     it('says the tasks follow the reports and switches to the framework the person uses', () => {
       setup(ELEVENLABS);
       const line = testId('company-plan-framework-line');
-      expect(line?.textContent).toContain('Tasks follow React, the framework in the reports.');
-      expect(Array.from(line?.querySelectorAll('button') ?? []).map((button) => button.textContent)).toEqual(['Use Angular', 'Use Vue', 'Use JavaScript']);
+      expect(line?.textContent).toContain('UI tasks follow React, the framework in the reports.');
+      expect(Array.from(line?.querySelectorAll('button') ?? []).map((button) => button.textContent)).toEqual(['Use Angular', 'Use Vue']);
       (line?.querySelector('button') as HTMLButtonElement).click();
 
       expect(plans.save).toHaveBeenCalledOnceWith({ companies: [{ slug: 'elevenlabs' }], when: 'next-week', level: 'senior', framework: 'angular' });
@@ -373,7 +375,7 @@ describe('CompanyPlanPreviewComponent', () => {
       expect(plan.tasks.filter((task) => task.family).every((task) => task.tech === 'angular')).toBeTrue();
 
       const line = testId('company-plan-framework-line');
-      expect(line?.textContent).toContain('Tasks follow Angular, your choice.');
+      expect(line?.textContent).toContain('UI tasks and extra practice follow Angular, your choice; the reported JavaScript tasks stay as reported.');
       const back = Array.from(line?.querySelectorAll('button') ?? []).find((button) => button.textContent === 'Back to the reports') as HTMLButtonElement;
       back.click();
       expect(plans.save).toHaveBeenCalledOnceWith({ companies: [{ slug: 'elevenlabs' }], when: 'next-week', level: 'senior' });

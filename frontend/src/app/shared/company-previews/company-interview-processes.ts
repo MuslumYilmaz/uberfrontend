@@ -240,6 +240,7 @@ const STRIPE_ST5 = report('Taro (approx.)', `${STRIPE_TARO}/frontend-developer-b
 const STRIPE_ST6_PLAN = report('Blind (recruiter plan)', 'https://www.teamblind.com/post/Stripe-frontend-onsite-SfaGgc1a', '2024-11');
 const STRIPE_ST7 = report('Blind', 'https://www.teamblind.com/post/stripe-frontend-interview-be7f1ymm', '2024-07');
 const STRIPE_ST8 = report('Taro', `${STRIPE_TARO}/frontend-developer-canada-september-19-2025-no-offer-positive-caea53c0/`, '2025-09');
+const STRIPE_ST9 = report('LeetCode Discuss', 'https://leetcode.com/discuss/post/5883632/', '2024-10');
 const STRIPE_ROLE = 'Frontend engineers';
 
 const BYTEDANCE_CAMPUS = official('ByteDance: Early careers interview tips', 'https://jobs.bytedance.com/en/campus/interview-tips');
@@ -1212,7 +1213,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
   },
   google: {
     summary:
-      'Google\'s hiring pages describe recruiter conversations, possible assessments and a panel of interviews by video or in person. Front-end accounts from 2021 to 2026 describe one or two technical screens, then four or five interviews mixing algorithm coding, usually one JavaScript or frontend round and Googleyness, with a frontend-leaning design round from L5.',
+      'Google\'s hiring pages describe recruiter conversations, possible assessments and a panel of interviews by video or in person. Front-end accounts from 2020 to 2026 describe one or two technical screens, then four or five interviews mixing algorithm coding, usually one JavaScript or frontend round and Googleyness, with a frontend-leaning design round from L5.',
     caveat:
       'The number of frontend rounds varies; one 2026 account, read as a preview only, had none. Google\'s pages say AI tools are not permitted in interviews, while a May 2026 news report describes a pilot that allows an approved assistant in one round for some US teams. Confirm the loop with your recruiter.',
     checkedAt: '2026-10-20',
@@ -1529,7 +1530,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
             stage: 'Technical screen',
             format: '60 minutes of live, multi-part coding in CoderPad, sometimes building a UI component; one screen was a three-part exercise.',
             appliesTo: STRIPE_ROLE,
-            sources: [STRIPE_CAREERS, STRIPE_ST3, STRIPE_ST5, STRIPE_ST7, STRIPE_ST8],
+            sources: [STRIPE_CAREERS, STRIPE_ST3, STRIPE_ST5, STRIPE_ST7, STRIPE_ST8, STRIPE_ST9],
             practice: { label: 'React fetch and render a list', path: '/react/coding/react-fetch-list-states' },
           },
           {

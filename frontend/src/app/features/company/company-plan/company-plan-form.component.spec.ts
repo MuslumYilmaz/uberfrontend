@@ -13,7 +13,7 @@ const company = (name: string, extra: object = {}) => ({
   signature: `${name} signature`,
   framework: 'react',
   checkedAt: '2026-10-22',
-  variants: [{ id: 'main', title: 'Engineers', sourceCount: 6, rounds: [round('recruiter', ['recruiter']), round('coding', ['coding'])], tasks: [] }],
+  variants: [{ id: 'main', title: 'Engineers', sourceCount: 6, rounds: [round('recruiter', ['recruiter']), round('coding', ['coding'])], tasks: [{ id: 'lead-task', rounds: ['coding'], lead: true }] }],
   ...extra,
 });
 

@@ -9,7 +9,7 @@ const LEVELS = new Set(['junior', 'mid', 'senior', 'staff']);
 const WHENS = new Set(['tomorrow', 'this-week', 'next-week', 'few-weeks', 'later']);
 const MAX_COMPANIES = 3;
 const MAX_PASSED_ROUNDS = 60;
-const FRAMEWORKS = new Set(['react', 'angular', 'vue', 'javascript']);
+const FRAMEWORKS = new Set(['react', 'angular', 'vue']);
 
 /** The answers with nothing unexpected in them, or null when they cannot be a plan. */
 export function cleanCompanyPlanAnswers(raw: unknown): CompanyPlanAnswers | null {

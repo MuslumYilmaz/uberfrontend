@@ -28,18 +28,18 @@ describe('planFrameworkLine', () => {
 
   it('says where the framework comes from and offers the other three, with a way back once one was chosen', () => {
     const reports = planFrameworkLine(plan({ companies: [{ slug: 'elevenlabs' }], when: 'next-week', level: 'senior' }));
-    expect(reports.text).toBe('Tasks follow React, the framework in the reports.');
-    expect(reports.options).toEqual([{ framework: 'angular', label: 'Use Angular' }, { framework: 'vue', label: 'Use Vue' }, { framework: 'javascript', label: 'Use JavaScript' }]);
+    expect(reports.text).toBe('UI tasks follow React, the framework in the reports.');
+    expect(reports.options).toEqual([{ framework: 'angular', label: 'Use Angular' }, { framework: 'vue', label: 'Use Vue' }]);
 
     const chosen = planFrameworkLine(plan({ companies: [{ slug: 'elevenlabs' }], when: 'next-week', level: 'senior', framework: 'angular' }));
-    expect(chosen.text).toBe('Tasks follow Angular, your choice.');
-    expect(chosen.options.map((option) => option.label)).toEqual(['Use React', 'Use Vue', 'Use JavaScript', 'Back to the reports']);
-    expect(chosen.options[3].framework).toBeNull();
+    expect(chosen.text).toBe('UI tasks and extra practice follow Angular, your choice; the reported JavaScript tasks stay as reported.');
+    expect(chosen.options.map((option) => option.label)).toEqual(['Use React', 'Use Vue', 'Back to the reports']);
+    expect(chosen.options[2].framework).toBeNull();
 
-    expect(planFrameworkLine(plan({ companies: [{ slug: 'google' }], when: 'later', level: 'mid' })).text).toBe('Tasks are in JavaScript, as the reports name no framework.');
+    expect(planFrameworkLine(plan({ companies: [{ slug: 'google' }], when: 'later', level: 'mid' })).text).toBe('The reports name no framework, so the tasks are in JavaScript and the UI builds in React.');
     const mixed = planFrameworkLine(plan({ companies: [{ slug: 'elevenlabs' }, { slug: 'google' }], when: 'later', level: 'mid' }));
-    expect(mixed.text).toBe("Tasks follow the framework in each company's reports.");
-    expect(mixed.options.map((option) => option.framework)).toEqual(['react', 'angular', 'vue', 'javascript']);
+    expect(mixed.text).toBe("UI tasks follow the framework in each company's reports.");
+    expect(mixed.options.map((option) => option.framework)).toEqual(['react', 'angular', 'vue']);
   });
 
   it('chips a chosen framework as the choice it is, and a reported one as from the reports', () => {
@@ -78,17 +78,19 @@ function copyFor(slug: string, data = DATA) {
 describe('companyPlanPricingCopy', () => {
   it('counts as open only the free tasks inside the plan', () => {
     expect(copyFor('elevenlabs').title).toBe('Your ElevenLabs plan is waiting');
-    expect(copyFor('elevenlabs').summary).toMatch(/^6 tasks for next week, about [\d.]+ hours?\. \d are open now, \d open with Premium\. Every round in order, with its tasks and your progress\.$/);
+    expect(copyFor('elevenlabs').summary).toMatch(/^6 tasks for next week, about \d+ hours?( \d+ minutes)?\. \d are open now, \d open with Premium\. Every round in order, with the tasks the reports describe and your progress\.$/);
     // A list of Premium-only candidates has every task locked; every real list now keeps an open task.
     const walmart = DATA.companies['walmart'];
+    // Without the free guides too, since a people round with nothing else now gets its guide.
     const premiumOnly = {
       ...DATA,
+      general: { ...DATA.general, guides: { people: '', design: '' } },
       companies: { walmart: { ...walmart, variants: walmart.variants.map((list) => ({ ...list, tasks: list.tasks.filter((row) => DATA.tasks[row.id]?.access === 'premium') })) } },
     } as CompanyPlanData;
-    expect(copyFor('walmart', premiumOnly).summary).toMatch(/^6 tasks for next week, about [\d.]+ hours?\. Every task opens with Premium\. Every round in order, with its tasks and your progress\.$/);
-    expect(copyFor('walmart').summary).toMatch(/^6 tasks for next week, about [\d.]+ hours?\. [1-9] (is|are) open now, \d open with Premium\. Every round in order, with its tasks and your progress\.$/);
+    expect(copyFor('walmart', premiumOnly).summary).toMatch(/^6 tasks for next week, about \d+ hours?( \d+ minutes)?\. Every task opens with Premium\. Every round in order, with the tasks the reports describe and your progress\.$/);
+    expect(copyFor('walmart').summary).toMatch(/^6 tasks for next week, about \d+ hours?( \d+ minutes)?\. [1-9] (is|are) open now, \d open with Premium\. Every round in order, with the tasks the reports describe and your progress\.$/);
     // Airbnb's table groups its rounds by type and gives no order.
-    expect(copyFor('airbnb').summary).toMatch(/ Every round, with its tasks and your progress\.$/);
+    expect(copyFor('airbnb').summary).toMatch(/ Every round, with the tasks the reports describe and your progress\.$/);
   });
 
   it('points at the month, with the reason, when the interview is within two weeks, and at the quarter otherwise', () => {

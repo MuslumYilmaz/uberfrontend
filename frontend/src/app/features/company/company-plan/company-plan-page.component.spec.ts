@@ -10,6 +10,7 @@ import { CompanyPlanPageComponent } from './company-plan-page.component';
 import { COMPANY_SET_COUNTS, PREMIUM_QUESTION_COUNT } from './company-plan-sets';
 import { CompanyPlanData, buildCompanyPlan } from './company-plan.engine';
 import { CompanyPlanService } from './company-plan.service';
+import { stripInlineMarkup } from '../../../shared/ui/inline-code/inline-code.component';
 
 const DATA = rawPlanData as unknown as CompanyPlanData;
 const TODAY = '2026-11-02';
@@ -115,7 +116,7 @@ describe('CompanyPlanPageComponent', () => {
     expect(text('h1')).toBe('Your ElevenLabs plan is ready');
     expect(Array.from(host.querySelectorAll('.plan-hero__chip')).map((chip) => chip.textContent)).toEqual(['Week of Nov 9', 'Senior', 'React, from reports']);
     expect(text('.plan-panel__label')).toBe('Start here');
-    expect(text('.plan-panel__title')).toBe(plan.next!.title);
+    expect(text('.plan-panel__title')).toBe(stripInlineMarkup(plan.next!.title));
     expect(host.querySelector('[data-testid="company-plan-next"]')?.getAttribute('href')).toBe(plan.next!.route);
     expect(text('[data-testid="company-plan-next"]')).toContain('Start the first task');
     expect(text('[data-testid="company-plan-progress"]')).toBe(`0 of ${plan.tasks.length} solved`);
@@ -133,7 +134,7 @@ describe('CompanyPlanPageComponent', () => {
     expect(text('h1')).toBe('Welcome back to your ElevenLabs plan');
     expect(text('.plan-panel__label')).toBe('Next up');
     expect(text('[data-testid="company-plan-next"]')).toContain('Continue with the next task');
-    expect(text('[data-testid="company-plan-progress"]')).toMatch(new RegExp(`^1 of ${plan.tasks.length} solved, about [\\d.]+ hours? left$`));
+    expect(text('[data-testid="company-plan-progress"]')).toMatch(new RegExp(`^1 of ${plan.tasks.length} solved, about \\d+ hours?( \\d+ minutes)? left$`));
 
     TestBed.resetTestingModule();
     setup(ELEVENLABS, { solvedIds: plan.tasks.map((task) => task.id) });
@@ -171,7 +172,7 @@ describe('CompanyPlanPageComponent', () => {
     const checks = all('company-plan-task-check') as HTMLButtonElement[];
     const lockedCheck = host.querySelector<HTMLButtonElement>(`#plan-task-${workspaceSolved.id} [data-testid="company-plan-task-check"]`)!;
     expect(lockedCheck.disabled).toBeTrue();
-    expect(lockedCheck.getAttribute('aria-label')).toBe(`Solved in the workspace: ${workspaceSolved.title}`);
+    expect(lockedCheck.getAttribute('aria-label')).toBe(`Solved in the workspace: ${stripInlineMarkup(workspaceSolved.title)}`);
     expect(checks.length).toBe(plan.tasks.length);
 
     host.querySelector<HTMLButtonElement>(`#plan-task-${open.id} [data-testid="company-plan-task-check"]`)!.click();
@@ -199,7 +200,7 @@ describe('CompanyPlanPageComponent', () => {
 
   it('groups the time map by company when there are several', () => {
     setup({ ...ELEVENLABS, companies: [{ slug: 'elevenlabs' }, { slug: 'agoda' }] });
-    expect(text('.plan-map__title')).toMatch(/^About [\d.]+ hours?, company by company$/);
+    expect(text('.plan-map__title')).toMatch(/^About \d+ hours?( \d+ minutes)?, company by company$/);
     expect(Array.from(host.querySelectorAll('.plan-map__group-name')).map((name) => name.textContent)).toEqual(['ElevenLabs', 'Agoda', 'Extra React practice']);
     expect(Array.from(host.querySelectorAll('.plan-company__title')).map((title) => title.textContent)).toEqual(['ElevenLabs, round by round', 'Agoda, round by round']);
   });

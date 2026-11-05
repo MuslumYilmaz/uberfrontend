@@ -1,6 +1,6 @@
 export type CompanyPlanAnswerLevel = 'junior' | 'mid' | 'senior' | 'staff';
-/** The framework a person chose for the tasks, when it is not the one the company's reports name. */
-export type CompanyPlanFrameworkChoice = 'react' | 'angular' | 'vue' | 'javascript';
+/** The framework a person chose for the UI tasks, when it is not the one the company's reports name. */
+export type CompanyPlanFrameworkChoice = 'react' | 'angular' | 'vue';
 export type CompanyPlanWhen = 'tomorrow' | 'this-week' | 'next-week' | 'few-weeks' | 'later';
 
 /** The form answers. A plan is rebuilt from these and the current content, so no task list is ever stored. */

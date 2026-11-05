@@ -651,18 +651,26 @@
   }
 
   .plan-steps__line {
-    width: 14px;
-    margin: 0 6px;
+    width: 10px;
+    margin: 0 4px;
   }
 
-  /* Only the current step keeps its words, and the others stay easy to tap. */
+  /* Only the current step keeps its words, and the others stay easy to tap. Four steps, three lines and the
+     current step's words must fit one 358px row, so the words clip before the last dot drops to a new line. */
   .plan-step:not(.plan-step--current) {
     justify-content: center;
-    min-width: 44px;
+    min-width: 40px;
   }
 
   .plan-step:not(.plan-step--current) .plan-step__label {
     display: none;
+  }
+
+  .plan-step--current .plan-step__label {
+    max-width: 36vw;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .plan-sentence,

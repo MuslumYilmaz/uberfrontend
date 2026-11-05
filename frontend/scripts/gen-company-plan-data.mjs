@@ -175,6 +175,7 @@ function buildCompany(slug, context) {
       const entry = chosen.get(id) ?? { id };
       if (fields.report && !entry.report) entry.report = fields.report;
       if (fields.lead) entry.lead = true;
+      if (fields.prompt) entry.prompt = true;
       for (const round of fields.rounds ?? []) entry.rounds = [...new Set([...(entry.rounds ?? []), round])];
       chosen.set(id, entry);
     };
@@ -198,8 +199,16 @@ function buildCompany(slug, context) {
       const kindless = !variant.stages.some((stage) => metaRound(stage).kinds.includes(wanted));
       const cited = kindless ? citing.map((stage) => metaRound(stage).id) : [];
       // Rounds the editor names win, as when one account is cited on several stages; otherwise the citing stages
-      // bind the task, and a report the table does not cite leaves it unbound.
+      // bind the task, and a report the table does not cite leaves it unbound. A named round that cites none of the
+      // task's reports is the editor's call, but the gate promises "each linked on the round it describes", so it is
+      // flagged for the table to catch up.
       const named = (plan.reportRounds?.[entry.task.id] ?? []).filter((id) => variant.stages.some((stage) => metaRound(stage).id === id));
+      for (const id of named) {
+        const stage = variant.stages.find((candidate) => metaRound(candidate).id === id);
+        if (!stage.sources.some((source) => urls.has(source.url))) {
+          console.warn(`[gen-company-plan-data] ${slug}/${meta.id}: reportRounds puts ${entry.task.id} on ${id}, but that stage cites none of its reports.`);
+        }
+      }
       add(publish(entry.task), { report: { publisher: newest.publisher, date: newest.date, ...(newest.posting ? { posting: true } : {}) }, rounds: named.length ? named : bound.length ? bound : cited });
     }
 
@@ -230,18 +239,26 @@ function buildCompany(slug, context) {
       const linked = catalog.get(prompt.path);
       if (!linked) continue;
       const settled = settle(linked);
-      if (!fitsFramework(settled) || chosen.get(settled.id)?.rounds?.length) continue;
+      if (!fitsFramework(settled)) continue;
+      // A task already tied to a round keeps it and is marked as the guide's own prompt, so it leads that round.
+      if (chosen.get(settled.id)?.rounds?.length) {
+        add(settled.id, { prompt: true });
+        continue;
+      }
       const wanted = settled.kind === 'system-design' ? 'design' : 'coding';
       const citesReport = (stage) => Boolean(prompt.reportUrl) && stage.sources.some((source) => source.url === prompt.reportUrl);
       const citing = variant.stages.filter((stage) => citesReport(stage) && metaRound(stage).kinds.includes(wanted));
       const elsewhere = !citing.length && table.variants.some((other) => other !== variant && other.stages.some(citesReport));
       if (elsewhere) continue;
       const target = citing[0] ?? variant.stages.find((stage) => metaRound(stage).kinds.includes(wanted));
-      if (target) add(publish(settled), { rounds: [metaRound(target).id] });
+      if (target) add(publish(settled), { rounds: [metaRound(target).id], prompt: true });
     }
 
-    // Reports from another list and unsourced tags can still fill this one, as picks without a report line.
-    const elsewhere = [...reported.values()].map((entry) => entry.task).filter((task) => !chosen.has(task.id));
+    // Unsourced tags and reports the tables do not cite can still fill this list, as picks without a report line. A
+    // task whose every report is cited by another list belongs to that list and stays out of this one.
+    const elsewhere = [...reported.values()]
+      .filter((entry) => !chosen.has(entry.task.id) && !entry.sources.every((source) => allCited.has(source.url) && !cited.has(source.url)))
+      .map((entry) => entry.task);
     for (const task of [...tagged, ...elsewhere]) {
       if (!chosen.has(task.id)) add(publish(task), {});
     }
@@ -281,6 +298,9 @@ function buildCompany(slug, context) {
     };
   });
 
+  // The company's whole evidence, counted the way the guide page counts it: every table citation and the guide's
+  // own sources list, once by URL. The plan's "from N public sources" then matches the guide's numbers.
+  const evidence = new Set([...allCited, ...(context.sources?.[slug] ?? [])]);
   return {
     name: brands[slug].label,
     signature: signatures[slug],
@@ -288,6 +308,7 @@ function buildCompany(slug, context) {
     ...(profile.mixed ? { mixed: true } : {}),
     ...(profile.aliases ? { aliases: profile.aliases } : {}),
     checkedAt: table.checkedAt,
+    sourceCount: evidence.size,
     variants,
   };
 }
@@ -356,6 +377,7 @@ export function renderCompanyPlanData(payload) {
 function loadCompanyPrompts(cache) {
   const previews = path.join(sharedRoot, 'company-previews');
   const prompts = {};
+  const sources = {};
   for (const file of fs.readdirSync(previews).sort()) {
     const match = /^(.+)-preview-content\.ts$/.exec(file);
     if (!match) continue;
@@ -363,13 +385,15 @@ function loadCompanyPrompts(cache) {
       .find((value) => value && typeof value === 'object' && Array.isArray(value.prompts?.items));
     if (!preview) continue;
     prompts[match[1]] = preview.prompts.items.map((item) => ({ path: item.resourcePath, reportUrl: item.reportedRound?.url ?? null }));
+    // The guide's own sources list, so the plan counts the same evidence the guide page does.
+    sources[match[1]] = (preview.sources?.items ?? []).map((item) => item.url);
   }
   const inline = path.resolve(sharedRoot, '..', 'features', 'company', 'company-preview');
   for (const [slug, name] of [['google', 'GOOGLE_PRACTICE_PROMPTS'], ['netflix', 'NETFLIX_PRACTICE_PROMPTS']]) {
     const module = loadTsModule(path.join(inline, `${slug}-preview-content.ts`), cache);
     prompts[slug] = (module[name] ?? []).map((item) => ({ path: item.resourcePath, reportUrl: null }));
   }
-  return prompts;
+  return { prompts, sources };
 }
 
 export function loadCompanyPlanSources() {
@@ -389,7 +413,7 @@ export function loadCompanyPlanSources() {
     starters: profiles.COMPANY_PLAN_STARTERS,
     formatPractice: profiles.COMPANY_PLAN_FORMAT_PRACTICE,
     guides: profiles.COMPANY_PLAN_GUIDES,
-    prompts: loadCompanyPrompts(cache),
+    ...loadCompanyPrompts(cache),
   };
 }
 

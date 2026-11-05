@@ -69,6 +69,8 @@ export class CompanyPlanFormComponent {
   readonly level = signal<CompanyPlanAnswerLevel>('senior');
   /** The round that is next, by company; a company not in here starts from its first round. */
   readonly next = signal<Readonly<Record<string, string>>>({});
+  /** For a list whose rounds have no fixed order: the rounds the person marked as behind them, by company. */
+  readonly behind = signal<Readonly<Record<string, readonly string[]>>>({});
   /** The person is a student or new graduate, so a company with a student list plans on it. */
   readonly student = signal(false);
   readonly open = signal(false);
@@ -159,7 +161,10 @@ export class CompanyPlanFormComponent {
 
   readonly whenQuestion = computed(() => (this.picked().length > 1 ? 'When is your first interview?' : 'When is your interview?'));
 
-  /** The rounds of each picked company for "Which round is next?", with the one chosen as next (the first by default). */
+  /**
+   * The rounds of each picked company for "Which round is next?", with the one chosen as next (the first by default).
+   * A list with no fixed order asks instead which rounds are behind the person; those are `behind`.
+   */
   readonly roundChoices = computed(() => {
     const data = this.data();
     if (!data) return [];
@@ -170,30 +175,52 @@ export class CompanyPlanFormComponent {
       return [{
         slug,
         name: company.name,
+        unordered: Boolean(list.unordered),
         next: this.next()[slug] ?? list.rounds[0]?.id ?? '',
+        behind: this.behind()[slug] ?? [],
         rounds: list.rounds.map((round) => ({ id: round.id, name: round.name, note: round.note })),
       }];
     });
   });
 
-  /** The keys of the rounds before each chosen next round: what the plan treats as passed. */
+  /** The keys of the rounds behind the person: the ones before the chosen next round, or the marked ones of an unordered list. */
   readonly passedRounds = computed<readonly string[]>(() => {
     return this.roundChoices().flatMap((group) => {
       const list = this.listFor(group.slug);
       if (!list) return [];
+      if (group.unordered) return list.rounds.filter((round) => group.behind.includes(round.id)).map((round) => companyPlanRoundKey(group.slug, list.id, round.id));
       const at = list.rounds.findIndex((round) => round.id === group.next);
       return list.rounds.slice(0, Math.max(at, 0)).map((round) => companyPlanRoundKey(group.slug, list.id, round.id));
     });
   });
 
-  readonly nextQuestion = computed(() => (this.roundChoices().length > 1 ? 'Which round is next at each company?' : 'Which round is next?'));
+  readonly nextQuestion = computed(() => {
+    const groups = this.roundChoices();
+    if (groups.length === 1 && groups[0].unordered) return 'Which rounds are behind you?';
+    return groups.length > 1 ? 'Which round is next at each company?' : 'Which round is next?';
+  });
 
-  /** "From the Phone screen", "From the first round", or how many companies are past their first round. */
+  /** What the fourth step's hint says: the ordered rule, the unordered rule, or both when the companies differ. */
+  readonly nextHint = computed(() => {
+    const groups = this.roundChoices();
+    const ordered = groups.some((group) => !group.unordered);
+    const unordered = groups.some((group) => group.unordered);
+    const rules = [
+      ordered ? 'The rounds before it count as passed, so your plan starts where you are.' : '',
+      unordered ? 'Rounds with no fixed order: mark the ones behind you, and the rest stay in the plan.' : '',
+    ];
+    return rules.filter(Boolean).join(' ');
+  });
+
+  /** "From the Phone screen", "2 rounds behind you", "From the first round", or how many companies have started. */
   readonly nextLabel = computed(() => {
     const groups = this.roundChoices();
-    const started = groups.filter((group) => group.next !== group.rounds[0]?.id);
+    const started = groups.filter((group) => (group.unordered ? group.behind.length > 0 : group.next !== group.rounds[0]?.id));
     if (groups.length > 1) return started.length ? `${started.length} of ${groups.length} past the first round` : 'From the first round';
-    const next = started[0]?.rounds.find((round) => round.id === started[0].next);
+    const group = started[0];
+    if (!group) return 'From the first round';
+    if (group.unordered) return `${group.behind.length} ${group.behind.length === 1 ? 'round' : 'rounds'} behind you`;
+    const next = group.rounds.find((round) => round.id === group.next);
     return next ? `From the ${next.name}` : 'From the first round';
   });
 
@@ -205,11 +232,13 @@ export class CompanyPlanFormComponent {
       const company = data.companies[slug];
       const list = this.listFor(slug);
       if (!company || !list) return [];
-      const practice = list.rounds.filter((round) => round.kinds.some((kind) => kind === 'coding' || kind === 'design' || kind === 'people')).length;
+      // "With practice" counts the rounds the guide's table links a practice page on, the same rows a reader can see.
+      const practice = list.rounds.filter((round) => list.tasks.some((task) => task.lead && task.rounds?.includes(round.id))).length;
+      const sources = company.sourceCount ?? list.sourceCount;
       return [{
         slug,
         name: company.name,
-        meta: `${list.rounds.length} reported rounds, ${practice} with practice · ${list.sourceCount} public ${list.sourceCount === 1 ? 'source' : 'sources'} · checked ${shortDate(company.checkedAt)}`,
+        meta: `${list.rounds.length} reported rounds, ${practice} with practice · ${sources} public ${sources === 1 ? 'source' : 'sources'} · checked ${shortDate(company.checkedAt)}`,
         rounds: list.rounds.map((round) => ({
           id: round.id,
           name: round.name,
@@ -255,9 +284,12 @@ export class CompanyPlanFormComponent {
       if (this.student() && this.studentOffers().length) lines.push({ label: 'Student', text: this.studentOffersLine() });
     }
     if (this.step() >= 4 && this.roundChoices().length) {
+      const unordered = this.roundChoices().every((group) => group.unordered);
       lines.push({
-        label: 'Next round',
-        text: this.passedRounds().length ? `${this.nextLabel()}. The rounds before it count as passed.` : 'From the first round. Every reported round is in the plan.',
+        label: unordered ? 'Rounds behind you' : 'Next round',
+        text: this.passedRounds().length
+          ? `${this.nextLabel()}. ${unordered ? 'They count as passed; the rest stay in the plan.' : 'The rounds before it count as passed.'}`
+          : 'From the first round. Every reported round is in the plan.',
       });
     }
     return lines;
@@ -385,8 +417,18 @@ export class CompanyPlanFormComponent {
     else this.finish();
   }
 
-  /** The round the person is about to face; the rounds before it are passed. With one company the answer is the last click. */
+  /**
+   * The round the person is about to face; the rounds before it are passed. With one company the answer is the last
+   * click. On a list with no fixed order the click marks the round as behind them, and "See my plan" finishes.
+   */
   pickNext(slug: string, roundId: string): void {
+    if (this.roundChoices().find((group) => group.slug === slug)?.unordered) {
+      this.behind.update((behind) => {
+        const marked = behind[slug] ?? [];
+        return { ...behind, [slug]: marked.includes(roundId) ? marked.filter((id) => id !== roundId) : [...marked, roundId] };
+      });
+      return;
+    }
     this.next.update((next) => ({ ...next, [slug]: roundId }));
     if (this.roundChoices().length === 1) this.finish();
   }

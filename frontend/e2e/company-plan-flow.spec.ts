@@ -253,7 +253,7 @@ test.describe('company plan from a company guide', () => {
 
     // The first three prompts are open; the fourth keeps its title and opening, and its details sit under a blur.
     const gate = page.getByTestId('company-prompt-gate');
-    await expect(gate).toContainText('Prompts 4 and 5, with their answer guides, are in Premium');
+    await expect(gate).toContainText('The answer guides for prompts 4 and 5 are in Premium');
     await expect(gate.getByRole('link', { name: 'Build my ElevenLabs plan' })).toHaveAttribute('href', '/companies?company=elevenlabs');
     const prompts = page.locator('.company-prompt');
     await expect(prompts.nth(2).locator('.company-prompt__details')).not.toHaveAttribute('inert', /.*/);
@@ -274,11 +274,11 @@ test.describe('company plan from a company guide', () => {
 
     // Deniz builds in Angular, the framework they use: the plan says whose choice it is and the address keeps it.
     const frameworkLine = page.getByTestId('company-plan-framework-line');
-    await expect(frameworkLine).toContainText('Tasks follow React, the framework in the reports.');
+    await expect(frameworkLine).toContainText('UI tasks follow React, the framework in the reports.');
     await frameworkLine.getByRole('button', { name: 'Use Angular' }).click();
     await expect(page).toHaveURL('/companies/preview?companies=elevenlabs&when=next-week&level=senior&framework=angular');
     await expect(page.locator('.preview__chip', { hasText: 'Angular, your choice' })).toBeVisible();
-    await expect(frameworkLine).toContainText('Tasks follow Angular, your choice.');
+    await expect(frameworkLine).toContainText('UI tasks and extra practice follow Angular, your choice; the reported JavaScript tasks stay as reported.');
     expect(await overflow(page)).toBe(0);
   });
 
@@ -353,7 +353,7 @@ test.describe('company plan from a company guide', () => {
     await expect(process.locator('.interview-process__sources a').first()).toBeVisible();
     await expect(prompts.nth(1).locator('.company-prompt__statement .premium-locked')).toHaveCount(0);
     await expect(prompts.nth(1).locator('.company-prompt__details')).toHaveAttribute('inert', '');
-    await expect(page.getByTestId('company-prompt-gate')).toContainText(/Prompts 2 to \d+, with their answer guides, are in Premium/);
+    await expect(page.getByTestId('company-prompt-gate')).toContainText(/The answer guides for prompts 2 to \d+ are in Premium/);
     expect(await overflow(page)).toBe(0);
   });
 });

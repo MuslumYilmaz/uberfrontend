@@ -68,7 +68,8 @@ export function whyLine(why: CompanyPlanWhy): string {
  * Taro, May 2025 · Phone screen". Format and general practice have no round and read as before.
  */
 export function whyLineFor(why: CompanyPlanWhy, round: string | null): string {
-  if (!round || why.kind === 'format' || why.kind === 'general') return whyLine(why);
+  // A task the reports tie to no round sits where the plan has room; naming that round would overstate it.
+  if (!round || why.kind === 'format' || why.kind === 'general' || why.unbound) return whyLine(why);
   return why.kind === 'report' ? `${whyLine(why)} · ${round}` : `Our pick for the ${round}`;
 }
 
@@ -78,11 +79,13 @@ export function formatGroupName(plan: Pick<CompanyPlan, 'companies'>): string {
   return frameworks.length === 1 ? `Extra ${frameworkLabel(frameworks[0])} practice` : 'Extra practice';
 }
 
-/** Half-hour steps, because a plan's time is an estimate. */
+/** Quarter-hour steps, close enough to the listed minutes to add up: "3 hours 15 minutes". */
 export function hoursText(minutes: number): string {
-  const hours = Math.round(minutes / 30) / 2;
-  if (hours < 1) return `${minutes} minutes`;
-  return hours === 1 ? '1 hour' : `${hours} hours`;
+  if (minutes < 60) return `${minutes} minutes`;
+  const quarters = Math.round(minutes / 15) * 15;
+  const hours = Math.floor(quarters / 60);
+  const rest = quarters % 60;
+  return `${hours} ${hours === 1 ? 'hour' : 'hours'}${rest ? ` ${rest} minutes` : ''}`;
 }
 
 export function clockText(minutes: number): string {
@@ -127,7 +130,7 @@ export function planDatePassed(when: CompanyPlanWhen, answeredAt: string, now: D
 
 /** "Rounds and tasks from 6 public sources, last checked Oct 22, 2026. These are practice versions, not leaked questions." */
 export function planEvidenceLine(plan: CompanyPlan, names: string): string {
-  const sources = plan.companies.reduce((sum, company) => sum + company.list.sourceCount, 0);
+  const sources = plan.companies.reduce((sum, company) => sum + company.sourceCount, 0);
   const where = plan.companies.length === 1 ? `, last checked ${shortDay(plan.companies[0].checkedAt)}` : ` across ${names}`;
   return `Rounds and tasks from ${sources} public ${sources === 1 ? 'source' : 'sources'}${where}. These are practice versions, not leaked questions.`;
 }
@@ -145,22 +148,23 @@ export function planFrameworkChips(plan: CompanyPlan): string[] {
   ));
 }
 
-const FRAMEWORK_CHOICES: readonly CompanyPlanFrameworkChoice[] = ['react', 'angular', 'vue', 'javascript'];
+const FRAMEWORK_CHOICES: readonly CompanyPlanFrameworkChoice[] = ['react', 'angular', 'vue'];
 
 /**
- * Where the tasks' framework comes from and how to change it: "Tasks follow React, the framework in the reports."
- * with a button per other framework, and a way back to the reports once a framework was chosen.
+ * Where the UI tasks' framework comes from and how to change it: "UI tasks follow React, the framework in the
+ * reports." with a button per other framework, and a way back to the reports once a framework was chosen. The line
+ * says what a choice moves, because the reported JavaScript tasks stay as they were reported.
  */
 export function planFrameworkLine(plan: CompanyPlan): { text: string; options: { framework: CompanyPlanFrameworkChoice | null; label: string }[] } {
   const reported = [...new Set(plan.companies.map((company) => company.framework))];
   const current = plan.framework ?? (reported.length === 1 ? reported[0] : null);
   const text = plan.framework
-    ? `Tasks follow ${frameworkLabel(plan.framework)}, your choice.`
+    ? `UI tasks and extra practice follow ${frameworkLabel(plan.framework)}, your choice; the reported JavaScript tasks stay as reported.`
     : current === 'javascript'
-      ? 'Tasks are in JavaScript, as the reports name no framework.'
+      ? 'The reports name no framework, so the tasks are in JavaScript and the UI builds in React.'
       : current
-        ? `Tasks follow ${frameworkLabel(current)}, the framework in the reports.`
-        : "Tasks follow the framework in each company's reports.";
+        ? `UI tasks follow ${frameworkLabel(current)}, the framework in the reports.`
+        : "UI tasks follow the framework in each company's reports.";
   const options: { framework: CompanyPlanFrameworkChoice | null; label: string }[] = FRAMEWORK_CHOICES
     .filter((framework) => framework !== current)
     .map((framework) => ({ framework, label: `Use ${frameworkLabel(framework)}` }));
@@ -276,7 +280,7 @@ export function companyPlanPricingCopy(data: CompanyPlanData, answers: CompanyPl
   const note = SOON_NOTES[answers.when] ?? '';
   return {
     title: `Your ${names} plan is waiting`,
-    summary: `${planSummaryLine(plan, answers.when)}.${opens} Every round${plan.companies.some((company) => company.list.unordered) ? '' : ' in order'}, with its tasks and your progress.`,
+    summary: `${planSummaryLine(plan, answers.when)}.${opens} Every round${plan.companies.some((company) => company.list.unordered) ? '' : ' in order'}, with the tasks the reports describe and your progress.`,
     note,
     recommendedPlan: note ? 'monthly' : 'quarterly',
     lead: [

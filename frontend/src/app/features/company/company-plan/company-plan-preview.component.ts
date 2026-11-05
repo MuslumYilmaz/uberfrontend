@@ -32,7 +32,7 @@ import { CompanyPlanService } from './company-plan.service';
 
 const WHENS: readonly CompanyPlanWhen[] = ['tomorrow', 'this-week', 'next-week', 'few-weeks', 'later'];
 const LEVELS: readonly CompanyPlanAnswerLevel[] = ['junior', 'mid', 'senior', 'staff'];
-const FRAMEWORKS: readonly CompanyPlanFrameworkChoice[] = ['react', 'angular', 'vue', 'javascript'];
+const FRAMEWORKS: readonly CompanyPlanFrameworkChoice[] = ['react', 'angular', 'vue'];
 const MAX_COMPANIES = 3;
 const MAX_CUSTOM_LENGTH = 60;
 
@@ -223,10 +223,10 @@ export class CompanyPlanPreviewComponent {
     const order = this.ordered() ? ' in order' : '';
     return this.restTasks().some((row) => row.locked)
       ? `Premium opens the locked tasks, with every round${order}.`
-      : `Every round${order}, with its tasks and your progress.`;
+      : `Every round${order}, with the tasks the reports describe and your progress.`;
   });
 
-  readonly roundsLine = computed(() => `Your plan adds every round${this.ordered() ? ' in order' : ''}, with its tasks and your progress.`);
+  readonly roundsLine = computed(() => `Your plan adds every round${this.ordered() ? ' in order' : ''}, with the tasks the reports describe and your progress.`);
 
   readonly buildLabel = computed(() => (this.viewer() === 'premium' ? 'Open my plan' : 'Unlock my plan'));
 
@@ -263,11 +263,15 @@ export class CompanyPlanPreviewComponent {
     const request = this.request();
     if (!data || !plan || !request || plan.general) return [];
     const rounds = plan.companies.reduce((sum, company) => sum + company.rounds.length, 0);
-    const left = rounds - plan.companies.reduce((sum, company) => sum + company.rounds.filter((round) => round.passed).length, 0);
+    const openRounds = plan.companies.flatMap((company) => company.rounds.filter((round) => !round.passed));
+    const left = openRounds.length;
+    const withTasks = openRounds.filter((round) => round.tasks.length).length;
     const order = this.ordered() ? 'in order' : 'grouped by type';
+    // The plan names every round; it only promises tasks on the rounds that hold one.
+    const tasksOn = withTasks === left ? 'with their tasks and your progress' : `tasks on ${withTasks} of them, and your progress`;
     const roundsFact = left < rounds
-      ? `${left} of ${rounds} reported rounds left, ${order}, with their tasks and your progress`
-      : `All ${rounds} reported rounds ${order}, with their tasks and your progress`;
+      ? `${left} of ${rounds} reported rounds left, ${order}, ${tasksOn}`
+      : `All ${rounds} reported rounds ${order}, ${tasksOn}`;
     const counts = data.general.premiumCounts;
     const framework = plan.companies[0].framework;
     const sets = companySetLine(plan.companies.map((company) => ({ name: company.name, counts: COMPANY_SET_COUNTS[company.slug] })));
@@ -277,7 +281,8 @@ export class CompanyPlanPreviewComponent {
     const warmups = this.warmups();
     const open = openTaskCount(plan);
     const locked = plan.tasks.length - open;
-    const pressure = plan.tasks.filter((task) => task.pressure).length;
+    // The badges on the page count: the plan's tasks and the free warm-ups shown beside them.
+    const pressure = new Set([...plan.tasks, ...plan.preview.open].filter((task) => task.pressure).map((task) => task.id)).size;
     // One set of numbers: the plan's tasks, how many open now, and the warm-ups that sit outside it.
     const split = this.viewer() === 'premium' || !locked ? '' : `: ${open} open now, ${locked} with Premium`;
     return [

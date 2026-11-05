@@ -224,7 +224,7 @@ describe('PricingComponent', () => {
       await render('/?src=company_plan_elevenlabs');
 
       expect(strip()?.querySelector('h2')?.textContent?.trim()).toBe('Your ElevenLabs plan is waiting');
-      expect(strip()?.querySelector('p')?.textContent?.trim()).toMatch(/^6 tasks for next week, about [\d.]+ hours?\. \d are open now, \d open with Premium\./);
+      expect(strip()?.querySelector('p')?.textContent?.trim()).toMatch(/^6 tasks for next week, about \d+ hours?( \d+ minutes)?\. \d are open now, \d open with Premium\./);
       expect(strip()?.querySelector('a')?.getAttribute('href')).toBe('/companies/preview');
       expect(firstCardLines()).toEqual([
         'Your full ElevenLabs plan',

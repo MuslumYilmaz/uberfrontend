@@ -172,19 +172,19 @@
     @if (step() === 4) {
       <div class="plan-question" data-testid="company-plan-next-step">
         <h2 class="plan-question__title">{{ nextQuestion() }}</h2>
-        <p class="plan-question__hint">The rounds before it count as passed, so your plan starts where you are.</p>
+        <p class="plan-question__hint">{{ nextHint() }}</p>
         @for (group of roundChoices(); track group.slug) {
           <div class="plan-choice-group">
             @if (roundChoices().length > 1) {
-              <p class="plan-choice-group__name">{{ group.name }}</p>
+              <p class="plan-choice-group__name">{{ group.name }}{{ group.unordered ? ': mark the rounds behind you' : '' }}</p>
             }
             <div class="plan-choices plan-choices--compact">
               @for (round of group.rounds; track round.id) {
                 <button
                   type="button"
                   class="plan-choice"
-                  [class.plan-choice--selected]="round.id === group.next"
-                  [attr.aria-pressed]="round.id === group.next"
+                  [class.plan-choice--selected]="group.unordered ? group.behind.includes(round.id) : round.id === group.next"
+                  [attr.aria-pressed]="group.unordered ? group.behind.includes(round.id) : round.id === group.next"
                   [attr.data-testid]="'company-plan-next-' + group.slug + '-' + round.id"
                   (click)="pickNext(group.slug, round.id)">
                   <span class="plan-choice__label">{{ round.name }}</span>

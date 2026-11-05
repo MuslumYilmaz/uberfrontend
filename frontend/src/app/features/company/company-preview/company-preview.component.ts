@@ -462,7 +462,8 @@ export class CompanyPreviewComponent implements OnInit {
         `${capital} open${locked === 1 ? 's' : ''} with a free account`,
         `See what each one asks. Premium then opens ${guides} and the full ${this.label} practice set.`);
     }
-    const title = locked === 1 ? `${capital}, with its answer guide, is in Premium` : `${capital}, with their answer guides, are in Premium`;
+    // The guides are what Premium holds; the practice pages a prompt links to may well be free.
+    const title = locked === 1 ? `The answer guide for ${range} is in Premium` : `The answer guides for ${range} are in Premium`;
     return this.lockGate('company-prompt-gate', 'company-prompt-gate', title,
       `Premium opens ${guides} and the full ${this.label} practice set. Your plan shows what opens for your date, and the price.`);
   }

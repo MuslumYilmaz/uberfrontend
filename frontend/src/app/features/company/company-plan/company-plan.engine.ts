@@ -37,6 +37,8 @@ export type CompanyPlanDataRow = {
   readonly rounds?: readonly string[];
   /** The practice link the guide shows on the round's row: the plan opens the round on it, as the guide does. */
   readonly lead?: true;
+  /** The guide's own prompt links to this task, so it comes before the other reported tasks of its round. */
+  readonly prompt?: true;
 };
 
 export type CompanyPlanDataRound = {
@@ -74,6 +76,8 @@ export type CompanyPlanDataCompany = {
   readonly mixed?: boolean;
   readonly aliases?: readonly string[];
   readonly checkedAt: string;
+  /** Every public source behind the company: the guide's list and all the tables' citations, once by URL. */
+  readonly sourceCount?: number;
   readonly variants: readonly CompanyPlanDataList[];
 };
 
@@ -108,8 +112,9 @@ export type CompanyPlanInput = {
 };
 
 export type CompanyPlanWhy =
-  | ({ readonly kind: 'report' } & CompanyPlanReportLine)
-  | { readonly kind: 'pick' }
+  /** `unbound`: the reports tie the task to no round, so it sits where the plan has room and names no round. */
+  | ({ readonly kind: 'report'; readonly unbound?: true } & CompanyPlanReportLine)
+  | { readonly kind: 'pick'; readonly unbound?: true }
   | { readonly kind: 'format' }
   | { readonly kind: 'general' };
 
@@ -130,6 +135,8 @@ export type PlannedCompany = {
   readonly framework: CompanyPlanFramework;
   readonly mixed: boolean;
   readonly checkedAt: string;
+  /** The company's whole evidence, the number the guide shows; the list's own count when the data has no other. */
+  readonly sourceCount: number;
   readonly list: { readonly id: string; readonly title: string; readonly chosen: boolean; readonly sourceCount: number; readonly unordered?: true };
   /** "These rounds come from Bangkok." and the questions that switch to the other lists. */
   readonly switchLine: { readonly text: string; readonly options: readonly { readonly listId: string; readonly ask: string }[] } | null;
@@ -194,7 +201,34 @@ export function companyPlanDefaultList(company: CompanyPlanDataCompany): Company
 }
 
 const isRunnable = (task: CompanyPlanDataTask) => task.kind === 'coding' || task.kind === 'debug' || task.kind === 'system-design';
-const whyOf = (row: CompanyPlanDataRow | null): CompanyPlanWhy => (row?.report ? { kind: 'report', ...row.report } : { kind: 'pick' });
+const whyOf = (row: CompanyPlanDataRow | null): CompanyPlanWhy => {
+  const unbound = row && !row.rounds?.length ? { unbound: true as const } : {};
+  return row?.report ? { kind: 'report', ...row.report, ...unbound } : { kind: 'pick', ...unbound };
+};
+
+/**
+ * The order a round offers its candidates in: the guide's own prompts first, then variety, so a task of a kind or
+ * topic the round does not hold yet comes before a second variant of one it does (the debugging round's debug task
+ * before a third autocomplete).
+ */
+function orderWithin(rows: readonly Candidate[]): Candidate[] {
+  const left = [...rows].sort((a, b) => Number(Boolean(b.row?.prompt)) - Number(Boolean(a.row?.prompt)));
+  const out: Candidate[] = [];
+  const kinds = new Set<string>();
+  const topics = new Set<string>();
+  const topicOf = (task: CompanyPlanDataTask) => task.family ?? task.focus?.[0] ?? task.id;
+  while (left.length) {
+    let at = left.findIndex((candidate) => !kinds.has(candidate.task.kind) && !topics.has(topicOf(candidate.task)));
+    if (at < 0) at = left.findIndex((candidate) => !topics.has(topicOf(candidate.task)));
+    if (at < 0) at = left.findIndex((candidate) => !kinds.has(candidate.task.kind));
+    if (at < 0) at = 0;
+    const [chosen] = left.splice(at, 1);
+    out.push(chosen);
+    kinds.add(chosen.task.kind);
+    topics.add(topicOf(chosen.task));
+  }
+  return out;
+}
 
 function roundTakes(round: CompanyPlanDataRound, task: CompanyPlanDataTask): boolean {
   return round.kinds.includes(task.kind === 'system-design' ? 'design' : 'coding');
@@ -226,12 +260,13 @@ function slotsFor(data: CompanyPlanData, slug: string, list: CompanyPlanDataList
     for (const round of bestFit(homeless ? fallback : eligible, task)) byRound.get(round.id)?.push({ task, row, phase });
   }
 
-  // A round with nothing of its own still gets the guide for its kind.
+  // A round with nothing of its own still gets the guide for its kind. When the guide is all the round has, it ranks
+  // like a linked task, so a behavioural round is not left empty while the coding rounds fill up.
   for (const round of open) {
     const own = byRound.get(round.id) ?? [];
     const addGuide = (route: string) => {
       const guide = data.tasks[route];
-      if (guide) own.push({ task: guide, row: null, phase: 'guide' });
+      if (guide) own.push({ task: guide, row: null, phase: own.length ? 'guide' : 'link' });
     };
     if (round.kinds.includes('people') && !own.some((candidate) => candidate.task.kind === 'guide')) addGuide(data.general.guides.people);
     if (round.kinds.includes('design') && !own.some((candidate) => candidate.task.kind === 'guide' || candidate.task.kind === 'system-design')) addGuide(data.general.guides.design);
@@ -246,7 +281,7 @@ function preferenceOrder(slots: readonly Slot[]): Selected[] {
   const seen = new Set<string>();
   for (const phase of PHASES) {
     const queues = slots
-      .map((slot) => ({ slot, rows: slot.candidates.filter((candidate) => candidate.phase === phase), at: 0 }))
+      .map((slot) => ({ slot, rows: orderWithin(slot.candidates.filter((candidate) => candidate.phase === phase)), at: 0 }))
       .filter((queue) => queue.rows.length);
     let moved = true;
     while (moved) {
@@ -367,7 +402,26 @@ export function buildCompanyPlan(data: CompanyPlanData, input: CompanyPlanInput)
   // nor the first company can use it up. A passed round has no slot.
   const orders = chosen.map(({ slug, list }) => preferenceOrder(slotsFor(data, slug, list, passed, taskFor)));
   const cursors = orders.map(() => 0);
+  // Every open round gets its first takeable task before any round gets a second, company by company in turns, so
+  // "every round, with its tasks" holds whenever the budget covers the rounds; the phased round-robin shares the rest.
+  const byRound = orders.map((order) => {
+    const groups = new Map<string, Selected[]>();
+    for (const entry of order) {
+      if (!entry.key) continue;
+      groups.set(entry.key, [...(groups.get(entry.key) ?? []), entry]);
+    }
+    return [...groups.values()];
+  });
   const fillRounds = (limit: number) => {
+    for (let at = 0; byRound.some((rounds) => at < rounds.length); at += 1) {
+      for (const rounds of byRound) {
+        if (selected.length >= limit) return;
+        const candidates = rounds[at];
+        if (!candidates || selected.some((taken) => taken.key === candidates[0].key)) continue;
+        const entry = candidates.find((candidate) => canTake(candidate.slug, candidate.task));
+        if (entry) selected.push(entry);
+      }
+    }
     let moved = true;
     while (selected.length < limit && moved) {
       moved = false;
@@ -426,7 +480,8 @@ export function buildCompanyPlan(data: CompanyPlanData, input: CompanyPlanInput)
   // company with none makes way for its first open candidate. A Tomorrow plan keeps its one Premium task.
   chosen.forEach(({ slug }, index) => {
     const own = selected.filter((entry) => entry.slug === slug);
-    if (!own.length || own.some((entry) => entry.task.access === 'free')) return;
+    // A guide is reading, not something to try, so it does not count as the company's open task.
+    if (!own.length || own.some((entry) => entry.task.access === 'free' && entry.task.kind !== 'guide')) return;
     if (input.when === 'tomorrow' && selected.filter((entry) => entry.task.access === 'premium').length <= 1) return;
     const at = selected.indexOf(own[own.length - 1]);
     const [removed] = selected.splice(at, 1);
@@ -441,6 +496,7 @@ export function buildCompanyPlan(data: CompanyPlanData, input: CompanyPlanInput)
     framework: input.framework ?? company.framework,
     mixed: input.framework ? false : Boolean(company.mixed),
     checkedAt: company.checkedAt,
+    sourceCount: company.sourceCount ?? list.sourceCount,
     list: { id: list.id, title: list.title, chosen: switched, sourceCount: list.sourceCount, ...(list.unordered ? { unordered: true as const } : {}) },
     switchLine: company.variants.length > 1
       ? {

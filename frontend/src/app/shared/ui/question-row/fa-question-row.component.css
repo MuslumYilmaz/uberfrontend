@@ -329,3 +329,14 @@
     font-size: 12px;
   }
 }
+
+/* A phone has no room for a one-line description, so it wraps to two lines instead of clipping mid-word. */
+@media (max-width: 460px) {
+  .fa-question-row__description {
+    display: -webkit-box;
+    white-space: normal;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
+}

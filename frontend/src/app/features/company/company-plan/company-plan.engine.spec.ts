@@ -187,8 +187,8 @@ describe('company plan engine', () => {
     );
     const plan = buildCompanyPlan(data, input({ when: 'this-week' }));
     expect(idsIn(plan, 'coding')).toEqual(['reported-new', 'reported-old', 'linked']);
-    expect(plan.tasks[0].why).toEqual({ kind: 'report', publisher: 'Taro', date: '2026-05' });
-    expect(plan.tasks[2].why).toEqual({ kind: 'pick' });
+    expect(plan.tasks[0].why).toEqual(jasmine.objectContaining({ kind: 'report', publisher: 'Taro', date: '2026-05' }));
+    expect(plan.tasks[2].why).toEqual(jasmine.objectContaining({ kind: 'pick' }));
     expect(plan.formatPractice.map((entry) => entry.id)).toEqual(['format-a']);
     expect(plan.formatPractice[0].why).toEqual({ kind: 'format' });
 
@@ -428,7 +428,7 @@ describe('company plan engine', () => {
     expect(angular.framework).toBe('angular');
     expect(angular.companies[0].framework).toBe('angular');
     expect(idsIn(angular, 'coding')).toEqual(['widget-angular', 'tagged-a']);
-    expect(angular.tasks[0].why).toEqual({ kind: 'report', ...report });
+    expect(angular.tasks[0].why).toEqual(jasmine.objectContaining({ kind: 'report', ...report }));
     // A thin company leaves budget to format practice, which comes from the chosen framework's pool.
     expect(angular.formatPractice.map((entry) => entry.id)).toEqual(['format-ng', 'format-b']);
     expect(angular.preview.rest.map((entry) => entry.id)).toContain('widget-angular');
@@ -443,6 +443,33 @@ describe('company plan engine', () => {
     expect(reported.framework).toBeUndefined();
     expect(reported.companies[0].framework).toBe('javascript');
     expect(idsIn(reported, 'coding')).toEqual(['widget-react', 'tagged-a']);
+  });
+
+  it('marks a task the reports tie to no round as unbound, and binds the rest to their rounds', () => {
+    const data = fixture([{ id: 'reported-new', report }, { id: 'linked', rounds: ['coding'] }], [round('coding', ['coding'])]);
+    const plan = buildCompanyPlan(data, input({ when: 'this-week' }));
+    expect(plan.tasks.find((task) => task.id === 'reported-new')?.why).toEqual({ kind: 'report', ...report, unbound: true });
+    expect(plan.tasks.find((task) => task.id === 'linked')?.why).toEqual({ kind: 'pick' });
+  });
+
+  it('gives every open round its first task before any round gets a second, and a debug task before a second variant', () => {
+    const data = fixture(
+      [
+        { id: 'widget-react', report, rounds: ['coding'] },
+        { id: 'tagged-a', report, rounds: ['coding'] },
+        { id: 'tagged-b', report, rounds: ['coding'] },
+        { id: 'debug-a', report, rounds: ['coding'] },
+        { id: 'design-a', report, rounds: ['design'] },
+      ],
+      [round('coding', ['coding']), round('design', ['design']), round('people', ['people'])],
+    );
+    const withDebug = { ...data, tasks: { ...data.tasks, 'debug-a': task('debug-a', { kind: 'debug', route: '/javascript/debug/debug-a', access: 'premium' }) } };
+    const plan = buildCompanyPlan(withDebug, input({ when: 'this-week', level: 'senior' }));
+    // Three round slots: the coding round's first task, the design round's walkthrough, and the behavioural guide the
+    // people round has as its only candidate; the coding round's second task waits.
+    expect(plan.companies[0].rounds.map((entry) => entry.tasks.map((item) => item.id))).toEqual([['widget-react'], ['design-a'], ['/guides/people']]);
+    const later = buildCompanyPlan(withDebug, input({ when: 'later', level: 'senior' }));
+    expect(idsIn(later, 'coding').slice(0, 2)).toEqual(['widget-react', 'debug-a']);
   });
 
   it('on the real data, a chosen framework gives every family task and the format practice in that framework', () => {

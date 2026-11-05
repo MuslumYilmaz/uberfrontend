@@ -2954,6 +2954,7 @@
       "signature": "Frontend Platform interview",
       "framework": "react",
       "checkedAt": "2026-10-21",
+      "sourceCount": 16,
       "variants": [
         {
           "id": "bangkok",
@@ -3176,7 +3177,8 @@
               "lead": true,
               "rounds": [
                 "frontend-platform-interview"
-              ]
+              ],
+              "prompt": true
             },
             {
               "id": "/guides/system-design-blueprint",
@@ -3200,10 +3202,12 @@
               },
               "rounds": [
                 "architecture-interview"
-              ]
+              ],
+              "prompt": true
             },
             {
               "id": "js-debounce",
+              "prompt": true,
               "rounds": [
                 "coding-interview"
               ]
@@ -3370,7 +3374,8 @@
               "lead": true,
               "rounds": [
                 "coding-round"
-              ]
+              ],
+              "prompt": true
             },
             {
               "id": "react-ssr-hydration",
@@ -3394,7 +3399,8 @@
               },
               "rounds": [
                 "platform-or-architecture-round"
-              ]
+              ],
+              "prompt": true
             },
             {
               "id": "react-fetch-list-states",
@@ -3406,7 +3412,8 @@
                 "online-assessment-or-take-home",
                 "coding-round",
                 "platform-or-architecture-round"
-              ]
+              ],
+              "prompt": true
             },
             {
               "id": "realtime-search-debounce-cache"
@@ -3438,6 +3445,7 @@
       "signature": "UI coding round",
       "framework": "react",
       "checkedAt": "2026-11-02",
+      "sourceCount": 16,
       "variants": [
         {
           "id": "main",
@@ -3731,6 +3739,7 @@
         "AWS"
       ],
       "checkedAt": "2026-10-20",
+      "sourceCount": 13,
       "variants": [
         {
           "id": "experienced",
@@ -3878,7 +3887,8 @@
               "lead": true,
               "rounds": [
                 "online-assessment"
-              ]
+              ],
+              "prompt": true
             },
             {
               "id": "react-todo-list",
@@ -3916,7 +3926,8 @@
               },
               "rounds": [
                 "loop-coding-interviews"
-              ]
+              ],
+              "prompt": true
             },
             {
               "id": "js-array-prototype-filter",
@@ -3961,7 +3972,8 @@
               },
               "rounds": [
                 "phone-screen"
-              ]
+              ],
+              "prompt": true
             },
             {
               "id": "image-upload-preview",
@@ -3971,7 +3983,8 @@
               },
               "rounds": [
                 "loop-front-end-system-design"
-              ]
+              ],
+              "prompt": true
             },
             {
               "id": "react-countdown-timer",
@@ -3981,7 +3994,8 @@
               },
               "rounds": [
                 "loop-coding-interviews"
-              ]
+              ],
+              "prompt": true
             },
             {
               "id": "react-image-slider",
@@ -3991,7 +4005,8 @@
               },
               "rounds": [
                 "loop-coding-interviews"
-              ]
+              ],
+              "prompt": true
             },
             {
               "id": "react-tabs-switcher",
@@ -4001,7 +4016,8 @@
               },
               "rounds": [
                 "loop-coding-interviews"
-              ]
+              ],
+              "prompt": true
             },
             {
               "id": "react-chips-input-autocomplete"
@@ -4028,6 +4044,7 @@
           "title": "Students and new graduates",
           "from": "students and new graduates",
           "ask": "Interviewing as a student or new graduate?",
+          "unordered": true,
           "students": true,
           "sourceCount": 1,
           "rounds": [
@@ -4091,7 +4108,8 @@
               "lead": true,
               "rounds": [
                 "new-graduate-first-round"
-              ]
+              ],
+              "prompt": true
             },
             {
               "id": "js-implement-new",
@@ -4160,6 +4178,7 @@
       "signature": "Onsite",
       "framework": "react",
       "checkedAt": "2026-10-23",
+      "sourceCount": 12,
       "variants": [
         {
           "id": "us",
@@ -4286,7 +4305,8 @@
                 "technical-screen",
                 "onsite"
               ],
-              "lead": true
+              "lead": true,
+              "prompt": true
             },
             {
               "id": "react-countdown-timer",
@@ -4298,7 +4318,8 @@
                 "technical-screen",
                 "onsite"
               ],
-              "lead": true
+              "lead": true,
+              "prompt": true
             },
             {
               "id": "react-vanilla-dropdown-port",
@@ -4309,7 +4330,8 @@
               "rounds": [
                 "technical-screen",
                 "onsite"
-              ]
+              ],
+              "prompt": true
             },
             {
               "id": "js-flatten-once",
@@ -4317,12 +4339,14 @@
                 "publisher": "Blind",
                 "date": "2024-05"
               },
+              "prompt": true,
               "rounds": [
                 "technical-screen"
               ]
             },
             {
               "id": "react-autocomplete-search-starter",
+              "prompt": true,
               "rounds": [
                 "technical-screen"
               ]
@@ -4413,16 +4437,19 @@
               },
               "rounds": [
                 "two-technical-rounds"
-              ]
+              ],
+              "prompt": true
             },
             {
               "id": "js-flatten-once",
+              "prompt": true,
               "rounds": [
                 "two-technical-rounds"
               ]
             },
             {
               "id": "react-autocomplete-search-starter",
+              "prompt": true,
               "rounds": [
                 "two-technical-rounds"
               ]
@@ -4446,6 +4473,7 @@
       "framework": "react",
       "mixed": true,
       "checkedAt": "2026-10-20",
+      "sourceCount": 11,
       "variants": [
         {
           "id": "main",
@@ -4695,6 +4723,7 @@
       "signature": "Fit interview",
       "framework": "react",
       "checkedAt": "2026-10-20",
+      "sourceCount": 12,
       "variants": [
         {
           "id": "main",
@@ -4898,6 +4927,7 @@
         "TikTok"
       ],
       "checkedAt": "2026-10-20",
+      "sourceCount": 25,
       "variants": [
         {
           "id": "us",
@@ -5378,6 +5408,7 @@
       "framework": "react",
       "mixed": true,
       "checkedAt": "2026-10-23",
+      "sourceCount": 14,
       "variants": [
         {
           "id": "senior",
@@ -5584,7 +5615,8 @@
                 "power-day-frontend-technical",
                 "power-day-case"
               ],
-              "lead": true
+              "lead": true,
+              "prompt": true
             },
             {
               "id": "multi-step-form-autosave",
@@ -5595,7 +5627,8 @@
               "rounds": [
                 "power-day-frontend-design"
               ],
-              "lead": true
+              "lead": true,
+              "prompt": true
             },
             {
               "id": "html-forms-validation-required",
@@ -5620,7 +5653,8 @@
                 "online-assessment",
                 "power-day-frontend-technical",
                 "power-day-case"
-              ]
+              ],
+              "prompt": true
             },
             {
               "id": "ui-component-state-from-mock",
@@ -5630,7 +5664,8 @@
               },
               "rounds": [
                 "power-day-frontend-design"
-              ]
+              ],
+              "prompt": true
             },
             {
               "id": "react-state-management-redux"
@@ -5718,10 +5753,12 @@
               "lead": true,
               "rounds": [
                 "power-day"
-              ]
+              ],
+              "prompt": true
             },
             {
               "id": "ui-component-state-from-mock",
+              "prompt": true,
               "rounds": [
                 "power-day"
               ]
@@ -5748,6 +5785,7 @@
       "framework": "javascript",
       "mixed": true,
       "checkedAt": "2026-10-26",
+      "sourceCount": 27,
       "variants": [
         {
           "id": "us",
@@ -5948,7 +5986,8 @@
                 "take-home-build",
                 "take-home-review"
               ],
-              "lead": true
+              "lead": true,
+              "prompt": true
             },
             {
               "id": "ui-component-state-from-mock",
@@ -5959,14 +5998,16 @@
               "rounds": [
                 "take-home-review"
               ],
-              "lead": true
+              "lead": true,
+              "prompt": true
             },
             {
               "id": "js-event-delegation",
               "lead": true,
               "rounds": [
                 "web-fundamentals-with-engineers"
-              ]
+              ],
+              "prompt": true
             },
             {
               "id": "model-training-progress-dashboard",
@@ -5974,12 +6015,14 @@
                 "publisher": "Taro",
                 "date": "2025-01"
               },
+              "prompt": true,
               "rounds": [
                 "take-home-review"
               ]
             },
             {
               "id": "js-xss-dom-sinks",
+              "prompt": true,
               "rounds": [
                 "web-fundamentals-with-engineers"
               ]
@@ -6098,6 +6141,7 @@
             },
             {
               "id": "model-training-progress-dashboard",
+              "prompt": true,
               "rounds": [
                 "whiteboard-design"
               ]
@@ -6254,6 +6298,7 @@
       "signature": "React live coding",
       "framework": "react",
       "checkedAt": "2026-10-20",
+      "sourceCount": 12,
       "variants": [
         {
           "id": "main",
@@ -6471,6 +6516,7 @@
                 "publisher": "Taro",
                 "date": "2025-11"
               },
+              "prompt": true,
               "rounds": [
                 "technical-screen"
               ]
@@ -6490,7 +6536,8 @@
               },
               "rounds": [
                 "react-live-coding"
-              ]
+              ],
+              "prompt": true
             },
             {
               "id": "infinite-scroll-list",
@@ -6500,7 +6547,8 @@
               },
               "rounds": [
                 "frontend-system-design"
-              ]
+              ],
+              "prompt": true
             },
             {
               "id": "js-count-vowels",
@@ -6546,7 +6594,8 @@
                 "technical-screen",
                 "react-live-coding",
                 "second-coding-round"
-              ]
+              ],
+              "prompt": true
             }
           ]
         }
@@ -6557,6 +6606,7 @@
       "signature": "90-minute assessment",
       "framework": "react",
       "checkedAt": "2026-10-22",
+      "sourceCount": 7,
       "variants": [
         {
           "id": "main",
@@ -6718,7 +6768,8 @@
                 "coding-assessment",
                 "live-technical-round"
               ],
-              "lead": true
+              "lead": true,
+              "prompt": true
             },
             {
               "id": "ai-ux-considerations",
@@ -6726,6 +6777,7 @@
                 "publisher": "Aced",
                 "date": "2026-10"
               },
+              "prompt": true,
               "rounds": [
                 "product-or-design-round"
               ]
@@ -6746,13 +6798,15 @@
               "rounds": [
                 "coding-assessment",
                 "live-technical-round"
-              ]
+              ],
+              "prompt": true
             },
             {
               "id": "js-stream-to-text",
               "rounds": [
                 "coding-assessment"
-              ]
+              ],
+              "prompt": true
             },
             {
               "id": "js-debug-stale-closure-autosave",
@@ -6764,7 +6818,8 @@
               "id": "live-chart-high-frequency-updates",
               "rounds": [
                 "product-or-design-round"
-              ]
+              ],
+              "prompt": true
             }
           ]
         }
@@ -6775,6 +6830,7 @@
       "signature": "Merge request review",
       "framework": "vue",
       "checkedAt": "2026-10-23",
+      "sourceCount": 19,
       "variants": [
         {
           "id": "frontend",
@@ -6972,7 +7028,8 @@
               "rounds": [
                 "merge-request-review"
               ],
-              "lead": true
+              "lead": true,
+              "prompt": true
             },
             {
               "id": "js-create-spy-function",
@@ -6984,14 +7041,16 @@
                 "merge-request-review",
                 "technical-interview"
               ],
-              "lead": true
+              "lead": true,
+              "prompt": true
             },
             {
               "id": "html-parsing-rendering",
               "lead": true,
               "rounds": [
                 "written-assessment"
-              ]
+              ],
+              "prompt": true
             },
             {
               "id": "css-flexbox-navbar",
@@ -7001,7 +7060,8 @@
               },
               "rounds": [
                 "merge-request-review"
-              ]
+              ],
+              "prompt": true
             },
             {
               "id": "html-head-seo-basics",
@@ -7012,6 +7072,7 @@
             },
             {
               "id": "vue-debounced-search",
+              "prompt": true,
               "rounds": [
                 "merge-request-review"
               ]
@@ -7153,6 +7214,7 @@
       "signature": "Hiring committee",
       "framework": "javascript",
       "checkedAt": "2026-10-20",
+      "sourceCount": 10,
       "variants": [
         {
           "id": "main",
@@ -7303,7 +7365,8 @@
               "lead": true,
               "rounds": [
                 "technical-screen"
-              ]
+              ],
+              "prompt": true
             },
             {
               "id": "js-build-tree-from-flat-list",
@@ -7332,6 +7395,7 @@
                 "publisher": "LeetCode Discuss",
                 "date": "2021-06"
               },
+              "prompt": true,
               "rounds": [
                 "assessment"
               ]
@@ -7355,30 +7419,35 @@
             },
             {
               "id": "js-get-by-path-1",
+              "prompt": true,
               "rounds": [
                 "assessment"
               ]
             },
             {
               "id": "js-take-latest",
+              "prompt": true,
               "rounds": [
                 "assessment"
               ]
             },
             {
               "id": "js-event-delegation",
+              "prompt": true,
               "rounds": [
                 "assessment"
               ]
             },
             {
               "id": "web-performance-optimize-load-time",
+              "prompt": true,
               "rounds": [
                 "assessment"
               ]
             },
             {
               "id": "infinite-scroll-list",
+              "prompt": true,
               "rounds": [
                 "system-design"
               ]
@@ -7416,6 +7485,7 @@
       "signature": "Craft demonstration",
       "framework": "react",
       "checkedAt": "2026-10-20",
+      "sourceCount": 20,
       "variants": [
         {
           "id": "main",
@@ -7635,7 +7705,8 @@
                 "technical-phone-interview",
                 "craft-demonstration",
                 "assessor-or-technical-rounds"
-              ]
+              ],
+              "prompt": true
             },
             {
               "id": "js-retry-with-delay",
@@ -7671,7 +7742,8 @@
                 "technical-phone-interview",
                 "craft-demonstration",
                 "assessor-or-technical-rounds"
-              ]
+              ],
+              "prompt": true
             },
             {
               "id": "react-chat-streaming-ui",
@@ -7683,7 +7755,8 @@
                 "technical-phone-interview",
                 "craft-demonstration",
                 "assessor-or-technical-rounds"
-              ]
+              ],
+              "prompt": true
             },
             {
               "id": "react-nested-comments",
@@ -7707,7 +7780,8 @@
                 "technical-phone-interview",
                 "craft-demonstration",
                 "assessor-or-technical-rounds"
-              ]
+              ],
+              "prompt": true
             },
             {
               "id": "js-memoize-function",
@@ -7731,7 +7805,8 @@
                 "technical-phone-interview",
                 "craft-demonstration",
                 "assessor-or-technical-rounds"
-              ]
+              ],
+              "prompt": true
             }
           ]
         }
@@ -7745,6 +7820,7 @@
         "JP Morgan"
       ],
       "checkedAt": "2026-10-21",
+      "sourceCount": 25,
       "variants": [
         {
           "id": "main",
@@ -7938,14 +8014,16 @@
               "lead": true,
               "rounds": [
                 "frontend-technical-conversation"
-              ]
+              ],
+              "prompt": true
             },
             {
               "id": "react-todo-list",
               "lead": true,
               "rounds": [
                 "live-coding"
-              ]
+              ],
+              "prompt": true
             },
             {
               "id": "js-xss-dom-sinks",
@@ -7976,7 +8054,8 @@
               },
               "rounds": [
                 "live-coding"
-              ]
+              ],
+              "prompt": true
             },
             {
               "id": "js-array-prototype-reduce",
@@ -7986,7 +8065,8 @@
               },
               "rounds": [
                 "security-and-framework-rounds"
-              ]
+              ],
+              "prompt": true
             },
             {
               "id": "js-memoize-function",
@@ -7996,7 +8076,8 @@
               },
               "rounds": [
                 "security-and-framework-rounds"
-              ]
+              ],
+              "prompt": true
             },
             {
               "id": "js-event-loop"
@@ -8020,6 +8101,7 @@
         "Instagram"
       ],
       "checkedAt": "2026-10-20",
+      "sourceCount": 16,
       "variants": [
         {
           "id": "ic4-ic6",
@@ -8209,6 +8291,7 @@
                 "publisher": "Taro",
                 "date": "2024-06"
               },
+              "prompt": true,
               "rounds": [
                 "initial-technical-screen"
               ]
@@ -8221,7 +8304,8 @@
               },
               "rounds": [
                 "full-loop-ui-architecture-and-design"
-              ]
+              ],
+              "prompt": true
             },
             {
               "id": "js-memoize-function",
@@ -8231,7 +8315,8 @@
               },
               "rounds": [
                 "initial-technical-screen"
-              ]
+              ],
+              "prompt": true
             },
             {
               "id": "js-timer-manager",
@@ -8242,7 +8327,8 @@
               "rounds": [
                 "initial-technical-screen",
                 "full-loop-coding"
-              ]
+              ],
+              "prompt": true
             },
             {
               "id": "js-timer-manager-and-dom-renderer",
@@ -8278,7 +8364,8 @@
               "rounds": [
                 "initial-technical-screen",
                 "full-loop-coding"
-              ]
+              ],
+              "prompt": true
             },
             {
               "id": "js-array-sort"
@@ -8375,7 +8462,8 @@
               },
               "rounds": [
                 "technical-interviews"
-              ]
+              ],
+              "prompt": true
             },
             {
               "id": "js-timer-manager-and-dom-renderer",
@@ -8395,7 +8483,8 @@
               },
               "rounds": [
                 "technical-interviews"
-              ]
+              ],
+              "prompt": true
             },
             {
               "id": "js-dom-twin-node",
@@ -8405,10 +8494,12 @@
               },
               "rounds": [
                 "technical-interviews"
-              ]
+              ],
+              "prompt": true
             },
             {
               "id": "js-stack-queue-implementation",
+              "prompt": true,
               "rounds": [
                 "technical-interviews"
               ]
@@ -8464,6 +8555,7 @@
       "signature": "Machine coding",
       "framework": "react",
       "checkedAt": "2026-10-20",
+      "sourceCount": 11,
       "variants": [
         {
           "id": "frontend",
@@ -8772,6 +8864,7 @@
       "framework": "javascript",
       "mixed": true,
       "checkedAt": "2026-10-22",
+      "sourceCount": 8,
       "variants": [
         {
           "id": "experienced",
@@ -8930,24 +9023,28 @@
             },
             {
               "id": "js-take-latest",
+              "prompt": true,
               "rounds": [
                 "technical-screen"
               ]
             },
             {
               "id": "infinite-scroll-list",
+              "prompt": true,
               "rounds": [
                 "onsite"
               ]
             },
             {
               "id": "react-rerender-decision-and-render",
+              "prompt": true,
               "rounds": [
                 "technical-screen"
               ]
             },
             {
               "id": "content-delivery-caching-strategies-streaming",
+              "prompt": true,
               "rounds": [
                 "technical-screen"
               ]
@@ -9021,18 +9118,21 @@
           "tasks": [
             {
               "id": "js-take-latest",
+              "prompt": true,
               "rounds": [
                 "take-home-assessment"
               ]
             },
             {
               "id": "react-rerender-decision-and-render",
+              "prompt": true,
               "rounds": [
                 "take-home-assessment"
               ]
             },
             {
               "id": "content-delivery-caching-strategies-streaming",
+              "prompt": true,
               "rounds": [
                 "take-home-assessment"
               ]
@@ -9074,6 +9174,7 @@
       "framework": "react",
       "mixed": true,
       "checkedAt": "2026-10-22",
+      "sourceCount": 8,
       "variants": [
         {
           "id": "main",
@@ -9259,6 +9360,7 @@
       "signature": "Bar Raiser",
       "framework": "react",
       "checkedAt": "2026-10-20",
+      "sourceCount": 17,
       "variants": [
         {
           "id": "main",
@@ -9419,7 +9521,8 @@
               "rounds": [
                 "live-coding"
               ],
-              "lead": true
+              "lead": true,
+              "prompt": true
             },
             {
               "id": "js-valid-parentheses",
@@ -9433,7 +9536,8 @@
               "lead": true,
               "rounds": [
                 "system-design"
-              ]
+              ],
+              "prompt": true
             },
             {
               "id": "/guides/behavioral",
@@ -9454,12 +9558,14 @@
             },
             {
               "id": "js-fetch-json-timeout",
+              "prompt": true,
               "rounds": [
                 "live-coding"
               ]
             },
             {
               "id": "js-microtasks-vs-macrotasks",
+              "prompt": true,
               "rounds": [
                 "live-coding"
               ]
@@ -9483,6 +9589,7 @@
       "framework": "javascript",
       "mixed": true,
       "checkedAt": "2026-10-20",
+      "sourceCount": 11,
       "variants": [
         {
           "id": "main",
@@ -9651,7 +9758,8 @@
               "lead": true,
               "rounds": [
                 "hiring-manager"
-              ]
+              ],
+              "prompt": true
             },
             {
               "id": "notification-toast-system",
@@ -9659,6 +9767,7 @@
                 "publisher": "LeetCode Discuss",
                 "date": "2026-02"
               },
+              "prompt": true,
               "rounds": [
                 "second-technical-round"
               ]
@@ -9690,7 +9799,8 @@
               "rounds": [
                 "javascript-fundamentals",
                 "second-technical-round"
-              ]
+              ],
+              "prompt": true
             },
             {
               "id": "js-create-counter",
@@ -9701,7 +9811,8 @@
               "rounds": [
                 "javascript-fundamentals",
                 "second-technical-round"
-              ]
+              ],
+              "prompt": true
             },
             {
               "id": "js-dom-renderer",
@@ -9709,6 +9820,7 @@
                 "publisher": "Blind",
                 "date": "2021-09"
               },
+              "prompt": true,
               "rounds": [
                 "javascript-fundamentals"
               ]
@@ -9729,6 +9841,7 @@
       "signature": "CS-fundamentals round",
       "framework": "react",
       "checkedAt": "2026-10-21",
+      "sourceCount": 15,
       "variants": [
         {
           "id": "ho-chi-minh",
@@ -9831,14 +9944,16 @@
                 "frontend-technical-round",
                 "cs-fundamentals-round"
               ],
-              "lead": true
+              "lead": true,
+              "prompt": true
             },
             {
               "id": "http-caching-basics",
               "lead": true,
               "rounds": [
                 "cs-fundamentals-round"
-              ]
+              ],
+              "prompt": true
             },
             {
               "id": "/guides/behavioral/stories",
@@ -9867,7 +9982,8 @@
               "rounds": [
                 "frontend-technical-round",
                 "cs-fundamentals-round"
-              ]
+              ],
+              "prompt": true
             },
             {
               "id": "css-inline-centering",
@@ -9875,6 +9991,7 @@
                 "publisher": "GoodJob",
                 "date": "2021-01"
               },
+              "prompt": true,
               "rounds": [
                 "frontend-technical-round"
               ]
@@ -9993,6 +10110,7 @@
             },
             {
               "id": "css-inline-centering",
+              "prompt": true,
               "rounds": [
                 "online-assessment"
               ]
@@ -10144,7 +10262,8 @@
                 "first-technical-interview",
                 "second-technical-interview"
               ],
-              "lead": true
+              "lead": true,
+              "prompt": true
             },
             {
               "id": "js-implement-new",
@@ -10193,12 +10312,14 @@
             },
             {
               "id": "http-caching-basics",
+              "prompt": true,
               "rounds": [
                 "first-technical-interview"
               ]
             },
             {
               "id": "css-inline-centering",
+              "prompt": true,
               "rounds": [
                 "application-or-referral-then-a-written-test"
               ]
@@ -10228,6 +10349,7 @@
       "framework": "javascript",
       "mixed": true,
       "checkedAt": "2026-10-20",
+      "sourceCount": 18,
       "variants": [
         {
           "id": "main",
@@ -10438,30 +10560,35 @@
             },
             {
               "id": "js-take-latest",
+              "prompt": true,
               "rounds": [
                 "final-web-practical"
               ]
             },
             {
               "id": "react-image-slider",
+              "prompt": true,
               "rounds": [
                 "final-web-practical"
               ]
             },
             {
               "id": "js-sleep",
+              "prompt": true,
               "rounds": [
                 "technical-screen"
               ]
             },
             {
               "id": "js-event-loop-nested-microtask-output",
+              "prompt": true,
               "rounds": [
                 "technical-screen"
               ]
             },
             {
               "id": "js-once",
+              "prompt": true,
               "rounds": [
                 "technical-screen"
               ]
@@ -10478,11 +10605,12 @@
       "signature": "Bug squash",
       "framework": "javascript",
       "checkedAt": "2026-10-20",
+      "sourceCount": 9,
       "variants": [
         {
           "id": "main",
           "title": "Frontend engineers",
-          "sourceCount": 8,
+          "sourceCount": 9,
           "newestReport": "2025-09",
           "rounds": [
             {
@@ -10532,7 +10660,7 @@
                   "date": "2025-08"
                 }
               ],
-              "moreSources": 2
+              "moreSources": 3
             },
             {
               "id": "onsite-bug-squash",
@@ -10720,6 +10848,7 @@
       "framework": "react",
       "mixed": true,
       "checkedAt": "2026-10-20",
+      "sourceCount": 15,
       "variants": [
         {
           "id": "engineers",
@@ -11161,6 +11290,7 @@
       "framework": "javascript",
       "mixed": true,
       "checkedAt": "2026-10-20",
+      "sourceCount": 11,
       "variants": [
         {
           "id": "main",
@@ -11429,6 +11559,7 @@
       "framework": "react",
       "mixed": true,
       "checkedAt": "2026-10-20",
+      "sourceCount": 16,
       "variants": [
         {
           "id": "sde3-ui",
@@ -11996,6 +12127,7 @@
       "signature": "Virtual onsite",
       "framework": "angular",
       "checkedAt": "2026-10-22",
+      "sourceCount": 6,
       "variants": [
         {
           "id": "frontend",
@@ -12100,7 +12232,8 @@
               "rounds": [
                 "phone-or-video-interviews"
               ],
-              "lead": true
+              "lead": true,
+              "prompt": true
             },
             {
               "id": "ai-chat-textarea-design",
@@ -12110,7 +12243,8 @@
               },
               "rounds": [
                 "virtual-onsite"
-              ]
+              ],
+              "prompt": true
             },
             {
               "id": "angular-autocomplete-search-starter",
@@ -12120,7 +12254,8 @@
               },
               "rounds": [
                 "virtual-onsite"
-              ]
+              ],
+              "prompt": true
             },
             {
               "id": "angular-debounced-search",
@@ -12140,7 +12275,8 @@
               },
               "rounds": [
                 "virtual-onsite"
-              ]
+              ],
+              "prompt": true
             },
             {
               "id": "js-fetch-json-timeout",
@@ -12170,7 +12306,8 @@
               },
               "rounds": [
                 "virtual-onsite"
-              ]
+              ],
+              "prompt": true
             }
           ]
         },
@@ -12311,6 +12448,7 @@
         "x.ai"
       ],
       "checkedAt": "2026-10-21",
+      "sourceCount": 13,
       "variants": [
         {
           "id": "main",
@@ -12528,7 +12666,8 @@
                 "react-coding-interview",
                 "html-css-interview"
               ],
-              "lead": true
+              "lead": true,
+              "prompt": true
             },
             {
               "id": "react-fetch-list-states",
@@ -12541,7 +12680,8 @@
                 "react-coding-interview",
                 "html-css-interview"
               ],
-              "lead": true
+              "lead": true,
+              "prompt": true
             },
             {
               "id": "ai-chat-textarea-design",
@@ -12552,7 +12692,8 @@
               "lead": true,
               "rounds": [
                 "systems-hands-on"
-              ]
+              ],
+              "prompt": true
             },
             {
               "id": "/guides/behavioral/stories",
@@ -12581,7 +12722,8 @@
               },
               "rounds": [
                 "react-coding-interview"
-              ]
+              ],
+              "prompt": true
             },
             {
               "id": "chat-conversation-state-management"
@@ -12604,6 +12746,7 @@
       "signature": "Take-home review",
       "framework": "react",
       "checkedAt": "2026-10-20",
+      "sourceCount": 6,
       "variants": [
         {
           "id": "main",

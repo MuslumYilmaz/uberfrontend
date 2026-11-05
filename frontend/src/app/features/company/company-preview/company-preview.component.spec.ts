@@ -1062,7 +1062,7 @@ describe('CompanyPreviewComponent', () => {
       expect(cards.length).toBe(5);
       expect(cards[2].nextElementSibling).toBe(card);
       expect(gate()).toEqual({
-        title: 'Prompts 4 and 5, with their answer guides, are in Premium',
+        title: 'The answer guides for prompts 4 and 5 are in Premium',
         line: 'Premium opens their answer guides and the full ElevenLabs practice set. Your plan shows what opens for your date, and the price.',
         button: 'Build my ElevenLabs plan →',
         href: '/companies?company=elevenlabs',
@@ -1072,12 +1072,12 @@ describe('CompanyPreviewComponent', () => {
     it('words the card for one, two or more locked prompts', async () => {
       // Amazon, not Google: Google sits behind the account gate, which words its card differently.
       await createComponent('amazon');
-      expect(gate()?.title).toBe('Prompts 4 to 7, with their answer guides, are in Premium');
+      expect(gate()?.title).toBe('The answer guides for prompts 4 to 7 are in Premium');
       await createComponent('xai');
       expect(prompts(fixture.nativeElement).length).toBe(4);
-      expect(gate()?.title).toBe('Prompt 4, with its answer guide, is in Premium');
+      expect(gate()?.title).toBe('The answer guide for prompt 4 is in Premium');
       await createComponent('openai');
-      expect(gate()?.title).toBe('Prompts 4 and 5, with their answer guides, are in Premium');
+      expect(gate()?.title).toBe('The answer guides for prompts 4 and 5 are in Premium');
       // OpenAI's prompts sit in two columns, so its card follows the list.
       expect((fixture.nativeElement.querySelector('.openai-prompt-list') as HTMLElement).nextElementSibling?.getAttribute('data-testid'))
         .toBe('company-prompt-gate');
@@ -1365,7 +1365,7 @@ describe('CompanyPreviewComponent', () => {
       expect(cards.every((card) => card.querySelector('.company-prompt__statement .premium-locked') === null)).toBeTrue();
       expect(cards[0].querySelector('.company-prompt__details')?.classList).not.toContain('company-prompt__locked');
       expect(cards[1].querySelector('.company-prompt__details')?.classList).toContain('company-prompt__locked');
-      expect(gateCard('company-prompt-gate')?.querySelector('.company-prompt-gate__title')?.textContent).toMatch(/^Prompts 2 to \d+, with their answer guides, are in Premium$/);
+      expect(gateCard('company-prompt-gate')?.querySelector('.company-prompt-gate__title')?.textContent).toMatch(/^The answer guides for prompts 2 to \d+ are in Premium$/);
       expect(gateCard('company-prompt-gate')?.classList).not.toContain('company-account-gate');
       // A free account reads Premium task names; only the task pages stay behind Premium.
       expect(host().querySelectorAll('.company-link--locked, .interview-process__locked').length).toBe(0);
