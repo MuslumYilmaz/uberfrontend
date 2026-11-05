@@ -261,9 +261,11 @@ describe('CompanyPlanPreviewComponent', () => {
       expect(text('[data-testid="company-plan-build"]')).toBe('Unlock my plan →');
     });
 
-    it('offers to save the plan on a free account and comes back here after signing up', () => {
+    it('offers to save the plan on a free account, says what that keeps, and comes back here after signing up', () => {
       setup(ELEVENLABS);
       expect(testId('company-plan-save-link')?.getAttribute('href')).toContain('/auth/signup?redirectTo=');
+      expect(text('[data-testid="company-plan-save-link"]')).toBe('Save this plan with a free account');
+      expect(text('[data-testid="company-plan-save-line"] .preview__save-why')).toBe('It keeps your plan and your progress on every device.');
       expect(text('[data-testid="company-plan-cta-note"]')).toBe('Your plan is part of Premium. You land on it right after payment.');
     });
 
@@ -286,6 +288,8 @@ describe('CompanyPlanPreviewComponent', () => {
     it('the night before an interview, points a phone at the guide to read', () => {
       setup({ ...ELEVENLABS, when: 'tomorrow' });
       expect(text('.preview__phone-note')).toContain('Tonight on a phone, read the ElevenLabs guide: its rounds and open prompts.');
+      // The guide's five prompts keep three open; Premium opens the other two answer guides, which read on a phone.
+      expect(text('.preview__phone-note')).toContain('Premium also opens the answer guides for prompts 4 and 5 there, readable on this phone tonight.');
       expect(testId('company-plan-phone-note')?.querySelector('a')?.getAttribute('href')).toBe('/companies/elevenlabs/preview');
     });
   });
@@ -378,7 +382,7 @@ describe('CompanyPlanPreviewComponent', () => {
       expect(plan.tasks.filter((task) => task.family).every((task) => task.tech === 'angular')).toBeTrue();
 
       const line = testId('company-plan-framework-line');
-      expect(line?.textContent).toContain('UI tasks and extra practice follow Angular, your choice; the reported JavaScript tasks stay as reported.');
+      expect(line?.textContent).toContain('Tasks with an Angular version, and the extra practice, follow Angular, your choice; the rest stay as reported.');
       const back = Array.from(line?.querySelectorAll('button') ?? []).find((button) => button.textContent === 'Back to the reports') as HTMLButtonElement;
       back.click();
       expect(plans.save).toHaveBeenCalledOnceWith({ companies: [{ slug: 'elevenlabs' }], when: 'next-week', level: 'senior' });

@@ -2052,7 +2052,7 @@
     ],
     "solutionAsset": "assets/sb/angular/solution/angular-autocomplete-search-solution.v2.json",
     "decisionGraphAsset": "assets/questions/angular/decision-graphs/angular-autocomplete-search-starter.v1.json",
-    "access": "premium",
+    "access": "free",
     "updatedAt": "2026-07-15",
     "seo": {
       "title": "Build Angular Autocomplete Search Component",
@@ -2075,8 +2075,8 @@
             "timeoutMs": 800
           },
           {
-          "type": "mouseDown",
-          "selector": ".option"
+            "type": "mouseDown",
+            "selector": ".option"
           },
           {
             "type": "expectValue",
@@ -2220,7 +2220,7 @@
           },
           {
             "type": "click",
-          "selector": ".layout .listCard:nth-child(1) .row input"
+            "selector": ".layout .listCard:nth-child(1) .row input"
           },
           {
             "type": "click",
@@ -2229,8 +2229,8 @@
           },
           {
             "type": "waitForCount",
-          "selector": ".layout .listCard:last-child .row",
-          "count": 4
+            "selector": ".layout .listCard:last-child .row",
+            "count": 4
           }
         ]
       }
@@ -2901,7 +2901,7 @@
         "steps": [
           {
             "type": "setValue",
-          "selector": ".chip-input input",
+            "selector": ".chip-input input",
             "value": "Alice"
           },
           {
@@ -2911,8 +2911,8 @@
             "timeoutMs": 800
           },
           {
-          "type": "mouseDown",
-          "selector": ".suggestion"
+            "type": "mouseDown",
+            "selector": ".suggestion"
           },
           {
             "type": "waitForCount",
@@ -3233,9 +3233,9 @@
             "className": "cell--head",
             "expected": false
           },
-        {
-          "type": "wait",
-          "durationMs": 110
+          {
+            "type": "wait",
+            "durationMs": 110
           },
           {
             "type": "expectClass",
@@ -3254,21 +3254,21 @@
       },
       {
         "id": "snake-keyboard-grow-score",
-      "name": "Keyboard guard, growth, score, and food respawn",
-      "steps": [
-        {
-          "type": "click",
-          "selector": ".actions button",
-          "index": 0
-        },
-        {
-          "type": "key",
-          "selector": "body",
-          "key": "ArrowLeft"
-        },
-        {
-          "type": "wait",
-          "durationMs": 200
+        "name": "Keyboard guard, growth, score, and food respawn",
+        "steps": [
+          {
+            "type": "click",
+            "selector": ".actions button",
+            "index": 0
+          },
+          {
+            "type": "key",
+            "selector": "body",
+            "key": "ArrowLeft"
+          },
+          {
+            "type": "wait",
+            "durationMs": 200
           },
           {
             "type": "expectClass",
@@ -3298,9 +3298,9 @@
             "selector": "body",
             "key": "ArrowDown"
           },
-        {
-          "type": "wait",
-          "durationMs": 100
+          {
+            "type": "wait",
+            "durationMs": 100
           },
           {
             "type": "expectClass",
@@ -3312,24 +3312,24 @@
       },
       {
         "id": "snake-wall-collision-stop",
-      "name": "Wall collision ends the game and stops movement",
-      "steps": [
-        {
-          "type": "click",
-          "selector": ".actions button",
-          "index": 0
-        },
-        {
-          "type": "waitForText",
+        "name": "Wall collision ends the game and stops movement",
+        "steps": [
+          {
+            "type": "click",
+            "selector": ".actions button",
+            "index": 0
+          },
+          {
+            "type": "waitForText",
             "selector": ".status-row",
             "text": "Game over",
             "match": "contains",
             "timeoutMs": 2200
           },
           {
-          "type": "expectClass",
-          "selector": ".cell",
-          "index": 111,
+            "type": "expectClass",
+            "selector": ".cell",
+            "index": 111,
             "className": "cell--head"
           },
           {
@@ -3338,9 +3338,9 @@
             "key": "Shift"
           },
           {
-          "type": "expectClass",
-          "selector": ".cell",
-          "index": 111,
+            "type": "expectClass",
+            "selector": ".cell",
+            "index": 111,
             "className": "cell--head"
           }
         ]

@@ -42,6 +42,33 @@ describe('LoginComponent analytics', () => {
     fixture.detectChanges();
   });
 
+  it('names the company plan the person came from, and stays quiet for any other way in', () => {
+    const host = fixture.nativeElement as HTMLElement;
+    expect(host.querySelector('[data-testid="login-plan-note"]')).toBeNull();
+
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      imports: [LoginComponent],
+      providers: [
+        provideRouter([]),
+        { provide: AuthService, useValue: auth },
+        { provide: AnalyticsService, useValue: analytics },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              queryParamMap: convertToParamMap({ redirectTo: '/companies/preview?companies=agoda&when=tomorrow&level=junior' }),
+            },
+          },
+        },
+      ],
+    });
+    const planFixture = TestBed.createComponent(LoginComponent);
+    planFixture.detectChanges();
+    const note = (planFixture.nativeElement as HTMLElement).querySelector('[data-testid="login-plan-note"]');
+    expect(note?.textContent?.replace(/\s+/g, ' ').trim()).toBe('Your Agoda plan will be saved to your account.');
+  });
+
   it('preserves source through password login and emits the standard login event', () => {
     auth.login.and.returnValue(of({} as any));
     component.form.setValue({ email: 'person@example.com', password: 'secret123' });

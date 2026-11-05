@@ -1999,7 +1999,7 @@
         "note": "One account describes a 60-minute machine-coding round: a typeahead with API calls, a live dropdown, highlighted matches, debounce or throttle, caching, keyboard navigation and error states. This starter is a practice version of that round in Vue, not its reported wording."
       }
     ],
-    "access": "premium",
+    "access": "free",
     "updatedAt": "2026-01-30",
     "seo": {
       "title": "Build Vue 3 Autocomplete Search with Keyboard Support",
@@ -2022,8 +2022,8 @@
             "timeoutMs": 800
           },
           {
-          "type": "mouseDown",
-          "selector": ".option"
+            "type": "mouseDown",
+            "selector": ".option"
           },
           {
             "type": "expectValue",
@@ -2165,7 +2165,7 @@
           },
           {
             "type": "click",
-          "selector": ".layout .listCard:nth-child(1) .row input"
+            "selector": ".layout .listCard:nth-child(1) .row input"
           },
           {
             "type": "click",
@@ -2174,8 +2174,8 @@
           },
           {
             "type": "waitForCount",
-          "selector": ".layout .listCard:last-child .row",
-          "count": 4
+            "selector": ".layout .listCard:last-child .row",
+            "count": 4
           }
         ]
       }
@@ -2760,7 +2760,7 @@
         "steps": [
           {
             "type": "setValue",
-          "selector": ".chip-input input",
+            "selector": ".chip-input input",
             "value": "Alice"
           },
           {
@@ -2770,8 +2770,8 @@
             "timeoutMs": 800
           },
           {
-          "type": "mouseDown",
-          "selector": ".suggestion"
+            "type": "mouseDown",
+            "selector": ".suggestion"
           },
           {
             "type": "waitForCount",
@@ -2955,7 +2955,7 @@
       "amazon",
       "microsoft"
     ],
-    "access": "premium",
+    "access": "free",
     "updatedAt": "2026-07-14",
     "seo": {
       "title": "Build Snake Game in Vue",

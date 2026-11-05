@@ -763,13 +763,14 @@ function assertAutocompletePressureMode() {
     },
     angular: {
       id: 'angular-autocomplete-search-starter',
-      access: 'premium',
+      // Free like its React and Vue family members since 2026-11-05: one family, one access level.
+      access: 'free',
       starter: 'assets/sb/angular/question/angular-autocomplete-search.v2.json',
       solution: 'assets/sb/angular/solution/angular-autocomplete-search-solution.v2.json',
     },
     vue: {
       id: 'vue-autocomplete-search',
-      access: 'premium',
+      access: 'free',
       starter: 'assets/sb/vue/question/vue-autocomplete-search.v1.json',
       solution: 'assets/sb/vue/solution/vue-autocomplete-search-solution.v1.json',
     },

@@ -601,7 +601,7 @@
       "accessibility",
       "keyboard"
     ],
-    "access": "premium",
+    "access": "free",
     "estimatedMinutes": 18,
     "updatedAt": "2026-07-15",
     "schemaVersion": "question.v1",
@@ -7745,7 +7745,7 @@
       "components",
       "grid"
     ],
-    "access": "premium",
+    "access": "free",
     "estimatedMinutes": 18,
     "updatedAt": "2026-07-14",
     "schemaVersion": "question.v1",
@@ -9109,7 +9109,7 @@
       "accessibility",
       "components"
     ],
-    "access": "premium",
+    "access": "free",
     "estimatedMinutes": 18,
     "updatedAt": "2026-01-30",
     "schemaVersion": "question.v1",
@@ -9806,7 +9806,7 @@
       "dom",
       "accessibility"
     ],
-    "access": "premium",
+    "access": "free",
     "estimatedMinutes": 18,
     "updatedAt": "2026-07-14",
     "schemaVersion": "question.v1",

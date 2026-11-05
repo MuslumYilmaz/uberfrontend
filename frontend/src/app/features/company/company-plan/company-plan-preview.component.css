@@ -116,6 +116,14 @@
   color: var(--uf-text-secondary);
 }
 
+.preview__switch-options {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 6px;
+  vertical-align: baseline;
+}
+
 .preview__switch-button {
   min-height: 44px;
   padding: 0 4px;
@@ -343,6 +351,19 @@
   justify-content: center;
   min-height: 44px;
   text-align: center;
+}
+
+.preview__save {
+  margin: 0;
+  display: grid;
+  gap: 2px;
+  text-align: center;
+}
+
+.preview__save-why {
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--uf-text-secondary);
 }
 
 @media (max-width: 959px) {

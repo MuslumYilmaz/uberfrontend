@@ -78,6 +78,8 @@ export type CompanyPlanDataCompany = {
   readonly checkedAt: string;
   /** Every public source behind the company: the guide's list and all the tables' citations, once by URL. */
   readonly sourceCount?: number;
+  /** How many practice prompts the company's guide carries; the answer guides past the open ones are Premium. */
+  readonly promptCount?: number;
   readonly variants: readonly CompanyPlanDataList[];
 };
 
@@ -137,6 +139,8 @@ export type PlannedCompany = {
   readonly checkedAt: string;
   /** The company's whole evidence, the number the guide shows; the list's own count when the data has no other. */
   readonly sourceCount: number;
+  /** The guide's practice prompts; zero for a guide without them. */
+  readonly promptCount: number;
   readonly list: { readonly id: string; readonly title: string; readonly chosen: boolean; readonly sourceCount: number; readonly unordered?: true };
   /** "These rounds come from Bangkok." and the questions that switch to the other lists. */
   readonly switchLine: { readonly text: string; readonly options: readonly { readonly listId: string; readonly ask: string }[] } | null;
@@ -440,6 +444,25 @@ export function buildCompanyPlan(data: CompanyPlanData, input: CompanyPlanInput)
   };
   fillRounds(budget.total - budget.format);
 
+  // What Premium opens sits on the round the person faces next whenever that round has a Premium candidate: it
+  // takes the format-practice slot before any other round's second task. A full Tomorrow plan swaps a Premium task
+  // of a later round for it, and otherwise leaves the one-Premium rule below to bring it in.
+  const nextRoundPremium = (index: number) => byRound[index][0]
+    ?.find((candidate) => candidate.task.access === 'premium' && canTake(candidate.slug, candidate.task));
+  chosen.forEach((_, index) => {
+    const entry = nextRoundPremium(index);
+    if (!entry || selected.some((taken) => taken.key === entry.key && taken.task.access === 'premium')) return;
+    if (selected.length >= budget.total) {
+      // Only the company's own Premium task on a later round makes way, so no company loses its one slot.
+      const at = selected.map((taken, position) => ({ taken, position }))
+        .filter(({ taken }) => taken.slug === entry.slug && taken.key !== entry.key && taken.task.access === 'premium')
+        .pop()?.position ?? -1;
+      if (at < 0) return;
+      selected.splice(at, 1);
+    }
+    selected.push(entry);
+  });
+
   // Format practice takes its share, and whatever a thin company left of the budget. It follows the person's
   // framework when they chose one, and each company's reports otherwise.
   const frameworks = input.framework ? [input.framework] : [...new Set(chosen.map(({ company }) => company.framework))];
@@ -454,13 +477,16 @@ export function buildCompanyPlan(data: CompanyPlanData, input: CompanyPlanInput)
   fillRounds(budget.total);
 
   // A short plan still carries one Premium task, so a buyer gets something new. It replaces a task of the same
-  // company, so no company loses its only slot. Only a company with no Premium task of its own falls back on format practice.
+  // company, so no company loses its only slot; the company's next round offers it first. Only a company with no
+  // Premium task of its own falls back on format practice.
   if (input.when === 'tomorrow' && !selected.some((entry) => entry.task.access === 'premium')) {
     let swapped = false;
     for (let at = selected.length - 1; at >= 0 && !swapped; at -= 1) {
       const [removed] = selected.splice(at, 1);
-      const order = orders[chosen.findIndex(({ slug }) => slug === removed.slug)] ?? [];
-      const premium = order.find((entry) => entry.task.access === 'premium' && canTake(entry.slug, entry.task));
+      const index = chosen.findIndex(({ slug }) => slug === removed.slug);
+      const order = orders[index] ?? [];
+      const premium = (index >= 0 ? nextRoundPremium(index) : undefined)
+        ?? order.find((entry) => entry.task.access === 'premium' && canTake(entry.slug, entry.task));
       if (premium) {
         selected.push(premium);
         swapped = true;
@@ -497,6 +523,7 @@ export function buildCompanyPlan(data: CompanyPlanData, input: CompanyPlanInput)
     mixed: input.framework ? false : Boolean(company.mixed),
     checkedAt: company.checkedAt,
     sourceCount: company.sourceCount ?? list.sourceCount,
+    promptCount: company.promptCount ?? 0,
     list: { id: list.id, title: list.title, chosen: switched, sourceCount: list.sourceCount, ...(list.unordered ? { unordered: true as const } : {}) },
     switchLine: company.variants.length > 1
       ? {

@@ -446,7 +446,7 @@
         "kind": "coding",
         "tech": "vue",
         "title": "Autocomplete Search (debounce + keyboard + outside click)",
-        "access": "premium",
+        "access": "free",
         "route": "/vue/coding/vue-autocomplete-search",
         "sources": [
           {
@@ -528,7 +528,7 @@
         "kind": "coding",
         "tech": "vue",
         "title": "Autocomplete Search (debounce + keyboard + outside click)",
-        "access": "premium",
+        "access": "free",
         "route": "/vue/coding/vue-autocomplete-search",
         "sources": [
           {
@@ -550,7 +550,7 @@
         "kind": "coding",
         "tech": "angular",
         "title": "Autocomplete Search Bar (Standalone Component)",
-        "access": "premium",
+        "access": "free",
         "route": "/angular/coding/angular-autocomplete-search-starter",
         "sources": [
           {

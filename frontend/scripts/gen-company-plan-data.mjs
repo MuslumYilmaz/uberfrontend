@@ -309,6 +309,8 @@ function buildCompany(slug, context) {
     ...(profile.aliases ? { aliases: profile.aliases } : {}),
     checkedAt: table.checkedAt,
     sourceCount: evidence.size,
+    // The guide's practice prompts; the plan tells a phone reader which answer guides Premium opens there.
+    promptCount: (context.prompts?.[slug] ?? []).length,
     variants,
   };
 }

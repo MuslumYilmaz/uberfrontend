@@ -158,8 +158,11 @@ const FRAMEWORK_CHOICES: readonly CompanyPlanFrameworkChoice[] = ['react', 'angu
 export function planFrameworkLine(plan: CompanyPlan): { text: string; options: { framework: CompanyPlanFrameworkChoice | null; label: string }[] } {
   const reported = [...new Set(plan.companies.map((company) => company.framework))];
   const current = plan.framework ?? (reported.length === 1 ? reported[0] : null);
+  // Only a task with a counterpart in the chosen framework switches (taskLookup); a reported React build without one
+  // stays React, so the line promises no more than that.
+  const label = plan.framework ? frameworkLabel(plan.framework) : '';
   const text = plan.framework
-    ? `UI tasks and extra practice follow ${frameworkLabel(plan.framework)}, your choice; the reported JavaScript tasks stay as reported.`
+    ? `Tasks with ${/^[aeiou]/i.test(label) ? 'an' : 'a'} ${label} version, and the extra practice, follow ${label}, your choice; the rest stay as reported.`
     : current === 'javascript'
       ? 'The reports name no framework, so the tasks are in JavaScript and the UI builds in React.'
       : current

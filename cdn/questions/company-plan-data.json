@@ -36,9 +36,9 @@
       "design": "/guides/system-design-blueprint"
     },
     "premiumCounts": {
-      "react": 31,
-      "angular": 23,
-      "vue": 23,
+      "react": 30,
+      "angular": 22,
+      "vue": 21,
       "javascript": 50,
       "systemDesign": 18
     },
@@ -221,7 +221,7 @@
       "route": "/angular/coding/angular-autocomplete-search-starter",
       "kind": "coding",
       "tech": "angular",
-      "access": "premium",
+      "access": "free",
       "minutes": 30,
       "pressure": true,
       "focus": [
@@ -2470,7 +2470,7 @@
       "route": "/react/coding/react-snake-game",
       "kind": "coding",
       "tech": "react",
-      "access": "premium",
+      "access": "free",
       "minutes": 45,
       "focus": [
         "ui"
@@ -2679,7 +2679,7 @@
       "route": "/vue/coding/vue-autocomplete-search",
       "kind": "coding",
       "tech": "vue",
-      "access": "premium",
+      "access": "free",
       "minutes": 30,
       "pressure": true,
       "focus": [
@@ -2859,7 +2859,7 @@
       "route": "/vue/coding/vue-snake-game",
       "kind": "coding",
       "tech": "vue",
-      "access": "premium",
+      "access": "free",
       "minutes": 45,
       "focus": [
         "ui"
@@ -2955,6 +2955,7 @@
       "framework": "react",
       "checkedAt": "2026-10-21",
       "sourceCount": 16,
+      "promptCount": 5,
       "variants": [
         {
           "id": "bangkok",
@@ -3446,6 +3447,7 @@
       "framework": "react",
       "checkedAt": "2026-11-02",
       "sourceCount": 16,
+      "promptCount": 0,
       "variants": [
         {
           "id": "main",
@@ -3740,6 +3742,7 @@
       ],
       "checkedAt": "2026-10-20",
       "sourceCount": 13,
+      "promptCount": 7,
       "variants": [
         {
           "id": "experienced",
@@ -4179,6 +4182,7 @@
       "framework": "react",
       "checkedAt": "2026-10-23",
       "sourceCount": 12,
+      "promptCount": 5,
       "variants": [
         {
           "id": "us",
@@ -4474,6 +4478,7 @@
       "mixed": true,
       "checkedAt": "2026-10-20",
       "sourceCount": 11,
+      "promptCount": 0,
       "variants": [
         {
           "id": "main",
@@ -4724,6 +4729,7 @@
       "framework": "react",
       "checkedAt": "2026-10-20",
       "sourceCount": 12,
+      "promptCount": 0,
       "variants": [
         {
           "id": "main",
@@ -4928,6 +4934,7 @@
       ],
       "checkedAt": "2026-10-20",
       "sourceCount": 25,
+      "promptCount": 0,
       "variants": [
         {
           "id": "us",
@@ -5409,6 +5416,7 @@
       "mixed": true,
       "checkedAt": "2026-10-23",
       "sourceCount": 14,
+      "promptCount": 5,
       "variants": [
         {
           "id": "senior",
@@ -5786,6 +5794,7 @@
       "mixed": true,
       "checkedAt": "2026-10-26",
       "sourceCount": 27,
+      "promptCount": 5,
       "variants": [
         {
           "id": "us",
@@ -6299,6 +6308,7 @@
       "framework": "react",
       "checkedAt": "2026-10-20",
       "sourceCount": 12,
+      "promptCount": 5,
       "variants": [
         {
           "id": "main",
@@ -6607,6 +6617,7 @@
       "framework": "react",
       "checkedAt": "2026-10-22",
       "sourceCount": 7,
+      "promptCount": 5,
       "variants": [
         {
           "id": "main",
@@ -6831,6 +6842,7 @@
       "framework": "vue",
       "checkedAt": "2026-10-23",
       "sourceCount": 19,
+      "promptCount": 5,
       "variants": [
         {
           "id": "frontend",
@@ -7215,6 +7227,7 @@
       "framework": "javascript",
       "checkedAt": "2026-10-20",
       "sourceCount": 10,
+      "promptCount": 7,
       "variants": [
         {
           "id": "main",
@@ -7486,6 +7499,7 @@
       "framework": "react",
       "checkedAt": "2026-10-20",
       "sourceCount": 20,
+      "promptCount": 5,
       "variants": [
         {
           "id": "main",
@@ -7821,6 +7835,7 @@
       ],
       "checkedAt": "2026-10-21",
       "sourceCount": 25,
+      "promptCount": 5,
       "variants": [
         {
           "id": "main",
@@ -8102,6 +8117,7 @@
       ],
       "checkedAt": "2026-10-20",
       "sourceCount": 16,
+      "promptCount": 7,
       "variants": [
         {
           "id": "ic4-ic6",
@@ -8556,6 +8572,7 @@
       "framework": "react",
       "checkedAt": "2026-10-20",
       "sourceCount": 11,
+      "promptCount": 0,
       "variants": [
         {
           "id": "frontend",
@@ -8865,6 +8882,7 @@
       "mixed": true,
       "checkedAt": "2026-10-22",
       "sourceCount": 8,
+      "promptCount": 6,
       "variants": [
         {
           "id": "experienced",
@@ -9175,6 +9193,7 @@
       "mixed": true,
       "checkedAt": "2026-10-22",
       "sourceCount": 8,
+      "promptCount": 0,
       "variants": [
         {
           "id": "main",
@@ -9361,6 +9380,7 @@
       "framework": "react",
       "checkedAt": "2026-10-20",
       "sourceCount": 17,
+      "promptCount": 5,
       "variants": [
         {
           "id": "main",
@@ -9590,6 +9610,7 @@
       "mixed": true,
       "checkedAt": "2026-10-20",
       "sourceCount": 11,
+      "promptCount": 5,
       "variants": [
         {
           "id": "main",
@@ -9842,6 +9863,7 @@
       "framework": "react",
       "checkedAt": "2026-10-21",
       "sourceCount": 15,
+      "promptCount": 5,
       "variants": [
         {
           "id": "ho-chi-minh",
@@ -10350,6 +10372,7 @@
       "mixed": true,
       "checkedAt": "2026-10-20",
       "sourceCount": 18,
+      "promptCount": 7,
       "variants": [
         {
           "id": "main",
@@ -10606,6 +10629,7 @@
       "framework": "javascript",
       "checkedAt": "2026-10-20",
       "sourceCount": 9,
+      "promptCount": 0,
       "variants": [
         {
           "id": "main",
@@ -10849,6 +10873,7 @@
       "mixed": true,
       "checkedAt": "2026-10-20",
       "sourceCount": 15,
+      "promptCount": 0,
       "variants": [
         {
           "id": "engineers",
@@ -11291,6 +11316,7 @@
       "mixed": true,
       "checkedAt": "2026-10-20",
       "sourceCount": 11,
+      "promptCount": 0,
       "variants": [
         {
           "id": "main",
@@ -11560,6 +11586,7 @@
       "mixed": true,
       "checkedAt": "2026-10-20",
       "sourceCount": 16,
+      "promptCount": 0,
       "variants": [
         {
           "id": "sde3-ui",
@@ -12128,6 +12155,7 @@
       "framework": "angular",
       "checkedAt": "2026-10-22",
       "sourceCount": 6,
+      "promptCount": 5,
       "variants": [
         {
           "id": "frontend",
@@ -12449,6 +12477,7 @@
       ],
       "checkedAt": "2026-10-21",
       "sourceCount": 13,
+      "promptCount": 4,
       "variants": [
         {
           "id": "main",
@@ -12747,6 +12776,7 @@
       "framework": "react",
       "checkedAt": "2026-10-20",
       "sourceCount": 6,
+      "promptCount": 0,
       "variants": [
         {
           "id": "main",

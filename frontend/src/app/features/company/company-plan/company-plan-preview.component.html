@@ -21,9 +21,12 @@
       @if (frameworkLine(); as line) {
         <p class="preview__switch" data-testid="company-plan-framework-line">
           {{ line.text }}
-          @for (option of line.options; track option.label) {
-            <button type="button" class="preview__switch-button" (click)="switchFramework(option.framework)">{{ option.label }}</button>
-          }
+          <!-- The choices move to the next line as one group instead of breaking mid-list on a phone. -->
+          <span class="preview__switch-options">
+            @for (option of line.options; track option.label) {
+              <button type="button" class="preview__switch-button" (click)="switchFramework(option.framework)">{{ option.label }}</button>
+            }
+          </span>
         </p>
       }
 
@@ -31,9 +34,11 @@
         @if (company.switchLine; as line) {
           <p class="preview__switch" data-testid="company-plan-switch-line">
             {{ line.text }}
-            @for (option of line.options; track option.listId) {
-              <button type="button" class="preview__switch-button" (click)="switchList(company.slug, option.listId)">{{ option.ask }}</button>
-            }
+            <span class="preview__switch-options">
+              @for (option of line.options; track option.listId) {
+                <button type="button" class="preview__switch-button" (click)="switchList(company.slug, option.listId)">{{ option.ask }}</button>
+              }
+            </span>
           </p>
         }
       }
@@ -103,7 +108,11 @@
         }
       </p>
       @if (viewer() === 'guest' && !current.general) {
-        <a class="preview__panel-link" data-testid="company-plan-save-link" routerLink="/auth/signup" [queryParams]="signupParams()">Save this plan with a free account</a>
+        <!-- The offer says what the account keeps; the sign-up page repeats the plan's name and the way back saves it. -->
+        <p class="preview__save" data-testid="company-plan-save-line">
+          <a class="preview__panel-link" data-testid="company-plan-save-link" routerLink="/auth/signup" [queryParams]="signupParams()">Save this plan with a free account</a>
+          <span class="preview__save-why">It keeps your plan and your progress on every device.</span>
+        </p>
       }
     </aside>
 

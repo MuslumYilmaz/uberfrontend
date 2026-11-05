@@ -7,7 +7,7 @@ import { expect, test } from './fixtures';
 // Five people through the company plan flow: form, preview, pricing, payment and the way back. The account, its plan
 // and the checkout attempt are answered from memory, so nothing reaches a backend and no checkout ever opens.
 
-type Answers = { companies: { slug: string; list?: string }[]; level: string; when: string };
+type Answers = { companies: { slug: string; list?: string }[]; level: string; when: string; passedRounds?: string[] };
 type SavedPlan = Answers & { createdAt: string; passedRounds: string[]; markedDone: string[] };
 type Account = { premium: boolean; plan: SavedPlan | null; solved: string[]; writes: Answers[] };
 
@@ -15,7 +15,13 @@ const PLAN_DATA = JSON.parse(readFileSync(resolve(__dirname, '../../cdn/question
 
 const newAccount = (overrides: Partial<Account> = {}): Account => ({ premium: false, plan: null, solved: [], writes: [], ...overrides });
 
-const savedPlan = (answers: Answers): SavedPlan => ({ ...answers, createdAt: new Date().toISOString(), passedRounds: [], markedDone: [] });
+// The backend keeps the rounds the form stated as passed (services/company-plan.js); so does this stand-in.
+const savedPlan = (answers: Answers): SavedPlan => ({
+  ...answers,
+  createdAt: new Date().toISOString(),
+  passedRounds: Array.isArray(answers.passedRounds) ? answers.passedRounds : [],
+  markedDone: [],
+});
 
 async function signIn(page: Page, account: Account): Promise<void> {
   const user = () => ({
@@ -120,6 +126,7 @@ test.describe('company plan, five people', () => {
     await expect(page.getByTestId('company-plan-open-task')).toHaveCount(3);
     const phoneNote = page.getByTestId('company-plan-phone-note');
     await expect(phoneNote).toContainText('Tonight on a phone, read the Amazon guide: its rounds and open prompts.');
+    await expect(phoneNote).toContainText('Premium also opens the answer guides for prompts 4 to 7 there, readable on this phone tonight.');
     await expect(phoneNote.getByRole('link', { name: 'Read the Amazon guide' })).toHaveAttribute('href', '/companies/amazon/preview');
     expect(await overflow(page)).toBe(0);
 
@@ -278,8 +285,51 @@ test.describe('company plan from a company guide', () => {
     await frameworkLine.getByRole('button', { name: 'Use Angular' }).click();
     await expect(page).toHaveURL('/companies/preview?companies=elevenlabs&when=next-week&level=senior&framework=angular');
     await expect(page.locator('.preview__chip', { hasText: 'Angular, your choice' })).toBeVisible();
-    await expect(frameworkLine).toContainText('UI tasks and extra practice follow Angular, your choice; the reported JavaScript tasks stay as reported.');
+    await expect(frameworkLine).toContainText('Tasks with an Angular version, and the extra practice, follow Angular, your choice; the rest stay as reported.');
     expect(await overflow(page)).toBe(0);
+  });
+
+  test('Gizem builds a plan as a guest and signs in on the way back: the sign-up page names her plan, and the preview says it is saved', async ({ page }) => {
+    // The account exists but nobody is signed in: the session starts at the login form, as it does for a visitor.
+    const account = newAccount();
+    await installAuthMock(page, {
+      token: `e2e-token-plan-guest-${Date.now()}`,
+      user: {
+        ...buildMockUser({ _id: 'e2e-plan-guest', username: 'plan_guest', email: 'guest@example.com', accessTier: 'free' }),
+        entitlements: { pro: { status: 'none', validUntil: null }, projects: { status: 'none', validUntil: null } },
+        solvedQuestionIds: [],
+        companyPlan: null,
+      },
+      validLogin: { emailOrUsername: 'guest@example.com', password: 'secret123' },
+    });
+    await page.route('**/api/users/me/company-plan', async (route) => {
+      const request = route.request();
+      if (request.method() === 'PUT') {
+        account.writes.push(request.postDataJSON());
+        account.plan = savedPlan(request.postDataJSON());
+      }
+      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ companyPlan: account.plan }) });
+    });
+
+    await answerForm(page, ['agoda'], 'next-week', 'mid');
+    const planUrl = '/companies/preview?companies=agoda&when=next-week&level=mid';
+    await expect(page).toHaveURL(planUrl);
+    const saveLine = page.getByTestId('company-plan-save-line');
+    await expect(saveLine).toContainText('It keeps your plan and your progress on every device.');
+    await saveLine.getByRole('link', { name: 'Save this plan with a free account' }).click();
+    await expect(page).toHaveURL(/\/auth\/signup\?redirectTo=%2Fcompanies%2Fpreview/);
+    await expect(page.getByTestId('signup-plan-note')).toHaveText('Your Agoda plan will be saved to this account.');
+
+    // She already has an account: the sign-in page keeps the way back and the plan's name.
+    await page.getByTestId('signup-link-login').click();
+    await expect(page.getByTestId('login-plan-note')).toHaveText('Your Agoda plan will be saved to your account.');
+    await page.getByTestId('login-email').fill('guest@example.com');
+    await page.getByTestId('login-password').fill('secret123');
+    await page.getByTestId('login-submit').click();
+    await expect(page).toHaveURL(planUrl);
+    await expect(page.getByTestId('company-plan-cta-note')).toHaveText('Saved to your account. Your plan is part of Premium, and you land on it right after payment.');
+    await expect(page.getByTestId('company-plan-save-line')).toHaveCount(0);
+    expect(account.writes).toEqual([{ companies: [{ slug: 'agoda' }], level: 'mid', when: 'next-week' }]);
   });
 
   test('Deniz opens a Premium task from the plan on a phone: the locked page says what a phone gets and leads back to the plan', async ({ page }) => {

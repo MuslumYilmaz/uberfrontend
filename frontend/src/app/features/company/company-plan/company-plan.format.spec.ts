@@ -32,7 +32,9 @@ describe('planFrameworkLine', () => {
     expect(reports.options).toEqual([{ framework: 'angular', label: 'Use Angular' }, { framework: 'vue', label: 'Use Vue' }]);
 
     const chosen = planFrameworkLine(plan({ companies: [{ slug: 'elevenlabs' }], when: 'next-week', level: 'senior', framework: 'angular' }));
-    expect(chosen.text).toBe('UI tasks and extra practice follow Angular, your choice; the reported JavaScript tasks stay as reported.');
+    expect(chosen.text).toBe('Tasks with an Angular version, and the extra practice, follow Angular, your choice; the rest stay as reported.');
+    expect(planFrameworkLine(plan({ companies: [{ slug: 'elevenlabs' }], when: 'next-week', level: 'senior', framework: 'vue' })).text)
+      .toBe('Tasks with a Vue version, and the extra practice, follow Vue, your choice; the rest stay as reported.');
     expect(chosen.options.map((option) => option.label)).toEqual(['Use React', 'Use Vue', 'Back to the reports']);
     expect(chosen.options[2].framework).toBeNull();
 

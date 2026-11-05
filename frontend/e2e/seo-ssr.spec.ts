@@ -234,11 +234,13 @@ const CASES = [
     ],
   },
   {
-    path: '/angular/coding/angular-autocomplete-search-starter',
-    titleIncludes: 'Angular Autocomplete Search',
-    h1: 'Autocomplete Search Bar (Standalone Component)',
+    // The Angular autocomplete starter went free with its React and Vue family on 2026-11-05; the tabs switcher
+    // keeps the Premium locked-preview coverage.
+    path: '/angular/coding/angular-tabs-switcher',
+    titleIncludes: 'Angular Tabs Switcher',
+    h1: 'Angular Tabs / Multi-View Switcher',
     detail: true,
-    premiumPreviewText: 'As the user types, show a dropdown of suggestions',
+    premiumPreviewText: 'accessible Angular tab switcher',
   },
   {
     path: '/react/coding/react-autocomplete-search-starter',

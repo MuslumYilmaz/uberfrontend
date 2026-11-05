@@ -4,6 +4,11 @@
     <div class="auth-card">
       <h1 class="auth-title">Sign in to your account</h1>
 
+      <!-- The plan the person built as a guest is what the account keeps; it is saved on the way back. -->
+      <p class="auth-plan-note" *ngIf="planName" data-testid="login-plan-note">
+        Your {{ planName }} plan will be saved to your account.
+      </p>
+
       <div class="auth-socials">
         <button type="button" class="btn-surface" data-testid="login-google" (click)="continueWithGoogle()">
           <i class="fa-brands fa-google social-icon" aria-hidden="true"></i>
@@ -84,7 +89,7 @@
         </li>
         <li>
           <span><i class="pi pi-save"></i></span>
-          <div><strong>Save & resume</strong> — your work persists; reset to the starter anytime.</div>
+          <div><strong>Save & resume</strong> — your plan and solved tasks stay on your account on every device; code drafts stay on this device.</div>
         </li>
         <li>
           <span><i class="pi pi-chart-line"></i></span>

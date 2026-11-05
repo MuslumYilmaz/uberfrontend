@@ -297,6 +297,30 @@ describe('company plan engine', () => {
     expect(plan.tasks.map((entry) => entry.id)).toContain('reported-old');
   });
 
+  it('puts the next round\'s Premium task before format practice, and ahead of a later round\'s Premium in a Tomorrow plan', () => {
+    // This week: 4 tasks, one of them format practice. The rounds take three free tasks first; the coding round's
+    // Premium report then takes the format slot instead of extra practice.
+    const data = fixture(
+      [{ id: 'tagged-a', rounds: ['coding'] }, { id: 'linked', rounds: ['coding'] }, { id: 'reported-old', rounds: ['coding'] }, { id: 'tagged-b', rounds: ['people'] }],
+      [round('coding', ['coding']), round('people', ['people'])],
+    );
+    const week = buildCompanyPlan(data, input({ when: 'this-week' }));
+    expect(week.tasks.length).toBe(4);
+    expect(week.companies[0].rounds[0].tasks.map((entry) => entry.id)).toContain('reported-old');
+    expect(week.formatPractice).toEqual([]);
+
+    // Tomorrow: 3 tasks, full after the rounds' first picks. The design round's Premium walkthrough makes way for
+    // the coding round's Premium report, so the one Premium task sits on the round the person faces next.
+    const later = fixture(
+      [{ id: 'tagged-a', rounds: ['coding'] }, { id: 'linked', rounds: ['coding'] }, { id: 'reported-old', rounds: ['coding'] }, { id: 'design-a', rounds: ['design'] }],
+      [round('coding', ['coding']), round('design', ['design'])],
+    );
+    const tomorrow = buildCompanyPlan(later, input({ when: 'tomorrow' }));
+    expect(tomorrow.tasks.length).toBe(3);
+    expect(tomorrow.companies[0].rounds[0].tasks.map((entry) => entry.id)).toContain('reported-old');
+    expect(tomorrow.tasks.filter((entry) => entry.access === 'premium').map((entry) => entry.id)).toEqual(['reported-old']);
+  });
+
   it('falls back to Premium format practice when the company has no Premium task', () => {
     const data = fixture([{ id: 'tagged-a' }, { id: 'tagged-b' }, { id: 'linked' }], [round('coding', ['coding'])]);
     const plan = buildCompanyPlan(data, input({ when: 'tomorrow' }));
@@ -466,8 +490,10 @@ describe('company plan engine', () => {
     const withDebug = { ...data, tasks: { ...data.tasks, 'debug-a': task('debug-a', { kind: 'debug', route: '/javascript/debug/debug-a', access: 'premium' }) } };
     const plan = buildCompanyPlan(withDebug, input({ when: 'this-week', level: 'senior' }));
     // Three round slots: the coding round's first task, the design round's walkthrough, and the behavioural guide the
-    // people round has as its only candidate; the coding round's second task waits.
-    expect(plan.companies[0].rounds.map((entry) => entry.tasks.map((item) => item.id))).toEqual([['widget-react'], ['design-a'], ['/guides/people']]);
+    // people round has as its only candidate. Then the coding round, the one the person faces next, gets its Premium
+    // debug task in the format slot.
+    expect(plan.companies[0].rounds.map((entry) => entry.tasks.map((item) => item.id))).toEqual([['widget-react', 'debug-a'], ['design-a'], ['/guides/people']]);
+    expect(plan.formatPractice).toEqual([]);
     const later = buildCompanyPlan(withDebug, input({ when: 'later', level: 'senior' }));
     expect(idsIn(later, 'coding').slice(0, 2)).toEqual(['widget-react', 'debug-a']);
   });

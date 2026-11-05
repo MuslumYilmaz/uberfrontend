@@ -29,6 +29,10 @@ import {
   whyLineFor,
 } from './company-plan.format';
 import { CompanyPlanService } from './company-plan.service';
+import { isCompanyGuideGated } from '../company-preview/company-guide-gate';
+
+/** The practice prompts a guide keeps open without an account or Premium; the answer guides after them are Premium. */
+const OPEN_GUIDE_PROMPTS = 3;
 
 const WHENS: readonly CompanyPlanWhen[] = ['tomorrow', 'this-week', 'next-week', 'few-weeks', 'later'];
 const LEVELS: readonly CompanyPlanAnswerLevel[] = ['junior', 'mid', 'senior', 'staff'];
@@ -239,8 +243,15 @@ export class CompanyPlanPreviewComponent {
     const plan = this.plan();
     const company = plan && !plan.general && plan.companies.length === 1 ? plan.companies[0] : null;
     if (company && this.request()?.answers.when === 'tomorrow') {
+      // The guide's answer guides past the open prompts are Premium and read on a phone: the one thing a
+      // purchase opens tonight. A gated guide keeps only its first prompt open before the account step.
+      const first = isCompanyGuideGated(company.slug) ? 2 : OPEN_GUIDE_PROMPTS + 1;
+      const last = company.promptCount;
+      const guides = last >= first
+        ? ` Premium also opens the answer guides for ${last === first ? `prompt ${first}` : last === first + 1 ? `prompts ${first} and ${last}` : `prompts ${first} to ${last}`} there, readable on this phone tonight.`
+        : '';
       return {
-        text: `Tonight on a phone, read the ${company.name} guide: its rounds and open prompts. The tasks here open as questions with their solutions; the code runs on a desktop or tablet.`,
+        text: `Tonight on a phone, read the ${company.name} guide: its rounds and open prompts. The tasks here open as questions with their solutions; the code runs on a desktop or tablet.${guides}`,
         guide: { name: company.name, path: `/companies/${company.slug}/preview` },
       };
     }

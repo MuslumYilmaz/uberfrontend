@@ -546,9 +546,10 @@ export class PricingPlansSectionComponent implements OnInit, OnChanges, AfterVie
       premiumValue: 'The Premium prompts inside them',
     },
     {
+      // The same sentence as the sign-up page's "Save & resume" line: one promise, kept in both places.
       label: 'Progress',
-      freeValue: 'Local drafts',
-      premiumValue: 'Account-backed progress across the Premium library',
+      freeValue: 'Your plan and solved tasks stay on your account on every device; code drafts stay on this device',
+      premiumValue: 'The same, across the whole Premium library',
     },
   ];
 
