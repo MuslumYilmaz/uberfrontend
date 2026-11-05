@@ -40,6 +40,15 @@ const noWrite = process.argv.includes('--no-write');
 // room for about fifteen more list rows; the total threshold stays at
 // 109,000,000.
 //
+// 2026-11-05, content wave step 11c: the prerender total reached 109,269,079
+// bytes. The Agoda hotel search case and the first Premium trivia page added
+// two routes (a locked trivia page is about 214 KB, 114 KB of it the trivia
+// detail's inlined component CSS; a locked system design page about 124 KB),
+// and links to them on about a hundred related pages added about 130 KB. No
+// existing page grew otherwise. The total threshold moved from 109,000,000 to
+// 112,000,000 for the planned content pages of steps 11 and 12, at roughly
+// 110 to 215 KB each. Splitting the trivia detail CSS would save more than this.
+//
 // "Eager JS" is the static import closure of the module scripts in index.html,
 // i.e. everything the browser must load before the app boots. The modulepreload
 // hints are not used as a budget: Angular only emits hints for the first ten
@@ -50,7 +59,7 @@ const THRESHOLDS = {
   initialBytes: 1_400_000,
   eagerJsBytes: 1_260_000,
   codingHtmlBytes: 660_000,
-  totalHtmlBytes: 109_000_000,
+  totalHtmlBytes: 112_000_000,
   sentryLazyChunkBytes: 260_000,
   showcaseLazyHeavyBytes: 620_000,
 };

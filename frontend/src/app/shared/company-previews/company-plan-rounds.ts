@@ -107,6 +107,7 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
             stage: 'Frontend Platform interview',
             kinds: ['coding'],
             note: '60 minutes on HackerRank: web fundamentals, a JavaScript implementation or a component and state discussion.',
+            picks: ['/javascript/trivia/js-web-fundamentals-hour-hotel-booking'],
           },
           {
             id: 'preliminary-call',
@@ -119,6 +120,7 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
             stage: 'Architecture interview',
             kinds: ['design'],
             note: '60 minutes on a frontend-flavoured product design such as a hotel search page, with no diagram expected.',
+            picks: ['/system-design/hotel-search-page-frontend'],
           },
           {
             id: 'culture-fit',
@@ -158,6 +160,7 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
             stage: 'Platform or architecture round',
             kinds: ['coding', 'design'],
             note: 'JavaScript depth such as hoisting and SSR versus CSR, or an hour of frontend architecture for a booking site.',
+            picks: ['/javascript/trivia/js-web-fundamentals-hour-hotel-booking', '/system-design/hotel-search-page-frontend'],
           },
           { id: 'hr-salary-and-relocation-call', stage: 'HR salary and relocation call', kinds: ['recruiter'] },
           {

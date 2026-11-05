@@ -1,5 +1,74 @@
 [
   {
+    "id": "hotel-search-page-frontend",
+    "title": "Design a Hotel Search Page Frontend for Several Teams",
+    "description": "Design a hotel search page frontend built by several teams: URL-owned search state, independently deployed units behind a thin shell, a results fetch that ignores late replies, and telemetry that points a regression at one deploy.",
+    "discovery": {
+      "teaser": "A filter changed mid-fetch, a shared link, a slow results unit and a release by another team must all leave the page showing one truthful list.",
+      "guideLabel": "Trace search state and deploys"
+    },
+    "tags": [
+      "accessibility",
+      "api-calls",
+      "architecture",
+      "caching",
+      "cdn",
+      "frontend-architecture",
+      "performance",
+      "routing",
+      "search",
+      "state-management"
+    ],
+    "companies": [
+      "agoda"
+    ],
+    "type": "system-design",
+    "access": "premium",
+    "publishedAt": "2026-11-05",
+    "updatedAt": "2026-11-05",
+    "difficulty": "hard",
+    "contentSchemaVersion": 2,
+    "practice": {
+      "targetLevel": "senior",
+      "timeboxMinutes": 20,
+      "candidatePrompt": "Design the frontend of a hotel search page. Date, city and guest inputs sit on top, filters on the left and result cards on the right. A million people a day use it, and several teams ship parts of it on their own schedules. Decide where the search state lives and how the page splits into deployable units. Say what the CDN and the browser cache, and how a regression is traced to one deploy.",
+      "constraints": [
+        "The URL is the source of truth.",
+        "Each team deploys its unit on its own schedule.",
+        "Prices change every few minutes."
+      ],
+      "expectedDecisions": [
+        "Split the page by ownership into a shell and three units with a typed contract between them.",
+        "Keep the inputs and the filters in the URL, derive each unit from it, and ignore replies for superseded queries.",
+        "Cache assets and HTML by version and prices briefly, and stamp every metric and funnel event with the unit build that produced it."
+      ],
+      "prerequisites": [
+        "URL and history APIs",
+        "HTTP caching headers",
+        "Core Web Vitals"
+      ],
+      "coreSkills": [
+        "Ownership boundaries",
+        "URL-owned state",
+        "Stale reply handling",
+        "Release observability"
+      ],
+      "guidedMock": false,
+      "evaluationSpine": {
+        "mustCover": [
+          "The URL owns the search and the filters.",
+          "Units deploy independently behind a shell contract."
+        ],
+        "strongSignals": [
+          "A late reply for an old query never overwrites current results.",
+          "Every metric and event names the unit build that produced it."
+        ],
+        "expertStretch": "Edge composition with per-unit rendering budgets.",
+        "redFlag": "Each unit keeps its own copy of the filters."
+      }
+    }
+  },
+  {
     "id": "messaging-inbox-frontend",
     "title": "Design a Real-Time Messaging Inbox",
     "description": "Design a person-to-person messaging inbox with server-ordered threads, optimistic sends that never duplicate, reconnect catch-up, cross-device read state, and an accessible message log.",

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-05T14:06:41.332Z",
+  "generatedAt": "2026-11-05T14:55:05.260Z",
   "entries": [
     {
       "tech": "angular",
@@ -1866,6 +1866,12 @@
       "tech": "javascript",
       "kind": "trivia",
       "id": "js-var-hoisting-shadowing-output",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
+      "id": "js-web-fundamentals-hour-hotel-booking",
       "file": "javascript/trivia.json"
     },
     {

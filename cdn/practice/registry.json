@@ -4638,6 +4638,31 @@
     "assetRef": "questions/javascript/trivia.json#ai-streaming-data-handling"
   },
   {
+    "id": "js-web-fundamentals-hour-hotel-booking",
+    "family": "question",
+    "title": "How would you answer a one-hour web-fundamentals round about a hotel booking page?",
+    "route": "/javascript/trivia/js-web-fundamentals-hour-hotel-booking",
+    "tech": "javascript",
+    "difficulty": "hard",
+    "summary": "A Platform hour can be sixty minutes of questions with no editor, and the answers that pass give a recommendation for the booking page and the trade-off behind it.",
+    "tags": [
+      "caching",
+      "cookies",
+      "fundamentals",
+      "performance",
+      "rendering",
+      "security",
+      "storage",
+      "testing",
+      "xss"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 7,
+    "updatedAt": "2026-11-05",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/javascript/trivia.json#js-web-fundamentals-hour-hotel-booking"
+  },
+  {
     "id": "js-compare-two-objects",
     "family": "question",
     "title": "How would you compare two objects in JavaScript?",
@@ -8677,6 +8702,32 @@
     "updatedAt": "2026-10-19",
     "schemaVersion": "question.v1",
     "assetRef": "questions/system-design/car-rental-booking-frontend/meta.json"
+  },
+  {
+    "id": "hotel-search-page-frontend",
+    "family": "question",
+    "title": "Design a Hotel Search Page Frontend for Several Teams",
+    "route": "/system-design/hotel-search-page-frontend",
+    "tech": "system-design",
+    "difficulty": "hard",
+    "summary": "Design a hotel search page frontend where the URL owns the search, several teams deploy their units behind one shell, and a regression is traced to one deploy.",
+    "tags": [
+      "accessibility",
+      "api-calls",
+      "architecture",
+      "caching",
+      "cdn",
+      "frontend-architecture",
+      "performance",
+      "routing",
+      "search",
+      "state-management"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 20,
+    "updatedAt": "2026-11-05",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/system-design/hotel-search-page-frontend/meta.json"
   },
   {
     "id": "messaging-inbox-frontend",

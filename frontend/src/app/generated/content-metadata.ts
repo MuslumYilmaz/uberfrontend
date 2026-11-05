@@ -1533,14 +1533,14 @@ export const TAG_REGISTRY = {
 };
 
 export const SHOWCASE_STATS = {
-  "totalQuestions": 510,
-  "premiumPracticeCount": 173,
+  "totalQuestions": 512,
+  "premiumPracticeCount": 175,
   "companyCounts": {
     "agoda": {
-      "all": 10,
+      "all": 12,
       "coding": 1,
-      "trivia": 7,
-      "system": 2
+      "trivia": 8,
+      "system": 3
     },
     "airbnb": {
       "all": 3,

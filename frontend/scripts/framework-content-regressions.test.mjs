@@ -6542,6 +6542,67 @@ for (const node of vanillaPortVariant.nodes) {
   assert.ok(vanillaPortLines.slice(lineStart - 1, lineEnd).join('\n').includes(snippet), `${node.id}: vanilla dropdown anchor range must contain its snippet`);
 }
 
+// Every Pressure Mode scenario must pass the checks PressureModeService.normalize applies. The service drops a
+// scenario that fails any of them, so a broken file means the mode silently never opens on its task.
+const PRESSURE_STEP_TYPES = new Set(['expectExists', 'expectText', 'expectNoText', 'expectDisabled', 'click', 'submit',
+  'mouseDown', 'pointerDown', 'wait', 'waitForText', 'setValue', 'expectValue', 'expectFocused', 'expectCount',
+  'waitForCount', 'expectAttribute', 'expectClass', 'mockHttp', 'expectHttpRequest', 'key', 'unmountPreview',
+  'expectNoPreviewTimers', 'expectNoPreviewLeaks']);
+const PRESSURE_FRAMEWORKS = ['react', 'angular', 'vue'];
+const pressureScenarios = new Map();
+for (const file of fs.readdirSync(path.join(repoRoot, 'cdn/questions/pressure-modes')).filter((name) => name.endsWith('.json')).sort()) {
+  const label = `pressure scenario ${file}`;
+  const scenario = json(`cdn/questions/pressure-modes/${file}`);
+  for (const field of ['schemaVersion', 'id', 'family', 'title']) {
+    assert.ok(typeof scenario[field] === 'string' && scenario[field].trim(), `${label}: missing ${field}`);
+  }
+  assert.ok(['premium', 'free'].includes(scenario.access), `${label}: access must be premium or free`);
+  assert.ok(Number(scenario.estimatedMinutes) > 0, `${label}: estimatedMinutes must be positive`);
+  const frameworksOf = (map, name) => {
+    assert.ok(map && typeof map === 'object' && !Array.isArray(map), `${label}: ${name} must be an object`);
+    for (const [key, value] of Object.entries(map)) {
+      assert.ok(PRESSURE_FRAMEWORKS.includes(key), `${label}: ${name} names an unknown framework ${key}`);
+      assert.ok(typeof value === 'string' && value.trim(), `${label}: ${name}.${key} must be text`);
+    }
+    return Object.keys(map).sort().join(',');
+  };
+  const supported = frameworksOf(scenario.supportedQuestions, 'supportedQuestions');
+  assert.ok(supported, `${label}: supportedQuestions is empty`);
+  assert.equal(frameworksOf(scenario.solutionAssets, 'solutionAssets'), supported, `${label}: solutionAssets must cover the supported frameworks`);
+  for (const [framework, asset] of Object.entries(scenario.solutionAssets)) {
+    assert.match(asset, new RegExp(`^assets/sb/${framework}/solution/[a-z0-9.-]+\\.json$`, 'i'), `${label}: ${framework} solution asset path`);
+    assertMirror(asset.replace(/^assets\//, ''), `${label}:${framework}`);
+  }
+  const debrief = scenario.debrief ?? {};
+  assert.ok(debrief.title && debrief.summary && Array.isArray(debrief.takeaways) && debrief.takeaways.length, `${label}: debrief needs a title, a summary and takeaways`);
+  assert.equal(frameworksOf(debrief.frameworkNotes, 'debrief.frameworkNotes'), supported, `${label}: debrief notes must cover the supported frameworks`);
+  assert.ok(Array.isArray(scenario.rounds) && scenario.rounds.length >= 1 && scenario.rounds.length <= 6, `${label}: one to six rounds`);
+  assert.equal(new Set(scenario.rounds.map((round) => round.id)).size, scenario.rounds.length, `${label}: round ids must be unique`);
+  let pressureChecks = 0;
+  for (const round of scenario.rounds) {
+    assert.ok(round.id && round.title && round.interviewerPrompt, `${label}: round ${round.id} needs an id, a title and a prompt`);
+    assert.ok(Array.isArray(round.constraints) && round.constraints.length, `${label}: round ${round.id} needs constraints`);
+    assert.ok(Array.isArray(round.frameworkTests) && round.frameworkTests.length, `${label}: round ${round.id} needs checks`);
+    for (const test of round.frameworkTests) {
+      assert.ok(Array.isArray(test.steps) && test.steps.length, `${label}: ${test.id} has no steps`);
+      for (const step of test.steps) {
+        assert.ok(PRESSURE_STEP_TYPES.has(step.type ?? step.action), `${label}: ${test.id} uses an unknown step type ${step.type ?? step.action}`);
+      }
+    }
+    pressureChecks += round.frameworkTests.length;
+  }
+  assert.ok(pressureChecks >= 1 && pressureChecks <= 6, `${label}: ${pressureChecks} checks, the runner takes one to six`);
+  pressureScenarios.set(`assets/questions/pressure-modes/${file}`, scenario);
+}
+for (const framework of PRESSURE_FRAMEWORKS) {
+  for (const question of json(`cdn/questions/${framework}/coding.json`)) {
+    if (!question.pressureModeAsset) continue;
+    const scenario = pressureScenarios.get(question.pressureModeAsset);
+    assert.ok(scenario, `${question.id}: pressureModeAsset ${question.pressureModeAsset} is not a scenario file`);
+    assert.equal(scenario.supportedQuestions[framework], question.id, `${question.id}: its scenario must list it for ${framework}`);
+  }
+}
+
 console.log('Framework content regressions: PASS');
 console.log('Legacy RIGHT -> UP -> LEFT reproduction: pending direction became LEFT');
 console.log(`Vue ${vueVersion} watcher semantics: watchEffect=1 run, bounded watch=4 runs`);

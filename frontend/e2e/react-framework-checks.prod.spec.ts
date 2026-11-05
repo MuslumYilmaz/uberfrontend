@@ -1621,16 +1621,15 @@ test.describe('Framework checks against the production SSR build', () => {
     ['angular', 'angular-autocomplete-search-starter'],
     ['vue', 'vue-autocomplete-search'],
   ] as const) {
+    // The Angular and Vue members of the autocomplete family are free like the React one since 2026-11-05, so a
+    // visitor without an account runs the same pressure rounds as a free pilot.
     test(`${framework} Autocomplete passes search, selection, repeat, accessibility, and cleanup pressure rounds`, async ({
       page,
-      baseURL,
     }) => {
-      if (!baseURL) throw new Error('Playwright baseURL is required for the premium pressure test');
-      await seedPremiumSession(page, baseURL);
       await page.goto(`/${framework}/coding/${questionId}?mode=pressure`);
       await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
       await expect(page.getByTestId('pressure-mode-panel')).toBeVisible();
-      await expect(page.getByTestId('pressure-mode-panel')).toContainText('Premium');
+      await expect(page.getByTestId('pressure-mode-panel')).toContainText('Free pilot');
       await waitForFrameworkPreview(page, '.input');
 
       await loadCanonicalBundle(page, AUTOCOMPLETE_PRESSURE_SOLUTIONS[framework]);

@@ -40,7 +40,7 @@
       "angular": 22,
       "vue": 21,
       "javascript": 51,
-      "systemDesign": 18
+      "systemDesign": 19
     },
     "familyMembers": {
       "accordion": {
@@ -648,6 +648,14 @@
         "concepts",
         "js"
       ]
+    },
+    "hotel-search-page-frontend": {
+      "id": "hotel-search-page-frontend",
+      "title": "Design a Hotel Search Page Frontend for Several Teams",
+      "route": "/system-design/hotel-search-page-frontend",
+      "kind": "system-design",
+      "access": "premium",
+      "minutes": 45
     },
     "html-aria-roles": {
       "id": "html-aria-roles",
@@ -1926,19 +1934,6 @@
         "algo"
       ]
     },
-    "js-testing-edge-cases-strategy": {
-      "id": "js-testing-edge-cases-strategy",
-      "title": "Testing Strategy: Edge Cases and Boundaries",
-      "route": "/javascript/trivia/js-testing-edge-cases-strategy",
-      "kind": "trivia",
-      "tech": "javascript",
-      "access": "free",
-      "minutes": 10,
-      "focus": [
-        "concepts",
-        "js"
-      ]
-    },
     "js-three-sum": {
       "id": "js-three-sum",
       "title": "3Sum (find unique triplets that sum to zero)",
@@ -2066,6 +2061,19 @@
       "minutes": 15,
       "focus": [
         "algo",
+        "js"
+      ]
+    },
+    "js-web-fundamentals-hour-hotel-booking": {
+      "id": "js-web-fundamentals-hour-hotel-booking",
+      "title": "How would you answer a one-hour web-fundamentals round about a hotel booking page?",
+      "route": "/javascript/trivia/js-web-fundamentals-hour-hotel-booking",
+      "kind": "trivia",
+      "tech": "javascript",
+      "access": "premium",
+      "minutes": 10,
+      "focus": [
+        "concepts",
         "js"
       ]
     },
@@ -3205,8 +3213,7 @@
               "lead": true,
               "rounds": [
                 "frontend-platform-interview"
-              ],
-              "prompt": true
+              ]
             },
             {
               "id": "/guides/system-design-blueprint",
@@ -3223,6 +3230,17 @@
               ]
             },
             {
+              "id": "hotel-search-page-frontend",
+              "report": {
+                "publisher": "LeetCode",
+                "date": "2026-07"
+              },
+              "rounds": [
+                "architecture-interview"
+              ],
+              "prompt": true
+            },
+            {
               "id": "realtime-search-debounce-cache",
               "report": {
                 "publisher": "LeetCode Discuss",
@@ -3230,6 +3248,12 @@
               },
               "rounds": [
                 "architecture-interview"
+              ]
+            },
+            {
+              "id": "js-web-fundamentals-hour-hotel-booking",
+              "rounds": [
+                "frontend-platform-interview"
               ],
               "prompt": true
             },
@@ -3251,12 +3275,6 @@
             },
             {
               "id": "js-xss-dom-sinks"
-            },
-            {
-              "id": "http-caching-basics"
-            },
-            {
-              "id": "js-testing-edge-cases-strategy"
             }
           ]
         },
@@ -3444,6 +3462,20 @@
               "prompt": true
             },
             {
+              "id": "js-web-fundamentals-hour-hotel-booking",
+              "rounds": [
+                "platform-or-architecture-round"
+              ],
+              "prompt": true
+            },
+            {
+              "id": "hotel-search-page-frontend",
+              "rounds": [
+                "platform-or-architecture-round"
+              ],
+              "prompt": true
+            },
+            {
               "id": "realtime-search-debounce-cache"
             },
             {
@@ -3457,12 +3489,6 @@
             },
             {
               "id": "js-cookie-sessionstorage-localstorage"
-            },
-            {
-              "id": "js-testing-edge-cases-strategy"
-            },
-            {
-              "id": "react-state-management-redux"
             }
           ]
         }

@@ -154,8 +154,8 @@ export const AGODA_COMPANY_PREVIEW: AuthoredCompanyPreview = {
         ],
         commonMiss:
           'Drawing the three visual areas as components and stopping there, with no answer for who deploys what, where the filter state lives, or how a regression would be noticed.',
-        resourceLabel: 'Work through the real-time search with debounce and caching case (Premium)',
-        resourcePath: '/system-design/realtime-search-debounce-cache',
+        resourceLabel: 'Work through the hotel search page frontend case (Premium)',
+        resourcePath: '/system-design/hotel-search-page-frontend',
         reportedRound: { label: AGODA_BANGKOK_2026_LABEL, url: AGODA_BANGKOK_2026_URL },
       },
       {
@@ -224,8 +224,8 @@ export const AGODA_COMPANY_PREVIEW: AuthoredCompanyPreview = {
         ],
         commonMiss:
           'Answering localStorage for the token without naming the XSS exposure, or describing CSRF as a variant of XSS; the round checks whether the trade-off is understood, not whether the term is recognised.',
-        resourceLabel: 'Review cookies versus sessionStorage versus localStorage (free)',
-        resourcePath: '/javascript/trivia/js-cookie-sessionstorage-localstorage',
+        resourceLabel: 'Read the twelve-question Platform hour answer guide (Premium)',
+        resourcePath: '/javascript/trivia/js-web-fundamentals-hour-hotel-booking',
         reportedRound: { label: AGODA_BANGKOK_2026_LABEL, url: AGODA_BANGKOK_2026_URL },
       },
       {
@@ -329,7 +329,7 @@ export const AGODA_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     kicker: 'Full company practice',
     title: 'Continue with the full Agoda practice set',
     copy:
-      'Premium unlocks the real-time search with debounce and caching case, the car rental booking frontend case, the React paginated data table drill and the wider premium library of coding, concept and system-design practice.',
+      'Premium unlocks the hotel search page frontend case, the twelve-question Platform hour answer guide, the car rental booking frontend case, the React paginated data table drill and the wider premium library of coding, concept and system-design practice.',
     buttonLabel: 'Unlock the full Agoda practice set',
     src: 'company_preview_agoda',
   },

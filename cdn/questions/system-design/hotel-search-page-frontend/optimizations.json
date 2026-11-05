@@ -1,0 +1,121 @@
+{
+  "key": "O",
+  "title": "Optimizations",
+  "blocks": [
+    {
+      "type": "table",
+      "title": "Hotel search failure playbook",
+      "columns": [
+        "Failure",
+        "Recovery",
+        "What stays true"
+      ],
+      "rows": [
+        [
+          "A reply for an older query arrives late",
+          "Compare its queryId with the current one and ignore it",
+          "Cards never belong to a different filter set than the URL"
+        ],
+        [
+          "The search request fails",
+          "Show an error state in the results slot with a retry; the inputs and the filters keep working",
+          "The URL still holds the search, so a retry needs no re-entry"
+        ],
+        [
+          "A unit fails to load",
+          "The shell renders a fallback in that slot and reports the build; the other units keep working",
+          "A broken filters build cannot blank the results"
+        ],
+        [
+          "The price changed since the quote",
+          "The property page refetches and shows the new price with its time",
+          "A traveller never pays a price the page invented"
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Caching from the CDN to the browser"
+    },
+    {
+      "type": "text",
+      "text": "Hashed assets are published with a long lifetime and marked immutable, so a release never needs a purge. HTML is served with a short lifetime and a build version header. Search replies are private and live briefly in the browser; the CDN never caches a reply that carries a guest's identity. Listing content is cached at the edge under surrogate keys and purged by hotelId when a hotel is edited."
+    },
+    {
+      "type": "steps",
+      "title": "Scenario walkthrough: a release by the filters team",
+      "steps": [
+        {
+          "title": "Build and test",
+          "text": "The filters team ships build f_219 with a new facet. CI runs the shell's contract test against it, publishes the hashed assets, and only then points the manifest at f_219."
+        },
+        {
+          "title": "Roll out by share",
+          "text": "The manifest serves f_219 to a measured share of new visits first, while the previous build stays published for every open tab."
+        },
+        {
+          "title": "Watch the vitals",
+          "text": "LCP, INP and the error rate for the filters slot are split by buildId, so f_219 is compared with f_218 on the same routes."
+        },
+        {
+          "title": "Roll back one unit",
+          "text": "If f_219 worsens INP on phones, the manifest points back to f_218 for new visits; no other team's unit moves."
+        }
+      ]
+    },
+    {
+      "type": "image",
+      "src": "questions/system-design/hotel-search-page-frontend/hotel-search-stale-reply.svg",
+      "alt": "Timeline where query q_41 is sent, a filter change aborts it and sends q_42, the late q_41 reply is ignored, and the q_42 reply renders the cards.",
+      "caption": "Late reply: only the reply whose queryId matches the current URL renders.",
+      "width": 960,
+      "height": 460,
+      "fallbackText": "Text fallback: q_41 is sent for the pool filter. Adding breakfast aborts q_41 and sends q_42. The late q_41 reply is ignored as superseded, and the q_42 reply renders 38 cards."
+    },
+    {
+      "type": "heading",
+      "text": "Testing and measurement for the search page"
+    },
+    {
+      "type": "checklist",
+      "title": "Hotel search tests that protect bookings",
+      "items": [
+        "Change a filter while a reply is in flight; assert the late reply never renders.",
+        "Open a shared link; assert the inputs, the filters and the cards all match the URL.",
+        "Mount a unit with an older contractVersion; assert the shell refuses it and reports the build.",
+        "Run keyboard and screen-reader passes over the combobox, the date picker, the filter group and the results live region."
+      ]
+    },
+    {
+      "type": "text",
+      "text": "Track LCP, INP and CLS per route and per unit build at p75, the time from search to first cards, the share of replies ignored as stale, and the search-to-view-to-book-to-pay funnel keyed by searchId, split by device class. A release is judged by the change in those numbers for its own unit."
+    },
+    {
+      "type": "links",
+      "title": "Technical references",
+      "items": [
+        {
+          "label": "MDN AbortController",
+          "href": "https://developer.mozilla.org/en-US/docs/Web/API/AbortController",
+          "description": "Cancel the request for a superseded query."
+        },
+        {
+          "label": "MDN Cache-Control",
+          "href": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Cache-Control",
+          "description": "Lifetimes for hashed assets, HTML and private replies."
+        },
+        {
+          "label": "web.dev Core Web Vitals",
+          "href": "https://web.dev/articles/vitals",
+          "description": "The field thresholds for LCP, INP and CLS."
+        },
+        {
+          "label": "MDN ARIA live regions",
+          "href": "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Guides/Live_regions",
+          "description": "Announcing result counts without moving focus."
+        }
+      ],
+      "editorialRole": "references"
+    }
+  ]
+}

@@ -85,6 +85,7 @@ const pilotExpectations = {
   'resilient-checkout-payment-flow': { targetLevel: 'mid', timeboxMinutes: 15, guidedMock: true },
   'car-rental-booking-frontend': { targetLevel: 'mid', timeboxMinutes: 15, guidedMock: false },
   'messaging-inbox-frontend': { targetLevel: 'senior', timeboxMinutes: 20, guidedMock: false },
+  'hotel-search-page-frontend': { targetLevel: 'senior', timeboxMinutes: 20, guidedMock: false },
 };
 
 for (const [id, expected] of Object.entries(pilotExpectations)) {
@@ -564,6 +565,44 @@ assert.doesNotMatch(
   messagingContractCode,
   /\b(?:clientTimestamp|localSentAt|deviceTime)\b/,
   'Messaging contracts must not order messages by device time',
+);
+
+const hotelSearch = bundleText('hotel-search-page-frontend');
+const hotelSearchContractCode = ['data', 'interfaces']
+  .flatMap((section) => read('hotel-search-page-frontend', section).blocks)
+  .filter((block) => block.type === 'code' && block.language === 'typescript')
+  .map((block) => block.code)
+  .join('\n');
+assert.match(hotelSearch, /every selected filter live in the query string/i, 'The URL must own the hotel search');
+assert.match(hotelSearch, /derives its state from the URL/i);
+assert.match(hotelSearch, /finds q_41 superseded/i, 'A late reply for an old query must be ignored');
+assert.match(hotelSearch, /contract test/i, 'A unit build must pass the shell contract test before it mounts');
+assert.match(hotelSearch, /hashed assets as immutable/i);
+assert.match(hotelSearch, /polite live region/i);
+for (const contract of [
+  'SearchQuery',
+  'PriceQuote',
+  'ResultCard',
+  'ResultsState',
+  'UnitManifest',
+  'SearchReply',
+  'SearchGateway',
+  'UnitContract',
+  'TelemetryEvent',
+  'Telemetry',
+]) {
+  assert.match(
+    hotelSearchContractCode,
+    new RegExp(`(?:interface|type)\\s+${contract}\\b`),
+    `Hotel search must define ${contract}`,
+  );
+}
+assert.match(hotelSearchContractCode, /interface ResultsState\s*\{[\s\S]*?queryId: string[\s\S]*?phase: ResultsPhase/);
+assert.match(hotelSearchContractCode, /interface PriceQuote\s*\{[\s\S]*?currency[\s\S]*?quotedAt/);
+assert.doesNotMatch(
+  hotelSearchContractCode,
+  /\b(?:filterState|localFilters|selectedFilters)\b/,
+  'Hotel search units must not keep their own copy of the filters',
 );
 
 const autosave = bundleText('multi-step-form-autosave');

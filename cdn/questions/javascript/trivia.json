@@ -10629,7 +10629,9 @@
       "error-handling"
     ],
     "importance": 4,
-    "companies": ["agoda"],
+    "companies": [
+      "agoda"
+    ],
     "answer": {
       "blocks": [
         {
@@ -11759,6 +11761,210 @@
     "seo": {
       "title": "JavaScript garbage collection: GC pauses, memory pressure, jank",
       "description": "Learn how JavaScript garbage collection works, why memory pressure creates GC pauses, and how to debug retained references or allocation churn in production."
+    }
+  },
+  {
+    "id": "js-web-fundamentals-hour-hotel-booking",
+    "title": "How would you answer a one-hour web-fundamentals round about a hotel booking page?",
+    "technology": "javascript",
+    "companies": [
+      "agoda"
+    ],
+    "difficulty": "hard",
+    "importance": 5,
+    "description": "A Platform round can be an hour of questions with no editor: page landing speed, SSG against SSR, CSR and ISR, the entities of a hotel booking page, what a CDN caches and how an update reaches it, where the authentication token lives, CSRF against XSS, the ways to hold state in React, whether the selected filters belong in state or in the query string, Core Web Vitals, a search-to-pay funnel, testing strategies and failures that are not yours. Each answer here gives the recommendation for the booking page first, then the trade-off that shows the choice was understood. The storage and security answers are the ones that end rounds: name the exposure, not just the API. The rendering and caching answers map each page type to a strategy instead of listing acronyms. The measurement answers tie LCP, INP and the funnel to one search id so the numbers can be joined.",
+    "interviewFocus": {
+      "summary": "The Platform hour checks breadth with judgment: for each web-fundamentals question, give the recommendation for a hotel booking page first, then the trade-off that shows you understood its cost.",
+      "tests": [
+        "Where the session token lives, and why localStorage loses to XSS",
+        "Which page type gets SSG, ISR, SSR or CSR, and what each costs",
+        "Whether the selected filters belong in state or in the query string"
+      ]
+    },
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>The round as a 2026 account reported it</strong><br><br>A senior frontend candidate in a Bangkok relocation loop described the Platform hour as sixty minutes of questions and no editor: techniques to make a page land fast; SSG, SSR, CSR and ISR; the core entities of a hotel booking page; what to cache in a CDN and how an update reaches it; the ways to store data on the client and where the authentication token goes; CSRF and XSS; the ways to hold state in React; whether the selected filters live in state or in the query string; measuring performance with Core Web Vitals; tracking a funnel from search to pay; testing strategies; and how to handle test failures that your own code did not cause. The interviewer is not collecting definitions. Each question has a recommendation for the booking page and a trade-off that shows you understood the cost, and the answer that names both is the one that passes. The table is the one-line version; the sections after it are what you say out loud."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Question",
+            "Recommendation for the booking page",
+            "The trade-off that shows judgment"
+          ],
+          "rows": [
+            [
+              "Page landing speed",
+              "Server-render the first screen, inline the critical CSS, preload the hero image and the fonts, split the rest by route",
+              "Preloading too much competes with the hero image; measure LCP in the field after each change"
+            ],
+            [
+              "SSG, SSR, CSR, ISR",
+              "SSG or ISR for city and landing pages, SSR for search results that depend on dates, CSR inside the signed-in booking flow",
+              "SSR costs a server render per request plus hydration; ISR serves one stale page until the regeneration lands"
+            ],
+            [
+              "Core entities",
+              "Property, room and rate plan, availability for a date range, price with currency and taxes, guest, reservation, payment, review, and the search query itself",
+              "Price and availability are time-bound facts, so the model carries a quoted-at time rather than a bare number"
+            ],
+            [
+              "CDN caching",
+              "Hashed assets immutable for a year, HTML with a short lifetime, listing content under surrogate keys, prices and availability private or uncached",
+              "A purge by key reaches every edge in seconds; a long HTML lifetime keeps a user on an old shell until it expires"
+            ],
+            [
+              "Client storage",
+              "Cookies for the session, sessionStorage for one tab's draft, localStorage for preferences, IndexedDB for large offline data",
+              "Anything script-readable is readable by injected script; cookies travel with every request, so keep them small"
+            ],
+            [
+              "The token",
+              "An HttpOnly, Secure, SameSite cookie set by the server; a short-lived access token held in memory if an API needs a bearer",
+              "localStorage survives reloads but hands the token to any XSS; a cookie needs CSRF protection instead"
+            ],
+            [
+              "CSRF and XSS",
+              "XSS: output encoding, safe DOM APIs, a CSP with nonces, Trusted Types. CSRF: SameSite cookies, an anti-CSRF token, origin checks, no state change on GET",
+              "Different attacks: XSS runs the attacker's script in your origin, CSRF rides your cookies from another origin"
+            ],
+            [
+              "State in React",
+              "useState and useReducer for local state, lifted state for siblings, Context for low-frequency shared values, an external store for high-frequency app state, a server cache for API data, the URL for navigation state",
+              "Context re-renders every consumer on change; an external store subscribes components to slices"
+            ],
+            [
+              "Filters: state or query params",
+              "The query string is the source of truth; mirror it into state for the controls and write back on commit",
+              "A URL-only filter set makes every change a history entry unless you replace while typing and push on commit"
+            ],
+            [
+              "Core Web Vitals",
+              "LCP, INP and CLS at the 75th percentile of real visits, reported per route with the web-vitals library",
+              "Lab scores from one laptop say nothing about phones on hotel Wi-Fi; field data is what search engines and your users see"
+            ],
+            [
+              "Search-to-pay funnel",
+              "One event per stage with a search id, a property id and a session id, sent through one client and joined server-side",
+              "Without the shared id the stages cannot be joined, and ad blockers under-count, so compare against server-side booking counts"
+            ],
+            [
+              "Testing, and failures that are not yours",
+              "Unit tests for pure logic, component tests for contracts, a few end-to-end runs for the booking path, contract tests against the API; mock third parties and quarantine known-flaky tests",
+              "Retrying every failing test hides real bugs; retry only tests marked flaky and report the external failure to its owner"
+            ]
+          ],
+          "caption": "The twelve questions, each with a recommendation and the trade-off behind it",
+          "stackOnMobile": true
+        },
+        {
+          "type": "text",
+          "text": "<strong>Rendering: pick a strategy per page, not per site</strong><br><br>Static generation (SSG) renders a page at build time and serves the same HTML to everyone; incremental static regeneration (ISR) rebuilds that page in the background after a set age, so a city landing page can be static yet refresh its featured hotels every few minutes. Server-side rendering (SSR) renders per request, which is what a search results page needs because the list depends on the dates, the guests and today's availability. Client-side rendering (CSR) ships a shell and fetches data in the browser; it fits the signed-in booking and account pages, where there is nothing for a search engine to index and the data is personal. The follow-up is hydration: a server-rendered page is not interactive until the JavaScript for it has loaded and attached, so a results page rendered on the server still needs a small bundle for its above-the-fold controls and lazy loading for the rest."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Caching: what the CDN holds and how an update reaches it</strong><br><br>Three kinds of content want three lifetimes. Hashed assets (the JavaScript, CSS and images with a content hash in the file name) are safe for a year with <code>Cache-Control: public, max-age=31536000, immutable</code>, because a change produces a new name. HTML gets a short lifetime or <code>no-cache</code> with an ETag, so the browser revalidates and picks up the new asset names within seconds of a deploy. Listing content such as photos and descriptions sits at the edge under a surrogate key per hotel, purged when the content team edits that hotel. Prices and availability are personal and time-bound: either <code>private</code> with a lifetime of a minute or two in the browser, or not cached at all, and never cached at the CDN for a response that carries a guest's identity. An update reaches the CDN by one of two routes: a new file name, which needs no purge, or an explicit purge by key, which the CDN applies at every edge within seconds. The pitfall is a long HTML lifetime, which keeps a user on an old shell that asks for asset names the deploy removed."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Client storage: where the token lives and why</strong><br><br>Cookies travel with every request to their domain, hold about four kilobytes, and can be marked <code>HttpOnly</code> (no script access), <code>Secure</code> (HTTPS only) and <code>SameSite</code> (not sent on most cross-site requests). localStorage persists until cleared, holds a few megabytes per origin, is synchronous and is readable by any script running on the origin. sessionStorage has the same API but lives in one tab and dies with it. IndexedDB holds large structured data asynchronously and is the right place for offline search results or a cached map. The recommendation for the authentication token is the cookie: set by the server, <code>HttpOnly</code>, <code>Secure</code>, <code>SameSite=Lax</code>, so an injected script cannot read it. If a separate API needs a bearer token, keep a short-lived access token in memory and refresh it through the cookie, the pattern often called a backend-for-frontend. The answer that ends the round is localStorage for the token without naming the exposure: the first cross-site-scripting bug on any page of the origin reads every token at once."
+        },
+        {
+          "type": "code",
+          "language": "js",
+          "code": "// On the server, after the password or the sign-in code checks out\nres.cookie('session', sessionId, {\n  httpOnly: true, // document.cookie cannot read it, so an XSS cannot steal it\n  secure: true, // only over HTTPS\n  sameSite: 'lax', // sent on top-level navigations, not on cross-site POSTs\n  maxAge: 12 * 60 * 60 * 1000,\n  path: '/',\n});\n\n// In the browser the token is never touched: the request just carries the cookie,\n// and the anti-CSRF token proves the request came from your own page\nawait fetch('/api/bookings', {\n  method: 'POST',\n  credentials: 'same-origin',\n  headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken },\n  body: JSON.stringify(booking),\n});"
+        },
+        {
+          "type": "text",
+          "text": "<strong>CSRF and XSS, told apart</strong><br><br>Cross-site scripting runs an attacker's script inside your origin: a review that contains a script tag, a search term reflected into the page without encoding, or a URL fragment written with <code>innerHTML</code>. The script can read anything script-readable, call your API as the user, and change what the page shows. The defences are output encoding by default (what React and Angular do for text), no raw HTML sinks without a sanitizer, a Content Security Policy that allows only scripts with a per-response nonce, and Trusted Types where supported. Cross-site request forgery is a different attack: a page on another site makes the user's browser send a request to yours, and the browser attaches the cookies. The server cannot tell the forged request from a real one unless something proves the request came from your page: a <code>SameSite</code> cookie, an anti-CSRF token in a header or a hidden field, a check of the <code>Origin</code> header, and no state change on GET. The common mistake is to call CSRF a kind of XSS; the hint that keeps them apart is that XSS steals from inside your origin and CSRF borrows your cookies from outside it."
+        },
+        {
+          "type": "text",
+          "text": "<strong>State in React, and where the filters belong</strong><br><br>Name the options from local to global and say what each costs. <code>useState</code> and <code>useReducer</code> hold state inside one component; lifting moves it to the nearest common parent of the components that read it; Context shares a value down a subtree and re-renders every consumer when it changes, so it suits the theme, the locale and the signed-in user, not a value that changes on every keystroke. An external store (Redux Toolkit, Zustand or a hand-written one behind <code>useSyncExternalStore</code>) lets components subscribe to slices, which is what a cart or a multi-step booking needs. A server-cache library (TanStack Query or RTK Query) owns API data with its loading, error and refetch states, so that data never lives in a reducer by hand. The URL holds navigation state. For the selected filters on a hotel booking page the recommendation is the query string as the source of truth: a shared link reproduces the list, the back button works, and the server can render the first page for the same URL. The controls mirror the URL into local state for instant feedback; typing updates the URL with <code>replaceState</code> and a committed change with <code>pushState</code>, so the history is not one entry per keystroke. Serialize carefully: omit defaults, keep arrays stable, and ignore unknown keys."
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "import { useSearchParams } from 'react-router';\n\nconst AMENITIES = ['pool', 'breakfast', 'parking', 'gym'];\n\nfunction Filters() {\n  const [params, setParams] = useSearchParams();\n  const selected = params.getAll('amenity'); // the URL is the source of truth\n\n  function toggle(amenity) {\n    const next = new URLSearchParams(params);\n    const values = selected.includes(amenity)\n      ? selected.filter((value) => value !== amenity)\n      : [...selected, amenity];\n    next.delete('amenity');\n    values.forEach((value) => next.append('amenity', value));\n    next.delete('page'); // a new filter set starts at page one\n    setParams(next); // commit: one history entry per change\n  }\n\n  return AMENITIES.map((amenity) => (\n    <label key={amenity}>\n      <input type=\"checkbox\" checked={selected.includes(amenity)} onChange={() => toggle(amenity)} />\n      {amenity}\n    </label>\n  ));\n}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Core Web Vitals and the search-to-pay funnel</strong><br><br>Core Web Vitals are three field metrics: Largest Contentful Paint for loading, Interaction to Next Paint for responsiveness and Cumulative Layout Shift for stability, judged at the 75th percentile of real visits on each page type. Collect them with the web-vitals library or a RUM provider, tag each sample with the route, the device class and the release, and read them per route; the city page and the search results page fail for different reasons. Lab tools such as Lighthouse reproduce a problem but do not grade the site. The funnel is a product metric with an engineering constraint: one event per stage (search, view, book, pay) carrying the same search id, property id and session id, so the stages can be joined into a conversion rate per step and per segment. Send the events through one client, batch them, flush with <code>navigator.sendBeacon</code> when the page is hidden, and compare the pay stage with server-side booking counts, because ad blockers and bots distort the browser numbers."
+        },
+        {
+          "type": "code",
+          "language": "js",
+          "code": "const searchId = crypto.randomUUID(); // one id for the whole search, from the first query to payment\nconst queue = [];\n\nfunction track(stage, extra = {}) {\n  queue.push({ stage, searchId, sessionId, route: location.pathname, release: APP_RELEASE, at: Date.now(), ...extra });\n}\n\ntrack('search', { city: 'bangkok', nights: 3 });\ntrack('view', { propertyId: 'h_1180' });\ntrack('book', { propertyId: 'h_1180', rateId: 'r_9' });\n\n// Called when the tab is hidden or the page unloads; sendBeacon survives the unload\nfunction flush() {\n  if (queue.length) navigator.sendBeacon('/api/events', JSON.stringify(queue.splice(0)));\n}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Testing strategies, and failures that are not yours</strong><br><br>Give one example per layer. Unit tests for pure logic: the price formatter, the date-range validator and the filter serializer, with boundary cases (an empty range, the same check-in and check-out day, a currency without decimals). Component tests for contracts: the filter panel writes the expected query string, the results list renders the empty and error states. Contract tests against the search API, so a changed field breaks a test instead of the page. A small set of end-to-end runs for the booking path, and screenshot tests for the layouts that regress silently. For failures outside your code, name the usual causes and the fix for each: a third-party widget or a flaky network in end-to-end runs, which you mock or replace with a recorded response; a shared test environment someone else changed, which you make hermetic with seeded data; a dependency that broke in a release, which you pin and report upstream with a reproduction. Retry only tests you have marked as flaky, keep them in quarantine with an owner, and never retry the whole suite, because that hides the real failures."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Common misses</strong><br><br>localStorage for the token with no mention of XSS. CSRF described as a variant of XSS. SSR, SSG and a CDN listed as features without saying which page gets which. Filters in component state only, so a shared link opens an empty search. Lab Lighthouse scores quoted as if they were field data. A funnel with no shared id, so the stages cannot be joined. Every failing test retried until it passes."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Interview framing</strong><br><br>Say it like this:<br><em>\"For the booking page I would put the session in an HttpOnly, SameSite cookie, never in localStorage, because one XSS on any page would read it; the cookie then needs CSRF protection, which SameSite and an anti-CSRF token give. I would render the city pages statically with regeneration, the search results on the server because they depend on dates and availability, and the signed-in flow on the client. Hashed assets are immutable at the CDN, HTML has a short lifetime, and prices are never cached at the edge. The selected filters live in the query string so a link reproduces the search, and I mirror them into state for the controls. I measure LCP, INP and CLS in the field per route, and the funnel with one search id per stage so the steps join.\"</em>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Summary</strong><br><br>Answer each fundamentals question with a recommendation for the page and its trade-off: a strategy per page type, three cache lifetimes with a purge path, the token in an HttpOnly cookie with CSRF protection to match, XSS and CSRF kept apart, state chosen by who reads it and how often it changes, filters in the URL, vitals measured in the field, a funnel joined by one id, and tests that isolate what is not yours."
+        }
+      ]
+    },
+    "access": "premium",
+    "premiumPreview": {
+      "summary": "A Platform hour can be sixty minutes of questions with no editor, and the answers that pass give a recommendation for the booking page and the trade-off behind it.",
+      "learningOutcomes": [
+        "Map SSG, ISR, SSR and CSR to the city, search and booking pages.",
+        "Set three cache lifetimes and name how an update reaches the CDN.",
+        "Put the session token in an HttpOnly cookie and say why localStorage fails.",
+        "Tell CSRF and XSS apart and give the defence for each.",
+        "Keep the filters in the query string and join the funnel by one search id."
+      ],
+      "unlockDescription": "Premium unlocks the twelve answers with their trade-offs, the cookie and filter code, the funnel event design and the testing answer for failures that are not yours."
+    },
+    "type": "trivia",
+    "tags": [
+      "caching",
+      "cookies",
+      "fundamentals",
+      "performance",
+      "rendering",
+      "security",
+      "storage",
+      "testing",
+      "xss"
+    ],
+    "publishedAt": "2026-11-05",
+    "updatedAt": "2026-11-05",
+    "seo": {
+      "title": "Web Fundamentals Hour: Hotel Booking Page Interview Answers",
+      "description": "Twelve web-fundamentals interview answers for a hotel booking page: rendering per page, CDN caching, the token, CSRF vs XSS, filters in the URL and vitals."
+    },
+    "incidentCard": {
+      "title": "Stolen Session Root Cause Check",
+      "scenario": "A week after launch, several guests report bookings they never made. Logs show the booking requests carried valid session tokens, sent by a script that ran on the reviews page, where a guest review containing markup was rendered with innerHTML. The token was kept in localStorage and sent as a bearer header. What is the most likely root cause?",
+      "options": [
+        {
+          "id": "xss-read-localstorage-token",
+          "label": "Stored XSS in the review markup ran in the site's origin and read the token from localStorage; render reviews as text, add a CSP, and move the session to an HttpOnly, SameSite cookie."
+        },
+        {
+          "id": "csrf-forged-booking",
+          "label": "Cross-site request forgery: another site posted the booking form and the browser attached the bearer header automatically."
+        },
+        {
+          "id": "cdn-cached-token",
+          "label": "The CDN cached a signed-in page and served one guest's token to the others."
+        }
+      ],
+      "correctOptionId": "xss-read-localstorage-token",
+      "rereadPrompt": "Close. Re-read which attack can read script-visible storage: a bearer header is never attached by the browser on its own, and the CDN never saw the token."
     }
   }
 ]

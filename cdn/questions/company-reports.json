@@ -34,6 +34,21 @@
         ]
       },
       {
+        "id": "hotel-search-page-frontend",
+        "kind": "system-design",
+        "title": "Design a Hotel Search Page Frontend for Several Teams",
+        "access": "premium",
+        "route": "/system-design/hotel-search-page-frontend",
+        "sources": [
+          {
+            "label": "LeetCode: Agoda senior frontend engineer loop, Bangkok, July 2026",
+            "url": "https://leetcode.com/discuss/post/8459009/",
+            "publisher": "LeetCode",
+            "date": "2026-07"
+          }
+        ]
+      },
+      {
         "id": "realtime-search-debounce-cache",
         "kind": "system-design",
         "title": "Real-time Search with Debounce & Caching",

@@ -8,6 +8,9 @@
   "supportedQuestions": {
     "react": "react-debug-transcript-sync"
   },
+  "solutionAssets": {
+    "react": "assets/sb/react/solution/react-debug-transcript-sync-pressure-solution.v1.json"
+  },
   "rounds": [
     {
       "id": "clock-follows-the-controls",
@@ -143,7 +146,7 @@
       "frameworkTests": [
         {
           "id": "pressure-transcript-sync-latest-language",
-          "name": "Round 3 · The latest language wins",
+          "name": "Round 3 · The latest language wins, and Loading shows until a transcript arrives",
           "steps": [
             {
               "type": "waitForCount",
@@ -176,18 +179,6 @@
               "index": 0,
               "text": "Welcome to the dubbing review",
               "match": "contains"
-            }
-          ]
-        },
-        {
-          "id": "pressure-transcript-sync-loading",
-          "name": "Round 3 · Loading shows until the Spanish transcript arrives",
-          "steps": [
-            {
-              "type": "waitForCount",
-              "selector": ".line",
-              "count": 8,
-              "timeoutMs": 2500
             },
             {
               "type": "click",
@@ -341,5 +332,18 @@
         }
       ]
     }
-  ]
+  ],
+  "debrief": {
+    "title": "You kept the transcript in step with the audio",
+    "summary": "You traced each reviewer report to its cause, then kept the player correct while it grew: a clock that follows its controls, a filter that answers every keystroke, a transcript request that only the latest choice owns, and loop and back controls that never leave the transcript.",
+    "takeaways": [
+      "An interval callback keeps the values of the render that started it; list them as dependencies or read them from a ref.",
+      "Every interval needs a cleanup, or pausing and playing again stacks timers.",
+      "Derive the filtered lines during render instead of copying them into state from an effect.",
+      "A cancelled flag in the effect cleanup keeps a late response for an old choice off the screen."
+    ],
+    "frameworkNotes": {
+      "react": "The clock effect lists playing, rate, the line count and loop, and its cleanup clears the interval; useMemo derives the filtered lines; the transcript effect flips a cancelled flag in its cleanup."
+    }
+  }
 }

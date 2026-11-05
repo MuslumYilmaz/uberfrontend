@@ -4,7 +4,7 @@ import fs from 'fs';
 import path from 'path';
 import { execFile } from 'child_process';
 import { promisify } from 'util';
-import { cdnSystemDesignIndexPath, generatedAppDir, srcPrerenderRoutesPath } from './content-paths.mjs';
+import { cdnQuestionsDir, cdnSystemDesignIndexPath, generatedAppDir, srcPrerenderRoutesPath } from './content-paths.mjs';
 import { loadTsModule } from './load-ts-module.mjs';
 import { startSeoStaticServer } from './seo-static-server.mjs';
 import { marksPremiumParts, premiumLockViolations } from './seo-premium-lock-contract.mjs';
@@ -2249,6 +2249,70 @@ try {
     name: `${companyGuideRoutes.length} company guides show no Premium practice name to visitors and mark the locked parts for search`,
     ok: companyGuideRoutes.length > 0 && premiumRoutes.size > 0 && lockProblems.length === 0,
     detail: lockProblems.length ? lockProblems.slice(0, 5).join(' | ') : `${premiumRoutes.size} Premium routes checked`,
+  });
+
+  // A Premium page prerenders the public locked view: its HTML, transfer state included, carries neither the answer
+  // of a trivia question, the solution block of a coding task, nor the sections of a system design case. Probes are
+  // 40-character runs of the locked text that the public fields (title, description, preview, practice) do not share.
+  const prerenderedRoutes = new Set(fs.readFileSync(srcPrerenderRoutesPath, 'utf8').split('\n').map((line) => line.trim()));
+  const readCdnJson = (...parts) => {
+    const file = path.join(cdnQuestionsDir, ...parts);
+    return fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, 'utf8')) : null;
+  };
+  const banks = new Map();
+  const bankEntry = (tech, kind, id) => {
+    const key = `${tech}/${kind}`;
+    if (!banks.has(key)) banks.set(key, readCdnJson(tech, `${kind}.json`) ?? []);
+    return banks.get(key).find((item) => item?.id === id) ?? null;
+  };
+  const lockedProbes = (texts, publicText) => texts
+    .flatMap((text) => String(text || '').split(/<[^>]+>/))
+    .flatMap((segment) => segment.match(/[A-Za-z0-9 ,]{40,}/g) ?? [])
+    .map((run) => run.trim().slice(0, 40))
+    .filter((probe) => probe.length === 40 && !publicText.includes(probe));
+  const blockTexts = (blocks) => (blocks ?? []).flatMap((block) => [
+    block?.text,
+    block?.code,
+    ...(block?.rows ?? []).flat(),
+    ...(block?.steps ?? []).map((step) => step?.text),
+    ...(block?.items ?? []).filter((item) => typeof item === 'string'),
+  ]);
+  const leakProblems = [];
+  let lockedPages = 0;
+  for (const route of premiumRoutes) {
+    if (!prerenderedRoutes.has(route)) continue;
+    const question = /^\/([a-z]+)\/(trivia|coding|debug)\/([^/]+)$/.exec(route);
+    const design = /^\/system-design\/([^/]+)$/.exec(route);
+    let probes = [];
+    let solutionKey = false;
+    if (question) {
+      const [, tech, kind, id] = question;
+      const entry = bankEntry(tech, kind, id);
+      if (!entry) continue;
+      const publicText = [entry.title, entry.description, entry.seo?.title, entry.seo?.description, entry.premiumPreview?.summary,
+        ...(entry.premiumPreview?.learningOutcomes ?? []), entry.premiumPreview?.unlockDescription].map(String).join(' ');
+      probes = kind === 'trivia' ? lockedProbes([...blockTexts(entry.answer?.blocks), entry.incidentCard?.scenario], publicText) : [];
+      solutionKey = kind !== 'trivia';
+    } else if (design) {
+      const meta = readCdnJson('system-design', design[1], 'meta.json');
+      if (!meta) continue;
+      const publicText = JSON.stringify([meta.title, meta.description, meta.seo, meta.premiumPreview, meta.practice, meta.sources]);
+      const sections = ['requirements', 'architecture', 'data', 'interfaces', 'optimizations']
+        .map((section) => readCdnJson('system-design', design[1], `${section}.json`));
+      probes = lockedProbes(sections.flatMap((section) => blockTexts(section?.blocks)), publicText);
+    } else {
+      continue;
+    }
+    lockedPages += 1;
+    const body = await curlBody(`${base}${route}`, { followRedirects: true, userAgent: GOOGLEBOT_USER_AGENT });
+    const found = probes.filter((probe) => body.includes(probe));
+    if (found.length) leakProblems.push(`${route}: locked text in the HTML ("${found[0]}")`);
+    if (solutionKey && body.includes('"solutionBlock"')) leakProblems.push(`${route}: solutionBlock in the HTML`);
+  }
+  checks.push({
+    name: `${lockedPages} prerendered Premium pages carry no answer, solution or locked section in their HTML`,
+    ok: lockedPages > 0 && leakProblems.length === 0,
+    detail: leakProblems.length ? leakProblems.slice(0, 5).join(' | ') : `${lockedPages} pages checked`,
   });
 
   let failed = 0;

@@ -1,6 +1,131 @@
 {
   "version": 1,
   "questions": {
+    "hotel-search-page-frontend": {
+      "assertions": [
+        {
+          "id": "url-owns-search",
+          "target": "all",
+          "require": [
+            "live in the query string",
+            "derives its state from the URL",
+            "through one router API"
+          ]
+        },
+        {
+          "id": "late-reply-ignored",
+          "target": "all",
+          "require": [
+            "queryId",
+            "superseded",
+            "ignore"
+          ]
+        },
+        {
+          "id": "team-owned-units",
+          "target": "all",
+          "require": [
+            "shell",
+            "contract test",
+            "buildId"
+          ]
+        },
+        {
+          "id": "cache-lifetimes",
+          "target": "visible",
+          "require": [
+            "immutable",
+            "short lifetime",
+            "purge"
+          ]
+        },
+        {
+          "id": "release-observability",
+          "target": "visible",
+          "require": [
+            "LCP",
+            "INP",
+            "funnel",
+            "searchId"
+          ]
+        },
+        {
+          "id": "accessible-search",
+          "target": "visible",
+          "require": [
+            "live region",
+            "keyboard",
+            "focus"
+          ]
+        }
+      ],
+      "symbols": [
+        {
+          "group": "hotel-search-page-frontend-contract",
+          "name": "SearchQuery",
+          "requiredMembers": [
+            "city",
+            "checkIn",
+            "checkOut",
+            "filters",
+            "sort",
+            "page"
+          ]
+        },
+        {
+          "group": "hotel-search-page-frontend-contract",
+          "name": "ResultsPhase",
+          "requiredLiterals": [
+            "idle",
+            "loading",
+            "ready",
+            "error"
+          ]
+        },
+        {
+          "group": "hotel-search-page-frontend-contract",
+          "name": "ResultsState",
+          "requiredMembers": [
+            "queryId",
+            "phase",
+            "cards",
+            "facets",
+            "nextPage"
+          ]
+        },
+        {
+          "group": "hotel-search-page-frontend-contract",
+          "name": "SearchGateway",
+          "requiredMembers": [
+            "search",
+            "loadPage",
+            "suggestCities"
+          ]
+        },
+        {
+          "group": "hotel-search-page-frontend-contract",
+          "name": "UnitContract",
+          "requiredMembers": [
+            "contractVersion",
+            "mount",
+            "update",
+            "unmount"
+          ]
+        },
+        {
+          "group": "hotel-search-page-frontend-contract",
+          "name": "TelemetryEvent",
+          "requiredLiterals": [
+            "vital",
+            "funnel",
+            "error",
+            "LCP",
+            "INP",
+            "CLS"
+          ]
+        }
+      ]
+    },
     "messaging-inbox-frontend": {
       "assertions": [
         {

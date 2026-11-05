@@ -412,6 +412,7 @@
 /javascript/trivia/js-undefined-vs-not-defined
 /javascript/trivia/js-use-strict-describe
 /javascript/trivia/js-var-hoisting-shadowing-output
+/javascript/trivia/js-web-fundamentals-hour-hotel-booking
 /javascript/trivia/js-web-workers-basics
 /javascript/trivia/js-why-eval-function-considered-dangerous
 /javascript/trivia/js-xss-dom-sinks
@@ -516,6 +517,7 @@
 /system-design/dashboard-widgets-draggable-resizable
 /system-design/endless-short-video-feed
 /system-design/flashcard-language-trainer
+/system-design/hotel-search-page-frontend
 /system-design/image-upload-preview
 /system-design/infinite-scroll-list
 /system-design/live-chart-high-frequency-updates

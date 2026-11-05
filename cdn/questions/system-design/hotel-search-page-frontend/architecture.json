@@ -1,0 +1,84 @@
+{
+  "key": "A",
+  "title": "Architecture",
+  "blocks": [
+    {
+      "type": "table",
+      "title": "Who owns each part of the search page",
+      "columns": [
+        "Owner",
+        "Keeps",
+        "Never decides"
+      ],
+      "rows": [
+        [
+          "Shell",
+          "Routing, layout, the design system version, the unit manifest",
+          "What a unit renders inside its slot"
+        ],
+        [
+          "Inputs unit",
+          "City suggestions, the date picker and guest counts before commit",
+          "The result list or the prices"
+        ],
+        [
+          "Filters unit",
+          "Facet counts and the selection being edited",
+          "Whether a change refetches; the URL change does"
+        ],
+        [
+          "Results unit",
+          "The current queryId, the loaded pages and the sort",
+          "Ranking; it renders the backend's order"
+        ],
+        [
+          "Search gateway",
+          "One AbortController per query",
+          "Truth after a reply for an older query; it ignores it"
+        ]
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "success",
+      "title": "URL-owned search with team-owned units",
+      "text": "HotelSearchShell reads the URL into a SearchQuery and passes it to three units through UnitContract, so the inputs, the filters and the results derive from one source. SearchGateway sends each query with its own queryId and AbortController, and a reply whose queryId is no longer current is ignored. The CDN caches hashed assets as immutable and HTML briefly, and Telemetry stamps every event with the unit and the build that produced it.",
+      "editorialRole": "canonical-model"
+    },
+    {
+      "type": "steps",
+      "title": "Worked example: a filter change during a slow results fetch",
+      "steps": [
+        {
+          "title": "Open the link",
+          "text": "Mia opens a shared link for Bangkok, 12 to 15 March, two guests, with the pool filter on. The shell parses the URL into query q_41 and mounts the units; the results unit shows skeletons while the gateway fetches."
+        },
+        {
+          "title": "Change a filter early",
+          "text": "Before the reply arrives she adds the breakfast filter. The filters unit writes to the URL, the shell derives query q_42, and the gateway aborts q_41 and sends q_42 with a new queryId."
+        },
+        {
+          "title": "Receive out of order",
+          "text": "A proxy returns the q_41 reply anyway, because the abort raced it. The results unit compares the reply's queryId with the current one, finds q_41 superseded, and keeps the skeletons."
+        },
+        {
+          "title": "Render and announce",
+          "text": "The q_42 reply arrives with 38 results. The results unit renders page one, the filters unit takes its counts from the same reply, and the live region announces that 38 hotels match."
+        },
+        {
+          "title": "Release behind her",
+          "text": "While she scrolls, the filters team ships build f_219. Her tab keeps the build it loaded until the next navigation, and the new build's contract test ran before the manifest pointed at it."
+        }
+      ]
+    },
+    {
+      "type": "image",
+      "src": "questions/system-design/hotel-search-page-frontend/hotel-search-ownership-flow.svg",
+      "alt": "Ownership flow where the URL feeds a shell that mounts the inputs, filters and results units, and the results unit calls the search gateway and backend.",
+      "caption": "Authority flow: the URL owns the search, the shell mounts team-owned units, and ranking comes back from the backend.",
+      "width": 960,
+      "height": 540,
+      "fallbackText": "Text fallback: The URL holds city, dates, guests and filters. The shell parses it and mounts three units through a contract. The results unit asks the gateway, which calls the backend with a queryId, and ranked cards return."
+    }
+  ]
+}
