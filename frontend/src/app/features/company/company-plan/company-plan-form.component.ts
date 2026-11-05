@@ -209,7 +209,7 @@ export class CompanyPlanFormComponent {
       return [{
         slug,
         name: company.name,
-        meta: `${list.rounds.length} reported rounds, ${practice} with practice · ${list.sourceCount} public sources · checked ${shortDate(company.checkedAt)}`,
+        meta: `${list.rounds.length} reported rounds, ${practice} with practice · ${list.sourceCount} public ${list.sourceCount === 1 ? 'source' : 'sources'} · checked ${shortDate(company.checkedAt)}`,
         rounds: list.rounds.map((round) => ({
           id: round.id,
           name: round.name,

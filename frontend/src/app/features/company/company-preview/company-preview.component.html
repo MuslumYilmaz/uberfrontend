@@ -882,14 +882,14 @@
         <p>{{ preview.sources.intro }}</p>
       </div>
       <div class="company-source-list" [class.company-locked]="detailLocked()" [class.premium-locked]="detailLocked()" [attr.data-nosnippet]="detailLocked() ? '' : null" [attr.inert]="detailLocked() ? '' : null">
-        <article *ngFor="let source of preview.sources.items">
+        <article *ngFor="let source of evidence?.sources ?? preview.sources.items">
           <h3>
             <a [href]="source.url" target="_blank" [attr.rel]="sourceRel(source)">{{ source.label }}</a>
           </h3>
           <p>{{ source.note }}</p>
         </article>
       </div>
-      <ng-container *ngTemplateOutlet="lockGateCard; context: { $implicit: sourcesGate(preview.sources.items.length) }"></ng-container>
+      <ng-container *ngTemplateOutlet="lockGateCard; context: { $implicit: sourcesGate(evidence?.counts?.sources ?? preview.sources.items.length) }"></ng-container>
     </section>
 
     <app-company-official-guides [slug]="slug" [companyLabel]="label" [guides]="officialGuides"></app-company-official-guides>

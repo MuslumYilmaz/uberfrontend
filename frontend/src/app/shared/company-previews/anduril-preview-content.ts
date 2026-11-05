@@ -51,9 +51,9 @@ export const ANDURIL_COMPANY_PREVIEW: AuthoredCompanyPreview = {
   hero: {
     kicker: 'Public Anduril prep guide',
     subtitle:
-      'Prepare with five practice prompts shaped by nine public frontend accounts from 2022 to 2025 and by Anduril employees describing the loop on Blind: a technical screen with an applied frontend problem, then an onsite of two coding rounds, a system design round and a behavioral interview.',
+      'Prepare with five practice prompts shaped by {reports} public frontend accounts from 2022 to 2025 and by Anduril employees describing the loop on Blind: a technical screen with an applied frontend problem, then an onsite of two coding rounds, a system design round and a behavioral interview.',
     caveat:
-      'The evidence is thin: four of the nine accounts are reviews re-hosted on Taro, and none covers a senior, staff or 2026 frontend loop. Recruiters have predicted the wrong kind of round before, so confirm the format with yours.',
+      'The evidence is thin: four of the {reports} accounts are reviews re-hosted on Taro, and none covers a senior, staff or 2026 frontend loop. Recruiters have predicted the wrong kind of round before, so confirm the format with yours.',
     chips: ['5 practice prompts', 'React, TypeScript, JavaScript classes', 'Full practice set requires Premium'],
   },
   studyPriorities: {
@@ -68,7 +68,7 @@ export const ANDURIL_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     kicker: 'Source boundary · checked October 2026',
     title: 'What the nine public accounts establish',
     paragraphs: [
-      'Nine self-reported candidates inform this guide. Five are on Blind: an April 2025 onsite without an offer, a 2023 loop that ended in an offer, and three commenters describing a 2024 coding round, a 2024 interview with lodash-style questions and an autocomplete task, and a 2025 screen. Four are on Taro from 2022 to 2025, including a 2023 frontend internship; Taro re-hosts Glassdoor reviews, so each is counted once and none is given a location here. Anduril employees also describe the loop in Blind comments; those are statements, not interview accounts.',
+      '{reports} self-reported candidates inform this guide. Five are on Blind: an April 2025 onsite without an offer, a 2023 loop that ended in an offer, and three commenters describing a 2024 coding round, a 2024 interview with lodash-style questions and an autocomplete task, and a 2025 screen. Four are on Taro from 2022 to 2025, including a 2023 frontend internship; Taro re-hosts Glassdoor reviews, so each is counted once and none is given a location here. Anduril employees also describe the loop in Blind comments; those are statements, not interview accounts.',
       'Together they establish the round types from 2022 to 2025: a recruiter call, one technical screen with an applied frontend problem, and an onsite of two coding rounds, a system design round and a behavioral interview. Anduril\'s own description lists a recruiter call, technical and behavioral interviews and role-specific assessments that could include live coding, and its frontend postings ask for React and TypeScript, eligibility for a US security clearance and, in one posting, travel of up to 25 percent.',
     ],
   },

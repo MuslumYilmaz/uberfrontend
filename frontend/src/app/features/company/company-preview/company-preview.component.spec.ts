@@ -9,6 +9,7 @@ import { AnalyticsService } from '../../../core/services/analytics.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { QuestionService } from '../../../core/services/question.service';
 import { SeoService } from '../../../core/services/seo.service';
+import { countWord } from './company-evidence';
 import { COMPANY_SET_COUNTS, PREMIUM_QUESTION_COUNT } from '../company-plan/company-plan-sets';
 import type { CompanyPlanData } from '../company-plan/company-plan.engine';
 import { companySetLine } from '../company-plan/company-plan.format';
@@ -790,6 +791,49 @@ describe('CompanyPreviewComponent', () => {
       expect(questionService.loadAllQuestionSummaries).not.toHaveBeenCalled();
     });
 
+    it('fills the count tokens from the page evidence, in the text and in the metadata', async () => {
+      const tokened: AuthoredCompanyPreview = {
+        ...acme,
+        description: 'Prepare with {#prompts} practice prompts from {reports} public account.',
+        hero: { ...acme.hero, subtitle: 'Prepare with {prompts} practice prompts shaped by {reports} public account and {official} official page.', chips: ['{#prompts} practice prompts'] },
+        sourceBoundary: { ...acme.sourceBoundary, paragraphs: ['{reports} self-reported account informs this guide; {sources} sources in all.'] },
+      };
+      await createComponent('acme', undefined, { acme: tokened });
+      const host: HTMLElement = fixture.nativeElement;
+      expect(host.querySelector('.preview-subtitle')?.textContent?.trim()).toBe('Prepare with two practice prompts shaped by one public account and one official page.');
+      expect(host.querySelector('.preview-chip')?.textContent?.trim()).toBe('2 practice prompts');
+      expect(host.textContent).toContain('One self-reported account informs this guide; two sources in all.');
+      expect(host.textContent).not.toContain('{');
+      const payload = seo.updateTags.calls.mostRecent().args[0] as any;
+      expect(payload.description).toBe('Prepare with 2 practice prompts from one public account.');
+    });
+
+    it('lists the sources the process table cites after the guide sources, and counts them all in the gates', async () => {
+      await createComponent('agoda');
+      const host: HTMLElement = fixture.nativeElement;
+      const rows = Array.from(host.querySelectorAll('.company-source-list article'));
+      const guideRows = AUTHORED_COMPANY_PREVIEWS['agoda'].sources.items.length;
+      expect(rows.length).toBeGreaterThan(guideRows);
+      expect(rows[guideRows].querySelector('p')?.textContent).toMatch(/read for the process table, where it describes the /);
+      expect(new Set(rows.map((row) => row.querySelector('a')?.getAttribute('href'))).size).toBe(rows.length);
+      expect(host.querySelector('.preview-subtitle')?.textContent).not.toContain('{');
+      const reports = rows.filter((row) => row.querySelector('a')?.getAttribute('rel')?.includes('nofollow')).length;
+      const word = countWord(reports);
+      expect(host.textContent).toContain(`${word.charAt(0).toUpperCase()}${word.slice(1)} public accounts inform this guide`);
+    });
+
+    it('states the prompt count of an inline guide from the prompts it renders', async () => {
+      for (const slug of ['openai', 'google', 'netflix']) {
+        await createComponent(slug);
+        const host: HTMLElement = fixture.nativeElement;
+        const chip = Array.from(host.querySelectorAll('.preview-chip')).map((node) => node.textContent?.trim() ?? '').find((text) => /representative prompts$/.test(text));
+        expect(chip).withContext(slug).toBeDefined();
+        const prompts = host.querySelectorAll('article.company-prompt, article.openai-prompt').length;
+        expect(chip).withContext(slug).toBe(`${prompts} representative prompts`);
+        TestBed.resetTestingModule();
+      }
+    });
+
     it('publishes CollectionPage, ItemList and BreadcrumbList metadata for the authored guide', async () => {
       await createComponent('acme', undefined, registry);
       const payload = seo.updateTags.calls.mostRecent().args[0] as any;
@@ -1293,6 +1337,12 @@ describe('CompanyPreviewComponent', () => {
       expect(gateCard('company-prompt-gate')?.querySelector('.company-prompt-gate__title')?.textContent).toMatch(/^Prompts 2 to \d+ open with a free account$/);
       expect(gateCard('company-sources-gate')?.querySelector('.company-prompt-gate__title')?.textContent).toBe('The sources open with a free account');
       expect(host().querySelector('.company-source-list')?.classList).toContain('premium-locked');
+
+      // Both gates count the same evidence: the guide's sources plus the ones the table cites, once by URL.
+      const sourceRows = host().querySelectorAll('.company-source-list article').length;
+      const reports = Array.from(host().querySelectorAll('.company-source-list article a')).filter((link) => link.getAttribute('rel')?.includes('nofollow')).length;
+      expect(gateCard('company-sources-gate')?.querySelector('.company-prompt-gate__line')?.textContent).toMatch(new RegExp(`^${sourceRows} public accounts and official pages`));
+      expect(gateCard('company-process-gate')?.querySelector('.company-prompt-gate__line')?.textContent).toMatch(new RegExp(`^${reports} public reports and ${sourceRows - reports} official pages`));
 
       const graph = (seo.updateTags.calls.mostRecent().args[0] as any).jsonLd as any[];
       const collection = graph.find((node) => node?.['@type'] === 'CollectionPage');

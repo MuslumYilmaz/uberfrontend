@@ -24,6 +24,7 @@ import type { AuthoredCompanyPreview, AuthoredSource } from '../../../shared/com
 import { AUTHORED_COMPANY_PREVIEWS_TOKEN } from '../../../shared/company-previews/authored-company-previews';
 import type { CompanyEditorialNotes } from '../../../shared/company-previews/company-editorial-notes.model';
 import { COMPANY_EDITORIAL_NOTES, type CompanyEditorialNotesRegistry } from '../../../shared/company-previews/company-editorial-notes';
+import { companyEvidence, fillAuthoredPreview, type CompanyEvidence } from './company-evidence';
 import { COMPANY_OFFICIAL_GUIDES, type CompanyOfficialGuide } from '../../../shared/company-previews/company-official-guides';
 import { isCompanyGuideGated } from './company-guide-gate';
 import {
@@ -332,6 +333,8 @@ export class CompanyPreviewComponent implements OnInit {
   isNetflixPreview = false;
   /** Set when the slug has a data-driven authored guide in the registry (see shared/company-previews). */
   authoredPreview: AuthoredCompanyPreview | null = null;
+  /** The authored guide's sources and counts, the page's one set of numbers. */
+  evidence: CompanyEvidence | null = null;
   /** The other company guides; built from the generated metadata so no company page re-dates. */
   relatedCompanyLinks: RelatedCompanyLink[] = [];
   /** Imported directly, not injected: the SEO inventory scopes the registry per company that way. Specs override the field. */
@@ -479,10 +482,13 @@ export class CompanyPreviewComponent implements OnInit {
    */
   processGate(): LockGate | null {
     if (!this.detailLocked()) return null;
-    const stages = (this.interviewProcess?.variants ?? []).flatMap((variant) => variant.stages);
-    const urls = (kind: 'report' | 'official') => new Set(stages.flatMap((stage) => stage.sources.filter((source) => source.kind === kind).map((source) => source.url))).size;
-    const reports = urls('report');
-    const official = urls('official');
+    // An authored guide counts its whole evidence once; a catalog guide has only the table to count.
+    const counts = this.evidence?.counts ?? (() => {
+      const stages = (this.interviewProcess?.variants ?? []).flatMap((variant) => variant.stages);
+      const urls = (kind: 'report' | 'official') => new Set(stages.flatMap((stage) => stage.sources.filter((source) => source.kind === kind).map((source) => source.url))).size;
+      return { reports: urls('report'), official: urls('official') };
+    })();
+    const { reports, official } = counts;
     const counted = `${reports} public ${reports === 1 ? 'report' : 'reports'}${official ? ` and ${official} official ${official === 1 ? 'page' : 'pages'}` : ''}`;
     return this.accountGate('company-process-gate', 'company-prompt-gate company-account-gate',
       'The sources behind each round open with a free account',
@@ -494,7 +500,7 @@ export class CompanyPreviewComponent implements OnInit {
     if (!this.detailLocked()) return null;
     return this.accountGate('company-sources-gate', 'company-prompt-gate company-account-gate',
       'The sources open with a free account',
-      `${count} public accounts and official pages, each with what it establishes and what it cannot.`);
+      `${count} public accounts and official pages, each with what it establishes and where the process table uses it.`);
   }
 
   /** The prompts past the open ones: "prompt 4", "prompts 4 and 5" or "prompts 2 to 7". */
@@ -611,7 +617,10 @@ export class CompanyPreviewComponent implements OnInit {
     this.isOpenAiPreview = this.slug === 'openai';
     this.isGooglePreview = this.slug === 'google';
     this.isNetflixPreview = this.slug === 'netflix';
-    this.authoredPreview = this.authoredPreviews[this.slug] ?? null;
+    // An authored guide counts its evidence once, and its text and metadata carry those counts.
+    const authored = this.authoredPreviews[this.slug] ?? null;
+    this.evidence = authored ? companyEvidence(authored, this.interviewProcess) : null;
+    this.authoredPreview = authored && this.evidence ? fillAuthoredPreview(authored, this.evidence.counts) : null;
     this.editorialNotes = this.authoredPreview || this.isOpenAiPreview || this.isGooglePreview || this.isNetflixPreview
       ? null
       : this.editorialNotesRegistry[this.slug] ?? null;

@@ -50,9 +50,9 @@ export const CAPITALONE_COMPANY_PREVIEW: AuthoredCompanyPreview = {
   hero: {
     kicker: 'Public Capital One prep guide',
     subtitle:
-      'Prepare with five practice prompts shaped by fifteen public frontend accounts from 2020 to 2025 and by Capital One careers pages: a CodeSignal assessment, then a Power Day of four one-hour interviews covering frontend design, a frontend technical round, a case built on reading code, and behavioral questions.',
+      'Prepare with five practice prompts shaped by {reports} public frontend accounts from 2020 to 2025 and by Capital One careers pages: a CodeSignal assessment, then a Power Day of four one-hour interviews covering frontend design, a frontend technical round, a case built on reading code, and behavioral questions.',
     caveat:
-      'The evidence is thin and dated: all fifteen accounts are reviews re-hosted on Taro, the newest with round detail is from late 2024, and the official process text is written for AI and ML roles. A front-end-focused candidate on a 2025 full-stack loop met generic coding and backend design rounds instead, so confirm the rounds with your recruiter.',
+      'The evidence is thin and dated: nearly every account is a review re-hosted on Taro, the newest with round detail is from late 2024, and the official process text is written for AI and ML roles. A front-end-focused candidate on a 2025 full-stack loop met generic coding and backend design rounds instead, so confirm the rounds with your recruiter.',
     chips: ['5 practice prompts', 'React, Angular, TypeScript, case code', 'Full practice set requires Premium'],
   },
   studyPriorities: {
@@ -67,7 +67,7 @@ export const CAPITALONE_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     kicker: 'Source boundary · checked October 2026',
     title: 'What the public accounts establish',
     paragraphs: [
-      'Fifteen frontend-titled accounts inform this guide, all of them Taro re-hosts of Glassdoor reviews from the United States and Canada, 2020 to 2025, and nine describe Power Day rounds. Blind threads add Capital One employees describing the assessment and their own loops.',
+      '{reports} frontend-titled accounts inform this guide, nearly all of them Taro re-hosts of Glassdoor reviews from the United States and Canada, 2020 to 2025, and most describe Power Day rounds. Blind threads add Capital One employees describing the assessment and their own loops.',
       'Capital One publishes a Power Day description for AI and ML roles and a general interview guide, but no frontend-specific one. Employees on Blind mentioned a hiring freeze in April 2026, while seven frontend postings were open in October 2026.',
     ],
   },

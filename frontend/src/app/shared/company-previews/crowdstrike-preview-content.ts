@@ -57,7 +57,7 @@ export const CROWDSTRIKE_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     subtitle:
       'Prepare with five practice prompts shaped by public frontend accounts and by CrowdStrike careers pages: a recruiter call, a manager conversation, spoken web fundamentals and security questions with engineers, a take-home UI build, and a review of that build.',
     caveat:
-      'Twenty frontend-focused accounts from 2020 to 2025 inform this guide: nineteen are reviews re-hosted on Taro and one is a Blind thread. We found no frontend account from 2026. Both frontend roles open in October 2026 are in the United Kingdom, where one 2024 report exists, so confirm the rounds with your recruiter.',
+      '{reports} frontend-focused accounts from 2020 to 2025 inform this guide, most of them reviews re-hosted on Taro, one a Blind thread. We found no frontend account from 2026. Both frontend roles open in October 2026 are in the United Kingdom, where one 2024 report exists, so confirm the rounds with your recruiter.',
     chips: ['5 practice prompts', 'Take-home review, web fundamentals, security', 'Full practice set requires Premium'],
   },
   studyPriorities: {

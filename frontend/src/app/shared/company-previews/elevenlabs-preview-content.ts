@@ -19,7 +19,7 @@ export const ELEVENLABS_PREVIEW_DESCRIPTION =
   'ElevenLabs frontend interview: the coding assessment formats (90-minute test, CoderPad React fix, take-home), the live technical round, and 5 practice prompts.';
 export const ELEVENLABS_PREVIEW_CANONICAL_PATH = '/companies/elevenlabs/preview';
 export const ELEVENLABS_PREVIEW_TRUST_NOTE =
-  'These are FrontendAtlas practice versions modelled on rounds described in public interview reports, not leaked, confirmed or official ElevenLabs questions. Two public pages cannot establish a fixed loop; use recruiter-provided material as the source of truth.';
+  'These are FrontendAtlas practice versions modelled on rounds described in public interview reports, not leaked, confirmed or official ElevenLabs questions. {reports} public accounts cannot establish a fixed loop; use recruiter-provided material as the source of truth.';
 
 export const ELEVENLABS_COMPANY_PREVIEW: AuthoredCompanyPreview = {
   slug: 'elevenlabs',
@@ -49,7 +49,7 @@ export const ELEVENLABS_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     kicker: 'Source boundary · checked October 2026',
     title: 'What the public pages establish, and what you still need to confirm',
     paragraphs: [
-      'Two public pages on Aced anchor this guide: a question bank updated by ElevenLabs candidates that lists the audio-transcript synchronisation exercise and the voice-dubbing review prompt alongside classic algorithm problems and behavioural questions, and one senior full-stack, frontend-leaning account describing a 90-minute technical assessment, a recruiter screen and a live practical fix. Four further accounts add the stack: a second Aced account with a practical front-end debugging round in a small React app, and three Taro full-stack accounts with React bug fixes on CoderPad, a React knowledge check and a React and TypeScript take-home. They establish that those exercises and that shape occurred; they do not establish exact wording, the current format, or how other teams interview.',
+      'Two pages on Aced anchor this guide: a question bank updated by ElevenLabs candidates that lists the audio-transcript synchronisation exercise and the voice-dubbing review prompt alongside classic algorithm problems and behavioural questions, and one senior full-stack, frontend-leaning account describing a 90-minute technical assessment, a recruiter screen and a live practical fix. Four further accounts add the stack: a second Aced account with a practical front-end debugging round in a small React app, and three Taro full-stack accounts with React bug fixes on CoderPad, a React knowledge check and a React and TypeScript take-home. They establish that those exercises and that shape occurred; they do not establish exact wording, the current format, or how other teams interview.',
       'Confirm the exercise types, the allowed tools, the expected stack and the timing with the recruiter and the job description. ElevenLabs publishes its roles on its careers site; use that for product context, not as evidence of interview content.',
     ],
   },
