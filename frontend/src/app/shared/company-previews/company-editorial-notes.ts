@@ -569,6 +569,18 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
           why: 'An editorial grouping for the HTML and CSS questions of the test.',
         },
         {
+          label: 'Vue autocomplete search',
+          path: '/vue/coding/vue-autocomplete-search',
+          access: 'free',
+          why: 'The same autocomplete in Vue, one of the frameworks candidates could choose.',
+        },
+        {
+          label: 'Autocomplete engine in plain JavaScript',
+          path: '/javascript/coding/js-autocomplete-engine',
+          access: 'premium',
+          why: 'The typeahead logic the coding rounds discuss: debounce, a stale-response guard and a cache, tested without a page.',
+        },
+        {
           label: 'Throttle',
           path: '/javascript/coding/js-throttle',
           access: 'premium',
@@ -579,12 +591,6 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
           path: '/react/coding/react-debounced-search',
           access: 'premium',
           why: 'A practice version of the component fed by API data to a design spec.',
-        },
-        {
-          label: 'Vue autocomplete search',
-          path: '/vue/coding/vue-autocomplete-search',
-          access: 'premium',
-          why: 'The same autocomplete in Vue, one of the frameworks candidates could choose.',
         },
         {
           label: 'Real-time search with debounce and cache',
@@ -947,6 +953,12 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
           why: 'A nested-tabs-from-a-flat-list task described in a 2025 account.',
         },
         {
+          label: 'Vue autocomplete search',
+          path: '/vue/coding/vue-autocomplete-search',
+          access: 'free',
+          why: 'The autocomplete search bar reported in a 2022 screen, in one of the two frameworks offered.',
+        },
+        {
           label: 'Unique array',
           path: '/javascript/coding/js-unique-array',
           access: 'premium',
@@ -957,12 +969,6 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
           path: '/javascript/coding/js-stack-queue-implementation',
           access: 'premium',
           why: 'Reported as a min stack.',
-        },
-        {
-          label: 'Vue autocomplete search',
-          path: '/vue/coding/vue-autocomplete-search',
-          access: 'premium',
-          why: 'The autocomplete search bar reported in a 2022 screen, in one of the two frameworks offered.',
         },
       ],
     },

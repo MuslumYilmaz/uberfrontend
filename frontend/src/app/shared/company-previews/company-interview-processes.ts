@@ -1698,7 +1698,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
             format: 'One or two rounds of about 60 minutes with two engineers: build a component in plain JavaScript or React, such as an autocomplete or a tooltip, follow a design spec with API data, or add a feature to a prepared app.',
             appliesTo: 'Frontend roles',
             sources: [BOOKINGCOM_BK1, BOOKINGCOM_BK2, BOOKINGCOM_BK5, BOOKINGCOM_BK6, BOOKINGCOM_BK7, BOOKINGCOM_BK9, BOOKINGCOM_BK10, BOOKINGCOM_BK11],
-            practice: { label: 'React autocomplete search', path: '/react/coding/react-autocomplete-search-starter' },
+            practice: { label: 'Autocomplete engine in plain JavaScript', path: '/javascript/coding/js-autocomplete-engine' },
           },
           {
             stage: 'Fit interview',

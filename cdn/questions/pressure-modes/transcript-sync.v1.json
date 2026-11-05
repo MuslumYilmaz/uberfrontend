@@ -1,0 +1,345 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "transcript-sync-pressure-v1",
+  "family": "transcript-sync",
+  "title": "Transcript Player Interview Pressure Mode",
+  "access": "premium",
+  "estimatedMinutes": 45,
+  "supportedQuestions": {
+    "react": "react-debug-transcript-sync"
+  },
+  "rounds": [
+    {
+      "id": "clock-follows-the-controls",
+      "title": "The clock follows the controls",
+      "interviewerPrompt": "Two reviewers wrote in: 2× does nothing, and Pause keeps the highlight moving. Reproduce both, tell me the cause, then fix it.",
+      "constraints": [
+        "The highlight advances `rate` lines per tick while playing, and a rate change takes effect from the next tick.",
+        "Pause stops the clock: the element with the class `time` must not change after a pause.",
+        "Keep the starter classes `play`, `rate-1x`, `rate-2x`, `time`, `status`, `line` and `line--active`."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-transcript-sync-pause",
+          "name": "Round 1 · Pause stops the clock",
+          "steps": [
+            {
+              "type": "waitForCount",
+              "selector": ".line",
+              "count": 8,
+              "timeoutMs": 2500
+            },
+            {
+              "type": "click",
+              "selector": ".play"
+            },
+            {
+              "type": "wait",
+              "durationMs": 1000
+            },
+            {
+              "type": "click",
+              "selector": ".play"
+            },
+            {
+              "type": "wait",
+              "durationMs": 1000
+            },
+            {
+              "type": "expectText",
+              "selector": ".time",
+              "text": "2.0 s",
+              "match": "equals"
+            }
+          ]
+        },
+        {
+          "id": "pressure-transcript-sync-rate",
+          "name": "Round 1 · Two-times speed reaches the end twice as fast",
+          "steps": [
+            {
+              "type": "waitForCount",
+              "selector": ".line",
+              "count": 8,
+              "timeoutMs": 2500
+            },
+            {
+              "type": "click",
+              "selector": ".play"
+            },
+            {
+              "type": "click",
+              "selector": ".rate-2x"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".status",
+              "text": "Finished",
+              "match": "contains",
+              "timeoutMs": 2300
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "search-while-it-plays",
+      "title": "Search while it plays",
+      "interviewerPrompt": "Now the search box. Typing must filter the lines at once, and the highlight has to keep moving while they type. Add a line that says where the highlight is.",
+      "constraints": [
+        "Derive the filtered lines from the transcript and the query during render; no effect may copy them into state.",
+        "Render `<span class=\"position\">Line X of Y</span>` under the search box, where X is the highlighted line's number and Y the number of lines.",
+        "Typing must not pause or reset the clock."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-transcript-sync-search",
+          "name": "Round 2 · Typing filters at once while the clock keeps running",
+          "steps": [
+            {
+              "type": "waitForCount",
+              "selector": ".line",
+              "count": 8,
+              "timeoutMs": 2500
+            },
+            {
+              "type": "click",
+              "selector": ".play"
+            },
+            {
+              "type": "setValue",
+              "selector": ".search",
+              "value": "mix"
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".line",
+              "count": 3,
+              "timeoutMs": 1500
+            },
+            {
+              "type": "wait",
+              "durationMs": 950
+            },
+            {
+              "type": "expectText",
+              "selector": ".position",
+              "text": "Line 3 of 8",
+              "match": "equals"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "switch-languages-mid-review",
+      "title": "Switch languages mid-review",
+      "interviewerPrompt": "Reviewers switch to Spanish and back while it plays. The Spanish transcript arrives late and overwrites English. Make the latest choice win, and show which transcript is loading.",
+      "constraints": [
+        "A response for a language that is no longer selected must never reach the screen.",
+        "While a transcript loads, the element with the class `status` reads `Loading Spanish…` or `Loading English…`.",
+        "A newly loaded transcript starts at its first line."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-transcript-sync-latest-language",
+          "name": "Round 3 · The latest language wins",
+          "steps": [
+            {
+              "type": "waitForCount",
+              "selector": ".line",
+              "count": 8,
+              "timeoutMs": 2500
+            },
+            {
+              "type": "click",
+              "selector": ".lang-es"
+            },
+            {
+              "type": "click",
+              "selector": ".lang-en"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".status",
+              "text": "English transcript",
+              "match": "contains",
+              "timeoutMs": 1500
+            },
+            {
+              "type": "wait",
+              "durationMs": 900
+            },
+            {
+              "type": "expectText",
+              "selector": ".line",
+              "index": 0,
+              "text": "Welcome to the dubbing review",
+              "match": "contains"
+            }
+          ]
+        },
+        {
+          "id": "pressure-transcript-sync-loading",
+          "name": "Round 3 · Loading shows until the Spanish transcript arrives",
+          "steps": [
+            {
+              "type": "waitForCount",
+              "selector": ".line",
+              "count": 8,
+              "timeoutMs": 2500
+            },
+            {
+              "type": "click",
+              "selector": ".lang-es"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".status",
+              "text": "Loading Spanish",
+              "match": "contains",
+              "timeoutMs": 800
+            },
+            {
+              "type": "waitForText",
+              "selector": ".status",
+              "text": "Spanish transcript",
+              "match": "contains",
+              "timeoutMs": 2500
+            },
+            {
+              "type": "expectText",
+              "selector": ".line",
+              "index": 0,
+              "text": "Bienvenidos",
+              "match": "contains"
+            },
+            {
+              "type": "expectText",
+              "selector": ".position",
+              "text": "Line 1 of 8",
+              "match": "equals"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "loop-and-seek",
+      "title": "Loop and seek",
+      "interviewerPrompt": "Last two requests from the review team: a loop toggle for short clips, and a button that jumps back two lines.",
+      "constraints": [
+        "Add a button with the class `back`. One click moves the highlight back two lines and never below the first line.",
+        "Add a toggle button with the class `loop` whose text reads `Loop: off` or `Loop: on`. Give it the class `loop--on` and `aria-pressed=\"true\"` while on.",
+        "While the loop is on, reaching the end restarts at the first line and keeps playing instead of showing `Finished`."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-transcript-sync-back",
+          "name": "Round 4 · Back jumps two lines and never below the start",
+          "steps": [
+            {
+              "type": "waitForCount",
+              "selector": ".line",
+              "count": 8,
+              "timeoutMs": 2500
+            },
+            {
+              "type": "click",
+              "selector": ".back"
+            },
+            {
+              "type": "expectText",
+              "selector": ".time",
+              "text": "0.0 s",
+              "match": "equals"
+            },
+            {
+              "type": "click",
+              "selector": ".play"
+            },
+            {
+              "type": "wait",
+              "durationMs": 1000
+            },
+            {
+              "type": "click",
+              "selector": ".play"
+            },
+            {
+              "type": "click",
+              "selector": ".back"
+            },
+            {
+              "type": "expectText",
+              "selector": ".time",
+              "text": "0.0 s",
+              "match": "equals"
+            },
+            {
+              "type": "expectText",
+              "selector": ".position",
+              "text": "Line 1 of 8",
+              "match": "equals"
+            }
+          ]
+        },
+        {
+          "id": "pressure-transcript-sync-loop",
+          "name": "Round 4 · Loop restarts instead of finishing",
+          "steps": [
+            {
+              "type": "waitForCount",
+              "selector": ".line",
+              "count": 8,
+              "timeoutMs": 2500
+            },
+            {
+              "type": "click",
+              "selector": ".loop"
+            },
+            {
+              "type": "expectText",
+              "selector": ".loop",
+              "text": "Loop: on",
+              "match": "equals"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".loop",
+              "attribute": "aria-pressed",
+              "expected": "true"
+            },
+            {
+              "type": "click",
+              "selector": ".play"
+            },
+            {
+              "type": "click",
+              "selector": ".rate-2x"
+            },
+            {
+              "type": "wait",
+              "durationMs": 2100
+            },
+            {
+              "type": "expectText",
+              "selector": ".status",
+              "text": "English transcript",
+              "match": "equals"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".line--active",
+              "count": 1
+            },
+            {
+              "type": "click",
+              "selector": ".play"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

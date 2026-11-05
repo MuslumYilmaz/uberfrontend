@@ -345,6 +345,7 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
             stage: 'Frontend coding',
             kinds: ['coding'],
             note: 'One or two rounds of about 60 minutes: build a component such as an autocomplete, or extend a prepared app.',
+            picks: ['/javascript/coding/js-autocomplete-engine', '/react/coding/react-autocomplete-search-starter'],
           },
           { id: 'fit-interview', stage: 'Fit interview', kinds: ['people'] },
         ],
@@ -603,7 +604,7 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
             stage: 'Live technical round',
             kinds: ['coding'],
             note: 'Pair work with an engineer: fixing a practical problem, debugging a small React app or building a component.',
-            picks: ['/javascript/debug/js-debug-stale-closure-autosave'],
+            picks: ['/react/coding/react-debug-transcript-sync', '/javascript/debug/js-debug-stale-closure-autosave'],
           },
           {
             id: 'product-or-design-round',

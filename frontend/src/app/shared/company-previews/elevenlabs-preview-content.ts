@@ -169,8 +169,8 @@ export const ELEVENLABS_COMPANY_PREVIEW: AuthoredCompanyPreview = {
         ],
         commonMiss:
           'Patching the symptom, for example forcing a re-render or adding a delay, while the race or stale closure stays in place.',
-        resourceLabel: 'Fix the async race in fetchWithCache',
-        resourcePath: '/javascript/debug/js-debug-async-race',
+        resourceLabel: 'Debug the transcript player that lags behind the audio',
+        resourcePath: '/react/coding/react-debug-transcript-sync',
         reportedRound: { label: ELEVENLABS_EXPERIENCE_LABEL, url: ELEVENLABS_EXPERIENCE_URL },
       },
       {

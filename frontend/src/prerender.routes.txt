@@ -246,6 +246,7 @@
 /javascript/coding/js-array-prototype-reduce
 /javascript/coding/js-array-sort
 /javascript/coding/js-arrays-equal
+/javascript/coding/js-autocomplete-engine
 /javascript/coding/js-build-tree-from-flat-list
 /javascript/coding/js-capitalize-words
 /javascript/coding/js-color-contrast-ratio
@@ -439,6 +440,7 @@
 /react/coding/react-debounced-search
 /react/coding/react-debug-api-misuse
 /react/coding/react-debug-double-render
+/react/coding/react-debug-transcript-sync
 /react/coding/react-dynamic-counter-buttons
 /react/coding/react-dynamic-table
 /react/coding/react-fetch-list-states

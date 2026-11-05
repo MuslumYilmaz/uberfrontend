@@ -1,0 +1,97 @@
+{
+  "questionId": "js-autocomplete-engine",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "javascript",
+      "code": "/**\n * createAutocomplete(fetchSuggestions, options)\n * - fetchSuggestions(query) returns a Promise of strings\n * - options: { debounceMs = 300, minLength = 1, maxResults = 8, cacheSize = 50 }\n * Returns { update(text, onResults), cancel(), getState() }.\n * onResults receives { query, status, items, message } for the latest query only.\n */\nexport default function createAutocomplete(fetchSuggestions, options = {}) {\n  const { debounceMs = 300, minLength = 1, maxResults = 8, cacheSize = 50 } = options;\n  const cache = new Map();\n  let timer = null;\n  let latest = '';\n  let requestId = 0;\n  let state = { query: '', status: 'idle', items: [], message: '' };\n\n  function emit(onResults, next) {\n    state = next;\n    onResults(next);\n  }\n\n  function remember(query, items) {\n    cache.delete(query);\n    cache.set(query, items);\n    if (cache.size > cacheSize) cache.delete(cache.keys().next().value);\n  }\n\n  function rank(query, items) {\n    const q = query.toLowerCase();\n    const seen = new Set();\n    const prefix = [];\n    const inner = [];\n    for (const raw of items) {\n      const item = String(raw).trim();\n      const key = item.toLowerCase();\n      if (!item || seen.has(key)) continue;\n      seen.add(key);\n      if (key.startsWith(q)) prefix.push(item);\n      else if (key.includes(q)) inner.push(item);\n    }\n    const byName = (a, b) => a.localeCompare(b);\n    return [...prefix.sort(byName), ...inner.sort(byName)].slice(0, maxResults);\n  }\n\n  function cancel() {\n    if (timer !== null) {\n      clearTimeout(timer);\n      timer = null;\n    }\n    requestId += 1;\n  }\n\n  function update(text, onResults) {\n    const query = String(text ?? '').trim().toLowerCase();\n    latest = query;\n    cancel();\n    if (query.length < minLength) {\n      emit(onResults, { query, status: 'idle', items: [], message: '' });\n      return;\n    }\n    if (cache.has(query)) {\n      emit(onResults, { query, status: 'ready', items: cache.get(query), message: '' });\n      return;\n    }\n    emit(onResults, { query, status: 'waiting', items: state.items, message: '' });\n    timer = setTimeout(() => {\n      timer = null;\n      const id = ++requestId;\n      emit(onResults, { query, status: 'loading', items: state.items, message: '' });\n      Promise.resolve()\n        .then(() => fetchSuggestions(query))\n        .then((items) => {\n          if (id !== requestId || query !== latest) return;\n          const ranked = rank(query, Array.isArray(items) ? items : []);\n          remember(query, ranked);\n          emit(onResults, { query, status: 'ready', items: ranked, message: '' });\n        })\n        .catch((error) => {\n          if (id !== requestId || query !== latest) return;\n          const message = error instanceof Error && error.message ? error.message : 'Suggestions unavailable';\n          emit(onResults, { query, status: 'error', items: [], message });\n        });\n    }, debounceMs);\n  }\n\n  return { update, cancel, getState: () => state };\n}\n",
+      "nodes": [
+        {
+          "id": "a1-normalise-the-query",
+          "title": "Normalise the query once",
+          "anchor": {
+            "lineStart": 53,
+            "lineEnd": 53,
+            "snippet": "const query = String(text ?? '').trim().toLowerCase();"
+          },
+          "why": "Trimming and lower-casing in one place makes \" SAN \" and \"san\" the same query for the debounce, the cache and the ranking.",
+          "alternative": "Normalise inside fetchSuggestions and in the cache lookup separately.",
+          "tradeoff": "One normalisation at the entry keeps every later comparison consistent."
+        },
+        {
+          "id": "a2-cancel-before-every-update",
+          "title": "Cancel the pending work before every update",
+          "anchor": {
+            "lineStart": 55,
+            "lineEnd": 55,
+            "snippet": "cancel();"
+          },
+          "why": "A new keystroke restarts the debounce window and marks any request in flight as stale, so the newest query is the only one that can reach the callback.",
+          "alternative": "Keep every timer and compare timestamps when a response arrives.",
+          "tradeoff": "Cancelling up front is simpler than ordering responses after the fact."
+        },
+        {
+          "id": "a3-answer-from-the-cache",
+          "title": "Answer a repeated query from the cache at once",
+          "anchor": {
+            "lineStart": 60,
+            "lineEnd": 60,
+            "snippet": "if (cache.has(query)) {"
+          },
+          "why": "A query the engine has already answered needs no debounce and no request; the cached list is emitted synchronously.",
+          "alternative": "Always debounce and fetch, letting the network cache help.",
+          "tradeoff": "The local cache saves the wait as well as the request, at the cost of a small eviction policy."
+        },
+        {
+          "id": "a4-debounce-then-fetch",
+          "title": "Debounce, then fetch with a request id",
+          "anchor": {
+            "lineStart": 65,
+            "lineEnd": 65,
+            "snippet": "timer = setTimeout(() => {"
+          },
+          "why": "The request starts only after the wait, and the id taken when it starts identifies this request for the response handlers.",
+          "alternative": "Fetch on every keystroke and throttle instead.",
+          "tradeoff": "A debounce sends one request for the final query; throttling sends several and still has to order the responses."
+        },
+        {
+          "id": "a5-ignore-stale-responses",
+          "title": "Ignore a response that is not for the latest query",
+          "anchor": {
+            "lineStart": 72,
+            "lineEnd": 72,
+            "snippet": "if (id !== requestId || query !== latest) return;"
+          },
+          "why": "A slow response for an older query arrives after the newer results; comparing the request id and the latest query drops it before it touches the state.",
+          "alternative": "Abort the older request with an AbortController.",
+          "tradeoff": "Aborting saves bandwidth when the API supports it; the id check works with any promise."
+        },
+        {
+          "id": "a6-rank-and-dedupe",
+          "title": "Rank prefix matches first and drop duplicates",
+          "anchor": {
+            "lineStart": 27,
+            "lineEnd": 27,
+            "snippet": "function rank(query, items) {"
+          },
+          "why": "Suggestions that start with the query are what the user is typing; substring matches follow, each group alphabetical, and a Set drops repeats such as Ankara and ankara.",
+          "alternative": "Return the API order and let the UI sort.",
+          "tradeoff": "Ranking in the engine keeps every caller consistent and makes the cap deterministic."
+        },
+        {
+          "id": "a7-turn-rejection-into-state",
+          "title": "Turn a rejection into an error state",
+          "anchor": {
+            "lineStart": 77,
+            "lineEnd": 77,
+            "snippet": ".catch((error) => {"
+          },
+          "why": "A failed request becomes a state the UI can render and the next query clears, instead of an unhandled rejection that leaves the list stuck.",
+          "alternative": "Let the rejection propagate to the caller.",
+          "tradeoff": "One state shape for success and failure keeps the component that renders it simple."
+        }
+      ]
+    }
+  }
+}

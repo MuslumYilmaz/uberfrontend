@@ -7653,5 +7653,292 @@
       "title": "Vanilla JS Dropdown Class, Then Port It to React",
       "description": "Write a keyboard-accessible dropdown as a plain JavaScript class, then port it to React with one shared reducer. Both versions pass the same checks."
     }
+  },
+  {
+    "id": "react-debug-transcript-sync",
+    "title": "Debug: Transcript Highlight That Lags Behind the Audio",
+    "type": "coding",
+    "technology": "react",
+    "difficulty": "intermediate",
+    "importance": 4,
+    "tags": [
+      "react",
+      "debugging",
+      "effects",
+      "closure",
+      "timers",
+      "async"
+    ],
+    "description": {
+      "summary": "Debug a React dubbing review player whose transcript highlight lags behind the audio, then add one small feature. Four reviewer reports arrived: \"Switching to 2× does nothing.\" \"Pause keeps the highlight moving.\" \"Typing in the search box changes nothing.\" \"After switching to Spanish and back, the English transcript is replaced by Spanish a moment later.\" Find the root cause of each report in src/App.tsx, fix all four, and add the position line the review team asked for. Public interview reports describe this round at ElevenLabs: a live technical round of pair work with an engineer on a practical problem (2026) and debugging a small React app with the interviewer (2025). Concepts: react, debugging, effects, closures, timers, async.",
+      "specs": {
+        "requirements": [
+          "Work in `src/App.tsx`; treat `loadTranscript`, the transcripts and `TICK_MS` as given.",
+          "While playing, advance the position by `rate` lines on every tick, and let a rate change take effect from the next tick.",
+          "Pause stops the clock; Play after Pause continues from the same position with one timer.",
+          "Filter the lines by the search text as the user types, from the transcript and the query, with no effect copying the result into state.",
+          "A transcript that arrives for a language the user has already left must never reach the screen.",
+          "Feature: render `<span className=\"position\">Line X of Y</span>` under the search box, where X is the highlighted line and Y the number of lines.",
+          "Keep the class names `.play`, `.rate-1x`, `.rate-2x`, `.time`, `.lang-en`, `.lang-es`, `.status`, `.search`, `.line` and `.line--active`."
+        ],
+        "expectedBehavior": [
+          "On first render the status reads `Loading English…`, then eight `.line` items appear with the first one highlighted and the status `English transcript`.",
+          "Typing `mix` leaves three lines, the first of them `The first voice sample mixes two speakers.`",
+          "Play, wait a second, Pause, wait another second: the time reads `2.0 s` and stays there.",
+          "Play at 2×: the status reads `Finished` after four ticks, half the time 1× needs.",
+          "Spanish then English in quick succession ends with the English transcript on screen, even after the slow Spanish response arrives.",
+          "After one second of playing, the position line reads `Line 3 of 8`."
+        ],
+        "implementationNotes": [
+          "Return a cleanup from the clock effect that clears the interval, and list `rate` among its dependencies so a rate change restarts the timer.",
+          "Compute the filtered lines with `useMemo` over `[lines, query]` instead of an effect that writes state.",
+          "Use a `cancelled` flag in the transcript effect cleanup so only the latest request can set the lines.",
+          "Clamp the position to the number of lines, derive `finished` from it, and stop playing when it is reached."
+        ],
+        "techFocus": [
+          "Stale closures in interval callbacks",
+          "Effect cleanup for timers",
+          "Deriving values instead of syncing state with effects",
+          "Late responses and request ordering",
+          "A small feature on top of a fix"
+        ]
+      }
+    },
+    "frameworkTests": [
+      {
+        "id": "transcript-sync-first-line",
+        "name": "Loads the English transcript and highlights its first line",
+        "steps": [
+          {
+            "type": "waitForCount",
+            "selector": ".line",
+            "count": 8,
+            "timeoutMs": 2500
+          },
+          {
+            "type": "expectText",
+            "selector": ".line--active",
+            "text": "Welcome to the dubbing review",
+            "match": "contains"
+          },
+          {
+            "type": "expectText",
+            "selector": ".status",
+            "text": "English transcript",
+            "match": "contains"
+          }
+        ]
+      },
+      {
+        "id": "transcript-sync-search-now",
+        "name": "Typing filters the transcript at once",
+        "steps": [
+          {
+            "type": "waitForCount",
+            "selector": ".line",
+            "count": 8,
+            "timeoutMs": 2500
+          },
+          {
+            "type": "setValue",
+            "selector": ".search",
+            "value": "mix"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".line",
+            "count": 3,
+            "timeoutMs": 1500
+          },
+          {
+            "type": "expectText",
+            "selector": ".line",
+            "index": 0,
+            "text": "mixes two speakers",
+            "match": "contains"
+          }
+        ]
+      },
+      {
+        "id": "transcript-sync-pause-stops",
+        "name": "Pause stops the clock",
+        "steps": [
+          {
+            "type": "waitForCount",
+            "selector": ".line",
+            "count": 8,
+            "timeoutMs": 2500
+          },
+          {
+            "type": "click",
+            "selector": ".play"
+          },
+          {
+            "type": "wait",
+            "durationMs": 1000
+          },
+          {
+            "type": "click",
+            "selector": ".play"
+          },
+          {
+            "type": "wait",
+            "durationMs": 1000
+          },
+          {
+            "type": "expectText",
+            "selector": ".time",
+            "text": "2.0 s",
+            "match": "equals"
+          }
+        ]
+      },
+      {
+        "id": "transcript-sync-double-speed",
+        "name": "Double speed reaches the end twice as fast",
+        "steps": [
+          {
+            "type": "waitForCount",
+            "selector": ".line",
+            "count": 8,
+            "timeoutMs": 2500
+          },
+          {
+            "type": "click",
+            "selector": ".play"
+          },
+          {
+            "type": "click",
+            "selector": ".rate-2x"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".status",
+            "text": "Finished",
+            "match": "contains",
+            "timeoutMs": 2300
+          }
+        ]
+      },
+      {
+        "id": "transcript-sync-latest-language",
+        "name": "A slow transcript for the previous language never replaces the newer one",
+        "steps": [
+          {
+            "type": "waitForCount",
+            "selector": ".line",
+            "count": 8,
+            "timeoutMs": 2500
+          },
+          {
+            "type": "click",
+            "selector": ".lang-es"
+          },
+          {
+            "type": "click",
+            "selector": ".lang-en"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".status",
+            "text": "English transcript",
+            "match": "contains",
+            "timeoutMs": 1500
+          },
+          {
+            "type": "wait",
+            "durationMs": 900
+          },
+          {
+            "type": "expectText",
+            "selector": ".line",
+            "index": 0,
+            "text": "Welcome to the dubbing review",
+            "match": "contains"
+          }
+        ]
+      },
+      {
+        "id": "transcript-sync-position-line",
+        "name": "The position line follows the highlight",
+        "steps": [
+          {
+            "type": "waitForCount",
+            "selector": ".line",
+            "count": 8,
+            "timeoutMs": 2500
+          },
+          {
+            "type": "click",
+            "selector": ".play"
+          },
+          {
+            "type": "wait",
+            "durationMs": 1000
+          },
+          {
+            "type": "expectText",
+            "selector": ".position",
+            "text": "Line 3 of 8",
+            "match": "equals"
+          }
+        ]
+      }
+    ],
+    "sdk": {
+      "asset": "assets/sb/react/question/react-debug-transcript-sync.v1.json",
+      "openFile": "/src/App.tsx",
+      "storageKey": "v2:ui:react:react-debug-transcript-sync"
+    },
+    "pressureModeAsset": "assets/questions/pressure-modes/transcript-sync.v1.json",
+    "solutionAsset": "assets/sb/react/solution/react-debug-transcript-sync-solution.v1.json",
+    "decisionGraphAsset": "assets/questions/react/decision-graphs/react-debug-transcript-sync.v1.json",
+    "companies": [
+      "elevenlabs"
+    ],
+    "sources": [
+      {
+        "label": "Aced: ElevenLabs senior full-stack (frontend-leaning) interview account, July 2026",
+        "url": "https://www.aced.io/experiences/eleven-labs-senior-frontend-engineer-interview-925c04",
+        "company": "elevenlabs",
+        "publisher": "Aced",
+        "date": "2026-07",
+        "note": "The account describes a live technical round of pair work with an engineer on a practical problem. This item practises that round as a debugging session on a small React app."
+      },
+      {
+        "label": "Aced: ElevenLabs frontend engineer interview account, November 2025",
+        "url": "https://www.aced.io/experiences/eleven-labs-frontend-engineer-interview-c79e72",
+        "company": "elevenlabs",
+        "publisher": "Aced",
+        "date": "2025-11",
+        "note": "The account describes debugging a small React app with the interviewer. The bugs here, a stale closure, a missing cleanup, a filter that never reruns and a late response that overwrites a newer one, are the kinds the ElevenLabs guide lists for that round."
+      }
+    ],
+    "premiumPreview": {
+      "summary": "Debug a dubbing review player whose transcript highlight lags behind the audio, then add a position line. Each of four reviewer reports points to a different mistake in how the component runs its clock, filters its lines and loads a transcript.",
+      "learningOutcomes": [
+        "Trace a control that does nothing back to a stale closure in an interval callback.",
+        "Stop a timer with an effect cleanup instead of a flag.",
+        "Replace an effect that syncs state with a value derived during render.",
+        "Keep a late response for an old selection from overwriting a newer one."
+      ],
+      "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+    },
+    "solutionBlock": {
+      "overview": "Root causes, one per report:\n\n1. The clock effect depends on `[playing]` only, so its interval callback keeps the rate it captured when playback started; 2× changes the state and nothing else.\n2. The same effect returns no cleanup, so Pause leaves the old interval running and the next Play adds a second one.\n3. The filter lives in an effect that depends on `[lines]`, so typing never reruns it.\n4. The transcript effect applies whichever response arrives, so the slow Spanish transcript replaces the English one that was already on screen.\n\nThe fix lists `rate` and the line count as dependencies of the clock effect, clears the interval in its cleanup, clamps the position at the end and stops playing there; derives the filtered lines with `useMemo` over the lines and the query; and flips a `cancelled` flag in the transcript effect cleanup so only the latest request can set the lines. The new position line reads the same active index as the highlight.\n\n**Test cases**\n- The English transcript loads with its first line highlighted.\n- `mix` leaves three lines at once.\n- Play, Pause: the time stays at `2.0 s`.\n- 2× reaches `Finished` in half the time.\n- Spanish then English keeps English on screen after the slow response.\n- The position line reads `Line 3 of 8` after a second of playing.",
+      "approaches": [
+        {
+          "title": "Clean up the clock, derive the filter and guard the transcript request",
+          "prose": "Start from the reports, not the code: each one maps to one line.\n\n1. Give the clock effect the dependencies it reads, `[playing, rate, total]`, and return a cleanup that clears the interval. A rate change now restarts the timer with the new rate, Pause clears it, and a second Play cannot stack a second timer.\n2. Clamp the position in the updater, `Math.min(current + rate, total)`, derive `finished` from it, and stop playing when it is reached; the cleanup does the rest.\n3. Delete the filter effect and its state. `useMemo` over `[lines, query]` returns the filtered lines in the same render as the keystroke.\n4. Declare `let cancelled = false` in the transcript effect, return early in the `.then` when it is set, and flip it in the cleanup. The slow Spanish response now lands after the user left Spanish and is ignored.\n5. Render `Line {activeIndex + 1} of {total}` from the same `activeIndex` the highlight uses.\n\nSay what each edit does as you make it: the interviewer is listening for the cause (a captured value, a missing cleanup, an effect that syncs state, an unguarded response), not for the symptom.",
+          "codeJs": "import React, { useEffect, useMemo, useState } from 'react';\nimport './App.css';\n\nexport interface Line {\n  id: number;\n  text: string;\n}\n\nexport type Language = 'en' | 'es';\nexport type Rate = 1 | 2;\n\n/** Each transcript line plays for one second of audio; the clock ticks every 400 ms of real time. */\nexport const TICK_MS = 400;\n\nconst TRANSCRIPTS: Record<Language, Line[]> = {\n  en: [\n    { id: 1, text: 'Welcome to the dubbing review for episode four.' },\n    { id: 2, text: 'The first voice sample mixes two speakers.' },\n    { id: 3, text: 'Mark the lines where the timing drifts.' },\n    { id: 4, text: 'The mix engineer joins after the break.' },\n    { id: 5, text: 'Keep the pauses where the original pauses.' },\n    { id: 6, text: 'Approve the take or request a new render.' },\n    { id: 7, text: 'Export the approved mix to the project.' },\n    { id: 8, text: 'Thanks, that is the end of the review.' }\n  ],\n  es: [\n    { id: 1, text: 'Bienvenidos a la revisión del doblaje del episodio cuatro.' },\n    { id: 2, text: 'La primera muestra de voz mezcla dos hablantes.' },\n    { id: 3, text: 'Marquen las líneas donde el tiempo se desvía.' },\n    { id: 4, text: 'El ingeniero de mezcla se une después de la pausa.' },\n    { id: 5, text: 'Mantengan las pausas donde pausa el original.' },\n    { id: 6, text: 'Aprueben la toma o pidan un nuevo render.' },\n    { id: 7, text: 'Exporten la mezcla aprobada al proyecto.' },\n    { id: 8, text: 'Gracias, ese es el final de la revisión.' }\n  ]\n};\n\n// Fake transcript service. Treat it as given: the bugs are in App below.\n// - Spanish answers slowly (700ms) and English quickly (150ms), so switching\n//   there and back quickly produces responses that arrive out of order\nexport function loadTranscript(language: Language): Promise<Line[]> {\n  const delay = language === 'es' ? 700 : 150;\n  return new Promise((resolve) => {\n    window.setTimeout(() => resolve(TRANSCRIPTS[language]), delay);\n  });\n}\n\nexport const LANGUAGE_NAMES: Record<Language, string> = { en: 'English', es: 'Spanish' };\n\nexport default function App() {\n  const [language, setLanguage] = useState<Language>('en');\n  const [lines, setLines] = useState<Line[]>([]);\n  const [query, setQuery] = useState('');\n  const [playing, setPlaying] = useState(false);\n  const [rate, setRate] = useState<Rate>(1);\n  const [position, setPosition] = useState(0);\n  const total = lines.length;\n  const finished = total > 0 && position >= total;\n\n  useEffect(() => {\n    let cancelled = false;\n    setLines([]);\n    loadTranscript(language).then((loaded) => {\n      if (cancelled) return;\n      setLines(loaded);\n      setPosition(0);\n    });\n    return () => {\n      cancelled = true;\n    };\n  }, [language]);\n\n  const filtered = useMemo(() => {\n    const q = query.trim().toLowerCase();\n    return q ? lines.filter((line) => line.text.toLowerCase().includes(q)) : lines;\n  }, [lines, query]);\n\n  useEffect(() => {\n    if (!playing) return;\n    const timer = window.setInterval(() => {\n      setPosition((current) => Math.min(current + rate, total));\n    }, TICK_MS);\n    return () => {\n      window.clearInterval(timer);\n    };\n  }, [playing, rate, total]);\n\n  useEffect(() => {\n    if (finished) setPlaying(false);\n  }, [finished]);\n\n  const activeIndex = Math.min(position, total - 1);\n  const active = lines[activeIndex];\n  const status = total === 0\n    ? `Loading ${LANGUAGE_NAMES[language]}…`\n    : finished\n      ? 'Finished'\n      : `${LANGUAGE_NAMES[language]} transcript`;\n\n  return (\n    <main className=\"main\">\n      <section className=\"card\">\n        <header className=\"header\">\n          <h1 className=\"title\">Dubbing Review Player (Solution)</h1>\n          <p className=\"subtitle\">The clock follows the rate, pause stops it, the search filters at once and the latest language wins.</p>\n        </header>\n\n        <div className=\"controls\">\n          <button type=\"button\" className=\"play\" onClick={() => setPlaying((value) => !value)}>\n            {playing ? 'Pause' : 'Play'}\n          </button>\n          <button\n            type=\"button\"\n            className={`rate rate-1x${rate === 1 ? ' rate--active' : ''}`}\n            onClick={() => setRate(1)}\n          >\n            1×\n          </button>\n          <button\n            type=\"button\"\n            className={`rate rate-2x${rate === 2 ? ' rate--active' : ''}`}\n            onClick={() => setRate(2)}\n          >\n            2×\n          </button>\n          <span className=\"time\">{position.toFixed(1)} s</span>\n        </div>\n\n        <div className=\"controls\">\n          <button type=\"button\" className=\"lang lang-en\" onClick={() => setLanguage('en')}>English</button>\n          <button type=\"button\" className=\"lang lang-es\" onClick={() => setLanguage('es')}>Spanish</button>\n          <span className=\"status\">{status}</span>\n        </div>\n\n        <div className=\"field\">\n          <label className=\"label\" htmlFor=\"transcript-search\">Search the transcript</label>\n          <input\n            id=\"transcript-search\"\n            className=\"search\"\n            type=\"search\"\n            value={query}\n            placeholder=\"Try mix, pause or render\"\n            onChange={(event: React.ChangeEvent<HTMLInputElement>) => setQuery(event.target.value)}\n          />\n        </div>\n\n        {total > 0 && (\n          <span className=\"position\">Line {activeIndex + 1} of {total}</span>\n        )}\n\n        <ol className=\"lines\">\n          {filtered.map((line) => (\n            <li key={line.id} className={`line${active && active.id === line.id ? ' line--active' : ''}`}>\n              {line.text}\n            </li>\n          ))}\n        </ol>\n      </section>\n    </main>\n  );\n}\n"
+        }
+      ]
+    },
+    "access": "premium",
+    "updatedAt": "2026-11-05",
+    "seo": {
+      "title": "Debug a React Transcript Player That Lags Behind",
+      "description": "Fix four bugs in a React dubbing review player: a stale clock closure, a missing cleanup, a filter that never reruns and a late transcript that wins."
+    }
   }
 ]

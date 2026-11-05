@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-23T11:14:16.444Z",
+  "generatedAt": "2026-11-05T14:06:41.332Z",
   "entries": [
     {
       "tech": "angular",
@@ -876,6 +876,12 @@
       "tech": "javascript",
       "kind": "coding",
       "id": "js-arrays-equal",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-autocomplete-engine",
       "file": "javascript/coding.json"
     },
     {
@@ -1968,6 +1974,12 @@
       "tech": "react",
       "kind": "coding",
       "id": "react-debug-double-render",
+      "file": "react/coding.json"
+    },
+    {
+      "tech": "react",
+      "kind": "coding",
+      "id": "react-debug-transcript-sync",
       "file": "react/coding.json"
     },
     {

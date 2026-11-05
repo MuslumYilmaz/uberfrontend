@@ -173,7 +173,7 @@ function assertFrameworkCssFormatting() {
       canonicalRoot: path.join(repoRoot, 'cdn', 'sb'),
       mirrorRoot: path.join(repoRoot, 'frontend', 'src', 'assets', 'sb'),
     }),
-    { assets: 242, cssSources: 308, changedAssets: 0, changedCssSources: 0 },
+    { assets: 245, cssSources: 311, changedAssets: 0, changedCssSources: 0 },
     'The full framework CSS corpus must stay canonical and exactly mirrored'
   );
 }
@@ -6167,6 +6167,48 @@ for (const node of apiMisuseVariant.nodes) {
   const { lineStart, lineEnd, snippet } = node.anchor;
   assert.ok(lineStart >= 1 && lineEnd >= lineStart && lineEnd <= apiMisuseLines.length, `${node.id}: invalid API misuse anchor range`);
   assert.ok(apiMisuseLines.slice(lineStart - 1, lineEnd).join('\n').includes(snippet), `${node.id}: API misuse anchor range must contain its snippet`);
+}
+
+// ElevenLabs live technical round (2026-11-05): a debug item whose starter keeps four causes and whose solutions,
+// pressure scenario and decision graph stay in step with each other.
+const transcriptQuestion = json('cdn/questions/react/coding.json').find((entry) => entry.id === 'react-debug-transcript-sync');
+assert.ok(transcriptQuestion);
+assert.equal(transcriptQuestion.access, 'premium');
+assert.deepEqual(transcriptQuestion.companies, ['elevenlabs']);
+assert.equal(transcriptQuestion.pressureModeAsset, 'assets/questions/pressure-modes/transcript-sync.v1.json');
+assert.equal(transcriptQuestion.decisionGraphAsset, 'assets/questions/react/decision-graphs/react-debug-transcript-sync.v1.json');
+const transcriptStarter = json('cdn/sb/react/question/react-debug-transcript-sync.v1.json').files['src/App.tsx'];
+const transcriptSolution = json('cdn/sb/react/solution/react-debug-transcript-sync-solution.v1.json').files['src/App.tsx'];
+const transcriptPressureSolution = json('cdn/sb/react/solution/react-debug-transcript-sync-pressure-solution.v1.json').files['src/App.tsx'];
+assert.match(transcriptStarter, /\}, \[playing\]\);/, 'the starter keeps the clock effect without the rate dependency');
+assert.doesNotMatch(transcriptStarter, /clearInterval/, 'the starter keeps the missing cleanup');
+assert.match(transcriptStarter, /\}, \[lines\]\);/, 'the starter keeps the filter effect that ignores the query');
+assert.doesNotMatch(transcriptStarter, /cancelled/, 'the starter keeps the unguarded transcript request');
+assert.doesNotMatch(transcriptStarter, /className="position"/, 'the starter leaves the position line to the candidate');
+for (const [name, source] of [['solution', transcriptSolution], ['pressure solution', transcriptPressureSolution]]) {
+  assert.match(source, /window\.clearInterval\(timer\);/, `${name} clears the interval`);
+  assert.match(source, /useMemo\(\(\) => \{/, `${name} derives the filter`);
+  assert.match(source, /cancelled = true;/, `${name} cancels a stale transcript request`);
+  assert.match(source, /className="position"/, `${name} renders the position line`);
+}
+assert.match(transcriptSolution, /\}, \[playing, rate, total\]\);/);
+assert.match(transcriptPressureSolution, /\}, \[playing, rate, total, loop\]\);/);
+assert.match(transcriptPressureSolution, /className="back"/);
+assert.match(transcriptPressureSolution, /aria-pressed=\{loop\}/);
+const transcriptPressure = json('cdn/questions/pressure-modes/transcript-sync.v1.json');
+assert.equal(transcriptPressure.supportedQuestions.react, 'react-debug-transcript-sync');
+assert.equal(transcriptPressure.rounds.length, 4);
+assert.ok(transcriptPressure.rounds.every((round) => Array.isArray(round.frameworkTests) && round.frameworkTests.length > 0));
+const transcriptGraph = json('cdn/questions/react/decision-graphs/react-debug-transcript-sync.v1.json');
+const transcriptVariant = transcriptGraph.variants.approach1;
+assert.equal(transcriptGraph.questionId, 'react-debug-transcript-sync');
+assert.equal(transcriptVariant.code, transcriptSolution, 'transcript decision graph must mirror the solution App.tsx');
+assert.equal(transcriptQuestion.solutionBlock.approaches[0].codeJs, transcriptSolution, 'the approach code must mirror the solution App.tsx');
+const transcriptLines = transcriptVariant.code.split('\n');
+for (const node of transcriptVariant.nodes) {
+  const { lineStart, lineEnd, snippet } = node.anchor;
+  assert.ok(lineStart >= 1 && lineEnd >= lineStart && lineEnd <= transcriptLines.length, `${node.id}: invalid transcript anchor range`);
+  assert.ok(transcriptLines.slice(lineStart - 1, lineEnd).join('\n').includes(snippet), `${node.id}: transcript anchor range must contain its snippet`);
 }
 
 const selectQuestion = json('cdn/questions/react/coding.json').find((entry) => entry.id === 'react-select-compound-api');

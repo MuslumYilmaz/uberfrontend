@@ -524,6 +524,28 @@
     ],
     "booking-com": [
       {
+        "id": "js-autocomplete-engine",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Autocomplete Engine: Debounced Suggestions That Never Go Stale",
+        "access": "premium",
+        "route": "/javascript/coding/js-autocomplete-engine",
+        "sources": [
+          {
+            "label": "Code360: Booking.com frontend engineer interview experience, April 2023",
+            "url": "https://www.naukri.com/code360/interview-experiences/booking-com/interview-experience-frontend-engineer-apr-2023-exp-0-2-years",
+            "publisher": "Code360",
+            "date": "2023-04"
+          },
+          {
+            "label": "enginebogie: Booking.com frontend engineer interview experience, May 2023",
+            "url": "https://enginebogie.com/interview/experience/booking-com-frontend-engineer/84",
+            "publisher": "enginebogie",
+            "date": "2023-05"
+          }
+        ]
+      },
+      {
         "id": "vue-autocomplete-search",
         "kind": "coding",
         "tech": "vue",
@@ -967,6 +989,28 @@
             "url": "https://www.aced.io/guides/elevenlabs-software-engineer-interview/questions",
             "publisher": "Aced",
             "date": "2026-10"
+          }
+        ]
+      },
+      {
+        "id": "react-debug-transcript-sync",
+        "kind": "coding",
+        "tech": "react",
+        "title": "Debug: Transcript Highlight That Lags Behind the Audio",
+        "access": "premium",
+        "route": "/react/coding/react-debug-transcript-sync",
+        "sources": [
+          {
+            "label": "Aced: ElevenLabs senior full-stack (frontend-leaning) interview account, July 2026",
+            "url": "https://www.aced.io/experiences/eleven-labs-senior-frontend-engineer-interview-925c04",
+            "publisher": "Aced",
+            "date": "2026-07"
+          },
+          {
+            "label": "Aced: ElevenLabs frontend engineer interview account, November 2025",
+            "url": "https://www.aced.io/experiences/eleven-labs-frontend-engineer-interview-c79e72",
+            "publisher": "Aced",
+            "date": "2025-11"
           }
         ]
       },

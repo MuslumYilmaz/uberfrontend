@@ -36,10 +36,10 @@
       "design": "/guides/system-design-blueprint"
     },
     "premiumCounts": {
-      "react": 30,
+      "react": 31,
       "angular": 22,
       "vue": 21,
-      "javascript": 50,
+      "javascript": 51,
       "systemDesign": 18
     },
     "familyMembers": {
@@ -910,6 +910,19 @@
       "focus": [
         "concepts",
         "js"
+      ]
+    },
+    "js-autocomplete-engine": {
+      "id": "js-autocomplete-engine",
+      "title": "Autocomplete Engine: Debounced Suggestions That Never Go Stale",
+      "route": "/javascript/coding/js-autocomplete-engine",
+      "kind": "coding",
+      "tech": "javascript",
+      "access": "premium",
+      "minutes": 30,
+      "focus": [
+        "js",
+        "algo"
       ]
     },
     "js-bigint-data-type": {
@@ -2281,6 +2294,20 @@
       "id": "react-debug-double-render",
       "title": "Debug: Component Renders Twice on Every Update",
       "route": "/react/coding/react-debug-double-render",
+      "kind": "coding",
+      "tech": "react",
+      "access": "premium",
+      "minutes": 30,
+      "pressure": true,
+      "focus": [
+        "debug",
+        "ui"
+      ]
+    },
+    "react-debug-transcript-sync": {
+      "id": "react-debug-transcript-sync",
+      "title": "Debug: Transcript Highlight That Lags Behind the Audio",
+      "route": "/react/coding/react-debug-transcript-sync",
       "kind": "coding",
       "tech": "react",
       "access": "premium",
@@ -4845,7 +4872,7 @@
           ],
           "tasks": [
             {
-              "id": "react-autocomplete-search-starter",
+              "id": "js-autocomplete-engine",
               "report": {
                 "publisher": "enginebogie",
                 "date": "2023-05"
@@ -4897,6 +4924,16 @@
               ]
             },
             {
+              "id": "react-autocomplete-search-starter",
+              "report": {
+                "publisher": "enginebogie",
+                "date": "2023-05"
+              },
+              "rounds": [
+                "frontend-coding"
+              ]
+            },
+            {
               "id": "realtime-search-debounce-cache",
               "report": {
                 "publisher": "enginebogie",
@@ -4917,9 +4954,6 @@
             },
             {
               "id": "js-flatten-once"
-            },
-            {
-              "id": "css-box-model"
             }
           ]
         }
@@ -6779,8 +6813,7 @@
                 "coding-assessment",
                 "live-technical-round"
               ],
-              "lead": true,
-              "prompt": true
+              "lead": true
             },
             {
               "id": "ai-ux-considerations",
@@ -6802,6 +6835,18 @@
             },
             {
               "id": "react-autocomplete-search-starter",
+              "report": {
+                "publisher": "Aced",
+                "date": "2026-07"
+              },
+              "rounds": [
+                "coding-assessment",
+                "live-technical-round"
+              ],
+              "prompt": true
+            },
+            {
+              "id": "react-debug-transcript-sync",
               "report": {
                 "publisher": "Aced",
                 "date": "2026-07"

@@ -3283,6 +3283,28 @@
     "assetRef": "questions/javascript/trivia.json#js-async-race-conditions"
   },
   {
+    "id": "js-autocomplete-engine",
+    "family": "question",
+    "title": "Autocomplete Engine: Debounced Suggestions That Never Go Stale",
+    "route": "/javascript/coding/js-autocomplete-engine",
+    "tech": "javascript",
+    "difficulty": "intermediate",
+    "summary": "Build the engine behind an autocomplete box: debounce, one request for the final query, ranked suggestions, a small cache, and a guard so a slow response for an older query never replaces the newer results.",
+    "tags": [
+      "async",
+      "promises",
+      "timers",
+      "cancellation",
+      "caching",
+      "utilities"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 18,
+    "updatedAt": "2026-11-05",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/javascript/coding.json#js-autocomplete-engine"
+  },
+  {
     "id": "js-big-o-notation",
     "family": "question",
     "title": "Big-O Notation (Time and Space Complexity)",
@@ -7077,6 +7099,28 @@
     "updatedAt": "2026-10-19",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/coding.json#react-debug-api-misuse"
+  },
+  {
+    "id": "react-debug-transcript-sync",
+    "family": "question",
+    "title": "Debug: Transcript Highlight That Lags Behind the Audio",
+    "route": "/react/coding/react-debug-transcript-sync",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "Debug a dubbing review player whose transcript highlight lags behind the audio, then add a position line.",
+    "tags": [
+      "react",
+      "debugging",
+      "effects",
+      "closure",
+      "timers",
+      "async"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 18,
+    "updatedAt": "2026-11-05",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/coding.json#react-debug-transcript-sync"
   },
   {
     "id": "react-file-explorer",

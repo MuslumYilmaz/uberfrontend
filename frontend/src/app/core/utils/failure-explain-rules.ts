@@ -313,6 +313,90 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
     }),
   },
   {
+    ruleId: 'react-debug-transcript-sync-root-causes',
+    questionId: 'react-debug-transcript-sync',
+    priority: 100,
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, ['filters the transcript', 'pause stops', 'double speed', 'previous language', 'position line']) ||
+      snapshot.failCount >= 2,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-debug-transcript-sync-root-causes',
+      title: 'Check what each effect captures, cleans up and depends on',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'Each failing check maps to one cause: the rate captured by the interval, the interval that is never cleared, the filter effect that depends on the lines only, or the transcript response that is never cancelled.',
+      ),
+      actions: [
+        'List `rate` and the line count among the clock effect\'s dependencies and return a cleanup that calls `clearInterval`.',
+        'Replace the filter effect and its state with `useMemo` over `[lines, query]`.',
+        'Flip a `cancelled` flag in the transcript effect cleanup and return early in the `.then` when it is set.',
+      ],
+      confidence: 0.86,
+    }),
+  },
+  {
+    ruleId: 'react-debug-transcript-sync-default',
+    questionId: 'react-debug-transcript-sync',
+    priority: 40,
+    matches: () => true,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-debug-transcript-sync-default',
+      title: 'Drive the highlight, the time and the position line from one position state',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The highlighted line, the time and the position line should all read the same clamped position, and the clock should be the only thing that moves it.',
+      ),
+      actions: [
+        'Clamp the position to the number of lines in the updater and derive `finished` from it.',
+        'Stop playing when `finished` turns true, so the cleanup clears the interval.',
+        'Render `Line {activeIndex + 1} of {total}` from the same index the highlight uses.',
+      ],
+      confidence: 0.72,
+    }),
+  },
+  {
+    ruleId: 'js-autocomplete-engine-latest-query',
+    questionId: 'js-autocomplete-engine',
+    priority: 100,
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, ['waits for the debounce', 'older query', 'cache without a new request', 'cancel clears', 'below minLength']) ||
+      snapshot.failCount >= 2,
+    buildHint: (snapshot) => ({
+      ruleId: 'js-autocomplete-engine-latest-query',
+      title: 'Let only the latest query reach the callback',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'Each failing check maps to one guard: the debounce that restarts on every update, the request id that outdates a slow response, the cache answered before the wait, or the cancel that clears both.',
+      ),
+      actions: [
+        'In `update`, clear the pending timer and bump a request id before anything else; keep the normalised text as the latest query.',
+        'Take a fresh id when the debounce fires and compare it, with the latest query, in both promise handlers before emitting.',
+        'Answer short queries with `idle` and cached queries with `ready` before starting a timer.',
+      ],
+      confidence: 0.86,
+    }),
+  },
+  {
+    ruleId: 'js-autocomplete-engine-default',
+    questionId: 'js-autocomplete-engine',
+    priority: 40,
+    matches: () => true,
+    buildHint: (snapshot) => ({
+      ruleId: 'js-autocomplete-engine-default',
+      title: 'Rank deterministically and keep one state shape',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'Every emission carries query, status, items and message; the ranking decides the order and the cap, and a rejection becomes the error state.',
+      ),
+      actions: [
+        'Split matches into prefix and substring buckets, sort each with `localeCompare`, drop duplicates by lower-cased name, then cap at `maxResults`.',
+        'Emit `error` with the rejection message and an empty list; the next `update` clears it.',
+        'Store ranked results in the cache keyed by the normalised query and evict the oldest entry past `cacheSize`.',
+      ],
+      confidence: 0.72,
+    }),
+  },
+  {
     ruleId: 'react-select-compound-api-parts',
     questionId: 'react-select-compound-api',
     priority: 100,

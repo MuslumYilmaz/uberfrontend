@@ -201,7 +201,8 @@ describe('CompanyPlanPageComponent', () => {
   it('groups the time map by company when there are several', () => {
     setup({ ...ELEVENLABS, companies: [{ slug: 'elevenlabs' }, { slug: 'agoda' }] });
     expect(text('.plan-map__title')).toMatch(/^About \d+ hours?( \d+ minutes)?, company by company$/);
-    expect(Array.from(host.querySelectorAll('.plan-map__group-name')).map((name) => name.textContent)).toEqual(['ElevenLabs', 'Agoda', 'Extra React practice']);
+    // Both next rounds carry a Premium task since 2026-11-05, so the budget has no room left for extra practice.
+    expect(Array.from(host.querySelectorAll('.plan-map__group-name')).map((name) => name.textContent)).toEqual(['ElevenLabs', 'Agoda']);
     expect(Array.from(host.querySelectorAll('.plan-company__title')).map((title) => title.textContent)).toEqual(['ElevenLabs, round by round', 'Agoda, round by round']);
   });
 
