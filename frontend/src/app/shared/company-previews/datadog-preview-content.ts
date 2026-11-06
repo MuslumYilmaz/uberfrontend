@@ -46,7 +46,7 @@ export const DATADOG_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     kicker: 'Study priorities',
     title: 'Prepare for product judgment, not Datadog trivia',
     paragraphs: [
-      'Every public account converges on the same material: data that keeps changing, tables that must stay sortable and filterable while it changes, and logs that arrive faster than a screen can show them. The accounts also describe loops that test algorithms and frontend work equally, with LeetCode-style screens before the React and design rounds. Each prompt below starts with the clarifying questions a strong candidate asks, then the behaviours a strong answer covers, then the miss that usually ends the round.',
+      'Every public account converges on the same material: data that keeps changing, tables that must stay sortable and filterable while it changes, and logs that arrive faster than a screen can show them. The accounts also describe loops that test algorithms and frontend work equally, with LeetCode-style screens before the React and design rounds. Each prompt above starts with the clarifying questions a strong candidate asks, then the behaviours a strong answer covers, then the miss that usually ends the round.',
       'The September 2025 account gives the most useful tactical advice: the live coding exercise starts simple and adds parts step by step, so complete each task step by step and do not worry about optimisations such as context providers or virtualisation.',
     ],
   },

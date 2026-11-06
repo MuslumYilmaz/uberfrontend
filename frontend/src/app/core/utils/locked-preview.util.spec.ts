@@ -72,6 +72,12 @@ describe('locked preview builder', () => {
     expect(preview.pitfalls.length).toBeGreaterThanOrEqual(3);
     expect(preview.related.length).toBeGreaterThan(0);
     expect(preview.related[0].title).toBe('Count Vowels');
+
+    // A task with an Interview Pressure Mode says so on its lock page, as its plan row's chip does.
+    const withPressure = buildLockedPreviewForCoding({ ...q, pressureModeAsset: 'assets/questions/pressure-modes/sum.v1.json' }, { candidates, tech: 'javascript', kind: 'coding' });
+    expect(withPressure?.unlockDescription).toBe(
+      'Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion. It also runs as an Interview Pressure Mode, in rounds that add requirements the way an interviewer does.',
+    );
   });
 
   it('builds a trivia preview without relying on answers', () => {

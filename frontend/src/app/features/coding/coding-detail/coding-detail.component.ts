@@ -451,6 +451,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       starterCode: q.starterCode,
       code: q.code,
       starterCodeTs: (q as Question & { starterCodeTs?: string }).starterCodeTs,
+      pressureModeAsset: q.pressureModeAsset,
     };
     const publicCandidates = this.allQuestions.map((candidate) => ({
       id: candidate.id,

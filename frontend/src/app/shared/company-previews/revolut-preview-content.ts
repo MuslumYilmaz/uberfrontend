@@ -59,7 +59,7 @@ export const REVOLUT_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     title: 'Prepare for product judgment, not Revolut trivia',
     paragraphs: [
       'The public accounts converge on one exercise: in about an hour, fetch data from a source and render it in React with TypeScript, with a loading state, data state management and fetching with error handling. The one account that shared written feedback was told that type management and loading-state handling needed more practice, so the drills below start there. The Revolut Tech post on web engineering describes the same bar from the other side of the table: the interviews place candidates in real-world scenarios and ask them to implement features standard to web engineers, not to crack obscure JavaScript puzzles.',
-      'Around that exercise the accounts describe a HackerRank screen or a short theory check run by the recruiter, a frontend system-design round in a 2025 loop, a team-fit conversation and a Bar Raiser interview. Each prompt below starts with the clarifying questions a strong candidate asks, then the behaviours a strong answer covers, then the miss that usually ends the round.',
+      'Around that exercise the accounts describe a HackerRank screen or a short theory check run by the recruiter, a frontend system-design round in a 2025 loop, a team-fit conversation and a Bar Raiser interview. Each prompt above starts with the clarifying questions a strong candidate asks, then the behaviours a strong answer covers, then the miss that usually ends the round.',
     ],
   },
   sourceBoundary: {

@@ -51,7 +51,7 @@ export const INTUIT_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     kicker: 'Study priorities',
     title: 'Prepare for product judgment, not Intuit trivia',
     paragraphs: [
-      'Every public frontend account describes the same centre of gravity: a hands-on craft round where you build or extend a small application and defend it, surrounded by JavaScript fundamentals, a medium algorithm screen and, since 2024, an AI component. Candidates report that the panel asks why at every line, expects an error fallback and expects tests that check real conditions rather than coverage. Each prompt below starts with the clarifying questions a strong candidate asks, then the behaviours a strong answer covers, then the miss that usually ends the round.',
+      'Every public frontend account describes the same centre of gravity: a hands-on craft round where you build or extend a small application and defend it, surrounded by JavaScript fundamentals, a medium algorithm screen and, since 2024, an AI component. Candidates report that the panel asks why at every line, expects an error fallback and expects tests that check real conditions rather than coverage. Each prompt above starts with the clarifying questions a strong candidate asks, then the behaviours a strong answer covers, then the miss that usually ends the round.',
       'Two lessons repeat across years. A 2022 account says level 2 and above are expected to have unit testing experience, and a 2023 account lost the loop partly on tests that proved nothing. A 2025 account stalled on a streaming user story by building the transport by hand instead of using the primitive the interviewer expected. Practise tests and streaming until they are routine.',
     ],
   },

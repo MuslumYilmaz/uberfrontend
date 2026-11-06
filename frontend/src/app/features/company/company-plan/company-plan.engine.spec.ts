@@ -176,8 +176,8 @@ describe('company plan engine', () => {
   it('spends the budget on reports first, newest first, then links, tags and concept questions', () => {
     const data = fixture(
       [
-        { id: 'reported-new', report: { publisher: 'Taro', date: '2026-05' } },
-        { id: 'reported-old', report: { publisher: 'Blind', date: '2020-01' } },
+        { id: 'reported-new', report: { publisher: 'Taro', date: '2026-05' }, rounds: ['coding'] },
+        { id: 'reported-old', report: { publisher: 'Blind', date: '2020-01' }, rounds: ['coding'] },
         { id: 'linked', rounds: ['coding'] },
         { id: 'tagged-a' },
         { id: 'tagged-b' },
@@ -298,16 +298,17 @@ describe('company plan engine', () => {
   });
 
   it('puts the next round\'s Premium task before format practice, and ahead of a later round\'s Premium in a Tomorrow plan', () => {
-    // This week: 4 tasks, one of them format practice. The rounds take three free tasks first; the coding round's
-    // Premium report then takes the format slot instead of extra practice.
     const data = fixture(
       [{ id: 'tagged-a', rounds: ['coding'] }, { id: 'linked', rounds: ['coding'] }, { id: 'reported-old', rounds: ['coding'] }, { id: 'tagged-b', rounds: ['people'] }],
       [round('coding', ['coding']), round('people', ['people'])],
     );
+    // This week the coding round is the day the person faces next: it takes its three tasks, its Premium report among
+    // them, before the people round gets one, and the format slot goes to extra practice.
     const week = buildCompanyPlan(data, input({ when: 'this-week' }));
     expect(week.tasks.length).toBe(4);
-    expect(week.companies[0].rounds[0].tasks.map((entry) => entry.id)).toContain('reported-old');
-    expect(week.formatPractice).toEqual([]);
+    expect(idsIn(week, 'coding')).toEqual(['tagged-a', 'linked', 'reported-old']);
+    expect(idsIn(week, 'people')).toEqual([]);
+    expect(week.formatPractice.map((entry) => entry.id)).toEqual(['format-a']);
 
     // Tomorrow: 3 tasks, full after the rounds' first picks. The design round's Premium walkthrough makes way for
     // the coding round's Premium report, so the one Premium task sits on the round the person faces next.
@@ -488,12 +489,14 @@ describe('company plan engine', () => {
       [round('coding', ['coding']), round('design', ['design']), round('people', ['people'])],
     );
     const withDebug = { ...data, tasks: { ...data.tasks, 'debug-a': task('debug-a', { kind: 'debug', route: '/javascript/debug/debug-a', access: 'premium' }) } };
-    const plan = buildCompanyPlan(withDebug, input({ when: 'this-week', level: 'senior' }));
-    // Three round slots: the coding round's first task, the design round's walkthrough, and the behavioural guide the
-    // people round has as its only candidate. Then the coding round, the one the person faces next, gets its Premium
-    // debug task in the format slot.
-    expect(plan.companies[0].rounds.map((entry) => entry.tasks.map((item) => item.id))).toEqual([['widget-react', 'debug-a'], ['design-a'], ['/guides/people']]);
-    expect(plan.formatPractice).toEqual([]);
+    const plan = buildCompanyPlan(withDebug, input({ when: 'next-week', level: 'senior' }));
+    // The first three round slots go to the coding round's first task, the design round's walkthrough and the
+    // behavioural guide the people round has as its only candidate; the coding round then gets its Premium debug task
+    // before a second variant.
+    const rounds = plan.companies[0].rounds.map((entry) => entry.tasks.map((item) => item.id));
+    expect(rounds[0].slice(0, 2)).toEqual(['widget-react', 'debug-a']);
+    expect(rounds[1]).toEqual(['design-a']);
+    expect(rounds[2]).toEqual(['/guides/people']);
     const later = buildCompanyPlan(withDebug, input({ when: 'later', level: 'senior' }));
     expect(idsIn(later, 'coding').slice(0, 2)).toEqual(['widget-react', 'debug-a']);
   });
@@ -510,5 +513,80 @@ describe('company plan engine', () => {
         for (const entry of plan.formatPractice) expect(entry.tech).withContext(`${slug}/${framework}: format ${entry.id}`).toBe(framework);
       }
     }
+  });
+
+  it('fills the day the person faces next before a later round on a near date, and leaves tasks tied to no round for later', () => {
+    // The screen is tomorrow: its three tied tasks are the plan, though the final loop has a practice link and an
+    // untied report would rank first further out.
+    const data = fixture(
+      [
+        { id: 'reported-new', report: { publisher: 'Taro', date: '2026-05' } },
+        { id: 'linked', rounds: ['screen'], lead: true },
+        { id: 'tagged-a', rounds: ['screen'] },
+        { id: 'reported-old', rounds: ['screen'] },
+        { id: 'tagged-b', rounds: ['final-coding'], lead: true },
+      ],
+      [round('screen', ['coding']), round('final-coding', ['coding'], { name: 'Final loop: coding' })],
+    );
+    const tomorrow = buildCompanyPlan(data, input({ when: 'tomorrow' }));
+    expect(idsIn(tomorrow, 'screen')).toEqual(['linked', 'tagged-a', 'reported-old']);
+    expect(idsIn(tomorrow, 'final-coding')).toEqual([]);
+    expect(tomorrow.tasks.map((entry) => entry.id)).not.toContain('reported-new');
+
+    // Further out every round gets its first task, and the untied report takes its place again.
+    const later = buildCompanyPlan(data, input({ when: 'later' }));
+    expect(idsIn(later, 'final-coding')).toContain('tagged-b');
+    expect(later.tasks.map((entry) => entry.id)).toContain('reported-new');
+  });
+
+  it('treats rounds that share a name before a colon as one day, so a Power Day tomorrow covers its rounds in turn', () => {
+    const data = fixture(
+      [
+        { id: 'design-a', rounds: ['day-design'], lead: true },
+        { id: 'linked', rounds: ['day-coding'], lead: true },
+        { id: 'tagged-a', rounds: ['day-coding'] },
+        { id: 'tagged-b', rounds: ['later'], lead: true },
+      ],
+      [
+        round('day-design', ['design'], { name: 'Power Day: design' }),
+        round('day-coding', ['coding'], { name: 'Power Day: coding' }),
+        round('later', ['coding'], { name: 'Team match' }),
+      ],
+    );
+    const tomorrow = buildCompanyPlan(data, input({ when: 'tomorrow', level: 'senior' }));
+    expect(idsIn(tomorrow, 'day-design')).toEqual(['design-a']);
+    expect(idsIn(tomorrow, 'day-coding')).toEqual(['linked', 'tagged-a']);
+    expect(idsIn(tomorrow, 'later')).toEqual([]);
+  });
+
+  it('gives a senior or staff person whose next round is design general design cases there instead of format practice', () => {
+    const rows: CompanyPlanDataRow[] = [{ id: 'design-a', rounds: ['design'], lead: true }, { id: 'linked', rounds: ['coding'] }];
+    const rounds = [round('coding', ['coding']), round('design', ['design']), round('values', ['people'])];
+    const base = fixture(rows, rounds);
+    const data = { ...base, general: { ...base.general, designPractice: ['design-b'] } } as CompanyPlanData;
+    const passed = [companyPlanRoundKey('acme', 'main', 'coding')];
+
+    const staff = buildCompanyPlan(data, input({ when: 'few-weeks', level: 'staff', passedRounds: passed }));
+    expect(idsIn(staff, 'design')).toEqual(['design-a', 'design-b']);
+    expect(staff.tasks.find((entry) => entry.id === 'design-b')?.why).toEqual({ kind: 'pick' });
+    expect(staff.formatPractice).toEqual([]);
+
+    // A mid-level plan keeps one design task and its format practice; a design round that is not next takes no cases.
+    const mid = buildCompanyPlan(data, input({ when: 'few-weeks', level: 'mid', passedRounds: passed }));
+    expect(idsIn(mid, 'design')).toEqual(['design-a']);
+    expect(mid.formatPractice.length).toBeGreaterThan(0);
+    const notNext = buildCompanyPlan(data, input({ when: 'few-weeks', level: 'staff' }));
+    expect(notNext.tasks.map((entry) => entry.id)).not.toContain('design-b');
+  });
+
+  it('drops a task tied to no round when every round that fits its words is behind the person', () => {
+    const data = fixture(
+      [{ id: 'tagged-a' }, { id: 'linked', rounds: ['algorithms'] }],
+      [round('ui', ['coding'], { focus: ['ui'] }), round('algorithms', ['coding'], { focus: ['algo'] })],
+    );
+    const tasks = { ...data.tasks, 'tagged-a': task('tagged-a', { focus: ['ui'] }) };
+    const passedUi = [companyPlanRoundKey('acme', 'main', 'ui')];
+    expect(buildCompanyPlan({ ...data, tasks }, input({ passedRounds: passedUi })).tasks.map((entry) => entry.id)).not.toContain('tagged-a');
+    expect(idsIn(buildCompanyPlan({ ...data, tasks }, input()), 'ui')).toEqual(['tagged-a']);
   });
 });

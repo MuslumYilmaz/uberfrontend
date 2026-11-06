@@ -31,6 +31,8 @@ export type CompanyPlanReportLine = {
   readonly date: string;
   /** The source is a job posting rather than a candidate's account. */
   readonly posting?: boolean;
+  /** The process table gives the month as approximate, so the plan says so too. */
+  readonly approx?: boolean;
 };
 
 export type CompanyPlanDataRow = {
@@ -94,6 +96,8 @@ export type CompanyPlanData = {
     readonly premiumCounts: Readonly<Record<CompanyPlanFramework | 'systemDesign', number>>;
     /** The same exercise in each framework, by family, for a person who chose a framework over the reports'. */
     readonly familyMembers?: Readonly<Record<string, Readonly<Partial<Record<'react' | 'angular' | 'vue', string>>>>>;
+    /** General design cases a senior or staff plan adds to the design round the person faces next, in this order. */
+    readonly designPractice?: readonly string[];
   };
   readonly tasks: Readonly<Record<string, CompanyPlanDataTask>>;
   readonly companies: Readonly<Record<string, CompanyPlanDataCompany>>;
@@ -249,7 +253,20 @@ function bestFit(rounds: readonly CompanyPlanDataRound[], task: CompanyPlanDataT
   return rounds;
 }
 
-function slotsFor(data: CompanyPlanData, slug: string, list: CompanyPlanDataList, passed: ReadonlySet<string>, taskFor: TaskLookup): Slot[] {
+/** Rounds held on one day share the part of their name before a colon ("Power Day: case"); any other round is its own day. */
+function dayOf(round: CompanyPlanDataRound): string {
+  const colon = round.name.indexOf(':');
+  return colon > 0 ? round.name.slice(0, colon).trim() : round.id;
+}
+
+function slotsFor(
+  data: CompanyPlanData,
+  slug: string,
+  list: CompanyPlanDataList,
+  passed: ReadonlySet<string>,
+  taskFor: TaskLookup,
+  designPicks: boolean,
+): Slot[] {
   const open = list.rounds.filter((round) => !passed.has(companyPlanRoundKey(slug, list.id, round.id)));
   const byRound = new Map<string, Candidate[]>(open.map((round) => [round.id, []]));
   const fallback = open.filter((round) => round.kinds.includes('coding') || round.kinds.includes('design')).slice(0, 1);
@@ -263,6 +280,10 @@ function slotsFor(data: CompanyPlanData, slug: string, list: CompanyPlanDataList
     const eligible = row.rounds?.length ? open.filter((round) => row.rounds?.includes(round.id)) : open.filter((round) => roundTakes(round, task));
     // Only a company with no round of this kind at all sends the task elsewhere, as with a reported design task.
     const homeless = !row.rounds?.length && !list.rounds.some((round) => roundTakes(round, task));
+    // A task tied to no round follows its words the same way: when every round that fits them is behind the person,
+    // it drops rather than filling a round of another kind (a UI build filed under Algorithms).
+    const fits = (round: CompanyPlanDataRound) => (task.focus ?? []).some((focus) => round.focus?.includes(focus));
+    if (!row.rounds?.length && !homeless && !eligible.some(fits) && list.rounds.some((round) => roundTakes(round, task) && fits(round))) continue;
     for (const round of bestFit(homeless ? fallback : eligible, task)) byRound.get(round.id)?.push({ task, row, phase });
   }
 
@@ -276,6 +297,17 @@ function slotsFor(data: CompanyPlanData, slug: string, list: CompanyPlanDataList
     };
     if (round.kinds.includes('people') && !own.some((candidate) => candidate.task.kind === 'guide')) addGuide(data.general.guides.people);
     if (round.kinds.includes('design') && !own.some((candidate) => candidate.task.kind === 'guide' || candidate.task.kind === 'system-design')) addGuide(data.general.guides.design);
+  }
+
+  // The round the person faces next is the first open one with something to practise. When it is a design round, a
+  // senior or staff person's spare design slots take general cases there, after the company's own and up to the cap.
+  const next = open.find((round) => byRound.get(round.id)?.length);
+  if (designPicks && next?.kinds.includes('design')) {
+    const own = byRound.get(next.id) ?? [];
+    for (const id of data.general.designPractice ?? []) {
+      const task = taskFor(id);
+      if (task && !own.some((candidate) => candidate.task.id === id)) own.push({ task, row: null, phase: 'pick' });
+    }
   }
 
   return open.map((round) => ({ slug, key: companyPlanRoundKey(slug, list.id, round.id), candidates: byRound.get(round.id) ?? [] }));
@@ -406,8 +438,17 @@ export function buildCompanyPlan(data: CompanyPlanData, input: CompanyPlanInput)
 
   // Rounds take turns inside a company and companies take turns inside the budget, so neither an early round
   // nor the first company can use it up. A passed round has no slot.
-  const orders = chosen.map(({ slug, list }) => preferenceOrder(slotsFor(data, slug, list, passed, taskFor)));
+  const designPicks = designCap > 1;
+  const slotLists = chosen.map(({ slug, list }) => slotsFor(data, slug, list, passed, taskFor, designPicks));
+  const orders = slotLists.map((slots) => preferenceOrder(slots));
   const cursors = orders.map(() => 0);
+  // Each company's next round, the first open one with something to practise, and the rounds held the same day.
+  const nextDays = chosen.map(({ slug, list }, index) => {
+    const key = slotLists[index].find((slot) => slot.candidates.length)?.key ?? null;
+    const round = list.rounds.find((entry) => companyPlanRoundKey(slug, list.id, entry.id) === key) ?? null;
+    const keys = round ? list.rounds.filter((entry) => dayOf(entry) === dayOf(round)).map((entry) => companyPlanRoundKey(slug, list.id, entry.id)) : [];
+    return { key, round, keys: new Set(keys) };
+  });
   // Every open round gets its first takeable task before any round gets a second, company by company in turns, so
   // "every round, with its tasks" holds whenever the budget covers the rounds; the phased round-robin shares the rest.
   const byRound = orders.map((order) => {
@@ -418,7 +459,39 @@ export function buildCompanyPlan(data: CompanyPlanData, input: CompanyPlanInput)
     }
     return [...groups.values()];
   });
+  // The night before, and in the days before, the plan is the day the person faces next: its rounds take their first
+  // tasks, then share what is left, before a later round gets one. Further out, every round gets its first task. The
+  // day's tasks are the ones tied to its rounds; a task tied to no round waits, as a take-home brief does.
+  const nearDay = input.when === 'tomorrow' || input.when === 'this-week';
+  const tiedHere = (entry: Selected) => !('unbound' in entry.why && entry.why.unbound);
+  const dayRounds = byRound.map((rounds, index) => rounds.filter((candidates) => nextDays[index].keys.has(candidates[0].key ?? '')));
+  const dayTurns = dayRounds.map(() => 0);
   const fillRounds = (limit: number) => {
+    if (nearDay) {
+      // Companies take turns, one task each per pass, and a company's day rounds take turns inside it.
+      let moved = true;
+      while (moved && selected.length < limit) {
+        moved = false;
+        dayRounds.forEach((rounds, index) => {
+          if (selected.length >= limit) return;
+          for (let tried = 0; tried < rounds.length; tried += 1) {
+            const at = (dayTurns[index] + tried) % rounds.length;
+            const entry = rounds[at].find((candidate) => tiedHere(candidate) && canTake(candidate.slug, candidate.task));
+            if (!entry) continue;
+            selected.push(entry);
+            dayTurns[index] = (at + 1) % rounds.length;
+            moved = true;
+            return;
+          }
+          // A company whose day has nothing tied to it still gets its first task, so no company is left out.
+          if (selected.some((taken) => taken.slug === chosen[index].slug)) return;
+          const first = byRound[index].flat().find((candidate) => canTake(candidate.slug, candidate.task));
+          if (!first) return;
+          selected.push(first);
+          moved = true;
+        });
+      }
+    }
     for (let at = 0; byRound.some((rounds) => at < rounds.length); at += 1) {
       for (const rounds of byRound) {
         if (selected.length >= limit) return;
@@ -449,7 +522,7 @@ export function buildCompanyPlan(data: CompanyPlanData, input: CompanyPlanInput)
   // What Premium opens sits on the round the person faces next whenever that round has a Premium candidate: it
   // takes the format-practice slot before any other round's second task. A full Tomorrow plan swaps a Premium task
   // of a later round for it, and otherwise leaves the one-Premium rule below to bring it in.
-  const nextRoundPremium = (index: number) => byRound[index][0]
+  const nextRoundPremium = (index: number) => byRound[index].find((candidates) => candidates[0].key === nextDays[index].key)
     ?.find((candidate) => candidate.task.access === 'premium' && canTake(candidate.slug, candidate.task));
   chosen.forEach((_, index) => {
     const entry = nextRoundPremium(index);
@@ -472,7 +545,10 @@ export function buildCompanyPlan(data: CompanyPlanData, input: CompanyPlanInput)
     const id = data.general.formatPractice[framework]?.[index];
     return id && data.tasks[id] ? [data.tasks[id]] : [];
   });
-  for (const task of [...formatPool(0), ...formatPool(1)]) {
+  // A senior or staff person whose next round is design practises design there; framework extras would serve rounds
+  // already behind them.
+  const designNext = designPicks && nextDays.every((day) => day.round?.kinds.includes('design'));
+  for (const task of designNext ? [] : [...formatPool(0), ...formatPool(1)]) {
     if (selected.length < budget.total && canTake('', task)) selected.push({ slug: '', key: null, task, why: { kind: 'format' } });
   }
   // When the plan already holds the format tasks, the rounds use what is left.

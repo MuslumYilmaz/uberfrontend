@@ -485,7 +485,9 @@ export class CompanyPreviewComponent implements OnInit {
   /** The card under a catalog guide's sample list when some samples are Premium; null for a member or an open list. */
   sampleGate(): LockGate | null {
     if (this.member() || !this.data.samples.some(premiumAccess)) return null;
-    const title = this.tier() === 'guest' ? 'The locked questions open with Premium' : 'The Premium questions open with Premium';
+    // A free account reads the names, so its title counts the Premium ones instead of calling them locked.
+    const premium = this.data.samples.filter(premiumAccess).length;
+    const title = this.tier() === 'guest' ? 'The locked questions open with Premium' : `${premium} of these questions ${premium === 1 ? 'is' : 'are'} Premium`;
     return this.lockGate('company-sample-gate', 'company-prompt-gate company-sample-gate', title,
       `Premium opens them, and all ${PREMIUM_QUESTION_COUNT} Premium questions in the library.`);
   }

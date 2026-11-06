@@ -105,6 +105,7 @@ function sources(overrides = {}) {
     brands: { acme: { label: 'Acme' } },
     starters: ['js-starter'],
     formatPractice: { javascript: ['js-starter'] },
+    designPractice: [],
     guides: { design: { label: 'Frontend system design blueprint', path: '/guides/system-design-blueprint' } },
     ...overrides,
   };
@@ -402,6 +403,14 @@ test('the summary counts what Premium opens from the catalog', () => {
   assert.deepEqual(counts, { javascript: 1, react: 1, systemDesign: 1 });
 });
 
+test('the general design cases are published for the design round a senior or staff person faces next', () => {
+  const payload = build({ designPractice: ['case-a'] });
+  assert.deepEqual(payload.general.designPractice, ['case-a']);
+  assert.equal(payload.tasks['case-a'].kind, 'system-design');
+  assert.equal(build().general.designPractice, undefined);
+  assert.throws(() => build({ designPractice: ['missing-case'] }), /design practice case missing-case is not in the catalog/);
+});
+
 test('a job posting is marked as one', () => {
   const payload = build({}, {
     ...baseCatalog,
@@ -413,6 +422,23 @@ test('a job posting is marked as one', () => {
   const [engineers] = payload.companies.acme.variants;
   assert.equal(engineers.tasks.find((task) => task.id === 'js-posted').report.posting, true);
   assert.equal(engineers.tasks.find((task) => task.id === 'js-old')?.report?.posting, undefined);
+});
+
+test('a report whose month the process table marks as approximate keeps the mark', () => {
+  const process = baseProcess();
+  const approximate = {
+    ...process,
+    variants: process.variants.map((variant) => ({
+      ...variant,
+      stages: variant.stages.map((stage) => ({
+        ...stage,
+        sources: stage.sources.map((source) => (source.url === reportUrl('new') ? { ...source, label: 'Taro (approx.)' } : source)),
+      })),
+    })),
+  };
+  const [engineers] = build({ processes: { acme: approximate } }).companies.acme.variants;
+  assert.equal(engineers.tasks.find((task) => task.id === 'js-new').report.approx, true);
+  assert.equal(engineers.tasks.find((task) => task.id === 'js-old')?.report?.approx, undefined);
 });
 
 test('tasks carry real access and minutes, and a linked guide is a free 15-minute task', () => {

@@ -55,6 +55,7 @@ describe('whyLineFor', () => {
   it('names the round on an open row, and leaves format and general practice alone', () => {
     expect(whyLineFor({ kind: 'pick' }, 'Phone screen')).toBe('Our pick for the Phone screen');
     expect(whyLineFor({ kind: 'report', publisher: 'Taro', date: '2025-05' }, 'Phone screen')).toBe('Modelled on a report: Taro, May 2025 · Phone screen');
+    expect(whyLineFor({ kind: 'report', publisher: 'Taro', date: '2022-01', approx: true }, 'Online assessment')).toBe('Modelled on a report: Taro (approx.), Jan 2022 · Online assessment');
     expect(whyLineFor({ kind: 'format' }, 'Extra React practice')).toBe('Extra practice in the reported format');
     expect(whyLineFor({ kind: 'general' }, null)).toBe('General frontend practice');
     expect(whyLineFor({ kind: 'pick' }, null)).toBe('Our pick for this round');

@@ -41,7 +41,7 @@ export const ELEVENLABS_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     kicker: 'Study priorities',
     title: 'Prepare for product judgment, not ElevenLabs trivia',
     paragraphs: [
-      'The public accounts reward engineers who can make a media interface truthful under time: a highlight that follows playback without drifting, a review screen that keeps an editor and voice actors in sync, a fix that addresses the cause of a bug rather than its symptom. Each prompt below starts with the clarifying questions a strong candidate asks, then the behaviours a strong answer covers, then the miss that usually ends the round.',
+      'The public accounts reward engineers who can make a media interface truthful under time: a highlight that follows playback without drifting, a review screen that keeps an editor and voice actors in sync, a fix that addresses the cause of a bug rather than its symptom. Each prompt above starts with the clarifying questions a strong candidate asks, then the behaviours a strong answer covers, then the miss that usually ends the round.',
       'The senior account describes a 90-minute technical assessment sent before the recruiter screen, followed by a live session fixing a practical problem with the interviewer; it does not list the assessment questions. Practice both shapes with a clock running, and narrate your decisions while you type.',
     ],
   },

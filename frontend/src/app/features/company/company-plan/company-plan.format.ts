@@ -53,7 +53,8 @@ export function shortDay(day: string): string {
 export function whyLine(why: CompanyPlanWhy): string {
   switch (why.kind) {
     case 'report':
-      return `Modelled on a ${why.posting ? 'job posting' : 'report'}: ${why.publisher}, ${shortMonth(why.date)}`;
+      // An approximate month carries the process table's mark: "Taro (approx.), Jan 2022".
+      return `Modelled on a ${why.posting ? 'job posting' : 'report'}: ${why.publisher}${why.approx ? ' (approx.)' : ''}, ${shortMonth(why.date)}`;
     case 'format':
       return 'Extra practice in the reported format';
     case 'general':

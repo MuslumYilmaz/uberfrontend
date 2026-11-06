@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RouterLink, provideRouter } from '@angular/router';
+import { AuthService, User } from '../../../core/services/auth.service';
 import { CompanyInterviewProcessComponent } from './company-interview-process.component';
 import type { CompanyInterviewProcess } from '../../company-previews/company-interview-processes';
 
@@ -200,6 +201,39 @@ describe('CompanyInterviewProcessComponent', () => {
     expect(host.querySelector('.interview-process__locked')).toBeNull();
     expect(Array.from(host.querySelectorAll('.interview-process__practice a')).map((link) => link.textContent?.trim()))
       .toEqual(['Chips input in React', 'Closures']);
+  });
+
+  it('keeps the Premium tag beside a Premium name a free account reads, and drops it for a member', async () => {
+    const premium: CompanyInterviewProcess = {
+      ...FIXTURE,
+      variants: [{
+        ...FIXTURE.variants[0],
+        stages: [
+          { ...FIXTURE.variants[0].stages[0], practice: { label: 'Chips input in React', path: '/react/coding/react-chips-input-autocomplete' } },
+          { ...FIXTURE.variants[0].stages[1], practice: { label: 'Closures', path: '/javascript/trivia/js-closures' } },
+        ],
+      }],
+    };
+    await TestBed.configureTestingModule({ imports: [CompanyInterviewProcessComponent], providers: [provideRouter([])] }).compileComponents();
+    const auth = TestBed.inject(AuthService);
+    const user = { _id: 'free-user', username: 'free_user', email: 'free@example.com', role: 'user', accessTier: 'free' } as unknown as User;
+    auth.user.set(user);
+    const fixture = TestBed.createComponent(CompanyInterviewProcessComponent);
+    fixture.componentRef.setInput('slug', 'acme');
+    fixture.componentRef.setInput('process', premium);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+    const host = fixture.nativeElement as HTMLElement;
+
+    expect(host.querySelector('.interview-process__locked')).toBeNull();
+    const cells = Array.from(host.querySelectorAll('.interview-process__practice'));
+    expect(cells.map((cell) => cell.querySelector('a')?.textContent?.trim())).toEqual(['Chips input in React', 'Closures']);
+    expect(cells.map((cell) => cell.querySelector('.interview-process__tag')?.textContent ?? null)).toEqual(['Premium task for this round', null]);
+
+    auth.user.set({ ...user, accessTier: 'premium' } as unknown as User);
+    fixture.detectChanges();
+    expect(host.querySelectorAll('.interview-process__tag').length).toBe(0);
   });
 
   it('behind the gate, keeps what every round asks open and replaces the evidence links with their counts and a tag', async () => {

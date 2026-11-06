@@ -1,5 +1,7 @@
-import { ChangeDetectionStrategy, Component, Input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, afterNextRender, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { AuthService } from '../../../core/services/auth.service';
+import { isProActive } from '../../../core/utils/entitlements.util';
 import { isPremiumRoute } from '../../../core/utils/premium-route.util';
 import type {
   CompanyInterviewProcess,
@@ -35,6 +37,19 @@ export class CompanyInterviewProcessComponent {
   /** The rows whose source list a phone reader opened; wider screens show every list regardless. */
   private readonly opened = signal<ReadonlySet<string>>(new Set());
 
+  private readonly auth = inject(AuthService);
+  /** Set after the first render, so the prerendered table stays the visitor's. */
+  private readonly rendered = signal(false);
+  /** A free account reads Premium names on the guide, so a Premium practice link keeps its tag. */
+  private readonly freeAccount = computed(() => {
+    const user = this.auth.user();
+    return this.rendered() && Boolean(user) && user?.role !== 'admin' && !isProActive(user);
+  });
+
+  constructor() {
+    afterNextRender(() => this.rendered.set(true));
+  }
+
   expanded(variantIndex: number, stage: InterviewProcessStage): boolean {
     return this.opened().has(`${variantIndex}:${stage.stage}`);
   }
@@ -51,6 +66,10 @@ export class CompanyInterviewProcessComponent {
 
   practiceLocked(path: string): boolean {
     return this.lockPremium && isPremiumRoute(path);
+  }
+
+  practicePremium(path: string): boolean {
+    return this.freeAccount() && isPremiumRoute(path);
   }
 
   get headingId(): string {

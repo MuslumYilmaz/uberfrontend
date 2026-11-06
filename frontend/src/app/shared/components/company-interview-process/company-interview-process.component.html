@@ -35,6 +35,9 @@
                         <span class="interview-process__tag">Premium task for this round</span>
                       } @else {
                         Practice: <a [routerLink]="practice.path" [fragment]="practice.fragment" [state]="returnState">{{ practice.label }}</a>
+                        @if (practicePremium(practice.path)) {
+                          <span class="interview-process__tag">Premium task for this round</span>
+                        }
                       }
                     </span>
                   }

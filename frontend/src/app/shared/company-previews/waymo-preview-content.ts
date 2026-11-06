@@ -37,7 +37,7 @@ export const WAYMO_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     kicker: 'Study priorities',
     title: 'Prepare for product judgment, not Waymo trivia',
     paragraphs: [
-      'The reported loop rewards engineers who state a contract before writing code: what a filter removes, which state owns a list, what happens to a reply when the user presses Stop. Each prompt below starts with the clarifying questions a strong candidate asks, then the behaviours a strong answer covers, then the miss that usually ends the round.',
+      'The reported loop rewards engineers who state a contract before writing code: what a filter removes, which state owns a list, what happens to a reply when the user presses Stop. Each prompt above starts with the clarifying questions a strong candidate asks, then the behaviours a strong answer covers, then the miss that usually ends the round.',
       'Treat the report as a shape, not a script. The phone screen rendered a filtered tree as UI; the onsite mixed debugging, a Promise exercise, system design and an autocomplete build. Practice those shapes in your own stack first, then once in Angular, because the candidate says the job description asked for production-level Angular proficiency.',
     ],
   },

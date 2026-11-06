@@ -159,6 +159,8 @@ function buildCompany(slug, context) {
 
   // A source cited by both files shows the table's date: the table records the interview month when an account gives one.
   const tableDates = new Map(table.variants.flatMap((variant) => variant.stages.flatMap((stage) => stage.sources.map((source) => [source.url, source.date]))));
+  // A table label such as "Taro (approx.)" marks an approximate month; the plan's report line keeps the mark.
+  const approxDates = new Set(table.variants.flatMap((variant) => variant.stages.flatMap((stage) => stage.sources.filter((source) => /\(approx\.\)/.test(source.label ?? '')).map((source) => source.url))));
   const allCited = new Set(tableDates.keys());
   // A catalog guide lists every reported item with its sources in a reports card; an authored or inline guide shows
   // only its table and its own sources list.
@@ -174,7 +176,7 @@ function buildCompany(slug, context) {
     if (!fitsFramework(settled)) throw new Error(`[gen-company-plan-data] ${slug} reports ${settled.id} outside its framework (${framework}).`);
     const entry = reported.get(settled.id) ?? { task: settled, ids: [], sources: [] };
     entry.ids.push(row.id);
-    entry.sources.push(...row.sources.map((source) => ({ url: source.url, publisher: source.publisher, date: tableDates.get(source.url) ?? source.date, posting: /\bposting\b/i.test(source.label) })));
+    entry.sources.push(...row.sources.map((source) => ({ url: source.url, publisher: source.publisher, date: tableDates.get(source.url) ?? source.date, posting: /\bposting\b/i.test(source.label), approx: approxDates.has(source.url) })));
     reported.set(settled.id, entry);
   }
 
@@ -243,7 +245,7 @@ function buildCompany(slug, context) {
         throw new Error(`[gen-company-plan-data] ${slug}/${meta.id}: ${entry.task.id} is modelled on ${newest.url}, which neither the ${slug} guide's sources nor its process table list.`);
       }
       if (hidden) add(publish(entry.task), { rounds });
-      else add(publish(entry.task), { report: { publisher: newest.publisher, date: newest.date, ...(newest.posting ? { posting: true } : {}) }, rounds });
+      else add(publish(entry.task), { report: { publisher: newest.publisher, date: newest.date, ...(newest.posting ? { posting: true } : {}), ...(newest.approx ? { approx: true } : {}) }, rounds });
     }
 
     // A linked or picked task with no report of its own is still an editor's choice for that round.
@@ -366,6 +368,12 @@ export function buildCompanyPlanData(cdnRoot, sources) {
     tasks.set(id, taskEntry(task, sources.familyKey(id)));
     return id;
   };
+  const publishDesign = (id) => {
+    const task = [...catalog.values()].find((candidate) => candidate.id === id && candidate.kind === 'system-design');
+    if (!task) throw new Error(`[gen-company-plan-data] the design practice case ${id} is not in the catalog.`);
+    tasks.set(id, taskEntry(task));
+    return id;
+  };
   const guides = {};
   for (const [kind, guide] of Object.entries(sources.guides)) {
     tasks.set(guide.path, taskEntry(guideTask(guide.path, guide.label)));
@@ -375,6 +383,7 @@ export function buildCompanyPlanData(cdnRoot, sources) {
   const general = {
     starters: sources.starters.map(publishGeneral),
     formatPractice: Object.fromEntries(Object.entries(sources.formatPractice).map(([framework, ids]) => [framework, ids.map(publishGeneral)])),
+    ...(sources.designPractice?.length ? { designPractice: sources.designPractice.map(publishDesign) } : {}),
     guides,
     // What the summary says Premium opens. Counted here, so the copy cannot drift from the catalog.
     premiumCounts: {
@@ -454,6 +463,7 @@ export function loadCompanyPlanSources() {
     familyKey: profiles.companyPlanFamilyKey,
     starters: profiles.COMPANY_PLAN_STARTERS,
     formatPractice: profiles.COMPANY_PLAN_FORMAT_PRACTICE,
+    designPractice: profiles.COMPANY_PLAN_DESIGN_PRACTICE,
     guides: profiles.COMPANY_PLAN_GUIDES,
     ...loadCompanyPrompts(cache),
   };

@@ -209,7 +209,7 @@ export class CompanyPlanFormComponent {
     const unordered = groups.some((group) => group.unordered);
     const rules = [
       ordered ? 'The rounds before it count as passed, so your plan starts where you are.' : '',
-      unordered ? 'Rounds with no fixed order: mark the ones behind you, and the rest stay in the plan.' : '',
+      unordered ? 'Rounds with no fixed order: mark the ones behind you, and your plan starts with the first round left in this list.' : '',
     ];
     return rules.filter(Boolean).join(' ');
   });

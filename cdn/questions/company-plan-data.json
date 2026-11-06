@@ -31,6 +31,12 @@
         "js-promise-all"
       ]
     },
+    "designPractice": [
+      "offline-email-client",
+      "component-design-system-architecture",
+      "news-feed-timeline",
+      "dashboard-widgets-draggable-resizable"
+    ],
     "guides": {
       "people": "/guides/behavioral",
       "design": "/guides/system-design-blueprint"
@@ -540,6 +546,14 @@
         "concepts",
         "js"
       ]
+    },
+    "component-design-system-architecture": {
+      "id": "component-design-system-architecture",
+      "title": "Component-driven Design System Architecture",
+      "route": "/system-design/component-design-system-architecture",
+      "kind": "system-design",
+      "access": "premium",
+      "minutes": 45
     },
     "content-delivery-caching-strategies-streaming": {
       "id": "content-delivery-caching-strategies-streaming",
@@ -2194,6 +2208,14 @@
       "access": "premium",
       "minutes": 45
     },
+    "news-feed-timeline": {
+      "id": "news-feed-timeline",
+      "title": "News Feed / Timeline Front-End System Design",
+      "route": "/system-design/news-feed-timeline",
+      "kind": "system-design",
+      "access": "premium",
+      "minutes": 45
+    },
     "ng-debug-fleet-status-bug-reports": {
       "id": "ng-debug-fleet-status-bug-reports",
       "title": "Fix a fleet status board from three user bug reports",
@@ -2211,6 +2233,14 @@
       "id": "notification-toast-system",
       "title": "Design a Toast Notification System",
       "route": "/system-design/notification-toast-system",
+      "kind": "system-design",
+      "access": "free",
+      "minutes": 45
+    },
+    "offline-email-client": {
+      "id": "offline-email-client",
+      "title": "Gmail-Style Offline Email Client Frontend System Design",
+      "route": "/system-design/offline-email-client",
       "kind": "system-design",
       "access": "free",
       "minutes": 45
@@ -4512,7 +4542,8 @@
               "id": "react-vanilla-dropdown-port",
               "report": {
                 "publisher": "Taro",
-                "date": "2025-01"
+                "date": "2025-01",
+                "approx": true
               },
               "rounds": [
                 "technical-screen",
@@ -5806,7 +5837,8 @@
               "id": "credit-card-application-page",
               "report": {
                 "publisher": "Taro",
-                "date": "2024-08"
+                "date": "2024-08",
+                "approx": true
               },
               "rounds": [
                 "power-day-frontend-design"
@@ -5818,7 +5850,8 @@
               "id": "js-debug-nullish-defaults",
               "report": {
                 "publisher": "Taro",
-                "date": "2024-07"
+                "date": "2024-07",
+                "approx": true
               },
               "rounds": [
                 "online-assessment",
@@ -5832,7 +5865,8 @@
               "id": "html-forms-validation-required",
               "report": {
                 "publisher": "Taro",
-                "date": "2023-02"
+                "date": "2023-02",
+                "approx": true
               },
               "rounds": [
                 "online-assessment",
@@ -5845,7 +5879,8 @@
               "id": "multi-step-form-autosave",
               "report": {
                 "publisher": "Taro",
-                "date": "2024-07"
+                "date": "2024-07",
+                "approx": true
               },
               "rounds": [
                 "power-day-frontend-design"
@@ -5855,7 +5890,8 @@
               "id": "js-debug-mutating-input",
               "report": {
                 "publisher": "Taro",
-                "date": "2023-02"
+                "date": "2023-02",
+                "approx": true
               },
               "rounds": [
                 "online-assessment",
@@ -5868,7 +5904,8 @@
               "id": "ui-component-state-from-mock",
               "report": {
                 "publisher": "Taro",
-                "date": "2022-08"
+                "date": "2022-08",
+                "approx": true
               },
               "rounds": [
                 "power-day-frontend-design"
@@ -6781,7 +6818,8 @@
               "id": "js-update-at-index",
               "report": {
                 "publisher": "Taro",
-                "date": "2025-09"
+                "date": "2025-09",
+                "approx": true
               },
               "rounds": [
                 "react-live-coding"
@@ -6792,7 +6830,8 @@
               "id": "infinite-scroll-list",
               "report": {
                 "publisher": "Taro",
-                "date": "2024-10"
+                "date": "2024-10",
+                "approx": true
               },
               "rounds": [
                 "frontend-system-design"
@@ -6803,7 +6842,8 @@
               "id": "js-count-vowels",
               "report": {
                 "publisher": "Taro",
-                "date": "2024-10"
+                "date": "2024-10",
+                "approx": true
               },
               "rounds": [
                 "technical-screen",
@@ -6815,7 +6855,8 @@
               "id": "js-max-char",
               "report": {
                 "publisher": "Taro",
-                "date": "2024-10"
+                "date": "2024-10",
+                "approx": true
               },
               "rounds": [
                 "technical-screen",
@@ -6827,7 +6868,8 @@
               "id": "live-comments-global-stream",
               "report": {
                 "publisher": "Taro",
-                "date": "2024-10"
+                "date": "2024-10",
+                "approx": true
               },
               "rounds": [
                 "frontend-system-design"
@@ -6837,7 +6879,8 @@
               "id": "react-dynamic-table",
               "report": {
                 "publisher": "Taro",
-                "date": "2024-10"
+                "date": "2024-10",
+                "approx": true
               },
               "rounds": [
                 "technical-screen",
@@ -7285,7 +7328,8 @@
               "id": "js-debug-async-race",
               "report": {
                 "publisher": "Taro",
-                "date": "2024-03"
+                "date": "2024-03",
+                "approx": true
               },
               "rounds": [
                 "merge-request-review"
@@ -7297,7 +7341,8 @@
               "id": "js-create-spy-function",
               "report": {
                 "publisher": "Taro",
-                "date": "2024-02"
+                "date": "2024-02",
+                "approx": true
               },
               "rounds": [
                 "merge-request-review",
@@ -7325,7 +7370,8 @@
               "id": "css-flexbox-navbar",
               "report": {
                 "publisher": "Taro",
-                "date": "2024-03"
+                "date": "2024-03",
+                "approx": true
               },
               "rounds": [
                 "merge-request-review"
@@ -8634,7 +8680,8 @@
               "id": "js-timer-manager",
               "report": {
                 "publisher": "Taro",
-                "date": "2022-01"
+                "date": "2022-01",
+                "approx": true
               },
               "rounds": [
                 "initial-technical-screen",
@@ -8646,7 +8693,8 @@
               "id": "js-timer-manager-and-dom-renderer",
               "report": {
                 "publisher": "Taro",
-                "date": "2022-01"
+                "date": "2022-01",
+                "approx": true
               },
               "rounds": [
                 "initial-technical-screen",
@@ -8657,14 +8705,16 @@
               "id": "js-array-prototype-map",
               "report": {
                 "publisher": "Taro",
-                "date": "2021-12"
+                "date": "2021-12",
+                "approx": true
               }
             },
             {
               "id": "js-dom-twin-node",
               "report": {
                 "publisher": "Taro",
-                "date": "2021-12"
+                "date": "2021-12",
+                "approx": true
               }
             },
             {
@@ -8770,7 +8820,8 @@
               "id": "js-timer-manager",
               "report": {
                 "publisher": "Taro",
-                "date": "2022-01"
+                "date": "2022-01",
+                "approx": true
               },
               "rounds": [
                 "technical-interviews"
@@ -8781,7 +8832,8 @@
               "id": "js-timer-manager-and-dom-renderer",
               "report": {
                 "publisher": "Taro",
-                "date": "2022-01"
+                "date": "2022-01",
+                "approx": true
               },
               "rounds": [
                 "technical-interviews"
@@ -8791,7 +8843,8 @@
               "id": "js-array-prototype-map",
               "report": {
                 "publisher": "Taro",
-                "date": "2021-12"
+                "date": "2021-12",
+                "approx": true
               },
               "rounds": [
                 "technical-interviews"
@@ -8802,7 +8855,8 @@
               "id": "js-dom-twin-node",
               "report": {
                 "publisher": "Taro",
-                "date": "2021-12"
+                "date": "2021-12",
+                "approx": true
               },
               "rounds": [
                 "technical-interviews"
@@ -9832,7 +9886,8 @@
               "id": "react-fetch-list-states",
               "report": {
                 "publisher": "Taro",
-                "date": "2025-05"
+                "date": "2025-05",
+                "approx": true
               },
               "rounds": [
                 "live-coding"
@@ -9873,7 +9928,8 @@
               "id": "react-debounced-search",
               "report": {
                 "publisher": "Taro",
-                "date": "2025-05"
+                "date": "2025-05",
+                "approx": true
               },
               "rounds": [
                 "live-coding"
@@ -11100,7 +11156,8 @@
               "id": "js-debug-async-race",
               "report": {
                 "publisher": "Taro",
-                "date": "2023-10"
+                "date": "2023-10",
+                "approx": true
               },
               "rounds": [
                 "onsite-bug-squash",
@@ -11168,7 +11225,8 @@
               "id": "js-debug-stale-closure-autosave",
               "report": {
                 "publisher": "Taro",
-                "date": "2023-10"
+                "date": "2023-10",
+                "approx": true
               },
               "rounds": [
                 "onsite-bug-squash",
@@ -11401,7 +11459,8 @@
               "id": "html-forms-validation-required",
               "report": {
                 "publisher": "Taro",
-                "date": "2022-01"
+                "date": "2022-01",
+                "approx": true
               },
               "rounds": [
                 "online-assessment",
@@ -11413,7 +11472,8 @@
               "id": "js-color-contrast-ratio",
               "report": {
                 "publisher": "Taro",
-                "date": "2022-01"
+                "date": "2022-01",
+                "approx": true
               },
               "rounds": [
                 "online-assessment"
@@ -11459,7 +11519,8 @@
               "id": "car-rental-booking-frontend",
               "report": {
                 "publisher": "Taro",
-                "date": "2024-01"
+                "date": "2024-01",
+                "approx": true
               },
               "rounds": [
                 "final-loop-frontend-system-design"
@@ -11469,7 +11530,8 @@
               "id": "css-positioning-badge",
               "report": {
                 "publisher": "Taro",
-                "date": "2022-01"
+                "date": "2022-01",
+                "approx": true
               },
               "rounds": [
                 "online-assessment"
@@ -11479,7 +11541,8 @@
               "id": "html-semantic-layout",
               "report": {
                 "publisher": "Taro",
-                "date": "2022-01"
+                "date": "2022-01",
+                "approx": true
               },
               "rounds": [
                 "online-assessment"
@@ -11489,7 +11552,8 @@
               "id": "react-fetch-list-states",
               "report": {
                 "publisher": "Taro",
-                "date": "2022-01"
+                "date": "2022-01",
+                "approx": true
               },
               "rounds": [
                 "online-assessment"
@@ -11499,7 +11563,8 @@
               "id": "react-like-button",
               "report": {
                 "publisher": "Taro",
-                "date": "2021-01"
+                "date": "2021-01",
+                "approx": true
               },
               "rounds": [
                 "online-assessment"

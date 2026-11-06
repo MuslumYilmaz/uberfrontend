@@ -178,6 +178,17 @@ export const COMPANY_PLAN_FORMAT_PRACTICE: Readonly<Record<CompanyPlanFramework,
   javascript: ['js-throttle', 'js-promise-all'],
 };
 
+/**
+ * General design cases a senior or staff plan adds to the design round the person faces next, after the company's
+ * own cases and up to the level's cap. Offline-first comes first because chat and inbox rounds ask about it.
+ */
+export const COMPANY_PLAN_DESIGN_PRACTICE: readonly string[] = [
+  'offline-email-client',
+  'component-design-system-architecture',
+  'news-feed-timeline',
+  'dashboard-widgets-draggable-resizable',
+];
+
 /** Where a plan starts when the company is unlisted, and what fills a preview short of open tasks. */
 export const COMPANY_PLAN_STARTERS: readonly string[] = [
   'js-debounce',
