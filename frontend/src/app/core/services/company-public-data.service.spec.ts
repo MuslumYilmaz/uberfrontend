@@ -110,6 +110,25 @@ describe('CompanyPublicDataService', () => {
     ]);
   });
 
+  it('shows one card per framework family, so the locked count on the page matches the locked cards', async () => {
+    const service = configure();
+    questions.loadAllQuestionSummaries.and.callFake((kind) => of(kind === 'coding'
+      ? [
+        question('angular-chips-input-autocomplete', 'coding', 'premium'),
+        question('react-chips-input-autocomplete', 'coding', 'premium'),
+        question('vue-chips-input-autocomplete', 'coding', 'premium'),
+        question('react-counter'),
+        question('vue-counter'),
+        question('js-only-once'),
+      ]
+      : [question('concept', 'trivia')],
+    ));
+    const resolved = await firstValueFrom(service.loadPreview('microsoft'));
+    // The first member of each family stays, in catalog order; the slots it frees go to other tasks.
+    expect(resolved.samples.map((item) => item.id)).toEqual(['angular-chips-input-autocomplete', 'react-counter', 'js-only-once', 'concept']);
+    expect(resolved.samples.filter((item) => item.access === 'premium').length).toBe(1);
+  });
+
   it('keeps authored previews independent of catalog availability', async () => {
     const service = configure();
     questions.loadAllQuestionSummaries.and.throwError('Catalog must not be loaded');

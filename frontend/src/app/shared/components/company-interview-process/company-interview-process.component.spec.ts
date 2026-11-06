@@ -192,7 +192,7 @@ describe('CompanyInterviewProcessComponent', () => {
     expect(locked.textContent?.trim()).toBe('Chips input in React');
     expect(locked.hasAttribute('inert')).toBeTrue();
     expect(locked.querySelector('.premium-locked')?.hasAttribute('data-nosnippet')).toBeTrue();
-    expect(host.querySelector('.interview-process__tag')?.textContent).toBe('Premium task');
+    expect(host.querySelector('.interview-process__tag')?.textContent).toBe('Premium task for this round');
     expect(host.querySelectorAll('.interview-process__locked').length).toBe(1);
 
     fixture.componentRef.setInput('lockPremium', false);

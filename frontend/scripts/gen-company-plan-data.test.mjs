@@ -288,6 +288,17 @@ test('a stage that links a section of the company guide leads its round with tha
   assert.throws(() => withSection({ label: 'Whole guide', path: '/companies/acme/preview' }), /own guide/);
 });
 
+test('a guide with a sources list must list the report a plan line names', () => {
+  // The stars widget is dated by its newest report, which the table does not cite.
+  assert.throws(
+    () => build({ sources: { acme: ['https://acme.example/jobs'] } }),
+    /react-star-rating is modelled on https:\/\/www\.jointaro\.com\/interviews\/companies\/acme\/experiences\/stars-newer\/, which neither the acme guide's sources nor its process table list/,
+  );
+  assert.doesNotThrow(() => build({ sources: { acme: [reportUrl('stars-newer')] } }));
+  // A catalog guide has no sources list; its reports card names the report instead.
+  assert.doesNotThrow(() => build({ sources: {} }));
+});
+
 test('a report belongs to the list citing it, and elsewhere is only a pick without a report line', () => {
   const [engineers, interns] = build().companies.acme.variants;
   assert.ok(interns.tasks.find((task) => task.id === 'js-old').report);

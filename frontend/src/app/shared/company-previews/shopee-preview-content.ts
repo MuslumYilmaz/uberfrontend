@@ -138,7 +138,7 @@ export const SHOPEE_COMPANY_PREVIEW: AuthoredCompanyPreview = {
           'Write one MenuItem component that renders a label and, when it has children and is open, a list of MenuItem for them; recursion over the data keeps the depth unbounded without duplicated markup.',
           'Keep the open state per item (an open flag inside each MenuItem) or as one open path in the parent; say which you chose and why the parent version makes closing siblings and keyboard navigation simpler.',
           'Handle pointer movement: open on mouseenter of the item, close on mouseleave of the item including its sub-menu, so the pointer can move into the sub-menu without collapsing it; add a short close delay if asked.',
-          'Use stable ids as keys rather than the array index, and add a focus and keyboard path (Enter or ArrowRight to open, Escape to close) so the menu works without a mouse; the React nested comments drill at /react/coding/react-nested-comments (Premium) rehearses the same recursive tree with a single active branch.',
+          'Use stable ids as keys rather than the array index, and add a focus and keyboard path (Enter or ArrowRight to open, Escape to close) so the menu works without a mouse.',
         ],
         commonMiss:
           'A sub-menu that closes as soon as the pointer leaves the parent label because the leave handler sits on the label rather than on the item with its sub-menu, and a children list rendered with index keys so hover state jumps between items.',
@@ -159,9 +159,9 @@ export const SHOPEE_COMPANY_PREVIEW: AuthoredCompanyPreview = {
         ],
         strongAnswer: [
           'Cache: return a wrapper that derives a key from the arguments (JSON.stringify for plain data, or a Map keyed by reference when identity is what the interviewer wants), stores results in a Map and returns the stored value on a hit; say how a thrown error and a Promise result should be treated.',
-          'Flatten: a recursive reduce that concatenates nested arrays, then Array.prototype.flat(Infinity) once you have shown the hand-written version; the one-level version at /javascript/coding/js-flatten-once (free) is the warm-up.',
-          'Deep clone: recurse over arrays and plain objects, copy Date, Map and Set explicitly, and keep a WeakMap of visited objects so cycles terminate; the full drill is at /javascript/coding/js-deep-clone (Premium).',
-          'new: create an object whose prototype is the constructor\'s prototype, call the constructor with that object as this, and return the constructor\'s result if it is an object, otherwise the new object; /javascript/coding/js-implement-new (free) covers the same contract. The 2020 record also asks whether an arrow function can be used with new, and the 2022 account asks you to walk an object\'s and a function\'s prototype chain all the way to null.',
+          'Flatten: a recursive reduce that concatenates nested arrays, then Array.prototype.flat(Infinity) once you have shown the hand-written version; the free Flatten One Level task is the warm-up.',
+          'Deep clone: recurse over arrays and plain objects, copy Date, Map and Set explicitly, and keep a WeakMap of visited objects so cycles terminate.',
+          'new: create an object whose prototype is the constructor\'s prototype, call the constructor with that object as this, and return the constructor\'s result if it is an object, otherwise the new object; the free task that implements the new operator covers the same contract. The 2020 record also asks whether an arrow function can be used with new, and the 2022 account asks you to walk an object\'s and a function\'s prototype chain all the way to null.',
         ],
         commonMiss:
           'A cache keyed by arguments.join(",") that treats {b: 3} as "[object Object]", a deep clone that loops forever on a cyclic reference, and an implementation of new that forgets the constructor may return an object of its own.',

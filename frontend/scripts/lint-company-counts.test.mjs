@@ -64,6 +64,15 @@ test('flags hand-written totals, wrong prompt counts, impossible sub-counts, unk
   ]);
 });
 
+test('flags one source spelled two ways across the guide and the table, which the page would count twice', () => {
+  const spelled = { ...table, variants: [{ title: 'Engineers', stages: [
+    { stage: 'Onsite', format: '', appliesTo: '', sources: [{ label: 'Blind', url: 'https://R.example/2/', kind: 'report', date: '2022-04' }] },
+  ] }] };
+  assert.deepEqual(checkGuide(guide(), spelled, evidence).filter((error) => error.startsWith('[sources]')), [
+    '[sources] https://r.example/2 and https://R.example/2/ are one page spelled two ways; use one URL in the guide and the process table',
+  ]);
+});
+
 test('a round decoder may rehearse on an open prompt or a page, never on a locked prompt', () => {
   const spotlights = (fragment) => [{ id: 'screen', kicker: 'k', title: 't', lede: [], facts: [], practiceLink: { label: 'Rehearse it', fragment } }];
   const open = guide({ prompts: { kicker: 'k', title: 't', intro: 'Intro.', itemListName: 'n', items: [{ id: 'a' }, { id: 'b' }, { id: 'c' }, { id: 'd' }] }, roundSpotlights: spotlights('c') });

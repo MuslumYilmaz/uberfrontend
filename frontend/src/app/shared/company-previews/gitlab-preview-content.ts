@@ -18,6 +18,9 @@ const GITLAB_TARO_HTML_2020_LABEL = 'Public report: Taro frontend developer merg
 const GITLAB_TARO_WRITTEN_2019_URL =
   'https://www.jointaro.com/interviews/companies/gitlab/experiences/frontend-engineer-united-kingdom-august-5-2019-no-offer-negative-d1e1bab6/';
 const GITLAB_TARO_WRITTEN_2019_LABEL = 'Public report: Taro frontend engineer written questions, August 2019';
+const GITLAB_TARO_HEAD_2022_URL =
+  'https://www.jointaro.com/interviews/companies/gitlab/experiences/frontend-developer-paraguay-may-3-2022-no-offer-positive-0f872bc9/';
+const GITLAB_TARO_HEAD_2022_LABEL = 'Public report: Taro frontend developer interview, May 2022';
 const GITLAB_MEDIUM_FULLSTACK_2025_URL = 'https://medium.com/@vedantj03/how-i-got-into-gitlab-an-open-source-journey-7ecdad137307';
 const GITLAB_MEDIUM_FULLSTACK_2025_LABEL = 'Public report: Medium full-stack engineer loop with an offer, 2025';
 const GITLAB_JOB_FAMILY_URL = 'https://handbook.gitlab.com/job-description-library/engineering/development/frontend/';
@@ -301,6 +304,7 @@ export const GITLAB_COMPANY_PREVIEW: AuthoredCompanyPreview = {
       { label: GITLAB_TARO_HTML_2020_LABEL, url: GITLAB_TARO_HTML_2020_URL, note: 'A re-hosted Glassdoor review from 2020, when the exercise was a pull request in the GitLab codebase. It establishes broken HTML, plain JavaScript to convert to Vue, and unit tests and a CI pipeline that failed; the current exercise is self-contained.', kind: 'report' },
       { label: GITLAB_TARO_WRITTEN_2019_LABEL, url: GITLAB_TARO_WRITTEN_2019_URL, note: 'A re-hosted Glassdoor review that ended after the written answers. It establishes one written question, what happens in the browser as it loads a page; the current written questions are not public.', kind: 'report' },
       { label: GITLAB_MEDIUM_FULLSTACK_2025_LABEL, url: GITLAB_MEDIUM_FULLSTACK_2025_URL, note: 'A first-person full-stack account that ended in an offer, with interviews in early 2025. It establishes a 90-minute frontend technical interview on JavaScript, Vue.js, testing and frontend practice next to a separate backend one, and a 60-minute hiring manager round.', kind: 'report' },
+      { label: GITLAB_TARO_HEAD_2022_LABEL, url: GITLAB_TARO_HEAD_2022_URL, note: 'One self-reported account without an offer. It lists the question of which meta tag makes a web page responsive; the plan\'s document-head task is a practice version of that question, not the reported wording.', kind: 'report' },
       { label: 'GitLab: Senior Frontend Engineer posting, Bangalore', url: GITLAB_SENIOR_FRONTEND_POSTING_URL, note: 'Official posting first published in September 2026. It places the role on a team that owns core repository capabilities and lists Vue, React, Angular, TypeScript or JavaScript as helpful; it says nothing about the interview.', kind: 'official' },
     ],
   },

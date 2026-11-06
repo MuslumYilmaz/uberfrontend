@@ -195,7 +195,7 @@ export const AGODA_COMPANY_PREVIEW: AuthoredCompanyPreview = {
         strongAnswer: [
           'Hold the request in one discriminated union with loading, success, empty and error states, and type the response once at the fetch boundary.',
           'Compute the statistics in a pure, tested module from the full dataset rather than from the visible page, and memoise them on the data reference.',
-          'Drive the table from a page index and page size held in state or the URL, derive the visible slice from the sorted data, and reset the page when the dataset changes; the React paginated data table drill at /react/coding/react-pagination-table (Premium) covers this slice.',
+          'Drive the table from a page index and page size held in state or the URL, derive the visible slice from the sorted data, and reset the page when the dataset changes.',
           'Separate the data layer, the statistics and the table components so each has one job; in the follow-up, write the debounce with one timer per instance, a cancel method, and the preserved this and arguments.',
         ],
         commonMiss:

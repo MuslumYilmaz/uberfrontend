@@ -50,7 +50,7 @@ export const CAPITALONE_COMPANY_PREVIEW: AuthoredCompanyPreview = {
   hero: {
     kicker: 'Public Capital One prep guide',
     subtitle:
-      'Prepare with five practice prompts shaped by {reports} public frontend accounts from 2020 to 2025 and by Capital One careers pages: a CodeSignal assessment, then a Power Day of four one-hour interviews covering frontend design, a frontend technical round, a case built on reading code, and behavioral questions.',
+      'Prepare with five practice prompts shaped by {reports} public frontend accounts from 2022 to 2025 and by Capital One careers pages: a CodeSignal assessment, then a Power Day of four one-hour interviews covering frontend design, a frontend technical round, a case built on reading code, and behavioral questions.',
     caveat:
       'The evidence is thin and dated: nearly every account is a review re-hosted on Taro, the newest with round detail is from late 2024, and the official process text is written for AI and ML roles. A front-end-focused candidate on a 2025 full-stack loop met generic coding and backend design rounds instead, so confirm the rounds with your recruiter.',
     chips: ['5 practice prompts', 'React, Angular, TypeScript, case code', 'Full practice set requires Premium'],

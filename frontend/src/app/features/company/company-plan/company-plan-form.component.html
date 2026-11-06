@@ -108,7 +108,7 @@
           <button faButton type="button" variant="primary" size="lg" data-testid="company-plan-continue" (click)="continueFromCompany()">Continue</button>
           <button type="button" class="plan-link" data-testid="company-plan-no-company" (click)="noCompany()">I don't have a company yet</button>
         </div>
-        <p class="plan-footnote">Takes three clicks, or four if you have started. No account needed.</p>
+        <p class="plan-footnote">Takes three clicks, or four if you have started.{{ signedIn() ? '' : ' No account needed.' }}</p>
       </div>
     }
 

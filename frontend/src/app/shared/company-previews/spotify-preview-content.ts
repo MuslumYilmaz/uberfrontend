@@ -8,7 +8,7 @@ import type { AuthoredCompanyPreview } from '../../shared/company-previews/autho
  */
 const SPOTIFY_OFFER_2022_URL = 'https://www.teamblind.com/post/weak-system-design-interview-for-spotify-chances-of-no-hire-00wjs6rg';
 const SPOTIFY_OFFER_2022_LABEL = 'Public report: Spotify web engineer final round with an offer, April 2022';
-const SPOTIFY_FOLLOW_UP_2022_URL = 'https://www.teamblind.com/post/Spotify-Final-Round-Web-Interview-QyUG2ZqX';
+const SPOTIFY_FOLLOW_UP_2022_URL = 'https://www.teamblind.com/post/spotify-final-round-web-interview-qyug2zqx';
 const SPOTIFY_THREAD_2021_URL = 'https://www.teamblind.com/post/Spotify-Web-Engineer-Interview-hNTex8N7';
 const SPOTIFY_THREAD_2021_LABEL = 'Public report: Spotify web engineer interview thread, 2021 to 2022';
 const SPOTIFY_STOCKHOLM_2019_URL = 'https://www.teamblind.com/post/spotify-frontend-interview-4ghdysqn';
@@ -130,7 +130,8 @@ export const SPOTIFY_COMPANY_PREVIEW: AuthoredCompanyPreview = {
         ],
         commonMiss:
           'Clickable divs without keyboard support, and autoplay that keeps moving while the user is reading or focused on a control.',
-        resourceLabel: 'Practice the image slider (Premium)',
+        // The bank has no framework-free carousel; the label says the practice is the same widget in React.
+        resourceLabel: 'Practice the same carousel in React (Premium)',
         resourcePath: '/react/coding/react-image-slider',
         reportedRound: { label: SPOTIFY_THREAD_2021_LABEL, url: SPOTIFY_THREAD_2021_URL },
       },

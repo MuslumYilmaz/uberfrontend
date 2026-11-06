@@ -1,7 +1,7 @@
 import rawPlanData from '../../../../../../cdn/questions/company-plan-data.json';
 import type { CompanyPlanAnswers } from '../../../core/models/company-plan.model';
 import { CompanyPlanData, PlannedTask, buildCompanyPlan } from './company-plan.engine';
-import { companyPlanPricingCopy, companySetLine, nextRoundName, planDateChip, planDatePassed, planFrameworkChips, planFrameworkLine, planPricingSource, practiceState, previewQueryParams, roundSourcesLine, whyLineFor } from './company-plan.format';
+import { companyPlanPricingCopy, companySetLine, nextRoundName, planDateChip, planDatePassed, planFrameworkChips, planFrameworkLine, planPricingSource, practiceState, previewQueryParams, roundSourcesLine, whyLine, whyLineFor, hoursText } from './company-plan.format';
 
 const DATA = rawPlanData as unknown as CompanyPlanData;
 
@@ -58,6 +58,22 @@ describe('whyLineFor', () => {
     expect(whyLineFor({ kind: 'format' }, 'Extra React practice')).toBe('Extra practice in the reported format');
     expect(whyLineFor({ kind: 'general' }, null)).toBe('General frontend practice');
     expect(whyLineFor({ kind: 'pick' }, null)).toBe('Our pick for this round');
+  });
+
+  it('names no round for a task the reports tie to none, wherever the plan placed it', () => {
+    expect(whyLineFor({ kind: 'pick', unbound: true }, 'Phone screen')).toBe('Our pick for this plan');
+    expect(whyLine({ kind: 'pick', unbound: true })).toBe('Our pick for this plan');
+    expect(whyLineFor({ kind: 'report', publisher: 'Taro', date: '2024-11', unbound: true }, 'Onsite')).toBe('Modelled on a report: Taro, Nov 2024');
+  });
+});
+
+describe('hoursText', () => {
+  it('adds the listed minutes up in five-minute steps, never a quarter hour off', () => {
+    expect(hoursText(200)).toBe('3 hours 20 minutes');
+    expect(hoursText(195)).toBe('3 hours 15 minutes');
+    expect(hoursText(60)).toBe('1 hour');
+    expect(hoursText(45)).toBe('45 minutes');
+    expect(hoursText(122)).toBe('2 hours');
   });
 });
 

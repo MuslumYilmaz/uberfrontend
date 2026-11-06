@@ -166,7 +166,8 @@ const GOOGLE_GO5 = report(
   '2024-06',
 );
 const GOOGLE_GO6 = report('Medium', 'https://shubhamjangle.medium.com/google-swe-iii-interview-the-round-by-round-breakdown-nobody-wrote-fd2c10fe52ff', '2026-04');
-const GOOGLE_GO7 = report('LeetCode', 'https://leetcode.com/discuss/interview-experience/1274542/', '2021-06');
+// The question bank cites this post at its current address; one spelling keeps the task on the rounds that cite it.
+const GOOGLE_GO7 = report('LeetCode', 'https://leetcode.com/discuss/post/1274542/', '2021-06');
 const GOOGLE_GO8 = report('Blind comment', 'https://www.teamblind.com/post/Google-Frontend-interview-78mvqUW2', '2021-06');
 const GOOGLE_PHONE_2020 = report('LeetCode', 'https://leetcode.com/discuss/post/592667/', '2020-04');
 // The Googleyness interview. Google's current pages no longer use the word; its interview tips describe the same
@@ -958,7 +959,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
   amazon: {
     title: 'Amazon Front End Engineer interview process',
     summary:
-      'Amazon\'s Front End Engineer preparation page describes three stages: an online assessment, a 60-minute phone screen and a loop of four 55-minute interviews. Public accounts from 2020 to 2024 describe loops of four or five interviews.',
+      'Amazon\'s Front End Engineer preparation page describes three stages: an online assessment, a 60-minute phone screen and a loop of four 55-minute interviews. Public accounts from 2020 to 2024 describe loops of four or five interviews, and accounts from 2019 and 2025 add the Leadership Principles questions.',
     caveat:
       'Each account describes one loop. Some added a bar raiser or a hiring-manager round, one 2020 phone screen had no behavioural questions, and one 2024 loop asked backend rather than frontend design. Confirm the format with your recruiter.',
     checkedAt: '2026-11-06',
@@ -1994,7 +1995,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
   },
   spotify: {
     summary:
-      'Spotify\'s hiring page describes a recruiter interview, a second interview with one or two team members and a final round with several team members. Web engineer accounts from 2022 to 2025, mostly from the US and Canada, describe a technical screen and a final round with a plain HTML, CSS and JavaScript build, algorithms, system design and a values interview.',
+      'Spotify\'s hiring page describes a recruiter interview, a second interview with one or two team members and a final round with several team members. Web engineer accounts from 2021 to 2025, mostly from the US and Canada, describe a technical screen and a final round with a plain HTML, CSS and JavaScript build, algorithms, system design and a values interview.',
     caveat:
       'The detailed accounts are from the US and Canada; evidence from Europe is limited to full-stack accounts. One hired candidate had no debugging round.',
     checkedAt: '2026-10-20',
@@ -2192,7 +2193,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
   },
   jpmorgan: {
     summary:
-      'JPMorgan Chase\'s How we hire page says the interview process will differ for each position and that candidates meet several people in multiple rounds, and JPMorgan Chase-badged employees on Blind describe decentralised, team-run loops. Frontend accounts from 2021 to 2026 in the UK, the US and India describe a recruiter screen, a one-hour React and JavaScript conversation often split between two interviewers, 30 to 90 minutes of live coding, and a hiring-manager or leadership round. The online-assessment and super-day rows come from generic software-engineer accounts that Software Engineer II and III requisitions probably share.',
+      'JPMorgan Chase\'s How we hire page says the interview process will differ for each position and that candidates meet several people in multiple rounds, and JPMorgan Chase-badged employees on Blind describe decentralised, team-run loops. Frontend accounts from 2017 to 2026 in the UK, the US and India describe a recruiter screen, a one-hour React and JavaScript conversation often split between two interviewers, 30 to 90 minutes of live coding, and a hiring-manager or leadership round. The online-assessment and super-day rows come from generic software-engineer accounts that Software Engineer II and III requisitions probably share.',
     caveat:
       'No standard loop exists: the format depends on the line of business and the team, so the order and count of stages vary between accounts, and most accounts describe two to four of these stages rather than all of them. The super-day shape rests on generic software-engineer accounts, and no frontend-titled report confirms it. Several frontend accounts are one to three lines long and some dates are approximate; one candidate met an interviewer assigned to a back-end role, and another heard nothing after a cleared round.',
     checkedAt: '2026-10-21',

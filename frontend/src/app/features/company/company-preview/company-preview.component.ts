@@ -24,7 +24,7 @@ import type { AuthoredCompanyPreview, AuthoredSource } from '../../../shared/com
 import { AUTHORED_COMPANY_PREVIEWS_TOKEN } from '../../../shared/company-previews/authored-company-previews';
 import type { CompanyEditorialNotes } from '../../../shared/company-previews/company-editorial-notes.model';
 import { COMPANY_EDITORIAL_NOTES, type CompanyEditorialNotesRegistry } from '../../../shared/company-previews/company-editorial-notes';
-import { companyEvidence, fillAuthoredPreview, type CompanyEvidence } from './company-evidence';
+import { companyEvidence, evidenceFrom, fillAuthoredPreview, type CompanyEvidence, type CompanyEvidenceCounts } from './company-evidence';
 // Not the plan's family helper: an import from shared/company-previews would date every guide by this component.
 import { FRAMEWORK_FAMILY_BY_ID } from '../../../shared/framework-families';
 import { COMPANY_OFFICIAL_GUIDES, type CompanyOfficialGuide } from '../../../shared/company-previews/company-official-guides';
@@ -56,7 +56,6 @@ import {
   GOOGLE_RESOURCE_LINKS,
 } from './google-preview-content';
 import {
-  NETFLIX_OFFICIAL_SOURCES,
   NETFLIX_PRACTICE_PROMPTS,
   NETFLIX_PREP_SEQUENCE,
   NETFLIX_PREVIEW_CANONICAL_PATH,
@@ -67,6 +66,7 @@ import {
   NETFLIX_PREVIEW_TRUST_NOTE,
   NETFLIX_RESOURCE_LINKS,
   NETFLIX_ROLE_LENSES,
+  NETFLIX_SOURCES,
   NETFLIX_WALKTHROUGH_STEPS,
 } from './netflix-preview-content';
 import { InlineCodeComponent } from '../../../shared/ui/inline-code/inline-code.component';
@@ -338,14 +338,14 @@ export class CompanyPreviewComponent implements OnInit {
   isNetflixPreview = false;
   /** Set when the slug has a data-driven authored guide in the registry (see shared/company-previews). */
   authoredPreview: AuthoredCompanyPreview | null = null;
-  /** The authored guide's sources and counts, the page's one set of numbers. */
+  /** The guide's sources and counts, the page's one set of numbers: an authored guide's, or Netflix's. */
   evidence: CompanyEvidence | null = null;
   /** The other guides' list is long; a phone shows the first few until asked. */
   readonly relatedExpanded = signal(false);
 
   /** The sources only the process table cites, after the guide's own list. */
   extraSources(): readonly AuthoredSource[] {
-    const own = this.authoredPreview?.sources.items.length ?? 0;
+    const own = this.authoredPreview?.sources.items.length ?? (this.isNetflixPreview ? NETFLIX_SOURCES.length : 0);
     return this.evidence?.sources.slice(own) ?? [];
   }
   /** The other company guides; built from the generated metadata so no company page re-dates. */
@@ -376,7 +376,7 @@ export class CompanyPreviewComponent implements OnInit {
   readonly netflixPrepSequence = NETFLIX_PREP_SEQUENCE;
   readonly netflixFaqs = NETFLIX_PREVIEW_FAQS;
   readonly netflixResourceLinks = NETFLIX_RESOURCE_LINKS;
-  readonly netflixOfficialSources = NETFLIX_OFFICIAL_SOURCES;
+  readonly netflixSources = NETFLIX_SOURCES;
   data: CompanyPreviewResolved = {
     slug: '',
     mode: 'catalog',
@@ -492,30 +492,38 @@ export class CompanyPreviewComponent implements OnInit {
 
   /**
    * The card under the process table for a visitor without an account on a gated guide. It promises what the account
-   * opens there, the links behind the evidence counts, and counts them the way the plan form does: every source the
-   * table cites, reports and official pages alike.
+   * opens there, the links behind the evidence counts, and counts them the way the plan form does: the guide's own
+   * sources and every source the table cites, reports and official pages alike.
    */
   processGate(): LockGate | null {
     if (!this.detailLocked()) return null;
-    // An authored guide counts its whole evidence once; a catalog guide has only the table to count.
+    // A guide with its own sources list counts its whole evidence once; a catalog guide has only the table to count.
     const counts = this.evidence?.counts ?? (() => {
       const stages = (this.interviewProcess?.variants ?? []).flatMap((variant) => variant.stages);
       const urls = (kind: 'report' | 'official') => new Set(stages.flatMap((stage) => stage.sources.filter((source) => source.kind === kind).map((source) => source.url))).size;
       return { reports: urls('report'), official: urls('official') };
     })();
-    const { reports, official } = counts;
-    const counted = `${reports} public ${reports === 1 ? 'report' : 'reports'}${official ? ` and ${official} official ${official === 1 ? 'page' : 'pages'}` : ''}`;
+    // The guide's own pages sit in its sources list, not on a round, so the line names both places.
+    const where = this.evidence ? 'linked on the rounds they describe and in the sources list' : 'each linked on the round it describes';
     return this.accountGate('company-process-gate', 'company-prompt-gate company-account-gate',
       'The sources behind each round open with a free account',
-      `${counted}, each linked on the round it describes. Premium adds the answer guides and the practice.`);
+      `${this.countedSources(counts)}, ${where}. Premium adds the answer guides and the practice.`);
   }
 
-  /** The card over an authored guide's sources for a visitor without an account on a gated guide. */
-  sourcesGate(count: number): LockGate | null {
-    if (!this.detailLocked()) return null;
+  /** The card over a guide's sources list for a visitor without an account on a gated guide. */
+  sourcesGate(counts: Pick<CompanyEvidenceCounts, 'reports' | 'official'> | null | undefined): LockGate | null {
+    if (!this.detailLocked() || !counts) return null;
     return this.accountGate('company-sources-gate', 'company-prompt-gate company-account-gate',
       'The sources open with a free account',
-      `${count} public accounts and official pages, each with what it establishes and where the process table uses it.`);
+      `${this.countedSources(counts)}, each with a note on what it can and cannot establish.`);
+  }
+
+  /** "7 public reports and 6 official pages", leaving out a kind the guide has none of. */
+  private countedSources({ reports, official }: Pick<CompanyEvidenceCounts, 'reports' | 'official'>): string {
+    return [
+      reports ? `${reports} public ${reports === 1 ? 'report' : 'reports'}` : '',
+      official ? `${official} official ${official === 1 ? 'page' : 'pages'}` : '',
+    ].filter(Boolean).join(' and ');
   }
 
   /** The prompts past the open ones: "prompt 4", "prompts 4 and 5" or "prompts 2 to 7". */
@@ -635,7 +643,9 @@ export class CompanyPreviewComponent implements OnInit {
     this.isNetflixPreview = this.slug === 'netflix';
     // An authored guide counts its evidence once, and its text and metadata carry those counts.
     const authored = this.authoredPreviews[this.slug] ?? null;
-    this.evidence = authored ? companyEvidence(authored, this.interviewProcess) : null;
+    this.evidence = authored
+      ? companyEvidence(authored, this.interviewProcess)
+      : this.isNetflixPreview ? evidenceFrom(NETFLIX_SOURCES, NETFLIX_PRACTICE_PROMPTS.length, this.interviewProcess) : null;
     this.authoredPreview = authored && this.evidence ? fillAuthoredPreview(authored, this.evidence.counts) : null;
     this.editorialNotes = this.authoredPreview || this.isOpenAiPreview || this.isGooglePreview || this.isNetflixPreview
       ? null
@@ -684,7 +694,10 @@ export class CompanyPreviewComponent implements OnInit {
     return items.filter((item) => item.access === 'free').length;
   }
 
-  /** Premium items counted as exercises: a widget published in three frameworks is one, not three. */
+  /**
+   * Premium items counted as exercises: a widget published in three frameworks is one, not three. The sample shows
+   * one card per family of the same map (CompanyPublicDataService), so this matches the locked cards.
+   */
   premiumCount(items: CompanyPreviewQuestion[]): number {
     return new Set(items.filter((item) => item.access === 'premium').map((item) => FRAMEWORK_FAMILY_BY_ID.get(item.id)?.key ?? `${item.kind}:${item.id}`)).size;
   }

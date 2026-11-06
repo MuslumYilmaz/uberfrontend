@@ -1368,6 +1368,23 @@ describe('CompanyPreviewComponent', () => {
     const gateCard = (testId: string) => host().querySelector(`[data-testid="${testId}"]`) as HTMLElement | null;
     const lockedParts = () => host().querySelectorAll('.premium-locked').length;
 
+    it('lists Netflix\'s own sources, with the account its debounce tasks are modelled on, then the table\'s, and counts them once', async () => {
+      await createComponent('netflix');
+      expect(fixture.componentInstance.detailLocked()).toBeTrue();
+      const section = host().querySelector('[aria-labelledby="netflix-source-notes"]') as HTMLElement;
+      const links = Array.from(section.querySelectorAll('.company-source-list article a')) as HTMLAnchorElement[];
+      const warsaw = links.find((link) => link.href.includes('senior-frontend-engineer-warsaw-masovia-november-1-2024'));
+      expect(warsaw?.rel).toContain('nofollow');
+      // The sources only the process table cites follow the guide's own list, behind one toggle.
+      expect(section.querySelector('[data-testid="company-sources-more"]')).not.toBeNull();
+      const reports = links.filter((link) => link.rel.includes('nofollow')).length;
+      const counted = `${reports} public reports and ${links.length - reports} official pages`;
+      expect(gateCard('company-sources-gate')?.querySelector('.company-prompt-gate__line')?.textContent)
+        .toBe(`${counted}, each with a note on what it can and cannot establish.`);
+      expect(gateCard('company-process-gate')?.querySelector('.company-prompt-gate__line')?.textContent)
+        .toBe(`${counted}, linked on the rounds they describe and in the sources list. Premium adds the answer guides and the practice.`);
+    });
+
     it('shows a visitor the structure and a lead-in, and keeps the rest in the page for search engines', async () => {
       await createComponent('meta');
       expect(fixture.componentInstance.tier()).toBe('guest');
@@ -1398,7 +1415,7 @@ describe('CompanyPreviewComponent', () => {
       }
       expect(gateCard('company-process-gate')?.querySelector('.company-prompt-gate__title')?.textContent).toBe('The sources behind each round open with a free account');
       expect(gateCard('company-process-gate')?.querySelector('.company-prompt-gate__line')?.textContent)
-        .toMatch(/^\d+ public reports( and \d+ official pages?)?, each linked on the round it describes\. Premium adds the answer guides and the practice\.$/);
+        .toMatch(/^\d+ public reports( and \d+ official pages?)?, linked on the rounds they describe and in the sources list\. Premium adds the answer guides and the practice\.$/);
       expect(gateCard('company-prompt-gate')?.querySelector('.company-prompt-gate__title')?.textContent).toMatch(/^Prompts 2 to \d+ open with a free account$/);
       expect(gateCard('company-sources-gate')?.querySelector('.company-prompt-gate__title')?.textContent).toBe('The sources open with a free account');
       expect(host().querySelector('.company-source-list')?.classList).toContain('premium-locked');
@@ -1406,7 +1423,8 @@ describe('CompanyPreviewComponent', () => {
       // Both gates count the same evidence: the guide's sources plus the ones the table cites, once by URL.
       const sourceRows = host().querySelectorAll('.company-source-list article').length;
       const reports = Array.from(host().querySelectorAll('.company-source-list article a')).filter((link) => link.getAttribute('rel')?.includes('nofollow')).length;
-      expect(gateCard('company-sources-gate')?.querySelector('.company-prompt-gate__line')?.textContent).toMatch(new RegExp(`^${sourceRows} public accounts and official pages`));
+      expect(gateCard('company-sources-gate')?.querySelector('.company-prompt-gate__line')?.textContent)
+        .toBe(`${reports} public reports and ${sourceRows - reports} official pages, each with a note on what it can and cannot establish.`);
       expect(gateCard('company-process-gate')?.querySelector('.company-prompt-gate__line')?.textContent).toMatch(new RegExp(`^${reports} public reports and ${sourceRows - reports} official pages`));
 
       // The prompt cards follow the table's rule: the report is named, its link waits for the account; only the

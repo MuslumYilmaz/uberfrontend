@@ -19,7 +19,7 @@ export const ELEVENLABS_PREVIEW_DESCRIPTION =
   'ElevenLabs frontend interview: the coding assessment formats (90-minute test, CoderPad React fix, take-home), the live technical round, and 5 practice prompts.';
 export const ELEVENLABS_PREVIEW_CANONICAL_PATH = '/companies/elevenlabs/preview';
 export const ELEVENLABS_PREVIEW_TRUST_NOTE =
-  'These are FrontendAtlas practice versions modelled on rounds described in public interview reports, not leaked, confirmed or official ElevenLabs questions. {reports} public accounts cannot establish a fixed loop; use recruiter-provided material as the source of truth.';
+  'These are FrontendAtlas practice versions modelled on rounds described in public interview reports, not leaked, confirmed or official ElevenLabs questions. {reports} public reports cannot establish a fixed loop; use recruiter-provided material as the source of truth.';
 
 export const ELEVENLABS_COMPANY_PREVIEW: AuthoredCompanyPreview = {
   slug: 'elevenlabs',
@@ -59,7 +59,7 @@ export const ELEVENLABS_COMPANY_PREVIEW: AuthoredCompanyPreview = {
       kicker: 'Round decoder',
       title: 'ElevenLabs coding assessment and live technical round: what the formats were and what was asked',
       lede: [
-        'ElevenLabs runs a coding assessment around the recruiter call and then a live technical round with an engineer. The assessment\'s format changed from loop to loop in the five public accounts from 2024 to 2026: a 90-minute assessment sent before the recruiter screen, an asynchronous easy or medium algorithm question with a React knowledge check, React and algorithm problems on CoderPad such as fixing a React bug, a LeetCode-style Python round, or a take-home exercise.',
+        'ElevenLabs runs a coding assessment around the recruiter call and then a live technical round with an engineer. The assessment\'s format changed from loop to loop in the public accounts from 2024 to 2026: a 90-minute assessment sent before the recruiter screen, an asynchronous easy or medium algorithm question with a React knowledge check, React and algorithm problems on CoderPad such as fixing a React bug, a LeetCode-style Python round, or a take-home exercise.',
         'The live round is pair work with an engineer: fixing a practical problem (2026), debugging a small React app (2025), building a text-to-speech React component (2024) or a real-life problem with changing constraints (another 2024 account). A product or design round follows in most loops, and the final conversation is with the CTO or a founder; the careers FAQ names a founder or Bar Raiser.',
       ],
       facts: [

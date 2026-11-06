@@ -1,3 +1,5 @@
+import type { AuthoredSource } from '../../../shared/company-previews/authored-company-preview.model';
+
 export type NetflixPracticePrompt = {
   readonly id: string;
   readonly title: string;
@@ -38,11 +40,6 @@ export type NetflixResourceLink = {
   readonly path: string;
 };
 
-export type NetflixOfficialSource = {
-  readonly label: string;
-  readonly url: string;
-  readonly note: string;
-};
 
 export const NETFLIX_PREVIEW_TITLE =
   'Netflix Frontend and UI Engineer Interview Questions: 6 Prompts';
@@ -367,35 +364,52 @@ export const NETFLIX_RESOURCE_LINKS: readonly NetflixResourceLink[] = [
   },
 ];
 
-export const NETFLIX_OFFICIAL_SOURCES: readonly NetflixOfficialSource[] = [
+/**
+ * The guide's own sources: Netflix's pages, then the one experienced-frontend account a plan task is modelled on.
+ * The process table's citations follow them on the page (company-evidence.ts), so the guide and the plan count
+ * the same evidence.
+ */
+export const NETFLIX_SOURCES: readonly AuthoredSource[] = [
   {
     label: 'Netflix Engineering',
     url: 'https://jobs.netflix.com/careers/engineering',
     note:
       'Use the published engineering domains to understand possible product contexts, not to infer a fixed interview loop.',
+    kind: 'official',
   },
   {
     label: 'Netflix Culture',
     url: 'https://jobs.netflix.com/culture',
     note:
       'Use the current culture material to prepare evidence-backed decision stories without trying to guess preferred answers.',
+    kind: 'official',
   },
   {
     label: 'Netflix New Grad interview guidance',
     url: 'https://jobs.netflix.com/careers/new-grads',
     note:
       'This guidance is new-grad specific and must not be generalized to every experienced frontend role.',
+    kind: 'official',
   },
   {
     label: 'React TV UI engineering case study',
     url: 'https://netflixtechblog.com/crafting-a-high-performance-tv-user-interface-using-react-3350e5a6ad3b',
     note:
       'An older engineering case study for constrained-device performance practice, not evidence of the current interview process or every current frontend stack.',
+    kind: 'official',
   },
   {
     label: 'Lumen dashboard engineering case study',
     url: 'https://netflixtechblog.com/lumen-custom-self-service-dashboarding-for-netflix-8c56b541548c',
     note:
       'An older dashboard case study that supplies product constraints for practice, not a current interview-format claim.',
+    kind: 'official',
+  },
+  {
+    label: 'Public report: Netflix senior frontend engineer interview, Warsaw, November 2024',
+    url: 'https://www.jointaro.com/interviews/companies/netflix/experiences/senior-frontend-engineer-warsaw-masovia-november-1-2024-no-offer-negative-c999399f/',
+    note:
+      'One self-reported loop of eight unnamed stages, without an offer. It says technical interviewers asked domain questions such as filtering REST API results by the search input, and a 200 ms debounce came up. The plan\'s debounce tasks are practice versions of that question; the account ties it to no round.',
+    kind: 'report',
   },
 ];

@@ -70,7 +70,14 @@ function citedSource(source: InterviewProcessSource, stages: readonly string[]):
 }
 
 export function companyEvidence(preview: AuthoredCompanyPreview, process: CompanyInterviewProcess | null): CompanyEvidence {
-  const curated = preview.sources.items;
+  return evidenceFrom(preview.sources.items, preview.prompts.items.length, process);
+}
+
+/**
+ * The same count for a guide whose sources list lives outside the authored model (Netflix): its own list first,
+ * then the sources only the process table cites.
+ */
+export function evidenceFrom(curated: readonly AuthoredSource[], prompts: number, process: CompanyInterviewProcess | null): CompanyEvidence {
   const seen = new Set(curated.map((source) => source.url));
   const cited = new Map<string, { source: InterviewProcessSource; stages: string[] }>();
   for (const variant of process?.variants ?? []) {
@@ -91,7 +98,7 @@ export function companyEvidence(preview: AuthoredCompanyPreview, process: Compan
   const sources = [...curated, ...extra];
   const reports = sources.filter((source) => source.kind === 'report').length;
   return {
-    counts: { reports, official: sources.length - reports, sources: sources.length, prompts: preview.prompts.items.length },
+    counts: { reports, official: sources.length - reports, sources: sources.length, prompts },
     sources,
   };
 }

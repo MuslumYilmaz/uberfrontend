@@ -223,6 +223,12 @@ function buildCompany(slug, context) {
           console.warn(`[gen-company-plan-data] ${slug}/${meta.id}: reportRounds puts ${entry.task.id} on ${id}, but that stage cites none of its reports.`);
         }
       }
+      // A guide with its own sources list shows every report a plan line names, so "Modelled on a report" can be
+      // followed on the guide. Catalog guides list their reported items in a reports card instead.
+      const listed = context.sources?.[slug];
+      if (listed && !allCited.has(newest.url) && !listed.includes(newest.url)) {
+        throw new Error(`[gen-company-plan-data] ${slug}/${meta.id}: ${entry.task.id} is modelled on ${newest.url}, which neither the ${slug} guide's sources nor its process table list.`);
+      }
       add(publish(entry.task), { report: { publisher: newest.publisher, date: newest.date, ...(newest.posting ? { posting: true } : {}) }, rounds: named.length ? named : bound.length ? bound : cited });
     }
 
@@ -412,6 +418,9 @@ function loadCompanyPrompts(cache) {
     const module = loadTsModule(path.join(inline, `${slug}-preview-content.ts`), cache);
     prompts[slug] = (module[name] ?? []).map((item) => ({ path: item.resourcePath, reportUrl: null }));
   }
+  // Netflix keeps its sources list beside its prompts; the guide counts it with the table, so the plan does too.
+  const netflix = loadTsModule(path.join(inline, 'netflix-preview-content.ts'), cache);
+  sources.netflix = (netflix.NETFLIX_SOURCES ?? []).map((item) => item.url);
   return { prompts, sources };
 }
 

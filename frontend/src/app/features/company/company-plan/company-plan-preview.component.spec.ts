@@ -186,17 +186,29 @@ describe('CompanyPlanPreviewComponent', () => {
     it('marks the tasks that run as an interview, in the list and in the panel', () => {
       setup(ELEVENLABS);
       const plan = fixture.componentInstance.plan()!;
-      // The count covers what the page badges: the plan's tasks and the free warm-ups shown beside them.
-      const pressure = new Set([...plan.tasks, ...plan.preview.open].filter((task) => task.pressure).map((task) => task.id)).size;
+      // The fact counts the plan's own tasks; a free warm-up outside the plan keeps its badge without being counted.
+      const pressure = plan.tasks.filter((task) => task.pressure).length;
       const facts = Array.from(host.querySelectorAll('.preview__facts li')).map((fact) => fact.textContent?.trim() ?? '');
       const fact = facts.find((line) => line.includes('(Pressure Mode)'));
       expect(Boolean(fact)).toBe(pressure > 0);
-      if (fact) expect(fact).toBe(`${pressure} ${pressure === 1 ? 'task runs' : 'tasks run'} as an interview (Pressure Mode): the requirements change while you code`);
+      if (fact) expect(fact).toBe(`${pressure} ${pressure === 1 ? 'task' : 'tasks'} in your plan ${pressure === 1 ? 'runs' : 'run'} as an interview (Pressure Mode): the requirements change while you code`);
       const tagged = Array.from(host.querySelectorAll('[data-testid="company-plan-rest-task"], [data-testid="company-plan-open-task"]'))
         .filter((row) => Array.from(row.querySelectorAll('.plan-row__tag')).some((tag) => tag.textContent === 'Pressure Mode')).length;
-      const shown = [...fixture.componentInstance.openTasks(), ...fixture.componentInstance.restTasks()].filter((row) => row.task.pressure).length;
-      expect(tagged).toBe(shown);
-      expect(pressure).toBe(shown);
+      const rows = [...fixture.componentInstance.openTasks(), ...fixture.componentInstance.restTasks()];
+      expect(tagged).toBe(rows.filter((row) => row.task.pressure).length);
+      const planned = new Set(plan.tasks.map((task) => task.id));
+      expect(pressure).toBe(rows.filter((row) => row.task.pressure && planned.has(row.task.id)).length);
+    });
+
+    it('leaves a badged warm-up outside the plan out of the Pressure Mode count', () => {
+      // Agoda for tomorrow: the plan holds no Pressure Mode task, and its free warm-up, the fetch-and-render task, does.
+      setup({ companies: 'agoda', when: 'tomorrow', level: 'mid' });
+      const component = fixture.componentInstance;
+      const plan = component.plan()!;
+      const warmup = component.openTasks().find((row) => row.why === 'Free warm-up, outside your plan' && row.task.pressure);
+      expect(warmup?.task.id).toBe('react-fetch-list-states');
+      expect(plan.tasks.some((task) => task.pressure)).toBeFalse();
+      expect(component.facts().some((line) => line.includes('(Pressure Mode)'))).toBeFalse();
     });
 
     it('writes a company with a hyphen into the pricing source the way the guides do', () => {
@@ -275,6 +287,12 @@ describe('CompanyPlanPreviewComponent', () => {
       expect(plans.save).toHaveBeenCalledOnceWith({ companies: [{ slug: 'elevenlabs' }], when: 'next-week', level: 'senior' });
       expect(navigate).toHaveBeenCalledOnceWith(['/pricing'], { queryParams: { src: 'company_plan_elevenlabs' } });
       expect(plans.track).toHaveBeenCalledWith('company_plan_build_clicked', jasmine.objectContaining({ companies: 'elevenlabs', viewer: 'guest' }));
+    });
+
+    it('promises "no account needed" only to a visitor without one', () => {
+      setup(ELEVENLABS, { viewer: 'free' });
+      expect(text('.preview__section-sub--desktop')).toBe('They run in your browser.');
+      expect(text('.preview__section-sub--phone')).toBe('Read them here; the code runs on a desktop or tablet.');
     });
 
     it('tells a phone what the tasks are good for there, without hiding the task list', () => {

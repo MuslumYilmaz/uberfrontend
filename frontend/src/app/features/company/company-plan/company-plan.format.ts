@@ -59,7 +59,8 @@ export function whyLine(why: CompanyPlanWhy): string {
     case 'general':
       return 'General frontend practice';
     default:
-      return 'Our pick for this round';
+      // A pick the reports tie to no round sits where the plan has room, so it claims no round.
+      return why.unbound ? 'Our pick for this plan' : 'Our pick for this round';
   }
 }
 
@@ -79,12 +80,12 @@ export function formatGroupName(plan: Pick<CompanyPlan, 'companies'>): string {
   return frameworks.length === 1 ? `Extra ${frameworkLabel(frameworks[0])} practice` : 'Extra practice';
 }
 
-/** Quarter-hour steps, close enough to the listed minutes to add up: "3 hours 15 minutes". */
+/** Five-minute steps, so the total adds up from the listed minutes: 200 minutes reads "3 hours 20 minutes". */
 export function hoursText(minutes: number): string {
   if (minutes < 60) return `${minutes} minutes`;
-  const quarters = Math.round(minutes / 15) * 15;
-  const hours = Math.floor(quarters / 60);
-  const rest = quarters % 60;
+  const rounded = Math.round(minutes / 5) * 5;
+  const hours = Math.floor(rounded / 60);
+  const rest = rounded % 60;
   return `${hours} ${hours === 1 ? 'hour' : 'hours'}${rest ? ` ${rest} minutes` : ''}`;
 }
 

@@ -19,8 +19,8 @@ const company = (name: string, extra: object = {}) => ({
 
 const DATA = {
   schemaVersion: 1,
-  tasks: {},
-  general: {},
+  tasks: { 'lead-task': { id: 'lead-task', title: 'Lead task', route: '/react/coding/lead-task', kind: 'coding', access: 'free', minutes: 30 } },
+  general: { starters: [], formatPractice: { react: [], angular: [], vue: [], javascript: [] }, guides: { people: '/guides/behavioral', design: '/guides/system-design-blueprint' }, premiumCounts: {} },
   companies: {
     elevenlabs: company('ElevenLabs'),
     agoda: company('Agoda'),
@@ -149,11 +149,39 @@ describe('CompanyPlanFormComponent', () => {
       expect(cardNames()).toEqual(['ElevenLabs']);
     });
 
+    it('says "no account needed" to a visitor', () => {
+      setup();
+      expect(host.querySelector('.plan-footnote')?.textContent?.trim()).toBe('Takes three clicks, or four if you have started. No account needed.');
+    });
+
+    it('does not say "no account needed" to a signed-in person', () => {
+      setup({ user: { _id: 'u', entitlements: { pro: { status: 'none' } } } });
+      expect(host.querySelector('.plan-footnote')?.textContent?.trim()).toBe('Takes three clicks, or four if you have started.');
+    });
+
     it('describes a company from the data in one line', () => {
       setup();
-      expect(host.querySelector('.plan-card__meta')?.textContent).toBe('2 reported rounds, 1 with practice · 6 public sources · checked Oct 22, 2026');
+      expect(host.querySelector('.plan-card__meta')?.textContent).toBe('2 reported rounds, tasks on 1 of them · 6 public sources · checked Oct 22, 2026');
       const rounds = Array.from(host.querySelectorAll('.plan-rounds__item'));
       expect(rounds.map((item) => item.classList.contains('plan-rounds__item--practice'))).toEqual([false, true]);
+    });
+
+    it('counts and marks the rounds the plan holds tasks on, as the preview does, not every practice-type round', () => {
+      // A people round with no guide data and a coding round whose only task is taken: the plan leaves both empty.
+      const data = {
+        ...DATA,
+        general: { ...DATA.general, guides: { people: '/guides/missing', design: '/guides/missing' } },
+        companies: {
+          ...DATA.companies,
+          elevenlabs: company('ElevenLabs', {
+            variants: [{ id: 'main', title: 'Engineers', sourceCount: 6, rounds: [round('coding', ['coding']), round('people', ['people']), round('second', ['coding'])], tasks: [{ id: 'lead-task', rounds: ['coding', 'second'], lead: true }] }],
+          }),
+        },
+      } as unknown as CompanyPlanData;
+      setup({ data });
+      expect(host.querySelector('.plan-card__meta')?.textContent).toBe('3 reported rounds, tasks on 1 of them · 6 public sources · checked Oct 22, 2026');
+      const rounds = Array.from(host.querySelectorAll('.plan-rounds__item'));
+      expect(rounds.map((item) => item.classList.contains('plan-rounds__item--practice'))).toEqual([true, false, false]);
     });
   });
 

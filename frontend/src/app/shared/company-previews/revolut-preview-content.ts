@@ -2,9 +2,9 @@ import type { AuthoredCompanyPreview } from '../../shared/company-previews/autho
 
 /**
  * Revolut frontend interview guide. Every prompt is a FrontendAtlas practice version modelled on public,
- * self-reported frontend accounts (six on Taro from 2023 to 2025, one Blind thread from 2022) and on
- * the Revolut Tech post on web engineering. Nothing here is a leaked, confirmed or official Revolut question, and a
- * handful of accounts cannot establish a fixed loop.
+ * self-reported frontend accounts (on Taro from 2022 to 2025, on Blind from 2022 and 2026, and a 2017 candidate
+ * repository) and on the Revolut Tech post on web engineering. Nothing here is a leaked, confirmed or official
+ * Revolut question, and a handful of accounts cannot establish a fixed loop.
  */
 const REVOLUT_APRIL_2025_URL =
   'https://www.jointaro.com/interviews/companies/revolut/experiences/frontend-developer-warsaw-masovia-april-1-2025-no-offer-neutral-71032bb4/';
@@ -49,7 +49,7 @@ export const REVOLUT_COMPANY_PREVIEW: AuthoredCompanyPreview = {
   hero: {
     kicker: 'Public Revolut prep guide',
     subtitle:
-      'Prepare with five practice prompts shaped by public frontend accounts from 2023 to 2025 and the Revolut Tech post: a one-hour TypeScript fetch-and-render task, an API pairing session, a three-task HackerRank screen, a theory check and a system-design round.',
+      'Prepare with five practice prompts shaped by public frontend accounts from 2022 to 2025 and the Revolut Tech post: a one-hour TypeScript fetch-and-render task, an API pairing session, a three-task HackerRank screen, a theory check and a system-design round.',
     caveat:
       'This guide uses public, self-reported interview accounts and the published Revolut Tech post on web engineering to create realistic constraints. It does not claim access to private interview material, a fixed interview format, or the stack of every Revolut team.',
     chips: ['5 practice prompts', 'TypeScript, React, API contracts', 'Full practice set requires Premium'],
@@ -85,7 +85,7 @@ export const REVOLUT_COMPANY_PREVIEW: AuthoredCompanyPreview = {
         { label: 'Length', value: 'Not reported in the public accounts.' },
         { label: 'Before it', value: 'A recruiter or HR screen (some recruiters ask a few JavaScript questions); a HackerRank test of three algorithm tasks in 85 to 110 minutes, sometimes before the recruiter call; about an hour of React and TypeScript live coding; a system design round for mid and senior roles; team fit.' },
         { label: 'Official pages', value: 'The careers video "How to succeed in your Bar Raiser interview" and the engineering careers page, which lists an intro call, tech interviews, team fit and an offer, without formats or durations.' },
-        { label: 'Sources', value: 'Taro accounts from 2023 to 2025 across Warsaw, Barcelona, Madrid, Portugal, Poland and Krakow; Blind posts from 2022 and March 2026; Revolut careers pages and the Bar Raiser video. All are listed under Sources below with what each can establish.' },
+        { label: 'Sources', value: 'Taro accounts from 2022 to 2025, most of them from Poland, Spain and Portugal; Blind posts from 2022 and March 2026; Revolut careers pages and the Bar Raiser video. All are listed under Sources below with what each can establish.' },
       ],
       practiceLink: { label: 'Prepare decision stories with the behavioural guide', path: '/guides/behavioral' },
       processLink: { label: 'See the Bar Raiser row in the reported process', fragment: 'revolut-interview-process-1-stage-bar-raiser' },

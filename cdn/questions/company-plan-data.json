@@ -6985,7 +6985,7 @@
       "signature": "Merge request review",
       "framework": "vue",
       "checkedAt": "2026-10-23",
-      "sourceCount": 19,
+      "sourceCount": 20,
       "promptCount": 5,
       "variants": [
         {
@@ -7576,7 +7576,10 @@
               "report": {
                 "publisher": "LeetCode Discuss",
                 "date": "2021-06"
-              }
+              },
+              "rounds": [
+                "interview-loop"
+              ]
             },
             {
               "id": "react-autocomplete-search-starter",
@@ -7584,10 +7587,10 @@
                 "publisher": "LeetCode Discuss",
                 "date": "2021-06"
               },
-              "prompt": true,
               "rounds": [
-                "assessment"
-              ]
+                "interview-loop"
+              ],
+              "prompt": true
             },
             {
               "id": "js-throttle",
@@ -9057,7 +9060,7 @@
       "framework": "javascript",
       "mixed": true,
       "checkedAt": "2026-10-22",
-      "sourceCount": 8,
+      "sourceCount": 13,
       "promptCount": 6,
       "variants": [
         {
@@ -10547,7 +10550,7 @@
       "framework": "javascript",
       "mixed": true,
       "checkedAt": "2026-10-20",
-      "sourceCount": 18,
+      "sourceCount": 17,
       "promptCount": 7,
       "variants": [
         {

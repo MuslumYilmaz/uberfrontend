@@ -56,8 +56,8 @@
         <h2 id="company-plan-open-title" class="preview__section-title">
           {{ viewer() === 'premium' ? 'Start with these ' + openTasks().length + ' tasks' : 'Try these ' + openTasks().length + ' tasks for free' }}
         </h2>
-        <p class="preview__section-sub preview__section-sub--desktop">{{ viewer() === 'premium' ? 'They run in your browser.' : 'They run in your browser. No account needed.' }}</p>
-        <p class="preview__section-sub preview__section-sub--phone">{{ viewer() === 'premium' ? 'Read them here; the code runs on a desktop or tablet.' : 'Read them here; the code runs on a desktop or tablet. No account needed.' }}</p>
+        <p class="preview__section-sub preview__section-sub--desktop">{{ viewer() === 'guest' ? 'They run in your browser. No account needed.' : 'They run in your browser.' }}</p>
+        <p class="preview__section-sub preview__section-sub--phone">{{ viewer() === 'guest' ? 'Read them here; the code runs on a desktop or tablet. No account needed.' : 'Read them here; the code runs on a desktop or tablet.' }}</p>
       </div>
       @for (row of openTasks(); track row.task.id) {
         <a class="plan-row" data-testid="company-plan-open-task" [routerLink]="row.task.route" [fragment]="row.task.fragment" [state]="row.state" (click)="taskOpened(row.task)">

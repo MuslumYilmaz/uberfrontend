@@ -662,7 +662,7 @@
 
     <section class="company-guide-section" aria-labelledby="netflix-source-notes">
       <div class="company-guide-section__head">
-        <p class="preview-kicker">Official context and case studies</p>
+        <p class="preview-kicker">Official pages and public interview reports</p>
         <h2 id="netflix-source-notes">Sources and evidence limits</h2>
         <p>
           These links support the public context used by the guide. Their notes state what each source can—and
@@ -670,14 +670,25 @@
         </p>
       </div>
       <div class="company-source-list" [class.company-locked]="detailLocked()" [class.premium-locked]="detailLocked()" [attr.data-nosnippet]="detailLocked() ? '' : null" [attr.inert]="detailLocked() ? '' : null">
-        <article *ngFor="let source of netflixOfficialSources">
+        <article *ngFor="let source of netflixSources">
           <h3>
-            <a [href]="source.url" target="_blank" rel="noopener noreferrer">{{ source.label }}</a>
+            <a [href]="source.url" target="_blank" [attr.rel]="sourceRel(source)">{{ source.label }}</a>
           </h3>
           <p>{{ source.note }}</p>
         </article>
+        <details class="company-source-list__more" *ngIf="extraSources().length as extra" data-testid="company-sources-more">
+          <summary class="company-source-list__summary">Show the {{ extra }} {{ extra === 1 ? 'source' : 'sources' }} cited only on the process table</summary>
+          <div class="company-source-list__extra">
+            <article *ngFor="let source of extraSources()">
+              <h3>
+                <a [href]="source.url" target="_blank" [attr.rel]="sourceRel(source)">{{ source.label }}</a>
+              </h3>
+              <p>{{ source.note }}</p>
+            </article>
+          </div>
+        </details>
       </div>
-      <ng-container *ngTemplateOutlet="lockGateCard; context: { $implicit: sourcesGate(netflixOfficialSources.length) }"></ng-container>
+      <ng-container *ngTemplateOutlet="lockGateCard; context: { $implicit: sourcesGate(evidence?.counts) }"></ng-container>
     </section>
 
     <app-company-official-guides [slug]="slug" [companyLabel]="label" [guides]="officialGuides"></app-company-official-guides>
@@ -942,7 +953,7 @@
           </div>
         </details>
       </div>
-      <ng-container *ngTemplateOutlet="lockGateCard; context: { $implicit: sourcesGate(evidence?.counts?.sources ?? preview.sources.items.length) }"></ng-container>
+      <ng-container *ngTemplateOutlet="lockGateCard; context: { $implicit: sourcesGate(evidence?.counts) }"></ng-container>
     </section>
 
     <app-company-official-guides [slug]="slug" [companyLabel]="label" [guides]="officialGuides"></app-company-official-guides>

@@ -89,6 +89,16 @@ export function checkGuide(preview, process, evidenceModule) {
     }
   }
 
+  // The page counts a source once by its exact URL, so one post written in two letter cases, or with and without a
+  // trailing slash, would be listed and counted twice.
+  const spellings = new Map();
+  for (const { url } of sources) {
+    const key = url.toLowerCase().replace(/\/+$/, '');
+    const other = spellings.get(key);
+    if (other) errors.push(`[sources] ${other} and ${url} are one page spelled two ways; use one URL in the guide and the process table`);
+    else spellings.set(key, url);
+  }
+
   const urls = new Set(sources.map((source) => source.url));
   for (const prompt of preview.prompts.items) {
     const url = prompt.reportedRound?.url;

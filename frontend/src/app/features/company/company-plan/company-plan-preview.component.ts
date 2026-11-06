@@ -293,14 +293,14 @@ export class CompanyPlanPreviewComponent {
     const warmups = this.warmups();
     const open = openTaskCount(plan);
     const locked = plan.tasks.length - open;
-    // The badges on the page count: the plan's tasks and the free warm-ups shown beside them.
-    const pressure = new Set([...plan.tasks, ...plan.preview.open].filter((task) => task.pressure).map((task) => task.id)).size;
+    // A fact about the plan counts the plan's tasks; a free warm-up outside it keeps its badge but is not counted.
+    const pressure = plan.tasks.filter((task) => task.pressure).length;
     // One set of numbers: the plan's tasks, how many open now, and the warm-ups that sit outside it.
     const split = this.viewer() === 'premium' || !locked ? '' : `: ${open} open now, ${locked} with Premium`;
     return [
       planSummaryLine(plan, request.answers.when) + split + (warmups ? `, plus ${warmups} free ${warmups === 1 ? 'warm-up' : 'warm-ups'} outside the plan` : ''),
       roundsFact,
-      ...(pressure ? [`${pressure} ${pressure === 1 ? 'task runs' : 'tasks run'} as an interview (Pressure Mode): the requirements change while you code`] : []),
+      ...(pressure ? [`${pressure} ${pressure === 1 ? 'task' : 'tasks'} in your plan ${pressure === 1 ? 'runs' : 'run'} as an interview (Pressure Mode): the requirements change while you code`] : []),
       ...(sets ? [sets] : []),
       ...(lastFact ? [lastFact] : []),
     ];

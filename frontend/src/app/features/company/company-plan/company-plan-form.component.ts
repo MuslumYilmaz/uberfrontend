@@ -9,7 +9,7 @@ import { FaRotatingWordsComponent } from '../../../shared/ui/rotating-words/fa-r
 import { hasPremium, premiumEnded } from './company-plan-access';
 import { companyMatchesSearch } from './company-plan-search';
 import { COMPANY_PLAN_WHEEL as WHEEL } from './company-plan-wheel';
-import { CompanyPlanData, CompanyPlanDataList, companyPlanDefaultList, companyPlanRoundKey } from './company-plan.engine';
+import { CompanyPlanData, CompanyPlanDataList, buildCompanyPlan, companyPlanDefaultList, companyPlanRoundKey } from './company-plan.engine';
 import { LEVEL_LABELS, WHEN_LABELS, planCompanyNames, previewQueryParams } from './company-plan.format';
 import { CompanyPlanService } from './company-plan.service';
 
@@ -82,6 +82,8 @@ export class CompanyPlanFormComponent {
 
   private readonly plans = inject(CompanyPlanService);
   private readonly auth = inject(AuthService);
+  /** "No account needed" is a promise to a visitor; a signed-in person already has one. */
+  readonly signedIn = computed(() => Boolean(this.auth.user()));
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly injector = inject(Injector);
@@ -224,26 +226,49 @@ export class CompanyPlanFormComponent {
     return next ? `From the ${next.name}` : 'From the first round';
   });
 
+  /**
+   * The plan these answers build, one budget shared by the companies on the card, as the preview builds it. The card
+   * reads its rounds from here, so "tasks on 4 of them" and the marked rounds are the preview's own numbers.
+   */
+  private readonly cardPlan = computed(() => {
+    const data = this.data();
+    const slugs = this.shownSlugs().filter((slug) => data?.companies[slug]);
+    if (!data || !slugs.length) return null;
+    const framework = this.plans.answers()?.framework;
+    return buildCompanyPlan(data, {
+      companies: slugs,
+      // Only a switched list is named, as the answers the preview receives name it.
+      lists: Object.fromEntries(slugs.flatMap((slug) => {
+        const list = this.listFor(slug);
+        return list && list.id !== companyPlanDefaultList(data.companies[slug]).id ? [[slug, list.id]] : [];
+      })),
+      when: this.when(),
+      level: this.level(),
+      passedRounds: this.passedRounds(),
+      ...(framework ? { framework } : {}),
+      today: new Date().toISOString().slice(0, 10),
+    });
+  });
+
   readonly cards = computed(() => {
     const data = this.data();
-    if (!data) return [];
-    const passed = new Set(this.passedRounds());
+    const plan = this.cardPlan();
+    if (!data || !plan) return [];
     return this.shownSlugs().flatMap((slug) => {
-      const company = data.companies[slug];
-      const list = this.listFor(slug);
-      if (!company || !list) return [];
-      // "With practice" counts the rounds the guide's table links a practice page on, the same rows a reader can see.
-      const practice = list.rounds.filter((round) => list.tasks.some((task) => task.lead && task.rounds?.includes(round.id))).length;
-      const sources = company.sourceCount ?? list.sourceCount;
+      const planned = plan.companies.find((company) => company.slug === slug);
+      if (!planned) return [];
+      // The rounds still ahead that the plan holds a task on: what the preview counts as "tasks on N of them".
+      const tasksOn = planned.rounds.filter((round) => !round.passed && round.tasks.length).length;
+      const sources = planned.sourceCount;
       return [{
         slug,
-        name: company.name,
-        meta: `${list.rounds.length} reported rounds, ${practice} with practice · ${sources} public ${sources === 1 ? 'source' : 'sources'} · checked ${shortDate(company.checkedAt)}`,
-        rounds: list.rounds.map((round) => ({
+        name: planned.name,
+        meta: `${planned.rounds.length} reported rounds, tasks on ${tasksOn} of them · ${sources} public ${sources === 1 ? 'source' : 'sources'} · checked ${shortDate(planned.checkedAt)}`,
+        rounds: planned.rounds.map((round) => ({
           id: round.id,
           name: round.name,
-          practice: round.kinds.some((kind) => kind === 'coding' || kind === 'design' || kind === 'people'),
-          passed: passed.has(companyPlanRoundKey(slug, list.id, round.id)),
+          practice: !round.passed && round.tasks.length > 0,
+          passed: round.passed,
         })),
       }];
     });
