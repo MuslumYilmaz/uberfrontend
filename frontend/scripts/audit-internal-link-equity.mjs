@@ -121,11 +121,26 @@ function companyExpectations(questionsDir, slugs) {
   const families = buildFrameworkFamilyByIdMap(fs.readFileSync(path.join(frontendRoot, 'src/app/shared/framework-families.ts'), 'utf8'));
   const counts = collectCompanyCounts(Object.fromEntries(lists.map(({ kind, items }) => [kind === 'system-design' ? 'system' : kind, items])), families);
   const samples = new Map(slugs.map((slug) => {
-    const matches = lists.map((list) => ({ ...list, items: list.items.filter((q) => (q.companies || []).some((company) => String(company).trim().toLowerCase() === slug)) }));
+    const matches = lists.map((list) => {
+      const items = list.items.filter((q) => (q.companies || []).some((company) => String(company).trim().toLowerCase() === slug));
+      // The page shows one coding card per exercise (company-public-data.service.ts), so the sample is read the same way.
+      return { ...list, items: list.kind === 'coding' ? oneCardPerExercise(items, families) : items };
+    });
     const keys = new Set(matches.flatMap(({ kind, items }) => items.map((q) => `${kind}:${q.tech || 'none'}:${q.id}`)));
     return [slug, { count: Math.min(8, keys.size), requiredIds: new Set(matches.flatMap(({ limit, items }) => items.slice(0, limit).map((q) => q.id))) }];
   }));
   return { counts, samples };
+}
+/** Keeps the first of each framework family in list order; a task with no counterparts always stays. */
+function oneCardPerExercise(items, families) {
+  const seen = new Set();
+  return items.filter((q) => {
+    const family = families.get(String(q.id ?? ''));
+    if (!family) return true;
+    if (seen.has(family)) return false;
+    seen.add(family);
+    return true;
+  });
 }
 function increment(map, target, source) {
   if (!map.has(target)) map.set(target, new Set());
